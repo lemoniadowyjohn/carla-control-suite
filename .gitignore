@@ -1,0 +1,75 @@
+# Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Testing
+.pytest_cache/
+.benchmarks/
+*.cover
+.coverage
+htmlcov/
+
+# Logs
+*.log
+hpc/logs/
+*.out
+*.err
+
+# Data and outputs
+ultimate_pipeline_out/
+calib_test_out/
+calib_sweep_out/
+calib_visual_out/
+training_data/
+_deep_scan_report/
+_hpc_suspects.txt
+*.zip
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+*.patch
+
+# System files
+.DS_Store
+Thumbs.db
+*.pem
+
+# Project specific
+calib_data.json
+project_doctor.log
+
+
+# --- Local datasets / outputs (machine-specific) ---
+/cities/
+/ultimate_pipeline_out/
+/legacy/
+
+# Large manual OpenDRIVE artifacts (avoid snapshot warnings)
+manual_maps/*.xodr
+
