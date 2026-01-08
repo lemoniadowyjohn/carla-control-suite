@@ -1,10 +1,57 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage/
+.coverage*
+htmlcov/
+
+# ===== Virtual envs =====
+.venv/
+venv/
+ENV/
+env/
+
+# ===== IDE / OS =====
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ===== Project generated outputs =====
 ultimate_pipeline_out/
-_analysis_out/
 outputs/
 logs/
 screenshots/
-__pycache__/
-.pytest_cache/
-*.bak
-*_backup*
+_analysis_out/
+_analysis_*/
+tmp/
+temp/
 
+# ===== CARLA / cache =====
+CarlaUE4/Saved/
+CarlaUE4/Intermediate/
+CarlaUE4/Binaries/
+carla_cache/
+*.log
+
+# ===== Backups / exports =====
+*.bak
+*.backup
+*_backup*
+*.old
+*.orig
+*.tmp
+
+# ===== Data / large artifacts (only if generated) =====
+datasets/
+notebooks/.ipynb_checkpoints/
