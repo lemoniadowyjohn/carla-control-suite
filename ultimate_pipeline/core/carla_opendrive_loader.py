@@ -7,12 +7,18 @@ from typing import Optional, Sequence, TYPE_CHECKING
 
 import importlib
 
+_CARLA = None
+
 if TYPE_CHECKING:
     import carla
 
 
 def _lazy_carla():
-    return importlib.import_module("carla")
+    """Import CARLA lazily so offline usage (HPC, tests) stays import-safe."""
+    global _CARLA
+    if _CARLA is None:
+        _CARLA = importlib.import_module("carla")
+    return _CARLA
 
 
 def safe_reload_world(client: carla.Client) -> None:
