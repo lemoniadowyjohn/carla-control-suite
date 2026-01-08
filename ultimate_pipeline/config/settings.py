@@ -21,9 +21,13 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
+
+from ultimate_pipeline.utils.paths import repo_root, resolve_city_path, default_city_dir
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = repo_root()
+CITY_NAME = os.getenv("UP_CITY", "ingolstadt")
 
 
 def _default_timestamp() -> str:
@@ -69,6 +73,9 @@ class Settings:
         "STRICT_TILE_SEMANTICS",
         "TILE_SIZE",
         "TILE_AUTO_FORENSICS_TRIGGER_N",
+        "TILE_SPAWN_ATTEMPTS",
+        "TILE_SPAWN_Z_OFFSET_M",
+        "TILE_SPAWN_FORWARD_M",
         "ENABLE_SPAWN_QA",
         "ENABLE_TILE_STRESS_TEST",
 
@@ -121,6 +128,9 @@ class Settings:
             "TILE_SIZE": self.TILE_SIZE,
             "TILE_MATCH_MIN_IOU_FOR_GAP": getattr(self, "TILE_MATCH_MIN_IOU_FOR_GAP", 0.9),
             "TILE_AUTO_FORENSICS_TRIGGER_N": self.TILE_AUTO_FORENSICS_TRIGGER_N,
+            "TILE_SPAWN_ATTEMPTS": self.TILE_SPAWN_ATTEMPTS,
+            "TILE_SPAWN_Z_OFFSET_M": self.TILE_SPAWN_Z_OFFSET_M,
+            "TILE_SPAWN_FORWARD_M": self.TILE_SPAWN_FORWARD_M,
             "ENABLE_SPAWN_QA": self.ENABLE_SPAWN_QA,
             "ENABLE_TILE_STRESS_TEST": self.ENABLE_TILE_STRESS_TEST,
             # --- Geometry / Semantics ---
@@ -266,9 +276,12 @@ class Settings:
     # -----------------------------------------------------------------
     # 2) INPUT / OUTPUT PATHS
     # -----------------------------------------------------------------
-    INPUT_XODR: str = (
-        r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main"
-        r"\cities\ingolstadt\ingolstadt_dominik.xodr"
+    INPUT_XODR: str = str(
+        resolve_city_path(
+            os.getenv("UP_INPUT_XODR", None)
+            or default_city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr",
+            city=CITY_NAME,
+        )
     )
     # Legacy compatibility alias for system_integrity_checker
     XODR_OUTPUT_FILE: str = INPUT_XODR
@@ -276,7 +289,7 @@ class Settings:
     # Keep commented manual-map path hints (for later domain-gap)
     #MANUAL_MAP_XODR: str = INPUT_XODR#(
     # Manual reference OpenDRIVE map (set this to Dominik's manual Ingolstadt .xodr)
-    MANUAL_MAP_XODR: str = r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\manual_maps\08_final_20251223_181652_031600_semantic.xodr"
+    MANUAL_MAP_XODR: str = os.getenv("UP_MANUAL_XODR", "")
     # e.g. r"C:\path\to\manual_map.xodr"
     # Optional: directory containing manual reference tiles (.xodr per tile). Leave empty to skip per-tile gaps.
     MANUAL_TILES_DIR: str = r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\manual_maps\tiles"
@@ -324,9 +337,11 @@ class Settings:
     DEM_PROVIDER: str = "COP30"
     ENABLE_DEM_AUTO_DOWNLOAD: bool = True
 
-    DEM_DIR: str = (
-        r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main"
-        r"\cities\ingolstadt\dem"
+    DEM_DIR: str = str(
+        resolve_city_path(
+            os.getenv("UP_DEM_DIR", None) or default_city_dir(CITY_NAME) / "dem",
+            city=CITY_NAME,
+        )
     )
     DEM_FILENAME: str = "dem_ing.tif"
 
@@ -368,16 +383,22 @@ class Settings:
     }
 
 
-    OSM_FILE: str = (
-        r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main"
-        r"\cities\ingolstadt\osm\ingolstadt.osm"
+    OSM_FILE: str = str(
+        resolve_city_path(
+            os.getenv("UP_OSM_FILE", None)
+            or default_city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm",
+            city=CITY_NAME,
+        )
     )
     # Alias used by older modules / system_integrity_checker
     OSM_INPUT_FILE: str = OSM_FILE
 
-    OSM_BUILDINGS_GEOJSON: str = (
-        r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main"
-        r"\cities\ingolstadt\osm\buildings.geojson"
+    OSM_BUILDINGS_GEOJSON: str = str(
+        resolve_city_path(
+            os.getenv("UP_OSM_BUILDINGS_GEOJSON", None)
+            or default_city_dir(CITY_NAME) / "osm" / "buildings.geojson",
+            city=CITY_NAME,
+        )
     )
 
     # -----------------------------------------------------------------
@@ -617,6 +638,11 @@ class Settings:
     # Write per-tile failure classification JSON
     ENABLE_TILE_FAILURE_TAXONOMY: bool = True
     TILE_FAILURE_TAXONOMY_JSON: str = "tile_failure_taxonomy.json"
+
+    # Tile QA spawn robustness
+    TILE_SPAWN_ATTEMPTS: int = 20        # try 20 different spawn points per tile
+    TILE_SPAWN_Z_OFFSET_M: float = 0.75    # lift spawn above ground (DEM/elevation safety)
+    TILE_SPAWN_FORWARD_M: float = 0.0      # optionally 2.0 if you still see failures near edges
 
     # Enable aggregate tile metrics (failure rate, counts)
     ENABLE_TILE_METRICS: bool = True
@@ -969,8 +995,7 @@ class Settings:
 
         self.OSM_FILE = _pick_existing(
             self.OSM_FILE,
-            str(PROJECT_ROOT / "cities" / "ingolstadt" / "osm" / "ingolstadt.osm"),
-            str(PROJECT_ROOT / "data" / "osm" / "ingolstadt.osm"),
+            str(default_city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm"),
         )
 
         if getattr(self, "OSM_TO_XODR_TOOL", ""):
@@ -978,14 +1003,13 @@ class Settings:
 
         self.INPUT_XODR = _pick_existing(
             self.INPUT_XODR,
-            str(PROJECT_ROOT / "cities" / "ingolstadt" / "ingolstadt_dominik.xodr"),
-            str(PROJECT_ROOT / "data" / "maps" / "ingolstadt_generated.xodr"),
+            str(default_city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr"),
         )
 
         if self.MANUAL_MAP_XODR:
             self.MANUAL_MAP_XODR = _pick_existing(
                 self.MANUAL_MAP_XODR,
-                str(PROJECT_ROOT / "manual_maps" / "ingolstadt_manual.xodr"),
+                str(PROJECT_ROOT / "manual_maps" / f"{CITY_NAME}_manual.xodr"),
             )
 
         self.BASE_OUTPUT_DIR = _pick_existing(
