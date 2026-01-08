@@ -1,24 +1,38 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
-Compare two pipeline runs for determinism:
-- MD5 of final XODR (byte-level)
-- SHA256 of planView geometry (semantic-ish)
-- MD5 of key JSON artifacts
+Compare two pipeline runs for determinism.
+
+What it checks:
+- Byte-level MD5 of the final XODR
+- Semantic-ish SHA256 of planView geometry (s,x,y,hdg,len + type-specific params)
+- MD5 equality of key JSON artifacts if present
+
+Usage:
+  python ultimate_pipeline/tools/compare_runs_determinism.py <RUN_A> <RUN_B> [--xodr A.xodr] [--xodr-b B.xodr]
 """
+
 from __future__ import annotations
 
 import argparse
 import hashlib
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from typing import Iterable, Optional
+
+from ultimate_pipeline.utils.bootstrap import bootstrap_console
+
+bootstrap_console()
 
 KEY_FILES = [
     "settings_snapshot.json",
     "map_statistics.json",
     "tile_metadata.json",
     "tile_adjacency.json",
-    "gate_failures.json",
+    "tile_validation_summary.json",
 ]
+
 
 def md5_file(p: Path) -> str:
     h = hashlib.md5()
@@ -27,82 +41,108 @@ def md5_file(p: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
-def pick_final_xodr(run_dir: Path) -> Path:
-    cand = sorted(run_dir.glob("08_final_*.xodr"))
-    if cand:
-        return cand[0]
-    xodrs = sorted(run_dir.glob("*.xodr"))
-    if not xodrs:
-        raise FileNotFoundError(f"No .xodr in {run_dir}")
-    return xodrs[-1]
 
-def semantic_hash_planview(xodr_path: Path, ndigits: int = 6) -> str:
-    def r(x: str) -> str:
-        try:
-            return f"{float(x):.{ndigits}f}"
-        except Exception:
-            return x
+def sha256_text(s: str) -> str:
+    return hashlib.sha256(s.encode("utf-8", errors="replace")).hexdigest()
 
-    root = ET.parse(xodr_path).getroot()
-    rows = []
-    for road in sorted(root.findall("road"), key=lambda rr: int(rr.get("id", "0"))):
+
+def _iter_planview_geoms(xodr_path: Path) -> Iterable[str]:
+    """Yield a stable textual signature for each <geometry> element."""
+    tree = ET.parse(str(xodr_path))
+    root = tree.getroot()
+
+    for road in root.findall(".//road"):
         rid = road.get("id", "")
-        pv = road.find("planView")
-        if pv is None:
+        planview = road.find("planView")
+        if planview is None:
             continue
-        for g in sorted(pv.findall("geometry"), key=lambda gg: float(gg.get("s", "0"))):
-            base = (rid, r(g.get("s","0")), r(g.get("x","0")), r(g.get("y","0")), r(g.get("hdg","0")), r(g.get("length","0")))
-            child = next(iter(g), None)
-            if child is None:
-                rows.append("|".join(base) + "|NONE")
+
+        for geom in planview.findall("geometry"):
+            s = geom.get("s", "")
+            x = geom.get("x", "")
+            y = geom.get("y", "")
+            hdg = geom.get("hdg", "")
+            length = geom.get("length", "")
+
+            child = None
+            for t in ("line", "arc", "spiral", "poly3", "paramPoly3"):
+                c = geom.find(t)
+                if c is not None:
+                    child = c
+                    gtype = t
+                    break
             else:
-                attrs = ",".join(f"{k}={r(child.attrib[k])}" for k in sorted(child.attrib.keys()))
-                rows.append("|".join(base) + f"|{child.tag}|{attrs}")
+                gtype = "unknown"
 
-    h = hashlib.sha256()
-    for line in rows:
-        h.update(line.encode("utf-8"))
-        h.update(b"\n")
-    return h.hexdigest()
+            params = ""
+            if child is not None:
+                items = sorted(child.attrib.items(), key=lambda kv: kv[0])
+                params = ";".join(f"{k}={v}" for k, v in items)
 
-def main():
+            yield f"{rid}|{s}|{x}|{y}|{hdg}|{length}|{gtype}|{params}"
+
+
+def planview_sha256(xodr_path: Path) -> str:
+    sig = "\n".join(_iter_planview_geoms(xodr_path))
+    return sha256_text(sig)
+
+
+def _pick_final_xodr(run_dir: Path, override: Optional[str]) -> Path:
+    if override:
+        p = (run_dir / override) if not Path(override).is_absolute() else Path(override)
+        if not p.exists():
+            raise FileNotFoundError(p)
+        return p
+
+    candidates = sorted(run_dir.glob("08_final*_laneSectionFixed.xodr"))
+    if candidates:
+        return candidates[0]
+    candidates = sorted(run_dir.glob("08_final*.xodr"))
+    if candidates:
+        return candidates[0]
+    raise FileNotFoundError(f"No final XODR found in {run_dir}")
+
+
+def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--auto", action="store_true")
-    ap.add_argument("--out-root", type=str, default="ultimate_pipeline_out")
-    ap.add_argument("--run-a", type=str)
-    ap.add_argument("--run-b", type=str)
+    ap.add_argument("run_a", type=Path)
+    ap.add_argument("run_b", type=Path)
+    ap.add_argument("--xodr", dest="xodr_a", default=None, help="Override XODR path or filename relative to RUN_A")
+    ap.add_argument("--xodr-b", dest="xodr_b", default=None, help="Override XODR path or filename relative to RUN_B")
     args = ap.parse_args()
 
-    if args.auto:
-        out_root = Path(args.out_root)
-        runs = sorted([p for p in out_root.iterdir() if p.is_dir() and p.name[:8].isdigit()], key=lambda p: p.name)
-        if len(runs) < 2:
-            raise SystemExit("Need at least 2 runs in ultimate_pipeline_out")
-        run_a, run_b = runs[-2], runs[-1]
-    else:
-        if not args.run_a or not args.run_b:
-            raise SystemExit("Use --auto or provide --run-a and --run-b")
-        run_a, run_b = Path(args.run_a), Path(args.run_b)
+    run_a: Path = args.run_a
+    run_b: Path = args.run_b
 
-    fa, fb = pick_final_xodr(run_a), pick_final_xodr(run_b)
+    xa = _pick_final_xodr(run_a, args.xodr_a)
+    xb = _pick_final_xodr(run_b, args.xodr_b)
 
-    print("== Final XODR (byte MD5) ==")
-    print("A:", md5_file(fa))
-    print("B:", md5_file(fb))
+    print("== Final XODR (MD5) ==")
+    ha = md5_file(xa)
+    hb = md5_file(xb)
+    print("A:", xa)
+    print("  ", ha)
+    print("B:", xb)
+    print("  ", hb)
+    print("byte_match:", ha == hb)
 
-    print("\n== Final XODR (planView semantic SHA256) ==")
-    ha, hb = semantic_hash_planview(fa), semantic_hash_planview(fb)
-    print("A:", ha)
-    print("B:", hb)
-    print("planview_match:", ha == hb)
+    print("\n== PlanView geometry (SHA256) ==")
+    pa = planview_sha256(xa)
+    pb = planview_sha256(xb)
+    print("A:", pa)
+    print("B:", pb)
+    print("planview_match:", pa == pb)
 
-    print("\n== Key artifacts (MD5) ==")
+    print("\n== Key artifacts (MD5 equality) ==")
     for rel in KEY_FILES:
-        pa, pb = run_a / rel, run_b / rel
-        if pa.exists() and pb.exists():
-            print(f"{rel}: {md5_file(pa) == md5_file(pb)}")
+        fa = run_a / rel
+        fb = run_b / rel
+        if fa.exists() and fb.exists():
+            print(f"{rel}: {md5_file(fa) == md5_file(fb)}")
         else:
-            print(f"{rel}: missing A={pa.exists()} B={pb.exists()}")
+            print(f"{rel}: missing A={fa.exists()} B={fb.exists()}")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

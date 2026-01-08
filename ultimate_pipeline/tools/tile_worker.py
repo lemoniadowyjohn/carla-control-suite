@@ -15,13 +15,20 @@ Exit codes:
 
 from __future__ import annotations
 
+from ultimate_pipeline.utils.bootstrap import bootstrap_console
+
+bootstrap_console()
+
 import argparse
 import datetime
 import json
+import logging
 import os
+import random
 import sys
 import time
-from typing import Any, Dict
+import traceback
+from typing import Any, Dict, List, Optional
 
 
 # -----------------------------------------------------------------------------
@@ -42,6 +49,8 @@ def _force_utf8_console() -> None:
 
 _force_utf8_console()
 
+log = logging.getLogger("tile_worker")
+
 
 from ultimate_pipeline.core.s_invariants import scan_s_invariants, fix_s_invariants
 
@@ -54,6 +63,15 @@ def _write(path: str, obj: Dict[str, Any]) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2, ensure_ascii=False)
+
+
+def _setup_logger() -> None:
+    if log.handlers:
+        return
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+    log.addHandler(handler)
+    log.setLevel(logging.INFO)
 
 
 def _wait_carla_ready(client: Any, timeout_s: float = 45.0, poll_s: float = 0.5) -> None:
@@ -102,6 +120,84 @@ def _get_client(host: str, port: int, timeout_s: float) -> Any:
     return client
 
 
+def _spawn_with_retries(
+    world: Any,
+    preferred_filter: str = "vehicle.*model3*",
+    fallback_filter: str = "vehicle.*",
+    max_attempts: int = 5,
+    seed: int = 42,
+    spawn_points: Optional[List[Any]] = None,
+    z_offset_m: float = 0.75,
+    forward_m: float = 0.0,
+) -> Any:
+    """
+    Robust ego spawn using the centralized try_robust_spawn helper.
+    """
+    from ultimate_pipeline.carla_tools.spawn_recovery import try_robust_spawn
+
+    bp_lib = world.get_blueprint_library()
+    bps = bp_lib.filter(preferred_filter)
+    if not bps:
+        bps = bp_lib.filter(fallback_filter)
+    if not bps:
+        raise RuntimeError("no vehicle blueprints available")
+    bp = bps[0]
+
+    spawns = list(spawn_points) if spawn_points is not None else list(world.get_map().get_spawn_points())
+    
+    log.info(
+        "Spawn strategy (robust) | spawn_points=%d | bp_pref=%s | max_attempts=%d | seed=%d",
+        len(spawns),
+        preferred_filter,
+        max_attempts,
+        seed,
+    )
+
+    ego, res = try_robust_spawn(
+        world=world,
+        blueprint=bp,
+        spawn_points=spawns,
+        max_attempts=max_attempts,
+        seed=seed,
+        z_offset_m=z_offset_m,
+        forward_m=forward_m
+    )
+
+    # Map res["attempts"] back to the format tile_worker expects for its report
+    attempts = []
+    for a in res.get("attempts", []):
+        ctx = {
+            "attempt": a.get("attempt"),
+            "spawn_index": a.get("spawn_index"),
+            "location": {
+                "x": a["transform"]["x"],
+                "y": a["transform"]["y"],
+                "z": a["transform"]["z"],
+            },
+            "rotation": {
+                "yaw": a["transform"]["yaw"],
+                "pitch": 0.0,
+                "roll": 0.0,
+            },
+            "blueprint": bp.id,
+            "status": a.get("status"),
+            "z_lift_applied_m": a.get("z_lift"),
+            "forward_shift_m": a.get("forward_nudge"),
+        }
+        if "error" in a:
+            ctx["exception"] = a["error"]
+        attempts.append(ctx)
+
+    if ego:
+        log.info("Spawn succeeded on attempt %d", res.get("final_index", -1))
+        return ego, attempts
+
+    raise RuntimeError(
+        f"failed to spawn ego after {max_attempts} attempts. "
+        f"Attempts: {attempts}"
+    )
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--xodr", required=True)
@@ -112,13 +208,39 @@ def main() -> int:
     ap.add_argument("--no_spawn", action="store_true")
     args = ap.parse_args()
 
+    _setup_logger()
+    log.info("tile_worker start | xodr=%s", args.xodr)
+
     rep: Dict[str, Any] = {
         "started_at": _now(),
         "tile_path": args.xodr,
         "status": "started",
         "preflight": {},
-        "carla": {},
+        "carla": {
+            "no_spawn": bool(args.no_spawn),
+            "spawn_ok": None,
+        },
         "ended_at": None,
+    }
+    result: Dict[str, Any] = {
+        "tile_path": args.xodr,
+        "tile_id": os.path.splitext(os.path.basename(args.xodr))[0],
+        "map_name": None,
+        "spawn": {
+            "attempted": False,
+            "ok": None,
+            "spawn_points": 0,
+            "chosen_index": None,
+            "chosen_location": None,
+            "chosen_rotation": None,
+            "blueprint_requested": "vehicle.*model3*",
+            "blueprint_used": None,
+            "attempts": 0,
+            "elapsed_s": None,
+            "attempt_log": [],
+        },
+        "failed_stage": None,
+        "exception": None,
     }
     _write(args.report_path, rep)
 
@@ -195,27 +317,88 @@ def main() -> int:
             do_reload=True,
             fallback_enabled=False,  # never silently fall back to built-in maps
         )
-
+        result["map_name"] = getattr(world.get_map(), "name", None)
         rep["carla"]["load_ok"] = True
         rep["carla"]["load_s"] = round(time.time() - t0, 3)
 
         # Optional spawn test
         if not args.no_spawn:
-            bp_lib = world.get_blueprint_library()
-            bps = bp_lib.filter("vehicle.*model3*")
-            bp = bps[0] if bps else bp_lib.filter("vehicle.*")[0]
-            spawns = world.get_map().get_spawn_points()
-            if not spawns:
-                raise RuntimeError("no spawn points in map")
-            ego = world.try_spawn_actor(bp, spawns[0])
-            if ego is None:
-                raise RuntimeError("failed to spawn ego")
-            ego.destroy()
-            rep["carla"]["spawn_ok"] = True
+            map_name = getattr(world.get_map(), "name", None)
+            log.info("Starting spawn test | map=%s", map_name)
+            # IMPORTANT: spawn failures are often "bad luck" with a few spawn points.
+            # Use a higher attempt budget for robustness (still deterministic via seed).
+            max_attempts = int(getattr(SETTINGS, "TILE_SPAWN_ATTEMPTS", 20) or 20)
+            if max_attempts < 5:
+                max_attempts = 5
+            seed = int(getattr(SETTINGS, "SEED", 42) or 42)
+            z_offset_m = float(getattr(SETTINGS, "TILE_SPAWN_Z_OFFSET_M", 0.75) or 0.75)
+            forward_m = float(getattr(SETTINGS, "TILE_SPAWN_FORWARD_M", 0.0) or 0.0)
+            ego: Any = None
+            spawn_attempts: List[Dict[str, Any]] = []
+            spawn_points = list(world.get_map().get_spawn_points())
+            rep["carla"]["spawn_points"] = len(spawn_points)
+            result["spawn"]["spawn_points"] = len(spawn_points)
+            result["spawn"]["attempted"] = True
+            try:
+                ego, spawn_attempts = _spawn_with_retries(
+                    world,
+                    preferred_filter="vehicle.*model3*",
+                    fallback_filter="vehicle.*",
+                    max_attempts=max_attempts,
+                    seed=seed,
+                    spawn_points=spawn_points,
+                    z_offset_m=z_offset_m,
+                    forward_m=forward_m,
+                )
+                result["spawn"]["ok"] = True
+                result["spawn"]["attempts"] = len(spawn_attempts)
+                if spawn_attempts:
+                    last = spawn_attempts[-1]
+                    result["spawn"]["chosen_index"] = last.get("spawn_index")
+                    result["spawn"]["blueprint_used"] = last.get("blueprint")
+                    result["spawn"]["elapsed_s"] = last.get("elapsed_s")
+                    result["spawn"]["chosen_location"] = last.get("location")
+                    result["spawn"]["chosen_rotation"] = last.get("rotation")
+                    result["spawn"]["attempt_log"] = spawn_attempts
+                rep["carla"]["spawn_ok"] = True
+                rep["carla"]["spawn_attempts"] = spawn_attempts
+            except Exception as e:
+                result["spawn"]["attempt_log"] = spawn_attempts
+                result["spawn"]["attempts"] = len(spawn_attempts)
+                result["spawn"]["failed_ctx"] = {
+                    "spawn_points": len(spawn_points),
+                    "map_name": map_name,
+                }
+                result["failed_stage"] = "spawn"
+                result["exception"] = {"type": type(e).__name__, "message": str(e), "traceback": traceback.format_exc()}
+                result["spawn"]["ok"] = False
+                if rep["carla"].get("spawn_ok") is None:
+                    rep["carla"]["spawn_ok"] = False
+                raise
+            finally:
+                if ego:
+                    try:
+                        ego.destroy()
+                    except Exception:
+                        pass
+            attempted = bool(result["spawn"].get("attempted"))
+            if attempted and rep["carla"].get("spawn_ok") is not True:
+                rep["carla"]["spawn_attempts"] = spawn_attempts
+                rep["carla"]["map_name"] = map_name
+                raise RuntimeError(
+                    f"failed to spawn ego after retries | map={map_name} | "
+                    f"attempts={len(spawn_attempts)} | spawn_points={len(spawn_points)}"
+                )
+        else:
+            # Explicitly record that spawn was not attempted; keep spawn_ok as None.
+            result["spawn"]["attempted"] = False
+            result["spawn"]["ok"] = None
+            rep["carla"]["spawn_ok"] = None
+        result["failed_stage"] = None
+        result["exception"] = None
+        rep["carla"]["result"] = result
 
         rep["status"] = "ok"
-        rep["ended_at"] = _now()
-        _write(args.report_path, rep)
         return 0
 
     except Exception as e:
@@ -225,15 +408,25 @@ def main() -> int:
         rep["carla"]["error"] = msg
         if "time-out" in msg.lower() or "timeout" in msg.lower():
             rep["carla"]["error_kind"] = "timeout_or_not_ready"
-        rep["ended_at"] = _now()
-        _write(args.report_path, rep)
+        result["failed_stage"] = "spawn" if "spawn" in msg.lower() else "load_map"
+        result["exception"] = {"type": type(e).__name__, "message": msg, "traceback": traceback.format_exc()}
+        attempted = bool(result.get("spawn", {}).get("attempted"))
+        if attempted and rep["carla"].get("spawn_ok") is None:
+            rep["carla"]["spawn_ok"] = False
         return 3
     except BaseException as e:
         rep["status"] = "unexpected"
         rep["carla"]["error"] = f"{type(e).__name__}: {e}"
+        result["failed_stage"] = "unexpected"
+        result["exception"] = {"type": type(e).__name__, "message": str(e), "traceback": traceback.format_exc()}
+        attempted = bool(result.get("spawn", {}).get("attempted"))
+        if attempted and rep["carla"].get("spawn_ok") is None:
+            rep["carla"]["spawn_ok"] = False
+        return 4
+    finally:
+        rep["carla"]["result"] = result
         rep["ended_at"] = _now()
         _write(args.report_path, rep)
-        return 4
 
 
 if __name__ == "__main__":
