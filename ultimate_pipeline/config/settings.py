@@ -278,7 +278,13 @@ class Settings:
     # -----------------------------------------------------------------
     INPUT_XODR: str = str(
         resolve_path(
-            os.getenv("UP_INPUT_XODR", None) or city_dir(CITY_NAME) / f"{CITY_NAME}.xodr",
+            os.getenv("UP_INPUT_XODR", None) or city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr",
+            default=city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr",
+        )
+    )
+    GENERATED_XODR: str = str(
+        resolve_path(
+            os.getenv("UP_GENERATED_XODR", None) or city_dir(CITY_NAME) / f"{CITY_NAME}.xodr",
             default=city_dir(CITY_NAME) / f"{CITY_NAME}.xodr",
         )
     )
