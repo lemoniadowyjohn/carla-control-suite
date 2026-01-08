@@ -3,9 +3,16 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Optional, Sequence, TYPE_CHECKING
 
-import carla
+import importlib
+
+if TYPE_CHECKING:
+    import carla
+
+
+def _lazy_carla():
+    return importlib.import_module("carla")
 
 
 def safe_reload_world(client: carla.Client) -> None:
