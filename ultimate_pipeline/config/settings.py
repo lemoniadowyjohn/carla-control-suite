@@ -23,7 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from ultimate_pipeline.utils.paths import repo_root, resolve_city_path, default_city_dir
+from ultimate_pipeline.utils.paths import repo_root, city_dir, resolve_path
 
 
 PROJECT_ROOT = repo_root()
@@ -277,10 +277,9 @@ class Settings:
     # 2) INPUT / OUTPUT PATHS
     # -----------------------------------------------------------------
     INPUT_XODR: str = str(
-        resolve_city_path(
-            os.getenv("UP_INPUT_XODR", None)
-            or default_city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr",
-            city=CITY_NAME,
+        resolve_path(
+            os.getenv("UP_INPUT_XODR", None) or city_dir(CITY_NAME) / f"{CITY_NAME}.xodr",
+            default=city_dir(CITY_NAME) / f"{CITY_NAME}.xodr",
         )
     )
     # Legacy compatibility alias for system_integrity_checker
@@ -338,9 +337,9 @@ class Settings:
     ENABLE_DEM_AUTO_DOWNLOAD: bool = True
 
     DEM_DIR: str = str(
-        resolve_city_path(
-            os.getenv("UP_DEM_DIR", None) or default_city_dir(CITY_NAME) / "dem",
-            city=CITY_NAME,
+        resolve_path(
+            os.getenv("UP_DEM_DIR", None) or city_dir(CITY_NAME) / "dem",
+            default=city_dir(CITY_NAME) / "dem",
         )
     )
     DEM_FILENAME: str = "dem_ing.tif"
@@ -384,20 +383,20 @@ class Settings:
 
 
     OSM_FILE: str = str(
-        resolve_city_path(
+        resolve_path(
             os.getenv("UP_OSM_FILE", None)
-            or default_city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm",
-            city=CITY_NAME,
+            or city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm",
+            default=city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm",
         )
     )
     # Alias used by older modules / system_integrity_checker
     OSM_INPUT_FILE: str = OSM_FILE
 
     OSM_BUILDINGS_GEOJSON: str = str(
-        resolve_city_path(
+        resolve_path(
             os.getenv("UP_OSM_BUILDINGS_GEOJSON", None)
-            or default_city_dir(CITY_NAME) / "osm" / "buildings.geojson",
-            city=CITY_NAME,
+            or city_dir(CITY_NAME) / "osm" / "buildings.geojson",
+            default=city_dir(CITY_NAME) / "osm" / "buildings.geojson",
         )
     )
 
@@ -995,7 +994,7 @@ class Settings:
 
         self.OSM_FILE = _pick_existing(
             self.OSM_FILE,
-            str(default_city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm"),
+            str(city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm"),
         )
 
         if getattr(self, "OSM_TO_XODR_TOOL", ""):
@@ -1003,14 +1002,14 @@ class Settings:
 
         self.INPUT_XODR = _pick_existing(
             self.INPUT_XODR,
-            str(default_city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr"),
+            str(city_dir(CITY_NAME) / f"{CITY_NAME}_dominik.xodr"),
         )
 
         if self.MANUAL_MAP_XODR:
-            self.MANUAL_MAP_XODR = _pick_existing(
-                self.MANUAL_MAP_XODR,
-                str(PROJECT_ROOT / "manual_maps" / f"{CITY_NAME}_manual.xodr"),
-            )
+                self.MANUAL_MAP_XODR = _pick_existing(
+                    self.MANUAL_MAP_XODR,
+                    str(PROJECT_ROOT / "manual_maps" / f"{CITY_NAME}_manual.xodr"),
+                )
 
         self.BASE_OUTPUT_DIR = _pick_existing(
             self.BASE_OUTPUT_DIR,
