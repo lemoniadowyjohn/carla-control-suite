@@ -1,0 +1,45 @@
+{
+  "requested_analysis_auto_xodr_candidate": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr",
+  "requested_analysis_auto_xodr_candidate_exists": false,
+  "analysis_auto_xodr": "cities/ingolstadt/ingolstadt_osm_auto.xodr",
+  "analysis_auto_xodr_resolution": "The requested contract-run XODR is absent in the governed worktree. The stable governed structural runs resolve the auto analysis input to cities/ingolstadt/ingolstadt_osm_auto.xodr.",
+  "dem_file_path": "cities/ingolstadt/dem/dem_ing.tif",
+  "dem_file_exists": true,
+  "dem_file_size_bytes": 69048,
+  "analysis_auto_xodr_is_flat": true,
+  "flatness_evidence": {
+    "roads_with_elevation_profile": 6040,
+    "segments_total": 6040,
+    "segments_all_zero_coefficients": 6040
+  },
+  "fail_on_flat_elevation_configured": "Current defaults in ultimate_pipeline/config/settings.py set DEM_STRICT_MODE=True, DEM_FULL_COVERAGE_STRICT=True, and FAIL_ON_FLAT_ELEVATION=True.",
+  "bypass_paths_found": [
+    {
+      "file": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py",
+      "line": 142,
+      "reason": "Flat fallback becomes allowed when FAIL_ON_FLAT_ELEVATION is disabled."
+    },
+    {
+      "file": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py",
+      "line": 331,
+      "reason": "A failed DEM full-coverage gate can skip DEM application and switch to a flat sampler when DEM_FULL_COVERAGE_STRICT is disabled."
+    },
+    {
+      "file": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py",
+      "line": 345,
+      "reason": "DEM coverage-check exceptions can continue without DEM when DEM_FULL_COVERAGE_STRICT is disabled."
+    },
+    {
+      "file": "ultimate_pipeline/run_determinism_audit.py",
+      "line": 46,
+      "reason": "The determinism audit explicitly forces UP_THESIS_STRICT=0, UP_DEM_STRICT_MODE=0, UP_DEM_FULL_COVERAGE_STRICT=0, and UP_FAIL_ON_FLAT_ELEVATION=0, proving that the repo contains a non-strict path that permits flat outputs."
+    }
+  ],
+  "strongest_supported_cause": "The governed structural analysis consumes an already-flat auto artifact (cities/ingolstadt/ingolstadt_osm_auto.xodr). The current codebase proves multiple non-strict execution paths that allow this outcome, and the determinism audit explicitly disables the DEM fail-closed flags. Because the packed contract-run XODR is absent, the exact producing run and exact bypass branch cannot be proven from surviving governed artifacts.",
+  "unsupported_hypotheses": [
+    "The DEM file was missing for the governed thesis artifact.",
+    "The governed thesis-analysis auto XODR contains applied nonzero elevation.",
+    "A specific governed post-processing step that strips nonzero elevation from this artifact was proven in this pass."
+  ],
+  "safe_conclusion": "DEM was not applied to the thesis analysis XODR; the artifact is flat."
+}

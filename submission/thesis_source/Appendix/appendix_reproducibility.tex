@@ -1,0 +1,30 @@
+
+\section{Reproducibility protocol and run evidence}
+\label{sec:repro_protocol}
+
+\subsection{Canonical Geographic Bounds (Ingolstadt)}
+All experiments are constrained to the following fixed OSM bounding box:
+\begin{itemize}
+    \item Lat-Min: 48.74935649548228
+    \item Lon-Min: 11.422268084715878
+    \item Lat-Max: 48.77444431571603
+    \item Lon-Max: 11.47882091528412
+\end{itemize}
+
+\subsection{Authoritative Sensor Rig Contract}
+To ensure mathematically consistent data across domains, the following rig contract is enforced:
+\begin{itemize}
+    \item \textbf{Camera Intrinsics:} Use \texttt{K\_undistortion} for an ideal pinhole model. Original $K$ and $D$ (distortion) are ignored.
+    \item \textbf{Camera Extrinsics:} The vehicle-to-camera transform ($cTv$) is used directly (not inverted).
+    \item \textbf{LiDAR Extrinsics:} The LiDAR-to-vehicle transform ($vTl$) MUST be inverted for attachment in CARLA's frame.
+\end{itemize}
+
+\subsection{Stable Evidence Roots}
+The quantitative findings in this thesis are backed exclusively by artifacts in the following stable directories:
+\begin{itemize}
+    \item \texttt{artifacts/final\_runs/scenario\_b\_audit/evidence/} (Audited thesis evidence)
+    \item \texttt{thesis\_results/} (Aggregated structural gap and variability reports)
+\end{itemize}
+
+\subsection{Minimum run manifest}
+... (rest of the file)

@@ -1,0 +1,73 @@
+                           ┌──────────────────────────┐
+                           │   RAW OSM → XODR INPUT   │
+                           └──────────────┬───────────┘
+                                          │
+                                          ▼
+                     ┌─────────────────────────────────────┐
+                     │     1. SANITIZATION + SUMO FIX      │
+                     │  - header cleanup                    │
+                     │  - geometry trimming                 │
+                     │  - SUMO junction repair             │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │      2. STRUCTURAL ANALYSIS         │
+                     │  - topology lint                     │
+                     │  - fatal road detection              │
+                     │  - semantic risk scoring            │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │        3. TOPOLOGY REPAIR           │
+                     │  - predecessor/successor fixes       │
+                     │  - junction reconstruction           │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │         4. ELEVATION MERGING        │
+                     │  - DEM sampling                     │
+                     │  - slope smoothing                  │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │    5. MESH + PLANVIEW CONTINUITY    │
+                     │  - geometry merging                  │
+                     │  - laneSection alignment             │
+                     │  - width continuity                 │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │           6. LANE SEMANTICS         │
+                     │  - LaneRepair                        │
+                     │  - LaneOffset normalization          │
+                     │  - sidewalks                         │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │           7. ENRICHMENT             │
+                     │  - roundabouts                       │
+                     │  - traffic lights                    │
+                     │  - building extrusion                │
+                     │  - realism objects                   │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │            8. TILING                │
+                     │  - tile extractor                    │
+                     │  - adjacency graph                   │
+                     └──────────────────┬──────────────────┘
+                                        │
+                                        ▼
+                     ┌─────────────────────────────────────┐
+                     │          9. VALIDATION              │
+                     │  - CARLA load test per tile         │
+                     │  - waypoint test                    │
+                     │  - spawn recovery                    │
+                     └─────────────────────────────────────┘

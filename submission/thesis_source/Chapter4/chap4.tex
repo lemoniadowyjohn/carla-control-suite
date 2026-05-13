@@ -1,0 +1,319 @@
+% Chapter 4 - System Overview
+\section{Automated OSM-to-CARLA Map Generation Pipeline}
+\label{sec:system_overview}
+
+
+This chapter describes the automated pipeline that converts OpenStreetMap (OSM) data into CARLA-compatible OpenDRIVE (XODR) maps and spatial tiles. CARLA is a high-fidelity simulator for autonomous driving research, but its OpenDRIVE ingestion is sensitive to structural inconsistencies; therefore, the generation process must target both OpenDRIVE correctness and CARLA-specific failure modes \cite{carla_paper,asam_opendrive_spec}. The proposed pipeline is implemented as an auditable sequence of deterministic stages with explicit contracts and persistent artifacts.
+
+\subsection{Overview and design goals}
+The thesis requires generating a large number of CARLA-compatible 3D maps from OSM data \cite{openstreetmap} to evaluate the structural domain gap between automatically generated maps and a manually authored reference map of Ingolstadt. The map generation process must satisfy three constraints:
+
+\begin{itemize}
+    \item \textbf{Geometric validity} with respect to OpenDRIVE (continuous and well-formed planView and elevation profiles).
+    \item \textbf{Semantic completeness} required for CARLA driving and sensor simulation (lanes, lane connectivity, and traffic-relevant semantics).
+    \item \textbf{Reproducibility} to enable controlled experiments and fair comparisons across runs.
+\end{itemize}
+
+To meet these constraints, the pipeline writes a sequence of intermediate OpenDRIVE snapshots and diagnostic artifacts, enabling ablation studies and failure localization when CARLA import issues occur.
+
+\subsection{Input data and spatial scope}
+The spatial scope is defined by a fixed GPS bounding box in Ingolstadt. The bounding box is used to extract the OSM region deterministically and to align downstream elevation data. The manually authored Ingolstadt OpenDRIVE map is treated as an immutable reference baseline; the pipeline generates one or more automatic variants from OSM using identical spatial bounds to isolate map-construction effects from geographic changes. Because OSM semantics are incomplete and heterogeneous, the pipeline uses conservative, deterministic rules for missing lane or junction annotations and logs all inferred decisions as artifacts.
+
+
+
+\subsection{Coordinate reference handling and canonical evaluation frame}
+\label{sec:crs_handling}
+A recurring source of invalid structural gap measurements is inconsistent georeferencing across OpenDRIVE sources.
+The manual Ingolstadt reference maps (Grid0821/0828) are provided in a Transverse Mercator projection consistent with the UTM Zone~32N family (metric coordinates in meters), while automatically generated OSM-derived maps may use a local Transverse Mercator projection anchored to the project bounding box and additionally encode a global translation via the \texttt{<offset>} element.
+Directly comparing raw 	exttt{(x,y)} coordinates across these frames can therefore produce kilometer-scale errors (centroid delta reduced from 5,444,300,m to 760.95,m) that are unrelated to actual map differences.
+
+To ensure meaningful structural metrics, this thesis adopts a \emph{canonical evaluation frame}:
+all geometric operations (alignment, distance metrics, and tile bounding boxes) are performed after transforming map geometry into EPSG:32632 (WGS84 / UTM Zone~32N), with \texttt{<offset>} applied before projection.
+(see Section~ef{sec:crs_normalization} in Chapter~7 for results)
+The transformation is implemented via deterministic header parsing (including CDATA and whitespace normalization) and is audited via a georeference provenance record written per run.
+After canonicalization, alignment is restricted to rigid SE(2) transforms (rotation + translation, scale fixed to 1) and guarded by a sanity threshold to prevent reporting misleading metrics when overlap is insufficient.
+
+Figure~\ref{fig:crs_normalization} summarizes the normalization and alignment workflow.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../images/fig_crs_normalization.png}
+    \caption{Coordinate normalization used for valid comparison between manual and automatically generated OpenDRIVE maps. Both sources are parsed (geoReference and optional offset), projected to a canonical CRS (EPSG:32632), and then aligned using a rigid SE(2) transform with a sanity gate.}
+    \label{fig:crs_normalization}
+\end{figure}
+
+\subsection{Stage-by-stage map construction}
+The pipeline is organized into sequential stages. Each stage writes a versioned OpenDRIVE output (XODR) and a structured JSON report so that the full transformation chain remains traceable from input to CARLA-ready output.
+
+\subsubsection{Sanitation (Stage 1)}
+The sanitation stage normalizes OpenDRIVE metadata (e.g., \texttt{geoReference}) and repairs common formatting issues that can prevent downstream tools from parsing the map. It also generates a cropped ``QA slice'' for rapid inspection. The stage output serves as a stable baseline for subsequent topology and geometry processing.
+
+\subsubsection{Topology lint and optional SUMO repair (Stage 2)}
+Automatic conversion from OSM frequently produces junction artifacts, missing connections, and inconsistent road-link structures. The pipeline therefore performs a topology lint pass and can optionally execute a SUMO-based repair workflow to stabilize the road graph \cite{sumo}. A validation report is stored as machine-readable JSON to support reproducible error analysis and comparisons between pipeline versions.
+
+\subsubsection{Topology repair (Stage 3)}
+Stage~3 applies deterministic cleanup of road predecessor/successor relationships and junction references. The goal is to ensure that the connectivity graph is well-formed before higher-level semantic enrichment is applied.
+
+\subsubsection{Enrichment and object injection (Stage 4)}
+To support perception studies and qualitative inspection, the pipeline optionally inserts semantic objects and environmental structure. Depending on data availability, this includes buildings derived from OSM footprints and, when available, preprocessed building footprints provided as GeoJSON \cite{rfc7946}, as well as additional realism objects. Enrichment is treated as an additive overlay: it is not allowed to mutate plan-view geometry or lane topology and is later verified by integrity gates.
+
+An auxiliary 3D enrichment path based on \textsc{OSM2World} was integrated for mesh-level
+scene generation. \textsc{OSM2World} converts the OSM source to an \textsc{OBJ} scene file;
+for the Ingolstadt area, this produced a 416\,MB \texttt{scene.obj} artifact in 128.6\,seconds
+(SHA-256 hash confirmed). A subsequent \textsc{Blender}-driven OBJ$\to$\textsc{FBX} stage
+converts the mesh to the format required for Unreal Engine asset cooking, enabling optional
+import of realistic environmental geometry (buildings, vegetation) into a packaged CARLA world.
+Both stages use deterministic caching keyed on SHA-256 hashes of the input OSM file and
+configuration, writing a \texttt{osm2world\_status.json} or \texttt{blender\_status.json}
+provenance record. This auxiliary path is disabled by default (\texttt{ENABLE\_OSM2WORLD=0})
+and does not affect OpenDRIVE generation. The structural domain-gap analysis in this thesis
+is performed on the final OpenDRIVE road-network artifact, so OSM2World-derived mesh
+enrichments lie outside the primary comparison scope.
+
+\subsubsection{Elevation application from DEM (Stage 5)}
+Because this work evaluates 3D maps, elevation is implemented as a first-class pipeline capability rather than a cosmetic detail. A digital elevation model (DEM) aligned to the GPS bounds can be sampled along roads and encoded in OpenDRIVE elevation profiles, and a smoothing operation is applied to avoid unrealistic high-frequency elevation changes that can break collision meshes or produce implausible slopes.
+The elevation source in this thesis is a Copernicus DEM product retrieved via OpenTopography, which provides reproducible access to global DEM datasets and metadata for scientific workflows \cite{opentopography,copernicusdem}.
+For the governed thesis analysis discussed in Chapter~7, however, the DEM coverage gate passed while the final comparison artifact still fell back to flat $z=0$ elevation. The reported structural gap metrics are therefore planar (2D) only, and Chapter~7's DEM-status paragraph should be read as the authoritative interpretation for the final analysis artifact.
+
+\subsubsection{PlanView and continuity smoothing (Stage 6)}
+OSM-derived geometry often contains fragmented plan-view elements and heading discontinuities. Stage~6 merges micro-segments, smooths plan-view geometry, clamps pathological curvature, and performs continuity repair to reduce geometric noise while preserving the global road layout. This stage typically reduces the number of geometric primitives and improves simulator stability by preventing discontinuities that trigger CARLA import failures.
+
+\subsubsection{Lane and cross-section generation (Stage 7)}
+For CARLA driving simulation and dataset generation, lane semantics must be present and consistent. This stage generates or repairs lane structures, applies lane-offset smoothing, and enforces cross-section continuity constraints to prevent negative widths and discontinuities at laneSection boundaries. A lane overlay visualization and cross-section diagnostics are exported for manual plausibility checks.
+
+\subsubsection{Lane links, markings, and integrity gates (Stage 8)}
+The final stage creates or repairs lane-to-lane connectivity, generates lane markings, and enforces CARLA-specific successor invariants at the laneSection level. Additional integrity gates (e.g., collision-mesh plausibility checks) detect major polygon issues that are strongly correlated with CARLA import failures. The output of this stage is the \emph{CARLA-safe} OpenDRIVE file used in subsequent experiments.
+
+\subsection{Quality gates and integrity contracts}
+\begin{table}[h]
+\centering
+\begin{tabular}{p{3.2cm}p{3.2cm}p{3.0cm}p{4.2cm}}
+\hline
+Gate Name & Condition & Action on Failure & Protects Against \\
+\hline
+Min XODR file size & $\geq 10{,}000$ bytes & Hard stop & Stub fixture inputs (run\_02: 796 bytes) \\
+Tile IoU gate & IoU $\geq 0.5$ & Skip per-tile metrics & Invalid local comparisons \\
+CRS sanity gate & Overlap after alignment $>$ threshold & Reject, report deferred & CRS mis-projection artefacts \\
+Empty correspondence gate & \texttt{correspondence.csv} $\geq 1$ data row & Hard stop & Silent zero-row claims \\
+Claim boundary annotation & \texttt{\_claim\_boundary} in \texttt{full\_report.json} & Required for admissibility & Unannotated result propagation \\
+\hline
+\end{tabular}
+\caption{Thesis integrity gates applied to prevent false-positive structural claims.}
+\label{tab:quality_gates_contract}
+\end{table}
+
+The run\_02 stub defect (796-byte XODR) was retroactively blocked by Gate~1 after discovery; run\_03 was the first re-run with real inputs (15.3 MB auto, 65.9 MB manual XODR), but the final authoritative structural thesis metrics are reported from the governed run\_11 raw basis.
+
+All gate decisions, override flags, and bypass history are recorded in a machine-readable
+\texttt{kill\_switch\_provenance} block within \texttt{full\_report.json}.
+Both the identity-alignment guard and the empty-correspondence guard are enforced by default;
+they can only be bypassed by explicitly setting \texttt{UP\_ALLOW\_IDENTITY\_ALIGNMENT=1}
+or \texttt{UP\_ALLOW\_EMPTY\_CORRESPONDENCE=1} respectively, and any such override is
+permanently logged in the provenance block.
+Domain-gap metrics are normalized to $[0,1]$ using explicit reference scales drawn from
+\texttt{SETTINGS.DOMAIN\_GAP\_NORMALIZATION}: geometry RMSE reference $= 1.0\,\text{m}$,
+Hausdorff reference $= 5.0\,\text{m}$, curvature KL reference $= 0.5$,
+intersection delta reference $= 1.0$, semantic delta reference $= 1.0$.
+The effective normalization applied to each metric is reported verbatim in the
+\texttt{normalization\_contract} block of \texttt{full\_report.json}.
+
+\subsection{Outputs and reproducibility artifacts}
+Each pipeline run produces (i) a sequence of stage XODR outputs, (ii) per-stage preview images for qualitative verification, and (iii) diagnostic JSON files that quantify structural properties (e.g., road counts, junction counts, curvature statistics) and validation outcomes. A settings snapshot is written to record all run-defining parameters; combined with cryptographic hashes of key artifacts, this snapshot enables reproducible re-runs and supports determinism auditing.
+
+
+
+\subsection{Design principles}
+The system is monolithic in integration to reduce glue-code drift, but stage-structured to keep transformations auditable. Five principles guide the design:
+\begin{itemize}
+\item \textbf{Determinism:} identical inputs and settings yield identical artifacts.
+\item \textbf{Single geometry authority:} once validated, reference-line geometry is frozen and later stages are geometry-preserving.
+\item \textbf{Artifact-first engineering:} every stage produces logs, reports, and visualizations to support debugging even if CARLA crashes.
+\item \textbf{Offline-first validation:} structural correctness is checked without simulator execution.
+\item \textbf{Causal independence:} evaluation stages must not influence synthesis stages.
+\end{itemize}
+
+
+\subsection{System architecture}
+\label{sec:system_overview:architecture}
+
+The governed implementation is organized as a single entrypoint that orchestrates a
+sequence of artifact-producing stages rather than as a distributed service stack. Inputs
+(OSM extract, optional DEM, and manual reference OpenDRIVE) feed an offline synthesis
+pipeline, while CARLA-based QA and perception capture remain downstream consumers
+rather than prerequisites for structural evaluation. This stage-structured design keeps the
+processing chain auditable and avoids version drift between loosely coupled scripts; the
+detailed stage model is summarized in Figure~\ref{fig:stage_model}.
+
+\paragraph{Core and configuration.}
+A single configuration object defines all parameters. Each run serializes a settings snapshot and hash at startup, which enables exact reproduction and supports defensible experimental comparison \cite{peng2011reproducible,sandve2013reproducible}.
+
+\paragraph{Offline pipeline blocks.}
+OSM/DEM ingestion, sanitization, topology repair, enrichment, geometry authority, lane synthesis, tiling, and domain-gap computations are implemented as offline stages that emit artifacts regardless of simulator availability.
+
+\paragraph{CARLA authority and QA.}
+All CARLA lifecycle operations (start/restart/load) are centralized in one module to prevent hidden state contamination across runs. CARLA-based checks are treated as empirical validation rather than as the sole definition of correctness \cite{carla_opendrive_standalone}.
+
+
+
+\subsection{Pipeline integrity constraints}
+\label{sec:system_overview:implementation}
+
+The implementation follows a ``single-authority'' contract: only designated stages may mutate certain aspects of the map. This is enforced through explicit checks (e.g., geometry freeze assertions before lane generation) and through artifact versioning. The goal is causal interpretability: differences between two runs should be attributable to configuration changes, not to hidden side effects.
+
+\paragraph{Monolithic integration, staged semantics.}
+The production pipeline is intentionally monolithic: all stages execute under one entrypoint and share a common run directory. This reduces the probability of mismatch between scripts and simplifies provenance. At the same time, the pipeline is stage-structured: each stage has a semantic contract and produces persistent artifacts (intermediate \texttt{.xodr} files, JSON reports, and plots).
+
+\paragraph{Pipeline stages mapped to code.}
+The implementation corresponds to the following stage sequence, which is referenced in later chapters when discussing validation and experiments:
+\begin{itemize}
+\item Stage 0: determinism, paths, OSM/DEM checks, CARLA client initialization.
+\item Stage 1: OpenDRIVE sanitization (+ optional SUMO repair).
+\item Stage 2: topology lint, structure scan, semantic risk scan.
+\item Stage 3: topology repair (offline invariants).
+\item Stage 4: enrichment (roundabouts, traffic lights, buildings, realism objects).
+\item Stage 5--6: geometry authority (DEM elevation, smoothing, planView smoothing, continuity repair) followed by \emph{geometry freeze}.
+\item Stage 7: lane generation and cross-section repair (offsets, sidewalks).
+\item Stage 8: laneLinks and markings, final integrity checks and quality gates.
+\item Stage 9: tiling and adjacency graph generation.
+\item Stage 10: tile QA (seams, CARLA tests, spawn QA, stress testing).
+\item Stage 11: road defect scans, sensor rig checks, screenshot capture.
+\item Stage 12+: domain-gap analysis and reporting.
+\end{itemize}
+
+\paragraph{Safety checks for perception and HPC modes.}
+The pipeline validates prerequisites early (e.g., sensor calibration files when perception is enabled) and enforces consistency constraints between modes (e.g., HPC perception implies dataset export). These checks prevent partial or silently invalid experimental runs.
+
+\paragraph{Geometry authority and freeze enforcement.}
+All modifications to \texttt{planView} and \texttt{elevationProfile} are restricted to the geometry authority block. After continuity repair, a geometry-freeze marker is stored as implementation-specific metadata in OpenDRIVE \texttt{<userData>} rather than as a standard header attribute. Downstream stages assert the presence of this marker before performing lane generation and semantic repairs, making geometry-preserving stages an auditable property rather than an informal convention.
+
+
+\subsection{Stage model mapped to invariants and outputs}
+The pipeline is implemented as a deterministic sequence of stages. Each stage has a contract: input, transformations, invariants, and persistent outputs.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../images/fig_pipeline_stages.png}
+\caption{Pipeline stage model. The stage boundaries define where invariants are checked and where artifacts are persisted for auditing.}
+\label{fig:stage_model}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Stage 1: sanitized base map.]{\includegraphics[width=0.32\linewidth]{../images/pipeline-stage01-sanitize.png}}
+\subfigure[Stage 2: structural cleanup.]{\includegraphics[width=0.32\linewidth]{../images/pipeline-stage02-structure-clean.png}}
+\subfigure[Stage 3: topology repair.]{\includegraphics[width=0.32\linewidth]{../images/pipeline-stage03-topology-repair.png}}\\
+\subfigure[Stage 5: planView merge/smoothing.]{\includegraphics[width=0.32\linewidth]{../images/pipeline-stage05-planview-merge.png}}
+\subfigure[Stage 5: continuity repair preview.]{\includegraphics[width=0.32\linewidth]{../images/pipeline-stage05-continuity.png}}
+\subfigure[Stage 6: post-continuity geometry.]{\includegraphics[width=0.32\linewidth]{../images/pipeline-stage06-post-continuity.png}}
+\caption{Representative intermediate artifacts exported by the pipeline for a single Ingolstadt run. Each snapshot visualizes the stage output written as versioned OpenDRIVE, enabling traceability and ablation studies.}
+\label{fig:pipeline_stage_artifacts}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Continuity gate: endpoint mismatch heatmap.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-continuity-heatmap.png}}
+\subfigure[Stage 7: final lane network.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-stage07-lanes-full.png}}\\[0.3em]
+\subfigure[Lane overlay diagnostic (lane IDs / widths).]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-lane-overlay.png}}
+\subfigure[Cross-section diagnostics for width continuity.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-cross-sections.png}}
+\caption{Quality-gate artifacts produced during geometry stabilization and lane synthesis. The continuity heatmap localizes geometric discontinuities, while the lane overlay and cross-section plots document plausibility and continuity of lane widths after lane generation and repair.}
+\label{fig:pipeline_quality_artifacts}
+\end{figure}
+
+
+\begin{table}[ht]
+\centering
+\caption{Pipeline stages, invariants, and primary artifacts (authoritative outputs per stage).}
+\label{tab:pipeline_stages}
+\begin{tabular}{p{0.06\linewidth} p{0.32\linewidth} p{0.30\linewidth} p{0.25\linewidth}}
+\hline
+\textbf{ID} & \textbf{Stage} & \textbf{Core invariant} & \textbf{Main artifact(s)} \\
+\hline
+0 & Determinism \& setup & Reproducible configuration snapshot & settings\_snapshot.json, input\_hashes.json \\
+1 & Sanitization & Valid OpenDRIVE XML baseline & 01\_sanitized.xodr \\
+2 & Lint \& risk scan & Anomalies detected early & 02\_lint\_report.json \\
+3 & Topology repair & Junction/link connectivity repaired & 03\_topology\_repaired.xodr \\
+4 & Semantic enrichment & Static semantics attached & 04\_enriched.xodr, enrichment\_log.json \\
+5 & DEM elevation + validation & Z-profile bounded; no spikes/NaNs & 05\_elevation.xodr, elevation\_stats.json \\
+6 & PlanView smoothing + mesh continuity & No heading jumps; no micro-geometries & 06\_smoothed.xodr, continuity\_debug.json \\
+7 & Lane generation + cross-section repair & Lane widths/offsets sane & 07\_lanes.xodr, lane\_report.json \\
+8 & LaneLinks + markings + final checks & CARLA successor invariant satisfied & 08\_final.xodr, integrity\_report.json \\
+9 & Tiling + adjacency (optional) & Tile core routability recorded & tiles/, tile\_metadata.json, tile\_adjacency.json \\
+10 & Tile QA (optional) & Seams bounded; CARLA load/spawn pass & seam\_statistics.json, tile\_qa.json \\
+11 & Dataset renders (optional) & Sensor outputs traceable per run & frames/, routes.json \\
+12 & Interactive simulator (optional) & Manual inspection and debugging only & interactive\_session\_log.json \\
+13 & Domain-gap analysis (optional) & Metrics computed reproducibly & domain\_gap/full\_report.json \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Determinism and provenance strategy}
+Reproducibility is treated as a scientific requirement \cite{peng2011reproducible,sandve2013reproducible}. Each run stores (i) a complete settings snapshot, (ii) cryptographic hashes of key inputs/outputs, and (iii) an artifact manifest that lists produced files and versions.
+
+\paragraph{Determinism verification protocol.}
+\emph{Determinism is evaluated by executing the complete pipeline twice under an identical settings snapshot and comparing the resulting artifacts using an external audit script, ensuring the generation process itself remains unchanged by the verification procedure.}
+
+At the beginning of each run, the pipeline serializes a complete settings snapshot (\texttt{settings\_snapshot.json}) and computes its hash (MD5) to uniquely identify the configuration used for all subsequent artifacts.
+
+Alongside the settings snapshot, each run records the toolchain identity (CARLA server/client version, Python version, and conversion tool versions such as SUMO/netconvert) and the pipeline source revision (git commit hash when available). This provenance information is critical when comparing generated maps across machines or across time, and it constrains the interpretation of conversion variability as either intentional diversity or unintended non-determinism.
+ A fixed random seed is applied consistently across the pipeline to reduce nondeterminism in procedural steps and sampling operations. After both runs finish, an external verifier (\texttt{compare\_runs\_determinism.py}) compares (i) the byte-level MD5 of the final OpenDRIVE file, (ii) a formatting-invariant semantic SHA-256 computed from plan-view geometry and the lane successor graph, and (iii) the presence and hashes of selected stage artifacts (e.g., tile metadata and quality-gate reports). Optionally, the verifier can delete the two run directories after comparison to preserve disk space.
+
+Additionally, a \emph{stage digest} (\texttt{stage\_hashes.json}) is generated per run
+by SHA-256 hashing a fixed set of well-known stage artifacts (structural summary,
+full domain-gap report, run metadata, determinism summary, CARLA status, and perception gap).
+Wall-clock timestamps are deliberately excluded from this digest to prevent spurious
+non-determinism: only pipeline-state-bearing content contributes to the combined
+\texttt{stage\_digest\_sha256} field.
+
+\paragraph{Semantic vs.\ byte-level determinism.}
+A mismatch in the byte-level hash with a matching semantic hash indicates serialization drift (e.g., attribute ordering, whitespace, or non-semantic metadata) rather than a structural change of the road network. This distinction is reported explicitly to avoid conflating formatting differences with changes in geometry or topology.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\linewidth]{../images/fig_determinism_audit.png}
+\caption{Determinism audit concept. Two runs with the same settings hash are compared via an external, read-only audit that checks artifact hashes and diffs.}
+\label{fig:determinism_audit}
+\end{figure}
+
+\subsection{CARLA authority contract}
+The authority module exposes configurable host/port settings for starting and restarting the simulator, so the same experiment code can run locally or on remote machines without hard-coded endpoints. 
+Only one module is allowed to start, restart, and load CARLA maps to avoid inconsistent simulator state management. This engineering constraint is methodologically important: it prevents hidden state contamination across experiments and makes simulator-based QA more interpretable \cite{carla_opendrive_standalone}.
+
+\subsection{Offline vs.\ simulator-dependent validation split}
+CARLA Standalone Mode is treated as an empirical QA layer, not the definition of correctness. Offline checks establish structural validity (schema integrity, referential integrity, lane-graph invariants). Simulator checks then validate loadability, waypoint generation, and basic drivability under controlled conditions \cite{carla_opendrive_standalone}.
+
+\subsection{Summary}
+The system design turns map generation into a reproducible scientific pipeline. Stage boundaries, invariant checks, and audit artifacts enable principled statements about correctness and stability beyond ``it loaded once in CARLA''.
+
+\subsection{Pipeline artifact contract}
+\label{sec:artifact_contract_pipeline}
+Each pipeline run produces a structured set of artifacts that enable reproducibility and downstream analysis. At minimum, a run directory contains:
+\begin{itemize}
+    \item \texttt{input/}: the OSM extract (bounding box, timestamp, and source metadata) and configuration snapshot.
+    \item \texttt{opendrive/}: generated OpenDRIVE (\texttt{.xodr}) files and normalized reports (JSON).
+    \item \texttt{carla/}: map identifiers used for CARLA loading, cache artifacts generated by CARLA (e.g., \texttt{OpenDrive/<Map>.xodr}, \texttt{TM/<Map>.bin}), and logs.
+    \item \texttt{metrics/}: structural metrics tables/plots and perceptual proxy metrics.
+    \item \texttt{hashes/}: byte-level and geometry/topology-level hashes for determinism auditing.
+\end{itemize}
+This contract makes it possible to re-run experiments, compare conditions, and isolate failures without relying on implicit simulator state.
+
+\subsection{Research-question traceability}
+\label{sec:rq_script_map}
+To keep the evaluation traceable, each research question is implemented by a dedicated experiment entrypoint and linked to governed artifacts through the run manifest. In the thesis body, the emphasis is placed on the resulting evidence bundle and its admissibility rather than on script filenames, because the scientific claim depends on reproducible artifacts rather than on a particular runner name.
+
+
+\subsection{Determinism analysis (byte-level vs geometric vs semantic)}
+\label{sec:determinism_levels}
+Determinism is assessed at three levels:
+\begin{itemize}
+    \item \textbf{Byte-level determinism:} a direct hash (e.g., MD5/SHA) of the generated \texttt{.xodr} file. This is strict but can fail due to non-semantic serialization differences (metadata fields, ordering, timestamps).
+    \item \textbf{Geometric determinism:} a hash computed from a normalized representation of OpenDRIVE plan-view geometry (e.g., road geometries with stable ordering and numeric rounding). This tests whether the road geometry itself is identical.
+    \item \textbf{Semantic/topological determinism:} stable counts and invariants derived from the road graph and lane topology (e.g., number of roads, junctions, lane sections, lane counts and connectivity).
+\end{itemize}
+
+\noindent\textbf{Interpretation layer:} it is possible for byte-level artifacts to differ while geometric and topological structure remains identical. In that case, the pipeline is deterministic in the academically relevant sense: the simulated environment is unchanged even though serialization differs.
+
+
+\subsection{Reference versus generated OpenDRIVE inputs}
+\label{sec:input_xodr}
+To avoid configuration ambiguity, the pipeline distinguishes \emph{reference} OpenDRIVE input files (e.g., \texttt{*\_dominik.xodr}) from \emph{generated} OpenDRIVE outputs (e.g., \texttt{*.xodr}).
+Comparisons are always performed \emph{across domains} (manual reference vs automatically generated), rather than within-domain, unless explicitly stated.

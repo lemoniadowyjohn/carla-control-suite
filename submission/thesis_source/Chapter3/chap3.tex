@@ -1,0 +1,189 @@
+% Chapter 3 - Foundations and Problem Setting
+\section{Foundations and Problem Setting}
+\label{sec:foundations}
+
+This chapter introduces the source and target representations used in this thesis and derives the constraints that define the problem.
+
+\subsection{OpenStreetMap as a source of road geometry and semantics}
+OpenStreetMap encodes roads primarily as \texttt{way} objects: ordered lists of \texttt{node} coordinates with tags describing road class and attributes. As a VGI dataset, OSM exhibits heterogeneous completeness and regional conventions \cite{goodchild2007vgi,haklay2010osm}.
+
+In addition to the peer-reviewed VGI quality literature, this thesis follows the normative OpenStreetMap community definitions for the underlying data model and tag semantics. The OSM data model is based on \emph{nodes}, \emph{ways}, and \emph{relations} with key--value tags \cite{osm_elements,osm_map_features}. One-way traffic is interpreted according to \texttt{oneway=*}, where \texttt{oneway=yes} follows the way direction and \texttt{oneway=-1} reverses it \cite{osm_oneway}. Turn restrictions are represented by \texttt{restriction} relations with \texttt{from/via/to} roles and a \texttt{restriction=*} value \cite{osm_restriction}. Where lane-related tags are available, lane counts and manoeuvre hints are derived from \texttt{lanes=*} and \texttt{turn:lanes=*} \cite{osm_lanes,osm_turn_lanes}. Grade-separation cues (\texttt{layer=*}, \texttt{bridge=*}, \texttt{tunnel=*}) are used to avoid illegal merges between roads at different vertical levels \cite{osm_layer,osm_bridge,osm_tunnel}. Roundabout semantics follow \texttt{junction=roundabout} guidance \cite{osm_junction_roundabout}. Licensing and attribution for all OSM-derived data follow the Open Database License requirements as stated on the official OpenStreetMap copyright and license page \cite{osm_copyright}.
+
+ For road-network conversion, three limitations are especially relevant.
+
+\begin{itemize}
+\item \textbf{Incomplete semantics:} lane counts, lane widths, lane types, and elevation are often missing or inconsistent.
+\item \textbf{Fragmented topology:} intersections can be represented by near-miss endpoints, missing connections, or node mismatches.
+\item \textbf{Tagging inconsistencies:} conventions vary across regions; even basic tags such as \texttt{oneway} and \texttt{lanes} can be absent or ambiguous.
+\end{itemize}
+
+\subsection{Study area: Ingolstadt extraction bounds}
+\label{sec:study_area}
+The experiments focus on a fixed geographic region in Ingolstadt. The OSM extract is cropped using a deterministic bounding box, stored locally, and reused across runs to avoid variability from live downloads.
+
+
+\begin{table}[ht]
+\centering
+\caption{Geographic bounds used to extract the Ingolstadt study area from OpenStreetMap.}
+\label{tab:ingolstadt_bbox}
+\begin{tabular}{l r}
+\hline
+Parameter & Value \\
+\hline
+Lat-Min & 48.74935649548228 \\
+Lon-Min & 11.422268084715878 \\
+Lat-Max & 48.77444431571603 \\
+Lon-Max & 11.47882091528412 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Reference maps: manual baseline vs. automatically generated maps}
+\label{sec:reference_maps}
+This thesis compares two map sources representing the same geographic region:\newline
+(i) a manually created reference map of Ingolstadt (``manual map''), and\newline
+(ii) a family of automatically generated maps derived from OpenStreetMap (``auto maps'').
+
+Both map sources are represented in the ASAM OpenDRIVE format (\texttt{.xodr}) and are ingested in CARLA using its OpenDRIVE standalone workflow (i.e., runtime world generation from an OpenDRIVE string rather than a pre-packaged Unreal map)\cite{asam_opendrive_181,carla_opendrive_standalone}. The manual map serves as a higher-fidelity baseline: it is produced through manual modeling and curation and is therefore expected to exhibit fewer structural and semantic inconsistencies than directly converted OSM data. The auto maps are produced by the proposed OSM$\rightarrow$OpenDRIVE$\rightarrow$CARLA pipeline, including topology repair and semantic completion steps designed to satisfy CARLA's drivability constraints.
+
+To enable meaningful comparison, both sources are evaluated under a shared georeferencing and sensor setup (Sections~\ref{sec:crs_handling} and \ref{sec:sensor_setup}). In particular, the study area bounding box (Table~\ref{tab:ingolstadt_bbox}) is treated as the authoritative spatial scope. Any subsetting, tiling, or quality-gate evaluation performed later in the pipeline inherits this scope and is logged together with configuration snapshots and hashes for reproducibility.
+
+Table~\ref{tab:env_comparison} summarises the key structural properties of the three CARLA environments used in this thesis. Auto-generated geometry and road-length values are anchored to the authoritative run\_11 governed artifact; junction-count and connectivity summaries come from the governed connectivity companion artifact family, and corrected curvature spread comes from the corrected support measurement on the same authoritative manual-vs-contract-run pair. Manual map values are computed from the OpenDRIVE XML files (\texttt{manual\_grid0821.xodr}, \texttt{manual\_grid0828.xodr}) and confirmed by CARLA stage-probe artifacts. Grid0821 and Grid0828 are both manually authored maps of the same Ingolstadt area and constitute the manual reference family; Grid0828 is the primary structural baseline used for the RQ2 domain-gap analysis.
+
+\begin{table}[ht]
+\centering
+\caption{Structural overview of the three CARLA environments used in this thesis. Road counts and lengths for the manual maps are computed from the OpenDRIVE XML; spawn points are confirmed by CARLA stage-probe artifacts. Auto-generated road count and total road length are anchored to the authoritative run\_11 artifact, while the auto junction count comes from the governed connectivity companion artifact family and the auto curvature standard deviation comes from the corrected support measurement on the authoritative manual-vs-contract-run pair.}
+\label{tab:env_comparison}
+\small
+\begin{tabular}{lrrr}
+\hline
+Property & Auto-gen.\ (OSM) & Manual Grid0821 & Manual Grid0828 \\
+\hline
+Data source & OSM, this pipeline & Manual authoring & Manual authoring \\
+CARLA load mode & OpenDRIVE standalone & Cooked Unreal map & Cooked Unreal map \\
+Road count & 5,837 & 993 & 972 \\
+Junction count & 779 & 119 & 119 \\
+Total road length & 258.6\,km & 53.5\,km & 52.9\,km \\
+CARLA spawn points & n/a (standalone) & 11,634 & 11,634 \\
+Mean lane count / road & 1.14 & \multicolumn{2}{c}{43.9 (Grid0828)} \\
+Curvature std (m$^{-1}$) & 0.865 & \multicolumn{2}{c}{0.055 (Grid0828)} \\
+RQ2 structural baseline & Yes (run\_11) & --- & Yes (primary) \\
+textbf{Note on run configurations:} The auto road count (5{,}837) and junction count (779) are anchored to the RQ2 governed run (run_11). The RQ1 determinism audit uses a different pipeline configuration and reports 5{,}712 roads (see Table~ef{tab:determinism_results}); both counts are internally consistent within their respective research-question contexts.
+Elevation (thesis artifact) & planar & planar & planar \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Licensing and data usage}
+\label{sec:licensing}
+OpenStreetMap (OSM) data used in this thesis is governed by the Open Database License
+(ODbL), so OSM-derived datasets must retain proper attribution to OpenStreetMap
+contributors \cite{osm_copyright,odbl10}. Elevation data and auxiliary assets remain
+subject to their respective provider licenses. For the experiments reported here, data
+sources are recorded in the run configuration snapshot, and the thesis reports academic
+use only rather than redistribution of third-party proprietary assets.
+
+
+\subsection{OpenDRIVE concepts used in this thesis}
+ASAM OpenDRIVE models static road networks as roads with a reference line geometry and explicit lane topology \cite{asam_opendrive_181}. This thesis focuses on a minimal but sufficient subset for CARLA ingestion:
+\begin{itemize}
+\item \textbf{\texttt{planView}:} the 2D road reference line geometry (line/arc/spiral segments).
+\item \textbf{\texttt{elevationProfile}:} vertical alignment as a function of longitudinal coordinate $s$.
+\item \textbf{\texttt{laneSection} and \texttt{laneLink}:} lane cross-sections and predecessor/successor connectivity that define drivable navigation.
+\end{itemize}
+
+\subsection{CARLA ingestion constraints and practical failure modes}
+CARLA ingests OpenDRIVE via Standalone Mode (\texttt{client.generate\_opendrive\_world()}) \cite{carla_opendrive_standalone}. In practice, CARLA is not tolerant to invalid topologies and may fail hard on:
+(i) broken lane successor/predecessor links,
+(ii) floating or disconnected road fragments,
+(iii) extremely large maps that exceed resource limits and can lead to crash-like states (e.g., ``zombie'' servers).
+Therefore, \emph{valid OpenDRIVE} (XML/schema validity) is not necessarily \emph{CARLA-stable}. The pipeline enforces stricter constraints aligned with CARLA’s internal assumptions.
+
+\subsection{Sensor calibration and perception rig on the ego vehicle}
+\label{sec:sensor_setup}
+
+Perception experiments require that simulated sensors are attached to the ego vehicle using a fixed, documented calibration.
+This thesis uses a \texttt{calib\_data.json} configuration that specifies a multi-camera rig and a LiDAR, including image sizes and rigid-body transforms.
+To avoid confounds from lens distortion modeling, the cameras are treated as \textbf{ideal pinhole cameras}: we use the provided \texttt{K\_undistortion} matrix for all cameras and ignore the original distortion parameters (\texttt{K} and \texttt{D}).
+
+\paragraph{Camera model.}
+Given a 3D point $X_v = [x\;y\;z\;1]^\top$ in the ego-vehicle coordinate frame, the point in camera coordinates is obtained via the homogeneous transform
+\begin{equation}
+X_c \;=\; T^{c}_{v}\, X_v ,
+\end{equation}
+where $T^{c}_{v}$ corresponds to the \texttt{cTv} matrix in the calibration file (vehicle $\rightarrow$ camera).
+Using a pinhole projection, the pixel coordinates $p = [u\;v\;1]^\top$ satisfy
+\begin{equation}
+\lambda\, p \;=\; K_{\text{undist}}\, \begin{bmatrix} I_{3\times 3} & 0 \end{bmatrix} X_c,
+\end{equation}
+with depth $\lambda>0$ and camera intrinsics $K_{\text{undist}}$.
+This is the standard central-projection model used in multi-view geometry. \cite{hartley2004multipleview}
+
+\paragraph{LiDAR extrinsics.}
+For the LiDAR, the calibration provides a transform \texttt{vTl} from LiDAR $\rightarrow$ vehicle.
+A LiDAR point $X_l$ is mapped into the ego frame as
+\begin{equation}
+X_v \;=\; T^{v}_{l}\, X_l .
+\end{equation}
+
+\paragraph{Coordinate frames in CARLA.}
+In CARLA, sensors are attached to actors using a \texttt{carla.Transform} defined relative to the parent actor (here: the ego vehicle). \cite{carla_docs_sensors}
+CARLA uses a left-handed coordinate system in Unreal Engine, where the vehicle frame is typically interpreted as $x$ forward, $y$ right, and $z$ up. \cite{carla_docs_transforms}
+These conventions are used consistently when converting the calibration matrices into CARLA sensor transforms, ensuring that all datasets and cross-map evaluations use identical sensor geometry.
+
+\paragraph{Implementation note (extrinsics direction).}
+Because the calibration file mixes transform directions (\texttt{cTv} is vehicle $\rightarrow$ camera, while \texttt{vTl} is LiDAR $\rightarrow$ vehicle), the pipeline normalizes all transforms into a consistent convention and records the resulting 6-DoF poses in the run manifest.
+This prevents silent left/right inversion or axis flips, which would otherwise introduce artificial ``domain gaps'' unrelated to the map structure.
+
+\subsection{Derived requirements for a research-grade pipeline}
+From the above constraints, the thesis derives the following requirements.
+\begin{itemize}
+item 	extbf{Structural determinism:} topological signatures (road count, junction count, lane distributions) must be invariant across runs with identical inputs (RQ1 hypothesis).
+Byte-level determinism is not required and is not achieved in practice (RQ1 verdict: 	exttt{NONDETERMINISTIC} at serialization level, 	exttt{DETERMINISTIC} at topological-signature level);
+see Section~ef{sec:determinism_audit}.
+\item \textbf{Audit artifacts:} hash-based tracking, structured reports, and overlays per stage.
+\item \textbf{Offline checks:} structural correctness checks without launching CARLA.
+\item \textbf{Two-pass validation:} offline validation gates first, followed by CARLA execution as an empirical QA layer.
+\end{itemize}
+
+
+\subsection{Manual map integration as a reproducibility control}
+\label{sec:manual_map_integration}
+The manually modeled Ingolstadt environment was provided as CARLA-compatible map assets (Grid0821 and Grid0828).
+Integration required ensuring that CARLA base content matches the runtime version (CARLA 0.9.16).
+During initial integration, a version mismatch caused deterministic crashes during world load due to incompatible blueprint bytecode (e.g., actor factory assets such as walker/vehicle factories).
+The issue was resolved by restoring the CARLA 0.9.16 blueprint packages from a clean reference build; after restoration, both maps loaded reliably.
+
+This incident is reported as part of the methodology because it demonstrates experimental control: without a stable simulator state, measured differences could be artifacts of a broken runtime rather than true domain-gap effects.
+
+
+\subsection{Map provenance and comparability}
+\label{sec:map_provenance}
+Two map domains are compared under identical simulator and sensor conditions:
+\begin{itemize}
+    \item \textbf{OSM-generated maps:} produced by the thesis pipeline from a fixed Ingolstadt OSM extract (deterministic settings and logged seeds).
+    \item \textbf{Manual reference maps:} externally provided, manually modeled CARLA maps (Grid0821, Grid0828) used as reference environments.
+\end{itemize}
+Both domains are executed in CARLA 0.9.16 with identical sensor configurations, weather presets, and traffic settings to ensure that comparisons isolate map effects rather than simulator drift.
+
+
+\subsection{CARLA map cache artifacts}
+\label{sec:carla_cache}
+When a map is loaded, CARLA generates and/or reuses cache artifacts that stabilize road logic and traffic behavior:
+\begin{itemize}
+    \item \texttt{OpenDrive/<Map>.xodr}: the OpenDRIVE representation used by CARLA for road logic and routing.
+    \item \texttt{TM/<Map>.bin}: Traffic Manager topology/routing cache.
+\end{itemize}
+These artifacts are created on first load and reused thereafter, contributing to repeatability when the simulator content is unchanged.
+
+
+\subsection{Failure modes and mitigation}
+\label{sec:failure_modes}
+Several operational risks affected the engineering environment around the experiments,
+but they were treated as controlled boundary conditions rather than as thesis results.
+The most important ones were simulator content/version mismatches, limited disk space for
+large CARLA assets, non-obvious log locations on Windows, and rendering pressure when
+adding sensors to tiled maps. These issues motivated explicit environment pinning, artifact
+logging, and low-resolution or headless fallback modes so that engineering instability would
+not be mistaken for a structural map-generation finding.

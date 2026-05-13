@@ -1,0 +1,8 @@
+@{
+    city         = "ingolstadt"
+    tiling_mode  = "disabled"
+    tile_size_m  = $null
+    tiles        = @()
+    generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+} | ConvertTo-Json -Depth 5 |
+Set-Content ".\ultimate_pipeline\tiles\tile_metadata.json" -Encoding UTF8

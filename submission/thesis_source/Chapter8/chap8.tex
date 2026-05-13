@@ -1,0 +1,94 @@
+% Kapitel 8 - Discussion
+\section{Discussion}
+\label{sec:discussion}
+
+This chapter discusses how the methodological choices and measured domain gaps relate to perception generalization and to the broader sim-to-real literature.
+
+\subsection{What ``map correctness'' means under CARLA constraints}
+Map correctness decomposes into three layers:
+(i) schema validity (XML/OpenDRIVE structure),
+(ii) structural validity (graph and invariant satisfaction), and
+(iii) simulator stability (CARLA loadability and runtime behavior).
+The thesis argues that structural validity is the primary scientific basis, while simulator stability is a robustness property influenced by engine limits \cite{carla_opendrive_standalone}.
+
+\subsection{Implications for domain gap and generalization}
+Structural differences (intersection geometry, lane placement, connectivity) can change ego trajectories and sensor viewpoints, affecting perception distributions even if textures appear similar. Domain adaptation and randomization literature suggests that robust generalization benefits from either domain-invariant features \cite{ganin2016dann,sun2016deepcoral} or sufficient variation in simulation \cite{tobin2017domainrandomization}. In this thesis, the citation to Tobin et al.\ is conceptual only: the work does not apply intentional appearance randomization, but instead measures whether bounded structural variability emerges from repeated map generation and how that variability relates to perception outcomes.
+
+\subsection{Observed structural variability under fixed inputs vs.\ explicit randomization}
+Under strict determinism, repeated generation with identical inputs should produce identical artifacts by design. This thesis therefore separates two experiment classes: same-input repeats for determinism analysis, and multi-map generation under controlled parameter changes for variability analysis. The older phrase ``natural domain randomization'' is avoided here because the thesis does not claim equivalence to intentional parameter randomization in the sense of \citet{tobin2017domainrandomization}. Variability is only scientifically useful when its source is explicit and attributable, not when it arises from accidental runtime instability.
+
+\subsection{Semantic object absence as an orthogonal domain gap}
+The governed four-category object-gap artifact shows that the contract-run auto map contains 0 barriers, 0 buildings, 0 poles, and 0 trees, whereas the manual Ingolstadt reference contains 1,538 barriers, 992 buildings, 3,427 poles, and 4,232 trees.
+This gap is orthogonal to geometric RMSE: even if road centrelines align more closely, the absence of roadside clutter changes occlusion structure, background complexity, and the availability of environmental cues for perception systems.
+Geometric agreement therefore does not bound the full perceptual domain gap.
+
+Two pipeline-level root causes were identified and fixed during the evaluation period.
+First, the \texttt{BuildingExtruder} module placed \texttt{<object>} elements at the OpenDRIVE root level, which is outside the valid schema position for CARLA ingestion; objects must reside inside \texttt{<road><objects>} elements.
+Second, the \texttt{buildings.geojson} source contained zero valid features due to a prior regeneration failure.
+Both defects were corrected (commit \texttt{807905fa}), and run\_12 stage-4 verification confirms that 5{,}683 buildings are now correctly injected.
+The zero counts in Table~\ref{tab:object_gap} accurately describe the authoritative contract-run artifact; they reflect a pipeline state that has since been corrected rather than an inherent limitation of OSM-based map generation.
+
+\subsection{Lane and junction connectivity fidelity}
+\label{sec:connectivity_gap}
+Beyond coarse road-count and junction-count statistics, a finer connectivity analysis examines whether road graphs are internally consistent and whether the two maps exhibit comparable link structures.
+Four categories of connectivity fidelity are measured from the OpenDRIVE XML without requiring CARLA ingestion.
+
+\paragraph{Road link consistency.}
+Each \texttt{<road>} element may declare a \texttt{predecessor} and \texttt{successor} via the \texttt{<link>} block.
+A link declaration is \emph{valid} if its \texttt{elementId} references an existing road or junction within the same file; a \emph{dangling} link points to a nonexistent identifier.
+The rate of valid predecessors and successors, and the percentage of roads that carry at least one resolvable link, form a self-consistency indicator that is independent of spatial alignment.
+Procedurally generated maps are expected to have higher dangling-link rates than hand-authored references because OSM road-network graphs are converted without explicit human review of connectivity boundaries.
+
+\paragraph{Lane count distribution.}
+The number of non-center lanes per road (summed across all \texttt{laneSections}) is compared as a distribution rather than a global total.
+A large L1 histogram distance indicates that the two maps differ in their typical cross-sectional profile: the auto map may favour higher-capacity roads in areas that OSM classifies as dual carriageways, while the manual map may retain a more conservative lane allocation derived from local survey.
+
+\paragraph{Junction degree.}
+For each \texttt{<junction>}, the number of distinct incoming roads and connecting roads provides a degree measure analogous to graph vertex degree.
+Procedurally generated maps derived from OSM tend to produce more junctions overall (779 vs.\ 119 in the Ingolstadt comparison) but may underrepresent complex multi-way junctions if OSM intersections are decomposed into simple two-road connections.
+
+\paragraph{Lane-link completeness.}
+Two complementary completeness rates are reported.
+The junction lane-link completeness rate measures the fraction of \texttt{<laneLink>} elements inside \texttt{<junction><connection>} blocks that carry both non-empty \texttt{from} and \texttt{to} attributes; incomplete entries indicate that CARLA cannot resolve turning movements at that junction.
+The intra-road lane-link validity rate measures the fraction of lane-level predecessor/successor declarations within multi-section roads that reference a lane identifier actually present in the adjacent section; this detects internal inconsistencies in lane-transition encoding.
+
+Table~\ref{tab:connectivity_gap} reports the measured values for the Ingolstadt map pair. These connectivity values come from the governed connectivity companion artifact family rather than the primary run\_11 geometry report; run\_11 remains the authoritative structural geometry basis.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrrl}
+\hline
+Metric & Manual & Auto & Note \\
+\hline
+Roads total & 972 & 5{,}837 & \\
+Pred.\ declared rate & 93.4\% & 0.0\% & Auto uses no road-level link decl. \\
+Succ.\ declared rate & 96.7\% & 0.0\% & \\
+Pred.\ valid rate & 100\% & n/a & All declared links resolve \\
+Succ.\ valid rate & 100\% & n/a & \\
+Mean lane count / road & 43.9 & 1.14 & Manual: multi-section roads; auto: single-section \\
+Median lane count / road & 11.0 & 1.0 & \\
+Lane count L1 gap & \multicolumn{2}{c}{0.289} & Distribution divergence $\in [0,1]$ \\
+Junctions total & 119 & 779 & \\
+Mean connections / junc.\ & 6.09 & 5.18 & Similar per-junction complexity \\
+Mean unique incoming / junc.\ & 2.69 & 2.29 & \\
+Junction L1 gap & \multicolumn{2}{c}{0.312} & \\
+Junction laneLink completeness & 100\% & 100\% & All laneLinks carry from/to \\
+Road lane-link valid rate & 100\% & 0.0\%$^\dagger$ & \\
+\hline
+\end{tabular}
+\caption{Lane and junction connectivity gap for the Ingolstadt map pair, reported from the governed connectivity companion artifact family. $^\dagger$The auto road lane-link valid rate of 0.0\% reflects the absence of multi-section roads in the auto map: all auto roads use a single \texttt{laneSection}, so no intra-road lane-link declarations exist to validate. This is an encoding difference, not a correctness failure.}
+\label{tab:connectivity_gap}
+\end{table}
+
+The most informative finding is the road-link coverage contrast: the manual map has 93--97\% road-level predecessor/successor declarations, all fully resolvable, while the auto-generated map carries no road-level link declarations whatsoever.
+This indicates that the OSM→OpenDRIVE pipeline encodes all road connectivity through junction elements rather than explicit road-link pairs.
+Junction laneLink completeness is 100\% in both maps, confirming that turning movements are fully specified at junctions.
+The large mean lane-count difference (43.9 vs.\ 1.14) reflects an encoding strategy difference: the manual map uses many laneSections per road to encode lane transitions along a corridor, whereas the auto map represents each OSM way as a single-section road with minimal internal structure.
+The framework is deterministic, XML-only, and validated with 16 unit tests covering all four metric categories.
+
+\subsection{Limitations and threats to validity}
+Key limitations include incomplete OSM semantics, heuristic enrichment, and CARLA engine constraints. Threats to validity are mitigated by determinism, artifact logging, explicit gating of optional components, and offline-first evaluation \cite{peng2011reproducible,sandve2013reproducible}.
+
+\subsection{Summary}
+The main practical lesson is that stable map generation requires explicit invariants and a separation between offline structural evaluation and simulator-based QA. This separation allows domain-gap analysis and perception experiments to remain reproducible even when the simulator is unstable at city scale.

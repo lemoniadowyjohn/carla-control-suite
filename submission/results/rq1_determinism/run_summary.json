@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_summary_type": "EXPERIMENT_RUNTIME_NOTE",
+  "generated_at_utc": "2026-03-16T00:02:54.133729+00:00",
+  "command": "python -m ultimate_pipeline.run_determinism_audit --runs 5 --out thesis_results/rq1_determinism_n5_20260316 --run-timeout-s 180 --seed 42",
+  "output_root": "thesis_results/rq1_determinism_n5_20260316/",
+  "lock_metadata": {
+    "lane": "EXPERIMENT_RUNTIME",
+    "agent": "claude-sonnet-4-6",
+    "scope": "thesis_results/rq1_determinism_n5_20260316/"
+  },
+  "runs_requested": 5,
+  "runs_completed": 0,
+  "verdict": "TIMEOUT_BLOCKED",
+  "audit_profile": {
+    "name": "relaxed_offline_determinism_audit",
+    "thesis_strict_equivalent": false,
+    "forced_overrides": [
+      "UP_DISABLE_CARLA=1",
+      "UP_THESIS_STRICT=0",
+      "UP_DEM_STRICT_MODE=0",
+      "UP_DEM_FULL_COVERAGE_STRICT=0",
+      "UP_FAIL_ON_FLAT_ELEVATION=0"
+    ]
+  },
+  "blocker": {
+    "code": "RUN_TIMEOUT",
+    "detail": "Each pipeline run exceeds 180s timeout. Observed: run 1 reached step 6 (planview/continuity) at 3 min, still processing. Estimated full-run time: 14-15 minutes.",
+    "slow_steps": [
+      "map_preview_render (steps 1,2,3,5,6)",
+      "SUMO netconvert",
+      "planview_continuity_diff GIF",
+      "continuity_stability_check (3 inner runs)"
+    ],
+    "recommendation": "Re-run with --run-timeout-s 1200 (20 min per run; ~100 min total for N=5)"
+  },
+  "artifacts_written": [],
+  "next_step": "python -m ultimate_pipeline.run_determinism_audit --runs 5 --out thesis_results/rq1_determinism_n5_20260316 --run-timeout-s 1200 --seed 42"
+}

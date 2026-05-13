@@ -1,0 +1,73 @@
+{
+  "timestamp_utc": "2026-03-16T00:01:11.918476+00:00",
+  "status": "failed",
+  "reason": "insufficient_successful_runs",
+  "verdict": "VERDICT_UNDETERMINED",
+  "runs_requested": 5,
+  "runs_successful": 0,
+  "runs_timed_out": 5,
+  "hashes_computed": 0,
+  "inconclusive_reason": "timeouts",
+  "audit_pipeline_profile": {
+    "name": "relaxed_offline_determinism_audit",
+    "thesis_strict_equivalent": false,
+    "description": "Determinism audit intentionally forces relaxed offline pipeline flags for reproducible hash comparison; this profile is not thesis-strict.",
+    "offline_only_requested": false,
+    "forced_env_overrides": {
+      "UP_THESIS_STRICT": "0",
+      "UP_STRICT_QUALITY_GATES": "0",
+      "UP_DEM_STRICT_MODE": "0",
+      "UP_DEM_FULL_COVERAGE_STRICT": "0",
+      "UP_FAIL_ON_FLAT_ELEVATION": "0",
+      "UP_DISABLE_CARLA": "1",
+      "UP_NO_CARLA_AUTOSTART": "1",
+      "ENABLE_OSM2WORLD": "0",
+      "UP_ENABLE_OSM2WORLD": "0"
+    },
+    "conditional_env_overrides": {}
+  },
+  "run_timeout_s": 180,
+  "run_results": [
+    {
+      "run_index": 0,
+      "run_tag": "audit_run_000",
+      "return_code": 124,
+      "output_dir": "",
+      "success": false
+    },
+    {
+      "run_index": 1,
+      "run_tag": "audit_run_001",
+      "return_code": 124,
+      "output_dir": "",
+      "success": false
+    },
+    {
+      "run_index": 2,
+      "run_tag": "audit_run_002",
+      "return_code": 124,
+      "output_dir": "",
+      "success": false
+    },
+    {
+      "run_index": 3,
+      "run_tag": "audit_run_003",
+      "return_code": 124,
+      "output_dir": "",
+      "success": false
+    },
+    {
+      "run_index": 4,
+      "run_tag": "audit_run_004",
+      "return_code": 124,
+      "output_dir": "",
+      "success": false
+    }
+  ],
+  "determinism_thesis_table_csv": "thesis_results\\rq1_determinism_n5_20260316\\determinism_thesis_table.csv",
+  "required_successful_runs": 2,
+  "source_osm_provenance": {
+    "identities": [],
+    "hashes": []
+  }
+}

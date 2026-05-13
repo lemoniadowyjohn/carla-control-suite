@@ -1,0 +1,13 @@
+tools
+├── _mcp_audit
+│   ├── _mcp_audit_report.json
+│   ├── _mcp_dependency_graph.dot
+│   └── _mcp_red_flags.txt
+├── __init__.py
+├── list_entrypoints.py
+├── load_final_into_carla.py
+├── mcp_audit_plus.py
+├── PROJECT_REPORT.md
+├── project_tools.py
+├── PROJECT_TREE.txt
+└── select_and_view_tile.py

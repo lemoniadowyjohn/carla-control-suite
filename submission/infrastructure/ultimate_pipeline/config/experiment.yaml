@@ -1,0 +1,17 @@
+city: ingolstadt
+seed: 42
+
+osm:
+  lat_min: 48.74935649548228
+  lon_min: 11.422268084715878
+  lat_max: 48.77444431571603
+  lon_max: 11.47882091528412
+
+carla:
+  enable: false
+  timeout_s: 20
+
+perception:
+  model: deeplabv3
+  batch_size: 4
+  epochs: 20

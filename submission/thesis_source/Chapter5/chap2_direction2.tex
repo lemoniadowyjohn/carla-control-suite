@@ -1,0 +1,16 @@
+% Chapter2/chap2_direction2.tex
+\subsubsection{OSM Data Quality, Map Representations, and OpenDRIVE-Based Simulation}
+
+OpenStreetMap (OSM) provides a global, openly licensed geographic database that is frequently used for research prototypes and large-scale mapping tasks. Its strengths are coverage and scalability, but data quality depends on contributor density, tagging conventions, and local mapping practices. Foundational analyses emphasize that OSM quality is heterogeneous and that completeness and positional accuracy vary across regions and feature types \cite{haklay2010}. For road networks in particular, missing or inconsistent attributes (e.g., lane counts, turn relations, and intersection semantics) are common practical issues when converting OSM data into lane-level representations.
+
+A key challenge is that many simulators require an explicit road-network schema with geometric primitives, junction connectivity, and lane semantics. OpenDRIVE, standardized by ASAM, is a widely used format to represent road geometry and topology for driving simulation and testing \cite{asam_opendrive}. It provides a structured model of roads, lane sections, lane links, and junctions, but it also imposes strict consistency requirements that are not directly guaranteed by OSM source data.
+
+CARLA supports importing road networks via OpenDRIVE and also provides tooling for converting OSM data to OpenDRIVE through an OSM-to-OpenDRIVE conversion interface (Osm2Odr / Osm2OdrSettings), which exposes parameters for projection, offsets, and conversion behavior \cite{carla_osm2odr_docs}. In practice, conversion pipelines must address several failure modes: discontinuous plan-view geometry, malformed or incomplete junction topology, missing lane-level attributes, and inconsistencies in successor/predecessor relations. These issues can lead to simulator instability or non-drivable networks even if the XML file is syntactically valid.
+
+Therefore, evaluation must go beyond ``does the simulator load the map''. A robust methodology distinguishes at least three layers of evidence:
+(i) \emph{structural validity} (schema compliance and internal reference consistency),
+(ii) \emph{semantic validity} (lane types, successor relations, junction connectivity), and
+(iii) \emph{runtime diagnostics} (spawn tests, waypoint queries, defect scans).
+This separation is especially important at city scale, where simulator crashes can occur due to engine constraints and resource behavior rather than map invalidity.
+
+Finally, street-network research provides tools and descriptors for analyzing topology and structure (e.g., intersection density, degree distributions, connectivity patterns). For example, OSMnx formalizes construction and analysis of OSM-based street graphs and motivates graph-theoretic characterization of road networks \cite{boeing2017osmnx}. Such descriptors are conceptually aligned with the structural domain-gap measurements in this thesis, where differences in topology and geometry are treated as first-class evaluation targets rather than side effects of rendering.

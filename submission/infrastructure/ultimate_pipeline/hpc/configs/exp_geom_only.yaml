@@ -1,0 +1,21 @@
+name: exp_geom_only
+domain_gap_enable:
+  geometry: true
+  curvature: false
+  intersection: false
+  semantics: false
+  road_classification: false
+  perception: false
+
+pipeline:
+  enable_realism: false
+  enable_buildings: false
+  enable_traffic_lights: false
+  enable_sidewalks: false
+  enable_lane_gnn_refiner: false
+
+training:
+  model: "your_sota_detector_or_segmenter"
+  seed: 42
+  epochs: 50
+  batch_size: 16

@@ -1,0 +1,67 @@
+{
+  "transform": {
+    "scale": 1.0,
+    "cos": 0.9998340803595716,
+    "sin": -0.018215700687288405,
+    "tx": -98720.64409538312,
+    "ty": 12664.513593291864
+  },
+  "crs_reprojection": {
+    "applied": true,
+    "src_crs": "+proj=tmerc +lat_0=48.74935649548228 +lon_0=11.422268084715878 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "dst_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "centroid_delta_before_m": 5444300.675571562,
+    "centroid_delta_after_m": 760.9515607735115,
+    "bbox_iou_after_reprojection": 0.6369240528279722
+  },
+  "diagnostics": {
+    "rmse_before": 2154.7480522525702,
+    "rmse_after_initial_rigid": 2010.9966704458734,
+    "rmse_after": 2026.6884883329426,
+    "n_points": 7446,
+    "fallback_used": false,
+    "manual_bbox": {
+      "minx": 678015.8009219,
+      "maxx": 682410.5096099,
+      "miny": 5402486.14794,
+      "maxy": 5405403.332598
+    },
+    "auto_bbox": {
+      "minx": 677963.0181409962,
+      "maxx": 682948.0512082402,
+      "miny": 5402447.14512913,
+      "maxy": 5406484.884846119
+    },
+    "rigid_only": true,
+    "scale_locked": 1.0,
+    "init_method": "centroid_translation_only",
+    "rotation_deg_after_init": 0.0,
+    "icp_iters_run": 20,
+    "icp_trim_percentile": 90.0,
+    "icp_max_dist_m": 200.0,
+    "icp_rmse_history": [
+      2060.960880772678,
+      2061.200789746165,
+      2061.5751231600766,
+      2061.951366162493,
+      2062.337786329588,
+      2062.7882738854555,
+      2063.279026679902,
+      2063.757068492784,
+      2064.1448041893555,
+      2064.500307096074,
+      2064.849792087141,
+      2065.181693173403,
+      2065.500952895122,
+      2065.767469274508,
+      2066.0185440037044,
+      2066.2294935201926,
+      2066.4860620330123,
+      2066.726271850072,
+      2066.8746416427757,
+      2066.976514756642
+    ],
+    "fit_metric": "planView geometry start-point correspondence RMSE",
+    "metric_note": "These diagnostics describe the rigid-fit start-point correspondence only. The authoritative geometry gap metric is structural_domain_gap.geometry.rmse."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "file_path": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr",
+  "sha256": "beb329a532558f0b0e92035fc2069f0af2e1763f9d78739682737733de3af96f",
+  "road_count": 5837,
+  "junction_count": 779,
+  "elevation_flat": true,
+  "object_count": 3820,
+  "signal_count": 1281,
+  "controller_count": 200,
+  "geoReference_present": true
+}

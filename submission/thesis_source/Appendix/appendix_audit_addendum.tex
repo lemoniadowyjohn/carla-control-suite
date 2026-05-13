@@ -1,0 +1,9 @@
+\subsection{Run\_11 Audit Addendum}
+The governed run\_11 directory contains \texttt{run\_11\_audit\_addendum.json}, which records the governance reconciliation for the primary structural gap run.
+Key entries:
+\begin{itemize}
+  \item \texttt{"analysis\_auto\_xodr\_is\_flat": true} --- confirms all elevation coefficients are zero in the run\_11 comparison artifact.
+  \item \texttt{"auto\_elevation\_applied\_in\_analysis\_artifact": false} --- DEM elevation must not be claimed for run\_11.
+  \item \texttt{"icp\_convergence\_confirmed": false} --- the ICP fit metric worsened monotonically; run\_11 reports the best obtained rigid alignment under CRS-normalised centroid initialisation.
+\end{itemize}
+These findings are consistent with the thesis text; the addendum provides machine-readable confirmations for automated audit tools.

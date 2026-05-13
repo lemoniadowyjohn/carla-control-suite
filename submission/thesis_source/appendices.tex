@@ -1,0 +1,66 @@
+%----------Appendix-------------------------------------------------------------
+\appendix
+\thispagestyle{myPageStyle}
+input{Appendix/appendix_audit_addendum}
+\input{Appendix/appendix_reproducibility}
+
+\section{Additional Reference Material}
+\label{sec:appendix_additional}
+%----------Appendix-------------------------------------------------------------
+
+\subsection{Pipeline entry points}
+\label{sec:appendix_entrypoints}
+The full pipeline is implemented as a staged toolchain with explicit entry points for reproducible execution and auditing. 
+The following scripts are the intended ``front doors'' of the code base:
+
+\begin{itemize}
+\item \texttt{run\_pipeline.py}: executes the end-to-end OSM$\rightarrow$OpenDRIVE$\rightarrow$CARLA pipeline and writes a self-contained run directory.
+\item \texttt{main\_pipeline.py}: pipeline orchestrator implementing the ordered stages and their artifact contracts.
+\item \texttt{run\_quality\_gates.py}: runs the quality-gate suite on an existing run folder, producing structured validation reports and a failure taxonomy.
+\item \texttt{run\_determinism\_audit.py}: external two-run audit that repeats the pipeline and compares hashed artifacts to determine whether the pipeline is deterministic under fixed inputs and settings.
+\item \texttt{run\_full\_domain\_gap.py}: performs offline domain-gap evaluation between an automatically generated map and a manually authored reference map, including alignment, tile matching, and structural/perceptual gap summaries.
+\end{itemize}
+
+\subsection{Sensor calibration contract}
+\label{sec:appendix_sensors}
+All perception experiments use a fixed, ego-mounted sensor rig defined in \texttt{calib\_data.json}. 
+Camera intrinsics are taken from \texttt{K\_undistortion} and treated as a pinhole model. The distortion parameters \texttt{K} and \texttt{D} are ignored, and no additional undistortion step is applied to rendered images.
+Extrinsics are interpreted using the provided frame conventions:
+\begin{itemize}
+\item \texttt{cTv}: vehicle$\rightarrow$camera transform (used to place camera sensors consistently).
+\item \texttt{vTl}: LiDAR$\rightarrow$vehicle transform (inverted if the simulator API expects vehicle$\rightarrow$LiDAR).
+\end{itemize}
+These conventions prevent calibration errors from confounding the domain-gap analysis.
+
+\subsection{Run artifact inventory}
+\label{sec:appendix_artifacts}
+Each pipeline run produces a directory containing stage-wise outputs and diagnostic artifacts. 
+Table~\ref{tab:artifact_inventory} lists the most important artifacts referenced throughout the thesis.
+
+\begin{table}[ht]
+\centering
+\caption{Key artifacts produced per run directory.}
+\label{tab:artifact_inventory}
+\begin{tabular}{ll}
+\toprule
+Artifact & Purpose \\
+\midrule
+\texttt{settings\_snapshot.json} + hash & frozen configuration and toolchain identity \\
+\texttt{final.xodr} / tile \texttt{*.xodr} & authoritative OpenDRIVE map(s) \\
+\texttt{map\_statistics.json} & descriptive statistics (roads, lanes, junctions, semantics) \\
+\texttt{validation\_report\_full.json} & structured gate results and invariant violations \\
+\texttt{gate\_failures.json} & concise list of failed gates for fast regression checks \\
+\texttt{xodr\_negative\_s\_report.csv} & longitudinal-$s$ invariant violations and repairs \\
+\texttt{tile\_metadata.json}, \texttt{tile\_adjacency.json} & deterministic tiling layout and adjacency graph \\
+\texttt{tile\_qa\_reports/*.json} & per-tile CARLA import/spawn/drive checks \\
+\texttt{tile\_failure\_taxonomy.json} & aggregated failure categories (map vs simulator) \\
+\texttt{domain\_gap/full\_report.json} & offline gap metrics and aligned overlays \\
+\texttt{figures/*} & diagnostic images (overlays, heatmaps, continuity plots) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Submission checklist (THI formal requirements)}
+\label{sec:appendix_checklist}
+Before submission, fill the mandatory front-page fields in \texttt{metadata.tex}: first examiner, second examiner, and issue date. 
+Verify that the thesis compiles without placeholders and that the main text volume (excluding appendix) is within 40--60 pages.

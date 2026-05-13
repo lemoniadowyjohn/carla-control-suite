@@ -1,0 +1,171 @@
+# =============================================================================
+# Thesis Protocol Configuration
+# =============================================================================
+# This file defines the fixed experimental parameters for thesis reproducibility.
+# All perception capture runs and domain gap experiments should reference this
+# protocol to ensure consistent, comparable results.
+#
+# Last updated: 2026-01-17
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Random Seed
+# -----------------------------------------------------------------------------
+# Fixed seed for all stochastic operations (NPC spawning, traffic behavior, etc.)
+seed: 42
+
+# -----------------------------------------------------------------------------
+# Simulation Settings
+# -----------------------------------------------------------------------------
+simulation:
+  fps: 20                      # Frames per second (CARLA server tick rate)
+  fixed_delta_seconds: 0.05    # 1/fps = deterministic stepping
+  ticks: 600                   # Total simulation ticks per capture (30 seconds at 20fps)
+  warmup_ticks: 40             # Ticks to skip before recording (let scene stabilize)
+  no_rendering_mode: false     # Must be false for perception capture
+
+# -----------------------------------------------------------------------------
+# Weather Configuration
+# -----------------------------------------------------------------------------
+# Using ClearNoon as baseline for consistent lighting across all experiments.
+# CARLA weather presets: ClearNoon, CloudyNoon, WetNoon, ClearSunset, etc.
+weather:
+  preset: "ClearNoon"
+  # Optional fine-grained control (uncomment to override preset):
+  # sun_altitude_angle: 70.0
+  # cloudiness: 10.0
+  # precipitation: 0.0
+  # fog_density: 0.0
+
+# -----------------------------------------------------------------------------
+# Route Definitions
+# -----------------------------------------------------------------------------
+# Routes define the ego vehicle path for perception capture.
+# Each route specifies spawn location and waypoints for deterministic replay.
+routes:
+  # Primary route: covers main roads and key intersections
+  primary:
+    route_id: "ingolstadt_primary_v1"
+    description: "Main arterial roads through central Ingolstadt"
+    spawn_index: 0
+    # Spawn point in CARLA coordinates (derived from map center)
+    spawn_point:
+      x: 0.0
+      y: 0.0
+      z: 0.5
+      yaw: 0.0
+    # Duration in ticks (overrides simulation.ticks if set)
+    duration_ticks: 600
+
+  # Secondary route: residential areas with different road characteristics
+  secondary:
+    route_id: "ingolstadt_residential_v1"
+    description: "Residential streets with narrower lanes"
+    spawn_index: 5
+    spawn_point:
+      x: 150.0
+      y: -200.0
+      z: 0.5
+      yaw: 90.0
+    duration_ticks: 600
+
+  # Junction-focused route: emphasizes complex intersections
+  junction_focus:
+    route_id: "ingolstadt_junctions_v1"
+    description: "Route targeting complex multi-lane junctions"
+    spawn_index: 10
+    spawn_point:
+      x: -100.0
+      y: 50.0
+      z: 0.5
+      yaw: 180.0
+    duration_ticks: 400
+
+# Active route for experiments (reference one of the above)
+active_route: "primary"
+
+# -----------------------------------------------------------------------------
+# Geographic Reference (Ingolstadt, Germany)
+# -----------------------------------------------------------------------------
+# OSM bounding box used for map generation
+geo_bounds:
+  lat_min: 48.74935649548228
+  lat_max: 48.77444431571603
+  lon_min: 11.422268084715878
+  lon_max: 11.47882091528412
+  # Approximate center point
+  center_lat: 48.7619
+  center_lon: 11.4505
+
+# -----------------------------------------------------------------------------
+# Map References
+# -----------------------------------------------------------------------------
+maps:
+  # Manually modeled CARLA maps (ground truth for domain gap analysis)
+  manual:
+    - name: "Grid0821"
+      description: "Manual Ingolstadt map, version August 21"
+    - name: "Grid0828"
+      description: "Manual Ingolstadt map, version August 28"
+
+  # Auto-generated maps from OSM (variable, regenerated per experiment)
+  generated:
+    # Path resolved at runtime via SETTINGS.GENERATED_XODR
+    xodr_source: "osm_to_opendrive_pipeline"
+    # Number of map variants to generate for variance analysis
+    n_variants: 5
+
+# -----------------------------------------------------------------------------
+# Perception Capture Settings
+# -----------------------------------------------------------------------------
+perception:
+  # Frames to capture per run
+  frames_per_run: 500
+  # Output formats
+  save_rgb: true
+  save_semantic: true
+  save_depth: false
+  save_lidar: true
+  # Image resolution (must match sensor rig config)
+  image_width: 1920
+  image_height: 1080
+
+# -----------------------------------------------------------------------------
+# NPC Traffic Configuration
+# -----------------------------------------------------------------------------
+traffic:
+  # Number of NPC vehicles to spawn
+  n_vehicles: 30
+  # Number of NPC pedestrians to spawn
+  n_pedestrians: 20
+  # Use Traffic Manager for realistic behavior
+  use_traffic_manager: true
+  # TM port (default CARLA TM port)
+  tm_port: 8000
+
+# -----------------------------------------------------------------------------
+# Experiment Matrix
+# -----------------------------------------------------------------------------
+# Defines the train/test combinations for domain gap evaluation
+experiments:
+  # Cross-domain evaluation pairs
+  pairs:
+    - train: "auto"
+      test: "manual"
+      name: "auto_to_manual"
+    - train: "manual"
+      test: "auto"
+      name: "manual_to_auto"
+    - train: "auto"
+      test: "auto_holdout"
+      name: "auto_baseline"
+    - train: "manual"
+      test: "manual_holdout"
+      name: "manual_baseline"
+
+# -----------------------------------------------------------------------------
+# Versioning
+# -----------------------------------------------------------------------------
+protocol_version: "1.0.0"
+thesis_title: "Domain Gap Analysis: OSM-Generated vs Manual CARLA Maps"
+author: "thesis_student"

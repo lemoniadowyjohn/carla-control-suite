@@ -1,0 +1,9 @@
+{
+  "checkpoint": "thesis_results\\gnn_v1\\ksweep_runs\\k_72\\map_encoder_epoch50.pt",
+  "noise_self_cosine": 0.4479276239871979,
+  "tile_self_cosine": 0.8606573343276978,
+  "cross_cosine": -0.16017892956733704,
+  "verdict": "NOT_COLLAPSED",
+  "interpretation": "Encoder is likely not collapsed, but separation margin is moderate; interpret with caution.",
+  "timestamp": "2026-03-20T01:55:59.959167+00:00"
+}

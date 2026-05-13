@@ -1,0 +1,97 @@
+{
+  "errors": [
+    {
+      "code": "no_roads",
+      "context": {},
+      "message": "No <road> elements found.",
+      "module": "strict_validator",
+      "severity": "error"
+    },
+    {
+      "code": "missing_georeference",
+      "context": {},
+      "message": "Missing or empty <geoReference> in <header>.",
+      "module": "carla_compat_gate",
+      "severity": "error"
+    }
+  ],
+  "modules": {
+    "carla_compat_gate": {
+      "available": true,
+      "issues": [
+        {
+          "code": "missing_georeference",
+          "context": {},
+          "message": "Missing or empty <geoReference> in <header>.",
+          "severity": "error"
+        },
+        {
+          "code": "missing_offset",
+          "context": {},
+          "message": "Missing <offset> in <header> (recommended).",
+          "severity": "warn"
+        }
+      ],
+      "stats": {
+        "errors": 1,
+        "warnings": 1
+      }
+    },
+    "lane_section_successor_scan": {
+      "available": true,
+      "report": {
+        "failures": [],
+        "input": "cities\\ingolstadt\\clean_ingolstadt_merged.xodr",
+        "repairs": 0
+      }
+    },
+    "strict_validator": {
+      "available": true,
+      "report": {
+        "issues": [
+          {
+            "code": "georef_missing",
+            "context": {},
+            "message": "Missing/empty <geoReference>. CARLA can load without it, but downstream alignment may break.",
+            "severity": "warn"
+          },
+          {
+            "code": "no_roads",
+            "context": {},
+            "message": "No <road> elements found.",
+            "severity": "error"
+          }
+        ],
+        "n_errors": 1,
+        "n_issues": 2,
+        "n_warnings": 1,
+        "ok": false
+      }
+    }
+  },
+  "parse_error": null,
+  "summary": {
+    "checked_at_utc": "2026-01-17T23:10:06.412618+00:00",
+    "error_count": 2,
+    "status": "fail",
+    "warning_count": 2
+  },
+  "timestamp_utc": "2026-01-17T23:10:06.412618+00:00",
+  "warnings": [
+    {
+      "code": "georef_missing",
+      "context": {},
+      "message": "Missing/empty <geoReference>. CARLA can load without it, but downstream alignment may break.",
+      "module": "strict_validator",
+      "severity": "warn"
+    },
+    {
+      "code": "missing_offset",
+      "context": {},
+      "message": "Missing <offset> in <header> (recommended).",
+      "module": "carla_compat_gate",
+      "severity": "warn"
+    }
+  ],
+  "xodr_path": "cities\\ingolstadt\\clean_ingolstadt_merged.xodr"
+}

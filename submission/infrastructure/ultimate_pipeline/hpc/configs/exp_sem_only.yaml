@@ -1,0 +1,17 @@
+name: exp_sem_only
+domain_gap_enable:
+  geometry: false
+  curvature: false
+  intersection: false
+  semantics: true
+  road_classification: true
+  perception: false
+
+pipeline:
+  enable_traffic_lights: true
+  enable_buildings: true
+  enable_sidewalks: true
+  enable_realism: false
+
+training:
+  seed: 42

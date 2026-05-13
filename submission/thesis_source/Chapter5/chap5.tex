@@ -1,0 +1,351 @@
+% Chapter 5 - Map Generation and Repair Method
+\section{Map Generation and Repair Method}
+\label{sec:generation_method}
+
+This chapter describes the deterministic pipeline stages that transform an OSM extract into CARLA-stable OpenDRIVE tiles. The goal is not to maximize semantic completeness, but to enforce a set of invariants that make city-scale ingestion repeatable and auditable \cite{asam_opendrive_181,carla_opendrive_standalone}.
+
+\subsection{Input preprocessing and sanitization}
+\paragraph{OSM extraction and caching.}
+The pipeline operates on a bounded geographic region (Table~\ref{tab:ingolstadt_bbox}). The OSM extract is stored locally and reused across runs to avoid nondeterminism from live downloads.
+
+\paragraph{Coordinate normalization.}
+OSM coordinates are provided in WGS84 latitude/longitude. Geometry is projected to a local metric frame to enable robust distance-based operations (clustering, smoothing) and OpenDRIVE synthesis. The chosen projection parameters are recorded in the settings snapshot.
+
+
+
+\subsection{Per-tile correspondence and coverage}
+\label{sec:tile_correspondence_overview}
+Whole-map metrics can obscure where structural discrepancies are concentrated.
+For this reason, the evaluation pipeline supports per-tile matching and tile-local gap metrics.
+However, per-tile comparisons are only valid if both maps are partitioned using the \emph{same} tile grid definition: identical projected CRS (meters), identical grid origin, identical tile size, and identical buffer rules.
+If these conditions are not met (e.g., manual tiles missing or computed in a different frame), the pipeline explicitly skips per-tile metrics and writes diagnostics (e.g., \texttt{tile\_correspondence.csv}) rather than fabricating matches.
+
+In practice, automatic maps are tiled as part of the generation process, while manual reference maps must be tiled with the same grid parameters derived from the auto run metadata (origin and tile size).
+Figure~\ref{fig:tile_correspondence} illustrates the correspondence requirement.
+This conservative gating prevents invalid local claims when overlap is partial or coordinate frames are inconsistent.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../images/fig_tile_correspondence.png}
+    \caption{Per-tile correspondence requires a shared canonical tile grid (origin and tile size) and a consistent metric CRS. Manual and auto maps are tiled using identical grid parameters; pairing is performed by tile bounding-box IoU with explicit diagnostics.}
+    \label{fig:tile_correspondence}
+\end{figure}
+
+\subsection{Operational definition of drivability}
+\label{sec:drivability_definition}
+A central requirement of this work is that generated maps are \emph{drivable} in the CARLA simulator.
+To avoid an informal interpretation, we define drivability operationally as a set of concrete criteria that can be verified by automated checks.
+A map (or tile) is considered drivable if it satisfies all \emph{offline} structural invariants and passes a minimal \emph{simulator-dependent} import and spawn test.
+
+\begin{table}[h]
+\centering
+\caption{Operational drivability criteria and where they are verified.}
+\label{tab:drivability_criteria}
+\begin{tabular}{p{0.36\textwidth} p{0.26\textwidth} p{0.30\textwidth}}
+\toprule
+\textbf{Criterion} & \textbf{Verified by} & \textbf{Evidence artifact} \\
+\midrule
+OpenDRIVE XML well-formed and schema-consistent & Offline quality gates & \texttt{validation\_report\_full.json} \\
+No critical parameterization violations (e.g., non-negative $s$ in laneSections) & Offline quality gates + repair report & \texttt{xodr\_negative\_s\_report.csv} \\
+Lane topology usable for routing (successor/predecessor links resolved) & Offline topology gates & \texttt{gate\_failures.json} \\
+CARLA can import the OpenDRIVE and generate the world & Tile QA worker (CARLA) & \texttt{tile\_qa\_reports/*.json} \\
+At least one valid spawn point for the ego vehicle & Tile QA worker (CARLA) & \texttt{tile\_failure\_taxonomy.json} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Optional higher-level drivability tests (e.g., autopilot driving for a fixed horizon) are treated as \emph{scenario} validation and are discussed separately from the minimal import/spawn contract.
+paragraph{Drivability status for the governed thesis artifact.}
+For the primary evidence bundle (run_11 contract XODR), CARLA was not invoked during the domain-gap analysis stage; 	exttt{carla_status.json} records 	exttt{enabled=false} in all governed domain-gap runs. Drivability for run_11 is therefore inferred from offline structural gates only: schema validity, topology lint, lane-link consistency, and negative-$s$ repair. Simulator-side import and spawn validation (Table~ef{tab:drivability_criteria}, rows 4--5) was performed in separate development-phase tile QA runs on earlier map variants and was not re-executed under the run_11 governance contract. A formal governed tile QA stage (loading the final XODR into CARLA via 	exttt{client.generate_opendrive_world()} and recording spawn success as an artifact) is identified as future work.
+
+Negative-$s$ violations are repaired automatically in-place during the tiling stage
+(Stage~9): each affected tile is first backed up, then the violation is corrected,
+and a per-tile report (\texttt{xodr\_negative\_s\_report.csv}) records before-and-after
+violation counts across 11 OpenDRIVE XPath targets (geometry, lane sections, lane offsets,
+elevation profiles, superelevation, lane widths, lane borders, road objects, signals,
+road type, and speed entries).
+Monotonic-sequence violations are reported but not automatically repaired, as they
+require semantic interpretation of the road layout to resolve safely.
+
+\subsection{Topology linting and structural risk scan}
+Before repairs, diagnostic scans quantify risks: connected components, near-miss endpoints, anomalous curvature outliers, and missing junction references. High-risk road identifiers are recorded to enable targeted debugging rather than opaque global modifications.
+
+\subsection{Topology repair and enrichment}
+\paragraph{Intersection clustering.}
+Near-miss endpoints are clustered within a deterministic tolerance. Cluster merges are logged. Layer information (bridge/tunnel/layer tags) is used to avoid illegal merges across vertical separation when available.
+
+\paragraph{Semantic enrichment.}
+Traffic lights and simple scene elements can be inferred and inserted conservatively to support more diverse perception scenes. Enrichment is designed to be \emph{geometry-preserving}.
+
+\subsection{Geometry authority: planView smoothing and elevation}
+OpenDRIVE uses a reference line and longitudinal coordinate $s$ to define road geometry \cite{asam_opendrive_181}. The pipeline constructs the reference line and then stabilizes it via deterministic smoothing and continuity repair.
+
+\paragraph{Elevation integration.}
+A DEM is sampled along the reference line and encoded as \texttt{elevationProfile}. To reduce high-frequency artifacts, elevation is smoothed while preserving large-scale terrain trends.
+
+\paragraph{Geometry freeze policy.}
+After continuity stabilization, geometry is declared frozen: downstream stages may not modify \texttt{planView} or \texttt{elevationProfile}. This prevents feedback loops where lane fixes reintroduce geometric defects.
+
+\subsection{Lane generation and cross-section repair}
+Lane sections are derived from OSM tags where available (e.g., lane counts) and from deterministic defaults otherwise \cite{haklay2010osm}. Cross-section repair enforces positive widths and continuity across adjacent lane sections. Sidewalks may be added as additional lane types.
+
+\subsection{LaneLink construction and the CARLA successor invariant}
+CARLA routing stability depends on consistent lane predecessor/successor relationships \cite{carla_opendrive_standalone}. The pipeline enforces a strict successor invariant for drivable lanes.
+
+\paragraph{Invariant definition.}
+Let $G=(V,E)$ be the directed lane graph where $V$ are lanes and $(u,v)\in E$ represents a successor link from lane $u$ to lane $v$. For every lane $u$ marked as drivable, the successor set must be non-empty:
+\begin{equation}
+\forall u \in V_{\mathrm{drive}}:\quad \exists v \in V_{\mathrm{drive}} \text{ such that } (u,v)\in E.
+\label{eq:successor_invariant}
+\end{equation}
+Violations are repaired where possible (e.g., by connecting to the best matching downstream lane) or the lane is downgraded to a non-driving type to prevent CARLA failures.
+
+\subsection{Tiling and adjacency graph generation}
+City-scale maps are decomposed into spatial tiles to localize errors, speed up validation, and support scalable experiments. Tiles are extracted with a configurable buffer to preserve cross-boundary successors.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\linewidth]{../images/fig_tiling_buffer.png}
+\caption{Buffered tiling concept. The dashed region denotes the buffered extraction used to reduce successor leakage across tile boundaries.}
+\label{fig:tiling_buffer}
+\end{figure}
+
+Each tile export includes bounds, road/lane counts, successor leakage statistics, and hashes for reproducibility. An adjacency graph encodes tile neighborhood relations for later analysis and visualization.
+
+
+\subsection{Seam continuity evaluation between adjacent tiles}
+Tiling introduces artificial boundaries that can create discontinuities in an otherwise globally consistent road network. Such seam artifacts may not prevent simulator loading, yet they can affect downstream tasks: routing continuity, vehicle dynamics at boundary crossings, and the visual/geometry consistency of perception datasets.
+
+\paragraph{Seam metrics.}
+For each pair of adjacent tiles $(A,B)$, the pipeline evaluates seam continuity by comparing the boundary-near road geometry and lane centerlines on both sides. Three metrics are recorded:
+\begin{itemize}
+    \item \textbf{Lateral displacement} $e_{\perp}$ (meters): planar offset between matched boundary samples.
+    \item \textbf{Heading discontinuity} $e_{\psi}$ (degrees): difference in tangent heading, wrapped to $[-180^\circ, 180^\circ]$.
+    \item \textbf{Elevation jump} $e_{z}$ (meters): difference in elevation at the seam.
+\end{itemize}
+Conceptually, the comparison matches the ``end'' of a boundary-crossing primitive in tile $A$ to the corresponding ``start'' primitive in tile $B$ (after applying the same tiling buffer and coordinate frame).
+
+\paragraph{Adjacency-complete evaluation.}
+To avoid bias from traversal order (e.g., ``previous tile loaded''), seam evaluation iterates \emph{all} edges in the stored tile adjacency graph. This enables reporting seam statistics per adjacent tile pair and supports reproducible aggregation (median/95th/max) over a fixed edge set.
+
+\paragraph{Failure mode: empty adjacency graph (``0/0 edges'').}
+A key robustness issue during development was that the stored adjacency graph could contain zero edges (e.g., ``0 edges for 74 tiles''). In this situation, seam checks cannot execute and the seam stage would otherwise report ``0/0 edges,'' which is diagnostically equivalent to ``seam QA never ran.'' In practice, the root cause was a mismatch between the produced tile set and the adjacency consumer (e.g., schema differences or inconsistent parsing of tile identifiers from filenames).
+
+\paragraph{Deterministic fallback adjacency reconstruction.}
+To guarantee that seam analysis executes on multi-tile runs, the seam stage includes a deterministic fallback. If an adjacency file exists but yields zero edges while multiple tiles are present, the pipeline reconstructs a 4-neighbor grid graph directly from tile filenames with encoded integer indices (e.g., \code{tile_3_7.xodr}). For each tile index pair $(i,j)$, neighbor edges are added to $(i\pm1,j)$ and $(i,j\pm1)$ if the corresponding tiles exist. The parsed index set and the resulting edge count are logged, and a \code{..._fallback.json} adjacency artifact is written for reproducibility. If adjacency remains empty despite a multi-tile set, the QA stage fails fast with an explicit error rather than silently skipping seam checks.
+
+\paragraph{Reproducible seam artifacts.}
+Each evaluated edge $(A,B)$ produces a machine-readable seam report (JSON) containing: tile identifiers, hashes of the compared OpenDRIVE files, parameters (tile size, buffer, sampling step), and the resulting seam metrics with warnings. A deterministic manifest lists all seam reports in stable order and links to the run-wide settings snapshot. This makes seam results externally auditable and reproducible without re-running CARLA.
+
+
+\subsection{Quality gates}
+\label{sec:quality_gates}
+Because an OpenStreetMap-to-OpenDRIVE conversion can fail silently or produce partially valid outputs, the pipeline uses a staged \emph{quality gate} strategy.
+Gates are designed to (i) detect invalid or simulator-hostile structures early, (ii) record a failure taxonomy for later analysis, and (iii) prevent confounding of domain-gap experiments by broken environments.
+
+\paragraph{Offline gates (structural and semantic sanity).}
+Offline gates operate directly on OpenDRIVE and derived geometry without requiring CARLA.
+They include:
+\begin{itemize}
+    \item \textbf{XML/schema integrity:} well-formed OpenDRIVE and required elements present.
+    \item \textbf{Parameterization invariants:} consistency of longitudinal parameter $s$ (e.g., no negative \texttt{laneSection@s}); consistency between geometry lengths and \texttt{road@length}.
+    \item \textbf{Topology invariants:} resolvable successor/predecessor relations and junction connectivity sanity.
+    \item \textbf{Geometry feasibility:} thresholds on extreme curvature, micro-segment merging and continuity checks after smoothing.
+    \item \textbf{Semantic sanity:} a semantic-overlap check (e.g., mutually exclusive road-space labels) and a randomness/entropy check used to detect degenerate or overly repetitive map realizations.
+    \item \textbf{Collision mesh gate:} polygon validity checks for generated road-space meshes (implemented using robust computational geometry).
+\end{itemize}
+All gate outcomes are recorded in a structured report (e.g., \texttt{validation\_report\_full.json}) and a concise failure list (e.g., \texttt{gate\_failures.json}), enabling reproducible post-hoc analysis.
+
+\paragraph{Repository-specific validity gates (elevation seams and origin sanity).}
+In addition to generic OpenDRIVE invariants, the implementation includes two thesis-critical gates motivated by CARLA failure modes observed on large, tiled maps:
+(i) an \textbf{elevation seam gate} that detects large discontinuities in the road surface between adjacent tiles (which otherwise appear in CARLA as vertical ``walls''/trenches and can destabilize physics), and
+(ii) an \textbf{origin sanity gate} that rejects maps whose coordinate frame is absurdly far from the simulator origin (a common symptom of projection mistakes).
+Gate outcomes are summarized into a compact \texttt{map\_acceptance.json} schema (\texttt{valid}, \texttt{failed\_gates}, \texttt{summary}).
+For strict experimental hygiene, perception capture can be configured to require acceptance (e.g., skipping runs on invalid maps rather than silently mixing corrupted data into the training set).
+
+\paragraph{Map identity guarding (manual vs. generated).}
+Because the thesis compares a manually authored Ingolstadt map against many generated realizations, the CARLA-side tooling includes a \emph{map identity guard} that records and verifies the loaded world/map name before spawning sensors or logging data.
+This prevents accidental cross-contamination of results when running headless batches or recovering from simulator restarts.
+
+\paragraph{Simulator-dependent gates (CARLA import and spawn).}
+CARLA-based checks are expensive and may be unstable for large maps.
+Therefore, they are executed after offline gates and typically on spatial tiles.
+For each tile, the validation worker attempts to import the OpenDRIVE into CARLA, generate the world, and spawn an ego vehicle with the fixed sensor rig.
+Outcomes are summarized per tile (JSON) and aggregated into a failure taxonomy (e.g., \texttt{tile\_failure\_taxonomy.json}), allowing pass-rate and failure-mode statistics to be reported separately from map correctness.
+
+\paragraph{Relation to domain-gap experiments.}
+Only maps/tiles that satisfy the drivability contract in Table~\ref{tab:drivability_criteria} are used for sensor-based perceptual evaluation and for training data generation.
+Maps failing gates remain informative: failure rates and repair counts are reported as \emph{pipeline stability metrics}, but they are not mixed into perception results to avoid bias.
+
+
+\subsection{Summary}
+The map generation method prioritizes CARLA-stable OpenDRIVE by combining deterministic repair, geometry freezing, strict lane-graph invariants, and tile-based decomposition.
+
+
+\subsection{Sensor rig correctness and coordinate conventions}
+\label{sec:sensor_rig}
+All perceptual comparisons use a single authoritative sensor rig to ensure that differences in sensor outputs are attributable to map structure rather than sensor misalignment.
+
+\paragraph{Models and intrinsics.}
+Cameras are modeled as ideal pinhole cameras using an undistorted intrinsic matrix $K_{\text{undist}}$.
+Distortion coefficients are ignored during rendering and projection to keep comparisons consistent across environments and runs.
+
+\paragraph{Coordinate frames.}
+CARLA/Unreal uses a right-handed coordinate system attached to the vehicle, while many perception pipelines use OpenCV camera coordinates.
+We explicitly document the axis conventions used and apply a single conversion layer to avoid frame ambiguity.
+Let $^{c}\mathbf{T}_{v}$ denote the rigid transform from vehicle frame to camera frame and $^{v}\mathbf{T}_{l}$ the transform from LiDAR frame to vehicle frame.
+Because CARLA attaches sensors using poses expressed in the vehicle frame, transforms must be applied with correct directionality; in practice this often requires careful inversion of transforms when switching between ``sensor-to-vehicle'' and ``vehicle-to-sensor'' conventions.
+
+\paragraph{Verification.}
+We verify the rig numerically (orthonormal rotation matrices, determinant $\approx +1$, positive depth for projected points) and visually (LiDAR-to-image overlay sanity checks).
+This guarantees that perceptual differences observed between map domains are caused by map structure rather than changes in viewpoint or calibration.
+
+
+
+
+\paragraph{Calibration consistency and camera selection.}
+The calibration file \texttt{calib\_data.json} defines six RGB cameras and two LiDAR sensors.
+All six cameras were instantiated in CARLA using the prescribed attachment rules: the \texttt{cTv} transform (vehicle $\rightarrow$ camera) is applied directly, and the \texttt{vTl} transform (LiDAR $\rightarrow$ vehicle) is inverted to obtain the vehicle $\rightarrow$ LiDAR pose required for attachment.
+Forward-alignment diagnostics verify geometric consistency between each camera's forward axis and the vehicle reference frame.
+Four cameras (\texttt{front\_left\_camera}, \texttt{front\_right\_camera}, \texttt{back\_left\_camera}, \texttt{back\_right\_camera}) exhibit forward vectors consistent with expected vehicle-aligned orientations (cosine similarity $\geq 0.93$ relative to the vehicle forward axis).
+In contrast, the lateral cameras (\texttt{left\_camera}, \texttt{right\_camera}) yield forward vectors predominantly aligned with the vertical axis in the CARLA frame.
+This behavior is consistent with the rotation components of the provided \texttt{cTv} matrices for these two cameras.
+Since identical transformation logic is applied uniformly to all sensors and the remaining cameras pass alignment validation, the observed misalignment is attributed to the supplied calibration parameters rather than implementation error in the pipeline.
+For perception experiments, only cameras passing the forward-alignment diagnostic are used; lateral camera imagery is excluded to ensure geometric consistency and strict reproducibility with the provided calibration file.
+
+\subsection{Perception experiment validity and headless execution}
+\label{sec:perception_validity}
+For perception evaluation, the minimal requirement is a loadable world with synchronized sensors that produce repeatable data streams.
+Authoring maps in Unreal Editor (cooking) is out of scope; the only requirement for this thesis is that maps are \emph{runtime-loadable} in CARLA.
+
+Large tiled maps combined with real-time rendering and multiple sensors can exceed GPU/VRAM budgets and trigger instability.
+To ensure deterministic and stable runs, all perception experiments are executed in headless simulation mode by enabling \texttt{no\_rendering\_mode}.
+Headless execution is common in research pipelines and does not invalidate results because world stepping and sensor streams remain well-defined under synchronous simulation.
+
+
+\subsection{Perceptual proxy metrics}
+\label{sec:perceptual_metrics}
+A full end-to-end training pipeline is not required to demonstrate perceptual domain shift.
+When ground-truth labels are unavailable, we use proxy metrics that quantify distributional changes in sensor observations under identical routes, weather, and sensor configuration:
+\begin{itemize}
+    \item \textbf{Image statistics:} brightness/contrast distributions, gradient magnitude (edge density), and Laplacian variance (texture proxy).
+    \item \textbf{Feature-space distance:} distances between embeddings computed by a fixed pretrained backbone (e.g., CNN features), reported with confidence intervals.
+    \item \textbf{LiDAR statistics:} point density by range bins, height distributions, and sparsity measures.
+\end{itemize}
+These proxies do not directly measure task accuracy, but they quantify distribution shift in the inputs that perception models consume.
+
+
+\subsection{Experimental design and statistical reporting}
+\label{sec:stats}
+All comparisons are repeated across multiple runs per condition to separate systematic effects from noise.
+We report summary statistics and uncertainty using confidence intervals.
+Because metric distributions are often non-normal, we employ non-parametric tests (e.g., Mann--Whitney U) and bootstrap confidence intervals for differences.
+Where appropriate, effect sizes (e.g., Cohen's $d$ for approximately normal metrics) are reported in addition to $p$-values.
+
+
+\subsection{Threats to validity}
+\label{sec:threats}
+We explicitly acknowledge limitations that may influence results:
+\begin{itemize}
+    \item \textbf{Simulator sensitivity:} results are tied to CARLA 0.9.16; different versions may alter rendering, physics, or map parsing.
+    \item \textbf{OSM completeness:} missing or inconsistent OSM tags affect semantics and may bias structural metrics.
+    \item \textbf{OpenDRIVE conversion assumptions:} complex junction modeling and lane semantics may be approximated by the pipeline.
+    \item \textbf{Sensor modeling limits:} simulator camera models and coordinate conventions differ from physical sensors; residual mismatches may remain.
+    \item \textbf{Scope:} the evaluation focuses on a single city area (Ingolstadt) and a limited set of conditions (weather/lighting sweeps where used).
+\end{itemize}
+
+
+\subsection{Reproducibility and engineering rigor}
+\label{sec:repro}
+To make results re-runnable, the pipeline logs random seeds, software versions, and configuration snapshots.
+Each run stores deterministic hashes of key outputs (OpenDRIVE, normalized reports) and preserves CARLA cache artifacts produced during map load.
+Quality assurance checks (e.g., tile adjacency validation, geometry sanity checks, and seam detection) are executed offline and recorded alongside run artifacts.
+
+\subsection{Reproducibility and evidence integrity}
+\label{sec:repro_integrity}
+Reproducibility is treated as a minimum standard for evaluating computational scientific claims \cite{peng2011reproducible,sandve2013tenrules}.
+To make results thesis-grade evidence rather than anecdotes, each experiment produces a machine-readable run manifest (\texttt{run\_manifest.json}) that functions as a lab notebook.
+
+\paragraph{Failure semantics.}
+Any pipeline exception terminates with a non-zero exit code and the run is marked as failed in the manifest.
+A run is not allowed to report ``completed successfully'' when exceptions occurred.
+This prevents ambiguous logs in which partial failures could be misinterpreted as valid results.
+
+\paragraph{Run manifest contents.}
+For every run we archive:
+\begin{itemize}
+  \item Git commit hash (exact code version used).
+  \item Full settings snapshot, including environment overrides.
+  \item SHA-256 hashes of key inputs/outputs (pinned OSM extract, generated OpenDRIVE, manual baseline OpenDRIVE, and sensor calibration JSON).
+  \item Runtime metadata: CARLA version (0.9.16) \cite{dosovitskiy2017carla}, operating system, Python version, and key library versions.
+\end{itemize}
+Together, these records provide an evidence trail that enables independent re-runs and post-hoc auditing.
+
+\subsection{Determinism decomposition}
+\label{sec:determinism_decomposition}
+Determinism is not a single property; in this thesis it is decomposed into three stages that can each introduce variability:
+
+\paragraph{(1) OSM snapshot variability.}
+The same geographic bounds can yield different map data over time as OpenStreetMap evolves.
+We therefore pin the input by saving the extracted \texttt{.osm} file and hashing it (SHA-256) \cite{openstreetmap_copyright,odbl10}.
+
+\paragraph{(2) OSM$\rightarrow$OpenDRIVE variability.}
+Even with identical OSM input, conversion can vary due to ordering effects, floating-point behavior, library versions, or heuristic decisions.
+We evaluate this stage with both byte-level hashes of \texttt{.xodr} outputs and semantic signatures (e.g., counts of roads/junctions, lane distributions, and geometry element statistics) derived from deterministic parsing using the OpenDRIVE standard \cite{asam_opendrive_1_7}.
+
+\paragraph{(3) OpenDRIVE$\rightarrow$CARLA import/normalization variability.}
+CARLA may normalize or reorder road representations during import.
+We test this by repeatedly loading the same OpenDRIVE into CARLA and hashing the exported OpenDRIVE from \texttt{world.get\_map().to\_opendrive()} plus a topology signature computed from waypoint sampling.
+This decomposition forms the backbone of any claim about observed structural variability under fixed inputs, because it separates true structural variability from formatting noise and runtime artifacts and does not itself establish intentional domain randomization.
+
+\subsection{Domain gap definitions and measurements}
+\label{sec:domain_gap_definitions}
+Following distribution-shift perspectives in domain adaptation \cite{ben_david2010domain}, we distinguish two complementary gaps:
+
+\paragraph{Structural domain gap (map graph and geometry).}
+Structural gap quantifies differences in the static road network and related semantics, primarily derived from OpenDRIVE \cite{asam_opendrive_1_7}.
+Examples include road/junction counts, connectivity and degree distributions, lane count and width statistics, curvature/heading-change distributions along centerlines, intersection density and types, and tile seam metrics (misaligned endpoints and adjacency inconsistencies).
+We also report drivability proxies from tile QA results (e.g., spawnability and continuity checks).
+
+\paragraph{Perceptual domain gap (sensor observations).}
+Perceptual gap quantifies how the environment changes the distributions observed by sensors.
+This gap is only meaningful if sensor calibration and coordinate conventions are correct; therefore, the sensor rig definition and validation protocol in Section~\ref{sec:sensor_rig} is treated as a prerequisite.
+Perceptual evaluation uses identical sensor rig, route, weather, and synchronous stepping to isolate map effects \cite{dosovitskiy2017carla}.
+
+\subsection{Why the manual map is not ``just another OpenDRIVE''}
+\label{sec:manual_not_just_xodr}
+For structural comparison, OpenDRIVE provides a sufficient representation of the road network (topology, lanes, and geometry).
+For perceptual comparison, OpenDRIVE alone is insufficient because it does not encode the full 3D scene content that affects sensors (e.g., buildings, vegetation, materials, clutter, and detailed object placement).
+Therefore, perceptual experiments use the actual Unreal Engine map assets (Grid0821/Grid0828) at runtime, while OpenDRIVE is used as the common interface for structural analysis.
+
+\subsection{Experimental runtime configuration}
+\label{sec:runtime_config}
+All simulator-backed experiments use CARLA 0.9.16 on Windows \cite{dosovitskiy2017carla}. To keep runs repeatable, the simulator is operated in synchronous mode with a fixed simulation step, and all relevant settings are frozen in the run manifest (Section~\ref{sec:repro_integrity}). When large maps exceed local GPU limits, \texttt{no\_rendering\_mode} may be enabled for stability; any perceptual use of headless execution is stated explicitly and interpreted conservatively.
+
+Tile-based analyses use the same grid origin, tile size, and metadata schema across domains so that local discrepancies are not confused with coordinate mismatch.
+
+\subsection{What generalization means in this thesis}
+\label{sec:generalization_definition}
+Generalization is defined only in two bounded settings: simulation-to-simulation transfer across generated and manual maps, and simulation-to-unlabeled-real evaluation through proxy metrics such as confidence drift, temporal consistency, and feature embedding distances \cite{ben_david2010domain}. Repeated generation from the same pinned OSM snapshot is interpreted as observed structural variability under fixed inputs, not as deliberate domain randomization \cite{tobin2017domainrandomization}.
+
+\subsection{Minimal end-to-end perception experiment}
+\label{sec:minimal_perception_experiment}
+A minimal perception experiment is included to show that the governed pipeline can produce empirical evidence rather than only infrastructure. The chosen task is semantic segmentation because CARLA provides simulator-native labels, which keeps the setup lightweight and the outputs interpretable. Training data is collected under a fixed sensor rig, route set, weather preset, and synchronous stepping; evaluation is then performed on held-out generated maps, on the manual Ingolstadt reference where feasible, and on unlabeled real data through the proxy metrics defined above. These experiments are exploratory only and are not used to claim state-of-the-art task performance or completed transfer validation.
+
+\subsection{Validity, provenance, and reproducibility controls}
+\label{sec:artifact_contract}
+The pipeline is treated as failure-aware rather than best-effort: a run is complete only when its required artifacts are present, and missing artifacts are interpreted as evidence that execution terminated before completion. At minimum, a complete run must preserve a manifest with hashes and configuration, the generated OpenDRIVE artifact used for analysis, and any additional correspondence or tile metadata required to justify tile-level reporting.
+
+Perception and route-based results are admissible only when they are recorded in the intended OpenDRIVE-derived world rather than in an unintended simulator fallback \cite{carla_maps_opendrive}. For this reason, each run records the world source, loaded map name, and attempted OpenDRIVE hash. The thesis also separates \emph{offline structural validity} from \emph{CARLA acceptability}: an XODR file may pass schema and topology checks while still failing to load or route correctly inside the simulator \cite{carla_python_api}. These two gate classes are reported separately so that simulator instability is not misrepresented as map invalidity.
+
+\subsection{Tile correspondence construction and refusal policy}
+\label{sec:tile_correspondence}
+Tile identifiers alone are not sufficient evidence of spatial correspondence because manual and automatically generated maps can be exported with different grid origins or coordinate frames. Tile matching is therefore established by spatial comparison of bounding-box centers with IoU gating and, where needed, a robust translation estimate. If coordinate magnitudes indicate incompatible units or correspondence cannot be verified reliably, per-tile analysis is refused and only whole-map metrics are reported. This refusal policy prevents misleading local metrics from being published on mismatched spatial partitions.
+
+\subsection{Data license and attribution}
+\label{sec:osm_license}
+OpenStreetMap data is used under the Open Database License (ODbL) \cite{osm_copyright,osm_attribution_guidelines}. Derived artifacts in this thesis retain the required attribution to OpenStreetMap contributors, while redistribution of the raw source database remains outside the thesis scope.
+
+\subsection{Claim boundaries for deferred perception and generalization work}
+\label{sec:perceptual_metrics_deferred}
+Scenario B does not report the originally planned paired perceptual-gap metrics for RGB and LiDAR because reliable manual-versus-auto Ingolstadt perception capture was not achieved. Instead, the thesis retains only the bounded Town10 proof-of-concept and the governed readiness artifacts described in the results chapters. Likewise, the end-to-end generalization pipeline was verified only at the level of artifact production and fixture-scale execution; it is not used to claim robustness improvement or transfer feasibility. Learning-related conclusions therefore remain deliberately bounded to infrastructure verification and observational evidence.

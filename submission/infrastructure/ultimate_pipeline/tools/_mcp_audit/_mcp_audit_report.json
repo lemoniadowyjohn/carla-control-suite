@@ -1,0 +1,152 @@
+{
+  "repo_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\tools",
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\tools\\_mcp_audit",
+  "counts": {
+    "py_files": 5,
+    "modules_indexed": 5,
+    "syntax_errors": 0,
+    "carla_importers": 2,
+    "illegal_carla_importers": 2,
+    "layer_violations": 0,
+    "optional_dep_warnings": 0,
+    "cycles": 0,
+    "self_cycles": 0,
+    "entrypoints": 0,
+    "unreachable_modules": null,
+    "geometry_guard_present": false,
+    "geometry_mutators": 0,
+    "geometry_mutators_without_guard": 0
+  },
+  "entrypoints": [],
+  "syntax_errors": [],
+  "illegal_carla_importers": [
+    {
+      "module": "select_and_view_tile",
+      "file": "select_and_view_tile.py"
+    },
+    {
+      "module": "load_final_into_carla",
+      "file": "load_final_into_carla.py"
+    }
+  ],
+  "layer_violations": [],
+  "optional_dep_warnings": [],
+  "cycles": [],
+  "self_cycles": [],
+  "unreachable_modules": [],
+  "geometry_freeze": {
+    "guard_present": false,
+    "guard_expected_paths": [
+      "ultimate_pipeline/geometry/geometry_guard.py",
+      "ultimate_pipeline/geometry_guard.py"
+    ],
+    "mutators_detected": [],
+    "mutators_without_guard": []
+  },
+  "policy": {
+    "exclude_dirs": [
+      ".git",
+      ".mypy_cache",
+      ".pytest_cache",
+      ".venv",
+      "__pycache__",
+      "build",
+      "data",
+      "datasets",
+      "dist",
+      "env",
+      "logs",
+      "results",
+      "ultimate_pipeline_out",
+      "venv"
+    ],
+    "allowed_carla_prefixes": [
+      "ultimate_pipeline/carla",
+      "ultimate_pipeline/carla_tools",
+      "ultimate_pipeline/core/carla_utils.py"
+    ],
+    "layer_forbidden_imports": [
+      {
+        "path_prefix": "ultimate_pipeline/domain_gap",
+        "forbid": [
+          "carla"
+        ]
+      },
+      {
+        "path_prefix": "ultimate_pipeline/quality",
+        "forbid": [
+          "carla"
+        ]
+      },
+      {
+        "path_prefix": "ultimate_pipeline/geometry",
+        "forbid": [
+          "carla"
+        ]
+      },
+      {
+        "path_prefix": "ultimate_pipeline/topology",
+        "forbid": [
+          "carla"
+        ]
+      }
+    ],
+    "optional_deps": {
+      "shapely": {
+        "suggest_guard": true
+      },
+      "torch": {
+        "suggest_guard": false
+      },
+      "cv2": {
+        "suggest_guard": true
+      }
+    }
+  },
+  "artifacts": {
+    "dependency_dot": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\tools\\_mcp_audit\\_mcp_dependency_graph.dot"
+  },
+  "deps": {
+    "": [],
+    "mcp_audit_plus": [],
+    "select_and_view_tile": [],
+    "list_entrypoints": [],
+    "load_final_into_carla": []
+  },
+  "external_import_tops": {
+    "": [],
+    "mcp_audit_plus": [
+      "__future__",
+      "argparse",
+      "ast",
+      "dataclasses",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sys",
+      "typing"
+    ],
+    "select_and_view_tile": [
+      "carla",
+      "os",
+      "time",
+      "ultimate_pipeline"
+    ],
+    "list_entrypoints": [
+      "ultimate_pipeline"
+    ],
+    "load_final_into_carla": [
+      "carla",
+      "sys",
+      "time"
+    ]
+  },
+  "module_index": {
+    "list_entrypoints": "list_entrypoints.py",
+    "load_final_into_carla": "load_final_into_carla.py",
+    "mcp_audit_plus": "mcp_audit_plus.py",
+    "select_and_view_tile": "select_and_view_tile.py",
+    "": "__init__.py"
+  }
+}
