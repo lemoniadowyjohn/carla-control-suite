@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "rig": "thesis",
+  "sensors": {
+    "camera_front": {
+      "intrinsics": {
+        "fx": 400,
+        "fy": 400,
+        "cx": 400,
+        "cy": 300,
+        "width": 800,
+        "height": 600
+      },
+      "extrinsics": {
+        "x": 1.5,
+        "y": 0.0,
+        "z": 1.4,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 0.0
+      }
+    },
+    "lidar_top": {
+      "extrinsics": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 2.0,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 0.0
+      },
+      "channels": 32,
+      "range": 50.0,
+      "points_per_second": 100000
+    }
+  }
+}

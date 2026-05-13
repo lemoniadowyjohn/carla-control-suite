@@ -1,0 +1,147 @@
+{
+  "carla_map_basename": "Town10HD",
+  "carla_map_name": "Carla/Maps/Town10HD",
+  "carla_world_settings": {
+    "fixed_delta_seconds": 0.1,
+    "synchronous_mode": true
+  },
+  "closed_utc": "2026-04-06T21:32:04.795183+00:00",
+  "counts": {
+    "lidar_files": 6,
+    "rgb_files": 8,
+    "semseg_files": 6,
+    "total_files": 20
+  },
+  "end_time": "2026-04-06T21:32:04.795183+00:00",
+  "last_tick_snapshot": null,
+  "manifest_source": "recorder",
+  "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording",
+  "output_roots": {
+    "lidar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\lidar",
+    "meta": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\meta",
+    "rgb": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb",
+    "semseg": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\semseg_raw"
+  },
+  "per_sensor_counts": {
+    "back_left_camera": {
+      "frames": 2,
+      "kind": "rgb",
+      "lidar_frames": 0,
+      "rgb_frames": 2
+    },
+    "back_right_camera": {
+      "frames": 1,
+      "kind": "rgb",
+      "lidar_frames": 0,
+      "rgb_frames": 1
+    },
+    "front_left_camera": {
+      "frames": 1,
+      "kind": "rgb",
+      "lidar_frames": 0,
+      "rgb_frames": 1
+    },
+    "front_right_camera": {
+      "frames": 1,
+      "kind": "rgb",
+      "lidar_frames": 0,
+      "rgb_frames": 1
+    },
+    "left_camera": {
+      "frames": 2,
+      "kind": "rgb",
+      "lidar_frames": 0,
+      "rgb_frames": 2
+    },
+    "middle_lidar": {
+      "frames": 3,
+      "kind": "lidar",
+      "lidar_frames": 3,
+      "rgb_frames": 0
+    },
+    "middle_lidar_old": {
+      "frames": 3,
+      "kind": "lidar",
+      "lidar_frames": 3,
+      "rgb_frames": 0
+    },
+    "right_camera": {
+      "frames": 1,
+      "kind": "rgb",
+      "lidar_frames": 0,
+      "rgb_frames": 1
+    }
+  },
+  "save_errors_tail": [],
+  "schema_version": 1,
+  "sensor_frame_counts": {
+    "back_left_camera": 2,
+    "back_right_camera": 1,
+    "front_left_camera": 1,
+    "front_right_camera": 1,
+    "left_camera": 2,
+    "middle_lidar": 3,
+    "middle_lidar_old": 3,
+    "right_camera": 1
+  },
+  "sensors": [
+    {
+      "frame_count": 2,
+      "kind": "rgb",
+      "name": "back_left_camera",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\back_left_camera",
+      "type_id": ""
+    },
+    {
+      "frame_count": 1,
+      "kind": "rgb",
+      "name": "back_right_camera",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\back_right_camera",
+      "type_id": ""
+    },
+    {
+      "frame_count": 1,
+      "kind": "rgb",
+      "name": "front_left_camera",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\front_left_camera",
+      "type_id": ""
+    },
+    {
+      "frame_count": 1,
+      "kind": "rgb",
+      "name": "front_right_camera",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\front_right_camera",
+      "type_id": ""
+    },
+    {
+      "frame_count": 2,
+      "kind": "rgb",
+      "name": "left_camera",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\left_camera",
+      "type_id": ""
+    },
+    {
+      "frame_count": 1,
+      "kind": "rgb",
+      "name": "right_camera",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\right_camera",
+      "type_id": ""
+    },
+    {
+      "frame_count": 3,
+      "kind": "lidar",
+      "name": "middle_lidar",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\lidar\\middle_lidar",
+      "type_id": ""
+    },
+    {
+      "frame_count": 3,
+      "kind": "lidar",
+      "name": "middle_lidar_old",
+      "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\lidar\\middle_lidar_old",
+      "type_id": ""
+    }
+  ],
+  "start_time": "2026-04-06T21:32:04.795183+00:00",
+  "started_utc": "2026-04-06T21:32:04.795183+00:00"
+}

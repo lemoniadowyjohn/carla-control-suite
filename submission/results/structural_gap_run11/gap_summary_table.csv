@@ -1,0 +1,10 @@
+object_class,auto_count,manual_count,delta,gap_factor
+Barrier,0,1541,-1541,1541.0x
+Building,0,993,-993,993.0x
+Gantry,0,11,-11,11.0x
+Lamp post,3854,0,+3854,0.00x
+Obstacle,0,468,-468,468.0x
+Pole,0,3431,-3431,3431.0x
+Roadmark,0,1994,-1994,1994.0x
+Tree,0,4234,-4234,4234.0x
+Vegetation,0,2042,-2042,2042.0x

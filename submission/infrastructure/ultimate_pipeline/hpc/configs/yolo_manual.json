@@ -1,0 +1,9 @@
+{
+  "model": "yolov8n-seg.pt",
+  "data": "datasets/yolo_manual/data.yaml",
+  "imgsz": 640,
+  "epochs": 50,
+  "batch": 8,
+  "device": 0,
+  "project": "runs/manual_yolo"
+}

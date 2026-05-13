@@ -1,0 +1,101 @@
+{
+  "enabled": true,
+  "pairing_method": "filename_intersection",
+  "n_tiles": 12,
+  "skipped_tiles": [],
+  "latent_gap_per_tile": {
+    "tile_2_1.xodr": {
+      "l1_mean": 0.1334209442138672,
+      "l2": 1.8318452835083008,
+      "mse": 0.02621607296168804,
+      "cosine_distance": 1.6778286695480347,
+      "cosine_similarity": -0.6778286695480347
+    },
+    "tile_1_1.xodr": {
+      "l1_mean": 0.09583388268947601,
+      "l2": 1.3446694612503052,
+      "mse": 0.014126063324511051,
+      "cosine_distance": 0.9040680527687073,
+      "cosine_similarity": 0.09593196958303452
+    },
+    "tile_4_0.xodr": {
+      "l1_mean": 0.06274956464767456,
+      "l2": 0.9091583490371704,
+      "mse": 0.006457569543272257,
+      "cosine_distance": 0.4132843613624573,
+      "cosine_similarity": 0.5867156386375427
+    },
+    "tile_3_2.xodr": {
+      "l1_mean": 0.1299627423286438,
+      "l2": 1.779293179512024,
+      "mse": 0.024733468890190125,
+      "cosine_distance": 1.5829421281814575,
+      "cosine_similarity": -0.5829421281814575
+    },
+    "tile_1_0.xodr": {
+      "l1_mean": 0.12543964385986328,
+      "l2": 1.7441420555114746,
+      "mse": 0.023765871301293373,
+      "cosine_distance": 1.5210156440734863,
+      "cosine_similarity": -0.5210156440734863
+    },
+    "tile_1_2.xodr": {
+      "l1_mean": 0.10039108991622925,
+      "l2": 1.4138809442520142,
+      "mse": 0.015617651864886284,
+      "cosine_distance": 0.9995296597480774,
+      "cosine_similarity": 0.0004703318700194359
+    },
+    "tile_0_2.xodr": {
+      "l1_mean": 0.08334828168153763,
+      "l2": 1.207067608833313,
+      "mse": 0.011382907629013062,
+      "cosine_distance": 0.7285059690475464,
+      "cosine_similarity": 0.2714940011501312
+    },
+    "tile_0_0.xodr": {
+      "l1_mean": 0.12760508060455322,
+      "l2": 1.7395061254501343,
+      "mse": 0.023639701306819916,
+      "cosine_distance": 1.5129408836364746,
+      "cosine_similarity": -0.5129408836364746
+    },
+    "tile_2_2.xodr": {
+      "l1_mean": 0.1254892498254776,
+      "l2": 1.7405316829681396,
+      "mse": 0.023667581379413605,
+      "cosine_distance": 1.5147252082824707,
+      "cosine_similarity": -0.5147252678871155
+    },
+    "tile_0_1.xodr": {
+      "l1_mean": 0.11591189354658127,
+      "l2": 1.5654078722000122,
+      "mse": 0.01914454624056816,
+      "cosine_distance": 1.2252508401870728,
+      "cosine_similarity": -0.22525081038475037
+    },
+    "tile_2_0.xodr": {
+      "l1_mean": 0.1151362881064415,
+      "l2": 1.5775775909423828,
+      "mse": 0.019443368539214134,
+      "cosine_distance": 1.2443755865097046,
+      "cosine_similarity": -0.2443755865097046
+    },
+    "tile_3_0.xodr": {
+      "l1_mean": 0.050567105412483215,
+      "l2": 0.7382766008377075,
+      "mse": 0.004258221480995417,
+      "cosine_distance": 0.2725260853767395,
+      "cosine_similarity": 0.7274739146232605
+    }
+  },
+  "encoder": {
+    "checkpoint": "thesis_results/gnn_v1/ksweep_runs/k_72/map_encoder_epoch50.pt",
+    "checkpoint_md5": "ea16fc1696b9dc7b83c8ad457491f34b",
+    "device": "cpu"
+  },
+  "determinism": {
+    "seed": 42,
+    "torch_deterministic": true
+  }
+}

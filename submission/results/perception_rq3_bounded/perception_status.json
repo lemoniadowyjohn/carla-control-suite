@@ -1,0 +1,312 @@
+{
+  "active_camera_count": 6,
+  "active_camera_limit": 2,
+  "active_npc_count": 20,
+  "active_npc_count_source": "configured_cap",
+  "building_proxy_spawn": {},
+  "calib_exists": true,
+  "calib_override_applied": true,
+  "calib_override_applied_to": [
+    "rig_calibration"
+  ],
+  "calib_override_path": "ultimate_pipeline/sensors/calib_data.json",
+  "calib_path_resolved": "ultimate_pipeline/sensors/calib_data.json",
+  "calib_source": "settings:SENSOR_CALIB_JSON",
+  "camera_callbacks_observed": 1,
+  "camera_claim_scope": "front_rear_only",
+  "camera_exclusion_policy": "exclude_failing",
+  "camera_resolution": {
+    "max_height": 1080,
+    "max_width": 1920,
+    "unique": [
+      "1920x1080"
+    ]
+  },
+  "capture_context": {
+    "auto_town": "Town10HD",
+    "expected_map_name": "",
+    "manual_town": "Town10HD",
+    "xodr_in": ""
+  },
+  "capture_status_path": "",
+  "capture_world_settings": {
+    "fixed_delta_seconds": 0.1,
+    "synchronous_mode": true
+  },
+  "classified_frame_failure": true,
+  "corrupted_png_read": 0,
+  "enrichment_spawn": {
+    "enabled": false,
+    "spawned_count": 0
+  },
+  "environment": {},
+  "evidence_pack_ok": true,
+  "excluded_camera_names": [
+    "left_camera",
+    "front_left_camera",
+    "front_right_camera",
+    "right_camera"
+  ],
+  "failing_camera_names": [
+    "left_camera",
+    "front_left_camera",
+    "front_right_camera",
+    "right_camera"
+  ],
+  "failure_detail": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\ultimate_pipeline\\config\\settings.py:1656: RuntimeWarning: HPC_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\hpc'. Set UP_HPC_DIR to a valid dir.\n  _warn_missing_setting_path(\nCARLA loaded Town map 'Carla/Maps/Town10HD'. If custom OpenDRIVE was expected, set UP_THESIS_STRICT=1 to enforce.\nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 147 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 147 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 148 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 149 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 150 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 151 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 152 (sensor.camera.rgb) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 153 (sensor.lidar.ray_cast) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 154 (sensor.lidar.ray_cast) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 155 (sensor.camera.semantic_segmentation) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 156 (sensor.camera.semantic_segmentation) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 157 (sensor.camera.semantic_segmentation) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 158 (sensor.camera.semantic_segmentation) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 159 (sensor.camera.semantic_segmentation) \nWARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 160 (sensor.camera.semantic_segmentation)",
+  "failure_reason": null,
+  "first_measurement_ok": true,
+  "fixed_delta_seconds": 0.1,
+  "force_fresh_capture": true,
+  "forward_alignment": {
+    "cameras": [
+      {
+        "expected_forward_vehicle": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "expected_rule": "name:back=>-X",
+        "failure_mode": "none",
+        "forward_alignment_ok": true,
+        "forward_alignment_to_expected": 0.9522085966804615,
+        "forward_alignment_to_vehicle_x": 0.9522085966804615,
+        "sensor": "back_left_camera"
+      },
+      {
+        "expected_forward_vehicle": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "expected_rule": "name:left=>+Y",
+        "failure_mode": "vertical_forward",
+        "forward_alignment_ok": false,
+        "forward_alignment_to_expected": 0.0010768477366813296,
+        "forward_alignment_to_vehicle_x": 0.02967827993791796,
+        "sensor": "left_camera"
+      },
+      {
+        "expected_forward_vehicle": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "expected_rule": "name:front=>+X",
+        "failure_mode": "none",
+        "forward_alignment_ok": false,
+        "forward_alignment_to_expected": 0.934262691232834,
+        "forward_alignment_to_vehicle_x": -0.934262691232834,
+        "sensor": "front_left_camera"
+      },
+      {
+        "expected_forward_vehicle": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "expected_rule": "name:front=>+X",
+        "failure_mode": "none",
+        "forward_alignment_ok": false,
+        "forward_alignment_to_expected": 0.9457589095276384,
+        "forward_alignment_to_vehicle_x": -0.9457589095276384,
+        "sensor": "front_right_camera"
+      },
+      {
+        "expected_forward_vehicle": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "expected_rule": "name:right=>-Y",
+        "failure_mode": "vertical_forward",
+        "forward_alignment_ok": false,
+        "forward_alignment_to_expected": -0.007371412930606447,
+        "forward_alignment_to_vehicle_x": -0.003515100376538439,
+        "sensor": "right_camera"
+      },
+      {
+        "expected_forward_vehicle": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "expected_rule": "name:back=>-X",
+        "failure_mode": "none",
+        "forward_alignment_ok": true,
+        "forward_alignment_to_expected": 0.9370324185813046,
+        "forward_alignment_to_vehicle_x": 0.9370324185813046,
+        "sensor": "back_right_camera"
+      }
+    ],
+    "checked_cameras": 6,
+    "failing_camera_names": [
+      "left_camera",
+      "front_left_camera",
+      "front_right_camera",
+      "right_camera"
+    ],
+    "ok_all": false,
+    "passing_camera_names": [
+      "back_left_camera",
+      "back_right_camera"
+    ],
+    "rule": "name-conditioned expected forward vectors (front:+X, back:-X, left:-Y, right:+Y)",
+    "skipped_cameras": [],
+    "spawned_camera_names": [
+      "back_left_camera",
+      "left_camera",
+      "front_left_camera",
+      "front_right_camera",
+      "right_camera",
+      "back_right_camera"
+    ],
+    "spawned_cameras_count": 6
+  },
+  "forward_alignment_diagnostics_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\forward_alignment_diagnostics.json",
+  "frames_recorded": 8,
+  "frames_requested": 50,
+  "front_camera_rgb_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\front_left_camera\\00003723.png",
+  "front_camera_source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\rgb\\front_left_camera",
+  "front_only_strict": false,
+  "invalid_png_count": 0,
+  "listener_callbacks_registered": 14,
+  "low_memory_override_used": false,
+  "low_memory_profile_active": false,
+  "map_probe_ok": null,
+  "map_probe_requested": false,
+  "map_probe_result_path": "",
+  "map_probe_stderr_path": "",
+  "map_probe_stdout_path": "",
+  "missing_artifacts": [],
+  "npz_files": 0,
+  "ok": true,
+  "output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c",
+  "passing_camera_names": [
+    "back_left_camera",
+    "back_right_camera"
+  ],
+  "ply_example_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\lidar\\middle_lidar\\00003723.ply",
+  "ply_files": 6,
+  "png_files": 20,
+  "produced_artifacts": {
+    "camera_front_png": true,
+    "ego_spawn_png": true,
+    "lidar_bev_png": true,
+    "lidar_overlay_png": false,
+    "objects_placed_json": false,
+    "objects_placed_png": false,
+    "qa_spawn_report_json": true,
+    "visual_qa_contract_json": true
+  },
+  "qa_objects_attempted": 0,
+  "qa_objects_collision_free_rate": 0.0,
+  "qa_objects_spawn_success_rate": 0.0,
+  "qa_objects_spawned": 0,
+  "qa_spawn_report_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\qa_spawn_report.json",
+  "queue_depth_at_shutdown": 0,
+  "record_route_returncode": 124,
+  "record_route_stderr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\record_route_stderr.txt",
+  "record_route_stdout_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\record_route_stdout.txt",
+  "recorded_modalities": null,
+  "recorder_manifest_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\recorder_manifest.json",
+  "recorder_manifest_recording_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\recorder_manifest.json",
+  "recorder_manifest_root_copy_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recorder_manifest.json",
+  "recorder_manifest_source": "recorder",
+  "recorder_manifest_synthesized": false,
+  "recorder_manifest_written": true,
+  "required_artifacts": {
+    "require_evidence_pack": false,
+    "require_manifest_nonempty": false,
+    "require_objects": false,
+    "require_overlay": false
+  },
+  "required_modalities": {
+    "lidar": 2,
+    "rgb": 6
+  },
+  "result_class": "bounded_partial_result",
+  "result_class_reason": "capture succeeded only partially; frame, sensor-attach, or evidence-pack completeness is missing",
+  "result_scope": "single_arm_capture",
+  "rig_attach_attempted": true,
+  "rpc_reachable": true,
+  "scene_readiness": {
+    "enrichments_enabled": false,
+    "enrichments_file_found": true,
+    "failure_reason": "",
+    "missing_required_types": [],
+    "qa_bundle_written": false,
+    "required_types": [],
+    "safe_to_start_recording": true,
+    "spawned_count": 0,
+    "strict_gate_requested": false,
+    "thesis_rig_attach_ready": true,
+    "thesis_rig_attached": true,
+    "thesis_rig_attached_reason": "spawn_success_count",
+    "thesis_rig_requested": true,
+    "timestamp": "2026-04-06T21:32:04.924386+00:00"
+  },
+  "scene_readiness_report_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\scene_readiness_report.json",
+  "semseg_callbacks_observed": 1,
+  "semseg_files": 6,
+  "sensor_rig_report_path": "thesis_results/perception_v1_rq3_final/town10_listener_fix_v1c/sensor_rig_report.json",
+  "sensors_attached": "unknown",
+  "sensors_attached_reason": "frame_counts_not_available_in_rig_report",
+  "sensors_attached_rule": "all_reported_sensors_spawned_and_required_modalities_have_frames",
+  "sensors_attached_status": "unknown",
+  "settings_applied_before_tick": true,
+  "spawned_sensors": [
+    "back_left_camera",
+    "back_right_camera",
+    "front_left_camera",
+    "front_right_camera",
+    "left_camera",
+    "middle_lidar",
+    "middle_lidar_old",
+    "right_camera",
+    "semseg_back_left_camera",
+    "semseg_back_right_camera",
+    "semseg_front_left_camera",
+    "semseg_front_right_camera",
+    "semseg_left_camera",
+    "semseg_right_camera"
+  ],
+  "stream_optional": false,
+  "stream_reachable": true,
+  "stream_required_successes": 1,
+  "stream_timeout_s": 1.0,
+  "stream_wait_s": 5.0,
+  "strict_artifacts_mode": false,
+  "synchronous_mode": true,
+  "thesis_capture_gate": {
+    "enabled": true,
+    "env_enabled": true,
+    "env_present": true,
+    "env_raw": "1",
+    "gate_required": true,
+    "settings_enabled": false
+  },
+  "tick_advanced": true,
+  "tick_watchdog_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\recording\\tick_watchdog.json",
+  "ticks_observed": 5,
+  "timeout_diagnostics_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\timeout_diagnostics.json",
+  "timestamp": "2026-04-06T21:32:04.795183+00:00",
+  "visual_qa_contract": {
+    "correct_world_identity": true,
+    "ego_spawned": true,
+    "evidence_written": true,
+    "first_frame_received": true,
+    "ok": false,
+    "runtime_verified": true,
+    "status": "bounded_partial_result",
+    "thesis_sensor_attached": false,
+    "world_loaded": true
+  },
+  "warnings": [
+    "record_route_timeout",
+    "record_route_nonzero",
+    "partial_frames"
+  ],
+  "world_settings_restored": false,
+  "write_integrity_status_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\perception_v1_rq3_final\\town10_listener_fix_v1c\\write_integrity_status.json"
+}

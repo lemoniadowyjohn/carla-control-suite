@@ -1,0 +1,25 @@
+{
+  "analysis_scope_note": "reported structural metrics are 2D planView metrics and are unaffected by flat auto elevation",
+  "auto_elevation_stats": {
+    "elevation_segment_count": 6040,
+    "max_z": 0.0,
+    "min_z": 0.0,
+    "roads_with_elevation_profile": 6040,
+    "segments_all_zero_coefficients": 6040,
+    "z_range": 0.0
+  },
+  "auto_map_elevation": "flat (z=0 for all roads / all elevation coefficients zero)",
+  "dem_fallback_active": true,
+  "dem_file_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/cities/ingolstadt/dem/dem_ing.tif",
+  "dem_file_size_bytes": 69048,
+  "manual_map_has_real_elevation": true,
+  "notes": [
+    "DEM integration is implemented in the pipeline design, but not realized in the specific thesis analysis artifact.",
+    "No direct auto-vs-manual elevation-gap metric is reported."
+  ],
+  "schema_version": 2,
+  "source_xodr": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/cities/ingolstadt/ingolstadt_osm_auto.xodr",
+  "thesis_impact": "The pipeline has DEM capability, but the governed thesis-analysis auto artifact stayed flat; thesis wording must not claim DEM-applied elevation for this specific artifact.",
+  "unquantified_elevation_gap": "The manual Ingolstadt reference contains nonzero elevation profiles, but no directly comparable auto-vs-manual elevation-gap metric is available for the governed thesis artifact.",
+  "xodr_sha256": "138eb2409f5cc8120e111bb8196b9acb3d1393fbb5292235378f8e4ccf7d41a5"
+}

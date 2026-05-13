@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-03-16T09:45:05Z",
+  "source_artifact_paths": [
+    "artifacts/final_runs/scenario_b_audit/evidence/determinism/determinism_report.json"
+  ],
+  "linked_determinism_report": "artifacts/final_runs/scenario_b_audit/evidence/determinism/determinism_report.json",
+  "determinism_status": "pass",
+  "determinism_verdict": "NONDETERMINISTIC",
+  "runs_successful": 5,
+  "n_maps": 5,
+  "map_signatures_count": 5,
+  "map_signature_fields": [
+    "xodr_sha256",
+    "tile_metadata_sha256",
+    "tile_count",
+    "road_count",
+    "junction_count",
+    "source_osm_identity",
+    "source_osm_sha256",
+    "source_osm_origin"
+  ],
+  "unique_xodr_sha256_count": 5,
+  "xodr_sha256_values": [
+    "9285c5175d15244a18fba1bdcb56d91e9b2ee00ced23412b11e1a2483cc68e59",
+    "f5160e6cfb1e3dcdfe1598c2bc6a83cad5da242b5e4d15b9c0f0ae6dcab38eda",
+    "9efc7cf0c2fd77f56964ee1ee13be90b1975ed94425bb0c692787477d0e6cb8e",
+    "89df3b474bc0667b8f8f07e4797a19c1a57ed0dd7545655bf45c56172c356c00",
+    "fe1dbb63f4606ca271dad5df001c7a0c46e9161a60380d611bfef87ea36d33b7"
+  ],
+  "pairwise_xodr_hash_distance": {
+    "method": "normalized_hamming_over_hex_sha256",
+    "n_pairs": 10,
+    "mean": 0.9453125,
+    "std": 0.029022149407822984,
+    "min": 0.90625,
+    "max": 1.0
+  },
+  "coefficient_of_variation": {
+    "tile_count": 0.0,
+    "road_count": 0.0,
+    "junction_count": 0.0
+  },
+  "hash_source_field": "map_signatures[].xodr_sha256",
+  "interpretation": {
+    "natural_variability_signal": "present",
+    "note": "Derived directly from determinism_report.json map_signatures and hash values; no synthetic placeholders."
+  },
+  "claim_boundary": "RQ4 variability artifact only; does not alter RQ3/RQ5 claim state."
+}

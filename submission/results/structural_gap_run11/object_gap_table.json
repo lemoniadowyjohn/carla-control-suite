@@ -1,0 +1,19 @@
+{
+  "source": "thesis_results/structural_gap_v1/run_03/gap_whole_semantics.json",
+  "source_run_id": "run_03",
+  "source_auto_xodr": "thesis_results/structural_gap_v1/run_03/auto_aligned_hardened.xodr",
+  "source_manual_xodr": "cities/ingolstadt/manual_grid0828.xodr",
+  "auto_counts": {
+    "barriers": 0,
+    "buildings": 0,
+    "poles": 0,
+    "trees": 0
+  },
+  "manual_counts": {
+    "barriers": 1538,
+    "buildings": 992,
+    "poles": 3427,
+    "trees": 4232
+  },
+  "interpretation": "The authoritative governed run_03 aligned pair shows a severe semantic-object absence in the generated auto artifact: 0 barriers, 0 buildings, 0 poles, and 0 trees versus hundreds to thousands in the manual Ingolstadt reference."
+}

@@ -1,0 +1,56 @@
+{
+  "artifact_resolution": {
+    "governed_surrogate_auto_xodr": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/thesis_results/structural_gap_v1/run_03/auto_aligned_hardened.xodr",
+    "governed_surrogate_run_id": "run_03",
+    "manual_xodr": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/cities/ingolstadt/manual_grid0828.xodr",
+    "requested_run11_aligned_auto_xodr": "thesis_results/structural_gap_v1/run_11/auto_aligned_rigid.xodr",
+    "requested_run11_aligned_auto_xodr_exists": false,
+    "status": "governed_run11_alignment_missing_used_governed_surrogate_alignment"
+  },
+  "computed_metrics": {
+    "auto_road_length_m": 259987.393706,
+    "auto_xodr": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/thesis_results/structural_gap_v1/run_03/auto_aligned_hardened.xodr",
+    "computed_on_governed_surrogate_alignment": true,
+    "computed_on_run11_alignment": false,
+    "curvature_kl_divergence": 2493.5289674394185,
+    "governed_surrogate_run_id": "run_03",
+    "intersection_gap_normalized": 0.1401,
+    "manual_road_length_m": 52946.01879,
+    "manual_xodr": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/cities/ingolstadt/manual_grid0828.xodr",
+    "metric_source_modules": [
+      "ultimate_pipeline.domain_gap.curvature_gap.CurvatureGap.compute",
+      "ultimate_pipeline.domain_gap.semantic_gap.SemanticGap.compute",
+      "ultimate_pipeline.domain_gap.intersection_gap.IntersectionGap.compute",
+      "ultimate_pipeline.run_full_domain_gap._normalized_l1_over2"
+    ],
+    "notes": [
+      "Metrics were recomputed offline from a governed surrogate aligned pair because a governed run_11 aligned XODR pair is not present.",
+      "Values should be interpreted as 2D planView structural metrics only."
+    ],
+    "run11_alignment_artifact_status": "missing_in_governed_worktree",
+    "semantic_gap_normalized": 0.16616712710521286
+  },
+  "coverage_context": {
+    "auto_road_length_m": 259987.393706,
+    "bbox_iou": 0.04622623138426989,
+    "bbox_iou_method": "planView_geometry_envelope_iou_from_geometry_start_and_end_points",
+    "coverage_ratio_auto_to_manual": 4.910423855232421,
+    "interpretation": "Whole-network structural metrics must be interpreted under partial overlap and a large coverage mismatch; they do not isolate matched-area local registration quality.",
+    "major_coverage_mismatch": true,
+    "manual_road_length_m": 52946.01879,
+    "partial_overlap": true,
+    "road_length_delta_m": 207041.374916
+  },
+  "fit_metric_provenance": {
+    "diagnostic_field": "alignment.diagnostics.icp_rmse_history",
+    "metric_not_equivalent_to_icp_objective": true,
+    "note": "This pass preserves only the prior conservative run_11 fit-metric boundary from the existing governed addendum. It is not newly reverified from governed run_11 source artifacts.",
+    "reported_fit_metric_worsened_monotonically": true,
+    "status": "carried_forward_from_prior_patch_output_not_reverified_in_governed_worktree",
+    "true_divergence_supported": false,
+    "verified_safe_conclusion": "reported_fit_metric_worsened_monotonically"
+  },
+  "governed_reconciliation_date_utc": "2026-03-25",
+  "run_id": "run_11",
+  "schema_version": 2
+}

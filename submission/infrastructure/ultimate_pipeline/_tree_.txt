@@ -1,0 +1,1983 @@
+﻿Folder PATH listing
+Volume serial number is AAEF-C5D5
+C:\USERS\ADMIN\PYCHARMPROJECTS\GPT4\PYTHONPROJECT3\CARLA_-MAIN\ULTIMATE_PIPELINE
+|   analyze_integration.ps1
+|   ARCHITECTURE_STATUS.md
+|   cli.py
+|   DEPRECATION_POLICY.md
+|   domain_gap.7z
+|   domain_gap_cli.py
+|   domain_gap_gnn.7z
+|   entrypoints.py
+|   env_info.txt
+|   import_map.csv
+|   import_map.txt
+|   list_ultimate_pipeline.ps1
+|   main_pipeline.py
+|   main_pipeline.py.bak
+|   main_pipeline_backup___.txt
+|   PROJECT_TREE.txt
+|   python_modules.txt
+|   python_structure.txt
+|   README.md
+|   requirements.txt
+|   run_full_domain_gap.py
+|   run_pipeline.py
+|   run_quality_gates.py
+|   settings_patched___.py
+|   sys_explanation.txt
+|   ultimate_pipeline_all_py.txt
+|   ultimate_pipeline_existing_modules.txt
+|   ultimate_pipeline_imported_modules.txt
+|   ultimate_pipeline_imports.txt
+|   ultimate_pipeline_NOT_integrated.txt
+|   ultimate_pipeline_tree.txt
+|   _all_python_files.txt
+|   _analysis_advanced_signals.csv
+|   _analysis_defs.csv
+|   _analysis_files_overview.csv
+|   _analysis_function_candidates.csv
+|   _analysis_validation_patterns.csv
+|   _deps_raw.csv
+|   _dir_tree.txt
+|   _domain_gap_file_inventory.csv
+|   _domain_gap_io.csv
+|   _domain_gap_loc.csv
+|   _domain_gap_loops.csv
+|   _domain_gap_outputs.csv
+|   _domain_gap_public_api.csv
+|   _domain_gap_unused_candidates.csv
+|   _tree.txt
+|   __init__.py
+|   
++---analysis
+|       correlator.py
+|       cross_city.py
+|       domain_gap_statistics.py
+|       __init__.py
+|       
++---augmentation
+|       realism_augmentor.py
+|       realism_augmentor.py.bak
+|       __init__.py
+|       
++---carla_tools
+|   |   actor_stream_manager.py
+|   |   carla_final_test.py
+|   |   carla_final_test.py.bak
+|   |   carla_recovery.py
+|   |   carla_sim_consolidated.py
+|   |   carla_sim_consolidated.py.bak
+|   |   carla_utils_DEPRECATED_DO_NOT_IMPORT.py
+|   |   evaluate_generated_map.py
+|   |   fixed_traffic_manager.py
+|   |   local_perception_runner.py
+|   |   mesh_streamer.py
+|   |   perception_runner_hpc.py
+|   |   perception_runner_local.py
+|   |   qa_tile_spawn_probe.py
+|   |   qa_tile_spawn_probe.py.bak
+|   |   README.txt
+|   |   road_defect_detector.py
+|   |   screenshot_generator.py
+|   |   spawn_recovery.py
+|   |   spawn_validator.py
+|   |   tile_qa_suite.py
+|   |   tile_streamer.py
+|   |   tile_world_runner.py
+|   |   weather_controller.py
+|   |   __init__.py
+|   |   
+|   +---vehicle_manager
+|   |       cache.py
+|   |       core.py
+|   |       spawner.py
+|   |       validator.py
+|   |       vehicle_manager.py
+|   |       __init__.py
+|   |       
+|   \---__pycache__
+|           actor_stream_manager.cpython-312.pyc
+|           carla_final_test.cpython-312.pyc
+|           carla_recovery.cpython-312.pyc
+|           carla_sim_consolidated.cpython-312.pyc
+|           fixed_traffic_manager.cpython-312.pyc
+|           local_perception_runner.cpython-312.pyc
+|           mesh_streamer.cpython-312.pyc
+|           qa_tile_spawn_probe.cpython-312.pyc
+|           road_defect_detector.cpython-312.pyc
+|           screenshot_generator.cpython-312.pyc
+|           spawn_recovery.cpython-312.pyc
+|           spawn_validator.cpython-312.pyc
+|           tile_streamer.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---carla_wrappers
+|       __init__.py
+|       
++---config
+|   |   coordinates.json
+|   |   experiment.yaml
+|   |   paths.py
+|   |   runtime.py
+|   |   settings.py
+|   |   settings_backup__.py
+|   |   __init__.py
+|   |   
+|   +---config_presets
+|   |       __init__.py
+|   |       
+|   \---__pycache__
+|           settings.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---core
+|   |   carla_utils.py
+|   |   crash_classifier.py
+|   |   determinism.py
+|   |   file_utils.py
+|   |   odr_io.py
+|   |   repair_diff.py
+|   |   tile_failure_monitor.py
+|   |   validation_report.py
+|   |   xodr_lightener.py
+|   |   xodr_sanitizer.py
+|   |   xodr_statistics.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           carla_utils.cpython-312.pyc
+|           crash_classifier.cpython-312.pyc
+|           file_utils.cpython-312.pyc
+|           odr_io.cpython-312.pyc
+|           repair_diff.cpython-312.pyc
+|           validation_report.cpython-312.pyc
+|           xodr_lightener.cpython-312.pyc
+|           xodr_sanitizer.cpython-312.pyc
+|           xodr_statistics.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---dashboard
+|       quality_gates_app.py
+|       __init__.py
+|       
++---data
+|       curator.py
+|       __init__.py
+|       
++---database
+|   |   db_dashboard.py
+|   |   db_export.py
+|   |   db_manager.py
+|   |   experiment_tracker.py
+|   |   run_archiver.py
+|   |   sql_queries.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           db_manager.cpython-312.pyc
+|           run_archiver.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---debug
+|   |   check_lanes_and_stats.py
+|   |   single_road_extractor.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           single_road_extractor.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---dem
+|   |   dem_auto_downloader.py
+|   |   dem_diagnostics.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           dem_auto_downloader.cpython-312.pyc
+|           dem_diagnostics.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---dev_tools
+|   |   analyze_imports.py
+|   |   fix_imports.py
+|   |   README.md.py
+|   |   scan_imports.py
+|   |   test_imports.py
+|   |   __init__.py
+|   |   
+|   \---tools
+|           compare_two_xodr.py
+|           debug_crop.py
+|           extract_manual_tiles.py
+|           find_broken_roads.py
+|           json_to_csv.py
+|           map_import_tester.py
+|           project_audit.ps1
+|           run_continuity_scan.py
+|           run_debug_pipeline.py
+|           run_domain_gap_analysis.py
+|           run_lane_debug.py
+|           visual_check_tile.py
+|           __init__.py
+|           
++---diagnostics
+|   |   autopilot_test.py
+|   |   carla_quick_load.py
+|   |   check_carla_session.py
+|   |   continuity_diff_anim.py
+|   |   continuity_heatmap.py
+|   |   continuity_metrics.py
+|   |   continuity_summary.py
+|   |   dataset_quick_audit.py
+|   |   elevation_summary.py
+|   |   lane_debugger.py
+|   |   mesh_checker.py
+|   |   pipeline_diagnostics.py
+|   |   system_integrity_checker.py
+|   |   tile_forensics.py
+|   |   xodr_cropper.py
+|   |   xodr_cropper_gps.py
+|   |   __init__.py
+|   |   
+|   +---legacy
+|   |       map_sanity_checker.py
+|   |       validate_results_legacy.py
+|   |       __init__.py
+|   |       
+|   \---__pycache__
+|           autopilot_test.cpython-312.pyc
+|           carla_quick_load.cpython-312.pyc
+|           mesh_checker.cpython-312.pyc
+|           pipeline_diagnostics.cpython-312.pyc
+|           xodr_cropper_gps.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---domain_gap
+|   |   curvature_gap.py
+|   |   domain_gap_aggregator.py
+|   |   domain_gap_analyzer.py
+|   |   domain_gap_prep.py
+|   |   domain_gap_prep.py.bak
+|   |   domain_gap_stats.py
+|   |   experiment_logger.py
+|   |   fast_eval.py
+|   |   feature_gap.py
+|   |   gap_analyzer.py
+|   |   geometry_gap.py
+|   |   geo_alignment.py
+|   |   intersection_classifier.py
+|   |   intersection_gap.py
+|   |   manual_vs_auto_comparator.py
+|   |   map_stats_osm.py
+|   |   map_stats_xodr.py
+|   |   object_density_gap.py
+|   |   osm_loader.py
+|   |   perception_gap.py
+|   |   perception_plots.py
+|   |   per_tile_gap.py
+|   |   qms.py
+|   |   report_aggregator.py
+|   |   road_classification_gap.py
+|   |   run_alignment_and_matching.py
+|   |   run_domain_gap_sweep.py
+|   |   run_gap_ablation_experiment.py
+|   |   run_map_gap_full.py
+|   |   semantic_gap.py
+|   |   structural_gap.py
+|   |   tile_gap_evaluator.py
+|   |   tile_gap_heatmap.py
+|   |   tile_matcher.py
+|   |   tile_perception_gap.py
+|   |   validator.py
+|   |   __init__.py
+|   |   
+|   +---adaptation
+|   |       adaptation_runner.py
+|   |       __init__.py
+|   |       
+|   \---__pycache__
+|           curvature_gap.cpython-312.pyc
+|           domain_gap_aggregator.cpython-312.pyc
+|           geometry_gap.cpython-312.pyc
+|           geo_alignment.cpython-312.pyc
+|           intersection_gap.cpython-312.pyc
+|           perception_gap.cpython-312.pyc
+|           semantic_gap.cpython-312.pyc
+|           tile_matcher.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---domain_gap_gnn
+|   |   graph_builder.py
+|   |   infer_tile_gaps.py
+|   |   latent_gap_metrics.py
+|   |   latent_gap_runner.py
+|   |   map_encoder.py
+|   |   map_tile_dataset.py
+|   |   train_map_encoder.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           __init__.cpython-312.pyc
+|           
++---enrichment
+|   |   building_extruder.py
+|   |   elevation_importer.py
+|   |   lane_generator.py
+|   |   object_injector.py
+|   |   osm_polygon_loader.py
+|   |   realism.py
+|   |   sidewalk_builder.py
+|   |   street_furniture_rules.py
+|   |   traffic_light_infer.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           building_extruder.cpython-312.pyc
+|           elevation_importer.cpython-312.pyc
+|           lane_generator.cpython-312.pyc
+|           object_injector.cpython-312.pyc
+|           osm_polygon_loader.cpython-312.pyc
+|           realism.cpython-312.pyc
+|           sidewalk_builder.cpython-312.pyc
+|           street_furniture_rules.cpython-312.pyc
+|           traffic_light_infer.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---experiments
+|   |   evaluator.py
+|   |   experiment_schema.py
+|   |   rl_fuzzer.py
+|   |   runner.py
+|   |   trainer.py
+|   |   __init__.py
+|   |   
+|   \---configs
+|           __init__.py
+|           
++---geometry
+|   |   crosssection_repair.py
+|   |   elevation_smoother.py
+|   |   geometry_math.py
+|   |   geometry_validator.py
+|   |   laneoffset_normalizer.py
+|   |   laneoffset_smoother.py
+|   |   lanesection_boundary_fixer.py
+|   |   lane_seam_checker.py
+|   |   lane_width_clamp.py
+|   |   mesh_continuity_repairer.py
+|   |   planview_smoother.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           crosssection_repair.cpython-312.pyc
+|           elevation_smoother.cpython-312.pyc
+|           geometry_validator.cpython-312.pyc
+|           laneoffset_normalizer.cpython-312.pyc
+|           laneoffset_smoother.cpython-312.pyc
+|           lanesection_boundary_fixer.cpython-312.pyc
+|           lane_width_clamp.cpython-312.pyc
+|           mesh_continuity_repairer.cpython-312.pyc
+|           planview_smoother.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---lanes
+|   |   lanelink_builder.py
+|   |   lane_repair.py
+|   |   markings_builder.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           lanelink_builder.cpython-312.pyc
+|           lane_repair.cpython-312.pyc
+|           markings_builder.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---llm
+|   |   llm_check.py
+|   |   llm_client.py
+|   |   llm_domain_gap_reviewer.py
+|   |   llm_quality_gate.py
+|   |   llm_safety_assistant.py
+|   |   llm_xodr_checker.py
+|   |   ollama_bootstrap.py
+|   |   xodr_llm_checker.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           llm_client.cpython-312.pyc
+|           llm_quality_gate.cpython-312.pyc
+|           ollama_bootstrap.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---logs
+|   |   __init__.py
+|   |   
+|   \---carla_crashes
++---ml
+|   |   lane_gnn_refiner.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           lane_gnn_refiner.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---modules
+|   |   __init__.py
+|   |   
+|   +---environments
+|   |       __init__.py
+|   |       
+|   +---perception
+|   |       __init__.py
+|   |       
+|   +---rl_agents
+|   |       __init__.py
+|   |       
+|   \---sensor_fusion
+|           __init__.py
+|           
++---osm
+|   |   osm_downloader.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           osm_downloader.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---perception
+|       DATASET_FORMAT.md
+|       dataset_generator.py
+|       dataset_generator.py.bak
+|       perception_api.py
+|       perception_runner_local_aug.py
+|       perception_runner_local_aug.py.bak
+|       record_route.py
+|       run_training.py
+|       __init__.py
+|       
++---pipeline_output
+|       __init__.py
+|       
++---PROJECT_AUDIT
+|       FOLDER_STATS.csv
+|       IMPORTS_UNIQUE.txt
+|       PY_FILES.csv
+|       README.md
+|       TREE.txt
+|       
++---quality
+|   |   carla_pruner.py
+|   |   check_elevation_smoothness.py
+|   |   check_lane_connectivity.py
+|   |   check_lane_section_successors.py
+|   |   check_physics_feasibility.py
+|   |   check_randomness_entropy.py
+|   |   check_semantic_overlap.py
+|   |   check_xml_integrity.py
+|   |   check_xodr_schema.py
+|   |   collision_mesh.py
+|   |   entropy.py
+|   |   quality_gates.py
+|   |   quality_gate_manager.py
+|   |   road_classification_gap.py
+|   |   semantic_overlap.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           carla_pruner.cpython-312.pyc
+|           check_elevation_smoothness.cpython-312.pyc
+|           check_lane_connectivity.cpython-312.pyc
+|           check_lane_section_successors.cpython-312.pyc
+|           check_physics_feasibility.cpython-312.pyc
+|           check_randomness_entropy.cpython-312.pyc
+|           check_semantic_overlap.cpython-312.pyc
+|           check_xml_integrity.cpython-312.pyc
+|           check_xodr_schema.cpython-312.pyc
+|           collision_mesh.cpython-312.pyc
+|           quality_gates.cpython-312.pyc
+|           quality_gate_manager.cpython-312.pyc
+|           road_classification_gap.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---reports
+|       report_generator.py
+|       __init__.py
+|       
++---results
+|       __init__.py
+|       
++---scenarios
+|   |   auto_scenario_generator.py
+|   |   sweeps.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           auto_scenario_generator.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---scripts
+|       run_ablation.sh
+|       __init__.py
+|       
++---sensors
+|   |   calib_data.json
+|   |   dominik_sensor_setup.py
+|   |   recorder.py
+|   |   sensor_visualizer.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           dominik_sensor_setup.cpython-312.pyc
+|           recorder.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---tests
+|   |   test_augmentation_realism.py
+|   |   test_db_manager.py
+|   |   test_pipeline_health.py
+|   |   test_tile_extractor.py
+|   |   __init__.py
+|   |   
+|   \---behavioral
+|           __init__.py
+|           
++---thesis
+|       generate_figures.py
+|       methodology.md
+|       __init__.py
+|       
++---tiles
+|       tile_metadata.json
+|       __init__.py
+|       
++---tile_validation
+|   |   carla_tile_tester.py
+|   |   geometry_seam_checker.py
+|   |   lane_seam_checker.py
+|   |   qa_tile_spawn_probe.py
+|   |   qa_tile_stress_tester.py
+|   |   seam_repair.py
+|   |   tile_stress_tester.py
+|   |   tile_visibility.py
+|   |   __init__.py
+|   |   
+|   +---visibility
+|   |       tile_visibility.py
+|   |       __init__.py
+|   |       
+|   \---__pycache__
+|           lane_seam_checker.cpython-312.pyc
+|           tile_stress_tester.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---tiling
+|   |   seam_artifacts.py
+|   |   stream_tiles.py
+|   |   tile_adjacency.py
+|   |   tile_auto_forensics.py
+|   |   tile_extractor.py
+|   |   tile_matcher.py
+|   |   tile_metadata.py
+|   |   tile_validator.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           tile_adjacency.cpython-312.pyc
+|           tile_auto_forensics.cpython-312.pyc
+|           tile_extractor.cpython-312.pyc
+|           tile_metadata.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---tools
+|   |   list_entrypoints.py
+|   |   load_final_into_carla.py
+|   |   mcp_audit_plus.py
+|   |   PROJECT_REPORT.md
+|   |   project_tools.py
+|   |   PROJECT_TREE.txt
+|   |   select_and_view_tile.py
+|   |   __init__.py
+|   |   
+|   \---_mcp_audit
+|           _mcp_audit_report.json
+|           _mcp_dependency_graph.dot
+|           _mcp_red_flags.txt
+|           
++---topology
+|   |   road_removal.py
+|   |   roundabout_rebuilder.py
+|   |   roundabout_reconstructor.py
+|   |   semantic_verifier.py
+|   |   structure_prune_legacy.py
+|   |   structure_scanner.py
+|   |   sumo_repair.py
+|   |   topology_linter.py
+|   |   topology_repair.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           roundabout_rebuilder.cpython-312.pyc
+|           roundabout_reconstructor.cpython-312.pyc
+|           semantic_verifier.cpython-312.pyc
+|           structure_prune_legacy.cpython-312.pyc
+|           structure_scanner.cpython-312.pyc
+|           sumo_repair.cpython-312.pyc
+|           topology_linter.cpython-312.pyc
+|           topology_repair.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---ultimate_pipeline_out
+|   |   __init__.py
+|   |   
+|   +---20251221_062847
+|   |   |   01_sanitized_20251221_062847.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251221_062847.xodr
+|   |   |   02_sumo_fixed_20251221_062847_QA_CROP.xodr
+|   |   |   03_topology_20251221_062847.xodr
+|   |   |   04_elevation_20251221_062847.xodr
+|   |   |   04_elevation_20251221_062847_QA_CROP.xodr
+|   |   |   05_planview_20251221_062847.xodr
+|   |   |   06_continuity_20251221_062847.xodr
+|   |   |   06_geometry_frozen_20251221_062847.xodr
+|   |   |   07_lanes_20251221_062847.xodr
+|   |   |   08_final_20251221_062847.xodr
+|   |   |   08_final_20251221_062847_laneSectionFixed.xodr
+|   |   |   08_final_20251221_062847_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---domain_gap
+|   |   |       aggregated_gap.json
+|   |   |       alignment.json
+|   |   |       auto_aligned.xodr
+|   |   |       domain_gap_summary.json
+|   |   |       full_report.json
+|   |   |       gap_whole_curvature.json
+|   |   |       gap_whole_geometry.json
+|   |   |       gap_whole_intersection.json
+|   |   |       gap_whole_road_classification.json
+|   |   |       gap_whole_semantics.json
+|   |   |       reproducibility_hash.json
+|   |   |       run_metadata.json
+|   |   |       settings_snapshot.json
+|   |   |       tile_curv_gap.json
+|   |   |       tile_gap_vector.json
+|   |   |       tile_geom_gap.json
+|   |   |       tile_matches.json
+|   |   |       
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251221_064315
+|   |   |       back_left_camera_3320.png
+|   |   |       back_left_camera_3321.png
+|   |   |       back_left_camera_3357.png
+|   |   |       back_left_camera_3369.png
+|   |   |       back_left_camera_3407.png
+|   |   |       back_right_camera_3325.png
+|   |   |       back_right_camera_3326.png
+|   |   |       back_right_camera_3364.png
+|   |   |       back_right_camera_3394.png
+|   |   |       defects.json
+|   |   |       front_left_camera_3322.png
+|   |   |       front_left_camera_3323.png
+|   |   |       front_left_camera_3360.png
+|   |   |       front_left_camera_3385.png
+|   |   |       front_left_camera_3418.png
+|   |   |       front_right_camera_3323.png
+|   |   |       front_right_camera_3324.png
+|   |   |       front_right_camera_3361.png
+|   |   |       front_right_camera_3381.png
+|   |   |       front_right_camera_3419.png
+|   |   |       left_camera_3321.png
+|   |   |       left_camera_3322.png
+|   |   |       left_camera_3358.png
+|   |   |       left_camera_3372.png
+|   |   |       left_camera_3408.png
+|   |   |       right_camera_3324.png
+|   |   |       right_camera_3325.png
+|   |   |       right_camera_3363.png
+|   |   |       right_camera_3386.png
+|   |   |       right_camera_3423.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251221_062847_random_spawn_1.png
+|   |   |       20251221_062847_random_spawn_2.png
+|   |   |       20251221_062847_random_spawn_3.png
+|   |   |       20251221_062847_random_spawn_4.png
+|   |   |       20251221_062847_random_spawn_5.png
+|   |   |       map_topdown_20251221_062847.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   +---20251221_181419
+|   |   |   01_sanitized_20251221_181419.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251221_181419.xodr
+|   |   |   02_sumo_fixed_20251221_181419_QA_CROP.xodr
+|   |   |   03_topology_20251221_181419.xodr
+|   |   |   04_elevation_20251221_181419.xodr
+|   |   |   04_elevation_20251221_181419_QA_CROP.xodr
+|   |   |   05_planview_20251221_181419.xodr
+|   |   |   06_continuity_20251221_181419.xodr
+|   |   |   06_geometry_frozen_20251221_181419.xodr
+|   |   |   07_lanes_20251221_181419.xodr
+|   |   |   08_final_20251221_181419.xodr
+|   |   |   08_final_20251221_181419_laneSectionFixed.xodr
+|   |   |   08_final_20251221_181419_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---domain_gap
+|   |   |       aggregated_gap.json
+|   |   |       alignment.json
+|   |   |       auto_aligned.xodr
+|   |   |       domain_gap_summary.json
+|   |   |       full_report.json
+|   |   |       gap_whole_curvature.json
+|   |   |       gap_whole_geometry.json
+|   |   |       gap_whole_intersection.json
+|   |   |       gap_whole_road_classification.json
+|   |   |       gap_whole_semantics.json
+|   |   |       reproducibility_hash.json
+|   |   |       run_metadata.json
+|   |   |       settings_snapshot.json
+|   |   |       tile_curv_gap.json
+|   |   |       tile_gap_vector.json
+|   |   |       tile_geom_gap.json
+|   |   |       tile_matches.json
+|   |   |       
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251221_182312
+|   |   |       back_left_camera_5657.png
+|   |   |       back_left_camera_5658.png
+|   |   |       back_left_camera_5684.png
+|   |   |       back_left_camera_5711.png
+|   |   |       back_left_camera_5737.png
+|   |   |       back_left_camera_5761.png
+|   |   |       back_right_camera_5662.png
+|   |   |       back_right_camera_5685.png
+|   |   |       defects.json
+|   |   |       front_left_camera_5659.png
+|   |   |       front_left_camera_5660.png
+|   |   |       front_left_camera_5686.png
+|   |   |       front_left_camera_5712.png
+|   |   |       front_left_camera_5739.png
+|   |   |       front_left_camera_5761.png
+|   |   |       front_right_camera_5660.png
+|   |   |       front_right_camera_5661.png
+|   |   |       front_right_camera_5685.png
+|   |   |       front_right_camera_5761.png
+|   |   |       left_camera_5658.png
+|   |   |       left_camera_5659.png
+|   |   |       left_camera_5681.png
+|   |   |       left_camera_5701.png
+|   |   |       left_camera_5723.png
+|   |   |       left_camera_5745.png
+|   |   |       left_camera_5764.png
+|   |   |       right_camera_5661.png
+|   |   |       right_camera_5662.png
+|   |   |       right_camera_5682.png
+|   |   |       right_camera_5705.png
+|   |   |       right_camera_5727.png
+|   |   |       right_camera_5749.png
+|   |   |       right_camera_5768.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251221_181419_random_spawn_1.png
+|   |   |       20251221_181419_random_spawn_2.png
+|   |   |       20251221_181419_random_spawn_3.png
+|   |   |       20251221_181419_random_spawn_4.png
+|   |   |       20251221_181419_random_spawn_5.png
+|   |   |       map_topdown_20251221_181419.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   +---20251221_235308
+|   |   |   01_sanitized_20251221_235308.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251221_235308.xodr
+|   |   |   02_sumo_fixed_20251221_235308_QA_CROP.xodr
+|   |   |   03_topology_20251221_235308.xodr
+|   |   |   04_elevation_20251221_235308.xodr
+|   |   |   04_elevation_20251221_235308_QA_CROP.xodr
+|   |   |   05_planview_20251221_235308.xodr
+|   |   |   06_continuity_20251221_235308.xodr
+|   |   |   06_geometry_frozen_20251221_235308.xodr
+|   |   |   07_lanes_20251221_235308.xodr
+|   |   |   08_final_20251221_235308.xodr
+|   |   |   08_final_20251221_235308_laneSectionFixed.xodr
+|   |   |   08_final_20251221_235308_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251222_000535
+|   |   |       back_left_camera_4298.png
+|   |   |       back_left_camera_4300.png
+|   |   |       back_left_camera_4327.png
+|   |   |       back_left_camera_4353.png
+|   |   |       back_left_camera_4380.png
+|   |   |       back_left_camera_4397.png
+|   |   |       back_left_camera_4411.png
+|   |   |       back_left_camera_4418.png
+|   |   |       back_right_camera_4303.png
+|   |   |       back_right_camera_4304.png
+|   |   |       back_right_camera_4329.png
+|   |   |       back_right_camera_4356.png
+|   |   |       back_right_camera_4382.png
+|   |   |       back_right_camera_4396.png
+|   |   |       back_right_camera_4410.png
+|   |   |       back_right_camera_4418.png
+|   |   |       defects.json
+|   |   |       front_left_camera_4300.png
+|   |   |       front_left_camera_4301.png
+|   |   |       front_left_camera_4328.png
+|   |   |       front_left_camera_4354.png
+|   |   |       front_left_camera_4381.png
+|   |   |       front_left_camera_4397.png
+|   |   |       front_left_camera_4408.png
+|   |   |       front_left_camera_4418.png
+|   |   |       front_right_camera_4301.png
+|   |   |       front_right_camera_4302.png
+|   |   |       front_right_camera_4328.png
+|   |   |       front_right_camera_4355.png
+|   |   |       front_right_camera_4381.png
+|   |   |       front_right_camera_4397.png
+|   |   |       front_right_camera_4408.png
+|   |   |       front_right_camera_4419.png
+|   |   |       left_camera_4299.png
+|   |   |       left_camera_4300.png
+|   |   |       left_camera_4323.png
+|   |   |       left_camera_4345.png
+|   |   |       left_camera_4367.png
+|   |   |       left_camera_4390.png
+|   |   |       left_camera_4397.png
+|   |   |       left_camera_4406.png
+|   |   |       left_camera_4415.png
+|   |   |       right_camera_4302.png
+|   |   |       right_camera_4303.png
+|   |   |       right_camera_4325.png
+|   |   |       right_camera_4347.png
+|   |   |       right_camera_4369.png
+|   |   |       right_camera_4391.png
+|   |   |       right_camera_4396.png
+|   |   |       right_camera_4406.png
+|   |   |       right_camera_4418.png
+|   |   |       right_camera_4423.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251221_235308_random_spawn_1.png
+|   |   |       20251221_235308_random_spawn_2.png
+|   |   |       20251221_235308_random_spawn_3.png
+|   |   |       20251221_235308_random_spawn_4.png
+|   |   |       20251221_235308_random_spawn_5.png
+|   |   |       map_topdown_20251221_235308.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   +---20251222_000811
+|   |   |   01_sanitized_20251222_000811.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251222_000811.xodr
+|   |   |   02_sumo_fixed_20251222_000811_QA_CROP.xodr
+|   |   |   03_topology_20251222_000811.xodr
+|   |   |   04_elevation_20251222_000811.xodr
+|   |   |   04_elevation_20251222_000811_QA_CROP.xodr
+|   |   |   05_planview_20251222_000811.xodr
+|   |   |   06_continuity_20251222_000811.xodr
+|   |   |   06_geometry_frozen_20251222_000811.xodr
+|   |   |   07_lanes_20251222_000811.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   geometry_validator_debug.json
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   planview_continuity_diff.gif
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   
+|   |   \---logs
+|   |           topology_lint.json
+|   |           
+|   +---20251222_001741
+|   |   |   01_sanitized_20251222_001741.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251222_001741.xodr
+|   |   |   02_sumo_fixed_20251222_001741_QA_CROP.xodr
+|   |   |   03_topology_20251222_001741.xodr
+|   |   |   04_elevation_20251222_001741.xodr
+|   |   |   04_elevation_20251222_001741_QA_CROP.xodr
+|   |   |   05_planview_20251222_001741.xodr
+|   |   |   06_continuity_20251222_001741.xodr
+|   |   |   06_geometry_frozen_20251222_001741.xodr
+|   |   |   07_lanes_20251222_001741.xodr
+|   |   |   08_final_20251222_001741.xodr
+|   |   |   08_final_20251222_001741_laneSectionFixed.xodr
+|   |   |   08_final_20251222_001741_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251222_003017
+|   |   |       back_left_camera_4020.png
+|   |   |       back_left_camera_4022.png
+|   |   |       back_left_camera_4045.png
+|   |   |       back_left_camera_4068.png
+|   |   |       back_left_camera_4090.png
+|   |   |       back_left_camera_4113.png
+|   |   |       back_right_camera_4025.png
+|   |   |       back_right_camera_4026.png
+|   |   |       back_right_camera_4047.png
+|   |   |       back_right_camera_4070.png
+|   |   |       back_right_camera_4095.png
+|   |   |       back_right_camera_4117.png
+|   |   |       defects.json
+|   |   |       front_left_camera_4022.png
+|   |   |       front_left_camera_4023.png
+|   |   |       front_left_camera_4046.png
+|   |   |       front_left_camera_4070.png
+|   |   |       front_left_camera_4093.png
+|   |   |       front_left_camera_4116.png
+|   |   |       front_right_camera_4023.png
+|   |   |       front_right_camera_4024.png
+|   |   |       front_right_camera_4046.png
+|   |   |       front_right_camera_4069.png
+|   |   |       front_right_camera_4092.png
+|   |   |       front_right_camera_4115.png
+|   |   |       left_camera_4021.png
+|   |   |       left_camera_4022.png
+|   |   |       left_camera_4043.png
+|   |   |       left_camera_4062.png
+|   |   |       left_camera_4081.png
+|   |   |       left_camera_4101.png
+|   |   |       left_camera_4120.png
+|   |   |       right_camera_4024.png
+|   |   |       right_camera_4025.png
+|   |   |       right_camera_4044.png
+|   |   |       right_camera_4062.png
+|   |   |       right_camera_4081.png
+|   |   |       right_camera_4100.png
+|   |   |       right_camera_4119.png
+|   |   |       right_camera_4134.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251222_001741_random_spawn_1.png
+|   |   |       20251222_001741_random_spawn_2.png
+|   |   |       20251222_001741_random_spawn_3.png
+|   |   |       20251222_001741_random_spawn_4.png
+|   |   |       20251222_001741_random_spawn_5.png
+|   |   |       map_topdown_20251222_001741.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   +---20251222_010116
+|   |   |   01_sanitized_20251222_010116.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251222_010116.xodr
+|   |   |   02_sumo_fixed_20251222_010116_QA_CROP.xodr
+|   |   |   03_topology_20251222_010116.xodr
+|   |   |   04_elevation_20251222_010116.xodr
+|   |   |   04_elevation_20251222_010116_QA_CROP.xodr
+|   |   |   05_planview_20251222_010116.xodr
+|   |   |   06_continuity_20251222_010116.xodr
+|   |   |   06_geometry_frozen_20251222_010116.xodr
+|   |   |   07_lanes_20251222_010116.xodr
+|   |   |   08_final_20251222_010116.xodr
+|   |   |   08_final_20251222_010116_laneSectionFixed.xodr
+|   |   |   08_final_20251222_010116_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251222_011028
+|   |   |       back_left_camera_5864.png
+|   |   |       back_left_camera_5865.png
+|   |   |       back_left_camera_5893.png
+|   |   |       back_left_camera_5921.png
+|   |   |       back_left_camera_5948.png
+|   |   |       back_right_camera_5869.png
+|   |   |       back_right_camera_5870.png
+|   |   |       back_right_camera_5897.png
+|   |   |       back_right_camera_5924.png
+|   |   |       back_right_camera_5951.png
+|   |   |       defects.json
+|   |   |       front_left_camera_5866.png
+|   |   |       front_left_camera_5867.png
+|   |   |       front_left_camera_5895.png
+|   |   |       front_left_camera_5923.png
+|   |   |       front_left_camera_5949.png
+|   |   |       front_right_camera_5867.png
+|   |   |       front_right_camera_5868.png
+|   |   |       front_right_camera_5895.png
+|   |   |       front_right_camera_5922.png
+|   |   |       front_right_camera_5949.png
+|   |   |       left_camera_5865.png
+|   |   |       left_camera_5866.png
+|   |   |       left_camera_5890.png
+|   |   |       left_camera_5912.png
+|   |   |       left_camera_5935.png
+|   |   |       left_camera_5957.png
+|   |   |       right_camera_5868.png
+|   |   |       right_camera_5869.png
+|   |   |       right_camera_5892.png
+|   |   |       right_camera_5915.png
+|   |   |       right_camera_5937.png
+|   |   |       right_camera_5959.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251222_010116_random_spawn_1.png
+|   |   |       20251222_010116_random_spawn_2.png
+|   |   |       20251222_010116_random_spawn_3.png
+|   |   |       20251222_010116_random_spawn_4.png
+|   |   |       20251222_010116_random_spawn_5.png
+|   |   |       map_topdown_20251222_010116.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   +---20251222_011330
+|   |   |   01_sanitized_20251222_011330.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251222_011330.xodr
+|   |   |   02_sumo_fixed_20251222_011330_QA_CROP.xodr
+|   |   |   03_topology_20251222_011330.xodr
+|   |   |   04_elevation_20251222_011330.xodr
+|   |   |   04_elevation_20251222_011330_QA_CROP.xodr
+|   |   |   05_planview_20251222_011330.xodr
+|   |   |   06_continuity_20251222_011330.xodr
+|   |   |   06_geometry_frozen_20251222_011330.xodr
+|   |   |   07_lanes_20251222_011330.xodr
+|   |   |   08_final_20251222_011330.xodr
+|   |   |   08_final_20251222_011330_laneSectionFixed.xodr
+|   |   |   08_final_20251222_011330_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251222_012203
+|   |   |       back_left_camera_5462.png
+|   |   |       back_left_camera_5463.png
+|   |   |       back_left_camera_5491.png
+|   |   |       back_left_camera_5518.png
+|   |   |       back_left_camera_5545.png
+|   |   |       back_right_camera_5467.png
+|   |   |       back_right_camera_5468.png
+|   |   |       back_right_camera_5495.png
+|   |   |       back_right_camera_5523.png
+|   |   |       back_right_camera_5549.png
+|   |   |       back_right_camera_5573.png
+|   |   |       defects.json
+|   |   |       front_left_camera_5464.png
+|   |   |       front_left_camera_5465.png
+|   |   |       front_left_camera_5493.png
+|   |   |       front_left_camera_5521.png
+|   |   |       front_left_camera_5548.png
+|   |   |       front_left_camera_5570.png
+|   |   |       front_right_camera_5465.png
+|   |   |       front_right_camera_5466.png
+|   |   |       front_right_camera_5493.png
+|   |   |       front_right_camera_5520.png
+|   |   |       front_right_camera_5547.png
+|   |   |       front_right_camera_5569.png
+|   |   |       left_camera_5463.png
+|   |   |       left_camera_5464.png
+|   |   |       left_camera_5487.png
+|   |   |       left_camera_5509.png
+|   |   |       left_camera_5533.png
+|   |   |       left_camera_5553.png
+|   |   |       right_camera_5466.png
+|   |   |       right_camera_5467.png
+|   |   |       right_camera_5490.png
+|   |   |       right_camera_5512.png
+|   |   |       right_camera_5536.png
+|   |   |       right_camera_5556.png
+|   |   |       right_camera_5578.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251222_011330_random_spawn_1.png
+|   |   |       20251222_011330_random_spawn_2.png
+|   |   |       20251222_011330_random_spawn_3.png
+|   |   |       20251222_011330_random_spawn_4.png
+|   |   |       20251222_011330_random_spawn_5.png
+|   |   |       map_topdown_20251222_011330.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   +---20251222_015923
+|   |   |   01_sanitized_20251222_015923.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251222_015923.xodr
+|   |   |   02_sumo_fixed_20251222_015923_QA_CROP.xodr
+|   |   |   03_topology_20251222_015923.xodr
+|   |   |   04_elevation_20251222_015923.xodr
+|   |   |   04_elevation_20251222_015923_QA_CROP.xodr
+|   |   |   05_planview_20251222_015923.xodr
+|   |   |   geometry_validator_debug.json
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   
+|   |   \---logs
+|   |           topology_lint.json
+|   |           
+|   +---20251222_020529
+|   |   |   01_sanitized_20251222_020529.xodr
+|   |   |   01_sanitized_GPS_QA_CROP.xodr
+|   |   |   02_sumo_fixed_20251222_020529.xodr
+|   |   |   02_sumo_fixed_20251222_020529_QA_CROP.xodr
+|   |   |   03_topology_20251222_020529.xodr
+|   |   |   04_elevation_20251222_020529.xodr
+|   |   |   04_elevation_20251222_020529_QA_CROP.xodr
+|   |   |   05_planview_20251222_020529.xodr
+|   |   |   06_continuity_20251222_020529.xodr
+|   |   |   06_geometry_frozen_20251222_020529.xodr
+|   |   |   07_lanes_20251222_020529.xodr
+|   |   |   08_final_20251222_020529.xodr
+|   |   |   08_final_20251222_020529_laneSectionFixed.xodr
+|   |   |   08_final_20251222_020529_semantic.xodr
+|   |   |   continuity_debug.json
+|   |   |   continuity_heatmap.png
+|   |   |   continuity_stability.json
+|   |   |   cross_sections.png
+|   |   |   gate_failures.json
+|   |   |   geometry_validator_debug.json
+|   |   |   lane_overlay.png
+|   |   |   map_preview_01_sanitize.png
+|   |   |   map_preview_02_structure_clean.png
+|   |   |   map_preview_03_topology_repair.png
+|   |   |   map_preview_05_continuity.png
+|   |   |   map_preview_05_planview_merge.png
+|   |   |   map_preview_06_lanes.png
+|   |   |   map_preview_06_post_continuity_planview.png
+|   |   |   map_preview_06_sidewalks.png
+|   |   |   map_preview_07_lanes_full.png
+|   |   |   map_preview_07_sidewalks_final.png
+|   |   |   map_statistics.json
+|   |   |   planview_continuity_diff.gif
+|   |   |   repair_diff.json
+|   |   |   road_defects.json
+|   |   |   semantic_high_risk_roads.json
+|   |   |   settings_snapshot.json
+|   |   |   tile_adjacency.json
+|   |   |   tile_metadata.json
+|   |   |   
+|   |   +---logs
+|   |   |       topology_lint.json
+|   |   |       validation_report_full.json
+|   |   |       
+|   |   +---perception_local_20251222_021706
+|   |   |       back_left_camera_5558.png
+|   |   |       back_left_camera_5559.png
+|   |   |       back_left_camera_5586.png
+|   |   |       back_left_camera_5613.png
+|   |   |       back_left_camera_5639.png
+|   |   |       back_right_camera_5563.png
+|   |   |       back_right_camera_5564.png
+|   |   |       back_right_camera_5590.png
+|   |   |       back_right_camera_5617.png
+|   |   |       back_right_camera_5643.png
+|   |   |       defects.json
+|   |   |       front_left_camera_5560.png
+|   |   |       front_left_camera_5561.png
+|   |   |       front_left_camera_5588.png
+|   |   |       front_left_camera_5615.png
+|   |   |       front_left_camera_5641.png
+|   |   |       front_right_camera_5561.png
+|   |   |       front_right_camera_5562.png
+|   |   |       front_right_camera_5587.png
+|   |   |       front_right_camera_5615.png
+|   |   |       front_right_camera_5641.png
+|   |   |       left_camera_5559.png
+|   |   |       left_camera_5560.png
+|   |   |       left_camera_5583.png
+|   |   |       left_camera_5605.png
+|   |   |       left_camera_5627.png
+|   |   |       left_camera_5649.png
+|   |   |       right_camera_5562.png
+|   |   |       right_camera_5563.png
+|   |   |       right_camera_5584.png
+|   |   |       right_camera_5606.png
+|   |   |       right_camera_5629.png
+|   |   |       right_camera_5650.png
+|   |   |       
+|   |   +---scenarios
+|   |   |       ingolstadt_auto_0.json
+|   |   |       ingolstadt_auto_1.json
+|   |   |       ingolstadt_auto_10.json
+|   |   |       ingolstadt_auto_11.json
+|   |   |       ingolstadt_auto_12.json
+|   |   |       ingolstadt_auto_13.json
+|   |   |       ingolstadt_auto_14.json
+|   |   |       ingolstadt_auto_15.json
+|   |   |       ingolstadt_auto_16.json
+|   |   |       ingolstadt_auto_17.json
+|   |   |       ingolstadt_auto_18.json
+|   |   |       ingolstadt_auto_19.json
+|   |   |       ingolstadt_auto_2.json
+|   |   |       ingolstadt_auto_20.json
+|   |   |       ingolstadt_auto_21.json
+|   |   |       ingolstadt_auto_22.json
+|   |   |       ingolstadt_auto_23.json
+|   |   |       ingolstadt_auto_24.json
+|   |   |       ingolstadt_auto_25.json
+|   |   |       ingolstadt_auto_26.json
+|   |   |       ingolstadt_auto_27.json
+|   |   |       ingolstadt_auto_28.json
+|   |   |       ingolstadt_auto_29.json
+|   |   |       ingolstadt_auto_3.json
+|   |   |       ingolstadt_auto_30.json
+|   |   |       ingolstadt_auto_31.json
+|   |   |       ingolstadt_auto_32.json
+|   |   |       ingolstadt_auto_33.json
+|   |   |       ingolstadt_auto_34.json
+|   |   |       ingolstadt_auto_35.json
+|   |   |       ingolstadt_auto_36.json
+|   |   |       ingolstadt_auto_37.json
+|   |   |       ingolstadt_auto_38.json
+|   |   |       ingolstadt_auto_39.json
+|   |   |       ingolstadt_auto_4.json
+|   |   |       ingolstadt_auto_40.json
+|   |   |       ingolstadt_auto_41.json
+|   |   |       ingolstadt_auto_42.json
+|   |   |       ingolstadt_auto_43.json
+|   |   |       ingolstadt_auto_44.json
+|   |   |       ingolstadt_auto_45.json
+|   |   |       ingolstadt_auto_46.json
+|   |   |       ingolstadt_auto_47.json
+|   |   |       ingolstadt_auto_48.json
+|   |   |       ingolstadt_auto_49.json
+|   |   |       ingolstadt_auto_5.json
+|   |   |       ingolstadt_auto_6.json
+|   |   |       ingolstadt_auto_7.json
+|   |   |       ingolstadt_auto_8.json
+|   |   |       ingolstadt_auto_9.json
+|   |   |       
+|   |   +---screenshots
+|   |   |       20251222_020529_random_spawn_1.png
+|   |   |       20251222_020529_random_spawn_2.png
+|   |   |       20251222_020529_random_spawn_3.png
+|   |   |       20251222_020529_random_spawn_4.png
+|   |   |       20251222_020529_random_spawn_5.png
+|   |   |       map_topdown_20251222_020529.png
+|   |   |       
+|   |   \---tiles
+|   |           tile_0_0.xodr
+|   |           tile_0_1.xodr
+|   |           tile_0_2.xodr
+|   |           tile_0_3.xodr
+|   |           tile_1_0.xodr
+|   |           tile_1_1.xodr
+|   |           tile_1_2.xodr
+|   |           tile_1_3.xodr
+|   |           tile_2_0.xodr
+|   |           tile_2_1.xodr
+|   |           tile_2_2.xodr
+|   |           tile_2_3.xodr
+|   |           tile_3_0.xodr
+|   |           tile_3_1.xodr
+|   |           tile_3_2.xodr
+|   |           tile_3_3.xodr
+|   |           tile_4_0.xodr
+|   |           tile_4_1.xodr
+|   |           tile_4_2.xodr
+|   |           tile_4_3.xodr
+|   |           tile_5_1.xodr
+|   |           tile_5_3.xodr
+|   |           
+|   \---20251222_024842
+|       |   01_sanitized_20251222_024842.xodr
+|       |   01_sanitized_GPS_QA_CROP.xodr
+|       |   02_sumo_fixed_20251222_024842.xodr
+|       |   02_sumo_fixed_20251222_024842_QA_CROP.xodr
+|       |   03_topology_20251222_024842.xodr
+|       |   04_elevation_20251222_024842.xodr
+|       |   04_elevation_20251222_024842_QA_CROP.xodr
+|       |   05_planview_20251222_024842.xodr
+|       |   06_continuity_20251222_024842.xodr
+|       |   06_geometry_frozen_20251222_024842.xodr
+|       |   07_lanes_20251222_024842.xodr
+|       |   continuity_debug.json
+|       |   continuity_heatmap.png
+|       |   continuity_stability.json
+|       |   geometry_validator_debug.json
+|       |   map_preview_01_sanitize.png
+|       |   map_preview_02_structure_clean.png
+|       |   map_preview_03_topology_repair.png
+|       |   map_preview_05_continuity.png
+|       |   map_preview_05_planview_merge.png
+|       |   map_preview_06_lanes.png
+|       |   map_preview_06_post_continuity_planview.png
+|       |   map_preview_06_sidewalks.png
+|       |   map_preview_07_lanes_full.png
+|       |   planview_continuity_diff.gif
+|       |   semantic_high_risk_roads.json
+|       |   settings_snapshot.json
+|       |   
+|       \---logs
+|               topology_lint.json
+|               
++---utils
+|       optional_imports.py
+|       output_discovery.py
+|       xodr_subset.py
+|       __init__.py
+|       
++---visualization
+|   |   animated_diff.py
+|   |   augmentation_preview.py
+|   |   augmentation_preview.py.bak
+|   |   city_drift_field.py
+|   |   city_map_diff.py
+|   |   cross_section_visualizer.py
+|   |   curvature_drift_plot.py
+|   |   elevation_heatmap.py
+|   |   heatmap_generator.py
+|   |   heatmap_plotter.py
+|   |   iou_histogram.py
+|   |   lane_overlay.py
+|   |   map_diff.py
+|   |   map_plotter.py
+|   |   osm_overlay.py
+|   |   spawn_heatmap.py
+|   |   thesis_figures.py
+|   |   tile_gap_heatmap.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           animated_diff.cpython-312.pyc
+|           cross_section_visualizer.cpython-312.pyc
+|           heatmap_generator.cpython-312.pyc
+|           heatmap_plotter.cpython-312.pyc
+|           lane_overlay.cpython-312.pyc
+|           map_diff.cpython-312.pyc
+|           map_plotter.cpython-312.pyc
+|           __init__.cpython-312.pyc
+|           
++---_analysis
+|       database_code_structure.csv
+|       database_py_inventory.csv
+|       database_usage_map.csv
+|       duplicate_function_signatures.csv
+|       python_files_inventory.csv
+|       tile_references.csv
+|       
++---_integration_audit
++---_mcp_audit
+|       _mcp_audit_report.json
+|       _mcp_dependency_graph.dot
+|       _mcp_red_flags.txt
+|       
+\---__pycache__
+        main_pipeline.cpython-312.pyc
+        run_full_domain_gap.cpython-312.pyc
+        __init__.cpython-312.pyc
+        

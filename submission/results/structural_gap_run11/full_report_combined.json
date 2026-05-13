@@ -1,0 +1,473 @@
+{
+  "aligned_auto_xodr": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/thesis_results/structural_gap_v1/run_11/auto_aligned_rigid.xodr",
+  "alignment": {
+    "crs_reprojection": {
+      "applied": true,
+      "bbox_iou_after_reprojection": 0.6369240528279722,
+      "centroid_delta_after_m": 760.9515607735115,
+      "centroid_delta_before_m": 5444300.675571562,
+      "dst_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "src_crs": "+proj=tmerc +lat_0=48.74935649548228 +lon_0=11.422268084715878 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    },
+    "diagnostics": {
+      "auto_bbox": {
+        "maxx": 682948.0512082402,
+        "maxy": 5406484.884846119,
+        "minx": 677963.0181409962,
+        "miny": 5402447.14512913
+      },
+      "fallback_used": false,
+      "fit_metric": "planView geometry start-point correspondence RMSE",
+      "icp_iters_run": 20,
+      "icp_max_dist_m": 200.0,
+      "icp_rmse_history": [
+        2060.960880772678,
+        2061.200789746165,
+        2061.5751231600766,
+        2061.951366162493,
+        2062.337786329588,
+        2062.7882738854555,
+        2063.279026679902,
+        2063.757068492784,
+        2064.1448041893555,
+        2064.500307096074,
+        2064.849792087141,
+        2065.181693173403,
+        2065.500952895122,
+        2065.767469274508,
+        2066.0185440037044,
+        2066.2294935201926,
+        2066.4860620330123,
+        2066.726271850072,
+        2066.8746416427757,
+        2066.976514756642
+      ],
+      "icp_trim_percentile": 90.0,
+      "init_method": "centroid_translation_only",
+      "manual_bbox": {
+        "maxx": 682410.5096099,
+        "maxy": 5405403.332598,
+        "minx": 678015.8009219,
+        "miny": 5402486.14794
+      },
+      "metric_note": "These diagnostics describe the rigid-fit start-point correspondence only. The authoritative geometry gap metric is structural_domain_gap.geometry.rmse.",
+      "n_points": 7446,
+      "rigid_only": true,
+      "rmse_after": 2026.6884883329426,
+      "rmse_after_initial_rigid": 2010.9966704458734,
+      "rmse_before": 2154.7480522525702,
+      "rotation_deg_after_init": 0.0,
+      "scale_locked": 1.0
+    },
+    "transform": {
+      "cos": 0.9998340803595716,
+      "scale": 1.0,
+      "sin": -0.018215700687288405,
+      "tx": -98720.64409538312,
+      "ty": 12664.513593291864
+    }
+  },
+  "auto_xodr": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr",
+  "coverage_context": {
+    "auto_road_length_m": 259987.393706,
+    "bbox_iou": 0.04622623138426989,
+    "bbox_iou_method": "planView_geometry_envelope_iou_from_geometry_start_and_end_points",
+    "coverage_ratio_auto_to_manual": 4.910423855232421,
+    "interpretation": "Whole-network structural metrics must be interpreted under partial overlap and a large coverage mismatch; they do not isolate matched-area local registration quality.",
+    "major_coverage_mismatch": true,
+    "manual_road_length_m": 52946.01879,
+    "partial_overlap": true,
+    "road_length_delta_m": 207041.374916
+  },
+  "determinism": {
+    "coefficient_of_variation": {
+      "junction_count": 0.0,
+      "road_count": 0.0,
+      "tile_count": 0.0
+    },
+    "runs_requested": 5,
+    "runs_successful": 5,
+    "status": "pass",
+    "verdict": "NONDETERMINISTIC"
+  },
+  "fit_metric_provenance": {
+    "diagnostic_field": "alignment.diagnostics.icp_rmse_history",
+    "metric_not_equivalent_to_icp_objective": true,
+    "note": "This pass preserves only the prior conservative run_11 fit-metric boundary from the existing governed addendum. It is not newly reverified from governed run_11 source artifacts.",
+    "reported_fit_metric_worsened_monotonically": true,
+    "status": "carried_forward_from_prior_patch_output_not_reverified_in_governed_worktree",
+    "true_divergence_supported": false,
+    "verified_safe_conclusion": "reported_fit_metric_worsened_monotonically"
+  },
+  "manual_xodr": "cities/ingolstadt/manual_grid0828.xodr",
+  "provenance": {
+    "canonical_auto_xodr": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr",
+    "canonical_manual_xodr": "cities/ingolstadt/manual_grid0828.xodr",
+    "combined_by": "T-COMBINED-REPORT-001",
+    "connectivity_source": "thesis_results/structural_gap_v1/run_12/connectivity_gap.json",
+    "corrected_curvature_source": "docs/submission/CURVATURE_CLAIM_BASIS.json",
+    "determinism_source": "artifacts/final_runs/scenario_b_audit/evidence/determinism/determinism_report.json",
+    "geometry_source": "thesis_results/structural_gap_v1/run_11/full_report.json",
+    "intersection_source": "thesis_results/structural_gap_v1/run_03/full_report.json",
+    "notes": "Convenience artifact only. It does not replace the authoritative source artifacts named above. run_11 remains the geometry authority; corrected curvature comes from the governed basis file; connectivity comes from the governed run_12 companion artifact.",
+    "road_classification_source": "thesis_results/structural_gap_v1/run_03/full_report.json",
+    "semantic_source": "thesis_results/structural_gap_v1/run_11/object_gap_table.json",
+    "tile_iou_source": "thesis_results/tile_analysis/tile_iou_report.json"
+  },
+  "schema_version": 1,
+  "source_crs": "+proj=tmerc +lat_0=48.74935649548228 +lon_0=11.422268084715878 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "status": "reconciled_companion",
+  "structural_domain_gap": {
+    "connectivity": {
+      "auto": {
+        "junction_degree": {
+          "total_connections_per_junction": {
+            "count": 779,
+            "max": 26.0,
+            "mean": 5.184852374839537,
+            "median": 4.0,
+            "p95": 14.0
+          },
+          "unique_incoming_per_junction": {
+            "count": 779,
+            "max": 5.0,
+            "mean": 2.287548138639281,
+            "median": 2.0,
+            "p95": 4.0
+          },
+          "unique_outgoing_per_junction": {
+            "count": 779,
+            "max": 26.0,
+            "mean": 5.184852374839537,
+            "median": 4.0,
+            "p95": 14.0
+          }
+        },
+        "lane_count": {
+          "stats": {
+            "count": 5837,
+            "max": 5.0,
+            "mean": 1.1406544457769403,
+            "median": 1.0,
+            "p95": 2.0
+          }
+        },
+        "lane_link": {
+          "junction_lane_link_completeness_rate": 1.0,
+          "road_lane_link_valid_rate": 0.0
+        },
+        "road_link": {
+          "predecessor_declared_rate": 0.0,
+          "predecessor_valid_rate": 0.0,
+          "roads_with_valid_pred_pct": 0.0,
+          "roads_with_valid_succ_pct": 0.0,
+          "successor_declared_rate": 0.0,
+          "successor_valid_rate": 0.0,
+          "total_roads": 5837
+        }
+      },
+      "disabled": false,
+      "gap": {
+        "junction_degree": {
+          "mean_incoming_delta": -0.40152749161282,
+          "mean_outgoing_delta": -0.9075845999503782,
+          "total_connections_l1_gap": 0.3116902730282914
+        },
+        "lane_count": {
+          "l1_gap": 0.28909465020576947,
+          "mean_delta": -42.763666541877384,
+          "median_delta": -10.0
+        },
+        "lane_link": {
+          "junction_lane_link_completeness_delta": 0.0,
+          "road_lane_link_valid_rate_delta": -1.0
+        },
+        "road_link": {
+          "predecessor_declared_rate": -0.934156378600823,
+          "predecessor_valid_rate": -1.0,
+          "roads_with_valid_pred_pct": -0.934156378600823,
+          "roads_with_valid_succ_pct": -0.9670781893004116,
+          "successor_declared_rate": -0.9670781893004116,
+          "successor_valid_rate": -1.0
+        }
+      },
+      "manual": {
+        "junction_degree": {
+          "total_connections_per_junction": {
+            "count": 119,
+            "max": 24.0,
+            "mean": 6.092436974789916,
+            "median": 5.0,
+            "p95": 16.099999999999994
+          },
+          "unique_incoming_per_junction": {
+            "count": 119,
+            "max": 5.0,
+            "mean": 2.689075630252101,
+            "median": 3.0,
+            "p95": 4.0
+          },
+          "unique_outgoing_per_junction": {
+            "count": 119,
+            "max": 24.0,
+            "mean": 6.092436974789916,
+            "median": 5.0,
+            "p95": 16.099999999999994
+          }
+        },
+        "lane_count": {
+          "stats": {
+            "count": 972,
+            "max": 1739.0,
+            "mean": 43.90432098765432,
+            "median": 11.0,
+            "p95": 190.79999999999973
+          }
+        },
+        "lane_link": {
+          "junction_lane_link_completeness_rate": 1.0,
+          "road_lane_link_valid_rate": 1.0
+        },
+        "road_link": {
+          "predecessor_declared_rate": 0.934156378600823,
+          "predecessor_valid_rate": 1.0,
+          "roads_with_valid_pred_pct": 0.934156378600823,
+          "roads_with_valid_succ_pct": 0.9670781893004116,
+          "successor_declared_rate": 0.9670781893004116,
+          "successor_valid_rate": 1.0,
+          "total_roads": 972
+        }
+      }
+    },
+    "curvature": {
+      "disabled": false,
+      "kl_divergence": 0.0003102193503752856,
+      "mean_auto": 0.04472245359449218,
+      "mean_manual": 0.03436255645020222,
+      "samples_auto": 54632,
+      "samples_manual": 37174,
+      "std_auto": 0.8645026743075891,
+      "std_manual": 0.05518923683875411
+    },
+    "elevation": {
+      "disabled": true,
+      "reason": "planar_map_dem_unavailable"
+    },
+    "geometry": {
+      "bbox_iou_after_reprojection": 0.6369240528279722,
+      "centroid_delta_after_m": 760.9515607735115,
+      "centroid_delta_before_m": 5444300.675571562,
+      "crs_alignment_applied": true,
+      "hausdorff": 1662.9994131814183,
+      "hausdorff_norm": 0.3143760123687782,
+      "icp_iters_run": 20,
+      "icp_rmse_history": [
+        2060.960880772678,
+        2061.200789746165,
+        2061.5751231600766,
+        2061.951366162493,
+        2062.337786329588,
+        2062.7882738854555,
+        2063.279026679902,
+        2063.757068492784,
+        2064.1448041893555,
+        2064.500307096074,
+        2064.849792087141,
+        2065.181693173403,
+        2065.500952895122,
+        2065.767469274508,
+        2066.0185440037044,
+        2066.2294935201926,
+        2066.4860620330123,
+        2066.726271850072,
+        2066.8746416427757,
+        2066.976514756642
+      ],
+      "match_threshold_m": 50.0,
+      "matched_count": 27519,
+      "matched_fraction": 0.7299082276802291,
+      "rigid_only": true,
+      "rigid_scale_fixed": 1.0,
+      "rmse": 54.84249445535241,
+      "rmse_matched": 24.46812067502164,
+      "rmse_norm": 1.0,
+      "runtime_sec": 515.48,
+      "samples": 37702,
+      "settings": {
+        "match_threshold_m": 50.0,
+        "max_geoms": null,
+        "max_samples": 50000,
+        "rmse_ref_m": 1.0,
+        "sample_step_m": 2.0,
+        "skip_hausdorff": false
+      },
+      "timings": {
+        "hausdorff_sec": 355.61,
+        "union_sec": 1.31
+      }
+    },
+    "intersection": {
+      "auto": {
+        "complex": 464,
+        "dead_end": 0,
+        "four_way": 144,
+        "other": 79,
+        "roundabout": 0,
+        "three_way": 80
+      },
+      "delta": {
+        "complex": 380,
+        "dead_end": 0,
+        "four_way": 117,
+        "other": 79,
+        "roundabout": 0,
+        "three_way": 72
+      },
+      "disabled": false,
+      "manual": {
+        "complex": 84,
+        "dead_end": 0,
+        "four_way": 27,
+        "other": 0,
+        "roundabout": 0,
+        "three_way": 8
+      },
+      "normalized_gap": 0.1401
+    },
+    "object_gap_table": {
+      "auto_counts": {
+        "barriers": 0,
+        "buildings": 0,
+        "poles": 0,
+        "trees": 0
+      },
+      "interpretation": "The authoritative governed run_03 aligned pair shows a severe semantic-object absence in the generated auto artifact: 0 barriers, 0 buildings, 0 poles, and 0 trees versus hundreds to thousands in the manual Ingolstadt reference.",
+      "manual_counts": {
+        "barriers": 1538,
+        "buildings": 992,
+        "poles": 3427,
+        "trees": 4232
+      },
+      "source": "thesis_results/structural_gap_v1/run_03/gap_whole_semantics.json",
+      "source_auto_xodr": "thesis_results/structural_gap_v1/run_03/auto_aligned_hardened.xodr",
+      "source_manual_xodr": "cities/ingolstadt/manual_grid0828.xodr",
+      "source_run_id": "run_03"
+    },
+    "road_classification": {
+      "auto_counts": {
+        "town": 6052
+      },
+      "disabled": false,
+      "gap": 0.0597,
+      "gap_definition": "L1/2 over normalized road_class count distributions",
+      "manual_counts": {
+        "motorway": 44,
+        "rural": 14,
+        "town": 914
+      },
+      "normalized_gap": 0.0597,
+      "per_class_diff": {
+        "motorway": {
+          "auto": 0,
+          "delta": -44,
+          "manual": 44
+        },
+        "rural": {
+          "auto": 0,
+          "delta": -14,
+          "manual": 14
+        },
+        "town": {
+          "auto": 6052,
+          "delta": 5138,
+          "manual": 914
+        }
+      }
+    },
+    "semantic": {
+      "disabled": false,
+      "gap": 0.1662,
+      "gap_definition": "L1/2 over normalized road_type length distributions",
+      "lane_markings": {
+        "auto_count": 0,
+        "auto_density": 0.0,
+        "delta_density": 0.0,
+        "manual_count": 0,
+        "manual_density": 0.0
+      },
+      "meta": {
+        "auto_total_road_length": 259987.39370578,
+        "manual_total_road_length": 52946.01878975082,
+        "normalized": true,
+        "settings": {
+          "reference": "unknown"
+        }
+      },
+      "normalized_gap": 0.1662,
+      "objects": {
+        "auto": {
+          "crosswalk": 62
+        },
+        "delta": {
+          "barrier": -1538,
+          "building": -992,
+          "crosswalk": 62,
+          "gantry": -11,
+          "none": -22,
+          "obstacle": -468,
+          "pole": -3427,
+          "roadmark": -1989,
+          "tree": -4232,
+          "vegetation": -2038
+        },
+        "manual": {
+          "barrier": 1538,
+          "building": 992,
+          "gantry": 11,
+          "none": 22,
+          "obstacle": 468,
+          "pole": 3427,
+          "roadmark": 1989,
+          "tree": 4232,
+          "vegetation": 2038
+        }
+      },
+      "road_types": {
+        "auto_length": {
+          "town": 259987.39370578204
+        },
+        "delta_length": {
+          "motorway": -7928.778760748474,
+          "rural": -869.1090732030341,
+          "town": 215839.26274998276
+        },
+        "delta_normalized": {
+          "motorway": -0.1497521238043173,
+          "rural": -0.016415003300895483,
+          "town": 0.1661671271052213
+        },
+        "manual_length": {
+          "motorway": 7928.778760748474,
+          "rural": 869.1090732030341,
+          "town": 44148.13095579927
+        }
+      },
+      "traffic_lights": {
+        "auto_count": 0,
+        "auto_density": 0.0,
+        "delta_density": 0.0,
+        "manual_count": 0,
+        "manual_density": 0.0
+      }
+    }
+  },
+  "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "tile_iou_gate_summary": {
+    "finding": "All 22 tile entries are below the IoU threshold (0.5); structural mismatch confirmed",
+    "iou_gate_threshold": 0.5,
+    "max_tile_iou_observed": 0.1166,
+    "mean_tile_iou_observed": 0.010740909090909091,
+    "tiles_gated_count": 22,
+    "tiles_passed_gate_count": 0
+  }
+}

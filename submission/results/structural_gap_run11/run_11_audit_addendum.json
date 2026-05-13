@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "run_id": "run_11",
+  "governed_reconciliation_date_utc": "2026-03-25",
+  "artifact_resolution": {
+    "requested_run11_aligned_auto_xodr": "thesis_results/structural_gap_v1/run_11/auto_aligned_rigid.xodr",
+    "requested_run11_aligned_auto_xodr_exists": false,
+    "supported_structural_numeric_source": "thesis_results/structural_gap_v1/run_03/auto_aligned_hardened.xodr",
+    "manual_xodr": "cities/ingolstadt/manual_grid0828.xodr",
+    "note": "The governed worktree does not preserve a run_11 aligned XODR pair, so numeric structural context is taken from the authoritative governed run_03 aligned pair."
+  },
+  "analysis_scope": {
+    "geometry_dimension": "2D_planView",
+    "auto_elevation_applied_in_analysis_artifact": false,
+    "impact_on_reported_structural_metrics": "none_for_2D_metrics",
+    "partial_overlap": true,
+    "major_coverage_mismatch": true
+  },
+  "fit_metric_boundary": {
+    "run11_best_obtained_rigid_alignment": true,
+    "governed_run11_alignment_artifact_present": false,
+    "source_status": "prior_patch_output_only_not_reverified_in_governed_worktree",
+    "reported_fit_metric_worsened_monotonically": true,
+    "metric_not_equivalent_to_icp_objective": true,
+    "true_icp_divergence_supported": false,
+    "summary": "Run_11 may be described only as the best obtained rigid alignment under the evaluated setup. The carried-forward reported fit metric worsened monotonically, but true ICP divergence or successful convergence is unsupported."
+  },
+  "coverage_context": {
+    "auto_road_length_m": 259987.393706,
+    "manual_road_length_m": 52946.01879,
+    "coverage_ratio_auto_to_manual": 4.910423855232421,
+    "road_length_delta_m": 207041.374916,
+    "bbox_iou": 0.04622623138426989,
+    "bbox_iou_method": "planView_geometry_envelope_iou_from_geometry_start_and_end_points",
+    "interpretation": "Whole-network structural metrics must be interpreted under partial overlap and a large coverage mismatch; they do not isolate matched-area local registration quality."
+  },
+  "dem_context": {
+    "analysis_auto_xodr": "cities/ingolstadt/ingolstadt_osm_auto.xodr",
+    "analysis_auto_xodr_is_flat": true,
+    "manual_reference_has_nonflat_elevation": true,
+    "note": "DEM application must not be claimed for the governed thesis-analysis artifact."
+  },
+  "safe_thesis_wording": {
+    "run11_structural_result": "Run_11 should be described as the best obtained rigid alignment under a 2D planView structural comparison with partial overlap and a large coverage mismatch, not as a globally well-registered full-network match.",
+    "icp_refinement_statement": "The reported run_11 fit metric worsened monotonically, but that reported metric is not proven equivalent to the ICP objective; the safe thesis statement is only that ICP refinement showed no improvement under the reported metric and does not support a successful-convergence claim.",
+    "dem_statement": "DEM integration exists in the pipeline design, but the governed thesis-analysis auto XODR remained flat; DEM elevation must not be claimed for that artifact."
+  },
+  "unsupported_claims": [
+    "run_11 demonstrates successful ICP convergence",
+    "DEM elevation was applied to the thesis analysis XODR"
+  ]
+}

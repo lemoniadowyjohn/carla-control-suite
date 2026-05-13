@@ -1,0 +1,25 @@
+# Simulation / data-gen requirements
+# CARLA: install the matching wheel manually (not via pip here), e.g.:
+#   pip install <path-to-carla-0.9.16-*.whl>
+click
+imageio
+Pillow
+PyYAML
+numpy
+pandas
+scipy
+shapely
+pyproj
+rasterio
+matplotlib
+requests
+psutil
+lxml
+opencv-python
+pygame
+torch
+torchvision
+torch-geometric
+ultralytics
+tqdm
+networkx

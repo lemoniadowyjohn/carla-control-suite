@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+WORKDIR /repo
+
+# Lightweight dependencies for running unit tests and smoke checks.
+RUN pip install --no-cache-dir pytest
+
+# Copy repo
+COPY . /repo
+
+# Default command: run the smoke script.
+CMD ["bash", "ultimate_pipeline/hpc/docker_smoke_test.sh"]

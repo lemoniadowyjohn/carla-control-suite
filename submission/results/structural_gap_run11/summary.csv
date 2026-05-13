@@ -1,0 +1,19 @@
+metric,value,unit,source,notes
+geometry_rmse_whole_map,54.84249445535241,m,run_11,Whole-network geometry gap after CRS reprojection and rigid SE(2) alignment with scale locked to 1.0.
+geometry_rmse_matched_subset,24.46812067502164,m,run_11,Matched-subset RMSE at the 50 m correspondence threshold.
+matched_fraction,0.7299082276802291,ratio,run_11,Fraction of manual-road samples matched within 50 m after alignment.
+hausdorff_distance,1662.9994131814183,m,run_11,Whole-network Hausdorff distance after rigid alignment.
+bbox_iou_after_reprojection,0.6369240528279722,ratio,run_11,Bounding-box IoU after explicit CRS reprojection into the manual frame.
+rigid_scale_fixed,1.0,ratio,run_11,Alignment scale lock; must remain 1.0.
+corrected_curvature_kl_divergence,0.0003102193503752856,nats,docs/submission/CURVATURE_CLAIM_BASIS.json,Corrected paramPoly3-aware curvature comparison on the authoritative run_11 measurement pair.
+corrected_curvature_std_auto,0.8645026743075891,m-1,docs/submission/CURVATURE_CLAIM_BASIS.json,Auto-map curvature standard deviation from the corrected curvature basis.
+corrected_curvature_std_manual,0.05518923683875411,m-1,docs/submission/CURVATURE_CLAIM_BASIS.json,Manual-map curvature standard deviation from the corrected curvature basis.
+road_length_ratio,4.910423855232421,ratio,run_11/supplementary_metrics.json,Auto total road length divided by manual total road length in the governed coverage context.
+junction_count_ratio,6.546218487394958,ratio,run_12/connectivity_gap.json,Auto junction count divided by manual junction count from the governed connectivity companion artifact.
+connectivity_auto_predecessor_declared_rate,0.0,rate,run_12/connectivity_gap.json,Fraction of auto roads that declare a predecessor in OpenDRIVE XML.
+connectivity_auto_successor_declared_rate,0.0,rate,run_12/connectivity_gap.json,Fraction of auto roads that declare a successor in OpenDRIVE XML.
+connectivity_junction_lane_link_completeness,1.0,rate,run_12/connectivity_gap.json,Fraction of auto junction laneLink elements with both from/to attributes populated.
+tile_max_iou,0.1166,ratio,tile_analysis,Maximum per-tile spatial overlap between auto and manual tiles.
+tiles_passing_iou_gate,0,count,tile_analysis,Tiles with IoU at or above the 0.5 thesis gate.
+determinism_road_count_cv,0.0,cv,rq1_audit,Coefficient of variation of road count across the restored 5-run determinism audit.
+determinism_junction_count_cv,0.0,cv,rq1_audit,Coefficient of variation of junction count across the restored 5-run determinism audit.

@@ -1,0 +1,4 @@
+sbatch hpc/sbatch/train_eval.sbatch hpc/configs/exp_geom_only.yaml
+sbatch hpc/sbatch/train_eval.sbatch hpc/configs/exp_curv_only.yaml
+sbatch hpc/sbatch/train_eval.sbatch hpc/configs/exp_sem_only.yaml
+sbatch hpc/sbatch/train_eval.sbatch hpc/configs/exp_full.yaml

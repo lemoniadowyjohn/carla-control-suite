@@ -1,0 +1,327 @@
+compare_runs_determinism.py --auto
+== Final XODR (byte MD5) ==
+A: 2fa442879140222169602d10f85a514b
+B: 4f9b20ec912e17746cae492981997b05
+
+== Final XODR (planView semantic SHA256) ==
+A: 313acb4ec89ec31644e270277170b4b8bec1e1355e9cc69df3bc4a5b59803ab8
+B: 313acb4ec89ec31644e270277170b4b8bec1e1355e9cc69df3bc4a5b59803ab8
+planview_match: True
+
+== Key artifacts (MD5) ==
+settings_snapshot.json: False
+map_statistics.json: missing A=False B=True
+tile_metadata.json: missing A=False B=True
+tile_adjacency.json: missing A=False B=True
+gate_failures.json: missing A=False B=False
+Thesis angle (one sentence you can paste)
+
+“Determinism is evaluated by executing the complete pipeline twice under an identical settings snapshot and comparing the resulting artifacts using an external audit script, ensuring the generation process itself remains unchanged by the verification procedure.”
+
+“Determinism Verification Protocol”
+
+run pipeline twice with identical settings snapshot
+
+compare:
+
+byte-level hash of final XODR
+
+semantic hash of planView + lanes + junction graph (your semantic SHA already exists)
+
+key artifacts presence/absence
+
+explain the distinction:
+
+semantic determinism (geometry/topology invariant)
+
+byte determinism (serialization stability)
+
+This directly matches your current results: “planview_match=True but bytes differ” is not a failure; it’s a finding.
+
+Update 2: Simulator QA / Sensor Calibration (Chapter 6)
+
+Add a short paragraph:
+
+“Calibration ingestion and frame conventions”
+
+cameras: ignore K and D, use K_undistortion (pinhole)
+
+cTv is vehicle→camera; used to set sensor extrinsics
+
+LiDAR vTl is LiDAR→vehicle; inverted to vehicle→LiDAR before spawning
+
+add a note: runs with default/zero extrinsics are flagged as uncalibrated and excluded from perception comparisons
+
+That prevents reviewers from nuking you with “your sensor rig might be wrong.”
+Best practice: also allow override via env var for HPC/Linux:
+
+SENSOR_CALIB_JSON: str = os.getenv("SENSOR_CALIB_JSON", r"...windows path...")
+
+
+Because hardcoded C:\... will break on HPC.
+
+
+
+
+
+
+Chapter 1 — Introduction
+1.1 Motivation: scalable map generation for AV simulation
+
+Autonomous driving research increasingly depends on simulation to test perception and planning under controllable variation (weather, lighting, traffic density, and rare corner cases). However, simulation usefulness at scale hinges on the availability of large road networks that are structurally consistent and repeatedly loadable. This thesis targets city-scale map generation as an experimental instrument: a map should not only be “valid,” but also stable enough to support repeated, comparable runs.
+
+1.2 Problem statement: OSM → OpenDRIVE → CARLA at city scale
+
+OpenStreetMap provides global road geometry and tags, but it is not a simulator-grade road model. Converting OSM-derived networks into ASAM OpenDRIVE and ingesting them into CARLA introduces multiple failure modes: missing lane semantics, broken connectivity, and engine-level instability on large maps. The problem addressed is therefore twofold: generate an OpenDRIVE map with enforced structural invariants and ensure that the resulting artifact can be used reliably for simulator-based experiments.
+
+1.3 Research questions and hypotheses
+
+This work investigates whether a deterministic, stage-based repair pipeline can produce CARLA-drivable road graphs at city scale from OSM-derived inputs, and whether the remaining discrepancies to a manually authored reference can be quantified offline. The central hypothesis is that “syntactic validity” is insufficient; instead, explicit invariants (especially lane successor connectivity) and targeted simulator QA are required for stable usage. A secondary hypothesis is that domain gap evaluation must be decoupled from simulator nondeterminism to remain robust.
+
+1.4 Contributions
+
+The thesis contributes (i) an integrated OSM→OpenDRIVE→CARLA pipeline with explicit invariants and a geometry-freeze contract, (ii) tile-based QA with artifact logging and failure taxonomy to mitigate simulator instability, (iii) an offline domain-gap framework producing global metrics and per-tile heatmaps against a manual reference map, and (iv) an auditability layer based on settings snapshots, hashes, and dependency boundary checks supporting reproducibility.
+
+1.5 Thesis outline
+
+This section briefly describes the flow: related work (simulation, Sim2Real, map representations), foundations (OSM/OpenDRIVE/CARLA constraints), system overview (pipeline architecture), detailed methods (generation and repair stages), simulator QA strategy, offline domain-gap evaluation, experimental setup, results, and discussion of correctness under engine constraints.
+
+Chapter 2 — Related Work
+2.1 Simulation platforms and synthetic driving data
+
+This section summarizes CARLA and comparable simulation environments as tools for generating controllable driving data and for benchmarking autonomy stacks. Emphasis is placed on how simulator pipelines depend on map fidelity and repeatability, and why map generation is a core enabler of scenario coverage.
+
+2.2 Domain shift and Sim2Real generalization in perception
+
+Prior research on domain shift is reviewed from two angles: appearance gap (textures, lighting, weather) and structural gap (geometry, topology, semantics). This motivates why structural errors—especially at intersections and lane connectivity—can affect perception and planning even if rendering appears realistic.
+
+2.3 Map representations for driving simulation (OpenDRIVE)
+
+OpenDRIVE is introduced as an engineering road model that explicitly represents reference line geometry, elevation, lanes, and lane connectivity. The section explains why OpenDRIVE is suitable as a simulator interchange format but also fragile: small inconsistencies can violate downstream assumptions in routing, physics, or map preprocessing.
+
+2.4 Automated map generation and validation pipelines
+
+Existing OSM-derived map pipelines are reviewed with a focus on repair strategies (topology correction, lane inference, enrichment) and validation approaches (schema checks, connectivity checks, simulator-based validation). This thesis positions itself as a “research-grade” pipeline: repairs are explicit, logged, and coupled to invariants that are checked continuously.
+
+2.5 Reproducibility, determinism, and scientific pipelines
+
+Reproducibility is discussed as a first-class requirement for complex, data-dependent pipelines. Deterministic seeds, provenance logging, configuration snapshots, and stable artifact naming are motivated as mechanisms that turn a large engineering system into a defensible scientific instrument.
+
+2.6 Summary and gap to this thesis
+
+The gap is summarized as: city-scale map generation requires more than schema validity; it needs explicit invariants aligned with simulator constraints, robust QA workflows resilient to nondeterministic crashes, and offline comparison metrics that remain usable when simulator validation is unreliable.
+
+Chapter 3 — Foundations and Problem Setting
+3.1 OpenStreetMap as a source of road geometry and semantics
+
+OSM is described as a rich but heterogeneous dataset, where roads are encoded as polylines and relations with varying completeness of tags. Limitations relevant to this thesis include fragmented topology, inconsistent tagging, and missing lane-level semantics.
+
+3.2 OpenDRIVE concepts
+
+This section defines the OpenDRIVE primitives used throughout the thesis: road reference lines (planView), elevation profiles, lane sections and widths, laneLinks, and junction connectivity. The role of these elements is framed from the pipeline’s perspective: they are not only descriptive fields, but constraints required for stable simulation.
+
+3.3 CARLA ingestion constraints and practical failure modes
+
+CARLA ingestion is discussed as a constraint layer beyond OpenDRIVE schema validity. Practical failure modes include instability during repeated loading, navigation preprocessing, internal invariant violations (especially missing driving-lane successors), and scalability limits for city-scale networks.
+
+3.4 Why “valid OpenDRIVE” is not automatically “stable in CARLA”
+
+A conceptual distinction is introduced: schema-valid files can still cause engine-level crashes due to internal assumptions and computational limits. This motivates the thesis design choice to separate offline structural evaluation from simulator-based drivability checks.
+
+3.5 Requirements derived for a research-grade pipeline
+
+The resulting requirements include deterministic execution, geometry authority and freeze points, explicit lane successor invariants, traceable artifacts per stage, and a validation strategy that remains meaningful under simulator nondeterminism.
+
+Chapter 4 — System Overview: Ultimate Pipeline
+4.1 Design principles
+
+The pipeline is monolithic in integration to reduce “glue-code drift,” but stage-structured to keep transformations auditable. Key principles are single authority for CARLA lifecycle, single authority for geometry mutations, and artifact-first engineering (every stage emits logs and visual outputs).
+
+4.2 Stage model mapped to invariants and outputs
+
+The stage model is presented as a contract: each stage has an input, deterministic transformations, invariant checks, and a set of produced artifacts (intermediate XODR, JSON reports, previews, overlays). This mapping makes it possible to argue correctness stage-by-stage rather than relying on a single end-to-end success criterion.
+
+4.3 Determinism and provenance strategy
+
+This section describes the settings snapshot, configuration hashing, fixed seeds, and stable output folder structure. The goal is that any reported result can be reproduced by re-running the pipeline with the same snapshot and inputs.
+
+4.4 CARLA authority contract
+
+Only one module is allowed to start, restart, and load CARLA maps to avoid inconsistent simulator state management. This is presented as an engineering constraint with direct scientific relevance: it prevents hidden state contamination across experiments.
+
+4.5 Offline vs. simulator-dependent validation split
+
+Offline checks (schema integrity, topology scanning, collision mesh validation, domain-gap metrics) are designed to run without CARLA. CARLA-based QA is intentionally constrained to targeted checks (tile loading, spawn validation, short stress tests) to reduce exposure to nondeterministic engine failures.
+
+Chapter 5 — Map Generation and Repair Method
+5.1 Input preprocessing and sanitization (incl. optional SUMO repair)
+
+The input OpenDRIVE is sanitized to reduce parser sensitivity and normalize metadata. An optional SUMO-based repair pass is used to stabilize topology when enabled. Both operations are logged and exported as versioned intermediate XODR files to support traceability.
+
+5.2 Topology linting, structure scanning, semantic risk analysis
+
+Before destructive repairs, diagnostic scans quantify risks: connectivity components, anomalous curvature outliers, broken junction references, and semantic uncertainty. High-risk road identifiers are recorded to support targeted debugging rather than global, opaque modifications.
+
+5.3 Topology repair and enrichment
+
+Topology repairs remove invalid links and normalize junction structures. Enrichment adds simulator-relevant semantics such as inferred traffic lights and buildings (with fallback behavior when external building sources are malformed), improving scenario realism while keeping changes auditable.
+
+5.4 Geometry authority: DEM elevation, planView smoothing, continuity repair
+
+Elevation is applied from a DEM and smoothed to remove high-frequency noise that causes unstable gradients. Plan-view smoothing merges micro-segments and fixes heading discontinuities. Continuity repair then reduces discontinuities between adjacent segments, stabilizing the geometric substrate used by all downstream semantics.
+
+5.5 Geometry freeze policy and immutability enforcement
+
+After continuity stabilization, geometry is declared “frozen”: subsequent stages are prohibited from modifying plan-view geometry. This prevents later steps (e.g., lane repair) from accidentally reintroducing geometry defects and supports a clean separation between generation and validation.
+
+5.6 Lane generation and cross-section repair
+
+Lane semantics are generated where missing and repaired to enforce positive widths and cross-section continuity. Lane offset smoothing and cross-section repair ensure that the drivable surface remains physically plausible and numerically stable for simulator ingestion.
+
+5.7 LaneLink construction, marking synthesis, and successor invariants
+
+LaneLinks are constructed across roads and junctions, and road markings are synthesized consistently with lane types. A strict “successor invariant” is enforced for driving lanes: lanes with missing or invalid successors are repaired or downgraded to prevent CARLA routing and ingestion failures. This step operationalizes the thesis claim that simulator stability requires invariants beyond schema validity.
+
+5.8 Tiling and adjacency graph generation
+
+The final map can be decomposed into tiles with per-tile metadata (bounds, lane statistics, drivability indicators) and an adjacency graph. Tiling supports scalable QA and targeted debugging at city scale, enabling isolated re-validation without reprocessing the full map.
+
+5.9 Quality gates
+
+Quality gates act as acceptance criteria, including XML integrity checks, semantic overlap checks, seam thresholds, and polygon collision mesh validation. Gate outputs are exported as structured summaries and defect logs, enabling quantitative reporting of pipeline robustness rather than anecdotal success.
+
+Chapter 6 — Simulator-Based QA and Robustness Strategy
+6.1 Lightweight vs. full-map CARLA validation
+
+Full-map loading is treated as optional because it is sensitive to engine-level constraints. Lightweight validation focuses on representative subsets and tile-based checks to produce stable, repeatable QA signals even when full-map ingestion is unreliable.
+
+6.2 Tile-based validation: spawn checks, seam analysis, stress testing
+
+Tile validation loads map subsets and performs spawn checks and short runtime tests to detect failures such as missing navigability, stuck vehicles, or seam discontinuities. Seam statistics provide localized measures of cross-tile consistency, making failures actionable and comparable across runs.
+
+6.3 Failure taxonomy and recovery logic
+
+Failures are categorized and recorded (e.g., RPC load errors, spawn failures, stuck events). Recovery logic—controlled restarts, readiness probes, and bounded retry policies—is treated as part of experimental infrastructure that protects reproducibility by reducing cross-run contamination.
+
+6.4 Sensor configuration and coordinate frames
+
+Perception experiments require consistent coordinate frames and verified extrinsics. The thesis should explicitly state that sensor intrinsics and extrinsics are validated, and that missing extrinsics (defaulting to zero transforms) are treated as an “uncalibrated” condition rather than silently accepted.
+
+6.5 LiDAR transformation verification
+
+A dedicated verification procedure is described for LiDAR coordinate transforms (e.g., projection sanity checks and consistent ego-pose evaluation). The purpose is to ensure that observed differences in perception outputs are attributable to map structure rather than misconfigured sensor placement.
+
+Chapter 7 — Offline Domain-Gap Evaluation
+7.1 Motivation
+
+Domain-gap evaluation is designed to remain meaningful when simulator validation is unstable. By operating directly on OpenDRIVE artifacts and metadata, the thesis avoids using “CARLA load success” as the primary correctness criterion.
+
+7.2 Global alignment and deterministic fallback
+
+The generated map is aligned to the manual reference using a similarity transform (translation/rotation/scale) derived from geometry. If alignment fails, a deterministic fallback (identity transform) is used to avoid nondeterministic evaluation behavior.
+
+7.3 Whole-map structural metrics
+
+Whole-map metrics quantify differences in geometry, curvature distributions, intersection structure, semantic objects, and road classification. These provide global indicators of similarity while remaining independent of simulator runtime effects.
+
+7.4 Tile matching and spatial localization
+
+Tiles are matched spatially (e.g., IoU-like overlap) to localize discrepancies. Per-tile metrics are visualized as heatmaps, allowing precise statements about where the generated map diverges from the manual reference (e.g., complex junction regions).
+
+7.5 Optional learned/latent gap and dependency gating
+
+Optional learned gap models (e.g., GNN-based embeddings) are treated as gated extensions with explicit dependency checks. This prevents silent evaluation drift and preserves reproducibility when optional libraries are unavailable.
+
+7.6 Outputs and audit artifacts
+
+The evaluation produces a consolidated machine-readable report (e.g., full_report.json) and visualization artifacts (overlays, heatmaps). These artifacts form the basis for results tables and qualitative figures in the thesis.
+
+Chapter 8 — Experimental Setup
+8.1 Study area selection and datasets
+
+The study area (Ingolstadt) is defined by fixed GPS bounds and fixed input datasets (OSM extract, DEM). This ensures stable spatial scope across all runs.
+
+8.2 Manual reference map creation and assumptions
+
+The manual OpenDRIVE map is treated as a reference baseline with documented assumptions and known modeling choices. The thesis should clarify what aspects are considered authoritative (geometry, lane semantics, intersection layout) and what uncertainty remains.
+
+8.3 Parameter settings and ablations
+
+Ablations target the pipeline’s most influential parameters (curvature clamps, seam thresholds, successor strictness, smoothing strengths). Each ablation is reproducibly tracked via settings snapshots and hashes.
+
+8.4 Compute environment and reproducibility manifest
+
+The compute environment is reported using a reproducibility manifest (OS, Python version, library versions, CARLA version). Runs are identified by output directory names and configuration hashes to allow exact reconstruction.
+
+8.5 Evaluation protocol
+
+The protocol is explicitly two-tier: offline domain-gap metrics provide primary comparison, while simulator QA provides constrained drivability evidence. This design acknowledges simulator nondeterminism and avoids conflating engine stability with structural correctness.
+
+Chapter 9 — Results
+9.1 Pipeline success metrics
+
+Results include counts of drivable lanes, satisfaction of successor invariants, marking consistency, and gate pass/fail outcomes. These are reported using exported statistics JSON files and validation summaries.
+
+9.2 CARLA validation outcomes
+
+Tile pass rates and defect logs (spawn failures, stuck events, RPC load failures) are summarized as a failure taxonomy. The results are interpreted as robustness evidence, not as the sole correctness argument.
+
+9.3 Domain-gap results
+
+Whole-map metric tables are combined with per-tile heatmaps to show both global similarity and spatially localized divergences. This section links numeric gap values to representative qualitative overlays.
+
+9.4 Case studies
+
+Selected regions (complex junctions, intersections, roundabouts) are analyzed in detail using overlays and tile-local reports. Case studies translate abstract metrics into concrete structural explanations.
+
+9.5 Discussion of CARLA bottlenecks at city scale
+
+Observed ingestion bottlenecks and instability patterns are summarized (e.g., repeated load sensitivity, RPC failures). The thesis frames these as engine constraints motivating tile QA and offline evaluation.
+
+Chapter 10 — Discussion
+10.1 What “map correctness” means under CARLA constraints
+
+Correctness is decomposed into schema validity, structural validity (invariants), and simulator stability. The thesis argues that structural validity should be the primary scientific basis, while simulator stability is treated as a robustness property influenced by engine limits.
+
+10.2 Trade-offs: strict invariants vs. completeness
+
+Strict successor enforcement improves navigability and stability but may downgrade incomplete fragments. This trade-off is framed as an explicit design choice rather than a hidden artifact of conversion.
+
+10.3 Validity vs. engine stability
+
+Failures during simulator loading are not automatically interpreted as semantic invalidity. Instead, the pipeline’s offline checks and deterministic artifacts provide a stable basis for evaluation independent of engine nondeterminism.
+
+10.4 Implications for Sim2Real and experimental design
+
+Structural differences (intersection geometry, lane placement) can change sensor observations and downstream behavior even if pixel appearance is similar. The thesis highlights how localized gap heatmaps support targeted improvements and principled dataset construction.
+
+10.5 Limitations and threats to validity
+
+Limitations include incomplete OSM semantics, heuristic enrichment, simulator engine constraints, and potential sensor calibration uncertainties. Threats to validity are mitigated via determinism, artifact logging, and explicit gating of optional evaluation components.
+
+Chapter 11 — Conclusion and Future Work
+11.1 Summary of contributions
+
+The conclusion restates the pipeline, invariant enforcement, tile QA strategy, and offline domain-gap framework as the primary contributions.
+
+11.2 Answers to research questions
+
+Each research question is answered using the reported metrics: pipeline stability evidence, invariant satisfaction, and quantified domain gaps against the manual reference.
+
+11.3 Future work
+
+Future work includes stronger static auditing, richer semantic inference, improved engine-stability mitigation, and expanded learned gap representations with standardized training/evaluation protocols.
+
+Appendices (what to put inside)
+
+A. Pipeline stage outputs and artifact catalog
+A table mapping stage → input/output files (XODR versions, JSON reports, images, overlays, heatmaps, defect logs).
+
+B. MCP audit rules and example reports
+List the audit rules (dependency guards, offline-only modules, optional imports) and show one example audit report.
+
+C. Key configuration tables
+A compact table of the most important settings: seeds, smoothing parameters, successor strictness, seam thresholds, tile size.
+
+D. Additional qualitative figures
+Full-page overlays, heatmaps, lane overlays, and selected screenshot grids.

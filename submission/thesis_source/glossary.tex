@@ -1,0 +1,57 @@
+% glossary.tex
+% Glossary and acronym definitions for the thesis.
+% Keep this file "data-only": no \chapter commands.
+
+% --- Acronyms (alphabetical) ---
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{av}{AV}{Autonomous Vehicle}
+\newacronym{bev}{BEV}{Bird's-Eye View}
+\newacronym{carla}{CARLA}{Car Learning to Act}
+\newacronym{crs}{CRS}{Coordinate Reference System}
+\newacronym{csv}{CSV}{Comma-Separated Values}
+\newacronym{dem}{DEM}{Digital Elevation Model}
+\newacronym{dnn}{DNN}{Deep Neural Network}
+\newacronym{gnss}{GNSS}{Global Navigation Satellite System}
+\newacronym{gpu}{GPU}{Graphics Processing Unit}
+\newacronym{hpc}{HPC}{High-Performance Computing}
+\newacronym{iou}{IoU}{Intersection over Union}
+\newacronym{json}{JSON}{JavaScript Object Notation}
+\newacronym{kitti}{KITTI}{Karlsruhe Institute of Technology and Toyota Technological Institute}
+\newacronym{lidar}{LiDAR}{Light Detection and Ranging}
+\newacronym{map}{mAP}{mean Average Precision}
+\newacronym{miou}{mIoU}{mean Intersection over Union}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{odbl}{ODbL}{Open Database License}
+\newacronym{odr}{OpenDRIVE}{OpenDRIVE (ASAM road network format)}
+\newacronym{osm}{OSM}{OpenStreetMap}
+\newacronym{openscenario}{OpenSCENARIO}{OpenSCENARIO (ASAM scenario description standard)}
+\newacronym{qa}{QA}{Quality Assurance}
+\newacronym{rmse}{RMSE}{Root Mean Squared Error}
+\newacronym{ros}{ROS}{Robot Operating System}
+\newacronym{se3}{SE(3)}{Special Euclidean group in 3D}
+\newacronym{slurm}{SLURM}{Simple Linux Utility for Resource Management}
+\newacronym{sumo}{SUMO}{Simulation of Urban MObility}
+\newacronym{uda}{UDA}{Unsupervised Domain Adaptation}
+\newacronym{utm}{UTM}{Universal Transverse Mercator}
+\newacronym{wgs84}{WGS84}{World Geodetic System 1984}
+\newacronym{xodr}{XODR}{OpenDRIVE file format (commonly \texttt{.xodr})}
+\newacronym{yolo}{YOLO}{You Only Look Once}
+
+% --- Glossary terms (optional; keep concise) ---
+\newglossaryentry{domain_gap}{
+  name={domain gap},
+  sort={domain gap},
+  description={A measurable divergence between the training data distribution and the deployment data distribution, which can degrade model performance under distribution shift}
+}
+
+\newglossaryentry{domain_randomization}{
+  name={domain randomization},
+  sort={domain randomization},
+  description={A strategy for improving sim-to-real transfer by increasing variability in synthetic data (e.g., textures, lighting, assets, or scene structure) so that real-world conditions fall within the training distribution}
+}
+
+\newglossaryentry{georeference}{
+  name={geoReference},
+  sort={georeference},
+  description={An OpenDRIVE header field that encodes the map's coordinate reference system (e.g., PROJ string) to enable consistent alignment with geographic coordinates}
+}

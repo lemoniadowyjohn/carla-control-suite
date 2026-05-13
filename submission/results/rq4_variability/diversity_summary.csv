@@ -1,0 +1,2 @@
+n_runs,n_success,unique_hashes,verdict_mode,coefficient_of_variation_road_count,coefficient_of_variation_junction_count,coefficient_of_variation_tile_count
+5,5,5,NONDETERMINISTIC,0.0,0.0,0.0

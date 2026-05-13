@@ -1,0 +1,19 @@
+{
+  "status": "COMPLETE",
+  "pyg_available": true,
+  "torch_available": true,
+  "tile_count": 72,
+  "tiles_dir": "domain_gap_results/auto_tiles_aligned",
+  "epochs_completed": 50,
+  "checkpoint": "thesis_results/gnn_v1/ksweep_runs/k_72/map_encoder_epoch50.pt",
+  "final_loss": 2.477336,
+  "latent_gap": {
+    "l1_mean": 0.11074218899011612,
+    "l2": 1.5527724027633667,
+    "mse": 0.018836734816432,
+    "cosine_distance": 1.205551266670227,
+    "cosine_similarity": -0.20555125176906586
+  },
+  "ksweep_report": "thesis_results/gnn_v1/ksweep_report.json",
+  "timestamp": "2026-03-20T01:56:52.216342+00:00"
+}

@@ -1,0 +1,14 @@
+numpy
+scipy
+shapely
+lxml
+pyproj
+rasterio
+networkx
+matplotlib
+opencv-python
+pygame
+torch
+torchvision
+tqdm
+psutil

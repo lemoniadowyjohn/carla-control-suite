@@ -1,0 +1,3 @@
+##########sbatch hpc/slurm_train_yolo.sh synthetic_only configs/yolo_synth.yaml
+          #sbatch hpc/slurm_train_yolo.sh real_only configs/yolo_real.yaml
+          #sbatch hpc/slurm_train_yolo.sh mixed configs/yolo_mixed.yaml
