@@ -1,0 +1,32 @@
+{
+  "schema_version": "n30_v1",
+  "timestamp": "2026-05-14T20:23:40.230758+00:00",
+  "method": "label_permutation_centroid_cross_cosine",
+  "k_permutations": 1000,
+  "seed": 42,
+  "alpha": 0.05,
+  "n_total": 45,
+  "n_auto": 30,
+  "n_manual": 15,
+  "observed_cross_cosine_centroids": 0.12359072797379399,
+  "observed_cross_cosine_all_pairs": 0.02038869082008738,
+  "null_distribution": {
+    "centroid_mean": 0.8772819101499194,
+    "centroid_std": 0.06716931853935292,
+    "centroid_min": 0.5081092375181641,
+    "centroid_max": 0.9853602350516885,
+    "centroid_p5": 0.751688359737912,
+    "centroid_p95": 0.9569708212896453,
+    "all_pairs_mean": 0.30463518808137974,
+    "all_pairs_std": 0.015184189748190705
+  },
+  "p_value_centroid": 0.0,
+  "p_value_all_pairs": 0.0,
+  "significant_at_alpha_05_centroid": true,
+  "significant_at_alpha_05_all_pairs": true,
+  "observed_percentile_in_null": 0.0,
+  "verdict": "SIGNIFICANT_SEPARATION",
+  "rq4_upgrade": "OBSERVATIONAL_TO_SUPPORTED",
+  "verdict_text": "The latent-space separation between auto and manual tile embeddings is statistically significant (p=0.0000 < 0.05). This upgrades RQ4 from purely observational to statistically supported.",
+  "note": "This permutation test operates on structural-feature MLP embeddings (N=45 tiles, 9 features). The primary GNN result (lane-graph GCN, N=72, cross-cosine=-0.160) remains the thesis-grade evidence. This test provides additional statistical grounding. The primary encoder is NT-Xent self-supervised, so permutation significance depends on whether the learned representation happens to separate auto/manual tiles as a consequence of structural distribution differences."
+}
