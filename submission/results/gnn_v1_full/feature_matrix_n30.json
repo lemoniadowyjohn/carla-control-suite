@@ -1,0 +1,841 @@
+{
+  "schema_version": "n30_v1",
+  "timestamp": "2026-05-14T20:20:44.973333+00:00",
+  "feature_names": [
+    "road_count",
+    "junction_count",
+    "mean_road_length_m",
+    "std_road_length_m",
+    "mean_curvature",
+    "std_curvature",
+    "lane_count",
+    "connectivity_rate",
+    "bbox_area_m2"
+  ],
+  "n_auto": 30,
+  "n_manual": 15,
+  "n_total": 45,
+  "target_met": true,
+  "source_dirs_auto": [
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\work\\codex-full-pipeline-rerun-20260427\\domain_gap_results\\auto_tiles_aligned"
+  ],
+  "source_dirs_manual": [
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_15_domain_gap\\manual_tiles_aligned\\tiles",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_16_post_fix\\manual_tiles_aligned\\tiles"
+  ],
+  "samples": [
+    {
+      "id": "tile_0_0_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_0.xodr",
+      "file_size_bytes": 6610,
+      "features": {
+        "road_count": 2,
+        "junction_count": 1,
+        "mean_road_length_m": 96.6004,
+        "std_road_length_m": 78.8827,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 4,
+        "connectivity_rate": 0.5,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_1_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_1.xodr",
+      "file_size_bytes": 6503,
+      "features": {
+        "road_count": 2,
+        "junction_count": 1,
+        "mean_road_length_m": 137.8167,
+        "std_road_length_m": 120.0989,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 4,
+        "connectivity_rate": 0.5,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_2_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_2.xodr",
+      "file_size_bytes": 166010,
+      "features": {
+        "road_count": 51,
+        "junction_count": 31,
+        "mean_road_length_m": 53.1709,
+        "std_road_length_m": 99.7186,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 98,
+        "connectivity_rate": 0.352941,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_3_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_3.xodr",
+      "file_size_bytes": 286863,
+      "features": {
+        "road_count": 105,
+        "junction_count": 62,
+        "mean_road_length_m": 46.465,
+        "std_road_length_m": 78.5087,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 191,
+        "connectivity_rate": 0.32381,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_4_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_4.xodr",
+      "file_size_bytes": 229069,
+      "features": {
+        "road_count": 78,
+        "junction_count": 52,
+        "mean_road_length_m": 65.9972,
+        "std_road_length_m": 98.7541,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 131,
+        "connectivity_rate": 0.294872,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_5_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_5.xodr",
+      "file_size_bytes": 284233,
+      "features": {
+        "road_count": 98,
+        "junction_count": 63,
+        "mean_road_length_m": 55.2083,
+        "std_road_length_m": 82.531,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 183,
+        "connectivity_rate": 0.326531,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_6_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_0_6.xodr",
+      "file_size_bytes": 153593,
+      "features": {
+        "road_count": 62,
+        "junction_count": 41,
+        "mean_road_length_m": 49.9977,
+        "std_road_length_m": 72.8211,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 104,
+        "connectivity_rate": 0.290323,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_0_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_0.xodr",
+      "file_size_bytes": 379142,
+      "features": {
+        "road_count": 160,
+        "junction_count": 112,
+        "mean_road_length_m": 48.021,
+        "std_road_length_m": 57.515,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 257,
+        "connectivity_rate": 0.275,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_1_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_1.xodr",
+      "file_size_bytes": 266285,
+      "features": {
+        "road_count": 101,
+        "junction_count": 68,
+        "mean_road_length_m": 53.4332,
+        "std_road_length_m": 61.4887,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 174,
+        "connectivity_rate": 0.326733,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_2_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_2.xodr",
+      "file_size_bytes": 471967,
+      "features": {
+        "road_count": 172,
+        "junction_count": 113,
+        "mean_road_length_m": 42.5932,
+        "std_road_length_m": 59.5531,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 313,
+        "connectivity_rate": 0.331395,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_3_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_3.xodr",
+      "file_size_bytes": 618719,
+      "features": {
+        "road_count": 248,
+        "junction_count": 162,
+        "mean_road_length_m": 35.1449,
+        "std_road_length_m": 52.7702,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 441,
+        "connectivity_rate": 0.342742,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_4_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_4.xodr",
+      "file_size_bytes": 550252,
+      "features": {
+        "road_count": 206,
+        "junction_count": 132,
+        "mean_road_length_m": 46.5298,
+        "std_road_length_m": 73.5468,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 362,
+        "connectivity_rate": 0.349515,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_5_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_5.xodr",
+      "file_size_bytes": 586858,
+      "features": {
+        "road_count": 213,
+        "junction_count": 143,
+        "mean_road_length_m": 44.0384,
+        "std_road_length_m": 73.0365,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 388,
+        "connectivity_rate": 0.323944,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_6_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_1_6.xodr",
+      "file_size_bytes": 152605,
+      "features": {
+        "road_count": 54,
+        "junction_count": 33,
+        "mean_road_length_m": 60.4943,
+        "std_road_length_m": 97.4817,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 96,
+        "connectivity_rate": 0.333333,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_2_0_auto_auto_tiles_source",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\auto_tiles_source\\tiles",
+      "filename": "tile_2_0.xodr",
+      "file_size_bytes": 298745,
+      "features": {
+        "road_count": 118,
+        "junction_count": 84,
+        "mean_road_length_m": 54.6444,
+        "std_road_length_m": 78.9868,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 198,
+        "connectivity_rate": 0.271186,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_0_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_0.xodr",
+      "file_size_bytes": 17747,
+      "features": {
+        "road_count": 5,
+        "junction_count": 2,
+        "mean_road_length_m": 120.1896,
+        "std_road_length_m": 84.8751,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 11,
+        "connectivity_rate": 0.4,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_1_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_1.xodr",
+      "file_size_bytes": 15340,
+      "features": {
+        "road_count": 4,
+        "junction_count": 1,
+        "mean_road_length_m": 187.0239,
+        "std_road_length_m": 99.3395,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 10,
+        "connectivity_rate": 0.25,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_2_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_2.xodr",
+      "file_size_bytes": 170447,
+      "features": {
+        "road_count": 52,
+        "junction_count": 32,
+        "mean_road_length_m": 52.4891,
+        "std_road_length_m": 98.8751,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 99,
+        "connectivity_rate": 0.615385,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_3_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_3.xodr",
+      "file_size_bytes": 259948,
+      "features": {
+        "road_count": 90,
+        "junction_count": 50,
+        "mean_road_length_m": 49.355,
+        "std_road_length_m": 85.0378,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 170,
+        "connectivity_rate": 0.555556,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_4_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_4.xodr",
+      "file_size_bytes": 189537,
+      "features": {
+        "road_count": 65,
+        "junction_count": 40,
+        "mean_road_length_m": 68.0408,
+        "std_road_length_m": 81.2223,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 116,
+        "connectivity_rate": 0.615385,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_5_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_5.xodr",
+      "file_size_bytes": 241783,
+      "features": {
+        "road_count": 75,
+        "junction_count": 48,
+        "mean_road_length_m": 63.9198,
+        "std_road_length_m": 100.6387,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 144,
+        "connectivity_rate": 0.64,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_0_6_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_0_6.xodr",
+      "file_size_bytes": 136055,
+      "features": {
+        "road_count": 53,
+        "junction_count": 34,
+        "mean_road_length_m": 50.7405,
+        "std_road_length_m": 75.2979,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 91,
+        "connectivity_rate": 0.641509,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_10_7_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_10_7.xodr",
+      "file_size_bytes": 30859,
+      "features": {
+        "road_count": 3,
+        "junction_count": 1,
+        "mean_road_length_m": 227.8683,
+        "std_road_length_m": 148.5989,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 7,
+        "connectivity_rate": 0.333333,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_0_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_0.xodr",
+      "file_size_bytes": 421316,
+      "features": {
+        "road_count": 171,
+        "junction_count": 121,
+        "mean_road_length_m": 48.0213,
+        "std_road_length_m": 58.2399,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 272,
+        "connectivity_rate": 0.707602,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_1_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_1.xodr",
+      "file_size_bytes": 288178,
+      "features": {
+        "road_count": 101,
+        "junction_count": 69,
+        "mean_road_length_m": 57.7742,
+        "std_road_length_m": 62.8398,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 167,
+        "connectivity_rate": 0.683168,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_2_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_2.xodr",
+      "file_size_bytes": 442287,
+      "features": {
+        "road_count": 152,
+        "junction_count": 98,
+        "mean_road_length_m": 47.4466,
+        "std_road_length_m": 62.9303,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 284,
+        "connectivity_rate": 0.644737,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_3_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_3.xodr",
+      "file_size_bytes": 549562,
+      "features": {
+        "road_count": 212,
+        "junction_count": 138,
+        "mean_road_length_m": 35.7607,
+        "std_road_length_m": 55.3464,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 381,
+        "connectivity_rate": 0.650943,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_4_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_4.xodr",
+      "file_size_bytes": 478712,
+      "features": {
+        "road_count": 182,
+        "junction_count": 114,
+        "mean_road_length_m": 42.7019,
+        "std_road_length_m": 59.9976,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 325,
+        "connectivity_rate": 0.626374,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_5_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_5.xodr",
+      "file_size_bytes": 516372,
+      "features": {
+        "road_count": 173,
+        "junction_count": 112,
+        "mean_road_length_m": 49.1267,
+        "std_road_length_m": 84.7069,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 326,
+        "connectivity_rate": 0.647399,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_1_6_auto_domain_gap_results",
+      "label": "auto",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\domain_gap_results\\auto_tiles_aligned",
+      "filename": "tile_1_6.xodr",
+      "file_size_bytes": 127918,
+      "features": {
+        "road_count": 41,
+        "junction_count": 25,
+        "mean_road_length_m": 72.3481,
+        "std_road_length_m": 108.4861,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 73,
+        "connectivity_rate": 0.609756,
+        "bbox_area_m2": 19877116.48
+      }
+    },
+    {
+      "id": "tile_10_2_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_10_2.xodr",
+      "file_size_bytes": 339620,
+      "features": {
+        "road_count": 1,
+        "junction_count": 0,
+        "mean_road_length_m": 286.6776,
+        "std_road_length_m": 0.0,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 283,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_1_2_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_1_2.xodr",
+      "file_size_bytes": 2184254,
+      "features": {
+        "road_count": 18,
+        "junction_count": 13,
+        "mean_road_length_m": 82.9553,
+        "std_road_length_m": 93.0373,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 1229,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_1_3_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_1_3.xodr",
+      "file_size_bytes": 2759969,
+      "features": {
+        "road_count": 26,
+        "junction_count": 16,
+        "mean_road_length_m": 56.3064,
+        "std_road_length_m": 56.4231,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 1734,
+        "connectivity_rate": 0.961538,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_1_4_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_1_4.xodr",
+      "file_size_bytes": 136694,
+      "features": {
+        "road_count": 1,
+        "junction_count": 0,
+        "mean_road_length_m": 63.1143,
+        "std_road_length_m": 0.0,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 79,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_2_2_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_2_2.xodr",
+      "file_size_bytes": 3517334,
+      "features": {
+        "road_count": 94,
+        "junction_count": 67,
+        "mean_road_length_m": 37.7362,
+        "std_road_length_m": 44.8355,
+        "mean_curvature": 0.0003002,
+        "std_curvature": 5.7e-07,
+        "lane_count": 1420,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_2_3_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_2_3.xodr",
+      "file_size_bytes": 2118181,
+      "features": {
+        "road_count": 28,
+        "junction_count": 19,
+        "mean_road_length_m": 51.0928,
+        "std_road_length_m": 48.314,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 1029,
+        "connectivity_rate": 0.964286,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_2_4_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_2_4.xodr",
+      "file_size_bytes": 4936558,
+      "features": {
+        "road_count": 70,
+        "junction_count": 52,
+        "mean_road_length_m": 39.6132,
+        "std_road_length_m": 36.6938,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 3155,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_2_5_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_2_5.xodr",
+      "file_size_bytes": 7141707,
+      "features": {
+        "road_count": 78,
+        "junction_count": 59,
+        "mean_road_length_m": 59.914,
+        "std_road_length_m": 44.261,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 4953,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_2_6_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_2_6.xodr",
+      "file_size_bytes": 1219168,
+      "features": {
+        "road_count": 3,
+        "junction_count": 0,
+        "mean_road_length_m": 167.7539,
+        "std_road_length_m": 73.6375,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 1030,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_3_2_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_3_2.xodr",
+      "file_size_bytes": 6407727,
+      "features": {
+        "road_count": 62,
+        "junction_count": 47,
+        "mean_road_length_m": 61.0686,
+        "std_road_length_m": 50.1774,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 5078,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_3_3_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_3_3.xodr",
+      "file_size_bytes": 7608124,
+      "features": {
+        "road_count": 98,
+        "junction_count": 72,
+        "mean_road_length_m": 48.6096,
+        "std_road_length_m": 44.3695,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 5831,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_3_4_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_3_4.xodr",
+      "file_size_bytes": 6015642,
+      "features": {
+        "road_count": 119,
+        "junction_count": 86,
+        "mean_road_length_m": 38.3599,
+        "std_road_length_m": 34.5947,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 3936,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_3_5_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_3_5.xodr",
+      "file_size_bytes": 8828333,
+      "features": {
+        "road_count": 144,
+        "junction_count": 111,
+        "mean_road_length_m": 52.9777,
+        "std_road_length_m": 37.6363,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 5565,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_3_6_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_3_6.xodr",
+      "file_size_bytes": 3934395,
+      "features": {
+        "road_count": 61,
+        "junction_count": 45,
+        "mean_road_length_m": 53.0175,
+        "std_road_length_m": 41.316,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 2593,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    },
+    {
+      "id": "tile_4_2_manual_manual_tiles_aligned",
+      "label": "manual",
+      "source_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\run_13\\manual_tiles_aligned\\tiles",
+      "filename": "tile_4_2.xodr",
+      "file_size_bytes": 5072631,
+      "features": {
+        "road_count": 30,
+        "junction_count": 23,
+        "mean_road_length_m": 62.0086,
+        "std_road_length_m": 72.5448,
+        "mean_curvature": 0.0,
+        "std_curvature": 0.0,
+        "lane_count": 4504,
+        "connectivity_rate": 1.0,
+        "bbox_area_m2": 12878754.48
+      }
+    }
+  ]
+}
