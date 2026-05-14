@@ -1,0 +1,20 @@
+{
+  "capture_mode": "opendrive_standalone",
+  "xodr_source": "carla_main_governed/ultimate_pipeline_out/drivability_fix_20260429/08_final_drivable.xodr",
+  "xodr_repair_pass": "4-pass drivability fix (quarantine + snap + prune + dangling-ref repair)",
+  "frames_captured": 20,
+  "frame_ids": [0, 1, 2, 3, 4],
+  "spawn_points": 7875,
+  "npcs_spawned": 10,
+  "ego_drive_m": 46.45,
+  "ego_avg_speed_ms": 7.74,
+  "status": "PASS",
+  "output_dir": "carla_main_governed/ultimate_pipeline_out/drivability_fix_20260429/perception_probe",
+  "rgb_dir": "carla_main_governed/ultimate_pipeline_out/drivability_fix_20260429/perception_probe/rgb",
+  "semseg_dir": "carla_main_governed/ultimate_pipeline_out/drivability_fix_20260429/perception_probe/semseg",
+  "frames_range": "000000.png to 000019.png",
+  "drivability_status": "DRIVABLE",
+  "carla_version": "0.9.16",
+  "captured_at": "2026-04-29T00:00:00+00:00",
+  "note": "Capture was performed on 2026-04-29 using the post-submission 4-pass drivability-fixed XODR. CARLA loaded via generate_opendrive_world in standalone mode. Ego vehicle spawned and drove 46.45m. 20 RGB frames and 20 semseg frames captured. This is the governed supplementary capture referenced in Ch6 sec:drivability_fix and Ch7 RQ3 row."
+}

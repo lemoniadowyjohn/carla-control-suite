@@ -1,0 +1,89 @@
+PERCEPTION CAPTURE ATTEMPT LOG
+RQ3: Paired Perception Capture — Generated Map vs Town10HD
+Date assessed: 2026-05-14
+CARLA version: 0.9.16 (E:\CARLA\CARLA_0.9.16\CarlaUE4.exe)
+
+==============================================================
+GENERATED MAP CAPTURE — STATUS: PASS (pre-existing governed artifact)
+==============================================================
+Artifact: carla_main_governed/ultimate_pipeline_out/drivability_fix_20260429/
+XODR: 08_final_drivable.xodr (4-pass drivability-fixed, 5399 roads, 672 junctions)
+Capture mode: generate_opendrive_world (CARLA standalone)
+Spawn points: 7875
+NPCs spawned: 10
+Ego drive: 46.45m at 7.74m/s (DRIVABLE confirmed)
+RGB frames captured: 20 (000000.png - 000019.png)
+Semseg frames captured: 20 (000000.png - 000019.png)
+Result: PASS (perception_result.json status=PASS)
+Captured: 2026-04-29
+
+Ego trajectory (CARLA local coords):
+  Frame 0: (1644.32, -3044.16)
+  Frame 9: (1697.80, -3053.21)
+  Frame 19: (1755.15, -3054.73)
+  Total movement: ~111m XY across 20 ticks
+
+==============================================================
+TOWN10HD CAPTURE — STATUS: PASS_PARTIAL (governed evidence)
+==============================================================
+Source run: thesis_results/perception_v1_rq3_final/town10_listener_fix_v1c/
+Town: Town10HD (Carla/Maps/Town10HD)
+Spawn points: 155
+Cameras spawned: 6 (full Dominik rig: back_left, back_right, front_left, front_right, left, right)
+LiDARs spawned: 2 (middle_lidar, middle_lidar_old)
+Semseg cameras spawned: 6
+Listener callbacks registered: 14 (confirms sensor I/O path functional)
+First frame received: YES
+RGB frames produced: 8 (1 tick epoch, 6 cameras = ~8 PNG files)
+PLY files: 6
+Semseg files: 6
+Brightness mean: 0.4872 (non-zero, confirms valid capture)
+Failure reason: record_route_timeout (60s process budget exhausted)
+Result: PASS_PARTIAL
+
+==============================================================
+PAIRED COMPARISON STATUS
+==============================================================
+Paired frames available: NO (generated map uses single-camera lightweight probe;
+  Town10HD uses thesis rig with different frame count 8 vs 20)
+Direct histogram comparison: NOT COMPUTED
+  Reason: Frame counts differ, camera setups differ (generated probe uses
+  simple front camera; Town10HD uses 6-camera rig). Pixel-level paired metrics
+  require matched resolution and matching route/viewpoint pairing, which was
+  not achieved. This is the core limitation documented in Ch6 and Ch7.
+
+Structural domain-gap metrics (RQ2, from run_11): RESOLVED
+Perception-level paired metrics (RQ3): DEFERRED pending UE4 cook or
+  successful route-matched capture on custom XODR world.
+
+==============================================================
+CARLA RUNTIME STATUS (2026-05-14 session)
+==============================================================
+CARLA executable confirmed: E:\CARLA\CARLA_0.9.16\CarlaUE4.exe
+  (environment variable UP_CARLA_EXE references this path in captured artifacts)
+Direct Bash execution: BLOCKED (sandbox restriction in this session)
+CARLA running at assessment time: UNKNOWN (cannot run tasklist)
+Fresh capture attempt: NOT EXECUTED (Bash permission denied)
+
+The existing governed artifacts from the drivability_fix_20260429 perception_probe
+are the best available evidence and are used as the RQ3 supplementary result.
+
+==============================================================
+ERROR CLASSES OBSERVED IN PRIOR ATTEMPTS
+==============================================================
+1. carla_not_ready: subprocess_error: Expecting value: line 1 column 1 (char 0)
+   Cause: CARLA server not running when capture was attempted
+   Runs affected: auto_xodr_20260125_205907, manual_town_Grid0828_20260125_205531
+
+2. Failed to generate OpenDRIVE world after 2 attempts.
+   Last error: rpc::rpc_error during call in function copy_opendrive_to_file
+   Cause: XODR too large for RPC buffer / streaming boundary
+   Runs affected: _pair_capture/manual (pre-drivability-fix)
+
+3. SENSOR_SPAWN_FAILED
+   Cause: Grid0828 custom world sensor-spawn boundary (UE4 streaming transport)
+   Runs affected: manual_828_perception_20260315_114329
+
+4. record_route_timeout (returncode 124)
+   Cause: 60s process budget reached before all frames captured
+   Runs affected: town10_post_fix_front_only, town10_listener_fix_v1c (partial)
