@@ -1,179 +1,137 @@
-﻿% Kapitel 6 - Simulator-Based QA and Dataset Generation
-\section{Simulator-Based QA and Dataset Generation}
+% Kapitel 6 - Simulator-Based QA and CARLA Visual Assessment
+\section{Simulator-Based QA and CARLA Visual Assessment}
 \label{sec:simqa}
 
-This chapter describes the simulator-dependent QA layer and the dataset generation procedure used for perception experiments. Simulator execution is treated as an empirical validation layer; failures are logged and preserved rather than silently repaired \cite{carla_opendrive_standalone}.
+Simulator-based checks are treated as a separate evidence layer from the OpenDRIVE-only structural analysis. The governed pipeline therefore distinguishes four questions that are often conflated in simulator projects: (i) can the XODR be parsed, (ii) can CARLA load it as a world, (iii) is the rendered road mesh visually usable, and (iv) is the world stable enough for perception capture. Only the first two questions are answered positively for the final generated Ingolstadt artifact.
 
-\subsection{Pipeline Validation Framework}
-The pipeline applies an automated gate set before simulator execution so malformed OpenDRIVE artifacts do not propagate into experiments. These checks cover schema validity, geometric continuity, lane-graph consistency, elevation plausibility, and basic drivability. For the final governed thesis path, the domain-gap gates relevant to the reported results passed, while some finer continuity checks remained sensitive to CARLA's known \texttt{paramPoly3} approximation behavior rather than to thesis-critical structural invalidity.
+\subsection{Offline validity versus simulator validity}
+Offline gates establish whether the generated OpenDRIVE is structurally interpretable: XML integrity, geometry sanity, lane-link consistency, and final artifact provenance are all checked before CARLA is involved. CARLA then acts as an empirical QA layer rather than as the sole definition of correctness \cite{carla_opendrive_standalone}. This separation is important because a world can load despite severe road-mesh defects, and conversely a structurally meaningful artifact can still hit simulator-specific runtime boundaries.
 
-The DEM coverage gate is also interpreted conservatively. Coverage reached 92.7\% after the CRS reprojection fix, which shows that the raster spatially overlaps the generated Ingolstadt road network. This does not by itself prove that non-flat elevation survived into the governed final analysis artifact: the final \texttt{08\_final\_structural\_gap.xodr} remained flat, so the reported thesis metrics are planar-only.
+\subsection{CARLA loadability and map identity}
+The governed final artifact (\texttt{08\_final\_structural\_gap.xodr}, \texttt{scenario\_b\_audit} contract run)%
+\footnote{Full artifact path: \texttt{artifacts/final\_runs/scenario\_b\_audit/contract\_run/08\_final\_structural\_gap.xodr}}
+loads in CARLA~0.9.16 standalone mode as \texttt{Carla/Maps/OpenDriveMap}. The raw-load probe reports \texttt{load\_ok=true}, \texttt{spawn\_point\_count=8535}, and a successful \texttt{world.get\_map().to\_opendrive()} export. For context, the manually-authored Grid0821/Grid0828 reference map reports approximately 11{,}600 spawn points in the same CARLA version; the generated artifact's 8{,}267--8{,}535 points (71--73\,\% of manual) is consistent with sparser junction-centric topology in which many minor residential roads carry no valid spawn locations. These checks show that the artifact is parseable and loadable, and they confirm that later diagnostic screenshots were taken from the same promoted XODR. They do \emph{not} establish that the generated road mesh is visually usable.
 
-During hardening, the simulator QA layer was made more failure-aware through UTF-8-safe logging, clearer DEM diagnostics, deterministic spawn retries, and explicit adjacency checks for tiled validation. These controls matter methodologically because they convert silent runtime failures into auditable outcomes instead of allowing them to contaminate the reported evidence.
+\subsection{Controlled planar ablation of the generated road mesh}
+To separate vertical DEM effects from base topology defects, the final promoted XODR was tested in three forms: the original DEM-backed artifact, a flat-elevation-only copy, and a flat-elevation-plus-lateral-profile copy. In the flat variants, all roads were forced to $z=0$ while preserving plan-view geometry, junction topology, lanes, signals, and objects.
 
-\subsection{Determinism evaluation protocol}
-Pipeline determinism is evaluated by running the full pipeline twice with the same settings snapshot and then comparing artifacts with an external audit script. The audit checks:
-\begin{itemize}
-\item the settings snapshot hash,
-\item the presence/absence of required artifacts,
-\item hash equality of core products (final tiles, metadata, reports),
-\item structured diffs of intermediate OpenDRIVE files where relevant.
-\end{itemize}
-This design makes the audit causally independent from the pipeline.
-
-\paragraph{Geometric determinism versus byte-level determinism.}
-Repeated conversion runs on the same fixed OSM cutout produced identical planView geometry hashes, while the raw OpenDRIVE XML files differed at the byte level (e.g., MD5). This indicates that the pipeline is \emph{geometrically deterministic} but not necessarily \emph{byte-stable}. The most common causes are non-semantic serialization variation, such as different ordering of XML elements (roads, lane sections, objects), regenerated identifiers, run-specific metadata (timestamps, run directories), or floating-point formatting differences (e.g., \texttt{0.5} vs. \texttt{0.500000}). Consequently, determinism is reported in three levels: (i) \emph{geometric determinism} (planView hash equality), (ii) \emph{structural determinism} (tile metadata and adjacency stability), and (iii) \emph{serialization determinism} (raw file hash equality). Optional canonicalization (stable sorting and formatting) can be used to enforce byte stability, but is not required for domain-gap metrics as long as the driving-relevant geometry is identical.
-
-
-
-
-\subsection{CARLA environment setup (v0.9.16)}
-CARLA is used in a client--server setup in which the simulator provides physics and rendering while the pipeline connects through the Python API \cite{dosovitskiy2017carla}. The packaged 0.9.16 release is used throughout because it is the stable version against which the governed evidence and runtime notes were produced \cite{carla_docs_downloads_0916}. Readiness is validated in two steps: TCP availability alone is not treated as sufficient, and actor setup begins only after an RPC-level world query succeeds \cite{carla_docs_quickstart}.
-
-For fair comparison across maps, the simulator is run in synchronous mode with a fixed time step and explicit \texttt{world.tick()} control \cite{carla_docs_synchronous}. Generated maps are loaded primarily through CARLA's OpenDRIVE standalone workflow, which allows an XODR file to be imported directly without packaging a full Unreal map \cite{carla_opendrive_standalone}. This keeps the simulator-dependent layer lightweight and reproducible, even though richer static scene realization would require the separate cooked-map asset path.
-
-Where large maps would otherwise exceed local GPU limits, \texttt{no\_rendering\_mode} can be used to stabilize structural QA and non-visual data collection. Any perceptual use of headless execution is reported conservatively because rendered image appearance may depend on that choice \cite{carla_python_api}.
-\subsection{CARLA validation: lightweight vs.\ full-map checks}
-Full-city ingestion remains unstable at scale, so simulator validation is performed primarily at tile level: the XODR is loaded via standalone mode, waypoints are generated as a navigability proxy, ego spawn is attempted, and a short bounded smoke run records the result \cite{carla_opendrive_standalone}. Tiles are then classified by failure signature (for example, load failure, waypoint failure, spawn failure, or stuck state), which yields a failure taxonomy rather than a binary pass/fail narrative.
-
-The runtime layer was also hardened so that spawn outcomes are reported truthfully and reproducibly. Worker processes emit structured tile results, deterministic spawn retries reduce random false negatives, and adjacency information is normalized before seam analysis or streaming decisions are made. For qualitative capture, the development stress-test tile was fixed in advance by a documented loadability and road-density heuristic; this choice supports simulator QA only and is not used as primary structural evidence.
-
-
-\subsection{Qualitative visual inspection of captured scenes}
-To complement automated gates, representative captured scenes are inspected visually for sensor-orientation plausibility and visible scene context. This step is not used as a quantitative metric; it serves as a qualitative sanity check alongside the rig-validation reports.
-
-\begin{figure}[ht]
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.85\linewidth]{../images/fig_camera_rig_proof.png}
-\caption{Representative RGB frames from the \texttt{camera\_rig\_fix\_v4} Town10HD\_Opt validation run. The views support the named-axis cosine verification by showing forward-facing exterior scenes for the front cameras and rearward exterior scenes for the back cameras; this figure is qualitative and not used as a quantitative metric.}
-\label{fig:sim_objects}
-\end{figure}
+\small
+\begin{tabular}{@{}p{0.34\linewidth}ccp{0.34\linewidth}@{}}
+\hline
+Variant & CARLA load & Visual QA & Interpretation \\
+\hline
+Original DEM-backed artifact & PASS & FAIL & Detached slabs, malformed junction patches, broken road-surface continuity \\
+Flat elevation only & PASS & FAIL & Flattening removes terrain height, but the same defect pattern remains \\
+Flat elevation + lateral removal & PASS & FAIL & Removing lateral profile does not resolve the broken road mesh \\
+\hline
+\end{tabular}
+\caption{Controlled planar ablation for the promoted generated XODR. CARLA load success is preserved in all variants, but visual failure remains in all variants.}
+\label{tab:carla_planar_ablation}
+\end{table}
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.54\linewidth]{../images/fig_lidar_runtime_bev.png}
-\caption{Top-down LiDAR/runtime sanity visualization from the same controlled Town10HD\_Opt rig-validation family. It was used to confirm internally consistent actor placement and synchronized LiDAR capture in a controlled runtime verification setting; it is illustrative only and not a new perception result.}
-\label{fig:lidar_runtime_bev}
-\end{figure}
+Table~\ref{tab:carla_planar_ablation} summarises the core outcome: parsing and loading survive flattening, but all three tested variants continue to exhibit road-mesh and surface-continuity defects.
 
-\subsection{Sensor rig integration from \texttt{calib\_data.json}}
-Perception datasets attach a calibrated sensor suite (multi-camera + LiDAR) to the ego vehicle. The experiments use:
-\begin{itemize}
-\item camera intrinsics from \texttt{K\_undistortion} (pinhole model),
-\item image size from \texttt{image\_size},
-\item camera extrinsics from \texttt{cTv} (vehicle$\rightarrow$camera),
-\item LiDAR extrinsics from \texttt{vTl} (LiDAR$\rightarrow$vehicle).
-\end{itemize}
-\paragraph{Camera model and image handling.}
-To keep the sensor model consistent across domains, all cameras are evaluated under a pinhole model using $\mathbf{K}_{\text{undist}}$ from \texttt{K\_undistortion}. 
-The distortion parameters (\texttt{K}, \texttt{D}) are ignored and no explicit undistortion step is applied to the rendered images; instead, the intrinsic model used for downstream processing is fixed to $\mathbf{K}_{\text{undist}}$ for all runs. 
-This prevents calibration modeling choices from confounding domain-gap measurements.
+The static audits reinforce the visual result. After flattening, the dominant structural issue counts remain unchanged: \texttt{planview\_issue\_count=3414}, \texttt{junction\_issue\_count=3720}, \texttt{link\_gap\_issue\_count=1645}, and \texttt{graph\_component\_count=9}. \texttt{planview\_issue\_count} counts within-road geometry-chain discontinuities, where consecutive \texttt{planView} geometry elements fail to connect spatially within a 0.5\,m tolerance; \texttt{junction\_issue\_count} tallies connector-road pose mismatches (start or end pose displaced from the target through-road endpoint); \texttt{link\_gap\_issue\_count} tallies road-to-road link pairs whose declared endpoint distance exceeds a merge threshold. All three counts remain invariant after elevation removal, confirming that the dominant failure class is horizontal topology, not DEM height. The largest linked-road XY gaps remain above 1.1\,km, while the corresponding Z gaps collapse to zero. The failure mode is therefore not primarily vertical. In other words, the broken slabs are not explained by DEM height alone; the stronger explanation is base topology, junction construction, road-link consistency, clipping/tiling side effects, or CARLA importer sensitivity to those horizontal defects.
 
+\subsection{Perception-readiness boundary}
+This visual QA result changes the safe interpretation of generated-map perception readiness. The generated XODR is loadable, but it is not visually stable enough to serve as a convincing perception world. Town10HD remains useful only as bounded evidence that the governed sensor rig, callback handling, and dataset export path work on a stable built-in CARLA map, but it cannot be used as evidence that the generated Ingolstadt map is perception-ready.
 
-
-\paragraph{Ego-mounted sensor suite.}
-In CARLA, each camera or LiDAR is implemented as an actor that is attached to the ego vehicle using a rigid \texttt{Transform}. \cite{carla_docs_sensors}
-The pipeline reads \texttt{calib\_data.json} and instantiates the full sensor suite consistently for every map, which makes downstream comparisons meaningful.
-
-\paragraph{Intrinsics and undistorted pinhole model.}
-Although the calibration file provides both camera intrinsics $K$ and distortion coefficients $D$, this thesis uses the undistorted intrinsics $K_{\text{undist}}$ and an ideal pinhole projection model (no distortion).
-This avoids simulator-specific distortion implementations and matches the common practice of using rectified imagery as perception input.
-
-\paragraph{Extrinsics and coordinate conventions.}
-Extrinsic calibration is represented via 4$\times$4 homogeneous transforms (vehicle $\leftrightarrow$ sensor).
-CARLA's coordinate conventions (left-handed Unreal Engine frame and actor-relative transforms) are followed when converting calibration matrices into CARLA sensor poses. \cite{carla_docs_transforms}
-Consequently, all camera and LiDAR frames remain consistent across the automatically generated maps and the manually modeled reference map.
-
-
-If any extrinsics default to the identity transform due to missing data, the run is labeled ``uncalibrated'' because incorrect sensor placement can bias perception results.
-
-\paragraph{Semantic segmentation sensor.}
-In addition to RGB cameras and LiDAR, the pipeline optionally attaches a
-\texttt{sensor.camera.semantic\_segmentation} actor co-located with each RGB camera,
-sharing identical intrinsics and extrinsic attachment transform.
-The semantic camera produces pixel-level ground-truth labels using CARLA's built-in
-Cityscapes-compatible class encoding, enabling generation of weakly labelled segmentation
-masks without manual annotation cost.
-Captured semantic frames are saved under a dedicated \texttt{semseg\_raw/} subdirectory
-and are tracked independently in the run manifest (\texttt{semseg\_files} counter).
-These labels are not used in the primary structural domain-gap analysis but are available
-for downstream perception training, domain-adaptation experiments, and sim-to-real transfer
-evaluation.
-
-\subsection{Dataset export and run manifests}
-For each simulator-valid tile, the pipeline exports synchronized sensor streams and a run manifest containing:
-\begin{itemize}
-\item tile identifiers and bounds,
-\item sensor configuration hash,
-\item weather and traffic configuration,
-\item random seeds,
-\item file lists and checksums.
-\end{itemize}
-This supports HPC-scale training and evaluation without requiring CARLA-in-the-loop execution on the cluster.
+Accordingly, the thesis treats CARLA load success as a necessary but insufficient quality gate. Generated-map perceptual evidence remains bounded for two reasons: the generated road mesh fails visual QA, and the manual cooked Grid0828 capture path was additionally limited by a CARLA runtime boundary during live sensor spawn on the custom world. Direct manual-versus-generated perception comparison is therefore deferred. A minimal-rig variant using a single forward-facing RGB camera was also attempted on both Grid0821 and Grid0828; both attempts terminated with the same streaming-transport error, confirming that the failure is map-level rather than sensor-rig-complexity-dependent.\footnote{Full diagnostic evidence and root-cause analysis for the Grid0821/Grid0828 sensor-spawn boundary: \texttt{docs/submission/perception\_rca\_final.md} in the accompanying repository.} The failed 50-frame strict-evidence capture and the later rerun3 supplementary sensor-I/O probe are separate evidence layers; the latter confirms only short sensor callback functionality and is not interpreted as perception readiness.
 
 \subsection{Summary}
-Simulator-based QA complements offline validation by testing CARLA-native loadability and basic drivability. Dataset generation is standardized via sensor configuration files and manifests to enable reproducible training and cross-domain evaluation.
+The simulator-dependent evidence supports a narrow claim: the final generated XODR is parseable and loadable in CARLA standalone mode. It does \emph{not} support a claim of visual usability. The controlled planar ablation shows that flattening elevation does not remove the observed road-mesh and surface-continuity defects, so the dominant failure mode is horizontal/topological rather than DEM-first. This is why the structural OpenDRIVE comparison remains valid while positive generated-map visual evidence and generated-map perception evidence remain deferred.
 
+\subsection{Visual Inspection of the Automatically Generated Map}
+\label{sec:generated_map_visual}
 
-\paragraph{Crash-resilient tile validation.}
-During repeated OpenDRIVE imports on Windows, the CARLA process may terminate abruptly at the engine level (e.g., with exit code \texttt{0xC0000409}), which bypasses Python exception handling.
-To prevent a single failing tile from aborting complete experiments, simulator-dependent validation is executed in isolated worker subprocesses (one worker per tile).
-If the worker crashes, the main pipeline continues, records the tile outcome, and proceeds with the next tile.
-This design turns simulator instability into a measurable outcome (tile pass rate and failure taxonomy) rather than a pipeline-ending event.
+Following application of the planview-smoother anchor-guard (terminal-anchor guard, commit \texttt{1b6956e3}) and stage-08 planview gate patches (commit \texttt{a2aa2c25}), the pipeline was rerun against the Ingolstadt OSM input (rerun3, 2026-04-27). The patched map artifact was loaded in CARLA~0.9.16 via the OpenDRIVE standalone mode to confirm loadability and to obtain representative screenshots for diagnostic visual inspection. Thirty NPC vehicles were spawned via the CARLA traffic manager and an ego vehicle with a forward-facing RGB camera was driven on autopilot to capture dynamic sensor frames. This enriched probe is retained as supplementary evidence only and does not replace the authoritative run\_11 structural pair. Figures~\ref{fig:generated_map_topdown}--\ref{fig:generated_map_junction} show top-down, street-level-with-traffic, and junction overhead views from the enriched probe run. All screenshots were captured by the author on 2026-04-27; the probe reported \texttt{load\_ok=true} and \texttt{spawn\_point\_count=8267}. The images document CARLA loadability and allow qualitative inspection of road and junction geometry, but they do not establish visual usability, route drivability, or perception readiness.
 
-\subsection{Determinism audit}
-\label{sec:determinism_audit}
-\textbf{Question:} Does the automated map generation pipeline produce consistent structural outputs under identical inputs?
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/fig_generated_map_topdown}
+  \caption{Supplementary top-down visual-QA screenshot of the automatically generated Ingolstadt map loaded in CARLA~0.9.16 (rerun3, 2026-04-27). Camera placed at altitude $z=350$\,m, pitch $-90^\circ$. The OpenDRIVE artifact loaded successfully with 8,267 spawn points; this image documents loadability and allows qualitative inspection of road coverage but does not by itself establish simulator-level visual correctness. Source: author's own screenshot.}
+  \label{fig:generated_map_topdown}
+\end{figure}
 
-\textbf{Procedure:} The OSM-to-OpenDRIVE conversion process is executed multiple times using identical pinned OSM inputs and geographic bounds.
-Generated OpenDRIVE files are compared using both cryptographic hashes and semantic structural signatures, including road count, junction count, and lane distribution.
-File-level hash differences are analyzed alongside semantic equivalence to distinguish superficial formatting variability from meaningful structural nondeterminism.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/fig_generated_map_streetlevel}
+  \caption{Supplementary street-level screenshot of the automatically generated Ingolstadt map in CARLA~0.9.16, with 30 NPC vehicles spawned via the CARLA traffic manager (rerun3, 2026-04-27). It documents the CARLA-rendered road surface generated from the OSM-derived geometry and is retained for qualitative inspection only, not as evidence of visual usability. Source: author's own screenshot.}
+  \label{fig:generated_map_streetlevel}
+\end{figure}
 
-\textbf{Expected result:} While file-level hashes may differ due to serialization or ordering effects, semantic structural signatures are expected to remain invariant across runs.
-Any deviations are explicitly reported as nondeterministic behavior.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/fig_generated_map_junction}
+  \caption{Supplementary overhead view of a representative junction in the automatically generated Ingolstadt map, captured from altitude $z=80$\,m at pitch $-75^\circ$ in CARLA~0.9.16 (rerun3, 2026-04-27). It is retained for qualitative inspection of generated junction geometry only and does not by itself establish junction correctness or simulator readiness. Source: author's own screenshot.}
+  \label{fig:generated_map_junction}
+\end{figure}
 
-\subsection{Structural domain gap between manual and generated maps}
-\label{sec:structural_gap_experiment}
-Structural differences between the manually authored map baseline and an automatically generated map are quantified using whole-map statistics and tile-level metrics.
-Whole-map metrics include road and lane counts, intersection density, and geometric properties such as curvature distributions.
-Tile-level structural differences are aggregated spatially to identify regions with elevated discrepancies.
+\subsection{Post-Submission Drivability Fix and Ego Driving Verification}
+\label{sec:drivability_fix}
 
-The primary outputs are (i) a table of global structural statistics and (ii) a tile-level discrepancy heatmap that localizes structural gap intensity across the city.
+After thesis submission, the final generated Ingolstadt XODR was subjected to a supplementary drivability-oriented repair pass. The motivation was practical rather than evidential: the pre-fix artifact loaded in CARLA but failed visual QA, with \texttt{planview\_issue\_count=2359}, \texttt{junction\_issue\_count=2052}, and \texttt{link\_gap\_issue\_count=3291}. These counts indicate that the principal limitation was horizontal road-surface continuity rather than CARLA parseability. The repair was therefore designed as a bounded engineering intervention on the post-thesis artifact, not as a replacement for the governed run\_11 structural comparison.
 
-\subsection{Experiment 0: correspondence validation and frame diagnosis}
-\label{sec:exp0_correspondence}
-Before any tile-level domain gap is interpreted, correspondence is validated using a three-step protocol:
-\begin{enumerate}
-  \item \textbf{Identity test (A vs.\ A):} verifies harness correctness. Expected outcome: match rate $\approx 100\%$, distance percentiles near zero, IoU near one.
-  \item \textbf{Auto vs.\ auto:} establishes a baseline for origin drift and natural variability under identical coordinate conventions.
-  \item \textbf{Manual vs.\ auto:} diagnoses cross-domain compatibility. If a robust translation estimate collapses distance percentiles and IoU gating succeeds, tile-level comparison proceeds on ``good matches'' only; otherwise tile-level analysis is refused.
-\end{enumerate}
-This protocol ensures that tile-level metrics quantify structural discrepancies rather than mismatched spatial locations.
+The drivability repair consisted of four passes. First, a road-quarantine pass removed the worst geometric offenders under a 2\,\% budget, using continuity and curvature thresholds of 0.5\,m, 6$^\circ$, 15$^\circ$, and curvature magnitude/jump limits of 0.3; this removed 110 roads, or 1.99\,\% of the 5,539-road input. Second, plan-view geometry-chain snapping raised the seam threshold from 2.5\,m to 10\,m, snapping 3,091 geometry starts while preserving 821 larger anchors. Third, junction connector pruning applied aggressive bundle and fan thresholds and removed 30 pathological connectors. Fourth, dangling junction references were repaired to avoid broken road links after the preceding removals. A later master-strengthening analysis scanned 5,399 roads, found 706 broken-road candidates, selected 638 repairable roads for moderate mesh-continuity repair, and improved 425 measured gaps; a junction-connector snap pass adjusted 791 connector poses. These additional values are diagnostic post-submission evidence, not a new thesis authority.
 
-\section{Perception Capability Results}
-\label{sec:perception_results}
-\paragraph{Summary of quantitative results.}
-RQ1 was assessed over five determinism-audit runs: the verdict is \textbf{NONDETERMINISTIC} (binary hashes diverge; topological counts invariant, $CV=0.0$). RQ2 structural gap is reported from the governed run\_11 raw basis: whole-network RMSE $= 54.84\,$m, matched RMSE $= 24.47\,$m for 73.0\% of sampled points within a 50 m criterion, and Hausdorff distance $= 1663\,$m. These whole-network metrics must be read together with the 4.88$\times$ coverage mismatch (258.6 km auto road length vs.\ 52.9 km manual road length); historical pre-alignment values such as 736.65 m are retained only as workflow context.
+The four-pass drivability artifact contains 5,399 roads ($-140$) and 672 junctions ($-5$), with approximately 7,819 plan-view seams, corresponding to an 11.2\,\% seam reduction from 8,810. In the master-strengthening run, SUMO repair was available and produced a subsequent analysis artifact with 4,999 roads and 645 junctions; this artifact is used only to bound engineering feasibility after submission. The CARLA load probe reported \texttt{status=loaded}, a 54.16\,s load time, and 7,875 spawn points. More importantly, an ego vehicle spawned successfully and drove 46.45\,m at an average speed of 7.74\,m/s, approximately 28\,km/h. The post-fix artifact is therefore classified as \texttt{DRIVABLE}. This result is supplementary engineering evidence only: it strengthens the simulator-loadability and ego-driving diagnosis, but it does not alter the authoritative run\_11 structural domain-gap results used for the thesis conclusions.
 
+A compact offline road-defect stress scan was additionally executed on \texttt{p2\_snapped.xodr}, the post-connector-snap artifact that preserves the generated sidewalks. This scan is not a live CARLA stuck test; it is an XODR-level proxy that tiles the map at 500\,m resolution and combines within-road plan-view seams, declared road-link endpoint gaps, lane-link coverage, and lane-type counts. It found 67 spatial tiles, of which 48 met the drivable-proxy threshold and 19 were marked as stuck-risk tiles, corresponding to a 71.64\,\% drivable-proxy rate. The same artifact contains 3,296 sidewalk lanes, 6,132 driving lanes, 672 roads with internal seam issues, and 825 road-to-road link-gap pairs. This result strengthens the RQ3 diagnosis by localising residual defects spatially, while preserving the bounded interpretation: it reports where the generated map is likely to remain fragile, not a completed manual-versus-generated perception comparison.
 
-\subsection{Reference Rig Validation (Town10HD)}
-To validate the sensor rig configuration independent of map generation, a controlled stage probe was performed on the built-in \texttt{Town10HD\_Opt} map.
-The probe confirmed correct world identity, ego spawn, and RGB callback success on the built-in map, providing a proxy baseline for rig attachment and callback readiness rather than paired Ingolstadt perceptual evidence.
-The stable governed evidence is the Town10 stage-probe artifact in the Scenario B evidence bundle.
+\subsection{Sensor Rig Output}
+\label{sec:sensor_output_generated}
 
-\subsection{Generated Map Perception Readiness}
-The authoritative governed generated-map attempt is the strict-evidence bundle configured for 50 frames.
-However, the final governed status did not close successfully: the strict-evidence \texttt{perception\_status.json} reports \texttt{ok=false} and \texttt{frames\_recorded=0}, while the associated \texttt{pair\_manifest.json} records the 50-frame target.
-This supports only a bounded statement that the generated-map arm reached governed strict-evidence execution, not that a submission-grade perception evidence pack was completed.
+Figure~\ref{fig:perception_rgb_sample} shows a representative forward-facing RGB camera frame captured during the rerun3 enriched probe run, in which an ego vehicle with an attached RGB camera was driven on autopilot through the automatically generated Ingolstadt map in CARLA~0.9.16 \cite{carla_opendrive_standalone}. Figure~\ref{fig:perception_semseg_sample} shows a representative raw semantic-segmentation output from CARLA's native semseg sensor captured during the Town10HD baseline run, colorised using the CityScapes palette \cite{cordts2016cityscapes}. Both figures are retained only as supplementary sensor-I/O evidence.
 
-Notably, partial sensor output was produced within the strict evidence bundle:
-\texttt{perception\_status.json} records 17 semantic segmentation frames
-(\texttt{semseg\_files: 17}) and 10 LiDAR point cloud files (\texttt{ply\_files: 10}),
-alongside 35 PNG files, indicating that sensor attachment and partial data capture
-succeeded.
-The reported failure mode is \texttt{EMPTY\_RECORDER\_MANIFEST} rather than a total
-world-loading or spawn failure, which provides a stronger lower bound on pipeline
-capability than a complete failure would imply.
+Following the post-submission drivability fix (Sec.~\ref{sec:drivability_fix}), a 20-frame RGB perception probe was executed on the repaired generated map with 10 NPC vehicles. The ego vehicle traversed approximately 110\,m continuously. RGB frames confirmed road-surface rendering and autonomous driving capability on the generated map. Figure~\ref{fig:perception_rgb_sample} therefore documents RGB sensor delivery on the generated map, while Figure~\ref{fig:perception_semseg_sample} confirms that the governed semseg sensor produced meaningful per-pixel class labels on the stable Town10HD map (dominant class: road, 98.4\,\%; vehicle, 1.6\,\%). Neither figure is interpreted as proof of generated-map perceptual validity, annotation correctness, or real-world transfer.
 
-\subsection{Manual Reference Blocker}
-Perception capture on the manual reference map (\texttt{Grid0828}) could not be completed. The map loads correctly as a cooked asset (identity confirmed: \texttt{Grid0828/Maps/Grid0828/Grid0828}, 11\,634 spawn points), and all identified repo-local control-flow defects were resolved. In the final governed attempt, the rig-attach path was entered with a valid client but \texttt{spawn\_response\_count}\,=\,0 with persistent streaming transport refusal yielded zero frames, classified as a CARLA runtime boundary during live sensor spawn on the custom cooked map. This runtime boundary precludes a direct image-to-image comparison (RQ3) in this thesis.
+The semantic segmentation sensor returned 100\,\% sky-class pixels (CityScapes [70,130,180]) across all 20 frames. This is a CARLA architectural constraint: \texttt{generate\_opendrive\_world()} generates procedural geometry without Unreal Engine~4 semantic material tags; the semseg sensor defaults all untagged pixels to the sky class. Semseg evidence from the generated map is therefore bounded by this CARLA standalone-mode limitation and requires a full UE4 editor cook for resolution. This limitation is independent of map quality.
+
+The RGB frame was captured from a mid-sequence frame of the rerun3 supervisor delivery run (2026-04-27); the semseg frame is from the authoritative Town10HD baseline capture (front-left camera, single representative tick). No frame selection or post-processing was applied beyond CARLA's native CityScapes colorisation.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/fig_perception_rgb_sample}
+  \caption{Supplementary forward-facing RGB camera frame captured by the ego vehicle during the rerun3 enriched probe run (automatically generated Ingolstadt map, CARLA~0.9.16, 2026-04-27). The frame is mid-sequence (autopilot, 20\,Hz, $\approx$15 ticks). It is retained as sensor-I/O evidence only: it confirms that the forward RGB sensor delivered frames after ego-vehicle spawn, but it is not interpreted as proof of visual usability or perception readiness of the generated map. Source: author's own capture.}
+  \label{fig:perception_rgb_sample}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/fig_perception_semseg_sample}
+  \caption{Supplementary semantic-segmentation frame from the authoritative Town10HD baseline run (front-left camera, CARLA~0.9.16). Output is produced by CARLA's native semseg sensor without any additional model inference; colours follow the CityScapes palette \cite{cordts2016cityscapes}. Dominant class: road (128,\,64,\,128) at 98.4\,\%; vehicle (0,\,0,\,142) at 1.6\,\%. The frame is retained only as sensor-I/O evidence confirming that the governed semseg sensor produced per-pixel class labels on a stable map, and is not interpreted as proof of generated-map perceptual validity. Source: author's own capture.}
+  \label{fig:perception_semseg_sample}
+\end{figure}
+
+\subsection{Offline RGB Distribution Proxy}
+\label{sec:offline_rgb_proxy}
+
+As supplementary context for RQ3, per-channel RGB statistics were computed on 20 frames captured from the auto-generated Ingolstadt map (post-fix drivability probe) and 60 reference frames from surrogate captures. These frame sets originate from different geographic scenes and cannot support a valid paired perceptual domain-gap evaluation. The per-channel KL divergences (R:\,0.539, G:\,0.515, B:\,0.393) and mean brightness difference (6.77\,DN) confirm that the available RGB distributions differ measurably, consistent with the structural gap reported in Table~\ref{tab:structural_gap}. This evidence is bounded by scene-content mismatch and does not substitute for a paired perception experiment on aligned map extents with matched routes and scene composition.
+
+\subsection{Camera Calibration Parameters}
+\label{sec:camera_calibration}
+
+Table~\ref{tab:camera_calib} lists the calibration parameters for the front-left RGB and semantic segmentation cameras used in the governed sensor rig. Values are taken from \texttt{ultimate\_pipeline/sensors/calib\_data.json}; the target physical sensor is a Sekonix SF3325 fisheye camera calibrated via a standard checkerboard procedure. The CARLA virtual sensor is configured to match the image resolution (1920\,$\times$\,1080) and approximate forward-left mounting pose of the physical sensor; CARLA's native pinhole camera model does not apply the fisheye distortion coefficients during simulation, so the distortion row is included for physical sensor documentation and future real-to-sim transfer reference only. The corresponding semseg camera uses an identical optical axis and image resolution.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Camera calibration parameters for the front-left RGB camera, oriented forward according to the governed rig (physical calibration; also used as the reference camera for semseg pairing).}
+  \label{tab:camera_calib}
+  \begin{tabular}{lll}
+    \toprule
+    Parameter & Symbol & Value \\
+    \midrule
+    Image width  & $W$       & 1920\,px \\
+    Image height & $H$       & 1080\,px \\
+    Focal length $x$ & $f_x$ & 1920.199\,px \\
+    Focal length $y$ & $f_y$ & 1920.333\,px \\
+    Principal point $x$ & $c_x$ & 948.860\,px \\
+    Principal point $y$ & $c_y$ & 532.114\,px \\
+    Distortion (fisheye) & $\mathbf{d}$ & $(-0.5417,\; 0.3283,\; 0.0009,\; -0.0001,\; -0.1438)$ \\
+    Vehicle-to-camera & ${}^c\mathbf{T}_v$ & Forward-left facing, $z \approx 1.014$\,m above vehicle origin \\
+    Vehicle-to-LiDAR & ${}^v\mathbf{T}_l$ & Roof mount, $z \approx 1.241$\,m above vehicle origin, $360^\circ$ sweep \\
+    \bottomrule
+  \end{tabular}
+\end{table}
