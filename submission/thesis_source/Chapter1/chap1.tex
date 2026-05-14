@@ -2,12 +2,15 @@
 \label{sec:introduction}
 
 
-Synthetic environments are widely used in autonomous driving research because they enable scalable, safe, and controllable experimentation. Yet perception models trained in simulation often struggle to generalize beyond their training conditions due to persistent domain gap effects\cite{bai2023bridging}. While this problem is often framed as a simulation-to-reality issue, relevant domain differences can also emerge \emph{within simulation itself} when the same geographic region is represented through different map-generation processes.
+Synthetic environments are widely used in autonomous driving research because they enable scalable, safe, and controllable experimentation. Yet perception models trained in simulation often struggle to generalize beyond their training conditions due to persistent domain gap effects~\cite{bai2023bridging}. While this problem is often framed as a simulation-to-reality issue, relevant domain differences can also emerge \emph{within simulation itself} when the same geographic region is represented through different map-generation processes.
 
 This thesis studies that intra-simulation gap for two large-scale CARLA environments of the same Ingolstadt region: an automatically generated map derived from OpenStreetMap (OSM) via an OSM--OpenDRIVE--CARLA pipeline, and a manually authored reference map. The primary emphasis is on reproducible and failure-aware quantification of structural differences in topology, geometry, and roadside semantics, while perception evidence is treated conservatively under a fixed sensor-rig contract.
 
-Perceptual gap quantification (RQ3) is bounded: the authoritative strict-evidence attempt targeted 50 frames, but the final governed result remained incomplete and closed with zero recorded frames; paired Grid0828 capture is still pending. GNN training (RQ4) first collapsed under a positive-only loss; the corrected NT-Xent run was non-collapsed (cross-cosine $=-0.160$, verdict \texttt{NOT\_COLLAPSED}) but remains observational because only a single governed run was completed and no downstream transfer experiment was executed. Transfer feasibility (RQ5) is deferred.
-The resulting claim scope is limited to Scenario B evidence: determinism characterization (RQ1), structural gap quantification (RQ2), bounded perception-infrastructure evidence, and observational GNN diagnostics.
+Perceptual gap quantification (RQ3) is bounded rather than complete: the strict-evidence capture attempt on the auto-generated map targeted 50 frames but produced zero recorded frames due to a confirmed CARLA runtime boundary (streaming transport refused connections on the custom world). The sensor rig was separately confirmed correct on a built-in Town10HD map (20 frames, all 14 sensor callbacks successful), so the failed target-map attempt is interpreted as a CARLA runtime/resource boundary on the specific Ingolstadt setup rather than as evidence of a rig implementation error. Direct paired perceptual quantification remains future work.
+
+GNN contrastive training (RQ4) was affected by representation collapse under a positive-only cosine loss; after switching to an NT-Xent objective the latent space was confirmed non-collapsed (cross-cosine $= -0.160$, verdict \texttt{NOT\_COLLAPSED}), but this result is observational only; no downstream transfer experiment was executed. Transfer feasibility (RQ5) is deferred accordingly.
+
+The resulting claim scope covers: determinism characterization (RQ1), structural gap quantification (RQ2), bounded perception-infrastructure evidence (RQ3), observational GNN diagnostics (RQ4), and an explicitly deferred transfer question (RQ5). This thesis primarily resolves the structural OpenDRIVE-level domain-gap comparison; direct perceptual domain-gap quantification and transfer/generalization experiments remain deferred, while the GNN analysis is retained only as an observational structural diagnostic.
 
 \subsection{Relevance and aim}
 Map quality is not a cosmetic detail: it affects traffic flow, lane-level routing, the placement and visibility of infrastructure, and the distribution of objects encountered along a route.
@@ -18,14 +21,15 @@ The aim of this thesis is to (1) quantify structural domain gaps between OSM-gen
 We address the following research questions:
 
 \begin{itemize}
-  \item \textbf{RQ1 (Determinism):} Does converting the same OSM extract into OpenDRIVE/CARLA yield deterministic geometry and behavior across repeated runs?
+  \item \textbf{RQ1 (Determinism):} Does the OSM$\rightarrow$OpenDRIVE pipeline preserve stable structural and topological signatures under fixed inputs, and where does byte-level nondeterminism arise?
   \item \textbf{RQ2 (Structural domain gap):} How do automatically generated OSM-based CARLA maps differ structurally from a manually modeled CARLA map of the same region?
   \item \textbf{RQ3 (Perceptual domain gap):} How do these structural differences shift perception outputs when running an identical sensor rig and route protocol?
-  \item \textbf{RQ4 (Observed structural variability under fixed inputs):} Across multiple OSM$\rightarrow$CARLA conversions, does repeated generation from the same pinned inputs introduce measurable structural variability that can support robustness analysis?
+  \item \textbf{RQ4 (Structural variability and latent representation):} Does repeated automatic map generation from the same pinned inputs introduce measurable structural variability, and can a latent representation of that variability support robustness analysis?
+  \item \textbf{RQ5 (Generalization and transfer):} To what extent do perception models trained on automatically generated maps generalize to (a) a manual simulated map and (b) unlabeled real-world data?
 \end{itemize}
 
 Our working hypotheses are that (i) geometry- and topology-level determinism is achievable with fixed seeds and pinned tool versions, even if byte-level artifacts differ due to serialization effects; and (ii) the largest structural gaps appear in semantics and lane topology rather than coarse road placement.
-A third hypothesis --- that perceptual shifts correlate with structural errors such as misaligned lanes, incorrect junction connectivity, and missing traffic-control elements --- was formulated but could not be evaluated within the thesis scope because direct paired perception capture on the auto-generated map was blocked by a CARLA runtime boundary (see §Scope Limitation below).
+A third hypothesis --- that perceptual shifts correlate with structural errors such as misaligned lanes, incorrect junction connectivity, and missing traffic-control elements --- was formulated but could not be evaluated within the thesis scope because direct paired perception capture on the auto-generated map was blocked by a CARLA runtime boundary (see the Scope Limitation paragraph below). A downstream transfer question (RQ5) was scoped conditionally on successful paired perception capture and is therefore reported as deferred rather than answered.
 
 
 \subsection{Research questions and falsification criteria}
@@ -52,13 +56,15 @@ How do structural map differences translate into perceptual differences for came
   \item \textbf{Evidence:} sensor outputs recorded under a single authoritative rig (Section~\ref{sec:sensor_rig}) using identical routes, weather, synchronous stepping, and tick budgets across domains; perceptual proxy metrics quantify distribution shift.
   \item \textbf{Falsification:} perceptual proxy metrics remain unchanged despite measurable structural differences, under identical sensor calibration and protocol.
 \end{itemize}
+This criterion could not be evaluated within the thesis period because direct paired capture on both maps was blocked by a CARLA runtime boundary (Section~\ref{sec:simqa}); RQ3 is therefore classified as \textsc{Bounded} pending execution of the paired experiment.
 
-\paragraph{RQ4 (Observed structural variability under fixed inputs).}
-Does repeated automatic map generation from the same pinned inputs introduce measurable structural variability that can support robustness analysis for perception experiments?
+\paragraph{RQ4 (Structural variability and latent representation).}
+Does repeated automatic map generation from the same pinned inputs introduce measurable structural variability, and can a contrastive latent-space model trained on that variability serve as an observational basis for robustness analysis?
 \begin{itemize}
-  \item \textbf{Evidence:} distributions of structural and perceptual metrics across repeated generations from the same pinned OSM snapshot; variability is decomposed by pipeline stage (Section~\ref{sec:determinism_decomposition}).
-  \item \textbf{Falsification:} repeated generations yield identical semantic signatures (no meaningful variability), or variability is dominated by instability artifacts (crashes/timeouts) rather than coherent structural diversity.
+  \item \textbf{Evidence:} structural metric distributions across repeated generations; GNN contrastive training (NT-Xent) on the resulting structural embeddings as an observational probe for representation quality; collapse detection via cross-domain cosine similarity.
+  \item \textbf{Falsification:} repeated generations yield identical semantic signatures (no meaningful variability), or the contrastive latent space collapses (cross-cosine $\approx 1.0$) indicating no domain-discriminative structure was learned.
 \end{itemize}
+Identical semantic signatures are operationally defined as $CV < 0.01$ for road and junction counts across repeated runs; values above this threshold constitute meaningful structural variability.
 
 \paragraph{RQ5 (Generalization).}
 To what extent do perception models trained on automatically generated maps generalize to (a) a manual simulated map and (b) unlabeled real-world data?
@@ -69,24 +75,25 @@ To what extent do perception models trained on automatically generated maps gene
 
 
 \paragraph{Scope Limitation: Perceptual Domain Gap and Generalization.}
-paragraph{Terminology: governed artifacts.}
-Throughout this thesis, a emph{governed artifact} is a result produced under strict reproducibility controls: pinned OSM extract (SHA-256 hashed), fixed geographic bounds, deterministic settings snapshot, explicit artifact manifesting, and independent audit of reported metrics.
-The governed path prioritises scientific defensibility: runs that cannot produce verifiable artifacts are classified as bounded or deferred rather than reported as positive results.
+The original thesis brief assigned by the supervising institution required, in addition to structural gap analysis: (i)~quantification of perceptual domain gap between generated and manual maps, (ii)~evaluation of perception-model generalization on the simulated Ingolstadt area, and (iii)~evaluation of generalization to unlabeled real-world data when training on automatically generated maps. These deliverables correspond to RQ3 and RQ5.
 
-While this thesis aimed to quantify the perceptual domain gap (RQ3) between generated and manual maps, this investigation is constrained by CARLA runtime instability during live sensor capture on the already-loaded cooked Grid0828 map. The map itself loads correctly and is confirmed as a valid cooked asset; all identified repo-local control-flow defects were resolved. In the final governed attempt, sensor spawn on the custom world produced zero frames due to persistent streaming transport failure, classified as a CARLA runtime boundary. Consequently, perceptual evaluation is limited to demonstrating the \emph{capability} of the generated maps to support sensor data collection. Direct pairwise perceptual quantification (RQ3), learning-based generalization experiments (RQ5), and any robustness conclusions beyond bounded variability observations are deferred to future work.
+The present thesis delivers the structural foundation (RQ1, RQ2) and provides bounded evidence for RQ3 and RQ4, but the direct perceptual quantification and transfer experiments could not be completed within the thesis period for two specific technical reasons. First, the final promoted XODR---while parseable and loadable in CARLA---fails visual road-mesh QA: the controlled planar ablation shows detached slabs, malformed junction patches, and broken road-surface continuity even after elevation flattening, confirming that the dominant failure class is horizontal/topological. A generated map that fails visual QA cannot serve as the basis for a paired perception experiment. Second, the manually authored Grid0828 cooked-world capture path was bounded by a CARLA runtime boundary during live sensor spawn, preventing direct manual-versus-generated paired recording. These are engineering pre-condition failures, not design decisions. Consequently, Town10HD is used only as bounded evidence that the sensor rig and capture stack function correctly on a stable built-in map, while direct manual-versus-generated perceptual quantification (RQ3) and learning-based generalization experiments (RQ5) remain deferred to future work once the generated map passes visual QA (see Section~\ref{sec:future_work}).
 
 \subsection{Contributions}
 This thesis contributes:
 \begin{itemize}
   \item A reproducible experimental comparison between an OSM-generated map set and a manually modeled reference map of the same area in CARLA 0.9.16.
   \item A determinism protocol with multi-level hashing (byte-level and geometry/topology-level) and repeatability reports.
-  \item Structural domain-gap metrics computed from OpenDRIVE (topology, geometry, semantics) and sensor-rig capability proofs under a unified contract (\texttt{K\_undistortion}, ignore \texttt{K}/\texttt{D}, camera \texttt{cTv} direct, LiDAR \texttt{vTl} inverted).
+  \item Structural domain-gap metrics computed from OpenDRIVE (topology, geometry, semantics) and sensor-rig capability proofs under a unified, mathematically verified calibration contract (consistent extrinsic conventions for camera and LiDAR placement, verified against the CARLA coordinate frame).
   \item A bounded analysis of observed conversion variability across multiple OSM-derived map variants (reported as variability evidence, not as a performance-gain claim).
 \end{itemize}
 
 \subsection{Thesis structure}
 Chapter~2 introduces background and related work on simulation, domain gap, and map standards.
-Chapter~3 describes the system and pipeline at a high level (CARLA, OSM extraction, OpenDRIVE generation, and the run artifact contract).
-Chapter~4 presents methodology, including manual map integration as a reproducibility control, determinism testing, the authoritative sensor rig, and the experimental protocol.
-Chapter~5 defines structural and perceptual metrics.
-Chapter~6 covers simulator-based QA and perception dataset generation. Chapter~7 presents quantitative results for RQ1 and RQ2 and bounded evidence for RQ3 and RQ4. Chapter~8 discusses implications, limitations, and threats to validity. Chapter~9 presents conclusions and future work.
+Chapter~3 presents foundational concepts: the OSM data model and its limitations, the Ingolstadt study area, the manual reference map family, sensor calibration conventions, and CARLA constraints.
+Chapter~4 describes the automated OSM-to-CARLA map generation pipeline: stage architecture (the implemented pipeline stages), quality gates, coordinate reference handling, artifact contracts, and the determinism and provenance strategy.
+Chapter~5 details the map generation and repair method: tile correspondence, operational drivability definition, topology repair, seam continuity, and sensor rig correctness.
+Chapter~6 covers simulator-based quality assurance and perception infrastructure validation, including the Town10HD rig confirmation and bounded perception evidence.
+Chapter~7 presents quantitative results: structural metrics (RMSE, Hausdorff, curvature divergence) defined and measured, RQ1 determinism audit, RQ2 structural gap, and bounded evidence for RQ3 and RQ4.
+Chapter~8 discusses implications for domain gap and generalization, connectivity fidelity, semantic object absence, and threats to validity.
+Chapter~9 presents conclusions and future work.

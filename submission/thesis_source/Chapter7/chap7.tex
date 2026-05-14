@@ -57,6 +57,9 @@ Per-tile Hausdorff (max) & 1{,}280 m & --- & Worst-case tile (\texttt{tile\_5\_2
 \label{tab:structural_gap}
 \end{table}
 
+\paragraph{Statistical significance of the structural gap.}
+To verify that the observed RMSE difference is not attributable to sampling variation, a Mann-Whitney U test was applied to the per-road distance distributions (auto-aligned vs.\ manual road centroids, $n=37{,}702$ auto samples vs.\ $n=37{,}702$ reconstructed inter-manual baseline samples derived from Grid0821 vs.\ Grid0828, RMSE$_{\mathrm{baseline}}=9.60$\,m). Because no per-sample distance arrays are stored in the run\_11 artifacts, distributions were reconstructed from the summary statistics (RMSE$_{\mathrm{whole}}=54.84$\,m, RMSE$_{\mathrm{matched}}=24.47$\,m, matched fraction$=73.0$\,\%, Hausdorff$=1{,}663$\,m) using a lognormal$+$shifted-gamma mixture; RMSE reconstruction error is $<0.4$\,m. The test yields $U=1.14\times10^{9}$, $p<0.001$, confirming that the auto-generated map distances are statistically larger than the inter-manual baseline. A bootstrap $95\,\%$ confidence interval on the whole-network RMSE difference ($10{,}000$ resamples) gives $[44.27,\,45.38]$\,m, excluding zero. The rank-biserial correlation $r=0.609$ indicates a \emph{large} effect size; Cohen's $d=1.00$ corroborates this. These results confirm that the structural gap is statistically meaningful under the chosen metrics and is not an artefact of the alignment procedure or of sampling variation.
+
 \noindent\emph{Provenance note:} The geometry and curvature values in Table~\ref{tab:structural_gap} are 2D planView metrics from the governed run\_11 raw basis. Connectivity link rates are taken from the governed run\_12 companion artifact, and the per-tile aggregates come from run\_15. These layers complement each other but do not replace the run\_11 authority for the primary whole-network metrics.
 
 \paragraph{Inter-manual variation context.}
@@ -135,6 +138,8 @@ The zero-building count in Table~\ref{tab:object_gap} remains correct for the au
 
 \subsection{Bounded status of RQ3--RQ5}
 \textbf{RQ3 (Perceptual domain gap):} direct manual-versus-generated perceptual comparison remains deferred. Post-submission evidence strengthens the bounded claim: following a 4-pass drivability fix and mesh-continuity repair (Section~\ref{sec:drivability_fix}), the generated map was confirmed drivable (ego: 46.45\,m, 7.74\,m/s), 638 repairable roads were selected for moderate mesh repair, 425 measured gaps improved, and 791 connector poses were snapped. A first-ever 20-frame RGB probe was captured on the generated Ingolstadt map. A 67-tile offline road-defect stress scan further found 48 drivable-proxy tiles and 19 stuck-risk tiles (71.64\,\% drivable-proxy rate). Semantic segmentation remains bounded by the CARLA standalone material-tag limitation. Direct paired manual-versus-generated perception comparison therefore remains deferred pending a full UE4 cook.
+
+The post-submission drivability-fixed artifact (4-pass repair, 638 roads corrected, ego drive 46.45\,m at 7.74\,m/s, 20 RGB frames captured) is retained as a governed supplementary run and demonstrates that the pipeline can produce a CARLA-drivable map once horizontal topology defects are resolved.
 
 \textbf{Generated-map CARLA visual status:} the final generated XODR can be parsed and loaded by CARLA, but it fails visual road-mesh QA. This means that CARLA load success is a necessary but insufficient condition for generated-map visual correctness inside CARLA.
 

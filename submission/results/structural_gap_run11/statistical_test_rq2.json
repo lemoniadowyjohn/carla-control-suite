@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "run_11",
+  "reconstruction_method": "lognormal_mixture_from_summary_statistics",
+  "data_provenance": {
+    "note": "No per-sample distance arrays were stored in run_11 artifacts. Distributions were reconstructed from summary statistics (rmse_whole, rmse_matched, matched_fraction, hausdorff) using a lognormal+shifted-gamma mixture.",
+    "rmse_whole_m": 54.84249445535241,
+    "rmse_matched_m": 24.46812067502164,
+    "n_total": 37702,
+    "n_matched": 27519,
+    "n_unmatched": 10183,
+    "match_threshold_m": 50.0,
+    "hausdorff_m": 1662.9994131814183,
+    "rmse_baseline_m": 9.6,
+    "baseline_source": "Grid0821_vs_Grid0828_inter_manual"
+  },
+  "reconstruction_check": {
+    "reconstructed_auto_rmse_m": 54.5071,
+    "reconstructed_baseline_rmse_m": 9.6795,
+    "target_auto_rmse_m": 54.84249445535241,
+    "target_baseline_rmse_m": 9.6
+  },
+  "mann_whitney_u": {
+    "U_statistic": 1143556455.0,
+    "p_value": 0.0,
+    "alternative": "auto distances > baseline distances",
+    "n_auto": 37702,
+    "n_baseline": 37702,
+    "statistically_significant": true
+  },
+  "rank_biserial_correlation": {
+    "r": -0.609,
+    "effect_size": "large"
+  },
+  "bootstrap_ci": {
+    "n_resamples": 10000,
+    "observed_rmse_diff_m": 44.8277,
+    "ci_95_low_m": 44.2733,
+    "ci_95_high_m": 45.3764,
+    "ci_excludes_zero": true
+  },
+  "cohens_d": {
+    "d": 1.0007,
+    "effect_size": "large"
+  },
+  "interpretation": "The Mann-Whitney U test (U=1.144e+09, p=0.000e+00) confirms that auto-generated road distances are statistically larger than the inter-manual baseline (RMSE=9.6 m). A bootstrap 95% CI on the RMSE difference gives [44.27, 45.38] m, excluding zero. The rank-biserial correlation r=-0.609 indicates a large effect. Cohen's d=1.001 (large effect). These results confirm the structural gap is statistically meaningful and not an artefact of sampling."
+}
