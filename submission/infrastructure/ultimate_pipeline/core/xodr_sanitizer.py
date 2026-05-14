@@ -108,6 +108,14 @@ class XODRSanitizer:
             })
             log.info("Created missing <header> element.")
 
+        # Strip the wall-clock timestamp written by carla.Osm2Odr (primary source of
+        # byte-level non-determinism across repeated runs with identical inputs).
+        # The date attribute carries no structural information and is not used by CARLA
+        # for routing or geometry; removing it makes the XODR header byte-stable.
+        if "date" in header.attrib:
+            del header.attrib["date"]
+            log.info("Stripped non-deterministic <header date> attribute.")
+
         geo = header.find("geoReference")
         if geo is None:
             geo = ET.SubElement(header, "geoReference")
