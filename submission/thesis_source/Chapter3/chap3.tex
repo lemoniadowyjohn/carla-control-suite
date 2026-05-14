@@ -68,7 +68,8 @@ CARLA spawn points & n/a (standalone) & 11,634 & 11,634 \\
 Mean lane count / road & 1.14 & \multicolumn{2}{c}{43.9 (Grid0828)} \\
 Curvature std (m$^{-1}$) & 0.865 & \multicolumn{2}{c}{0.055 (Grid0828)} \\
 RQ2 structural baseline & Yes (run\_11) & --- & Yes (primary) \\
-textbf{Note on run configurations:} The auto road count (5{,}837) and junction count (779) are anchored to the RQ2 governed run (run_11). The RQ1 determinism audit uses a different pipeline configuration and reports 5{,}712 roads (see Table~ef{tab:determinism_results}); both counts are internally consistent within their respective research-question contexts.
+\\\\textbf{Note on run configurations:} The auto road count (5{,}837) and junction count (779) are anchored to the RQ2 governed run (run\_11). The RQ1 determinism audit uses a different pipeline configuration and reports 5{,}712 roads (see Table~
+\ref{tab:determinism_results}); both counts are internally consistent within their respective research-question contexts.
 Elevation (thesis artifact) & planar & planar & planar \\
 \hline
 \end{tabular}
@@ -139,9 +140,10 @@ This prevents silent left/right inversion or axis flips, which would otherwise i
 \subsection{Derived requirements for a research-grade pipeline}
 From the above constraints, the thesis derives the following requirements.
 \begin{itemize}
-item 	extbf{Structural determinism:} topological signatures (road count, junction count, lane distributions) must be invariant across runs with identical inputs (RQ1 hypothesis).
-Byte-level determinism is not required and is not achieved in practice (RQ1 verdict: 	exttt{NONDETERMINISTIC} at serialization level, 	exttt{DETERMINISTIC} at topological-signature level);
-see Section~ef{sec:determinism_audit}.
+\item \textbf{Structural determinism:} topological signatures (road count, junction count, lane distributions) must be invariant across runs with identical inputs (RQ1 hypothesis).
+Byte-level determinism is not required and is not achieved in practice (RQ1 verdict: \texttt{NONDETERMINISTIC} at serialization level, \texttt{DETERMINISTIC} at topological-signature level);
+see Section~
+\ref{sec:determinism_audit}.
 \item \textbf{Audit artifacts:} hash-based tracking, structured reports, and overlays per stage.
 \item \textbf{Offline checks:} structural correctness checks without launching CARLA.
 \item \textbf{Two-pass validation:} offline validation gates first, followed by CARLA execution as an empirical QA layer.

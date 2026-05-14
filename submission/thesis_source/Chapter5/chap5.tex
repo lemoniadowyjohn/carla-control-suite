@@ -55,8 +55,9 @@ At least one valid spawn point for the ego vehicle & Tile QA worker (CARLA) & \t
 \end{table}
 
 Optional higher-level drivability tests (e.g., autopilot driving for a fixed horizon) are treated as \emph{scenario} validation and are discussed separately from the minimal import/spawn contract.
-paragraph{Drivability status for the governed thesis artifact.}
-For the primary evidence bundle (run_11 contract XODR), CARLA was not invoked during the domain-gap analysis stage; 	exttt{carla_status.json} records 	exttt{enabled=false} in all governed domain-gap runs. Drivability for run_11 is therefore inferred from offline structural gates only: schema validity, topology lint, lane-link consistency, and negative-$s$ repair. Simulator-side import and spawn validation (Table~ef{tab:drivability_criteria}, rows 4--5) was performed in separate development-phase tile QA runs on earlier map variants and was not re-executed under the run_11 governance contract. A formal governed tile QA stage (loading the final XODR into CARLA via 	exttt{client.generate_opendrive_world()} and recording spawn success as an artifact) is identified as future work.
+\paragraph{Drivability status for the governed thesis artifact.}
+For the primary evidence bundle (run\_11 contract XODR), CARLA was not invoked during the domain-gap analysis stage; \texttt{carla_status.json} records \texttt{enabled=false} in all governed domain-gap runs. Drivability for run\_11 is therefore inferred from offline structural gates only: schema validity, topology lint, lane-link consistency, and negative-$s$ repair. Simulator-side import and spawn validation (Table~
+\ref{tab:drivability_criteria}, rows 4--5) was performed in separate development-phase tile QA runs on earlier map variants and was not re-executed under the run\_11 governance contract. A formal governed tile QA stage (loading the final XODR into CARLA via \texttt{client.generate_opendrive_world()} and recording spawn success as an artifact) is identified as future work.
 
 Negative-$s$ violations are repaired automatically in-place during the tiling stage
 (Stage~9): each affected tile is first backed up, then the violation is corrected,
@@ -87,7 +88,7 @@ A DEM is sampled along the reference line and encoded as \texttt{elevationProfil
 After continuity stabilization, geometry is declared frozen: downstream stages may not modify \texttt{planView} or \texttt{elevationProfile}. This prevents feedback loops where lane fixes reintroduce geometric defects.
 
 \subsection{Lane generation and cross-section repair}
-Lane sections are derived from OSM tags where available (e.g., lane counts) and from deterministic defaults otherwise \cite{haklay2010osm}. Cross-section repair enforces positive widths and continuity across adjacent lane sections. Sidewalks may be added as additional lane types.
+Lane sections are derived from OSM tags where available (e.g., lane counts) and from deterministic defaults otherwise \cite{haklay2010osm}. Cross-\section repair enforces positive widths and continuity across adjacent lane sections. Sidewalks may be added as additional lane types.
 
 \subsection{LaneLink construction and the CARLA successor invariant}
 CARLA routing stability depends on consistent lane predecessor/successor relationships \cite{carla_opendrive_standalone}. The pipeline enforces a strict successor invariant for drivable lanes.
