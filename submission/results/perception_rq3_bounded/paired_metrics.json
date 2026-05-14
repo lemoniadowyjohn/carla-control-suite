@@ -1,0 +1,48 @@
+{
+  "status": "DEFERRED",
+  "reason": "Paired pixel-level metrics require matched frame counts, identical camera setups, and route-matched viewpoints. The generated-map capture (20 frames, single lightweight camera, CARLA standalone) and the Town10HD capture (8 frames, 6-camera Dominik rig, cooked town) are not directly comparable on a per-frame basis.",
+  "generated_map": {
+    "source": "carla_main_governed/ultimate_pipeline_out/drivability_fix_20260429/perception_probe",
+    "frames": 20,
+    "camera": "forward-facing lightweight RGB (single sensor.camera.rgb)",
+    "resolution": "unspecified (probe script)",
+    "status": "PASS",
+    "ego_drive_m": 46.45,
+    "spawn_points": 7875
+  },
+  "town10hd": {
+    "source": "carla_main_governed/thesis_results/perception_v1_rq3_final/town10_listener_fix_v1c",
+    "frames": 8,
+    "camera": "6-camera Dominik rig (front_left_camera used for brightness metrics)",
+    "resolution": "1920x1080",
+    "status": "PASS_PARTIAL",
+    "brightness_mean": 0.4872235059738159,
+    "brightness_std": 0.08613831549882889,
+    "laplacian_variance": 0.005406981334090233,
+    "listener_callbacks": 14,
+    "spawn_points": 155
+  },
+  "proxy_metrics_available": {
+    "description": "The following proxy metrics are available from existing governed runs but do not constitute a valid paired comparison",
+    "generated_map_ego_drive_m": 46.45,
+    "generated_map_ego_speed_ms": 7.74,
+    "generated_map_spawn_points": 7875,
+    "generated_map_rgb_frames": 20,
+    "town10hd_brightness_mean": 0.4872,
+    "town10hd_listener_callbacks": 14,
+    "town10hd_ply_files": 6,
+    "tile_defect_stress_proxy": {
+      "tiles_scanned": 67,
+      "drivable_proxy_tiles": 48,
+      "stuck_risk_tiles": 19,
+      "drivable_proxy_rate": 0.7164
+    }
+  },
+  "kl_divergence": null,
+  "histogram_intersection": null,
+  "mean_brightness_difference": null,
+  "per_channel_kl": null,
+  "note": "KL divergence and histogram intersection cannot be computed without matched paired frames from the same camera model at the same viewpoint. The direct paired comparison is deferred pending UE4 cook of Grid0828 or a new capture session with CARLA running and a route-matched protocol.",
+  "thesis_classification": "BOUNDED",
+  "assessed_at": "2026-05-14"
+}
