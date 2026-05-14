@@ -1,0 +1,21 @@
+{
+  "issues": [
+    {
+      "location": "Chapter9/chap9.tex:69",
+      "type": "stale_text",
+      "detail": "Paragraph was discussing N=6 pilot as current state; updated to reflect completed N=45 scale-up."
+    },
+    {
+      "location": "Chapter3:72",
+      "type": "broken_latex",
+      "detail": "Missing backslash for ref and newline in middle of reference; fixed."
+    },
+    {
+      "location": "Chapter7:94",
+      "type": "missing_figure",
+      "detail": "bbox_overlap_run11.png was missing in workspace; copied from governed source."
+    }
+  ],
+  "verified_on": "2026-05-14",
+  "status": "PASS_AFTER_FIXES"
+}

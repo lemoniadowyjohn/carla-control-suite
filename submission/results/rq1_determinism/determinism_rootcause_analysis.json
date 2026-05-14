@@ -1,0 +1,8 @@
+{
+  "date_was_primary_source": true,
+  "remaining_diff_lines": 0,
+  "other_differing_fields": [],
+  "audit_runs_checked": 5,
+  "tool_used": "xodr_sanitizer.py",
+  "verified_on": "2026-05-14"
+}

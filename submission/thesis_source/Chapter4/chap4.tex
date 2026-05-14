@@ -25,11 +25,12 @@ The spatial scope is defined by a fixed GPS bounding box in Ingolstadt. The boun
 \label{sec:crs_handling}
 A recurring source of invalid structural gap measurements is inconsistent georeferencing across OpenDRIVE sources.
 The manual Ingolstadt reference maps (Grid0821/0828) are provided in a Transverse Mercator projection consistent with the UTM Zone~32N family (metric coordinates in meters), while automatically generated OSM-derived maps may use a local Transverse Mercator projection anchored to the project bounding box and additionally encode a global translation via the \texttt{<offset>} element.
-Directly comparing raw 	exttt{(x,y)} coordinates across these frames can therefore produce kilometer-scale errors (centroid delta reduced from 5,444,300,m to 760.95,m) that are unrelated to actual map differences.
+Directly comparing raw \texttt{(x,y)} coordinates across these frames can therefore produce kilometer-scale errors (centroid delta reduced from 5,444,300,m to 760.95,m) that are unrelated to actual map differences.
 
 To ensure meaningful structural metrics, this thesis adopts a \emph{canonical evaluation frame}:
 all geometric operations (alignment, distance metrics, and tile bounding boxes) are performed after transforming map geometry into EPSG:32632 (WGS84 / UTM Zone~32N), with \texttt{<offset>} applied before projection.
-(see Section~ef{sec:crs_normalization} in Chapter~7 for results)
+(see Section~
+\ref{sec:crs_normalization} in Chapter~7 for results)
 The transformation is implemented via deterministic header parsing (including CDATA and whitespace normalization) and is audited via a georeference provenance record written per run.
 After canonicalization, alignment is restricted to rigid SE(2) transforms (rotation + translation, scale fixed to 1) and guarded by a sanity threshold to prevent reporting misleading metrics when overlap is insufficient.
 
@@ -73,7 +74,7 @@ enrichments lie outside the primary comparison scope.
 \subsubsection{Elevation application from DEM (Stage 5)}
 Because this work evaluates 3D maps, elevation is implemented as a first-class pipeline capability rather than a cosmetic detail. A digital elevation model (DEM) aligned to the GPS bounds can be sampled along roads and encoded in OpenDRIVE elevation profiles, and a smoothing operation is applied to avoid unrealistic high-frequency elevation changes that can break collision meshes or produce implausible slopes.
 The elevation source in this thesis is a Copernicus DEM product retrieved via OpenTopography, which provides reproducible access to global DEM datasets and metadata for scientific workflows \cite{opentopography,copernicusdem}.
-For the governed thesis analysis discussed in Chapter~7, however, the DEM coverage gate passed while the final comparison artifact still fell back to flat $z=0$ elevation. The reported structural gap metrics are therefore planar (2D) only, and Chapter~7's DEM-status paragraph should be read as the authoritative interpretation for the final analysis artifact.
+For the governed thesis analysis discussed in Chapter~7, however, the DEM coverage gate passed while the final comparison artifact still fell back to flat $z=0$ elevation. The reported structural gap metrics are therefore planar (2D) only, and Chapter~7's DEM-status \paragraph should be read as the authoritative interpretation for the final analysis artifact.
 
 \subsubsection{PlanView and continuity smoothing (Stage 6)}
 OSM-derived geometry often contains fragmented plan-view elements and heading discontinuities. Stage~6 merges micro-segments, smooths plan-view geometry, clamps pathological curvature, and performs continuity repair to reduce geometric noise while preserving the global road layout. This stage typically reduces the number of geometric primitives and improves simulator stability by preventing discontinuities that trigger CARLA import failures.
@@ -214,7 +215,7 @@ The pipeline is implemented as a deterministic sequence of stages. Each stage ha
 \subfigure[Continuity gate: endpoint mismatch heatmap.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-continuity-heatmap.png}}
 \subfigure[Stage 7: final lane network.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-stage07-lanes-full.png}}\\[0.3em]
 \subfigure[Lane overlay diagnostic (lane IDs / widths).]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-lane-overlay.png}}
-\subfigure[Cross-section diagnostics for width continuity.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-cross-sections.png}}
+\subfigure[Cross-\section diagnostics for width continuity.]{\includegraphics[width=0.44\linewidth,height=0.18\textheight,keepaspectratio]{../images/pipeline-cross-sections.png}}
 \caption{Quality-gate artifacts produced during geometry stabilization and lane synthesis. The continuity heatmap localizes geometric discontinuities, while the lane overlay and cross-section plots document plausibility and continuity of lane widths after lane generation and repair.}
 \label{fig:pipeline_quality_artifacts}
 \end{figure}

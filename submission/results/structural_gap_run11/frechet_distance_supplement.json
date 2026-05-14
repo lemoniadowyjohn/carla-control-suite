@@ -1,0 +1,9 @@
+{
+  "mean_m": 1781.6155001999894,
+  "median_m": 126.80129161421951,
+  "p90_m": 4166.262737660532,
+  "matched_pair_count": 457,
+  "spacing_m": 5.0,
+  "matching_threshold_m": 50.0,
+  "transform_run": "run_11"
+}
