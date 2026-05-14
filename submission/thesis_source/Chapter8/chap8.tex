@@ -18,7 +18,7 @@ The visual failure does not nullify the structural comparison. The primary thesi
 The same logic applies to semantic gaps. The contract-run artifact records zero buildings, barriers, poles, and trees in the evaluated four-category counter, while the manual reference contains many such objects. Later pipeline fixes improved building injection, but they do not retroactively change the authoritative contract-run measurement. The generated-map domain gap is therefore structural and semantic at the XODR level even before perception is considered.
 
 \subsection{Perception and generalization boundaries}
-The final thesis claim boundary is now clearer. Town10HD provides bounded evidence that the governed sensor rig, callback flow, and export stack work on a stable built-in CARLA map. It does \emph{not} prove that the generated Ingolstadt map is perception-ready. Because the generated road mesh fails visual QA, the thesis cannot use generated-map screenshots or generated-map capture status as positive perception evidence. RQ3 remains deferred, RQ4 remains observational only, and RQ5 remains unanswered.
+The final thesis claim boundary is now clearer. Town10HD provides bounded evidence that the governed sensor rig, callback flow, and export stack work on a stable built-in CARLA map. It does \emph{not} prove that the generated Ingolstadt map is perception-ready. Because the generated road mesh fails visual QA, the thesis cannot use generated-map screenshots or generated-map capture status as positive perception evidence. RQ3 remains bounded, RQ4 is upgraded to statistically supported (permutation test $p<0.001$, Section~\ref{sec:extended_gnn}), and RQ5 remains deferred.
 
 \subsection{Claim boundary summary}
 \label{sec:claim_boundary}
@@ -40,7 +40,7 @@ The generated XODR is parseable and loadable in CARLA 0.9.16 standalone mode. & 
 \hline
 The sensor rig and capture stack function correctly on a stable built-in CARLA map (Town10HD). & That the same rig produces usable data on the generated Ingolstadt map, or that the rig has been validated on real data. \\
 \hline
-A contrastive GNN trained on the structural metrics produced a non-collapsed latent space (observational). & Any downstream accuracy, transfer, or generalisation claim. \\
+A contrastive encoder trained on structural metrics produced a non-collapsed latent space with statistically significant auto/manual separation (permutation $p<0.001$, $N\!=\!45$). & Any downstream accuracy, transfer, or generalisation claim. \\
 \hline
 \end{tabular}
 \caption[Explicit claim boundary for this thesis.]{Explicit claim boundary. Claims in the left column are backed by governed evidence. Items in the right column are explicitly out of scope or unsupported by the collected evidence.}
@@ -63,6 +63,7 @@ The curvature KL divergence metric was found to approach zero despite a large sp
 The determinism conclusion is bounded: the 5-run audit shows topological invariance, but a larger audit across more versions or seed variations could reveal hidden nondeterminism. The perception conclusions are limited to infrastructure validation (Town10HD); no direct effect size or statistical power calculation was performed for the deferred RQ3 experiments.
 
 \subsection{Extended GNN validation}
+\label{sec:extended_gnn}
 
 \paragraph{Extended GNN validation ($N=45$ tiles).}
 To strengthen the observational GNN finding beyond the initial $N=6$ pilot, a contrastive encoder was retrained on an expanded structural feature set of $N=30$ auto-generated tiles (drawn from two pipeline runs across Ingolstadt extracts) and $N=15$ manually authored tiles (drawn from Grid0828 runs). The encoder is a two-layer MLP trained with NT-Xent loss on nine structural features per tile (road count, junction count, mean and standard deviation of road length and curvature, lane count, connectivity rate, bounding-box area). The cross-cosine similarity between auto and manual embedding centroids is $0.124$ (verdict: \texttt{NOT\_COLLAPSED}). This is consistent with the primary graph-encoder result (cross-cosine $= -0.160$, $N = 72$ lane-graph tiles): in both cases the auto and manual tile embeddings occupy clearly separated regions of the latent space relative to the null distribution. A permutation test ($K = 1{,}000$ shuffles of the auto/manual labels) yields $p < 0.001$ (observed centroid cosine $= 0.124$ falls below all $1{,}000$ permuted values; null distribution mean $= 0.877 \pm 0.067$). This confirms that the latent-space separation exceeds chance at $\alpha = 0.05$, upgrading RQ4 from purely observational to statistically supported.
