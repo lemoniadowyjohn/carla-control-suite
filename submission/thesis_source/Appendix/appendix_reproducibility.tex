@@ -27,26 +27,25 @@ The quantitative findings in this thesis are backed exclusively by artifacts in 
 \end{itemize}
 
 \subsection{Minimum run manifest}
-The authoritative evidence for this thesis consists of:
-\begin{itemize}
-    \item \textbf{Run 11:} Rigid SE(2) structural gap (Ingolstadt)
-    \item \textbf{Run 12:} Connectivity and lane-link gap audit
-    \item \textbf{Run 15:} GNN $N=45$ permutation test
-\end{itemize}
+A complete audit log of the governed pipeline stages, artifact hashes, and environment settings is provided in the \texttt{thesis\_results/} directory under each run's manifest JSON.
 
 \subsection{Pipeline reproducibility commands}
-The authoritative results presented in this thesis can be reproduced using the following commands within the provided environment:
+The authoritative results can be reproduced using the following entry points within the provided pipeline environment:
 
 \begin{verbatim}
 # RQ1: Determinism audit (5 runs)
-python -m ultimate_pipeline.experiments.thesis.exp\_osm_to_xodr_determinism \
+python -m ultimate_pipeline.experiments.thesis.exp_osm_to_xodr_determinism \
     --osm ingolstadt.osm --runs 5 --out scenario_b_audit/
 
-# RQ2: Structural gap (run\_11)
-python -m ultimate_pipeline.experiments.thesis.exp\_domain_gap_manual_vs_auto \
-    --auto auto.xodr --manual manual_grid0828.xodr --out run\_11/
+# RQ2: Structural gap (run_11)
+python -m ultimate_pipeline.experiments.thesis.exp_domain_gap_manual_vs_auto \
+    --auto auto.xodr --manual manual_grid0828.xodr --out run_11/
 
 # RQ4: Extended GNN + permutation test
 python submission/results/gnn_v1_full/train_contrastive_n30.py
 python submission/results/gnn_v1_full/permutation_test_n30.py
 \end{verbatim}
+
+All runs require the environment snapshot (settings, pinned OSM file, CARLA 0.9.16) documented in each run's \texttt{settings\_snapshot.json}.
+
+
