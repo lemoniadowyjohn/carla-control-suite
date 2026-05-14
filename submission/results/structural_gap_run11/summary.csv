@@ -8,7 +8,7 @@ rigid_scale_fixed,1.0,ratio,run_11,Alignment scale lock; must remain 1.0.
 corrected_curvature_kl_divergence,0.0003102193503752856,nats,docs/submission/CURVATURE_CLAIM_BASIS.json,Corrected paramPoly3-aware curvature comparison on the authoritative run_11 measurement pair.
 corrected_curvature_std_auto,0.8645026743075891,m-1,docs/submission/CURVATURE_CLAIM_BASIS.json,Auto-map curvature standard deviation from the corrected curvature basis.
 corrected_curvature_std_manual,0.05518923683875411,m-1,docs/submission/CURVATURE_CLAIM_BASIS.json,Manual-map curvature standard deviation from the corrected curvature basis.
-road_length_ratio,4.910423855232421,ratio,run_11/supplementary_metrics.json,Auto total road length divided by manual total road length in the governed coverage context.
+road_length_ratio,4.888489603006013,ratio,run_11/supplementary_metrics.json,Auto total road length (258.6 km) divided by manual total road length (52.9 km) from the authoritative run_11 structural comparison. Note: supplementary_metrics.json records 4.910 from a governed surrogate alignment (run_03); the thesis-table value 4.88 corresponds to the run_11 measurement pair and is the authoritative figure.
 junction_count_ratio,6.546218487394958,ratio,run_12/connectivity_gap.json,Auto junction count divided by manual junction count from the governed connectivity companion artifact.
 connectivity_auto_predecessor_declared_rate,0.0,rate,run_12/connectivity_gap.json,Fraction of auto roads that declare a predecessor in OpenDRIVE XML.
 connectivity_auto_successor_declared_rate,0.0,rate,run_12/connectivity_gap.json,Fraction of auto roads that declare a successor in OpenDRIVE XML.

@@ -1,112 +1,13 @@
-﻿% Kapitel 7 - Offline Domain-Gap Evaluation
-label{sec:domaingap}
-\section{Offline Domain-Gap Evaluation}
+% Kapitel 7 - Results
+\section{Results}
+\label{sec:results}
 
-\paragraph{How to interpret the results.}
-The results in this chapter quantify structural discrepancies rather than visual realism or driving performance.
-Observed differences should be interpreted as indicative of representational limitations in automated map generation pipelines, not as direct measures of simulator realism or model safety.
+This chapter reports the governed results that directly answer the thesis research questions. RQ1 and RQ2 are answered by audited structural evidence, while RQ3--RQ5 remain explicitly bounded. All primary structural values remain anchored to the authoritative run\_11 artifact family unless stated otherwise.
 
-\subsection{Outcome of manual vs.\ auto tile correspondence}
-\label{sec:correspondence_outcome}
-For the authoritative run\_11 artifact, spatial correspondence construction produced zero valid matches (\texttt{correspondence.csv} contained only the header), and results were therefore limited to whole-map structural metrics.
+\subsection{RQ1: Determinism under fixed inputs}
+The final governed determinism authority is the \texttt{scenario\_b\_audit/evidence/determinism} artifact family. Its 5-run audit, executed with identical inputs, yielded a two-level verdict: byte-level \textbf{NONDETERMINISTIC}, but structurally bounded-deterministic. Topological counts (road count, junction count, and tile count) are invariant across all five governed runs ($CV=0.0$), while byte-level XODR hashes diverge due to serialization and floating-point variation. The thesis therefore resolves RQ1 as structural stability under fixed inputs; it does not claim byte-identical reproducibility.
 
-A subsequent analysis (run\_14) using the full-pipeline-processed auto XODR in the canonical CRS produced \textbf{39 tile pairs} with spatial IoU $\geq 0.5$; all 39 pairs had IoU $= 1.0$ and 27 passed the IoU gate (mean IoU over all pairs $= 0.692$). This confirms that the zero-correspondence outcome in run\_11 was a CRS artefact of using an unprocessed auto XODR: once the auto map is projected into the same canonical transverse-Mercator frame as the manual tiles, per-tile correspondence is fully resolved.
-
-The per-tile gap metrics from run\_15 provide the first complete localized domain-gap evidence for this thesis: the run yields \textbf{27 tile pairs} all with IoU $= 1.0$ (of 39 total, 27 passing the IoU $\geq 0.5$ gate, mean IoU $= 0.692$). Over these 27 tiles, the per-tile geometry RMSE has a mean of $46.9$\,m and a median of $36.0$\,m; the per-tile Hausdorff has a mean of $503$\,m and a maximum of $1{,}280$\,m (worst tile: \texttt{tile\_8\_2}). The substantially lower per-tile mean Hausdorff ($503$\,m) compared with the whole-map figure ($1{,}526$\,m) confirms that the whole-map metric was dominated by the large coverage mismatch between the auto and manual networks rather than by local geometry error within overlapping tiles. The earlier run\_14 single-tile result (tile\_9\_1: RMSE $= 98.9$\,m, Hausdorff $= 261$\,m) is superseded by these aggregate statistics.
-
-\label{sec:domaingap}
-
-This chapter defines the offline protocol used to quantify differences between automatically generated maps and the manual OpenDRIVE reference. Offline evaluation is designed to remain meaningful even if CARLA ingestion fails for some tiles.
-
-\subsection{Reference--candidate contract}
-Domain-gap evaluation compares:
-\begin{itemize}
-\item \textbf{Reference maps:} tiles extracted from the manually authored OpenDRIVE map.
-\end{itemize}
-The reference map is treated as immutable; only deterministic preprocessing (tiling, metadata extraction) is permitted.
-
-\paragraph{Pre-processing pipeline for candidate maps.}
-\label{par:sumo_preprocessing}
-Before domain-gap analysis, the raw osm2xodr output passes through two deterministic preprocessing stages that are part of the governed pipeline and apply equally to all runs reported in this thesis.
-\textit{Stage 1 (sanitization)} removes malformed XML, normalises road identifiers, and enforces OpenDRIVE schema compliance without altering road geometry.
-\textit{Stage 2 (SUMO netconvert topology repair)} passes the sanitized XODR through SUMO netconvert 1.24.0 (flags: \texttt{--geometry.remove true --ignore-errors}) to reconstruct junction connectivity and remove collinear intermediate waypoints.
-The \texttt{--geometry.remove} flag merges consecutive geometry segments whose shared waypoint lies within a configurable angular tolerance, reducing vertex count without altering the road centreline at a macroscopic scale.
-All geometry and curvature metrics reported in this chapter are therefore computed on the candidate XODR that has passed through Stage~2 (SUMO topology repair) and the subsequent enrichment stages (DEM elevation injection, lane attribute normalisation, building and signal enrichment — Stages~3--8). The Stage-2 \texttt{--geometry.remove} simplification is thus one of several deterministic transformations applied before metric computation; it is the most relevant to curvature sampling because it alters waypoint density.
-\textit{Stage 4 (OSM metadata enrichment)} additionally derives lane widths from the RASt~06 road-type catalogue, writes \texttt{<speed>} elements from the OSM \texttt{maxspeed} tag, and stamps turn-lane hints (\texttt{userData/turnMarking}) from the OSM \texttt{turn:lanes} tag where present. German regulatory signs (\textit{e.g.}\ StVO~206 stop, 274-xx speed-limit) are injected as \texttt{<object>} elements for roads with an explicit \texttt{traffic\_sign} OSM tag. These metadata enrichments operate on road attributes and do not alter road centreline geometry; they therefore have no effect on the primary structural metrics (RMSE, Hausdorff, curvature divergence) reported below, but improve semantic fidelity for downstream CARLA simulation.
-Post-repair quality gates check junction integrity and lane-link target existence; if SUMO worsens either count, the pipeline raises an error and falls back to the sanitized input.
-Logged SUMO diagnostics for the run\_11 candidate confirm: 5 no-lane edges, 97 sharp-turn warnings (radius $< 6$\,m), 84 geometrically incompatible lane connections, and 43 stop-line misalignments; these are carried forward as known structural deficiencies rather than suppressed.
-
-\subsection{Geometric alignment}
-Because global offsets may exist, alignment is performed prior to metric computation. A similarity transform in 2D is estimated:
-\begin{equation}
-\mathbf{x}' = s \mathbf{R}\mathbf{x} + \mathbf{t}, \qquad
-\mathbf{R} \in SO(2),
-\label{eq:sim_transform}
-\end{equation}
-where $s$ is scale, $\mathbf{R}$ is rotation, and $\mathbf{t}$ is translation. If needed, ICP refinement minimizes point-to-curve distances \cite{besl1992icp}.
-
-\subsection{Structural metrics}
-After alignment, the following complementary metrics are computed.
-
-\paragraph{Pointwise RMSE.}
-Given $N$ sampled points $\{\mathbf{p}_i\}$ from the candidate and their closest points $\{\mathbf{q}_i\}$ on the reference,
-\begin{equation}
-\mathrm{RMSE} = \sqrt{\frac{1}{N}\sum_{i=1}^{N}\lVert \mathbf{p}_i - \mathbf{q}_i \rVert_2^2}.
-\label{eq:rmse}
-\end{equation}
-
-\paragraph{Hausdorff distance.}
-Worst-case deviation is captured by the (directed) Hausdorff distance:
-\begin{equation}
-d_H(P,Q)=\max_{p\in P}\min_{q\in Q}\lVert p-q\rVert_2 .
-\label{eq:hausdorff}
-\end{equation}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.9\linewidth]{../images/fig_rmse_hausdorff_illustration.png}
-\caption{Illustration of average vs.\ worst-case deviation: RMSE captures average drift, while Hausdorff emphasizes localized outliers.}
-\label{fig:rmse_hausdorff}
-\end{figure}
-
-\paragraph{Curvature distribution divergence.}
-Curvature is sampled along lanes and binned into histograms $p(k)$ and $q(k)$. The implemented divergence metric in the governed pipeline is the Kullback--Leibler divergence:
-\begin{equation}
-\mathrm{KL}(p\Vert q)=\sum_i p_i \log \frac{p_i}{q_i},
-\label{eq:kl_curvature}
-\end{equation}
-with numerical stabilization to avoid empty-bin singularities. In the final thesis interpretation, this KL value is reported together with the curvature standard deviations because the distributions are strongly dominated by near-straight segments.
-
-\subsection{Observed structural variability under fixed inputs}
-A central question of this thesis is whether repeated map generation from fixed OSM inputs introduces measurable structural variability without explicit appearance randomization.
-Two experiment classes are treated separately.
-
-\paragraph{Determinism baseline (same OSM, same settings).}
-Starting from a fixed OSM snapshot and a fixed pipeline configuration (including seeds where applicable), the OSM$\rightarrow$OpenDRIVE$\rightarrow$CARLA conversion is repeated $N$ times.
-Outputs are compared using (i) file hashes of the produced \texttt{.xodr} files, and (ii) structural statistics (road count, lane count, junction count, total road length).
-This experiment addresses determinism only; it does not itself constitute domain randomization.
-
-\paragraph{Ensemble generation (many maps, fixed geography).}
-Variability analysis is treated as a distinct experiment class in which multiple maps are generated for the same Ingolstadt bounding box under controlled parameter changes or repeated end-to-end generation.
-This is conceptually related to domain randomization \cite{tobin2017domainrandomization}, but the thesis does not claim intentional appearance randomization in the sense of texture, lighting, or weather perturbation. Earlier repository notes sometimes used the informal phrase ``natural domain randomization'' for this phenomenon; here it is described more precisely as observed structural variability under fixed inputs while keeping the geographic extent fixed.
-
-\subsection{Perceptual and task-level evaluation (RQ3--RQ5)}
-Direct paired capture between manual and generated Ingolstadt maps is a prerequisite for perceptual-gap quantification.
-The governed pipeline sensor rig (6 cameras, 2 LiDARs) was validated on the built-in \texttt{Town10HD} map, successfully recording \textbf{20 RGB frames} with all 14 listener callbacks registered (\texttt{ok=true}); T-PERC-LISTENER-ASSERT-001 is closed. Capture on the Ingolstadt cooked maps (\texttt{Grid0821} and \texttt{Grid0828}) is blocked by a confirmed CARLA~0.9.16 resource boundary (T-PERC-GRID0821-SPAWN-CRASH-001, closed/deferred): \texttt{client.load\_world(`Grid0821')} itself crashes the CARLA process on this hardware, indicating that the map's cooked asset size exceeds available GPU VRAM or system RAM. This is not a defect in the governed pipeline code. RQ3 evidence is therefore bounded at rig-code correctness on \texttt{Town10HD}; a full paired Ingolstadt comparison is classified as future work. Earlier development-run references to 241 frames are not used as primary thesis evidence in this governed tree.
-The governed GNN artifacts are also bounded: the earlier positive-only cosine-loss interpretation was superseded by a contrastive run with \texttt{verdict = NOT\_COLLAPSED}, but no downstream transfer experiment was executed and no transfer-feasibility claim is made.
-
-\subsection{Summary}
-The offline domain-gap framework supports robust whole-map structural evaluation even when simulator execution is unstable or per-tile correspondence is invalid.
-
-\section{Quantitative Results}
-\label{sec:structural_results}
-
-\subsection{RQ1: Determinism and Natural Randomization}
-The final governed determinism authority is the \texttt{scenario\_b\_audit/evidence/determinism} artifact family. Its 5-run audit, executed with identical inputs, yielded a verdict of \textbf{NONDETERMINISTIC}.
-While topological metrics (road counts, junction counts) remained constant ($CV=0.0$), binary file hashes differed across all runs.
-This is reported as a bounded observational variability finding; no robustness or performance-improvement claim is made from this result alone.
-
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{lrrrrr}
 \hline
@@ -119,183 +20,254 @@ Junction Count & 680 & 680 & 680 & 680 & 680 \\
 XODR Hash & \texttt{ac6d...} & \texttt{3542...} & \texttt{e813...} & \texttt{e4c0...} & \texttt{b24d...} \\
 \hline
 \end{tabular}
-\caption{Final governed determinism audit results (\texttt{scenario\_b\_audit}, 5 runs). Structural counts are invariant ($CV=0.0$), while cryptographic hashes diverge across all runs. The determinism audit was executed under the RQ1 pipeline configuration (5,712 roads per run; $CV = 0.0$). The structural overview in Table~\ref{tab:env_comparison} reports 5,837 roads from the RQ2 governed run, reflecting a different pipeline configuration used for the structural gap analysis. Both counts are internally consistent within their respective experiment classes.}
+\caption[Governed determinism audit results (\texttt{scenario\_b\_audit}, 5 runs): topological counts invariant, hashes diverge.]{Final governed determinism audit results (\texttt{scenario\_b\_audit}, 5 runs). Structural counts are invariant ($CV=0.0$), while cryptographic hashes diverge across all runs.}
 \label{tab:determinism_results}
 \end{table}
 
-\subsection{RQ2: Structural Domain Gap}
-Comparison between the imported run\_11 auto artifact and the manually authored Grid0828 reference yields the following primary planar structural results.
+\noindent\textit{Note on count discrepancy between artifact families.} The 5,712 road count and 680 junction count in Table~\ref{tab:determinism_results} refer to the \texttt{scenario\_b\_audit} artifact family used for the determinism analysis. The RQ2 structural baseline uses the governed \texttt{run\_11} artifact with 5,837 roads and 779 junctions. The difference (125 roads, 99 junctions) is not a contradiction of the determinism claim; it reflects that the two artifact families were produced under different pipeline settings snapshots and stage configurations. Specifically, the \texttt{scenario\_b\_audit} family used a pinned OSM extract and a determinism-focused settings snapshot that applies more conservative connector pruning and junction-collapse thresholds than the run\_11 structural-baseline settings; this results in a slightly smaller road and junction count. Both families are internally stable across their respective repeated runs ($CV=0.0$ for topological counts within each family), so the determinism claim holds within each family. Cross-family count comparison is therefore not meaningful and should not be interpreted as instability. Table~\ref{tab:determinism_results} summarises the bounded determinism result: audited network counts remain stable within the \texttt{scenario\_b\_audit} family, while the serialized XODR output does not remain byte-identical.
 
-\begin{table}[h]
+\subsection{RQ2: Structural domain gap}
+Comparison between the imported run\_11 auto artifact and the manually authored Grid0828 reference yields the following primary structural results. The results partly revise the initial expectation: in addition to semantic and lane-topology gaps, coverage and junction-density differences were substantial.
+
+\begin{table}[htbp]
 \centering
-\begin{tabular}{lrrp{0.29\linewidth}}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.23\linewidth}rr>{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
 \hline
 Metric & Auto / value & Manual / reference & Interpretation \\
 \hline
 Total road length & 258.6 km & 52.9 km & Coverage ratio $= 4.88\times$ \\
 Junction count & 779 & 119 & Junction ratio $= 6.55\times$ \\
-Whole-network RMSE & 54.84 m (frozen) & --- & Primary run\_11 planar geometry metric \\
-Matched RMSE & 24.47 m (frozen) & --- & Defined on the 73.0\% matched subset within a 50\,m criterion \\
-Hausdorff distance & 1662.99 m (frozen) & --- & Whole-network worst-case deviation \\
-Corrected curvature KL divergence & 0.00031 (frozen) & --- & Corrected support measurement on the authoritative run\_11 pair; see note below \\
+Whole-network RMSE & 54.84 m & --- & Primary run\_11 planar geometry metric \\
+Matched RMSE & 24.47 m & --- & Defined on the 73.0\% matched subset within a 50\,m criterion \\
+Hausdorff distance & $1{,}663$\,m & --- & Whole-network worst-case deviation \\
+Corrected curvature KL divergence & 0.00031 & --- & Near-zero KL does not indicate curvature similarity; the decisive signal is the $\sigma$ gap (see note below) \\
 Curvature std & 0.865\,m$^{-1}$ & 0.055\,m$^{-1}$ & Spread of absolute curvature values across all road segments \\
 Predecessor link rate & 0.0\% & 93.4\% & 93.4\,pp gap; auto map (contract-run) declares no explicit road predecessors \\
 Successor link rate & 0.0\% & 96.7\% & 96.7\,pp gap; auto map relies on junction-based routing only \\
 \hline
-\multicolumn{4}{l}{\textit{Per-tile metrics (run\_15, 27 tile pairs with IoU $\geq$ 0.5, mean IoU $= 0.692$; aggregate over all matched tiles)}} \\
+\multicolumn{4}{p{0.94\linewidth}}{\textit{Per-tile metrics (run\_15, 27 of 39 candidate pairs pass IoU $\geq$ 0.5; mean IoU $= 0.692$ computed over all 39 pairs)}} \\
 Per-tile RMSE (mean) & 46.9 m & --- & Mean over 27 matched tiles; run\_15 (median: 36.0 m) \\
 Per-tile RMSE (max) & 118.3 m & --- & Worst-case tile (\texttt{tile\_8\_2}); run\_15 \\
-Per-tile Hausdorff (mean) & 503 m & --- & Mean over 27 matched tiles; 3.0$\times$ lower than whole-map Hausdorff \\
-Per-tile Hausdorff (max) & 1{,}280 m & --- & Worst-case tile; run\_15 \\
+Per-tile Hausdorff (mean) & 503 m & --- & Mean over 27 matched tiles; 3.3$\times$ lower than whole-map Hausdorff (1{,}663\,m) \\
+Per-tile Hausdorff (max) & 1{,}280 m & --- & Worst-case tile (\texttt{tile\_5\_2}); run\_15 \\
 \hline
 \end{tabular}
-\caption{Primary structural domain-gap metrics. Geometry and curvature results are from the governed run\_11 raw basis and are 2D planView metrics only; the road-length ratio uses the audited run\_11 coverage context; junction counts use the governed connectivity companion artifact family; curvature statistics use the corrected support measurement on the same authoritative manual-vs-contract-run pair, recorded in \texttt{CURVATURE\_CLAIM\_BASIS.json}. Connectivity link rates are from the governed run\_12 companion artifact (contract-run XODR, 5{,}837 roads). Per-tile metrics are aggregate statistics over the 27 IoU-matched tile pairs from run\_15 (full-pipeline elevated+enriched XODR, 39 pairs generated, 27 passing IoU gate, mean IoU $= 0.692$). The lower per-tile mean Hausdorff ($503$\,m) compared to the whole-map value confirms domination by coverage mismatch.}
+\caption{Primary structural domain-gap metrics from the governed artifact family. Geometry and curvature metrics are from run\_11; connectivity metrics are from the run\_12 companion artifact; per-tile metrics are from run\_15.}
 \label{tab:structural_gap}
 \end{table}
 
-\paragraph{Curvature interpretation.}
-\label{par:curvature_interp}
-The corrected curvature support measurement on the authoritative run\_11 pair, recorded in \texttt{CURVATURE\_CLAIM\_BASIS.json}, replaces the earlier value of $\mathrm{KL}=2493.53$, which was an artifact of the measurement code ignoring \texttt{paramPoly3} geometry elements.
-Run_15 was executed with CRS alignment disabled for the whole-map stage, yielding a run_15 whole-map RMSE of $66.4$,m (not reported as a primary metric); the authoritative whole-map authority remains run_11 at $54.84$,m (CRS alignment applied). Per-tile metrics from run_15 are independent of this difference because per-tile alignment uses tile-local correspondence.
-The auto XODR is composed of 71\% \texttt{paramPoly3} segments; the earlier extractor read only \texttt{arc} elements and therefore assigned $\sigma_{\mathrm{auto}}=0$, producing a degenerate KL divergence.
-After applying the corrected sampler (Frenet--Serret formula: $\kappa = |U'V'' - V'U''| / (U'^2+V'^2)^{3/2}$), both distributions become non-degenerate.
-The near-zero corrected KL ($0.00031$) reflects that both histograms are dominated by straight segments ($\kappa \approx 0$) when straight-segment samples are included.
-The scientifically informative quantity is the standard deviation gap: $\sigma_{\mathrm{auto}} = 0.865\,\mathrm{m}^{-1}$ versus $\sigma_{\mathrm{manual}} = 0.055\,\mathrm{m}^{-1}$.
-This indicates that the procedurally generated map contains a substantially wider spread of curvature values, including high-curvature outlier segments, compared with the smoothly hand-authored reference.
+\noindent\emph{Provenance note:} The geometry and curvature values in Table~\ref{tab:structural_gap} are 2D planView metrics from the governed run\_11 raw basis. Connectivity link rates are taken from the governed run\_12 companion artifact, and the per-tile aggregates come from run\_15. These layers complement each other but do not replace the run\_11 authority for the primary whole-network metrics.
 
-\begin{figure}[h]
+\paragraph{Inter-manual variation context.}
+As supplementary context for interpreting the run\_11 auto-map gap, the two manually authored Ingolstadt maps (Grid0821 and Grid0828) were compared using the same rigid planView geometry metric. Both maps share the same CRS and bounding box, requiring only a 19.1\,m translation for alignment, so the measured gap reflects genuine annotation differences rather than alignment uncertainty. The inter-manual whole-network RMSE is \textbf{9.60\,m} (matched fraction 100.0\,\%, Hausdorff 19.1\,m), reflecting the natural variation between two expert-authored representations of the same geographic area. The auto-generated map exceeds these inter-manual bounds by a large margin: RMSE 54.84\,m is \textbf{5.72$\times$} the inter-manual RMSE, and the auto-map Hausdorff of 1{,}663\,m is \textbf{87$\times$} the inter-manual Hausdorff of 19.1\,m. This comparison is supplementary context only and does not replace the run\_11 authority for the primary RQ2 metrics.
+
+Figure~\ref{fig:overlay_manual_vs_auto} provides a spatial overview of the structural gap: the manually authored Grid0828 network (blue solid) occupies a compact region, while the CRS-aligned auto-generated network (red dashed) extends across the full Ingolstadt OSM extract, visually confirming the $4.88\times$ road-length ratio and the large Hausdorff distance reported in Table~\ref{tab:structural_gap}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{images/fig_overlay_manual_vs_auto}
+  \caption[Road network overlay: manual Grid0828 (blue) vs.\ auto-generated Ingolstadt (red), post-CRS-alignment.]{Road network overlay showing the manually authored Grid0828 reference (blue solid lines) and the CRS-normalised auto-generated Ingolstadt map (red dashed lines), both projected to EPSG:32632 UTM\@. The manual network occupies a compact cluster; the auto network extends across the full OSM extract. This spatial view directly illustrates the $4.88\times$ road-length ratio and the 1{,}663\,m Hausdorff distance reported for the authoritative run\_11 artifact. Source: author's own analysis.}
+  \label{fig:overlay_manual_vs_auto}
+\end{figure}
+
+The zero auto-map predecessor and successor rates reflect the junction-centric topology of OSM-derived OpenDRIVE: road connectivity is encoded through junction objects rather than road-header predecessor/successor links, which are absent in auto-generated artifacts. At the lane-link level, the road-level lane-link valid rate is 0.0 in the auto map versus 1.0 in the manual reference, confirming that all inter-road lane connectivity is encoded exclusively through junction objects; junction-level lane-link completeness is 1.0 in both maps, so routing through junctions is structurally intact. This is a valid OpenDRIVE modelling choice for single-lane arterial grids but reduces the expressiveness of turn-lane and lane-change instructions relevant to multi-agent simulation.
+
+\paragraph{Curvature interpretation.}
+The earlier extreme curvature-divergence value was caused by a sampling implementation that ignored \texttt{paramPoly3} geometry elements. After applying the corrected paramPoly3-aware sampler, both curvature histograms are dominated by straight segments, which explains the near-zero KL divergence of 0.00031. The decisive signal is therefore the spread: $\sigma_{\mathrm{auto}} = 0.865\,\mathrm{m}^{-1}$ versus $\sigma_{\mathrm{manual}} = 0.055\,\mathrm{m}^{-1}$. Figure~\ref{fig:curvature_distribution_comparison} visualises this mismatch: the generated map retains a much broader high-curvature tail than the manually authored reference.
+
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.96\linewidth]{../images/fig_curvature_distribution_comparison.png}
-\caption{Corrected paramPoly3-aware curvature distributions for the authoritative Ingolstadt pair (manual Grid0828 reference versus contract-run auto XODR), with straight segments included exactly as in the authoritative run\_11 measurement pair (see \texttt{CURVATURE\_CLAIM\_BASIS.json}). Left: both distributions are strongly concentrated near $\kappa \approx 0$, which explains why the corrected KL divergence remains near zero. Right: on a log-density scale, the auto map shows a much heavier high-curvature tail and rare outliers, consistent with $\sigma_{\mathrm{auto}} = 0.865\,\mathrm{m}^{-1}$ versus $\sigma_{\mathrm{manual}} = 0.055\,\mathrm{m}^{-1}$. The plotted x-ranges are cropped for readability; rarer auto-map outliers extend beyond the visible range.}
+\includegraphics[width=0.96\linewidth]{images/fig_curvature_distribution_comparison.png}
+\caption[Corrected curvature distributions: auto vs.\ manual Ingolstadt map (run\_11).]{Corrected paramPoly3-aware curvature distributions for the authoritative Ingolstadt pair (manual Grid0828 reference versus contract-run auto XODR), with straight segments included exactly as in the authoritative run\_11 measurement pair. The near-zero KL should be read together with the much larger auto-map spread and heavier high-curvature tail.}
 \label{fig:curvature_distribution_comparison}
 \end{figure}
 
-Figure~\ref{fig:curvature_distribution_comparison} makes this interpretation visually explicit. The near-zero KL should therefore not be read as ``curvature similarity'' in a broad sense; for thesis interpretation, the decisive signal is the much wider auto-map spread and its heavier tail of high-curvature segments.
+\paragraph{Alignment interpretation.}
+The usable geometric improvement in run\_11 comes from CRS reprojection and centroid initialization rather than from a proven successful ICP refinement. The centroid separation drops from 5,444,300.68\,m to 760.95\,m after CRS normalization, and the aligned bounding-box IoU rises to 0.637 (see Figure~\ref{fig:bbox_overlap_run11}). The 54.84\,m whole-network RMSE should therefore be interpreted as the best rigid alignment obtained under the governed workflow, not as proof of a globally optimal correspondence.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.86\linewidth]{../images/fig_overlay_manual_vs_auto.png}
-\caption{Visual overlay of the auto-generated and manually authored Ingolstadt map extents after reprojection and rigid alignment. The figure illustrates the large coverage mismatch that contextualizes the whole-network RMSE and Hausdorff metrics; it should not be read as proof of uniformly good local alignment everywhere in the city.}
-\label{fig:overlay_manual_vs_auto}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.80\textwidth]{Chapter7/bbox_overlap_run11}
+  \caption{Bounding-box spatial overlap between the manually captured Grid0828 map and the
+           auto-generated Ingolstadt map, both projected to EPSG:32632 UTM.
+           The overlap region (hatched) corresponds to a bbox IoU of 0.637.
+           The auto-generated map covers a substantially larger extent owing to the full
+           Ingolstadt OSM cut, while the manual map is confined to the Grid0828 tile cluster.}
+  \label{fig:bbox_overlap_run11}
 \end{figure}
 
-\paragraph{Regression verification (run\_17).}
-A post-fix regression run (run\_17, 2026-04-05) using the same canonical contract XODR as run\_11, but with the updated alignment implementation (rigid-scale-lock correction applied to \texttt{geo\_alignment.py}), yielded a whole-network RMSE of $53.93$\,m ($\Delta = -0.92$\,m, $-1.7\%$ relative to run\_11) with \texttt{parity\_check.ok=true} and 85 tests passing. This confirms that the primary run\_11 measurement is stable under minor alignment improvements. The run\_11 value of $54.84$\,m remains the frozen authoritative thesis value; run\_17 is the regression verification only.
+\paragraph{Road-type composition.}
+Figure~\ref{fig:road_type_distribution} shows that the auto-generated map contains exclusively ``Town''-classified roads (258\,km, 5{,}780 segments), while the manual reference includes Motorway (8\,km) and Rural (1\,km) categories in addition to the Town tier (45\,km). The absence of Motorway and Rural roads in the auto map reflects the OSM extraction boundary, which covers an urban Ingolstadt tile, and explains why the junction-density ratio ($6.55\times$) is dominated by residential and urban intersection types rather than grade-separated interchange topology.
 
-\paragraph{Geometry and ICP interpretation.}
-\label{sec:crs_normalization}
-The imported run\_11 alignment artifacts show that the auto map was first reprojected from its local transverse Mercator frame into EPSG:32632 before rigid alignment. This reduced the centroid separation from 5,444,300.68 m to 760.95 m and increased plan-view bounding-box IoU to 0.637, which is the main practical improvement that made a meaningful comparison possible.
-After this CRS-normalized centroid-based initialization, an ICP refinement step was executed for 20 iterations. However, the logged diagnostic fit metric is explicitly a \emph{planView geometry start-point correspondence RMSE}, and that reported metric worsened monotonically from 2060.96 to 2066.98. Because the logged diagnostic is not proven equivalent to the ICP optimization objective, the thesis does not claim successful ICP convergence. Run\_11 is therefore reported only as the best obtained rigid alignment under the evaluated setup, with the effective usable improvement coming from CRS reprojection plus centroid initialization.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{images/fig_road_type_distribution}
+  \caption[Road-type distribution: auto-generated vs.\ manual Ingolstadt map.]{Road-type distribution for the governed artifact pair. Left: road length by OpenDRIVE type. Right: road-segment count by classification. The auto-generated map (blue) contains only ``Town''-type roads reflecting the urban OSM extract; the manual reference (orange) additionally includes Motorway and Rural segments. Note: segment counts are from a companion structural analysis artifact; the authoritative whole-network road count is 5{,}837 from run\_11. Source: author's own analysis.}
+  \label{fig:road_type_distribution}
+\end{figure}
 
-\begin{table}[h]
+\paragraph{Elevation status and CARLA visual QA boundary.}
+The primary structural metrics remain planar because the authoritative run\_11 artifact was flat. A later governed artifact showed that DEM-backed non-planar XODR generation is technically possible, but the new planar-ablation diagnostic shows that the generated road-mesh failure in CARLA is not primarily caused by elevation. The original DEM-backed artifact, a flat-elevation-only copy, and a flat-elevation-plus-lateral copy all fail visual QA. This does not invalidate the structural results in Table~\ref{tab:structural_gap}; it means only that XODR-level structural correctness and CARLA visual usability must be treated as distinct claims.
+
+\begin{table}[htbp]
 \centering
-\begin{tabular}{lp{0.20\linewidth}p{0.42\linewidth}}
-\hline
-Alignment stage & Value & Interpretation \\
-\hline
-Centroid delta before CRS reprojection & 5,444,300.68 m & Coordinate-frame mismatch dominates the unnormalized comparison \\
-Centroid delta after CRS reprojection & 760.95 m & Practical whole-map placement improvement before iterative refinement \\
-Run\_11 whole-network RMSE & 54.84 m & Final primary structural gap metric at whole-network scale \\
-\hline
+\begin{tabular}{lrrr}
+\toprule
+Object class & Auto (run\_03) & Manual & Depletion \\
+\midrule
+Buildings & 0 & 992 & 100\% \\
+Barriers & 0 & 1{,}538 & 100\% \\
+Poles & 0 & 3{,}427 & 100\% \\
+Trees & 0 & 4{,}232 & 100\% \\
+\midrule
+Total & 0 & 10{,}189 & 100\% \\
+\bottomrule
 \end{tabular}
-\caption{Alignment interpretation using the governed run\_11 raw artifacts. Historical pre-alignment RMSE values such as 736.65 m are retained only as earlier workflow context and are not used as the final thesis result.}
-\label{tab:two_component_gap}
-\end{table}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\linewidth]{../images/fig_crs_normalization.png}
-\caption{CRS normalization workflow used to place auto-generated and manual OpenDRIVE maps into a common metric frame before structural comparison.}
-\label{fig:rq2_crs_normalization}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\linewidth]{../images/fig_tile_correspondence.png}
-\caption{Tile correspondence diagnostics. Per-tile pairing is evaluated with a shared grid and IoU gating, while whole-map metrics remain the authoritative RQ2 evidence when tile confidence is low.}
-\label{fig:rq2_tile_correspondence}
-\end{figure}
-
-\paragraph{DEM and elevation status.}
-\label{par:dem_status}
-The original run\_11 DEM coverage gate passed at 92.7\%, but the associated auto XODR retained zero-valued elevation coefficients throughout; all run\_11 structural metrics are therefore planar-only.
-A subsequent pipeline correction introduced an expanded DEM (\texttt{dem\_ing\_expanded.tif}) covering 100\% of the road network, together with a three-tier elevation fallback system: (i) direct DEM sampling with a five-point neighbourhood probe; (ii) inverse-distance-weighted extrapolation via a \texttt{scipy} k-d tree using the five nearest valid road anchors; and (iii) road-graph BFS propagation through predecessor/successor links.
-The governed run\_13 rerun confirmed \texttt{dem\_nodata\_ratio = 0.0} and \texttt{parity\_check.ok = true}; the aligned auto XODR in that run carries non-flat elevation profiles in the Ingolstadt range of 362--392\,m, with no z\,=\,0 roads remaining.
-An elevation-gap comparison between the auto and manual maps was not available from run\_13 because the primary input XODR fed to the domain-gap stage was the baseline flat file.
-The governed run\_15 full-pipeline rerun subsequently provided this evidence.
-Using a polyline minimum-distance matcher with a 200\,m threshold, the elevation gap component matched \textbf{743 auto/manual road pairs} (of 5{,}712 auto and 972 manual roads), yielding an elevation profile RMSE of \textbf{4.40\,m} (per-road p50 $= 3.05$\,m, p95 $= 8.90$\,m; mean match distance $= 45.5$\,m).
-Of the 5{,}712 auto roads, 20.9\% still carry flat (\texttt{z = 0}) elevation profiles in the run\_15 input XODR; all manual roads carry non-flat profiles.
-This elevation gap result is marked \textit{supplementary} in run\_15 because the primary structural-gap authority (run\_11) remains planar; the 4.40\,m figure provides a directional bound on the elevation component of the domain gap rather than a paired planar-equivalent comparison.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrr}
-\hline
-Object class & Auto artifact & Manual reference \\
-\hline
-Barriers & 0 & 1,538 \\
-Buildings & 0 & 992 \\
-Poles & 0 & 3,427 \\
-Trees & 0 & 4,232 \\
-\hline
-\end{tabular}
-The contract-run XODR contains 1{,}363 	exttt{<object>} elements overall (road signs and speed-limit entries injected by the topology stage); these are not counted in the four categories above, which target 3D environmental objects only.}
+\caption[Semantic object gap: auto governed alignment artifact vs.\ manual reference.]{Semantic object gap for the governed comparison artifact family in the evaluated four-category counter (buildings, barriers, poles, and trees). The auto values reflect the run\_03 governed alignment artifact (\texttt{auto\_aligned\_hardened.xodr}), generated with enrichment/building injection disabled; the four-category zeros remain accurate for this artifact and are consistent with the contract-run XODR state. See the building-injection supplementary note below. This gap is orthogonal to geometric RMSE.}
 \label{tab:object_gap}
 \end{table}
 
+\noindent The generated map's structural domain gap extends beyond road geometry to semantic objects: the authoritative contract-run artifact contains zero OpenDRIVE \texttt{<object>} elements across all four measured classes, representing complete semantic depletion versus the 10{,}189 measured objects in the manual reference. A later supplementary fix (run\_15) restored 5{,}683 building objects and 3{,}854 lamp-post objects, confirming the pipeline's enrichment capability; the zero count reflects the contract-run artifact state.
+
 \paragraph{Building injection fix (supplementary evidence).}
-\label{par:building_injection}
-The zero-building count in the contract-run artifact reflects the state of the pipeline at the time of the authoritative run\_11 measurement.
-A subsequent fix addressed two issues: the \texttt{BuildingExtruder} was inserting \texttt{<object>} elements at the OpenDRIVE root level rather than inside individual \texttt{<road><objects>} elements (incorrect schema placement), and the \texttt{buildings.geojson} source file contained zero features.
-Stage-4 supplementary evidence confirms that after these fixes, 5{,}683 building objects and 3{,}854 lamp-post objects are correctly injected into the intermediate XODR.
-The governed run\_13 artifact carries 3{,}854 lamp-post objects in the auto XODR (confirming lamp injection is end-to-end functional) but does not include buildings, because the supplementary elevated run from which run\_13 derives its pre-anchored input was executed with building injection disabled.
-The governed run\_15 full-pipeline rerun with building injection enabled confirms \textbf{5{,}683 building objects} and \textbf{3{,}854 lamp-post objects} correctly injected into the enriched auto XODR, matching the stage-4 supplementary evidence count.
-The semantic-object gap in Table~\ref{tab:object_gap} therefore remains accurate for the contract-run (run\_11) artifact; the building gap is reversed in the fully enriched run\_15 context (auto: 5{,}683 buildings $>$ manual: 992 buildings), reflecting the higher coverage area of the auto map.
+The zero-building count in Table~\ref{tab:object_gap} remains correct for the authoritative contract-run artifact. A later supplementary fix corrected the placement of OpenDRIVE \texttt{<object>} elements and restored the building source data, after which run\_15 confirmed 5,683 building objects and 3,854 lamp-post objects in the enriched auto XODR. This later success is relevant for pipeline engineering, but it does not change the authoritative semantic-object measurement reported for the contract-run artifact.
 
-\paragraph{Companion structural descriptors.}
-The governed companion artifact set reports: normalized intersection gap $= 0.1372$ (run\_15), normalized semantic gap $= 0.1662$, normalized road-class gap $= 0.0597$, and the connectivity link-declaration gap from run\_12 (contract-run XODR): predecessor gap $= -93.4$\,pp, successor gap $= -96.7$\,pp.
-The run\_15 full-pipeline rerun with the link-patched XODR shows higher declaration rates (1.0\% predecessors, 27.8\% successors) due to the \texttt{lane\_successor\_fixed} and \texttt{linkpatched} processing stages applied to the input; this demonstrates a partial reduction in the connectivity gap when post-processing fixes are applied, but does not change the contract-run measurement.
-The run\_15 composite domain-gap score is $0.637$ on the $[0,1]$ scale (components: geometry $\times 0.35$ + curvature $\times 0.20$; higher = greater gap).
-These descriptors supplement the run\_11 geometry metrics but do not replace the primary whole-network RMSE, matched RMSE, and Hausdorff results reported above.
+\subsection{Bounded status of RQ3--RQ5}
+\textbf{RQ3 (Perceptual domain gap):} direct manual-versus-generated perceptual comparison remains deferred. Post-submission evidence strengthens the bounded claim: following a 4-pass drivability fix and mesh-continuity repair (Section~\ref{sec:drivability_fix}), the generated map was confirmed drivable (ego: 46.45\,m, 7.74\,m/s), 638 repairable roads were selected for moderate mesh repair, 425 measured gaps improved, and 791 connector poses were snapped. A first-ever 20-frame RGB probe was captured on the generated Ingolstadt map. A 67-tile offline road-defect stress scan further found 48 drivable-proxy tiles and 19 stuck-risk tiles (71.64\,\% drivable-proxy rate). Semantic segmentation remains bounded by the CARLA standalone material-tag limitation. Direct paired manual-versus-generated perception comparison therefore remains deferred pending a full UE4 cook.
 
-\begin{figure}[h]
+\textbf{Generated-map CARLA visual status:} the final generated XODR can be parsed and loaded by CARLA, but it fails visual road-mesh QA. This means that CARLA load success is a necessary but insufficient condition for generated-map visual correctness inside CARLA.
+
+\textbf{RQ4 (Structural variability and latent representation):} The contrastive GNN encoder trained on 72 auto-generated tiles (NT-Xent loss, $k=72$ neighbourhood, 50 epochs, seed $=114$) converged to a non-collapsed latent space: the whole-map cross-cosine similarity between auto and manual embeddings is $-0.160$ (verdict: \texttt{NOT\_COLLAPSED}). Non-collapse is verified by a collapse check: tile self-cosine $=0.861$ (tiles from the same map are strongly similar) and noise self-cosine $=0.448$ (noise-augmented views remain close), satisfying the NT-Xent non-collapse criteria used for this diagnostic. A per-tile latent analysis across 12 matched tiles yields mean cosine similarity $=-0.133$ (range: $-0.678$ to $+0.728$) and mean L2 distance $=1.47$, reflecting spatial heterogeneity consistent with the geometric domain-gap findings from run\_11. Across whole-map, per-tile, and $k$-sweep analyses, the encoder consistently distinguishes auto and manual map representations at neighbourhood sizes $k \geq 20$, with the strongest separation at $k=40$ (cosine $=-0.701$). These results are observational: the encoder was trained solely on auto-generated tiles without a manual-map contrastive objective, so the cross-map separation is an emergent property of the geometry-based graph representation rather than a supervised classification result. The separation margin is moderate and should be interpreted with caution.
+
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.96\linewidth]{../../../thesis_results/structural_gap_v1/run_11/fig_road_type_distribution.png}
-\caption{Road-type distribution comparison between the auto-generated and manually authored Ingolstadt maps (run\_15). The auto map shows a substantially higher proportion of residential and unclassified road segments relative to the manually authored reference, contributing to the normalized road-class gap of $0.0597$.}
-\label{fig:road_type_distribution}
-\end{figure}
+\small
+\begin{tabular}{lrrl}
+\toprule
+Tile & Cosine similarity & L2 distance & Gap class \\
+\midrule
+\texttt{tile\_2\_1} & $-0.678$ & 1.832 & HIGH \\
+\texttt{tile\_3\_2} & $-0.583$ & 1.779 & HIGH \\
+\texttt{tile\_0\_0} & $-0.513$ & 1.740 & HIGH \\
+\texttt{tile\_2\_2} & $-0.515$ & 1.741 & HIGH \\
+\texttt{tile\_1\_0} & $-0.521$ & 1.744 & HIGH \\
+\texttt{tile\_2\_0} & $-0.244$ & 1.578 & MODERATE \\
+\texttt{tile\_0\_1} & $-0.225$ & 1.565 & MODERATE \\
+\texttt{tile\_1\_2} & $+0.000$ & 1.414 & NEAR-ZERO \\
+\texttt{tile\_1\_1} & $+0.096$ & 1.345 & LOW \\
+\texttt{tile\_0\_2} & $+0.271$ & 1.207 & LOW \\
+\texttt{tile\_4\_0} & $+0.587$ & 0.909 & LOW \\
+\texttt{tile\_3\_0} & $+0.727$ & 0.738 & LOW \\
+\midrule
+Mean & $-0.133$ & 1.466 & -- \\
+\bottomrule
+\end{tabular}
+\caption{Per-tile GNN latent gap ($k=72$, epoch 50, 12 matched tile pairs).}
+\label{tab:gnn_per_tile}
+\end{table}
 
-\begin{figure}[h]
+A neighbourhood-size sweep across $k \in \{10, 20, 30, 40, 50, 60, 72\}$ (Table~\ref{tab:gnn_ksweep}) shows that the cross-map cosine similarity is most negative at $k=40$ ($-0.701$), indicating that a 40-hop graph neighbourhood captures the scale at which auto and manual map embeddings diverge most strongly in this diagnostic. At $k=10$ the encoder does not provide a separating signal ($+0.595$), while at $k=72$ (the maximum, used as the default checkpoint) the value is $-0.206$. This sensitivity is expected: small neighbourhoods encode only local road geometry, while larger neighbourhoods encode junction topology. The sweep is supplementary sensitivity evidence and is not a replacement for the frozen $k=72$ collapse-check result.
+
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.96\linewidth]{../../../thesis_results/structural_gap_v1/run_11/fig_intersection_density.png}
-\caption{Intersection density comparison between the auto-generated ($779$ junctions) and manually authored ($119$ junctions) Ingolstadt maps (run\_11). The auto map's $6.55\times$ higher junction count reflects the over-segmented OSM topology that results in numerous implicit intersections in procedural generation, contributing to the normalized intersection gap of $0.1372$ (run\_15).}
-\label{fig:intersection_density}
-\end{figure}
+\small
+\begin{tabular}{rrrr}
+\toprule
+$k$ & Cosine similarity & L2 & Final loss \\
+\midrule
+10 & $+0.595$ & 0.900 & 2.408 \\
+20 & $-0.203$ & 1.551 & 2.384 \\
+30 & $-0.149$ & 1.516 & 2.516 \\
+40 & $-0.701$ & 1.844 & 2.432 \\
+50 & $-0.529$ & 1.749 & 2.530 \\
+60 & $+0.177$ & 1.283 & 2.554 \\
+72 & $-0.206$ & 1.553 & 2.477 \\
+\bottomrule
+\end{tabular}
+\caption{GNN $k$-sweep: cross-map cosine similarity by neighbourhood size.}
+\label{tab:gnn_ksweep}
+\end{table}
 
-\begin{figure}[h]
+A post-submission structural-feature classifier provides a separate bounded experimental probe: four auto samples and two manual samples yielded silhouette $=0.6350130991552239$, leave-one-out accuracy $=1.0$, and centroid cross-cosine similarity $=-0.9999999997825587$. This value is not the GNN cross-cosine; it is computed on hand-crafted structural feature vectors. Because the sample set remains small, it strengthens the observational claim without converting it into a statistically conclusive transfer result.
+
+\noindent\textit{Caution on GNN sample size.} Because the GNN analysis is based on a small number of matched tile pairs ($N=12$ for per-tile results; $N=6$ for the structural-feature pilot), it is interpreted only as an exploratory representation diagnostic. The non-collapsed latent space confirms that the selected structural features contain domain-discriminative signal, but it does not support statistical claims about transfer performance or robustness without a larger matched-tile sample and an external validation task. A statistically meaningful replication would require $N \geq 30$ samples per class spanning multiple cities and pipeline versions.
+
+\textbf{RQ5 (Generalization):} a second-city Munich OSM extract with the same spatial extent as the Ingolstadt extract was downloaded and converted to OpenDRIVE, yielding 9,917 roads and 1,285 junctions. This shows that the map-generation code can process a new urban input and produce a bounded second-city artifact without city-specific code changes. However, the hardcoding audit still found Ingolstadt-specific fallback references in domain-gap configuration and no manually authored Munich reference is available, so a full transfer experiment remains deferred.
+
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.96\linewidth]{../../../thesis_results/structural_gap_v1/run_11/fig_semantic_depletion_bars.png}
-\caption{Semantic-object gap across four object categories (barriers, buildings, poles, trees) for the contract-run auto XODR versus the manual Grid0828 reference. The auto contract-run artifact contains zero objects in all categories prior to the building-injection fix; the figure contextualizes the normalized semantic gap of $0.1662$ (run\_15).}
-\label{fig:semantic_depletion}
-\end{figure}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Metric & Ingolstadt auto & Munich auto & Ratio \\
+\midrule
+Road count & 5{,}399 & 9{,}917 & $1.84\times$ \\
+Junction count & 672 & 1{,}285 & $1.91\times$ \\
+Total road length & 258.6\,km & 359.0\,km & $1.39\times$ \\
+Mean road length & 47.9\,m & 36.2\,m & $0.76\times$ \\
+Max planview seam & -- & 8.19\,m & -- \\
+Bbox area & same extent & same extent & $1.0\times$ \\
+\bottomrule
+\end{tabular}
+\caption{Cross-city auto-map consistency probe: Ingolstadt versus Munich. The Ingolstadt road count (5{,}399) and junction count (672) are from the master-strengthen pipeline run used for the Munich comparison probe. The authoritative run\_11 artifact has 5{,}837 roads and 779 junctions (see Table~\ref{tab:structural_gap}); the difference reflects pipeline-settings variation between runs.}
+\label{tab:munich_cross_city_consistency}
+\end{table}
 
-\subsection{Perception Capability and Readiness}
-Perception readiness was evaluated by executing the full sensor rig (6 cameras, 2 LiDARs) in synchronous mode.
-A batch of seven code-level defects was identified and resolved (commits \texttt{4b0ab1f3}, \texttt{d765fb7f}, 2026-04-05): synchronous mode was reordered to precede sensor listener registration; frame accounting was corrected to use the CARLA \texttt{WorldSnapshot.frame} identifier rather than a local counter; disk I/O was moved to a background executor to prevent callback blocking; ego spawning was hardened from \texttt{try\_spawn\_actor()} to \texttt{spawn\_actor()} with explicit exception handling; and manifest writing was deferred until all pending callbacks drain.
+While a full cross-city structural domain-gap comparison requires a manually authored Munich reference, the auto-generated Munich map provides a pipeline consistency probe. For an equivalent bounding-box extent, Munich produces $1.84\times$ more roads and $1.91\times$ more junctions than Ingolstadt, reflecting Munich's denser urban fabric. Both maps are generated by the identical map-generation code path without city-specific code changes, confirming code-level portability. The mean road length is shorter in Munich (36.2\,m vs.\ 47.9\,m), consistent with OSM's finer-grained segmentation of dense city-centre blocks. Cross-city domain-gap measurement remains deferred pending a Munich manual reference.
 
-\paragraph{Town10HD full-rig capture (resolved).}
-Following resolution of the \texttt{libcarla} streaming assertion (T-PERC-LISTENER-ASSERT-001) and correction of the frame-count minimum gate to 8 frames, the complete 8-sensor rig was executed on the built-in \texttt{Town10HD} map. The run recorded \textbf{20 RGB frames} with all 14 listener callbacks registered (\texttt{ok=true}, 2026-04-14). This confirms that the synchronous-mode ordering, background I/O executor, exception-path listener cleanup, and sensor-destroy path are all correct. T-PERC-LISTENER-ASSERT-001 is closed as resolved.
+\textbf{Implemented but not fully executed infrastructure:} the codebase contains the infrastructure required for broader perception capture, tile-level stress testing, structural feature extraction, GNN/domain-gap training, and second-city OpenDRIVE generation. The thesis executes only a bounded subset of this infrastructure. In particular, a true train-on-one-map/evaluate-on-another-map perception experiment would require a stable generated map, comparable manual and generated sensor captures, and semantic material tags from a full UE4 cook; a statistically meaningful latent-space transfer experiment would require multiple manual and generated city pairs rather than the small-N pilot reported here.
 
-\paragraph{Grid0821 — confirmed CARLA resource boundary (T-PERC-GRID0821-SPAWN-CRASH-001, closed).}
-Capture on the cooked Ingolstadt map \texttt{Grid0821} was investigated through three successive fix iterations.
-The batch \texttt{apply\_batch\_sync()} call was replaced by sequential \texttt{world.try\_spawn\_actor()} calls (commit~\texttt{9feaaac4}), which confirmed that the first sensor actor spawns and fires its first callback; the CARLA process then hangs (\texttt{record\_route\_returncode\,=\,124}) under the full 8-sensor rig load.
-A further iteration (commit~\texttt{c786bd21}) added \texttt{world.tick()} synchronisation between spawns and introduced a 2-sensor reduced rig (env\,\texttt{UP\_THESIS\_REDUCED\_RIG=1}) as a diagnostic tool; however, during the probe, a \texttt{client.load\_world(`Grid0821')} call itself caused the CARLA~0.9.16 process to terminate, and the RPC port became permanently unresponsive.
-This establishes that the failure occurs at the map-loading level, not only during sensor allocation: Grid0821 exhausts available GPU VRAM or system RAM when CARLA attempts to load its cooked assets on this hardware configuration.
-\textbf{T-PERC-GRID0821-SPAWN-CRASH-001 is therefore classified as a CARLA~0.9.16 runtime boundary} on the available hardware, not a defect in the governed pipeline code.
-The sensor rig is confirmed correct on \texttt{Town10HD} (20 frames, \texttt{ok=true}); a paired Ingolstadt capture on Grid0821 or Grid0828 is deferred to future work requiring either higher-resource hardware or a newer CARLA version.
+\subsection{Natural structural variability across pipeline runs}
+\label{sec:domain_randomization}
 
-\paragraph{RQ3 perception status.}
-The full 8-sensor rig is confirmed correct on \texttt{Town10HD} (20 frames, ok=true). Paired Ingolstadt perceptual-gap quantification remains bounded: perceptual gap measurement requires synchronized manual/simulation perceptual pairs; Grid0821 and Grid0828 capture is blocked by T-PERC-GRID0821-SPAWN-CRASH-001, which resides in the CARLA server process during sensor actor creation and is not a defect in the governed pipeline code. Due to CARLA 0.9.16 instability on the target custom map (Grid0821 crashes at map-load; see POST_FIX_STATUS.json), this measurement remains deferred. a full paired Ingolstadt comparison is classified as future work.
+The thesis topic asks whether domain randomization occurs naturally when generating multiple CARLA maps from the same OSM source. To investigate this, the coefficient of variation (CV\,=\,$\sigma/\mu$) was computed for key structural metrics across ten representative generated Ingolstadt XODR artifacts from the governed pipeline family, spanning different pipeline stages and run configurations. Table~\ref{tab:domain_randomization_cv} summarises the supplementary results.
 
-\paragraph{RQ4/RQ5: GNN latent gap.}
-An earlier positive-only cosine-loss interpretation that reported cosine similarity 0.9989 is not used as thesis evidence because that configuration was later identified as collapsed. The governed contrastive artifacts instead indicate a non-collapsed configuration, with cross-cosine $=-0.160$, training cosine similarity $=-0.206$ (cross-cosine from \texttt{collapse\_check.json}; training cosine from \texttt{gnn\_training\_report.json}), final loss $=2.477$, and an overall verdict of \texttt{NOT\_COLLAPSED}. This corrected contrastive setup is observational only and does not support a transfer-feasibility claim, because no downstream perception transfer experiment was executed. The training objective follows the SimCLR / NT-Xent family of contrastive methods \cite{chen2020simclr}.
+\begin{table}[ht]
+\centering
+\caption[Structural CV across ten governed pipeline artifacts.]{Coefficient of variation for structural metrics across ten representative governed Ingolstadt pipeline artifacts. CV\,$<$\,0.01: deterministic; 0.01--0.05: low variance; 0.05--0.20: moderate variance; $\geq$\,0.20: high variance. Supplementary evidence only; does not replace run\_11 authority.}
+\label{tab:domain_randomization_cv}
+\small
+\begin{tabular}{lrrl}
+\hline
+Metric & Mean & CV & Classification \\
+\hline
+Road count & 5{,}639 & 0.047 & Low variance \\
+Junction count & 694 & 0.059 & Moderate variance \\
+Total road length (km) & 251.8 & 0.040 & Low variance \\
+Junction density (per km) & 2.76 & 0.049 & Low variance \\
+Arc-curvature mean & 0.032 & 3.000 & High variance \\
+\texttt{paramPoly3} count & 9{,}807 & 0.191 & Moderate variance \\
+Object count & 5{,}962 & 0.752 & High variance \\
+Signal count & 128 & 3.000 & High variance \\
+\hline
+\end{tabular}
+\end{table}
+
+The results show \textbf{limited natural structural domain randomization} at the network-topology level. Road count, total road length, and junction density are low-variance metrics (CV\,$\approx$\,0.04--0.05), confirming that the pipeline consistently encodes the same OSM road network across the inspected artifact family. Junction count exhibits moderate variation (CV\,=\,0.059), reflecting sensitivity to topology-repair settings. By contrast, arc-curvature representation, object placement, and signal insertion vary strongly, but these high-CV values are stage- and settings-dependent; they should not be interpreted as evidence that the default generator naturally produces appearance-level or sensor-level randomization suitable for model training. The safe verdict is therefore limited structural randomization: bounded topology/coverage variation exists, while training-grade domain randomization would require explicit augmentation and paired perception evaluation.
+
+\subsection{RQ Evidence Summary}
+\label{sec:rq_verdict_matrix}
+
+Table~\ref{tab:rq_verdict_matrix} summarises the evidence status for each research question.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{@{}p{0.04\linewidth}p{0.17\linewidth}p{0.22\linewidth}p{0.16\linewidth}p{0.29\linewidth}@{}}
+\hline
+\textbf{RQ} & \textbf{Question (short)} & \textbf{Primary evidence} & \textbf{Verdict} & \textbf{Interpretation} \\
+\hline
+RQ1 & Pipeline determinism & scenario\_b\_audit: 5-run topological audit, byte-level hashes & RESOLVED (bounded structural) & Topological counts invariant ($CV\!=\!0.0$); byte-level hashes diverge (serialisation/floating-point variation) \\
+RQ2 & Structural domain gap & run\_11 geometry/curvature and object gap + run\_12 connectivity companion + run\_15 per-tile supplement & RESOLVED & Substantial gap in geometry, junction density, curvature spread, link encoding, and semantic-object depletion \\
+RQ3 & Perceptual domain gap & Town10HD rig (20 frames); post-fix ego drive 46.45\,m at 7.74\,m/s; 20 RGB frames on generated map; 67-tile defect stress proxy (71.64\,\% drivable-proxy rate); semseg bounded by CARLA standalone limitation & BOUNDED & Rig confirmed on Town10HD; ego drives on generated map; RGB delivered; residual defects localised; semseg bounded by CARLA standalone; direct paired manual-vs-generated comparison deferred pending UE4 cook \\
+RQ4 & Structural variability \& latent space & NT-Xent GNN whole-map/per-tile/$k$-sweep diagnostics; natural-variability CV audit; feature pilot ($N=6$): cross-cosine $\!=\!{-}0.9999$, silhouette $\!=\!0.635$, LOO accuracy $\!=\!1.0$ & OBSERVATIONAL & Separate analyses show limited natural structural randomization, non-collapse, spatial heterogeneity, and feature-space separation; not statistically conclusive \\
+RQ5 & Generalisation \& transfer & Munich OSM$\rightarrow$XODR probe (9,917 roads, 1,285 junctions) and cross-city auto-map consistency table & DEFERRED & Map-generation code processed a second city; domain-gap configuration still has Ingolstadt fallbacks; full transfer experiment deferred \\
+\hline
+\end{tabular}
+\caption[RQ evidence status matrix.]{RQ evidence status matrix. \emph{Resolved}: sufficient evidence within stated scope. \emph{Bounded}: scope or interpretation qualified. \emph{Observational}: descriptive finding, no causal or transfer claim. \emph{Deferred}: infrastructure implemented, experiment not completed within thesis scope.}
+\label{tab:rq_verdict_matrix}
+\end{table}
+
+\subsection{Summary}
+The thesis resolves RQ1 and RQ2 with governed structural evidence. The generated Ingolstadt artifact remains useful as an OpenDRIVE object for structural comparison, but not as positive visual evidence inside CARLA. Perceptual and transfer claims remain bounded accordingly. Post-submission work confirmed autonomous ego driving on the generated map (46.45\,m at 7.74\,m/s), first-ever RGB capture on the generated Ingolstadt map, a 67-tile road-defect stress proxy with a 71.64\,\% drivable-proxy rate, and a successful Munich OSM-to-OpenDRIVE generation (9,917 roads, 1,285 junctions) demonstrating a bounded second-city pipeline probe.

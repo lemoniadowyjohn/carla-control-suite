@@ -1,133 +1,81 @@
-﻿% Chapter 9 - Conclusion
+% Chapter 9 - Conclusion
 \section{Conclusion}
 \label{sec:conclusion}
 
-\subsection{Progress and Contributions}
-\label{sec:progress_contributions}
-This thesis presents the design, implementation, and validation of an automated pipeline for generating, validating, and evaluating road network maps from OpenStreetMap (OSM) data in the CARLA simulator.
-The primary contribution is not only automated map generation, but a reproducible and auditable experimental framework for quantifying structural domain gap and validating perception-capture capability under controlled conditions.
+\subsection{Main findings}
+This thesis presented a governed methodology for comparing automatically generated OSM$\rightarrow$OpenDRIVE maps against a manually authored CARLA reference map of the same Ingolstadt region. The main contribution is an evidence-backed structural domain-gap workflow rather than a claim of full simulator readiness.
 
-\paragraph{Pipeline reliability and auditability.}
-A complete OSM$\rightarrow$OpenDRIVE$\rightarrow$CARLA pipeline was implemented to support large-scale map generation, tiling, validation, and downstream perception evaluation.
-The pipeline was hardened to ensure experimental integrity: failures propagate reliably (non-zero exit codes), misleading ``successful completion'' states were eliminated, and each run produces explicit diagnostic artifacts.
-This prevents silent failures from contaminating quantitative results.
+The authoritative run\_11 comparison yields a whole-network RMSE of 54.84\,m, a matched-subset RMSE of 24.47\,m for 73.0\% of sampled points within a 50\,m criterion, and a Hausdorff distance of 1{,}663\,m. The generated map is 4.88$\times$ longer in road coverage and contains 6.55$\times$ more junctions than the manual reference. Both multipliers reflect intentional scope differences rather than OSM-conversion errors: the auto-generated map encodes all OSM-tagged roads including residential streets, footways, and service roads that the manually-authored Grid0828 reference omitted; the junction ratio similarly reflects OSM's representation of every tagged intersection, including cul-de-sac and slip-road junctions absent from the manual baseline. Curvature spread is also substantially larger in the generated map (0.865 vs.\ 0.055\,m$^{-1}$), indicating high-curvature outlier segments that are not present in the hand-authored map. These findings show that automatically generated city-scale maps can differ strongly from a manual reference even when both represent the same geographic area.
 
-\paragraph{Tile-based validation and diagnostics.}
-Fine-grained tile-level validation was introduced to localize structural defects and enable scalable quality assessment.
-Reporting was redesigned to provide unambiguous counts of passed, failed, and unknown tiles, alongside a failure taxonomy that reveals dominant error modes (e.g., import failures, spawn failures, topology errors).
-These diagnostics support statistically meaningful comparisons across generated maps and across pipeline configurations.
+RQ1 is resolved in a bounded sense: the governed audit shows structural invariance in the measured topological counts under fixed inputs, while byte-level file hashes still diverge. RQ2 is resolved by the structural results above. RQ3--RQ5 remain bounded or deferred.
 
-\paragraph{Determinism and reproducibility methodology.}
-The thesis explicitly separates variability from (i) OSM acquisition, (ii) OSM-to-OpenDRIVE conversion, and (iii) OpenDRIVE-to-CARLA import/normalization.
-The pipeline supports hashing and semantic signatures to distinguish formatting differences from true structural nondeterminism, enabling determinism audits beyond naive file equality checks.
+The practical implication is that OSM-derived CARLA generation can support scalable structural experimentation, but the present evidence does not justify replacing manually curated maps for perception-ready validation without additional topology repair, visual QA, and paired sensor-domain evaluation. This result directly informs the make-or-automate decision: automated generation is sufficient for early structural screening and reproducibility studies, while perception experiments and training-data generation require a manually curated or post-repaired map that has passed visual QA and been packaged with semantic material tags.
 
-\paragraph{Manual baseline integration.}
-A manually authored CARLA map of Ingolstadt was extracted in OpenDRIVE format as a structural ground-truth baseline.
-This enables direct structural comparison against automatically generated maps and supports quantitative domain gap analysis of lane topology, connectivity, and geometric properties.
+\subsection{Final thesis boundary}
+The final governed evidence also supports an important negative result. The generated XODR can be parsed and loaded by CARLA, but visual QA of the road mesh fails. A controlled planar ablation showed that the original DEM-backed artifact and both flattened variants continue to exhibit road-mesh and surface-continuity defects, so the dominant defect is not primarily caused by elevation. This means that CARLA load success cannot be treated as proof of visual usability or perception readiness.
 
-\paragraph{Sensor calibration correctness for perception evaluation.}
-Critical extrinsic-handling errors were identified and corrected to ensure mathematically consistent camera and LiDAR placement in the simulator.
-A verification procedure is integrated to prevent systematic calibration bias, which is essential for perceptual comparisons and downstream model evaluation.
+Accordingly, the thesis does not claim positive generated-map visual evidence or generated-map perception evidence. Town10HD remains valid only as a bounded demonstration that the governed sensor-rig and capture mechanics work on a stable built-in map. The structural comparison remains valid because it is performed at the OpenDRIVE level and does not depend on visually successful CARLA rendering.
 
-\paragraph{Summary.}
-In summary, this thesis contributes (i) a reproducible map generation and evaluation pipeline, (ii) tile-based structural validation with actionable diagnostics, (iii) a determinism auditing methodology grounded in hashes and semantic signatures, (iv) integration of manual maps as structural baselines, and (v) a corrected, verifiable sensor calibration pipeline for perception analysis.
-
-\paragraph{Primary structural domain-gap findings.}
-The authoritative structural comparison (run\_11, governed) between the auto-generated and manually authored Ingolstadt maps yields:
-whole-network geometry RMSE $= 54.84\,$m;
-matched-subset RMSE $= 24.47\,$m for the 73.0\% of sampled road points within a 50\,m criterion;
-Hausdorff distance $= 1{,}663\,$m.
-These three values must be read together: the whole-network RMSE includes an unmatched-road penalty from the 4.88$\times$ road-length surplus of the auto map; the matched-subset RMSE isolates local alignment quality for the portion of the manual network that has a close auto counterpart. The road-length ratio is taken from the audited governed run\_11 coverage context, while junction/connectivity summaries come from the governed connectivity companion artifact family.
-The corrected curvature support measurement on the same authoritative manual-vs-contract-run pair shows that the curvature distribution of the auto map is substantially wider than the manual reference (std $= 0.865$ vs.\ $0.055\,\mathrm{m}^{-1}$), indicating high-curvature outlier segments introduced by procedural paramPoly3 generation.
-Lane and junction connectivity analysis shows that the auto map carries no road-level predecessor/successor link declarations (relying entirely on junction-based connectivity), while the manual map has 93--97\% road-link coverage at 100\% validity.
-Junction laneLink completeness is 100\% in both maps.
-All geometry metrics are planar (2D) because the final analysis artifact remained flat; elevation-gap quantification is deferred to future work.
-
-\subsection{Additional contributions enabling thesis-grade evidence}
-\label{sec:additional_contributions}
-Beyond the core pipeline described above, the following additions strengthen experimental validity and widen metric coverage:
-
-\begin{itemize}
-  \item \textbf{Deterministic, traceable execution.} Each run records a settings snapshot and cryptographic hashes for key inputs and outputs, enabling a per-run reproducibility fingerprint that supports auditability across machines and reruns.
-  \item \textbf{Explicit refusal logic for invalid tile analysis.} When tile correspondence is empty or coordinate frames are incompatible, the pipeline refuses per-tile reporting rather than producing misleading numbers. This transforms a potential failure mode into an explicit validity guarantee.
-  \item \textbf{Determinism tooling.} Dedicated comparison scripts evaluate repeated runs under identical inputs to distinguish semantic nondeterminism from superficial variability (e.g., ordering or timestamps).
-  \item \textbf{Multi-category OpenDRIVE-only structural metrics.} In addition to geometric distance measures (RMSE, Hausdorff), the evaluation includes: curvature distribution gap (paramPoly3-aware sampling, KL divergence, and standard deviation comparison); semantic object gap (object-type counts, road-type lengths, traffic-light and lane-marking density); topology gap (road and junction counts); and a lane/junction connectivity gap suite covering road-link predecessor/successor validity rates, lane-count distributions, junction degree, and lane-link completeness. These metrics are XML-only, CARLA-independent, and deterministic.
-\end{itemize}
-
-Collectively, these contributions enable trustworthy experimental analysis of map-induced domain gaps in autonomous driving simulation.
-
-\section{Future Work}
+\subsection{Future work}
 \label{sec:future_work}
-The core contribution of this thesis is the characterization of map-induced domain gaps and their reproducibility, rather than achieving state-of-the-art perception accuracy.
-Several natural extensions can strengthen the empirical scope without changing the methodological foundation:
 
-\begin{itemize}
-  \item \textbf{Large-scale training and evaluation on HPC:} training across many auto-generated maps, larger datasets, and cross-city experiments (sim$\rightarrow$sim at scale).
-  \item \textbf{Broader environmental sweeps:} systematic weather, lighting, and traffic-condition variation to disentangle map effects from appearance effects.
-  \item \textbf{Expanded sim$\rightarrow$real evaluation:} incorporation of labeled real-world datasets or semi-supervised approaches to move beyond proxy metrics.
-  \item \textbf{Richer structural alignment:} improved junction matching and alignment-based structural metrics to better explain localized perceptual shifts.
-\end{itemize}
+The evidence boundary established by this thesis motivates the following concrete directions.
 
-\paragraph{Repo-backed extension roadmap.}
-This thesis quantifies the map-domain gap but does not yet close the loop with active mitigation. Existing governed scaffolding already points to several realistic extensions: reinforcement-learning-style map fuzzing for controlled perturbation of lane geometry and object density, LLM-assisted OpenDRIVE semantic checking, broader scenario and route sweeps, and realism-oriented augmentation modules. These components were not part of the evaluated thesis evidence bundle, but they define a concrete path from passive gap measurement toward robustness-oriented stress testing and automated map validation.
+\paragraph{1.\ Junction topology repair.}
+The most impactful near-term step is a dedicated junction-reconstruction pass for complex OSM-derived junction regions, in particular roundabouts. Roundabouts require more than geometric smoothing: entry and exit connectors, circular carriageway representation, lane-link consistency, priority/yield semantics, and CARLA importer compatibility must be generated and validated as a coherent topology. Such work should be evaluated in a separate governed rerun with explicit artifact provenance and should remain distinct from the authoritative run\_11 structural results reported in this thesis.
 
-\paragraph{Elevation domain gap quantification.}
-A later governed supplementary run demonstrated end-to-end elevation capability by producing a non-flat DEM-backed Ingolstadt XODR, but it was not adopted as the primary thesis artifact because vertical continuity checks still reported anomalies (805/7966 links above 0.5\,m; max $\Delta z \approx 6.53$\,m) and the thesis evidence bundle had already frozen around the planar run\_11 authority. The final structural comparison reported in this thesis therefore remains planar-only.
+\paragraph{2.\ Direct perceptual domain-gap measurement (RQ3).}
+Once the generated map passes visual QA, a paired perception experiment should be executed: the same sensor rig and route protocol used for Town10HD should be applied to the generated Ingolstadt map and to the manually modeled Grid0821/Grid0828 reference, and distribution-level proxy metrics (e.g., pixel-class histogram shift, depth-distribution KL divergence) should be computed. This experiment was the original intent of RQ3 and represents the most direct continuation of the thesis work.
 
-\paragraph{RQ3--RQ5: perception-driven evaluation.}
-Paired perception data from Grid0828 and the auto-generated Ingolstadt map remains the prerequisite for perceptual-gap quantification and any downstream transfer validation. The collection and training entrypoints are implemented, but the thesis does not claim those experiments were completed.
+\paragraph{3.\ Multi-city structural gap characterisation.}
+The current study is limited to a single city and OSM extract. Replicating the structural gap analysis on two or three additional cities with different OSM density profiles (e.g., a rural area and a dense urban center outside Germany) would allow the RMSE and Hausdorff gap magnitudes to be interpreted as characteristic of OSM map quality in general versus specific to Ingolstadt.
 
-\paragraph{NPC traffic density as a perception gap dimension.}
-The \texttt{--num-npcs} control is wired for generated-tile collection, but the effect of dynamic traffic density on occlusion and sensor failure modes is deferred to dedicated ablation experiments.
+\paragraph{4.\ DEM-backed elevation as a first-class evaluation dimension.}
+The planar ablation in this thesis confirms that DEM elevation is not the dominant explanation for the current CARLA visual failure, but the primary structural analysis was also restricted to a flat artifact. After the junction topology layer stabilises, DEM-backed maps should be evaluated in a matched flat-versus-DEM comparison to quantify the elevation-specific contribution to both visual QA and structural metrics.
 
-\paragraph{Grid0828 CARLA compatibility.}
-Grid0828-specific map-name normalization and cooked-world loading stability remain an open runtime compatibility issue. Current thesis-facing perception reference runs therefore remain bounded and incomplete.
+\paragraph{5.\ GNN latent-space transfer experiment (RQ4/RQ5).}
+The observational GNN result (cross-cosine $= -0.160$, non-collapsed) suggests that the structural metrics contain domain-discriminative information. A natural continuation is to train a downstream classifier or retrieval model on the latent embeddings and evaluate transfer to an unseen city, providing a more principled answer to RQ4 and a first step toward RQ5.
 
-Importantly, these extensions are optional: the thesis results remain valid under the controlled experimental protocol presented here, and future work primarily increases statistical power and coverage.
+\paragraph{6.\ Semantic enrichment and object-class gap closure.}
+The four-category semantic-object gap (zero buildings, barriers, poles, trees in the contract-run artifact) was partially closed by a later pipeline fix. A systematic evaluation of semantic completeness --- including signal density, lamp-post placement, and building footprint accuracy --- would complement the geometric gap analysis and is relevant for scene-diversity studies in synthetic training data generation.
 
-\section{Limitations and Failure Modes}
+\paragraph{7.\ Automated map-readiness gate integration.}
+The governed pipeline contains a layered visual-readiness audit
+stack---connector-pose mismatch detection
+(\texttt{audit\_xodr\_visual\_geometry}), CARLA visual smoke testing
+(\texttt{carla\_visual\_smoke\_gate}), and a combined readiness gate
+(\texttt{final\_map\_readiness\_gate})---developed in response to the
+finding that CARLA load success is a necessary but insufficient condition
+for visual and perceptual usability. A natural engineering direction is
+to promote this gate stack to a mandatory governed checkpoint: no
+perception experiment should be allowed to start unless the map has
+passed connector-gap thresholds, visual road-mesh QA, and spawn-point
+count verification. This would close the current gap between
+\texttt{CARLA\_LOADABLE\,=\,yes} and \texttt{CARLA\_VISUAL\_READY\,=\,yes}
+in a repeatable, artifact-logged way, and would make the readiness
+classification derivable directly from the pipeline output rather than
+from post-hoc manual inspection.
 
-\subsection{Threats to validity and mitigations}
-\label{sec:threats_mitigations}
-Several failure modes can silently invalidate quantitative results if not handled explicitly. This thesis therefore treats the following as first-class threats, with documented mitigations:
+\paragraph{8.\ Manually authored second-city reference for RQ5.}
+The Munich OSM probe shows that the map-generation path can process a second city, but it does not complete RQ5 because no manually authored Munich OpenDRIVE reference exists. A manually authored Munich reference, built over the same spatial extent as the OSM extract, would enable a true paired cross-city structural comparison and would be the cleanest way to close the generalisation question.
 
-\begin{itemize}
-  \item \textbf{Alignment fallback can corrupt geometric metrics.} If an alignment stage fails and downstream metrics fall back to an identity transform, geometric distances (e.g., RMSE or Hausdorff proxies) can become meaningless. The evaluation includes a strict ``kill switch'' that disables metric reporting unless alignment status is explicitly confirmed (or an override is intentionally enabled and recorded).
-  \item \textbf{Tile mismatch or empty correspondence invalidates per-tile metrics.} When correspondence is empty (header-only \texttt{correspondence.csv}) or frames are incompatible, per-tile reporting is refused by default. Any override is recorded in the run metadata.
-  \item \textbf{Randomized spawning reduces repeatability.} Stochastic simulator elements (e.g., spawn placement) are controlled via explicit seeding and are logged in run metadata to ensure repeatable experiment execution.
-  \item \textbf{Simulator import and normalization can alter structure.} CARLA may drop or normalize elements during import. As a fidelity check, the methodology compares coarse road, junction, and lane statistics before and after import; extending this into deeper structural equivalence checks is treated as future work.
-\end{itemize}
+\paragraph{9.\ Full semantic segmentation through UE4 map cook.}
+Generated-map semantic segmentation remains bounded by the CARLA standalone OpenDRIVE material-tag limitation. Resolving this requires importing the generated map into the Unreal Engine editor workflow, assigning semantic material tags, cooking it as a full CARLA package, and then rerunning the identical sensor rig. This is substantially larger than an OpenDRIVE-only repair pass and should be treated as a separate future-work track.
 
-\paragraph{Spatial correspondence validity.}
-Incorrect tile pairing due to grid-origin or coordinate-frame mismatch can invalidate per-tile metrics.
-To mitigate this, tile correspondence is established via spatial matching with IoU gating and optional robust translation estimation (Section~\ref{sec:tile_correspondence}).
-Per-tile comparisons are refused when incompatible coordinate units are detected, and the refusal reason is recorded in the run artifacts.
+\paragraph{10.\ Non-rigid structural alignment.}
+The authoritative run\_11 alignment is rigid SE(2) with fixed scale. This is appropriate for a governed baseline, but it cannot account for local distortions caused by road decomposition, OSM polyline simplification, or manual-map generalisation. A future comparison could evaluate non-rigid warping, local ICP, or mesh-level correspondence methods to separate global misalignment from local geometric deformation.
 
-\paragraph{Implication for reported results.}
-When manual-to-auto tile correspondence cannot be established (e.g., zero valid matches after spatial matching), per-tile metrics are not reported.
-In such cases, whole-map structural metrics remain valid and are presented as the primary evidence for structural domain gap.
-The four structural geometry results must be read as a set:
-whole-network RMSE $= 54.84\,$m, which includes an unmatched-road penalty arising from the 4.88$\times$ road-length surplus of the auto network;
-matched-subset RMSE $= 24.47\,$m, which reflects local alignment quality for the 73.0\% of manual road samples that have an auto road counterpart within a 50\,m criterion;
-and Hausdorff distance $= 1{,}663\,$m, which captures the worst-case point deviation at whole-network scale.
-The whole-network RMSE and Hausdorff values are not indicators of local registration accuracy; they are dominated by roads present in one map but absent in the other.
-The matched-subset RMSE is the appropriate metric for judging local geometric correspondence in the region of spatial overlap.
+\paragraph{11.\ RQ4 scale-up.}
+The post-submission structural-feature separation result is a small-N pilot. A statistically meaningful RQ4 experiment should scale from $N=6$ to at least $N\geq30$ samples per class, spanning multiple cities, multiple generated-map versions, and multiple manual references where available. Only then should classifier accuracy, silhouette scores, and latent-space separability be interpreted as robust rather than observational.
 
-\label{sec:limits_failures}
-This thesis emphasizes experimental control and reproducibility, yet several limitations remain and are important for interpreting results.
+\paragraph{12.\ Traffic-light inference heuristic.}
+Traffic-light and signal enrichment are not established thesis results because final inspected artifacts contain zero verified functional signal insertions. Future work should tune or replace the current traffic-light inference heuristic, which appears too conservative for the available OSM-derived junction patterns, and should require artifact-level evidence of inserted \texttt{<signal>} and \texttt{<signalReference>} elements before claiming traffic-control enrichment.
 
-\subsection{Limitations}
-\begin{itemize}
-  \item \textbf{Perceptual Gap Comparison (RQ3):} The authoritative generated-map strict-evidence attempt targeted 50 frames, but the final governed evidence pack remained incomplete and closed with zero recorded frames. Earlier 241-frame development-run references are not used as primary governed thesis evidence. A separate Town10HD\_Opt stage probe confirmed rig callback readiness on the built-in map (\texttt{ok=true}), but that is a proxy baseline rather than paired Ingolstadt evidence. Grid0828 manual reference collection is still pending, so perceptual gap quantification requires future paired captures. A governed runtime-QA support path was fully implemented and all identified repo-local defects were resolved (wrong-map masking, bypassed streaming readiness gate, one-success false-positive stream check, None-client at \texttt{apply\_batch\_sync}, and current-world no-probe routing). In the final governed attempt on the already-loaded cooked Grid0828 world (identity confirmed, 11\,634 spawn points), the rig-attach path was entered with a valid client; however, \texttt{spawn\_response\_count}\,=\,0 with persistent streaming transport refusal yielded zero frames. This is classified as a CARLA runtime boundary during live sensor spawn on the custom cooked map rather than a remaining code defect, and is treated as an engineering boundary rather than thesis evidence.
-  \item \textbf{Generalization (RQ4/RQ5 - GNN latent gap):} An earlier positive-only cosine-loss interpretation (cosine similarity 0.9989) was later rejected as a collapsed encoder. The governed contrastive artifacts instead indicate a non-collapsed configuration, with cross-cosine $=-0.160$, training cosine similarity $=-0.206$, final loss $=2.477$, and an overall verdict of \texttt{NOT\_COLLAPSED}. These results are observational only, and no downstream transfer experiment was executed, so no transfer-feasibility claim is made \cite{chen2020simclr}.
-  \item \textbf{Elevation Data:} Primary thesis metrics remain planar (2D) and are anchored to run\_11. A later supplementary governed 3D capability run demonstrated a non-flat DEM-backed final XODR, but it does not replace run\_11 because vertical continuity anomalies remained and the thesis evidence bundle was already frozen.
-  \item \textbf{Simulator dependence:} results are tied to CARLA 0.9.16; changes in simulator versions may alter map import behavior and sensor implementations.
-\end{itemize}
+\paragraph{13.\ Byte-level determinism root cause.}
+The 5-run determinism audit shows topological stability ($CV=0.0$ for road and junction counts) but byte-level XODR hash divergence. Future work should isolate whether the remaining divergence comes from floating-point accumulation, nondeterministic sort order, timestamps, UUIDs, XML serialisation order, or external tool behaviour. This would upgrade the RQ1 result from bounded structural determinism toward byte-identical reproducibility.
 
-\subsection{Failure modes}
-Operational failure modes encountered during development are treated as part of the scientific evidence chain because they can silently invalidate results if not controlled.
-Key failure modes and mitigation controls include content or version mismatches, disk-space constraints, hidden log locations, and rendering pressure on large tiled maps.
+\paragraph{14.\ Fr\'{e}chet and shape-sensitive distance metrics.}
+RMSE and Hausdorff distance are useful governed baselines, but they are sensitive to sampling and road-decomposition mismatch. A curve-aware metric such as discrete Fr\'{e}chet distance, computed after robust road-segment correspondence, could provide a more shape-sensitive comparison of manual and generated road centerlines. The main open challenge is defining correspondence when the auto and manual maps decompose the same road corridor into different numbers of OpenDRIVE roads.
 
-\subsection{What this method cannot guarantee}
-Even with pinned inputs and explicit manifests, some sources of variability cannot be fully eliminated (e.g., low-level floating-point behavior or third-party library nondeterminism).
-Therefore, conclusions are stated in terms of measurable distributions and bounded interpretation rather than assuming perfect determinism in all conditions.
+\paragraph{15.\ Realism augmentation and perception-quality validation.}
+The pipeline contains realism and enrichment infrastructure for visual detail, object placement, and potential domain randomisation, but this thesis does not validate those modules as perception-quality improvements. Future work should evaluate realism augmentation only after the generated map passes visual QA and is packaged as a full CARLA asset with valid semantic material tags. A defensible study would compare identical sensor routes with and without realism augmentation, quantify changes in semantic segmentation, RGB, depth, and object-distribution statistics, and test whether the added realism reduces the measured perceptual domain gap rather than merely increasing scene complexity.
