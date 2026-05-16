@@ -79,7 +79,7 @@ provenance record. This auxiliary path is disabled by default (\texttt{ENABLE\_O
 and does not affect OpenDRIVE generation. Importing OSM2World-derived FBX assets into
 a distributable CARLA world additionally requires the full Unreal Engine source build of CARLA,
 which is outside the scope of this thesis; only the XODR-based standalone API
-(\texttt{generate\_opendrive\_world}) was used for simulator-dependent evaluation here.
+\texttt{generate\_opendrive\_world} was used for simulator-dependent evaluation here.
 The structural domain-gap analysis in this thesis is therefore performed on the final
 OpenDRIVE road-network artifact, and OSM2World-derived mesh enrichments lie outside
 the primary comparison scope.
@@ -102,15 +102,16 @@ After late junction-link mutation, the selected final XODR is rechecked by lane-
 \subsection{Quality gates and integrity contracts}
 \begin{table}[htbp]
 \centering
-\begin{tabular}{p{3.2cm}p{3.2cm}p{3.0cm}p{4.2cm}}
+\small
+\begin{tabular}{p{3.0cm}p{3.4cm}p{3.0cm}p{4.2cm}}
 \hline
 Gate Name & Condition & Action on Failure & Protects Against \\
 \hline
 Min XODR file size & $\geq 10{,}000$ bytes & Hard stop & Stub fixture inputs (run\_02: 796 bytes) \\
 Tile IoU gate & IoU $\geq 0.5$ & Skip per-tile metrics & Invalid local comparisons \\
 CRS sanity gate & Overlap after alignment $>$ threshold & Reject, report deferred & CRS mis-projection artefacts \\
-Empty correspondence gate & \texttt{correspondence.csv} $\geq 1$ data row & Hard stop & Silent zero-row claims \\
-Claim boundary annotation & \texttt{\_claim\_boundary} in \texttt{full\_report.json} & Required for admissibility & Unannotated result propagation \\
+Empty correspondence gate & \texttt{correspondence.csv} $\geq$\,1 data row & Hard stop & Silent zero-row claims \\
+Claim boundary annotation & \texttt{\_claim\_boundary} in \mbox{\texttt{full\_report.json}} & Required for admissibility & Unannotated result propagation \\
 Connector-crowding gate & Repeated-anchor and overlap counts within thresholds & Hard stop & Exploded junction patches / connector crowding \\
 \hline
 \end{tabular}
@@ -125,11 +126,11 @@ The run\_02 stub defect (796-byte XODR) was retroactively blocked by Gate~1 afte
 All gate decisions, override flags, and bypass history are recorded in a machine-readable
 \texttt{kill\_switch\_provenance} block within \texttt{full\_report.json}.
 Both the identity-alignment guard and the empty-correspondence guard are enforced by default;
-they can only be bypassed by explicitly setting \texttt{UP\_ALLOW\_IDENTITY\_ALIGNMENT=1}
-or \texttt{UP\_ALLOW\_EMPTY\_CORRESPONDENCE=1} respectively, and any such override is
+they can only be bypassed by explicitly setting \texttt{UP\_ALLOW\_}\allowbreak\texttt{IDENTITY\_ALIGNMENT=1}
+or \texttt{UP\_ALLOW\_EMPTY\_}\allowbreak\texttt{CORRESPONDENCE=1} respectively, and any such override is
 permanently logged in the provenance block.
 Domain-gap metrics are normalized to $[0,1]$ using explicit reference scales drawn from
-\texttt{SETTINGS.DOMAIN\_GAP\_NORMALIZATION}: geometry RMSE reference $= 1.0\,\text{m}$,
+\texttt{SETTINGS.}\allowbreak\texttt{DOMAIN\_GAP\_}\allowbreak\texttt{NORMALIZATION}: geometry RMSE reference $= 1.0\,\text{m}$,
 Hausdorff reference $= 5.0\,\text{m}$, curvature KL reference $= 0.5$,
 intersection delta reference $= 1.0$, semantic delta reference $= 1.0$.
 The effective normalization applied to each metric is reported verbatim in the
