@@ -36,10 +36,11 @@ def _resolve_preferred_dem_path(settings, dem_path: str | None) -> tuple[str | N
 
 def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     """
-    📐 GEOMETRY AUTHORITY (merged STEP 5 + STEP 6)
+    📐 GEOMETRY AUTHORITY (merged STEP 5 + STEP 6, hardened order)
 
-    The only place where planView + elevation geometry is allowed to change.
-    After this step, geometry is frozen.
+    1) Step 6 establishes horizontal (planView) geometry first
+    2) Freeze XY geometry before any elevation pass
+    3) Step 5 applies DEM elevation on frozen XY (no horizontal drift)
     """
     _inject_main_pipeline_globals()
     s = self.settings
@@ -48,11 +49,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     geo_out = s.stage_path("05_planview")
     cont_out = s.stage_path("06_continuity")
 
-    # STEP 5: 🏔️ DEM elevation + smoothing + geometry validator
-    elev_out = self._step5_dem_and_geometry(topo_fixed, elev_out)
-
-    # STEP 6: 📐 planView smoothing + continuity + micro-prune
-    cont_out = self._step6_planview_continuity(elev_out, geo_out, cont_out)
+    # STEP 6 FIRST: 📐 planView smoothing + continuity + micro-prune
+    # Establish horizontal geometry BEFORE elevation is sampled.
+    cont_out = self._step6_planview_continuity(topo_fixed, geo_out, cont_out)
 
     # Stage 6 may move through-road endpoints after topology has fixed
     # junction connector positions. Rebuild displaced connectors before freeze.
@@ -117,8 +116,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     else:
         print("[STEP 6] Junction connector rebuild disabled.")
 
-    # 🧊 Freeze geometry AFTER continuity repair
-    frozen_out = s.stage_path("06_geometry_frozen")
+    # 🧊 Freeze horizontal geometry BEFORE elevation is applied.
+    # This ensures DEM samples z at the final XY positions.
+    frozen_before_elev = s.stage_path("06_geometry_frozen")
     tree, root = load_xodr(cont_out)
 
     header = root.find("header")
@@ -127,13 +127,17 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
 
     header.set("geometryFrozen", "true")
 
-    save_xodr(tree, frozen_out)
-    print(f"🧊 Geometry frozen → {frozen_out}")
+    save_xodr(tree, frozen_before_elev)
+    print(f"🧊 Horizontal geometry frozen before elevation → {frozen_before_elev}")
 
     # Verify determinism
-    self._verify_continuity_stability(frozen_out)
+    self._verify_continuity_stability(frozen_before_elev)
 
-    return frozen_out
+    # STEP 5: 🏔️ DEM elevation + smoothing + geometry validator
+    # Applied on frozen XY — elevation is vertical-only and does not drift horizontally.
+    elev_out = self._step5_dem_and_geometry(frozen_before_elev, elev_out)
+
+    return elev_out
 
 
 # ---------------- 5) 🏔️ DEM + GEOMETRY ----------------
