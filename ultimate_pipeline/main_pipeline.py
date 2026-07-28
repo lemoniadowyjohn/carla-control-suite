@@ -63,6 +63,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import carla  # type: ignore
 from ultimate_pipeline.utils.paths import city_dir
 from ultimate_pipeline.quality.lane_width_invariants import default_report_path
+from ultimate_pipeline.contracts.gate_runner import CumulativeGateRunner
 
 from ultimate_pipeline.quality.lane_width_invariants import (
     enforce_lane_width_invariants_on_root,
@@ -784,6 +785,7 @@ class MainPipeline:
             "has_lanes": False,
         }
         self._run_stage: str = "init"
+        self._gate_runner: CumulativeGateRunner | None = None
 
     def _write_run_status(
         self,
@@ -2196,6 +2198,10 @@ if str(_repo_root) not in sys.path:
         self._mark_stage("quality_gates")
         self._run_quality_gates_wrapper(final_out)
 
+        # Cumulative gate check (tally-all, fail-at-end)
+        self._mark_stage("cumulative_gates")
+        self._finalize_gates()
+
         # 📋 Final summary + 🤖 LLM review
         self._mark_stage("final_summary")
         self._final_summary_and_llm(final_out)
@@ -2393,10 +2399,15 @@ if str(_repo_root) not in sys.path:
         - Prints [QA][stage] name
         - Runs fn() and gets a dict report
         - Writes the report to <out_dir>/qa_stage_reports/{stage}__{name}.json
-        - If strict quality gates are active and report["ok"] is False, raises exception
+        - Delegates to CumulativeGateRunner (tally-all, fail-at-end)
         """
         print(f"\n[QA][{stage}] {name} ...")
-        rep = fn()
+        runner = self._gate_runner
+        if runner is None:
+            strict = self._resolve_strict_quality_gates()
+            runner = CumulativeGateRunner(strict=strict)
+            self._gate_runner = runner
+        rep = runner.run(stage, name, fn)
         try:
             if getattr(self, "out_dir", None):
                 qa_dir = os.path.join(self.out_dir, "qa_stage_reports")
@@ -2407,11 +2418,23 @@ if str(_repo_root) not in sys.path:
                 print(f"[QA][{stage}] wrote {path}")
         except Exception as e:
             print(f"[QA][{stage}] report write skipped: {e}")
-        strict = self._resolve_strict_quality_gates()
-        ok = rep.get("ok", True) if isinstance(rep, dict) else True
-        if strict and not ok:
-            raise RuntimeError(f"[QA FAIL][{stage}] {name}: {rep}")
         return rep
+
+    def _finalize_gates(self) -> dict:
+        """Call at the end of the pipeline to raise on any collected failures."""
+        runner = self._gate_runner
+        if runner is None:
+            return {"total": 0, "passed": 0, "failed": 0, "results": []}
+        summary = runner.finalize()
+        try:
+            if getattr(self, "out_dir", None):
+                path = os.path.join(self.out_dir, "cumulative_gate_report.json")
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(summary, f, indent=2, default=str)
+                print(f"[QA] cumulative gate report -> {path}")
+        except Exception as e:
+            print(f"[QA] cumulative gate report write skipped: {e}")
+        return summary
 
     # ---------------- 1) 🧼 SANITIZE ----------------
     def _step1_sanitize(self, sanitized: str) -> None:
