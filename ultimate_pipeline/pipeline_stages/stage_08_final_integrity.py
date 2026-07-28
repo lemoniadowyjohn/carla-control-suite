@@ -20,11 +20,11 @@ def _inject_main_pipeline_globals() -> None:
 
 
 def _unsafe_lanelink_regen_enabled(settings_obj) -> bool:
-    enabled = bool(getattr(settings_obj, "ENABLE_LANELINK_REGEN", False))
-    env_val = os.getenv("UP_ENABLE_LANELINK_REGEN", "").strip().lower()
-    if env_val in ("1", "true", "yes", "on"):
-        enabled = True
-    return enabled
+    from ultimate_pipeline.contracts.release_profile import resolve_experimental_unsafe
+
+    profile_name = str(getattr(settings_obj, "RELEASE_PROFILE", "") or "")
+    env_val = os.getenv("UP_ENABLE_LANELINK_REGEN", "")
+    return resolve_experimental_unsafe(profile_name, env_override=env_val)
 
 
 def _step8_marking_summary(self, final_out: str) -> None:
