@@ -1,0 +1,9 @@
+required_tools: [RoadRunner, UnrealEngine, Datasmith]
+minimum_capability_checks: [experimental_build]
+import_export_format: datasmith
+expected_outputs: [datasmith_scene]
+required_gates: [experimental_validation]
+optional_gates: [plugin_runtime_test]
+authority_class: experimental
+carla_compatibility_status: unknown
+release_prohibition_conditions: [runtime_failure]

@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ultimate-pipeline.local/schemas/roadrunner/job.schema.json",
+  "title": "RoadRunner Job Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "mode",
+    "source",
+    "output_directory",
+    "import_options",
+    "export_options",
+    "requested_authority",
+    "created_at"
+  ],
+  "properties": {
+    "job_id": { "$ref": "#/$defs/identifier" },
+    "mode": { "$ref": "#/$defs/roadRunnerMode" },
+    "source": { "$ref": "#/$defs/sourceDataContract" },
+    "output_directory": {
+      "allOf": [{ "$ref": "#/$defs/pathRef" }],
+      "properties": { "kind": { "const": "DIRECTORY" } }
+    },
+    "import_options": { "$ref": "#/$defs/importOptions" },
+    "export_options": { "$ref": "#/$defs/exportOptions" },
+    "requested_authority": {
+      "enum": ["DERIVED_CANDIDATE", "VISUAL_ONLY", "SYNTHETIC_SCENARIO", "DEBUG_ONLY"]
+    },
+    "created_at": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s]+$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "placeholder": {
+      "enum": ["", "placeholder", "todo", "tbd", "unknown", "none", "null", "changeme", "replace_me", "replace-me", "0000000000000000000000000000000000000000000000000000000000000000"]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "pathRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "kind", "must_exist"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "not": { "$ref": "#/$defs/placeholder" } },
+        "kind": { "enum": ["FILE", "DIRECTORY", "ARTIFACT"] },
+        "must_exist": { "type": "boolean" }
+      }
+    },
+    "roadRunnerMode": {
+      "enum": ["REFERENCE_ONLY", "ROUNDTRIP_CANDIDATE", "AUTHORITATIVE_SCENE", "VISUAL_BUILD_ONLY", "PLUGIN_EXPERIMENT"]
+    },
+    "artifactRole": {
+      "enum": ["STRUCTURAL_XODR", "RRSCENE", "VISUAL_MESH", "TILED_VISUAL_MESH", "CARLA_PACKAGE", "DIAGNOSTIC"]
+    },
+    "sourceDataContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "path", "sha256", "artifact_role", "authority_class", "coordinate_reference", "metadata"],
+      "properties": {
+        "source_id": { "$ref": "#/$defs/identifier" },
+        "path": { "$ref": "#/$defs/pathRef" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "artifact_role": { "$ref": "#/$defs/artifactRole" },
+        "authority_class": { "const": "GOVERNED_INPUT" },
+        "coordinate_reference": { "type": ["string", "null"], "not": { "$ref": "#/$defs/placeholder" } },
+        "metadata": { "type": "object" }
+      }
+    },
+    "importOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preserve_lane_ids", "preserve_signal_ids", "import_elevation", "import_lane_markings", "strict_schema", "extra"],
+      "properties": {
+        "preserve_lane_ids": { "type": "boolean" },
+        "preserve_signal_ids": { "type": "boolean" },
+        "import_elevation": { "type": "boolean" },
+        "import_lane_markings": { "type": "boolean" },
+        "strict_schema": { "type": "boolean" },
+        "extra": { "type": "object" }
+      }
+    },
+    "exportOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["export_roles", "include_diagnostics", "deterministic_export", "extra"],
+      "properties": {
+        "export_roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/artifactRole" }
+        },
+        "include_diagnostics": { "type": "boolean" },
+        "deterministic_export": { "type": "boolean" },
+        "extra": { "type": "object" }
+      }
+    }
+  }
+}
