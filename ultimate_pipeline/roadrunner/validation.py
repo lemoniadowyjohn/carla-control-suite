@@ -14,7 +14,7 @@ from enum import Enum
 from typing import Any, Mapping, Sequence
 
 from .exceptions import RoadRunnerContractError
-from .models import GateStatus, SerializableContract, deterministic_json, validate_identifier, validate_sha256
+from .models import GateStatus, SerializableContract, validate_identifier
 
 
 class DiffClassification(Enum):

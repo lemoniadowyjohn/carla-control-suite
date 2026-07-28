@@ -8,22 +8,20 @@ RoadRunner-exported candidate XODR.
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 from .exceptions import RoadRunnerContractError
-from .models import GateStatus, SerializableContract, deterministic_json, utc_now_iso, validate_identifier, validate_sha256
+from .models import GateStatus, SerializableContract, utc_now_iso, validate_identifier, validate_sha256
 from .validation import (
-    DiffClassification,
     DiffRecord,
     GateResult,
     RoundtripConfig,
     apply_hard_gates,
     compute_overall_status,
 )
-from .xodr_diff import XodrSnapshot, compute_diffs, parse_xodr
+from .xodr_diff import compute_diffs, parse_xodr
 
 
 @dataclass(frozen=True)
