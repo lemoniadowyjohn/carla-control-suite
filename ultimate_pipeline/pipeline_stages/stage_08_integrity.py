@@ -422,11 +422,8 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
 
 
 def _unsafe_lanelink_regen_enabled(settings_obj) -> bool:
-    from ultimate_pipeline.contracts.release_profile import resolve_experimental_unsafe
-
-    profile_name = str(getattr(settings_obj, "RELEASE_PROFILE", "") or "")
-    env_val = os.getenv("UP_ENABLE_LANELINK_REGEN", "")
-    return resolve_experimental_unsafe(profile_name, env_override=env_val)
+    from ultimate_pipeline.contracts.release_profile import unsafe_lanelink_regen_enabled
+    return unsafe_lanelink_regen_enabled(settings_obj)
 
 
 def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
