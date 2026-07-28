@@ -2185,6 +2185,17 @@ if str(_repo_root) not in sys.path:
         else:
             print("[STEP 8G] Drivable-surface hole scan disabled.")
 
+        # 8H) Full-map parent/child metrics
+        self._mark_stage("full_map_metrics")
+        from ultimate_pipeline.quality.full_map_metrics import (
+            FullMapMetricsScanner,
+        )
+
+        def _compute_metrics():
+            return FullMapMetricsScanner.scan(final_out)
+
+        self._stage_gate("08H", "full_map_metrics", _compute_metrics)
+
         # 9) 🧩 Tiling
         self._mark_stage("tiling")
         graph_path = self._step9_tiling(final_out)
