@@ -2374,15 +2374,17 @@ if str(_repo_root) not in sys.path:
         from ultimate_pipeline.contracts.release_profile import resolve_strict_quality_gates as _resolve
 
         profile_name = str(getattr(self.settings, "RELEASE_PROFILE", "") or "")
-        env_val = os.getenv("UP_STRICT_QUALITY_GATES", "")
+        env_val: str | None = os.getenv("UP_STRICT_QUALITY_GATES")
         return _resolve(profile_name, env_override=env_val)
 
     def _resolve_experimental_unsafe(self) -> bool:
         from ultimate_pipeline.contracts.release_profile import resolve_experimental_unsafe as _resolve
 
-        profile_name = str(getattr(self.settings, "RELEASE_PROFILE", "") or "")
-        env_val = os.getenv("UP_ENABLE_UNSAFE_PLANVIEW_MUTATIONS", "")
-        return _resolve(profile_name, env_override=env_val)
+        profile_name = str(
+            getattr(self.settings, "RELEASE_PROFILE", "structural_release")
+            or "structural_release"
+        )
+        return _resolve(profile_name)
 
     def _stage_gate(self, stage: str, name: str, fn):
         """

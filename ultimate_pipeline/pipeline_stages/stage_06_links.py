@@ -18,11 +18,8 @@ def _inject_main_pipeline_globals():
 
 
 def _unsafe_planview_mutations_enabled(settings_obj) -> bool:
-    from ultimate_pipeline.contracts.release_profile import resolve_experimental_unsafe
-
-    profile_name = str(getattr(settings_obj, "RELEASE_PROFILE", "") or "")
-    env_val = os.getenv("UP_ENABLE_UNSAFE_PLANVIEW_MUTATIONS", "")
-    return resolve_experimental_unsafe(profile_name, env_override=env_val)
+    from ultimate_pipeline.contracts.release_profile import unsafe_planview_mutations_enabled
+    return unsafe_planview_mutations_enabled(settings_obj)
 
 
 def _step6_planview_continuity(
