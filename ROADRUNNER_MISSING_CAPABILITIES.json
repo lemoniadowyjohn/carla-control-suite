@@ -1,0 +1,125 @@
+{
+  "evaluation_basis": [
+    "uploaded repository audit",
+    "uploaded RoadRunner deep research guide",
+    "reported DeepSeek branch state",
+    "latest branch not visible remotely at evaluation time"
+  ],
+  "highest_impact_missing_capabilities": [
+    {
+      "priority": 1,
+      "capability": "Curvature-continuous road authoring",
+      "RoadRunner": [
+        "addClothoidFitRoad",
+        "addSpiral",
+        "addParametricCubic",
+        "Road Plan Tool"
+      ],
+      "repo_state": "partial repair utilities; unsafe smoothing/merging history; no governed G2 authoring layer",
+      "required_gate": "C0/G1 and curvature-continuity checks, endpoint/tangent preservation, no line fallback"
+    },
+    {
+      "priority": 2,
+      "capability": "Maneuver-level junction authoring",
+      "RoadRunner": [
+        "Maneuver Tool",
+        "Rebuild Maneuver Roads",
+        "Custom Junction Tool"
+      ],
+      "repo_state": "heuristic connectors and LaneLinks; straight-chord and direction risks",
+      "required_gate": "legal movement graph, lane-centre attachment, route matrix, no central chords"
+    },
+    {
+      "priority": 3,
+      "capability": "Lane form and width authoring",
+      "RoadRunner": [
+        "Lane Width Tool",
+        "Lane Form Tool",
+        "Lane Carve Tool",
+        "Lane Add Tool"
+      ],
+      "repo_state": "synthetic fixed-width lanes, duplicate sections, incomplete directional evidence",
+      "required_gate": "ordered unique sections, nonnegative width, smooth tapers, source-backed types/directions"
+    },
+    {
+      "priority": 4,
+      "capability": "Vertical/lateral road design",
+      "RoadRunner": [
+        "vertical profile nodes/spans",
+        "addSuperElevation",
+        "addLateralHeight"
+      ],
+      "repo_state": "elevation order and fitting weak; superelevation/lateral profile largely absent",
+      "required_gate": "horizontal freeze first, C0/C1 vertical continuity, bounded crossfall/superelevation"
+    },
+    {
+      "priority": 5,
+      "capability": "Drivable-surface and hole analysis",
+      "RoadRunner": [
+        "scene validation",
+        "Road Construction Tool",
+        "OpenDRIVE Preview"
+      ],
+      "repo_state": "no first-class lane/surface polygon closure stage",
+      "required_gate": "zero lane-centre-intersecting holes, slivers, detached slabs, unexplained overlaps"
+    },
+    {
+      "priority": 6,
+      "capability": "Paired logical and visual export",
+      "RoadRunner": [
+        "CARLA export",
+        "FBX/XODR",
+        "Datasmith/XODR",
+        "Scene Export Preview"
+      ],
+      "repo_state": "OSM2World and Blender are disconnected and weakly validated",
+      "required_gate": "mesh/XODR scale-axis-origin alignment, semantics, materials, collision, LOD"
+    },
+    {
+      "priority": 7,
+      "capability": "Traffic-control authoring",
+      "RoadRunner": [
+        "Signal Tool",
+        "phase/timing editor",
+        "Sign Tool"
+      ],
+      "repo_state": "static traffic-light objects and fixed sign placement risks",
+      "required_gate": "signals/controllers/controls, lane validity, stop lines, CARLA runtime actor behavior"
+    },
+    {
+      "priority": 8,
+      "capability": "Multi-source geospatial reconstruction",
+      "RoadRunner": [
+        "Aerial Imagery",
+        "Elevation Map",
+        "Point Cloud",
+        "Vector Data",
+        "Scene Builder"
+      ],
+      "repo_state": "OSM+DEM dominant; no governed imagery/point-cloud fitting workflow",
+      "required_gate": "CRS/datum manifest, source alignment, control-point residual, bridge/tunnel separation"
+    },
+    {
+      "priority": 9,
+      "capability": "Large-map visual tiling",
+      "RoadRunner": [
+        "tilesExportOptions",
+        "Scene Export Preview"
+      ],
+      "repo_state": "XODR tiling exists but semantic equivalence and visual tiling are incomplete",
+      "required_gate": "tile union equals source, one XODR authority, mesh tile alignment, streaming QA"
+    },
+    {
+      "priority": 10,
+      "capability": "Automation and round-trip governance",
+      "RoadRunner": [
+        "MATLAB application API",
+        "authoring API",
+        "gRPC API",
+        "RRHD"
+      ],
+      "repo_state": "no RoadRunner capability probe or semantic round-trip gate",
+      "required_gate": "version/license detection, immutable manifests, candidate quarantine, semantic diff"
+    }
+  ]
+}
