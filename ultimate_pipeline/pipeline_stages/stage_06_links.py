@@ -233,7 +233,7 @@ def _step6_planview_continuity(
             "updated_geometry_starts": 0,
             "micro_prune_geometry_starts_recomputed": int(micro_prune_start_fixes),
         }
-        if precheck_max_seam_m > large_seam_threshold_m:
+        if precheck_max_seam_m > large_seam_threshold_m and unsafe:
             try:
                 tree_fix, root_fix = load_xodr(cont_out)
                 updated_starts = int(
