@@ -13,6 +13,7 @@ from .gate_matrix import (
     evaluate_gate_matrix,
 )
 from .manifest import artifact_fingerprints, build_run_manifest
+from .semantic_manifest import compare_xodr_files, compare_xodr_semantic
 from .models import (
     ArtifactRecord,
     ArtifactRole,
@@ -67,6 +68,8 @@ __all__ = [
     "artifact_fingerprints",
     "assert_release_allowed",
     "build_run_manifest",
+    "compare_xodr_files",
+    "compare_xodr_semantic",
     "deterministic_json",
     "ensure_artifact_parents",
     "evaluate_gate_matrix",
