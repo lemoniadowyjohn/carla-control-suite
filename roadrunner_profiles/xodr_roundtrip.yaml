@@ -1,0 +1,9 @@
+required_tools: [RoadRunner]
+minimum_capability_checks: [license_active, xodr_exporter]
+import_export_format: xodr
+expected_outputs: [xodr_file]
+required_gates: [license_validation, xodr_lint]
+optional_gates: []
+authority_class: xodr_data
+carla_compatibility_status: high
+release_prohibition_conditions: [xodr_invalid]

@@ -1,0 +1,75 @@
+"""Batch 1: Dependency-free contracts for the optional RoadRunner backend."""
+
+from __future__ import annotations
+
+from .exceptions import RoadRunnerContractError, RoadRunnerGateError
+from .gate_matrix import (
+    DEFAULT_GATE_MATRIX,
+    DEFAULT_GATE_MATRIX_MODEL,
+    GateMatrix,
+    GateMatrixDecision,
+    GateMatrixProfile,
+    assert_release_allowed,
+    evaluate_gate_matrix,
+)
+from .manifest import artifact_fingerprints, build_run_manifest
+from .models import (
+    ArtifactRecord,
+    ArtifactRole,
+    AuthorityClass,
+    CapabilityResult,
+    ExportOptions,
+    ExportProfile,
+    GateStatus,
+    ImportOptions,
+    ImportProfile,
+    InstallationCapability,
+    PathKind,
+    PathRef,
+    RoadRunnerJobRequest,
+    RoadRunnerMode,
+    RunManifest,
+    SerializableContract,
+    SourceDataContract,
+    StageGate,
+    deterministic_json,
+    ensure_artifact_parents,
+    validate_sha256,
+)
+from .source_contract import governed_xodr_source
+
+__all__ = [
+    "ArtifactRecord",
+    "ArtifactRole",
+    "AuthorityClass",
+    "CapabilityResult",
+    "DEFAULT_GATE_MATRIX",
+    "DEFAULT_GATE_MATRIX_MODEL",
+    "ExportOptions",
+    "ExportProfile",
+    "GateMatrix",
+    "GateMatrixDecision",
+    "GateMatrixProfile",
+    "GateStatus",
+    "ImportOptions",
+    "ImportProfile",
+    "InstallationCapability",
+    "PathKind",
+    "PathRef",
+    "RoadRunnerContractError",
+    "RoadRunnerGateError",
+    "RoadRunnerJobRequest",
+    "RoadRunnerMode",
+    "RunManifest",
+    "SerializableContract",
+    "SourceDataContract",
+    "StageGate",
+    "artifact_fingerprints",
+    "assert_release_allowed",
+    "build_run_manifest",
+    "deterministic_json",
+    "ensure_artifact_parents",
+    "evaluate_gate_matrix",
+    "governed_xodr_source",
+    "validate_sha256",
+]
