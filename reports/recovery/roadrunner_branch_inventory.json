@@ -1,0 +1,326 @@
+{
+  "generated_at": "2026-07-28T21:30:00+02:00",
+  "authoritative_base_sha": "db0d983a34209e0a47628d3c2b48efc3f9327ec4",
+  "implementation_branch": "deepseek-observability-integration-verification",
+  "branches_expected": 8,
+  "branches_missing": 5,
+  "branches_empty": 3,
+  "branches_with_unique_commits": 0,
+  "files_found": 52,
+  "files_with_content": 50,
+  "files_zero_byte": 2,
+  "files": {
+    "ultimate_pipeline\\roadrunner\\__init__.py": {
+      "size": 5033,
+      "mtime": 1785254805.9763095,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Dependency-free contracts for the optional RoadRunner backend.\"\"\"\n\nfrom __future__ import annotat"
+    },
+    "ultimate_pipeline\\roadrunner\\alignment.py": {
+      "size": 15411,
+      "mtime": 1785253594.361776,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Mesh-XODR alignment validation for RoadRunner exports.\n\nComputes and validates alignment metrics "
+    },
+    "ultimate_pipeline\\roadrunner\\capability_probe.py": {
+      "size": 9963,
+      "mtime": 1785252934.0088012,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Capability probe for RoadRunner and MATLAB backends.\n\nAll detection is performed through filesyst"
+    },
+    "ultimate_pipeline\\roadrunner\\exceptions.py": {
+      "size": 320,
+      "mtime": 1785251951.904146,
+      "has_content": true,
+      "first_100_chars": "\"\"\"RoadRunner contract validation exceptions.\"\"\"\n\nfrom __future__ import annotations\n\n\nclass RoadRun"
+    },
+    "ultimate_pipeline\\roadrunner\\export_inventory.py": {
+      "size": 21333,
+      "mtime": 1785253376.3673828,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Export inventory validation for RoadRunner/FBX/Datasmith/tiled outputs.\n\nValidates expected files"
+    },
+    "ultimate_pipeline\\roadrunner\\gate_matrix.py": {
+      "size": 5037,
+      "mtime": 1785252573.2869644,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Gate matrix policy for RoadRunner releases.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclas"
+    },
+    "ultimate_pipeline\\roadrunner\\grpc_runner.py": {
+      "size": 6871,
+      "mtime": 1785254174.1942034,
+      "has_content": true,
+      "first_100_chars": "\"\"\"gRPC runner for RoadRunner with offline-safe, no-vendor-bindings policy.\n\nGenerated protobuf bind"
+    },
+    "ultimate_pipeline\\roadrunner\\installation.py": {
+      "size": 9666,
+      "mtime": 1785252773.3616261,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Offline-safe RoadRunner and MATLAB installation detection.\n\nAll detection is performed through fi"
+    },
+    "ultimate_pipeline\\roadrunner\\manifest.py": {
+      "size": 1199,
+      "mtime": 1785251952.149497,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Run manifest helpers for optional RoadRunner backend contracts.\"\"\"\n\nfrom __future__ import annota"
+    },
+    "ultimate_pipeline\\roadrunner\\matlab_runner.py": {
+      "size": 6656,
+      "mtime": 1785253165.2771738,
+      "has_content": true,
+      "first_100_chars": "\"\"\"MATLAB runner for RoadRunner automation.\n\nAll invocations use argument arrays, timeouts, and safe"
+    },
+    "ultimate_pipeline\\roadrunner\\mesh_manifest.py": {
+      "size": 13416,
+      "mtime": 1785253448.0424259,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Mesh manifest validation for RoadRunner visual builds.\n\nProvides typed dataclasses and validators"
+    },
+    "ultimate_pipeline\\roadrunner\\models.py": {
+      "size": 19743,
+      "mtime": 1785252573.2794142,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Typed dependency-free RoadRunner backend contracts.\n\nThe classes in this module describe data exc"
+    },
+    "ultimate_pipeline\\roadrunner\\package_manifest.py": {
+      "size": 11522,
+      "mtime": 1785253514.6587296,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Package manifest validation for RoadRunner tiled exports.\n\nValidates tile names and grid position"
+    },
+    "ultimate_pipeline\\roadrunner\\process_runner.py": {
+      "size": 9302,
+      "mtime": 1785253840.2105575,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Deterministic process runner with argument arrays, timeouts, and safe termination.\"\"\"\n\nfrom __fut"
+    },
+    "ultimate_pipeline\\roadrunner\\semantic_manifest.py": {
+      "size": 10513,
+      "mtime": 1785253465.771618,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Semantic manifest validation for RoadRunner visual builds.\n\nValidates semantic group assignments,"
+    },
+    "ultimate_pipeline\\roadrunner\\source_contract.py": {
+      "size": 529,
+      "mtime": 1785251952.0972123,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Source-data contract helpers for RoadRunner workflows.\"\"\"\n\nfrom __future__ import annotations\n\nfr"
+    },
+    "ultimate_pipeline\\roadrunner\\validation.py": {
+      "size": 17497,
+      "mtime": 1785267340.6474166,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Validation types and hard gates for RoadRunner roundtrip comparison.\n\nDefines the difference clas"
+    },
+    "ultimate_pipeline\\roadrunner\\xodr_diff.py": {
+      "size": 58050,
+      "mtime": 1785267693.7729487,
+      "has_content": true,
+      "first_100_chars": "\"\"\"XODR semantic diff engine for RoadRunner roundtrip validation.\n\nParses OpenDRIVE (.xodr) files in"
+    },
+    "tools\\roadrunner\\build_carla_import_manifest.py": {
+      "size": 5174,
+      "mtime": 1785253524.6051042,
+      "has_content": true,
+      "first_100_chars": "\"\"\"Build a CARLA import manifest from RoadRunner export inventory.\n\nScans an export directory, valid"
+    },
+    "tools\\roadrunner\\generate_grpc_bindings.py": {
+      "size": 3507,
+      "mtime": 1785253235.5484724,
+      "has_content": true,
+      "first_100_chars": "#!/usr/bin/env python3\n\"\"\"CLI tool to generate gRPC bindings from .proto files.\n\nGenerated bindings "
+    },
+    "tools\\roadrunner\\inventory_export.py": {
+      "size": 5178,
+      "mtime": 1785253533.5845866,
+      "has_content": true,
+      "first_100_chars": "\"\"\"CLI tool for exporting and validating RoadRunner export inventories.\n\nScans an export directory, "
+    },
+    "tools\\roadrunner\\probe_roadrunner.py": {
+      "size": 4432,
+      "mtime": 1785253232.110952,
+      "has_content": true,
+      "first_100_chars": "#!/usr/bin/env python3\n\"\"\"CLI probe for RoadRunner and MATLAB installation capabilities.\"\"\"\n\nfrom __"
+    },
+    "tools\\roadrunner\\validate_mesh_xodr_alignment.py": {
+      "size": 7954,
+      "mtime": 1785253546.870172,
+      "has_content": true,
+      "first_100_chars": "\"\"\"CLI tool for validating mesh-XODR alignment.\n\nComputes alignment metrics between a visual mesh ex"
+    },
+    "matlab\\roadrunner\\rr_close_all.m": {
+      "size": 5319,
+      "mtime": 1785253366.2022772,
+      "has_content": true,
+      "first_100_chars": "function varargout = rr_close_all(varargin)\n% RR_CLOSE_ALL Close all RoadRunner instances cleanly.\n%"
+    },
+    "matlab\\roadrunner\\rr_export_fbx_xodr.m": {
+      "size": 6444,
+      "mtime": 1785253356.9062438,
+      "has_content": true,
+      "first_100_chars": "function varargout = rr_export_fbx_xodr(varargin)\n% RR_EXPORT_FBX_XODR Export a RoadRunner scene to "
+    },
+    "matlab\\roadrunner\\rr_export_tiled.m": {
+      "size": 5734,
+      "mtime": 1785253362.001426,
+      "has_content": true,
+      "first_100_chars": "function varargout = rr_export_tiled(varargin)\n% RR_EXPORT_TILED Export a RoadRunner scene to Tiled "
+    },
+    "matlab\\roadrunner\\rr_export_xodr.m": {
+      "size": 5685,
+      "mtime": 1785253303.2733805,
+      "has_content": true,
+      "first_100_chars": "function varargout = rr_export_xodr(varargin)\n% RR_EXPORT_XODR Export a RoadRunner scene to XODR.\n%\n"
+    },
+    "matlab\\roadrunner\\rr_import_xodr.m": {
+      "size": 5774,
+      "mtime": 1785253299.1149049,
+      "has_content": true,
+      "first_100_chars": "function varargout = rr_import_xodr(varargin)\n% RR_IMPORT_XODR Import an XODR/OpenDRIVE file into Ro"
+    },
+    "matlab\\roadrunner\\rr_probe.m": {
+      "size": 9615,
+      "mtime": 1785253295.1353698,
+      "has_content": true,
+      "first_100_chars": "function varargout = rr_probe(varargin)\n% RR_PROBE Offline-safe RoadRunner capability probe for MATL"
+    },
+    "schemas\\roadrunner\\capability.schema.json": {
+      "size": 2305,
+      "mtime": 1785252029.6460395,
+      "has_content": true,
+      "first_100_chars": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://ultimate-pipeline.l"
+    },
+    "schemas\\roadrunner\\export_inventory.schema.json": {
+      "size": 5405,
+      "mtime": 1785253558.5014157,
+      "has_content": true,
+      "first_100_chars": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://ultimate-pipeline.l"
+    },
+    "schemas\\roadrunner\\gate_matrix.schema.json": {
+      "size": 1382,
+      "mtime": 1785252029.847548,
+      "has_content": true,
+      "first_100_chars": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://ultimate-pipeline.l"
+    },
+    "schemas\\roadrunner\\job.schema.json": {
+      "size": 3907,
+      "mtime": 1785252029.7336018,
+      "has_content": true,
+      "first_100_chars": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://ultimate-pipeline.l"
+    },
+    "schemas\\roadrunner\\manifest.schema.json": {
+      "size": 4786,
+      "mtime": 1785252029.8175592,
+      "has_content": true,
+      "first_100_chars": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://ultimate-pipeline.l"
+    },
+    "roadrunner_profiles\\carla_0913_datasmith_experimental.yaml": {
+      "size": 366,
+      "mtime": 1785252465.786727,
+      "has_content": true,
+      "first_100_chars": "required_tools: [RoadRunner, UnrealEngine, Datasmith]\nminimum_capability_checks: [experimental_build"
+    },
+    "roadrunner_profiles\\carla_0916_fbx_xodr.yaml": {
+      "size": 366,
+      "mtime": 1785252409.0081668,
+      "has_content": true,
+      "first_100_chars": "required_tools: [RoadRunner, CARLA_0916]\nminimum_capability_checks: [license_active, fbx_exporter]\ni"
+    },
+    "roadrunner_profiles\\carla_filmbox_legacy.yaml": {
+      "size": 290,
+      "mtime": 1785252515.9139297,
+      "has_content": true,
+      "first_100_chars": "required_tools: [RoadRunner]\nminimum_capability_checks: [legacy_support]\nimport_export_format: fbx\ne"
+    },
+    "roadrunner_profiles\\large_map_tiled.yaml": {
+      "size": 380,
+      "mtime": 1785252606.5917525,
+      "has_content": true,
+      "first_100_chars": "required_tools: [RoadRunner]\nminimum_capability_checks: [tile_alignment]\nimport_export_format: xodr_"
+    },
+    "roadrunner_profiles\\reference_only.yaml": {
+      "size": 285,
+      "mtime": 1785252297.0899885,
+      "has_content": true,
+      "first_100_chars": "required_tools: [RoadRunner]\nminimum_capability_checks: [license_active]\nimport_export_format: rrsce"
+    },
+    "roadrunner_profiles\\xodr_roundtrip.yaml": {
+      "size": 319,
+      "mtime": 1785252352.8718998,
+      "has_content": true,
+      "first_100_chars": "required_tools: [RoadRunner]\nminimum_capability_checks: [license_active, xodr_exporter]\nimport_expor"
+    },
+    "tests\\roadrunner\\__init__.py": {
+      "size": 0,
+      "mtime": 1785267309.1624186,
+      "has_content": false,
+      "first_100_chars": ""
+    },
+    "tests\\roadrunner\\conftest\\__init__.py": {
+      "size": 0,
+      "mtime": 1785266658.9489474,
+      "has_content": false,
+      "first_100_chars": ""
+    },
+    "tests\\roadrunner\\fixtures\\fixtures.json": {
+      "size": 624,
+      "mtime": 1785267758.4467053,
+      "has_content": true,
+      "first_100_chars": "{\r\n  \"line_road\": {\r\n    \"Header\": {\r\n      \"version\": \"1.0\",\r\n      \"date\": \"2026-01-01T00:00:00Z\","
+    },
+    "docs\\roadrunner\\ARCHITECTURE.md": {
+      "size": 333,
+      "mtime": 1785251855.2872353,
+      "has_content": true,
+      "first_100_chars": "# Architecture\n\nRoadRunner is an optional, license-dependent component within the workflow.\n\n## Key "
+    },
+    "docs\\roadrunner\\AUTHORING_WORKFLOW.md": {
+      "size": 188,
+      "mtime": 1785252003.2739506,
+      "has_content": true,
+      "first_100_chars": "# Authoring Workflow\n\n- Superelevation authoring is release-sensitive.\n- Lateral cross-section and m"
+    },
+    "docs\\roadrunner\\CARLA_0916_COMPATIBILITY.md": {
+      "size": 210,
+      "mtime": 1785251946.5891664,
+      "has_content": true,
+      "first_100_chars": "# CARLA 0.9.16 Compatibility\n\n- The project targets CARLA 0.9.16.\n- MathWorks' CARLA plugin target v"
+    },
+    "docs\\roadrunner\\INSTALLATION_MATRIX.md": {
+      "size": 306,
+      "mtime": 1785252663.5218265,
+      "has_content": true,
+      "first_100_chars": "# Installation Matrix\n\n- RoadRunner is license-dependent.\n- MATLAB authoring API availability begins"
+    },
+    "docs\\roadrunner\\LARGE_MAP_WORKFLOW.md": {
+      "size": 162,
+      "mtime": 1785252160.9695466,
+      "has_content": true,
+      "first_100_chars": "# Large Map Workflow\n\n- Large-map visual tiles must align to one exact XODR.\n- Pedestrian navigation"
+    },
+    "docs\\roadrunner\\MANUAL_QA_CHECKLIST.md": {
+      "size": 299,
+      "mtime": 1785252762.0879173,
+      "has_content": true,
+      "first_100_chars": "# Manual QA Checklist\n\n- Verify traffic-light visuals do not imply sufficient CARLA traffic logic.\n-"
+    },
+    "docs\\roadrunner\\ROUNDTRIP_POLICY.md": {
+      "size": 212,
+      "mtime": 1785252049.2951932,
+      "has_content": true,
+      "first_100_chars": "# Roundtrip Policy\n\n- RoadRunner import/export is not assumed lossless.\n- A .rrscene file never sile"
+    },
+    "docs\\roadrunner\\VISUAL_BUILD_WORKFLOW.md": {
+      "size": 244,
+      "mtime": 1785252716.2129006,
+      "has_content": true,
+      "first_100_chars": "# Visual Build Workflow\n\n- Traffic-light visuals are not sufficient evidence of CARLA traffic logic."
+    },
+    "reports\\roadrunner\\nemotron_risk_register.json": {
+      "size": 17528,
+      "mtime": 1785264189.9846706,
+      "has_content": true,
+      "first_100_chars": "{\n  \"$schema\": \"../roadrunner/risk_register.schema.json\",\n  \"register_id\": \"rr-visual-mimo-risk-regi"
+    }
+  }
+}
