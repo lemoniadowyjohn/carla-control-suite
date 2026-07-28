@@ -2156,6 +2156,35 @@ if str(_repo_root) not in sys.path:
         # 8F) Optional CARLA elevation verification hook (thesis evidence)
         self._step8f_optional_carla_elevation_validation(final_out)
 
+        # 8G) Drivable-surface hole analysis
+        self._mark_stage("drivable_surface_scan")
+        if getattr(self.settings, "ENABLE_DRIVABLE_SURFACE_HOLE_SCAN", True):
+            from ultimate_pipeline.quality.drivable_surface_scanner import (
+                DrivableSurfaceScanner,
+            )
+
+            hole_threshold = float(
+                getattr(self.settings, "DRIVABLE_SURFACE_HOLE_THRESHOLD_M", 0.5)
+            )
+            seam_threshold = float(
+                getattr(self.settings, "DRIVABLE_SURFACE_SEAM_THRESHOLD_DEG", 5.0)
+            )
+            drop_threshold = float(
+                getattr(self.settings, "DRIVABLE_SURFACE_DROP_THRESHOLD_M", 0.3)
+            )
+
+            def _scan_holes():
+                return DrivableSurfaceScanner.scan(
+                    final_out,
+                    hole_threshold_m=hole_threshold,
+                    seam_threshold_deg=seam_threshold,
+                    drop_threshold_m=drop_threshold,
+                )
+
+            self._stage_gate("08G", "drivable_surface", _scan_holes)
+        else:
+            print("[STEP 8G] Drivable-surface hole scan disabled.")
+
         # 9) 🧩 Tiling
         self._mark_stage("tiling")
         graph_path = self._step9_tiling(final_out)
