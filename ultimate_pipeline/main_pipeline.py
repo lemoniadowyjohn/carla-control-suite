@@ -2436,6 +2436,44 @@ if str(_repo_root) not in sys.path:
             print(f"[QA] cumulative gate report write skipped: {e}")
         return summary
 
+    def _verify_geometry_freeze_hash(self, xodr_path: str) -> str | None:
+        """
+        Verify that the geometry freeze hash embedded in *xodr_path* matches
+        a live hash of the file content.
+
+        Returns the expected hash if valid, or *None* on mismatch / missing
+        header attribute.
+        """
+        import xml.etree.ElementTree as ET_xml
+        import hashlib as _hlib
+
+        try:
+            tree = ET_xml.parse(xodr_path)
+            root = tree.getroot()
+            header = root.find("header")
+            if header is None:
+                print("[FREEZE-HASH] No <header> found — freeze hash not verified.")
+                return None
+            expected = header.get("geometryFreezeHash")
+            if not expected:
+                print("[FREEZE-HASH] No geometryFreezeHash attribute — freeze hash not verified.")
+                return None
+            actual = _hlib.sha256()
+            with open(xodr_path, "rb") as f:
+                actual.update(f.read())
+            actual_hex = actual.hexdigest()
+            if actual_hex != expected:
+                print(
+                    f"[FREEZE-HASH] MISMATCH: header={expected} live={actual_hex} "
+                    f"— geometry may have drifted."
+                )
+                return None
+            print(f"[FREEZE-HASH] Verified: {expected}")
+            return expected
+        except Exception as e:
+            print(f"[FREEZE-HASH] Verification skipped: {e}")
+            return None
+
     # ---------------- 1) 🧼 SANITIZE ----------------
     def _step1_sanitize(self, sanitized: str) -> None:
         from ultimate_pipeline.pipeline_stages.stage_01_sanitize import _step1_sanitize as _impl

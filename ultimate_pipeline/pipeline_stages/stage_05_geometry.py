@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 
 
 def _inject_main_pipeline_globals():
@@ -127,8 +128,32 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
 
     header.set("geometryFrozen", "true")
 
+    freeze_hash = hashlib.sha256()
+    with open(cont_out, "rb") as f:
+        freeze_hash.update(f.read())
+    freeze_hex = freeze_hash.hexdigest()
+    header.set("geometryFreezeHash", freeze_hex)
+
     save_xodr(tree, frozen_before_elev)
     print(f"🧊 Horizontal geometry frozen before elevation → {frozen_before_elev}")
+    print(f"🔒 Freeze hash: {freeze_hex}")
+
+    freeze_report_path = os.path.join(self.out_dir, "geometry_freeze_hash.json")
+    try:
+        import json
+        with open(freeze_report_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "freeze_hash": freeze_hex,
+                    "frozen_xodr": frozen_before_elev,
+                    "source_xodr": cont_out,
+                },
+                f,
+                indent=2,
+            )
+        print(f"[FREEZE] geometry_freeze_hash.json -> {freeze_report_path}")
+    except Exception as e:
+        print(f"[FREEZE] geometry_freeze_hash.json write skipped: {e}")
 
     # Verify determinism
     self._verify_continuity_stability(frozen_before_elev)
@@ -147,6 +172,9 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
     _inject_main_pipeline_globals()
     s = self.settings
     print("\n============== 🏔️ STEP 5: Elevation Smoothing ==============")
+
+    if os.path.isfile(topo_fixed):
+        self._verify_geometry_freeze_hash(topo_fixed)
 
     gps = s.GPS_BOUNDS
     # Pre-compute thesis strict mode for early fail-closed enforcement
