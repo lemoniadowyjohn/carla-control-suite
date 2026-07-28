@@ -38,6 +38,9 @@ from .models import (
     validate_sha256,
 )
 from .source_contract import governed_xodr_source
+from .export_inventory import ExportInventory, FBXFileRecord, MaterialDef, TextureRef, LODLevel, SemanticGroup
+from .mesh_manifest import MeshManifest, MeshObjectManifest, BoundingBox, MaterialBinding, TextureReference
+from .alignment import AlignmentMetrics, compute_alignment, detect_y_inversion, extract_xodr_points, extract_mesh_bbox_points
 
 __all__ = [
     "ArtifactRecord",
@@ -65,14 +68,30 @@ __all__ = [
     "SerializableContract",
     "SourceDataContract",
     "StageGate",
+    "AlignmentMetrics",
+    "BoundingBox",
+    "ExportInventory",
+    "FBXFileRecord",
+    "LODLevel",
+    "MaterialBinding",
+    "MaterialDef",
+    "MeshManifest",
+    "MeshObjectManifest",
+    "SemanticGroup",
+    "TextureRef",
+    "TextureReference",
+    "alignmentMetrics",
     "artifact_fingerprints",
     "assert_release_allowed",
     "build_run_manifest",
     "compare_xodr_files",
     "compare_xodr_semantic",
+    "compute_alignment",
     "deterministic_json",
     "ensure_artifact_parents",
     "evaluate_gate_matrix",
+    "extract_mesh_bbox_points",
+    "extract_xodr_points",
     "governed_xodr_source",
     "validate_sha256",
 ]

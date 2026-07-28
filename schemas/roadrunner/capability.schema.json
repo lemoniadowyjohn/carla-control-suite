@@ -64,6 +64,158 @@
     },
     "artifactRole": {
       "enum": ["STRUCTURAL_XODR", "RRSCENE", "VISUAL_MESH", "TILED_VISUAL_MESH", "CARLA_PACKAGE", "DIAGNOSTIC"]
+    },
+    "textureRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["texture_id", "path", "width", "height", "format"],
+      "properties": {
+        "texture_id": { "$ref": "#/$defs/identifier" },
+        "path": { "type": "string", "minLength": 1 },
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "format": { "type": ["string", "null"] }
+      }
+    },
+    "materialDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_id", "name", "textures", "properties"],
+      "properties": {
+        "material_id": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string", "minLength": 1 },
+        "textures": { "type": "array", "items": { "$ref": "#/$defs/textureRef" } },
+        "properties": { "type": "object" }
+      }
+    },
+    "lodLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "triangle_count", "vertex_count"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 0 },
+        "triangle_count": { "type": "integer", "minimum": 0 },
+        "vertex_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "semanticGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group_id", "object_count", "label", "metadata"],
+      "properties": {
+        "group_id": { "$ref": "#/$defs/identifier" },
+        "object_count": { "type": "integer", "minimum": 0 },
+        "label": { "type": "string" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "fbxFileRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file_id", "path", "tile_x", "tile_y", "file_size_bytes", "sha256", "materials", "lod_levels", "semantic_groups"],
+      "properties": {
+        "file_id": { "$ref": "#/$defs/identifier" },
+        "path": { "type": "string", "minLength": 1 },
+        "tile_x": { "type": ["integer", "null"] },
+        "tile_y": { "type": ["integer", "null"] },
+        "file_size_bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "materials": { "type": "array", "items": { "$ref": "#/$defs/materialDef" } },
+        "lod_levels": { "type": "array", "items": { "$ref": "#/$defs/lodLevel" } },
+        "semantic_groups": { "type": "array", "items": { "$ref": "#/$defs/semanticGroup" } }
+      }
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "exportInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["export_id", "fbx_files", "tile_grid_cols", "tile_grid_rows", "has_materials", "has_textures", "total_file_size_bytes"],
+      "properties": {
+        "export_id": { "$ref": "#/$defs/identifier" },
+        "fbx_files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fbxFileRecord" } },
+        "tile_grid_cols": { "type": "integer", "minimum": 1 },
+        "tile_grid_rows": { "type": "integer", "minimum": 1 },
+        "has_materials": { "type": "boolean" },
+        "has_textures": { "type": "boolean" },
+        "total_file_size_bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "boundingBox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_x", "min_y", "min_z", "max_x", "max_y", "max_z"],
+      "properties": {
+        "min_x": { "type": "number" },
+        "min_y": { "type": "number" },
+        "min_z": { "type": "number" },
+        "max_x": { "type": "number" },
+        "max_y": { "type": "number" },
+        "max_z": { "type": "number" }
+      }
+    },
+    "materialBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_id", "object_name"],
+      "properties": {
+        "material_id": { "$ref": "#/$defs/identifier" },
+        "object_name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "textureReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["texture_id", "object_name", "channel"],
+      "properties": {
+        "texture_id": { "$ref": "#/$defs/identifier" },
+        "object_name": { "type": "string", "minLength": 1 },
+        "channel": { "type": "string", "minLength": 1 }
+      }
+    },
+    "meshObjectManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_id", "name", "bounding_box", "triangle_count", "vertex_count", "material_bindings", "texture_references", "metadata"],
+      "properties": {
+        "object_id": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string", "minLength": 1 },
+        "bounding_box": { "$ref": "#/$defs/boundingBox" },
+        "triangle_count": { "type": "integer", "minimum": 0 },
+        "vertex_count": { "type": "integer", "minimum": 0 },
+        "material_bindings": { "type": "array", "items": { "$ref": "#/$defs/materialBinding" } },
+        "texture_references": { "type": "array", "items": { "$ref": "#/$defs/textureReference" } },
+        "metadata": { "type": "object" }
+      }
+    },
+    "meshManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_id", "objects", "total_triangles", "total_vertices"],
+      "properties": {
+        "manifest_id": { "$ref": "#/$defs/identifier" },
+        "objects": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/meshObjectManifest" } },
+        "total_triangles": { "type": "integer", "minimum": 0 },
+        "total_vertices": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "alignmentMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scale", "translation_x", "translation_y", "heading_deg", "y_inverted", "rmse", "point_count", "notes"],
+      "properties": {
+        "scale": { "type": "number", "exclusiveMinimum": 0 },
+        "translation_x": { "type": "number" },
+        "translation_y": { "type": "number" },
+        "heading_deg": { "type": "number" },
+        "y_inverted": { "type": "boolean" },
+        "rmse": { "type": "number", "minimum": 0 },
+        "point_count": { "type": "integer", "minimum": 0 },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
     }
   }
 }
