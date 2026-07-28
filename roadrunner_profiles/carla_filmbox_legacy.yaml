@@ -1,0 +1,9 @@
+required_tools: [RoadRunner]
+minimum_capability_checks: [legacy_support]
+import_export_format: fbx
+expected_outputs: [fbx_file]
+required_gates: [legacy_qa]
+optional_gates: []
+authority_class: legacy
+carla_compatibility_status: deprecated
+release_prohibition_conditions: [no_legacy_support]

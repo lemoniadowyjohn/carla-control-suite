@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ultimate-pipeline.local/schemas/roadrunner/gate_matrix.schema.json",
+  "title": "RoadRunner Gate Matrix",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profiles"],
+  "properties": {
+    "profiles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/gateMatrixProfile" }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s]+$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "placeholder": {
+      "enum": ["", "placeholder", "todo", "tbd", "unknown", "none", "null", "changeme", "replace_me", "replace-me", "0000000000000000000000000000000000000000000000000000000000000000"]
+    },
+    "gateMatrixProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "required_gates", "optional_gates"],
+      "properties": {
+        "profile": { "$ref": "#/$defs/identifier" },
+        "required_gates": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "optional_gates": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ultimate-pipeline.local/schemas/roadrunner/roundtrip.schema.json",
+  "title": "RoadRunner Roundtrip Validation Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_id",
+    "parent_path",
+    "candidate_path",
+    "parent_sha256",
+    "candidate_sha256",
+    "config",
+    "diffs",
+    "gates",
+    "overall_status",
+    "generated_at"
+  ],
+  "properties": {
+    "report_id": { "$ref": "#/$defs/identifier" },
+    "parent_path": { "type": "string", "minLength": 1 },
+    "candidate_path": { "type": "string", "minLength": 1 },
+    "parent_sha256": { "$ref": "#/$defs/sha256" },
+    "candidate_sha256": { "$ref": "#/$defs/sha256" },
+    "config": { "$ref": "#/$defs/roundtripConfig" },
+    "diffs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/diffRecord" }
+    },
+    "gates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gateResult" }
+    },
+    "overall_status": { "$ref": "#/$defs/gateStatus" },
+    "generated_at": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s]+$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "placeholder": {
+      "enum": ["", "placeholder", "todo", "tbd", "unknown", "none", "null", "changeme", "replace_me", "replace-me", "0000000000000000000000000000000000000000000000000000000000000000"]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "gateStatus": {
+      "enum": ["PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE"]
+    },
+    "diffClassification": {
+      "enum": ["IDENTICAL", "FORMAT_ONLY", "APPROVED_IMPROVEMENT", "POTENTIAL_LOSS", "CRITICAL_REGRESSION", "UNSUPPORTED_COMPARISON"]
+    },
+    "roundtripConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tangent_regression_threshold_deg",
+        "position_tolerance_m",
+        "length_tolerance_m",
+        "width_tolerance_m",
+        "curvature_tolerance",
+        "sample_interval_m",
+        "shapely_available"
+      ],
+      "properties": {
+        "tangent_regression_threshold_deg": { "type": "number", "minimum": 0 },
+        "position_tolerance_m": { "type": "number", "minimum": 0 },
+        "length_tolerance_m": { "type": "number", "minimum": 0 },
+        "width_tolerance_m": { "type": "number", "minimum": 0 },
+        "curvature_tolerance": { "type": "number", "minimum": 0 },
+        "sample_interval_m": { "type": "number", "exclusiveMinimum": 0 },
+        "shapely_available": { "type": "boolean" }
+      }
+    },
+    "diffRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "element_id", "parent_value", "candidate_value", "classification", "message", "evidence"],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/identifier" },
+        "element_id": { "type": ["string", "null"] },
+        "parent_value": { "type": ["string", "null"] },
+        "candidate_value": { "type": ["string", "null"] },
+        "classification": { "$ref": "#/$defs/diffClassification" },
+        "message": { "type": "string", "minLength": 1 },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "gateResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_id", "status", "required", "message", "metrics"],
+      "properties": {
+        "gate_id": { "$ref": "#/$defs/identifier" },
+        "status": { "$ref": "#/$defs/gateStatus" },
+        "required": { "type": "boolean" },
+        "message": { "type": "string", "minLength": 1 },
+        "metrics": { "type": "object" }
+      }
+    }
+  }
+}

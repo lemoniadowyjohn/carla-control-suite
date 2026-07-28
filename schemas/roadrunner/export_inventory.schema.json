@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ultimate-pipeline.local/schemas/roadrunner/export_inventory.schema.json",
+  "title": "RoadRunner Export Inventory",
+  "description": "Validates export inventory for FBX, Datasmith, and tiled RoadRunner outputs. FBX existence alone does not prove CARLA readiness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "export_id",
+    "source_xodr_sha256",
+    "expected_files",
+    "base_name",
+    "units",
+    "axis_convention",
+    "origin_x",
+    "origin_y",
+    "origin_z",
+    "vertical_min",
+    "vertical_max",
+    "mesh_stats",
+    "generated_at"
+  ],
+  "properties": {
+    "export_id": { "$ref": "#/$defs/identifier" },
+    "source_xodr_sha256": { "$ref": "#/$defs/sha256" },
+    "expected_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/fileRecord" }
+    },
+    "base_name": { "type": "string", "minLength": 1 },
+    "units": { "enum": ["centimeters", "meters", "millimeters"] },
+    "axis_convention": { "enum": ["Y_UP", "Z_UP", "UNREAL_Y_FORWARD"] },
+    "origin_x": { "type": "number" },
+    "origin_y": { "type": "number" },
+    "origin_z": { "type": "number" },
+    "crs_epsg": { "type": ["string", "null"] },
+    "crs_wkt": { "type": ["string", "null"] },
+    "vertical_min": { "type": "number" },
+    "vertical_max": { "type": "number" },
+    "bounding_box": { "anyOf": [{ "$ref": "#/$defs/boundingBox" }, { "type": "null" }] },
+    "mesh_stats": { "$ref": "#/$defs/meshStats" },
+    "materials": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/materialRecord" }
+    },
+    "semantic_groups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/semanticGroupRecord" }
+    },
+    "lod_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lodEntry" }
+    },
+    "tiles": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tileRecord" }
+    },
+    "package_json_path": { "type": ["string", "null"] },
+    "generated_at": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s]+$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "placeholder": {
+      "enum": ["", "placeholder", "todo", "tbd", "unknown", "none", "null", "changeme", "replace_me", "replace-me", "0000000000000000000000000000000000000000000000000000000000000000"]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": { "$ref": "#/$defs/placeholder" }
+    },
+    "fileRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rel_path", "sha256", "size_bytes"],
+      "properties": {
+        "rel_path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": ["string", "null"] }
+      }
+    },
+    "boundingBox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_x", "min_y", "min_z", "max_x", "max_y", "max_z"],
+      "properties": {
+        "min_x": { "type": "number" },
+        "min_y": { "type": "number" },
+        "min_z": { "type": "number" },
+        "max_x": { "type": "number" },
+        "max_y": { "type": "number" },
+        "max_z": { "type": "number" }
+      }
+    },
+    "meshStats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_vertices", "total_faces", "mesh_count", "object_count"],
+      "properties": {
+        "total_vertices": { "type": "integer", "minimum": 0 },
+        "total_faces": { "type": "integer", "minimum": 0 },
+        "mesh_count": { "type": "integer", "minimum": 0 },
+        "object_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "materialRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_name"],
+      "properties": {
+        "material_name": { "$ref": "#/$defs/identifier" },
+        "texture_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "is_road_surface": { "type": "boolean" }
+      }
+    },
+    "semanticGroupRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group_name", "object_count", "collision_enabled"],
+      "properties": {
+        "group_name": { "$ref": "#/$defs/identifier" },
+        "object_count": { "type": "integer", "minimum": 0 },
+        "collision_enabled": { "type": "boolean" }
+      }
+    },
+    "lodEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lod_level", "mesh_count", "triangle_count"],
+      "properties": {
+        "lod_level": { "type": "integer", "minimum": 0 },
+        "mesh_count": { "type": "integer", "minimum": 0 },
+        "triangle_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "tileRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tile_name", "grid_col", "grid_row", "origin_x", "origin_y", "origin_z"],
+      "properties": {
+        "tile_name": { "$ref": "#/$defs/identifier" },
+        "grid_col": { "type": "integer" },
+        "grid_row": { "type": "integer" },
+        "origin_x": { "type": "number" },
+        "origin_y": { "type": "number" },
+        "origin_z": { "type": "number" }
+      }
+    }
+  }
+}

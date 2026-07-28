@@ -1,0 +1,9 @@
+required_tools: [RoadRunner]
+minimum_capability_checks: [tile_alignment]
+import_export_format: xodr_tiled
+expected_outputs: [tiled_xodr_files]
+required_gates: [tile_consistency_check, exact_xodr_alignment_verify]
+optional_gates: []
+authority_class: large_map_data
+carla_compatibility_status: conditional
+release_prohibition_conditions: [tile_misalignment, missing_pedestrian_nav]

@@ -1,0 +1,693 @@
+{
+  "line_road": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "1",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "arc_road": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "2",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          },
+          {
+            "s": 50.0,
+            "x": 30.0,
+            "y": 30.0,
+            "hdg": 1.5708,
+            "length": 50.0,
+            "curve": {
+              "a": 0.1,
+              "b": 0.0,
+              "c": 0.0,
+              "d": 0.0,
+              "type": "circular"
+            }
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "spiral_road": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "3",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "curve": {
+              "a": 0.001,
+              "b": 0.0,
+              "c": 0.0,
+              "d": 0.0,
+              "type": "clothoid"
+            }
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "param_poly3_road": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "4",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          },
+          {
+            "s": 50.0,
+            "x": 40.0,
+            "y": 20.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "paramPoly3": {
+              "a": 0.0001,
+              "b": 0.0,
+              "c": 0.0,
+              "d": 0.0,
+              "length": 50.0
+            }
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "two_road_connection": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "101",
+        "type": "TYPE",
+        "length": 50.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "102",
+        "type": "TYPE",
+        "length": 50.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 50.0,
+            "hdg": -1.5708,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "four_way_junction": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "201",
+        "type": "TYPE",
+        "length": 50.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "202",
+        "type": "TYPE",
+        "length": 50.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 50.0,
+            "hdg": -1.5708,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "203",
+        "type": "TYPE",
+        "length": 50.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 50.0,
+            "y": 0.0,
+            "hdg": 1.5708,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "roundabout": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "301",
+        "type": "TYPE",
+        "length": 200.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "curve": {
+              "a": 0.002,
+              "b": 0.0,
+              "c": 0.0,
+              "d": 0.0,
+              "type": "circular"
+            }
+          },
+          {
+            "s": 100.0,
+            "x": 50.0,
+            "y": -30.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          },
+          {
+            "s": 150.0,
+            "x": 50.0,
+            "y": -30.0,
+            "hdg": 1.5708,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "lane_taper": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "401",
+        "type": "TYPE",
+        "length": 50.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 25.0,
+            "segmentType": "line"
+          },
+          {
+            "s": 25.0,
+            "x": 20.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 25.0,
+            "width": 2.0
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "taper": {
+            "startWidth": 3.5,
+            "endWidth": 2.0,
+            "length": 25.0
+          },
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "lane_merge_split": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "501",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          },
+          {
+            "s": 50.0,
+            "x": 30.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 50.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "merge": {
+            "startLanes": 3,
+            "endLanes": 2,
+            "length": 10.0
+          },
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "elevation_superelevation": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "601",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "elevation": {
+            "start": 0.0,
+            "end": 5.0,
+            "type": "linear"
+          },
+          "superelevation": {
+            "strength": 0.05,
+            "shape": "constant"
+          },
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "signals_controllers": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "701",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "signals": [
+            {
+              "id": "701_1",
+              "type": "trafficLight",
+              "position": 50.0,
+              "controller": "controller_1"
+            }
+          ],
+          "controller": {
+            "id": "controller_1",
+            "type": "actuated",
+            "cycle_time": 60.0
+          },
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "deliberate_road_deletion": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "801",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "status": "DEPRECATED",
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "deliberate_lanelink_loss": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest"
+    },
+    "Road": [
+      {
+        "id": "901",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "902",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 30.0,
+            "y": 30.0,
+            "hdg": 1.5708,
+            "length": 100.0,
+            "curve": {
+              "a": 0.1,
+              "b": 0.0,
+              "c": 0.0,
+              "d": 0.0,
+              "type": "circular"
+            }
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "deliberate_georeference_loss": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "NONE"
+    },
+    "Road": [
+      {
+        "id": "1001",
+        "type": "TYPE",
+        "length": 100.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 100.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "tiled_visual_manifest": {
+    "Header": {
+      "version": "1.0",
+      "date": "2026-01-01T00:00:00Z",
+      "author": "test",
+      "country": "unittest",
+      "grid": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "delta": 1.0,
+        "nsquare": 2
+      }
+    },
+    "Road": [
+      {
+        "id": "1101",
+        "type": "TYPE",
+        "length": 10.0,
+        "planView": [
+          {
+            "s": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "hdg": 0.0,
+            "length": 10.0,
+            "segmentType": "line"
+          }
+        ],
+        "lanes": {
+          "width": 3.5,
+          "visual": {
+            "tiled": true,
+            "manifest": "test_manifest.xodr"
+          },
+          "center": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  }
+}
