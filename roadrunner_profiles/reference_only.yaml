@@ -1,0 +1,9 @@
+required_tools: [RoadRunner]
+minimum_capability_checks: [license_active]
+import_export_format: rrscene
+expected_outputs: [none]
+required_gates: [license_validation]
+optional_gates: []
+authority_class: reference
+carla_compatibility_status: none
+release_prohibition_conditions: [always]

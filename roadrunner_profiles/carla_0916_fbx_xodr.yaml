@@ -1,0 +1,9 @@
+required_tools: [RoadRunner, CARLA_0916]
+minimum_capability_checks: [license_active, fbx_exporter]
+import_export_format: fbx_xodr
+expected_outputs: [fbx_file, xodr_file]
+required_gates: [license_validation, fb_xodr_match]
+optional_gates: []
+authority_class: geometry_and_logic
+carla_compatibility_status: compliant
+release_prohibition_conditions: [version_mismatch]
