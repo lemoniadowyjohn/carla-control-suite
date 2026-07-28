@@ -1,0 +1,32 @@
+{
+  "repository_root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "origin_url": "https://github.com/lemoniadowyjohn/carla-control-suite.git",
+  "current_branch": "deepseek-observability-integration-verification",
+  "local_head_sha": "db0d983a34209e0a47628d3c2b48efc3f9327ec4",
+  "remote_head_sha": "db0d983a34209e0a47628d3c2b48efc3f9327ec4",
+  "local_remote_match": true,
+  "implementation_branch": "deepseek-observability-integration-verification",
+  "implementation_local_sha": "db0d983a34209e0a47628d3c2b48efc3f9327ec4",
+  "implementation_remote_sha": "db0d983a34209e0a47628d3c2b48efc3f9327ec4",
+  "implementation_published": true,
+  "recovery_branch": "recovery/roadrunner-capability-integration",
+  "recovery_local_sha": "25917b1878fab530d86b2c6164d6e37148c5c427",
+  "recovery_remote_sha": "25917b1878fab530d86b2c6164d6e37148c5c427",
+  "recovery_published": true,
+  "worktrees": [
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main (rr-contracts-gpt55)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_audit (audit/gemini31pro-audit)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed (fix/deepseek-observability-integration-verification)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/claude-grid0828-review (detached)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/codex-full-pipeline-rerun-20260427 (work/codex-full-pipeline-rerun-20260427)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/codex-grid0828-patch (work/codex-grid0828-batch-sync-001)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/gemini-governance-normalize (work/gemini-governance-normalize-20260315)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/gemini-grid0828-runtime (detached)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed_worktrees/codex-jsnap-20260428 (work/codex-jsnap-20260428)",
+    "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_rr_recovery (recovery/roadrunner-capability-integration)"
+  ],
+  "stashes": [
+    "stash@{0}: On fix/elevation-and-final-quality-gate-closure: hardening-20260728-pre-baseline"
+  ],
+  "timestamp": "2026-07-29T00:00:00Z"
+}
