@@ -1,0 +1,63 @@
+{
+  "date": "2026-07-29",
+  "scope_note": "Line/Arc implementations NOT covered by I01 Groups A/B/C. Migrating these was explicitly out of scope for this task. Drawn from reports/geometry_structure_discovery.md table 3, re-verified directly this session.",
+  "remaining_implementations": [
+    {
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "class_or_function": "GeometryCalculator._integrate_line",
+      "line_range": "89-93",
+      "formula_style": "canonical (x + length*cos(hdg))",
+      "eps": "1e-9",
+      "primitives": ["line", "arc"],
+      "status": "DUPLICATE",
+      "in_i01_scope": false
+    },
+    {
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "class_or_function": "GeometryCalculator._integrate_arc",
+      "line_range": "95-103",
+      "formula_style": "canonical ((sin(hdg_new)-sin(hdg))/curvature)",
+      "eps": "1e-9",
+      "primitives": ["line", "arc"],
+      "status": "DUPLICATE",
+      "in_i01_scope": false
+    },
+    {
+      "file": "ultimate_pipeline/topology/junction_connector_rebuild.py",
+      "class_or_function": "_arc_endpoint",
+      "line_range": "225-239",
+      "formula_style": "local-frame (dx_local=sin(k*l)/k, dy_local=(1-cos(k*l))/k, rotated into global frame)",
+      "eps": "1e-12",
+      "primitives": ["line", "arc"],
+      "status": "DUPLICATE",
+      "in_i01_scope": false
+    },
+    {
+      "file": "ultimate_pipeline/tile_validation/lane_seam_checker.py",
+      "class_or_function": "_sample_geometry",
+      "line_range": "70-107 (approx; distinct from the already-migrated ultimate_pipeline/geometry/lane_seam_checker.py)",
+      "formula_style": "R-based inline sampling",
+      "eps": "unknown, not audited in depth (out of scope)",
+      "primitives": ["line", "arc"],
+      "status": "DUPLICATE",
+      "in_i01_scope": false,
+      "note": "Newly identified during this session's repository-wide audit (Task 7); not listed in the I01 prompt's Group A/B/C file lists."
+    },
+    {
+      "file": "submission/infrastructure/ultimate_pipeline/*",
+      "class_or_function": "n/a (full directory mirror)",
+      "line_range": "n/a",
+      "formula_style": "mixed; mirrors ultimate_pipeline/ as of an earlier snapshot",
+      "eps": "n/a",
+      "primitives": ["line", "arc"],
+      "status": "MIRROR (STALE)",
+      "in_i01_scope": false,
+      "note": "Confirmed this session: submission/infrastructure/ultimate_pipeline/quality/check_geometric_continuity.py has no canonical-evaluator imports at all, unlike the root copy — the mirror has drifted out of sync. Per reports/geometry_structure_discovery.md section 8, do not edit directly; refreshed by a separate submission/export process."
+    }
+  ],
+  "total_remaining": 5,
+  "counts_by_status": {
+    "DUPLICATE": 4,
+    "MIRROR (STALE)": 1
+  }
+}
