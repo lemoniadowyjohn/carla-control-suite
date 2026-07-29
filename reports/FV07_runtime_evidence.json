@@ -1,0 +1,7 @@
+{
+  "carla_runtime_executed": false,
+  "evidence": "Only offline Python tests executed; no CARLA server, Unreal, GPU runtime, map package load, route drive, or sensor capture was performed.",
+  "generated_at_utc": "2026-07-29T22:08:06.986665+00:00",
+  "perception_runtime_executed": false,
+  "status": "BLOCKED_RUNTIME"
+}

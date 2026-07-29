@@ -1,0 +1,41 @@
+{
+  "after": {
+    "bytes": 14563831,
+    "connection_count": 3395,
+    "duplicate_junction_ids": 0,
+    "duplicate_road_ids": 0,
+    "exists": true,
+    "geometry_chain_seams": {
+      "checked": 12674,
+      "evaluation_errors": 0,
+      "heading_over_1deg": 426,
+      "max_heading_deg": 179.99999993912968,
+      "max_position_m": 2.066415915704189e-06,
+      "position_over_5cm": 0,
+      "unsupported_boundaries": 0
+    },
+    "invalid_junction_references": 0,
+    "invalid_road_references": 0,
+    "junction_count": 645,
+    "laneLink_count": 3658,
+    "lane_section_count": 4999,
+    "nonfinite_attribute_values": 0,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\ultimate_pipeline_out\\master_strengthen_20260429\\p3_sumo.xodr",
+    "primitive_count_by_type": {
+      "arc": 0,
+      "line": 3931,
+      "paramPoly3": 13742,
+      "poly3": 0,
+      "spiral": 0,
+      "unknown": 0
+    },
+    "road_count": 4999,
+    "road_length_total_m": 232857.76693386014,
+    "self_links": 0,
+    "sha256": "8439eea4ad63f0949d2fcd506266bc8b7c2b669546c55363760e0f3711916d80",
+    "zero_length_planview_segments": 0
+  },
+  "current_code_modified_map": false,
+  "generated_at_utc": "2026-07-29T22:08:06.986665+00:00",
+  "note": "No map-changing repair was run in this verification; final map equals recovered accepted artifact by SHA."
+}
