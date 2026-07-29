@@ -9,6 +9,7 @@ from opendrive_geometry.primitives import (
     sample_arc,
     sample_line,
     sample_param_poly3,
+    EPS,
 )
 from opendrive_geometry.errors import (
     DegenerateTangentError,
@@ -21,12 +22,20 @@ from opendrive_geometry.errors import (
     UnsupportedGeometryError,
     UnsupportedPRangeError,
 )
+from opendrive_geometry.evaluator import (
+    RangePolicy,
+    EvaluationPolicy,
+    LineArcEvaluator,
+    ParamPoly3Evaluator,
+)
 
 __all__ = [
     "Pose2D", "Vec2", "Bounds2D", "ProjectionResult", "GeometrySegment",
+    "EPS",
     "evaluate_line", "evaluate_arc", "sample_line", "sample_arc",
     "evaluate_param_poly3", "sample_param_poly3", "param_poly3_endpoint",
     "param_poly3_curvature_at", "param_poly3_bounds",
+    "RangePolicy", "EvaluationPolicy", "LineArcEvaluator", "ParamPoly3Evaluator",
     "UnsupportedGeometryError", "GeometryOutOfRangeError",
     "ParamPoly3Error", "MissingPRangeError", "UnsupportedPRangeError",
     "InvalidParamPoly3LengthError", "NonFiniteCoefficientError",
