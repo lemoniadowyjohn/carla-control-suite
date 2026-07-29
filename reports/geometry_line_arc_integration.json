@@ -1,0 +1,93 @@
+{
+  "batch": "G02",
+  "title": "Line/Arc canonical evaluator facade — integration report",
+  "timestamp": "2026-07-29T00:00:00",
+  "phases": {
+    "phase1_active_call_path": {
+      "status": "passed",
+      "detail": "22 modules verified in reports/geometry_active_call_path.json; submission/ tree not on sys.path; no import ambiguity"
+    },
+    "phase2_canonical_facade": {
+      "status": "passed",
+      "file": "opendrive_geometry/evaluator.py",
+      "detail": "LineArcEvaluator with RangePolicy (STRICT/CLAMP/EXTRAPOLATE), EvaluationPolicy, pose_at, curvature_at, endpoint, sample, bounds"
+    },
+    "phase3_readonly_consumers": {
+      "status": "passed",
+      "migrated_modules": [
+        "domain_gap/elevation_gap.py",
+        "domain_gap/geo_alignment.py",
+        "quality/check_dem_full_coverage.py",
+        "tile_validation/geometry_seam_checker.py",
+        "geometry/lane_seam_checker.py",
+        "visualization/lane_overlay.py",
+        "visualization/heatmap_generator.py"
+      ],
+      "already_fixed_G01": [
+        "visualization/map_plotter.py",
+        "visualization/map_diff.py"
+      ],
+      "detail": "Each consumer delegates to LineArcEvaluator with caller-specific RangePolicy and epsilon"
+    },
+    "phase4_continuity_evaluation": {
+      "status": "passed",
+      "file": "quality/check_geometric_continuity.py",
+      "detail": "_pose_line, _pose_arc delegate via GeometrySegment conversion; Spiral/Poly3/ParamPoly3 unchanged"
+    },
+    "phase5_connector_deferred": {
+      "status": "passed",
+      "detail": "topology/junction_connector_rebuild.py NOT migrated; _arc_endpoint not migrated; deferred to dedicated batch"
+    },
+    "phase6_containment_flags": {
+      "status": "passed",
+      "files": [
+        "ultimate_pipeline/config/settings.py",
+        "ultimate_pipeline/contracts/release_profile.py",
+        "ultimate_pipeline/pipeline_stages/stage_06_links.py"
+      ],
+      "flags": {
+        "ENABLE_UNSAFE_SHORT_SEGMENT_MERGE": false,
+        "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING": false,
+        "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK": false
+      },
+      "release_profile": "release profiles reject all three unsafe flags"
+    },
+    "phase7_semantic_non_regression": {
+      "status": "passed",
+      "test_file": "tests/unit/test_geometric_continuity_migration.py",
+      "test_count": 24,
+      "test_passed": 24,
+      "test_failed": 0,
+      "detail": "Verifies line/arc pose via migrated dispatch, all other primitives unchanged, mixed-chain continuity checks, containment flags"
+    }
+  },
+  "test_results": {
+    "tests/opendrive_geometry": {
+      "passed": 1740,
+      "failed": 0,
+      "skipped": 66,
+      "regression": false
+    },
+    "tests/unit": {
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0,
+      "regression": false
+    },
+    "ultimate_pipeline/tests/test_contracts.py": {
+      "passed": 71,
+      "failed": 0,
+      "skipped": 0,
+      "regression": false
+    },
+    "cross_compare_implementations": {
+      "detail": "Same known discrepancies as G01 — no new regressions",
+      "regression": false
+    }
+  },
+  "compile_check": {
+    "files_modified": 12,
+    "errors": 0
+  },
+  "verdict": "PASS — No regressions. Line/Arc canonical facade fully integrated. 9 consumers migrated. Containment flags deployed and locked in release profiles. _arc_endpoint and junction_connector_rebuild deferred to G03."
+}

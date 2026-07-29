@@ -1,0 +1,38 @@
+{
+  "report": "geometry_evaluation_caller_contracts",
+  "classification": "C. MULTIPLE_CONFLICTING_STRUCTURES",
+  "contract_types": {
+    "STRICT_RANGE": "raises error on out-of-range s",
+    "CLAMP_TO_SEGMENT": "clamps s to [0, length]",
+    "ALLOW_EXTRAPOLATION": "silently accepts out-of-range s",
+    "ENDPOINTS_ONLY": "always evaluates at full geometry length",
+    "IN_RANGE_BY_CONSTRUCTION": "s is always in [0, length] by design"
+  },
+  "evaluators": [
+    {"file": "opendrive_geometry/primitives.py", "function": "evaluate_line", "contract": "STRICT_RANGE", "eps": "1e-12"},
+    {"file": "opendrive_geometry/primitives.py", "function": "evaluate_arc", "contract": "STRICT_RANGE", "eps": "1e-12"},
+    {"file": "geometry/geometry_math.py", "function": "_integrate_line", "contract": "ALLOW_EXTRAPOLATION", "eps": "1e-9"},
+    {"file": "geometry/geometry_math.py", "function": "_integrate_arc", "contract": "ALLOW_EXTRAPOLATION", "eps": "1e-9"},
+    {"file": "quality/check_geometric_continuity.py", "function": "_pose_line", "contract": "CLAMP_TO_SEGMENT", "eps": "1e-12"},
+    {"file": "quality/check_geometric_continuity.py", "function": "_pose_arc", "contract": "CLAMP_TO_SEGMENT", "eps": "1e-12"},
+    {"file": "tile_validation/geometry_seam_checker.py", "function": "_geometry_endpoint", "contract": "ENDPOINTS_ONLY", "eps": "1e-12"},
+    {"file": "geometry/lane_seam_checker.py", "function": "_sample_geometry", "contract": "IN_RANGE_BY_CONSTRUCTION", "eps": "1e-9"},
+    {"file": "domain_gap/elevation_gap.py", "function": "_sample_line", "contract": "ALLOW_EXTRAPOLATION", "eps": "1e-12"},
+    {"file": "domain_gap/elevation_gap.py", "function": "_sample_arc", "contract": "ALLOW_EXTRAPOLATION", "eps": "1e-12"},
+    {"file": "domain_gap/geo_alignment.py", "function": "_sample_transformed_geometry_points", "contract": "IN_RANGE_BY_CONSTRUCTION", "eps": "1e-12"},
+    {"file": "visualization/map_plotter.py", "function": "_sample_geometry", "contract": "IN_RANGE_BY_CONSTRUCTION", "eps": "implicit"},
+    {"file": "quality/check_dem_full_coverage.py", "function": "_sample_line", "contract": "CLAMP_TO_SEGMENT", "eps": "1e-9"},
+    {"file": "quality/check_dem_full_coverage.py", "function": "_sample_arc", "contract": "CLAMP_TO_SEGMENT", "eps": "1e-9"},
+    {"file": "topology/junction_connector_rebuild.py", "function": "_arc_endpoint", "contract": "ENDPOINTS_ONLY", "eps": "1e-12"},
+    {"file": "visualization/lane_overlay.py", "function": "_endpoint", "contract": "ENDPOINTS_ONLY", "eps": "implicit"},
+    {"file": "visualization/heatmap_generator.py", "function": "_endpoint", "contract": "ENDPOINTS_ONLY", "eps": "implicit"},
+    {"file": "visualization/map_diff.py", "function": "_sample_geometry", "contract": "IN_RANGE_BY_CONSTRUCTION", "eps": "1e-9"}
+  ],
+  "key_findings": [
+    "Only canonical primitives.py uses STRICT_RANGE — all production implementations are lenient",
+    "6 functions are endpoints-only (no variable s parameter)",
+    "5 sample_geometry variants generate s internally; always in range",
+    "elevation_gap silently accepts arbitrary t-values from callers",
+    "check_geometric_continuity.py is the only caller-level clamp"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-07-29",
+  "verifier": "independent principal verification engineer (did not implement)",
+  "discrepancies": [
+    {
+      "id": "D1",
+      "report": "reports/geometry_structure_discovery.md, reports/line_arc_independent_execution.md, reports/geometry_line_arc_integration.json (batch label 'G02')",
+      "claim": "Implementation verified at commit faa20bb5 on deepseek-observability-integration-verification",
+      "actual_result": "The canonical opendrive_geometry/ package and all geometry tests are UNTRACKED (git ls-files opendrive_geometry/ is empty; check-ignore exit=1 so not gitignored, simply never added). They are absent from faa20bb5 and from every commit. Reports describe code that does not exist in the referenced SHA.",
+      "status": "REFUTED",
+      "severity": "CRITICAL",
+      "required_correction": "git add + commit the opendrive_geometry package, its tests, and fixtures; re-pin every report to the committing SHA; re-run the gate."
+    },
+    {
+      "id": "D2",
+      "report": "reports/stage6_containment.md, reports/geometry_line_arc_integration.json (phase6)",
+      "claim": "Stage 6 containment flags deployed and locked; settings.py / release_profile.py / stage_06_links.py updated and verified",
+      "actual_result": "Those exact files are MODIFIED-UNCOMMITTED in the working tree (settings.py +205, release_profile.py +105, stage_06_links.py +452, stage_05_geometry.py +6; 740 insertions/28 deletions). The I02 containment implementation is not committed and not published.",
+      "status": "PARTIALLY_SUPPORTED_BUT_UNCOMMITTED",
+      "severity": "CRITICAL",
+      "required_correction": "Commit the Stage 6 containment changes and publish; the behavior is present and tested in the working tree but is not reproducibly pinned."
+    },
+    {
+      "id": "D3",
+      "report": "git remote state vs local",
+      "claim": "Reviewed batches reflect the branch tip",
+      "actual_result": "Local HEAD 4561f953 is 1 commit ahead of local remote-tracking ref origin/deepseek-observability-integration-verification (faa20bb5). Network verification of the true remote tip is BLOCKED (git ls-remote failed: SSL 'unable to get local issuer certificate'). The one committed reviewed change (4561f953, map_plotter/map_diff I01) is unpublished.",
+      "status": "REFUTED",
+      "severity": "CRITICAL",
+      "required_correction": "Push the branch after committing all reviewed artifacts; re-verify local SHA == published remote SHA over a working TLS path."
+    },
+    {
+      "id": "D4",
+      "report": "session lineage",
+      "claim": "Stable review SHA",
+      "actual_result": "HEAD advanced during the review window: reflog HEAD@{1}=faa20bb5 -> HEAD@{0}=4561f953 via a commit not issued by this verification session. The repository is being concurrently mutated (11 live worktrees under carla_main_governed, opencode dispatcher, governance processes).",
+      "status": "REFUTED",
+      "severity": "HIGH",
+      "required_correction": "Freeze the branch (single-writer) for the duration of verification; pin a tag."
+    },
+    {
+      "id": "D5",
+      "report": "reports/geometry_structure_discovery.md section 6, reports/parampoly3_evaluator.md",
+      "claim": "Inventory of geometry evaluators / active consumers",
+      "actual_result": "ultimate_pipeline/quality/autofix_postprune_elevation.py was NOT inventoried by any batch. It is an ACTIVE (env-gated: UP_AUTOFIX_POSTPRUNE_ELEVATION, wired at main_pipeline.py:2048) elevation MUTATOR that rewrites <elevation> elements and calls tree.write(), using an inline local-frame _pose_arc and numeric _pose_spiral that are not under the single geometry authority.",
+      "status": "REFUTED (incomplete inventory)",
+      "severity": "MEDIUM",
+      "required_correction": "Add to the duplicate inventory; classify as active elevation mutator; out of read-only junction scope but must be governed before any elevation-mutation task."
+    },
+    {
+      "id": "D6",
+      "report": "expected report set (master prompt section 1)",
+      "claim": "N/A (existence check)",
+      "actual_result": "MISSING: reports/geometry_improvement_reverification.{md,json}, reports/line_arc_hardening.{md,json}, reports/geometry_caller_contracts.{md,json}, reports/geometry_authority_readiness_review.{md,json}. The G02 readiness-review output was never produced. Present under different names: geometry_structure_discovery.*, line_arc_test_scaffold.md, geometry_evaluation_caller_contracts.*.",
+      "status": "MISSING_EVIDENCE",
+      "severity": "LOW",
+      "required_correction": "Not recreated during verification per instructions. Produce the geometry_authority_readiness_review under the canonical name if the G02 gate is to be closed."
+    },
+    {
+      "id": "D7",
+      "report": "reports/geometry_line_arc_integration.json",
+      "claim": "self-labelled batch 'G02' with verdict deferring to 'G03'",
+      "actual_result": "The same file is cited by reports/parampoly3_evaluator.md as evidence 'I02'. Internal batch labels (G02/I02/G03) drift and do not map 1:1 to the prompt's V01/V02/I01/I02/G01/G02 sequence.",
+      "status": "SUPPORTED (label inconsistency)",
+      "severity": "LOW",
+      "required_correction": "Normalize batch identifiers across reports to a single register."
+    },
+    {
+      "id": "D8",
+      "report": "reports/*.md test-count claims",
+      "claim": "line/arc scaffold 1740 passed/66 skipped; parampoly3 70 passed; containment 123 passed",
+      "actual_result": "Independently reproduced at the current working tree: canonical geometry suites 2361 passed / 78 skipped; containment+migration+contracts 123 passed. Counts are consistent in direction and the 123 figure reproduces exactly. No fabricated pass detected. (Full non-CARLA regression not re-run this session.)",
+      "status": "VERIFIED",
+      "severity": "NONE",
+      "required_correction": "None for counts; re-run full non-CARLA suite post-commit."
+    }
+  ]
+}

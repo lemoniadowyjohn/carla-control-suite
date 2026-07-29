@@ -1,0 +1,162 @@
+{
+  "verdict": "FAIL_REPORTS_NOT_REPRODUCIBLE",
+  "repository": {
+    "root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+    "branch": "deepseek-observability-integration-verification",
+    "local_sha": "4561f9536853d378746e975abcca8637d0ed8832",
+    "remote_sha": "faa20bb574badb963e98c2cf9d790d232cbe0a15",
+    "remote_sha_source": "local remote-tracking ref origin/deepseek-observability-integration-verification; live git ls-remote BLOCKED by SSL cert error",
+    "local_remote_match": false,
+    "clean": false,
+    "head_moved_during_review": true,
+    "head_move": "faa20bb5 -> 4561f953 (external commit, not issued by this session)"
+  },
+  "environment": {
+    "python_version": "3.12.2",
+    "virtual_env_active": true,
+    "virtual_env": "carla_-main/.venv",
+    "import_identity": "unambiguous",
+    "opendrive_geometry_resolves_to": "carla_-main/opendrive_geometry/__init__.py",
+    "ultimate_pipeline_resolves_to": "carla_-main/ultimate_pipeline/__init__.py",
+    "shadowing": "none active; parent pythonProject3/ultimate_pipeline lacks __init__.py; no parent-level opendrive_geometry; editable install __editable__.ultimate_pipeline-0.1.0.pth points at carla_-main",
+    "carla_governed_symlink": "carla_governed -> carla_main_governed; it IS a linked git worktree of THIS repo (.git pointer -> carla_-main/.git/worktrees/carla_main_governed, branch fix/deepseek-observability-integration-verification) with its OWN .venv; has ultimate_pipeline but NO opendrive_geometry (canonical geometry work lives only in carla_-main, so no shadowing of the canonical package)",
+    "pythonpath_hazard": "global PYTHONPATH=carla_-main would shadow the governed worktree's own ultimate_pipeline if python is run from inside carla_main_governed; harmless for carla_-main verification, unset before governed-side work"
+  },
+  "re_verification_2026_07_29_session2": {
+    "verdict_unchanged": true,
+    "source_still_untracked": "git ls-files opendrive_geometry/ = 0; tests/opendrive_geometry/ = 0; check-ignore evaluator.py exit 1 (untracked not ignored)",
+    "head": "4561f953 (ahead of origin faa20bb5); live git ls-remote still SSL-blocked",
+    "working_tree_dirty_entries": 361,
+    "stage6_files_still_uncommitted": ["settings.py", "release_profile.py", "stage_05_geometry.py", "stage_06_links.py"],
+    "geometry_suite_rerun": "tests/opendrive_geometry -> 2202 passed, 78 skipped, 0 failed; canonical pkg compileall clean",
+    "environment_aligned": true,
+    "aligned_detail": "interpreter carla_-main/.venv py3.12.2; opendrive_geometry + evaluator + ultimate_pipeline + config.settings all resolve inside carla_-main; editable finder hard-pins ultimate_pipeline; no stray site-packages copies; no governed path on sys.path",
+    "remediation_applied": {
+      "implementation_commit": "0c1a4293c6a86e52147927d0cb128f531e9df55b",
+      "stat": "39 files changed, 7331 insertions(+), 28 deletions(-)",
+      "now_tracked": {"opendrive_geometry/": 10, "tests/opendrive_geometry/": 11},
+      "clean_checkout_repro_proof": "detached worktree at 0c1a4293, PYTHONPATH=clean-worktree -> tests/opendrive_geometry: 2202 passed, 78 skipped, 0 failed",
+      "blocker1_package_untracked": "CLEARED at 0c1a4293",
+      "blocker2_stage6_uncommitted": "CLEARED at 0c1a4293",
+      "blocker3_unpublished": "resolves on push (see published field)",
+      "verdict_note": "reproducibility precondition satisfied; overall verdict remains FAIL_REPORTS_NOT_REPRODUCIBLE PENDING full re-gate (non-CARLA regression, python -O, cross_compare, Stage6 semantic-hash) at pinned+pushed SHA; no PASS claimed this session"
+    }
+  },
+  "batches_reviewed": [
+    "V01 geometry structure reverification",
+    "V02 line/arc test and comparison hardening",
+    "I01 canonical line/arc evaluator integration",
+    "I02 Stage 6 unsafe-mutation containment",
+    "G01 ParamPoly3 evaluator",
+    "G02 geometry authority readiness review (output never produced)"
+  ],
+  "commands": [
+    "git rev-parse HEAD; git branch --show-current; git status --short; git reflog; git worktree list; git stash list",
+    "git rev-parse origin/deepseek-observability-integration-verification",
+    "git ls-files --error-unmatch <canonical files> (all UNTRACKED)",
+    "git check-ignore -v <canonical files> (exit 1 = not ignored)",
+    "python -c import opendrive_geometry; print __file__ (+ ultimate_pipeline, check_geometric_continuity)",
+    "python -m pytest tests/opendrive_geometry tests/unit/test_opendrive_geometry_parampoly3.py ultimate_pipeline/tests/unit/test_opendrive_geometry_line_arc.py -q  => 2361 passed / 78 skipped",
+    "python -m pytest tests/unit/test_stage6_containment.py test_stage6_unsafe_flag_policy.py test_junction_connector_rebuild.py test_geometric_continuity_migration.py ultimate_pipeline/tests/test_contracts.py -q  => 123 passed",
+    "independent recompute of Arc vs spec, arc->line convergence, ParamPoly3 curvature vs arc-length finite difference",
+    "primitive census of auto_master.xodr and manual_grid0828.xodr"
+  ],
+  "tests": {
+    "collected": 2562,
+    "passed": 2484,
+    "failed": 0,
+    "skipped": 78,
+    "errors": 0,
+    "scope": "canonical geometry suites (2361/78) + Stage6/containment/migration/contracts (123/0); full non-CARLA regression NOT re-run this session"
+  },
+  "line": {
+    "status": "CORRECT",
+    "issues": [],
+    "range_policy": "STRICT in primitives.evaluate_line; STRICT/CLAMP/EXTRAPOLATE selectable via evaluator facade"
+  },
+  "arc": {
+    "status": "CORRECT",
+    "max_abs_error_vs_spec": 1.7763568394002505e-15,
+    "issues": [
+      "arc_bounds is sampled (64 pts) not analytical; adequate for bounds but not exact",
+      "bounded catastrophic-cancellation position wobble ~5e-5 exactly at k=1e-12 (EPS boundary); off-boundary from production arcs (k~0.1); quantified non-blocking"
+    ]
+  },
+  "parampoly3": {
+    "status": "CORRECT",
+    "curvature_finite_diff_error": 7.34e-12,
+    "features": ["normalized + arcLength pRange", "signed curvature via chain rule", "analytical bounds", "typed failures", "endpoint-inclusive sampling"],
+    "active_canonical_consumers": ["ultimate_pipeline/domain_gap/curvature_gap.py (read-only)"],
+    "issues": ["only one read-only consumer migrated; check_geometric_continuity.py, geometry_math.py remain on frozen mixed-use formulas by design"]
+  },
+  "canonical_integration": {
+    "status": "PARTIAL_BY_DESIGN",
+    "migrated_readonly_consumers": [
+      "domain_gap/elevation_gap.py", "domain_gap/geo_alignment.py", "quality/check_dem_full_coverage.py",
+      "tile_validation/geometry_seam_checker.py", "geometry/lane_seam_checker.py",
+      "visualization/lane_overlay.py", "visualization/heatmap_generator.py",
+      "visualization/map_plotter.py", "visualization/map_diff.py"
+    ],
+    "remaining_active_duplicates": [
+      {"file": "ultimate_pipeline/geometry/geometry_math.py", "class": "UNMIGRATED_DUPLICATE (frozen)", "reason": "mixed-use xodr_cropper_gps consumer"},
+      {"file": "ultimate_pipeline/quality/check_geometric_continuity.py", "class": "JUSTIFIED_SPECIALIZATION (line/arc delegated; spiral/poly3/paramPoly3 frozen)", "reason": "feeds recompute_geometry_starts_chained_inplace XML mutation"},
+      {"file": "ultimate_pipeline/topology/junction_connector_rebuild.py", "class": "UNMIGRATED_DUPLICATE (deferred)", "reason": "mutation/reconstruction, out of scope"},
+      {"file": "ultimate_pipeline/map_fixes/xodr_junction_links.py", "class": "UNMIGRATED_DUPLICATE (mutation)", "reason": "junction-link mutation; _geom_end returns base heading (incorrect endpoint tangent)"},
+      {"file": "ultimate_pipeline/tools/xodr_carla_hardener.py", "class": "KNOWN_DEFECT (mutation)", "reason": "malformed pRange parser + optional ParamPoly3->Line mutation"},
+      {"file": "ultimate_pipeline/quality/autofix_postprune_elevation.py", "class": "UNMIGRATED_DUPLICATE (active elevation mutator, unreported by prior batches)", "reason": "inline _pose_arc + numeric _pose_spiral; rewrites elevationProfile; env-gated on active pipeline"}
+    ]
+  },
+  "supported_primitives": {
+    "Line": "COMPLETE (read-only)",
+    "Arc": "COMPLETE (bounds sampled not analytical)",
+    "Spiral": "MISSING from canonical authority (only unverified numeric Euler in frozen mutation-adjacent code)",
+    "Poly3": "MISSING from canonical authority (only in frozen check_geometric_continuity)",
+    "ParamPoly3": "COMPLETE (analytical bounds, signed curvature)",
+    "production_map_census": {
+      "auto_master.xodr": {"line": 3931, "arc": 0, "spiral": 0, "poly3": 0, "paramPoly3": 13742, "junctions": 645, "connector_roads": 3395},
+      "manual_grid0828.xodr": {"line": 13895, "arc": 3, "spiral": 0, "poly3": 0, "paramPoly3": 7432, "junctions": 119, "connector_roads": 704}
+    }
+  },
+  "junction_prerequisites": {
+    "endpoint_position": "READY (line/arc/paramPoly3)",
+    "endpoint_tangent": "READY (line/arc/paramPoly3)",
+    "curvature": "READY (line=0, arc=k, paramPoly3 signed)",
+    "road_bounds": "READY (line/arc sampled, paramPoly3 analytical)",
+    "contact_point_orientation": "DERIVABLE from endpoint+tangent, not yet implemented as helper",
+    "lane_center_derivation_plan": "BLOCKED (no plan, no lane-width/lateral-profile integration in geometry authority)",
+    "projection_or_nearest_s": "BLOCKED (ReferenceLineEvaluator.project is protocol-only; no concrete implementation; ProjectionResult never produced)",
+    "curvature_derivative_dk_ds": "MISSING (no primitive exposes dk/ds)"
+  },
+  "stage6_containment": {
+    "status": "NON_DESTRUCTIVE_IN_GOVERNED_MODE (verified, but implementation uncommitted)",
+    "governed_read_only": true,
+    "semantic_diff_has_teeth": true,
+    "unsafe_flags_default_false": true,
+    "release_thesis_reject_enable": true,
+    "straight_chord_fallback_blocked": true,
+    "active_unsafe_mutators": [
+      "EXPERIMENTAL_UNSAFE profile (non-governed) can still invoke PlanViewSmoother mutators + MeshContinuityRepairer (by design)",
+      "autofix_postprune_elevation.py env-gated elevation rewrite (separate from Stage 6 governance)"
+    ]
+  },
+  "artifact_safety": {
+    "status": "ABSENT",
+    "rollback_verified": false,
+    "detail": "No candidate-directory / atomic-promotion / rejected-candidate-retention / rollback framework exists for geometry mutation. Stage 6 uses copy-input-to-output + read-only semantic diff (containment), not a mutation transaction. Failure-injection tests (candidate creation/serialization/validation/promotion/manifest/disk-full/interrupt) do not exist.",
+    "impact": "Blocks any future junction/connector/LaneLink/elevation MUTATION. Not required for the read-only junction model itself."
+  },
+  "known_regressions": {
+    "map_plotter_sentinel_1e9": "FIXED — delegates canonical LineArcEvaluator; regression-tested",
+    "map_diff_curvature_squared_heading": "FIXED — canonical signed-curvature; regression-tested"
+  },
+  "claim_discrepancies": ["see reports/full_geometry_claim_discrepancies.json (D1-D8)"],
+  "blockers": [
+    "Canonical opendrive_geometry/ package + ALL geometry tests + fixtures manifest are UNTRACKED (never committed; not gitignored)",
+    "I02 Stage 6 containment (settings.py/release_profile.py/stage_06_links.py/stage_05_geometry.py) is uncommitted",
+    "Reviewed commit 4561f953 is unpublished (local ahead of origin faa20bb5); live remote unverifiable (SSL)",
+    "All reports cite SHA faa20bb5 which does not contain the reviewed implementation",
+    "HEAD advanced during review under concurrent mutation"
+  ],
+  "remaining_risks": ["see reports/full_geometry_remaining_risks.md"],
+  "approved_next_scope": []
+}

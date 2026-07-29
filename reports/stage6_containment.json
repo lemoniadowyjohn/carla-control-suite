@@ -1,0 +1,158 @@
+{
+  "schema": "stage6_containment_report_v1",
+  "date": "2026-07-29",
+  "objective": "Contain unsafe Stage 6 geometry mutation in governed release and thesis profiles without adding replacement repair heuristics.",
+  "unsafe_operations_discovered": [
+    {
+      "operation": "PlanViewSmoother.smooth_heading_jumps",
+      "active": "observe_only_in_governed; mutating_only_in_explicit_experimental",
+      "configuration_flag": "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["planView.geometry.@hdg"],
+      "call_count": 1,
+      "output_artifact": "stage6_containment_runtime.json proposals; no XODR mutation in READ_ONLY_DIAGNOSTIC",
+      "rollback": "input XODR is copied byte-for-byte to Stage 6 outputs in governed mode",
+      "tests": ["tests/unit/test_stage6_containment.py", "tests/unit/test_stage6_unsafe_flag_policy.py"]
+    },
+    {
+      "operation": "PlanViewSmoother.merge_small_geometries",
+      "active": "observe_only_in_governed; mutating_only_in_explicit_experimental",
+      "configuration_flag": "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["planView.geometry list", "planView.geometry.@length", "road.@length"],
+      "call_count": 2,
+      "output_artifact": "stage6_containment_runtime.json proposals; no XODR mutation in READ_ONLY_DIAGNOSTIC",
+      "rollback": "parent road planView is not touched in governed mode",
+      "tests": ["tests/unit/test_stage6_containment.py", "tests/unit/test_stage6_unsafe_flag_policy.py"]
+    },
+    {
+      "operation": "PlanViewSmoother.merge_short_segments",
+      "active": "observe_only_in_governed; mutating_only_in_explicit_experimental",
+      "configuration_flag": "ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["planView.geometry list", "planView.geometry.@length", "road.@length"],
+      "call_count": 2,
+      "output_artifact": "stage6_containment_runtime.json proposals; no XODR mutation in READ_ONLY_DIAGNOSTIC",
+      "rollback": "parent road planView is not touched in governed mode",
+      "tests": ["tests/unit/test_stage6_containment.py", "tests/unit/test_stage6_unsafe_flag_policy.py"]
+    },
+    {
+      "operation": "PlanViewSmoother.clamp_curvature",
+      "active": "observe_only_in_governed; mutating_only_in_explicit_experimental",
+      "configuration_flag": "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["planView.geometry.arc.@curvature"],
+      "call_count": 1,
+      "output_artifact": "stage6_containment_runtime.json proposals; no XODR mutation in READ_ONLY_DIAGNOSTIC",
+      "rollback": "curvature is not written in governed mode",
+      "tests": ["tests/unit/test_stage6_containment.py", "tests/unit/test_stage6_unsafe_flag_policy.py"]
+    },
+    {
+      "operation": "PlanViewSmoother.recompute_geometry_starts",
+      "active": "observe_only_in_governed; mutating_only_in_explicit_experimental",
+      "configuration_flag": "ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["planView.geometry.@x", "planView.geometry.@y", "planView.geometry.@hdg"],
+      "call_count": 3,
+      "output_artifact": "stage6_containment_runtime.json proposals; no XODR mutation in READ_ONLY_DIAGNOSTIC",
+      "rollback": "legacy ENABLE_GEOMETRY_START_RECOMPUTE is rejected outside EXPERIMENTAL_UNSAFE",
+      "tests": ["tests/unit/test_stage6_containment.py", "tests/unit/test_stage6_unsafe_flag_policy.py"]
+    },
+    {
+      "operation": "MeshContinuityRepairer.run",
+      "active": "diagnostic_scan_only_in_governed",
+      "configuration_flag": "CONTINUITY_MODE plus Stage 6 governed containment",
+      "default": "moderate, but bypassed by READ_ONLY_DIAGNOSTIC in governed mode",
+      "release_profile_value": "READ_ONLY_DIAGNOSTIC",
+      "mutation_domains": ["planView.geometry starts", "planView.geometry headings", "geometry chain rewrite"],
+      "call_count": 1,
+      "output_artifact": "continuity_debug.json and stage6_containment_runtime.json",
+      "rollback": "geo_out is copied to cont_out without invoking repair save in governed mode",
+      "tests": ["tests/unit/test_stage6_containment.py"]
+    },
+    {
+      "operation": "plan-view seam auto-repair",
+      "active": "disabled_in_governed",
+      "configuration_flag": "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["planView.geometry.@x", "planView.geometry.@y", "planView.geometry.@hdg"],
+      "call_count": 0,
+      "output_artifact": "planview_internal_seams_step6.json only when non-governed path reaches seam gate",
+      "rollback": "not invoked in governed READ_ONLY_DIAGNOSTIC",
+      "tests": ["tests/unit/test_stage6_containment.py"]
+    },
+    {
+      "operation": "junction connector rebuild straight-chord fallback",
+      "active": "blocked_by_default",
+      "configuration_flag": "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK",
+      "default": false,
+      "release_profile_value": false,
+      "mutation_domains": ["junction connector road planView", "connector road.@length"],
+      "call_count": 1,
+      "output_artifact": "junction_connector_rebuild_report.json; junction_connector_risk.json",
+      "rollback": "original connector planView is preserved when BLOCKED_CONNECTOR_RECONSTRUCTION is emitted",
+      "tests": ["tests/unit/test_junction_connector_rebuild.py", "tests/unit/test_stage6_unsafe_flag_policy.py"]
+    }
+  ],
+  "operations_disabled": [
+    "merge_short_segments",
+    "merge_small_geometries",
+    "smooth_heading_jumps",
+    "clamp_curvature",
+    "recompute_geometry_starts",
+    "mesh continuity repair mutation",
+    "plan-view seam auto-repair",
+    "straight-chord connector fallback"
+  ],
+  "observe_only_operations": [
+    "smooth_heading_jumps",
+    "merge_small_geometries",
+    "merge_short_segments",
+    "clamp_curvature",
+    "recompute_geometry_starts",
+    "mesh continuity scan"
+  ],
+  "release_profile_enforcement": {
+    "governed_profiles": ["STRUCTURAL_RELEASE", "CARLA_RELEASE", "VISUAL_RELEASE", "PERCEPTION_RELEASE"],
+    "thesis_profile_control": "THESIS_STRICT=True forces READ_ONLY_DIAGNOSTIC and rejects unsafe flag enables",
+    "experimental_profile_required": "RELEASE_PROFILE=EXPERIMENTAL_UNSAFE and THESIS_STRICT=False are required before individual unsafe flags may be enabled",
+    "env_override_policy": "UP_ENABLE_* unsafe env values are strictly parsed; true values fail configuration validation outside EXPERIMENTAL_UNSAFE"
+  },
+  "xodr_semantic_changes": {
+    "containment_mode_required_result": "exact_equality",
+    "protected_domains": [
+      "planView",
+      "road.length",
+      "elevationProfile",
+      "lateralProfile",
+      "lanes",
+      "junctions",
+      "LaneLinks",
+      "signals",
+      "objects"
+    ],
+    "verified_by": "tests/unit/test_stage6_containment.py",
+    "observed_test_result": "0 protected semantic changes across regression fixtures"
+  },
+  "blocked_connector_candidates": {
+    "code": "BLOCKED_CONNECTOR_RECONSTRUCTION",
+    "behavior": "preserve parent connector; report junction_id, incoming_road, connecting_road, outgoing_road",
+    "verified_by": "tests/unit/test_junction_connector_rebuild.py"
+  },
+  "tests": {
+    "command": "python -m pytest tests/unit/test_stage6_unsafe_flag_policy.py tests/unit/test_stage6_containment.py tests/unit/test_junction_connector_rebuild.py ultimate_pipeline/tests/test_contracts.py tests/unit/test_geometric_continuity_migration.py -q --tb=short",
+    "result": "123 passed, 32 warnings",
+    "warnings": "Existing missing COORDINATES_JSON and HPC_DIR setting-path warnings only"
+  },
+  "remaining_mutators": [
+    "Non-governed EXPERIMENTAL_UNSAFE can still invoke PlanViewSmoother mutators when individual flags are enabled.",
+    "Non-governed Stage 6 can still run MeshContinuityRepairer mutation modes.",
+    "ParamPoly3 connector rebuild can still write a verified arc when tangent-compatible construction succeeds."
+  ]
+}
