@@ -1,0 +1,25 @@
+{
+  "batches": [
+    {
+      "batch": "source_hardening",
+      "commit": "6d11a973",
+      "contents": "restore missing geometry/domain/contract/topology/CARLA contract surface; fail-close connector straight-chord fallback; bootstrap cross_compare; portable ParamPoly3 parent-source strictness",
+      "status": "COMMITTED"
+    },
+    {
+      "batch": "map_mutation",
+      "commit": null,
+      "reason": "artifact transaction package incomplete; no accepted map was modified",
+      "status": "NOT_RUN"
+    },
+    {
+      "batch": "runtime_carla",
+      "commit": null,
+      "reason": "CARLA/Unreal server not launched during this verification",
+      "status": "BLOCKED_RUNTIME"
+    }
+  ],
+  "generated_at_utc": "2026-07-29T22:08:06.986665+00:00",
+  "source_commit": "6d11a973202ed9039e21b4d93e914bce0632ec18",
+  "uncommitted_incomplete_artifact_package": "ultimate_pipeline/artifacts imports missing promotion.py and recovery.py; left unstaged"
+}
