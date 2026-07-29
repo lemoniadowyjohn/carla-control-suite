@@ -38,7 +38,9 @@
       "clean_checkout_repro_proof": "detached worktree at 0c1a4293, PYTHONPATH=clean-worktree -> tests/opendrive_geometry: 2202 passed, 78 skipped, 0 failed",
       "blocker1_package_untracked": "CLEARED at 0c1a4293",
       "blocker2_stage6_uncommitted": "CLEARED at 0c1a4293",
-      "blocker3_unpublished": "resolves on push (see published field)",
+      "blocker3_unpublished": "CLEARED — pushed faa20bb5..4112bfa4 via schannel; live git ls-remote tip=4112bfa4=local HEAD; ahead/behind 0/0; opendrive_geometry=10 files at remote tip",
+      "reports_commit": "4112bfa458aef49c363113ed269b99bffca81967",
+      "published": true,
       "verdict_note": "reproducibility precondition satisfied; overall verdict remains FAIL_REPORTS_NOT_REPRODUCIBLE PENDING full re-gate (non-CARLA regression, python -O, cross_compare, Stage6 semantic-hash) at pinned+pushed SHA; no PASS claimed this session"
     }
   },

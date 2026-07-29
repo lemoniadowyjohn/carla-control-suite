@@ -37,7 +37,9 @@ The previously-untracked reviewed implementation was committed and published:
 - `git ls-files opendrive_geometry/` now returns **10** files; `tests/opendrive_geometry/` **11** (both were **0** before).
 - **Clean-checkout reproducibility proof:** a detached `git worktree` at `0c1a4293` (committed-tree files only) ran the geometry suite under `PYTHONPATH=<clean-worktree>` → **2202 passed, 78 skipped, 0 failed**. The committed code is self-contained; a fresh clone of this SHA reproduces the result.
 
-**Status change:** blockers #1 (package untracked) and #2 (Stage-6 uncommitted) are **CLEARED** at `0c1a4293`. Blocker #3 (unpublished) resolves on the push recorded in the "Publication" note below. The overall verdict remains **`FAIL_REPORTS_NOT_REPRODUCIBLE` pending the full re-gate** (full non-CARLA regression, `python -O`, `cross_compare_implementations.py`, and Stage-6 semantic-hash before/after) to be run at the pinned+pushed SHA — those were **not** re-run this session and no PASS is claimed until they are.
+**Publication:** the branch was pushed to `origin` (`faa20bb5..4112bfa4`, via the `schannel` HTTPS backend — Windows cert store, verification intact). Live `git ls-remote origin` returns tip `4112bfa4` = local HEAD (ahead/behind 0/0); `git ls-tree origin/…` confirms `opendrive_geometry/` = **10 files at the remote tip**. The earlier SSL block on remote verification is resolved.
+
+**Status change:** blockers #1 (package untracked), #2 (Stage-6 uncommitted), and #3 (unpublished/diverged/remote-unverifiable) are all **CLEARED** — implementation at `0c1a4293`, reports at `4112bfa4`, published and live-verified. Blocker #4 (concurrent mutation) is mitigated: this branch is now pinned at a pushed SHA, though 11 worktrees still share the object store. The overall verdict remains **`FAIL_REPORTS_NOT_REPRODUCIBLE` pending the full re-gate** (full non-CARLA regression, `python -O`, `cross_compare_implementations.py`, and Stage-6 semantic-hash before/after) to be run at this pinned+pushed SHA — those were **not** re-run this session and no PASS is claimed until they are.
 
 ## Repository identity
 
