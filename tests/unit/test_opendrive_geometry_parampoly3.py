@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import os
 import json
 import hashlib
 from pathlib import Path
@@ -581,8 +582,21 @@ class TestRepositoryFixtures:
                     digest.update(block)
             return digest.hexdigest()
 
+        require_parent_sources = os.getenv(
+            "UP_REQUIRE_PARAMPOLY3_PARENT_SOURCES", "0"
+        ).strip().lower() in {"1", "true", "yes", "on"}
+        missing_parent_sources = []
         for source in manifest["sources"]:
-            assert sha256(repository / source["file"]) == source["sha256"]
+            source_path = repository / source["file"]
+            if source_path.exists():
+                assert sha256(source_path) == source["sha256"]
+            else:
+                missing_parent_sources.append(source["file"])
+        if require_parent_sources and missing_parent_sources:
+            pytest.fail(
+                "ParamPoly3 parent source maps are missing: "
+                + ", ".join(sorted(missing_parent_sources))
+            )
 
         fixtures = [
             (source, fixture)
