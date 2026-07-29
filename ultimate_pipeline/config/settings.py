@@ -68,6 +68,20 @@ def _env_bool(env_key: str, default: bool) -> bool:
     return v.lower() in ("1", "true", "yes", "on")
 
 
+def _env_bool_strict(env_key: str, default: bool) -> bool:
+    v = os.getenv(env_key, "").strip()
+    if not v:
+        return bool(default)
+    lowered = v.lower()
+    if lowered in ("1", "true", "yes", "on"):
+        return True
+    if lowered in ("0", "false", "no", "off"):
+        return False
+    raise RuntimeError(
+        f"{env_key} must be one of 1,true,yes,on,0,false,no,off; got {v!r}"
+    )
+
+
 def _pick_existing(*candidates: str) -> str:
     """Pick the first candidate that exists on disk; otherwise return the first."""
     for c in candidates:
@@ -252,7 +266,141 @@ class Settings:
         "DEM_SUSPICIOUS_RATIO_FAIL_THRESHOLD",
         "STRICT_QUALITY_GATES",
         "THESIS_STRICT",
+        "RELEASE_PROFILE",
+        "ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+        "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE",
+        "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+        "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+        "ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE",
+        "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK",
     }
+
+    RELEASE_PROFILES = {
+        "DEVELOPMENT": {
+            "description": "Exploratory development - permissive, allows heuristic repairs",
+            "ENABLE_ROUNDABOUT_RECONSTRUCTION": False,
+            "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR": False,
+            "STRICT_QUALITY_GATES": False,
+            "STRICT_TILE_SEMANTICS": False,
+            "ENABLE_TRAFFIC_LIGHTS": True,
+            "ENABLE_SIDEWALKS": True,
+            "ENABLE_BUILDINGS": True,
+            "ENABLE_REALISM": True,
+            "ALLOW_FALLBACK_MAP": True,
+            "ALLOW_TILE_QA_SKIP": True,
+        },
+        "EXPERIMENTAL_UNSAFE": {
+            "description": "Explicit local diagnostics profile that may enable unsafe mutators by individual flag",
+            "ENABLE_ROUNDABOUT_RECONSTRUCTION": False,
+            "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR": False,
+            "STRICT_QUALITY_GATES": False,
+            "STRICT_TILE_SEMANTICS": False,
+            "ENABLE_TRAFFIC_LIGHTS": True,
+            "ENABLE_SIDEWALKS": True,
+            "ENABLE_BUILDINGS": True,
+            "ENABLE_REALISM": True,
+            "ALLOW_FALLBACK_MAP": True,
+            "ALLOW_TILE_QA_SKIP": True,
+        },
+        "STRUCTURAL_RELEASE": {
+            "description": "Structural XODR readiness - immutable stages, fail-closed gates",
+            "ENABLE_ROUNDABOUT_RECONSTRUCTION": False,
+            "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR": False,
+            "STRICT_QUALITY_GATES": True,
+            "STRICT_TILE_SEMANTICS": True,
+            "ENABLE_TRAFFIC_LIGHTS": False,
+            "ENABLE_SIDEWALKS": False,
+            "ENABLE_BUILDINGS": False,
+            "ENABLE_REALISM": False,
+            "ALLOW_FALLBACK_MAP": False,
+            "ALLOW_TILE_QA_SKIP": False,
+        },
+        "CARLA_RELEASE": {
+            "description": "CARLA drivable standalone - exact map load, distributed spawn/route/tick diagnostics",
+            "ENABLE_ROUNDABOUT_RECONSTRUCTION": False,
+            "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR": False,
+            "STRICT_QUALITY_GATES": True,
+            "STRICT_TILE_SEMANTICS": True,
+            "ENABLE_TRAFFIC_LIGHTS": False,
+            "ENABLE_SIDEWALKS": True,
+            "ENABLE_BUILDINGS": True,
+            "ENABLE_REALISM": True,
+            "ALLOW_FALLBACK_MAP": False,
+            "ALLOW_TILE_QA_SKIP": False,
+        },
+        "VISUAL_RELEASE": {
+            "description": "Visual map cooking - aligned cooked package, semantics, materials, collision, LOD, signals",
+            "ENABLE_ROUNDABOUT_RECONSTRUCTION": False,
+            "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR": False,
+            "STRICT_QUALITY_GATES": True,
+            "STRICT_TILE_SEMANTICS": True,
+            "ENABLE_TRAFFIC_LIGHTS": True,
+            "ENABLE_SIDEWALKS": True,
+            "ENABLE_BUILDINGS": True,
+            "ENABLE_REALISM": True,
+            "ALLOW_FALLBACK_MAP": False,
+            "ALLOW_TILE_QA_SKIP": False,
+        },
+        "PERCEPTION_RELEASE": {
+            "description": "Perception sensor readiness - canonical calibrated rig, stable multimodal capture",
+            "ENABLE_ROUNDABOUT_RECONSTRUCTION": False,
+            "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR": False,
+            "STRICT_QUALITY_GATES": True,
+            "STRICT_TILE_SEMANTICS": True,
+            "ENABLE_TRAFFIC_LIGHTS": True,
+            "ENABLE_SIDEWALKS": True,
+            "ENABLE_BUILDINGS": True,
+            "ENABLE_REALISM": True,
+            "ALLOW_FALLBACK_MAP": False,
+            "ALLOW_TILE_QA_SKIP": False,
+        },
+    }
+
+    RELEASE_PROFILE: str = "DEVELOPMENT"
+
+    def _apply_release_profile(self) -> None:
+        """Apply release profile settings immutably - fail-closed for release profiles."""
+        profile_name = self.RELEASE_PROFILE
+        if profile_name not in self.RELEASE_PROFILES:
+            raise RuntimeError(
+                f"Unknown RELEASE_PROFILE: {profile_name}. "
+                f"Valid: {list(self.RELEASE_PROFILES.keys())}"
+            )
+        profile = self.RELEASE_PROFILES[profile_name]
+        unsafe_allowed = profile_name == "EXPERIMENTAL_UNSAFE" and not bool(self.THESIS_STRICT)
+        is_release = profile_name not in ("DEVELOPMENT", "EXPERIMENTAL_UNSAFE")
+        unsafe_keys = (
+            "ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+            "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE",
+            "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+            "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+            "ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE",
+            "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK",
+        )
+        if not unsafe_allowed:
+            for _unsafe_key in unsafe_keys:
+                if getattr(self, _unsafe_key, False):
+                    raise RuntimeError(
+                        f"RELEASE_PROFILE={profile_name} forbids {_unsafe_key}=True. "
+                        "Unsafe geometry mutations require RELEASE_PROFILE=EXPERIMENTAL_UNSAFE."
+                    )
+            if getattr(self, "ENABLE_GEOMETRY_START_RECOMPUTE", False):
+                raise RuntimeError(
+                    f"RELEASE_PROFILE={profile_name} forbids ENABLE_GEOMETRY_START_RECOMPUTE=True. "
+                    "Use ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE only under RELEASE_PROFILE=EXPERIMENTAL_UNSAFE."
+                )
+
+        for key, value in profile.items():
+            if key == "description":
+                continue
+            setattr(self, key, value)
+
+        if is_release:
+            self.THESIS_STRICT = True
+            self.STRICT_QUALITY_GATES = True
+            self.STRICT_TILE_SEMANTICS = True
+            self.ALLOW_FALLBACK_MAP = False
+            self.ALLOW_TILE_QA_SKIP = False
 
     def to_dict(self) -> dict:
         data = {
@@ -261,6 +409,7 @@ class Settings:
             "_exported_at_utc": datetime.now(timezone.utc)
             .isoformat()
             .replace("+00:00", "Z"),
+            "RELEASE_PROFILE": self.RELEASE_PROFILE,
             # --- Core paths ---
             "INPUT_XODR": self.INPUT_XODR,
             "OSM_FILE": self.OSM_FILE,
@@ -290,6 +439,12 @@ class Settings:
             # --- Geometry tuning ---
             "CURVATURE_MAX_ALLOWED": self.CURVATURE_MAX_ALLOWED,
             "MIN_GEOM_MERGE_LENGTH": self.MIN_GEOM_MERGE_LENGTH,
+            "ENABLE_UNSAFE_SHORT_SEGMENT_MERGE": self.ENABLE_UNSAFE_SHORT_SEGMENT_MERGE,
+            "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE": self.ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE,
+            "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING": self.ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING,
+            "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP": self.ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP,
+            "ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE": self.ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE,
+            "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK": self.ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK,
             "CONTINUITY_MODE": self.CONTINUITY_MODE,
             # --- Domain-gap / metric performance ---
             "GEOMETRY_GAP_MAX_SAMPLES": getattr(self, "GEOMETRY_GAP_MAX_SAMPLES", None),
@@ -426,6 +581,7 @@ class Settings:
     # Map load policy + fallback (for perception capture)
     # -----------------------------------------------------------------
     CARLA_ENABLE_MAP_FALLBACK: bool = False
+    ALLOW_FALLBACK_MAP: bool = True
     # Try these in order if OpenDRIVE generation fails
     CARLA_FALLBACK_MAPS = ("Town10HD_Opt", "Town05", "Town03", "Town01")
     # If True, skip OpenDRIVE entirely and use the built-in map below
@@ -433,6 +589,11 @@ class Settings:
     CARLA_BUILTIN_MAP: str = "Town10HD_Opt"
     # Optional cooked map preload at CARLA server startup.
     CARLA_DEFAULT_MAP: str = os.getenv("UP_CARLA_DEFAULT_MAP", "").strip()
+
+    # -----------------------------------------------------------------
+    # Tile QA isolation control
+    # -----------------------------------------------------------------
+    ALLOW_TILE_QA_SKIP: bool = True
 
     # -----------------------------------------------------------------
     # CARLA startup / recovery tuning
@@ -593,6 +754,13 @@ class Settings:
     MIN_GEOM_MERGE_LENGTH: float = 2.0
     MAX_GEOM_MERGE_LENGTH: float = 300.0
     GEOMETRY_FROZEN = True
+    # --- Unsafe geometry mutation containment flags (all disabled by default) ---
+    ENABLE_UNSAFE_SHORT_SEGMENT_MERGE: bool = False
+    ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE: bool = False
+    ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING: bool = False
+    ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP: bool = False
+    ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE: bool = False
+    ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK: bool = False
     # --- Curvature clamp for planView smoother ---
     CURVATURE_MAX_ALLOWED: float = 1.0  # used before continuity repair
 
@@ -1436,6 +1604,34 @@ class Settings:
         self.PREANCHOR_INPUT_XODR = _env_bool(
             "UP_PREANCHOR_INPUT_XODR", self.PREANCHOR_INPUT_XODR
         )
+        self.RELEASE_PROFILE = os.getenv("UP_RELEASE_PROFILE", self.RELEASE_PROFILE).strip()
+        self.ENABLE_UNSAFE_SHORT_SEGMENT_MERGE = _env_bool_strict(
+            "UP_ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+            bool(self.ENABLE_UNSAFE_SHORT_SEGMENT_MERGE),
+        )
+        self.ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE = _env_bool_strict(
+            "UP_ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE",
+            bool(self.ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE),
+        )
+        self.ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING = _env_bool_strict(
+            "UP_ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+            bool(self.ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING),
+        )
+        self.ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP = _env_bool_strict(
+            "UP_ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+            bool(self.ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP),
+        )
+        self.ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE = _env_bool_strict(
+            "UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE",
+            _env_bool_strict(
+                "UP_ENABLE_GEOMETRY_START_RECOMPUTE",
+                bool(self.ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE),
+            ),
+        )
+        self.ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK = _env_bool_strict(
+            "UP_ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK",
+            bool(self.ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK),
+        )
         self.ENABLE_ROUNDABOUT_RECONSTRUCTION = _env_bool(
             "UP_ENABLE_ROUNDABOUT_RECONSTRUCTION",
             bool(self.ENABLE_ROUNDABOUT_RECONSTRUCTION),
@@ -1569,15 +1765,19 @@ class Settings:
         self.DEM_FILE = self.DEM_TIF
 
         # 3. Export map-fallback settings for core loader (used by load_opendrive_world)
+        # Use ALLOW_FALLBACK_MAP as the authoritative source (release profiles control this)
         try:
             os.environ["UP_CARLA_FALLBACK_ENABLED"] = (
-                "1" if self.CARLA_ENABLE_MAP_FALLBACK else "0"
+                "1" if self.ALLOW_FALLBACK_MAP else "0"
             )
             os.environ["UP_CARLA_FALLBACK_MAPS"] = ",".join(
                 list(self.CARLA_FALLBACK_MAPS)
             )
         except Exception:
             pass
+
+        # Keep CARLA_ENABLE_MAP_FALLBACK in sync for backward compatibility
+        self.CARLA_ENABLE_MAP_FALLBACK = self.ALLOW_FALLBACK_MAP
 
         # 3b. CARLA streaming port defaults to RPC+1 unless explicitly configured.
         # This matters because the client library will connect to RPC+1 for streaming.
@@ -1675,6 +1875,9 @@ class Settings:
             env_var="UP_PIPELINE_OUT_DIR",
             expect="dir",
         )
+
+        # Apply release profile (must be last to enforce immutability)
+        self._apply_release_profile()
 
     def _auto_find_manual_tiles_dir(self) -> str:
         """Best-effort discovery of tiles for the manual reference map.
