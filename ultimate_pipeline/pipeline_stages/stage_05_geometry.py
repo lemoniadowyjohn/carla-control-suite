@@ -64,6 +64,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
             from ultimate_pipeline.topology.junction_connector_rebuild import (
                 rebuild_displaced_junction_connectors_in_file,
             )
+            from ultimate_pipeline.contracts.release_profile import (
+                straight_chord_connector_fallback_enabled,
+            )
 
             connector_rebuild_report_path = os.path.join(
                 self.out_dir, "junction_connector_rebuild_report.json"
@@ -84,6 +87,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
                 ),
                 max_abs_curvature=float(
                     os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_MAX_ABS_CURV", "1.0")
+                ),
+                allow_straight_chord_fallback=straight_chord_connector_fallback_enabled(
+                    self.settings
                 ),
             )
             self.vreport.add_dict(
