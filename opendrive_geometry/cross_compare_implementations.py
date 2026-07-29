@@ -11,7 +11,11 @@ from __future__ import annotations
 import math
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from opendrive_geometry.primitives import evaluate_line, evaluate_arc, evaluate_param_poly3, EPS
 
