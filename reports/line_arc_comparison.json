@@ -1,0 +1,64 @@
+{
+  "report": "line_arc_test_scaffold",
+  "classification": "C. MULTIPLE_CONFLICTING_STRUCTURES",
+  "decision_rule": "do not merge; create neutral test adapters",
+  "total_implementations": 13,
+  "non_buggy_implementations": ["canonical", "geometry_calculator", "local_frame", "geometry_seam_checker", "lane_seam_checker", "elevation_gap", "geo_alignment", "dem_coverage", "lane_overlay", "heatmap_generator", "junction_connector_rebuild"],
+  "buggy_implementations": ["map_plotter (PROB-243 sentinel)", "map_diff (PROB-245 broken formula)"],
+  "fixed_implementations": ["map_plotter (sentinel removed)", "map_diff (correct canonical formula)"],
+  "formula_families": ["canonical", "R-based", "local-frame"],
+  "eps_values": [1e-9, 1e-12, "implicit"],
+  "test_files": [
+    "tests/opendrive_geometry/__init__.py",
+    "tests/opendrive_geometry/fixtures.py",
+    "tests/opendrive_geometry/analytical.py",
+    "tests/opendrive_geometry/adapters.py",
+    "tests/opendrive_geometry/test_line.py",
+    "tests/opendrive_geometry/test_arc.py",
+    "tests/opendrive_geometry/test_transform_invariance.py",
+    "tests/opendrive_geometry/test_existing_implementations.py",
+    "tests/opendrive_geometry/test_near_zero_curvature.py",
+    "tests/opendrive_geometry/test_s_domain.py",
+    "tests/opendrive_geometry/test_sampling.py"
+  ],
+  "line_tests": 15,
+  "arc_tests": 18,
+  "transform_tests": 9,
+  "near_zero_curvature_tests": 495,
+  "s_domain_tests": 46,
+  "sampling_tests": 15,
+  "existing_implementation_group_tests": 1208,
+  "comparison_tests": "parametrized across 12 non-buggy adapters x fixtures x s-values",
+  "opendrive_unit_tests": 56,
+  "total_test_count": 1862,
+  "passed": 1796,
+  "failed": 0,
+  "skipped": 66,
+  "cross_comparison": {
+    "geometry_seam_checker": "ALL OK",
+    "geometry_calculator": "max_dh=5e-09 (EPS 1e-9 boundary)",
+    "local_frame": "max_dy=2.84e-14 (FP rounding)",
+    "lane_seam_checker": "max_dh=5e-09 (EPS 1e-9 boundary)",
+    "elevation_gap": "max_dh=5e-11 (<= vs < boundary)",
+    "geo_alignment": "max_dh=5e-11 (<= vs < boundary)",
+    "map_plotter": "max_dx=95.5 (sentinel bug, before fix)"
+  },
+  "production_bugs_fixed": [
+    {
+      "id": "PROB-243",
+      "file": "ultimate_pipeline/visualization/map_plotter.py",
+      "description": "Sentinel 1e9 radius for zero-curvature arcs causes wrong endpoint",
+      "fix": "Replaced 1e9 sentinel with inv_c and EPS branching"
+    },
+    {
+      "id": "PROB-245",
+      "file": "ultimate_pipeline/visualization/map_diff.py",
+      "description": "Broken formula theta * curvature * abs(R) causes heading reversal for negative curvature and straight-line position",
+      "fix": "Replaced with correct canonical arc formula (sin/cos diff)"
+    }
+  ],
+  "known_residual_discrepancies": [
+    "<= vs < EPS check at k=1e-12: elevation_gap/geo_alignment treat k==eps as line (dh=5e-11 at s=50)",
+    "EPS 1e-9 vs 1e-12: geometry_calculator/lane_seam_checker use coarser threshold (dh=5e-09 at k=1e-10)"
+  ]
+}

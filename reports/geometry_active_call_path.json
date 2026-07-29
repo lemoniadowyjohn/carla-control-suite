@@ -1,0 +1,179 @@
+{
+  "report": "geometry_active_call_path",
+  "classification": "C. MULTIPLE_CONFLICTING_STRUCTURES",
+  "entry_command": "python ultimate_pipeline/run_pipeline.py",
+  "entry_point": "ultimate_pipeline.run_pipeline -> ultimate_pipeline.main_pipeline.MainPipeline",
+  "repo_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+  "submission_tree_in_syspath": false,
+  "import_ambiguity": false,
+  "verification_date": "2026-07-29",
+  "modules": [
+    {
+      "module": "ultimate_pipeline.run_pipeline",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\run_pipeline.py",
+      "imported_by": ["cli entry"],
+      "active": true,
+      "sha256": "fec317692faceb44865c64b3082e77ba8df6c8b4cd8aa7142129d6bf99ede23f"
+    },
+    {
+      "module": "ultimate_pipeline.main_pipeline",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\main_pipeline.py",
+      "imported_by": ["ultimate_pipeline.run_pipeline"],
+      "active": true,
+      "sha256": "dae16b66fb6274e6fe0d9e23607aae25b7ce73e3d3f154e9c570391363d09bfb"
+    },
+    {
+      "module": "ultimate_pipeline.config.settings",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\config\\settings.py",
+      "imported_by": ["ultimate_pipeline.main_pipeline"],
+      "active": true,
+      "sha256": "03931681fc2c8c512558a50025c3172e0625d7fa4d71dfd6b90f371bad1e34e5"
+    },
+    {
+      "module": "ultimate_pipeline.pipeline_stages.stage_06_links",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\pipeline_stages\\stage_06_links.py",
+      "imported_by": ["ultimate_pipeline.main_pipeline"],
+      "active": true,
+      "sha256": "431aa087f4609ad1b0d9c0db2a719ee3064420b7b9745d3138b3ff6422bf2478"
+    },
+    {
+      "module": "ultimate_pipeline.pipeline_stages.stage_05_geometry",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\pipeline_stages\\stage_05_geometry.py",
+      "imported_by": ["ultimate_pipeline.main_pipeline"],
+      "active": true,
+      "sha256": "a43e0bb950e468a9d0e636c95e6610f8900cf11f8e4c357aff0937d306e7bbcc"
+    },
+    {
+      "module": "ultimate_pipeline.quality.check_geometric_continuity",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\quality\\check_geometric_continuity.py",
+      "imported_by": ["stage_06_links.py", "stage_09_tiling.py", "quality_gate_manager.py"],
+      "active": true,
+      "sha256": "d510499fc6ff582c341203a43308d4e0cd4b271d921e4e884647e80cdb46abc2"
+    },
+    {
+      "module": "ultimate_pipeline.quality.quality_gate_manager",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\quality\\quality_gate_manager.py",
+      "imported_by": ["ultimate_pipeline.main_pipeline"],
+      "active": true,
+      "sha256": "8ff6745fcfd3269b671f46d083923f427fbadb266945731123d65f2a18d3efa7"
+    },
+    {
+      "module": "ultimate_pipeline.domain_gap.elevation_gap",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\domain_gap\\elevation_gap.py",
+      "imported_by": ["ultimate_pipeline.pipeline_stages.stage_12_domain_gap"],
+      "active": true,
+      "sha256": "878999ef5d543657b4db14052c582e4b4b06b63c4277996454adf414ad50f536"
+    },
+    {
+      "module": "ultimate_pipeline.domain_gap.geo_alignment",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\domain_gap\\geo_alignment.py",
+      "imported_by": ["ultimate_pipeline.pipeline_stages.stage_12_domain_gap"],
+      "active": true,
+      "sha256": "3cbdd245d6d3602df5bcb647d6f44bffd79bfc510d132997b9759ca98a30c082"
+    },
+    {
+      "module": "ultimate_pipeline.quality.check_dem_full_coverage",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\quality\\check_dem_full_coverage.py",
+      "imported_by": ["stage_10_tile_qa.py"],
+      "active": true,
+      "sha256": "9d4ea536fa45dab24caea1ab989252c7a31007533265b7b7a2914c256100cc34"
+    },
+    {
+      "module": "ultimate_pipeline.tile_validation.geometry_seam_checker",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\tile_validation\\geometry_seam_checker.py",
+      "imported_by": ["tile_validation module"],
+      "active": true,
+      "sha256": "fefcd19ffb755af8bffa06354bbab380d8e4f72c84d988b3191d15aa961e4f6e"
+    },
+    {
+      "module": "ultimate_pipeline.geometry.lane_seam_checker",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\geometry\\lane_seam_checker.py",
+      "imported_by": ["lane validation"],
+      "active": true,
+      "sha256": "cc0f0a465329acc207a7862f39eb27f700b0c8e6151bce0ab9ae2d8b267e96ab"
+    },
+    {
+      "module": "ultimate_pipeline.visualization.lane_overlay",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\visualization\\lane_overlay.py",
+      "imported_by": ["visualization module"],
+      "active": true,
+      "sha256": "963abdb131cdecc8836f3eb5ff0ded8530ff5642f1336d98caee0264d6cd24b6"
+    },
+    {
+      "module": "ultimate_pipeline.visualization.heatmap_generator",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\visualization\\heatmap_generator.py",
+      "imported_by": ["stage_06_links.py"],
+      "active": true,
+      "sha256": "9025c2eb1f78f0086b059ca02b789c0ba2def14471f0650c44decff8e80f647c"
+    },
+    {
+      "module": "ultimate_pipeline.visualization.map_plotter",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\visualization\\map_plotter.py",
+      "imported_by": ["stage_06_links.py"],
+      "active": true,
+      "sha256": "dfecd9c844fab0e8a4fd838019086fdabf4550739de721eba013b5390e587f56"
+    },
+    {
+      "module": "ultimate_pipeline.visualization.map_diff",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\visualization\\map_diff.py",
+      "imported_by": ["map_diff module"],
+      "active": true,
+      "sha256": "15e53b8bc5f8ee72b03119fe7e0a6d97421c2931c5c51fa1a47bcb76bcf72a89"
+    },
+    {
+      "module": "ultimate_pipeline.geometry.geometry_math",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\geometry\\geometry_math.py",
+      "imported_by": ["elevation_gap.py", "geo_alignment.py"],
+      "active": true,
+      "sha256": "b6859204749d4f296a3b7ef95a4e30b3467a97c70d9113478e24344721b6dd4d"
+    },
+    {
+      "module": "ultimate_pipeline.topology.junction_connector_rebuild",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\topology\\junction_connector_rebuild.py",
+      "imported_by": ["stage_03_topology_repair.py"],
+      "active": true,
+      "sha256": "e4a7c9c4d3d4331fb692f2cc899e3db87bf62920834a425d64b5f2e781ae8e10"
+    },
+    {
+      "module": "ultimate_pipeline.geometry.planview_smoother",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\geometry\\planview_smoother.py",
+      "imported_by": ["stage_06_links.py"],
+      "active": true,
+      "sha256": "462687ddb1eb6be6ffead8d68f79b1448fc4c1805bfacfc1c612b12ce57f0b57"
+    },
+    {
+      "module": "opendrive_geometry.primitives",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\opendrive_geometry\\primitives.py",
+      "imported_by": ["tests (not production)"],
+      "active": true,
+      "sha256": "5cc2ef0ada005a8b5beba593a897c1fa63a4eb6cbac3176f3f07a5a05cd13d30"
+    },
+    {
+      "module": "opendrive_geometry.evaluator",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\opendrive_geometry\\evaluator.py",
+      "imported_by": ["none yet (stub/being implemented)"],
+      "active": true,
+      "sha256": "66a65a604324ce348dbf7e46f3868e2b66c8bdbf7c4147b2c674da3fbac66c87"
+    },
+    {
+      "module": "opendrive_geometry.model",
+      "resolved_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\opendrive_geometry\\model.py",
+      "imported_by": ["opendrive_geometry.primitives", "opendrive_geometry.evaluator"],
+      "active": true,
+      "sha256": "2172ec60f3780157148130a0c988b4cc58b48307d0710ffc289264688e1dfab7"
+    }
+  ],
+  "exact_stage6_implementation": "ultimate_pipeline.pipeline_stages.stage_06_links._step6_planview_continuity",
+  "exact_continuity_checker": "ultimate_pipeline.quality.check_geometric_continuity.check_geometric_continuity",
+  "exact_continuity_checker_repair": "ultimate_pipeline.quality.check_geometric_continuity.auto_repair_tiny_planview_seams_in_file",
+  "exact_tiling_checker": "ultimate_pipeline.tile_validation.geometry_seam_checker._geometry_endpoint",
+  "exact_domain_gap_consumers": [
+    "ultimate_pipeline.domain_gap.elevation_gap._sample_geometry_points",
+    "ultimate_pipeline.domain_gap.geo_alignment._sample_transformed_geometry_points"
+  ],
+  "subprocess_resolution": {
+    "opendrive_geometry": "resolves to repo-root package (not in submission/)",
+    "consistent": true
+  },
+  "resolution": "ALL_MODULES_VERIFIED — no import ambiguity"
+}

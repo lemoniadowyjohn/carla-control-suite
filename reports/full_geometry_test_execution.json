@@ -1,0 +1,72 @@
+{
+  "generated_by": "independent principal verification (master geometry program verification)",
+  "generated_at": "2026-07-29",
+  "python_version": "3.12.2",
+  "interpreter": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.venv/Scripts/python.exe",
+  "virtual_env": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.venv",
+  "repository_root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "branch": "deepseek-observability-integration-verification",
+  "working_tree_head_at_run": "4561f9536853d378746e975abcca8637d0ed8832",
+  "note": "Tests were executed against the WORKING TREE (untracked + uncommitted files), not against any committed SHA. See claim discrepancies.",
+  "suites_executed_this_session": [
+    {
+      "command": "python -m pytest tests/opendrive_geometry/ tests/unit/test_opendrive_geometry_parampoly3.py ultimate_pipeline/tests/unit/test_opendrive_geometry_line_arc.py -q",
+      "collected": 2439,
+      "passed": 2361,
+      "failed": 0,
+      "skipped": 78,
+      "errors": 0,
+      "duration_s": 19.91,
+      "result": "PASS"
+    },
+    {
+      "command": "python -m pytest tests/unit/test_stage6_containment.py tests/unit/test_stage6_unsafe_flag_policy.py tests/unit/test_junction_connector_rebuild.py tests/unit/test_geometric_continuity_migration.py ultimate_pipeline/tests/test_contracts.py -q",
+      "collected": 123,
+      "passed": 123,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "warnings": 32,
+      "warning_cause": "existing missing optional settings paths (COORDINATES_JSON, HPC_DIR)",
+      "duration_s": 17.70,
+      "result": "PASS"
+    }
+  ],
+  "independent_recomputations": [
+    {
+      "target": "opendrive_geometry.primitives.evaluate_arc",
+      "method": "compared against OpenDRIVE spec closed form x0+(sin(h)-sin(h0))/k, y0-(cos(h)-cos(h0))/k over k=+0.2,-0.05,+0.13",
+      "max_abs_error": 1.7763568394002505e-15,
+      "result": "CORRECT"
+    },
+    {
+      "target": "evaluate_arc near-zero-curvature convergence",
+      "method": "arc vs line endpoint displacement",
+      "observations": {
+        "k=1e-6": 5.0e-5,
+        "k=1e-9": 1.209e-7,
+        "k=1e-12": 4.813e-5,
+        "k=1e-13": 0.0
+      },
+      "interpretation": "Exact line reduction below EPS=1e-12; at the k=1e-12 boundary the arc closed form incurs bounded catastrophic-cancellation position wobble ~5e-5. Bounded and off-boundary from all production arcs (k~0.1). Quantified, non-blocking.",
+      "result": "BOUNDED_EPSILON_ARTIFACT"
+    },
+    {
+      "target": "opendrive_geometry.primitives.param_poly3_curvature_at",
+      "method": "arc-length-normalized finite difference of tangent heading kappa=(dphi/ds)/|r'(s)| for arcLength cubic",
+      "analytic": 0.0004997001,
+      "finite_difference": 0.0004997002,
+      "abs_error": 7.34e-12,
+      "note": "A naive dphi/ds check first appeared to differ by ~2x; that is the curve speed |r'|=2.0004 (arcLength pRange does not imply unit speed). After correct arc-length normalization the analytic curvature and independent finite difference agree.",
+      "result": "CORRECT"
+    }
+  ],
+  "suites_NOT_executed_this_session": [
+    "python -m compileall opendrive_geometry ultimate_pipeline tests -q",
+    "python -m pytest --collect-only -q (full)",
+    "python -m pytest -m \"not carla\" -q (full non-CARLA regression)",
+    "python -O -m pytest tests/opendrive_geometry -q (optimization mode)",
+    "python opendrive_geometry/cross_compare_implementations.py"
+  ],
+  "not_executed_rationale": "Overall verdict is FAIL_REPORTS_NOT_REPRODUCIBLE on lineage grounds (reviewed implementation is untracked/uncommitted/unpublished). Full regression + optimization-mode + cross-compare runs are REQUIRED before any PASS can be issued and must be re-run after the artifacts are committed and pinned; they were not run in this session and are not claimed as passing."
+}

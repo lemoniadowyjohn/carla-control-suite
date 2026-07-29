@@ -1,0 +1,56 @@
+{
+  "schema_version": 4,
+  "production_baseline": {
+    "commit": "711580a3045be04fab606a6cb7d0a5c38b828440",
+    "pose_source": "ultimate_pipeline/quality/check_geometric_continuity.py",
+    "curvature_source": "ultimate_pipeline/domain_gap/curvature_gap.py",
+    "adapter": "opendrive_geometry/parampoly3_legacy_baseline.py"
+  },
+  "comparison": {
+    "position_heading": "canonical vs frozen pre-migration continuity pose implementation",
+    "curvature": "abs(canonical signed curvature) vs frozen pre-migration curvature sampler"
+  },
+  "stations_per_record": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "sources": [
+    {
+      "file": "auto_master.xodr",
+      "sha256": "8439eea4ad63f0949d2fcd506266bc8b7c2b669546c55363760e0f3711916d80",
+      "records_discovered": 13742,
+      "normalized": 13742,
+      "arcLength": 0
+    },
+    {
+      "file": "manual_grid0828.xodr",
+      "sha256": "932d5ef7e7024c123ced88fc7ac81915dbd9b7e6b0e08fa1ae5402e9c360d140",
+      "records_discovered": 7432,
+      "normalized": 0,
+      "arcLength": 7432
+    }
+  ],
+  "records_discovered": 21174,
+  "normalized_records": 13742,
+  "arcLength_records": 7432,
+  "malformed_records": 0,
+  "nonfinite_outputs": 0,
+  "degenerate_records": 0,
+  "malformed_by_reason": {},
+  "position_difference": {
+    "max": 4.547473508864641e-13,
+    "p95": 0.0
+  },
+  "heading_difference": {
+    "max": 1.7763568394002505e-15,
+    "p95": 4.440892098500626e-16
+  },
+  "curvature_difference": {
+    "max": 2.842170943040401e-14,
+    "p95": 5.551115123125783e-17
+  },
+  "evaluations_compared": 105870
+}

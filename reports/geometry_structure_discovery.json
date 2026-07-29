@@ -1,0 +1,488 @@
+{
+  "classification": "C. MULTIPLE_CONFLICTING_STRUCTURES",
+  "canonical_candidate": {
+    "package": "opendrive_geometry",
+    "model": "opendrive_geometry/model.py",
+    "primitives": "opendrive_geometry/primitives.py",
+    "protocol": "opendrive_geometry/evaluator.py",
+    "tests": "ultimate_pipeline/tests/unit/test_opendrive_geometry_line_arc.py",
+    "active_production_path": false,
+    "convention": "OpenDRIVE standard (x, y, hdg from +x axis, CCW positive)",
+    "eps": 1e-12,
+    "primitives_supported": ["line", "arc"],
+    "primitives_missing": ["spiral", "poly3", "paramPoly3"],
+    "test_count": 56,
+    "test_count_passing": 56
+  },
+  "implementations": [
+    {
+      "id": 1,
+      "file": "opendrive_geometry/primitives.py",
+      "function": "evaluate_line/evaluate_arc",
+      "lines": "11-38",
+      "eps": 1e-12,
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": true,
+      "has_sample": true,
+      "has_curvature": true,
+      "has_bounds": true,
+      "has_projection": false,
+      "callers": ["test_opendrive_geometry_line_arc.py", "cross_compare_implementations.py"],
+      "production_path": false,
+      "tests": 56,
+      "status": "ACTIVE_CANONICAL"
+    },
+    {
+      "id": 2,
+      "file": "ultimate_pipeline/quality/check_geometric_continuity.py",
+      "function": "_pose_line/_pose_arc/_pose_spiral_numeric/_pose_poly3/_pose_param_poly3",
+      "lines": "98-217",
+      "eps": 1e-12,
+      "primitives": ["line", "arc", "spiral", "poly3", "paramPoly3"],
+      "formula_family": "local-frame (dx_local, dy_local)",
+      "has_endpoint": true,
+      "has_sample": false,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["stage_06_links.py", "stage_09_tiling.py", "quality_gate_manager.py", "junction_connector_rebuild.py", "road_link_endpoint_errors.py", "check_post_tiling_integrity.py"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 3,
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "function": "GeometryCalculator._integrate_line/_integrate_arc",
+      "lines": "101-116",
+      "eps": 1e-9,
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": true,
+      "has_sample": false,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["elevation_gap.py (paramPoly3 only)", "geo_alignment.py (paramPoly3 only)"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 4,
+      "file": "ultimate_pipeline/tile_validation/geometry_seam_checker.py",
+      "function": "_geometry_endpoint",
+      "lines": "28-55",
+      "eps": 1e-12,
+      "primitives": ["line", "arc"],
+      "formula_family": "R-based",
+      "has_endpoint": true,
+      "has_sample": false,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["GeometrySeamChecker"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 5,
+      "file": "ultimate_pipeline/geometry/lane_seam_checker.py",
+      "function": "_sample_geometry",
+      "lines": "25-61",
+      "eps": 1e-9,
+      "primitives": ["line", "arc"],
+      "formula_family": "R-based",
+      "has_endpoint": false,
+      "has_sample": true,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["LaneSeamChecker"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 6,
+      "file": "ultimate_pipeline/domain_gap/elevation_gap.py",
+      "function": "_sample_line/_sample_arc",
+      "lines": "133-161",
+      "eps": 1e-12,
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": false,
+      "has_sample": true,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["ElevationGap.compute"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 7,
+      "file": "ultimate_pipeline/domain_gap/geo_alignment.py",
+      "function": "_sample_transformed_geometry_points",
+      "lines": "37-66",
+      "eps": 1e-12,
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": false,
+      "has_sample": true,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["GeoAligner"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 8,
+      "file": "ultimate_pipeline/visualization/map_plotter.py",
+      "function": "_sample_geometry",
+      "lines": "32-85",
+      "eps": "sentinel 1e9 (no line fallback)",
+      "primitives": ["line", "arc"],
+      "formula_family": "R-based (BROKEN for k=0)",
+      "has_endpoint": false,
+      "has_sample": true,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["MapPlotter"],
+      "production_path": false,
+      "tests": 0,
+      "bug": true,
+      "bug_description": "Sentinel radius returns start pose for zero-curvature arcs (dx up to 95.5m)",
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 9,
+      "file": "ultimate_pipeline/quality/check_dem_full_coverage.py",
+      "function": "_sample_line/_sample_arc",
+      "lines": "13-34",
+      "eps": 1e-9,
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": false,
+      "has_sample": true,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["CheckDemFullCoverage"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 10,
+      "file": "ultimate_pipeline/topology/junction_connector_rebuild.py",
+      "function": "_arc_endpoint",
+      "lines": "225-239",
+      "eps": 1e-12,
+      "primitives": ["line", "arc"],
+      "formula_family": "local-frame",
+      "has_endpoint": true,
+      "has_sample": false,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["rebuild_displaced_junction_connectors_in_file"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 11,
+      "file": "ultimate_pipeline/visualization/lane_overlay.py",
+      "function": "_endpoint",
+      "lines": "58-83",
+      "eps": "implicit (1e-9)",
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": true,
+      "has_sample": false,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["LaneOverlay"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 12,
+      "file": "ultimate_pipeline/visualization/heatmap_generator.py",
+      "function": "_endpoint",
+      "lines": "55-84",
+      "eps": "implicit (1e-9)",
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical",
+      "has_endpoint": true,
+      "has_sample": false,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["HeatmapGenerator"],
+      "production_path": true,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 13,
+      "file": "ultimate_pipeline/visualization/map_diff.py",
+      "function": "_sample_geometry",
+      "lines": "47-66",
+      "eps": 1e-9,
+      "primitives": ["line", "arc"],
+      "formula_family": "BROKEN",
+      "has_endpoint": false,
+      "has_sample": true,
+      "has_curvature": false,
+      "has_bounds": false,
+      "has_projection": false,
+      "callers": ["MapDiff"],
+      "production_path": false,
+      "tests": 0,
+      "bug": true,
+      "bug_description": "Arc heading calculation uses k^2 instead of k: hdg += ds * curvature * abs(curvature)",
+      "status": "ACTIVE_DUPLICATE"
+    },
+    {
+      "id": 14,
+      "file": "ultimate_pipeline/opendrive_geometry/model.py",
+      "function": "ArcGeometry.point_at_s",
+      "lines": "447-467",
+      "eps": 1e-12,
+      "primitives": ["line", "arc"],
+      "formula_family": "canonical (local frame, h field)",
+      "has_endpoint": true,
+      "has_sample": true,
+      "has_curvature": true,
+      "has_bounds": true,
+      "has_projection": true,
+      "callers": [],
+      "production_path": false,
+      "tests": 0,
+      "status": "INACTIVE"
+    },
+    {
+      "id": 15,
+      "file": "submission/infrastructure/ultimate_pipeline/*",
+      "function": "(all of the above duplicated)",
+      "lines": "—",
+      "eps": "—",
+      "primitives": "—",
+      "formula_family": "—",
+      "has_endpoint": "—",
+      "has_sample": "—",
+      "has_curvature": "—",
+      "has_bounds": "—",
+      "has_projection": "—",
+      "callers": [],
+      "production_path": false,
+      "tests": 0,
+      "status": "ACTIVE_DUPLICATE"
+    }
+  ],
+  "tests": [
+    {
+      "file": "ultimate_pipeline/tests/unit/test_opendrive_geometry_line_arc.py",
+      "count": 56,
+      "scope": "line+arc evaluate, sample, bounds",
+      "carla_free": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": 0
+    },
+    {
+      "file": "ultimate_pipeline/tests/unit/test_curvature_gap_parampoly3.py",
+      "count": 3,
+      "scope": "paramPoly3 curvature extraction",
+      "carla_free": true,
+      "assertion_style": "==, > 0.0",
+      "collect_errors": 0
+    },
+    {
+      "file": "ultimate_pipeline/tests/unit/test_elevation_gap.py",
+      "count": 14,
+      "scope": "elevation gap metric (uses geometry sampling)",
+      "carla_free": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": 0
+    },
+    {
+      "file": "ultimate_pipeline/tests/unit/test_connectivity_gap.py",
+      "count": 14,
+      "scope": "connectivity metric",
+      "carla_free": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": 0
+    },
+    {
+      "file": "ultimate_pipeline/tests/unit/test_geo_alignment_rigid_scale_lock.py",
+      "count": 2,
+      "scope": "geo alignment",
+      "carla_free": true,
+      "assertion_style": "==, abs()",
+      "collect_errors": 0
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap/tests/test_geo_alignment.py",
+      "count": 10,
+      "scope": "geo alignment",
+      "carla_free": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": 0
+    },
+    {
+      "file": "external/blender-driving-scenario-creator/tests/test_geometry_line.py",
+      "count": 4,
+      "scope": "line (Blender)",
+      "carla_free": true,
+      "requires_blender": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": "not in pytest.ini"
+    },
+    {
+      "file": "external/blender-driving-scenario-creator/tests/test_geometry_arc.py",
+      "count": 5,
+      "scope": "arc (Blender)",
+      "carla_free": true,
+      "requires_blender": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": "not in pytest.ini"
+    },
+    {
+      "file": "external/blender-driving-scenario-creator/tests/test_geometry_clothoid.py",
+      "count": 1,
+      "scope": "clothoid (Blender)",
+      "carla_free": true,
+      "requires_blender": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": "not in pytest.ini"
+    },
+    {
+      "file": "external/blender-driving-scenario-creator/tests/test_geometry_parampoly3.py",
+      "count": 1,
+      "scope": "paramPoly3 (Blender)",
+      "carla_free": true,
+      "requires_blender": true,
+      "assertion_style": "pytest.approx",
+      "collect_errors": "not in pytest.ini"
+    }
+  ],
+  "fixtures": {
+    "xodr_files": [],
+    "shared_geometry_xodr_fixtures": [],
+    "conftest_geometry_fixtures": [],
+    "all_tests_generate_xodr_programmatically": true
+  },
+  "duplicates": [
+    {
+      "root_cause": "Inline arc formula (canonical div-by-k)",
+      "files": [
+        "opendrive_geometry/primitives.py",
+        "geometry/geometry_math.py",
+        "domain_gap/elevation_gap.py",
+        "domain_gap/geo_alignment.py",
+        "quality/check_dem_full_coverage.py",
+        "visualization/lane_overlay.py",
+        "visualization/heatmap_generator.py",
+        "submission/infrastructure/... (all of above)"
+      ],
+      "count": 14,
+      "impact": "Fix must be applied 14 times"
+    },
+    {
+      "root_cause": "Inline arc formula (local-frame dx/dy)",
+      "files": [
+        "quality/check_geometric_continuity.py",
+        "topology/junction_connector_rebuild.py",
+        "quality/autofix_postprune_elevation.py",
+        "submission/... (all of above)"
+      ],
+      "count": 6,
+      "impact": "Different from canonical = confusion, ~1e-14 floating point noise"
+    },
+    {
+      "root_cause": "Inline arc formula (R-based)",
+      "files": [
+        "tile_validation/geometry_seam_checker.py",
+        "geometry/lane_seam_checker.py",
+        "tile_validation/lane_seam_checker.py",
+        "visualization/map_plotter.py",
+        "submission/... (all of above)"
+      ],
+      "count": 8,
+      "impact": "Equivalent but different variable names, map_plotter sentinel is buggy"
+    },
+    {
+      "root_cause": "submission tree mirror",
+      "files": "entire submission/infrastructure/ultimate_pipeline/",
+      "count": "all files × 2",
+      "impact": "Every fix must be applied to both trees"
+    }
+  ],
+  "missing_capabilities": [
+    "spiral evaluator (Fresnel integrals)",
+    "poly3 evaluator (road-frame cubic)",
+    "paramPoly3 evaluator (uv-frame cubic, needed for 10290 instances)",
+    "point projection (nearest s on geometry)",
+    "curvature derivative (dk/ds)",
+    "sampling with guaranteed endpoint for all primitive types",
+    "analytical curvature at arbitrary s for line/arc",
+    "geometry bounds for spiral/poly3/paramPoly3",
+    "cross-module conformance test",
+    "xodr fixture files for geometry testing"
+  ],
+  "blocked_items": [
+    {
+      "id": "PROB-243",
+      "file": "visualization/map_plotter.py",
+      "lines": "52-55",
+      "description": "Sentinel radius 1e9 for zero-curvature arcs returns start pose"
+    },
+    {
+      "id": "PROB-245",
+      "file": "visualization/map_diff.py",
+      "lines": "58-65",
+      "description": "Broken arc formula: heading uses curvature^2 instead of curvature"
+    },
+    {
+      "id": "PROB-244",
+      "file": "all geometry files",
+      "lines": "multiple",
+      "description": "22 duplicate implementations, no single authority wired to production"
+    },
+    {
+      "id": "PROB-028",
+      "file": "all geometry files",
+      "lines": "multiple",
+      "description": "paramPoly3 evaluator not recognized by geometry type detection; 10290 instances affected"
+    }
+  ],
+  "recommended_next_action": "Wire opendrive_geometry/primitives.py into the active production call path by delegating all 22 inline line/arc implementations to the canonical evaluator. Fix map_plotter sentinel bug and map_diff broken formula. Standardize all EPS thresholds to 1e-12.",
+  "verification_commands": {
+    "pytest_collect": {
+      "command": "pytest ultimate_pipeline/tests/unit/test_opendrive_geometry_line_arc.py ultimate_pipeline/tests/unit/test_curvature_gap_parampoly3.py --collect-only -q",
+      "exit_code": 0,
+      "collected": 59,
+      "errors": 0
+    },
+    "compileall": {
+      "command": "python -m compileall opendrive_geometry ultimate_pipeline/geometry/geometry_math.py ultimate_pipeline/quality/check_geometric_continuity.py ultimate_pipeline/tile_validation/geometry_seam_checker.py ultimate_pipeline/geometry/lane_seam_checker.py ultimate_pipeline/visualization/map_plotter.py -q",
+      "exit_code": 0,
+      "errors": "none"
+    },
+    "cross_compare": {
+      "command": "python opendrive_geometry/cross_compare_implementations.py",
+      "exit_code": 1,
+      "findings": "5 discrepancies found: 4 are EPS threshold differences at boundary, 1 is map_plotter sentinel bug"
+    }
+  }
+}
