@@ -14,6 +14,27 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
+class LockPolicyStrictBehavior(BaseModel):
+    active_lease: str = "block"
+    stale_lease: str = "warn_allow_override"
+    malformed_lock: str = "block"
+
+
+class LockPolicyContract(BaseModel):
+    required: bool = True
+    enforce_exclusive: bool = True
+    lease_timeout_s: int = 14400
+    lock_file: str = ".agent_locks/writer.lock"
+    required_fields: list[str] = Field(default_factory=lambda: [
+        "owner", "branch", "head_sha", "hostname", "pid",
+        "created_at", "lease_minutes", "expires_at",
+    ])
+    optional_fields: list[str] = Field(default_factory=lambda: [
+        "heartbeat_at", "model", "task_id",
+    ])
+    strict_behavior: LockPolicyStrictBehavior = Field(default_factory=LockPolicyStrictBehavior)
+
+
 class BboxContract(BaseModel):
     """Fixed OSM bounding box contract - DO NOT CHANGE."""
 
@@ -149,6 +170,9 @@ class AgentSyncContract(BaseModel):
     tile_pairing: TilePairingContract = Field(default_factory=TilePairingContract)
     artifacts: ArtifactContract = Field(default_factory=ArtifactContract)
     environment: EnvironmentContract = Field(default_factory=EnvironmentContract)
+
+    # Lock policy
+    lock_policy: LockPolicyContract = Field(default_factory=LockPolicyContract)
 
     # Flags for strict validation
     strict_mode: bool = False

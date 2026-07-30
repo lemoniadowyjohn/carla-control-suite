@@ -1,0 +1,17 @@
+{
+  "report": "C44",
+  "title": "Fresh Claude Session Test",
+  "date": "2026-07-30",
+  "branch": "fix/claude-hooks-lock-governance-20260730",
+  "tested": false,
+  "procedure": [
+    "1. Restart Claude application",
+    "2. Trigger PreToolUse:Read, PostToolUse:Read",
+    "3. Trigger PreToolUse:Grep, PostToolUse:Grep",
+    "4. Trigger PreToolUse:PowerShell, PostToolUse:PowerShell",
+    "5. Trigger Stop",
+    "6. Inspect hook output for python3: command not found"
+  ],
+  "expected": "zero python3: command not found messages",
+  "current_status": "FIXED_PENDING_FRESH_SESSION"
+}

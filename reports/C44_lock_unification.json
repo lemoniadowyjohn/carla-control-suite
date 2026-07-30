@@ -1,0 +1,34 @@
+{
+  "report": "C44",
+  "title": "Writer Lock Unification",
+  "date": "2026-07-30",
+  "branch": "fix/claude-hooks-lock-governance-20260730",
+  "changes": {
+    "agent_sync_py_updated": true,
+    "writer_lock_py_created": true,
+    "previous_default": ".agent_lock.json",
+    "new_default": ".agent_locks/writer.lock",
+    "backward_compatibility": "legacy .agent_lock.json treated as conflict; warn, do not acquire",
+    "no_migration_needed": "agent_lock.json never existed on disk"
+  },
+  "writer_lock_module": {
+    "path": "ultimate_pipeline/contracts/writer_lock.py",
+    "schema": "agent-writer-lock/v1",
+    "features": [
+      "atomic acquisition",
+      "owner-specific release",
+      "heartbeat",
+      "lease validation",
+      "path-overlap detection",
+      "read-only mode check",
+      "stale-lock recovery",
+      "malformed-lock rejection"
+    ]
+  },
+  "tests": {
+    "path": "tests/unit/test_writer_lock.py",
+    "count": 10,
+    "all_pass": true
+  },
+  "canonical_lock_path": ".agent_locks/writer.lock"
+}
