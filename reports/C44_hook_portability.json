@@ -1,0 +1,25 @@
+{
+  "report": "C44",
+  "title": "Claude Hook Portability",
+  "date": "2026-07-30",
+  "branch": "fix/claude-hooks-lock-governance-20260730",
+  "diagnosis": {
+    "previous_status": "FIXED_VERIFIED_FOR_LOCAL_PYTHON",
+    "current_status": "FIXED_PENDING_FRESH_SESSION",
+    "root_cause": "command -v python3 prints to stderr on Git Bash when python3 is not installed; stderr leaks to Claude CLI output",
+    "fix": "Appended 2>/dev/null to all command -v invocations"
+  },
+  "files_patched": [
+    "C:\\Users\\admin\\.claude\\plugins\\marketplaces\\claude-plugins-official\\plugins\\hookify\\hooks\\hooks.json",
+    "C:\\Users\\admin\\.claude\\plugins\\marketplaces\\claude-plugins-official\\plugins\\security-guidance\\hooks\\hooks.json",
+    "C:\\Users\\admin\\.claude\\plugins\\cache\\claude-plugins-official\\hookify\\27d2b86d72da\\hooks\\hooks.json",
+    "C:\\Users\\admin\\.claude\\plugins\\cache\\claude-plugins-official\\security-guidance\\27d2b86d72da\\hooks\\hooks.json"
+  ],
+  "portable_launcher": {
+    "path": ".claude/run_python_hook.sh",
+    "resolution_order": ["CLAUDE_HOOK_PYTHON", "repository venv", "py -3", "python", "python3"]
+  },
+  "claude_restart_required": true,
+  "fresh_session_tested": false,
+  "hook_events_pass": null
+}
