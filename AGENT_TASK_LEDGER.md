@@ -43,3 +43,8 @@ See `.agent_locks/writer.lock` (runtime; not tracked). Policy: `.agent_locks/REA
 | P5 | Governance & artifact-safety integration | **BLOCKED** | prereq P4 approval; prompt `reports/codex_prompts/P5_codex55_safety.md` |
 | S01 | Artifact transactions | **READY** | 8/9 modules present in `ultimate_pipeline/artifacts/`; add `hashing.py`+`locking.py` (P5) |
 | MAP-REPAIR | Structural map repair | **BLOCKED** | not authorized; later P6 after independent artifact-safety review |
+| VXR-COORD | Visual/XODR campaign coordination (`ingolstadt_cooked_perception_v1`) | **RESOLVED** | R0 done @ `02bdc100`; base clean, prior writer closed; verdict `READY_TO_RUN_LOW_COST_DISCOVERY`; evidence `reports/visual_structural_reconciliation/R00,00,07,08,09` |
+| DSV01 | Visual (OSM2World/Blender/FBX) donor discovery | **READY** | DeepSeek V4 Light, read-only, parallel; prompt `reports/delegation_prompts/visual_xodr_campaign/DSV01_visual_donor_discovery.md` |
+| DSV02 | OSM→XODR + structural-validation donor discovery | **READY** | DeepSeek V4 Light, read-only, parallel; prompt `…/DSV02_xodr_donor_discovery.md` |
+| C44V01 | Read-only coordinate-contract + FBX/XODR alignment verifier | **BLOCKED** | prereq DSV01∧DSV02; Codex 4.4 Light; prompt `…/C44V01_coordinate_contract_verifier.md` |
+| C55V01 | New governed structural + matched visual candidate | **BLOCKED** | prereq donor decision + `CRS_CONTRACT_READY` + OSM + FBX decision + B2/B3/B4; Codex 5.5; prompt `…/C55V01_new_campaign_integration.md` |

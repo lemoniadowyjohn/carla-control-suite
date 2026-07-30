@@ -1,0 +1,61 @@
+{
+  "report": "09_final_coordinator_verdict",
+  "verdict": "READY_TO_RUN_LOW_COST_DISCOVERY",
+  "date": "2026-07-31",
+  "coordinator_model": "claude-opus-4-8",
+  "repository_family": "github.com/lemoniadowyjohn/carla-control-suite.git",
+  "worktree_count": 10,
+  "clean_base_worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "clean_base_branch": "integration/governed-map-quality-20260729",
+  "base_local_sha": "02bdc10042a61774e3efb02f4f512a76cb1a0b26",
+  "base_remote_sha": "02bdc10042a61774e3efb02f4f512a76cb1a0b26",
+  "local_remote_match": true,
+  "active_writer": "COORD-VXR-DISCOVERY",
+  "prior_writer_closed": true,
+  "lock_status": "canonical_no_competing_lock",
+  "run_11_status": "HISTORICAL_EVIDENCE_ONLY",
+  "new_campaign_required": true,
+  "campaign_id": "ingolstadt_cooked_perception_v1",
+  "authoritative_osm": "PENDING",
+  "osm_sha": "PENDING",
+  "osm_bounds_expected": "Ingolstadt lat 48.74936-48.77444 lon 11.42227-11.47882",
+  "osm_valid": "PENDING",
+  "donors": {
+    "osm_to_xodr": "PENDING_DSV02",
+    "structural_validation": "PENDING_DSV02",
+    "artifact_safety": "PENDING_DSV02",
+    "osm2world": "PENDING_DSV01",
+    "blender": "PENDING_DSV01",
+    "fbx_artifact": "PENDING_DSV01",
+    "unreal_import": "PENDING_DSV01"
+  },
+  "coordinate_contract": {
+    "projected_crs": "PENDING_C44V01",
+    "xodr_georeference": "PENDING_C44V01",
+    "xodr_header_offset": "PENDING_C44V01",
+    "vertical_datum": "PENDING_C44V01",
+    "crs_round_trip": "PENDING_C44V01",
+    "horizontal_alignment": "PENDING_C44V01",
+    "vertical_alignment": "PENDING_C44V01",
+    "reflection": "PENDING_C44V01",
+    "unexplained_scale": "PENDING_C44V01"
+  },
+  "fbx_decision": "PENDING_C44V01_then_CLAUDE",
+  "source_identities_match": "PENDING_C44V01",
+  "campaign_order": [
+    "valid_osm", "deterministic_osm_to_xodr", "topology_authority", "final_horizontal_geometry",
+    "horizontal_freeze", "elevation_against_frozen", "lanes_lanelinks", "signals_semantics",
+    "immutable_structural_validation", "visual_from_same_source", "coordinate_alignment",
+    "minimal_unreal_fixture", "full_cook", "carla_drivability", "perception"
+  ],
+  "horizontal_freeze_required": true,
+  "visible_road_authority": "PENDING_single_source_couples_to_AG07_B3",
+  "delegated": {
+    "deepseek": ["DSV01_visual_donor_discovery", "DSV02_xodr_donor_discovery"],
+    "codex_44": ["C44V01_coordinate_contract_verifier"],
+    "codex_55_blocked": ["C55V01_new_campaign_integration"]
+  },
+  "next_model": "DeepSeek V4 Light",
+  "next_prompt": "reports/delegation_prompts/visual_xodr_campaign/DSV01_visual_donor_discovery.md (parallel with DSV02)",
+  "carries_prior_gate_blockers": ["B2_authoritative_xodr", "B3_visible_road", "B4_cook_toolchain"]
+}
