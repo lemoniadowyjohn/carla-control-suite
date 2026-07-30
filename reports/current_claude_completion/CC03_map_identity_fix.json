@@ -1,0 +1,25 @@
+{
+  "report": "CC03_map_identity_fix",
+  "requirement": "Repair red map-identity test; CarlaSession lacked validate_map_identity",
+  "state": "implemented_and_committed",
+  "commit": "7053bab56de4ba1680c4fb73bf85a5dc9b911694",
+  "implementation": {
+    "session_method": "ultimate_pipeline/carla_tools/session.py::CarlaSession.validate_map_identity",
+    "delegates_to": "ultimate_pipeline/carla_tools/map_identity_guard.py::validate_world_map"
+  },
+  "proven_behaviors": {
+    "correct_identity_passes": true,
+    "wrong_map_name_fails": true,
+    "town_fallback_fails": true,
+    "fail_open_impossible_under_strict": true,
+    "strict_env_gate": "UP_THESIS_STRICT=1"
+  },
+  "focused_test": {"file": "tests/unit/test_map_identity_guard.py", "passed": 5, "failed": 0},
+  "scope_limitation": {
+    "wrong_xodr_sha_fails": "not_covered_narrow_guard",
+    "wrong_cooked_package_sha_fails": "not_covered_narrow_guard",
+    "rationale": "P0 authorized a NARROW map-name identity fix; SHA-binding belongs to broader runtime-proof gate",
+    "status": "deferred_followup"
+  },
+  "verdict": "VERIFIED_FIXED_for_map_name_identity; SHA_gates_NOT_APPLICABLE_to_narrow_fix"
+}

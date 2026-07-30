@@ -1,0 +1,20 @@
+{
+  "report": "CC01_topology",
+  "session": "Claude Opus 4.8 (P0)",
+  "timestamp": "2026-07-30",
+  "repo_toplevel": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "branch": "integration/governed-map-quality-20260729",
+  "head_sha": "7053bab56de4ba1680c4fb73bf85a5dc9b911694",
+  "tracked_tree_clean": true,
+  "writer_lock_present": false,
+  "fast_forward": {
+    "governance_commit": "ee8871c88e7fee3add62e249719ca05e35a06957",
+    "governance_commit_subject": "fix(governance): make active Claude hooks interpreter-portable",
+    "is_ancestor_of_head": true,
+    "merge_commit_created": false,
+    "status": "already_integrated_linear"
+  },
+  "safety_commit_parent": "ee8871c88e7fee3add62e249719ca05e35a06957",
+  "concurrent_writer_on_branch": false,
+  "conclusion": "topology_safe_fast_forward_complete_no_concurrent_writer"
+}
