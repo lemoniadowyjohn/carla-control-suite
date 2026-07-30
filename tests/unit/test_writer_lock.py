@@ -22,11 +22,12 @@ def test_acquire_and_release(tmp_path: Path) -> None:
     assert lock.branch == "test-branch"
     assert lock.head_sha == "abcdef1234567890"
     assert lock.pid > 0
+    assert lock.lock_id
 
     lock_path = tmp_path / ".agent_locks" / "writer.lock"
     assert lock_path.exists()
 
-    lock.release()
+    lock.release(owner="test-agent", lock_id=lock.lock_id)
     assert lock.status == "released"
 
 
@@ -76,6 +77,32 @@ def test_malformed_lock_rejected(tmp_path: Path) -> None:
     assert loaded.is_malformed()
 
 
+def test_legacy_lock_conflict_rejected(tmp_path: Path) -> None:
+    legacy_path = tmp_path / ".agent_lock.json"
+    legacy_path.write_text(
+        json.dumps(
+            {
+                "schema": "agent-writer-lock/v1",
+                "status": "active",
+                "owner": "legacy-agent",
+                "branch": "legacy-branch",
+                "head_sha": "legacy-sha",
+                "created_at": "2026-07-30T00:00:00+00:00",
+                "expires_at": "2099-01-01T00:00:00+00:00",
+                "pid": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(RuntimeError, match="Legacy writer lock held"):
+        WriterLock.acquire(
+            root=tmp_path,
+            branch="branch",
+            head_sha="sha",
+            owner="agent",
+        )
+
+
 def test_owner_check(tmp_path: Path) -> None:
     lock = WriterLock.acquire(
         root=tmp_path,
@@ -88,6 +115,18 @@ def test_owner_check(tmp_path: Path) -> None:
     assert not lock.owned_by("other-agent")
 
 
+def test_wrong_owner_release_rejected(tmp_path: Path) -> None:
+    lock = WriterLock.acquire(
+        root=tmp_path,
+        branch="test",
+        head_sha="abc",
+        owner="my-agent",
+    )
+    with pytest.raises(RuntimeError, match="release rejected for owner"):
+        lock.release(owner="other-agent")
+    lock.release(owner="my-agent", lock_id=lock.lock_id)
+
+
 def test_is_live(tmp_path: Path) -> None:
     lock = WriterLock.acquire(
         root=tmp_path,
@@ -98,6 +137,40 @@ def test_is_live(tmp_path: Path) -> None:
     )
     assert lock.is_live()
     assert not lock.is_expired()
+
+
+def test_read_only_coexistence(tmp_path: Path) -> None:
+    read_only_lock = WriterLock.acquire(
+        root=tmp_path,
+        branch="test",
+        head_sha="abc",
+        owner="reader",
+        read_only=True,
+    )
+    assert read_only_lock.status == "read_only"
+    assert not read_only_lock.is_live()
+
+    writer_lock = WriterLock.acquire(
+        root=tmp_path,
+        branch="test",
+        head_sha="def",
+        owner="writer",
+    )
+    assert writer_lock.status == "active"
+
+
+def test_path_overlap_detection(tmp_path: Path) -> None:
+    lock = WriterLock.acquire(
+        root=tmp_path,
+        branch="test",
+        head_sha="abc",
+        owner="agent",
+        allowed_paths=["reports/**", "*.md"],
+        forbidden_paths=["cities/**"],
+    )
+    assert not lock.overlaps_path(tmp_path / "reports" / "base_closure" / "BC01.md")
+    assert lock.overlaps_path(tmp_path / "cities" / "blocked.txt")
+    assert lock.overlaps_path(tmp_path / "nested" / "notes.txt")
 
 
 def test_heartbeat(tmp_path: Path) -> None:
