@@ -1,0 +1,105 @@
+{
+  "test_metadata": {
+    "test_type": "fresh_process_hook_verification",
+    "test_id": "FCH01",
+    "test_date": "2026-07-30",
+    "model": "claude-haiku-4-5-20251001",
+    "procedure": "P2_FRESH_CLAUDE_CODE_HOOK_TEST"
+  },
+  "session_baseline": {
+    "start_timestamp": "2026-07-30T23:35:26.010Z",
+    "worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+    "branch": "integration/governed-map-quality-20260729",
+    "head_sha": "59c36ce6bb074620f375634f328584e293d80d9f",
+    "process_state": "fresh_initial_session"
+  },
+  "hook_events": [
+    {
+      "event_id": "1",
+      "hook_phase": "PreToolUse",
+      "tool": "Read",
+      "timestamp": "2026-07-30T23:35:26Z",
+      "status": "PASS",
+      "file_target": ".gitignore",
+      "lines_read": 213,
+      "error_message": null,
+      "python3_reference": false
+    },
+    {
+      "event_id": "2",
+      "hook_phase": "PostToolUse",
+      "tool": "Read",
+      "timestamp": "2026-07-30T23:35:27Z",
+      "status": "PASS",
+      "file_target": ".gitignore",
+      "output_lines": 213,
+      "error_message": null,
+      "python3_reference": false
+    },
+    {
+      "event_id": "3",
+      "hook_phase": "PreToolUse",
+      "tool": "Grep",
+      "timestamp": "2026-07-30T23:35:28Z",
+      "status": "PASS",
+      "pattern": "import",
+      "scope": "project_root",
+      "error_message": null,
+      "python3_reference": false
+    },
+    {
+      "event_id": "4",
+      "hook_phase": "PostToolUse",
+      "tool": "Grep",
+      "timestamp": "2026-07-30T23:35:29Z",
+      "status": "PASS",
+      "matches_returned": 3,
+      "head_limit_applied": true,
+      "error_message": null,
+      "python3_reference": false
+    },
+    {
+      "event_id": "5",
+      "hook_phase": "PreToolUse",
+      "tool": "PowerShell",
+      "timestamp": "2026-07-30T23:35:46Z",
+      "status": "PASS",
+      "command": "Get-Date -Format 'HH:mm:ss.fff'; 'PowerShell trigger test'",
+      "error_message": null,
+      "python3_reference": false
+    },
+    {
+      "event_id": "6",
+      "hook_phase": "PostToolUse",
+      "tool": "PowerShell",
+      "timestamp": "2026-07-30T23:35:47Z",
+      "status": "PASS",
+      "output_timestamp": "23:35:47.967",
+      "error_message": null,
+      "python3_reference": false
+    }
+  ],
+  "error_summary": {
+    "total_events": 6,
+    "passed": 6,
+    "failed": 0,
+    "python3_errors": 0,
+    "hook_disabled": false,
+    "hook_replaced": false,
+    "configuration_fallback": false
+  },
+  "verdict": {
+    "primary_criterion": "python3_command_not_found",
+    "primary_result": "NOT_DETECTED",
+    "overall_status": "FRESH_SESSION_HOOKS_PASS",
+    "safe_to_proceed": true,
+    "compliance": "COMPLIANT"
+  },
+  "observations": [
+    "All hook events executed without deprecated python3 reference",
+    "No hook suppression or bypass detected",
+    "All three tool categories triggered correctly",
+    "Session state remained clean",
+    "No configuration fallback indicators"
+  ]
+}
