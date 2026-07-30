@@ -2,7 +2,9 @@ from __future__ import annotations
 import json
 import os
 import platform
+import uuid
 import time
+from fnmatch import fnmatch
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Sequence
@@ -33,6 +35,8 @@ class WriterLock:
     model: str = ""
     task_id: str = ""
     pid: int = 0
+    lock_id: str = ""
+    read_only: bool = False
     allowed_paths: list[str] = field(default_factory=list)
     forbidden_paths: list[str] = field(default_factory=list)
     release_protocol: str = ""
@@ -49,12 +53,15 @@ class WriterLock:
         model: str = "",
         task_id: str = "",
         lease_minutes: int = DEFAULT_LEASE_MINUTES,
+        lock_id: str = "",
+        read_only: bool = False,
         allowed_paths: Sequence[str] | None = None,
         forbidden_paths: Sequence[str] | None = None,
     ) -> WriterLock:
         lock_dir = root / LOCK_DIR
         lock_dir.mkdir(parents=True, exist_ok=True)
         lock_path = lock_dir / LOCK_FILE
+        legacy_lock_path = root / ".agent_lock.json"
         if lock_path.exists():
             existing = cls.load(lock_path)
             if existing.is_live():
@@ -64,8 +71,18 @@ class WriterLock:
                 )
             if existing.is_malformed():
                 lock_path.unlink(missing_ok=True)
+        if legacy_lock_path.exists():
+            legacy = cls.load(legacy_lock_path)
+            if legacy.is_live():
+                raise RuntimeError(
+                    f"Legacy writer lock held by {legacy.owner} "
+                    f"(PID {legacy.pid}, expires {legacy.expires_at})"
+                )
+            if legacy.is_malformed():
+                raise RuntimeError("Legacy writer lock is malformed")
         now_utc = _now_iso()
         expires = _future_iso(lease_minutes)
+        resolved_lock_id = lock_id or (task_id or uuid.uuid4().hex)
         lock = cls(
             owner=owner,
             owner_account=_owner_account(),
@@ -80,6 +97,8 @@ class WriterLock:
             model=model,
             task_id=task_id,
             pid=os.getpid(),
+            lock_id=resolved_lock_id,
+            read_only=read_only,
             allowed_paths=list(allowed_paths) if allowed_paths else [],
             forbidden_paths=list(forbidden_paths) if forbidden_paths else [],
             release_protocol=(
@@ -88,6 +107,7 @@ class WriterLock:
             ),
             heartbeat_at=now_utc,
         )
+        lock.status = "read_only" if read_only else "active"
         lock.save(lock_path)
         return lock
 
@@ -128,13 +148,24 @@ class WriterLock:
             "model": self.model,
             "task_id": self.task_id,
             "pid": self.pid,
+            "lock_id": self.lock_id,
+            "read_only": self.read_only,
             "allowed_paths": list(self.allowed_paths),
             "forbidden_paths": list(self.forbidden_paths),
             "release_protocol": self.release_protocol,
             "heartbeat_at": self.heartbeat_at,
         }
 
-    def release(self) -> None:
+    def release(self, owner: str | None = None, lock_id: str | None = None) -> None:
+        if owner is not None and not self.owned_by(owner):
+            raise RuntimeError(
+                f"Writer lock release rejected for owner {owner}; owned by {self.owner}"
+            )
+        expected_lock_id = self.lock_id or self.task_id
+        if lock_id is not None and lock_id not in {expected_lock_id, self.task_id}:
+            raise RuntimeError(
+                f"Writer lock release rejected for lock_id {lock_id}; expected {expected_lock_id}"
+            )
         self.status = "released"
         path = self._default_path()
         if path.exists():
@@ -164,10 +195,31 @@ class WriterLock:
         return self.owner == owner
 
     def overlaps_path(self, path: Path) -> bool:
-        resolved = path.resolve()
-        for allowed in self.allowed_paths:
-            if resolved.match(allowed):
-                return True
+        candidate = path.resolve()
+        repo_root = Path(self.repository).resolve() if self.repository else Path.cwd().resolve()
+        try:
+            relative = candidate.relative_to(repo_root)
+        except ValueError:
+            relative = candidate
+        relative_text = relative.as_posix()
+
+        def _matches(patterns: list[str]) -> bool:
+            candidate = relative_text.strip("/")
+            for pattern in patterns:
+                normalized = pattern.replace("\\", "/").strip("/")
+                if normalized.endswith("/**"):
+                    prefix = normalized[:-3]
+                    if candidate == prefix or candidate.startswith(prefix + "/"):
+                        return True
+                    continue
+                if fnmatch(candidate, normalized):
+                    return True
+            return False
+
+        if self.forbidden_paths and _matches(self.forbidden_paths):
+            return True
+        if self.allowed_paths and not _matches(self.allowed_paths):
+            return True
         return False
 
     def _default_path(self) -> Path:
