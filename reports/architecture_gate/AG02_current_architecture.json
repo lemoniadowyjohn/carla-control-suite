@@ -1,0 +1,38 @@
+{
+  "report": "AG02_current_architecture",
+  "classification": "A_RUNTIME_XODR_ONLY",
+  "evidence": {
+    "unreal_tree_present": false,
+    "tracked_fbx_count": 0,
+    "tracked_xodr_count": 1,
+    "tracked_xodr_is_input_map": false,
+    "tracked_xodr_note": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr is a results artifact",
+    "session_load_mechanism": "carla.Client.load_world(map_name) + reload_world; guarded by map_identity_guard",
+    "osm_tiling_perception_tracked_py": 0,
+    "osm_tiling_perception_note": "only orphaned __pycache__ (.pyc) present",
+    "osm2world_references": ["ultimate_pipeline/config/settings.py", "ultimate_pipeline/main_pipeline.py", "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py"],
+    "blender_references": 0,
+    "roadrunner_maps_integrated": false,
+    "cooking_toolchain_present": false
+  },
+  "rejected_classifications": {
+    "B_RUNTIME_XODR_WITH_PROXY_ENRICHMENT": "OSM2World referenced but producer source absent; enrichment non-reproducible/latent",
+    "C_SUPPLEMENTARY_OSM2WORLD_BLENDER_NOT_INTEGRATED": "no Blender at all; no OSM2World mesh output present",
+    "D_PARTIAL_UNREAL_CUSTOM_MAP": "no Unreal tree / FBX / Content",
+    "E_COOKED_LOADABLE_CUSTOM_MAP": "no cooked package",
+    "F_ROADRUNNER_AUTHORITATIVE_MAP": "Grid0821/0828 are reference maps in sibling worktrees, not authoritative here",
+    "G_MULTIPLE_CONFLICTING_PATHS": "only one live path; no competing UE4/UE5/tiling build architectures"
+  },
+  "component_status": {
+    "runtime_session_owner": "OPERATIONAL_UNVERIFIED",
+    "map_identity_guard": "OPERATIONAL_UNVERIFIED",
+    "sensor_registry": "PARTIAL",
+    "opendrive_geometry_authority": "PARTIAL_VERIFIED_MATH",
+    "artifact_transactions": "PARTIAL_missing_hashing_and_locking",
+    "osm_to_xodr_producer": "ABSENT_source",
+    "tiling_producer": "ABSENT_source",
+    "perception_producer": "ABSENT_source",
+    "fbx_blender_unreal_cook_package": "ABSENT",
+    "coordinate_transform_module": "ABSENT"
+  }
+}
