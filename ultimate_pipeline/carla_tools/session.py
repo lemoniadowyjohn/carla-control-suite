@@ -56,6 +56,22 @@ class CarlaSession:
         settings.synchronous_mode = False
         self._world.apply_settings(settings)
 
+    def validate_map_identity(
+        self,
+        expected_map_name: str | None = None,
+        expected_substring: str | None = None,
+        strict: bool = False,
+    ) -> dict[str, Any]:
+        if self._world is None:
+            raise RuntimeError("No world loaded.")
+        from .map_identity_guard import validate_world_map
+        return validate_world_map(
+            self._world,
+            expected_map_name=expected_map_name,
+            expected_substring=expected_substring,
+            strict=strict,
+        )
+
     @property
     def client(self) -> Any:
         return self._client
