@@ -4,7 +4,7 @@ Authoritative index of the P0–P5 multi-model execution chain for the OSM→Ope
 program. Self-contained prompts live in `reports/codex_prompts/`. Source spec:
 `F:\pulpit\osm_carla_prompt_bundle\osm_carla_prompt_bundle\osm_carla_bundle_current_state_adjustments_v4.md`.
 
-Branch: `integration/governed-map-quality-20260729` (current closure code commit `867811c4`).
+Branch: `integration/governed-map-quality-20260729` (published closure tip `1884d9d0`; code commit `867811c4`).
 
 | Prompt | Model | Prompt file | Status | Verdict / gate |
 |---|---|---|---|---|

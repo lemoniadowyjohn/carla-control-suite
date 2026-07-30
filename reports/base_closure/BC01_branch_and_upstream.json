@@ -3,7 +3,7 @@
   "repository": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
   "branch": "integration/governed-map-quality-20260729",
   "base_sha_before_p3": "b6c0934041bfe3bebd06879bd7d019640eac0841",
-  "p3_closure_commit": "867811c4",
+  "p3_closure_commit": "1884d9d0",
   "upstream_set": true,
   "dirty_tracked_tree": false,
   "executor": "Codex 4.4 Light"

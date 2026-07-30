@@ -4,7 +4,7 @@
   "executor": "Codex 4.4 Light",
   "branch": "integration/governed-map-quality-20260729",
   "base_sha_before_p3": "b6c09340",
-  "closure_commit": "867811c4",
+  "closure_commit": "1884d9d0",
   "canonical_lock": ".agent_locks/writer.lock",
   "lock_decision": "A_gitignore_live_lock",
   "lock_tests_passed": 20,
