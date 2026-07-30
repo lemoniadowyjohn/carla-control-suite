@@ -1,0 +1,8 @@
+{
+  "report": "BC05_tests",
+  "env": {"UP_DISABLE_CARLA": "1"},
+  "interpreter": ".venv/Scripts/python.exe",
+  "focused": {"passed": 16, "failed": 0, "files": ["tests/unit/test_agent_sync_contract.py", "tests/unit/test_writer_lock.py"]},
+  "full_configured_offline": {"passed": 329, "failed": 0, "warnings": 48, "baseline": 323, "new": 6},
+  "conclusion": "green"
+}

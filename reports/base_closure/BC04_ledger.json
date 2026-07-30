@@ -1,0 +1,19 @@
+{
+  "report": "BC04_ledger",
+  "ledger": "AGENT_TASK_LEDGER.md",
+  "rows": {
+    "GOV-AUTH-001": "RESOLVED",
+    "GOV-LOCK-001": "RESOLVED",
+    "GOV-SYNC-001": "RESOLVED",
+    "GOV-HOOK-001": "FIXED_PENDING_FRESH_SESSION",
+    "P0": "RESOLVED",
+    "P1": "RESOLVED",
+    "P2": "OPEN",
+    "P3": "READY",
+    "P4": "OPEN",
+    "P5": "BLOCKED",
+    "S01": "READY",
+    "MAP-REPAIR": "BLOCKED"
+  },
+  "hook_not_resolved_without_p2": true
+}
