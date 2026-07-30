@@ -7,8 +7,8 @@ CODEX 4.4 BASE-CLOSURE VERDICT: BASE_READY_FOR_ARCHITECTURE_GATE
 WORKTREE:            carla_-main
 BRANCH:              integration/governed-map-quality-20260729
 BASE SHA:            b6c09340 (before P3)
-FINAL LOCAL SHA:     867811c4 (closure code commit; docs evidence commit follows)
-FINAL REMOTE SHA:    867811c4 (after push of the closure commit)
+FINAL LOCAL SHA:     1884d9d0 (published docs evidence tip)
+FINAL REMOTE SHA:    1884d9d0 (after push)
 LOCAL/REMOTE MATCH:  YES
 DIRTY STATE:         clean tracked tree (untracked non-P3 dirs + gitignored live lock only)
 
@@ -19,7 +19,7 @@ AGENT_SYNC:          lock_file == .agent_locks/writer.lock; load OK; validate va
 GOVERNANCE LEDGER:   AGENT_TASK_LEDGER.md wired
 HOOK STATUS:         GOV-HOOK-001 = RESOLVED  (P2 fresh-session hook test passed)
 FULL OFFLINE TESTS:  333 passed, 0 failed
-COMMITS:             867811c4 (feat(governance): finalize canonical writer-lock contract) + this docs(base_closure) evidence commit
+COMMITS:             867811c4 (feat(governance): finalize canonical writer-lock contract) + 1884d9d0 (docs(governance): bind ledger and prompt status to current base)
 NEXT SAFE MODEL:     P4 architecture gate in a fresh Opus session
 ```
 
