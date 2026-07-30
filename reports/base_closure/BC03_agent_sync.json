@@ -6,6 +6,8 @@
   "errors": [],
   "warnings": [],
   "lock_file": ".agent_locks/writer.lock",
+  "round_trip": true,
+  "malformed_contract_rejected": true,
   "sensor_rig": {"use_K_undistortion": true, "ignore_K": true, "ignore_D": true, "ctv_inverted": false, "vtl_inverted": true},
   "determinism": {"min_runs": 5, "preferred_runs": 10},
   "verified_by_test": "tests/unit/test_agent_sync_contract.py::test_repo_agent_sync_yaml_exists_loads_and_is_canonical"

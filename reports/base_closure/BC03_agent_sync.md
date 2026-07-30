@@ -10,5 +10,7 @@
 - **Fixed bbox** (DO NOT CHANGE): lat [48.74935649548228, 48.77444431571603], lon [11.422268084715878, 11.47882091528412].
 - **Determinism:** min_runs=5, preferred=10; signature fields incl. `xodr_sha256`, `tile_count`, `road_count`, `junction_count`.
 - **Entrypoint discipline** is enforced by the loader/CLI (`python -m ultimate_pipeline.cli`; forbidden `config.settings`).
+- **Additional coverage:** malformed-contract rejection is exercised by `test_validate_rejects_inverted_ctv`;
+  lock round-trip, canonical-path, and malformed-lock replacement are covered in `tests/unit/test_writer_lock.py`.
 
 Verification test: `tests/unit/test_agent_sync_contract.py::test_repo_agent_sync_yaml_exists_loads_and_is_canonical` PASSED.

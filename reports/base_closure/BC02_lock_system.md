@@ -11,5 +11,7 @@
   purpose "P5 blocked-status artifacts only") — Codex correctly acquired, detected the unmet P5 gate, and released.
 - **P3 lock:** acquired live for this closure (owner "Claude Opus 4.8 (P3 base closure)", task `P3-BASE-CLOSURE`);
   released at end of BC06.
-- **Lock tests:** `tests/unit/test_writer_lock.py` (10) + new `test_agent_sync_contract.py` lock cases
-  (acquire-blocks-second-live, canonical-path, malformed-replaced) — all pass.
+- **Lock tests:** `tests/unit/test_writer_lock.py` (14) + `tests/unit/test_agent_sync_contract.py` lock cases (6)
+  — 20/20 focused pass.
+- **Behavior covered:** atomic acquisition, owner/lock-id release checks, heartbeat, lease expiry, path-overlap
+  conflict detection, read-only coexistence, malformed-lock rejection, legacy-conflict rejection.

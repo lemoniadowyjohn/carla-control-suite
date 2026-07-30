@@ -8,6 +8,9 @@
   "policy_doc": ".agent_locks/README.md",
   "legacy_alias": ".agent_lock.json",
   "prior_codex_lock_status": "released",
-  "p3_lock": {"owner": "Claude Opus 4.8 (P3 base closure)", "task_id": "P3-BASE-CLOSURE", "released_at_bc06": true},
-  "lock_tests_passed": true
+  "p3_lock": {"owner": "Codex 4.4 Light", "task_id": "P3-BASE-CLOSURE", "released_at_bc06": true},
+  "lock_tests_passed": true,
+  "legacy_conflict_rejected": true,
+  "read_only_coexistence": true,
+  "path_overlap_detection": true
 }
