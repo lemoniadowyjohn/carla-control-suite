@@ -1,0 +1,89 @@
+version: 1
+description: Ultimate Pipeline Agent Sync Contract
+bbox:
+  lat_min: 48.74935649548228
+  lat_max: 48.77444431571603
+  lon_min: 11.422268084715878
+  lon_max: 11.47882091528412
+sensor_rig:
+  use_K_undistortion: true
+  ignore_K: true
+  ignore_D: true
+  ctv_inverted: false
+  vtl_inverted: true
+  rig_verification_required: true
+  screenshot_required: true
+determinism:
+  min_runs: 5
+  preferred_runs: 10
+  required_signature_fields:
+  - xodr_sha256
+  - tile_metadata_sha256
+  - tile_count
+  - road_count
+  - junction_count
+  verdicts:
+  - DETERMINISTIC
+  - NATURAL_RANDOMIZATION
+  - NONDETERMINISTIC
+tile_pairing:
+  algorithm: hungarian
+  fallback: greedy
+  require_one_to_one: true
+artifacts:
+  domain_gap:
+  - full_report.json
+  - summary.csv
+  - reproducibility_hash.json
+  - tile_pairing_report.json
+  - domain_gap_status.json
+  determinism:
+  - determinism_report.json
+  - determinism_hashes.csv
+  - determinism_thesis_table.csv
+  - determinism_delta.csv
+  perception:
+  - perception_status.json
+  - rig_verification.json
+  - ego_spawn.png
+  - camera_front.png
+  - lidar_bev.png
+  perception_optional:
+  - lidar_on_rgb_overlay.png
+  - objects_placed.json
+  - objects_placed.png
+environment:
+  required: []
+  optional:
+  - UP_MANUAL_XODR_GRID0828
+  - UP_MANUAL_TILES_DIR
+  - UP_AUTO_RUN_DIR
+  - UP_DISABLE_CARLA
+  - UP_TILE_CORRESPONDENCE_CSV
+  - UP_ALLOW_IDENTITY_ALIGNMENT
+  - UP_ALLOW_EMPTY_CORRESPONDENCE
+  - UP_ENABLE_CARLA_TESTS
+lock_policy:
+  required: true
+  enforce_exclusive: true
+  lease_timeout_s: 14400
+  lock_file: .agent_locks/writer.lock
+  required_fields:
+  - owner
+  - branch
+  - head_sha
+  - hostname
+  - pid
+  - created_at
+  - lease_minutes
+  - expires_at
+  optional_fields:
+  - heartbeat_at
+  - model
+  - task_id
+  strict_behavior:
+    active_lease: block
+    stale_lease: warn_allow_override
+    malformed_lock: block
+strict_mode: false
+fail_on_missing_artifacts: true

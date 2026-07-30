@@ -205,3 +205,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Agent governance: live writer locks are runtime/ephemeral (pid, lease, expiry).
+# The canonical lock SYSTEM is code (ultimate_pipeline/contracts/writer_lock.py) and
+# the policy is tracked (.agent_locks/README.md); the live lock instance is NOT tracked.
+.agent_locks/*.lock
