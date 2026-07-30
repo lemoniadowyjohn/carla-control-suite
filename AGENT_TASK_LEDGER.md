@@ -31,14 +31,14 @@ See `.agent_locks/writer.lock` (runtime; not tracked). Policy: `.agent_locks/REA
 ## Current tasks
 | ID | Task | Status | Notes |
 |---|---|---|---|
-| GOV-AUTH-001 | Clean pushed base with upstream | **RESOLVED** | `integration/governed-map-quality-20260729` @ base, local==origin, 0/0 |
-| GOV-HOOK-001 | Portable Claude hooks (`run_python_hook.sh`) | **FIXED_PENDING_FRESH_SESSION** | Code landed @ `ee8871c8`; flips to RESOLVED only after P2 fresh-session hook test passes |
+| GOV-AUTH-001 | Clean pushed base with upstream | **RESOLVED** | `integration/governed-map-quality-20260729` on upstream-tracked base; local/remote verified clean before P3 evidence refresh |
+| GOV-HOOK-001 | Portable Claude hooks (`run_python_hook.sh`) | **RESOLVED** | P2 fresh-session hook test passed (`FCH01`); no `python3` hook failures observed |
 | GOV-LOCK-001 | Canonical writer-lock system | **RESOLVED** | `contracts/writer_lock.py` + `.agent_locks/writer.lock` (gitignored live) + README policy |
 | GOV-SYNC-001 | `agent_sync.yaml` bound to canonical lock | **RESOLVED** | generated from schema; `lock_policy.lock_file=.agent_locks/writer.lock`; validates clean |
 | P0 | Integration fast-forward + safety layer + map-identity | **RESOLVED** | `INTEGRATION_BRANCH_PUSHED_GREEN`; evidence `reports/current_claude_completion/` |
 | P1 | Delta base verification | **RESOLVED** | `reports/delta_base_verification/DV01–DV04` |
-| P2 | Fresh Claude hook smoke test | **OPEN** | prompt `reports/codex_prompts/P2_fresh_claude_hook_test.md`; gates GOV-HOOK-001 |
-| P3 | Base + governance closure | **IN_PROGRESS → READY** | this ledger + agent_sync.yaml + CODEX_FIX_PROMPTS + tests |
+| P2 | Fresh Claude hook smoke test | **RESOLVED** | prompt `reports/codex_prompts/P2_fresh_claude_hook_test.md`; `FCH01` PASS |
+| P3 | Base + governance closure | **RESOLVED** | canonical lock/test refresh + ledger + CODEX_FIX_PROMPTS + reports |
 | P4 | Architecture gate | **OPEN** | fresh Opus session (not P0); prereq P2+P3; prompt `reports/codex_prompts/P4_architecture_gate.md` |
 | P5 | Governance & artifact-safety integration | **BLOCKED** | prereq P4 approval; prompt `reports/codex_prompts/P5_codex55_safety.md` |
 | S01 | Artifact transactions | **READY** | 8/9 modules present in `ultimate_pipeline/artifacts/`; add `hashing.py`+`locking.py` (P5) |

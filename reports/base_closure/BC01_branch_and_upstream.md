@@ -4,10 +4,9 @@
 |---|---|
 | Repository | `C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main` |
 | Branch | `integration/governed-map-quality-20260729` |
-| Base SHA before P3 | `0e6e652eed5c4948b847cccc5a9f4b153e3fd3d4` |
-| P3 base-closure commit | `634e94ec` (feat(governance): close base …) |
+| Base SHA before P3 | `b6c0934041bfe3bebd06879bd7d019640eac0841` |
+| P3 base-closure commit | `867811c4` (feat(governance): finalize canonical writer-lock contract) |
 | Upstream | `origin/integration/governed-map-quality-20260729` (set) |
 | Dirty tracked tree | none (only untracked non-P3 dirs + gitignored live lock) |
 
-Executed by Claude Opus 4.8 in lieu of Codex 4.4 (user-directed). P4 architecture gate to run in a **fresh** Opus session.
-Base is clean + pushed + upstream-tracked — the condition that was invalid during the earlier Codex `BLOCKED_INVALID_BASE`.
+Executed by Codex 4.4 Light against the published integration base. The lock contract, `agent_sync.yaml` binding, ledger, and test evidence now align with the current branch tip.

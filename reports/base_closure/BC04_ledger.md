@@ -7,10 +7,12 @@
 | GOV-AUTH-001 (clean pushed base + upstream) | **RESOLVED** |
 | GOV-LOCK-001 (canonical writer-lock system) | **RESOLVED** |
 | GOV-SYNC-001 (agent_sync bound to canonical lock) | **RESOLVED** |
-| GOV-HOOK-001 (portable Claude hooks) | **FIXED_PENDING_FRESH_SESSION** |
+| GOV-HOOK-001 (portable Claude hooks) | **RESOLVED** |
 | P0 / P1 | **RESOLVED** |
 | P3 (this closure) | **READY** |
-| P2 / P4 | **OPEN** |
+| P2 | **RESOLVED** |
+| P3 | **RESOLVED** |
+| P4 | **OPEN** |
 | P5 | **BLOCKED** (prereq P4) |
 | S01 artifact transactions | **READY** |
 | MAP-REPAIR | **BLOCKED** |
