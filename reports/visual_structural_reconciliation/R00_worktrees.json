@@ -1,0 +1,55 @@
+{
+  "report": "R00_worktrees",
+  "phase": "R0",
+  "date": "2026-07-31",
+  "coordinator_model": "claude-opus-4-8",
+  "mode": "read-only",
+  "repo_family_origin": "github.com/lemoniadowyjohn/carla-control-suite.git",
+  "hook_evidence_note": "this coordinator process is NOT fresh-session hook evidence; canonical hook evidence is FCH01 (Haiku 4.5 @ b6c09340)",
+  "base": {
+    "worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+    "branch": "integration/governed-map-quality-20260729",
+    "local_sha": "02bdc10042a61774e3efb02f4f512a76cb1a0b26",
+    "remote_sha": "02bdc10042a61774e3efb02f4f512a76cb1a0b26",
+    "local_remote_match": true,
+    "tracked_tree_clean": true,
+    "untracked_present": true
+  },
+  "active_writer": {
+    "owner": "P4-REVERIFY-DOCS",
+    "status": "released",
+    "is_live": false,
+    "final_head_sha": "02bdc10042a61774e3efb02f4f512a76cb1a0b26",
+    "push_handoff_complete": true
+  },
+  "r0_gate": {
+    "blocked_previous_writer_not_closed": false,
+    "blocked_no_clean_base": false
+  },
+  "worktrees": [
+    {"path": "carla_-main", "branch": "integration/governed-map-quality-20260729", "head": "02bdc10042a61774e3efb02f4f512a76cb1a0b26", "role": "BASE", "dirty": false, "writable_after_discovery": true},
+    {"path": "carla_main_audit", "branch": "audit/gemini31pro-audit", "head": "d202ad2227f251b02235b149cbe7282b27d8cacb", "role": "audit", "dirty": null, "writable_after_discovery": false},
+    {"path": "carla_main_governed", "branch": "fix/deepseek-observability-integration-verification", "head": "deb261bf3bd21c2c7b399cbd69434fb8aade5086", "role": "governance_donor", "dirty": true, "writable_after_discovery": false},
+    {"path": "carla_main_governed/work/claude-grid0828-review", "branch": "(detached)", "head": "b1b6e010cbd4b10b1ac6e45a4a9f30c545c0c760", "role": "grid0828_review", "writable_after_discovery": false},
+    {"path": "carla_main_governed/work/codex-full-pipeline-rerun-20260427", "branch": "work/codex-full-pipeline-rerun-20260427", "head": "6b2506210a23637eb15f8773674de3ab560f0e6d", "role": "full_pipeline_rerun_donor_candidate", "writable_after_discovery": false},
+    {"path": "carla_main_governed/work/codex-grid0828-patch", "branch": "work/codex-grid0828-batch-sync-001", "head": "fe7daad8f2229e689a265b0a9be25546300fee99", "role": "grid0828_patch", "writable_after_discovery": false},
+    {"path": "carla_main_governed/work/gemini-governance-normalize", "branch": "work/gemini-governance-normalize-20260315", "head": "68ab0caf8659d612ed3f1ef50b1b8db3cad47eb2", "role": "governance_normalize", "writable_after_discovery": false},
+    {"path": "carla_main_governed/work/gemini-grid0828-runtime", "branch": "(detached)", "head": "21e8e23a016c3e79a538a59dca5b5ce4812b21ba", "role": "grid0828_runtime", "writable_after_discovery": false},
+    {"path": "carla_main_governed_worktrees/codex-jsnap-20260428", "branch": "work/codex-jsnap-20260428", "head": "2b1a3d11cdda2c019f52fac86fdd194e74852b4e", "role": "junction_snap_donor_candidate", "writable_after_discovery": false},
+    {"path": "carla_rr_recovery", "branch": "recovery/roadrunner-capability-integration", "head": "25917b1878fab530d86b2c6164d6e37148c5c427", "role": "roadrunner_recovery_donor_candidate", "writable_after_discovery": false}
+  ],
+  "orphaned_pointers": [
+    {"path": "carla_-main/carla_governed", "issue": "gitlink -> pruned worktree wt-ext-patch-integration-20260309 (fatal: not a git repository)", "action": "reference_only; hygiene debt"}
+  ],
+  "stash_count": 17,
+  "geometry_ancestor_note": "687a69a0 (previously-verified geometry SHA) is an ancestor of base 02bdc100",
+  "preservation_invariants": [
+    "thesis_results/structural_gap_v1/run_11/",
+    "artifacts/final_runs/scenario_b_audit/contract_run/",
+    "08_final_structural_gap.xodr",
+    "submission/results/structural_gap_run11/ (base-tracked historical evidence)"
+  ],
+  "new_campaign_id": "ingolstadt_cooked_perception_v1",
+  "new_campaign_namespace": "campaigns/ingolstadt_cooked_perception_v1/",
+  "conclusion": "base clean + previous writer closed; proceed to low-cost discovery (DSV01+DSV02)"
+}
