@@ -1,0 +1,36 @@
+{
+  "report": "AG06_implementation_contract",
+  "activation_status": "CONDITIONAL_NOT_YET_AUTHORIZED",
+  "p5_blocked": true,
+  "p5_blocked_reason": "AG07 is REQUIRES_BASE_CORRECTION not ARCHITECTURE_APPROVED_FOR_CODEX_55",
+  "scope": {
+    "P5-1_artifact_transactions": "add hashing.py + locking.py (9/9 modules) + tests",
+    "P5-2_map_registry": "register Grid0821/Grid0828 by SHA; resolve mislabeled grid0828 file (holds Grid0821)",
+    "P5-3_governance_enforcer": "fail-closed on registry mismatch / identity drift",
+    "P5-4_calibration_contract": "resolve use_K_undistortion vs ignore_K/ignore_D first, then codify",
+    "P5-5_elevation_guard": "wire elevation/+dem/ with tests",
+    "P5-6_promotion_rollback_immutability": "atomic promotion + tested rollback + validator immutability",
+    "P5-7_failure_injection_tests": "offline+geometry+cross-comparison green; guards proven to fire"
+  },
+  "hard_boundaries": [
+    "no_real_map_mutation_that_is_P6",
+    "no_unreal_carla_cook",
+    "no_thesis_run11_changes",
+    "single_writer_lock_required",
+    "bounded_atomic_commits_no_junk",
+    "canonical_entrypoint_python_-m_ultimate_pipeline.cli"
+  ],
+  "preconditions_fail_closed": [
+    "head_equals_origin",
+    "committed_AG07_equals_ARCHITECTURE_APPROVED_FOR_CODEX_55",
+    "GOV-HOOK-001_RESOLVED_with_fresh_claude_hook_test_evidence",
+    "B2_xodr_pinned_B3_fbx_decision_B4_toolchain_for_cook_only"
+  ],
+  "existing_codex55_outputs": {
+    "path": "reports/codex55_safety/C55_00..C55_08",
+    "tracked": false,
+    "verdict": "BLOCKED_INVALID_BASE",
+    "base_sha": "0e6e652e",
+    "status": "stale_governance_held_no_mutation_regenerate_when_authorized"
+  }
+}

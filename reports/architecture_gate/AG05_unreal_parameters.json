@@ -1,0 +1,19 @@
+{
+  "report": "AG05_unreal_parameters",
+  "detail_file": "reports/architecture_gate/UNREAL_COOKING_PARAMETERS.md",
+  "track": "A_UE4_26_CARLA_0916_make",
+  "track_b_disabled": true,
+  "disabled_blocks": ["ue5_cmake_ninja", "world_partition", "nanite", "lumen", "virtual_textures", "stale_section0_anchors"],
+  "cook_host": "linux_docker_source_build_image",
+  "packaged_install_can_cook": false,
+  "tiling": "LEGACY_CARLA_LARGE_MAP_TILES",
+  "tile_naming": "<MapName>_Tile_<x>_<y>.fbx",
+  "stale_anchor_replacements": {
+    "run_11_path": "submission/results/structural_gap_run11/",
+    "governance_branch_sha": "integration/governed-map-quality-20260729@5eddcc54",
+    "carla_main_governed": "RETIRED"
+  },
+  "unreal_prompt_ready": false,
+  "unreal_prompt_ready_reason": "parameterized_but_inputs_unresolved_B2_B3_B4_and_crs_vertical_calibration",
+  "execute_cook_now": false
+}

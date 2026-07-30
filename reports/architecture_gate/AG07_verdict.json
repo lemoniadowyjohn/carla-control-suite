@@ -1,0 +1,59 @@
+{
+  "report": "AG07_verdict",
+  "verdict": "REQUIRES_BASE_CORRECTION",
+  "secondary_conditions": ["FAIL_HOOK_GOVERNANCE", "BLOCKED_TOOLCHAIN"],
+  "codex_55_authorized": false,
+  "unreal_prompt_ready": false,
+  "repository": "github.com/lemoniadowyjohn/carla-control-suite.git",
+  "worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "branch": "integration/governed-map-quality-20260729",
+  "sha": "5eddcc543e6cd3b51b78e94f3586dc2c152e9c80",
+  "current_architecture": "A_RUNTIME_XODR_ONLY",
+  "target_architecture": "E_COOKED_LOADABLE_CUSTOM_MAP",
+  "prompt_status_actual": {
+    "P0": "CONFIRMED_RESOLVED",
+    "P1": "PARTIAL_evidence_untracked",
+    "P2": "NOT_EXECUTED",
+    "P3": "SUBSTANTIALLY_DONE_CONDITIONAL_ON_P2",
+    "P5": "CONFIRMED_BLOCKED_no_mutation"
+  },
+  "blockers": [
+    {"id": "B1", "desc": "P2 fresh-session hook test never ran; GOV-HOOK-001 not RESOLVED", "severity": "CRITICAL", "maps_to": "FAIL_HOOK_GOVERNANCE"},
+    {"id": "B2", "desc": "authoritative XODR not pinned (INPUT_XODR is computed path; only tracked xodr is a results artifact)", "severity": "CRITICAL"},
+    {"id": "B3", "desc": "authoritative FBX / visible-road source absent (0 tracked FBX)", "severity": "HIGH"},
+    {"id": "B4", "desc": "cook toolchain absent on host (packaged CARLA only; no source tree; Linux/Docker cook path unproven on Windows)", "severity": "HIGH", "maps_to": "BLOCKED_TOOLCHAIN"},
+    {"id": "B5", "desc": "osm/tiling/perception subsystem source-absent (only .pyc)", "severity": "MEDIUM"},
+    {"id": "B6", "desc": "P1 (delta_base_verification) and P5 (codex55_safety) evidence untracked", "severity": "LOW"}
+  ],
+  "pins": {
+    "carla_branch": "0.9.16",
+    "carla_commit": "UNKNOWN_MUST_RESOLVE",
+    "unreal_version": "UE4.26",
+    "unreal_commit": "UNKNOWN_MUST_RESOLVE",
+    "build_workflow": "make_trackA_linux_docker_cook_ue5_disabled",
+    "authoritative_xodr": "UNKNOWN_MUST_RESOLVE",
+    "authoritative_visual_input": "ABSENT_MUST_RESOLVE",
+    "visible_road_source": "carla_runtime_xodr_extrusion_target_decide",
+    "osm2world_role": "supplementary_source_absent_not_integrated",
+    "blender_role": "NONE",
+    "tiling": "LEGACY_CARLA_LARGE_MAP_TILES_target",
+    "coordinate_contract": "WGS84->projCRS_UNKNOWN->OpenDRIVE_m->FBX->UE_cm_LH->CARLA",
+    "vertical_contract": "UNKNOWN_MUST_RESOLVE",
+    "semantic_strategy": "carla_ue4_tagger_deferred",
+    "collision_strategy": "per_semantic_class_deferred",
+    "navigation_strategy": "recast_deferred",
+    "traffic_control_strategy": "xodr_signals_to_carla_actors_must_resolve",
+    "session_owner": "ultimate_pipeline/carla_tools/session.py",
+    "sensor_contract": "use_K_undistortion=T,ignore_K=T,ignore_D=T,ctv_inverted=F,vtl_inverted=T_CLARIFY"
+  },
+  "thesis_boundary": {
+    "historical_evidence": "submission/results/structural_gap_run11 (immutable)",
+    "new_campaign_namespace": "artifacts/carla_map_cook/<run_id> (not yet created)",
+    "reference_map_role": "Grid0821/0828 evaluation reference only",
+    "non_upgradable": "runtime-XODR perception cannot be relabeled cooked-custom-map"
+  },
+  "stop_after_verdict": true,
+  "p5_started": false,
+  "unreal_started": false,
+  "carla_started": false
+}

@@ -1,0 +1,43 @@
+{
+  "report": "AG03_target_architecture",
+  "target_architecture": "E_COOKED_LOADABLE_CUSTOM_MAP",
+  "target_status": "SELECTED_BUT_NOT_YET_ACTIONABLE",
+  "track": "A_UE4_26_CARLA_0916",
+  "track_b_ue5_disabled": true,
+  "decisions": {
+    "carla_repository": "carla-simulator/carla",
+    "carla_branch_tag": "0.9.16",
+    "carla_commit": "UNKNOWN_MUST_RESOLVE",
+    "unreal_version": "UE4.26",
+    "unreal_commit": "UNKNOWN_MUST_RESOLVE",
+    "pythonapi_version": "0.9.16",
+    "build_system": "make",
+    "native_or_docker": "docker_linux_required_for_cook",
+    "host_support": "runtime_windows_ok; cook_needs_linux_docker_MUST_RESOLVE",
+    "visible_road_authority_current": "carla_runtime_xodr_extrusion",
+    "visible_road_authority_target": "MUST_DECIDE_recommend_CARLA_GENERATED_ROAD",
+    "osm2world_role": "supplementary_source_absent_not_integrated",
+    "blender_role": "NONE",
+    "authoritative_xodr": "UNKNOWN_MUST_RESOLVE_BLOCKER",
+    "authoritative_fbx": "ABSENT_MUST_RESOLVE_BLOCKER",
+    "coordinate_transform": "WGS84->projCRS->OpenDRIVE_m->FBX->UE_cm_LH_Xfwd_Yright_Zup->CARLA; CRS_PROJ_UNKNOWN_MUST_RESOLVE",
+    "vertical_transform": "UNKNOWN_MUST_RESOLVE_flat_vs_xodr_vs_dem",
+    "reference_map_role": "Grid0821_Grid0828_evaluation_reference_only",
+    "tiling": "LEGACY_CARLA_LARGE_MAP_TILES_not_world_partition",
+    "tile_size_experiment": "500_1000_2000_deferred",
+    "semantic_strategy": "carla_ue4_tagger_deferred",
+    "traffic_control_strategy": "xodr_signals_to_carla_actors_MUST_RESOLVE",
+    "collision_strategy": "per_semantic_class_deferred",
+    "navigation_strategy": "recast_pedestrian_deferred",
+    "runtime_session_owner": "ultimate_pipeline/carla_tools/session.py",
+    "sensor_contract": "use_K_undistortion=T,ignore_K=T,ignore_D=T,ctv_inverted=F,vtl_inverted=T_CLARIFY",
+    "dataset_identity_contract": "xodr_sha256,tile_metadata_sha256,tile_count,road_count,junction_count"
+  },
+  "path_A_to_E": [
+    "close_P2_hook_governance",
+    "pin_authoritative_xodr",
+    "provide_authoritative_fbx_or_select_CARLA_GENERATED_ROAD",
+    "stand_up_carla_0916_ue426_source_build_on_linux_docker",
+    "execute_parameterized_cooking_prompt_in_separate_run_namespace"
+  ]
+}
