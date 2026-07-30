@@ -39,7 +39,7 @@ See `.agent_locks/writer.lock` (runtime; not tracked). Policy: `.agent_locks/REA
 | P1 | Delta base verification | **RESOLVED** | `reports/delta_base_verification/DV01–DV04` |
 | P2 | Fresh Claude hook smoke test | **RESOLVED** | prompt `reports/codex_prompts/P2_fresh_claude_hook_test.md`; `FCH01` PASS |
 | P3 | Base + governance closure | **RESOLVED** | canonical lock/test refresh + ledger + CODEX_FIX_PROMPTS + reports |
-| P4 | Architecture gate | **OPEN** | fresh Opus session (not P0); prereq P2+P3; prompt `reports/codex_prompts/P4_architecture_gate.md` |
+| P4 | Architecture gate | **BLOCKED** | EXECUTED by fresh Opus (not P0); re-verified 2026-07-31 @ `d4b0fe14` → verdict `REQUIRES_BASE_CORRECTION` (evidence `reports/architecture_gate/AG01–AG07`). B1 CLOSED (P2/FCH01 PASS); **B2 (CRITICAL authoritative-XODR), B3 (FBX/road), B4 (cook toolchain) OPEN**. CODEX 5.5 NOT authorized; re-run gate after B2–B4 close |
 | P5 | Governance & artifact-safety integration | **BLOCKED** | prereq P4 approval; prompt `reports/codex_prompts/P5_codex55_safety.md` |
 | S01 | Artifact transactions | **READY** | 8/9 modules present in `ultimate_pipeline/artifacts/`; add `hashing.py`+`locking.py` (P5) |
 | MAP-REPAIR | Structural map repair | **BLOCKED** | not authorized; later P6 after independent artifact-safety review |
