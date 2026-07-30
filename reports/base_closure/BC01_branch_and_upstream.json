@@ -1,0 +1,10 @@
+{
+  "report": "BC01_branch_and_upstream",
+  "repository": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha_before_p3": "0e6e652eed5c4948b847cccc5a9f4b153e3fd3d4",
+  "p3_closure_commit": "634e94ec",
+  "upstream_set": true,
+  "dirty_tracked_tree": false,
+  "executor": "Claude Opus 4.8 (in lieu of Codex 4.4, user-directed)"
+}

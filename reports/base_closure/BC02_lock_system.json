@@ -1,0 +1,13 @@
+{
+  "report": "BC02_lock_system",
+  "canonical_impl": "ultimate_pipeline/contracts/writer_lock.py",
+  "schema": "agent-writer-lock/v1",
+  "canonical_path": ".agent_locks/writer.lock",
+  "tracked_vs_ignored_decision": "A_gitignore_live_lock_track_policy_readme",
+  "writer_lock_gitignored_confirmed": true,
+  "policy_doc": ".agent_locks/README.md",
+  "legacy_alias": ".agent_lock.json",
+  "prior_codex_lock_status": "released",
+  "p3_lock": {"owner": "Claude Opus 4.8 (P3 base closure)", "task_id": "P3-BASE-CLOSURE", "released_at_bc06": true},
+  "lock_tests_passed": true
+}
