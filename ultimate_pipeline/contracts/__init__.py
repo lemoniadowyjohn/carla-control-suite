@@ -23,6 +23,11 @@ from ultimate_pipeline.contracts.agent_sync import (
     load_agent_sync,
     validate_agent_sync,
 )
+from ultimate_pipeline.contracts.coordinate_contract import (
+    C44V01Verification,
+    build_c44v01_verification,
+    write_c44v01_reports,
+)
 from ultimate_pipeline.contracts.artifacts import (
     RunArtifacts,
     create_run_id,
@@ -42,6 +47,9 @@ __all__ = [
     "BboxContract",
     "load_agent_sync",
     "validate_agent_sync",
+    "C44V01Verification",
+    "build_c44v01_verification",
+    "write_c44v01_reports",
     "RunArtifacts",
     "create_run_id",
     "ensure_run_directory",
