@@ -1,0 +1,17 @@
+{
+  "report": "CC04_tests",
+  "head_sha": "7053bab56de4ba1680c4fb73bf85a5dc9b911694",
+  "interpreter": ".venv/Scripts/python.exe",
+  "python": "3.12.2",
+  "pytest": "9.0.1",
+  "env": {"UP_DISABLE_CARLA": "1"},
+  "runs": {
+    "focused_map_identity": {"passed": 5, "failed": 0, "duration_s": 0.13},
+    "remaining_safety_layer": {"passed": 5, "failed": 0, "duration_s": 0.95, "files": ["tests/roadrunner/test_capability_probe.py", "tests/unit/test_artifact_transactions.py"]},
+    "full_configured_offline": {"passed": 323, "failed": 0, "warnings": 48, "duration_s": 8.75, "testpaths": ["ultimate_pipeline/tests", "tests/unit"]},
+    "geometry_broad_slice": {"passed": 2284, "skipped": 78, "deselected": 220, "failed": 0, "duration_s": 7.88},
+    "cross_comparison": {"verdict": "PASS", "formula_defects": 0, "expected_policy_diffs": 40, "harness": "opendrive_geometry.cross_compare_implementations"}
+  },
+  "carla_runtime": "BLOCKED_BY_ENVIRONMENT",
+  "conclusion": "all_offline_gates_green_fresh_evidence"
+}

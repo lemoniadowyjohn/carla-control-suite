@@ -1,0 +1,29 @@
+{
+  "report": "CC02_safety_layer_files",
+  "safety_commit": "7053bab56de4ba1680c4fb73bf85a5dc9b911694",
+  "author": "Michal",
+  "committed_at": "2026-07-30T18:54:00+02:00",
+  "subject": "feat(safety): land map-repair safety layer on integration branch",
+  "files_changed": 14,
+  "insertions": 1215,
+  "atomic": true,
+  "files": [
+    {"path": "ultimate_pipeline/artifacts/__init__.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/errors.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/model.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/promotion.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/recovery.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/semantic_diff.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/store.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/artifacts/transaction.py", "class": "required_source"},
+    {"path": "ultimate_pipeline/carla_tools/map_identity_guard.py", "class": "required_source", "sha256": "B64A59909B9C5D0E9C99A45D051A20E615385C3E822DA15C8A72C5DF9558BE37"},
+    {"path": "ultimate_pipeline/carla_tools/session.py", "class": "required_source", "sha256": "9CC310779AE132E065AA60D302B9C37A6382785CC2DE90E75C92B45E875DE376"},
+    {"path": "ultimate_pipeline/roadrunner/capability_probe.py", "class": "required_source"},
+    {"path": "tests/roadrunner/test_capability_probe.py", "class": "required_test"},
+    {"path": "tests/unit/test_artifact_transactions.py", "class": "required_test"},
+    {"path": "tests/unit/test_map_identity_guard.py", "class": "required_test"}
+  ],
+  "counts": {"required_source": 11, "required_test": 3, "junk_or_generated_staged": 0},
+  "excluded_untracked": ["nul", "vehicle.", ".idea/", "carla_governed/", "external/", "__pycache__/", ".pytest_cache/", "reports/*"],
+  "safety_layer_tracked": true
+}
