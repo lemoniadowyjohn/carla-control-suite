@@ -645,5 +645,8 @@
   "large_artifact_policy": {
     "xodr_files_committed": true,
     "reason": "Repository Git LFS rule tracks campaigns/ingolstadt_cooked_perception_v1/**/*.xodr and **/*.osm (see .gitattributes); XODR bytes now stored as LFS objects, hashes remain authoritative in this manifest."
-  }
+  },
+  "converter_profile": "osm_to_xodr_wrapper.py (ultimate_pipeline/osm) sha256 2678373C3AC9AB688D6B7CDFB30D326345605FF9162CC3901F1A51323DFE4973 — donor worktree codex-full-pipeline-rerun-20260427 (DSV02 matrix: codex-full-pipeline-rerun variant); Osm2Odr invoked via CARLA PythonAPI (carla.Osm2Odr + Osm2OdrSettings)",
+  "carla_osm2odr_version": "UNKNOWN_UNSOURCED (Osm2Odr via CARLA PythonAPI carla.Osm2Odr; no CARLA/Osm2Odr version string found in donor code or logs)",
+  "crs_contract_hash": "8886CE90FD2F7D4F61B319FBCB162B0FD536211AFA31EEF2FD4F32921084D000"
 }
