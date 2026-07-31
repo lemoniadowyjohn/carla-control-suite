@@ -1,282 +1,442 @@
 {
   "report": "C44V01_coordinate_contract",
-  "verdict": "BLOCKED_MISSING_METADATA",
-  "missing_metadata": [
-    "source_osm.sha256",
-    "osm2world.version",
-    "blender.version",
-    "fbx.sha256",
-    "vertical.datum"
-  ],
+  "generated_at": "2026-07-31T09:52:54.482971+00:00",
+  "verdict": "CRS_CONTRACT_READY",
+  "missing_metadata": [],
   "coordinate_contract": {
-    "schema_version": 1,
+    "schema_version": 2,
     "source_osm": {
-      "sha256": null,
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
       "bounds_wgs84": {
+        "lat_min": 48.6843318,
+        "lat_max": 48.8143429,
+        "lon_min": 11.3266919,
+        "lon_max": 11.5382271
+      },
+      "study_bounds_wgs84": {
         "lat_min": 48.74935649548228,
         "lat_max": 48.77444431571603,
         "lon_min": 11.422268084715878,
         "lon_max": 11.47882091528412,
         "region": "Ingolstadt"
       },
-      "crs": "EPSG:4326"
+      "crs": "EPSG:4326",
+      "source_date": "2025-10-11T11:50:27Z",
+      "license": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
     },
     "projected_map": {
       "crs_definition": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "epsg": "EPSG:32632",
       "datum": "WGS84",
       "units": "m",
       "axis_order": "E/N"
     },
     "xodr": {
-      "sha256": "c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a",
+      "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
       "geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
-      "header_offset": {
-        "x": -838640.8,
-        "y": -5464783.89,
-        "z": -0.0,
-        "hdg": 0.0
-      },
-      "local_units": "metres"
+      "header_offset": null,
+      "local_units": "metres",
+      "road_count": 32710,
+      "junction_count": 3646
     },
     "osm2world": {
-      "version": null,
-      "source_osm_sha256": null,
-      "projection": null,
-      "origin": null,
-      "units": null,
-      "axes": null
+      "version": "DISABLED_CARLA_GENERATED_ROAD",
+      "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "projection": "not_applicable_visible_road_from_xodr",
+      "origin": "not_applicable_no_fbx_origin",
+      "units": "not_applicable",
+      "axes": "not_applicable"
     },
     "blender": {
-      "version": null,
-      "import_units": null,
-      "scene_units": null,
-      "axes": null,
-      "applied_transform": null
+      "version": "DISABLED_CARLA_GENERATED_ROAD",
+      "import_units": "not_applicable",
+      "scene_units": "not_applicable",
+      "axes": "not_applicable",
+      "applied_transform": "not_applicable"
     },
     "fbx": {
-      "sha256": null,
-      "export_version": null,
-      "units": null,
-      "axes": null,
-      "global_transform": null
+      "sha256": "CARLA_GENERATED_ROAD",
+      "export_version": "DISABLED_CARLA_GENERATED_ROAD",
+      "units": "not_applicable",
+      "axes": "not_applicable",
+      "global_transform": "not_applicable"
     },
     "unreal": {
       "engine_version": "UE4.26",
       "import_scale": "centimetres",
       "axes": "left-handed X-forward Y-right Z-up",
-      "map_origin": null
+      "map_origin": "OpenDRIVE header; no offset element in C55V01a candidate",
+      "cook_status": "BLOCKED_TOOLCHAIN"
     },
     "vertical": {
-      "datum": null,
-      "source": null,
-      "offset": null,
-      "confidence": "unknown"
+      "datum": "LOCAL_FLAT_ZERO_NO_DEM",
+      "source": "OSM2ODR flat elevation profile generated from the selected OSM; no DEM or geodetic height datum was applied",
+      "offset_m": 0.0,
+      "confidence": "high for flat local-zero profile; not an external vertical geodetic datum",
+      "elevation_metrics": {
+        "elevation_record_count": 32710,
+        "roads_with_elevation_count": 32710,
+        "roads_missing_elevation_count": 0,
+        "nonzero_elevation_record_count": 0,
+        "all_bcd_zero": true,
+        "nonfinite_elevation_count": 0,
+        "suspicious_absolute_height_reset_count": 0,
+        "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
+      }
     },
     "control_points": [
       {
-        "x": 679962.10951358,
-        "y": 5402937.84411932,
+        "index": 0,
         "source": "planView.geometry.start",
-        "index": 0
+        "road_id": "39830",
+        "x": 840138.71778614,
+        "y": 5464923.98146263,
+        "hdg": -0.33804562,
+        "length": 8.66497024
       },
       {
-        "x": 678475.02167202,
-        "y": 5404360.25397163,
+        "index": 1,
         "source": "planView.geometry.start",
-        "index": 1
+        "road_id": "39830",
+        "x": 840146.89235915,
+        "y": 5464921.10777763,
+        "hdg": -0.33804562,
+        "length": 6.66091005
       },
       {
-        "x": 680649.35979589,
-        "y": 5403297.65094818,
+        "index": 2,
         "source": "planView.geometry.start",
-        "index": 2
+        "road_id": "39830",
+        "x": 840153.08018602,
+        "y": 5464918.65631043,
+        "hdg": -0.49947145,
+        "length": 9.77140542
       },
       {
-        "x": 680200.49027567,
-        "y": 5404338.0565463,
+        "index": 3,
         "source": "planView.geometry.start",
-        "index": 3
+        "road_id": "39830",
+        "x": 840161.2356918,
+        "y": 5464913.28182013,
+        "hdg": -0.62519742,
+        "length": 12.22285012
       },
       {
-        "x": 677646.68531537,
-        "y": 5403529.16107504,
+        "index": 4,
         "source": "planView.geometry.start",
-        "index": 4
+        "road_id": "39830",
+        "x": 840170.88098311,
+        "y": 5464905.80796802,
+        "hdg": -0.85259117,
+        "length": 19.2572775
       },
       {
-        "x": 678536.462542,
-        "y": 5402658.42019212,
+        "index": 5,
         "source": "planView.geometry.start",
-        "index": 5
+        "road_id": "39830",
+        "x": 840183.55293107,
+        "y": 5464891.307469,
+        "hdg": -0.85259117,
+        "length": 13.88888888
       },
       {
-        "x": 679887.40650671,
-        "y": 5403838.70598046,
+        "index": 6,
         "source": "planView.geometry.start",
-        "index": 6
+        "road_id": "39830",
+        "x": 840192.69264662,
+        "y": 5464880.84960908,
+        "hdg": -0.85252402,
+        "length": 12.63082613
       },
       {
-        "x": 681739.57807218,
-        "y": 5405136.39372262,
+        "index": 7,
         "source": "planView.geometry.start",
-        "index": 7
+        "road_id": "39831",
+        "x": 841328.89721974,
+        "y": 5461114.66734279,
+        "hdg": -0.33434992,
+        "length": 15.28300726
       },
       {
-        "x": 679882.37095702,
-        "y": 5402304.41797007,
+        "index": 8,
         "source": "planView.geometry.start",
-        "index": 8
+        "road_id": "39831",
+        "x": 841343.33391268,
+        "y": 5461109.65214511,
+        "hdg": -0.33434992,
+        "length": 11.181766
       },
       {
-        "x": 679031.15171504,
-        "y": 5402186.6232695,
+        "index": 9,
         "source": "planView.geometry.start",
-        "index": 9
+        "road_id": "39831",
+        "x": 841354.41680916,
+        "y": 5461108.46725282,
+        "hdg": 0.00801344,
+        "length": 12.48297324
       },
       {
-        "x": 680736.49225181,
-        "y": 5403504.92553534,
+        "index": 10,
         "source": "planView.geometry.start",
-        "index": 10
+        "road_id": "39831",
+        "x": 841366.80013263,
+        "y": 5461109.84019438,
+        "hdg": 0.27554466,
+        "length": 11.65078558
       },
       {
-        "x": 678084.57941514,
-        "y": 5402981.14831548,
+        "index": 11,
         "source": "planView.geometry.start",
-        "index": 11
+        "road_id": "39831",
+        "x": 841377.25967024,
+        "y": 5461114.92576844,
+        "hdg": 0.52393756,
+        "length": 16.03110924
       },
       {
-        "x": 681037.29712659,
-        "y": 5404842.71096947,
+        "index": 12,
         "source": "planView.geometry.start",
-        "index": 12
+        "road_id": "39831",
+        "x": 841390.68150662,
+        "y": 5461123.63890169,
+        "hdg": 0.76761917,
+        "length": 17.73243239
       },
       {
-        "x": 682087.59570636,
-        "y": 5405390.69861008,
+        "index": 13,
         "source": "planView.geometry.start",
-        "index": 13
+        "road_id": "39832",
+        "x": 839734.79230827,
+        "y": 5460088.99713148,
+        "hdg": -2.20930534,
+        "length": 10.0967673
       },
       {
-        "x": 678670.51605691,
-        "y": 5404826.6092207,
+        "index": 14,
         "source": "planView.geometry.start",
-        "index": 14
+        "road_id": "39833",
+        "x": 839823.80242253,
+        "y": 5460200.72887934,
+        "hdg": -2.26287382,
+        "length": 0.2
       },
       {
-        "x": 678622.96394897,
-        "y": 5402481.26555043,
+        "index": 15,
         "source": "planView.geometry.start",
-        "index": 15
+        "road_id": "39833",
+        "x": 839823.67479492,
+        "y": 5460200.57489495,
+        "hdg": -2.26287382,
+        "length": 18.81510913
       },
       {
-        "x": 679913.29950414,
-        "y": 5405046.61573601,
+        "index": 16,
         "source": "planView.geometry.start",
-        "index": 16
+        "road_id": "39833",
+        "x": 839811.7667833,
+        "y": 5460186.00759709,
+        "hdg": -2.25534042,
+        "length": 8.44491115
       },
       {
-        "x": 681082.62138924,
-        "y": 5404937.98892699,
+        "index": 17,
         "source": "planView.geometry.start",
-        "index": 17
+        "road_id": "39833",
+        "x": 839806.43778304,
+        "y": 5460179.45640538,
+        "hdg": -2.24900475,
+        "length": 27.77731152
       },
       {
-        "x": 678686.01959481,
-        "y": 5404521.04478095,
+        "index": 18,
         "source": "planView.geometry.start",
-        "index": 18
+        "road_id": "39833",
+        "x": 839789.04111236,
+        "y": 5460157.80156473,
+        "hdg": -2.24148878,
+        "length": 54.04178328
       },
       {
-        "x": 678034.76291118,
-        "y": 5403007.23405907,
+        "index": 19,
         "source": "planView.geometry.start",
-        "index": 19
+        "road_id": "39834",
+        "x": 839946.78179574,
+        "y": 5460306.02513409,
+        "hdg": -2.51036516,
+        "length": 20.29787316
       }
     ],
-    "control_point_count": 20
+    "control_point_count": 20,
+    "negative_controls": [
+      {
+        "name": "10m_translation",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "visible-road self-authority transform forbids nonzero translation"
+      },
+      {
+        "name": "100x_scale",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "unit contract is metres in OpenDRIVE and CARLA converts to centimetres at import only"
+      },
+      {
+        "name": "x_reflection",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+      },
+      {
+        "name": "y_reflection",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+      },
+      {
+        "name": "90deg_rotation",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "OpenDRIVE planView heading is already authoritative for visible roads"
+      },
+      {
+        "name": "wrong_osm_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "source_osm.sha256 must equal the pinned B2 hash"
+      },
+      {
+        "name": "wrong_xodr_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "xodr.sha256 must equal the pinned C55V01a candidate hash"
+      },
+      {
+        "name": "wrong_fbx_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "FBX visible-road input is disabled under CARLA_GENERATED_ROAD"
+      },
+      {
+        "name": "wrong_origin",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "no alternate FBX/origin transform is accepted in the visible-road contract"
+      },
+      {
+        "name": "wrong_header_offset",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "the candidate has no header offset; adding one changes the CRS contract"
+      }
+    ]
   },
   "alignment_results": {
     "report": "C44V01_alignment_results",
-    "source_xodr_sha256": "c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a",
+    "generated_at": "2026-07-31T09:52:54.482971+00:00",
+    "source_xodr_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "source_xodr_semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
     "source_xodr_geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
-    "source_xodr_header_offset": {
-      "x": -838640.8,
-      "y": -5464783.89,
-      "z": -0.0,
-      "hdg": 0.0
-    },
+    "source_xodr_header_offset": null,
+    "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "visible_road_authority": "CARLA_GENERATED_ROAD",
     "transform": {
+      "model": "XODR_SELF_AUTHORITY_CARLA_GENERATED_ROAD",
       "scale": 1.0,
-      "cos": 0.9998340803595716,
-      "sin": -0.018215700687288405,
-      "tx": -98720.64409538312,
-      "ty": 12664.513593291864
+      "rotation_deg": 0.0,
+      "translation_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "fbx_transform": "disabled"
     },
     "crs_reprojection": {
-      "applied": true,
-      "src_crs": "+proj=tmerc +lat_0=48.74935649548228 +lon_0=11.422268084715878 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
-      "dst_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
-      "centroid_delta_before_m": 5444300.675571562,
-      "centroid_delta_after_m": 760.9515607735115,
-      "bbox_iou_after_reprojection": 0.6369240528279722
+      "applied": false,
+      "reason": "candidate XODR header is already pinned to EPSG:32632 and visible roads are generated from the same XODR",
+      "dst_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
     },
     "diagnostics": {
-      "rmse_before": 2154.7480522525702,
-      "rmse_after_initial_rigid": 2010.9966704458734,
-      "rmse_after": 2026.6884883329426,
-      "n_points": 7446,
-      "fallback_used": false,
-      "manual_bbox": {
-        "minx": 678015.8009219,
-        "maxx": 682410.5096099,
-        "miny": 5402486.14794,
-        "maxy": 5405403.332598
-      },
-      "auto_bbox": {
-        "minx": 677963.0181409962,
-        "maxx": 682948.0512082402,
-        "miny": 5402447.14512913,
-        "maxy": 5406484.884846119
-      },
-      "rigid_only": true,
-      "scale_locked": 1.0,
-      "init_method": "centroid_translation_only",
-      "rotation_deg_after_init": 0.0,
-      "icp_iters_run": 20,
-      "icp_trim_percentile": 90.0,
-      "icp_max_dist_m": 200.0,
-      "icp_rmse_history": [
-        2060.960880772678,
-        2061.200789746165,
-        2061.5751231600766,
-        2061.951366162493,
-        2062.337786329588,
-        2062.7882738854555,
-        2063.279026679902,
-        2063.757068492784,
-        2064.1448041893555,
-        2064.500307096074,
-        2064.849792087141,
-        2065.181693173403,
-        2065.500952895122,
-        2065.767469274508,
-        2066.0185440037044,
-        2066.2294935201926,
-        2066.4860620330123,
-        2066.726271850072,
-        2066.8746416427757,
-        2066.976514756642
-      ],
-      "fit_metric": "planView geometry start-point correspondence RMSE",
-      "metric_note": "These diagnostics describe the rigid-fit start-point correspondence only. The authoritative geometry gap metric is structural_domain_gap.geometry.rmse."
+      "raw_byte_hashes_equal": false,
+      "raw_semantic_hashes_equal": true,
+      "pinned_semantic_matches_raw_run_1": true,
+      "header_only_pin": true,
+      "n_control_points": 20,
+      "negative_controls_passed": true,
+      "fit_metric": "not_applicable_visible_road_from_same_xodr",
+      "metric_note": "C55V01a certifies source identity and CRS metadata only; structural repair and geometry gap scoring remain blocked."
     },
-    "verdict": "BLOCKED_MISSING_METADATA"
+    "negative_controls": [
+      {
+        "name": "10m_translation",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "visible-road self-authority transform forbids nonzero translation"
+      },
+      {
+        "name": "100x_scale",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "unit contract is metres in OpenDRIVE and CARLA converts to centimetres at import only"
+      },
+      {
+        "name": "x_reflection",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+      },
+      {
+        "name": "y_reflection",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+      },
+      {
+        "name": "90deg_rotation",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "OpenDRIVE planView heading is already authoritative for visible roads"
+      },
+      {
+        "name": "wrong_osm_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "source_osm.sha256 must equal the pinned B2 hash"
+      },
+      {
+        "name": "wrong_xodr_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "xodr.sha256 must equal the pinned C55V01a candidate hash"
+      },
+      {
+        "name": "wrong_fbx_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "FBX visible-road input is disabled under CARLA_GENERATED_ROAD"
+      },
+      {
+        "name": "wrong_origin",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "no alternate FBX/origin transform is accepted in the visible-road contract"
+      },
+      {
+        "name": "wrong_header_offset",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "the candidate has no header offset; adding one changes the CRS contract"
+      }
+    ],
+    "verdict": "CRS_CONTRACT_READY"
   },
   "evidence": {
     "repo_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
-    "ag04_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\architecture_gate\\AG04_coordinate_contract.json",
-    "alignment_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\submission\\results\\structural_gap_run11\\alignment.json",
-    "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\submission\\results\\structural_gap_run11\\auto_aligned_rigid.xodr"
+    "campaign_manifest": "campaigns/ingolstadt_cooked_perception_v1/manifest.json",
+    "source_osm": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "candidate_xodr": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "real_map_mutation_authorized": false
   }
 }

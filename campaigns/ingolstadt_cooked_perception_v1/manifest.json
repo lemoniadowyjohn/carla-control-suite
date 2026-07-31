@@ -1,0 +1,741 @@
+{
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "branch": "integration/governed-map-quality-20260729",
+  "approved_base_sha": "a7919117c245ecd7e0c47ff541e4b4d6151fd8e0",
+  "execution_base_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "generation_head_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "upstream_sha_at_generation": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "local_remote_match_at_generation": true,
+  "real_map_mutation_authorized": false,
+  "protected_artifacts_immutable": true,
+  "manifest": "campaigns/ingolstadt_cooked_perception_v1/manifest.json",
+  "map_id": "INGOLSTADT_COOKED_PERCEPTION_V1_RAW_XODR",
+  "readiness_state": "CRS_CONTRACT_READY_STRUCTURAL_UNREVIEWED",
+  "source_osm": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "byte_size": 11154738,
+    "xml_root": "osm",
+    "osm_version": "0.6",
+    "generator": "Overpass API 0.7.62.8 e802775f",
+    "source_date": "2025-10-11T11:50:27Z",
+    "license": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+    "bounds_wgs84": {
+      "lat_min": 48.6843318,
+      "lat_max": 48.8143429,
+      "lon_min": 11.3266919,
+      "lon_max": 11.5382271
+    },
+    "study_bounds_wgs84": {
+      "lat_min": 48.74935649548228,
+      "lat_max": 48.77444431571603,
+      "lon_min": 11.422268084715878,
+      "lon_max": 11.47882091528412,
+      "region": "Ingolstadt"
+    },
+    "covers_study_bounds": true,
+    "counts": {
+      "node_count": 74874,
+      "way_count": 17250,
+      "relation_count": 9,
+      "highway_way_count": 17200,
+      "building_way_count": 1
+    },
+    "way_node_ref_count": 101920,
+    "missing_way_node_refs": 0,
+    "validation": "USE_EXISTING_VALID_OSM"
+  },
+  "candidate_xodr": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+    "semantic_hash_algorithm": "c55v01a-xodr-structure-v1: sha256(JSON of road/link/planView/elevation/lane/laneLink/junction/connection attributes, sorted deterministically)",
+    "byte_size": 82318919,
+    "geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geo_reference_matches_epsg32632": true,
+    "header_offset": null,
+    "road_count": 32710,
+    "junction_count": 3646,
+    "signal_count": 0,
+    "lane_link_count": 32040,
+    "control_points": [
+      {
+        "index": 0,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840138.71778614,
+        "y": 5464923.98146263,
+        "hdg": -0.33804562,
+        "length": 8.66497024
+      },
+      {
+        "index": 1,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840146.89235915,
+        "y": 5464921.10777763,
+        "hdg": -0.33804562,
+        "length": 6.66091005
+      },
+      {
+        "index": 2,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840153.08018602,
+        "y": 5464918.65631043,
+        "hdg": -0.49947145,
+        "length": 9.77140542
+      },
+      {
+        "index": 3,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840161.2356918,
+        "y": 5464913.28182013,
+        "hdg": -0.62519742,
+        "length": 12.22285012
+      },
+      {
+        "index": 4,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840170.88098311,
+        "y": 5464905.80796802,
+        "hdg": -0.85259117,
+        "length": 19.2572775
+      },
+      {
+        "index": 5,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840183.55293107,
+        "y": 5464891.307469,
+        "hdg": -0.85259117,
+        "length": 13.88888888
+      },
+      {
+        "index": 6,
+        "source": "planView.geometry.start",
+        "road_id": "39830",
+        "x": 840192.69264662,
+        "y": 5464880.84960908,
+        "hdg": -0.85252402,
+        "length": 12.63082613
+      },
+      {
+        "index": 7,
+        "source": "planView.geometry.start",
+        "road_id": "39831",
+        "x": 841328.89721974,
+        "y": 5461114.66734279,
+        "hdg": -0.33434992,
+        "length": 15.28300726
+      },
+      {
+        "index": 8,
+        "source": "planView.geometry.start",
+        "road_id": "39831",
+        "x": 841343.33391268,
+        "y": 5461109.65214511,
+        "hdg": -0.33434992,
+        "length": 11.181766
+      },
+      {
+        "index": 9,
+        "source": "planView.geometry.start",
+        "road_id": "39831",
+        "x": 841354.41680916,
+        "y": 5461108.46725282,
+        "hdg": 0.00801344,
+        "length": 12.48297324
+      },
+      {
+        "index": 10,
+        "source": "planView.geometry.start",
+        "road_id": "39831",
+        "x": 841366.80013263,
+        "y": 5461109.84019438,
+        "hdg": 0.27554466,
+        "length": 11.65078558
+      },
+      {
+        "index": 11,
+        "source": "planView.geometry.start",
+        "road_id": "39831",
+        "x": 841377.25967024,
+        "y": 5461114.92576844,
+        "hdg": 0.52393756,
+        "length": 16.03110924
+      },
+      {
+        "index": 12,
+        "source": "planView.geometry.start",
+        "road_id": "39831",
+        "x": 841390.68150662,
+        "y": 5461123.63890169,
+        "hdg": 0.76761917,
+        "length": 17.73243239
+      },
+      {
+        "index": 13,
+        "source": "planView.geometry.start",
+        "road_id": "39832",
+        "x": 839734.79230827,
+        "y": 5460088.99713148,
+        "hdg": -2.20930534,
+        "length": 10.0967673
+      },
+      {
+        "index": 14,
+        "source": "planView.geometry.start",
+        "road_id": "39833",
+        "x": 839823.80242253,
+        "y": 5460200.72887934,
+        "hdg": -2.26287382,
+        "length": 0.2
+      },
+      {
+        "index": 15,
+        "source": "planView.geometry.start",
+        "road_id": "39833",
+        "x": 839823.67479492,
+        "y": 5460200.57489495,
+        "hdg": -2.26287382,
+        "length": 18.81510913
+      },
+      {
+        "index": 16,
+        "source": "planView.geometry.start",
+        "road_id": "39833",
+        "x": 839811.7667833,
+        "y": 5460186.00759709,
+        "hdg": -2.25534042,
+        "length": 8.44491115
+      },
+      {
+        "index": 17,
+        "source": "planView.geometry.start",
+        "road_id": "39833",
+        "x": 839806.43778304,
+        "y": 5460179.45640538,
+        "hdg": -2.24900475,
+        "length": 27.77731152
+      },
+      {
+        "index": 18,
+        "source": "planView.geometry.start",
+        "road_id": "39833",
+        "x": 839789.04111236,
+        "y": 5460157.80156473,
+        "hdg": -2.24148878,
+        "length": 54.04178328
+      },
+      {
+        "index": 19,
+        "source": "planView.geometry.start",
+        "road_id": "39834",
+        "x": 839946.78179574,
+        "y": 5460306.02513409,
+        "hdg": -2.51036516,
+        "length": 20.29787316
+      }
+    ],
+    "elevation_metrics": {
+      "elevation_record_count": 32710,
+      "roads_with_elevation_count": 32710,
+      "roads_missing_elevation_count": 0,
+      "nonzero_elevation_record_count": 0,
+      "all_bcd_zero": true,
+      "nonfinite_elevation_count": 0,
+      "suspicious_absolute_height_reset_count": 0,
+      "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
+    }
+  },
+  "raw_xodr_runs": [
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1.xodr",
+      "sha256": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d",
+      "semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+      "semantic_hash_algorithm": "c55v01a-xodr-structure-v1: sha256(JSON of road/link/planView/elevation/lane/laneLink/junction/connection attributes, sorted deterministically)",
+      "byte_size": 82318841,
+      "geo_reference": "+proj=tmerc",
+      "geo_reference_matches_epsg32632": false,
+      "header_offset": null,
+      "road_count": 32710,
+      "junction_count": 3646,
+      "signal_count": 0,
+      "lane_link_count": 32040,
+      "control_points": [
+        {
+          "index": 0,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840138.71778614,
+          "y": 5464923.98146263,
+          "hdg": -0.33804562,
+          "length": 8.66497024
+        },
+        {
+          "index": 1,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840146.89235915,
+          "y": 5464921.10777763,
+          "hdg": -0.33804562,
+          "length": 6.66091005
+        },
+        {
+          "index": 2,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840153.08018602,
+          "y": 5464918.65631043,
+          "hdg": -0.49947145,
+          "length": 9.77140542
+        },
+        {
+          "index": 3,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840161.2356918,
+          "y": 5464913.28182013,
+          "hdg": -0.62519742,
+          "length": 12.22285012
+        },
+        {
+          "index": 4,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840170.88098311,
+          "y": 5464905.80796802,
+          "hdg": -0.85259117,
+          "length": 19.2572775
+        },
+        {
+          "index": 5,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840183.55293107,
+          "y": 5464891.307469,
+          "hdg": -0.85259117,
+          "length": 13.88888888
+        },
+        {
+          "index": 6,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840192.69264662,
+          "y": 5464880.84960908,
+          "hdg": -0.85252402,
+          "length": 12.63082613
+        },
+        {
+          "index": 7,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841328.89721974,
+          "y": 5461114.66734279,
+          "hdg": -0.33434992,
+          "length": 15.28300726
+        },
+        {
+          "index": 8,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841343.33391268,
+          "y": 5461109.65214511,
+          "hdg": -0.33434992,
+          "length": 11.181766
+        },
+        {
+          "index": 9,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841354.41680916,
+          "y": 5461108.46725282,
+          "hdg": 0.00801344,
+          "length": 12.48297324
+        },
+        {
+          "index": 10,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841366.80013263,
+          "y": 5461109.84019438,
+          "hdg": 0.27554466,
+          "length": 11.65078558
+        },
+        {
+          "index": 11,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841377.25967024,
+          "y": 5461114.92576844,
+          "hdg": 0.52393756,
+          "length": 16.03110924
+        },
+        {
+          "index": 12,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841390.68150662,
+          "y": 5461123.63890169,
+          "hdg": 0.76761917,
+          "length": 17.73243239
+        },
+        {
+          "index": 13,
+          "source": "planView.geometry.start",
+          "road_id": "39832",
+          "x": 839734.79230827,
+          "y": 5460088.99713148,
+          "hdg": -2.20930534,
+          "length": 10.0967673
+        },
+        {
+          "index": 14,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839823.80242253,
+          "y": 5460200.72887934,
+          "hdg": -2.26287382,
+          "length": 0.2
+        },
+        {
+          "index": 15,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839823.67479492,
+          "y": 5460200.57489495,
+          "hdg": -2.26287382,
+          "length": 18.81510913
+        },
+        {
+          "index": 16,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839811.7667833,
+          "y": 5460186.00759709,
+          "hdg": -2.25534042,
+          "length": 8.44491115
+        },
+        {
+          "index": 17,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839806.43778304,
+          "y": 5460179.45640538,
+          "hdg": -2.24900475,
+          "length": 27.77731152
+        },
+        {
+          "index": 18,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839789.04111236,
+          "y": 5460157.80156473,
+          "hdg": -2.24148878,
+          "length": 54.04178328
+        },
+        {
+          "index": 19,
+          "source": "planView.geometry.start",
+          "road_id": "39834",
+          "x": 839946.78179574,
+          "y": 5460306.02513409,
+          "hdg": -2.51036516,
+          "length": 20.29787316
+        }
+      ],
+      "elevation_metrics": {
+        "elevation_record_count": 32710,
+        "roads_with_elevation_count": 32710,
+        "roads_missing_elevation_count": 0,
+        "nonzero_elevation_record_count": 0,
+        "all_bcd_zero": true,
+        "nonfinite_elevation_count": 0,
+        "suspicious_absolute_height_reset_count": 0,
+        "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
+      }
+    },
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_2.xodr",
+      "sha256": "c8c57c7282f483592802307aa9ccc839eedf1468279690afa612b0bcd59734c2",
+      "semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+      "semantic_hash_algorithm": "c55v01a-xodr-structure-v1: sha256(JSON of road/link/planView/elevation/lane/laneLink/junction/connection attributes, sorted deterministically)",
+      "byte_size": 82318841,
+      "geo_reference": "+proj=tmerc",
+      "geo_reference_matches_epsg32632": false,
+      "header_offset": null,
+      "road_count": 32710,
+      "junction_count": 3646,
+      "signal_count": 0,
+      "lane_link_count": 32040,
+      "control_points": [
+        {
+          "index": 0,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840138.71778614,
+          "y": 5464923.98146263,
+          "hdg": -0.33804562,
+          "length": 8.66497024
+        },
+        {
+          "index": 1,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840146.89235915,
+          "y": 5464921.10777763,
+          "hdg": -0.33804562,
+          "length": 6.66091005
+        },
+        {
+          "index": 2,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840153.08018602,
+          "y": 5464918.65631043,
+          "hdg": -0.49947145,
+          "length": 9.77140542
+        },
+        {
+          "index": 3,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840161.2356918,
+          "y": 5464913.28182013,
+          "hdg": -0.62519742,
+          "length": 12.22285012
+        },
+        {
+          "index": 4,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840170.88098311,
+          "y": 5464905.80796802,
+          "hdg": -0.85259117,
+          "length": 19.2572775
+        },
+        {
+          "index": 5,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840183.55293107,
+          "y": 5464891.307469,
+          "hdg": -0.85259117,
+          "length": 13.88888888
+        },
+        {
+          "index": 6,
+          "source": "planView.geometry.start",
+          "road_id": "39830",
+          "x": 840192.69264662,
+          "y": 5464880.84960908,
+          "hdg": -0.85252402,
+          "length": 12.63082613
+        },
+        {
+          "index": 7,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841328.89721974,
+          "y": 5461114.66734279,
+          "hdg": -0.33434992,
+          "length": 15.28300726
+        },
+        {
+          "index": 8,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841343.33391268,
+          "y": 5461109.65214511,
+          "hdg": -0.33434992,
+          "length": 11.181766
+        },
+        {
+          "index": 9,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841354.41680916,
+          "y": 5461108.46725282,
+          "hdg": 0.00801344,
+          "length": 12.48297324
+        },
+        {
+          "index": 10,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841366.80013263,
+          "y": 5461109.84019438,
+          "hdg": 0.27554466,
+          "length": 11.65078558
+        },
+        {
+          "index": 11,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841377.25967024,
+          "y": 5461114.92576844,
+          "hdg": 0.52393756,
+          "length": 16.03110924
+        },
+        {
+          "index": 12,
+          "source": "planView.geometry.start",
+          "road_id": "39831",
+          "x": 841390.68150662,
+          "y": 5461123.63890169,
+          "hdg": 0.76761917,
+          "length": 17.73243239
+        },
+        {
+          "index": 13,
+          "source": "planView.geometry.start",
+          "road_id": "39832",
+          "x": 839734.79230827,
+          "y": 5460088.99713148,
+          "hdg": -2.20930534,
+          "length": 10.0967673
+        },
+        {
+          "index": 14,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839823.80242253,
+          "y": 5460200.72887934,
+          "hdg": -2.26287382,
+          "length": 0.2
+        },
+        {
+          "index": 15,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839823.67479492,
+          "y": 5460200.57489495,
+          "hdg": -2.26287382,
+          "length": 18.81510913
+        },
+        {
+          "index": 16,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839811.7667833,
+          "y": 5460186.00759709,
+          "hdg": -2.25534042,
+          "length": 8.44491115
+        },
+        {
+          "index": 17,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839806.43778304,
+          "y": 5460179.45640538,
+          "hdg": -2.24900475,
+          "length": 27.77731152
+        },
+        {
+          "index": 18,
+          "source": "planView.geometry.start",
+          "road_id": "39833",
+          "x": 839789.04111236,
+          "y": 5460157.80156473,
+          "hdg": -2.24148878,
+          "length": 54.04178328
+        },
+        {
+          "index": 19,
+          "source": "planView.geometry.start",
+          "road_id": "39834",
+          "x": 839946.78179574,
+          "y": 5460306.02513409,
+          "hdg": -2.51036516,
+          "length": 20.29787316
+        }
+      ],
+      "elevation_metrics": {
+        "elevation_record_count": 32710,
+        "roads_with_elevation_count": 32710,
+        "roads_missing_elevation_count": 0,
+        "nonzero_elevation_record_count": 0,
+        "all_bcd_zero": true,
+        "nonfinite_elevation_count": 0,
+        "suspicious_absolute_height_reset_count": 0,
+        "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
+      }
+    }
+  ],
+  "visual": {
+    "visible_road_authority": "CARLA_GENERATED_ROAD",
+    "visual_sha256": "CARLA_GENERATED_ROAD",
+    "fbx_input": "DISABLED_CARLA_GENERATED_ROAD",
+    "fbx_role": "FBX_ENVIRONMENT_ONLY",
+    "selected_policy": "CARLA_GENERATED_ROAD",
+    "source_matched_to_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "source_matched_fbx_available": false,
+    "rejected_visible_road_fbx_artifacts": [
+      {
+        "path": "fbx_test_output/osm2world/scene.fbx",
+        "sha256": "fb54045952ffe2716fd6034a9c2d6b125fb82502550afd33824b36fede97a200",
+        "size": 115809148,
+        "classification": "BLENDER_EXPORT_PROVEN"
+      },
+      {
+        "path": "fbx_test_output/osm2world/scene.obj",
+        "classification": "OSM2WORLD_EXECUTION_PROVEN"
+      },
+      {
+        "path": "artifacts/supervisor_delivery/fbx/generated_ingolstadt_osm2world.fbx",
+        "sha256": "48675a4d8d0248d20793d437354ebf7161b4db05e574b7a492fb57aa4d6b1d97",
+        "size": 166231852
+      },
+      {
+        "path": "artifacts/supervisor_delivery/fbx_export/ingolstadt_osm2world.obj",
+        "sha256": "7266a5f0c8be5198c39435fc550c5ed40f34b6f730e85e421d720d9be4787044",
+        "size": 293798947
+      },
+      {
+        "path": "artifacts/supervisor_delivery/fbx_export/ingolstadt_osm2world.obj.mtl",
+        "sha256": "f57566b1a0dec3525263ca3a9967b3315871587ab619bc8d1c4d94b4181e8a4c",
+        "size": 7779
+      }
+    ],
+    "decision_reason": [
+      "No tracked FBX provenance ties any FBX to the selected B2 OSM SHA.",
+      "Using CARLA OpenDRIVE extrusion avoids duplicate visible road authority.",
+      "Future environment FBX must quarantine road, curb, and sidewalk geometry unless re-approved."
+    ]
+  },
+  "vertical": {
+    "datum": "LOCAL_FLAT_ZERO_NO_DEM",
+    "source": "OSM2ODR flat elevation profile generated from the selected OSM; no DEM or geodetic height datum was applied",
+    "offset_m": 0.0,
+    "confidence": "high for flat local-zero profile; not an external vertical geodetic datum",
+    "elevation_metrics": {
+      "elevation_record_count": 32710,
+      "roads_with_elevation_count": 32710,
+      "roads_missing_elevation_count": 0,
+      "nonzero_elevation_record_count": 0,
+      "all_bcd_zero": true,
+      "nonfinite_elevation_count": 0,
+      "suspicious_absolute_height_reset_count": 0,
+      "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
+    }
+  },
+  "c44v01_verdict": "CRS_CONTRACT_READY",
+  "mutations": {
+    "road_junction_lane_lanelink_elevation_mutation": false,
+    "header_metadata_pin": true,
+    "header_metadata_pin_description": "Only the raw run-1 header geoReference was pinned to EPSG:32632; semantic hash matches raw run 1."
+  },
+  "large_artifact_policy": {
+    "xodr_files_committed": false,
+    "reason": "No repository LFS rule or external-artifact policy was found for 82 MB XODR files; manifests retain full hashes and local paths."
+  },
+  "protected_paths_not_modified": [
+    "thesis_results/structural_gap_v1/run_11/",
+    "08_final_structural_gap.xodr",
+    "scenario_b_audit/contract_run/",
+    "submission/results/structural_gap_run11/"
+  ]
+}

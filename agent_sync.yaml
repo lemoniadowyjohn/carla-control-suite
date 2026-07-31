@@ -16,6 +16,17 @@ sensor_rig:
 determinism:
   min_runs: 5
   preferred_runs: 10
+  c55v01a_candidate:
+    campaign: ingolstadt_cooked_perception_v1
+    map_id: INGOLSTADT_COOKED_PERCEPTION_V1_RAW_XODR
+    source_osm_sha256: b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f
+    raw_xodr_sha256: 6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d
+    pinned_xodr_sha256: ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d
+    semantic_sha256: 019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e
+    road_count: 32710
+    junction_count: 3646
+    readiness_state: CRS_METADATA_PINNED_STRUCTURAL_UNREVIEWED
+    geo_reference: "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
   required_signature_fields:
   - xodr_sha256
   - tile_metadata_sha256

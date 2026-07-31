@@ -13,24 +13,24 @@
 | `UNREAL_VERSION` | `4.26` |
 | `TARGET_PLATFORM` | Cook host **Linux (Docker)**; runtime host is Windows 11 |
 | `COOK_CONFIGURATION` | `Shipping` |
-| Governance branch/SHA | `integration/governed-map-quality-20260729` @ `5eddcc54` |
+| Governance branch/SHA | `integration/governed-map-quality-20260729` @ C55V01a final pushed SHA |
 | `run_11` evidence path (prompt §0 is STALE) | **REPLACE** `thesis_results/structural_gap_v1/run_11/` → `submission/results/structural_gap_run11/` |
-| Governed structural XODR (prompt §0 is STALE) | **REPLACE** with the authoritative XODR once pinned (B2); current tracked candidate is a *results* artifact only |
+| Governed structural XODR (prompt §0 is STALE) | **REPLACE** with the C55V01a source-matched candidate `campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr` @ `ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d`; structural review still required before mutation/cook |
 | Governance checkout `carla_main_governed` (prompt §0) | **REPLACE/RETIRE** — not the current authority; current authority is this branch/SHA |
-| OSM2World / Blender / FBX | **historically supplementary; NOT integrated** (matches prompt §0 boundary #4) |
+| OSM2World / Blender / FBX | **FBX visible-road input DISABLED**; visible road authority = `CARLA_GENERATED_ROAD`; OSM2World/Blender artifacts are supplementary environment references only until source-matched to the C55V01a OSM |
 
 ## Section-by-section disposition
 
 | § | Title | Disposition | Notes / substitution |
 |---|---|---|---|
 | 0 | Repository-truth preflight | **REPLACE** | Anchors are stale (branch `verification/map-quality-hardening-20260729` @ `687a69a0`, `carla_main_governed`). Use AG01 authority chain instead. Keep boundaries #1–#6. |
-| 1 | Inputs | **REPLACE** | `XODR_INPUT` = must-resolve (B2); `FBX_INPUT` = must-resolve (B3); `PYTHON_EXECUTABLE` = project `.venv`. |
+| 1 | Inputs | **REPLACE** | `XODR_INPUT` = C55V01a source-matched candidate above; `FBX_INPUT` = `DISABLED_CARLA_GENERATED_ROAD`; `PYTHON_EXECUTABLE` = project `.venv`. |
 | 2 | Version gate | **APPLY (Track A only)** | Pin: CARLA 0.9.16, UE4.26, PythonAPI 0.9.16, `make`. DISABLE the entire Track B block. |
 | 3 | Git/worktree safety | **APPLY** | Already partly executed in this gate; forbids `reset --hard`/`clean -fdx`/force-push — consistent with governance. |
 | 4 | Architecture discovery | **APPLY** | Component statuses already inventoried in AG02 (reuse, do not duplicate). |
 | 5 | Tiled vs monolithic | **APPLY** | Choose `LEGACY_CARLA_LARGE_MAP_TILES` (UE4.26). `UE5_WORLD_PARTITION_MAP` / `HYBRID_*` **DISABLED**. Tile experiment 500/1000/2000 m. |
 | 6 | Source/artifact structure | **APPLY** | New campaign under `artifacts/carla_map_cook/<run_id>/` (separate governed namespace — do not touch `run_11`). |
-| 7 | Input validation (FBX+XODR) | **APPLY when inputs exist** | XODR validation applies now to any candidate; FBX validation deferred until B3 resolved. |
+| 7 | Input validation (FBX+XODR) | **APPLY / FBX DISABLED** | XODR validation applies to the C55V01a candidate; FBX visible-road validation is disabled because the selected visible-road authority is CARLA's XODR extrusion. |
 | 8 | Coordinate contract | **APPLY** | Fill from AG04; UE target = cm, LH, X-fwd/Y-right/Z-up; reuse governed rigid+scale transform. |
 | 9 | Alignment control points | **APPLY** | Numerical evidence decisive; screenshots not sufficient. |
 | 10 | Geometry tiling | **APPLY (legacy naming)** | `<MapName>_Tile_<x>_<y>.fbx`; preserve single world origin. |
@@ -60,7 +60,7 @@
 | 34 | Performance | **APPLY** | Define thresholds from target HW; no universal FPS. |
 | 35 | Determinism | **APPLY** | ≥3 runs; matches `agent_sync.determinism` (min_runs 5). |
 | 36 | Test profiles | **APPLY** | Skipped mandatory test = release failure. |
-| 36A.1 | Road-rendering authority | **APPLY — DECISION REQUIRED** | Select one visible-road producer (see AG03 #10); quarantine OSM2World road/curb/sidewalk if used. |
+| 36A.1 | Road-rendering authority | **APPLY — DECIDED** | Visible-road producer = `CARLA_GENERATED_ROAD`; quarantine OSM2World road/curb/sidewalk from any future environment FBX. |
 | 36A.2 | Governing alignment transform | **APPLY** | Reuse `run_11/alignment.json` (do not re-derive). |
 | 36A.3 | Elevation/vertical datum | **APPLY** | Resolve AG04 §3. |
 | 36A.4 | Traffic lights/signs/landmarks | **APPLY** | XODR signal record insufficient; instantiate CARLA actors. |
@@ -85,8 +85,8 @@
 
 ## Repo-specific replacements required before any execution
 
-1. Authoritative **XODR** path + hash (B2).
-2. Authoritative **FBX** (or a recorded decision to use `CARLA_GENERATED_ROAD`, dropping the FBX requirement) (B3).
+1. Authoritative **XODR** path + hash (B2): C55V01a candidate `ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d`, pending independent structural review.
+2. Authoritative **FBX** (or a recorded decision to use `CARLA_GENERATED_ROAD`, dropping the FBX requirement) (B3): `CARLA_GENERATED_ROAD` selected for visible roads; FBX sections disabled for visible-road authority.
 3. **CARLA 0.9.16 UE4.26 source** checkout + commit + Docker image digest on a Linux host (B4).
 4. **CRS/PROJ** string from the XODR `<geoReference>` (AG04 §1 stage 2).
 5. Confirmed **sensor-calibration semantics** (AG04 §4).

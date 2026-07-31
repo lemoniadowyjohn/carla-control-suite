@@ -1,0 +1,60 @@
+{
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "branch": "integration/governed-map-quality-20260729",
+  "approved_base_sha": "a7919117c245ecd7e0c47ff541e4b4d6151fd8e0",
+  "execution_base_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "generation_head_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "upstream_sha_at_generation": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "local_remote_match_at_generation": true,
+  "real_map_mutation_authorized": false,
+  "protected_artifacts_immutable": true,
+  "report": "C55V01a_visual",
+  "verdict": "CARLA_GENERATED_ROAD_RATIFIED",
+  "visual": {
+    "visible_road_authority": "CARLA_GENERATED_ROAD",
+    "visual_sha256": "CARLA_GENERATED_ROAD",
+    "fbx_input": "DISABLED_CARLA_GENERATED_ROAD",
+    "fbx_role": "FBX_ENVIRONMENT_ONLY",
+    "selected_policy": "CARLA_GENERATED_ROAD",
+    "source_matched_to_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "source_matched_fbx_available": false,
+    "rejected_visible_road_fbx_artifacts": [
+      {
+        "path": "fbx_test_output/osm2world/scene.fbx",
+        "sha256": "fb54045952ffe2716fd6034a9c2d6b125fb82502550afd33824b36fede97a200",
+        "size": 115809148,
+        "classification": "BLENDER_EXPORT_PROVEN"
+      },
+      {
+        "path": "fbx_test_output/osm2world/scene.obj",
+        "classification": "OSM2WORLD_EXECUTION_PROVEN"
+      },
+      {
+        "path": "artifacts/supervisor_delivery/fbx/generated_ingolstadt_osm2world.fbx",
+        "sha256": "48675a4d8d0248d20793d437354ebf7161b4db05e574b7a492fb57aa4d6b1d97",
+        "size": 166231852
+      },
+      {
+        "path": "artifacts/supervisor_delivery/fbx_export/ingolstadt_osm2world.obj",
+        "sha256": "7266a5f0c8be5198c39435fc550c5ed40f34b6f730e85e421d720d9be4787044",
+        "size": 293798947
+      },
+      {
+        "path": "artifacts/supervisor_delivery/fbx_export/ingolstadt_osm2world.obj.mtl",
+        "sha256": "f57566b1a0dec3525263ca3a9967b3315871587ab619bc8d1c4d94b4181e8a4c",
+        "size": 7779
+      }
+    ],
+    "decision_reason": [
+      "No tracked FBX provenance ties any FBX to the selected B2 OSM SHA.",
+      "Using CARLA OpenDRIVE extrusion avoids duplicate visible road authority.",
+      "Future environment FBX must quarantine road, curb, and sidewalk geometry unless re-approved."
+    ]
+  },
+  "donor": {
+    "worktree": "carla_main_governed",
+    "sha": "deb261bf3bd21c2c7b399cbd69434fb8aade5086",
+    "role": "reference only; no source-matched FBX promoted",
+    "blender_version_observed": "4.3.0"
+  }
+}

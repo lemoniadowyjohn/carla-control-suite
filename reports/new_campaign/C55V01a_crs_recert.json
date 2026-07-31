@@ -1,0 +1,181 @@
+{
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "branch": "integration/governed-map-quality-20260729",
+  "approved_base_sha": "a7919117c245ecd7e0c47ff541e4b4d6151fd8e0",
+  "execution_base_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "generation_head_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "upstream_sha_at_generation": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "local_remote_match_at_generation": true,
+  "real_map_mutation_authorized": false,
+  "protected_artifacts_immutable": true,
+  "report": "C55V01a_crs_recert",
+  "verdict": "CRS_CONTRACT_READY",
+  "coordinate_contract": {
+    "path": "reports/visual_structural_reconciliation/C44V01_coordinate_contract.json",
+    "verdict": "CRS_CONTRACT_READY",
+    "missing_metadata": []
+  },
+  "alignment_results": {
+    "report": "C44V01_alignment_results",
+    "generated_at": "2026-07-31T09:52:54.482971+00:00",
+    "source_xodr_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "source_xodr_semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+    "source_xodr_geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "source_xodr_header_offset": null,
+    "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "visible_road_authority": "CARLA_GENERATED_ROAD",
+    "transform": {
+      "model": "XODR_SELF_AUTHORITY_CARLA_GENERATED_ROAD",
+      "scale": 1.0,
+      "rotation_deg": 0.0,
+      "translation_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "fbx_transform": "disabled"
+    },
+    "crs_reprojection": {
+      "applied": false,
+      "reason": "candidate XODR header is already pinned to EPSG:32632 and visible roads are generated from the same XODR",
+      "dst_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    },
+    "diagnostics": {
+      "raw_byte_hashes_equal": false,
+      "raw_semantic_hashes_equal": true,
+      "pinned_semantic_matches_raw_run_1": true,
+      "header_only_pin": true,
+      "n_control_points": 20,
+      "negative_controls_passed": true,
+      "fit_metric": "not_applicable_visible_road_from_same_xodr",
+      "metric_note": "C55V01a certifies source identity and CRS metadata only; structural repair and geometry gap scoring remain blocked."
+    },
+    "negative_controls": [
+      {
+        "name": "10m_translation",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "visible-road self-authority transform forbids nonzero translation"
+      },
+      {
+        "name": "100x_scale",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "unit contract is metres in OpenDRIVE and CARLA converts to centimetres at import only"
+      },
+      {
+        "name": "x_reflection",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+      },
+      {
+        "name": "y_reflection",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+      },
+      {
+        "name": "90deg_rotation",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "OpenDRIVE planView heading is already authoritative for visible roads"
+      },
+      {
+        "name": "wrong_osm_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "source_osm.sha256 must equal the pinned B2 hash"
+      },
+      {
+        "name": "wrong_xodr_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "xodr.sha256 must equal the pinned C55V01a candidate hash"
+      },
+      {
+        "name": "wrong_fbx_hash",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "FBX visible-road input is disabled under CARLA_GENERATED_ROAD"
+      },
+      {
+        "name": "wrong_origin",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "no alternate FBX/origin transform is accepted in the visible-road contract"
+      },
+      {
+        "name": "wrong_header_offset",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "the candidate has no header offset; adding one changes the CRS contract"
+      }
+    ],
+    "verdict": "CRS_CONTRACT_READY"
+  },
+  "negative_controls": [
+    {
+      "name": "10m_translation",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "visible-road self-authority transform forbids nonzero translation"
+    },
+    {
+      "name": "100x_scale",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "unit contract is metres in OpenDRIVE and CARLA converts to centimetres at import only"
+    },
+    {
+      "name": "x_reflection",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+    },
+    {
+      "name": "y_reflection",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "handedness conversion is not a free reflection for the OpenDRIVE source frame"
+    },
+    {
+      "name": "90deg_rotation",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "OpenDRIVE planView heading is already authoritative for visible roads"
+    },
+    {
+      "name": "wrong_osm_hash",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "source_osm.sha256 must equal the pinned B2 hash"
+    },
+    {
+      "name": "wrong_xodr_hash",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "xodr.sha256 must equal the pinned C55V01a candidate hash"
+    },
+    {
+      "name": "wrong_fbx_hash",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "FBX visible-road input is disabled under CARLA_GENERATED_ROAD"
+    },
+    {
+      "name": "wrong_origin",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "no alternate FBX/origin transform is accepted in the visible-road contract"
+    },
+    {
+      "name": "wrong_header_offset",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "the candidate has no header offset; adding one changes the CRS contract"
+    }
+  ],
+  "thresholds_broadened": false,
+  "vertical_reported_separately": true
+}
