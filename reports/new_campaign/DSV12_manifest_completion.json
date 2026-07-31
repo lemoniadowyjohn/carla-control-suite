@@ -1,0 +1,41 @@
+{
+  "report": "DSV12_manifest_completion",
+  "task_id": "DSV12-MANIFEST",
+  "model": "DeepSeek V4 Light",
+  "mode": "BOUNDED_WRITE_MANIFESTS_ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "953ae945deb9064b35ff145b53f97dff969673d9",
+  "writer_lock": {"task_id": "DSV12-MANIFEST", "acquired_via": "ultimate_pipeline.contracts.writer_lock.WriterLock.acquire", "released_after_push": true},
+  "verdict": "MANIFEST_COMPLETED",
+  "files_modified": [
+    "campaigns/ingolstadt_cooked_perception_v1/manifest.json",
+    "campaigns/ingolstadt_cooked_perception_v1/candidate/manifest.json",
+    "reports/new_campaign/DSV12_manifest_completion.md",
+    "reports/new_campaign/DSV12_manifest_completion.json"
+  ],
+  "fields_bound": [
+    {
+      "field": "converter_profile",
+      "value": "osm_to_xodr_wrapper.py (ultimate_pipeline/osm) sha256 2678373C3AC9AB688D6B7CDFB30D326345605FF9162CC3901F1A51323DFE4973 — donor worktree codex-full-pipeline-rerun-20260427 (DSV02 matrix: codex-full-pipeline-rerun variant); Osm2Odr invoked via CARLA PythonAPI (carla.Osm2Odr + Osm2OdrSettings)",
+      "evidence": "osm_to_xodr_conversion_status.json donor_root; on-disk wrapper sha256 == DSV02 matrix; wrapper L151-180 carla.Osm2Odr.convert"
+    },
+    {
+      "field": "carla_osm2odr_version",
+      "value": "UNKNOWN_UNSOURCED (Osm2Odr via CARLA PythonAPI carla.Osm2Odr; no CARLA/Osm2Odr version string found in donor code or logs)",
+      "evidence": "grep of donor worktree + carla_client.log — no version string; bound unsourced per coordinator rule"
+    },
+    {
+      "field": "crs_contract_hash",
+      "value": "8886CE90FD2F7D4F61B319FBCB162B0FD536211AFA31EEF2FD4F32921084D000",
+      "evidence": "sha256 of reports/visual_structural_reconciliation/C44V01_coordinate_contract.json (14823 bytes), recomputed and confirmed"
+    }
+  ],
+  "other_fields_modified": 0,
+  "json_validated": true,
+  "notes": [
+    "OSM2World/Blender versions remain N/A-by-policy (CARLA_GENERATED_ROAD)",
+    "random seeds flag from DSV10 out of scope for DSV12",
+    "follow-up: source carla_osm2odr_version from carla.__version__ / get_server_version() at next runtime"
+  ],
+  "checked_at": "2026-07-31T00:00:00Z"
+}
