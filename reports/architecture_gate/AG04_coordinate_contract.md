@@ -7,7 +7,7 @@ This is the **contract skeleton** the cook campaign must fill (cooking-prompt §
 | Stage | Frame | Units | Handedness / axes | Pinned? |
 |---|---|---|---|---|
 | 1 | OSM WGS84 lat/lon | degrees | geographic | **bbox pinned**: lat `48.74936–48.77444`, lon `11.42227–11.47882` (Ingolstadt), from `agent_sync.yaml` |
-| 2 | Projected CRS | metres | E/N | **UNKNOWN → must-resolve** — no `geoReference`/EPSG/PROJ string tracked in `ultimate_pipeline/`; must be read from the authoritative XODR `<geoReference>` once pinned |
+| 2 | Projected CRS | metres | E/N | **UNKNOWN → must-resolve** — no `geoReference`/EPSG/PROJ string tracked in `ultimate_pipeline/`; must be read from the authoritative XODR `<geoReference>` once pinned **[07-31 #2: RESOLVED — EPSG:32632 (tmerc 9E) read from pinned XODR ff2a05e7]** |
 | 3 | OpenDRIVE local metric frame | metres | RH, Z-up | governed by authoritative XODR (unpinned → B2). `<offset>` handling **must-resolve** **[07-31 #2: XODR pinned ff2a05e7; B2 CLOSED]** |
 | 4 | FBX source frame | (mesh units) | mesh axis system | **N/A now** (no FBX). Must-resolve when a visual source exists |
 | 5 | Unreal frame | **centimetres** | **left-handed, X-forward, Y-right, Z-up** | **pinned by engine** (UE4.26 target). Metre→cm conversion must be applied **exactly once** |

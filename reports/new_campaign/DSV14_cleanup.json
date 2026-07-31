@@ -1,0 +1,25 @@
+{
+  "report": "DSV14_cleanup",
+  "task_id": "DSV14-CLEANUP",
+  "model": "DeepSeek V4 Light",
+  "mode": "BOUNDED_WRITE_AG04_REPORTS_ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "f6448fc76e82edb6ec6a059f1ed4211c3cbe16fe",
+  "writer_lock": {"task_id": "DSV14-CLEANUP", "acquired_via": "ultimate_pipeline.contracts.writer_lock.WriterLock.acquire", "released_after_push": true},
+  "verdict": "CLEANUP_APPLIED",
+  "ag04_row2_tag": "[07-31 #2: RESOLVED — EPSG:32632 (tmerc 9E) read from pinned XODR ff2a05e7]",
+  "carla_osm2odr_version": {
+    "re_attempted": true,
+    "found": false,
+    "sources_checked": ["PythonAPI/carla/dist egg/whl", "LibCarla Version.h", "carla dist-info / venv markers", "carla_client.log x2", "carla_load_probe.json", "CARLA_PROBE_*.txt"],
+    "binding_unchanged": "UNKNOWN_UNSOURCED (both manifests untouched)",
+    "sourcing_notes": [
+      "carla.__version__ / client.get_server_version() at next runtime session (authoritative)",
+      "PythonAPI wheel filename of the source build: carla-0.9.16-cp38-linux_x86_64.whl",
+      "E:\\CARLA packaged wheel carla-0.9.16-cp312 plausible but unproven as conversion env - not bound"
+    ]
+  },
+  "files_modified": ["reports/architecture_gate/AG04_coordinate_contract.md", "reports/new_campaign/DSV14_cleanup.md", "reports/new_campaign/DSV14_cleanup.json"],
+  "manifests_modified": false,
+  "checked_at": "2026-07-31T00:00:00Z"
+}
