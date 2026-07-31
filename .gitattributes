@@ -1,3 +1,5 @@
+campaigns/ingolstadt_cooked_perception_v1/**/*.xodr filter=lfs diff=lfs merge=lfs -text
+campaigns/ingolstadt_cooked_perception_v1/**/*.osm filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/20260803T150000Z/candidate_f4_piecewise_profiles.xodr filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/20260803T160000Z/candidate_f5_bounded_offsets.xodr filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/20260803T170000Z/candidate_f6_seam_repaired.xodr filter=lfs diff=lfs merge=lfs -text
