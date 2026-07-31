@@ -1,0 +1,48 @@
+{
+  "report": "DSV11_ag_refresh",
+  "task_id": "DSV11-AG-REFRESH",
+  "model": "DeepSeek V4 Light",
+  "mode": "BOUNDED_WRITE_AG_REPORTS_LEDGER_REPORTS",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "ac43fe23d69dc51b8c115de28be10e53d75da7d7",
+  "writer_lock": {"task_id": "DSV11-AG-REFRESH", "acquired_via": "ultimate_pipeline.contracts.writer_lock.WriterLock.acquire", "released_after_push": true},
+  "verdict": "AG_REFRESH_APPLIED",
+  "verdict_transition": "REQUIRES_BASE_CORRECTION -> BLOCKED_TOOLCHAIN",
+  "banner_inserted_after_line": 9,
+  "blocker_status": {
+    "B1": "CLOSED (prior, 2026-07-31)",
+    "B2": "CLOSED 2026-07-31 (XODR ff2a05e7 LFS-tracked, OSM b9e07465, EPSG:32632 @ 64139d3b)",
+    "B3": "CLOSED 2026-07-31 (CARLA_GENERATED_ROAD ratified, vertical LOCAL_FLAT_ZERO)",
+    "B4": "OPEN (cook toolchain) - sole remaining blocker",
+    "B5": "OPEN (MED)",
+    "B6": "OPEN (partially)"
+  },
+  "codex_55_authorized": {"c55v01b": true, "full_cook_p5": false, "real_map_mutation": false},
+  "files_modified": [
+    "reports/architecture_gate/AG07_verdict.md",
+    "reports/architecture_gate/AG07_verdict.json",
+    "reports/architecture_gate/AG03_target_architecture.md",
+    "reports/architecture_gate/AG05_unreal_parameters.md",
+    "reports/architecture_gate/AG04_coordinate_contract.md",
+    "reports/architecture_gate/AG06_implementation_contract.md",
+    "AGENT_TASK_LEDGER.md",
+    "reports/new_campaign/DSV11_ag_refresh.md",
+    "reports/new_campaign/DSV11_ag_refresh.json"
+  ],
+  "ledger_update": {"C55V01b": {"status": "BLOCKED", "note": "AUTHORIZED by Claude 2026-07-31 (base corrected, CRS ready, determinism proven); prereq = Codex 5.5 quota only; candidate-only, STOP before cook (B4)."}},
+  "staleness_fixed_from_dsv09_map": {
+    "AG07_verdict.md": [34, 35, 40, 57, 73, 74, 91, 92],
+    "AG03_target_architecture.md": [4, 28, 29, 46, 47],
+    "AG05_unreal_parameters.md": [15, 16],
+    "AG04_coordinate_contract.md": [11],
+    "AG06_implementation_contract.md": [35]
+  },
+  "original_text_preserved": true,
+  "notes": [
+    "AG07 md L11 heading + final status block superseded in place (original text retained in preserved banners/rows)",
+    "coordinate_contract projCRS(UNKNOWN) -> EPSG:32632 consistency fix (md + json)",
+    "AG04 row 2 (Projected CRS UNKNOWN) not tagged - outside DSV09 staleness map; flagged for next refresh",
+    "UNREAL_COOKING_PARAMETERS.md verified NOT stale - untouched"
+  ],
+  "checked_at": "2026-07-31T00:00:00Z"
+}

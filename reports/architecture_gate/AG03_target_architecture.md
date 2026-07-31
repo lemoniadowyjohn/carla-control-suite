@@ -1,7 +1,7 @@
 # AG03 — Target Architecture Selection + Pinned Decisions
 
 **Target (exactly one): `E_COOKED_LOADABLE_CUSTOM_MAP`** — reached via **Track A (CARLA 0.9.16 / Unreal Engine 4.26)**.
-**Status of target: SELECTED-BUT-NOT-YET-ACTIONABLE** — the two primary inputs the cook requires (an authoritative FBX visual mesh and a pinned authoritative XODR describing the *same* map) do not exist in a pinned form in this worktree (see blockers B2/B3 in AG07).
+**Status of target: SELECTED-BUT-NOT-YET-ACTIONABLE** — the two primary inputs the cook requires (an authoritative FBX visual mesh and a pinned authoritative XODR describing the *same* map) do not exist in a pinned form in this worktree (see blockers B2/B3 in AG07). **[07-31 #2: B2/B3 closed — XODR pinned @ 64139d3b (ff2a05e7, EPSG:32632); CARLA_GENERATED_ROAD ratified]**
 
 ## 1. Track selection (cooking-prompt §2 version gate)
 
@@ -25,8 +25,8 @@
 | 10 | Visible-road authority | **CURRENT:** CARLA runtime extrusion from XODR (`load_world`). **TARGET:** must select exactly one of `XODR_DERIVED_MESH` / `CARLA_GENERATED_ROAD` / `ROADRUNNER_MESH` (cooking-prompt §36A.1) — **DECISION REQUIRED at cook (P6), recommend `CARLA_GENERATED_ROAD` unless a proven FBX road mesh exists** | must-decide |
 | 11 | OSM2World role | **Supplementary, referenced-but-source-absent, non-authoritative, NOT integrated.** If ever used, environmental geometry only; road/curb/sidewalk objects must be quarantined by semantic filter | HIGH |
 | 12 | Blender role | **NONE** (absent) | HIGH |
-| 13 | Authoritative XODR | **UNKNOWN → must-resolve.** `settings.INPUT_XODR` = computed path `{CITY}_osm_auto.xodr` to a non-tracked runtime file; `MANUAL_MAP_XODR` default `""`; only tracked XODR is a results artifact | **BLOCKER (B2)** |
-| 14 | Authoritative FBX/visual input | **ABSENT → must-resolve** (0 tracked FBX) | **BLOCKER (B3)** |
+| 13 | Authoritative XODR | **UNKNOWN → must-resolve.** `settings.INPUT_XODR` = computed path `{CITY}_osm_auto.xodr` to a non-tracked runtime file; `MANUAL_MAP_XODR` default `""`; only tracked XODR is a results artifact | **BLOCKER (B2)** **[07-31 #2: CLOSED]** |
+| 14 | Authoritative FBX/visual input | **ABSENT → must-resolve** (0 tracked FBX) | **BLOCKER (B3)** **[07-31 #2: CLOSED]** |
 | 15 | Coordinate transform | WGS84 → projected CRS → OpenDRIVE metric → FBX → UE cm (LH, X-fwd, Y-right, Z-up) → CARLA world. bbox pinned (Ingolstadt). **CRS/PROJ string UNKNOWN → must-resolve** (no `geoReference`/EPSG tracked) | must-resolve |
 | 16 | Vertical transform | **UNKNOWN → must-resolve** (flat vs XODR-elevated vs DEM). `ultimate_pipeline/{elevation,dem}/` exist; `run_11` has `elevation_stats_auto.json` | must-resolve |
 | 17 | Manual/reference map role | Grid0821/Grid0828 = **evaluation reference only**, not production input. Provenance drift (mislabeled `grid0828` file carrying Grid0821 content) is a **P5 registry** task, not P4 | HIGH |
@@ -43,8 +43,8 @@
 ## 3. Path A → E (what must happen, in order)
 
 1. Close base governance (P2 hook test) — *precondition, not architecture*.
-2. Pin an **authoritative XODR** (real, tracked, hashed, provenance-verified) — resolves B2.
-3. Provide/produce an **authoritative FBX** describing the *same* map (or select `CARLA_GENERATED_ROAD` and drop the FBX requirement) — resolves B3/decision #10.
+2. Pin an **authoritative XODR** (real, tracked, hashed, provenance-verified) — resolves B2. **[07-31 #2: done — B2 CLOSED @ 64139d3b]**
+3. Provide/produce an **authoritative FBX** describing the *same* map (or select `CARLA_GENERATED_ROAD` and drop the FBX requirement) — resolves B3/decision #10. **[07-31 #2: done — B3 CLOSED, CARLA_GENERATED_ROAD selected]**
 4. Stand up a **CARLA 0.9.16 UE4.26 source build** on a supported (Linux/Docker) host — resolves B4/toolchain.
 5. Only then execute the parameterized cooking prompt (AG05) under a separate governed run namespace.
 
