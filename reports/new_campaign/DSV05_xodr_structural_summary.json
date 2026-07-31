@@ -1,0 +1,64 @@
+{
+  "report": "DSV05_xodr_structural_summary",
+  "task_id": "DSV03-06-REPORTS",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "target": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "lfs_oid": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "byte_size": 82318919
+  },
+  "verdict": "STRUCTURAL_SUMMARY_CAPTURED",
+  "tools": [
+    {
+      "tool": "check_post_tiling_integrity.py",
+      "path": "carla_main_governed_worktrees/codex-jsnap-20260428/ultimate_pipeline/quality/check_post_tiling_integrity.py",
+      "read_only": true,
+      "run_succeeded": true,
+      "defaults": "eps_xy=0.05, eps_hdg=0.01"
+    },
+    {
+      "tool": "check_lane_link_targets_exist.py",
+      "path": "carla_main_governed_worktrees/codex-jsnap-20260428/ultimate_pipeline/quality/check_lane_link_targets_exist.py",
+      "read_only": true,
+      "run_succeeded": true
+    },
+    {
+      "tool": "elevation_summary.py",
+      "path": "codex-jsnap copy broken (missing ultimate_pipeline.core.odr_io); governed copy DEM-guidance only",
+      "read_only": true,
+      "run_succeeded": false,
+      "note": "no XODR elevation records emitted"
+    }
+  ],
+  "counts": {
+    "roads": 32710,
+    "junctions": 3646,
+    "connections": null,
+    "laneLinks": null,
+    "signals": 0,
+    "elevation_records": null,
+    "primitive_types": null,
+    "road_link_coverage_pct": null
+  },
+  "mechanical_issues": {
+    "duplicate_ids": 0,
+    "dangling_junction_references": 0,
+    "orphan_road_links": 0,
+    "dangling_lane_link_targets": 0,
+    "seam_endpoint_issues": 27645,
+    "warnings": 0,
+    "tool_ok": false
+  },
+  "vertical": {
+    "profile": "LOCAL_FLAT_ZERO_NO_DEM",
+    "expected_by_decision": true,
+    "defect_flag": false
+  },
+  "validity_verdict": "DEFERRED_TO_CODEX_55_C55V01B",
+  "handoff_notes": [
+    "semantic_sha256 019fc30e... shared by run_1/pinned/run_2 (header-only pin)",
+    "27,645 seam_endpoint_issues is the highest-signal item for structural-freeze review"
+  ],
+  "checked_at": "2026-07-31T00:00:00Z"
+}

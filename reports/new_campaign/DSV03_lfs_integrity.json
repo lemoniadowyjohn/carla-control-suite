@@ -1,0 +1,52 @@
+{
+  "report": "DSV03_lfs_integrity",
+  "task_id": "DSV03-06-REPORTS",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "64139d3b2560cb7f00061092f22b481adf963af8",
+  "verdict": "LFS_INTEGRITY_VERIFIED",
+  "lfs_files": [
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1.xodr",
+      "oid": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d",
+      "size": 82318841,
+      "manifest_sha256": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d",
+      "manifest_byte_size": 82318841,
+      "match": true
+    },
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+      "oid": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "size": 82318919,
+      "manifest_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "manifest_byte_size": 82318919,
+      "match": true
+    },
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_2.xodr",
+      "oid": "c8c57c7282f483592802307aa9ccc839eedf1468279690afa612b0bcd59734c2",
+      "size": 82318841,
+      "manifest_sha256": "c8c57c7282f483592802307aa9ccc839eedf1468279690afa612b0bcd59734c2",
+      "manifest_byte_size": 82318841,
+      "match": true
+    },
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "oid": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "size": 11154738,
+      "manifest_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "manifest_byte_size": 11154738,
+      "match": true
+    }
+  ],
+  "mismatch_count": 0,
+  "lfs_pointer_bytes_in_tree": true,
+  "gitattributes_routes_lfs": true,
+  "candidate_gitignore_blocks_xodr": false,
+  "campaign_dir_clean": true,
+  "local_equals_upstream": true,
+  "upstream_sha": "64139d3b2560cb7f00061092f22b481adf963af8",
+  "notes": "run_1/pinned/run_2 share semantic_sha256 019fc30e... (header-only pin; structural content identical by design)",
+  "checked_at": "2026-07-31T00:00:00Z"
+}

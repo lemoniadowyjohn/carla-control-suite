@@ -1,0 +1,92 @@
+{
+  "report": "DSV04_hygiene_sweep",
+  "task_id": "DSV03-06-REPORTS",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "64139d3b2560cb7f00061092f22b481adf963af8",
+  "verdict": "HYGIENE_GAPS_FOUND",
+  "evidence_tracked": {
+    "visual_structural_reconciliation": true,
+    "new_campaign_C55V01a": true,
+    "delegation_prompts": true,
+    "CLAUDE_donor_decision": true,
+    "AG03A_visible_road_decision": true,
+    "untracked_orphans": []
+  },
+  "tracked_state": {
+    "tracked_modifications": 0,
+    "untracked_entries": [
+      ".githooks/", ".idea/", "carla_governed/", "external/", "nul", "vehicle.",
+      "reports/C01_carla_runtime_audit.json", "reports/C01_carla_runtime_audit.md",
+      "reports/R01_final_integration_gate.md", "reports/claude_independent_governance_review/",
+      "reports/codex55_safety/", "reports/deepseek_governance_inventory/",
+      "reports/delta_base_verification/", "reports/source_visual_closure/",
+      "ultimate_pipeline/tools/junction_connector_rebuild.py"
+    ]
+  },
+  "preservation_invariants": [
+    {
+      "path": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr (carla_-main)",
+      "sha256": "C765C4DAF84E051934E420D4AE71609EF7A0F3CC34EB02B2165EEB8A1A1EEA3A",
+      "byte_size": 13845703,
+      "tracked": true,
+      "unchanged_vs_dsv02": true
+    },
+    {
+      "path": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr (governed)",
+      "sha256": "2C120DC7CA739E40E7A5B409CC7324B9BED7C5392F550CFF98455F7560DF14B1",
+      "byte_size": 16031746,
+      "tracked": false,
+      "unchanged_vs_dsv02": true
+    },
+    {
+      "path": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr.bak_elevated",
+      "sha256": "0F47A9F01E2C3BD9D8AE312DEB0EB05827CF3453B1131398FB1B31DD81DA3F33",
+      "byte_size": 16031746,
+      "tracked": false,
+      "unchanged_vs_dsv02": null
+    },
+    {
+      "path": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr.bak_prewidthfix",
+      "sha256": "DF09D57C72D84B011D665C4010BC9849D0CA7E10A530FF09ADB72B208BA6C2D1",
+      "byte_size": 16031381,
+      "tracked": false,
+      "unchanged_vs_dsv02": null
+    },
+    {
+      "path": "artifacts/final_runs/scenario_b_audit/contract_run/08_final_structural_gap.xodr.bak_utm",
+      "sha256": "90FD0FDEDA75A58A0D6106F47CE33F1A3E63D4192C4B0E1711E4E17EBB6B3033",
+      "byte_size": 13846068,
+      "tracked": false,
+      "unchanged_vs_dsv02": null
+    },
+    {
+      "path": "thesis_results/structural_gap_v1/run_11/ (governed, 4 files)",
+      "files": {
+        "fig_intersection_density.png": "5A0EA8FE25916C8D53F817AD929C8AE9FAE7687F3C47EB44F29FFAB0E7AA5529",
+        "fig_road_type_distribution.png": "D5C716A1167E8F68FCC7164975E373C992E5D4B2A67FF0F7988CC4F2CB0D8944",
+        "fig_semantic_depletion_bars.png": "D275436F0E6F195A255962A754EB492E0B5679BD2E1D017806005DDA977A537B",
+        "road_length_measurement.json": "6988A350D5A52ED493690C1BB85ED58D05316766D0A96D6A8528BE1E5DA79E64"
+      },
+      "tracked": false
+    },
+    {
+      "path": "work/codex-full-pipeline-rerun-20260427/thesis_results/structural_gap_v1/run_11/auto_aligned_rigid.xodr",
+      "sha256": "03AA1841831816C77B8061252FE6270F802E27D33F323BB1073CE6DC4BAEA2DE",
+      "byte_size": 13625961,
+      "tracked": false,
+      "unchanged_vs_dsv02": true
+    }
+  ],
+  "ledger_cross_check": {
+    "VXR-COORD": {"ledger": "RESOLVED", "reality": "consistent"},
+    "DSV01": {"ledger": "READY", "reality": "executed, reports tracked", "stale": true},
+    "DSV02": {"ledger": "READY", "reality": "executed, reports tracked", "stale": true},
+    "C44V01": {"ledger": "BLOCKED", "reality": "executed, reports tracked, prereq satisfied", "stale": true},
+    "C55V01": {"ledger": "BLOCKED", "reality": "C55V01a staged @ c264e0c8/d6cd4e0b", "stale": true},
+    "P4_row_B2": {"ledger": "B2 OPEN", "reality": "B2 CLOSED @ 64139d3b (LFS, DSV03 verified)", "stale": true}
+  },
+  "stale_ledger_rows": ["DSV01", "DSV02", "C44V01", "C55V01", "P4/B2"],
+  "checked_at": "2026-07-31T00:00:00Z"
+}
