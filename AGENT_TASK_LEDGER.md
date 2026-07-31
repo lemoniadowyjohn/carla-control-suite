@@ -48,4 +48,4 @@ See `.agent_locks/writer.lock` (runtime; not tracked). Policy: `.agent_locks/REA
 | DSV02 | OSM→XODR + structural-validation donor discovery | **RESOLVED** | XODR_DONORS_MAPPED; best OSM->XODR donor codex-full-pipeline-rerun@6b250621; report DSV02_xodr_donor_matrix |
 | C44V01 | Read-only coordinate-contract + FBX/XODR alignment verifier | **RESOLVED** | CRS_CONTRACT_READY after C55V01a recert; CRS=EPSG:32632; report C44V01_coordinate_contract |
 | C55V01a | New governed structural + matched visual candidate — CRS stage | **RESOLVED** | CRS_CONTRACT_READY_CANDIDATES_STAGED @ d6cd4e0b; OSM b9e07465, XODR ff2a05e7 (EPSG:32632), VISUAL=CARLA_GENERATED_ROAD, vertical=LOCAL_FLAT_ZERO; B2 LFS-closed @64139d3b |
-| C55V01b | New governed structural + matched visual candidate — structural freeze | **BLOCKED** | structural validation+freeze of new XODR; prereq Codex 5.5 quota + Claude authorization; B4 gates any cook |
+| C55V01b | New governed structural + matched visual candidate — structural freeze | **BLOCKED** | AUTHORIZED by Claude 2026-07-31 (base corrected, CRS ready, determinism proven); prereq = Codex 5.5 quota only; candidate-only, STOP before cook (B4). |

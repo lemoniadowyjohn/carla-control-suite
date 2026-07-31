@@ -32,7 +32,7 @@ P5 is **governance & artifact-safety integration** — code + tests only. Diffic
 1. `git rev-parse HEAD == origin/integration/governed-map-quality-20260729`.
 2. A **committed** `reports/architecture_gate/AG07_verdict.*` reads `ARCHITECTURE_APPROVED_FOR_CODEX_55` (**not present** — currently `REQUIRES_BASE_CORRECTION`).
 3. B1 (P2 hook governance) RESOLVED; `GOV-HOOK-001 = RESOLVED` with `reports/fresh_claude_hook_test/` evidence present.
-4. B2 authoritative XODR pinned; B3 FBX/visible-road decision recorded; B4 toolchain available — *for the cook campaign only; P5 code/tests can proceed once B1 + AG07 approval hold.*
+4. B2 authoritative XODR pinned; B3 FBX/visible-road decision recorded; B4 toolchain available — *for the cook campaign only; P5 code/tests can proceed once B1 + AG07 approval hold.* **[07-31 #2: B2/B3 satisfied; B4 still open]**
 
 If precondition 2 or 3 fails → P5 returns `BLOCKED_INVALID_BASE` and mutates nothing (exactly as `C55_08` already did).
 

@@ -1,6 +1,6 @@
 {
   "report": "AG07_verdict",
-  "verdict": "REQUIRES_BASE_CORRECTION",
+  "verdict": "BLOCKED_TOOLCHAIN",
   "secondary_conditions": ["BLOCKED_TOOLCHAIN"],
   "cleared_conditions": ["FAIL_HOOK_GOVERNANCE"],
   "reverification": {
@@ -12,12 +12,18 @@
     "verdict_change": "none (still REQUIRES_BASE_CORRECTION)",
     "delta": "B1 CLOSED (P2/FCH01 PASS @ b6c09340, GOV-HOOK-001 RESOLVED); B2/B3/B4/B5/B6 remain open; post-P4 commits 867811c4/1884d9d0/d4b0fe14 are governance-only"
   },
-  "codex_55_authorized": false,
+  "reverification_2026_07_31_2": {
+    "date": "2026-07-31",
+    "head_sha": "ac43fe23d69dc51b8c115de28be10e53d75da7d7",
+    "verdict_change": "REQUIRES_BASE_CORRECTION -> BLOCKED_TOOLCHAIN (B1/B2/B3 closed; base corrected)",
+    "delta": "B2 CLOSED @64139d3b (XODR ff2a05e7 LFS-tracked, OSM b9e07465, EPSG:32632); B3 CLOSED (CARLA_GENERATED_ROAD ratified, vertical LOCAL_FLAT_ZERO); sole remaining blocker B4 (cook toolchain); C55V01b authorized candidate-only"
+  },
+  "codex_55_authorized": {"c55v01b": true, "full_cook_p5": false},
   "unreal_prompt_ready": false,
   "repository": "github.com/lemoniadowyjohn/carla-control-suite.git",
   "worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
   "branch": "integration/governed-map-quality-20260729",
-  "sha": "d4b0fe14b51a714434a77c798d80e5f847eba748",
+  "sha": "ac43fe23d69dc51b8c115de28be10e53d75da7d7",
   "current_architecture": "A_RUNTIME_XODR_ONLY",
   "target_architecture": "E_COOKED_LOADABLE_CUSTOM_MAP",
   "prompt_status_actual": {
@@ -29,8 +35,8 @@
   },
   "blockers": [
     {"id": "B1", "status": "CLOSED", "closed_on": "2026-07-31", "desc": "P2 fresh-session hook test PASSED (FCH01 @ b6c09340); GOV-HOOK-001 RESOLVED", "severity": "CRITICAL", "maps_to": "FAIL_HOOK_GOVERNANCE (cleared)"},
-    {"id": "B2", "desc": "authoritative XODR not pinned (INPUT_XODR is computed path; only tracked xodr is a results artifact)", "severity": "CRITICAL"},
-    {"id": "B3", "desc": "authoritative FBX / visible-road source absent (0 tracked FBX)", "severity": "HIGH"},
+    {"id": "B2", "status": "CLOSED", "closed_on": "2026-07-31", "desc": "authoritative XODR pinned + LFS-tracked: candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr sha256 ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d (EPSG:32632) @ 64139d3b; OSM b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f", "severity": "CRITICAL"},
+    {"id": "B3", "status": "CLOSED", "closed_on": "2026-07-31", "desc": "CARLA_GENERATED_ROAD ratified (no FBX required; C44V01_coordinate_contract.md, AG03A_visible_road_decision.md; vertical LOCAL_FLAT_ZERO)", "severity": "HIGH"},
     {"id": "B4", "desc": "cook toolchain absent on host (packaged CARLA only; no source tree; Linux/Docker cook path unproven on Windows)", "severity": "HIGH", "maps_to": "BLOCKED_TOOLCHAIN"},
     {"id": "B5", "desc": "osm/tiling/perception subsystem source-absent (only .pyc)", "severity": "MEDIUM"},
     {"id": "B6", "desc": "P1 (delta_base_verification) and P5 (codex55_safety) evidence untracked", "severity": "LOW"}
@@ -41,13 +47,13 @@
     "unreal_version": "UE4.26",
     "unreal_commit": "UNKNOWN_MUST_RESOLVE",
     "build_workflow": "make_trackA_linux_docker_cook_ue5_disabled",
-    "authoritative_xodr": "UNKNOWN_MUST_RESOLVE",
-    "authoritative_visual_input": "ABSENT_MUST_RESOLVE",
-    "visible_road_source": "carla_runtime_xodr_extrusion_target_decide",
+    "authoritative_xodr": "candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d EPSG:32632 @64139d3b",
+    "authoritative_visual_input": "CARLA_GENERATED_ROAD_RATIFIED",
+    "visible_road_source": "carla_runtime_xodr_extrusion_load_world_DECIDED_CARLA_GENERATED_ROAD",
     "osm2world_role": "supplementary_source_absent_not_integrated",
     "blender_role": "NONE",
     "tiling": "LEGACY_CARLA_LARGE_MAP_TILES_target",
-    "coordinate_contract": "WGS84->projCRS_UNKNOWN->OpenDRIVE_m->FBX->UE_cm_LH->CARLA",
+    "coordinate_contract": "WGS84->projCRS_EPSG32632->OpenDRIVE_m->FBX->UE_cm_LH->CARLA",
     "vertical_contract": "UNKNOWN_MUST_RESOLVE",
     "semantic_strategy": "carla_ue4_tagger_deferred",
     "collision_strategy": "per_semantic_class_deferred",

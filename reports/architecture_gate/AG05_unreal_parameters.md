@@ -12,8 +12,8 @@ Full section-by-section disposition: **`reports/architecture_gate/UNREAL_COOKING
 ## UNREAL PROMPT READY = **NO (parameterized, not authorized)**
 
 The parameterization is complete and binding, but three inputs must close first:
-1. Authoritative **XODR** (pinned, tracked, hashed) — B2.
-2. Authoritative **FBX** *or* a recorded `CARLA_GENERATED_ROAD` decision — B3.
+1. Authoritative **XODR** (pinned, tracked, hashed) — B2. **[07-31 #2: CLOSED @ 64139d3b]**
+2. Authoritative **FBX** *or* a recorded `CARLA_GENERATED_ROAD` decision — B3. **[07-31 #2: decision recorded; B3 CLOSED]**
 3. **CARLA 0.9.16 / UE4.26 source** build on a supported Linux/Docker host — B4.
 
 Plus resolve: CRS/PROJ from XODR `<geoReference>`, vertical datum, and the sensor-calibration contradiction (AG04).
