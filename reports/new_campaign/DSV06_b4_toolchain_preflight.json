@@ -1,0 +1,75 @@
+{
+  "report": "DSV06_b4_toolchain_preflight",
+  "task_id": "DSV03-06-REPORTS",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "verdict": "B4_PREREQS_INVENTORIED",
+  "blockers": [
+    "UE4.26 source access (Epic account + EULA + CARLA UE4.26 fork)",
+    "CARLA 0.9.16 source tree (absent; must clone -b 0.9.16 + submodules, pin commit)",
+    "Docker CLI/Desktop (absent)",
+    "Linux build deps (clang/cmake/ninja/python3.7+)",
+    "Disk headroom (only F: 111.7 GB viable for ~120-150 GB build)",
+    "Toolchain pin manifest (no pinned UE/CARLA commit+digest)"
+  ],
+  "host_prerequisites": {
+    "wsl": {"present": true, "distros": ["Ubuntu (WSL2, stopped)", "docker-desktop (WSL2, default, stopped)"], "wsl1": false},
+    "docker": {"present": false, "note": "docker CLI absent; stopped docker-desktop WSL distro only"},
+    "git_lfs": {"present": true, "version": "3.5.1"},
+    "disk_free_gb": {"C": 47.1, "E": 12.8, "F": 111.7, "G": 7.7, "H": 16.6},
+    "cpu": "Intel Core i7-8850H @ 2.60 GHz, 6C/12T",
+    "ram_gb": 47.7,
+    "gpu": "Quadro P3200 Max-Q, driver 32.0.15.7322 (+ Intel UHD 630, 2x DisplayLink)",
+    "wslconfig": null
+  },
+  "source_tree_scan": {
+    "carla_source_trees": 0,
+    "setup_sh": 0,
+    "makefile": 0,
+    "uproject_in_worktrees": 0,
+    "unrealengine_dirs": 0,
+    "packaged_carla_binaries_in_worktrees": 0,
+    "dockerfiles_total": 25,
+    "dockerfile_yolo_smoke_copies": 13,
+    "dockerfile_yolo_smoke_unrelated": true,
+    "dockerfile_mcp_copies": 11,
+    "dockerfile_esmini": 1,
+    "external_carla": {
+      "path": "E:\\CARLA\\CARLA_0.9.16",
+      "type": "packaged release (CarlaUE4.exe, CarlaUE4-Win64-Shipping.exe; no Engine\\Source, no GenerateProjectFiles.bat, no UE4Editor.exe, no CarlaUE4\\Source)",
+      "runtime_dockerfile": "ubuntu:20.04 runtime image (not build)"
+    }
+  },
+  "enter_carla": {
+    "path": "submission/infrastructure/ultimate_pipeline/tools/enter_carla.ps1",
+    "copies_in_worktrees": 1,
+    "target_exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe (via thesis_env_preset.ps1:19)",
+    "packaged": true,
+    "cannot_cook": true,
+    "note": "packaged Shipping build; no editor toolchain; server runtime only"
+  },
+  "epic_access_markers": {
+    "epic_git_urls": 0,
+    "account_notes": 0,
+    "get_ue_scripts": 0,
+    "planning_references": [
+      "reports/architecture_gate/AG03/AG05/AG07/UNREAL_COOKING_PARAMETERS.md",
+      "Problems.md:1713 / PROB-101",
+      "read_only_map_readiness_audit 20260730_001850 06_unreal_cooking_readiness.md",
+      "CODEX_FIX_PROMPTS.md D3",
+      "ultimate_pipeline/config/settings.py auto-discovery hints"
+    ]
+  },
+  "checklist": [
+    {"step": 1, "item": "Disk ~120-150 GB", "status": "GAP", "action": "Build on F: (111.7 GB free) or free C:"},
+    {"step": 2, "item": "WSL2 Ubuntu", "status": "PARTIAL", "action": "wsl -s Ubuntu; apt update; optional .wslconfig 32GB/8procs"},
+    {"step": 3, "item": "Docker", "status": "GAP", "action": "Install Docker Desktop or engine in Ubuntu"},
+    {"step": 4, "item": "UE4.26 source access", "status": "GAP", "action": "Epic account -> GitHub link -> EULA -> UE4.26 + carla-simulator/UnrealEngine fork"},
+    {"step": 5, "item": "CARLA 0.9.16 source", "status": "GAP", "action": "git clone -b 0.9.16 + submodules (LFS ready); pin commit"},
+    {"step": 6, "item": "Linux build deps", "status": "GAP", "action": "clang-8/9, cmake>=3.9, ninja, python3.7+ per Util/Install.md"},
+    {"step": 7, "item": "Engine build / cook", "status": "GAP", "action": "make setup LibCarla PythonAPI launch import package; record digest+pins (AG07)"},
+    {"step": 8, "item": "Runtime sanity", "status": "PARTIAL", "action": "packaged E:\\CARLA server-only; GPU/RAM adequate"},
+    {"step": 9, "item": "Toolchain pin manifest", "status": "GAP", "action": "track UE4.26/CARLA-0.9.16 commit pins + digest"}
+  ],
+  "checked_at": "2026-07-31T00:00:00Z"
+}
