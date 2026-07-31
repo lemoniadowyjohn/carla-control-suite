@@ -1,0 +1,30 @@
+{
+  "report": "C55V01a_donor_decision",
+  "verdict": "DONORS_FIXED_FOR_C55V01A_METADATA_ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "execution_base_sha": "f94b2195a30d6dddac6208adfada6f5a4c94a89f",
+  "real_map_mutation_authorized": false,
+  "donors": {
+    "osm_to_xodr_generator": {
+      "decision": "USE_AS_REFERENCE",
+      "worktree": "carla_main_governed/work/codex-full-pipeline-rerun-20260427",
+      "sha": "6b2506210a23637eb15f8773674de3ab560f0e6d"
+    },
+    "visual_pipeline": {
+      "decision": "USE_AS_REFERENCE",
+      "worktree": "carla_main_governed",
+      "sha": "deb261bf3bd21c2c7b399cbd69434fb8aade5086"
+    },
+    "junction_snap": {
+      "decision": "USE_AS_REFERENCE",
+      "worktree": "current base history",
+      "sha": "0578e45bfe79452879372a9ab095e660e8a94e63"
+    },
+    "campaign_candidates": {
+      "decision": "REGENERATE_ARTIFACT",
+      "namespace": "campaigns/ingolstadt_cooked_perception_v1",
+      "base_sha": "f94b2195a30d6dddac6208adfada6f5a4c94a89f"
+    }
+  },
+  "protected_artifacts_immutable": true
+}

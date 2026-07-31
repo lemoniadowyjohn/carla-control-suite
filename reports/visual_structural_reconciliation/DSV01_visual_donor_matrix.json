@@ -1,0 +1,52 @@
+{
+  "report": "DSV01_visual_donor_matrix",
+  "model": "DeepSeek V4 Light",
+  "mode": "read-only",
+  "base_sha": "7053bab56de4ba1680c4fb73bf85a5dc9b911694",
+  "worktrees_scanned": [
+    {"path": "carla_-main", "branch": "integration/governed-map-quality-20260729", "sha": "7053bab5"},
+    {"path": "carla_main_audit", "branch": "audit/gemini31pro-audit", "sha": "d202ad22"},
+    {"path": "carla_main_governed", "branch": "fix/deepseek-observability-integration-verification", "sha": "deb261bf"},
+    {"path": "carla_main_governed/work/claude-grid0828-review", "branch": "detached", "sha": "b1b6e010"},
+    {"path": "carla_main_governed/work/codex-full-pipeline-rerun-20260427", "branch": "work/codex-full-pipeline-rerun-20260427", "sha": "6b250621"},
+    {"path": "carla_main_governed/work/codex-grid0828-patch", "branch": "work/codex-grid0828-batch-sync-001", "sha": "fe7daad8"},
+    {"path": "carla_main_governed/work/gemini-governance-normalize", "branch": "work/gemini-governance-normalize-20260315", "sha": "68ab0caf"},
+    {"path": "carla_main_governed/work/gemini-grid0828-runtime", "branch": "detached", "sha": "21e8e23a"},
+    {"path": "carla_main_governed_worktrees/codex-jsnap-20260428", "branch": "work/codex-jsnap-20260428", "sha": "2b1a3d11"},
+    {"path": "carla_rr_recovery", "branch": "recovery/roadrunner-capability-integration", "sha": "25917b18"},
+    {"path": "carla_governed", "branch": "fix/deepseek-observability-integration-verification", "sha": "deb261bf", "note": "mirror of carla_main_governed"},
+    {"path": "carla_-main_submission_ready", "branch": null, "sha": null, "note": "plain directory, not a git repo"}
+  ],
+  "implementations": {
+    "osm2world_runner": {
+      "submission_variant": {"sha256": "451A2009E02DE3F8751832D1FF12FB061C9A7E9228038CA5C35274C2A63D2D27", "size": 33614, "worktrees": ["carla_-main", "carla_main_audit", "carla_rr_recovery"]},
+      "governed_variant": {"sha256": "9CF30DD01ADA3EAFF7B9D2C0281A44D658541212E8BC94D70FBF86629E94B4FC", "size": 32747, "worktrees": ["carla_main_governed sub-worktrees"]}
+    },
+    "blender_runner": {
+      "submission_variant": {"sha256": "4BC29E3A15D830BC401D09B6385841400C0F3537A6CAD9315AD6CFB506433F58", "size": 18042, "worktrees": ["carla_-main", "carla_main_audit", "carla_rr_recovery"]},
+      "governed_variant": {"sha256": "4ECC506F12FA1BAEDD3F7EEBFB658C6DD7D8C594D9177DD7B768B3A55639741F", "size": 16889, "worktrees": ["carla_main_governed sub-worktrees"]}
+    },
+    "osm2world_jar": {"sha256": "F20B00E1C5DC50CE211FFAB817D874799576DACCE4F8190D83C8A7B48CB61FAC", "size": 506756, "worktrees": ["carla_main_governed/work/*/OSM2World-latest-bin/"]}
+  },
+  "execution_classifications": {
+    "COOKED_AND_RUNTIME_VERIFIED": ["carla_main_governed", "carla_governed"],
+    "UNREAL_IMPORTED": ["carla_main_governed"],
+    "VALIDATED_STATICALLY": ["carla_main_governed sub-worktrees (5 copies)"],
+    "EXECUTED_WITH_LOGS": ["carla_-main"],
+    "IMPLEMENTATION_ONLY": ["carla_main_audit", "carla_rr_recovery", "codex-jsnap-20260428", "carla_-main_submission_ready"]
+  },
+  "key_fbx_artifacts": [
+    {"path": "fbx_test_output/osm2world/scene.fbx", "size": 115809148, "sha256": "FB540459...", "worktree": "carla_main_governed", "status": "untracked"},
+    {"path": "artifacts/supervisor_delivery/fbx/generated_ingolstadt_osm2world.fbx", "size": 166231852, "sha256": "48675A4D...", "worktree": "carla_main_governed", "status": "untracked"}
+  ],
+  "best_donors": {
+    "osm2world_execution": {"worktree": "carla_main_governed", "sha": "deb261bf", "evidence": "5x GLB + 20x OBJ + full pipeline logs"},
+    "blender_conversion": {"worktree": "carla_main_governed", "sha": "deb261bf", "evidence": "Blender 4.3.0 stdout: 69.8s, 11784 meshes, 0 errors"},
+    "fbx_export": {"worktree": "carla_main_governed", "sha": "deb261bf", "evidence": "115MB + 166MB FBX with export logs"},
+    "semantic_splitting": null,
+    "fbx_validation": {"worktree": "carla_main_governed", "sha": "deb261bf", "evidence": "Blender import-export validated, no dedicated FBX validator"},
+    "unreal_import": null
+  },
+  "files_not_found": ["*.uproject", "*.umap", "package.json", "visual_manifest*.json", "asset_manifest*.json"],
+  "verdict": "VISUAL_DONORS_MAPPED"
+}
