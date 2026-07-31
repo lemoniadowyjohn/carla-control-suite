@@ -1,0 +1,45 @@
+{
+  "report": "DSV08_determinism_diff",
+  "task_id": "DSV09-LEDGER-batch",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "7506128da4e3bd56e0bb8a010cb0abd03f7ab7d0",
+  "verdict": "CONVERSION_DETERMINISTIC",
+  "files": {
+    "A": {"path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1.xodr", "sha256": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d", "byte_size": 82318841},
+    "B": {"path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_2.xodr", "sha256": "c8c57c7282f483592802307aa9ccc839eedf1468279690afa612b0bcd59734c2", "byte_size": 82318841}
+  },
+  "byte_different": true,
+  "header_differences": {
+    "classified": "non-semantic",
+    "comment_timestamp": "2026-07-31 11:38:06 vs 11:38:21",
+    "header_date": "Fri Jul 31 11:38:06 2026 vs Fri Jul 31 11:38:21 2026",
+    "identical_fields": ["revMajor=1", "revMinor=4", "name", "version=1.00", "bounds", "geoReference +proj=tmerc"]
+  },
+  "tree_comparison_excluding_header": "EQUAL",
+  "document_order_identical": true,
+  "ordering_only_differences": 0,
+  "differing_element_paths": 0,
+  "tag_census_identical": true,
+  "tag_counts": {
+    "road": 32710, "junction": 3646, "connection": 22816, "lane": 84781,
+    "laneLink": 32040, "link": 117483, "predecessor": 64738, "successor": 64692,
+    "planView": 32710, "geometry": 80261, "elevation": 32710, "elevationProfile": 32710,
+    "laneSection": 32710, "roadMark": 84781, "width_speed": 52071, "signals": 22816,
+    "type": 32710, "laneOffset": 3562
+  },
+  "canonical_semantic_sha256": {
+    "A": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+    "B": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+    "matches_manifest_019fc30e": false,
+    "note": "algorithm-not-replicated; tree equality is the primary proof"
+  },
+  "claim_proven": "C55V01a >=2 identical runs -> PROVEN",
+  "audit_trail": {
+    "script": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\xodr_semantic_diff.py",
+    "result": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\xodr_semantic_diff_result.json",
+    "repo_modified": false
+  },
+  "checked_at": "2026-07-31T00:00:00Z"
+}

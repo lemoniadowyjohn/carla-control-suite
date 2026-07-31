@@ -1,0 +1,42 @@
+{
+  "report": "DSV10_manifest_completeness",
+  "task_id": "DSV09-LEDGER-batch",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "7506128da4e3bd56e0bb8a010cb0abd03f7ab7d0",
+  "verdict": "MANIFEST_FIELDS_MISSING",
+  "audited_files": [
+    "campaigns/ingolstadt_cooked_perception_v1/manifest.json (741 L)",
+    "campaigns/ingolstadt_cooked_perception_v1/candidate/manifest.json (649 L)",
+    "campaigns/ingolstadt_cooked_perception_v1/source/manifest.json (39 L)",
+    "campaigns/ingolstadt_cooked_perception_v1/visual/manifest.json (46 L)",
+    "campaigns/ingolstadt_cooked_perception_v1/candidate/osm_to_xodr_conversion_status.json"
+  ],
+  "fields": [
+    {"field": "Git SHA", "status": "present", "evidence": "approved_base_sha a7919117 / execution_base_sha c264e0c8 / generation_head_sha c264e0c8 / upstream_sha_at_generation / branch"},
+    {"field": "OSM SHA", "status": "present", "evidence": "source_osm.sha256 b9e07465... + byte_size 11154738"},
+    {"field": "OSM bounds", "status": "present", "evidence": "bounds_wgs84 + study_bounds_wgs84 + covers_study_bounds true + counts/generator/license"},
+    {"field": "Converter profile", "status": "partial", "evidence": "donor_root in osm_to_xodr_conversion_status.json; no converter tool/version field"},
+    {"field": "CARLA/Osm2Odr version", "status": "missing", "evidence": "no version strings anywhere"},
+    {"field": "CRS-contract hash", "status": "partial", "evidence": "geo_reference PROJ pinned + matches_epsg32632 true; C44V01 report exists but no contract-hash field"},
+    {"field": "DEM hash / flat-zero", "status": "present", "evidence": "vertical: LOCAL_FLAT_ZERO_NO_DEM, offset 0.0, elevation_metrics all_bcd_zero true"},
+    {"field": "OSM2World version", "status": "missing", "evidence": "N/A-by-policy (CARLA_GENERATED_ROAD); artifact paths only, no versions"},
+    {"field": "Blender version", "status": "missing", "evidence": "N/A-by-policy; classification BLENDER_EXPORT_PROVEN but no version"},
+    {"field": "Visual config", "status": "present", "evidence": "visible_road_authority CARLA_GENERATED_ROAD + visual_sha256 + fbx_role + selected_policy"},
+    {"field": "Random seeds", "status": "missing", "evidence": "no seed field; determinism proven by DSV08 (seeds N/A but unbound)"},
+    {"field": "large_artifact_policy", "status": "present", "evidence": "xodr_files_committed true + reason @ 64139d3b"}
+  ],
+  "missing_fields": [
+    "converter profile (tool identity/version)",
+    "CARLA/Osm2Odr version",
+    "CRS-contract hash field (C44V01 reference)",
+    "OSM2World version (N/A-by-policy)",
+    "Blender version (N/A-by-policy)",
+    "random seeds policy (deterministic, DSV08)"
+  ],
+  "critical_identifiers_bound": true,
+  "c55v01b_impact": "none blocking - all validation hashes (OSM/XODR/semantic/CRS/vertical) bound",
+  "recommendation": "bind converter profile sha256 (2678373C3AC9...), CARLA/Osm2Odr version, CRS-contract hash ref, seed policy; mark OSM2World/Blender not_in_selected_chain",
+  "checked_at": "2026-07-31T00:00:00Z"
+}

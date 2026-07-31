@@ -1,0 +1,31 @@
+{
+  "report": "DSV09_ledger_refresh",
+  "task_id": "DSV09-LEDGER",
+  "model": "DeepSeek V4 Light",
+  "mode": "BOUNDED_WRITE_LEDGER_ONLY_PLUS_READONLY_SCAN",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "7506128da4e3bd56e0bb8a010cb0abd03f7ab7d0",
+  "writer_lock": {"task_id": "DSV09-LEDGER", "acquired_via": "ultimate_pipeline.contracts.writer_lock.WriterLock.acquire", "released_after_push": true},
+  "verdict": "LEDGER_REFRESHED_STALENESS_MAPPED",
+  "ledger_corrections": [
+    {"id": "DSV01", "status": "RESOLVED", "note": "VISUAL_DONORS_MAPPED; best visual pipeline carla_main_governed@deb261bf; report DSV01_visual_donor_matrix"},
+    {"id": "DSV02", "status": "RESOLVED", "note": "XODR_DONORS_MAPPED; best OSM->XODR donor codex-full-pipeline-rerun@6b250621; report DSV02_xodr_donor_matrix"},
+    {"id": "C44V01", "status": "RESOLVED", "note": "CRS_CONTRACT_READY after C55V01a recert; CRS=EPSG:32632; report C44V01_coordinate_contract"},
+    {"id": "C55V01a", "status": "RESOLVED", "note": "CRS_CONTRACT_READY_CANDIDATES_STAGED @ d6cd4e0b; OSM b9e07465, XODR ff2a05e7 (EPSG:32632), VISUAL=CARLA_GENERATED_ROAD, vertical=LOCAL_FLAT_ZERO; B2 LFS-closed @64139d3b"},
+    {"id": "C55V01b", "status": "BLOCKED", "note": "structural validation+freeze of new XODR; prereq Codex 5.5 quota + Claude authorization; B4 gates any cook"},
+    {"id": "P4", "status": "BLOCKED", "note": "REQUIRES_BASE_CORRECTION; B1/B2/B3 CLOSED (B2 via LFS @64139d3b, B3 CARLA_GENERATED_ROAD); ONLY B4 (cook toolchain) OPEN; re-gate after B4"}
+  ],
+  "row_structure_mismatches": 0,
+  "files_modified": ["AGENT_TASK_LEDGER.md"],
+  "staleness_map": {
+    "AG07_verdict.md": [7, 8, 34, 35, 40, 57, 73, 74, 91, 92],
+    "AG03_target_architecture.md": [4, 28, 29, 46, 47],
+    "AG05_unreal_parameters.md": [15, 16],
+    "AG04_coordinate_contract.md": [11],
+    "AG06_implementation_contract.md": [35],
+    "UNREAL_COOKING_PARAMETERS.md": []
+  },
+  "not_stale_verified": "UNREAL_COOKING_PARAMETERS.md L88-90 (ff2a05e7 / CARLA_GENERATED_ROAD / B4 open — correct)",
+  "ag_refresh_owner": "Claude coordinator (NOT applied in this batch)",
+  "checked_at": "2026-07-31T00:00:00Z"
+}

@@ -1,0 +1,43 @@
+{
+  "report": "DSV07_measurement_reconcile",
+  "task_id": "DSV09-LEDGER-batch",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ-ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "7506128da4e3bd56e0bb8a010cb0abd03f7ab7d0",
+  "verdict": "MEASUREMENT_RECONCILED",
+  "measured_file": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "lfs_oid": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "byte_size": 82318919,
+    "is_tiled_derivative": false,
+    "campaign_dir_has_tiled_derivatives": false
+  },
+  "counting_method": {
+    "tool": "check_post_tiling_integrity.py",
+    "evidence": "root.findall('road') -> num_roads = len(roads); root.findall('junction') -> num_junctions = len(junctions); root.findall('.//signal') -> num_signals",
+    "counts_logical_elements": true,
+    "counts_tiled_segments": false
+  },
+  "manifest_expected": {
+    "road_count": 32710,
+    "junction_count": 3646,
+    "sources_agree": true,
+    "locations": [
+      "manifest.json L57-58, L264-265, L470-471",
+      "candidate/manifest.json L13-14, L220-221, L426-427",
+      "agent_sync.yaml L26-27"
+    ]
+  },
+  "dsv05_measured": {"roads": 32710, "junctions": 3646, "signals": 0},
+  "dsv08_corroboration": {"roads": 32710, "junctions": 3646, "connections": 22816, "lanes": 84781},
+  "manifest_match": true,
+  "donor_5539_explanation": {
+    "artifact": "08_final_rerun3_BEST_jsnap.xodr (codex-jsnap)",
+    "roads": 5539,
+    "lineage": "legacy JSNAP-processed thesis map (structural-gap/JSNAP donor), not the new raw Osm2Odr conversion",
+    "conclusion": "6x gap is artifact lineage, not a measurement artifact"
+  },
+  "c55v01b_guidance": "validate against 32710 roads / 3646 junctions / 22816 connections (manifest-bound)",
+  "checked_at": "2026-07-31T00:00:00Z"
+}
