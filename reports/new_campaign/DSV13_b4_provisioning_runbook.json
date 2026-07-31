@@ -1,0 +1,30 @@
+{
+  "report": "DSV13_b4_provisioning_runbook",
+  "task_id": "DSV13-RUNBOOK",
+  "model": "DeepSeek V4 Light",
+  "mode": "READ_ONLY_AUTHORING_REPORTS_ONLY",
+  "branch": "integration/governed-map-quality-20260729",
+  "base_sha": "2fdc8e501faf40f0bd3b29bc85e4e6780b083a69",
+  "writer_lock": {"task_id": "DSV13-RUNBOOK", "acquired_via": "ultimate_pipeline.contracts.writer_lock.WriterLock.acquire", "released_after_push": true},
+  "verdict": "B4_RUNBOOK_READY",
+  "steps": [
+    {"step": 0, "name": "disk gate", "status": "HARD_GATE_CURRENTLY_FAILS", "disk_free_gb": {"F": 111.7, "C": 51.3, "E": 12.8}, "required_free_gb": 200, "docs_minimum_gb": 130, "action": "free >=250 GB on F: or attach external NVMe; move WSL vhdx to F: via wsl --export/--import"},
+    {"step": 1, "name": "WSL2 Ubuntu 20.04 + Docker Desktop", "actions": [".wslconfig 32GB/8procs", "apt deps per CARLA 0.9.16 docs (Ubuntu 20.04 line)", "Docker Desktop WSL2 backend"]},
+    {"step": 2, "name": "GitHub <-> Epic link", "human_only": true, "latency": "24-72h activation", "note": "needed for UE fork Setup.sh licensed binaries"},
+    {"step": 3, "name": "UE4.26 CARLA fork build", "commands": ["git clone --depth 1 -b carla https://github.com/CarlaUnreal/UnrealEngine.git ~/UnrealEngine_4.26", "./Setup.sh && ./GenerateProjectFiles.sh && make"], "disk_gb": 91, "time_h": "1-5", "pin": "UE fork HEAD + Build.version changelist"},
+    {"step": 4, "name": "CARLA 0.9.16 source build", "commands": ["git clone -b ue4-dev ... && git checkout 0.9.16", "./Update.sh", "make setup LibCarla PythonAPI launch package"], "disk_gb": 31, "time_h": "2-6", "pin": "CARLA HEAD @ 0.9.16 + content hash + wheel name"},
+    {"step": 5, "name": "Dockerfile.carla_cook + digest", "path": "submission/infrastructure/ultimate_pipeline/cook/Dockerfile.carla_cook", "note": "adaptation of carla Util/Docker; full UE-in-Docker image needs 600-700 GB / ~4h; fallback: record carlasim/carla:0.9.16 RepoDigest", "pin": "docker images --digests"},
+    {"step": 6, "name": "trivial-XODR cook smoke test", "method": "manual import + OpenDrive Actor (CARLA_GENERATED_ROAD, no FBX) + make package", "verify": "get_available_maps contains map; load_world OK; get_server_version printed"}
+  ],
+  "pins_to_record": ["WSL kernel/distro", "UE fork HEAD SHA", "UE Build.version changelist", "CARLA HEAD @ 0.9.16", "content tar.gz SHA256", "PythonAPI wheel filename", "cook image digest", "carlasim/carla:0.9.16 RepoDigest", "smoke test server version"],
+  "callouts": [
+    "F: 111.7 GB insufficient (need >=200 GB; docs floor ~130 GB; Docker cook path 600-700 GB)",
+    "packaged E:\\CARLA\\CARLA_0.9.16 cannot cook (DSV06 finding)",
+    "UE make without -j (docs warning)",
+    "start Epic link day 1 (24-72h activation)",
+    "GPU/RAM adequate; WSLg supports UE editor GUI"
+  ],
+  "sources": ["DSV06_b4_toolchain_preflight", "carla.readthedocs.io/en/0.9.16/build_linux", "carla.readthedocs.io/en/0.9.16/tuto_M_add_map_package", "carla.readthedocs.io/en/0.9.16/tuto_M_add_map_alternative", "AG03/AG05/AG07 (Track A, CARLA_GENERATED_ROAD, 36A.7)"],
+  "disk_reverified_on": "2026-07-31",
+  "checked_at": "2026-07-31T00:00:00Z"
+}
