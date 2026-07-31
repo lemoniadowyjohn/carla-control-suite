@@ -1,0 +1,2 @@
+campaigns/ingolstadt_cooked_perception_v1/**/*.xodr filter=lfs diff=lfs merge=lfs -text
+campaigns/ingolstadt_cooked_perception_v1/**/*.osm filter=lfs diff=lfs merge=lfs -text

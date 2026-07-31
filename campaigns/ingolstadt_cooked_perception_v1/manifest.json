@@ -729,8 +729,8 @@
     "header_metadata_pin_description": "Only the raw run-1 header geoReference was pinned to EPSG:32632; semantic hash matches raw run 1."
   },
   "large_artifact_policy": {
-    "xodr_files_committed": false,
-    "reason": "No repository LFS rule or external-artifact policy was found for 82 MB XODR files; manifests retain full hashes and local paths."
+    "xodr_files_committed": true,
+    "reason": "Repository Git LFS rule tracks campaigns/ingolstadt_cooked_perception_v1/**/*.xodr and **/*.osm (see .gitattributes); XODR bytes now stored as LFS objects, hashes remain authoritative in this manifest."
   },
   "protected_paths_not_modified": [
     "thesis_results/structural_gap_v1/run_11/",
