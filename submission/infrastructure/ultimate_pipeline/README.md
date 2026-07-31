@@ -38,6 +38,11 @@ on synthetic, automatically generated maps generalize to:
 
 ## Key Entry Points
 
+### Session Bootstrap
+- `tools/enter_carla.ps1`
+  Loads the Windows thesis preset into the current PowerShell session and
+  optionally moves to the repository root.
+
 ### Map Generation
 - `run_pipeline.py`  
   End-to-end OSM → CARLA OpenDRIVE generation pipeline.
