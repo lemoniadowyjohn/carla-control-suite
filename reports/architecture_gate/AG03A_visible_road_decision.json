@@ -1,0 +1,48 @@
+{
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "branch": "integration/governed-map-quality-20260729",
+  "approved_base_sha": "a7919117c245ecd7e0c47ff541e4b4d6151fd8e0",
+  "execution_base_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "generation_head_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "upstream_sha_at_generation": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "local_remote_match_at_generation": true,
+  "real_map_mutation_authorized": false,
+  "protected_artifacts_immutable": true,
+  "report": "AG03A_visible_road_decision",
+  "verdict": "CARLA_GENERATED_ROAD",
+  "visible_road_authority": "CARLA_GENERATED_ROAD",
+  "fbx_role": "FBX_ENVIRONMENT_ONLY",
+  "fbx_input": "DISABLED_CARLA_GENERATED_ROAD",
+  "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "candidate_xodr_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "candidate_xodr_geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "visual_donor_sha": "deb261bf3bd21c2c7b399cbd69434fb8aade5086",
+  "rejected_visible_road_fbx_artifacts": [
+    {
+      "path": "fbx_test_output/osm2world/scene.fbx",
+      "sha256": "fb54045952ffe2716fd6034a9c2d6b125fb82502550afd33824b36fede97a200",
+      "size": 115809148,
+      "classification": "BLENDER_EXPORT_PROVEN"
+    },
+    {
+      "path": "fbx_test_output/osm2world/scene.obj",
+      "classification": "OSM2WORLD_EXECUTION_PROVEN"
+    },
+    {
+      "path": "artifacts/supervisor_delivery/fbx/generated_ingolstadt_osm2world.fbx",
+      "sha256": "48675a4d8d0248d20793d437354ebf7161b4db05e574b7a492fb57aa4d6b1d97",
+      "size": 166231852
+    },
+    {
+      "path": "artifacts/supervisor_delivery/fbx_export/ingolstadt_osm2world.obj",
+      "sha256": "7266a5f0c8be5198c39435fc550c5ed40f34b6f730e85e421d720d9be4787044",
+      "size": 293798947
+    },
+    {
+      "path": "artifacts/supervisor_delivery/fbx_export/ingolstadt_osm2world.obj.mtl",
+      "sha256": "f57566b1a0dec3525263ca3a9967b3315871587ab619bc8d1c4d94b4181e8a4c",
+      "size": 7779
+    }
+  ],
+  "b3_closed": true
+}

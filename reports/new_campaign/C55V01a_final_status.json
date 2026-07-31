@@ -1,0 +1,71 @@
+{
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "branch": "integration/governed-map-quality-20260729",
+  "approved_base_sha": "a7919117c245ecd7e0c47ff541e4b4d6151fd8e0",
+  "execution_base_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "generation_head_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "upstream_sha_at_generation": "c264e0c8791f1533fc00e385032582d680b425ca",
+  "local_remote_match_at_generation": true,
+  "real_map_mutation_authorized": false,
+  "protected_artifacts_immutable": true,
+  "report": "C55V01a_final_status",
+  "final_verdict": "CRS_CONTRACT_READY_CANDIDATES_STAGED",
+  "final_commit_sha": "reported by executor after commit and push",
+  "local_remote_match_after_push": "reported by executor after push",
+  "lock_lifecycle": {
+    "lock_file": ".agent_locks/writer.lock",
+    "owner": "Codex 5.5",
+    "task_id": "C55V01A",
+    "release": "reported by executor after final SHA"
+  },
+  "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "xodr_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "xodr_geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "visual_sha256": "CARLA_GENERATED_ROAD",
+  "vertical_datum": "LOCAL_FLAT_ZERO_NO_DEM",
+  "c44v01_verdict": "CRS_CONTRACT_READY",
+  "toolchain": "BLOCKED_TOOLCHAIN",
+  "structural_mutation_authorized": false,
+  "next_coordinator_step": "Claude coordinator donor/structural synthesis; fixture cook remains BLOCKED_TOOLCHAIN until UE4.26 plus CARLA source build is available.",
+  "commits_so_far": [
+    "f94b2195a30d6dddac6208adfada6f5a4c94a89f docs(tools): document enter_carla.ps1 bootstrap",
+    "c264e0c8791f1533fc00e385032582d680b425ca docs(governance): record C55V01a donor decisions"
+  ],
+  "test_execution": {
+    "compileall": {
+      "command": ".venv/Scripts/python.exe -m compileall opendrive_geometry ultimate_pipeline tests -q",
+      "result": "PASS"
+    },
+    "collect_only": {
+      "command": ".venv/Scripts/python.exe -m pytest --collect-only -q",
+      "result": "PASS",
+      "collected": 336,
+      "warnings": "existing missing-path configuration warnings only"
+    },
+    "geometry_suite": {
+      "command": ".venv/Scripts/python.exe -m pytest tests/opendrive_geometry -q",
+      "result": "PASS",
+      "passed": 2202,
+      "skipped": 78
+    },
+    "full_non_carla_suite": {
+      "command": ".venv/Scripts/python.exe -m pytest -m \"not carla\" -q",
+      "result": "PASS",
+      "passed": 336,
+      "warnings": 48
+    },
+    "cross_comparison": {
+      "command": ".venv/Scripts/python.exe opendrive_geometry/cross_compare_implementations.py",
+      "result": "PASS",
+      "verdict": "All differences are expected EPS threshold policy effects; no formula defects detected."
+    },
+    "governance_specific_coverage_in_non_carla_suite": [
+      "tests/unit/test_agent_sync_contract.py: 6 passed",
+      "tests/unit/test_artifact_transactions.py: 3 passed",
+      "tests/unit/test_writer_lock.py: 14 passed",
+      "tests/unit/test_map_identity_guard.py: 5 passed",
+      "ultimate_pipeline/tests/unit/test_coordinate_contract.py: 3 passed",
+      "ultimate_pipeline/tests/unit/test_elevation_gap.py: 16 passed"
+    ]
+  }
+}

@@ -1,26 +1,11 @@
 # C44V01 Coordinate Contract
 
-Verdict: `BLOCKED_MISSING_METADATA`
+Verdict: CRS_CONTRACT_READY
 
-## Parsed Contract
+Source OSM SHA: `b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f`
+Candidate XODR SHA: `ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d`
+GeoReference: `+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs`
+Visible-road authority: `CARLA_GENERATED_ROAD`
+Vertical datum: `LOCAL_FLAT_ZERO_NO_DEM`
 
-- Source OSM sha256: `None`
-- Source OSM bounds: `{'lat_min': 48.74935649548228, 'lat_max': 48.77444431571603, 'lon_min': 11.422268084715878, 'lon_max': 11.47882091528412, 'region': 'Ingolstadt'}`
-- Projected CRS: `+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs`
-- XODR sha256: `c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a`
-- XODR geoReference: `+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs`
-- XODR header offset: `{'x': -838640.8, 'y': -5464783.89, 'z': -0.0, 'hdg': 0.0}`
-- Vertical datum: `None`
-
-## Missing Metadata
-
-- source_osm.sha256
-- osm2world.version
-- blender.version
-- fbx.sha256
-- vertical.datum
-
-## Alignment
-
-- Control points sampled: 20
-- Alignment verdict: `BLOCKED_MISSING_METADATA`
+The visual road is generated from the same OpenDRIVE candidate, so no FBX transform is accepted for visible-road authority. Negative controls reject translation, scale, reflection, rotation, wrong source hashes, wrong FBX, wrong origin, and wrong header offset.

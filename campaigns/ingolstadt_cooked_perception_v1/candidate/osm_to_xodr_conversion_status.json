@@ -1,0 +1,21 @@
+{
+  "donor_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\work\\codex-full-pipeline-rerun-20260427",
+  "source_osm": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "runs": [
+    {
+      "index": 1,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_1.xodr",
+      "sha256": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d",
+      "size": 82318841,
+      "duration_s": 14.519
+    },
+    {
+      "index": 2,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_2.xodr",
+      "sha256": "c8c57c7282f483592802307aa9ccc839eedf1468279690afa612b0bcd59734c2",
+      "size": 82318841,
+      "duration_s": 15.537
+    }
+  ],
+  "status": "CONVERSION_SUCCEEDED"
+}

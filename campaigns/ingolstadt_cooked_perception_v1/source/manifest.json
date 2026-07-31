@@ -1,0 +1,39 @@
+{
+  "manifest": "campaigns/ingolstadt_cooked_perception_v1/source/manifest.json",
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "source_osm": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "byte_size": 11154738,
+    "xml_root": "osm",
+    "osm_version": "0.6",
+    "generator": "Overpass API 0.7.62.8 e802775f",
+    "source_date": "2025-10-11T11:50:27Z",
+    "license": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+    "bounds_wgs84": {
+      "lat_min": 48.6843318,
+      "lat_max": 48.8143429,
+      "lon_min": 11.3266919,
+      "lon_max": 11.5382271
+    },
+    "study_bounds_wgs84": {
+      "lat_min": 48.74935649548228,
+      "lat_max": 48.77444431571603,
+      "lon_min": 11.422268084715878,
+      "lon_max": 11.47882091528412,
+      "region": "Ingolstadt"
+    },
+    "covers_study_bounds": true,
+    "counts": {
+      "node_count": 74874,
+      "way_count": 17250,
+      "relation_count": 9,
+      "highway_way_count": 17200,
+      "building_way_count": 1
+    },
+    "way_node_ref_count": 101920,
+    "missing_way_node_refs": 0,
+    "validation": "USE_EXISTING_VALID_OSM"
+  },
+  "verdict": "USE_EXISTING_VALID_OSM"
+}
