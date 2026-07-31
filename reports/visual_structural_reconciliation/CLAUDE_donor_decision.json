@@ -1,0 +1,54 @@
+{
+  "report": "CLAUDE_donor_decision",
+  "task_id": "C55V01A",
+  "date": "2026-07-31",
+  "repository": "carla-control-suite.git",
+  "branch": "integration/governed-map-quality-20260729",
+  "execution_base_sha": "f94b2195a30d6dddac6208adfada6f5a4c94a89f",
+  "p4_approved_base_ancestor": "a7919117c245ecd7e0c47ff541e4b4d6151fd8e0",
+  "real_map_mutation_authorized": false,
+  "protected_paths": [
+    "thesis_results/structural_gap_v1/run_11/",
+    "08_final_structural_gap.xodr",
+    "scenario_b_audit/contract_run/",
+    "submission/results/structural_gap_run11/"
+  ],
+  "decisions": [
+    {
+      "subsystem": "osm_to_xodr_generator",
+      "decision": "USE_AS_REFERENCE",
+      "donor_worktree": "carla_main_governed/work/codex-full-pipeline-rerun-20260427",
+      "donor_sha": "6b2506210a23637eb15f8773674de3ab560f0e6d",
+      "use": "Use the reviewed conversion path for deterministic candidate regeneration; no whole-worktree merge."
+    },
+    {
+      "subsystem": "visual_osm2world_blender_fbx",
+      "decision": "USE_AS_REFERENCE",
+      "donor_worktree": "carla_main_governed",
+      "donor_sha": "deb261bf3bd21c2c7b399cbd69434fb8aade5086",
+      "use": "Prefer source-matched regeneration from the same OSM; otherwise ratify CARLA_GENERATED_ROAD fallback."
+    },
+    {
+      "subsystem": "junction_snap",
+      "decision": "USE_AS_REFERENCE",
+      "donor_worktree": "current base history",
+      "donor_sha": "0578e45bfe79452879372a9ab095e660e8a94e63",
+      "use": "Reuse only because it is already on the base; do not re-import or run structural mutation."
+    },
+    {
+      "subsystem": "candidate_artifacts",
+      "decision": "REGENERATE_ARTIFACT",
+      "donor_worktree": "campaigns/ingolstadt_cooked_perception_v1",
+      "donor_sha": "f94b2195a30d6dddac6208adfada6f5a4c94a89f",
+      "use": "Generate isolated candidate artifacts and metadata only."
+    }
+  ],
+  "source_evidence": [
+    "reports/visual_structural_reconciliation/DSV01_visual_donor_matrix.*",
+    "reports/visual_structural_reconciliation/DSV02_xodr_donor_matrix.*",
+    "reports/visual_structural_reconciliation/C44V01_coordinate_contract.*",
+    "reports/visual_structural_reconciliation/C44V01_alignment_results.json",
+    "reports/architecture_gate/AG07_verdict.*"
+  ],
+  "verdict": "DONORS_FIXED_FOR_C55V01A_METADATA_ONLY"
+}

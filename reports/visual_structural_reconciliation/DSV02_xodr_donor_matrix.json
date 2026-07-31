@@ -1,0 +1,64 @@
+{
+  "report": "DSV02_xodr_donor_matrix",
+  "model": "DeepSeek V4 Light",
+  "mode": "read-only",
+  "base_sha": "7053bab56de4ba1680c4fb73bf85a5dc9b911694",
+  "converter_implementations": {
+    "osm_to_xodr_wrapper_py": {
+      "variants": [
+        {"sha256": "37DB812C3C86508E3C55CD7C106947E88B22328574C99FC910228687C95AB285", "worktrees": ["carla_-main", "carla_main_audit", "carla_rr_recovery"]},
+        {"sha256": "436CB7945026C4F1BF22DC498B2AF7DABAEB35789532A42F02009AF22D55A29B", "worktrees": ["carla_main_governed (root)"]},
+        {"sha256": "2678373C3AC9AB688D6B7CDFB30D326345605FF9162CC3901F1A51323DFE4973", "worktrees": ["codex-full-pipeline-rerun", "submission_ready packs"]}
+      ]
+    },
+    "osm_to_xodr_py": {
+      "variants": [
+        {"sha256": "D64C80A601A1E7A5A81E81008DB5266A71DE064921071060CB0260A966638401", "worktrees": ["carla_-main"]},
+        {"sha256": "472BEFD59B841FDFE8A9CDF80BC1FBAF778E17DA5D3578202DD0FF19FD0F9417", "worktrees": ["codex-full-pipeline-rerun", "submission_ready"]}
+      ]
+    }
+  },
+  "key_xodr_artifacts": [
+    {"name": "auto_aligned_rigid.xodr (run_11)", "sha256": "C765C4DAF84E051934E420D4AE71609EF7A0F3CC34EB02B2165EEB8A1A1EEA3A", "size": 13845703, "roads": 5837, "junctions": 779, "worktrees": ["carla_-main", "carla_main_audit", "carla_rr_recovery", "submission_ready"], "status": "untracked"},
+    {"name": "auto_aligned_rigid.xodr (codex rerun)", "sha256": "03AA1841831816C77B8061252FE6270F802E27D33F323BB1073CE6DC4BAEA2DE", "size": 13625961, "worktrees": ["codex-full-pipeline-rerun"], "status": "untracked"},
+    {"name": "08_final_structural_gap.xodr (contract_run)", "sha256": "2C120DC7CA739E40E7A5B409CC7324B9BED7C5392F550CFF98455F7560DF14B1", "size": 16031746, "roads": 5712, "junctions": 680, "worktrees": ["carla_main_governed"], "status": "untracked"},
+    {"name": "08_final_structural_gap.xodr (submission_ready)", "sha256": "BEB329A532558F0B0E92035FC2069F0AF2E1763F9D78739682737733DE3AF96F", "roads": 5837, "junctions": 779, "worktrees": ["submission_ready packs"], "status": "untracked"},
+    {"name": "08_final_rerun3_BEST_jsnap.xodr", "size": 19149977, "roads": 5539, "junctions": 677, "worktrees": ["codex-jsnap"], "status": "tracked"}
+  ],
+  "protected_artifacts": {
+    "thesis_results/structural_gap_v1/run_11/": {"exists": true, "note": "4 files present (figures + measurement JSON), no XODR"},
+    "artifacts/final_runs/scenario_b_audit/contract_run/": {"exists": true, "files": 4, "note": "08_final_structural_gap.xodr + 3 .bak variants"},
+    "submission/results/structural_gap_run11/auto_aligned_rigid.xodr": {"exists": true, "sha256": "C765C4DAF84E...", "worktree": "carla_-main"}
+  },
+  "geo_reference_strategies": [
+    {"type": "UTM zone 32N", "proj": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m", "offset": "x=677577.43 y=5401899.77", "used_by": ["contract_run", "jsnap", "normalized_input"]},
+    {"type": "UTM negative offset", "proj": "same UTM", "offset": "x=-838640.80 y=-5464783.89", "used_by": ["auto_aligned_rigid", "submission_ready 08_final"]},
+    {"type": "Localized CRS", "proj": "+proj=tmerc +lat_0=48.749... +lon_0=11.422... +k=1 +x_0=0 +y_0=0", "offset": "x=-838640.80 y=-5464783.89", "used_by": ["submission_ready 08_final_structural_gap.xodr"]}
+  ],
+  "run_manifests": {
+    "carla_main_governed": ["run_11", "run_13", "run_14", "run_15", "run_15_domain_gap", "run_15_prebuild_fix", "run_16", "run_16_post_fix", "run_17", "run_18_standalone_xodr", "test_crs_warn_v2"],
+    "codex-full-pipeline-rerun": ["run_01", "run_02", "run_03", "run_04"],
+    "pipeline_outputs": ["rerun2_20260427", "rerun3_20260427", "audit_run_000", "audit_run_001"]
+  },
+  "junction_connector_snap": {
+    "worktree": "codex-jsnap",
+    "sha": "2b1a3d11",
+    "tool": "ultimate_pipeline/tools/junction_connector_snap.py",
+    "tool_sha256": "D668FA593BF228097F6CCD1910E9D47C16CEACFA124709FAA088F413DE1B2848",
+    "output": "08_final_rerun3_BEST_jsnap.xodr",
+    "output_roads": 5539,
+    "output_junctions": 677
+  },
+  "best_donors": {
+    "osm_validation": {"worktree": "carla_main_governed", "sha": "deb261bf"},
+    "osm_to_xodr_conversion": {"worktree": "codex-full-pipeline-rerun", "sha": "6b250621"},
+    "canonical_geometry": {"worktree": "carla_-main", "sha": "7053bab5"},
+    "topology_validation": {"worktree": "carla_main_governed", "sha": "deb261bf"},
+    "lane_validation": {"worktree": "codex-full-pipeline-rerun", "sha": "6b250621"},
+    "elevation_validation": {"worktree": "carla_main_governed", "sha": "deb261bf"},
+    "artifact_transactions": {"worktree": "carla_-main", "sha": "7053bab5"},
+    "junction_connector_snap": {"worktree": "codex-jsnap", "sha": "2b1a3d11"},
+    "carla_standalone_loading": null
+  },
+  "verdict": "XODR_DONORS_MAPPED"
+}
