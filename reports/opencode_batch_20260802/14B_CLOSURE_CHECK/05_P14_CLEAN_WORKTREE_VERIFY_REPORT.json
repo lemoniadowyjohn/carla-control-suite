@@ -1,0 +1,93 @@
+{
+ "head": {
+  "commit": "1bc6dd3d37112553c4c9d0e4f82edd29555efbb1",
+  "matches": true,
+  "expected": "1bc6dd3d37112553c4c9d0e4f82edd29555efbb1",
+  "dirty_lines": 6
+ },
+ "gates": {
+  "G2_compileall": {
+   "pass": true,
+   "rc": 0,
+   "stderr": ""
+  },
+  "G3_imports": {
+   "pass": true,
+   "stdout": "[2026-08-02 01:47:52] IMPORT_RESULT 18 / 18\n",
+   "stderr": "onProject3\\carla_release_verify\\ultimate_pipeline\\config\\settings.py:1872: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.\n  _warn_missing_setting_path(\n"
+  },
+  "G4_collection": {
+   "pass": true,
+   "collected": 2606,
+   "tail": "o a valid dir.\n    _warn_missing_setting_path(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n======================== 2606 tests collected in 6.08s ========================\n"
+  },
+  "G5_suite": {
+   "pass": true,
+   "summary": "================ 2528 passed, 78 skipped, 5 warnings in 31.88s ================",
+   "tail": "ultimate_pipeline\\config\\settings.py:1872\n  C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline\\config\\settings.py:1872: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.\n    _warn_missing_setting_path(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================ 2528 passed, 78 skipped, 5 warnings in 31.88s ================"
+  },
+  "G6_negative_controls": {
+   "pass": true,
+   "summary": "============================= 11 passed in 0.50s ==============================",
+   "tail": "ultimate_pipeline\\tests\\unit\\test_p08_signal_enrichment.py ..            [ 72%]\nultimate_pipeline\\tests\\unit\\test_p09_tile_equivalence.py .              [ 81%]\nultimate_pipeline\\tests\\unit\\test_p10_output_artifacts.py ..             [100%]\n\n============================= 11 passed in 0.50s =============================="
+  },
+  "G7_map_structural": {
+   "pass": true,
+   "result": {
+    "lane_ok": true,
+    "lane_fails": 0,
+    "seams_max_delta": 0.0,
+    "seams_checked": 45632,
+    "bounds_roads": 32710,
+    "bounds_bad": 0
+   },
+   "stderr": ""
+  },
+  "G8_hashes": {
+   "pass": true,
+   "osm": "b9e074656f",
+   "osm_expect": "b9e074656f",
+   "xodr": "ff2a05e7b0",
+   "xodr_expect": "ff2a05e7b0"
+  },
+  "G9_manifest": {
+   "pass": true,
+   "result": {
+    "checks": 32,
+    "mismatches": [
+     "output:07_BLOCKING_ISSUES.md"
+    ]
+   },
+   "known_findings": {
+    "output:07_BLOCKING_ISSUES.md": "Phase A accepted finding: claim stale vs regenerated file; actual hash recorded in audit trail (acceptance ACCEPTED_WITH_FINDINGS)."
+   },
+   "new_findings": [],
+   "stdout": "MANIFEST_RESULT {\"checks\": 32, \"mismatches\": [\"output:07_BLOCKING_ISSUES.md\"]}\n",
+   "stderr": ""
+  },
+  "G10_tracked_ids": {
+   "pass": true,
+   "result": {
+    "reqs": 218,
+    "issues": 14,
+    "total": 232,
+    "dup_req": 0,
+    "dup_issue": 0
+   }
+  },
+  "G11_untracked_sources": {
+   "pass": true,
+   "count": 0,
+   "paths": [],
+   "excluded_by_design": [
+    "?? .githooks/",
+    "?? .venv_verify/",
+    "?? audit_output/",
+    "?? p14_verify.py",
+    "?? pyproject.toml",
+    "?? verify_out/"
+   ]
+  }
+ },
+ "overall": true
+}
