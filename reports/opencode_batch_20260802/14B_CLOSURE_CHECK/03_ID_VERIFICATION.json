@@ -1,0 +1,16 @@
+{
+ "audit_id": "LOW_COST_MODEL_AUDIT_20260801",
+ "formal_requirement_count": 218,
+ "formal_assessed": 218,
+ "issue_id_count": 14,
+ "issue_tracked_assessed": 14,
+ "total_tracked": 232,
+ "unknown_ids": 0,
+ "duplicate_ids": 0,
+ "unassessed_requirements": [],
+ "unassessed_issues": [],
+ "registry_vs_inventory_diff": [],
+ "overlap_req_issue": [],
+ "unassessed_requirements_count": 0,
+ "unassessed_issues_count": 0
+}
