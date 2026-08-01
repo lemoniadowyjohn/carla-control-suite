@@ -1,0 +1,219 @@
+requirement_id,subsystem,verification_state,implementation_state,evidence_level,required_evidence_level,evidence_met,tests_required,tests_executed,passed,failed,skipped,test_references,note
+BLD-001,BLD,FAIL,PARTIAL,SOURCE_ONLY,SOURCE_ONLY,True,True,True,1,0,0,,Canonical test_coordinate_contract.py (in testpaths) passes and asserts the contract flags missing fbx.sha256 - a positive control that metadata absence is dete
+BLD-002,BLD,FAIL,MISSING,SOURCE_ONLY,SOURCE_ONLY,True,True,False,0,0,0,,No tests; execution also blocked (no Blender on host).
+BLD-003,BLD,FAIL,MISSING,SOURCE_ONLY,SOURCE_ONLY,True,True,False,0,0,0,,No tests.
+BLD-004,BLD,FAIL,MISSING,SOURCE_ONLY,SOURCE_ONLY,True,True,False,0,0,0,,No tests.
+BLD-005,BLD,FAIL,PARTIAL,SOURCE_ONLY,SOURCE_ONLY,True,True,False,0,0,0,,No tests.
+BLD-006,BLD,FAIL,MISSING,SOURCE_ONLY,SOURCE_ONLY,True,True,False,0,0,0,,"No tests; runtime execution impossible on this host (no Blender binary, cooking blocked)."
+BLD-007,BLD,FAIL,MISSING,SOURCE_ONLY,SOURCE_ONLY,True,True,False,0,0,0,,No tests.
+BOOT-001,BOOT,FAIL,PARTIAL,FIXTURE,UNIT,True,False,0,0,0,0,,
+BOOT-002,BOOT,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,336,336,0,0,,
+BOOT-003,BOOT,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,IMPORT,UNIT,False,True,0,0,0,0,,
+BOOT-004,BOOT,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+BOOT-005,BOOT,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+BOOT-006,BOOT,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+BOOT-007,BOOT,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,UNIT,UNIT,True,True,9,9,0,0,,
+BOOT-008,BOOT,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+CAR-001,CAR,BLOCKED,PARTIAL,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,No canonical unit tests for the loader; version/config recording exercised only via preflight subprocess (requires server).
+CAR-002,CAR,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,UNIT,CARLA_EXACT_MAP,False,True,True,5,0,0,,"tests\unit\test_map_identity_guard.py: 5 passed within the canonical 336-pass suite (fallback detection, strict raise, save/load identity)."
+CAR-003,CAR,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,UNIT,CARLA_EXACT_MAP,False,True,True,5,0,0,,"Same 5 unit tests as CAR-002 (fallback strings incl. Grid0828 vs Town05, strict RuntimeError, save_map_identity round-trip) - canonical and green."
+CAR-004,CAR,BLOCKED,PARTIAL,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,No unit tests; runtime spawn checks BLOCKED (no server).
+CAR-005,CAR,BLOCKED,MISSING,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,None (no module to test).
+CAR-006,CAR,BLOCKED,IMPLEMENTED_INACTIVE,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,None (runtime logic; no offline unit tests found).
+CAR-007,CAR,BLOCKED,IMPLEMENTED_INACTIVE,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,None; all runtime.
+CAR-008,CAR,BLOCKED,PARTIAL,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,No unit tests for TM reset/seed semantics (none in canonical testpaths).
+CAR-009,CAR,BLOCKED,VERIFIED_ACTIVE,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,No unit tests for cleanup paths (no canonical test covers vehicle_manager).
+CAR-010,CAR,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,IMPORT,CARLA_EXACT_MAP,False,True,True,6,0,0,,Synthetic-sample classification check executed offline (6/6 expected positives; not a canonical pytest - no canonical tests exist for crash_classifier).
+CAR-011,CAR,FAIL,PARTIAL,ACTIVE_CALL_TRACE,CARLA_EXACT_MAP,False,True,False,0,0,0,,No tests for route completion or lane invasion.
+DEM-001,DEM,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No canonical test imports dem_diagnostics (root tests only cover domain_gap elevation contract). No DEM file present in campaign to exercise summarize().
+DEM-002,DEM,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No canonical test invokes make_raster_sampler; tests/opendrive_geometry/adapters.py only cites check_dem_full_coverage.py:13-34 sampling math as a reference.
+DEM-003,DEM,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test executes check_dem_full_coverage or check_dem_coverage against a fixture XODR+DEM.
+DEM-004,DEM,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No tests distinguish the four failure classes.
+DEM-005,DEM,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No canonical test exercises apply_dem fallback paths; elevation_importer is not imported by any canonical test.
+DG-001,DG,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,True,5,0,0,,"Hashes of 5 release files (alignment.json, auto_aligned_rigid.xodr, full_report.json, two tarballs) computed and cross-checked against recorded values - all con"
+DG-002,DG,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,False,0,0,0,,No test/code enforces immutability of submitted measurements.
+DG-003,DG,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,ACTIVE_CALL_TRACE,True,True,True,15,0,0,,15 geo-alignment tests passed (3 canonical + 12 in ultimate_pipeline/domain_gap/tests); offline georef parse of the pinned XODR header passed with complete CRS 
+DG-004,DG,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,False,0,0,0,,No test asserts that distance metrics are accompanied by coverage/uncertainty in pipeline reports.
+DG-005,DG,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,False,0,0,0,,No test/code separates coverage-driven differences from defects.
+DG-006,DG,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,ACTIVE_CALL_TRACE,True,True,True,47,0,0,,21 (canonical unit: elevation gap + curvature + geo alignment lock) + 9 (tests/domain_gap elevation contract) + 12 (domain_gap/tests geo alignment) + 1 offline 
+DG-007,DG,PASS,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,False,0,0,0,,No offline test covers perception bounding; CARLA capture not executed in this audit (CARLA unavailable).
+DG-008,DG,PASS,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,False,0,0,0,,No test asserts seed/CI recording.
+DG-009,DG,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,ACTIVE_CALL_TRACE,True,True,False,0,0,0,,No regeneration test; script was not executed (would write artifacts).
+ELV-001,ELV,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No canonical test exercises elevation sampling on a frozen reference line.
+ELV-002,ELV,FAIL,MISSING,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test asserts piecewise profile generation.
+ELV-003,ELV,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,"Offline FULL_MAP_OFFLINE census: 32710 elevation segments, all at s=0.0; check_elevation_continuity ok=True (45632 links, 0 issues). Ordering/validity holds tri"
+ELV-004,ELV,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,"Offline run on pinned XODR: check_elevation_continuity ok=True, num_links_checked=45632, num_issues=0 (trivially continuous at flat z=0)."
+ELV-005,ELV,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No tests for structural separation in elevation.
+ELV-006,ELV,CONFLICTING_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test exercises the offset solver; not executable without an elevation-bearing XODR.
+ELV-007,ELV,PASS,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,Separation verified by source inspection; no test asserts validators are read-only.
+ELV-008,ELV,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test asserts planView immutability after elevation acceptance (test_stage6_read_only_containment covers stage 6 semantics only).
+ELV-009,ELV,FAIL,IMPLEMENTED_INACTIVE,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test imports fix_elevation_seams; no test asserts seam-fixer behavior.
+ENR-001,ENR,FAIL,MISSING,ACTIVE_CALL_TRACE,FIXTURE,True,True,True,0,0,0,,"No canonical test covers provenance recording. Probe evidence: emitted <speed> attrs {'max','unit'} only; emitted sign <object> attrs contain name='de:206' but "
+ENR-002,ENR,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FIXTURE,True,True,True,2,0,0,,Snapshot tests (non-canonical): test_speed_limit_skipped_for_unmatched_road and parse_maxspeed('unparseable_garbage')->None PASS - OSM-meta writers do not guess
+ENR-003,ENR,FAIL,PARTIAL,ACTIVE_CALL_TRACE,FIXTURE,True,True,True,0,0,0,,"Execution probes (temp, read-only): TrafficLightInferer 2nd call inserted 3 more <object> (6 total, duplicate ids tl_42_0/1/2 x2) - FAIL. apply_regulatory_signs"
+ENR-004,ENR,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,False,0,0,0,,No tests.
+ENR-005,ENR,FAIL,PARTIAL,SOURCE_ONLY,FIXTURE,False,True,False,0,0,0,,No tests assert the metric breakdown.
+FIN-001,FIN,PASS,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,UNIT,True,True,True,27,0,0,,"tests/roadrunner/test_gate_matrix.py (16) + test_semantic_manifest.py (11) = 27 passed, 1.07s. NOTE: tests/roadrunner is NOT in pytest.ini canonical testpaths ("
+FIN-002,FIN,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,UNIT,True,True,True,3,0,0,,test_parent_is_persisted_and_candidate_promotes_atomically asserts sha256_of(accepted.path)==manifest.accepted.sha256 and parent_sha256==parent_ref.sha256; Reco
+FIN-003,FIN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No test feeds stale/placeholder/report-only evidence and asserts rejection.
+FIN-004,FIN,PASS,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,UNIT,True,True,True,17,0,0,,"test_artifact_transactions.py (3) + test_writer_lock.py (14) = 17 passed, canonical testpaths."
+FIN-005,FIN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No test exercises write_failure_bundle.
+FIN-006,FIN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No regression-comparison test exists.
+FIN-007,FIN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No test asserts LLM advisory cannot override a failing deterministic gate.
+FIN-008,FIN,PASS,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No test asserts absence of remote telemetry.
+FIN-009,FIN,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No enable/disable parity test exists for observability output.
+FIN-010,FIN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,UNIT,True,True,False,0,0,0,,No test asserts the final verdict states highest maturity + all blocked levels.
+FRZ-001,FRZ,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+FRZ-002,FRZ,FAIL,IMPLEMENTED_INACTIVE,SOURCE_ONLY,FIXTURE,False,True,"['Probe (tempfile): freeze_hash computed on pre-attribute file; verification hashes post-attribute file -> expected e2c398a204c5... != actual 2bda477137f0... (exit 0, mismatch by construction)']",0,1,0,,
+FRZ-003,FRZ,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+FRZ-004,FRZ,PASS,VERIFIED_ACTIVE,UNIT,FIXTURE,False,True,"['pytest tests/unit/test_stage6_unsafe_flag_policy.py: 16 passed (asserts defaults False and profile-rejection)', 'pytest tests/unit/test_stage6_containment.py: 10 passed']",26,0,0,,
+GATE-001,GATE,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,True,16,0,0,,"tests/roadrunner/test_gate_matrix.py (NOT in canonical testpaths): profile overlap rejected, empty matrix rejected, unknown profile raises, per-profile decision"
+GATE-002,GATE,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,True,16,0,0,,"Dedicated negative tests for missing required, BLOCKED required, and required NOT_APPLICABLE all assert release_allowed is False."
+GATE-003,GATE,PASS,VERIFIED_ACTIVE,FIXTURE,UNIT,True,True,False,0,0,0,,No dedicated pytest asserts placeholder rejection or stale-hash rejection; covered by live negative controls below.
+GATE-004,GATE,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,UNIT,True,True,True,1,0,0,,"Canonical suite (336 passed) includes semantic-diff/contract tests; live readiness-gate check against the pinned XODR: correct cited sha256 -> pass, wrong sha25"
+GATE-005,GATE,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,SOURCE_ONLY,UNIT,False,True,False,0,0,0,,No test asserts validators do not mutate; verified by static import scan.
+GATE-006,GATE,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,True,71,0,0,,test_contracts.py 71 passed (canonical path); test_artifact_transactions.py passes in canonical suite (336 total).
+GATE-007,GATE,PASS,VERIFIED_ACTIVE,FIXTURE,UNIT,True,True,True,71,0,0,,Canonical suite 336 green includes semantic-diff/promotion coverage; readiness-gate before/after logic exercised via live negative controls.
+GEO-001,GEO,PASS,VERIFIED_ACTIVE,UNIT,FIXTURE,False,True,"['pytest tests/opendrive_geometry --collect 2280', 'pytest tests/opendrive_geometry (run): 2202 passed, 78 skipped, exit 0 (10.08s)', 'pytest tests/opendrive_geometry/test_existing_implementations.py: 1503 passed, 78 skipped', 'pytest tests/opendrive_geometry/test_sampling.py: 15 passed', 'pytest tests/opendrive_geometry/test_arc.py: 20 passed', 'pytest tests/opendrive_geometry/test_transform_invariance.py: 9 passed', 'pytest tests/unit/test_opendrive_geometry_parampoly3.py: 70 passed', 'pytest tests/unit/test_opendrive_geometry_parampoly3.py::TestZeroTangent::TestNonfiniteCoefficients::TestEvaluationRange: 11 passed']",2827,0,78,,
+GEO-002,GEO,INSUFFICIENT_EVIDENCE,IMPLEMENTED_UNVERIFIED,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+GEO-003,GEO,PASS,VERIFIED_ACTIVE,UNIT,FIXTURE,False,True,"['pytest tests/unit/test_geometric_continuity_migration.py: 24 passed', 'pytest tests/unit (test_geometric_continuity_migration, test_artifact_transactions, test_writer_lock, test_agent_sync_contract, test_map_identity_guard): 52 passed']",76,0,0,,
+GEO-004,GEO,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,FIXTURE,False,True,"['pytest tests/unit/test_stage6_unsafe_flag_policy.py: 16 passed (exit 0)', 'pytest tests/unit/test_stage6_containment.py: 10 passed']",26,0,0,,
+GEO-005,GEO,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+GEO-006,GEO,PASS,VERIFIED_ACTIVE,FIXTURE,FIXTURE,True,True,['pytest tests/unit/test_stage6_containment.py: 10 passed (uses _NoopPlotter/_NoopMeshChecker/_NoopHeatmap/_DiagnosticMeshRepairer/_FakeStage fixtures)'],10,0,0,,
+GEO-007,GEO,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+GEO-008,GEO,PASS,VERIFIED_ACTIVE,FIXTURE,FIXTURE,True,True,['pytest tests/unit/test_stage6_containment.py: 10 passed'],10,0,0,,
+GEO-009,GEO,PASS,VERIFIED_ACTIVE,FIXTURE,FIXTURE,True,True,"['pytest tests/unit/test_stage6_containment.py: 10 passed', 'pytest tests/unit/test_stage6_unsafe_flag_policy.py: 16 passed']",26,0,0,,
+GEO-010,GEO,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+GLOBAL-001,GLOBAL,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,9,9,0,0,,
+GLOBAL-002,GLOBAL,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+GLOBAL-003,GLOBAL,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+GLOBAL-004,GLOBAL,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,True,0,0,0,0,,
+GLOBAL-005,GLOBAL,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,True,0,0,0,0,,
+GLOBAL-006,GLOBAL,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,3,3,0,0,,
+GLOBAL-007,GLOBAL,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,336,336,0,0,,
+GLOBAL-008,GLOBAL,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+GLOBAL-009,GLOBAL,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,9,9,0,0,,
+GLOBAL-010,GLOBAL,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+GLOBAL-011,GLOBAL,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+GLOBAL-012,GLOBAL,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+JCT-001,JCT,PASS,VERIFIED_ACTIVE,UNIT,FIXTURE,False,True,"['pytest tests/unit/test_junction_connector_rebuild.py: 2 passed (test_line_connector_rebuild_blocks_straight_chord_by_default, test_rebuild_parampoly3_connector_prefers_verified_arc) (exit 0)', 'pytest tests/topology/test_junction_model.py: 11 passed (exit 0)']",13,0,0,,
+JCT-002,JCT,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,UNIT,FIXTURE,False,True,['pytest tests/unit/test_junction_connector_rebuild.py::test_rebuild_parampoly3_connector_prefers_verified_arc: 1 passed'],1,0,0,,
+JCT-003,JCT,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+JCT-004,JCT,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+JCT-005,JCT,PASS,VERIFIED_ACTIVE,UNIT,FIXTURE,False,True,"['pytest tests/unit/test_junction_connector_rebuild.py::test_line_connector_rebuild_blocks_straight_chord_by_default: 1 passed (asserts geometry unchanged: x=70, y=0, length=40 preserved; risk report ok=False)']",1,0,0,,
+JCT-006,JCT,CONFLICTING_EVIDENCE,PARTIAL,UNIT,FIXTURE,False,True,"['pytest tests/unit/test_junction_connector_rebuild.py: 2 passed (original geometry preserved on blocked rebuild: x=70, y=0, length=40 unchanged)']",2,0,0,,
+JCT-007,JCT,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+JCT-008,JCT,CONFLICTING_EVIDENCE,PARTIAL,UNIT,FIXTURE,False,True,"[""pytest tests/unit/test_junction_connector_rebuild.py: 2 passed (assert report['attempted'], blocked_connector_candidates, rebuilt, geometry_written fields)""]",2,0,0,,
+LAN-001,LAN,CONFLICTING_EVIDENCE,PARTIAL,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,Offline FULL_MAP_OFFLINE census: 0 roads with duplicate laneSection s; ordering holds trivially (single section per road).
+LAN-002,LAN,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,Offline census: 0 duplicate lane ids per side; 32710 center lanes all type='none'; 0 driving lanes with id=0.
+LAN-003,LAN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,True,1,0,0,,"Pinned census: types {none:32710, driving:34674, sidewalk:17392, restricted:5}; no footway/cycleway/path lanes present in artifact."
+LAN-004,LAN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test covers oneway representation.
+LAN-005,LAN,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test for connector lane creation semantics.
+LAN-006,LAN,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,"No dedicated test for preservation-by-default (test_stage6_containment covers stage 6 geometry, not lanes)."
+LAN-007,LAN,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,"Offline run on pinned XODR: check_lane_width_continuity ok=True, num_roads=32710, num_issues=0."
+LAN-008,LAN,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,"Offline run on pinned XODR: both gates ok=True, 0 issues (single width per lane -> no transitions to break)."
+LAN-009,LAN,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,"Offline run on pinned XODR: check_lane_geometry_continuity ok=True, n_issues=0, lane_offset_eps=0.05."
+LAN-010,LAN,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No dedicated test for cross-section repair preserving center/source semantics.
+LAN-011,LAN,BLOCKED,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No tests.
+LAN-012,LAN,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test for superelevation/crossfall range validity after length change.
+LLK-001,LLK,CONFLICTING_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,True,34,0,0,,test_contracts.py: 12 parametrized test_lanelink_regeneration_policy cases + test_invalid_lanelink_env_fails_closed all PASS - but these test ONLY the policy fu
+LLK-002,LLK,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,"No test enumerating the four attachment combos (start->start, start->end, end->start, end->end)."
+LLK-003,LLK,FAIL,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test resolving sections from contact points.
+LLK-004,LLK,FAIL,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test for geometry/movement-based pairing.
+LLK-005,LLK,PASS,VERIFIED_ACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,True,True,1,0,0,,"Offline run on pinned XODR: ok=True, num_issues=0, roads_scanned=32710, lane_types=[driving]."
+LLK-006,LLK,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No tests.
+LLK-007,LLK,FAIL,IMPLEMENTED_INACTIVE,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test asserts the sanitizer performs real checks.
+LLK-008,LLK,BLOCKED,NOT_APPLICABLE,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,CARLA smoke/spawn validation exists in code but cannot execute: no CARLA server; .venv lacks carla module.
+O2W-001,O2W,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,True,1,0,0,,"Static verification: classification as supplementary is consistently stated in runner docstring, stage_04 gate, README, and architecture-gate reports (AG02/AG03"
+O2W-002,O2W,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No unit test for cache identity; verified by source inspection (cache key = OSM hash + config hash; identity fields recorded; cache validated against key + outp
+O2W-003,O2W,BLOCKED,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No OBJ-structure validation test exists (no validator to test).
+O2W-004,O2W,BLOCKED,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No tests.
+O2W-005,O2W,PASS,PARTIAL,ACTIVE_CALL_TRACE,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No automated test asserts that a disabled OSM2World run produces no completeness claims; policy consistency verified by document/flag inspection only.
+OSM-001,OSM,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,[],[],[],[],,
+OSM-002,OSM,INSUFFICIENT_EVIDENCE,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,False,['Get-FileHash campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm -Algorithm SHA256'],['B9E074656F744C31E6AABB0A16E6B2246824CA74E202EA2C316FF7F22364F24F matches manifest'],[],[],,
+OSM-003,OSM,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+OSM-004,OSM,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+OSM-005,OSM,NOT_APPLICABLE,NOT_APPLICABLE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['Read-only ET scan of pinned authoritative XODR: <signal>, <signalReference>, <controller> counts']","['signals=0, signalReference=0, controllers=0 (matches manifest signal_count=0)']",[],[],,
+OSM-006,OSM,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+OSM-007,OSM,PASS,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,False,['Get-FileHash campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1.xodr -Algorithm SHA256'],['6044A87D8D6E116B444FE4413A46AB97085033DEF004B62D011233F4DDC0E93D matches manifest'],[],[],,
+OSM-008,OSM,PASS,PARTIAL,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['Read-only ET scan of pinned authoritative XODR (roads/junctions/signals/signalRef/controllers/elevation records)', 'check_geometric_continuity.py full-map run (num_roads=32710, num_links_checked=45632)']","['roads=32710, junctions=3646, signals=0, signalReference=0, controllers=0, elevation_records=32710, nonfinite_elev=0', 'All counts match manifest']",[],[],,
+OSM-009,OSM,INSUFFICIENT_EVIDENCE,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+PER-001,PER,INSUFFICIENT_EVIDENCE,IMPLEMENTED_UNVERIFIED,UNIT,DISTRIBUTED_ROUTE_SENSOR,False,True,True,1,0,0,,"Canonical tests/unit/test_map_identity_guard.py PASSED inside the 336-run: is_town_fallback('Town05')=True, 'Town10HD'=True, '/Game/Carla/Maps/Grid0828'=False; "
+PER-002,PER,FAIL,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,No offline test can enumerate collected modalities without CARLA.
+PER-003,PER,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,No tests.
+PER-004,PER,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,Detector code exists but has no offline unit tests; live frame-integrity verification BLOCKED (no server).
+PER-005,PER,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,No split logic exists to test.
+PER-006,PER,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,No test asserting reproducibility fields in run_info; no two-run determinism test.
+PER-007,PER,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,No test for the separation logic.
+PER-008,PER,INSUFFICIENT_EVIDENCE,IMPLEMENTED_UNVERIFIED,UNIT,DISTRIBUTED_ROUTE_SENSOR,False,True,True,336,0,0,,Canonical 336-test suite passed (48 warnings) - map-generation tests unaffected by optional ML imports. run_gnn_pipeline dry-run subprocess tests FAILED for unr
+PREF-001,PREF,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,IMPORT,UNIT,False,False,0,0,0,0,,
+PREF-002,PREF,BLOCKED,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+PREF-003,PREF,BLOCKED,IMPLEMENTED_INACTIVE,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+PREF-004,PREF,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+PREF-005,PREF,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+PREF-006,PREF,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,UNIT,False,False,0,0,0,0,,
+PREF-007,PREF,PASS,VERIFIED_ACTIVE,UNIT,UNIT,True,True,0,0,0,0,,
+PREF-008,PREF,PASS,VERIFIED_ACTIVE,IMPORT,UNIT,False,True,0,0,0,0,,
+RAB-001,RAB,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+RAB-002,RAB,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+RAB-003,RAB,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+RAB-004,RAB,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+RAB-005,RAB,BLOCKED,MISSING,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+RAB-006,RAB,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FIXTURE,False,True,[],0,0,0,,
+REP-001,REP,BLOCKED,PARTIAL,IMPORT,IMPORT,True,False,0,0,0,0,,
+REP-002,REP,BLOCKED,PARTIAL,IMPORT,IMPORT,True,False,0,0,0,0,,
+REP-003,REP,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,SOURCE_ONLY,IMPORT,False,False,0,0,0,,,
+REP-004,REP,FAIL,PARTIAL,IMPORT,IMPORT,True,False,0,0,0,0,,
+REP-005,REP,PASS,VERIFIED_ACTIVE,UNIT,IMPORT,True,True,336,336,0,0,,
+REP-006,REP,INSUFFICIENT_EVIDENCE,VERIFIED_ACTIVE,SOURCE_ONLY,IMPORT,False,False,0,0,0,0,,
+REP-007,REP,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,IMPORT,False,False,0,0,0,0,,
+REP-008,REP,PASS,VERIFIED_ACTIVE,UNIT,IMPORT,True,True,336,336,0,0,,
+REP-009,REP,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,IMPORT,False,True,0,0,0,0,,
+SAN-001,SAN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,UNIT,True,False,"['probe: sanitize_xodr on malformed XML \'<OpenDRIVE><road id=""1""><planView></road>\'']","['malformed_xml_sanitize_ok=False (ET.parse raises, returns False, no silent recovery)']",[],[],,
+SAN-002,SAN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,UNIT,True,False,"['probe: 2-road/1-junction XODR with self-links, duplicate successors, invalid connections, NaN length, s=-0.004, width a=0']","['counts roads/junctions/laneSections preserved: (2,1,2) before and after', 'only self-link, duplicate successor, and self/missing junction connections removed (documented via diff_log)', 'road id=1 and junction id=10 still present']",[],[],,
+SAN-003,SAN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,UNIT,True,False,['probe: sanitizer on XODR containing malformed links/junction connections'],"['road count 2->2, junction count 1->1, laneSection count 2->2 (no road/junction/lane deletion)']",[],[],,
+SAN-004,SAN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,UNIT,True,False,['probe: run sanitize_xodr twice on same input; compare sha256 of outputs'],['idempotent_bytes_equal=True (byte-identical outputs)'],[],[],,
+SAN-005,SAN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,UNIT,True,False,['probe: second sanitize pass over first sanitized output'],"['second pass: 0 width fixes, 0 geometry fixes, 0 s clamps, 0 links/junctions removed; output byte-identical']",[],[],,
+SAN-006,SAN,INSUFFICIENT_EVIDENCE,PARTIAL,UNIT,UNIT,True,False,"['probe: NaN geometry length, s=-0.004 laneSection, width a=0', 'full-map elevation scan of pinned authoritative XODR']","['geo_len_nan_fixed_to_0.01=True, laneSection_s_clamped_to_0=True, width_a_fixed_to_3.5=True', 'authoritative XODR: nonfinite_elev=0 over 32710 elevation records']",[],[],,
+SAN-007,SAN,CONFLICTING_EVIDENCE,PARTIAL,UNIT,UNIT,True,False,['probe: sanitize raw.xodr -> 01_sanitized.xodr (temp dir)'],['output written to explicit new path; raw input bytes unchanged; second output 01_sanitized_2.xodr created separately'],[],[],,
+SEM-001,SEM,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,FIXTURE,FULL_MAP_OFFLINE,False,False,"['ultimate_pipeline/tests/unit/test_coordinate_contract.py', 'ultimate_pipeline/tests/unit/test_geo_alignment_rigid_scale_lock.py']","['test_coordinate_contract.py: 3 passed', 'test_geo_alignment_rigid_scale_lock.py: 2 passed']",[],[],,
+SEM-002,SEM,INSUFFICIENT_EVIDENCE,PARTIAL,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,['python ultimate_pipeline/quality/check_geometric_continuity.py <pinned.xodr> --eps-xy 0.05 --eps-hdg 0.01 (exit 2)'],"['full-map link inventory produced (32710 roads, 45632 links checked)']",[],[],,
+SEM-003,SEM,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+SEM-004,SEM,PASS,PARTIAL,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['tests/topology/test_junction_model.py (11 tests; NOT in canonical testpaths)', 'probe: TopologyRepair.run on dangling-ref XODR', 'probe: full-map dangling/duplicate scan on pinned authoritative XODR', 'check_geometric_continuity full-map run']","['junction model: missing-road refs detected, duplicate connections detected, lane-link out-of-range detected (11 passed)', 'full map: dangling predecessor=328, dangling successor=328, duplicate road/junction ids=0, duplicate connection slots=0', 'check_geometric_continuity: 27645 link endpoint/heading issues on 45632 links (reciprocal-link mismatch detection)']",[],[],,
+SEM-005,SEM,PASS,PARTIAL,UNIT,FULL_MAP_OFFLINE,False,False,"['tests/unit/test_junction_connector_rebuild.py (canonical, 2 passed)', 'ultimate_pipeline/tests/unit/test_junction_connector_rebuild.py (canonical, 2 passed)']","['test_line_connector_rebuild_blocks_straight_chord_by_default: ambiguous connector blocked with BLOCKED_CONNECTOR_RECONSTRUCTION, no guessed repair']",[],[],,
+SEM-006,SEM,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+SEM-007,SEM,PASS,PARTIAL,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['python ultimate_pipeline/quality/check_geometric_continuity.py <pinned.xodr> (read-only full-map run, exit 2)', 'Get-FileHash pinned XODR before/after all audit runs']",['report produced to stdout only; pinned XODR sha256 unchanged (FF2A05E7...); git status shows no campaigns modifications'],[],[],,
+SEN-001,SEN,CONFLICTING_EVIDENCE,PARTIAL,UNIT,DISTRIBUTED_ROUTE_SENSOR,False,True,True,1,0,0,,"Offline: sha256 computed (054A2D8B...), file tracked, offline calib_sanity_check exit 0 parsed all 6 cameras + 2 lidars. Compilation-only test_calibration_singl"
+SEN-002,SEN,INSUFFICIENT_EVIDENCE,IMPLEMENTED_UNVERIFIED,UNIT,DISTRIBUTED_ROUTE_SENSOR,False,True,True,2,0,0,,(1) Synthetic control points executed with the REAL submission transform_conventions module + real calib_data.json: front cameras point forward (front_left +0.9
+SEN-003,SEN,FAIL,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,True,1,1,0,,Offline calib_sanity_check exit 0: all 6 cameras parsed with image_size 1920x1080 and has_K_undistortion=true; all 2 lidars parsed. test_calib_path.py collectio
+SEN-004,SEN,BLOCKED,IMPLEMENTED_UNVERIFIED,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,"No unit test for single-tick-owner exclusivity. tests/carla_tools/test_session.py (10 passed) covers set_sync_mode helpers only, no live ticking."
+SEN-005,SEN,BLOCKED,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,True,1,0,0,,test_wait_for_first_sample (fake world/sensor) passed in bundle; NO cross-modality frame-pairing test exists.
+SEN-006,SEN,BLOCKED,IMPLEMENTED_UNVERIFIED,UNIT,DISTRIBUTED_ROUTE_SENSOR,False,True,True,19,2,0,,test_wait_for_first_sample PASSED (fake world/sensor: emits on tick 2 -> True; never delivers -> False). Part of bundle run: 19 passed / 2 failed (failures are 
+SEN-007,SEN,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,DISTRIBUTED_ROUTE_SENSOR,False,True,False,0,0,0,,No test asserts run_info/world-snapshot contents or completeness.
+SIG-001,SIG,FAIL,MISSING,ACTIVE_CALL_TRACE,FIXTURE,True,True,True,0,0,0,,"Execution probe: infer_and_insert on 3-incoming junction emitted 3 <object type='traffic_light'>, 0 <signal>, 0 <signalReference>. Pinned XODR: 0 <signal>, 0 <s"
+SIG-002,SIG,CONFLICTING_EVIDENCE,PARTIAL,SOURCE_ONLY,FIXTURE,False,True,True,0,0,0,,"Probe confirmed objects are non-functional (dynamic='no', orientation='none', type 'traffic_light' as visual object). No code path exists that promotes a visibl"
+SIG-003,SIG,FAIL,MISSING,ACTIVE_CALL_TRACE,FIXTURE,True,True,True,0,0,0,,"Probe captured exact emitted attrs: TL object {'s':'94.000','t':'0.0','zOffset':'0.0','hdg':'0.000000', no hOffset, no validity}; sign object {'s':'0.0','t':'-1"
+SIG-004,SIG,FAIL,MISSING,SOURCE_ONLY,FIXTURE,False,True,False,0,0,0,,No tests.
+SIG-005,SIG,FAIL,MISSING,ACTIVE_CALL_TRACE,FIXTURE,True,True,True,0,0,0,,"Probe: two infer_and_insert calls on the same 3-incoming junction produced 6 objects with duplicated ids (tl_42_0 twice, etc.) - the exact failure mode the requ"
+TIL-001,TIL,FAIL,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,True,True,0,0,0,,No test covers curve-extrema bounds; live fixture demonstrates both truncation directions.
+TIL-002,TIL,FAIL,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,True,True,0,0,0,,No documentation or test asserts the assignment policy; live fixture evidence below.
+TIL-003,TIL,FAIL,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,True,True,0,0,0,,Live fixture evidence below; no dedicated preservation test in canonical suite.
+TIL-004,TIL,FAIL,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,True,True,0,0,0,,Live fixture evidence below.
+TIL-005,TIL,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,True,0,0,0,,No test covers junction straddling; fixture junction at boundary appears in neither tile.
+TIL-006,TIL,FAIL,PARTIAL,FIXTURE,FULL_MAP_OFFLINE,False,True,True,21,1,0,,Submission-tree tile tests (run with editable finder disabled and neutral cwd): 21 passed / 1 failed (test_tile_crs_alignment integration test depends on full r
+TIL-007,TIL,PASS,VERIFIED_ACTIVE,FIXTURE,FULL_MAP_OFFLINE,False,True,True,0,0,0,,No dedicated determinism test in canonical suite; live double-run evidence below.
+TIL-008,TIL,BLOCKED,VERIFIED_ACTIVE,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,Execution requires CARLA (supervisor loads tiles in CARLA); offline environment -> BLOCKED_TOOLCHAIN. Code path verified by reading.
+TIL-009,TIL,FAIL,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,True,False,0,0,0,,No test asserts release-mode tile-failure blocking; verified by reading the fail-open paths.
+TOP-001,TOP,FAIL,IMPLEMENTED_INACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['probe: TopologyRepair.run on XODR with dangling successor elementId=999 and junction 777', 'full-map scan of pinned authoritative XODR for dangling predecessor/successor refs']","['probe: dangling links removed (links_after=[]); no roads deleted', 'full map: dangling predecessor=328, dangling successor=328']","[""Authoritative candidate FAILS the property: 656 dangling road links target non-existent ids (e.g. successor elementId='12' road 39835)""]",[],,
+TOP-002,TOP,INSUFFICIENT_EVIDENCE,PARTIAL,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['check_geometric_continuity.py full-map run (exit 2)', 'probe: TopologyRepair removes duplicate-key links and unknown elementType']","['reciprocal link endpoint/heading mismatch detection demonstrated on full map (27645 issues)', 'elementType validity + duplicate suppression verified in probe']",[],[],,
+TOP-003,TOP,INSUFFICIENT_EVIDENCE,IMPLEMENTED_INACTIVE,UNIT,FULL_MAP_OFFLINE,False,False,"['tests/unit/test_junction_connector_rebuild.py (canonical)', 'ultimate_pipeline/tests/unit/test_junction_connector_rebuild.py (canonical)', 'tests/unit/test_geometric_continuity_migration.py::TestContainmentFlags (canonical)']","['test_line_connector_rebuild_blocks_straight_chord_by_default: BLOCKED_CONNECTOR_RECONSTRUCTION when tangents incompatible; no nearest-attachment guess', 'test_release_profile_rejects_unsafe_flags: release profiles never enable straight-chord fallback', 'fallback only when release-profile flag explicitly enabled']",[],[],,
+TOP-004,TOP,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+TOP-005,TOP,INSUFFICIENT_EVIDENCE,PARTIAL,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,['probe: TopologyRepair.run on XODR with junction emptied by connection removal'],"['no ROAD removal exists in any HEAD module (grep for road removal in topology_repair/junction_connector_rebuild: none)', 'probe: junction 10 removed only after all its connections became invalid (no reason/impact record)']",[],[],,
+TOP-006,TOP,FAIL,MISSING,SOURCE_ONLY,FULL_MAP_OFFLINE,False,False,[],[],[],[],,
+TOP-007,TOP,PASS,IMPLEMENTED_INACTIVE,FULL_MAP_OFFLINE,FULL_MAP_OFFLINE,True,False,"['full-map scan of pinned authoritative XODR: junction connections vs existing roads', 'tests/topology/test_junction_model.py (11 passed; NOT in canonical testpaths)', 'probe: TopologyRepair.run on invalid junction connections']","[""full map: bad_junction_connections=0 (all 3646 junctions' connections reference existing roads)"", 'junction model: missing-road connection detected, duplicate connection detected', 'probe: invalid connections removed; roads untouched']",[],[],,
+TQA-001,TQA,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,CARLA_EXACT_MAP,False,True,False,0,0,0,,No test asserts deterministic defect-class coverage of QA locations; no test pinning selection to environment variables.
+TQA-002,TQA,INSUFFICIENT_EVIDENCE,PARTIAL,ACTIVE_CALL_TRACE,CARLA_EXACT_MAP,False,True,False,0,0,0,,No test asserts QA reports carry the tile/XODR hash they were produced against.
+TQA-003,TQA,INSUFFICIENT_EVIDENCE,MISSING,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,No test exercises image-content checking (no such code exists).
+TQA-004,TQA,CONFLICTING_EVIDENCE,PARTIAL,FULL_MAP_OFFLINE,CARLA_EXACT_MAP,False,True,True,1,0,0,,Offline full-map execution on pinned artifact: DrivableSurfaceScanner clean; FullMapMetricsScanner ok. Defect classes covered: holes/seams/drops/dead-connection
+TQA-005,TQA,BLOCKED,IMPLEMENTED_INACTIVE,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,Submission unit test test_run_full_domain_gap_offline_carla_guard.py asserts tile_qa_status=='SKIPPED_CARLA_NOT_INVOKED' when simulation gate disabled - documen
+TQA-006,TQA,BLOCKED,IMPLEMENTED_INACTIVE,SOURCE_ONLY,CARLA_EXACT_MAP,False,True,False,0,0,0,,No test for seam repair; no test asserting a repaired-tile or explicit no-repair report on release.

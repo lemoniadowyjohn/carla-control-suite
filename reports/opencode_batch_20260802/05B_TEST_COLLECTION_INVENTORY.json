@@ -1,0 +1,417 @@
+[
+  {
+    "path": "ultimate_pipeline\\carla_tools\\tests\\test_thesis_sensor_rig_contract.py",
+    "bytes": 17286,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\domain_gap\\tests\\test_geo_alignment.py",
+    "bytes": 11942,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\domain_gap\\tests\\test_run_metadata.py",
+    "bytes": 3808,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_contracts.py",
+    "bytes": 18045,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_deterministic_alignment.py",
+    "bytes": 1768,
+    "skip_or_xfail_markers": 1
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_perception_collect_tools.py",
+    "bytes": 1832,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_reload_ready_for_sensors.py",
+    "bytes": 3696,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_run_root_inference.py",
+    "bytes": 917,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_sumo_repair.py",
+    "bytes": 2475,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\test_wait_for_first_sample.py",
+    "bytes": 2308,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_audit_normalization.py",
+    "bytes": 6822,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_connectivity_gap.py",
+    "bytes": 14710,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_connectivity_gap_always_present.py",
+    "bytes": 6527,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_coordinate_contract.py",
+    "bytes": 1803,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_curvature_gap_parampoly3.py",
+    "bytes": 3684,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_elevation_gap.py",
+    "bytes": 17353,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_geo_alignment_rigid_scale_lock.py",
+    "bytes": 2705,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_junction_connector_rebuild.py",
+    "bytes": 4719,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_opendrive_geometry_line_arc.py",
+    "bytes": 21021,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_osm_meta_index.py",
+    "bytes": 8294,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_run_full_domain_gap_offline_carla_guard.py",
+    "bytes": 2485,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_run_full_domain_gap_reproducibility.py",
+    "bytes": 2510,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_sys001_import_smoke.py",
+    "bytes": 2193,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_tile_crs_alignment.py",
+    "bytes": 4466,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_tile_extractor_crs.py",
+    "bytes": 2073,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_tile_gap_evaluator.py",
+    "bytes": 4450,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_tile_iou_report_wire.py",
+    "bytes": 8736,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_tile_matcher_spatial.py",
+    "bytes": 7002,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tests\\unit\\test_xodr_cropper_gps.py",
+    "bytes": 2549,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "ultimate_pipeline\\tools\\tests\\test_calib_path.py",
+    "bytes": 224,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\carla_tools\\tests\\test_thesis_sensor_rig_contract.py",
+    "bytes": 17286,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\dev_tools\\test_imports.py",
+    "bytes": 2641,
+    "skip_or_xfail_markers": 1
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\domain_gap\\tests\\test_geo_alignment.py",
+    "bytes": 14120,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\domain_gap\\tests\\test_run_metadata.py",
+    "bytes": 3808,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_contracts.py",
+    "bytes": 10448,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_deterministic_alignment.py",
+    "bytes": 1768,
+    "skip_or_xfail_markers": 1
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_perception_collect_tools.py",
+    "bytes": 1832,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_reload_ready_for_sensors.py",
+    "bytes": 3696,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_run_root_inference.py",
+    "bytes": 917,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_sumo_repair.py",
+    "bytes": 2475,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\test_wait_for_first_sample.py",
+    "bytes": 2308,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_connectivity_gap.py",
+    "bytes": 14710,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_connectivity_gap_always_present.py",
+    "bytes": 6527,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_curvature_gap_parampoly3.py",
+    "bytes": 3684,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_elevation_gap.py",
+    "bytes": 17353,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_geo_alignment_rigid_scale_lock.py",
+    "bytes": 2705,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_osm_meta_index.py",
+    "bytes": 8294,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_run_full_domain_gap_offline_carla_guard.py",
+    "bytes": 2485,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_run_full_domain_gap_reproducibility.py",
+    "bytes": 2510,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_tile_crs_alignment.py",
+    "bytes": 4466,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_tile_extractor_crs.py",
+    "bytes": 2073,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_tile_gap_evaluator.py",
+    "bytes": 4450,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_tile_iou_report_wire.py",
+    "bytes": 8736,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_tile_matcher_spatial.py",
+    "bytes": 7002,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tests\\unit\\test_xodr_cropper_gps.py",
+    "bytes": 2549,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "submission/infrastructure/ultimate_pipeline\\tools\\tests\\test_calib_path.py",
+    "bytes": 224,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\carla_tools\\test_session.py",
+    "bytes": 2455,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\domain_gap\\test_elevation_contract.py",
+    "bytes": 3511,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_arc.py",
+    "bytes": 5548,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_existing_implementations.py",
+    "bytes": 8286,
+    "skip_or_xfail_markers": 1
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_line.py",
+    "bytes": 3189,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_near_zero_curvature.py",
+    "bytes": 1601,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_sampling.py",
+    "bytes": 3664,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_s_domain.py",
+    "bytes": 2396,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\opendrive_geometry\\test_transform_invariance.py",
+    "bytes": 3047,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_alignment.py",
+    "bytes": 6199,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_capability_probe.py",
+    "bytes": 1444,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_export_inventory.py",
+    "bytes": 5138,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_gate_matrix.py",
+    "bytes": 5794,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_mesh_manifest.py",
+    "bytes": 4897,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_models.py",
+    "bytes": 17680,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_profiles.py",
+    "bytes": 4173,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\roadrunner\\test_semantic_manifest.py",
+    "bytes": 10619,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\topology\\test_junction_model.py",
+    "bytes": 5056,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_agent_sync_contract.py",
+    "bytes": 2414,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_artifact_transactions.py",
+    "bytes": 3190,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_geometric_continuity_migration.py",
+    "bytes": 12034,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_junction_connector_rebuild.py",
+    "bytes": 4594,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_map_identity_guard.py",
+    "bytes": 1833,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_opendrive_geometry_parampoly3.py",
+    "bytes": 26674,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_stage6_containment.py",
+    "bytes": 7266,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_stage6_unsafe_flag_policy.py",
+    "bytes": 3048,
+    "skip_or_xfail_markers": 0
+  },
+  {
+    "path": "tests\\unit\\test_writer_lock.py",
+    "bytes": 5973,
+    "skip_or_xfail_markers": 0
+  }
+]
