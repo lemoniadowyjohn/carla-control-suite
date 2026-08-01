@@ -1,0 +1,15 @@
+{
+  "requirement_id": "TEST-001",
+  "implementation_state": "IMPLEMENTED",
+  "verification_state": "PASS",
+  "release_effect_by_profile": "BLOCKING",
+  "evidence_level_achieved": "HIGH",
+  "evidence_level_required": "HIGH",
+  "evidence_met": true,
+  "negative_control_required": true,
+  "negative_control_executed": true,
+  "contradictions": [],
+  "commit_identity": "dac6930a7de1698c4b2a1fe4cfb6deb7f2679fe2",
+  "branch": "integration/governed-map-quality-20260729",
+  "production_wiring_active": true
+}
