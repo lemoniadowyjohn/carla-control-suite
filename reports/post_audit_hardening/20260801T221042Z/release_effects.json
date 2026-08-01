@@ -1,0 +1,195 @@
+{
+  "audit_id": "LOW_COST_MODEL_AUDIT_20260801",
+  "profiles": {
+    "STANDALONE_XODR": {
+      "verdict": "BLOCKED",
+      "counts": {
+        "BLOCKS_PROFILE": 205,
+        "BLOCKS_ALL_RELEASES": 6,
+        "NON_BLOCKING": 7
+      },
+      "status_counts": {
+        "FAIL": 50,
+        "CONFLICTING_EVIDENCE": 32,
+        "INSUFFICIENT_EVIDENCE": 107,
+        "BLOCKED": 22,
+        "PASS": 6,
+        "NOT_APPLICABLE": 1
+      },
+      "blockers": [
+        "BLD-001",
+        "BLD-002",
+        "BLD-003",
+        "BLD-004",
+        "BLD-005",
+        "BLD-006",
+        "BLD-007",
+        "BOOT-001",
+        "BOOT-002",
+        "BOOT-003",
+        "BOOT-004",
+        "BOOT-005",
+        "BOOT-006",
+        "BOOT-007",
+        "BOOT-008",
+        "CAR-001",
+        "CAR-002",
+        "CAR-003",
+        "CAR-004",
+        "CAR-005"
+      ]
+    },
+    "COOKED_VISUAL_MAP": {
+      "verdict": "BLOCKED",
+      "counts": {
+        "BLOCKS_PROFILE": 205,
+        "BLOCKS_ALL_RELEASES": 6,
+        "NON_BLOCKING": 7
+      },
+      "status_counts": {
+        "FAIL": 50,
+        "CONFLICTING_EVIDENCE": 32,
+        "INSUFFICIENT_EVIDENCE": 107,
+        "BLOCKED": 22,
+        "PASS": 6,
+        "NOT_APPLICABLE": 1
+      },
+      "blockers": [
+        "BLD-001",
+        "BLD-002",
+        "BLD-003",
+        "BLD-004",
+        "BLD-005",
+        "BLD-006",
+        "BLD-007",
+        "BOOT-001",
+        "BOOT-002",
+        "BOOT-003",
+        "BOOT-004",
+        "BOOT-005",
+        "BOOT-006",
+        "BOOT-007",
+        "BOOT-008",
+        "CAR-001",
+        "CAR-002",
+        "CAR-003",
+        "CAR-004",
+        "CAR-005"
+      ]
+    },
+    "PERCEPTION_READY": {
+      "verdict": "BLOCKED",
+      "counts": {
+        "BLOCKS_PROFILE": 205,
+        "BLOCKS_ALL_RELEASES": 6,
+        "NON_BLOCKING": 7
+      },
+      "status_counts": {
+        "FAIL": 50,
+        "CONFLICTING_EVIDENCE": 32,
+        "INSUFFICIENT_EVIDENCE": 107,
+        "BLOCKED": 22,
+        "PASS": 6,
+        "NOT_APPLICABLE": 1
+      },
+      "blockers": [
+        "BLD-001",
+        "BLD-002",
+        "BLD-003",
+        "BLD-004",
+        "BLD-005",
+        "BLD-006",
+        "BLD-007",
+        "BOOT-001",
+        "BOOT-002",
+        "BOOT-003",
+        "BOOT-004",
+        "BOOT-005",
+        "BOOT-006",
+        "BOOT-007",
+        "BOOT-008",
+        "CAR-001",
+        "CAR-002",
+        "CAR-003",
+        "CAR-004",
+        "CAR-005"
+      ]
+    },
+    "DOMAIN_GAP_ONLY": {
+      "verdict": "BLOCKED",
+      "counts": {
+        "BLOCKS_PROFILE": 205,
+        "BLOCKS_ALL_RELEASES": 6,
+        "NON_BLOCKING": 7
+      },
+      "status_counts": {
+        "FAIL": 50,
+        "CONFLICTING_EVIDENCE": 32,
+        "INSUFFICIENT_EVIDENCE": 107,
+        "BLOCKED": 22,
+        "PASS": 6,
+        "NOT_APPLICABLE": 1
+      },
+      "blockers": [
+        "BLD-001",
+        "BLD-002",
+        "BLD-003",
+        "BLD-004",
+        "BLD-005",
+        "BLD-006",
+        "BLD-007",
+        "BOOT-001",
+        "BOOT-002",
+        "BOOT-003",
+        "BOOT-004",
+        "BOOT-005",
+        "BOOT-006",
+        "BOOT-007",
+        "BOOT-008",
+        "CAR-001",
+        "CAR-002",
+        "CAR-003",
+        "CAR-004",
+        "CAR-005"
+      ]
+    },
+    "FULL_PRODUCTION_RELEASE": {
+      "verdict": "BLOCKED",
+      "counts": {
+        "BLOCKS_PROFILE": 205,
+        "BLOCKS_ALL_RELEASES": 6,
+        "NON_BLOCKING": 7
+      },
+      "status_counts": {
+        "FAIL": 50,
+        "CONFLICTING_EVIDENCE": 32,
+        "INSUFFICIENT_EVIDENCE": 107,
+        "BLOCKED": 22,
+        "PASS": 6,
+        "NOT_APPLICABLE": 1
+      },
+      "blockers": [
+        "BLD-001",
+        "BLD-002",
+        "BLD-003",
+        "BLD-004",
+        "BLD-005",
+        "BLD-006",
+        "BLD-007",
+        "BOOT-001",
+        "BOOT-002",
+        "BOOT-003",
+        "BOOT-004",
+        "BOOT-005",
+        "BOOT-006",
+        "BOOT-007",
+        "BOOT-008",
+        "CAR-001",
+        "CAR-002",
+        "CAR-003",
+        "CAR-004",
+        "CAR-005"
+      ]
+    }
+  }
+}

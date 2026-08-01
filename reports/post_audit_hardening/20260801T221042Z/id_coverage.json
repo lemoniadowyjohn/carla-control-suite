@@ -1,1 +1,9 @@
-{"formal_requirements_assessed": 218, "issue_ids_assessed": 14, "duplicates": 0, "unknown_ids": 0, "unassessed_ids": 0}
+{
+  "formal_ids": 218,
+  "issue_ids": 14,
+  "total_tracked": 232,
+  "expected_claimed": 232,
+  "duplicate_ids": 0,
+  "unknown_ids": 0,
+  "unassessed": 0
+}
