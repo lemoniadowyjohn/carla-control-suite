@@ -1,15 +1,2194 @@
 {
-  "requirement_id": "TEST-001",
-  "implementation_state": "IMPLEMENTED",
-  "verification_state": "PASS",
-  "release_effect_by_profile": "BLOCKING",
-  "evidence_level_achieved": "HIGH",
-  "evidence_level_required": "HIGH",
-  "evidence_met": true,
-  "negative_control_required": true,
-  "negative_control_executed": true,
-  "contradictions": [],
-  "commit_identity": "dac6930a7de1698c4b2a1fe4cfb6deb7f2679fe2",
-  "branch": "integration/governed-map-quality-20260729",
-  "production_wiring_active": true
+  "audit_id": "LOW_COST_MODEL_AUDIT_20260801",
+  "status_logic": "PASS requires evidence_met=true AND mandatory negative control executed AND no unresolved contradictions",
+  "corrections": [
+    {
+      "requirement_id": "BLD-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BLD-002",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BLD-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BLD-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BLD-005",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BLD-006",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BLD-007",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-002",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "BOOT-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-007",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "BOOT-008",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-001",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-004",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-005",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-006",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-007",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-008",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-009",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-010",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "CAR-011",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DEM-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DEM-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DEM-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DEM-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DEM-005",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DG-001",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DG-002",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DG-003",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "DG-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DG-005",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "DG-006",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "DG-007",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "DG-008",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "DG-009",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-002",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-003",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "ELV-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-005",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-006",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-007",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "ELV-008",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ELV-009",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ENR-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ENR-002",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ENR-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ENR-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "ENR-005",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-001",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "FIN-002",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-004",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "FIN-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-007",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-008",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "FIN-009",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FIN-010",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FRZ-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FRZ-002",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FRZ-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "FRZ-004",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "GATE-001",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GATE-002",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GATE-003",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GATE-004",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GATE-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GATE-006",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GATE-007",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GEO-001",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "GEO-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GEO-003",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "GEO-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GEO-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GEO-006",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GEO-007",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GEO-008",
+      "audited_status": "PASS",
+      "corrected_status": "PASS",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS sustained (evidence_met=true, negative control executed, no unresolved contradiction)"
+    },
+    {
+      "requirement_id": "GEO-009",
+      "audited_status": "PASS",
+      "corrected_status": "PASS",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS sustained (evidence_met=true, negative control executed, no unresolved contradiction)"
+    },
+    {
+      "requirement_id": "GEO-010",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-001",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GLOBAL-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-006",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GLOBAL-007",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GLOBAL-008",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-009",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "GLOBAL-010",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-011",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "GLOBAL-012",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "JCT-001",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "JCT-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "JCT-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "JCT-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "JCT-005",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "JCT-006",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "JCT-007",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "JCT-008",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-001",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-002",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "LAN-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-007",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "LAN-008",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "LAN-009",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "LAN-010",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-011",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LAN-012",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-001",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-005",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "LLK-006",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-007",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "LLK-008",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "O2W-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "O2W-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "O2W-003",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "O2W-004",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "O2W-005",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "OSM-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "OSM-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "OSM-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "OSM-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "OSM-005",
+      "audited_status": "NOT_APPLICABLE",
+      "corrected_status": "NOT_APPLICABLE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "OSM-006",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "OSM-007",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "OSM-008",
+      "audited_status": "PASS",
+      "corrected_status": "PASS",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "PASS sustained (evidence_met=true, negative control executed, no unresolved contradiction)"
+    },
+    {
+      "requirement_id": "OSM-009",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-002",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-007",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PER-008",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-002",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-003",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "PREF-007",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: mandatory negative control not executed"
+    },
+    {
+      "requirement_id": "PREF-008",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "RAB-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "RAB-002",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "RAB-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "RAB-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "RAB-005",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "RAB-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-001",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-002",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-005",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "REP-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-007",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "REP-008",
+      "audited_status": "PASS",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: unresolved contradictions"
+    },
+    {
+      "requirement_id": "REP-009",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-006",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SAN-007",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEM-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEM-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEM-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEM-004",
+      "audited_status": "PASS",
+      "corrected_status": "PASS",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS sustained (evidence_met=true, negative control executed, no unresolved contradiction)"
+    },
+    {
+      "requirement_id": "SEM-005",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "SEM-006",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEM-007",
+      "audited_status": "PASS",
+      "corrected_status": "PASS",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "PASS sustained (evidence_met=true, negative control executed, no unresolved contradiction)"
+    },
+    {
+      "requirement_id": "SEN-001",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEN-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEN-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEN-004",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEN-005",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEN-006",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SEN-007",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SIG-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SIG-002",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SIG-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SIG-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "SIG-005",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-002",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-003",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-004",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-005",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-006",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-007",
+      "audited_status": "PASS",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "PASS->downgrade: evidence_met=false"
+    },
+    {
+      "requirement_id": "TIL-008",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TIL-009",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-001",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": true,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-004",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-005",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-006",
+      "audited_status": "FAIL",
+      "corrected_status": "FAIL",
+      "evidence_met": false,
+      "negative_control_required": false,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 0,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TOP-007",
+      "audited_status": "PASS",
+      "corrected_status": "PASS",
+      "evidence_met": true,
+      "negative_control_required": true,
+      "negative_control_executed": true,
+      "unresolved_contradictions": 0,
+      "correction": "PASS sustained (evidence_met=true, negative control executed, no unresolved contradiction)"
+    },
+    {
+      "requirement_id": "TQA-001",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TQA-002",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TQA-003",
+      "audited_status": "INSUFFICIENT_EVIDENCE",
+      "corrected_status": "INSUFFICIENT_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TQA-004",
+      "audited_status": "CONFLICTING_EVIDENCE",
+      "corrected_status": "CONFLICTING_EVIDENCE",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 2,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TQA-005",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    },
+    {
+      "requirement_id": "TQA-006",
+      "audited_status": "BLOCKED",
+      "corrected_status": "BLOCKED",
+      "evidence_met": false,
+      "negative_control_required": true,
+      "negative_control_executed": false,
+      "unresolved_contradictions": 1,
+      "correction": "unchanged by A2 status logic"
+    }
+  ],
+  "summary": {
+    "FAIL": 50,
+    "CONFLICTING_EVIDENCE": 32,
+    "INSUFFICIENT_EVIDENCE": 107,
+    "BLOCKED": 22,
+    "PASS": 6,
+    "NOT_APPLICABLE": 1
+  }
 }
