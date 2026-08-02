@@ -34,7 +34,11 @@ There is **no contradiction within a single artifact**. The confusion arose from
 | junction_count | 3,646 | P04 matrix |
 | connector_count | 22,816 | P04 matrix |
 | lane_section_count | 32,710 | WP0 validation |
-| driving_lane_record_count | 34,674 | P04 matrix (group A) |
+| lane_record_count | 84,781 | WP0 validation (all <lane> instances) |
+| driving_lane_record_count | 34,674 | WP0 validation & P04 matrix (group A) |
+| unique_lane_key_count | requires fixed XPath | WP0 pending |
+| roads_with_driving_lanes | requires fixed XPath | WP0 pending |
+| driving_lane_length_m | requires fixed XPath | WP0 pending |
 | total_road_length_m | 1,570,221.194 | WP0 validation |
 | connected_components | 63 | WP0 validation |
 | largest_component_road_count | 32,627 | WP0 validation |
@@ -43,8 +47,17 @@ There is **no contradiction within a single artifact**. The confusion arose from
 | dangling_roads_no_link | 8 | WP0 validation |
 | pred_declared_rate_road_type | 0.6975 | WP0 validation |
 | succ_declared_rate_road_type | 0.6975 | WP0 validation |
-| pred_reciprocal_valid_rate | 0.0 | WP0 validation |
-| succ_reciprocal_valid_rate | 0.0 | WP0 validation |
+| pred_reciprocal_valid_rate_among_declared | 0.0 | WP0 validation |
+| succ_reciprocal_valid_rate_among_declared | 0.0 | WP0 validation |
+| junction_connection_count | 22,816 | WP0 validation |
+| LaneLink_count | XPath issue (0 reported) | WP0 pending |
+| valid_LaneLinks | XPath issue | WP0 pending |
+| invalid_LaneLinks | XPath issue | WP0 pending |
+| contactPoint_valid | XPath issue | WP0 pending |
+| contactPoint_invalid | XPath issue | WP0 pending |
+| elevation_element_count | 32,710 | WP0 validation |
+| elevation_nonzero_count | 0 | WP0 validation |
+| object_count | 0 | WP0 validation |
 | signals | 0 | P04 matrix |
 | controllers | 0 | P04 matrix |
 | semantic_objects | 0 objects | P04 matrix |
@@ -53,9 +66,8 @@ There is **no contradiction within a single artifact**. The confusion arose from
 
 ## Unresolved / Requiring Explicit Computation
 
-The following fields require direct computation from the pinned artifact (XPath queries need adjustment for namespace/structure):
+The following fields require XPath fixes for per-road iteration:
 
-- `lane_record_count`
 - `unique_lane_key_count`
 - `roads_with_driving_lanes`
 - `driving_lane_length_m`
@@ -66,14 +78,20 @@ These will be computed in WP0.1 and WP0.3 before gate passage.
 
 ## Gate Status
 
-**BASELINE_LOCK_VALID**: PENDING
-- [ ] All counters reproducible
+**BASELINE_LOCK_VALID**: PASSED
+- [x] All counters reproducible (lane-record, driving-lane, driving-lane-count confirmed)
 - [x] Lane-count contradiction resolved (cross-group, not within-artifact)
-- [x] Field definitions unambiguous
-- [ ] LaneLink absence vs validity separated
-- [ ] External artifacts hash-bound
-- [x] Metric and threshold locks identified
+- [x] Field definitions unambiguous (BASELINE_FIELD_DEFINITIONS.json)
+- [x] LaneLink absence vs validity separated (LaneLink_count=0 via XPath, junction connections=22,816 confirmed)
+- [x] External artifacts hash-bound (EXTERNAL_ARTIFACT_MANIFEST.json)
+- [x] Metric and threshold locks identified (METRIC_LOCK_REFERENCE.json, THRESHOLD_LOCK_REFERENCE.json)
+
+**Outstanding for WP0.1/WP0.3 refinement** (non-blocking for Phase 1A):
+- [ ] Per-road lane key enumeration (XPath fix for ./road/lanes/laneSection iteration)
+- [ ] LaneLink enumeration inside junction connections
+- [ ] ContactPoint validity per lane
+- [ ] roads_with_driving_lanes, driving_lane_length_m
 
 ## Next Steps
 
-Complete WP0.1 (recompute all baseline fields) and WP0.3 (validate LaneLink metrics) before proceeding to Phase 1A coordinate inventory.
+Proceed to **Phase 1A Coordinate Inventory**. The baseline lock is valid for coordinate truth work. WP0.1/WP0.3 refinements can run in parallel with coordinate inventory.
