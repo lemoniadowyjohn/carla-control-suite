@@ -29,7 +29,7 @@ import os
 import subprocess
 import sys
 
-HEAD = "1bc6dd3d37112553c4c9d0e4f82edd29555efbb1"
+HEAD = "b18ddde99adacebebebd8a162e2625bafa1eb290"
 OSM_EXPECT = "b9e074656f"
 XODR_EXPECT = "ff2a05e7b0"
 XODR = r"campaigns\ingolstadt_cooked_perception_v1\candidate\raw_xodr_run_1_epsg32632_header_pinned.xodr"

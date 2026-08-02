@@ -1,9 +1,9 @@
 {
  "head": {
-  "commit": "1bc6dd3d37112553c4c9d0e4f82edd29555efbb1",
+  "commit": "b18ddde99adacebebebd8a162e2625bafa1eb290",
   "matches": true,
-  "expected": "1bc6dd3d37112553c4c9d0e4f82edd29555efbb1",
-  "dirty_lines": 6
+  "expected": "b18ddde99adacebebebd8a162e2625bafa1eb290",
+  "dirty_lines": 5
  },
  "gates": {
   "G2_compileall": {
@@ -13,23 +13,23 @@
   },
   "G3_imports": {
    "pass": true,
-   "stdout": "[2026-08-02 01:47:52] IMPORT_RESULT 18 / 18\n",
+   "stdout": "[2026-08-02 01:58:43] IMPORT_RESULT 18 / 18\n",
    "stderr": "onProject3\\carla_release_verify\\ultimate_pipeline\\config\\settings.py:1872: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.\n  _warn_missing_setting_path(\n"
   },
   "G4_collection": {
    "pass": true,
    "collected": 2606,
-   "tail": "o a valid dir.\n    _warn_missing_setting_path(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n======================== 2606 tests collected in 6.08s ========================\n"
+   "tail": "o a valid dir.\n    _warn_missing_setting_path(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n======================== 2606 tests collected in 5.46s ========================\n"
   },
   "G5_suite": {
    "pass": true,
-   "summary": "================ 2528 passed, 78 skipped, 5 warnings in 31.88s ================",
-   "tail": "ultimate_pipeline\\config\\settings.py:1872\n  C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline\\config\\settings.py:1872: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.\n    _warn_missing_setting_path(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================ 2528 passed, 78 skipped, 5 warnings in 31.88s ================"
+   "summary": "================ 2528 passed, 78 skipped, 5 warnings in 33.67s ================",
+   "tail": "ultimate_pipeline\\config\\settings.py:1872\n  C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline\\config\\settings.py:1872: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_release_verify\\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.\n    _warn_missing_setting_path(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================ 2528 passed, 78 skipped, 5 warnings in 33.67s ================"
   },
   "G6_negative_controls": {
    "pass": true,
-   "summary": "============================= 11 passed in 0.50s ==============================",
-   "tail": "ultimate_pipeline\\tests\\unit\\test_p08_signal_enrichment.py ..            [ 72%]\nultimate_pipeline\\tests\\unit\\test_p09_tile_equivalence.py .              [ 81%]\nultimate_pipeline\\tests\\unit\\test_p10_output_artifacts.py ..             [100%]\n\n============================= 11 passed in 0.50s =============================="
+   "summary": "============================= 11 passed in 0.62s ==============================",
+   "tail": "ultimate_pipeline\\tests\\unit\\test_p08_signal_enrichment.py ..            [ 72%]\nultimate_pipeline\\tests\\unit\\test_p09_tile_equivalence.py .              [ 81%]\nultimate_pipeline\\tests\\unit\\test_p10_output_artifacts.py ..             [100%]\n\n============================= 11 passed in 0.62s =============================="
   },
   "G7_map_structural": {
    "pass": true,
@@ -84,7 +84,6 @@
     "?? .venv_verify/",
     "?? audit_output/",
     "?? p14_verify.py",
-    "?? pyproject.toml",
     "?? verify_out/"
    ]
   }
