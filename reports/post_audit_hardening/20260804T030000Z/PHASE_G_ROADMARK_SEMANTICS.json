@@ -1,0 +1,642 @@
+{
+  "audit_input": {
+    "lanes_audited": 84781,
+    "metrics": {
+      "advisory_none_with_width": 9941,
+      "invalid_color": 0,
+      "invalid_lanechange": 0,
+      "invalid_type": 0,
+      "invalid_weight": 0,
+      "missing_roadmark": 0,
+      "solid_crossing_allowed": 0,
+      "solid_lanechange_missing": 17024,
+      "visible_neg_width": 0,
+      "visible_zero_width": 4894
+    },
+    "roadmarks_audited": 84781,
+    "samples": {
+      "solid_lanechange_missing": [
+        {
+          "lane": "-1",
+          "road": "49725"
+        },
+        {
+          "lane": "-2",
+          "road": "49725"
+        },
+        {
+          "lane": "-1",
+          "road": "49726"
+        },
+        {
+          "lane": "-2",
+          "road": "49726"
+        },
+        {
+          "lane": "-1",
+          "road": "49729"
+        },
+        {
+          "lane": "-2",
+          "road": "49729"
+        },
+        {
+          "lane": "-1",
+          "road": "49732"
+        },
+        {
+          "lane": "-2",
+          "road": "49732"
+        },
+        {
+          "lane": "-1",
+          "road": "49734"
+        },
+        {
+          "lane": "-2",
+          "road": "49734"
+        },
+        {
+          "lane": "-1",
+          "road": "49736"
+        },
+        {
+          "lane": "-2",
+          "road": "49736"
+        },
+        {
+          "lane": "-1",
+          "road": "49739"
+        },
+        {
+          "lane": "-2",
+          "road": "49739"
+        },
+        {
+          "lane": "-1",
+          "road": "49741"
+        },
+        {
+          "lane": "-2",
+          "road": "49741"
+        },
+        {
+          "lane": "-1",
+          "road": "49743"
+        },
+        {
+          "lane": "-2",
+          "road": "49743"
+        },
+        {
+          "lane": "-1",
+          "road": "49745"
+        },
+        {
+          "lane": "-2",
+          "road": "49745"
+        },
+        {
+          "lane": "-1",
+          "road": "49747"
+        },
+        {
+          "lane": "-2",
+          "road": "49747"
+        },
+        {
+          "lane": "-1",
+          "road": "49750"
+        },
+        {
+          "lane": "-2",
+          "road": "49750"
+        },
+        {
+          "lane": "-1",
+          "road": "49754"
+        },
+        {
+          "lane": "-1",
+          "road": "49759"
+        },
+        {
+          "lane": "-2",
+          "road": "49759"
+        },
+        {
+          "lane": "-1",
+          "road": "49762"
+        },
+        {
+          "lane": "-2",
+          "road": "49762"
+        },
+        {
+          "lane": "-1",
+          "road": "49764"
+        },
+        {
+          "lane": "-2",
+          "road": "49764"
+        },
+        {
+          "lane": "-1",
+          "road": "49766"
+        },
+        {
+          "lane": "-2",
+          "road": "49766"
+        },
+        {
+          "lane": "-1",
+          "road": "49767"
+        },
+        {
+          "lane": "-2",
+          "road": "49767"
+        },
+        {
+          "lane": "-1",
+          "road": "49768"
+        },
+        {
+          "lane": "-2",
+          "road": "49768"
+        },
+        {
+          "lane": "-1",
+          "road": "49771"
+        },
+        {
+          "lane": "-1",
+          "road": "49772"
+        },
+        {
+          "lane": "-1",
+          "road": "49773"
+        },
+        {
+          "lane": "-2",
+          "road": "49773"
+        },
+        {
+          "lane": "-1",
+          "road": "49776"
+        },
+        {
+          "lane": "-2",
+          "road": "49776"
+        },
+        {
+          "lane": "-1",
+          "road": "49778"
+        },
+        {
+          "lane": "-2",
+          "road": "49778"
+        },
+        {
+          "lane": "-1",
+          "road": "49781"
+        },
+        {
+          "lane": "-2",
+          "road": "49781"
+        },
+        {
+          "lane": "-1",
+          "road": "49784"
+        },
+        {
+          "lane": "-2",
+          "road": "49784"
+        },
+        {
+          "lane": "-1",
+          "road": "49787"
+        }
+      ],
+      "visible_zero_width": [
+        {
+          "lane": "0",
+          "road": "49724",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49725",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49727",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49728",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49731",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49738",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49749",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49750",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49753",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49758",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49761",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49766",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49767",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49770",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49771",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49772",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49775",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49780",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49783",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49786",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49795",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49796",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49798",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49800",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49801",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49803",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49805",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49807",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49808",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49809",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49810",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49813",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49816",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49819",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49822",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49825",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49828",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49829",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49830",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49831",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49832",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49833",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49835",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49836",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49837",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49838",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49839",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49840",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49849",
+          "type": "solid",
+          "width": "0.00"
+        },
+        {
+          "lane": "0",
+          "road": "49852",
+          "type": "solid",
+          "width": "0.00"
+        }
+      ]
+    }
+  },
+  "audit_output": {
+    "clean_after_repair": true,
+    "metrics": {
+      "invalid_type": 0,
+      "solid_lanechange_missing": 0,
+      "visible_zero_width": 0
+    }
+  },
+  "cross_checks": {
+    "g4_lane_continuity_metrics_after": {
+      "directionally_wrong_lane_links": 0,
+      "duplicate_lane_links": 0,
+      "missing_lane_link_targets": 0,
+      "unlinked_required_driving_lanes": 0
+    },
+    "g4_still_passes": true
+  },
+  "fixtures": {
+    "fixtures": {
+      "clean": {
+        "defects": {
+          "invalid_color": 0,
+          "invalid_lanechange": 0,
+          "invalid_type": 0,
+          "invalid_weight": 0,
+          "missing_roadmark": 0,
+          "solid_crossing_allowed": 0,
+          "solid_lanechange_missing": 0,
+          "visible_neg_width": 0,
+          "visible_zero_width": 0
+        },
+        "ok": true
+      },
+      "invalid_values": {
+        "defects": {
+          "invalid_color": 1,
+          "invalid_lanechange": 0,
+          "invalid_type": 1,
+          "invalid_weight": 1,
+          "missing_roadmark": 0,
+          "solid_crossing_allowed": 0,
+          "solid_lanechange_missing": 0,
+          "visible_neg_width": 0,
+          "visible_zero_width": 0
+        },
+        "ok": true
+      },
+      "solid_crossing": {
+        "defects": {
+          "invalid_color": 0,
+          "invalid_lanechange": 0,
+          "invalid_type": 0,
+          "invalid_weight": 0,
+          "missing_roadmark": 0,
+          "solid_crossing_allowed": 1,
+          "solid_lanechange_missing": 0,
+          "visible_neg_width": 0,
+          "visible_zero_width": 0
+        },
+        "ok": true
+      },
+      "solid_no_lanechange": {
+        "defects": {
+          "invalid_color": 0,
+          "invalid_lanechange": 0,
+          "invalid_type": 0,
+          "invalid_weight": 0,
+          "missing_roadmark": 0,
+          "solid_crossing_allowed": 0,
+          "solid_lanechange_missing": 1,
+          "visible_neg_width": 0,
+          "visible_zero_width": 0
+        },
+        "ok": true
+      },
+      "zero_width_solid": {
+        "defects": {
+          "invalid_color": 0,
+          "invalid_lanechange": 0,
+          "invalid_type": 0,
+          "invalid_weight": 0,
+          "missing_roadmark": 0,
+          "solid_crossing_allowed": 0,
+          "solid_lanechange_missing": 0,
+          "visible_neg_width": 0,
+          "visible_zero_width": 1
+        },
+        "ok": true
+      }
+    },
+    "fixtures_ok": true
+  },
+  "g7_verdict": "PHASE_G_ROADMARK_SEMANTICS_PASS",
+  "generated_at_utc": "2026-08-03T19:09:29.365307+00:00",
+  "identity": {
+    "lane_topology_changed": true,
+    "lane_topology_hash_after": "3e60c78820ffc4fc1b929ae995b65e4f0540ba6d0962b62759560eb344837827",
+    "lane_topology_hash_before": "3547b06a2acd3106952b296fc16e266b9afc65b70a58bc3a6ed3bef02aff12b0",
+    "protected_hash_matches_g0": {
+      "connector_geometry_hash": true,
+      "contactpoint_hash": true,
+      "elevation_profile_hash": true,
+      "junction_structure_hash": true,
+      "planview_hash": true,
+      "road_length_hash": true,
+      "road_link_hash": true
+    }
+  },
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T020000Z\\candidate_g6_junction_lanelinks.xodr",
+  "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T030000Z\\candidate_g7_roadmarks.xodr",
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g7_roadmark_semantics.py",
+  "repair": {
+    "lanechange_fixed": 17024,
+    "mutation_kind": "roadMark attribute only (width, laneChange)",
+    "widths_fixed": 4894
+  },
+  "run_id": "20260804T030000Z"
+}
