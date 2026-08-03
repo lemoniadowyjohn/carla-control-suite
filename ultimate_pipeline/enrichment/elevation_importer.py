@@ -699,20 +699,32 @@ class ElevationImporter:
         collect_qc: bool = False,
         linear_grade: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
-        thesis_strict = os.getenv("UP_THESIS_STRICT", "").strip().lower() in (
-            "1",
-            "true",
-            "yes",
-            "on",
+        from ultimate_pipeline.enrichment.elevation_fallback_policy import (
+            elevation_fallback_policy,
+            assert_no_fallback_violations,
         )
-        settings_obj = None
-        try:
-            from ultimate_pipeline.config.settings import SETTINGS as _SETTINGS
+        f2_policy = elevation_fallback_policy()
 
-            settings_obj = _SETTINGS
-            thesis_strict = bool(getattr(_SETTINGS, "THESIS_STRICT", False)) or thesis_strict
-        except Exception:
-            settings_obj = None
+        # thesis_strict is now driven solely by the F2 fallback policy
+        settings_obj = None
+        if f2_policy == "strict":
+            thesis_strict = True
+        elif f2_policy == "audit":
+            thesis_strict = False
+        else:
+            thesis_strict = os.getenv("UP_THESIS_STRICT", "").strip().lower() in (
+                "1",
+                "true",
+                "yes",
+                "on",
+            )
+            try:
+                from ultimate_pipeline.config.settings import SETTINGS as _SETTINGS
+
+                settings_obj = _SETTINGS
+                thesis_strict = bool(getattr(_SETTINGS, "THESIS_STRICT", False)) or thesis_strict
+            except Exception:
+                settings_obj = None
 
         # Resolve linear_grade from settings if not explicitly provided
         if linear_grade is None:
@@ -732,6 +744,7 @@ class ElevationImporter:
         applied_road_ids: List[str] = []
         fallback_road_ids: List[str] = []
         linear_grade_road_ids: List[str] = []
+        endpoint_nodata_road_ids: List[str] = []
         extrapolated_road_ids: List[str] = []
         propagated_road_ids: List[str] = []
         deferred_roads: List[Dict[str, Any]] = []
@@ -835,15 +848,12 @@ class ElevationImporter:
                     # Compute endpoint using the last geometry only (stable and matches OpenDRIVE semantics):
                     # end ≈ (x_last, y_last) + length_last * heading_last
                     x_end, y_end = x0, y0
-                    x_last, y_last = x_end, y_end
                     try:
                         gl = geos[-1]
                         geo_len = float(gl.get("length", "0"))
                         hdg = float(gl.get("hdg", "0"))
-                        x_last = float(gl.get("x", x_end))
-                        y_last = float(gl.get("y", y_end))
-                        x_end = x_last + geo_len * math.cos(hdg)
-                        y_end = y_last + geo_len * math.sin(hdg)
+                        x_end = float(gl.get("x", x_end)) + geo_len * math.cos(hdg)
+                        y_end = float(gl.get("y", y_end)) + geo_len * math.sin(hdg)
                     except Exception:
                         # keep fallback (x0,y0) -> slope stays 0
                         x_end, y_end = x0, y0
@@ -871,25 +881,24 @@ class ElevationImporter:
                         eps = 2.0
 
                     z_end, valid_end = _try_neighborhood(x_end, y_end, hdg, eps)
-                    if not valid_end:
-                        # Try last geometry anchor neighborhood as fallback
-                        z_end, valid_end = _try_neighborhood(x_last, y_last, hdg, eps)
 
                     if valid_end and z_end is not None:
                         b_coeff = (z_end - z0) / road_length
                         linear_grade_road_ids.append(rid)
                     else:
-                        # In thesis strict, failing to sample road endpoint is a hard error (prevents continuity).
-                        if thesis_strict:
-                            raise RuntimeError(
-                                f"[ELEVATION][STRICT] DEM sampling returned nodata for road {rid} at end anchor."
-                            )
+                        # Record endpoint no-data violation; F2 gate will handle strict/audit behavior
+                        endpoint_nodata_road_ids.append(rid)
 
-            _set_flat_elevation(road, float(z0), b_coeff)
-            applied_road_ids.append(rid)
-            applied_z_by_road[rid] = float(z0)
-            if fallback_active:
-                fallback_road_ids.append(rid)
+            # In strict/audit mode, do not mutate the road if endpoint no-data occurred
+            if rid in endpoint_nodata_road_ids and f2_policy in ("strict", "audit"):
+                # Leave the original road elevation intact; do not apply flat elevation
+                pass
+            else:
+                _set_flat_elevation(road, float(z0), b_coeff)
+                applied_road_ids.append(rid)
+                applied_z_by_road[rid] = float(z0)
+                if fallback_active:
+                    fallback_road_ids.append(rid)
 
         try:
             max_extrapolation_dist_m = float(
@@ -949,16 +958,21 @@ class ElevationImporter:
                     if nearest_dist > float(max_extrapolation_dist_m):
                         remaining_deferred.append(deferred)
                         continue
+                    # This road would be resolved via KD-tree nearest-neighbour extrapolation
+                    extrapolated_road_ids.append(rid)
                     weights = [1.0 / (dist + 1.0e-6) for dist, _ in valid_neighbors]
                     z_fallback = sum(
                         weight * float(valid_samples[idx][2])
                         for weight, (_, idx) in zip(weights, valid_neighbors)
                     ) / sum(weights)
-                    _set_flat_elevation(deferred["road"], float(z_fallback), 0.0)
-                    applied_road_ids.append(rid)
-                    fallback_road_ids.append(rid)
-                    extrapolated_road_ids.append(rid)
-                    applied_z_by_road[rid] = float(z_fallback)
+                    if f2_policy in ("strict", "audit"):
+                        # Do NOT mutate the XML, do not update applied_z_by_road
+                        pass
+                    else:
+                        _set_flat_elevation(deferred["road"], float(z_fallback), 0.0)
+                        applied_road_ids.append(rid)
+                        fallback_road_ids.append(rid)
+                        applied_z_by_road[rid] = float(z_fallback)
             else:
                 remaining_deferred = list(deferred_roads)
 
@@ -982,65 +996,57 @@ class ElevationImporter:
                             continue
                         visited.add(neighbor_id)
                         frontier.append((neighbor_id, hops + 1))
-                if resolved_z is None:
+                if resolved_z is not None:
+                    # This road would be resolved via graph propagation
+                    propagated_road_ids.append(rid)
+                    if f2_policy in ("strict", "audit"):
+                        # Do NOT mutate the XML, do not update applied_z_by_road
+                        pass
+                    else:
+                        _set_flat_elevation(deferred["road"], float(resolved_z), 0.0)
+                        applied_road_ids.append(rid)
+                        fallback_road_ids.append(rid)
+                        applied_z_by_road[rid] = float(resolved_z)
+                else:
+                    # This road would be resolved via global median or hardcoded fallback
                     unresolved_after_fallback.append(deferred)
                     if valid_samples:
                         resolved_z = float(statistics.median(sample[2] for sample in valid_samples))
                         print(
                             f"[ELEVATION][WARN] Road {rid} remained unresolved after DEM, KD-tree, and graph fallbacks. "
-                            f"Applying global median fallback z={resolved_z:.3f}m instead of leaving z=0."
+                            f"Would apply global median fallback z={resolved_z:.3f}m instead of leaving z=0."
                         )
                     else:
                         resolved_z = 375.0
                         print(
                             f"[ELEVATION][WARN] Road {rid} remained unresolved and no valid DEM samples existed. "
-                            f"Applying hardcoded Ingolstadt fallback z={resolved_z:.3f}m instead of leaving z=0."
+                            f"Would apply hardcoded Ingolstadt fallback z={resolved_z:.3f}m instead of leaving z=0."
                         )
-                _set_flat_elevation(deferred["road"], float(resolved_z), 0.0)
-                applied_road_ids.append(rid)
-                fallback_road_ids.append(rid)
-                propagated_road_ids.append(rid)
-                applied_z_by_road[rid] = float(resolved_z)
-
-        if thesis_strict and unresolved_after_fallback:
-            first_unresolved = unresolved_after_fallback[0]
-            unresolved_ids = [str(item["road_id"]) for item in unresolved_after_fallback]
-            raise RuntimeError(
-                "[ELEVATION][STRICT] DEM sampling remained unresolved after direct sampling, "
-                "KD-tree extrapolation, and road-graph propagation for road "
-                f"{first_unresolved['road_id']} at start anchor "
-                f"(x0={float(first_unresolved['x0']):.3f}, y0={float(first_unresolved['y0']):.3f}, "
-                f"hdg0={float(first_unresolved.get('hdg0', 0.0)):.6f}, eps={float(first_unresolved.get('eps0', 0.0))}). "
-                f"Tried {int(first_unresolved.get('start_candidates_tried', 0))} start candidates. "
-                f"Unresolved roads: {', '.join(unresolved_ids)}."
-            )
+                    if f2_policy in ("strict", "audit"):
+                        # Do NOT mutate the XML
+                        pass
+                    else:
+                        _set_flat_elevation(deferred["road"], float(resolved_z), 0.0)
+                        applied_road_ids.append(rid)
+                        fallback_road_ids.append(rid)
+                        applied_z_by_road[rid] = float(resolved_z)
 
         # ------------------------------------------------------------
         # F2: strict fallback policy — any invented elevation value is a
         # hard failure (KD-tree NN extrapolation, graph propagation, global
         # median, hardcoded constant, or flat sampler).
         # ------------------------------------------------------------
-        f2_policy = None
-        try:
-            from ultimate_pipeline.enrichment.elevation_fallback_policy import (
-                assert_no_fallback_violations,
-                elevation_fallback_policy,
-            )
-
-            f2_policy = elevation_fallback_policy()
-            f2_result = assert_no_fallback_violations(
-                extrapolated_road_ids=extrapolated_road_ids,
-                propagated_road_ids=propagated_road_ids,
-                unresolved_road_ids=[
-                    str(item["road_id"]) for item in unresolved_after_fallback
-                ],
-                flat_sampler_active=bool(fallback_active),
-                policy=f2_policy,
-            )
-        except RuntimeError:
-            raise
-        except Exception:
-            f2_result = {"policy": "unavailable", "violation_count": 0, "passed": True}
+        # f2_policy is already resolved at the top of the function
+        f2_result = assert_no_fallback_violations(
+            extrapolated_road_ids=extrapolated_road_ids,
+            propagated_road_ids=propagated_road_ids,
+            unresolved_road_ids=[
+                str(item["road_id"]) for item in unresolved_after_fallback
+            ],
+            flat_sampler_active=bool(fallback_active),
+            endpoint_nodata_road_ids=endpoint_nodata_road_ids,
+            policy=f2_policy,
+        )
 
         try:
             max_seam_delta_m = float(os.getenv("UP_ELEV_MAX_SEAM_DELTA_M", "30.0"))
@@ -1074,7 +1080,7 @@ class ElevationImporter:
                     f"|dz|={delta_z:.3f}m > {float(max_seam_delta_m):.3f}m."
                 )
 
-        if thesis_strict and suspect_seam_roads:
+        if f2_policy == "strict" and suspect_seam_roads:
             first_suspect = suspect_seam_roads[0]
             raise RuntimeError(
                 "[ELEVATION][STRICT] Elevation seam exceeds threshold between roads "
@@ -1093,6 +1099,7 @@ class ElevationImporter:
                 "fallback_road_ids": sorted(set(fallback_road_ids)),
                 "linear_grade_enabled": bool(linear_grade),
                 "linear_grade_road_ids": sorted(set(linear_grade_road_ids)),
+                "endpoint_nodata_road_ids": sorted(set(endpoint_nodata_road_ids)),
                 "extrapolated_road_ids": sorted(set(extrapolated_road_ids)),
                 "extrapolated_count": int(len(set(extrapolated_road_ids))),
                 "extrapolation_max_dist_m": float(max_extrapolation_dist_m),
@@ -1105,9 +1112,9 @@ class ElevationImporter:
                 "max_seam_delta_m": float(max((item["delta_z_m"] for item in suspect_seam_roads), default=0.0)),
                 "seam_delta_threshold_m": float(max_seam_delta_m),
                 "f2_fallback_policy": f2_policy,
-                "f2_fallback_violations": f2_result.get("violations") if f2_result else None,
-                "f2_fallback_violation_count": int(f2_result.get("violation_count", 0)) if f2_result else 0,
-                "f2_fallback_gate_passed": bool(f2_result.get("passed", True)) if f2_result else True,
+                "f2_fallback_violations": f2_result.get("violations"),
+                "f2_fallback_violation_count": int(f2_result.get("violation_count", 0)),
+                "f2_fallback_gate_passed": f2_result.get("passed", True),
             }
         return None
 

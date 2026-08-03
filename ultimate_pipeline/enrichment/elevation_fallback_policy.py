@@ -27,10 +27,12 @@ from typing import Dict, List, Optional
 
 
 def elevation_fallback_policy() -> str:
-    """'strict' by default; 'lenient' only via explicit opt-in."""
+    """'strict' by default; 'lenient' only via explicit opt-in, or 'audit'."""
     mode = os.getenv("UP_ELEVATION_FALLBACK_POLICY", "").strip().lower()
     if mode in ("lenient", "legacy", "warn"):
         return "lenient"
+    if mode == "audit":
+        return "audit"
     return "strict"
 
 
@@ -40,18 +42,21 @@ def fallback_kind_violations(
     propagated_road_ids: Optional[List[str]] = None,
     unresolved_road_ids: Optional[List[str]] = None,
     flat_sampler_active: bool = False,
+    endpoint_nodata_road_ids: Optional[List[str]] = None,
 ) -> Dict[str, List[str]]:
     """Classify forbidden fallback kinds by road id (deduplicated, sorted)."""
     ex = sorted(set(extrapolated_road_ids or []))
     pr = sorted(set(propagated_road_ids or []))
     un = sorted(set(unresolved_road_ids or []))
     flat = ["__flat_sampler__"] if flat_sampler_active else []
+    ep_nd = sorted(set(endpoint_nodata_road_ids or []))
     return {
         "extrapolated": ex,
         "propagated": pr,
         "median_or_hardcoded": un,
         "flat_sampler": flat,
-        "all_forbidden": sorted(set(ex + pr + un + flat)),
+        "endpoint_nodata": ep_nd,
+        "all_forbidden": sorted(set(ex + pr + un + flat + ep_nd)),
     }
 
 
@@ -61,6 +66,7 @@ def assert_no_fallback_violations(
     propagated_road_ids: Optional[List[str]] = None,
     unresolved_road_ids: Optional[List[str]] = None,
     flat_sampler_active: bool = False,
+    endpoint_nodata_road_ids: Optional[List[str]] = None,
     policy: Optional[str] = None,
 ) -> Dict[str, object]:
     """Fail closed when any road received invented elevation in strict mode.
@@ -73,6 +79,7 @@ def assert_no_fallback_violations(
         propagated_road_ids=propagated_road_ids,
         unresolved_road_ids=unresolved_road_ids,
         flat_sampler_active=flat_sampler_active,
+        endpoint_nodata_road_ids=endpoint_nodata_road_ids,
     )
     forbidden = violations["all_forbidden"]
     if mode == "strict" and forbidden:
@@ -80,7 +87,8 @@ def assert_no_fallback_violations(
             f"extrapolated={violations['extrapolated']} "
             f"propagated={violations['propagated']} "
             f"median_or_hardcoded={violations['median_or_hardcoded']} "
-            f"flat_sampler={violations['flat_sampler']}"
+            f"flat_sampler={violations['flat_sampler']} "
+            f"endpoint_nodata={violations['endpoint_nodata']}"
         )
         raise RuntimeError(
             "[ELEVATION][F2] Strict fallback policy: DEM elevation could not be "
