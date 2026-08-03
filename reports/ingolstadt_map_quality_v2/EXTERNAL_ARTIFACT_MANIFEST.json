@@ -1,1 +1,119 @@
-{"schema_version": 1, "campaign": "ingolstadt_map_quality_v2", "branch": "improvement/ingolstadt-map-quality-v2-202608", "external_artifact_root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608", "created_at_utc": "2026-08-02T22:57:00Z", "artifacts": [{"logical_path": "baseline_record/BASELINE_CANDIDATE.json", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/baseline_record/BASELINE_CANDIDATE.json", "size_bytes": 0, "sha256": "pending", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "N/A", "created_utc": "2026-08-02T22:57:00Z"}, {"logical_path": "baseline_record/BASELINE_FIELD_DEFINITIONS.json", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/baseline_record/BASELINE_FIELD_DEFINITIONS.json", "size_bytes": 0, "sha256": "pending", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "N/A", "created_utc": "2026-08-02T22:57:00Z"}, {"logical_path": "baseline_record/BASELINE_VALIDATION.md", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/baseline_record/BASELINE_VALIDATION.md", "size_bytes": 0, "sha256": "pending", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "N/A", "created_utc": "2026-08-02T22:57:00Z"}, {"logical_path": "MASTER_PROMPT.md", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/MASTER_PROMPT.md", "size_bytes": 0, "sha256": "pending", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "N/A", "created_utc": "2026-08-02T22:57:00Z"}, {"logical_path": "evidence/BASELINE_CANDIDATE_PINNED.xodr", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/reports/full_replay_domain_gap_campaign_20260802T081541Z/replay/run_a/raw_replay_epsg32632_header_pinned.xodr", "size_bytes": 82318919, "sha256": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "osm:b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f, lane_width:6.0, no_traffic_lights", "created_utc": "2026-08-02T08:15:41Z"}, {"logical_path": "evidence/HISTORICAL_RUN11_ARTIFACT.xodr", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/submission/results/structural_gap_run11/auto_aligned_rigid.xodr", "size_bytes": 13845703, "sha256": "c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "run_11 historical", "created_utc": "2026-08-02T08:15:41Z"}, {"logical_path": "evidence/MANUAL_GRID0828.xodr", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main_submission_ready/final_code_evidence_pack_2026-03-26/evidence/rq2_source_maps/manual_ingolstadt_grid0828.xodr", "size_bytes": 66465691, "sha256": "a42ddfeae03b562d7d96d3fc14d2c5f04939218df4376b2738a96f0a6431b992", "producer_commit": "N/A (external reference)", "configuration_hash": "survey", "created_utc": "2026-03-26T00:00:00Z"}, {"logical_path": "evidence/MANUAL_GRID0821.xodr", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/codex-full-pipeline-rerun-20260427/cities/ingolstadt/manual_grid0821.xodr", "size_bytes": 65623470, "sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8", "producer_commit": "N/A (external reference)", "configuration_hash": "survey", "created_utc": "2026-04-27T00:00:00Z"}, {"logical_path": "metric_locks/METRIC_DEFINITION_LOCK.json", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/reports/full_replay_domain_gap_campaign_20260802T081541Z/regression/METRIC_DEFINITION_LOCK.json", "size_bytes": 0, "sha256": "pending", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "P04 v2 metric definitions", "created_utc": "2026-08-02T18:06:17Z"}, {"logical_path": "threshold_locks/THRESHOLD_CHANGE_REPORT.md", "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/reports/full_replay_domain_gap_campaign_20260802T081541Z/regression/THRESHOLD_CHANGE_REPORT.md", "size_bytes": 0, "sha256": "pending", "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf", "configuration_hash": "no threshold changes", "created_utc": "2026-08-02T18:06:17Z"}], "manifest_sha256": "pending"}
+{
+  "schema_version": 1,
+  "campaign": "ingolstadt_map_quality_v2",
+  "branch": "improvement/ingolstadt-map-quality-v2-202608",
+  "external_artifact_root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608",
+  "created_at_utc": "2026-08-02T22:57:00Z",
+  "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+  "artifacts": [
+    {
+      "logical_path": "baseline_record/BASELINE_CANDIDATE.json",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/baseline_record/BASELINE_CANDIDATE.json",
+      "size_bytes": 2581,
+      "sha256": "4b8a28ae2294890ff872a592cd990cde5ceebe2270712a6ef267272d8f798153",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "N/A",
+      "created_utc": "2026-08-02T22:57:00Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "external_reference",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "MASTER_PROMPT.md",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/MASTER_PROMPT.md",
+      "size_bytes": 4619,
+      "sha256": "7321fb0d6a7ae4f5609ad2721067ef5f7f996d117806b771161a8f37b05a8fa9",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "N/A",
+      "created_utc": "2026-08-02T22:57:00Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "committed_directly",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "evidence/BASELINE_CANDIDATE_PINNED.xodr",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/reports/full_replay_domain_gap_campaign_20260802T081541Z/replay/run_a/raw_replay_epsg32632_header_pinned.xodr",
+      "size_bytes": 82318919,
+      "sha256": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "osm:b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f, lane_width:6.0, no_traffic_lights",
+      "created_utc": "2026-08-02T08:15:41Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "large_binary_lfs",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "evidence/HISTORICAL_RUN11_ARTIFACT.xodr",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/submission/results/structural_gap_run11/auto_aligned_rigid.xodr",
+      "size_bytes": 13845703,
+      "sha256": "c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "run_11 historical",
+      "created_utc": "2026-08-02T08:15:41Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "large_binary_lfs",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "evidence/MANUAL_GRID0828.xodr",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main_submission_ready/final_code_evidence_pack_2026-03-26/evidence/rq2_source_maps/manual_ingolstadt_grid0828.xodr",
+      "size_bytes": 65938173,
+      "sha256": "a42ddfeae03b562d7d96d3fc14d2c5f04939218df4376b2738a96f0a6431b992",
+      "producer_commit": "N/A (external reference)",
+      "configuration_hash": "survey",
+      "created_utc": "2026-03-26T00:00:00Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "external_reference",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "evidence/MANUAL_GRID0821.xodr",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed/work/codex-full-pipeline-rerun-20260427/cities/ingolstadt/manual_grid0821.xodr",
+      "size_bytes": 65623470,
+      "sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+      "producer_commit": "N/A (external reference)",
+      "configuration_hash": "survey",
+      "created_utc": "2026-04-27T00:00:00Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "external_reference",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "metric_locks/METRIC_DEFINITION_LOCK.json",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/reports/full_replay_domain_gap_campaign_20260802T081541Z/regression/METRIC_DEFINITION_LOCK.json",
+      "size_bytes": 2228,
+      "sha256": "10ff52f65fb2da1461852ad1f1c8e7990ed3be1f34c8d2526227db5b31465ef3",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "P04 v2 metric definitions",
+      "created_utc": "2026-08-02T18:06:17Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "external_reference",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "threshold_locks/THRESHOLD_CHANGE_REPORT.md",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay/reports/full_replay_domain_gap_campaign_20260802T081541Z/regression/THRESHOLD_CHANGE_REPORT.md",
+      "size_bytes": 824,
+      "sha256": "6766166c87adca18ae99c98d572479dcef84e0f4025cd76c8f2252c727e46734",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "no threshold changes",
+      "created_utc": "2026-08-02T18:06:17Z",
+      "promotion_status": "ACCEPTED",
+      "reason_not_committed": "external_reference",
+      "exists_on_disk": true
+    },
+    {
+      "logical_path": "evidence/REJECTED_CANDIDATE_V1_CONNECTIVITY_REPAIRED.xodr",
+      "absolute_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_improvement/ingolstadt-map-quality-v2-202608/work_package_02_connectivity/rejected_attempt_v1/candidate_connectivity_repaired.xodr",
+      "size_bytes": 89206190,
+      "sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+      "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+      "configuration_hash": "osm:b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f, lane_width:6.0, no_traffic_lights",
+      "created_utc": "2026-08-02T08:15:41Z",
+      "promotion_status": "REJECTED",
+      "reason_not_committed": "REJECTED_CANDIDATE_NOT_COMMITTED - referenced by hash in rejected_attempt_v1/HASH_REGISTRY.json",
+      "exists_on_disk": true
+    }
+  ],
+  "manifest_sha256": "32b03b4b9a063ea04bf6bbb75993b4ab4e9f2a2ea93c31d6f1493b1bd5e971eb"
+}
