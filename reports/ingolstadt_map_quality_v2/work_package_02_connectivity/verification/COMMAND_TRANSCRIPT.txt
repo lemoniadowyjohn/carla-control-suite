@@ -1,0 +1,75 @@
+PHASE 0: BYTE SHA-256 RECOMPUTATION
+- Reported: c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43
+- Recomputed: c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43
+- Match: TRUE
+
+PHASE 1: METRIC DEFINITIONS & BASELINE RECOMPUTATION
+- Metric definitions written to 01_METRIC_DEFINITIONS.json
+- Baseline metrics:
+  declared_predecessor_slots: 22816
+  declared_successor_slots: 22816
+  references_to_missing_road_ids: 0
+  references_to_missing_junction_ids: 656
+  invalid_element_type: 0
+  invalid_contact_point: 0
+  missing_reciprocal_road_links: 45632
+  directionally_wrong_reciprocal_links: 0
+- Coordinate-corrected metrics: identical to baseline (coordinate changes don't affect link structure)
+- Repaired metrics:
+  declared_predecessor_slots: 22816 (unchanged)
+  declared_successor_slots: 29960 (+7144)
+  references_to_missing_road_ids: 0
+  references_to_missing_junction_ids: 656
+  missing_reciprocal_road_links: 28390 (-17242 from baseline)
+  directionally_wrong_reciprocal_links: 10098 (NEW - introduced by repairs)
+
+PHASE 2: XML ENUMERATION & NAMESPACE SUPPORT
+- Namespace: None (no namespace)
+- laneLink elements found in junction connections: 32040
+- LaneLink inside road/lane/link: 84781 (these are <link> elements for lane-level predecessors/successors, not <laneLink> elements)
+- Total junctions: 3646
+- Total connections: 22816
+- Connections with LaneLinks: 22816
+- Total LaneLinks in junctions: 32040
+
+PHASE 3: REPAIR VALIDATION
+- New successor links added: 7144
+- Repaired accepted: 1012 (1012 passed distance ≤ 15m and heading ≤ 15°)
+- Independently rejected: 6132 (86% failure rate)
+  - Distance exceedance only: 1341
+  - Both distance and heading: 1967
+  - Heading incompatible only: 2824
+- Rejected repairs written to 04_REJECTED_REPAIRS.csv
+
+PHASE 4: PREDECESSOR REPAIR INVESTIGATION
+- Proposed predecessor repairs: 4596
+- Valid predecessor repairs: 0
+- ROOT CAUSE: Predecessor validation logic in repair algorithm is defective
+- All 4596 proposed predecessor repairs failed validation
+- Roads with successor but no predecessor: 32710 (all repaired roads lack predecessor links)
+
+PHASE 5: RECIPROCITY MATRIX
+- Baseline: 45632 missing reciprocals, 0 directionally wrong
+- Repaired: 28390 missing reciprocals, 10098 directionally wrong (NEW DEFECT)
+
+PHASE 6: CONTENT PRESERVATION
+- Road IDs preserved: TRUE
+- Junction IDs preserved: TRUE
+- Lane count preserved: 84781 (TRUE)
+- LaneSections preserved: TRUE
+- Total road length preserved: 1570224.77 (TRUE)
+- Geometry changes: 0 (expected — only link elements modified)
+
+PHASE 7: ROUTE FIXTURES
+- Straight continuation: PASS (successor links exist)
+- Other route fixtures: NOT_TESTABLE (no CARLA runtime, junction-based routing requires LaneLink resolution)
+
+PHASE 8: HASH COMPUTATION
+- Byte SHA-256: c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43
+- Canonical semantic hash (header excluded): 1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978
+- Baseline canonical hash: 138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d
+- Repaired ≠ baseline: TRUE (expected — topology changes)
+- Topology-only hash differs from coordinate-corrected: TRUE (expected)
+
+DECISION: CONNECTIVITY_REPAIR_REJECTED
+Reason: 10098 directionally wrong reciprocals, 6132/7144 repairs independently rejected, 0 predecessor repairs applied

@@ -1,0 +1,11 @@
+change_type,road,link_type,element_type,element_id,contact_point
+link_added,-3,successor,road,-2,end
+link_added,-4,successor,road,-3,end
+link_added,-5,successor,road,-4,end
+link_added,-6,successor,road,-5,end
+link_added,-7,successor,road,-3,end
+link_added,-8,successor,road,-7,end
+link_added,-9,successor,road,-3,end
+link_added,-10,successor,road,-9,end
+link_added,-11,successor,road,-3,end
+link_added,-12,successor,road,-7,end

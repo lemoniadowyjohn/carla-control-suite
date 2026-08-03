@@ -1,0 +1,9 @@
+category,count,note
+references_to_missing_road_ids,0,All link targets exist
+references_to_missing_junction_ids,656,Junction connections reference missing junction IDs
+invalid_element_type,0,All element types valid
+invalid_contact_point,0,All contact points valid
+directionally_wrong_reciprocals,10098,Introduced by successor-only repairs
+missing_reciprocal_road_links,28390,"37.8% reduction from 45632, but still high"
+rejected_successor_repairs,6132,86% of 7144 proposed repairs rejected
+predecessor_repair_asymmetry,4596,All proposed predecessor repairs rejected - algorithm defect

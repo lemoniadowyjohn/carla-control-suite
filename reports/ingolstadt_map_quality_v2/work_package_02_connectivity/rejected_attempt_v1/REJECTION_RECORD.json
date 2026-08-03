@@ -1,0 +1,66 @@
+{
+  "rejection_id": "WP2B_V1_REJECTION_INGOLSTADT_20260803",
+  "target": "candidate_connectivity_repaired.xodr",
+  "candidate_byte_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+  "verdict": "CONNECTIVITY_REPAIR_REJECTED",
+  "campaign_verdict": "COORDINATE_VERIFIED_CONNECTIVITY_REJECTED",
+  "verifying_work_package": "WP2C",
+  "rejecting_work_package": "WP2C",
+  "rejected_by_commit": "bfde949445be808f2c6c791e5754f85f38d462f8",
+  "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+  "rejection_timestamp_utc": "2026-08-03T01:00:00Z",
+  "rejection_criteria": {
+    "directionally_wrong_reciprocals_max": 0,
+    "directionally_wrong_reciprocals_observed": 10098,
+    "references_to_missing_junction_ids_max": 0,
+    "references_to_missing_junction_ids_observed": 656,
+    "ambiguous_automatic_repairs_accepted_max": 0,
+    "ambiguous_automatic_repairs_accepted_observed": 7144,
+    "predecessor_repairs_min": null,
+    "predecessor_repairs_observed": 0
+  },
+  "gates_failed": [
+    "directionally_wrong_reciprocals",
+    "ambiguous_automatic_repairs_accepted",
+    "references_to_missing_junction_ids"
+  ],
+  "gates_passed": [
+    "references_to_missing_road_ids",
+    "invalid_element_type",
+    "invalid_contact_point",
+    "invalid_existing_LaneLink_targets",
+    "unexplained_road_deletion",
+    "unexplained_road_length_loss",
+    "unexplained_lane_loss",
+    "prohibited_geometry_mutation",
+    "route_fixture_failures"
+  ],
+  "rejection_summary": {
+    "successor_repairs_rejected": 6132,
+    "successor_repairs_total": 7144,
+    "predecessor_repairs_accepted": 0,
+    "predecessor_repairs_total": 4596,
+    "directionally_wrong_reciprocals_introduced": 10098,
+    "missing_junction_references": 656
+  },
+  "reason": "The V1 connectivity repair candidate was independently verified by WP2C and failed mandatory zero-defect gates. The repair algorithm introduced 10,098 directionally wrong reciprocal links, applied 7,144 successor repairs without geometric validation (6,132 independently rejected), accepted zero predecessor repairs due to an algorithm defect, and left 656 missing junction references unremediated.",
+  "evidence_files": [
+    "REJECTION_RECORD.json",
+    "REPAIR_SUMMARY.md",
+    "REPAIR_CONFIGURATION.json",
+    "HASH_REGISTRY.json",
+    "promotion_block.json",
+    "repair_report.json",
+    "repaired_validation.py",
+    "PROMOTION_BLOCKED.json",
+    "verification/00_WP2C_EXECUTIVE_STATUS.md",
+    "verification/15_WP2C_VERDICT.md",
+    "verification/04_REJECTED_REPAIRS.csv",
+    "verification/06_RECIPROCITY_MATRIX_RESULTS.json",
+    "verification/13_HASH_REGISTRY.json",
+    "verification/14_REMAINING_DEFECTS.csv"
+  ],
+  "promotion_status": "REJECTED",
+  "promotion_allowed": false,
+  "manifest_reference": "EXTERNAL_ARTIFACT_MANIFEST.json"
+}
