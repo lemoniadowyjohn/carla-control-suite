@@ -19,6 +19,22 @@ from ultimate_pipeline.quality.check_geometric_continuity import (
 )
 
 
+class ConnectorValidator:
+    def __init__(self, connector_road: ET.Element):
+        self.road = connector_road
+        
+    def validate(self) -> bool:
+        # E1.3: validate planView
+        if self.road.find("planView") is None: return False
+        # E1.4: validate length
+        if float(self.road.get("length", 0)) < 0: return False
+        # E1.5: validate lane sections
+        if self.road.find("lanes") is None: return False
+        # E1.8: validate attachment poses (simplified)
+        if _road_endpoints(self.road) is None: return False
+        return True
+
+
 Point = Tuple[float, float]
 
 
@@ -585,13 +601,11 @@ def rebuild_displaced_junction_connectors_on_root(
                 continue
 
             stats["attempted"] += 1
-            old_length = connector_road.get("length")
-            old_plan = connector_road.find("planView")
-            old_plan_copy = copy.deepcopy(old_plan) if old_plan is not None else None
-            old_plan_index = (
-                list(connector_road).index(old_plan) if old_plan is not None else None
-            )
-
+            # E1: Deep copy the complete road for atomic commit
+            parent_map = {c: p for p in root.iter() for c in p}
+            connector_road_parent = parent_map[connector_road]
+            original_connector_road_copy = copy.deepcopy(connector_road)
+            
             if connector_contact_point == "end":
                 plan_start = outgoing_anchor
                 plan_end = incoming_anchor
@@ -634,11 +648,22 @@ def rebuild_displaced_junction_connectors_on_root(
                 )
                 after_records.append(after_record)
                 continue
+            
+            # Atomic commit check: validator
+            validator = ConnectorValidator(connector_road)
+            if not validator.validate():
+                # Revert using original_connector_road_copy
+                connector_road_parent.remove(connector_road)
+                connector_road_parent.append(original_connector_road_copy)
+                stats["reverted"] += 1
+                
+                after_record = dict(before_record)
+                after_record["action"] = "reverted"
+                after_record["reason"] = "validator_failed"
+                after_records.append(after_record)
+                continue
 
-            stats["geometry_written"][written_kind] = (
-                int(stats["geometry_written"].get(written_kind, 0)) + 1
-            )
-
+            # Post-validator check (gap check)
             connector_after = _connector_endpoint_poses(
                 connector_road, connector_contact_point
             )
@@ -686,12 +711,9 @@ def rebuild_displaced_junction_connectors_on_root(
                         }
                     )
             else:
-                _restore_road_planview(
-                    connector_road,
-                    old_length=old_length,
-                    old_plan=old_plan_copy,
-                    old_plan_index=old_plan_index,
-                )
+                # Revert using original_connector_road_copy
+                connector_road_parent.remove(connector_road)
+                connector_road_parent.append(original_connector_road_copy)
                 stats["reverted"] += 1
                 after_record = dict(before_record)
                 after_record["action"] = "reverted"
