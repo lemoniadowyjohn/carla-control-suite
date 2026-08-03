@@ -1,0 +1,98 @@
+{
+  "checks": {
+    "all_roads_have_profiles": true,
+    "candidate_source_bytes_untouched": true,
+    "candidate_source_unchanged": true,
+    "crs_contract_verified": true,
+    "no_deferrals": true,
+    "road_count_preserved": true
+  },
+  "crs_contract": {
+    "claimed_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "claimed_crs_header_bounds_wgs84": {
+      "lat_max": 49.3166287421714,
+      "lat_min": 49.183116214988864,
+      "lon_max": 13.76006739410691,
+      "lon_min": 13.56642001213345
+    },
+    "claimed_crs_reason": "parsed",
+    "claimed_plausible": false,
+    "claimed_proj4": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geometry_bounds": {
+      "east": 845935.65308293,
+      "north": 5472743.854711261,
+      "south": 5458668.202795612,
+      "west": 832671.5018876609
+    },
+    "header_bounds": {
+      "east": 845943.06,
+      "north": 5472743.54,
+      "south": 5458671.57,
+      "west": 832672.9
+    },
+    "native_frame": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "native_frame_header_bounds_wgs84": {
+      "lat_max": 48.826007874046795,
+      "lat_min": 48.68420443267649,
+      "lon_max": 11.527611357975239,
+      "lon_min": 11.322214553035723
+    },
+    "native_plausible": true,
+    "osm_bounds": {
+      "lat_max": 48.8143429,
+      "lat_min": 48.6843318,
+      "lon_max": 11.5382271,
+      "lon_min": 11.3266919
+    },
+    "osm_bounds_expanded_deg": 0.15,
+    "reason": "claimed_geoReference_disproven;osm2odr_native_frame_matches_osm",
+    "verdict": "OSM2ODR_NATIVE_VERIFIED",
+    "wp1_control_point": {
+      "source": "WP1 candidate_actual_reprojection.xodr, road 39830 (0.0 m verified)",
+      "utm32n_x": 678942.92,
+      "utm32n_y": 5402201.68,
+      "wgs84_lat": 48.747103,
+      "wgs84_lon": 11.434291,
+      "xodr_x": 840138.71778614,
+      "xodr_y": 5464923.98146263
+    },
+    "wp1_control_point_error_m_if_claimed_crs": 171724.56707256217
+  },
+  "f4_verdict": "F4_PIECEWISE_PROFILES_PASS",
+  "generated_at_utc": "2026-08-03T13:57:42.074985+00:00",
+  "input_candidate": {
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "road_count": 32710,
+    "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d"
+  },
+  "output_candidate": {
+    "elevation_profiles": 32710,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T150000Z\\candidate_f4_piecewise_profiles.xodr",
+    "road_count": 32710,
+    "sha256": "51fc96ebc839be6c897aa073125fe5ee82c1ae4048b12b5ed2da33ddb71114f7"
+  },
+  "parameters": {
+    "max_deviation_m": 2.0,
+    "sample_spacing_m": 5.0,
+    "scipy_available": true
+  },
+  "phase": "F",
+  "producer": "ultimate_pipeline/tools/phase_f4_piecewise_profiles.py",
+  "run_id": "20260803T150000Z",
+  "sampler": {
+    "bbox_intersects_dem": true,
+    "crs_transform_applied": true
+  },
+  "stats": {
+    "deferred_road_ids": [],
+    "max_deviation_m": 2.0,
+    "profiles_deferred": 0,
+    "profiles_replaced": 32710,
+    "roads_total": 32710,
+    "sample_count_total": 450953,
+    "sample_spacing_m": 5.0,
+    "scipy_used": true,
+    "segment_count_total": 418243,
+    "warnings": []
+  }
+}
