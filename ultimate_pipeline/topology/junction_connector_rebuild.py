@@ -683,6 +683,9 @@ def rebuild_displaced_junction_connectors_on_root(
             )
             if verified:
                 stats["rebuilt"] += 1
+                stats["geometry_written"][written_kind] = (
+                    int(stats["geometry_written"].get(written_kind, 0)) + 1
+                )
                 after_record = dict(before_record)
                 after_record.update(
                     {
