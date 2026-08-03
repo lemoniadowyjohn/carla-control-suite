@@ -1,0 +1,71 @@
+{
+  "checks": {
+    "extreme_width_derivative_zero": true,
+    "implausible_width_zero": true,
+    "negative_width_zero": true,
+    "no_cross_section_inversion": true,
+    "no_double_laneoffset": true,
+    "no_left_right_ordering_inversion": true,
+    "no_overlapping_width_intervals": true,
+    "no_width_gaps": true,
+    "non_finite_border_zero": true,
+    "non_finite_coefficients": true,
+    "non_finite_laneoffset_zero": true,
+    "width_records_within_section": true
+  },
+  "g0_reference": {
+    "g0_evidence": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T190000Z\\PHASE_G_INPUT.json",
+    "input_byte_sha256": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba"
+  },
+  "g2_verdict": "PHASE_G_POLYNOMIAL_VALIDATION_PASS",
+  "generated_at_utc": "2026-08-03T18:18:33.736256+00:00",
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+  "issue_counts": {
+    "cross_section_inversion": 0,
+    "extreme_width_derivative": 0,
+    "implausible_width": 0,
+    "laneoffset_double_apply": 0,
+    "left_right_ordering_inversion": 0,
+    "negative_width": 0,
+    "non_finite": 0,
+    "non_finite_border": 0,
+    "non_finite_laneoffset": 0,
+    "overlapping_width_intervals": 0,
+    "width_gap": 0,
+    "width_record_outside_section": 0
+  },
+  "issues": {
+    "cross_section_inversion": [],
+    "extreme_width_derivative": [],
+    "implausible_width": [],
+    "laneoffset_double_apply": [],
+    "left_right_ordering_inversion": [],
+    "negative_width": [],
+    "non_finite": [],
+    "non_finite_border": [],
+    "non_finite_laneoffset": [],
+    "overlapping_width_intervals": [],
+    "width_gap": [],
+    "width_record_outside_section": []
+  },
+  "metrics": {
+    "cross_section_inversion_count": 0,
+    "max_individual_lane_width_m": 6.0655,
+    "max_section_boundary_jump_m": 0.0,
+    "max_total_road_width_m": 48.0,
+    "max_width_derivative_m_per_m": 0.21,
+    "negative_width_count": 0,
+    "roads_outside_governed_envelope": 0,
+    "section_boundary_width_jumps": [],
+    "width_max_m": 6.0655,
+    "width_p50_m": 6.0,
+    "width_p90_m": 6.0,
+    "width_p95_m": 6.0,
+    "width_p99_m": 6.0,
+    "width_samples": 760671
+  },
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g2_polynomial_validation.py",
+  "run_id": "20260803T210000Z",
+  "sample_spacing_m": 4.0
+}
