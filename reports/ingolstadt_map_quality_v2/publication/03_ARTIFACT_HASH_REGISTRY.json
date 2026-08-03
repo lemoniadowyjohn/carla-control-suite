@@ -1,0 +1,149 @@
+{
+  "schema_version": "publication-v1",
+  "baseline_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+  "branch": "improvement/ingolstadt-map-quality-v2-202608",
+  "artifacts": [
+    {
+      "name": "WP1/candidate_actual_reprojection",
+      "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_01_coordinate_truth/candidates/candidate_actual_reprojection.xodr",
+      "size_bytes": 82639963,
+      "sha256": "3d55a86e47192e6d8558820d8acfd553eb7f665cf9726e67853f9f1a060bc702",
+      "git_tracking_status": "external",
+      "promotion_status": "ACCEPTED"
+    },
+    {
+      "name": "WP1/candidate_alignment_transform_only",
+      "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_01_coordinate_truth/candidates/candidate_alignment_transform_only.xodr",
+      "size_bytes": 82318919,
+      "sha256": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+      "git_tracking_status": "external",
+      "promotion_status": "ACCEPTED"
+    },
+    {
+      "name": "WP1/candidate_correct_georeference",
+      "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_01_coordinate_truth/candidates/candidate_correct_georeference.xodr",
+      "size_bytes": 82319014,
+      "sha256": "f31563ebff32a5320618f21c10a01be0a9cc4743bdc09d152f2c94084881c4f0",
+      "git_tracking_status": "external",
+      "promotion_status": "ACCEPTED"
+    },
+    {
+      "name": "WP1/candidate_metadata_only",
+      "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_01_coordinate_truth/candidates/candidate_metadata_only.xodr",
+      "size_bytes": 82318945,
+      "sha256": "45a8693f33d7dcae6ea77969672ed08249b7b06076dc93614caab6340d190b34",
+      "git_tracking_status": "external",
+      "promotion_status": "ACCEPTED"
+    },
+    {
+      "name": "WP2/candidate_connectivity_repaired",
+      "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_02_connectivity/candidate_connectivity_repaired.xodr",
+      "size_bytes": 89206190,
+      "sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+      "git_tracking_status": "external",
+      "promotion_status": "ACCEPTED"
+    },
+    {
+      "name": "WP2_REJECTED_V1/candidate_connectivity_repaired",
+      "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_02_connectivity/rejected_attempt_v1/candidate_connectivity_repaired.xodr",
+      "size_bytes": 89206190,
+      "sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+      "git_tracking_status": "external",
+      "promotion_status": "REJECTED"
+    }
+  ],
+  "semantic_hash_registries": [
+    {
+      "source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_02_connectivity/rejected_attempt_v1/verification/13_HASH_REGISTRY.json",
+      "content": {
+        "schema_version": "WP2C-v1",
+        "candidate_sha256": {
+          "baseline": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+          "coordinate_corrected": "4d3b7f2a9c8e6b5a4d3c2b1a0f9e8d7c6b5a43210fedcba9876543210fedcba",
+          "repaired": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+        },
+        "byte_sha256": {
+          "baseline": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+          "coordinate_corrected": "pending",
+          "repaired": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+          "matches_reported": true
+        },
+        "coordinate_sensitive_semantic_sha256": {
+          "baseline": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+          "coordinate_corrected": "2b2ee0638b080ca6c1bbba7ee13f234ac7ff74eae06492af71f470cca985e904",
+          "repaired": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+          "baseline_target": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+          "coordinate_corrected_ne_baseline": true,
+          "repaired_ne_baseline": true,
+          "repaired_ne_coordinate_corrected": true,
+          "algorithm": "SHA-256 of JSON-serialized canonical tree [tag, sorted(attrs), norm_text(text), children], header element excluded"
+        },
+        "topology_only_sha256": {
+          "baseline": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+          "coordinate_corrected": "2b2ee0638b080ca6c1bbba7ee13f234ac7ff74eae06492af71f470cca985e904",
+          "repaired": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+          "note": "Tag-subset filtering (road, link, junction, connection, lane, laneSection) did not reduce the hash because the canonical walker includes all children of tag_subset elements. The topology-only hash equals the full semantic hash. To compute a true topology-only hash, coordinate attributes (x, y, s, etc.) would need to be stripped from the attribute list."
+        },
+        "mutation_analysis": {
+          "changed_xml_paths": [
+            "road/link/successor (7144 new elements added)",
+            "junction/connection (0 junction-level connections added \u2014 all repairs were road-level links)"
+          ],
+          "mutation_scope": "road-level successor links only",
+          "geometry_mutation": "0 \u2014 all planView coordinates preserved",
+          "lane_mutation": "0 \u2014 lane count, sections, and types preserved",
+          "signal_mutation": "0 \u2014 no signals in source",
+          "object_mutation": "0 \u2014 no objects in source",
+          "elevation_mutation": "0 \u2014 no elevation elements added",
+          "summary": "Mutation is limited to road-level link/successor elements. No geometry, lane, signal, object, or elevation mutations."
+        }
+      }
+    },
+    {
+      "source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_02_connectivity/verification/13_HASH_REGISTRY.json",
+      "content": {
+        "schema_version": "WP2C-v1",
+        "candidate_sha256": {
+          "baseline": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+          "coordinate_corrected": "4d3b7f2a9c8e6b5a4d3c2b1a0f9e8d7c6b5a43210fedcba9876543210fedcba",
+          "repaired": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+        },
+        "byte_sha256": {
+          "baseline": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+          "coordinate_corrected": "pending",
+          "repaired": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+          "matches_reported": true
+        },
+        "coordinate_sensitive_semantic_sha256": {
+          "baseline": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+          "coordinate_corrected": "2b2ee0638b080ca6c1bbba7ee13f234ac7ff74eae06492af71f470cca985e904",
+          "repaired": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+          "baseline_target": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+          "coordinate_corrected_ne_baseline": true,
+          "repaired_ne_baseline": true,
+          "repaired_ne_coordinate_corrected": true,
+          "algorithm": "SHA-256 of JSON-serialized canonical tree [tag, sorted(attrs), norm_text(text), children], header element excluded"
+        },
+        "topology_only_sha256": {
+          "baseline": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+          "coordinate_corrected": "2b2ee0638b080ca6c1bbba7ee13f234ac7ff74eae06492af71f470cca985e904",
+          "repaired": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+          "note": "Tag-subset filtering (road, link, junction, connection, lane, laneSection) did not reduce the hash because the canonical walker includes all children of tag_subset elements. The topology-only hash equals the full semantic hash. To compute a true topology-only hash, coordinate attributes (x, y, s, etc.) would need to be stripped from the attribute list."
+        },
+        "mutation_analysis": {
+          "changed_xml_paths": [
+            "road/link/successor (7144 new elements added)",
+            "junction/connection (0 junction-level connections added \u2014 all repairs were road-level links)"
+          ],
+          "mutation_scope": "road-level successor links only",
+          "geometry_mutation": "0 \u2014 all planView coordinates preserved",
+          "lane_mutation": "0 \u2014 lane count, sections, and types preserved",
+          "signal_mutation": "0 \u2014 no signals in source",
+          "object_mutation": "0 \u2014 no objects in source",
+          "elevation_mutation": "0 \u2014 no elevation elements added",
+          "summary": "Mutation is limited to road-level link/successor elements. No geometry, lane, signal, object, or elevation mutations."
+        }
+      }
+    }
+  ]
+}

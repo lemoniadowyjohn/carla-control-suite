@@ -1,0 +1,37 @@
+{
+  "schema_version": "WP2B-V1-REPAIR-CONFIG-v1",
+  "repair_algorithm": "automated_successor_link_insertion",
+  "configuration": {
+    "lane_width_m": 6.0,
+    "traffic_lights": false,
+    "osm_hash": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f",
+    "input_candidate": "candidate_actual_reprojection.xodr",
+    "input_candidate_sha256": "3d55a86e47192e6d8558820d8acfd553eb7f665cf9726e67853f9f1a060bc702",
+    "candidate_byte_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+  },
+  "pre_verification_config_hash": "osm:b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f, lane_width:6.0, no_traffic_lights",
+  "repair_parameters": {
+    "max_successor_distance_m": null,
+    "successor_heading_threshold_deg": null,
+    "max_predecessor_distance_m": null,
+    "predecessor_heading_threshold_deg": null,
+    "reciprocity_enforcement": false,
+    "junction_repair_enabled": false
+  },
+  "defects_identified": [
+    "distance_heading_validation_not_applied_before_acceptance",
+    "predecessor_repair_logic_defective",
+    "reciprocity_enforcement_not_implemented",
+    "junction_reference_repair_not_attempted"
+  ],
+  "wp2c_mandatory_gates": {
+    "distance_threshold_m": 15.0,
+    "heading_threshold_deg": 15.0,
+    "reciprocity_required": true,
+    "zero_missing_junction_references_required": true
+  },
+  "producer_script": "work_package_02_connectivity/repaired_validation.py",
+  "verification_script": "work_package_02_connectivity/wp2c_verify.py",
+  "produced_by_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+  "verification_commit": "bfde949445be808f2c6c791e5754f85f38d462f8"
+}

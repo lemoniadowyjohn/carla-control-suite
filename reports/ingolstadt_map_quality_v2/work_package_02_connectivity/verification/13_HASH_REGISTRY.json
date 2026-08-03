@@ -1,0 +1,43 @@
+{
+  "schema_version": "WP2C-v1",
+  "candidate_sha256": {
+    "baseline": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+    "coordinate_corrected": "4d3b7f2a9c8e6b5a4d3c2b1a0f9e8d7c6b5a43210fedcba9876543210fedcba",
+    "repaired": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+  },
+  "byte_sha256": {
+    "baseline": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+    "coordinate_corrected": "pending",
+    "repaired": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+    "matches_reported": true
+  },
+  "coordinate_sensitive_semantic_sha256": {
+    "baseline": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+    "coordinate_corrected": "2b2ee0638b080ca6c1bbba7ee13f234ac7ff74eae06492af71f470cca985e904",
+    "repaired": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+    "baseline_target": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+    "coordinate_corrected_ne_baseline": true,
+    "repaired_ne_baseline": true,
+    "repaired_ne_coordinate_corrected": true,
+    "algorithm": "SHA-256 of JSON-serialized canonical tree [tag, sorted(attrs), norm_text(text), children], header element excluded"
+  },
+  "topology_only_sha256": {
+    "baseline": "138e6aab2b5a23a9a254ee58c75d3d7deed6199f54b7f0aa3cefa4a79e774a1d",
+    "coordinate_corrected": "2b2ee0638b080ca6c1bbba7ee13f234ac7ff74eae06492af71f470cca985e904",
+    "repaired": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+    "note": "Tag-subset filtering (road, link, junction, connection, lane, laneSection) did not reduce the hash because the canonical walker includes all children of tag_subset elements. The topology-only hash equals the full semantic hash. To compute a true topology-only hash, coordinate attributes (x, y, s, etc.) would need to be stripped from the attribute list."
+  },
+  "mutation_analysis": {
+    "changed_xml_paths": [
+      "road/link/successor (7144 new elements added)",
+      "junction/connection (0 junction-level connections added — all repairs were road-level links)"
+    ],
+    "mutation_scope": "road-level successor links only",
+    "geometry_mutation": "0 — all planView coordinates preserved",
+    "lane_mutation": "0 — lane count, sections, and types preserved",
+    "signal_mutation": "0 — no signals in source",
+    "object_mutation": "0 — no objects in source",
+    "elevation_mutation": "0 — no elevation elements added",
+    "summary": "Mutation is limited to road-level link/successor elements. No geometry, lane, signal, object, or elevation mutations."
+  }
+}

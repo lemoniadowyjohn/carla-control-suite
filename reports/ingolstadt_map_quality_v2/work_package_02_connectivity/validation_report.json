@@ -1,0 +1,30 @@
+{
+  "connectivity_analysis": {
+    "total_road_links": 52776,
+    "predecessor_links": 22816,
+    "successor_links": 29960,
+    "dangling_links_count": 0,
+    "dangling_links_sample": [],
+    "reciprocal_links_count": 14288,
+    "reciprocal_links_ratio": 0.2707,
+    "lane_links_count": 64080,
+    "topology_changes": {
+      "added_junctions_count": 0,
+      "removed_junctions_count": 0,
+      "modified_junctions_count": 0,
+      "added_junctions_sample": [],
+      "modified_junctions_sample": []
+    }
+  },
+  "road_network_summary": {
+    "roads": 32710,
+    "junctions": 3646,
+    "lanes": 84781
+  },
+  "validation": {
+    "no_dangling_links": true,
+    "reciprocal_links_exist": true,
+    "no_junctions_added_or_removed": true,
+    "lane_count_preserved": true
+  }
+}

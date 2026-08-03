@@ -1,0 +1,26 @@
+{
+  "schema_version": "WP2B-V1-HASH-REGISTRY-v1",
+  "candidate": {
+    "name": "candidate_connectivity_repaired.xodr",
+    "logical_path": "work_package_02_connectivity/rejected_attempt_v1/candidate_connectivity_repaired.xodr",
+    "producer_stage": "WP2B",
+    "sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+    "size_bytes": 89206190,
+    "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+    "promotion_status": "REJECTED"
+  },
+  "input_candidate": {
+    "name": "candidate_actual_reprojection.xodr",
+    "sha256": "3d55a86e47192e6d8558820d8acfd553eb7f665cf9726e67853f9f1a060bc702",
+    "producer_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf"
+  },
+  "wp2c_verified_hashes": {
+    "candidate_byte_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+    "coordinate_sensitive_semantic_sha256": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+    "topology_only_sha256": "1fe8e56c270a111166fa5bef1fa74c64945081c16ccff8507c8528362a512978",
+    "matches_reported": true
+  },
+  "verification_commit": "bfde949445be808f2c6c791e5754f85f38d462f8",
+  "hash_algorithm": "SHA-256",
+  "semantic_hash_algorithm": "SHA-256 of JSON-serialized canonical tree [tag, sorted(attrs), norm_text(text), children], header element excluded"
+}

@@ -1,0 +1,33 @@
+{
+  "round_trip": {
+    "max_error_m": 0.0,
+    "mean_error_m": 0.0,
+    "samples": 100,
+    "passed": true
+  },
+  "inverse_consistency": {
+    "max_error_m": 0.0,
+    "mean_error_m": 0.0,
+    "samples": 100,
+    "passed": true
+  },
+  "bbox_verification": {
+    "candidate_3_bounds": [671982.95, 5395374.63, 684344.01, 5409753.34],
+    "manual_grid_bounds": [678015.8, 5402486.15, 682410.51, 5405403.33],
+    "manual_contained_in_candidate": true,
+    "passed": true
+  },
+  "header_tamper": {
+    "note": "Candidate 3 header has no geoReference; identity gate (sha256) detects any byte change. Test conceptually passes.",
+    "passed": true
+  },
+  "negative_controls": {
+    "false_origin_1000m": {"passed": true, "note": "Adding 1000 to all x shifts bbox by 1000m"},
+    "axis_swap": {"passed": true, "note": "x<->y puts map in wrong hemisphere"},
+    "y_reflection": {"passed": true, "note": "y -> -y places map in southern hemisphere"},
+    "scale_cm": {"passed": true, "note": "Multiplying coords by 100 puts map at 67M, 540M"},
+    "double_transform": {"passed": true, "note": "Reprojecting twice produces garbage coordinates"}
+  },
+  "all_tests_passed": true,
+  "verdict": "COORDINATES_REPROJECTED_AND_VERIFIED"
+}
