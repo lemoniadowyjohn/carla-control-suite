@@ -2,39 +2,39 @@
   "coverage_gate": {
     "coverage_ratio_diag": 1.0,
     "dem_bounds_wgs84": {
-      "lat_max": 48.81847223333333,
-      "lat_min": 48.69208334444444,
+      "lat_max": 48.836250011111105,
+      "lat_min": 48.67430556666666,
       "lon_max": 11.537361100000014,
       "lon_min": 11.312083322222236
     },
     "fully_covered": true,
     "map_extent_wgs84": {
-      "lat_max": 48.80820708731479,
-      "lat_min": 48.701939121121065,
-      "lon_max": 11.527512789923767,
-      "lon_min": 11.322214547562044
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
     },
     "margin_deg": 0.0,
     "needed_bounds_wgs84": {
-      "lat_max": 48.80820708731479,
-      "lat_min": 48.701939121121065,
-      "lon_max": 11.527512789923767,
-      "lon_min": 11.322214547562044
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
     },
     "ok": true,
     "overlap_wgs84": {
-      "lat_max": 48.80820708731479,
-      "lat_min": 48.701939121121065,
-      "lon_max": 11.527512789923767,
-      "lon_min": 11.322214547562044
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
     },
     "reason": "covered"
   },
   "crs_contract": {
     "claimed_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
     "claimed_crs_header_bounds_wgs84": {
-      "lat_max": 49.30926083210751,
-      "lat_min": 49.190451605186034,
+      "lat_max": 49.3166287421714,
+      "lat_min": 49.183116214988864,
       "lon_max": 13.76006739410691,
       "lon_min": 13.56642001213345
     },
@@ -43,9 +43,9 @@
     "claimed_proj4": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
     "geometry_bounds": {
       "east": 845935.65308293,
-      "north": 5472743.65483122,
-      "south": 5458671.56721343,
-      "west": 832672.90000828
+      "north": 5472743.854711261,
+      "south": 5458668.202795612,
+      "west": 832671.5018876609
     },
     "header_bounds": {
       "east": 845943.06,
@@ -55,8 +55,8 @@
     },
     "native_frame": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
     "native_frame_header_bounds_wgs84": {
-      "lat_max": 48.808196059136904,
-      "lat_min": 48.70193914570195,
+      "lat_max": 48.826007874046795,
+      "lat_min": 48.68420443267649,
       "lon_max": 11.527611357975239,
       "lon_min": 11.322214553035723
     },
@@ -84,47 +84,48 @@
   "dem_download": {
     "already_present": true,
     "download_margin_deg": 0.01,
+    "existing_coverage_ok": false,
     "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif"
   },
   "dem_identity": {
     "bounds_degrees": {
-      "bottom": 48.69208334444444,
+      "bottom": 48.67430556666666,
       "left": 11.312083322222236,
       "right": 11.537361100000014,
-      "top": 48.81847223333333
+      "top": 48.836250011111105
     },
     "bounds_wgs84": {
-      "lat_max": 48.81847223333333,
-      "lat_min": 48.69208334444444,
+      "lat_max": 48.836250011111105,
+      "lat_min": 48.67430556666666,
       "lon_max": 11.537361100000014,
       "lon_min": 11.312083322222236
     },
     "crs": "GEOGCS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST]]",
-    "elevation_max": 431.9171447753906,
-    "elevation_mean": 374.773193359375,
+    "elevation_max": 487.0121154785156,
+    "elevation_mean": 378.85205078125,
     "elevation_min": 346.7928161621094,
-    "file_bytes": 1335276,
-    "height": 455,
+    "file_bytes": 1711684,
+    "height": 583,
     "licence": "Copernicus DEM GLO-30 (Copernicus WorldDEM-30) distributed by OpenTopography; free of charge for all purposes under the Copernicus regulation policy.",
     "no_data": null,
     "ok": true,
     "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
     "provenance": {
       "bounds": {
-        "bottom": 48.69208334444444,
+        "bottom": 48.67430556666666,
         "left": 11.312083322222236,
         "right": 11.537361100000014,
-        "top": 48.81847223333333
+        "top": 48.836250011111105
       },
       "crs": "GEOGCS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST]]",
-      "file_bytes": 1335276,
+      "file_bytes": 1711684,
       "licence": "Copernicus DEM GLO-30 (Copernicus WorldDEM-30) distributed by OpenTopography; free of charge for all purposes under the Copernicus regulation policy.",
       "no_data": null,
       "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
       "provider": "COP30",
-      "recorded_at_utc": "2026-08-03T10:32:06.317771+00:00",
+      "recorded_at_utc": "2026-08-03T10:54:55.914073+00:00",
       "resolution_m": null,
-      "sha256": "583751dc3b2849628a827e1840a1c34b8d3d730b820ccd9f0a127d334a27a206",
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
       "vertical_datum": "EGM2008 (Copernicus DEM geoid-referenced heights)"
     },
     "provider": "COP30",
@@ -132,35 +133,35 @@
       "x": 0.0002777777777777778,
       "y": 0.0002777777777777778
     },
-    "sha256": "583751dc3b2849628a827e1840a1c34b8d3d730b820ccd9f0a127d334a27a206",
+    "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
     "source": "OpenTopography global DEM API (COP30)",
-    "valid_pixel_count": 369005,
+    "valid_pixel_count": 472813,
     "vertical_datum": "EGM2008 (Copernicus DEM geoid-referenced heights)",
     "width": 811
   },
   "f1_status": "PASS",
   "fail_reason": null,
-  "generated_at_utc": "2026-08-03T10:31:09.720912+00:00",
+  "generated_at_utc": "2026-08-03T10:53:59.773430+00:00",
   "map_extent": {
     "bbox_in_xodr_frame": {
       "east": 845935.65308293,
-      "north": 5472743.65483122,
-      "south": 5458671.56721343,
-      "west": 832672.90000828
+      "north": 5472743.854711261,
+      "south": 5458668.202795612,
+      "west": 832671.5018876609
     },
     "extent_wgs84": {
-      "lat_max": 48.80820708731479,
-      "lat_min": 48.701939121121065,
-      "lon_max": 11.527512789923767,
-      "lon_min": 11.322214547562044
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
     },
     "sampling_crs": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
     "sampling_crs_source": "osm2odr_native_verified",
     "verification": {
       "claimed_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
       "claimed_crs_header_bounds_wgs84": {
-        "lat_max": 49.30926083210751,
-        "lat_min": 49.190451605186034,
+        "lat_max": 49.3166287421714,
+        "lat_min": 49.183116214988864,
         "lon_max": 13.76006739410691,
         "lon_min": 13.56642001213345
       },
@@ -169,9 +170,9 @@
       "claimed_proj4": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
       "geometry_bounds": {
         "east": 845935.65308293,
-        "north": 5472743.65483122,
-        "south": 5458671.56721343,
-        "west": 832672.90000828
+        "north": 5472743.854711261,
+        "south": 5458668.202795612,
+        "west": 832671.5018876609
       },
       "header_bounds": {
         "east": 845943.06,
@@ -181,8 +182,8 @@
       },
       "native_frame": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
       "native_frame_header_bounds_wgs84": {
-        "lat_max": 48.808196059136904,
-        "lat_min": 48.70193914570195,
+        "lat_max": 48.826007874046795,
+        "lat_min": 48.68420443267649,
         "lon_max": 11.527611357975239,
         "lon_min": 11.322214553035723
       },

@@ -115,8 +115,18 @@ def main() -> int:
         return 1
     ext = extent["extent_wgs84"]
 
-    # 4) DEM: download full extent if missing
-    if not DEM_PATH.exists():
+    # 4) DEM: download full extent if missing or if coverage fails
+    coverage_precheck = None
+    if DEM_PATH.exists():
+        identity_precheck = dem_identity_record(
+            str(DEM_PATH),
+            provider=DEM_PROVIDER,
+            licence=DEM_LICENCE,
+            vertical_datum=DEM_DATUM,
+            source="OpenTopography global DEM API (COP30)",
+        )
+        coverage_precheck = dem_coverage_gate(identity_precheck, ext)
+    if not DEM_PATH.exists() or not bool(coverage_precheck and coverage_precheck.get("ok")):
         api_key = SETTINGS.OPENTOPO_API_KEY or os.getenv("OPENTOPO_API_KEY", "")
         if not api_key:
             report["f1_status"] = "FAIL"
@@ -136,7 +146,8 @@ def main() -> int:
     report["dem_download"] = {
         "path": str(DEM_PATH),
         "download_margin_deg": DOWNLOAD_MARGIN_DEG,
-        "already_present": True,
+        "already_present": bool(DEM_PATH.exists()),
+        "existing_coverage_ok": bool(coverage_precheck and coverage_precheck.get("ok")),
     }
 
     # 5) DEM identity

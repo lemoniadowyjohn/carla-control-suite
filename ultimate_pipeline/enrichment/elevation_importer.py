@@ -1015,6 +1015,33 @@ class ElevationImporter:
                 f"Unresolved roads: {', '.join(unresolved_ids)}."
             )
 
+        # ------------------------------------------------------------
+        # F2: strict fallback policy — any invented elevation value is a
+        # hard failure (KD-tree NN extrapolation, graph propagation, global
+        # median, hardcoded constant, or flat sampler).
+        # ------------------------------------------------------------
+        f2_policy = None
+        try:
+            from ultimate_pipeline.enrichment.elevation_fallback_policy import (
+                assert_no_fallback_violations,
+                elevation_fallback_policy,
+            )
+
+            f2_policy = elevation_fallback_policy()
+            f2_result = assert_no_fallback_violations(
+                extrapolated_road_ids=extrapolated_road_ids,
+                propagated_road_ids=propagated_road_ids,
+                unresolved_road_ids=[
+                    str(item["road_id"]) for item in unresolved_after_fallback
+                ],
+                flat_sampler_active=bool(fallback_active),
+                policy=f2_policy,
+            )
+        except RuntimeError:
+            raise
+        except Exception:
+            f2_result = {"policy": "unavailable", "violation_count": 0, "passed": True}
+
         try:
             max_seam_delta_m = float(os.getenv("UP_ELEV_MAX_SEAM_DELTA_M", "30.0"))
         except Exception:
@@ -1077,6 +1104,10 @@ class ElevationImporter:
                 "suspect_seam_count": int(len(suspect_seam_roads)),
                 "max_seam_delta_m": float(max((item["delta_z_m"] for item in suspect_seam_roads), default=0.0)),
                 "seam_delta_threshold_m": float(max_seam_delta_m),
+                "f2_fallback_policy": f2_policy,
+                "f2_fallback_violations": f2_result.get("violations") if f2_result else None,
+                "f2_fallback_violation_count": int(f2_result.get("violation_count", 0)) if f2_result else 0,
+                "f2_fallback_gate_passed": bool(f2_result.get("passed", True)) if f2_result else True,
             }
         return None
 

@@ -118,7 +118,49 @@ def header_bounds_from_xodr(xodr_path: str) -> Optional[Dict[str, float]]:
         return None
 
 
+def _geometry_endpoint(
+    x: float, y: float, hdg: float, length: float, prim: ET.Element
+) -> tuple:
+    """Exact endpoint for line/arc/paramPoly3 primitives (bbox purposes)."""
+    lname = _localname(prim.tag)
+    if lname == "line":
+        return (x + length * math.cos(hdg), y + length * math.sin(hdg))
+    if lname == "arc":
+        try:
+            k = float(prim.get("curvature", "0.0"))
+        except Exception:
+            k = 0.0
+        if abs(k) < 1e-9:
+            return (x + length * math.cos(hdg), y + length * math.sin(hdg))
+        return (
+            x + (math.sin(hdg + k * length) - math.sin(hdg)) / k,
+            y + (-math.cos(hdg + k * length) + math.cos(hdg)) / k,
+        )
+    if lname == "paramPoly3":
+        try:
+            p_range = str(prim.get("pRange", "arcLength"))
+            p_max = float(length) if p_range == "arcLength" else 1.0
+            a_u = float(prim.get("aU", "0"))
+            b_u = float(prim.get("bU", "0"))
+            c_u = float(prim.get("cU", "0"))
+            d_u = float(prim.get("dU", "0"))
+            a_v = float(prim.get("aV", "0"))
+            b_v = float(prim.get("bV", "0"))
+            c_v = float(prim.get("cV", "0"))
+            d_v = float(prim.get("dV", "0"))
+        except Exception:
+            return (x + length * math.cos(hdg), y + length * math.sin(hdg))
+        p = p_max
+        u = a_u + b_u * p + c_u * p * p + d_u * p * p * p
+        v = a_v + b_v * p + c_v * p * p + d_v * p * p * p
+        cos_h = math.cos(hdg)
+        sin_h = math.sin(hdg)
+        return (x + u * cos_h - v * sin_h, y + u * sin_h + v * cos_h)
+    return (x + length * math.cos(hdg), y + length * math.sin(hdg))
+
+
 def _planview_bbox(xodr_path: str) -> Optional[Dict[str, float]]:
+    """Bbox of ALL planView geometry: starts AND exact endpoints."""
     minx = miny = math.inf
     maxx = maxy = -math.inf
     found = False
@@ -131,13 +173,25 @@ def _planview_bbox(xodr_path: str) -> Optional[Dict[str, float]]:
                 try:
                     x = float(el.get("x"))
                     y = float(el.get("y"))
+                    hdg = float(el.get("hdg"))
+                    length = float(el.get("length"))
                 except Exception:
+                    el.clear()
                     continue
+                prim = None
+                for child in list(el):
+                    if _localname(child.tag) in ("line", "arc", "paramPoly3"):
+                        prim = child
+                        break
+                if prim is None:
+                    el.clear()
+                    continue
+                ex, ey = _geometry_endpoint(x, y, hdg, length, prim)
                 found = True
-                minx = min(minx, x)
-                maxx = max(maxx, x)
-                miny = min(miny, y)
-                maxy = max(maxy, y)
+                minx = min(minx, x, ex)
+                maxx = max(maxx, x, ex)
+                miny = min(miny, y, ey)
+                maxy = max(maxy, y, ey)
                 el.clear()
     except Exception:
         return None
@@ -185,11 +239,21 @@ def _bbox_to_wgs84(
     except Exception:
         return None
     try:
-        w_minx, w_miny = tf.transform(bbox["west"], bbox["south"])
-        w_maxx, w_maxy = tf.transform(bbox["east"], bbox["north"])
+        corners = (
+            (float(bbox["west"]), float(bbox["south"])),
+            (float(bbox["west"]), float(bbox["north"])),
+            (float(bbox["east"]), float(bbox["south"])),
+            (float(bbox["east"]), float(bbox["north"])),
+        )
+        tx: List[float] = []
+        ty: List[float] = []
+        for x, y in corners:
+            xx, yy = tf.transform(x, y)
+            tx.append(float(xx))
+            ty.append(float(yy))
     except Exception:
         return None
-    return {"lon_min": w_minx, "lat_min": w_miny, "lon_max": w_maxx, "lat_max": w_maxy}
+    return {"lon_min": min(tx), "lat_min": min(ty), "lon_max": max(tx), "lat_max": max(ty)}
 
 
 def _expanded(bounds: Dict[str, float], margin_deg: float) -> Dict[str, float]:
