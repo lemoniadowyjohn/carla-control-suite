@@ -215,4 +215,5 @@ __marimo__/
 # phase_g8_acceptance.py (run_preflight); only the summarized loadability
 # section of PHASE_G_ACCEPTANCE.json is tracked.
 reports/post_audit_hardening/*/preflight_report.json
+reports/post_audit_hardening/*/*/preflight_report.json
 reports/post_audit_hardening/*/baseline_g0_preflight/

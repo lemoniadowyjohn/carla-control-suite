@@ -1,0 +1,8 @@
+{
+  "candidate_error_count": 24,
+  "g0_baseline_error_count": 24,
+  "new_or_exceeded_error_classes": {},
+  "error_signatures_equal": true,
+  "candidate": "reports/post_audit_hardening/20260804T050000Z/candidate_h_signal_enrichment.xodr",
+  "verdict": "H_LOADABILITY_MATCHES_G0_BASELINE"
+}
