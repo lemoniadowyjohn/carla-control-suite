@@ -1,0 +1,700 @@
+{
+  "bad_roads": [],
+  "checks": {
+    "all_vertices_finite": true,
+    "monotonic_lateral_offsets": true,
+    "no_lane_overlap_or_crossover": true,
+    "no_self_intersecting_cross_section": true,
+    "positive_drivable_width": true,
+    "section_boundary_continuity": true,
+    "sections_available": true
+  },
+  "cross_section_samples": 338964,
+  "drivable_width_max_m": 30.0,
+  "drivable_width_p50_m": 6.0,
+  "drivable_width_p90_m": 6.0,
+  "drivable_width_p95_m": 12.0,
+  "drivable_width_p99_m": 18.0,
+  "fixture_names": [
+    "bicycle_lane",
+    "junction_approach",
+    "lane_addition",
+    "lane_drop",
+    "multi_lane_arterial",
+    "one_lane_one_way",
+    "roundabout_approach",
+    "shoulder",
+    "sidewalk",
+    "turn_lane",
+    "two_lane_bidirectional"
+  ],
+  "fixtures": {
+    "all_fixtures_pass": true,
+    "fixtures": {
+      "bicycle_lane": {
+        "drivable_widths": [
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8,
+          8.8
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "9",
+        "samples": 22
+      },
+      "junction_approach": {
+        "drivable_widths": [
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "10",
+        "samples": 18
+      },
+      "lane_addition": {
+        "drivable_widths": [
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "4",
+        "samples": 32
+      },
+      "lane_drop": {
+        "drivable_widths": [
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "5",
+        "samples": 32
+      },
+      "multi_lane_arterial": {
+        "drivable_widths": [
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0,
+          14.0
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "3",
+        "samples": 26
+      },
+      "one_lane_one_way": {
+        "drivable_widths": [
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "1",
+        "samples": 22
+      },
+      "roundabout_approach": {
+        "drivable_widths": [
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5,
+          3.5
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "11",
+        "samples": 14
+      },
+      "shoulder": {
+        "drivable_widths": [
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "7",
+        "samples": 22
+      },
+      "sidewalk": {
+        "drivable_widths": [
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8,
+          9.8
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "8",
+        "samples": 22
+      },
+      "turn_lane": {
+        "drivable_widths": [
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2,
+          10.2
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "6",
+        "samples": 22
+      },
+      "two_lane_bidirectional": {
+        "drivable_widths": [
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0,
+          7.0
+        ],
+        "issues": [],
+        "pass": true,
+        "road_id": "2",
+        "samples": 22
+      }
+    }
+  },
+  "g0_reference": {
+    "g0_evidence": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T190000Z\\PHASE_G_INPUT.json",
+    "input_byte_sha256": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba"
+  },
+  "g3_verdict": "PHASE_G_CROSS_SECTION_PASS",
+  "generated_at_utc": "2026-08-03T18:32:29.848917+00:00",
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+  "max_section_boundary_jump_m": 0.0,
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g3_cross_section.py",
+  "road_issue_counts": {
+    "49822": 1,
+    "49876": 1,
+    "50003": 1,
+    "50058": 1,
+    "50252": 1,
+    "50263": 1,
+    "50310": 1,
+    "50490": 1,
+    "51395": 1,
+    "51425": 1,
+    "51646": 1,
+    "52530": 1,
+    "52738": 1,
+    "53700": 1,
+    "54025": 1,
+    "54107": 1,
+    "54261": 1,
+    "54509": 1,
+    "56340": 1,
+    "56356": 1,
+    "56874": 1,
+    "57300": 1,
+    "57311": 1,
+    "58269": 1,
+    "58404": 1,
+    "59788": 1,
+    "60813": 1,
+    "62170": 1,
+    "62888": 1,
+    "63387": 1,
+    "63480": 1,
+    "63491": 1,
+    "64160": 1,
+    "64648": 1,
+    "65228": 1,
+    "66369": 1,
+    "68135": 1,
+    "68410": 1,
+    "68705": 1,
+    "68971": 1,
+    "69106": 1,
+    "69248": 1,
+    "70006": 1
+  },
+  "roads_audited": 32710,
+  "roads_with_issues": 43,
+  "run_id": "20260803T220000Z",
+  "sample_spacing_m": 5.0,
+  "section_continuity_jumps": [],
+  "stub_coverage_road_count": 43,
+  "stub_coverage_roads": [
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "49822",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "49876",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "50003",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "50058",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "50252",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "50263",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "50310",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "50490",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "51395",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "51425",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "51646",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "52530",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "52738",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "53700",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "54025",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "54107",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "54261",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "54509",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "56340",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "56356",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "56874",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "57300",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "57311",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "58269",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "58404",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "59788",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "60813",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "62170",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "62888",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "63387",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "63480",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "63491",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "64160",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "64648",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "65228",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "66369",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "68135",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "68410",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "68705",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "68971",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "69106",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "69248",
+      "section_s": 0.0
+    },
+    {
+      "issues": [],
+      "kinds": [],
+      "road": "70006",
+      "section_s": 0.0
+    }
+  ],
+  "total_issues": 0
+}

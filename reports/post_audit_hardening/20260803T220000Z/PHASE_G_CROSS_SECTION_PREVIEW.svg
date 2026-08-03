@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800">
+<style>text{font:12px monospace} rect{stroke:#444;stroke-width:1}</style>
+<rect x='10' y='10' width='1380' height='1780' fill='#fbfbfb'/>
+<text x='40' y='40'>G3 offline cross-section preview (fixtures, s=mid)</text>
+<text x='40' y='88'>one_lane_one_way: pass=True drivable_width(mid)=3.50 m samples=22</text>
+<text x='40' y='112'>two_lane_bidirectional: pass=True drivable_width(mid)=7.00 m samples=22</text>
+<text x='40' y='136'>multi_lane_arterial: pass=True drivable_width(mid)=14.00 m samples=26</text>
+<text x='40' y='160'>lane_addition: pass=True drivable_width(mid)=3.50 m samples=32</text>
+<text x='40' y='184'>lane_drop: pass=True drivable_width(mid)=7.00 m samples=32</text>
+<text x='40' y='208'>turn_lane: pass=True drivable_width(mid)=10.20 m samples=22</text>
+<text x='40' y='232'>shoulder: pass=True drivable_width(mid)=8.00 m samples=22</text>
+<text x='40' y='256'>sidewalk: pass=True drivable_width(mid)=9.80 m samples=22</text>
+<text x='40' y='280'>bicycle_lane: pass=True drivable_width(mid)=8.80 m samples=22</text>
+<text x='40' y='304'>junction_approach: pass=True drivable_width(mid)=3.50 m samples=18</text>
+<text x='40' y='328'>roundabout_approach: pass=True drivable_width(mid)=3.50 m samples=14</text>
+</svg>
