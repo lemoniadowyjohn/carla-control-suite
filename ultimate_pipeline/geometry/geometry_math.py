@@ -1,5 +1,8 @@
 import hashlib
 import json
+import math
+import xml.etree.ElementTree as ET
+from typing import Iterable, List, Tuple
 
 class GeometryHasher:
     @staticmethod

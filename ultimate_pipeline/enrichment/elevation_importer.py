@@ -1293,6 +1293,42 @@ class ElevationImporter:
         dem_crs_obj = None
         georef = _get_georef_from_xodr(xodr_path) if xodr_path else None
         map_crs, map_crs_source, map_crs_raw = _infer_map_crs(xodr_path, georef)
+
+        # ------------------------------------------------------------
+        # F1: CRS contract — verify the geographic frame before sampling.
+        # The pinned candidate's geoReference claims EPSG:32632 while the
+        # geometry is in Osm2Odr's native tmerc(0,0) frame (WP1-verified,
+        # 0.0 m).  Sampling with the claimed CRS alone would read the DEM at
+        # the wrong geographic location.  resolve_sampling_crs decides the
+        # true frame against the OSM source and fails closed when it cannot.
+        # ------------------------------------------------------------
+        f1_crs_contract = None
+        if xodr_path:
+            try:
+                from ultimate_pipeline.dem.dem_crs_contract import (
+                    resolve_sampling_crs,
+                )
+
+                _f1_osm = os.getenv("UP_OSM_FILE", "").strip()
+                contract_crs, contract_source, contract_record = (
+                    resolve_sampling_crs(
+                        xodr_path, osm_path=_f1_osm or None, strict=strict
+                    )
+                )
+            except Exception as exc:
+                if strict:
+                    raise RuntimeError(
+                        f"[F1] DEM sampling CRS contract failed: {exc}"
+                    ) from exc
+                contract_crs, contract_source, contract_record = (
+                    None,
+                    "unverified",
+                    None,
+                )
+            if contract_crs is not None and map_crs is not None and CRS is not None:
+                map_crs = contract_crs
+                map_crs_source = contract_source
+            f1_crs_contract = contract_record
         gps_center_proj = _gps_center_projected_in_map_crs(map_crs)
         local_center = _bbox_center(local_raw_bbox)
         if local_center is not None and gps_center_proj is not None:
@@ -1620,6 +1656,7 @@ class ElevationImporter:
             )
             setattr(sampler, "_gps_anchor_bbox_diag", gps_anchor_bbox_diag)
             setattr(sampler, "_likely_cause", likely_cause)
+            setattr(sampler, "_f1_crs_contract", f1_crs_contract)
         except Exception:
             pass
 
