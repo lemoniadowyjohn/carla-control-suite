@@ -1,0 +1,1707 @@
+{
+  "checks_input": {
+    "complete_driving_from_coverage": false,
+    "complete_driving_to_coverage": true,
+    "no_duplicate_from_lanes": true,
+    "no_missing_from_lanes": true,
+    "no_missing_to_lanes": true,
+    "no_type_incompatible_lanelinks": true
+  },
+  "checks_output": {
+    "complete_driving_from_coverage": true,
+    "complete_driving_to_coverage": true,
+    "no_duplicate_from_lanes": true,
+    "no_missing_from_lanes": true,
+    "no_missing_to_lanes": true,
+    "no_type_incompatible_lanelinks": true
+  },
+  "connections_audited": 22816,
+  "cross_checks": {
+    "g4_lane_continuity_metrics_after": {
+      "directionally_wrong_lane_links": 0,
+      "duplicate_lane_links": 0,
+      "missing_lane_link_targets": 0,
+      "unlinked_required_driving_lanes": 0
+    },
+    "g4_still_passes": true
+  },
+  "fixtures": {
+    "fixtures": {
+      "clean_4way": {
+        "defects": {
+          "duplicate_from_lanes": 0,
+          "missing_driving_from_coverage": 0,
+          "missing_driving_to_coverage": 0,
+          "missing_from_lanes": 0,
+          "missing_to_lanes": 0,
+          "type_incompatible_lanelinks": 0
+        },
+        "ok": true
+      },
+      "missing_coverage": {
+        "defects": {
+          "duplicate_from_lanes": 0,
+          "missing_driving_from_coverage": 1,
+          "missing_driving_to_coverage": 1,
+          "missing_from_lanes": 0,
+          "missing_to_lanes": 0,
+          "type_incompatible_lanelinks": 0
+        },
+        "ok": true
+      },
+      "missing_from": {
+        "defects": {
+          "duplicate_from_lanes": 0,
+          "missing_driving_from_coverage": 2,
+          "missing_driving_to_coverage": 1,
+          "missing_from_lanes": 1,
+          "missing_to_lanes": 0,
+          "type_incompatible_lanelinks": 0
+        },
+        "ok": true
+      },
+      "missing_to": {
+        "defects": {
+          "duplicate_from_lanes": 0,
+          "missing_driving_from_coverage": 1,
+          "missing_driving_to_coverage": 2,
+          "missing_from_lanes": 0,
+          "missing_to_lanes": 1,
+          "type_incompatible_lanelinks": 0
+        },
+        "ok": true
+      },
+      "roundabout_approach": {
+        "defects": {
+          "duplicate_from_lanes": 0,
+          "missing_driving_from_coverage": 0,
+          "missing_driving_to_coverage": 0,
+          "missing_from_lanes": 0,
+          "missing_to_lanes": 0,
+          "type_incompatible_lanelinks": 0
+        },
+        "ok": true
+      }
+    },
+    "fixtures_ok": true
+  },
+  "g6_verdict": "PHASE_G_JUNCTION_LANELINKS_PASS",
+  "generated_at_utc": "2026-08-03T18:59:14.685179+00:00",
+  "identity": {
+    "lane_topology_changed": true,
+    "lane_topology_hash_after": "efa5fe2f503a6faa02799680c5369f4b09c845f2157868c88eae1cec7d4487fc",
+    "lane_topology_hash_before": "3547b06a2acd3106952b296fc16e266b9afc65b70a58bc3a6ed3bef02aff12b0",
+    "protected_hash_matches_g0": {
+      "connector_geometry_hash": true,
+      "contactpoint_hash": true,
+      "elevation_profile_hash": true,
+      "junction_structure_hash": true,
+      "planview_hash": true,
+      "road_length_hash": true,
+      "road_link_hash": true
+    }
+  },
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T000000Z\\candidate_g5_lane_types.xodr",
+  "issues_input": {
+    "duplicate_from_lanes": [],
+    "lane_link_consistency_advisory": [],
+    "missing_driving_from_coverage": [
+      {
+        "connection": "0",
+        "incoming": "45618",
+        "junction": "3591",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "44476",
+        "junction": "263",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48432",
+        "junction": "3619",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "40043",
+        "junction": "188",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44414",
+        "junction": "3584",
+        "lane": "-3"
+      },
+      {
+        "connection": "2",
+        "incoming": "44603",
+        "junction": "59",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44560",
+        "junction": "3643",
+        "lane": "-2"
+      },
+      {
+        "connection": "2",
+        "incoming": "49689",
+        "junction": "3436",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49689",
+        "junction": "3436",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "47724",
+        "junction": "129",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "39907",
+        "junction": "139",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "39854",
+        "junction": "45",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "42227",
+        "junction": "308",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "39934",
+        "junction": "180",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "39934",
+        "junction": "180",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47223",
+        "junction": "3877",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "44178",
+        "junction": "3511",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "44178",
+        "junction": "3511",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44950",
+        "junction": "3732",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "44578",
+        "junction": "371",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "44578",
+        "junction": "371",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49661",
+        "junction": "2916",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "49517",
+        "junction": "496",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44685",
+        "junction": "3493",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "39860",
+        "junction": "57",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48950",
+        "junction": "3944",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "48950",
+        "junction": "3944",
+        "lane": "-4"
+      },
+      {
+        "connection": "0",
+        "incoming": "44704",
+        "junction": "3684",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "45017",
+        "junction": "3747",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "49329",
+        "junction": "186",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "40135",
+        "junction": "368",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44279",
+        "junction": "544",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43965",
+        "junction": "3290",
+        "lane": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "48810",
+        "junction": "3290",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45421",
+        "junction": "3803",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "47709",
+        "junction": "3892",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "48453",
+        "junction": "3303",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49695",
+        "junction": "942",
+        "lane": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "49695",
+        "junction": "942",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "45203",
+        "junction": "309",
+        "lane": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "45203",
+        "junction": "309",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44212",
+        "junction": "7",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "44212",
+        "junction": "7",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47136",
+        "junction": "3848",
+        "lane": "-4"
+      },
+      {
+        "connection": "0",
+        "incoming": "48161",
+        "junction": "124",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "48161",
+        "junction": "124",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44169",
+        "junction": "3516",
+        "lane": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "44169",
+        "junction": "3516",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "41501",
+        "junction": "1877",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40285",
+        "junction": "691",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "46733",
+        "junction": "3835",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "41236",
+        "junction": "1640",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "41236",
+        "junction": "1640",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "41682",
+        "junction": "2026",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47128",
+        "junction": "3849",
+        "lane": "-4"
+      },
+      {
+        "connection": "0",
+        "incoming": "47217",
+        "junction": "3869",
+        "lane": "-4"
+      },
+      {
+        "connection": "4",
+        "incoming": "40159",
+        "junction": "505",
+        "lane": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "40159",
+        "junction": "505",
+        "lane": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "42796",
+        "junction": "2861",
+        "lane": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "42796",
+        "junction": "2861",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45416",
+        "junction": "3800",
+        "lane": "-4"
+      },
+      {
+        "connection": "0",
+        "incoming": "42454",
+        "junction": "763",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40181",
+        "junction": "538",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44673",
+        "junction": "2418",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43800",
+        "junction": "2433",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43602",
+        "junction": "3296",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "42720",
+        "junction": "2806",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "47913",
+        "junction": "982",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44528",
+        "junction": "3627",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "48567",
+        "junction": "3925",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "48567",
+        "junction": "3925",
+        "lane": "-3"
+      },
+      {
+        "connection": "4",
+        "incoming": "49713",
+        "junction": "3412",
+        "lane": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "49713",
+        "junction": "3412",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49427",
+        "junction": "3403",
+        "lane": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "49427",
+        "junction": "3403",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "47166",
+        "junction": "938",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "47166",
+        "junction": "938",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "47886",
+        "junction": "2805",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43803",
+        "junction": "3374",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "42865",
+        "junction": "2894",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48118",
+        "junction": "3913",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "48098",
+        "junction": "3911",
+        "lane": "-3"
+      },
+      {
+        "connection": "1",
+        "incoming": "44259",
+        "junction": "9",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48763",
+        "junction": "3933",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "48762",
+        "junction": "3932",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "42822",
+        "junction": "367",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48456",
+        "junction": "3826",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "47222",
+        "junction": "2485",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "48754",
+        "junction": "3273",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "49493",
+        "junction": "93",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44409",
+        "junction": "3581",
+        "lane": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "44409",
+        "junction": "3581",
+        "lane": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "45417",
+        "junction": "3802",
+        "lane": "-4"
+      },
+      {
+        "connection": "0",
+        "incoming": "42234",
+        "junction": "1354",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43918",
+        "junction": "3424",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48433",
+        "junction": "3615",
+        "lane": "-2"
+      },
+      {
+        "connection": "1",
+        "incoming": "49624",
+        "junction": "109",
+        "lane": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "44265",
+        "junction": "3539",
+        "lane": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "44265",
+        "junction": "3539",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49555",
+        "junction": "3445",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49368",
+        "junction": "3968",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40025",
+        "junction": "318",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47817",
+        "junction": "2454",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49081",
+        "junction": "3382",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44047",
+        "junction": "3373",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49056",
+        "junction": "3373",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "48858",
+        "junction": "2822",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43860",
+        "junction": "3394",
+        "lane": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "49667",
+        "junction": "8",
+        "lane": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49667",
+        "junction": "8",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45606",
+        "junction": "3568",
+        "lane": "-2"
+      },
+      {
+        "connection": "2",
+        "incoming": "48181",
+        "junction": "3013",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44229",
+        "junction": "3534",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44080",
+        "junction": "3486",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49153",
+        "junction": "3875",
+        "lane": "-4"
+      },
+      {
+        "connection": "0",
+        "incoming": "49153",
+        "junction": "3875",
+        "lane": "-5"
+      },
+      {
+        "connection": "2",
+        "incoming": "39897",
+        "junction": "120",
+        "lane": "-1"
+      },
+      {
+        "connection": "8",
+        "incoming": "48230",
+        "junction": "3046",
+        "lane": "-1"
+      },
+      {
+        "connection": "9",
+        "incoming": "48230",
+        "junction": "3046",
+        "lane": "-1"
+      },
+      {
+        "connection": "10",
+        "incoming": "40802",
+        "junction": "1273",
+        "lane": "-1"
+      },
+      {
+        "connection": "11",
+        "incoming": "40802",
+        "junction": "1273",
+        "lane": "-1"
+      },
+      {
+        "connection": "12",
+        "incoming": "40802",
+        "junction": "1273",
+        "lane": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49191",
+        "junction": "3418",
+        "lane": "-1"
+      },
+      {
+        "connection": "9",
+        "incoming": "44081",
+        "junction": "105",
+        "lane": "-1"
+      },
+      {
+        "connection": "11",
+        "incoming": "44081",
+        "junction": "105",
+        "lane": "-1"
+      }
+    ],
+    "missing_driving_to_coverage": [],
+    "missing_from_lanes": [],
+    "missing_to_lanes": [],
+    "type_incompatible_lanelinks": []
+  },
+  "lanelinks_audited": 32040,
+  "metrics_input": {
+    "duplicate_from_lanes": 0,
+    "lane_link_consistency_advisory": 0,
+    "missing_driving_from_coverage": 125,
+    "missing_driving_to_coverage": 0,
+    "missing_from_lanes": 0,
+    "missing_to_lanes": 0,
+    "type_incompatible_lanelinks": 0
+  },
+  "metrics_output": {
+    "duplicate_from_lanes": 0,
+    "lane_link_consistency_advisory": 0,
+    "missing_driving_from_coverage": 0,
+    "missing_driving_to_coverage": 0,
+    "missing_from_lanes": 0,
+    "missing_to_lanes": 0,
+    "type_incompatible_lanelinks": 0
+  },
+  "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T020000Z\\candidate_g6_junction_lanelinks.xodr",
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g6_junction_lanelinks.py",
+  "repair": {
+    "added_lanelinks": [
+      {
+        "connection": "0",
+        "incoming": "45618",
+        "junction": "3591",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44476",
+        "junction": "263",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48432",
+        "junction": "3619",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40043",
+        "junction": "188",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44414",
+        "junction": "3584",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "2",
+        "incoming": "44603",
+        "junction": "59",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44560",
+        "junction": "3643",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "49689",
+        "junction": "3436",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49689",
+        "junction": "3436",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "47724",
+        "junction": "129",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "39907",
+        "junction": "139",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "39854",
+        "junction": "45",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "42227",
+        "junction": "308",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "39934",
+        "junction": "180",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "39934",
+        "junction": "180",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47223",
+        "junction": "3877",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "44178",
+        "junction": "3511",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "44178",
+        "junction": "3511",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44950",
+        "junction": "3732",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "2",
+        "incoming": "44578",
+        "junction": "371",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49661",
+        "junction": "2916",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "49517",
+        "junction": "496",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44685",
+        "junction": "3493",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "39860",
+        "junction": "57",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48950",
+        "junction": "3944",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "48950",
+        "junction": "3944",
+        "lane": "-4",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "44704",
+        "junction": "3684",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "45017",
+        "junction": "3747",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49329",
+        "junction": "186",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "40135",
+        "junction": "368",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44279",
+        "junction": "544",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43965",
+        "junction": "3290",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "48810",
+        "junction": "3290",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45421",
+        "junction": "3803",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47709",
+        "junction": "3892",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48453",
+        "junction": "3303",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49695",
+        "junction": "942",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "49695",
+        "junction": "942",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "45203",
+        "junction": "309",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "45203",
+        "junction": "309",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44212",
+        "junction": "7",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "44212",
+        "junction": "7",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47136",
+        "junction": "3848",
+        "lane": "-4",
+        "target": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "48161",
+        "junction": "124",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "48161",
+        "junction": "124",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44169",
+        "junction": "3516",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "44169",
+        "junction": "3516",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "41501",
+        "junction": "1877",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40285",
+        "junction": "691",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "46733",
+        "junction": "3835",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "41236",
+        "junction": "1640",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "41236",
+        "junction": "1640",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "41682",
+        "junction": "2026",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47128",
+        "junction": "3849",
+        "lane": "-4",
+        "target": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "47217",
+        "junction": "3869",
+        "lane": "-4",
+        "target": "-3"
+      },
+      {
+        "connection": "6",
+        "incoming": "40159",
+        "junction": "505",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "42796",
+        "junction": "2861",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45416",
+        "junction": "3800",
+        "lane": "-4",
+        "target": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "42454",
+        "junction": "763",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40181",
+        "junction": "538",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44673",
+        "junction": "2418",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43800",
+        "junction": "2433",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43602",
+        "junction": "3296",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "42720",
+        "junction": "2806",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "47913",
+        "junction": "982",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44528",
+        "junction": "3627",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "48567",
+        "junction": "3925",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48567",
+        "junction": "3925",
+        "lane": "-3",
+        "target": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "49713",
+        "junction": "3412",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "49713",
+        "junction": "3412",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49427",
+        "junction": "3403",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "4",
+        "incoming": "49427",
+        "junction": "3403",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "47166",
+        "junction": "938",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "47886",
+        "junction": "2805",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43803",
+        "junction": "3374",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "42865",
+        "junction": "2894",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48118",
+        "junction": "3913",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48098",
+        "junction": "3911",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "1",
+        "incoming": "44259",
+        "junction": "9",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48763",
+        "junction": "3933",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "48762",
+        "junction": "3932",
+        "lane": "-3",
+        "target": "-2"
+      },
+      {
+        "connection": "0",
+        "incoming": "42822",
+        "junction": "367",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48456",
+        "junction": "3826",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47222",
+        "junction": "2485",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "48754",
+        "junction": "3273",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "49493",
+        "junction": "93",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44409",
+        "junction": "3581",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44409",
+        "junction": "3581",
+        "lane": "-3",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45417",
+        "junction": "3802",
+        "lane": "-4",
+        "target": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "42234",
+        "junction": "1354",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43918",
+        "junction": "3424",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "48433",
+        "junction": "3615",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "1",
+        "incoming": "49624",
+        "junction": "109",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "6",
+        "incoming": "44265",
+        "junction": "3539",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49555",
+        "junction": "3445",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49368",
+        "junction": "3968",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "40025",
+        "junction": "318",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "47817",
+        "junction": "2454",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49081",
+        "junction": "3382",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44047",
+        "junction": "3373",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49056",
+        "junction": "3373",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "48858",
+        "junction": "2822",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "43860",
+        "junction": "3394",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "3",
+        "incoming": "49667",
+        "junction": "8",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "45606",
+        "junction": "3568",
+        "lane": "-2",
+        "target": "-1"
+      },
+      {
+        "connection": "2",
+        "incoming": "48181",
+        "junction": "3013",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44229",
+        "junction": "3534",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "44080",
+        "junction": "3486",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49153",
+        "junction": "3875",
+        "lane": "-4",
+        "target": "-3"
+      },
+      {
+        "connection": "0",
+        "incoming": "49153",
+        "junction": "3875",
+        "lane": "-5",
+        "target": "-3"
+      },
+      {
+        "connection": "2",
+        "incoming": "39897",
+        "junction": "120",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "9",
+        "incoming": "48230",
+        "junction": "3046",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "12",
+        "incoming": "40802",
+        "junction": "1273",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "0",
+        "incoming": "49191",
+        "junction": "3418",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "11",
+        "incoming": "44081",
+        "junction": "105",
+        "lane": "-1",
+        "target": "-1"
+      },
+      {
+        "connection": "9",
+        "incoming": "44081",
+        "junction": "105",
+        "lane": "-1",
+        "target": "-1"
+      }
+    ],
+    "laneLink_added": 116,
+    "mutation_kind": "junction laneLink + connecting-road mirror lane link (uncovered driving lanes converge onto routed neighbour targets)",
+    "repair_issues": []
+  },
+  "run_id": "20260804T020000Z"
+}
