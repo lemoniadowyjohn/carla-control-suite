@@ -1,0 +1,11 @@
+{
+  "total_roads": 32710,
+  "proposed_pred": 4596,
+  "proposed_succ": 7463,
+  "valid_pred": 0,
+  "valid_succ": 7144,
+  "repairs_applied": 7144,
+  "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_improvement\\ingolstadt-map-quality-v2-202608\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr",
+  "size_bytes": 89206190,
+  "sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+}
