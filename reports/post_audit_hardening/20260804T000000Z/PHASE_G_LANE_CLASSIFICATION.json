@@ -1,0 +1,95 @@
+{
+  "audit_input": {
+    "invalid_lane_types": [],
+    "multiple_walk_side_lanes": [],
+    "restricted_lanes": [
+      {
+        "lane": -1,
+        "road": "44238",
+        "section_s": "0",
+        "width": 3.2
+      },
+      {
+        "lane": -1,
+        "road": "71769",
+        "section_s": "0",
+        "width": 6.0
+      },
+      {
+        "lane": -1,
+        "road": "71774",
+        "section_s": "0",
+        "width": 6.0
+      },
+      {
+        "lane": -1,
+        "road": "71779",
+        "section_s": "0",
+        "width": 6.0
+      },
+      {
+        "lane": -1,
+        "road": "71784",
+        "section_s": "0",
+        "width": 6.0
+      }
+    ],
+    "walk_lane_not_outermost": [],
+    "width_band_violations": []
+  },
+  "audit_output": {
+    "clean_after_reclassification": true,
+    "restricted_lanes_after": []
+  },
+  "cross_checks": {
+    "g4_type_incompatible_links_after": 0
+  },
+  "g5_verdict": "PHASE_G_LANE_CLASSIFICATION_PASS",
+  "generated_at_utc": "2026-08-03T18:45:40.515136+00:00",
+  "identity": {
+    "lane_topology_changed": true,
+    "lane_topology_hash_after": "3fe9c8429e508fbc18c07c59283a58ce25b1a683551679055426d5c4f6f6e1ea",
+    "lane_topology_hash_before": "3547b06a2acd3106952b296fc16e266b9afc65b70a58bc3a6ed3bef02aff12b0",
+    "protected_hash_matches_g0": {
+      "connector_geometry_hash": true,
+      "contactpoint_hash": true,
+      "elevation_profile_hash": true,
+      "junction_structure_hash": true,
+      "planview_hash": true,
+      "road_length_hash": true,
+      "road_link_hash": true
+    }
+  },
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+  "mutations": {
+    "lanes_reclassified": 5,
+    "mutation_kind": "type attribute only (restricted -> driving)"
+  },
+  "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T000000Z\\candidate_g5_lane_types.xodr",
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g5_lane_classification.py",
+  "reclass_issues": [],
+  "reclassified_lanes": [
+    {
+      "lane": -1,
+      "road": "44238"
+    },
+    {
+      "lane": -1,
+      "road": "71769"
+    },
+    {
+      "lane": -1,
+      "road": "71774"
+    },
+    {
+      "lane": -1,
+      "road": "71779"
+    },
+    {
+      "lane": -1,
+      "road": "71784"
+    }
+  ],
+  "run_id": "20260804T000000Z"
+}
