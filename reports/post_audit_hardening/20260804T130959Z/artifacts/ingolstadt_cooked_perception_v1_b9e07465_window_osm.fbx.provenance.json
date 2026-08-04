@@ -1,0 +1,23 @@
+{
+  "artifact": "ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+  "artifact_sha256": "dae9c8d457fd73fd69b243ab107df9437f1428ed2f16b005f990ce240e79bdd4",
+  "size_bytes": 14684,
+  "input": "ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+  "input_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "input_artifact_sha256": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+  "source_step": "Phase_J (Blender FBX export, build_fbx)",
+  "source_tool": {
+    "name": "blender",
+    "version": "4.3.0"
+  },
+  "provenance_chain": [
+    "coordinate_control.py",
+    "osm2world",
+    "build_obj",
+    "build_mtl",
+    "build_glb",
+    "build_fbx"
+  ],
+  "recorded_at": "2026-08-04T13:42:00Z",
+  "note": "retroactively recorded to close the FBX provenance sidcar; hash matches current bytes"
+}

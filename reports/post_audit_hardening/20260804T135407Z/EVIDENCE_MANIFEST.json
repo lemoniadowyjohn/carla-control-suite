@@ -1,0 +1,577 @@
+{
+  "run_id": "20260804T135407Z",
+  "generated_at": "2026-08-04T13:57:26.818992+00:00",
+  "git_commit": "a386ba901291840c85393426fb70fb85cff6e261",
+  "git_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+  "evidence_files": [
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\archive_round_trip.json",
+      "sha256": "824c11d5a4c1fee5d3e3a44647d3eaf50ebefbf318f3c97bcadc32b364d596a6",
+      "size": 256
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\audit_normalization_status.json",
+      "sha256": "d9b8fb23315d40299fc29c812e2615735ca308645a3a77803fa8bbf846e92bf0",
+      "size": 775
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\audit_output_clean_archive.zip",
+      "sha256": "4e5a5fbc3e1433ee4bd020fb70e63b37ada17185f3918aba409de942dd2490a0",
+      "size": 886807
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\id_coverage.json",
+      "sha256": "d7519a475a83a66d825b8437d2ee49538649a20991c65fee63dda8878c0f90c6",
+      "size": 162
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\issues_registry.jsonl",
+      "sha256": "9ca1c33344f4cd589f7633c880cff24893d768d4408156187ea2697794e12eea",
+      "size": 5978
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\manifest_hash_verification.json",
+      "sha256": "8adccc7ebb36dcd44b58c5a1d7230d7cc8db410c965142bac90641f8451a9965",
+      "size": 12420
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\P02_AUDIT_NORMALIZATION_ACCEPTANCE.json",
+      "sha256": "8c9770e9aed4423b0c00937e28cd99df37fcf4583066907db6cda81860d98e88",
+      "size": 1394
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\release_effects.json",
+      "sha256": "375f24ab8fd95892cee9f689b6077289611dd73f4e9b6acdce698eadd51a4379",
+      "size": 4229
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\requirements_registry.jsonl",
+      "sha256": "05513a436f4fa8d873d1b1ee294d50da54826029e31bf4bb079c86b6d25e8379",
+      "size": 83786
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260801T221042Z\\status_correction.json",
+      "sha256": "a7a9ae7cbddd9e786e322ab7f0d1b61832319777b5b04783cbdffaa2482e09a5",
+      "size": 76376
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T100000Z\\PHASE_E_CLOSURE.json",
+      "sha256": "a08124942382589ff1372966b1cf58a2ec918e1d81e275efea63ca8e5734db60",
+      "size": 2887
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T100000Z\\PHASE_E_CLOSURE.md",
+      "sha256": "2296c6046ca41e1f3b0ee5bdabba286c394f40190e43836cb5ed5b048095938b",
+      "size": 1971
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T110000Z\\F1_DEM_PROVENANCE.json",
+      "sha256": "ebea19a5bfe895567705c317c95b64f297d55d7edf1846dbfa0447afd2f9e057",
+      "size": 8725
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T110000Z\\F1_DEM_PROVENANCE.md",
+      "sha256": "fc00ad1f81ab1b1bca93550c058d9c5c8aafc2104904924852c1dc29f7bb1ca3",
+      "size": 2548
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T120000Z\\F2_FALLBACK_POLICY.json",
+      "sha256": "8b1d1890058b00ec3d4ac339819675db092d506d5694c9e301e5047bcbf2bde4",
+      "size": 1912839
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T120000Z\\F2_FALLBACK_POLICY.md",
+      "sha256": "79268e0d4bbdeba5bdfe0ccfb27ad9d0cdcab3aea818840c9142c3a4bc919700",
+      "size": 1662
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T130000Z\\F2_FALLBACK_POLICY.json",
+      "sha256": "68242e1a30fcad0cad1cc45296f9c76e7f990ec0b3a234270aed73f3352b4e8e",
+      "size": 5264975
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T130000Z\\F2_FALLBACK_POLICY.md",
+      "sha256": "dacb4f303e5d3f64d08fe87708c86562753f4feb6192c337d08e53dc1f5108b7",
+      "size": 2248
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T140000Z\\F3_STRUCTURE_CLASSIFICATION.json",
+      "sha256": "32814d979391e167a343de2ccdfae6b3b93dc1f67039de635135cbe3f83fe2fd",
+      "size": 22237
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T140000Z\\F3_STRUCTURE_CLASSIFICATION.md",
+      "sha256": "c809861bfb686adda4f352c7d7ffae212a86e9f456a4d6fd2202533a5ce35f81",
+      "size": 1277
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T150000Z\\candidate_f4_piecewise_profiles.xodr",
+      "sha256": "7a8f1d760f4caf9cf941bf71b7e910f6fe8e45aab8089997a98d2bb3ba31b253",
+      "size": 106774483
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T150000Z\\F4_PIECEWISE_PROFILES.json",
+      "sha256": "92372345928872bb27b79dc7bd4120896e6481a135685b030581e0c94906e449",
+      "size": 3531
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T150000Z\\F4_PIECEWISE_PROFILES.md",
+      "sha256": "dc0df5230b6bf9f0c4e3eca0ee9a3e5a89e6a2eb188fa9e1061c7ceb6741db87",
+      "size": 933
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T160000Z\\_f5_work_copy.xodr",
+      "sha256": "7a8f1d760f4caf9cf941bf71b7e910f6fe8e45aab8089997a98d2bb3ba31b253",
+      "size": 106774483
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+      "sha256": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba",
+      "size": 106774483
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T160000Z\\F5_BOUNDED_OFFSETS.json",
+      "sha256": "571376c56fe6e5b0164607e458c6b1e5a75de642da0ac77976132fb37555b47d",
+      "size": 1827
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T160000Z\\F5_BOUNDED_OFFSETS.md",
+      "sha256": "c6841f2f0fded670c0c17832df49597b356c31043fbf404e1f212cca0d5899b6",
+      "size": 1037
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T170000Z\\_f6_work_copy.xodr",
+      "sha256": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba",
+      "size": 106774483
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T170000Z\\candidate_f6_seam_repaired.xodr",
+      "sha256": "c49e1557f82b10c0544239e2a924ab0980d79d4453501fc4866c2ba1c161d196",
+      "size": 107198816
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T170000Z\\F6_SEAM_REPAIR.json",
+      "sha256": "c4a097ec61f0a4ad2d205616bb5114e4a36e4bd9105f09b0293d3de3b04b6824",
+      "size": 1879
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T170000Z\\F6_SEAM_REPAIR.md",
+      "sha256": "f15c87f1a8a31e33b476e2c68941fb249aad49ff36c45ec5474ac56ad79a7b48",
+      "size": 1229
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T180000Z\\F7_FINAL_VERIFICATION.md",
+      "sha256": "b486bfd7923e5d701bf4048329427ba83630e9aa231c73f9350a58c831d8a5c2",
+      "size": 1736
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T180000Z\\PHASE_F_ELEVATION_VERIFIED.json",
+      "sha256": "915ec6ac6a23c2de116f54aefbb7fd412b87b346b1fbfb4a11a35c35b90b8f8f",
+      "size": 3439
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T190000Z\\PHASE_G_INPUT.json",
+      "sha256": "b6740be9c52e9d5c02de6dc7dfec705ee912b7deb8c4b43ff60d06bccfa01330",
+      "size": 2518
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T190000Z\\PHASE_G_INPUT.md",
+      "sha256": "23f118f3fb982122b99edbe4ac94db6400c948abd25c0ff733535a2d1d672c3e",
+      "size": 1807
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T200000Z\\PHASE_G_LANE_INVENTORY.json",
+      "sha256": "e22feb6fe619ff6a9dd16928e8fa2c0d81fe453342331d79174fb792bed899e7",
+      "size": 16814753
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T200000Z\\PHASE_G_LANE_INVENTORY.md",
+      "sha256": "913adf5647db8a37a8a78323ae14b4e4de56ba4c9ca8812e20addfbc5d846ebf",
+      "size": 839
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T210000Z\\PHASE_G_POLYNOMIAL_VALIDATION.json",
+      "sha256": "398294b0b25db1e2e5cdf5e803b9591a7dec9da10424e1ed0bbe25da1a93526e",
+      "size": 2541
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T210000Z\\PHASE_G_POLYNOMIAL_VALIDATION.md",
+      "sha256": "4f357ee5bf941e9add880382c443d26b9b6d182edd5ac9407914447f96994696",
+      "size": 1359
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T220000Z\\PHASE_G_CROSS_SECTION.json",
+      "sha256": "84add3a8adc36bca31ea6b57b0f0c42cc61f961299ca55f899e4ab18a1d462db",
+      "size": 13037
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T220000Z\\PHASE_G_CROSS_SECTION.md",
+      "sha256": "1e480f93051349ae650b3d083a4618c71f119aa43f4e6592fc1cb66a9b26c987",
+      "size": 1297
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T220000Z\\PHASE_G_CROSS_SECTION_PREVIEW.svg",
+      "sha256": "939d03beaa1bf9ecb844b0b2748b3351b44447d75f5b727bd22a25fc2b576c02",
+      "size": 1316
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T230000Z\\PHASE_G_LANE_CONTINUITY.json",
+      "sha256": "93ecddea5165d20d0700fab609b997600557d7d5328139833e5b668a95cf08ee",
+      "size": 28323
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260803T230000Z\\PHASE_G_LANE_CONTINUITY.md",
+      "sha256": "792feec74ec17b6b10740f705d9af8f7459c4ca54b9280c7297d654cd5cea9ba",
+      "size": 1176
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T000000Z\\candidate_g5_lane_types.xodr",
+      "sha256": "becd4ac1ce6252b904f1ec8eaf6773de27863ff9cdfd6e40fd66f4f160d9d8a3",
+      "size": 108793871
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T000000Z\\PHASE_G_LANE_CLASSIFICATION.json",
+      "sha256": "85ceac577810dd49b0733a8190a3900e92680fbdc7265207cdb73a713210d599",
+      "size": 2532
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T000000Z\\PHASE_G_LANE_CLASSIFICATION.md",
+      "sha256": "98a4455cde0ce2d9a7d0f2dee84af099c0cfe6e69d043d2e7d577b49975259ea",
+      "size": 1689
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T020000Z\\candidate_g6_junction_lanelinks.xodr",
+      "sha256": "261ccbe7f9c79ea9963ff2f0a66a44e73d2537c071600138d37d94a859b1d060",
+      "size": 108802803
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T020000Z\\PHASE_G_JUNCTION_LANELINKS.json",
+      "sha256": "2db75b20b97babfdd304a665aa3a40af77c4c5d24a7e4204656d73b8de912d3c",
+      "size": 38483
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T020000Z\\PHASE_G_JUNCTION_LANELINKS.md",
+      "sha256": "5668f1bca9e85bf80529c05665793bc048dcdd971fe6f8c6ccf340794c971e64",
+      "size": 3227
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T030000Z\\candidate_g7_roadmarks.xodr",
+      "sha256": "b99c125a05ac7f56dc67a7a17ca2d95144b8cf3a13266f3733924f8a4aa00b68",
+      "size": 109109235
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T030000Z\\PHASE_G_ROADMARK_SEMANTICS.json",
+      "sha256": "b2e7fdaee577a23d04918b275967d7795bf9c065488498c87c5ed518007d7615",
+      "size": 14621
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T030000Z\\PHASE_G_ROADMARK_SEMANTICS.md",
+      "sha256": "01ddedbb8ff7e42f91d54df8dc32f014a37ad623e903ca961a5ef2824d05113c",
+      "size": 2815
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T040000Z\\PHASE_G_ACCEPTANCE.json",
+      "sha256": "5374e061580136beb43a3cadcdb561083fa61e08fa8efc4760adc39c3e0e702f",
+      "size": 95442
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T040000Z\\PHASE_G_ACCEPTANCE.md",
+      "sha256": "bb0d2eafde791ab08b7ae7eb43a558632a08912b01602c740d08f23911d6a2fd",
+      "size": 2023
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T050000Z\\candidate_h_signal_enrichment.xodr",
+      "sha256": "8050ade947111513af7fb4042a41b788b12fbee876d150e1c75f7113bfff7cd7",
+      "size": 109250965
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T050000Z\\h_loadability_summary.json",
+      "sha256": "8dd4110972b51273fa1b31ee5dfb2f7fdb6b6c3d5601135e4488464a32e3ccad",
+      "size": 297
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T050000Z\\PHASE_H_SIGNAL_ENRICHMENT.json",
+      "sha256": "4d9b3f5881636cf26689db1ce9bb0e835bb5e3e705167c38566d4b1f9875603e",
+      "size": 2656
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T050000Z\\PHASE_H_SIGNAL_ENRICHMENT.md",
+      "sha256": "3064fef701ede98891e8d3672fef2a49cac2f2224a83cd88b37f311d1eea97d0",
+      "size": 2225
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T060000Z\\PHASE_I_TILING_STRATEGY.json",
+      "sha256": "4ab3815137381cad84262a46a2846db47bb2a279cd57b64191f75de6756e34da",
+      "size": 4172
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T060000Z\\PHASE_I_TILING_STRATEGY.md",
+      "sha256": "93c45778b36a67a493c9394f61054903799662de93a2e8dbe88a83773595a46b",
+      "size": 2034
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T060000Z\\tiles\\tile_0_0.xodr",
+      "sha256": "255368e43aeeeedfe3e4571faa3cbfd48d61d148ead973d732c731a9ef232313",
+      "size": 2330834
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T060000Z\\tiles\\tile_0_1.xodr",
+      "sha256": "a1ff06b2bee77363fcceac162253c33410627816d0b715f3652bb42a8e87f2e5",
+      "size": 717078
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T060000Z\\tiles\\tile_1_0.xodr",
+      "sha256": "a7c8cbcbdfc8b7a43eb3f5494444e57aa1221aee15dc80daead3b9a6b60fd26e",
+      "size": 664981
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T060000Z\\tiles\\tile_1_1.xodr",
+      "sha256": "1da0418d3391e5412136bb3128c61e68a6b42c8cff68e68bec6fbfe44bec3c8b",
+      "size": 1580368
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_convert.py",
+      "sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "size": 5393
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_status.json",
+      "sha256": "9b67aab0b7dea25cc49172c169111bbbfdbe6cc200815ec94ef754ff6c767b50",
+      "size": 5445
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_stdout.log",
+      "sha256": "a78f91d7153c8c7edb566420430f758bdd14bd09eedde123703fcb00062598e5",
+      "size": 515
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\fbx_roundtrip.py",
+      "sha256": "8211ea67638be3e7a108a095816615a5ac091f5fe7d2d0efc94327d339340901",
+      "size": 2393
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\fbx_roundtrip_manifest.json",
+      "sha256": "73cc7dd86310e364650d041e5cb0059ba99d502ac8e076baedda764ef86b1bf0",
+      "size": 1338
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\fbx_roundtrip_stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\fbx_roundtrip_stdout.log",
+      "sha256": "abded03a3e2411f1e8a2372e3618f922cbe28a0ea963c9a1f270fb1a22b3134d",
+      "size": 323
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.blender_manifest.json",
+      "sha256": "ded696556d54f012231c6ca06afa3d8d9a2d89f78533250193e83375e0da17ad",
+      "size": 2666
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+      "sha256": "dae9c8d457fd73fd69b243ab107df9437f1428ed2f16b005f990ce240e79bdd4",
+      "size": 14684
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx.provenance.json",
+      "sha256": "734b7aa30738cb7cce19806376ca17b18fd61f97fc328f31eb1f692893095266",
+      "size": 872
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+      "sha256": "a984e735dd603cdba5f5f757d583ca7cab99a16f34f5dc10cf140c45d6781bf6",
+      "size": 4052
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb.provenance.json",
+      "sha256": "656f6f7eb703fb2e6cb45c54e1696c5459fe9bb968370c4d62697753386daf25",
+      "size": 402
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+      "sha256": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+      "size": 1226
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl",
+      "sha256": "a4a424a7d83042428627f3790c973bf7a380bcb97dfd9416932d8d4e904ca0a3",
+      "size": 262
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl.provenance.json",
+      "sha256": "5662356e2da2c5afec379c3eb694e3d226514abb23fae851b2d8f9cdc6a66617",
+      "size": 406
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.provenance.json",
+      "sha256": "cbbb07a4f1d10c39ff8f47d2d54e3c289d3a2fe1de2a83459d71bc08069a398a",
+      "size": 402
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+      "sha256": "84afe2ce3fc334e808e5492de4ac016b97abdb84d046874e89154932717f1e49",
+      "size": 1671
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties",
+      "sha256": "6b092dd52e96037925554804d5264a6380144934adf5ba1905f164bc6c20a942",
+      "size": 452
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_preview_png_stderr.log",
+      "sha256": "34e518537ff4390efbc12ba024cb1af975a92c5bccc74cb7946034ceb3a187bd",
+      "size": 15585
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_preview_png_stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_scene_glb_stderr.log",
+      "sha256": "36829d3e6c47c1be1da84067f05d9b45ae5834b961e0426130a168cea6777c8f",
+      "size": 13251
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_scene_glb_stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_scene_obj_stderr.log",
+      "sha256": "b1ce98f97f2afbe0f8c70af140922db395ee3e1453f664ed9737436ab2bc131d",
+      "size": 12864
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_scene_obj_stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_status.json",
+      "sha256": "73406d3e99919e365f6c1a8c22fa2f8c39db2cecf32e69052147ddf9a64fb469",
+      "size": 14776
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+      "sha256": "e580e45fcd2bd49aa33e4c679d6ff680ec7fc988a729975331f2e057480ca9b9",
+      "size": 773744
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\PHASE_J_OSM2WORLD_BLENDER.json",
+      "sha256": "5820fcf93462022dc241872ac2cf391cba546c586ff0f36e1ef71d59577d1e96",
+      "size": 32277
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T130959Z\\PHASE_J_OSM2WORLD_BLENDER.md",
+      "sha256": "c93f563d5c88522107016d89278d859a6119e77abe1c85c0cbeb1bd2f9dc8aa7",
+      "size": 6742
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T135407Z\\10_TEST_COLLECTION_REPORT.md",
+      "sha256": "1b0a63adcba76063ecd36595f2ce75e47c460eda2374d98186435991b952ccd5",
+      "size": 867
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T135407Z\\18_OSM2WORLD_BLENDER_REPORT.md",
+      "sha256": "dd23a1a31d86ecd65c7c2abf2b8d80f576c7bbe4206c8c6b9270eefa9534b018",
+      "size": 946
+    },
+    {
+      "path": "reports\\post_audit_hardening\\20260804T135407Z\\23_NEGATIVE_CONTROL_REPORT.md",
+      "sha256": "785fcd18eccdae00e3b21d5156da1650302e597159da09e2a0dadd62a929cafa",
+      "size": 1097
+    }
+  ],
+  "evidence_file_count": 97,
+  "mandatory_tests_6_1": {
+    "compileall_ok": true,
+    "collect_only_rc": 0,
+    "collected": 588,
+    "pytest_not_carla_rc": 0,
+    "passed": 588,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "summary": "================ 588 passed, 49 warnings in 163.31s (0:02:43) =================",
+    "collection_errors": true,
+    "mandatory_skips": 0,
+    "verdict": "PASS"
+  },
+  "fixture_corpus_6_3": {
+    "required": [
+      "straight",
+      "spiral",
+      "roundabout",
+      "tile_boundary",
+      "bridge",
+      "sidewalk",
+      "OSM2World",
+      "Blender",
+      "paramPoly3"
+    ],
+    "present": [
+      "straight",
+      "spiral",
+      "roundabout",
+      "bridge",
+      "sidewalk",
+      "OSM2World",
+      "Blender",
+      "paramPoly3"
+    ],
+    "missing": [
+      "tile_boundary"
+    ],
+    "present_count": 8,
+    "required_count": 9
+  },
+  "negative_controls_6_5": {
+    "controls": {
+      "fbx_no_axis_reflection": {
+        "mechanism": "J6 round-trip re-import inventory comparison (bounds within 0.01 m, same vertex/face/UV/material counts)",
+        "verdict": "PASS",
+        "detected": false
+      },
+      "fbx_no_100x_scale": {
+        "mechanism": "manifest export global_scale + round-trip bounds match",
+        "global_scale": 1.0,
+        "verdict": "PASS",
+        "detected": false
+      },
+      "stale_fbx": {
+        "verdict": "PASS",
+        "results": [
+          {
+            "file": "ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+            "sidecar_match": true,
+            "recorded": "dae9c8d457fd",
+            "actual": "dae9c8d457fd"
+          }
+        ]
+      },
+      "manifest_hash_mismatch": {
+        "mechanism": "J1 input_hash_linkage + artifact_hash_match provenance sidecars",
+        "obj_input_hash_linkage": true,
+        "obj_artifact_hash_match": true,
+        "verdict": "PASS"
+      },
+      "stale_artifact_substitution": {
+        "mechanism": "J1_glb json_utf8 + json_valid (reject corrupt GLB as in prior full-map run)",
+        "glb_json_utf8": true,
+        "glb_json_valid": true,
+        "verdict": "PASS"
+      }
+    },
+    "verdict": "ALL_PASS",
+    "j6_verdict": "ROUNDTRIP_PASS"
+  }
+}

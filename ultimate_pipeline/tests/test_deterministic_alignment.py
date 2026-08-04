@@ -8,6 +8,12 @@ from ultimate_pipeline.domain_gap.deterministic_alignment import (
     BBox,
 )
 
+try:
+    import pyproj  # noqa: F401
+    _HAS_PYPROJ = True
+except Exception:
+    _HAS_PYPROJ = False
+
 def _write_minimal_xodr(path: Path, xs, ys):
     root = ET.Element("OpenDRIVE")
     road = ET.SubElement(root, "road", attrib={"name":"r1","length":"1","id":"1","junction":"-1"})
@@ -16,7 +22,7 @@ def _write_minimal_xodr(path: Path, xs, ys):
         ET.SubElement(plan, "geometry", attrib={"s":str(i), "x":str(x), "y":str(y), "hdg":"0", "length":"1"})
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
 
-@pytest.mark.skipif(True, reason="Enable once pyproj is installed in the repo venv")
+@pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
 def test_alignment_maps_centroid_to_projected_gps_center(tmp_path: Path):
     auto = tmp_path/"auto.xodr"
     _write_minimal_xodr(auto, [0,10,5], [0,10,5])
