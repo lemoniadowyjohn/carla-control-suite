@@ -28,6 +28,7 @@ describe the same geographic region (origin-shift class of bug).
 from __future__ import annotations
 
 import json
+import math
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
