@@ -156,17 +156,42 @@ def _lane_predecessor_points_outside_tile(lane: ET.Element, tile_road_ids: set) 
 # ------------------------------------------------------------
 # Geometry helpers
 # ------------------------------------------------------------
+# Deterministic per-road cache: _road_bounds is invoked once per road per
+# tile cell; bounds never change for an unmutated source root.
+_BOUNDS_CACHE: Dict[str, Tuple[float, float, float, float]] = {}
+
+
 def _road_bounds(road: ET.Element) -> Tuple[float, float, float, float]:
-    xs, ys = [], []
-    for g in road.findall(".//planView/geometry"):
-        try:
-            xs.append(float(g.get("x", "0.0")))
-            ys.append(float(g.get("y", "0.0")))
-        except ValueError:
-            pass
-    if not xs or not ys:
-        return 0.0, 0.0, 0.0, 0.0
-    return min(xs), min(ys), max(xs), max(ys)
+    """TIL-001: curve-aware AABB of the complete reference line.
+
+    Includes analytic extrema of line/arc/spiral/poly3/paramPoly3 (hardened
+    geometry evaluator, opendrive_geometry) plus the lane half-width margin,
+    so no lane and no curve extremum ever escapes the tile bounds.
+    """
+    rid = road.get("id")
+    if rid is not None and rid in _BOUNDS_CACHE:
+        return _BOUNDS_CACHE[rid]
+    try:
+        from ultimate_pipeline.tiling.tile_equivalence import (
+            road_bounds_curve_aware,
+        )
+        b = road_bounds_curve_aware(road)
+        result = (b["x_min"], b["y_min"], b["x_max"], b["y_max"])
+    except Exception:
+        xs, ys = [], []
+        for g in road.findall(".//planView/geometry"):
+            try:
+                xs.append(float(g.get("x", "0.0")))
+                ys.append(float(g.get("y", "0.0")))
+            except ValueError:
+                pass
+        if not xs or not ys:
+            result = (0.0, 0.0, 0.0, 0.0)
+        else:
+            result = (min(xs), min(ys), max(xs), max(ys))
+    if rid is not None:
+        _BOUNDS_CACHE[rid] = result
+    return result
 
 
 def _road_length(road: ET.Element) -> float:
@@ -239,9 +264,40 @@ def _build_tile_root(
     tile_root.append(deep_clone(header) if header is not None else ET.Element("header"))
     tile_root.find("header").set("name", tile_name)
 
+    # TIL-003/I3: junction-cut prevention — when any member of a junction
+    # reaches a buffered cell, the ENTIRE junction travels together
+    # (complete-junction duplication with one owner; ownership is recorded
+    # out of band). A junction never disappears across a tile boundary.
+    junction_roads: Dict[str, List[ET.Element]] = {}
+    for r in roads:
+        jid = r.get("junction")
+        # OSM2ODR convention: junction="-1" means "not part of any
+        # junction" — never group these into a pseudo-junction, otherwise
+        # the whole-map AABB of "-1" would cascade every non-junction road
+        # into every tile.
+        if jid and jid != "-1":
+            junction_roads.setdefault(jid, []).append(r)
+    junction_bounds: Dict[str, Tuple[float, float, float, float]] = {}
+    for jid, members in junction_roads.items():
+        xs: List[float] = []
+        ys: List[float] = []
+        for m in members:
+            mnx, mny, mxx, mxy = _road_bounds(m)
+            xs.extend((mnx, mxx))
+            ys.extend((mny, mxy))
+        junction_bounds[jid] = (min(xs), min(ys), max(xs), max(ys))
+
     for r in roads:
         mnx, mny, mxx, mxy = _road_bounds(r)
-        if not (mxx < buf_min_x or mnx > buf_max_x or mxy < buf_min_y or mny > buf_max_y):
+        hit = not (mxx < buf_min_x or mnx > buf_max_x
+                   or mxy < buf_min_y or mny > buf_max_y)
+        if not hit:
+            jid = r.get("junction")
+            if jid and jid in junction_bounds:
+                jx0, jy0, jx1, jy1 = junction_bounds[jid]
+                hit = not (jx1 < buf_min_x or jx0 > buf_max_x
+                           or jy1 < buf_min_y or jy0 > buf_max_y)
+        if hit:
             tile_root.append(deep_clone(r))
 
     return tile_root
@@ -296,6 +352,12 @@ def _finalize_tile(
         print(f"⚠ {msg}")
 
     out_path = os.path.join(out_dir, f"{tile_name}.xodr")
+    # TIL-004/I5: analysis markers must never leak into duplicated XODR
+    # elements; ownership/leakage is tracked out of band (tile_health).
+    for lane in tile_root.findall(".//lane"):
+        lane.attrib.pop("_successor_outside_tile", None)
+        lane.attrib.pop("_predecessor_outside_tile", None)
+        lane.attrib.pop("was_driving", None)
     try:
         header = tile_root.find("header")
         if header is not None:

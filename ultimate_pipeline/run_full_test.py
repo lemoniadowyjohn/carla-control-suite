@@ -124,9 +124,8 @@ def main() -> int:
     out_dir = out_root / stamp
     _mkdir(out_dir)
 
-    # Environment (conservative defaults)
+    # Environment (conservative defaults; no tile-QA-failure bypass)
     env = dict(os.environ)
-    env.setdefault("UP_ALLOW_TILE_QA_FAIL", "1")
 
     index: Dict[str, Any] = {
         "timestamp_local": stamp,

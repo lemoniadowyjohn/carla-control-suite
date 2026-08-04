@@ -31,6 +31,7 @@ try:
         evaluate_poly3,
         evaluate_spiral,
         line_bounds,
+        param_poly3_bounds,
         poly3_bounds,
         spiral_bounds,
     )
@@ -101,18 +102,30 @@ def _geometry_local_bounds(geom: ET.Element) -> Tuple[float, float, float, float
         bu = _safe_float(child.get("bU")); bv = _safe_float(child.get("bV"))
         cu = _safe_float(child.get("cU")); cv = _safe_float(child.get("cV"))
         du = _safe_float(child.get("dU")); dv = _safe_float(child.get("dV"))
-        # conservative dense sampling (paramPoly3 extrema are not closed-form here)
-        pts = [(x0, y0)]
-        n = max(8, min(64, int(length / 2.0)))
-        for i in range(1, n + 1):
-            t = i / n
-            uu = u + bu * t + cu * t * t + du * t * t * t
-            vv = v + bv * t + cv * t * t + dv * t * t * t
-            px = x0 + uu * math.cos(hdg) - vv * math.sin(hdg)
-            py = y0 + uu * math.sin(hdg) + vv * math.cos(hdg)
-            pts.append((px, py))
-        xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
-        return (min(xs), min(ys), max(xs), max(ys))
+        if _HAS_GEOMETRY:
+            try:
+                # analytic extrema incl. derivative roots (hardened evaluator)
+                return _as_bounds(param_poly3_bounds(
+                    x0, y0, hdg, length, u, bu, cu, du, v, bv, cv, dv,
+                    child.get("pRange", "arcLength")))
+            except Exception:
+                pass
+        try:
+            # fallback: hardened sampler (ultimate_pipeline.geometry)
+            from ultimate_pipeline.geometry.geometry_math import (
+                sample_parampoly3_points,
+            )
+            pts = sample_parampoly3_points(
+                child, x0, y0, hdg, length,
+                [i / max(8, min(64, int(length / 2.0)))
+                 for i in range(1, max(8, min(64, int(length / 2.0))) + 1)])
+            xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+            return (min(xs), min(ys), max(xs), max(ys))
+        except Exception:
+            pass
+        # conservative box fallback
+        return (min(x0, x0 + length), min(y0, y0 + length),
+                max(x0, x0 + length), max(y0, y0 + length))
     return (x0, y0, x0, y0)
 
 
@@ -202,10 +215,13 @@ def tile_road_ownership(
         ownership[rid] = _tile_of(x, y)
 
     # Junction context: roads sharing a junction id move together.
+    # OSM2ODR convention: junction="-1" means "not part of any junction" —
+    # the pseudo-junction must not co-assign non-junction roads (its
+    # bounding center spans the whole map).
     junctions: Dict[str, List[str]] = {}
     for road in roads:
         jid = road.get("junction")
-        if jid:
+        if jid and jid != "-1":
             junctions.setdefault(jid, []).append((road.get("id") or "").strip())
     for jid, rids in junctions.items():
         chosen = [ownership[r] for r in rids if ownership[r] is not None]

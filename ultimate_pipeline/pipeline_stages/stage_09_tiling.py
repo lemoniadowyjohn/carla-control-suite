@@ -499,6 +499,22 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
                 or getattr(self.settings, "STRICT_TILE_SEMANTICS", False)
             )
             allow_skip = getattr(self.settings, "ALLOW_TILE_QA_SKIP", True)
+            # TIL-009: the release profile is authoritative — the QA-failure
+            # bypass requires an explicit opt-in
+            # (ReleaseDefaults.allow_tile_qa_failure=True). Unknown/absent
+            # profiles fail closed.
+            try:
+                from ultimate_pipeline.contracts.release_profile import (
+                    DEFAULTS as _PROFILE_DEFAULTS,
+                )
+                _profile = os.getenv("UP_RELEASE_PROFILE", "")
+                _profile = getattr(self.settings, "RELEASE_PROFILE", "") or _profile
+                if _profile not in _PROFILE_DEFAULTS:
+                    allow_skip = False
+                elif not _PROFILE_DEFAULTS[_profile].allow_tile_qa_failure:
+                    allow_skip = False
+            except Exception:
+                allow_skip = False
             bypass_env = os.getenv("UP_ALLOW_TILE_QA_FAIL", "").strip().lower() in (
                 "1",
                 "true",

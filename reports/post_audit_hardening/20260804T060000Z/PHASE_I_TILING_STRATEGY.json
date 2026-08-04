@@ -1,0 +1,133 @@
+{
+  "generated_at_utc": "2026-08-04T00:03:36.280836+00:00",
+  "i1_curve_aware_bounds": {
+    "geometry_curve_extrema": 10553,
+    "geometry_kind_counts": {
+      "line": 26220,
+      "paramPoly3": 54041
+    },
+    "max_geometry_bounds_delta_m": 37.111,
+    "roads_curve_extrema_beyond_endpoints": 10540,
+    "roads_scanned": 32710,
+    "threshold_m": 0.5
+  },
+  "i2_ownership_policy": {
+    "assigned": 1373,
+    "policy": "midpoint",
+    "unassigned": 31337
+  },
+  "i7_fail_closed": {
+    "release_profile_flag_exists": true,
+    "run_full_test.py": true,
+    "run_thesis_final_experiments.py": true,
+    "stage_09_profile_consumed": true
+  },
+  "i8_equivalence": {
+    "adjacency": {
+      "adjacency_edges": 6,
+      "missing_connections": [],
+      "ok": true,
+      "rule": "TIL-006",
+      "tile_count": 4
+    },
+    "border_roads_not_context_duplicated": [],
+    "border_roads_total": 10,
+    "buffer_m": 50.0,
+    "byte_violations": [],
+    "core_roads": 1414,
+    "dangling_links": [],
+    "duplicate_violations": [],
+    "duplicated_road_count": 69,
+    "inventory_mismatches": [],
+    "junction_missing": [],
+    "junction_split": [],
+    "missing_core_roads": [],
+    "ownership": {
+      "assigned": 1373,
+      "policy": "midpoint",
+      "unassigned": 31337
+    },
+    "tile_health": {
+      "tile_0_0": {
+        "is_drivable": true,
+        "num_driving_lanes_semantic": 763,
+        "num_driving_lanes_xml": 763,
+        "num_roads": 763,
+        "semantics": {
+          "allow_successor_outside_tile": true,
+          "drivable_in_full_map": true,
+          "locally_closed_routing_graph": false,
+          "predecessor_leakage": true,
+          "preserve_global_lane_types_in_tiles": true,
+          "successor_leakage": true
+        }
+      },
+      "tile_0_1": {
+        "is_drivable": true,
+        "num_driving_lanes_semantic": 199,
+        "num_driving_lanes_xml": 199,
+        "num_roads": 199,
+        "semantics": {
+          "allow_successor_outside_tile": true,
+          "drivable_in_full_map": true,
+          "locally_closed_routing_graph": false,
+          "predecessor_leakage": true,
+          "preserve_global_lane_types_in_tiles": true,
+          "successor_leakage": true
+        }
+      },
+      "tile_1_0": {
+        "is_drivable": true,
+        "num_driving_lanes_semantic": 159,
+        "num_driving_lanes_xml": 159,
+        "num_roads": 158,
+        "semantics": {
+          "allow_successor_outside_tile": true,
+          "drivable_in_full_map": true,
+          "locally_closed_routing_graph": false,
+          "predecessor_leakage": true,
+          "preserve_global_lane_types_in_tiles": true,
+          "successor_leakage": true
+        }
+      },
+      "tile_1_1": {
+        "is_drivable": true,
+        "num_driving_lanes_semantic": 506,
+        "num_driving_lanes_xml": 506,
+        "num_roads": 504,
+        "semantics": {
+          "allow_successor_outside_tile": true,
+          "drivable_in_full_map": true,
+          "locally_closed_routing_graph": false,
+          "predecessor_leakage": true,
+          "preserve_global_lane_types_in_tiles": true,
+          "successor_leakage": true
+        }
+      }
+    },
+    "tile_road_counts": {
+      "tile_0_0": 763,
+      "tile_0_1": 199,
+      "tile_1_0": 158,
+      "tile_1_1": 504
+    },
+    "tile_size_m": 1000.0,
+    "union_roads": 1555,
+    "window_junction_count": 142,
+    "window_origin": [
+      838500.0,
+      5460500.0
+    ]
+  },
+  "i_verdict": "PHASE_I_TILING_PASS",
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T050000Z\\candidate_h_signal_enrichment.xodr",
+  "phase": "I",
+  "producer": "ultimate_pipeline/tools/phase_i_tiling_strategy.py",
+  "run_id": "20260804T060000Z",
+  "strategy": {
+    "carla_map_identity": "ONE_LOGICAL_MAP_PER_CAMPAIGN",
+    "tile_role": "observation_window_with_context_duplication",
+    "unreal_visual_asset_tiling": "IMPORT_TIME_CARLA_EDITOR",
+    "xodr_logical_partitioning": "NOT_APPLIED_cooked_single_identity"
+  }
+}
