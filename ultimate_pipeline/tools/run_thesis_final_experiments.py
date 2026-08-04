@@ -565,7 +565,7 @@ def run_auto_repeats(
         env = os.environ.copy()
         pipeline_out_dir = run_dir / "pipeline_out"
         env["UP_OUTPUT_DIR"] = str(pipeline_out_dir)
-                run_tag = f"{base_tag}_auto_{idx+1}"
+        run_tag = f"{base_tag}_auto_{idx+1}"
         map_id = f"auto_repeat_{idx+1}"
         generated_xodr = run_dir / f"generated_from_osm_{idx+1}.xodr"
         osm_manifest_path = run_dir / "osm_to_xodr_manifest.json"

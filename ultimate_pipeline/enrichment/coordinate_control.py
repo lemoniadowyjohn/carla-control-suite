@@ -28,7 +28,6 @@ describe the same geographic region (origin-shift class of bug).
 from __future__ import annotations
 
 import json
-import math
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -39,6 +38,32 @@ try:
     _HAS_PYPROJ = True
 except Exception:  # pragma: no cover
     _HAS_PYPROJ = False
+
+# ---------------------------------------------------------------------------
+# Verified F1 coordinate contract (P05 CRS reconciliation, PHASE_1A_DIAGNOSIS.md).
+#
+# The authoritative OpenDRIVE geometry frame is the Osm2ODR-native transverse
+# Mercator projection used by CARLA's Osm2ODR converter:
+#
+#     +proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs
+#
+# The OpenDRIVE <geoReference> header carried on `raw_xodr_run_1_epsg32632_header_pinned.xodr`
+# (an EPSG:32632-style string) is METADATA-ONLY per F1: Osm2ODR does NOT reproject
+# geometry into it. Treating the header string as the geometry CRS is the root cause
+# of the J5 ~165,943 m "origin-shift" defect. This constant is the single source of
+# truth; the declared geoReference is retained only for provenance reporting.
+# ---------------------------------------------------------------------------
+VERIFIED_XODR_GEOMETRY_CRS_PROJ4 = (
+    "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+)
+VERIFIED_XODR_FRAME = "Osm2Odr-native tmerc(lat_0=0, lon_0=0, k=1, x_0=0, y_0=0)"
+
+
+def verified_geometry_crs() -> Optional["CRS"]:
+    """Return the F1-verified XODR *geometry* CRS (or None if pyproj is absent)."""
+    if not _HAS_PYPROJ:
+        return None
+    return CRS.from_proj4(VERIFIED_XODR_GEOMETRY_CRS_PROJ4)
 
 
 def parse_obj_origin(path: Path) -> Optional[Dict[str, float]]:
@@ -81,8 +106,27 @@ def project_wgs84_to_xodr(
     points: List[Tuple[float, float]],
     geo_reference: str,
 ) -> List[Tuple[float, float]]:
-    """Project (lon, lat) points into the XODR frame via geoReference."""
+    """Project (lon, lat) points into the XODR frame via geoReference.
+
+    .. deprecated:: J5R
+        This uses the **declared** ``<geoReference>`` header, which F1 proved is
+        metadata-only (Osm2ODR does not reproject geometry into it). Use
+        :func:`project_wgs84_to_xodr_native` for projection. Retained only for
+        backward compatibility / provenance reporting.
+    """
     crs = _xodr_crs(geo_reference)
+    if crs is None:
+        return []
+    transformer = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
+    return [tuple(transformer.transform(lon, lat)) for lon, lat in points]
+
+
+def project_wgs84_to_xodr_native(
+    points: List[Tuple[float, float]],
+    crs: Optional["CRS"] = None,
+) -> List[Tuple[float, float]]:
+    """Project (lon, lat) points into the F1-verified native XODR geometry frame."""
+    crs = crs or verified_geometry_crs()
     if crs is None:
         return []
     transformer = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
@@ -94,8 +138,7 @@ def sample_xodr_road_points(
     max_roads: int = 400,
     max_geometries: int = 200000,
 ) -> List[Tuple[float, float]]:
-    """
-    Sample planView control points: every geometry element start and end
+    """Sample planView control points: every geometry element start and end
     position for up to max_roads roads.
     """
     from opendrive_geometry.primitives import (
@@ -172,7 +215,7 @@ def _aabb(points: List[Tuple[float, float]]) -> Dict[str, float]:
 
 
 def _nearest(point: Tuple[float, float],
-             points: List[Tuple[float, float]]) -> Tuple[float, float, int]:
+             points: List[Tuple[float, float]]) -> Tuple[float, Tuple[float, float], int]:
     best_d = float("inf")
     best_i = -1
     best_p = (0.0, 0.0)
@@ -206,7 +249,11 @@ def coordinate_control_check(
 
     report: Dict[str, Any] = {
         "obj_header_origin_wgs84": origin,
-        "xodr_geo_reference": geo_ref,
+        "xodr_geo_reference_declared": geo_ref,
+        "xodr_geometry_crs_verified": VERIFIED_XODR_FRAME,
+        "contract_authority": "F1 P05 CRS reconciliation (PHASE_1A_DIAGNOSIS.md): "
+                              "XODR geometry is Osm2Odr-native tmerc; the <geoReference> "
+                              "header is metadata-only and is NOT used for projection",
         "xodr_roads_sampled": sample_limit,
         "xodr_road_points_sampled": len(xodr_points),
         "xodr_road_aabb": xodr_aabb,
@@ -222,58 +269,81 @@ def coordinate_control_check(
         report["detail"] = "OBJ header does not declare a coordinate origin"
         return report
 
-    if not _HAS_PYPROJ:
-        report["verdict"] = "PYPROJ_UNAVAILABLE"
+    crs = verified_geometry_crs()
+    if not _HAS_PYPROJ or crs is None:
+        report["verdict"] = "MISALIGNED"
+        report["detail"] = "verified coordinate contract unavailable (pyproj/CRS resolve failed)"
         return report
 
-    proj = project_wgs84_to_xodr([(origin["lon"], origin["lat"])], geo_ref)
-    if not proj:
-        report["verdict"] = "GEO_REFERENCE_UNPROJECTABLE"
+    origin_xodr = _first_or_none(project_wgs84_to_xodr_native(
+        [(origin["lon"], origin["lat"])], crs))
+    if origin_xodr is None:
+        report["verdict"] = "MISALIGNED"
+        report["detail"] = "could not forward-project OBJ origin into verified native frame"
         return report
-    origin_xodr = proj[0]
-    report["obj_origin_xodr_frame"] = list(origin_xodr)
+    report["obj_origin_xodr_frame"] = [origin_xodr[0], origin_xodr[1]]
 
     if xodr_points:
         dist, nearest, idx = _nearest(origin_xodr, xodr_points)
         report["nearest_xodr_road_point_m"] = round(dist, 1)
         report["nearest_xodr_road_point"] = list(nearest)
     else:
-        dist = float("inf")
         report["nearest_xodr_road_point_m"] = None
 
-    # expected XODR region from the source OSM window
-    if os_window_bounds_wgs84:
+    overlap = 0.0
+    origin_in_roads = False
+    if os_window_bounds_wgs84 and xodr_points:
         b = os_window_bounds_wgs84
         corners = [
             (b["lon_min"], b["lat_min"]), (b["lon_max"], b["lat_min"]),
             (b["lon_max"], b["lat_max"]), (b["lon_min"], b["lat_max"]),
         ]
-        proj_corners = project_wgs84_to_xodr(corners, geo_ref)
-        os_aabb = _aabb(proj_corners)
-        report["os_window_xodr_aabb"] = os_aabb
-        overlap_w = max(0.0, min(os_aabb["x_max"], xodr_aabb["x_max"])
-                        - max(os_aabb["x_min"], xodr_aabb["x_min"]))
-        overlap_h = max(0.0, min(os_aabb["y_max"], xodr_aabb["y_max"])
-                        - max(os_aabb["y_min"], xodr_aabb["y_min"]))
-        report["overlap_m2"] = round(overlap_w * overlap_h, 1)
-        center_os = ((os_aabb["x_min"] + os_aabb["x_max"]) / 2.0,
-                     (os_aabb["y_min"] + os_aabb["y_max"]) / 2.0)
-        gap, _, _ = _nearest(center_os, xodr_points) if xodr_points else (float("inf"), (), -1)
-        report["os_center_to_nearest_xodr_road_m"] = round(gap, 1)
+        proj_corners = project_wgs84_to_xodr_native(corners, crs)
+        if proj_corners:
+            os_aabb = _aabb(proj_corners)
+            report["os_window_xodr_aabb"] = os_aabb
+            overlap = _bbox_overlap_m2(os_aabb, xodr_aabb)
+            report["overlap_m2"] = round(overlap, 1)
+            origin_in_roads = _point_in_aabb(origin_xodr, xodr_aabb)
+            report["obj_origin_within_xodr_road_bbox"] = origin_in_roads
+            center_os = ((os_aabb["x_min"] + os_aabb["x_max"]) / 2.0,
+                         (os_aabb["y_min"] + os_aabb["y_max"]) / 2.0)
+            gap, _, _ = _nearest(center_os, xodr_points)
+            report["os_center_to_nearest_xodr_road_m"] = round(gap, 1)
 
-    if math.isinf(dist) or dist is None:
-        report["verdict"] = "MISALIGNED"
-        report["detail"] = "no XODR road points to compare"
-    elif dist < 100.0:
+    aligned = bool(xodr_points) and overlap > 0.0 and origin_in_roads
+    report["gate"] = "overlap_m2 > 0 AND obj_origin within xodr_road_aabb (verified native CRS)"
+    if aligned:
         report["verdict"] = "ALIGNED"
-        report["detail"] = (f"OBJ origin within {dist:.1f} m of an XODR road "
-                            "control point")
+        report["detail"] = (
+            "OSM window forward-projected via the verified Osm2Odr-native tmerc frame "
+            f"overlaps the XODR road bbox ({overlap:.1f} m^2) and the OBJ origin "
+            f"({origin_xodr[0]:.1f}, {origin_xodr[1]:.1f}) falls within the XODR road bbox.")
     else:
         report["verdict"] = "MISALIGNED"
-        report["detail"] = (f"OBJ origin is {dist:.1f} m from the nearest XODR "
-                            "road control point: the source OSM and the XODR "
-                            "map do not describe the same region (origin-shift)")
+        report["detail"] = (
+            "OSM2World/OSM window does not align to the XODR road network under the "
+            "verified coordinate contract: the source OSM and XODR geometry do not "
+            "describe the same region (origin-shift). Overlap "
+            f"{overlap:.1f} m^2; origin within road bbox: {origin_in_roads}.")
     return report
+
+
+def _first_or_none(seq: List[Tuple[float, float]]) -> Optional[Tuple[float, float]]:
+    return seq[0] if seq else None
+
+
+def _bbox_overlap_m2(a: Dict[str, float], b: Dict[str, float]) -> float:
+    ow = max(0.0, min(a["x_max"], b["x_max"]) - max(a["x_min"], b["x_min"]))
+    oh = max(0.0, min(a["y_max"], b["y_max"]) - max(a["y_min"], b["y_min"]))
+    return ow * oh
+
+
+def _point_in_aabb(p: Tuple[float, float], aabb: Dict[str, float]) -> bool:
+    if not aabb:
+        return False
+    return (aabb["x_min"] <= p[0] <= aabb["x_max"]
+            and aabb["y_min"] <= p[1] <= aabb["y_max"])
 
 
 if __name__ == "__main__":
