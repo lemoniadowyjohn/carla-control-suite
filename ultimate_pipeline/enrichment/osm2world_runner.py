@@ -162,6 +162,7 @@ lodDistances=100,500,2000
         osm2world_home: Optional[str] = None,
         timeout_sec: Optional[int] = None,
         config_path: Optional[str] = None,
+        name_prefix: Optional[str] = None,
     ):
         """
         Initialize OSM2World runner.
@@ -172,9 +173,11 @@ lodDistances=100,500,2000
             osm2world_home: Path to OSM2World binary folder (uses env/default if None)
             timeout_sec: Timeout for OSM2World execution (default from env or 1800)
             config_path: Path to external properties file (optional)
+            name_prefix: J2 artifact name prefix (default "scene")
         """
         self.osm_path = Path(osm_path)
         self.output_dir = Path(output_dir)
+        self.name_prefix = name_prefix or "scene"
 
         # Timeout: env > arg > default 1800
         default_timeout = 1800
@@ -658,16 +661,17 @@ except Exception as e:
             if not requested:
                 requested = ["obj"]
 
-            # Map output types to file paths
+            # Map output types to file paths (J2 artifact naming)
+            stem = self.name_prefix
             out_files: Dict[str, Path] = {}
             if "obj" in requested:
-                out_files["scene.obj"] = self.output_dir / "scene.obj"
+                out_files["scene.obj"] = self.output_dir / f"{stem}.obj"
             if "png" in requested:
-                out_files["preview.png"] = self.output_dir / "preview.png"
+                out_files["preview.png"] = self.output_dir / f"{stem}.png"
             if "glb" in requested:
-                out_files["scene.glb"] = self.output_dir / "scene.glb"
+                out_files["scene.glb"] = self.output_dir / f"{stem}.glb"
             if "gltf" in requested:
-                out_files["scene.gltf"] = self.output_dir / "scene.gltf"
+                out_files["scene.gltf"] = self.output_dir / f"{stem}.gltf"
 
             attempts: List[Dict[str, Any]] = []
             any_success = False

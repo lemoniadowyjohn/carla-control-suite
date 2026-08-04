@@ -1,0 +1,8 @@
+{
+  "artifact": "ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl",
+  "artifact_sha256": "a4a424a7d83042428627f3790c973bf7a380bcb97dfd9416932d8d4e904ca0a3",
+  "input": "ingolstadt_authoritative.osm (window clip)",
+  "input_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "generator": "OSM2World 0.5.0-SNAPSHOT (legacy CLI)",
+  "run_id": "20260804T130959Z"
+}

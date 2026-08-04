@@ -1,0 +1,12 @@
+# This file was created by OSM2World 0.5.0-SNAPSHOT - https://osm2world.org
+
+
+newmtl MAT_0_0
+Ns 92.156863
+Ka 0.15294118 0.15294118 0.15294118
+Kd 0.15294118 0.15294118 0.15294118
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1
+illum 2
+
