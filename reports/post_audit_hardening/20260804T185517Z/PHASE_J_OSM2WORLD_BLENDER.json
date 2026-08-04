@@ -1,0 +1,667 @@
+{
+  "artifacts": {
+    "glb": "reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+    "mtl": "reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl",
+    "name_prefix": "ingolstadt_cooked_perception_v1_b9e07465_window_osm",
+    "naming_scheme": "<map_id>_<campaign_id>_<source_hash_prefix>_<tile_id>.<ext> = ingolstadt_cooked_perception_v1_b9e07465_window_osm.<ext>",
+    "obj": "reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj"
+  },
+  "checks": {
+    "J1_glb": {
+      "checks": {
+        "accessor_bounds": {
+          "detail": [],
+          "ok": true
+        },
+        "accessor_count": {
+          "detail": 3,
+          "ok": true
+        },
+        "exists": {
+          "detail": "4052 bytes",
+          "ok": true
+        },
+        "json_utf8": {
+          "detail": "utf-8 decode ok",
+          "ok": true
+        },
+        "json_valid": {
+          "detail": "JSON parse ok",
+          "ok": true
+        },
+        "magic": {
+          "detail": "glTF",
+          "ok": true
+        },
+        "total_length": {
+          "detail": "4052 vs 4052",
+          "ok": true
+        },
+        "version": {
+          "detail": 2,
+          "ok": true
+        }
+      },
+      "ok": true
+    },
+    "J1_mtl": {
+      "checks": {
+        "materials": {
+          "detail": [
+            "MAT_0_0"
+          ],
+          "ok": true
+        },
+        "texture_references": {
+          "detail": {},
+          "ok": true
+        }
+      },
+      "materials": [
+        "MAT_0_0"
+      ],
+      "ok": true
+    },
+    "J1_obj": {
+      "bounds": {
+        "x_max": 156.762,
+        "x_min": 124.092,
+        "y_max": 0.0,
+        "y_min": 0.0,
+        "z_max": 310.166,
+        "z_min": 256.535
+      },
+      "checks": {
+        "artifact_hash_match": {
+          "detail": "88d153348f00",
+          "ok": true
+        },
+        "bounds": {
+          "detail": {
+            "x_max": 156.762,
+            "x_min": 124.092,
+            "y_max": 0.0,
+            "y_min": 0.0,
+            "z_max": 310.166,
+            "z_min": 256.535
+          },
+          "ok": true
+        },
+        "coordinate_magnitude": {
+          "detail": "max |coord| = 310.2 m (limit 10000000 m)",
+          "ok": true
+        },
+        "degenerate_faces": {
+          "detail": 0,
+          "ok": true
+        },
+        "duplicate_objects": {
+          "detail": {},
+          "ok": true
+        },
+        "empty_file": {
+          "detail": "1226 bytes",
+          "ok": true
+        },
+        "empty_objects": {
+          "detail": {},
+          "ok": true
+        },
+        "exists": {
+          "detail": "1226 bytes",
+          "ok": true
+        },
+        "face_count": {
+          "detail": 17,
+          "ok": true
+        },
+        "finite_coordinates": {
+          "detail": 19,
+          "ok": true
+        },
+        "input_hash_linkage": {
+          "detail": "b9e074656f74",
+          "ok": true
+        },
+        "material_library": {
+          "detail": {
+            "ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl": true
+          },
+          "ok": true
+        },
+        "normal_count": {
+          "detail": 1,
+          "ok": true
+        },
+        "uv_count": {
+          "detail": 0,
+          "ok": true
+        },
+        "vertex_count": {
+          "detail": 19,
+          "ok": true
+        }
+      },
+      "counts": {
+        "faces": 17,
+        "material_libraries": 1,
+        "materials_used": 1,
+        "normals": 1,
+        "object_groups": 3,
+        "texcoords": 0,
+        "vertices": 19
+      },
+      "ok": true
+    },
+    "J4_semantic_partition": {
+      "classes": {
+        "elevator": {
+          "example_names": [
+            "Elevator0",
+            "Elevator1"
+          ],
+          "faces": 0,
+          "materials": [],
+          "objects": 2,
+          "vertices": 0
+        },
+        "ground": {
+          "example_names": [
+            "SurfaceArea2"
+          ],
+          "faces": 17,
+          "materials": [
+            "MAT_0_0"
+          ],
+          "objects": 1,
+          "vertices": 19
+        }
+      },
+      "classification_rule": "OSM2World group/object naming conventions (case-insensitive substring, see _SEMANTIC_RULES)",
+      "deterministic_names": [
+        "Elevator0",
+        "Elevator1",
+        "SurfaceArea2"
+      ],
+      "duplicate_object_names": [],
+      "object_name_count": 3,
+      "objects_total": 3
+    },
+    "J5_coordinate_control": {
+      "contract_authority": "F1 P05 CRS reconciliation (PHASE_1A_DIAGNOSIS.md): XODR geometry is Osm2Odr-native tmerc; the <geoReference> header is metadata-only and is NOT used for projection",
+      "detail": "OSM window forward-projected via the verified Osm2Odr-native tmerc frame overlaps the XODR road bbox (5304311.8 m^2) and the OBJ origin (839964.0, 5465150.6) falls within the XODR road bbox.",
+      "gate": "overlap_m2 > 0 AND obj_origin within xodr_road_aabb (verified native CRS)",
+      "mapping": {
+        "xodr_x = origin_x + obj_x": true,
+        "xodr_y = origin_y - obj_z": true,
+        "xodr_z = obj_y": true
+      },
+      "nearest_xodr_road_point": [
+        840120.2793574487,
+        5464912.628673666
+      ],
+      "nearest_xodr_road_point_m": 284.7,
+      "obj_header_origin_wgs84": {
+        "ele": 0.0,
+        "lat": 48.74933435,
+        "lon": 11.43242175
+      },
+      "obj_origin_within_xodr_road_bbox": true,
+      "obj_origin_xodr_frame": [
+        839964.008386947,
+        5465150.607499553
+      ],
+      "os_center_to_nearest_xodr_road_m": 284.1,
+      "os_window_xodr_aabb": {
+        "x_max": 841118.5008909947,
+        "x_min": 838815.2780020604,
+        "y_max": 5466303.241288995,
+        "y_min": 5464000.245847157
+      },
+      "overlap_m2": 5304311.8,
+      "verdict": "ALIGNED",
+      "xodr_geo_reference_declared": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "xodr_geometry_crs_verified": "Osm2Odr-native tmerc(lat_0=0, lon_0=0, k=1, x_0=0, y_0=0)",
+      "xodr_road_aabb": {
+        "x_max": 845170.2360026434,
+        "x_min": 833985.6818998278,
+        "y_max": 5472212.823954722,
+        "y_min": 5459301.5226598
+      },
+      "xodr_road_points_sampled": 5410,
+      "xodr_roads_sampled": 400
+    },
+    "J6_fbx_roundtrip": {
+      "comparison": {
+        "extra_objects": [],
+        "field_differences": [],
+        "missing_objects": [],
+        "objects_roundtrip": 1,
+        "objects_source": 1,
+        "verdict": "ROUNDTRIP_PASS"
+      },
+      "ok": true,
+      "roundtrip_manifest": {
+        "blender_version": "4.3.0",
+        "import_operator": "import_scene.fbx",
+        "import_options": {
+          "axis_forward": "-Z",
+          "axis_up": "Y",
+          "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "global_scale": 1.0
+        },
+        "materials_total": 1,
+        "objects": [
+          {
+            "bounds": [
+              [
+                124.092003,
+                0.0,
+                256.535004
+              ],
+              [
+                124.092003,
+                0.0,
+                310.165985
+              ],
+              [
+                124.092003,
+                0.0,
+                310.165985
+              ],
+              [
+                124.092003,
+                0.0,
+                256.535004
+              ],
+              [
+                156.761993,
+                0.0,
+                256.535004
+              ],
+              [
+                156.761993,
+                0.0,
+                310.165985
+              ],
+              [
+                156.761993,
+                0.0,
+                310.165985
+              ],
+              [
+                156.761993,
+                0.0,
+                256.535004
+              ]
+            ],
+            "faces": 17,
+            "materials": [
+              "MAT_0_0"
+            ],
+            "name": "SurfaceArea2",
+            "type": "MESH",
+            "uv_layers": 0,
+            "vertices": 19
+          }
+        ],
+        "objects_total": 1
+      }
+    },
+    "J7_collision": {
+      "corridor_buffer_m": 3.0,
+      "corridor_lane_width_m": 3.5,
+      "intrusion_count": 0,
+      "intrusion_tolerance_m": 0.5,
+      "intrusions": [],
+      "objects_total": 3,
+      "road_corridors_checked": 2000,
+      "verdict": "PASS",
+      "violation_count": 0,
+      "violations": []
+    },
+    "J7_lod": {
+      "lod_distances_m": [
+        100,
+        500,
+        2000
+      ],
+      "policy_declared": true,
+      "policy_source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties",
+      "unit_note": "OSM2World OBJ: 1 coordinate unit ~ 1 m (header)",
+      "verdict": "POLICY_DECLARED"
+    },
+    "J8_detached_slabs": {
+      "coplanar_overlapping_pairs_total": 0,
+      "degenerate_faces_total": 0,
+      "exact_duplicate_faces_total": 0,
+      "floating_slab_candidates": [],
+      "floating_slab_count": 0,
+      "objects_checked": 3,
+      "per_object": [
+        {
+          "faces": 0,
+          "object": "Elevator0",
+          "reason": "no vertices",
+          "skipped": true
+        },
+        {
+          "faces": 0,
+          "object": "Elevator1",
+          "reason": "no vertices",
+          "skipped": true
+        },
+        {
+          "coplanar_overlapping_pairs": 0,
+          "exact_duplicate_faces": 0,
+          "faces": 17,
+          "object": "SurfaceArea2",
+          "skipped": false
+        }
+      ],
+      "verdict": "PASS"
+    }
+  },
+  "generated_at": "2026-08-04T18:56:33.491397+00:00",
+  "run_id": "20260804T185517Z",
+  "tools": {
+    "blender_fbx": {
+      "blender_exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+      "blender_exe_hash": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "command_line": [
+        "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+        "--background",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\blender_convert.py",
+        "--",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.blender_manifest.json"
+      ],
+      "conversion_script": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\blender_convert.py",
+      "duration_sec": 4.578,
+      "end_time": "2026-08-04T20:56:29.417382",
+      "exception": "",
+      "exit_code": 0,
+      "input_hash": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+      "input_obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+      "manifest": {
+        "blender_build_commit_time": "08:52",
+        "blender_version": "4.3.0",
+        "export_operator": "export_scene.fbx",
+        "export_options": {
+          "add_leaf_bones": false,
+          "apply_scale_options": "FBX_SCALE_NONE",
+          "apply_unit_scale": true,
+          "armature_nodetype": "NULL",
+          "axis_forward": "-Z",
+          "axis_up": "Y",
+          "bake_anim": false,
+          "batch_mode": "OFF",
+          "embed_textures": false,
+          "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "global_scale": 1.0,
+          "mesh_smooth_type": "OFF",
+          "object_types": [
+            "ARMATURE",
+            "EMPTY",
+            "MESH"
+          ],
+          "path_mode": "AUTO",
+          "primary_bone_axis": "Y",
+          "secondary_bone_axis": "X",
+          "use_custom_props": false,
+          "use_mesh_edges": false,
+          "use_mesh_modifiers": true,
+          "use_selection": false,
+          "use_tspace": false
+        },
+        "fbx_format": "binary",
+        "fbx_header": "Kaydara FBX Binary",
+        "fbx_signature": "Kaydara FBX Binary",
+        "fbx_version": "FBX binary int=7400",
+        "fbx_version_int": 7400,
+        "images_total": 0,
+        "import_operator": "wm.obj_import",
+        "import_options": {
+          "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj"
+        },
+        "input_obj_hash": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+        "materials_total": 1,
+        "objects": [
+          {
+            "bounds": [
+              [
+                124.092003,
+                0.0,
+                256.535004
+              ],
+              [
+                124.092003,
+                0.0,
+                310.165985
+              ],
+              [
+                124.092003,
+                0.0,
+                310.165985
+              ],
+              [
+                124.092003,
+                0.0,
+                256.535004
+              ],
+              [
+                156.761993,
+                0.0,
+                256.535004
+              ],
+              [
+                156.761993,
+                0.0,
+                310.165985
+              ],
+              [
+                156.761993,
+                0.0,
+                310.165985
+              ],
+              [
+                156.761993,
+                0.0,
+                256.535004
+              ]
+            ],
+            "faces": 17,
+            "materials": [
+              "MAT_0_0"
+            ],
+            "name": "SurfaceArea2",
+            "type": "MESH",
+            "uv_layers": 0,
+            "vertices": 19
+          }
+        ],
+        "objects_total": 1,
+        "output_fbx_hash": "96a18cc8b369b868b980be3dd10a5c5cfcbec1f55150155a3afbb5d7344573dd",
+        "scene_unit_scale": 1.0,
+        "scene_unit_system": "METRIC"
+      },
+      "output_fbx": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+      "output_hash": "96a18cc8b369b868b980be3dd10a5c5cfcbec1f55150155a3afbb5d7344573dd",
+      "reason": "Converted to FBX (0.01 MB)",
+      "script_hash": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "start_time": "2026-08-04T20:56:24.839148",
+      "status": "ok",
+      "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\blender_stderr.log",
+      "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\blender_stdout.log"
+    },
+    "clip": {
+      "bytes": 773744,
+      "clip_method": "verbatim deep-copy of in-window elements (dynsax-safe)",
+      "nodes": 4670,
+      "relations": 0,
+      "source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "source_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "ways": 1225,
+      "window_wgs84": {
+        "lat_max": 48.75835306894997,
+        "lat_min": 48.74032693105002,
+        "lon_max": 11.446091429059045,
+        "lon_min": 11.418828570940956
+      }
+    },
+    "determinism": {
+      "byte_identical": true,
+      "face_counts_equal": true,
+      "object_names_equal": true,
+      "objects": 3,
+      "sha256_a": "88d153348f004537",
+      "sha256_b": "88d153348f004537",
+      "verdict": "DETERMINISTIC",
+      "vertex_counts_equal": true
+    },
+    "osm2world": {
+      "abs_config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties",
+      "abs_osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+      "attempts": [
+        {
+          "command_line": [
+            "java",
+            "-jar",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+            "convert",
+            "-i",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+            "-o",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+            "--config",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties"
+          ],
+          "exit_code": 0,
+          "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+          "stderr_head": "ERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+          "stdout_head": "",
+          "variant": 1
+        },
+        {
+          "command_line": [
+            "java",
+            "-jar",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+            "convert",
+            "-i",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+            "-o",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+            "--config",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties"
+          ],
+          "exit_code": 0,
+          "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+          "stderr_head": "ERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+          "stdout_head": "",
+          "variant": 1
+        },
+        {
+          "command_line": [
+            "java",
+            "-jar",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+            "convert",
+            "-i",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+            "-o",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+            "--config",
+            "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties"
+          ],
+          "exit_code": 0,
+          "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "stderr_head": "ERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+          "stdout_head": "",
+          "variant": 1
+        }
+      ],
+      "cache_key": "c695cc3e0bf6513b",
+      "command_lines": [
+        [
+          "java",
+          "-jar",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+          "convert",
+          "-i",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+          "-o",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+          "--config",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties"
+        ],
+        [
+          "java",
+          "-jar",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+          "convert",
+          "-i",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+          "-o",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+          "--config",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties"
+        ],
+        [
+          "java",
+          "-jar",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+          "convert",
+          "-i",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\window_osm.osm",
+          "-o",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "--config",
+          "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties"
+        ]
+      ],
+      "config_hash": "6b092dd52e96037925554804d5264a6380144934adf5ba1905f164bc6c20a942",
+      "config_header_hex": "23204f534d32576f",
+      "config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world.properties",
+      "duration_sec": 24.558,
+      "end_time": "2026-08-04T20:55:45.484660",
+      "exception": "",
+      "exit_codes": {
+        "preview.png": 0,
+        "scene.glb": 0,
+        "scene.obj": 0
+      },
+      "glb_valid": true,
+      "glb_validation_reason": "GLB header valid",
+      "hashes": {
+        "config": "6b092dd52e96037925554804d5264a6380144934adf5ba1905f164bc6c20a942",
+        "input_osm": "e580e45fcd2bd49aa33e4c679d6ff680ec7fc988a729975331f2e057480ca9b9",
+        "preview.png": "4e402c0f87fa8909427b6319018f0387e75afd8a582acd2e8f1dacc0b788a831",
+        "scene.glb": "bfe23958d2e530c7107044cea8adbe3bde06667dad7534d30fe2708145f333af",
+        "scene.obj": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b"
+      },
+      "input_osm_hash": "e580e45fcd2bd49aa33e4c679d6ff680ec7fc988a729975331f2e057480ca9b9",
+      "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+      "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "osm2world_version": "OSM2World.jar",
+      "outputs": {
+        "preview.png": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+        "scene.glb": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+        "scene.obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj"
+      },
+      "reason": "Generated 3 outputs: scene.obj, preview.png, scene.glb",
+      "start_time": "2026-08-04T20:55:20.926515",
+      "status": "ok",
+      "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world_scene_obj_stderr.log",
+      "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T185517Z\\artifacts\\osm2world_scene_obj_stdout.log",
+      "successful_variant": 1,
+      "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin"
+    }
+  },
+  "verdict": "J1_PASS; J4_OK; J5_ALIGNED; J7_PASS; J8_PASS; J6_PASS"
+}
