@@ -1,0 +1,39 @@
+{
+  "checked_at_utc": "2026-08-01T13:29:45.943721+00:00",
+  "connector_count": 22816,
+  "dry_run_invariant_report": {
+    "defaults": {
+      "default_width_m": 3.5,
+      "lane_types": [
+        "driving",
+        "shoulder",
+        "sidewalk",
+        "border",
+        "parking",
+        "biking",
+        "restricted",
+        "none"
+      ]
+    },
+    "examples": [],
+    "ok": true,
+    "severity": "pass",
+    "totals": {
+      "missing_width_lanes_fixed": 0,
+      "missing_width_lanes_found": 0,
+      "missing_width_lanes_unfixed": 0
+    }
+  },
+  "junction_count": 3646,
+  "lane_width_missing": 0,
+  "lane_width_warnings": {
+    "examples": [],
+    "missing_width_lane_count": 0,
+    "restricted_or_none_missing_width_road_ids": []
+  },
+  "ok": true,
+  "parse_error": null,
+  "road_count": 32710,
+  "schema": "verify_final_xodr_v1",
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_1_epsg32632_header_pinned.xodr"
+}

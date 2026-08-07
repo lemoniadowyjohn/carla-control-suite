@@ -1,0 +1,13 @@
+road_id,junction_id,status,source_geom_count,dest_geom_count,classification,reason
+50003,131,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+51425,1701,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+51646,1087,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+52738,1407,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+54261,1259,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+56874,646,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+57300,1857,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+58404,237,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+62170,2436,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+66369,3004,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+68135,2965,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"
+69106,3476,MODIFIED,1,1,SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY,"Zero-length sole geometry repaired: length=0.00000000 -> 0.10000000, road_length=0.10000000"

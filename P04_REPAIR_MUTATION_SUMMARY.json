@@ -1,0 +1,16 @@
+{
+  "source_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "repaired_sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+  "source_road_count": 32710,
+  "repaired_road_count": 32710,
+  "changed_road_count": 12,
+  "classifications": {
+    "SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY": 12
+  },
+  "total_geom_changes": 12,
+  "nonzero_length_changes": 0,
+  "s_x_y_hdg_changes": 0,
+  "primitive_changes": 0,
+  "road_length_changes": 0,
+  "lane_link_elevation_signal_junction_changes": 0
+}
