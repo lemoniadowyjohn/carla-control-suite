@@ -1,0 +1,50 @@
+{
+  "run_id": "20260807T000000Z",
+  "stage": "P-Q",
+  "producer": "final_release_closure",
+  "generated_at_utc": "2026-08-07T00:00:00Z",
+  "overall_verdict": "Q_RELEASE_HOLD_LIVE_RUNTIME_REQUIRED",
+  "offline_gates": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "PASS",
+    "E": "PASS",
+    "F": "PASS",
+    "G": "SEMANTIC_CONTENT_PARTIAL",
+    "H": "H_GOVERNED_PAYLOAD_EXACT",
+    "I": "PACKAGED_MAP_EVIDENCE_PRODUCED"
+  },
+  "live_gates": {
+    "J": "BLOCKED_SERVER_UNAVAILABLE",
+    "K": "BLOCKED_SERVER_UNAVAILABLE",
+    "L": "BLOCKED_SERVER_UNAVAILABLE",
+    "M": "BLOCKED_SERVER_UNAVAILABLE",
+    "N": "BLOCKED_SERVER_UNAVAILABLE",
+    "Q": "Q_RELEASE_BLOCKED_SERVER_UNAVAILABLE"
+  },
+  "governed_payload": {
+    "sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+    "coordinate_contract_pass": true,
+    "release_verifier_ok": true,
+    "load_call": "load_opendrive_world(..., governed_payload_sha256='3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4')"
+  },
+  "residual_perception_blockers": {
+    "crosswalk_objects": {"osm_authority": 174, "packaged": 0, "disposition": "SEMANTIC_CONTENT_MISSING"},
+    "pedestrian_lanes": {"osm_authority": 78, "packaged": 0, "disposition": "SEMANTIC_CONTENT_MISSING"}
+  },
+  "server_required": {
+    "host": "127.0.0.1",
+    "port": 2000,
+    "present": false,
+    "reason": "No CarlaUE4 executable on PATH or disk; CARLA_ROOT unset."
+  },
+  "hash_chain": {
+    "repaired_candidate_raw_bytes": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+    "repaired_candidate_lf_text": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
+    "enriched_candidate_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+    "governed_payload": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+    "runtime_to_opendrive": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80"
+  },
+  "release_hold_reason": "Live verification gates (J-N) blocked by missing CARLA server binary (unavailable tool per shared contract). Release held until a server is available to execute J-N end-to-end; governed payload is ready for release-mode byte-exact load."
+}
