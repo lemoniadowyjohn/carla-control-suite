@@ -1,106 +1,89 @@
-#!/usr/bin/env python3
-"""
-Map identity guard for thesis validity.
-
-Prevents silent Town fallback when custom OpenDRIVE should be loaded.
-Gate: UP_THESIS_STRICT=1 enables hard stop on Town detection.
-"""
 from __future__ import annotations
 
 import json
 import os
-import logging
-from typing import Any, Dict, Optional
+from pathlib import Path
+from typing import Any
 
-log = logging.getLogger(__name__)
+
+STRICT_ENV = "UP_THESIS_STRICT"
+
+
+def _strict_from_env() -> bool:
+    return os.getenv(STRICT_ENV, "") == "1"
+
+
+def _map_name(world: Any) -> str:
+    carla_map = world.get_map()
+    name = getattr(carla_map, "name", None)
+    if not isinstance(name, str) or not name.strip():
+        return "unknown"
+    return name.strip()
+
+
+def is_town_fallback(map_name: str) -> bool:
+    normalized = map_name.replace("\\", "/")
+    leaf = normalized.rsplit("/", 1)[-1]
+    return leaf.startswith("Town") or "/Town" in normalized
 
 
 def validate_world_map(
     world: Any,
     *,
-    expected_substring: Optional[str] = None,
-    strict: Optional[bool] = None,
-) -> Dict[str, Any]:
-    """
-    Validate loaded CARLA world map identity.
-
-    Args:
-        world: carla.World instance
-        expected_substring: Optional substring that map name must contain
-        strict: Override for UP_THESIS_STRICT (default: read from env)
-
-    Returns:
-        Dict with validation result and provenance fields (JSON-safe)
-
-    Raises:
-        RuntimeError: If strict mode and map is a default Town
-    """
+    expected_substring: str | None = None,
+    expected_map_name: str | None = None,
+    strict: bool | None = None,
+) -> dict[str, Any]:
     if strict is None:
-        strict = os.getenv("UP_THESIS_STRICT", "") == "1"
+        strict = _strict_from_env()
 
-    result: Dict[str, Any] = {
-        "thesis_strict_enabled": strict,
-        "world_map_name": None,
+    result: dict[str, Any] = {
+        "expected_map_name": expected_map_name,
+        "expected_substring": expected_substring,
         "is_town_fallback": False,
+        "strict_enabled": strict,
         "validation_passed": False,
+        "world_map_name": None,
         "error": None,
     }
 
     try:
-        carla_map = world.get_map()
-        map_name = carla_map.name if carla_map else "unknown"
-        result["world_map_name"] = map_name
+        map_name = _map_name(world)
+    except Exception as exc:
+        result["error"] = f"failed to read CARLA map identity: {exc}"
+        if strict:
+            raise RuntimeError(result["error"]) from exc
+        return result
 
-        # Detect Town fallback (default CARLA maps)
-        is_town = (
-            map_name.startswith("Town")
-            or map_name.startswith("/Game/Carla/Maps/Town")
-            or "/Town" in map_name
-        )
-        result["is_town_fallback"] = is_town
+    result["world_map_name"] = map_name
+    result["is_town_fallback"] = is_town_fallback(map_name)
 
-        if is_town and strict:
-            err = (
-                f"HARD STOP: CARLA loaded default map '{map_name}' instead of custom OpenDRIVE. "
-                f"This invalidates thesis metrics. Disable with UP_THESIS_STRICT=0."
-            )
-            result["error"] = err
-            log.error(err)
-            raise RuntimeError(err)
+    failures: list[str] = []
+    if result["is_town_fallback"]:
+        failures.append(f"CARLA loaded default Town map {map_name!r}")
+    if expected_map_name is not None and map_name != expected_map_name:
+        failures.append(f"map name {map_name!r} does not match expected {expected_map_name!r}")
+    if expected_substring is not None and expected_substring not in map_name:
+        failures.append(f"map name {map_name!r} does not contain {expected_substring!r}")
 
-        if is_town:
-            log.warning(
-                "CARLA loaded Town map '%s'. If custom OpenDRIVE was expected, "
-                "set UP_THESIS_STRICT=1 to enforce.",
-                map_name,
-            )
+    if failures:
+        result["error"] = "; ".join(failures)
+        if strict:
+            raise RuntimeError(result["error"])
+        return result
 
-        # Optional: check expected substring
-        if expected_substring and expected_substring not in map_name:
-            msg = f"Map name '{map_name}' does not contain expected '{expected_substring}'"
-            if strict:
-                result["error"] = msg
-                log.error(msg)
-                raise RuntimeError(msg)
-            log.warning(msg)
-
-        substring_ok = (expected_substring is None) or (expected_substring in map_name)
-        result["validation_passed"] = (not is_town) and substring_ok
-        log.info("World map identity: %s (strict=%s)", map_name, strict)
-
-    except RuntimeError:
-        raise
-    except Exception as e:
-        result["error"] = str(e)
-        log.warning("Map identity check failed: %s", e)
-
+    result["validation_passed"] = True
     return result
 
 
-def save_map_identity(result: Dict[str, Any], path: str) -> None:
-    """Save map identity result to JSON file."""
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2, sort_keys=True, ensure_ascii=True)
-    except Exception as e:
-        log.warning("Failed to save map identity to %s: %s", path, e)
+def save_map_identity(result: dict[str, Any], path: str | Path) -> Path:
+    output = Path(path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(result, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    return output
+
+
+__all__ = ["STRICT_ENV", "is_town_fallback", "save_map_identity", "validate_world_map"]

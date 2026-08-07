@@ -12,7 +12,7 @@ Fail-fast steps:
   4) preflight_xodr_loadability
 
 Best-effort steps:
-  5) load_final_into_carla (runtime load attempt)
+  5) start_carla_load_xodr (runtime load attempt)
   6) carla_screenshot_once (optional)
   7) run_perception_pair (optional; requires manual town + calib)
 """
@@ -180,20 +180,31 @@ def main() -> int:
     index["artifacts"]["preflight_report"] = str(preflight_out / "preflight_report.json")
 
     # ---- Step 5 (best-effort): runtime load attempt ----
-    if _have_module("ultimate_pipeline.tools.load_final_into_carla"):
-        # NOTE: this tool expects positional xodr path and hardcodes 127.0.0.1:2000 internally.
+    if _have_module("ultimate_pipeline.tools.start_carla_load_xodr"):
         steps.append(
             _run_step(
-                name="05_load_final_into_carla",
-                cmd=[sys.executable, "-m", "ultimate_pipeline.tools.load_final_into_carla", str(xodr)],
+                name="05_start_carla_load_xodr",
+                cmd=[
+                    sys.executable,
+                    "-m",
+                    "ultimate_pipeline.tools.start_carla_load_xodr",
+                    "--xodr",
+                    str(xodr),
+                    "--host",
+                    args.host,
+                    "--port",
+                    str(args.port),
+                    "--wait-s",
+                    "5.0",
+                ],
                 out_dir=out_dir,
                 env=env,
                 fail_fast=False,
             )
         )
-        index["artifacts"]["carla_load_attempt"] = str(out_dir / "05_load_final_into_carla.log")
+        index["artifacts"]["carla_load_attempt"] = str(out_dir / "05_start_carla_load_xodr.log")
     else:
-        index["notes"].append("SKIP: ultimate_pipeline.tools.load_final_into_carla not found")
+        index["notes"].append("SKIP: ultimate_pipeline.tools.start_carla_load_xodr not found")
 
     # ---- Step 6 (best-effort): screenshot_once ----
     if args.run_screenshot and _have_module("ultimate_pipeline.tools.carla_screenshot_once"):

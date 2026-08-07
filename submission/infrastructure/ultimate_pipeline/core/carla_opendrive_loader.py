@@ -6,11 +6,43 @@ from pathlib import Path
 from typing import Optional, Sequence, TYPE_CHECKING
 
 import importlib
+import xml.etree.ElementTree as ET
 
 _CARLA = None
 
 if TYPE_CHECKING:
     import carla
+
+
+class CarlaOpendrivePreflightError(RuntimeError):
+    """Raised when XODR preflight validation fails before CARLA is touched."""
+
+
+def _preflight_xodr(xodr_text: str, source_sha256: str) -> None:
+    """Run the strict CARLA-compatibility gate on XODR text before any CARLA call.
+
+    A deterministic preflight error must:
+    - not be retried;
+    - not start CARLA map generation;
+    - not fall back to Town10HD_Opt;
+    - not be converted into a generic timeout.
+    """
+    try:
+        root = ET.fromstring(xodr_text)
+    except ET.ParseError as exc:
+        raise CarlaOpendrivePreflightError(
+            f"XODR preflight failed: XML parse error (source_sha256={source_sha256}): {exc}"
+        ) from exc
+
+    from ultimate_pipeline.quality.check_carla_opendrive_compat import StrictCarlaOpendriveGate
+
+    issues = StrictCarlaOpendriveGate.validate(root)
+    fatal = [i for i in issues if i.get("severity") == "error"]
+    if fatal:
+        codes = "; ".join(f"{i['code']}: {i['message']}" for i in fatal[:5])
+        raise CarlaOpendrivePreflightError(
+            f"XODR preflight failed: {len(fatal)} fatal issue(s) (source_sha256={source_sha256}): {codes}"
+        )
 
 
 def _lazy_carla():
@@ -244,11 +276,32 @@ def load_opendrive_world(
     fallback_enabled: Optional[bool] = None,
     fallback_maps: Optional[Sequence[str]] = None,
     fallback_timeout_s: float = 60.0,
+    source_sha256: str = "",
+    governed_payload_sha256: str = "",
 ) -> carla.World:
-    """Robust OpenDRIVE load with optional built-in map fallback."""
+    """Robust OpenDRIVE load with optional built-in map fallback.
+
+    ``governed_payload_sha256`` enables release mode (Q4): the supplied
+    ``xodr_text`` must be byte-identical to the governed load-payload
+    artifact.  Any runtime-only transformation (in-memory re-normalization)
+    is then forbidden and raises before CARLA is touched.
+    """
+    # Preflight: validate XODR before any CARLA interaction.
+    _preflight_xodr(xodr_text, source_sha256=source_sha256)
+
     # Always start with a long timeout for real work.
     client.set_timeout(float(timeout_s))
-    xodr_text = _normalize_georef_in_xodr_text(xodr_text)
+    if governed_payload_sha256:
+        import hashlib
+        actual_sha = hashlib.sha256(xodr_text.encode("utf-8")).hexdigest()
+        if actual_sha != governed_payload_sha256:
+            raise RuntimeError(
+                "release_mode_governed_payload_mismatch: input byte sha256={} != "
+                "governed payload {}; no runtime-only transformation is permitted "
+                "in release mode.".format(actual_sha, governed_payload_sha256)
+            )
+    else:
+        xodr_text = _normalize_georef_in_xodr_text(xodr_text)
     ready_timeout_s = _resolve_ready_timeout_s(ready_timeout_s)
 
     last_exc: Optional[BaseException] = None
@@ -359,12 +412,17 @@ def load_opendrive_world_from_file(
     timeout_s: float = 180.0,
     retries: int = 2,
     do_reload: bool = True,
-    fallback_enabled: Optional[bool] = None,
+fallback_enabled: Optional[bool] = None,
     fallback_maps: Optional[Sequence[str]] = None,
+    source_sha256: str = "",
+    governed_payload_sha256: str = "",
 ) -> carla.World:
     """Convenience wrapper around `load_opendrive_world` for .xodr files."""
     xodr_path = Path(xodr_path)
     xodr_text = xodr_path.read_text(encoding="utf-8", errors="ignore")
+    if not source_sha256:
+        import hashlib
+        source_sha256 = hashlib.sha256(xodr_text.encode("utf-8")).hexdigest()
     return load_opendrive_world(
         client,
         xodr_text,
@@ -372,8 +430,11 @@ def load_opendrive_world_from_file(
         timeout_s=timeout_s,
         retries=retries,
         do_reload=do_reload,
+        ready_timeout_s=ready_timeout_s,
         fallback_enabled=fallback_enabled,
         fallback_maps=fallback_maps,
+        source_sha256=source_sha256,
+        governed_payload_sha256=governed_payload_sha256,
     )
 
 
