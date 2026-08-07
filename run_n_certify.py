@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+"""
+Phase N certification against corrected Phase L evidence.
+
+This program now delegates ALL verdict logic to the independently validated
+engine in ``phase_q.certifier_decision.assess`` (Q1).  It never hardcodes a
+gate status; every gate is a predicate over evidence.  It also records Q0
+provenance at the start of the run (Q00/Q01/Q02).
+
+Read-only: consumes evidence files, writes reports under
+reports/post_audit_hardening/{RUN_ID}_N_CERTIFICATION/.
+"""
+from __future__ import annotations
+
+import json
+import os
+from datetime import datetime, timezone
+
+from phase_q.common import PROJECT_ROOT, make_run_id, save_json, save_text, sha256_file
+from phase_q.certifier_decision import assess
+from phase_q.semantic_policy import (
+    PROFILE_PERCEPTION_RELEASE,
+    PROFILE_PACKAGED_MAP,
+    PROFILE_STRUCTURAL_XODR,
+)
+
+BASE = "reports/post_audit_hardening"
+RUN_ID = make_run_id()
+OUT_DIR = os.path.join(BASE, "{}_N_CERTIFICATION".format(RUN_ID))
+
+PHASE_L_EVIDENCE_DIR = os.path.join(BASE, "20260805T122525Z")
+P4_EVIDENCE_DIR = os.path.join(BASE, "20260805T115947Z_P4_RUNTIME_EQUIVALENCE")
+
+PROFILES = {
+    "structural": PROFILE_STRUCTURAL_XODR,
+    "packaged": PROFILE_PACKAGED_MAP,
+    "perception": PROFILE_PERCEPTION_RELEASE,
+}
+
+
+def _load_json(rel):
+    with open(rel, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def build_bundle(args):
+    """Assemble the evidence bundle exactly as the engine consumes it."""
+    l = {}
+    names = (
+        "L1_carla_preflight.json", "L2_map_identity.json", "L3_parser_logs.json",
+        "L4_alignment.json", "L5_visual_regression.json", "L6_waypoint_topology.json",
+        "L7_drivability.json", "L8_signal_validation.json", "L9_sensor_validation.json",
+        "L10_performance.json", "L11_old_vs_new.json", "L12_protected_hashes.json",
+        "PHASE_L_RUNTIME_VALIDATION.json",
+    )
+    for fn in names:
+        l[fn] = _load_json(os.path.join(PHASE_L_EVIDENCE_DIR, fn))
+    p4 = _load_json(os.path.join(P4_EVIDENCE_DIR, "P04_RAW_RUNTIME_EVIDENCE.json"))
+    stage7 = _load_json("_stage7_acceptance_results.json")
+    p1 = _load_json("P04_REPAIR_MUTATION_SUMMARY.json")
+
+    l2 = l["L2_map_identity.json"]
+    l4 = l["L4_alignment.json"]
+    l7 = l["L7_drivability.json"]
+    l9 = l["L9_sensor_validation.json"]
+    l10 = l["L10_performance.json"]
+    l11 = l["L11_old_vs_new.json"]
+    l1 = l["L1_carla_preflight.json"]
+
+    semantic_counts = {}
+    semantic_counts_file = args.get("semantic_counts")
+    if semantic_counts_file and os.path.exists(semantic_counts_file):
+        with open(semantic_counts_file, "r", encoding="utf-8") as f:
+            semantic_counts = json.load(f)
+
+    combined = l["PHASE_L_RUNTIME_VALIDATION.json"]
+    bundle = {
+        "provenance": {},
+        "run_manifest": {
+            "run_id": combined.get("run_id"),
+            "commit": combined.get("commit"),
+            "branch": combined.get("branch"),
+        },
+        "config": {
+            "expected_run_id": args.get("expected_run_id") or combined.get("run_id"),
+            "profile": args.get("profile"),
+        },
+        "map": {"name": l2.get("map_name")},
+        "l2": l2,
+        "l4": l4,
+        "l7": l7,
+        "l9": l9,
+        "l10": l10,
+        "l11": l11,
+        "p4": p4,
+        "stage7": stage7,
+        "p1": p1,
+        "semantic_equiv": {"verdict": "SEMANTIC_EQUIVALENCE_PENDING"},
+        "semantic_counts": semantic_counts,
+        "evidence_manifest": {},
+    }
+    return bundle
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Phase N certification (governed)")
+    parser.add_argument("--profile", choices=sorted(PROFILES.keys()),
+                        default="perception")
+    parser.add_argument("--semantic-counts", default=None,
+                        help="JSON with per-category semantic counts/dispositions")
+    args_p = parser.parse_args()
+    profile = PROFILES[args_p.profile]
+    bundle = build_bundle({"profile": args_p.profile,
+                           "semantic_counts": args_p.semantic_counts,
+                           "expected_run_id": None})
+
+    # Q0 - provenance capture (offline, git-based)
+    from phase_q import provenance as prov
+    os.makedirs(OUT_DIR, exist_ok=True)
+    prov_q = prov.write_q0_outputs(OUT_DIR)
+    bundle["provenance"] = prov.capture_worktree_provenance()
+
+    result = assess(bundle, {
+        "profile": profile,
+        "expected_run_id": bundle["config"]["expected_run_id"],
+    })
+
+    _write("N0_PHASE_L_EVIDENCE_AUDIT.json", {
+        "run_id": RUN_ID,
+        "audit_timestamp": datetime.now(timezone.utc).isoformat(),
+        "phase_l_verdict": bundle["run_manifest"]["commit"],
+        "verdict": result["verdict"],
+        "rejections": result["rejections"],
+    })
+    _write("N18_FINAL_RELEASE_VERDICT.json", {
+        "run_id": RUN_ID,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "profile": result["profile"],
+        "verdict": result["verdict"],
+        "gate_summary": result["summary"],
+        "gate_results": result["gates"],
+        "rejections": result["rejections"],
+    })
+    _write("N00_GATE_MATRIX.json",
+           {"run_id": RUN_ID, "profile": result["profile"], "gates": result["gates"]})
+    _write("G00_GATE_MATRIX.md", md_gate_matrix(result["gates"]))
+    _write("N00_EXECUTIVE_SUMMARY.md", executive_summary(result))
+    _write("PHASE_N_Q1_RELATED_PROVENANCE.json", prov_q)
+
+    _write("EVIDENCE_MANIFEST.json", build_evidence_manifest())
+
+    print("Phase N certification written to: {}".format(OUT_DIR))
+    print("Profile: {}".format(result["profile"]))
+    print("Verdict: {}".format(result["verdict"]))
+    print("Gate summary: {}".format(result["summary"]))
+
+
+def md_gate_matrix(gates):
+    lines = ["# Phase N Gate Matrix (governed)", "",
+             "| Gate | Status | Evidence |", "|------|--------|----------|"]
+    for k, v in gates.items():
+        lines.append("| {} | {} | {} |".format(k, v["status"], v["evidence"]))
+    return "\n".join(lines)
+
+
+def executive_summary(result):
+    lines = [
+        "# Phase N Certification - Summary",
+        "",
+        "**Run ID:** {}".format(RUN_ID),
+        "**Profile:** {}".format(result["profile"]),
+        "**Engine verdict:** {}".format(result["verdict"]),
+        "",
+        "Gate pass: {} / {}  \nRejections: {}".format(
+            result["summary"]["passed"],
+            int(result["summary"]["passed"]) + int(result["summary"]["failed"]),
+            len(result["rejections"])),
+        "",
+    ]
+    for r in result["rejections"]:
+        lines.append("- `{}` {}".format(r["code"], r["reason"]))
+    lines.append("")
+    lines.append("Evidence provenance: {}".format(PHASE_L_EVIDENCE_DIR))
+    return "\n".join(lines)
+
+
+def _write(rel, payload):
+    path = os.path.join(OUT_DIR, rel)
+    os.makedirs(OUT_DIR, exist_ok=True)
+    if isinstance(payload, (dict, list)):
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, default=str)
+    else:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(payload)
+    return path
+
+
+def build_evidence_manifest():
+    entries = []
+    for root, _, files in os.walk(OUT_DIR):
+        for fn in files:
+            if fn.lower().endswith((".json", ".md", ".csv")):
+                p = os.path.join(root, fn)
+                rel = os.path.relpath(p, OUT_DIR)
+                entries.append({"path": rel, "size_bytes": os.path.getsize(p),
+                                "sha256": sha256_file(p)})
+    entries.sort(key=lambda e: e["path"])
+    return {"run_id": RUN_ID, "generated_at": datetime.now(timezone.utc).isoformat(),
+            "scope": "run-local", "entries": entries}
+
+
+if __name__ == "__main__":
+    main()
