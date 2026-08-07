@@ -1,0 +1,75 @@
+{
+  "counters": {
+    "ambiguous": 1671,
+    "legacy_speed_removed": 52071,
+    "matched": 2589,
+    "matched_roads": 4314,
+    "requested": {
+      "controller": 0,
+      "speed_limit": 4333,
+      "turn_lanes": 333,
+      "zone_sign": 318
+    },
+    "speed_limits": {
+      "conflicts_rejected": 40,
+      "roads_updated": 3309,
+      "signals_inserted": 3309,
+      "skipped_existing": 0,
+      "speeds_inserted": 3771
+    },
+    "turn_lanes": {
+      "rejected_lane_mismatch": 29,
+      "roads_updated": 212,
+      "skipped_existing": 11
+    },
+    "unmapped": 724,
+    "zone_signs": {
+      "roads_updated": 158,
+      "signals_inserted": 158,
+      "skipped_duplicate": 2,
+      "skipped_existing": 0,
+      "skipped_unprovenanced": 0,
+      "speeds_inserted": 57
+    }
+  },
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "generated_at_utc": "2026-08-07T19:49:36.593631+00:00",
+  "h_replay_verdict": "PHASE_H_REPLAY_PASS",
+  "idempotent": true,
+  "integrity": {
+    "duplicate_ids": 0,
+    "duplicate_spatial": 0,
+    "invalid_validity": 0,
+    "missing_provenance": 0,
+    "non_governed_prefix": 0,
+    "out_of_s": 0,
+    "out_of_t": 0,
+    "unknown_subtype": 0,
+    "unknown_type": 0,
+    "unresolved_refs": 0
+  },
+  "integrity_clean": true,
+  "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr",
+  "output_sha256": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+  "parent": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_fixed_final.xodr",
+  "parent_sha256": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
+  "producer": "replay_phase_h_on_repaired.py",
+  "run_id": "20260807T000000Z",
+  "semantic_inventory": {
+    "controllers": 0,
+    "crosswalk_objects": 0,
+    "lane_change_permissions": 0,
+    "objects": 0,
+    "pedestrian_lanes": 0,
+    "road_markings": 84781,
+    "road_types": 32710,
+    "semantic_material_classes": 0,
+    "sidewalks": 17392,
+    "signal_references": 0,
+    "signals": 3467,
+    "speed_limits": 0,
+    "stop_yield_controls": 0,
+    "traffic_light_actor_bindings": 0,
+    "turn_lane_semantics": 32040
+  }
+}

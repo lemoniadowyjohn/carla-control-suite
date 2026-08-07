@@ -1,0 +1,115 @@
+{
+  "artifacts": {
+    "phase_h_accepted": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T050000Z\\candidate_h_signal_enrichment.xodr",
+    "repaired_candidate": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_fixed_final.xodr",
+    "replayed_enriched_candidate": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr"
+  },
+  "equivalence_enriched_vs_phase_h": {
+    "total_difference_ids": 0,
+    "verdict": "SEMANTIC_EQUIVALENCE_PASS"
+  },
+  "generated_at_utc": "2026-08-07T19:52:06.804805+00:00",
+  "inventory": {
+    "phase_h_accepted": {
+      "controllers": 0,
+      "crosswalk_objects": 0,
+      "lane_change_permissions": 0,
+      "objects": 0,
+      "pedestrian_lanes": 0,
+      "road_markings": 84781,
+      "road_types": 32710,
+      "semantic_material_classes": 0,
+      "sidewalks": 17392,
+      "signal_references": 0,
+      "signals": 3467,
+      "speed_limits": 0,
+      "stop_yield_controls": 0,
+      "traffic_light_actor_bindings": 0,
+      "turn_lane_semantics": 32040
+    },
+    "repaired_candidate": {
+      "controllers": 0,
+      "crosswalk_objects": 0,
+      "lane_change_permissions": 0,
+      "objects": 0,
+      "pedestrian_lanes": 0,
+      "road_markings": 84781,
+      "road_types": 32710,
+      "semantic_material_classes": 0,
+      "sidewalks": 17392,
+      "signal_references": 0,
+      "signals": 0,
+      "speed_limits": 0,
+      "stop_yield_controls": 0,
+      "traffic_light_actor_bindings": 0,
+      "turn_lane_semantics": 32040
+    },
+    "replayed_enriched": {
+      "controllers": 0,
+      "crosswalk_objects": 0,
+      "lane_change_permissions": 0,
+      "objects": 0,
+      "pedestrian_lanes": 0,
+      "road_markings": 84781,
+      "road_types": 32710,
+      "semantic_material_classes": 0,
+      "sidewalks": 17392,
+      "signal_references": 0,
+      "signals": 3467,
+      "speed_limits": 0,
+      "stop_yield_controls": 0,
+      "traffic_light_actor_bindings": 0,
+      "turn_lane_semantics": 32040
+    }
+  },
+  "osm_authority_counts": {
+    "crossing_nodes": 0,
+    "crosswalk_footways": 174,
+    "give_way_nodes": 0,
+    "maxspeed_ways": 4350,
+    "pedestrian_ways": 78,
+    "sidewalk_footways": 398,
+    "stop_nodes": 0,
+    "traffic_sign_tag_ways": 529,
+    "traffic_signal_nodes": 0,
+    "turn_lanes_ways": 333
+  },
+  "producer": "reconcile_semantic_completeness.py",
+  "profile_verdicts": {
+    "PACKAGED_MAP": {
+      "failed_categories": [
+        "crosswalk_objects",
+        "pedestrian_lanes"
+      ],
+      "verdict": "FAIL"
+    },
+    "PERCEPTION_RELEASE": {
+      "failed_categories": [
+        "crosswalk_objects",
+        "pedestrian_lanes"
+      ],
+      "verdict": "FAIL"
+    },
+    "STRUCTURAL_XODR": {
+      "failed_categories": [
+        "signal_references",
+        "objects",
+        "crosswalk_objects",
+        "landmarks",
+        "lane_change_permissions",
+        "pedestrian_lanes",
+        "traffic_light_actor_bindings",
+        "semantic_material_classes"
+      ],
+      "verdict": "FAIL"
+    }
+  },
+  "regression_repaired_vs_phase_h": {
+    "signals_missing": 3467
+  },
+  "run_id": "20260807T000000Z",
+  "speed_limit_elements_in_enriched": 3828,
+  "stage_g_verdict": "SEMANTIC_CONTENT_PARTIAL",
+  "turn_lane_userdata_vectors_in_enriched": 212,
+  "zone_signals_in_enriched": 158
+}
