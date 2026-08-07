@@ -1,0 +1,54 @@
+{
+  "run_id": "20260805T141616Z",
+  "timestamp": "2026-08-05T14:16:16.000000+00:00",
+  "phase": "O9_P13",
+  "title": "Loader Program Consolidation",
+  "summary": "Consolidated OpenDRIVE loader entry points onto the canonical loader and identity guards; deprecated redundant/thin or prototype programs.",
+  "canonical_loader": {
+    "module": "ultimate_pipeline.core.carla_opendrive_loader",
+    "functions": [
+      "load_opendrive_world",
+      "load_opendrive_world_from_file",
+      "wait_for_carla_ready",
+      "ensure_world_ticks"
+    ],
+    "hardening": [
+      "StrictCarlaOpendriveGate preflight (_preflight_xodr) before any CARLA call",
+      "built-in town fallback blocked (opendrive_load_fallback_blocked)",
+      "world-tick verification after generation",
+      "short-timeout readiness probe with long-timeout restore"
+    ]
+  },
+  "canonical_identity_guards": [
+    "ultimate_pipeline/core/xodr_hash_gate.py",
+    "ultimate_pipeline/carla_tools/map_identity_guard.py"
+  ],
+  "deprecated": [
+    {
+      "path": "ultimate_pipeline/tools/load_final_into_carla.py",
+      "status": "DEPRECATED",
+      "reason": "Thin wrapper around the canonical loader that hardcoded 127.0.0.1:2000 and used emoji stdout. Now delegates to load_opendrive_world_from_file with fallback disabled; kept for backward compatibility until no callers remain.",
+      "remaining_references": [
+        "ultimate_pipeline/run_full_test.py (docstring only; step 5 switched to start_carla_load_xodr)",
+        "worktrees/ and submission/ snapshot copies (not production callers)"
+      ]
+    },
+    {
+      "path": "reports/post_audit_hardening/20260804T221856Z_O08_LOADER_HARDENING.py",
+      "status": "DEPRECATED",
+      "reason": "One-off hardening prototype whose behavior was ported into the canonical loader + identity guards. Its EXPECTED_CANDIDATE points to the superseded source candidate (ff2a05e7...) rather than the repaired candidate (80ebb005...). Retained only as evidence.",
+      "remaining_references": []
+    }
+  ],
+  "kept_as_canonical_entry_point": {
+    "module": "ultimate_pipeline.tools.start_carla_load_xodr",
+    "reason": "Full-featured CLI (autostart CARLA, configurable host/port/timeout/retries/wait) delegating to load_opendrive_world_from_file with fallback disabled; now the loader used by ultimate_pipeline/run_full_test.py step 5."
+  },
+  "runtime_authority": {
+    "map_name": "Carla/Maps/OpenDriveMap",
+    "repaired_candidate_sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+    "runtime_to_opendrive_sha256": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+    "authority_doc": "reports/post_audit_hardening/20260805T141616Z_O06_RUNTIME_INPUT_AUTHORITY.json"
+  },
+  "verdict": "O9_LOADER_CONSOLIDATION_COMPLETE"
+}

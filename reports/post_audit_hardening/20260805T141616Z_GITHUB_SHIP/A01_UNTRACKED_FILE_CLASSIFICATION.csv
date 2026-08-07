@@ -1,0 +1,679 @@
+path,tracked/untracked,code/evidence/candidate/temp/cache/config,required for reproducibility?,contains secrets?,should commit?,target logical commit,reason
+.githooks/post-checkout,untracked,config,no,no,no,N/A,local githooks template
+.githooks/post-commit,untracked,config,no,no,no,N/A,local githooks template
+.githooks/post-merge,untracked,config,no,no,no,N/A,local githooks template
+.githooks/pre-push,untracked,config,no,no,no,N/A,local githooks template
+.idea/dataSources.local.xml,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/shelf/Uncommitted_changes_before_Checkout_at_14_03_2026_19_32_[Changes]/shelved.patch,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/shelf/Uncommitted_changes_before_Checkout_at_14_03_2026_19_32__Changes_.xml,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/shelf/Uncommitted_changes_before_Merge_at_14_03_2026_19_30_[Changes]/shelved.patch,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/shelf/Uncommitted_changes_before_Merge_at_14_03_2026_19_30__Changes_.xml,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/shelf/Uncommitted_changes_before_Update_at_14_03_2026_19_34_[Changes]/shelved.patch,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/shelf/Uncommitted_changes_before_Update_at_14_03_2026_19_34__Changes_.xml,untracked,cache,no,no,no,N/A,IDE metadata
+.idea/workspace.xml,untracked,cache,no,no,no,N/A,IDE metadata
+P03_REPAIR_MUTATION_LEDGER.csv,untracked,temp,no,no,no,N/A,local/unclassified temp file
+P04_REPAIR_MUTATION_SUMMARY.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+P05_UNEXPECTED_MUTATIONS.csv,untracked,temp,no,no,no,N/A,local/unclassified temp file
+POST_AUDIT_HARDENING_PROMPT.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+_a0_gather.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_p1_repair_audit.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_p4_runtime_evidence.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+_run_p4_equiv.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_stage1_inventory.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+_stage1_inventory.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_stage1b_check_geoms.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_stage5_repair.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_stage5_repair_report.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+_stage7_acceptance.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_stage7_acceptance_results.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+_stage7_gate_check.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_verify_native.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_verify_repair.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+_write_p4_evidence.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+audit_output.zip,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/00_EXECUTIVE_SUMMARY.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/01_REPOSITORY_IDENTITY.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/02_REQUIREMENT_INVENTORY.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/03_AUDIT_PLAN.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/04_REQUIREMENT_RESULTS.jsonl,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/05_REQUIREMENT_RESULTS.csv,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/06_COVERAGE_REPORT.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/07_BLOCKING_ISSUES.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/08_CONTRADICTIONS.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/09_TEST_QUALITY.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/10_PROFILE_RELEASE_MATRIX.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/11_UNVERIFIED_CLAIMS.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/12_NEXT_ACTIONS.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/EVIDENCE_MANIFEST.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/audit_plan.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/phase6_reviewer_B.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/pipeline_quality_audit.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/raport.md,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/requirement_inventory.csv,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/requirement_inventory.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/requirement_inventory_raw.txt,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-01_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-03_04_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-05_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-06_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-07_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-08_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-09_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-10_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-11_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-12_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-13_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+audit_output/worker_shards/SHARD-14_worker_A.json,untracked,temp,no,no,no,N/A,local/unclassified temp file
+campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fixed_final.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+campaigns/ingolstadt_cooked_perception_v1/candidate/verify_final_xodr_report.json,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+carla_governed/OSM2World-latest-bin/OSM2World.jar,untracked,temp,no,no,no,N/A,local/unclassified temp file
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/_normalized_input.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/camera_front.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/carla_screenshot_once_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/carla_screenshot_once_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/carla_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/ego_spawn.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/forward_alignment_diagnostics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/lidar_bev.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/lidar_on_rgb_overlay.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/objects_placed.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/objects_placed.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/pair_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/perception_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/qa_spawn_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/real_u_proxy_metrics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/record_route_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/record_route_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/ego_spawn.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar/00116246.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar/00116247.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar/00116248.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar/00116249.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar/00116250.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar_old/00116246.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar_old/00116247.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar_old/00116248.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar_old/00116249.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/lidar/middle_lidar_old/00116250.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/meta/world_snapshots.jsonl,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/back_left_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/back_left_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/back_left_camera/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/back_right_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/back_right_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/back_right_camera/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/front_left_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/front_left_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/front_left_camera/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/front_right_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/front_right_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/front_right_camera/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/left_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/left_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/right_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/right_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rgb/right_camera/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/rig_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_back_left_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_back_left_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_back_left_camera/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_back_right_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_front_left_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_front_left_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_front_right_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_front_right_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_left_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_right_camera/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/semseg_raw/semseg_right_camera/00116247.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/sensor_transforms.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/thesis_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording/tick_watchdog.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/recording_summary.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/rig_verification.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/scene_readiness_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/screenshot_result.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/screenshots/00116246.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/screenshots/00116248.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/screenshots/camera_front.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/screenshots/lidar_bev.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/spawn_sanity_objects_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/spawn_sanity_objects_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke/write_integrity_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/_normalized_input.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/camera_front.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/carla_screenshot_once_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/carla_screenshot_once_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/carla_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/ego_spawn.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/forward_alignment_diagnostics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/lidar_bev.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/lidar_on_rgb_overlay.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/objects_placed.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/objects_placed.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/pair_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/perception_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/qa_spawn_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/real_u_proxy_metrics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/record_route_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/record_route_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/capture_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/ego_spawn.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116142.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116143.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116144.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116145.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116146.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116147.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116148.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116206.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116207.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116208.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116209.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116210.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116211.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar/00116212.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116142.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116143.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116144.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116145.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116146.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116147.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116148.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116206.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116207.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116208.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116209.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116210.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116211.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/lidar/middle_lidar_old/00116212.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/meta/world_snapshots.jsonl,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116143.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116144.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_left_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116143.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116144.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116146.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/back_right_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116143.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116144.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_left_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116143.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116144.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/front_right_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116143.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116144.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/left_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116143.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116144.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rgb/right_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/rig_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_left_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_left_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_left_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_left_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_right_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_right_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_right_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_back_right_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_left_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_left_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_left_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_left_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_right_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_right_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_right_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_front_right_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_left_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_left_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_left_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_right_camera/00116206.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_right_camera/00116207.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_right_camera/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/semseg_raw/semseg_right_camera/00116209.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/sensor_transforms.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/thesis_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording/tick_watchdog.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/recording_summary.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/rig_verification.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/scene_readiness_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/screenshot_result.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/screenshots/00116142.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/screenshots/00116145.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/screenshots/00116208.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/screenshots/camera_front.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/screenshots/lidar_bev.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/spawn_sanity_objects_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/spawn_sanity_objects_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/timeout_diagnostics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_pre_semseg_fix_20260309_2058/write_integrity_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/_normalized_input.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/camera_front.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/carla_screenshot_once_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/carla_screenshot_once_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/carla_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/ego_spawn.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/forward_alignment_diagnostics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/lidar_bev.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/lidar_on_rgb_overlay.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/objects_placed.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/objects_placed.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/pair_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/perception_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/qa_spawn_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/real_u_proxy_metrics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/record_route_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/record_route_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/ego_spawn.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116226.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116227.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116228.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116229.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116230.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116231.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar/00116232.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116226.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116227.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116228.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116229.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116230.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116231.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/lidar/middle_lidar_old/00116232.ply,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/meta/world_snapshots.jsonl,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_left_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_left_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_left_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_right_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_right_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_right_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/back_right_camera/00116229.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/front_left_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/front_left_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/front_left_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/front_right_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/front_right_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/front_right_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/left_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/left_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/left_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/right_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/right_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rgb/right_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/rig_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_left_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_left_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_left_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_right_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_right_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_right_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_back_right_camera/00116229.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_front_left_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_front_left_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_front_left_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_front_right_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_front_right_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_front_right_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_left_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_left_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_left_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_right_camera/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_right_camera/00116227.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/semseg_raw/semseg_right_camera/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/sensor_transforms.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/thesis_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording/tick_watchdog.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/recording_summary.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/rig_verification.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/scene_readiness_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/screenshot_result.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/screenshots/00116226.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/screenshots/00116228.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/screenshots/camera_front.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/screenshots/lidar_bev.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/spawn_sanity_objects_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/spawn_sanity_objects_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/generated_smoke_semseg_verify/write_integrity_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/_normalized_input.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/carla_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/pair_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/perception_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/qa_spawn_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/real_u_proxy_metrics.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/record_route_stderr.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/record_route_stdout.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/recording/capture_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/recording/recorder_manifest.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/recording/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/recording/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/recording_summary.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/run_info.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/scene_readiness_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/sensor_rig_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/write_integrity_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/scenario_b/orchestration_rq_plumbing_verify_20260309/evidence_summary.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/scenario_b/orchestration_rq_plumbing_verify_20260309/unified_rq_report.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+carla_governed/artifacts/scenario_b/vision_gap_rq_plumbing_verify/out/vision_domain_gap_summary.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+check_raw_run1.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+create_a1_registries.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+create_reconciliation_reports.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+examine_bad_roads.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+external/blender-driving-scenario-creator/,untracked,temp,no,no,no,N/A,local/unclassified temp file
+external/esmini/,untracked,temp,no,no,no,N/A,local/unclassified temp file
+generate_audit.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+nul,untracked,temp,no,no,no,N/A,local/unclassified temp file
+phase_l_validation.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/__init__.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/actor_binding.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/audit.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/certifier_decision.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/certifier_validation.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/common.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/governed_payload.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/label_ontology.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/manifests.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/protocols.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/provenance.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/resource_profiles.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/semantic_evidence.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/semantic_policy.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/server_attestation.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/spawn_nav_gate.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+phase_q/watchdog.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+reports/C01_carla_runtime_audit.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/C01_carla_runtime_audit.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/R01_final_integration_gate.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL01_hook_verification.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL01_hook_verification.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL02_lock_verification.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL02_lock_verification.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL03_contract_verification.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL03_contract_verification.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL04_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL04_map_identity.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL05_calibration.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL05_calibration.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL06_artifact_transactions.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL06_artifact_transactions.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL07_test_execution.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL07_test_execution.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL08_final_verdict.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/claude_independent_governance_review/CL08_final_verdict.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_00_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_00_identity.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_01_governance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_01_governance.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_02_map_registry.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_02_map_registry.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_03_calibration.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_03_calibration.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_04_elevation_guard.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_04_elevation_guard.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_05_artifacts.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_05_artifacts.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_06_failure_injection.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_06_failure_injection.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_07_tests.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_07_tests.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_08_final_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/codex55_safety/C55_08_final_status.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS01_worktrees.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS02_hooks.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS03_locks.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS04_contracts.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS05_xodr_paths.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS06_map_families.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS07_donor_implementations.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/deepseek_governance_inventory/DS08_summary.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV01_git_and_ancestry.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV01_git_and_ancestry.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV02_safety_layer.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV02_safety_layer.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV03_bundle_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV03_bundle_alignment.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV04_handoff.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/delta_base_verification/DV04_handoff.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/opencode_batch_20260802/14B_CLOSURE_EVIDENCE.zip,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T135530Z/02_VISUAL_ASSET_TRANSFORM_CHAIN.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T135530Z/02_VISUAL_ASSET_TRANSFORM_CHAIN.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb.provenance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.mtl.provenance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj.provenance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.png,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/osm2world.properties,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/osm2world_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T185347Z/artifacts/window_osm.osm,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T203529Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T203529Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T203529Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T203529Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T203529Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L6_waypoint_topology.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204003Z/L7_drivability.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L10_performance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L11_old_vs_new.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L12_protected_hashes.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L13_outputs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L6_waypoint_topology.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L7_drivability.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L8_signal_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/L9_sensor_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/PHASE_L_RUNTIME_VALIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T204419Z/PHASE_L_RUNTIME_VALIDATION.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L10_performance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L11_old_vs_new.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L12_protected_hashes.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L13_outputs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L6_waypoint_topology.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L7_drivability.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L8_signal_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/L9_sensor_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/PHASE_L_RUNTIME_VALIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205730Z/PHASE_L_RUNTIME_VALIDATION.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L10_performance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L11_old_vs_new.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L12_protected_hashes.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L13_outputs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L6_waypoint_topology.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L7_drivability.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L8_signal_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/L9_sensor_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/PHASE_L_RUNTIME_VALIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T205920Z/PHASE_L_RUNTIME_VALIDATION.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L10_performance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L11_old_vs_new.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L12_protected_hashes.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L13_outputs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L6_waypoint_topology.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L7_drivability.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L8_signal_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/L9_sensor_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/N1_runtime_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/PHASE_L_RUNTIME_VALIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T210232Z/PHASE_L_RUNTIME_VALIDATION.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T213425Z_N0_PHASE_L_EVIDENCE_AUDIT.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T213425Z_N0_PHASE_L_EVIDENCE_AUDIT.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214216Z_N1_RUNTIME_MAP_IDENTITY.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214256Z_N0_PRIMARY_VS_DERIVED_EVIDENCE.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214410Z_N2_SOURCE_RUNTIME_EQUIVALENCE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N10_PERFORMANCE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N11_NEGATIVE_CONTROLS.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N12_DETERMINISM.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N13_RELEASE_PACKAGE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N14_OLD_VS_NEW.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N3_PROCESS_AND_PORT_AUDIT.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N4_SPATIAL_COVERAGE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N5_ROUTE_STRESS.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N6_VEHICLE_PHYSICS.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N7_TRAFFIC_STRESS.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N8_SENSOR_VALIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214459Z_N9_VISUAL_COLLISION_ALIGNMENT.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214540Z_N15_FINAL_RELEASE_CERTIFICATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214630Z_N17_GATE_MATRIX.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214709Z_N00_EXECUTIVE_SUMMARY.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214807Z_N01_REPOSITORY_AND_ARTIFACT_IDENTITY.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214807Z_N02_PHASE_L_EVIDENCE_AUDIT.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214853Z_N16_OLD_VS_NEW_COMPARISON.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214941Z_N16_OLD_VS_NEW_COMPARISON.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T214941Z_N18_FINAL_RELEASE_VERDICT.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T215104Z_COMMAND_TRANSCRIPT.txt,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T215143Z_EVIDENCE_MANIFEST.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T215143Z_N15_RELEASE_PACKAGE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221702Z_O00_EXISTING_PROGRAM_INVENTORY.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221723Z_O01_CAPABILITY_MATRIX.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221723Z_O02_PHASE_L_CALL_GRAPH.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221723Z_O03_WRONG_MAP_ROOT_CAUSE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221755Z_O04_CANDIDATE_LINEAGE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221755Z_O05_CANDIDATE_LINEAGE.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221755Z_O06_RUNTIME_INPUT_AUTHORITY.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221856Z_O07_RUNTIME_STRATEGY.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260804T221856Z_O08_LOADER_HARDENING.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+reports/post_audit_hardening/20260804T223515Z_O04_CARLA_CRASH_EVIDENCE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P04_RAW_RUNTIME_EVIDENCE.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P13_RUNTIME_INVENTORY_METHODS.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P14_SOURCE_RUNTIME_ID_DIFF.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P15_MISSING_RUNTIME_ROADS.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P16_UNEXPECTED_RUNTIME_ROADS.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P17_RUNTIME_JUNCTION_DIFF.csv,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE/P18_SOURCE_RUNTIME_SEMANTIC_DIFF.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T120340Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T120340Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T120340Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L10_performance.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L11_old_vs_new.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L12_protected_hashes.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L13_outputs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L1_carla_preflight.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L2_map_identity.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L3_parser_logs.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L4_alignment.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L5_visual_regression.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L6_waypoint_topology.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L7_drivability.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L8_signal_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/L9_sensor_validation.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/PHASE_L_RUNTIME_VALIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T122525Z/PHASE_L_RUNTIME_VALIDATION.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/EVIDENCE_MANIFEST.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/G00_GATE_MATRIX.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/N00_EXECUTIVE_SUMMARY.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/N00_GATE_MATRIX.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/N0_PHASE_L_EVIDENCE_AUDIT.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/N18_FINAL_RELEASE_VERDICT.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/O9_LOADER_CONSOLIDATION.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/P47_FINAL_RELEASE_VERDICT.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/post_audit_hardening/20260805T141616Z_O06_RUNTIME_INPUT_AUTHORITY.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B2_authoritative_osm.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B2_authoritative_osm.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B2_xodr_policy.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B2_xodr_policy.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B3_visible_road_policy.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B3_visible_road_policy.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B3_visual_artifacts.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B3_visual_artifacts.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B4_toolchain.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/B4_toolchain.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/CRS_metadata.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/CRS_metadata.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/final_gate_status.json,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+reports/source_visual_closure/final_gate_status.md,untracked,evidence,yes,no,yes,D5,verification and independent governance audit evidence
+run_n0_audit.py,untracked,code,no,no,no,N/A,local utility/diagnostic script
+run_n_certify.py,untracked,code,yes,no,yes,D3,Phase L/N/Q validation logic
+submission_files.txt,untracked,temp,no,no,no,N/A,local/unclassified temp file
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_1210569551279489176.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_2060131613385256664.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_251583721919672826.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_2767322890684755323.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_298016106736688912.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_3192344160788733546.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_6116180927405359888.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_7047003107710038403.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_7086752096608772091.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_7101881477105635919.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_7290063698777476487.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_7326278570518433924.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_8023232510830363613.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+ultimate_pipeline/reports/post_audit_hardening/_f1_test_tmp/xodr_884393409926195101.xodr,untracked,candidate,yes,no,yes,D2,repaired candidate and map verification reports
+vehicle.,untracked,temp,no,no,no,N/A,local/unclassified temp file
+work/phase_j_window.osm,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees
+work/phase_j_window_osm.osm,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees
+work/post-audit-hardening-20260801/,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees
+worktree_files.txt,untracked,temp,no,no,no,N/A,local/unclassified temp file
+worktrees/deep-reexamination-20260803/,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees
+worktrees/phase-e-hardening/,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees
+worktrees/post-audit-hardening-20260730/,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees
+worktrees/reexam-published-f91f1df5/,untracked,temp,no,no,no,N/A,temporary scratchpad and worktrees

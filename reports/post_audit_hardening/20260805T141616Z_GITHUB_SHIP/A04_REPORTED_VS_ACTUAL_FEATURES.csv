@@ -1,0 +1,8 @@
+feature,reported_status,actual_status,verification_method,file_path,verdict
+Strict OpenDRIVE preflight,Implemented,Implemented,Source review of _preflight_xodr,ultimate_pipeline/core/carla_opendrive_loader.py,VERIFIED
+Zero attempts on preflight error,Implemented,Implemented,Source review of call sequence,ultimate_pipeline/core/carla_opendrive_loader.py,VERIFIED
+No Town fallback in release mode,Implemented,Implemented,Source review of fallback_enabled,ultimate_pipeline/core/carla_opendrive_loader.py,VERIFIED
+Runtime to_opendrive verification,Implemented,Implemented,Source review of identity guard,ultimate_pipeline/carla_tools/map_identity_guard.py,VERIFIED
+Loader consolidation/deprecation,Implemented,Implemented,Source review of load_final_into_carla,ultimate_pipeline/tools/load_final_into_carla.py,VERIFIED
+Phase L empty-landmark handling,Implemented,Implemented,Source review of landmark checks,phase_l_validation.py,VERIFIED
+Phase N corrected evidence consumption,Implemented,Implemented,Source review of run_n_certify,run_n_certify.py,VERIFIED

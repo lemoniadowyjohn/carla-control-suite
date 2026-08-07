@@ -1,0 +1,6 @@
+module_relative_path,canonical_root_sha256,submission_mirror_sha256,drift_status,reconciliation_action
+core/carla_opendrive_loader.py,a9f7b01,a9f7b01,SYNCHRONIZED,Mirrored from canonical root
+core/xodr_hash_gate.py,82f1021,82f1021,SYNCHRONIZED,Mirrored from canonical root
+carla_tools/map_identity_guard.py,39281a1,39281a1,SYNCHRONIZED,Mirrored from canonical root
+quality/check_carla_opendrive_compat.py,2e41a19,2e41a19,SYNCHRONIZED,Mirrored from canonical root
+tools/load_final_into_carla.py,12405f1,12405f1,SYNCHRONIZED,Mirrored from canonical root

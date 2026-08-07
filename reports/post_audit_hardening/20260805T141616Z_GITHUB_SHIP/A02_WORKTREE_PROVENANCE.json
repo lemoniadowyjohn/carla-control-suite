@@ -1,0 +1,14 @@
+{
+  "local_head": "f5aabc0a4f170e564aa03efcb906966880859a9f",
+  "remote_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "remote_branch_sha": "d6013b1c1f5106499af8655c34633895837449d8",
+  "status": {
+    "ahead_behind": "0\t4",
+    "clean_committed": false,
+    "classification": "DIRTY_WORKTREE_EVIDENCE_RUN_WITH_PATCH_HASH"
+  },
+  "untracked_summary": {
+    "total": 678,
+    "should_commit": 592
+  }
+}
