@@ -1,0 +1,55 @@
+{
+  "equivalence": {
+    "note": "packaged==governed payload expected PASS; vs repaired parent diffs are the restored signal/speed/turn layer (non-decisive on structure; decisive categories added)",
+    "packaged_vs_governed_payload_verdict": "SEMANTIC_EQUIVALENCE_PASS",
+    "packaged_vs_repaired_parent_verdict": "SEMANTIC_EQUIVALENCE_FAIL"
+  },
+  "generated_at_utc": "2026-08-07T21:44:54.883388+00:00",
+  "live_runtime_requirements_unmet": [
+    "CARLA server binary not present in environment (CARLA_ROOT unset, no CarlaUE4 executable on disk). Packed-map actor bindings and live perception sensor captures (L9/L10) cannot be produced until server is available."
+  ],
+  "package": {
+    "artifact": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr",
+    "name": "ingolstadt_cooked_perception_v1 packaged map",
+    "semantically_identical_to_repaired": true,
+    "sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+    "sha256_raw_bytes": "8b60d8f428c7cdaca9d907963dbf89665df3584168a74805f66af86e63ce8cf4"
+  },
+  "producer": "stage_i_packaged_map.py",
+  "residual_packaged_gaps": {
+    "crosswalk_objects": {
+      "disposition": "SEMANTIC_CONTENT_MISSING",
+      "gate": "PERCEPTION_RELEASE blocker (packaged actor binding)",
+      "osm_authority_count": 174,
+      "packaged_count": 0
+    },
+    "pedestrian_lanes": {
+      "disposition": "SEMANTIC_CONTENT_MISSING",
+      "gate": "PERCEPTION_RELEASE blocker (packaged actor binding)",
+      "osm_authority_count": 78,
+      "packaged_count": 0
+    }
+  },
+  "run_id": "20260807T000000Z",
+  "semantic_inventory": {
+    "packaged": {
+      "controllers": 0,
+      "crosswalk_objects": 0,
+      "lane_change_permissions": 0,
+      "objects": 0,
+      "pedestrian_lanes": 0,
+      "road_markings": 84781,
+      "road_types": 32710,
+      "semantic_material_classes": 0,
+      "sidewalks": 17392,
+      "signal_references": 0,
+      "signals": 3467,
+      "speed_limits": 0,
+      "stop_yield_controls": 0,
+      "traffic_light_actor_bindings": 0,
+      "turn_lane_semantics": 32040
+    }
+  },
+  "stage": "I",
+  "verdict": "I_PACKAGED_MAP_EVIDENCE_PRODUCED"
+}
