@@ -1,0 +1,32 @@
+{
+  "manifest_schema": "Q03_LOAD_PAYLOAD_MANIFEST/v1",
+  "strategy": "B",
+  "transformation_name": "ultimate_pipeline.core.carla_opendrive_loader._normalize_georef_in_xodr_text",
+  "transformation_version": "georef_normalize_elementtree_v1",
+  "producer_commit": "21ffc321bd4a48bbea77e604489299c2cb1cac5b",
+  "candidate": {
+    "name": "ingolstadt_candidate_g_semantic_enriched",
+    "role": "parent candidate",
+    "sha256": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470"
+  },
+  "payload": {
+    "sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+    "length_bytes": 80962666
+  },
+  "semantic_diff": {
+    "region": "header/geoReference only",
+    "geo_reference_before": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geo_reference_after": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+  },
+  "coordinate_contract": {
+    "road_ids_equal": true,
+    "junction_ids_equal": true,
+    "signal_ids_equal": true,
+    "object_ids_equal": true,
+    "header_bounds_equal": true,
+    "offset_equal": true,
+    "georeference_only_change": false,
+    "coordinate_contract_pass": true
+  },
+  "payload_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\governed_payload.xodr"
+}

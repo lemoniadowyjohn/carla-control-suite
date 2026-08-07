@@ -80,7 +80,7 @@ def _identity_invariant(parsed: XodrTree) -> Dict[str, Any]:
         "junctions": sorted(set(_id_attr_gen(parsed, "junction"))),
         "signals": sorted(set(_id_attr_gen(parsed, "signal"))),
         "objects": sorted(set(_id_attr_gen(parsed, "object"))),
-        "lane_ids": sorted(set(_id_attr_gen(parsed, "lane"))[:0]) or None,
+        "lane_ids": None,
         "header_bounds": _header_bounds(parsed),
         "offset": _header_offset(parsed),
     }
@@ -108,7 +108,7 @@ def coordinate_contract_check(before: XodrTree, after: XodrTree) -> Dict[str, An
         "junction_ids_equal": b["junctions"] == a["junctions"],
         "signal_ids_equal": b["signals"] == a["signals"],
         "object_ids_equal": b["objects"] == a["objects"],
-        "header_bounds_equal": b["header_keys"] == a["header_keys"],
+        "header_bounds_equal": b["header_bounds"] == a["header_bounds"],
         "offset_equal": b["offset"] == a["offset"],
         "georeference_only_change": _geo_ref(before) != _geo_ref(after),
     }

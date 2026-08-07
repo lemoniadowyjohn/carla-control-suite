@@ -9,3 +9,4 @@ reports/post_audit_hardening/20260803T170000Z/candidate_f6_seam_repaired.xodr fi
 reports/post_audit_hardening/**/_*_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/20260803T160000Z/_f5_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/20260803T170000Z/_f6_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/**/governed_payload.xodr filter=lfs diff=lfs merge=lfs -text
