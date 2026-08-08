@@ -217,3 +217,175 @@ def combined_traffic_control_digest(parsed: XodrTree) -> Dict[str, str]:
         "controller_digest": controller_digest(parsed),
         "combined_traffic_control_digest": combined,
     }
+
+
+# ---------------------------------------------------------------------------
+# v2 canonical traffic-control digests (C0 remediation, R2)
+#
+# C0 finding: v1 collapses empty OR missing collections to a count-only
+# sha256("0") digest, so empty == missing == count-only sha256("0") and a
+# parse failure is indistinguishable from an empty document. v2 fixes that
+# with a versioned canonical serialization:
+#
+#   digest = SHA256("phase_q/signal_digest/v2" SEP "<TAG>:<STATE>"
+#                   SEP "<count>" ( SEP <flat record> )*)
+#
+# <STATE> in {PRESENT, EMPTY_COLLECTION, MISSING_COLLECTION, PARSE_FAILURE}.
+# Records are sorted by their flat serialization so document order does not
+# affect the digest (canonical ordering). Missing vs empty is detected via
+# container presence (e.g. a <signals> wrapper). v1 functions above are kept
+# unchanged for historical freeze comparison; new frozen authority is v2.
+# ---------------------------------------------------------------------------
+_V2_PREFIX = "phase_q/signal_digest/v2"
+_V2_STATE_PRESENT = "PRESENT"
+_V2_STATE_EMPTY = "EMPTY_COLLECTION"
+_V2_STATE_MISSING = "MISSING_COLLECTION"
+_V2_STATE_PARSE_FAILURE = "PARSE_FAILURE"
+_V2_PARSE_FAILURE_DIGEST_TAG = "PARSE_FAILURE"
+
+
+def _v2_record_key(record: Dict[str, Any]) -> str:
+    return SEP.join(str(v) for v in record.values())
+
+
+def _v2_sorted(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return sorted(records, key=_v2_record_key)
+
+
+def _v2_digest_records(tag: str, state: str, records: List[Dict[str, Any]]) -> str:
+    h = hashlib.sha256()
+    h.update(_V2_PREFIX.encode("utf-8"))
+    h.update(SEP.encode("utf-8"))
+    h.update(("{}:{}".format(tag, state)).encode("utf-8"))
+    h.update(SEP.encode("utf-8"))
+    h.update(str(len(records)).encode("utf-8"))
+    for r in _v2_sorted(records):
+        h.update(SEP.encode("utf-8"))
+        h.update(_v2_record_key(r).encode("utf-8"))
+    return h.hexdigest()
+
+
+def _v2_state(records: List[Dict[str, Any]], container_found: bool) -> str:
+    if records:
+        return _V2_STATE_PRESENT
+    if container_found:
+        return _V2_STATE_EMPTY
+    return _V2_STATE_MISSING
+
+
+# v2 container rules: a collection is "present" iff a container element for it
+# exists in the tree (e.g. <signal> or <signals> for elements, <signals> for
+# references, <controllers> or <controller> for controllers).
+def _v2_find_container(root: Any, paths: Tuple[str, ...]) -> bool:
+    for path in paths:
+        if root.findall(path):
+            return True
+    return False
+
+
+def traffic_control_digests_v2(parsed: XodrTree) -> Dict[str, Any]:
+    """Versioned canonical traffic-control digests (C0 remediation R2).
+
+    Distiguishes PRESENT / EMPTY_COLLECTION / MISSING_COLLECTION and rejects
+    count-only collapses: the digest input prefixes the collection state.
+    """
+    root = parsed.root
+    sig_el = signal_element_list(parsed)
+    sig_ref = signal_reference_list_v2(parsed)
+    ctrl = controller_list_v2(parsed)
+
+    el_container = _v2_find_container(root, ("road/signals", "road/signal"))
+    ref_container = _v2_find_container(root, ("road/signals", "road/signalReference"))
+    ctrl_container = _v2_find_container(root, ("controllers", "controller"))
+
+    el_state = _v2_state(sig_el, el_container)
+    ref_state = _v2_state(sig_ref, ref_container)
+    ctrl_state = _v2_state(ctrl, ctrl_container)
+
+    d_el = _v2_digest_records("SIGNAL_ELEMENT", el_state, sig_el)
+    d_ref = _v2_digest_records("SIGNAL_REFERENCE", ref_state, sig_ref)
+    d_ctrl = _v2_digest_records("CONTROLLER", ctrl_state, ctrl)
+
+    h = hashlib.sha256()
+    h.update(_V2_PREFIX.encode("utf-8"))
+    h.update(SEP.encode("utf-8"))
+    for tag, state, d in (("SIGNAL_ELEMENT", el_state, d_el),
+                          ("SIGNAL_REFERENCE", ref_state, d_ref),
+                          ("CONTROLLER", ctrl_state, d_ctrl)):
+        h.update(("{}:{}".format(tag, state)).encode("utf-8"))
+        h.update(SEP.encode("utf-8"))
+        h.update(d.encode("utf-8"))
+        h.update(SEP.encode("utf-8"))
+
+    return {
+        "schema": "phase_q/signal_digest/v2",
+        "schema_version": _header_schema_version(parsed),
+        "signal_count": len(sig_el),
+        "signal_reference_count": len(sig_ref),
+        "controller_count": len(ctrl),
+        "signal_element_state": el_state,
+        "signal_reference_state": ref_state,
+        "controller_state": ctrl_state,
+        "parse_failure": False,
+        "signal_element_digest": d_el,
+        "signal_reference_digest": d_ref,
+        "controller_digest": d_ctrl,
+        "combined_traffic_control_digest": h.hexdigest(),
+    }
+
+
+def traffic_control_digests_v2_from_text(xodr_text: str) -> Dict[str, Any]:
+    """v2 digests for raw XODR text; a malformed document yields a distinct
+    PARSE_FAILURE digest instead of silently equal to an empty collection."""
+    try:
+        parsed = XodrTree(xodr_text)
+        return traffic_control_digests_v2(parsed)
+    except Exception as exc:  # noqa: BLE001 - parse failure is data, not bug
+        return {
+            "schema": "phase_q/signal_digest/v2",
+            "schema_version": None,
+            "signal_count": None,
+            "signal_reference_count": None,
+            "controller_count": None,
+            "signal_element_state": _V2_STATE_PARSE_FAILURE,
+            "signal_reference_state": _V2_STATE_PARSE_FAILURE,
+            "controller_state": _V2_STATE_PARSE_FAILURE,
+            "parse_failure": True,
+            "parse_error": "{}: {}".format(type(exc).__name__, exc),
+            "signal_element_digest": _V2_PARSE_FAILURE_DIGEST_TAG + ":SIGNAL_ELEMENT",
+            "signal_reference_digest": _V2_PARSE_FAILURE_DIGEST_TAG + ":SIGNAL_REFERENCE",
+            "controller_digest": _V2_PARSE_FAILURE_DIGEST_TAG + ":CONTROLLER",
+            "combined_traffic_control_digest": _V2_PARSE_FAILURE_DIGEST_TAG + ":COMBINED",
+        }
+def signal_reference_list_v2(parsed: XodrTree) -> List[Dict[str, Any]]:
+    """v2 reference inventory: also reads <signals><signalReference> (CARLA
+    container convention), not only road-level <signalReference>."""
+    root = parsed.root
+    recs: List[Dict[str, Any]] = []
+    for road in root.findall("road"):
+        for ref in road.findall("signalReference") + road.findall("signals/signalReference"):
+            recs.append({
+                "id": norm_id(ref.get("id")),
+                "s": _num(ref.get("s")),
+                "t": _num(ref.get("t")),
+                "type": norm_id(ref.get("type")),
+                "subtype": norm_id(ref.get("subtype")),
+                "validities": _validities(ref),
+            })
+    return recs
+
+
+def controller_list_v2(parsed: XodrTree) -> List[Dict[str, Any]]:
+    """v2 controller inventory: <controller> children of root or of an
+    optional <controllers> wrapper (OpenDRIVE 1.7 container form)."""
+    root = parsed.root
+    recs: List[Dict[str, Any]] = []
+    for ctrl in root.findall("controller") + root.findall("controllers/controller"):
+        recs.append({
+            "id": norm_id(ctrl.get("id")),
+            "name": norm_id(ctrl.get("name")),
+            "type": norm_id(ctrl.get("type")),
+            "delay": _num(ctrl.get("delay")),
+            "plugin": norm_id(ctrl.get("plugin")),
+        })
+    return recs
