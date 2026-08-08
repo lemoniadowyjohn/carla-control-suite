@@ -1,0 +1,148 @@
+{
+ "schema_version": "R00_PRE_GATE_PROVISIONAL_ARTIFACTS/v1",
+ "generated_at_utc": "2026-08-08T00:00:00Z",
+ "branch": "fix/post-audit-phase-ese-20260803",
+ "review_context": "CLAUDE_SEMANTIC_WRITE_CONTRACT_NEEDS_FIXES",
+ "policy": {
+  "provisional_marker": "PROVISIONAL_PRE_C0",
+  "release_authority": false,
+  "authority_rule": "No PROVISIONAL_PRE_C0 artifact may be used as release authority, load payload, semantic candidate, or accepted parent until CLAUDE_SEMANTIC_WRITE_CONTRACT_ACCEPTED."
+ },
+ "pre_c0_commits": [
+  {
+   "sha": "2ec8927a",
+   "classification": "C0_REVIEW_IMPLEMENTATION_PRE_C0"
+  },
+  {
+   "sha": "b9d51fe7",
+   "classification": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "sha": "3eede5b4",
+   "classification": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "sha": "74fb5b4d",
+   "classification": "PROVISIONAL_PRE_C0"
+  }
+ ],
+ "provisional_artifacts": [
+  {
+   "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+   "sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+   "size": 82589796,
+   "status": "PROVISIONAL_PRE_C0",
+   "action": "RENAME_TO_provisional_pre_c0_ingolstadt_perception.xodr"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/candidate_crosswalk_enriched.xodr",
+   "sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+   "size": 82589796,
+   "status": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/perception_governed/governed_payload.xodr",
+   "sha256": "a7b319db6627d5711dd989436c4abb1e1ae60455039ea500f8ead2eeaf50af30",
+   "size": 82589778,
+   "status": "PROVISIONAL_PRE_C0",
+   "note": "INTEGRITY_MISMATCH_DECLARED_VS_DISK"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/perception_governed/Q03_LOAD_PAYLOAD_MANIFEST.json",
+   "sha256": "3d526d324294a9c479b1c88dbc1aac3f424598028116562376a02d4b4b8b8f59",
+   "size": 1369,
+   "status": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/perception_governed/Q04_GEOREFERENCE_SEMANTIC_DIFF.json",
+   "sha256": "e0456f207e82294e7c8944b21ca60dbdd2162827760795e91a78f01b0e8f22d1",
+   "size": 1067,
+   "status": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/PQ_FINAL_RELEASE_CLOSURE.json",
+   "sha256": "6b5636d0524d5b8afa55e4e2605c799848feda14081614bfe3f9bba190e16259",
+   "size": 4199,
+   "status": "PROVISIONAL_PRE_C0",
+   "action": "CLOSURE_SUSPENDED_PENDING_CLAUDE_C0"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/N22_XODR_LOADABILITY_AND_XML_INTEGRITY.json",
+   "sha256": "aac7472d566104d65430619bacbf72b229ce43d9ba4c1c22abebe7c34115fbbd",
+   "size": 391,
+   "status": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "path": "reports/post_audit_hardening/20260807T000000Z/N23_CARLA_OPENDRIVE_COMPAT.json",
+   "sha256": "a4e18b5405ce9caddd8d0eb4bc123f7960268c1540c4117f67bd27e85b20c490",
+   "size": 503,
+   "status": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "path": "docs/N19_CLAUDE_C1_PACKET.md",
+   "sha256": "d52a59f55ad2daae79704fc587319baa9350db925374ded23c9ddc91dd093cc1",
+   "size": 10806,
+   "status": "PROVISIONAL_PRE_C0"
+  },
+  {
+   "path": "docs/N04_CLAUDE_C0_PACKET.md",
+   "sha256": "ff1c4ec5f3033daaaa7d0b0f92dc0326440cfb06783672478b4e9ea48601ab1e",
+   "size": 15316,
+   "status": "PROVISIONAL_PRE_C0",
+   "superseded_by": "R13_UPDATED_CLAUDE_C0_PACKET.md"
+  }
+ ],
+ "pre_c0_git_log": [
+  "74fb5b4d 2026-08-08 Stage 16: commit N22/N23 gate reports + perception governed payload (LFS pointer)",
+  "3eede5b4 2026-08-08 Stage 15 (commit): promote perception candidate ingolstadt_perception_final.xodr (LFS); PQ closure pending->false",
+  "b9d51fe7 2026-08-08 Stage 15-16-20: govern + promote perception candidate, N22/N23 validation, offline verdict",
+  "2ec8927a 2026-08-08 Stage I-N: crosswalk + pedestrian semantic enrichment with integrity gates",
+  "44c5e22a 2026-08-08 Stage D0: provenance, untracked classification, reuse matrix, OSM crossing recompute + tests",
+  "c99adb31 2026-08-08 Add consolidated G-Q closure report + all-stage verification gate",
+  "1556561b 2026-08-08 Stage P-Q: final release closure (release held; live gates J-N blocked by missing CARLA server)",
+  "d517fb33 2026-08-08 Stage J-Q: attempt live build-in smoke + governed-payload load; BLOCKED (no CARLA server binary)"
+ ],
+ "parent_chain": {
+  "ingolstadt_fixed_final.xodr": {
+   "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fixed_final.xodr",
+   "sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+   "enrichable": false,
+   "reason": "zero-signal repaired candidate; enrichment forbidden"
+  },
+  "candidate_g_semantic_enriched.xodr": {
+   "path": "reports/post_audit_hardening/20260807T000000Z/candidate_g_semantic_enriched.xodr",
+   "sha256": "8b60d8f428c7cdaca9d907963dbf89665df3584168a74805f66af86e63ce8cf4",
+   "role": "3467-signal semantic parent (to be re-frozen in R04)"
+  },
+  "raw_xodr_run_1_epsg32632_header_pinned.xodr": {
+   "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+   "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d"
+  }
+ },
+ "payload_declared_vs_disk": {
+  "governed_payload.xodr": {
+   "declared_sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+   "on_disk_sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+   "match": true
+  },
+  "perception_governed/governed_payload.xodr": {
+   "declared_sha256": "719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21",
+   "on_disk_sha256": "a7b319db6627d5711dd989436c4abb1e1ae60455039ea500f8ead2eeaf50af30",
+   "declared_length": 80996355,
+   "on_disk_size": 82589778,
+   "match": false,
+   "note": "on-disk bytes are a near-copy of the candidate; declare integrity_break"
+  }
+ },
+ "closure_restored_to": {
+  "c0_accepted": false,
+  "c1_accepted": false,
+  "perception_candidate_accepted": false,
+  "final_perception_closure": false
+ },
+ "manifest_update": {
+  "readiness_state_after": "REVIEW_RESTORED_PENDING_CLAUDE_C0",
+  "perception_candidate_xodr": "REMOVED_FROM_AUTHORITATIVE_FIELDS",
+  "perception_governed_payload": "REMOVED_FROM_AUTHORITATIVE_FIELDS"
+ }
+}

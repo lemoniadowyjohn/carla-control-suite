@@ -3,7 +3,16 @@
   "stage": "P-Q",
   "producer": "final_release_closure",
   "generated_at_utc": "2026-08-07T00:00:00Z",
-  "overall_verdict": "Q_RELEASE_HOLD_LIVE_RUNTIME_REQUIRED",
+  "overall_verdict": "Q_CLOSURE_SUSPENDED_PENDING_CLAUDE_C0",
+  "release_closure_state": "PENDING",
+  "pre_c0_historical": true,
+  "acceptance": {
+    "c0_accepted": false,
+    "c1_accepted": false,
+    "perception_candidate_accepted": false,
+    "final_perception_closure": false
+  },
+  "quarantine_ref": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R00_PRE_GATE_PROVISIONAL_ARTIFACTS.json",
   "offline_gates": {
     "A": "PASS",
     "B": "PASS",
