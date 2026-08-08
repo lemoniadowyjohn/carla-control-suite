@@ -1,6 +1,6 @@
 # R13 UPDATED CLAUDE C0 PACKET
 
-*Run: `20260808T000000Z_C0_REMEDIATION` · branch `fix/post-audit-phase-e-junctions-roundabouts-20260803` · HEAD `25104180066aaa68ab38bdbca73a6f341025dd33` · frozen 2026-08-08T19:49:57.586326+00:00*
+*Run: `20260808T000000Z_C0_REMEDIATION` · branch `fix/post-audit-phase-e-junctions-roundabouts-20260803` · HEAD `69d040255d20b5927a8a9a202fd88ae82f9a1213` · frozen 2026-08-08T19:50:22.046948+00:00*
 
 ## Terminal C0-R readiness — STOP A
 
@@ -54,7 +54,7 @@ This packet supersedes `docs/N04_CLAUDE_C0_PACKET.md` and the provisional R00/R0
 
 ## Freeze
 
-- `R13O_C0_REVIEW_FREEZE.json` + `R13Z_FINAL_FREEZE_REGISTRY.json` written at HEAD `25104180066aaa68ab38bdbca73a6f341025dd33`; branch `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
-- Git working tree clean; `25104180` commits R13 batch; freeze commit is next.
+- `R13O_C0_REVIEW_FREEZE.json` + `R13Z_FINAL_FREEZE_REGISTRY.json` written at HEAD `69d040255d20b5927a8a9a202fd88ae82f9a1213`; branch `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
+- Git working tree clean; `25104180` commits the R13 batch; freeze commit `69d040255d20b5927a8a9a202fd88ae82f9a1213` records this packet.
 - STOP A boundary respected: no C1 candidate is produced in this batch (offline; CARLA runtime not consulted).
 

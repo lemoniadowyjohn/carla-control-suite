@@ -177,8 +177,8 @@ packet.append("## Freeze")
 packet.append("")
 packet.append(f"- `R13O_C0_REVIEW_FREEZE.json` + `R13Z_FINAL_FREEZE_REGISTRY.json` "
               f"written at HEAD `{head}`; branch `{branch}`.")
-packet.append("- Git working tree clean; `25104180` commits R13 batch; freeze "
-              "commit is next.")
+packet.append("- Git working tree clean; `25104180` commits the R13 batch; "
+              f"freeze commit `{head}` records this packet.")
 packet.append("- STOP A boundary respected: no C1 candidate is produced in "
               "this batch (offline; CARLA runtime not consulted).")
 packet.append("")
