@@ -29,6 +29,30 @@
     "release_verifier_ok": true,
     "load_call": "load_opendrive_world(..., governed_payload_sha256='3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4')"
   },
+  "perception_candidate_promotion": {
+    "candidate_path": "reports/post_audit_hardening/20260807T000000Z/candidate_crosswalk_enriched.xodr",
+    "canonical_promoted_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+    "candidate_sha256_bytes": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+    "candidate_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+    "governed_payload": {
+      "sha256": "719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21",
+      "length_bytes": 80996355,
+      "transformation_version": "georef_normalize_elementtree_v1",
+      "coordinate_contract_pass": true,
+      "producer_commit": "2ec8927ac42abf03bca26b872ef32c1a9d53f3f4"
+    },
+    "promotion_verdict": "PERCEPTION_CANDIDATE_OFFLINE_VERIFIED_AND_PROMOTED",
+    "large_file_commit_pending": true
+  },
+  "N22_N23": {
+    "gate": "N22_XODR_LOADABILITY_AND_XML_INTEGRITY + N23_CARLA_OPENDRIVE_COMPAT",
+    "candidate_sha256_bytes": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+    "candidate_byte_size": 82589796,
+    "run_quality_gates_failures": {},
+    "strict_xodr_validation": {"ok": true, "n_errors": 0, "n_warnings": 80291, "warning_kind": "geom_xy_large (expected UTM-projected real-world coords)"},
+    "lane_link_targets": {"ok": true, "num_issues": 0, "roads_scanned": 32710},
+    "result": "PASS"
+  },
   "residual_perception_blockers": {
     "crosswalk_objects": {"osm_authority": 174, "packaged": 0, "disposition": "SEMANTIC_CONTENT_MISSING"},
     "pedestrian_lanes": {"osm_authority": 78, "packaged": 0, "disposition": "SEMANTIC_CONTENT_MISSING"}
@@ -44,7 +68,10 @@
     "repaired_candidate_lf_text": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
     "enriched_candidate_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
     "governed_payload": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
-    "runtime_to_opendrive": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80"
+    "runtime_to_opendrive": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+    "perception_candidate_bytes": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+    "perception_candidate_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+    "perception_governed_payload": "719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21"
   },
   "release_hold_reason": "Live verification gates (J-N) blocked by missing CARLA server binary (unavailable tool per shared contract). Release held until a server is available to execute J-N end-to-end; governed payload is ready for release-mode byte-exact load."
 }

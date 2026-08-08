@@ -10,7 +10,7 @@
   "protected_artifacts_immutable": true,
   "manifest": "campaigns/ingolstadt_cooked_perception_v1/manifest.json",
   "map_id": "INGOLSTADT_COOKED_PERCEPTION_V1_RAW_XODR",
-  "readiness_state": "CRS_CONTRACT_READY_STRUCTURAL_UNREVIEWED",
+  "readiness_state": "CRS_CONTRACT_READY_GOVERNED",
   "source_osm": {
     "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
     "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
@@ -250,6 +250,30 @@
       "suspicious_absolute_height_reset_count": 0,
       "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
     }
+  },
+  "perception_candidate_xodr": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+    "canonical_path": "reports/post_audit_hardening/20260807T000000Z/candidate_crosswalk_enriched.xodr",
+    "sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+    "sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+    "byte_size": 82589796,
+    "geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geo_reference_matches_epsg32632": true,
+    "produced_by": "stage_i1_crosswalk_writer.py (crosswalk object enrichment; 66 crosswalk objects)",
+    "promoted_from": "candidate_g_semantic_enriched.xodr sha256_lf_text d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+    "gates_n22_n23": "PASS (strict_xodr 0 errors; lane_link 0 issues; 32710 roads validated)",
+    "readiness_state_at_promotion": "CRS_CONTRACT_GOVERNANCE_PROMOTED"
+  },
+  "perception_governed_payload": {
+    "path": "reports/post_audit_hardening/20260807T000000Z/perception_governed/governed_payload.xodr",
+    "sha256": "719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21",
+    "length_bytes": 80996355,
+    "transformation": "ultimate_pipeline.core.carla_opendrive_loader._normalize_georef_in_xodr_text",
+    "transformation_version": "georef_normalize_elementtree_v1",
+    "candidate_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+    "coordinate_contract_pass": true,
+    "producer_commit": "2ec8927ac42abf03bca26b872ef32c1a9d53f3f4",
+    "release_verifier": "phase_q.governed_payload.release_payload_verifier(719eec3ec169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21)"
   },
   "raw_xodr_runs": [
     {
