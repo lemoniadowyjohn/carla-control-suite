@@ -1,0 +1,27 @@
+{
+  "accounted_total": 5431,
+  "accounting_invariant_pass": true,
+  "authority_total": 5431,
+  "classification_counts": {
+    "CROSSING": 179,
+    "FOOTWAY": 2719,
+    "PATH": 1954,
+    "PEDESTRIAN_STREET": 78,
+    "PLATFORM": 103,
+    "SIDEWALK": 398
+  },
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "disposition_counts": {
+    "ALREADY_PRESENT": 5071,
+    "AMBIGUOUS_REJECTED": 78,
+    "INSERTED_XODR_OBJECT": 66,
+    "OUTSIDE_MAP_SCOPE": 35,
+    "PACKAGE_MESH_REQUIRED": 181
+  },
+  "producer": "stage_j_pedestrian_authority.py",
+  "run_id": "20260807T000000Z",
+  "source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "source_sha256_lf_text": "67da6a5a3aa7072e5552ab9ddab2cec42a0a69b32933a852949167af20fcf764",
+  "stage": "J",
+  "verdict": "PEDESTRIAN_AUTHORITY_ACCOUNTED"
+}

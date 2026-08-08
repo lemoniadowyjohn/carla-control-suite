@@ -1,9 +1,9 @@
 # ultimate_pipeline/enrichment/object_injector.py
 
+import math
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Tuple
-import math
 
 
 @dataclass
@@ -143,3 +143,120 @@ class ObjectInjector:
                     "y": f"{y:.3f}",
                     "z": f"{z:.3f}",
                 })
+
+
+# --------------------------------------------------------------------------
+# Crosswalk authoring (Stage I). Reuses the canonical <object> + <outline>
+# schema defined above. Additive only: inserts <object type="crosswalk"> under
+# <road><objects>; never mutates roads/junctions/geometries/signals.
+# --------------------------------------------------------------------------
+CROSSWALK_DEFAULT_DEPTH_M = 4.0  # along-road marking extent
+
+
+def _crossing_subtype(crossing_type: Optional[str]) -> str:
+    ct = (crossing_type or "").lower()
+    if ct == "zebra":
+        return "crosswalk_zebra"
+    if ct == "marked":
+        return "crosswalk_marked"
+    if ct in ("traffic_signals", "uncontrolled", "island"):
+        return "crosswalk_signals"
+    return "crosswalk"
+
+
+def _bearing(a: Tuple[float, float], b: Tuple[float, float]) -> float:
+    dx = b[0] - a[0]
+    dy = b[1] - a[1]
+    return math.degrees(math.atan2(dy, dx))
+
+
+def _crosswalk_outline(start: Tuple[float, float],
+                       end: Tuple[float, float],
+                       depth: float = CROSSWALK_DEFAULT_DEPTH_M) -> List[Tuple[float, float, float]]:
+    """Closed quad for a crosswalk marking.
+
+    start->end is the curb-to-curb centerline (across-road); `depth` is the
+    along-road extent, applied perpendicular to the centerline on its road-side.
+    Returns 5 vertices (first == last for a closed polygon), CCW in the +Y-forward
+    local frame used by OpenDRIVE.
+    """
+    cx = (end[0] - start[0]) / 2.0
+    cy = (end[1] - start[1]) / 2.0
+    seg = math.hypot(cx, cy)
+    if seg < 1e-6:
+        nx, ny = depth / 2.0, 0.0
+    else:
+        nx = -(cy / seg) * (depth / 2.0)
+        ny = (cx / seg) * (depth / 2.0)
+    s_left = (start[0] - nx, start[1] - ny, 0.0)
+    s_right = (start[0] + nx, start[1] + ny, 0.0)
+    e_right = (end[0] + nx, end[1] + ny, 0.0)
+    e_left = (end[0] - nx, end[1] - ny, 0.0)
+    return [s_left, s_right, e_right, e_left, s_left]
+
+
+@dataclass
+class CrosswalkSpec:
+    """One authoritative crosswalk to author. Sourced from the Stage H ledger."""
+    osm_id: str
+    crossing_type: Optional[str]
+    start_m: Tuple[float, float]
+    end_m: Tuple[float, float]
+    road_id: str
+    s: float
+    t: float
+    road_ids_all: Tuple[str, ...] = ()
+    disposition: str = "INSERTED"
+    reason: str = ""
+
+
+class CrosswalkInjector:
+    """Deterministic, idempotent crosswalk <object> injector.
+
+    Reuses ObjectInjector._attach_object (canonical OpenDRIVE object schema).
+    Idempotent across runs: an object id `crosswalk_{osm_id}` is unique and
+    skipped if already present in the target XODR.
+    """
+
+    @staticmethod
+    def existing_ids(root: ET.Element) -> set:
+        ids = set()
+        for obj in root.iter("object"):
+            if (obj.get("type") or "").lower() == "crosswalk":
+                oid = obj.get("id")
+                if oid:
+                    ids.add(oid)
+        return ids
+
+    @staticmethod
+    def inject(root: ET.Element, specs: List["CrosswalkSpec"]) -> Dict[str, int]:
+        roads_by_id = {r.get("id"): r for r in root.findall("road")}
+        existing = CrosswalkInjector.existing_ids(root)
+        stats = {"written": 0, "skipped_existing": 0, "skipped_no_road": 0}
+        for spec in specs:
+            obj_id = f"crosswalk_{spec.osm_id}"
+            if obj_id in existing:
+                stats["skipped_existing"] += 1
+                continue
+            road = roads_by_id.get(spec.road_id)
+            if road is None:
+                stats["skipped_no_road"] += 1
+                continue
+            start, end = spec.start_m, spec.end_m
+            obj = OSMObject(
+                x=(start[0] + end[0]) / 2.0,
+                y=(start[1] + end[1]) / 2.0,
+                z=0.0,
+                obj_type="crosswalk",
+                subtype=_crossing_subtype(spec.crossing_type),
+                height=0.0,
+                outline=_crosswalk_outline(start, end),
+                heading=math.radians(_bearing(start, end)),
+                road_id=spec.road_id,
+                s=spec.s,
+                t=spec.t,
+            )
+            ObjectInjector._attach_object(road, obj, obj_id)
+            existing.add(obj_id)
+            stats["written"] += 1
+        return stats
