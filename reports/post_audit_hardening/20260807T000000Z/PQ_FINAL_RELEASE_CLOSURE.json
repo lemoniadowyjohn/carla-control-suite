@@ -42,7 +42,9 @@
       "producer_commit": "2ec8927ac42abf03bca26b872ef32c1a9d53f3f4"
     },
     "promotion_verdict": "PERCEPTION_CANDIDATE_OFFLINE_VERIFIED_AND_PROMOTED",
-    "large_file_commit_pending": true
+    "large_file_commit_pending": false,
+    "promoted_committed_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+    "promoted_committed_sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6"
   },
   "N22_N23": {
     "gate": "N22_XODR_LOADABILITY_AND_XML_INTEGRITY + N23_CARLA_OPENDRIVE_COMPAT",
