@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "num_issues": 0,
+  "issues": [],
+  "totals": {
+    "roads_scanned": 32710,
+    "lane_types": [
+      "driving"
+    ],
+    "allow_dead_ends": true,
+    "max_issues": 2000
+  },
+  "xodr_path": "reports\\post_audit_hardening\\20260807T000000Z\\candidate_crosswalk_enriched.xodr"
+}

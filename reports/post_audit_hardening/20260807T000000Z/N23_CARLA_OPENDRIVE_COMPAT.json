@@ -1,0 +1,12 @@
+{
+  "gate": "N23_CARLA_OPENDRIVE_COMPAT",
+  "candidate": "reports/post_audit_hardening/20260807T000000Z\\candidate_crosswalk_enriched.xodr",
+  "candidate_sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+  "artifacts_produced": [
+    "carla_compat_report.json",
+    "strict_xodr_validation.json",
+    "lane_link_check.json",
+    "external_libopendrive_report.json"
+  ],
+  "note": "See run_quality_gates() return; empty failures dict => all pass (skips are safe)."
+}
