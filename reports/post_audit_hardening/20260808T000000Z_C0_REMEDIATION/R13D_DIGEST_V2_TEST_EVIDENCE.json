@@ -1,0 +1,55 @@
+{
+  "all_cases_pass": true,
+  "cases": [
+    {
+      "empty_state": "EMPTY_COLLECTION",
+      "missing_state": "MISSING_COLLECTION",
+      "pass": true,
+      "proposition": "EMPTY != MISSING (distinct collection states)"
+    },
+    {
+      "empty_digest": "2cb78347bba8902e4a98f7c9dd821c901fb5864f38a4d5d3424915847677586d",
+      "parse_digest": "PARSE_FAILURE:SIGNAL_ELEMENT",
+      "pass": true,
+      "proposition": "EMPTY != PARSE_FAILURE (sentinel, not a sha of empty)"
+    },
+    {
+      "count_only_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "empty_collection_digest": "2cb78347bba8902e4a98f7c9dd821c901fb5864f38a4d5d3424915847677586d",
+      "pass": true,
+      "proposition": "EMPTY != count-only sha256('0')"
+    },
+    {
+      "after": "d6b3375634e15b5e84dcee1e84cfe83f1bf3d83e92c7d9aeaa31c8606171385a",
+      "before": "05e7e68b022a92ebac4bb540c7084861d4e6a9ac15844267e177775d3621d1d2",
+      "pass": true,
+      "proposition": "adding one signalReference changes ref digest"
+    },
+    {
+      "after": "bdc270f1cabbf29068c2945140879b40fbeab734cd4d2db81135673c72e2617c",
+      "before": "df095a75e26a4316663762a27afc136457b0807d83221ed60d5bebd7eb00e0ae",
+      "pass": true,
+      "proposition": "semantic mutation changes the digest (same count)"
+    },
+    {
+      "doc_order_digest": "df095a75e26a4316663762a27afc136457b0807d83221ed60d5bebd7eb00e0ae",
+      "pass": true,
+      "proposition": "reordering records does NOT change the digest",
+      "reversed_order_digest": "df095a75e26a4316663762a27afc136457b0807d83221ed60d5bebd7eb00e0ae"
+    },
+    {
+      "pass": true,
+      "proposition": "all four collection states are distinct",
+      "states": [
+        "PRESENT",
+        "EMPTY_COLLECTION",
+        "MISSING_COLLECTION",
+        "PARSE_FAILURE"
+      ]
+    }
+  ],
+  "digest_construction": "sha256(\"phase_q/signal_digest/v2\") SEP \"<TAG>:<STATE>\" SEP <count> (SEP *sorted records)",
+  "reference_implementation": "phase_q/signal_digest.py::traffic_control_digests_v2[_from_text]",
+  "schema": "R13D_DIGEST_V2_TEST_EVIDENCE/v1",
+  "verdict": "DIGEST_V2_DISCRIMINATOR_PASS"
+}

@@ -151,9 +151,11 @@ def test_crosswalk_ids_unique_and_typed(candidate_root):
     ids = [o.get("id") for o in cws]
     assert len(cws) == 66
     assert len(set(ids)) == 66
-    # every crosswalk object has a closed outline (no invalid polygons)
+    # every crosswalk object has a closed local outline in the only corner
+    # form CARLA 0.9.16 reads: <cornerLocal u v z> (R05).
     for o in cws:
         ol = o.find("outline")
         assert ol is not None
-        corners = ol.findall("cornerGlobal")
+        corners = ol.findall("cornerLocal")
         assert len(corners) >= 4
+        assert ol.findall("cornerGlobal") == []

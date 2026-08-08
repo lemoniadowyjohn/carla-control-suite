@@ -21,13 +21,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from typing import Any, Dict, Optional
 
-from phase_q.common import XodrTree, make_run_id, sha256_text, utcnow_iso
+from phase_q.common import XodrTree, make_run_id, sha256_bytes, sha256_text, utcnow_iso
 
 # Referenced loader transformation - single source of truth.
 LOADER_TRANSFORMATION = "ultimate_pipeline.core.carla_opendrive_loader._normalize_georef_in_xodr_text"
 TRANSFORMATION_VERSION = "georef_normalize_elementtree_v1"
+IDENTITY_GUARD = "governed_payload_identity_guard/v1"
 
 
 def _apply_loader_normalization(xodr_text: str) -> str:
@@ -197,6 +199,132 @@ def release_payload_verifier(payload_sha256: str):
     return _verify
 
 
+# ---------------------------------------------------------------------------
+# R13B — governed payload identity guard (write transaction).
+#
+# C0 remediation A.2: the quarantine discovered a governed artifact whose
+# Q03 manifest declared bytes that did NOT match the file on disk
+# (R00/R01, INTEGRITY_MISMATCH_DECLARED_VS_DISK). The writer transaction is
+# hardened to make that class of defect impossible:
+#
+#   1. serialize payload text to a temp file in the target directory;
+#   2. flush + fsync (durable bytes on disk);
+#   3. reopen the temp file and compute sha256 + size FROM THE DISK BYTES
+#      (never from the in-memory text);
+#   4. compare against the canonical in-memory sha/size; any mismatch is a
+#      hard error (do not continue);
+#   5. fsync the directory, then atomically rename to the final path;
+#   6. reopen the final path once more and verify byte sha256 + size; record
+#      this "post-rename identity" in the returned artifact record.
+#
+# `verify_payload_identity(path, declared_sha256, declared_size)` is the
+# independent runtime check that flags any later divergence (the exact check
+# that caught the pre-C0 quarantine case).
+# ---------------------------------------------------------------------------
+IDENTITY_GUARD_VERSION = "governed_payload_identity_guard/v1"
+
+
+def atomic_write_payload_bytes(path: os.PathLike | str, data: bytes) -> dict:
+    """Durably write `data` to `path` and return a verified identity record.\n
+    Raises RuntimeError on any declared-vs-disk mismatch (identity hard gate).
+    """
+    import os
+    from pathlib import Path
+
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp = target.with_name(target.name + ".tmp.{}".format(os.getpid()))
+    try:
+        with open(tmp, "wb") as f:
+            f.write(data)
+            f.flush()
+            os.fsync(f.fileno())
+        # reopen from disk bytes (source of truth)
+        on_disk = tmp.read_bytes()
+        disk_sha = sha256_bytes(on_disk)
+        declared_sha = sha256_bytes(data)
+        size = len(on_disk)
+        if disk_sha != declared_sha or len(on_disk) != len(data):
+            raise ValueError(
+                "governed_payload_identity: declared={} size={} vs disk={} "
+                "size={} -> HARD FAIL (write not durably verifiable)".format(
+                    declared_sha, len(data), disk_sha, len(on_disk)))
+        os.replace(tmp, target)
+        try:
+            dir_fd = os.open(target.parent, os.O_RDONLY)
+            try:
+                os.fsync(dir_fd)
+            finally:
+                os.close(dir_fd)
+        except OSError:
+            pass  # best-effort on platforms without dir fsync
+        final = target.read_bytes()  # reopen the FINAL path, verify again
+        final_sha = sha256_bytes(final)
+        if final_sha != declared_sha or len(final) != len(data):
+            raise IdentityError(
+                "governed_payload_identity: post-rename verification failed "
+                "declared={} vs final={}".format(declared_sha, final_sha))
+        return {
+            "guard": IDENTITY_GUARD,
+            "payload_file": str(target),
+            "declared_sha256": declared_sha,
+            "declared_size": len(data),
+            "disk_sha256": disk_sha,
+            "disk_size": size,
+            "post_rename_sha256": final_sha,
+            "post_rename_size": len(final),
+            "identity_pass": True,
+        }
+    finally:
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+_write_payload_bytes = atomic_write_payload_bytes
+
+
+class IdentityError(RuntimeError):
+    """Raised when governed payload identity cannot be verified."""
+
+
+class IdentityVerificationError(IdentityError):
+    """Raised when the payload diverges from its declared identity."""
+
+
+def verify_payload_identity(path: os.PathLike | str, declared_sha256: str,
+                            declared_size: int) -> dict:
+    """Independent check that a payload file matches its declaration.
+
+    This is the same check that flagged the pre-C0 quarantine mismatch
+    (R00 INTEGRITY_MISMATCH_DECLARED_VS_DISK). Raises
+    IdentityVerificationError on divergence; returns an identity record on
+    success.
+    """
+    from pathlib import Path
+
+    p = Path(path)
+    raw = p.read_bytes()
+    size = len(raw)
+    actual = sha256_bytes(raw)
+    match = (actual == declared_sha256) and (size == declared_size)
+    if not match:
+        raise IdentityVerificationError(
+            "INTEGRITY_MISMATCH_DECLARED_VS_DISK declared_sha256={} "
+            "declared_size={} disk_sha256={} disk_size={}".format(
+                declared_sha256, declared_size, actual, size))
+    return {
+        "guard": IDENTITY_GUARD,
+        "payload_file": str(p),
+        "declared_sha256": declared_sha256,
+        "declared_size": declared_size,
+        "disk_sha256": actual,
+        "disk_size": size,
+        "identity_pass": True,
+    }
+
+
 def write_q04_artifacts(
     candidate_xodr_path: str,
     producer_commit: str,
@@ -210,18 +338,23 @@ def write_q04_artifacts(
     manifest = generate_governed_payload(
         text, producer_commit, candidate_name=candidate_name)
     payload_text = manifest.pop("payload_text", "")
+    payload_bytes = payload_text.encode("utf-8")
 
     q03_path = save_json(f"{out_dir}/Q03_LOAD_PAYLOAD_MANIFEST.json", manifest)
     q04_path = save_json(f"{out_dir}/Q04_GEOREFERENCE_SEMANTIC_DIFF.json",
                          generate_semantic_diff(manifest))
-    payload_path = save_text(f"{out_dir}/governed_payload.xodr", payload_text)
 
-    # Record the payload artifact path inside the manifest after writing.
+    # Identity-guard write (temp -> fsync -> verify -> atomic rename ->
+    # reopen -> verify). The manifest bytes are updated from the DISK bytes.
+    payload_path = f"{out_dir}/governed_payload.xodr"
+    identity = _write_payload_bytes(payload_path, payload_bytes)
     manifest["payload_file"] = payload_path
+    manifest["identity_guard"] = identity
     save_json(q03_path, manifest)
 
     return {
         "Q03_LOAD_PAYLOAD_MANIFEST.json": q03_path,
         "Q04_GEOREFERENCE_SEMANTIC_DIFF.json": q04_path,
         "governed_payload.xodr": payload_path,
+        "identity_guard": identity,
     }

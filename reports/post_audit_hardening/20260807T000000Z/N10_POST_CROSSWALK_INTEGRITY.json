@@ -2,11 +2,19 @@
   "crosswalk_objects_written_total": 66,
   "inject_stats": {
     "skipped_existing": 66,
+    "skipped_no_geometry": 0,
     "skipped_no_road": 0,
     "written": 0
   },
-  "output_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+  "output_sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
   "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_crosswalk_enriched.xodr",
+  "parent_hard_gate": {
+    "allowed": true,
+    "effective_allowlist": [
+      "object:INSERT_OBJECT_CROSSWALK"
+    ],
+    "reasons": []
+  },
   "parent_hard_gate_pass": true,
   "parent_sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
   "producer": "stage_i1_crosswalk_writer.py",

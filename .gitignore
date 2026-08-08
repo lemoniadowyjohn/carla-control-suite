@@ -217,3 +217,58 @@ __marimo__/
 reports/post_audit_hardening/*/preflight_report.json
 reports/post_audit_hardening/*/*/preflight_report.json
 reports/post_audit_hardening/*/baseline_g0_preflight/
+
+# ---------------------------------------------------------------------------
+# R13 terminal freeze (S01-classified NEVER-COMMIT workspace junk)
+# ---------------------------------------------------------------------------
+# IDE/tooling + local agent governance
+.githooks/
+.idea/
+.venv/
+# Probe / one-off scripts, transient state (S01: UNCLASSIFIED / STAGING)
+/_a0_gather.py
+/_check_connector_ids.py
+/_p1_repair_audit.py
+/_p4_runtime_evidence.json
+/_run_p4_equiv.py
+/_stage1_inventory.json
+/_stage1_inventory.py
+/_stage1b_check_geoms.py
+/_stage5_repair.py
+/_stage5_repair_report.json
+/_stage7_acceptance.py
+/_stage7_gate_check.py
+/_verify_native.py
+/_verify_repair.py
+/_write_p4_evidence.py
+/check_raw_run1.py
+/create_a1_registries.py
+/examine_bad_roads.py
+/generate_audit.py
+/run_n0_audit.py
+submission_files.txt
+worktree_files.txt
+POST_AUDIT_HARDENING_PROMPT.md
+# transient/unstructured outputs
+/audit_output/
+/audit_output.zip
+/carla_governed/
+/external/
+/nul
+/vehicle.
+/worktrees/
+/work/
+# orphan reports from prior remediation sessions (never committed)
+/reports/C01_carla_runtime_audit.json
+/reports/C01_carla_runtime_audit.md
+/reports/R01_final_integration_gate.md
+/reports/claude_independent_governance_review/
+/reports/codex55_safety/
+/reports/deepseek_governance_inventory/
+/reports/delta_base_verification/
+/reports/opencode_batch_20260802/
+/reports/source_visual_closure/
+/reports/post_audit_hardening/20260804*
+/reports/post_audit_hardening/20260805*
+/reports/post_audit_hardening/20260807T000000Z.backup_cornerGlobal/
+/ultimate_pipeline/reports/

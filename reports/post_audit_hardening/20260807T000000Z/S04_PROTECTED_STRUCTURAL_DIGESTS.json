@@ -1,0 +1,37 @@
+{
+  "note": "All protected structural digests MUST equal the repaired parent.",
+  "repaired": {
+    "combined_structural_digest": "b30d96781ea61d5822e24c5eb6812048cc98b9c82f70357f5b9e65c67b3a8353",
+    "elevation_digest": "18618e75687e32edb8030fc3b9c686d10d3aaa1b000442f4f97ea99cf5af8291",
+    "junction_digest": "ba65c039e348dcb5e6fdc9ee370327ccab132d232fcf7263ac1da7ef92aae6d6",
+    "junctions": 3646,
+    "lanelink_digest": "fcfad5c3ced7f66350ab41bab4a6784f3459c4ac1dedbc6d4f54c8775d13a662",
+    "lanesection_digest": "31c8e0447ef70bef60f84393e739d703ea7da7e6785b9b133d27276087ae8c56",
+    "planview_digest": "e4b4402a2644e2905410d34d083d6255dbfc47fd29068ff93eac333f6b49f06a",
+    "road_link_digest": "645f1a8fdc2e77f0e52e7727fc6daa0fc97bab564ab7c618bc4ce390c1183975",
+    "roads": 32710,
+    "schema": "phase_q/structural_digest/v1"
+  },
+  "run_id": "20260807T000000Z",
+  "semantic_parent": {
+    "combined_structural_digest": "b30d96781ea61d5822e24c5eb6812048cc98b9c82f70357f5b9e65c67b3a8353",
+    "elevation_digest": "18618e75687e32edb8030fc3b9c686d10d3aaa1b000442f4f97ea99cf5af8291",
+    "junction_digest": "ba65c039e348dcb5e6fdc9ee370327ccab132d232fcf7263ac1da7ef92aae6d6",
+    "junctions": 3646,
+    "lanelink_digest": "fcfad5c3ced7f66350ab41bab4a6784f3459c4ac1dedbc6d4f54c8775d13a662",
+    "lanesection_digest": "31c8e0447ef70bef60f84393e739d703ea7da7e6785b9b133d27276087ae8c56",
+    "planview_digest": "e4b4402a2644e2905410d34d083d6255dbfc47fd29068ff93eac333f6b49f06a",
+    "road_link_digest": "645f1a8fdc2e77f0e52e7727fc6daa0fc97bab564ab7c618bc4ce390c1183975",
+    "roads": 32710,
+    "schema": "phase_q/structural_digest/v1"
+  },
+  "structural_identicals": {
+    "elevation": true,
+    "junction": true,
+    "lanelink": true,
+    "lanesection": true,
+    "planview": true,
+    "road_link": true
+  },
+  "structure_preserved": true
+}

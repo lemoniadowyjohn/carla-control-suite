@@ -15,6 +15,7 @@ Read-only re-verification from the on-disk crosswalk-enriched candidate:
 from __future__ import annotations
 
 import json
+import math
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -27,6 +28,9 @@ from phase_q.structural_digest import all_structural_digests
 from phase_q.signal_digest import combined_traffic_control_digest
 from phase_q.semantic_evidence import (
     extract_semantic_inventory, compare_inventories,
+)
+from ultimate_pipeline.enrichment.crosswalk_schema import (
+    carla_world_corners, reference_pose_at_s,
 )
 
 RUN_ID = "20260807T000000Z"
@@ -54,7 +58,15 @@ def _counts(root):
 
 
 def _crosswalk_polygon_valid(pts):
-    return len(pts) >= 4 and pts[0] == pts[-1]
+    """World-reconstructed CARLA polygon must be closed, finite, non-degenerate."""
+    if not pts or len(pts) < 4:
+        return False
+    if pts[0][0] != pts[-1][0] or pts[0][1] != pts[-1][1]:
+        return False
+    if not all(math.isfinite(p) for pt in pts for p in pt):
+        return False
+    area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(pts, pts[1:]))
+    return abs(area) / 2.0 > 1e-6
 
 
 def _crosswalk_objects(root):
@@ -67,8 +79,25 @@ def _crosswalk_objects(root):
             continue
         for o in objs.findall("object"):
             if (o.get("type") or "").lower() == "crosswalk":
-                items.append((o, rid, rlen))
+                items.append((o, road, rid, rlen))
     return items
+
+
+def _local_corners(o: ET.Element):
+    ol = o.find("outline")
+    if ol is None:
+        return []
+    pts = []
+    for c in ol.findall("cornerLocal"):
+        try:
+            pts.append((
+                float(c.get("u", "0") or "0"),
+                float(c.get("v", "0") or "0"),
+                float(c.get("z", "0") or "0"),
+            ))
+        except (TypeError, ValueError):
+            return []
+    return pts
 
 
 def main() -> int:
@@ -90,16 +119,20 @@ def main() -> int:
     cmp = compare_inventories(parent_inv, child_inv)
 
     cw = _crosswalk_objects(root)
-    cw_ids = [o.get("id") for o, _, _ in cw]
+    cw_ids = [o.get("id") for o, _, _, _ in cw]
     bad_s, bad_poly = [], []
-    for o, rid, rlen in cw:
+    for o, road, rid, rlen in cw:
         s = float(o.get("s", "0") or "0")
         if s < -1e-6 or s > rlen + 1e-3:
             bad_s.append((o.get("id"), rid, s, rlen))
-        ol = o.find("outline")
-        if ol is None or not _crosswalk_polygon_valid(
-                [(float(c.get("x", "0")), float(c.get("y", "0")), float(c.get("z", "0")))
-                 for c in ol.findall("cornerGlobal")]):
+        local_pts = _local_corners(o)
+        pose = reference_pose_at_s(road, s)
+        world = None
+        if pose is not None and local_pts:
+            hdg = float(o.get("hdg", "0") or "0")
+            t = float(o.get("t", "0") or "0")
+            world = carla_world_corners(local_pts, pose, t, hdg)
+        if not _crosswalk_polygon_valid(world):
             bad_poly.append(o.get("id"))
 
     allowed = {"objects", "crosswalk_objects"}

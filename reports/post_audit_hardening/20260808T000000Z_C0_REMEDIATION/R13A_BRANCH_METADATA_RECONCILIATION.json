@@ -1,0 +1,17 @@
+{
+  "branch_current_derived": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "corrections": [],
+  "derivation_rule": "branch metadata must derive from `git branch --show-current`",
+  "garbled_before": [],
+  "garbled_token": "fix/post-audit-phase-ese-20260803",
+  "head_sha": "a08bed5e8cadcf0577093280ece1e07dfb860a31",
+  "records_scan_for_branch": [
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R00_PRE_GATE_PROVISIONAL_ARTIFACTS.json",
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R01_PROCESS_INTEGRITY_CORRECTION.md",
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R04_SEMANTIC_PARENT_AUTHORITY.json"
+  ],
+  "residual_after_sweep": [],
+  "review_context": "R13 TERMINAL C0-R PREP",
+  "schema": "R13A_BRANCH_METADATA_RECONCILIATION/v1",
+  "verdict": "BRANCH_METADATA_RECONCILED"
+}

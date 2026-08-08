@@ -1,10 +1,9 @@
 {
-  "candidate_xodr": "reports\\post_audit_hardening\\20260807T000000Z\\candidate_crosswalk_enriched.xodr",
-  "check": "determinism",
+  "run_b_sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
+  "run_a_sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
   "identical": true,
-  "method": "delete candidate, regenerate via committed producer, compare LF sha256 to run A",
-  "run_a_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
-  "run_b_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
-  "run_id": "20260807T000000Z",
-  "stage": "I.1"
+  "note": "two fresh writer runs from the semantic parent",
+  "stage": "I.1",
+  "test": "T18",
+  "run_id": "20260807T000000Z"
 }

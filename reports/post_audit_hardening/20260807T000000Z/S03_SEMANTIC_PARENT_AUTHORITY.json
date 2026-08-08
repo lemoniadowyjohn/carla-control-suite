@@ -1,0 +1,75 @@
+{
+  "connector_count": 12,
+  "connector_repair_ids": [
+    "50003",
+    "51425",
+    "51646",
+    "52738",
+    "54261",
+    "56874",
+    "57300",
+    "58404",
+    "62170",
+    "66369",
+    "68135",
+    "69106"
+  ],
+  "counts": {
+    "controllers": 0,
+    "junctions": 3646,
+    "laneSections": 32710,
+    "lanes": 84781,
+    "objects": 0,
+    "roadMarks": 84781,
+    "roads": 32710,
+    "signalReferences": 0,
+    "signals": 3467
+  },
+  "generated_at_utc": "2026-08-08T12:39:53.415823+00:00",
+  "producer": "stage_1_freeze_semantic_parent.py",
+  "repaired_counts": {
+    "controllers": 0,
+    "junctions": 3646,
+    "laneSections": 32710,
+    "lanes": 84781,
+    "objects": 0,
+    "roadMarks": 84781,
+    "roads": 32710,
+    "signalReferences": 0,
+    "signals": 0
+  },
+  "run_id": "20260807T000000Z",
+  "semantic_parent": {
+    "name": "candidate_g_semantic_enriched",
+    "parent": {
+      "descended_from_repaired": true,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_fixed_final.xodr",
+      "sha256_lf_text": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
+      "sha256_raw_bytes": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+    },
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr",
+    "sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470"
+  },
+  "stage": "1",
+  "structural_invariants": {
+    "elevation": true,
+    "junction": true,
+    "lanelink": true,
+    "lanesection": true,
+    "planview": true,
+    "road_link": true
+  },
+  "structure_preserved": true,
+  "traffic_control": {
+    "combined_traffic_control_digest": "393ddad4861370ffd126da28bd1cd8416adf039eac1163d9d3e5772566dbf1c5",
+    "controller_count": 0,
+    "controller_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "schema": "phase_q/signal_digest/v1",
+    "schema_version": "1.4",
+    "signal_count": 3467,
+    "signal_element_digest": "0ac4a46686227999fb0bbdb4d264b4d2cdc2312195efff7d4e039a1ac35e8df1",
+    "signal_reference_count": 0,
+    "signal_reference_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  "verdict": "SEMANTIC_PARENT_FROZEN"
+}

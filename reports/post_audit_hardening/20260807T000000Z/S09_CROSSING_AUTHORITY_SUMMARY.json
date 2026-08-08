@@ -1,0 +1,33 @@
+{
+  "accounted_total": 179,
+  "accounting_invariant_pass": true,
+  "already_present": 0,
+  "ambiguous_rejected": 78,
+  "authority_total": 179,
+  "candidate_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr",
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "disposition_counts": {
+    "AMBIGUOUS_MATCH_REJECTED": 78,
+    "DUPLICATE_MERGED": 5,
+    "INSERTED": 61,
+    "OUTSIDE_MAP_SCOPE": 35
+  },
+  "dispositions": {
+    "AMBIGUOUS_MATCH_REJECTED": 78,
+    "DUPLICATE_MERGED": 5,
+    "INSERTED": 61,
+    "OUTSIDE_MAP_SCOPE": 35
+  },
+  "duplicate_merged": 5,
+  "existing_crosswalk_object_ids_in_xodr": [],
+  "generated_at_utc": "2026-08-08T12:25:50.562477+00:00",
+  "inserted": 61,
+  "osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "outside_map_scope": 35,
+  "producer": "stage_h_crossing_authority.py",
+  "run_id": "20260807T000000Z",
+  "source_invalid": 0,
+  "stage": "H",
+  "unsupported_geometry": 0,
+  "verdict": "CROSSING_AUTHORITY_ACCOUNTED"
+}

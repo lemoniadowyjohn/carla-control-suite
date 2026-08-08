@@ -1,0 +1,19 @@
+{
+  "all_sections_pass": true,
+  "run_flags": [],
+  "schema": "R13_PRODUCTION_SUMMARY/v1",
+  "sections": {
+    "A_branch_metadata": "BRANCH_METADATA_RECONCILED",
+    "B_identity_guard": "GOVERNED_PAYLOAD_IDENTITY_GUARD_OK",
+    "D_digest_v2": "DIGEST_V2_DISCRIMINATOR_PASS",
+    "E_semantic_parent_v2": "SEMANTIC_PARENT_AUTHORITY_V2",
+    "G_fixture_rows": 69,
+    "H_subtype_rows": 179,
+    "I_handoff": "OK",
+    "J_xml_object_count": "XML_OBJECT_COUNT_VERIFIED",
+    "K_pedestrian_rows": 5431,
+    "L_pedestrian_counts": "PEDESTRIAN_SOURCE_AUTHORITY_RECOMPUTED",
+    "M_representation_rows": 7,
+    "N_mutation_gate": "MUTATION_ALLOWLIST_AND_PARENT_GATE_OK"
+  }
+}

@@ -5,6 +5,11 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Tuple
 
+from ultimate_pipeline.enrichment.crosswalk_schema import (
+    carla_local_corners,
+    reference_pose_at_s,
+)
+
 
 @dataclass
 class OSMObject:
@@ -112,7 +117,18 @@ class ObjectInjector:
     # Attach object to road with full OpenDRIVE schema
     # ----------------------------------------------------------------------
     @staticmethod
-    def _attach_object(road: ET.Element, obj: OSMObject, obj_id: str):
+    def _attach_object(
+        road: ET.Element,
+        obj: OSMObject,
+        obj_id: str,
+        outline_frame: str = "global",
+    ):
+        """Attach an object under <road><objects>.
+
+        outline_frame="global" emits <cornerGlobal x y z> (buildings, inert
+        for CARLA 0.9.16); "local" emits <cornerLocal u v z> — the ONLY form
+        CARLA 0.9.16 ObjectParser reads for crosswalks (R05 lemma).
+        """
         objects_elem = road.find("objects")
         if objects_elem is None:
             objects_elem = ET.SubElement(road, "objects")
@@ -134,21 +150,31 @@ class ObjectInjector:
 
         o = ET.SubElement(objects_elem, "object", attrs)
 
-        # Add building outline if exists
+        # Add outline if exists
         if obj.outline:
             outline_elem = ET.SubElement(o, "outline")
-            for (x, y, z) in obj.outline:
-                ET.SubElement(outline_elem, "cornerGlobal", {
-                    "x": f"{x:.3f}",
-                    "y": f"{y:.3f}",
-                    "z": f"{z:.3f}",
-                })
+            if outline_frame == "local":
+                for (u, v, z) in obj.outline:
+                    ET.SubElement(outline_elem, "cornerLocal", {
+                        "u": f"{u:.6f}",
+                        "v": f"{v:.6f}",
+                        "z": f"{z:.6f}",
+                    })
+            else:
+                for (x, y, z) in obj.outline:
+                    ET.SubElement(outline_elem, "cornerGlobal", {
+                        "x": f"{x:.3f}",
+                        "y": f"{y:.3f}",
+                        "z": f"{z:.3f}",
+                    })
 
 
 # --------------------------------------------------------------------------
-# Crosswalk authoring (Stage I). Reuses the canonical <object> + <outline>
-# schema defined above. Additive only: inserts <object type="crosswalk"> under
-# <road><objects>; never mutates roads/junctions/geometries/signals.
+# Crosswalk authoring (Stage I). Reuses the canonical <object> schema; the
+# crosswalk <outline> is written with <cornerLocal u v z> corners (the ONLY
+# corner form CARLA 0.9.16 ObjectParser reads) per R05. Additive only:
+# inserts <object type="crosswalk"> under <road><objects>; never mutates
+# roads/junctions/geometries/signals.
 # --------------------------------------------------------------------------
 CROSSWALK_DEFAULT_DEPTH_M = 4.0  # along-road marking extent
 
@@ -213,7 +239,10 @@ class CrosswalkSpec:
 class CrosswalkInjector:
     """Deterministic, idempotent crosswalk <object> injector.
 
-    Reuses ObjectInjector._attach_object (canonical OpenDRIVE object schema).
+    Reuses ObjectInjector._attach_object (canonical OpenDRIVE object schema)
+    with outline_frame="local": crosswalk outlines are written as
+    <cornerLocal u v z> per the CARLA 0.9.16 ObjectParser (R05 lemma), where
+    u/v are relative to the road reference line frame at (s, t, hdg).
     Idempotent across runs: an object id `crosswalk_{osm_id}` is unique and
     skipped if already present in the target XODR.
     """
@@ -232,7 +261,10 @@ class CrosswalkInjector:
     def inject(root: ET.Element, specs: List["CrosswalkSpec"]) -> Dict[str, int]:
         roads_by_id = {r.get("id"): r for r in root.findall("road")}
         existing = CrosswalkInjector.existing_ids(root)
-        stats = {"written": 0, "skipped_existing": 0, "skipped_no_road": 0}
+        stats = {
+            "written": 0, "skipped_existing": 0, "skipped_no_road": 0,
+            "skipped_no_geometry": 0,
+        }
         for spec in specs:
             obj_id = f"crosswalk_{spec.osm_id}"
             if obj_id in existing:
@@ -242,7 +274,16 @@ class CrosswalkInjector:
             if road is None:
                 stats["skipped_no_road"] += 1
                 continue
+            pose = reference_pose_at_s(road, spec.s)
+            if pose is None:
+                stats["skipped_no_geometry"] += 1
+                continue
             start, end = spec.start_m, spec.end_m
+            heading = math.radians(_bearing(start, end))
+            outline_world = _crosswalk_outline(start, end)
+            t = spec.t or 0.0
+            outline_local = carla_local_corners(
+                outline_world, pose=pose, t=t, hdg=heading)
             obj = OSMObject(
                 x=(start[0] + end[0]) / 2.0,
                 y=(start[1] + end[1]) / 2.0,
@@ -250,13 +291,13 @@ class CrosswalkInjector:
                 obj_type="crosswalk",
                 subtype=_crossing_subtype(spec.crossing_type),
                 height=0.0,
-                outline=_crosswalk_outline(start, end),
-                heading=math.radians(_bearing(start, end)),
+                outline=outline_local,
+                heading=heading,
                 road_id=spec.road_id,
                 s=spec.s,
-                t=spec.t,
+                t=t,
             )
-            ObjectInjector._attach_object(road, obj, obj_id)
+            ObjectInjector._attach_object(road, obj, obj_id, outline_frame="local")
             existing.add(obj_id)
             stats["written"] += 1
         return stats

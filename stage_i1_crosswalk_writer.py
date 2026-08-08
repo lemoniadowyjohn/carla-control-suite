@@ -8,7 +8,8 @@ Read-only on inputs; additive on output:
 
   candidate_crosswalk_enriched.xodr  (+ N09/N10 evidence)
 
-Mutation is strictly limited to adding <object type="crosswalk"> (+ <outline>/<cornerGlobal)
+Mutation is strictly limited to adding <object type="crosswalk"> (+ <outline>/<cornerLocal>
+u v z, the only corner form CARLA 0.9.16 ObjectParser reads — R05).
 under existing <road><objects>. All structural + traffic-control digests MUST
 remain identical to the frozen semantic parent (N01/N02/N03).
 
@@ -33,6 +34,7 @@ from ultimate_pipeline.enrichment.object_injector import (
 from phase_q.common import sha256_text, XodrTree, strip_xml_namespaces
 from phase_q.structural_digest import all_structural_digests
 from phase_q.signal_digest import combined_traffic_control_digest
+from phase_q.mutation_allowlist import parent_hard_gate, effective_allowlist
 from phase_q.semantic_evidence import (
     extract_semantic_inventory, compare_inventories,
 )
@@ -85,17 +87,22 @@ def main() -> int:
               file=sys.stderr)
         return 2
 
+    # ---- Parent hard gate (R13, fail-closed; single gate for ALL enrichment) ----
     frozen_auth = _j(FROZEN_AUTHORITY)
-    frozen_counts = frozen_auth["counts"]
-    parent_sha = sha256_text(SEMANTIC_PARENT.read_text(encoding="utf-8", errors="replace"))
-    if (parent_sha != frozen_auth["semantic_parent"]["sha256_lf_text"]
-            or frozen_counts["signals"] != 3467
-            or frozen_counts["roads"] != 32710
-            or frozen_counts["junctions"] != 3646):
-        print(f"Stage I.1: HARD FAIL - parent gate broken "
-              f"(sha_match={parent_sha == frozen_auth['semantic_parent']['sha256_lf_text']})",
+    gate_frozen = {
+        "counts": frozen_auth["counts"],
+        "semantic_parent": frozen_auth["semantic_parent"],
+        "traffic_control": _j(FROZEN_TC),
+    }
+    parent_text = SEMANTIC_PARENT.read_text(encoding="utf-8", errors="replace")
+    gate_result = parent_hard_gate(parent_text, gate_frozen)
+    allowlist = effective_allowlist()
+    if not gate_result.allowed or "object:INSERT_OBJECT_CROSSWALK" not in allowlist:
+        print(f"Stage I.1: HARD FAIL - parent gate broken: {gate_result.reasons}",
               file=sys.stderr)
         return 1
+    parent_sha = sha256_text(parent_text)
+    frozen_counts = frozen_auth["counts"]
 
     parent_struct = _j(FROZEN_STRUCT)["semantic_parent"]
     frozen_tc = _j(FROZEN_TC)
@@ -169,6 +176,7 @@ def main() -> int:
             and frozen_counts["signals"] == 3467
             and frozen_counts["roads"] == 32710
             and frozen_counts["junctions"] == 3646),
+        "parent_hard_gate": gate_result.as_dict(),
         "inject_stats": stats,
         "crosswalk_objects_written_total": len(written_objs),
         "structural_integrity": {

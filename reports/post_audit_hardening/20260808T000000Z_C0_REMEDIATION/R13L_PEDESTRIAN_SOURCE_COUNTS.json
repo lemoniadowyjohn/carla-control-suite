@@ -1,0 +1,26 @@
+{
+  "accounted_total": 5431,
+  "accounting_invariant_pass": true,
+  "authority_total": 5431,
+  "classification_counts": {
+    "CROSSING": 179,
+    "FOOTWAY": 2719,
+    "PATH": 1954,
+    "PEDESTRIAN_STREET": 78,
+    "PLATFORM": 103,
+    "SIDEWALK": 398
+  },
+  "disposition_counts": {
+    "ALREADY_PRESENT": 5071,
+    "AMBIGUOUS_REJECTED": 78,
+    "INSERTED_XODR_OBJECT": 66,
+    "OUTSIDE_MAP_SCOPE": 35,
+    "PACKAGE_MESH_REQUIRED": 181
+  },
+  "pedestrian_ways_with_geometry": 5431,
+  "producer": "stage_r13_production.py (Stage J classification rules)",
+  "schema": "R13L_PEDESTRIAN_SOURCE_COUNTS/v1",
+  "source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "source_sha256_lf_text": "67da6a5a3aa7072e5552ab9ddab2cec42a0a69b32933a852949167af20fcf764",
+  "verdict": "PEDESTRIAN_SOURCE_AUTHORITY_RECOMPUTED"
+}
