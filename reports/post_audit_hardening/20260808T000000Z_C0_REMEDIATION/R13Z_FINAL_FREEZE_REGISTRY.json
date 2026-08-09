@@ -8,7 +8,7 @@
     "path": "reports/post_audit_hardening/20260807T000000Z/candidate_crosswalk_enriched.xodr"
   },
   "git_clean_required": true,
-  "head_commit": "685e403e7e98da8f3b13a574ecde49d92af8d5e0",
+  "head_commit": "0a5a64603d6ca7645660fd1fa30975cc8d94fc95",
   "run_id": "20260808T000000Z_C0_REMEDIATION",
   "schema": "R13Z_FINAL_FREEZE_REGISTRY/v1"
 }
