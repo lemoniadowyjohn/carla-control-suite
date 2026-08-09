@@ -1,0 +1,20 @@
+{
+  "coordinate_contract": {
+    "coordinate_contract_pass": true,
+    "georeference_only_change": false,
+    "header_bounds_equal": true,
+    "junction_ids_equal": true,
+    "object_ids_equal": true,
+    "offset_equal": true,
+    "road_ids_equal": true,
+    "signal_ids_equal": true
+  },
+  "georeference_changes": {
+    "after": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "before": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "mode": "whitespace-canonicalized single-line <geoReference>"
+  },
+  "interpretation": "The only semantic difference between candidate and governed payload is the canonicalized <geoReference> text plus ElementTree reserialization. Road, junction, lane, signal and object identity, plus header bounds and offset, are structurally invariant (see coordinate_contract).",
+  "manifest_schema": "Q04_GEOREFERENCE_SEMANTIC_DIFF/v1",
+  "payload_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+}

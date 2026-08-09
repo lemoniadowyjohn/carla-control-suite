@@ -58,212 +58,6 @@
     "missing_way_node_refs": 0,
     "validation": "USE_EXISTING_VALID_OSM"
   },
-  "candidate_xodr": {
-    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
-    "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
-    "semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
-    "semantic_hash_algorithm": "c55v01a-xodr-structure-v1: sha256(JSON of road/link/planView/elevation/lane/laneLink/junction/connection attributes, sorted deterministically)",
-    "byte_size": 82318919,
-    "geo_reference": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
-    "geo_reference_matches_epsg32632": true,
-    "header_offset": null,
-    "road_count": 32710,
-    "junction_count": 3646,
-    "signal_count": 0,
-    "lane_link_count": 32040,
-    "control_points": [
-      {
-        "index": 0,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840138.71778614,
-        "y": 5464923.98146263,
-        "hdg": -0.33804562,
-        "length": 8.66497024
-      },
-      {
-        "index": 1,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840146.89235915,
-        "y": 5464921.10777763,
-        "hdg": -0.33804562,
-        "length": 6.66091005
-      },
-      {
-        "index": 2,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840153.08018602,
-        "y": 5464918.65631043,
-        "hdg": -0.49947145,
-        "length": 9.77140542
-      },
-      {
-        "index": 3,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840161.2356918,
-        "y": 5464913.28182013,
-        "hdg": -0.62519742,
-        "length": 12.22285012
-      },
-      {
-        "index": 4,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840170.88098311,
-        "y": 5464905.80796802,
-        "hdg": -0.85259117,
-        "length": 19.2572775
-      },
-      {
-        "index": 5,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840183.55293107,
-        "y": 5464891.307469,
-        "hdg": -0.85259117,
-        "length": 13.88888888
-      },
-      {
-        "index": 6,
-        "source": "planView.geometry.start",
-        "road_id": "39830",
-        "x": 840192.69264662,
-        "y": 5464880.84960908,
-        "hdg": -0.85252402,
-        "length": 12.63082613
-      },
-      {
-        "index": 7,
-        "source": "planView.geometry.start",
-        "road_id": "39831",
-        "x": 841328.89721974,
-        "y": 5461114.66734279,
-        "hdg": -0.33434992,
-        "length": 15.28300726
-      },
-      {
-        "index": 8,
-        "source": "planView.geometry.start",
-        "road_id": "39831",
-        "x": 841343.33391268,
-        "y": 5461109.65214511,
-        "hdg": -0.33434992,
-        "length": 11.181766
-      },
-      {
-        "index": 9,
-        "source": "planView.geometry.start",
-        "road_id": "39831",
-        "x": 841354.41680916,
-        "y": 5461108.46725282,
-        "hdg": 0.00801344,
-        "length": 12.48297324
-      },
-      {
-        "index": 10,
-        "source": "planView.geometry.start",
-        "road_id": "39831",
-        "x": 841366.80013263,
-        "y": 5461109.84019438,
-        "hdg": 0.27554466,
-        "length": 11.65078558
-      },
-      {
-        "index": 11,
-        "source": "planView.geometry.start",
-        "road_id": "39831",
-        "x": 841377.25967024,
-        "y": 5461114.92576844,
-        "hdg": 0.52393756,
-        "length": 16.03110924
-      },
-      {
-        "index": 12,
-        "source": "planView.geometry.start",
-        "road_id": "39831",
-        "x": 841390.68150662,
-        "y": 5461123.63890169,
-        "hdg": 0.76761917,
-        "length": 17.73243239
-      },
-      {
-        "index": 13,
-        "source": "planView.geometry.start",
-        "road_id": "39832",
-        "x": 839734.79230827,
-        "y": 5460088.99713148,
-        "hdg": -2.20930534,
-        "length": 10.0967673
-      },
-      {
-        "index": 14,
-        "source": "planView.geometry.start",
-        "road_id": "39833",
-        "x": 839823.80242253,
-        "y": 5460200.72887934,
-        "hdg": -2.26287382,
-        "length": 0.2
-      },
-      {
-        "index": 15,
-        "source": "planView.geometry.start",
-        "road_id": "39833",
-        "x": 839823.67479492,
-        "y": 5460200.57489495,
-        "hdg": -2.26287382,
-        "length": 18.81510913
-      },
-      {
-        "index": 16,
-        "source": "planView.geometry.start",
-        "road_id": "39833",
-        "x": 839811.7667833,
-        "y": 5460186.00759709,
-        "hdg": -2.25534042,
-        "length": 8.44491115
-      },
-      {
-        "index": 17,
-        "source": "planView.geometry.start",
-        "road_id": "39833",
-        "x": 839806.43778304,
-        "y": 5460179.45640538,
-        "hdg": -2.24900475,
-        "length": 27.77731152
-      },
-      {
-        "index": 18,
-        "source": "planView.geometry.start",
-        "road_id": "39833",
-        "x": 839789.04111236,
-        "y": 5460157.80156473,
-        "hdg": -2.24148878,
-        "length": 54.04178328
-      },
-      {
-        "index": 19,
-        "source": "planView.geometry.start",
-        "road_id": "39834",
-        "x": 839946.78179574,
-        "y": 5460306.02513409,
-        "hdg": -2.51036516,
-        "length": 20.29787316
-      }
-    ],
-    "elevation_metrics": {
-      "elevation_record_count": 32710,
-      "roads_with_elevation_count": 32710,
-      "roads_missing_elevation_count": 0,
-      "nonzero_elevation_record_count": 0,
-      "all_bcd_zero": true,
-      "nonfinite_elevation_count": 0,
-      "suspicious_absolute_height_reset_count": 0,
-      "profile_classification": "LOCAL_FLAT_ZERO_NO_DEM"
-    }
-},
   "raw_xodr_runs": [
     {
       "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1.xodr",
@@ -745,7 +539,7 @@
     "xodr_files_committed": true,
     "reason": "Repository Git LFS rule tracks campaigns/ingolstadt_cooked_perception_v1/**/*.xodr and **/*.osm (see .gitattributes); XODR bytes now stored as LFS objects, hashes remain authoritative in this manifest."
   },
-  "converter_profile": "osm_to_xodr_wrapper.py (ultimate_pipeline/osm) sha256 2678373C3AC9AB688D6B7CDFB30D326345605FF9162CC3901F1A51323DFE4973 — donor worktree codex-full-pipeline-rerun-20260427 (DSV02 matrix: codex-full-pipeline-rerun variant); Osm2Odr invoked via CARLA PythonAPI (carla.Osm2Odr + Osm2OdrSettings)",
+  "converter_profile": "osm_to_xodr_wrapper.py (ultimate_pipeline/osm) sha256 2678373C3AC9AB688D6B7CDFB30D326345605FF9162CC3901F1A51323DFE4973 \u2014 donor worktree codex-full-pipeline-rerun-20260427 (DSV02 matrix: codex-full-pipeline-rerun variant); Osm2Odr invoked via CARLA PythonAPI (carla.Osm2Odr + Osm2OdrSettings)",
   "carla_osm2odr_version": "UNKNOWN_UNSOURCED (Osm2Odr via CARLA PythonAPI carla.Osm2Odr; no CARLA/Osm2Odr version string found in donor code or logs)",
   "crs_contract_hash": "8886CE90FD2F7D4F61B319FBCB162B0FD536211AFA31EEF2FD4F32921084D000",
   "protected_paths_not_modified": [
@@ -753,5 +547,32 @@
     "08_final_structural_gap.xodr",
     "scenario_b_audit/contract_run/",
     "submission/results/structural_gap_run11/"
-  ]
+  ],
+  "retired_candidate_xodr": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "retired": true,
+    "retired_by": "C2 Step A promotion (CLAUDE_SEMANTIC_CANDIDATE_ACCEPTED); replaced by governed perception candidate"
+  },
+  "perception_candidate": {
+    "role": "governed perception load payload",
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+    "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "byte_size": 81007405,
+    "candidate_sha256": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
+    "transformation": "ultimate_pipeline.core.carla_opendrive_loader._normalize_georef_in_xodr_text",
+    "transformation_version": "georef_normalize_elementtree_v1",
+    "identity_guard": "governed_payload_identity_guard/v1",
+    "promoted_from": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr"
+  },
+  "repaired_parent": {
+    "role": "repaired parent",
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fixed_final.xodr",
+    "sha256_bytes": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+  },
+  "semantic_parent": {
+    "role": "semantic parent",
+    "path": "reports/post_audit_hardening/20260807T000000Z/candidate_g_semantic_enriched.xodr",
+    "sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470"
+  }
 }
