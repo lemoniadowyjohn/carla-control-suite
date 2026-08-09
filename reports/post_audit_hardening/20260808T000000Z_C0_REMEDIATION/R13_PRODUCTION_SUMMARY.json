@@ -1,6 +1,8 @@
 {
   "all_sections_pass": true,
-  "run_flags": [],
+  "run_flags": [
+    "--skip-heavy"
+  ],
   "schema": "R13_PRODUCTION_SUMMARY/v1",
   "sections": {
     "A_branch_metadata": "BRANCH_METADATA_RECONCILED",

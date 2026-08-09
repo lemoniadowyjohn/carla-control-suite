@@ -114,7 +114,11 @@ def a_branch_reconciliation() -> Dict[str, Any]:
     sweep = subprocess.run(
         ["git", "grep", "-l", "-e", "post-audit-phase-ese", "--"],
         cwd=str(REPO), capture_output=True, text=True)
-    residual = sorted(l.strip() for l in sweep.stdout.splitlines() if l.strip())
+    excluded = {"stage_r13_production.py",
+                "R13A_BRANCH_METADATA_RECONCILIATION.json"}
+    residual = sorted(
+        l.strip() for l in sweep.stdout.splitlines()
+        if l.strip() and Path(l.strip()).name not in excluded)
     verdict = ("BRANCH_METADATA_RECONCILED"
                if (branch_now == CORRECT_BRANCH and not garbled_files
                    and not residual) else "BRANCH_METADATA_STILL_BROKEN")
@@ -129,6 +133,8 @@ def a_branch_reconciliation() -> Dict[str, Any]:
         "garbled_before": [g["file"] for g in garbled_files],
         "corrections": garbled_files,
         "residual_after_sweep": residual,
+        "sweep_exclusions": sorted(excluded),
+        "sweep_exclusion_note": "detector declares the garbled token as the literal it scans for; self-record legitimately names it",
         "verdict": verdict,
     }
 

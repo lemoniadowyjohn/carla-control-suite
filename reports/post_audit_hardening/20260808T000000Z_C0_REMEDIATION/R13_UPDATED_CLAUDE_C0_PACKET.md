@@ -1,6 +1,6 @@
 # R13 UPDATED CLAUDE C0 PACKET
 
-*Run: `20260808T000000Z_C0_REMEDIATION` · branch `fix/post-audit-phase-e-junctions-roundabouts-20260803` · HEAD `69d040255d20b5927a8a9a202fd88ae82f9a1213` · frozen 2026-08-08T19:50:22.046948+00:00*
+*Run: `20260808T000000Z_C0_REMEDIATION` · branch `fix/post-audit-phase-e-junctions-roundabouts-20260803` · HEAD `685e403e7e98da8f3b13a574ecde49d92af8d5e0` · frozen 2026-08-09T06:46:45.159371+00:00*
 
 ## Terminal C0-R readiness — STOP A
 
@@ -10,7 +10,7 @@ This packet supersedes `docs/N04_CLAUDE_C0_PACKET.md` and the provisional R00/R0
 
 | Artifact | sha256 |
 | --- | --- |
-| `R13A_BRANCH_METADATA_RECONCILIATION.json` | `b22f874962371f4c25b62f98d709b09940d7fc8c67f6ce36792c81d0edc53a5d` |
+| `R13A_BRANCH_METADATA_RECONCILIATION.json` | `23b1681c9c79d2b0ecf2406af4e2f1f3d3398c477cf09980d98f59662e40ec7b` |
 | `R13B_GOVERNED_PAYLOAD_IDENTITY_GUARD.json` | `c4b2ddfce031e68ffad097d294c79a2d71adcc6e46cfa993a41f0576a4df80e4` |
 | `R13C_DIGEST_V13_SEMANTIC_PARENT_DOC.md` | `d7b36edccddd2c83f31659aa26cc885e1ef9f439c97ba707ef0268d9e4f30d13` |
 | `R13D_DIGEST_V2_TEST_EVIDENCE.json` | `5d58429495fb4957e1b0520860fde1d438083009b00db3f8017a8090cbc67e95` |
@@ -24,7 +24,7 @@ This packet supersedes `docs/N04_CLAUDE_C0_PACKET.md` and the provisional R00/R0
 | `R13L_PEDESTRIAN_SOURCE_COUNTS.json` | `702c6958f061d1263ce35881c35fd9dbd863f80c4e79e1b056688cd2e7c3e80d` |
 | `R13M_PEDESTRIAN_CLASSIFICATION_REPRESENTATION.csv` | `ac90c00de7f78e7b9f4a4be6266248d448f44af33646556400279b5eff8f96ff` |
 | `R13N_MUTATION_ALLOWLIST_AND_PARENT_GATE.json` | `731b05fbc8f255ee3aa81aaf3b77a7aae0a0898e2be827277ed30d9eed5108a9` |
-| `R13_PRODUCTION_SUMMARY.json` | `abc5ddb4bc4438fee22e4c731a7e9e08cf68be0ad0019d30ce64b8b0546ed843` |
+| `R13_PRODUCTION_SUMMARY.json` | `2e9cd337cbb7237802f4107f31fcae2c7fc2585db0be3bd8d98f85adea887a08` |
 
 ## Section verdicts
 
@@ -54,7 +54,7 @@ This packet supersedes `docs/N04_CLAUDE_C0_PACKET.md` and the provisional R00/R0
 
 ## Freeze
 
-- `R13O_C0_REVIEW_FREEZE.json` + `R13Z_FINAL_FREEZE_REGISTRY.json` written at HEAD `69d040255d20b5927a8a9a202fd88ae82f9a1213`; branch `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
-- Git working tree clean; `25104180` commits the R13 batch; freeze commit `69d040255d20b5927a8a9a202fd88ae82f9a1213` records this packet.
+- `R13O_C0_REVIEW_FREEZE.json` + `R13Z_FINAL_FREEZE_REGISTRY.json` written at HEAD `685e403e7e98da8f3b13a574ecde49d92af8d5e0`; branch `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
+- Git working tree clean; `25104180` commits the R13 batch; freeze commit `685e403e7e98da8f3b13a574ecde49d92af8d5e0` records this packet.
 - STOP A boundary respected: no C1 candidate is produced in this batch (offline; CARLA runtime not consulted).
 

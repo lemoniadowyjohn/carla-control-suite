@@ -4,14 +4,22 @@
   "derivation_rule": "branch metadata must derive from `git branch --show-current`",
   "garbled_before": [],
   "garbled_token": "fix/post-audit-phase-ese-20260803",
-  "head_sha": "a08bed5e8cadcf0577093280ece1e07dfb860a31",
+  "head_sha": "685e403e7e98da8f3b13a574ecde49d92af8d5e0",
   "records_scan_for_branch": [
     "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R00_PRE_GATE_PROVISIONAL_ARTIFACTS.json",
     "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R01_PROCESS_INTEGRITY_CORRECTION.md",
-    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R04_SEMANTIC_PARENT_AUTHORITY.json"
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R04_SEMANTIC_PARENT_AUTHORITY.json",
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R13_UPDATED_CLAUDE_C0_PACKET.md",
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R13O_C0_REVIEW_FREEZE.json",
+    "reports\\post_audit_hardening\\20260808T000000Z_C0_REMEDIATION\\R13Z_FINAL_FREEZE_REGISTRY.json"
   ],
   "residual_after_sweep": [],
   "review_context": "R13 TERMINAL C0-R PREP",
   "schema": "R13A_BRANCH_METADATA_RECONCILIATION/v1",
+  "sweep_exclusion_note": "detector declares the garbled token as the literal it scans for; self-record legitimately names it",
+  "sweep_exclusions": [
+    "R13A_BRANCH_METADATA_RECONCILIATION.json",
+    "stage_r13_production.py"
+  ],
   "verdict": "BRANCH_METADATA_RECONCILED"
 }

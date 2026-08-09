@@ -1,8 +1,8 @@
 {
   "artifacts": {
     "R13A_BRANCH_METADATA_RECONCILIATION.json": {
-      "bytes": 864,
-      "sha256": "b22f874962371f4c25b62f98d709b09940d7fc8c67f6ce36792c81d0edc53a5d"
+      "bytes": 1403,
+      "sha256": "23b1681c9c79d2b0ecf2406af4e2f1f3d3398c477cf09980d98f59662e40ec7b"
     },
     "R13B_GOVERNED_PAYLOAD_IDENTITY_GUARD.json": {
       "bytes": 2024,
@@ -57,13 +57,13 @@
       "sha256": "731b05fbc8f255ee3aa81aaf3b77a7aae0a0898e2be827277ed30d9eed5108a9"
     },
     "R13_PRODUCTION_SUMMARY.json": {
-      "bytes": 667,
-      "sha256": "abc5ddb4bc4438fee22e4c731a7e9e08cf68be0ad0019d30ce64b8b0546ed843"
+      "bytes": 689,
+      "sha256": "2e9cd337cbb7237802f4107f31fcae2c7fc2585db0be3bd8d98f85adea887a08"
     }
   },
   "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
-  "frozen_at_utc": "2026-08-08T19:50:22.046948+00:00",
-  "head_commit": "69d040255d20b5927a8a9a202fd88ae82f9a1213",
+  "frozen_at_utc": "2026-08-09T06:46:45.159371+00:00",
+  "head_commit": "685e403e7e98da8f3b13a574ecde49d92af8d5e0",
   "mutation_scope": {
     "only_mutation": "object:INSERT_OBJECT_CROSSWALK"
   },
