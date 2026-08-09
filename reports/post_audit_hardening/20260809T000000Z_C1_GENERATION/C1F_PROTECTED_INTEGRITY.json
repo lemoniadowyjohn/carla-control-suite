@@ -1,0 +1,116 @@
+{
+  "crosswalk_corners": {
+    "objects_with_empty_cornerLocal": 0,
+    "objects_with_nonempty_cornerLocal": 66,
+    "per_object_corner_counts": {
+      "crosswalk_1042219118": 5,
+      "crosswalk_1043366193": 5,
+      "crosswalk_1050386657": 5,
+      "crosswalk_1065435249": 5,
+      "crosswalk_1182767736": 5,
+      "crosswalk_1183958178": 5,
+      "crosswalk_1189564732": 5,
+      "crosswalk_1189564736": 5,
+      "crosswalk_1189564740": 5,
+      "crosswalk_1189565564": 5,
+      "crosswalk_1193072819": 5,
+      "crosswalk_1193072820": 5,
+      "crosswalk_1210272943": 5,
+      "crosswalk_1231643352": 5,
+      "crosswalk_1231643354": 5,
+      "crosswalk_1251945016": 5,
+      "crosswalk_1251945025": 5,
+      "crosswalk_1272842061": 5,
+      "crosswalk_1272842063": 5,
+      "crosswalk_1288620300": 5,
+      "crosswalk_1302300634": 5,
+      "crosswalk_1302300635": 5,
+      "crosswalk_1304137978": 5,
+      "crosswalk_1304137980": 5,
+      "crosswalk_1304137981": 5,
+      "crosswalk_1304137983": 5,
+      "crosswalk_1304137985": 5,
+      "crosswalk_1304137986": 5,
+      "crosswalk_1304137990": 5,
+      "crosswalk_1304137992": 5,
+      "crosswalk_1304137993": 5,
+      "crosswalk_1304137994": 5,
+      "crosswalk_1304137995": 5,
+      "crosswalk_1304138002": 5,
+      "crosswalk_1304138004": 5,
+      "crosswalk_1310466524": 5,
+      "crosswalk_1310466528": 5,
+      "crosswalk_1310466537": 5,
+      "crosswalk_1311357354": 5,
+      "crosswalk_1311357356": 5,
+      "crosswalk_1311357358": 5,
+      "crosswalk_1311357360": 5,
+      "crosswalk_1418867010": 5,
+      "crosswalk_317613599": 5,
+      "crosswalk_317613600": 5,
+      "crosswalk_333438883": 5,
+      "crosswalk_397807429": 5,
+      "crosswalk_710645369": 5,
+      "crosswalk_814692001": 5,
+      "crosswalk_815412596": 5,
+      "crosswalk_815412599": 5,
+      "crosswalk_815412609": 5,
+      "crosswalk_816754721": 5,
+      "crosswalk_816754722": 5,
+      "crosswalk_822603353": 5,
+      "crosswalk_822603362": 5,
+      "crosswalk_822603365": 5,
+      "crosswalk_833624970": 5,
+      "crosswalk_833624971": 5,
+      "crosswalk_833624972": 5,
+      "crosswalk_857631237": 5,
+      "crosswalk_865774606": 5,
+      "crosswalk_865774610": 5,
+      "crosswalk_885891572": 5,
+      "crosswalk_888409635": 5,
+      "crosswalk_891546830": 5
+    }
+  },
+  "parent_sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+  "semantic_inventory_delta": {
+    "crosswalk_objects_written": 66,
+    "delta_is_exact": true,
+    "only_crosswalk_objects_changed": true
+  },
+  "signal_id_set": {
+    "candidate_count": 3467,
+    "parent_count": 3467,
+    "unchanged": true
+  },
+  "structural": {
+    "category_checks": {
+      "connector_repair": true,
+      "elevation": true,
+      "junction": true,
+      "lanelink": true,
+      "lanesection": true,
+      "planview": true,
+      "road_link": true,
+      "roadmark": true,
+      "superelevation_crossfall": true
+    },
+    "combined_structural_digest": "b30d96781ea61d5822e24c5eb6812048cc98b9c82f70357f5b9e65c67b3a8353",
+    "unchanged": true
+  },
+  "traffic_control": {
+    "combined": "393ddad4861370ffd126da28bd1cd8416adf039eac1163d9d3e5772566dbf1c5",
+    "controller": {
+      "digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "unchanged": true
+    },
+    "signal_element": {
+      "digest": "0ac4a46686227999fb0bbdb4d264b4d2cdc2312195efff7d4e039a1ac35e8df1",
+      "unchanged": true
+    },
+    "signal_reference": {
+      "digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "unchanged": true
+    },
+    "unchanged": true
+  }
+}
