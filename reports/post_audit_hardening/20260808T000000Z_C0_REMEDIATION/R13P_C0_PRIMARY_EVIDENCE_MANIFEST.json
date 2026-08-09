@@ -1,0 +1,136 @@
+{
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "entries": [
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13A_BRANCH_METADATA_RECONCILIATION.json",
+      "role": "r13_technical_evidence",
+      "sha256": "23b1681c9c79d2b0ecf2406af4e2f1f3d3398c477cf09980d98f59662e40ec7b",
+      "size_bytes": 1403
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13B_GOVERNED_PAYLOAD_IDENTITY_GUARD.json",
+      "role": "r13_technical_evidence",
+      "sha256": "c4b2ddfce031e68ffad097d294c79a2d71adcc6e46cfa993a41f0576a4df80e4",
+      "size_bytes": 2024
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13C_DIGEST_V13_SEMANTIC_PARENT_DOC.md",
+      "role": "r13_technical_evidence",
+      "sha256": "d7b36edccddd2c83f31659aa26cc885e1ef9f439c97ba707ef0268d9e4f30d13",
+      "size_bytes": 3625
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13D_DIGEST_V2_TEST_EVIDENCE.json",
+      "role": "r13_technical_evidence",
+      "sha256": "5d58429495fb4957e1b0520860fde1d438083009b00db3f8017a8090cbc67e95",
+      "size_bytes": 2144
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13E_SEMANTIC_PARENT_AUTHORITY_V2.json",
+      "role": "r13_technical_evidence",
+      "sha256": "fb712c442c4ef14d039a466e87fdb7afb96aeea87549d1b5f66ff49876e8737f",
+      "size_bytes": 4299
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13F_CROSSWALK_LEMMA_EVIDENCE_DOC.md",
+      "role": "r13_technical_evidence",
+      "sha256": "63d057a7c2d4a2fb11225bf050c1ba7a97ac5cf3bf1c1be9af017d7ecf7cc4a4",
+      "size_bytes": 2433
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13G_CROSSWALK_COORDINATE_FIXTURES.csv",
+      "role": "r13_technical_evidence",
+      "sha256": "124708daae0f5ba86776391c33cb9d063a02f67fa84ff1a0ed0169d303fd0775",
+      "size_bytes": 15113
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13H_CROSSWALK_SUBTYPE_AUTHORITY.csv",
+      "role": "r13_technical_evidence",
+      "sha256": "16b3b10c95e46e001cdcd26741af5d1ecf9f3813de3ee500e49f896b80fa405c",
+      "size_bytes": 17420
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13I_PACKAGE_SEMANTIC_HANDOFF.json",
+      "role": "r13_technical_evidence",
+      "sha256": "38af4abc3d9334ca0438d2ac7b9df8044981c3027ba15f8c3ffc83668c2c3138",
+      "size_bytes": 2823
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13J_XML_OBJECT_COUNT_EVIDENCE.json",
+      "role": "r13_technical_evidence",
+      "sha256": "29f54e670252d7009e4920a8dbbe259fe1f0ac72a47ca0462fa1ade1a8430600",
+      "size_bytes": 1720
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13K_PEDESTRIAN_SOURCE_AUTHORITY.csv",
+      "role": "r13_technical_evidence",
+      "sha256": "0630d2d2ee0abc23c6c5bac6cbda8d395660e0eee364ad726f7f49ee620c2353",
+      "size_bytes": 1247648
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13L_PEDESTRIAN_SOURCE_COUNTS.json",
+      "role": "r13_technical_evidence",
+      "sha256": "702c6958f061d1263ce35881c35fd9dbd863f80c4e79e1b056688cd2e7c3e80d",
+      "size_bytes": 919
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13M_PEDESTRIAN_CLASSIFICATION_REPRESENTATION.csv",
+      "role": "r13_technical_evidence",
+      "sha256": "ac90c00de7f78e7b9f4a4be6266248d448f44af33646556400279b5eff8f96ff",
+      "size_bytes": 476
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13N_MUTATION_ALLOWLIST_AND_PARENT_GATE.json",
+      "role": "r13_technical_evidence",
+      "sha256": "731b05fbc8f255ee3aa81aaf3b77a7aae0a0898e2be827277ed30d9eed5108a9",
+      "size_bytes": 707
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13O_C0_REVIEW_FREEZE.json",
+      "role": "r13o_freeze_schema",
+      "sha256": "7474374e358ff364967ca1ec46366ec204b2c8971be05204fb5399dd0696ced4",
+      "size_bytes": 1888
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json",
+      "role": "r13p_evidence_manifest_self",
+      "self_sha_omitted": true,
+      "sha256": null,
+      "size_bytes": 6143
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_PRODUCTION_SUMMARY.json",
+      "role": "r13_technical_evidence",
+      "sha256": "2e9cd337cbb7237802f4107f31fcae2c7fc2585db0be3bd8d98f85adea887a08",
+      "size_bytes": 689
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_UPDATED_CLAUDE_C0_PACKET.md",
+      "role": "r13_packet",
+      "sha256": "716ff3e98aeb6ddce62a0fcfb567277affb0960e9e84c9a68f7046c9b03e9784",
+      "size_bytes": 5601
+    }
+  ],
+  "note": "Primary evidence for terminal C0-R review. sha256 computed over raw file bytes. R13P self entry omits its own sha (fixed-point avoidance); the annotated tag carries it.",
+  "review_phase": "TERMINAL_C0_R",
+  "run_id": "20260808T000000Z_C0_REMEDIATION",
+  "schema": "R13P_C0_PRIMARY_EVIDENCE_MANIFEST/v1"
+}

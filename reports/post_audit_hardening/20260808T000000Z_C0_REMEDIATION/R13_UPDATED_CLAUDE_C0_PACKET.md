@@ -1,6 +1,6 @@
 # R13 UPDATED CLAUDE C0 PACKET
 
-*Run: `20260808T000000Z_C0_REMEDIATION` · branch `fix/post-audit-phase-e-junctions-roundabouts-20260803` · HEAD `0a5a64603d6ca7645660fd1fa30975cc8d94fc95` · frozen 2026-08-09T06:50:23.944757+00:00*
+*Run: `20260808T000000Z_C0_REMEDIATION` · branch `fix/post-audit-phase-e-junctions-roundabouts-20260803` · review identity resolved by annotated tag (see Freeze) · frozen 2026-08-09T06:50:23.944757+00:00*
 
 ## Terminal C0-R readiness — STOP A
 
@@ -54,7 +54,25 @@ This packet supersedes `docs/N04_CLAUDE_C0_PACKET.md` and the provisional R00/R0
 
 ## Freeze
 
-- `R13O_C0_REVIEW_FREEZE.json` + `R13Z_FINAL_FREEZE_REGISTRY.json` written at HEAD `0a5a64603d6ca7645660fd1fa30975cc8d94fc95`; branch `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
-- Git working tree clean; `25104180` commits the R13 batch; freeze commit `0a5a64603d6ca7645660fd1fa30975cc8d94fc95` records this packet.
-- STOP A boundary respected: no C1 candidate is produced in this batch (offline; CARLA runtime not consulted).
+- freeze_schema: `C0R_TAG_ANCHORED_V2`
+- freeze_tag: `c0r_freeze_20260809_01`
+- review identity: resolved AFTER the terminal freeze commit by the
+  annotated tag (the tag is the authoritative commit/tree identity):
+  - `git rev-parse <freeze_tag>^{commit} == git rev-parse HEAD`
+  - `git rev-parse <freeze_tag>^{tree}   == git rev-parse HEAD^{tree}`
+  - `git status --porcelain` == empty
+- review invariant: NO commits may occur after tag creation and before
+  the Claude review.
+- The annotated tag message carries the authoritative identities
+  (`freeze_commit`, `freeze_tree`, `freeze_parent`) and the per-file
+  SHA-256s (r13, r13o, manifest). No committed JSON/manifest stores the
+  carrying commit SHA, the tag-object SHA, or a future tree SHA
+  (fixed-point avoidance; old self-referential R13O scheme invalidated).
+- `R13O_C0_REVIEW_FREEZE.json` (schema `C0R_TAG_ANCHORED_V2`) +
+  `R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json` + this packet are the freeze
+  documents; the primary evidence manifest lists every artifact Claude
+  must re-hash in terminal C0-R.
+- Git working tree clean at pre-freeze parent `98dae075…`; STOP A
+  boundary respected: no C1 candidate is produced in this batch
+  (offline; CARLA runtime not consulted).
 
