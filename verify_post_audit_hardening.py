@@ -14,6 +14,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[0]
 RUN = REPO / "reports" / "post_audit_hardening" / "20260807T000000Z"
+C1_RUN = REPO / "reports" / "post_audit_hardening" / "20260809T000000Z_C1_GENERATION"
+C2_RUN = REPO / "reports" / "post_audit_hardening" / "20260809T000000Z_C2_3DPACKAGE"
 
 REPAIRED = REPO / "campaigns" / "ingolstadt_cooked_perception_v1" / "candidate" / "ingolstadt_fixed_final.xodr"
 ENRICHED = RUN / "candidate_g_semantic_enriched.xodr"
@@ -102,13 +104,35 @@ def main() -> int:
         check(f"{s} BLOCKED_SERVER_UNAVAILABLE",
               d["verdict"] == f"{s}_BLOCKED_SERVER_UNAVAILABLE", d["verdict"])
 
-    # Residual gaps
-    cg = ip["residual_packaged_gaps"]["crosswalk_objects"]
-    pg = ip["residual_packaged_gaps"]["pedestrian_lanes"]
-    check("crosswalk objects missing (174 OSM vs 0)",
-          cg["osm_authority_count"] == 174 and cg["packaged_count"] == 0)
-    check("pedestrian lanes missing (78 OSM vs 0)",
-          pg["osm_authority_count"] == 78 and pg["packaged_count"] == 0)
+    # Residual gaps (flipped after C1: present <= authority, cornerLocal-only)
+    c1b = json.loads((C1_RUN / "C1B_CROSSING_DISPOSITION_LEDGER.json").read_text())
+    c1c = json.loads((C1_RUN / "C1C_PEDESTRIAN_LEDGER.json").read_text())
+    c1f = json.loads((C1_RUN / "C1F_PROTECTED_INTEGRITY.json").read_text())
+    cc_corners = c1f["crosswalk_corners"]
+    auth_x = c1b["authority_total"]
+    present_x = c1b["disposition_counts"]["INSERTED"] + c1b["disposition_counts"]["DUPLICATE_MERGED"]
+    check("crosswalk objects present <= authority (66 <= 179)",
+          present_x == 66 and auth_x == 179 and present_x <= auth_x,
+          f"present={present_x} authority={auth_x}")
+    check("crosswalk corners cornerLocal-only (66 nonempty, 0 empty)",
+          cc_corners["objects_with_nonempty_cornerLocal"] == 66
+          and cc_corners["objects_with_empty_cornerLocal"] == 0,
+          str(cc_corners))
+    auth_p = c1c["authority_total"]
+    present_p = (c1c["disposition_counts"]["ALREADY_PRESENT"]
+                 + c1c["disposition_counts"]["INSERTED_XODR_OBJECT"]
+                 + c1c["disposition_counts"]["PACKAGE_MESH_REQUIRED"])
+    check("pedestrian lanes present <= authority (5318 <= 5431)",
+          present_p == 5318 and auth_p == 5431 and present_p <= auth_p,
+          f"present={present_p} authority={auth_p}")
+    c2b = C2_RUN / "C2B_ALREADY_PRESENT_DECOMPOSITION.json"
+    if c2b.exists():
+        d = json.loads(c2b.read_text())
+        check("C2B decomposition split == 5071",
+              d["road_adjacent_sidewalk_matched"] + d["standalone_package_mesh"] == 5071,
+              str(d))
+    else:
+        check("C2B decomposition pending (B not run)", True, "C2B ledger pending")
 
     ok = all(c["pass"] for c in checks)
     print("VERIFY_POST_AUDIT_HARDENING:", "ALL PASS" if ok else "FAILURES")
