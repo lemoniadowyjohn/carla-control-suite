@@ -103,8 +103,8 @@
       "immutable_for_review": true,
       "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13O_C0_REVIEW_FREEZE.json",
       "role": "r13o_freeze_schema",
-      "sha256": "7474374e358ff364967ca1ec46366ec204b2c8971be05204fb5399dd0696ced4",
-      "size_bytes": 1888
+      "sha256": "b0fb279565d10a87d63d9b66319be9629d259260c3b2aafbf18342a35615f6e5",
+      "size_bytes": 2023
     },
     {
       "immutable_for_review": true,
@@ -112,7 +112,14 @@
       "role": "r13p_evidence_manifest_self",
       "self_sha_omitted": true,
       "sha256": null,
-      "size_bytes": 6143
+      "size_bytes": 6533
+    },
+    {
+      "immutable_for_review": true,
+      "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13R_REPOSITORY_BINDING.json",
+      "role": "r13_repository_binding",
+      "sha256": "504050531ad7da770b7dca4b24d5a21c26247445463ead5c5fdd97b8977c885d",
+      "size_bytes": 576
     },
     {
       "immutable_for_review": true,
@@ -125,12 +132,13 @@
       "immutable_for_review": true,
       "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_UPDATED_CLAUDE_C0_PACKET.md",
       "role": "r13_packet",
-      "sha256": "716ff3e98aeb6ddce62a0fcfb567277affb0960e9e84c9a68f7046c9b03e9784",
-      "size_bytes": 5601
+      "sha256": "139aeb1fcf591f28ed73618a3f2da9ea587ea2b5044bed73028f3bf2ba0c268d",
+      "size_bytes": 6278
     }
   ],
-  "note": "Primary evidence for terminal C0-R review. sha256 computed over raw file bytes. R13P self entry omits its own sha (fixed-point avoidance); the annotated tag carries it.",
-  "review_phase": "TERMINAL_C0_R",
-  "run_id": "20260808T000000Z_C0_REMEDIATION",
-  "schema": "R13P_C0_PRIMARY_EVIDENCE_MANIFEST/v1"
+  "freeze_tag": "c0r_freeze_20260809T085442Z_01",
+  "manifest_schema": "R13_PRIMARY_EVIDENCE_V1",
+  "note": "Primary evidence for terminal C0-R. sha256 over raw bytes. Self entry omits own sha (fixed-point), carried by the annotated tag.",
+  "repository_binding_path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13R_REPOSITORY_BINDING.json",
+  "review_phase": "TERMINAL_C0_R"
 }

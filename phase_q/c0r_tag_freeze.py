@@ -35,11 +35,14 @@ FORBIDDEN_KEYS = ("head_commit", "freeze_commit", "carrying_commit", "tag_object
 R13_REL = "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_UPDATED_CLAUDE_C0_PACKET.md"
 R13O_REL = "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13O_C0_REVIEW_FREEZE.json"
 R13P_REL = "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json"
+R13R_REL = "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13R_REPOSITORY_BINDING.json"
 
 MESSAGE_KEYS = (
     "freeze_schema", "freeze_commit", "freeze_tree", "freeze_parent",
-    "branch", "r13_path", "r13_sha256", "r13o_path", "r13o_sha256",
+    "branch", "repository",
+    "r13_path", "r13_sha256", "r13o_path", "r13o_sha256",
     "manifest_path", "manifest_sha256",
+    "repository_binding_path", "repository_binding_sha256",
 )
 
 VERDICT_OK = "C0R_TAG_FREEZE_VERIFIED"
@@ -58,6 +61,13 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: f.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _rel(repo: Path, path: Path) -> str:
+    try:
+        return str(path.relative_to(repo)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
 
 
 def _git_out(repo: Path, *args: str) -> str:
@@ -97,6 +107,7 @@ class C0RTagFreezeVerifier:
         r13_path: Optional[Path] = None,
         r13o_path: Optional[Path] = None,
         r13p_path: Optional[Path] = None,
+        r13r_path: Optional[Path] = None,
     ) -> None:
         self.repo = repo
         self.tag = tag
@@ -104,6 +115,7 @@ class C0RTagFreezeVerifier:
         self.r13 = r13_path or repo / R13_REL
         self.r13o = r13o_path or repo / R13O_REL
         self.r13p = r13p_path or repo / R13P_REL
+        self.r13r = r13r_path or repo / R13R_REL
         self.checks: List[FreezeCheck] = []
 
     # ------------------------------------------------------------------
@@ -176,19 +188,38 @@ class C0RTagFreezeVerifier:
             ("r13_sha_matches_tag_metadata", "r13_sha256", self.r13),
             ("r13o_sha_matches_tag_metadata", "r13o_sha256", self.r13o),
             ("r13p_sha_matches_tag_metadata", "manifest_sha256", self.r13p),
+            ("r13r_sha_matches_tag_metadata", "repository_binding_sha256",
+             self.r13r),
         ):
             disk = sha256_file(path)
             meta_sha = meta.get(key, "")
             self._add(name, bool(meta_sha) and meta_sha == disk,
                       f"tag={meta_sha[:16] or '<missing>'} disk={disk[:16]}")
 
-        # 7 manifest entries: present, hashes match, immutable flag
+        # 7 repository binding (tag message must name the exact checkout)
+        top = _git_out(self.repo, "rev-parse", "--show-toplevel")
+        repo_line = meta.get("repository", "")
+        norm_top = (top or "").replace("\\", "/").lower()
+        norm_line = repo_line.replace("\\", "/").lower()
+        self._add("repository_line_matches_toplevel",
+                  bool(norm_top) and norm_top == norm_line,
+                  f"msg={repo_line or '<missing>'} toplevel={top}")
+        self._add("repository_binding_receipt_present", self.r13r.is_file(),
+                  str(self.r13r) + (" ok" if self.r13r.is_file() else " MISSING"))
+
+        # 8 manifest: R13R listed, entries present/hashes match
         try:
             manifest = json.loads(self.r13p.read_text(encoding="utf-8"))
         except Exception as exc:
             self._add("manifest_parse", False, str(exc))
             return self._result()
         entries = manifest.get("entries") or []
+        binding_present_in_manifest = any(
+            (e.get("path") or "") == _rel(self.repo, self.r13r)
+            for e in entries)
+        self._add("manifest_contains_repository_binding",
+                  binding_present_in_manifest,
+                  f"r13_rel={_rel(self.repo, self.r13r)}")
         all_present, all_match, all_immutable = True, True, True
         mismatched = []
         for e in entries:
@@ -274,6 +305,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--r13-path", default=None)
     ap.add_argument("--r13o-path", default=None)
     ap.add_argument("--r13p-path", default=None)
+    ap.add_argument("--r13r-path", default=None)
     args = ap.parse_args(argv)
 
     verifier = C0RTagFreezeVerifier(
@@ -283,6 +315,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         r13_path=Path(args.r13_path) if args.r13_path else None,
         r13o_path=Path(args.r13o_path) if args.r13o_path else None,
         r13p_path=Path(args.r13p_path) if args.r13p_path else None,
+        r13r_path=Path(args.r13r_path) if args.r13r_path else None,
     )
     result = verifier.verify()
     print(json.dumps(result.to_dict(), indent=2, sort_keys=True))

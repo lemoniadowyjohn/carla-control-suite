@@ -1,0 +1,12 @@
+{
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "git_common_dir": ".git",
+  "git_dir": ".git",
+  "pre_freeze_head": "38e0522c9232290b9dfc6c1032906cd1ef9d40fa",
+  "pre_freeze_parent": "98dae075a7001dede21a8ffadabd12f6736455a8",
+  "pre_freeze_tree": "2ac048824c7a823f81a91f25baea2ad9b92fb195",
+  "resolved_toplevel": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "schema": "R13_REPOSITORY_BINDING_V1",
+  "target_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "worktree_clean_before": true
+}

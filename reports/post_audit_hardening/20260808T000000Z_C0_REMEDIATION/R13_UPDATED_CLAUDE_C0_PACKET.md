@@ -55,24 +55,33 @@ This packet supersedes `docs/N04_CLAUDE_C0_PACKET.md` and the provisional R00/R0
 ## Freeze
 
 - freeze_schema: `C0R_TAG_ANCHORED_V2`
-- freeze_tag: `c0r_freeze_20260809_01`
+- freeze_tag: `c0r_freeze_20260809T085442Z_01` (repository-bound review
+  tag; the earlier `c0r_freeze_20260809_01` tag is superseded history)
+- repository binding receipt: `R13R_REPOSITORY_BINDING.json` (schema
+  `R13_REPOSITORY_BINDING_V1`) records `resolved_toplevel`, `git_dir`,
+  `git_common_dir`, branch, and the pre-freeze HEAD/tree/parent of THIS
+  checkout — proving the freeze mutation happened in the exact review
+  target `C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main`.
 - review identity: resolved AFTER the terminal freeze commit by the
   annotated tag (the tag is the authoritative commit/tree identity):
   - `git rev-parse <freeze_tag>^{commit} == git rev-parse HEAD`
   - `git rev-parse <freeze_tag>^{tree}   == git rev-parse HEAD^{tree}`
   - `git status --porcelain` == empty
+  - `git branch --show-current` == `fix/post-audit-phase-e-junctions-roundabouts-20260803`
+  - every `R13P` evidence SHA-256 matches its on-disk file
 - review invariant: NO commits may occur after tag creation and before
   the Claude review.
 - The annotated tag message carries the authoritative identities
-  (`freeze_commit`, `freeze_tree`, `freeze_parent`) and the per-file
-  SHA-256s (r13, r13o, manifest). No committed JSON/manifest stores the
-  carrying commit SHA, the tag-object SHA, or a future tree SHA
-  (fixed-point avoidance; old self-referential R13O scheme invalidated).
+  (`freeze_commit`, `freeze_tree`, `freeze_parent`), `repository=` (the
+  resolved toplevel), and per-file SHA-256s (`r13`, `r13o`, `manifest`,
+  `repository_binding`). No committed JSON/manifest stores the carrying
+  commit SHA, the tag-object SHA, or a future tree SHA (fixed-point
+  avoidance; old self-referential R13O scheme invalidated).
 - `R13O_C0_REVIEW_FREEZE.json` (schema `C0R_TAG_ANCHORED_V2`) +
-  `R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json` + this packet are the freeze
-  documents; the primary evidence manifest lists every artifact Claude
-  must re-hash in terminal C0-R.
-- Git working tree clean at pre-freeze parent `98dae075…`; STOP A
-  boundary respected: no C1 candidate is produced in this batch
+  `R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json` (schema
+`R13_PRIMARY_EVIDENCE_V1`) + `R13R_REPOSITORY_BINDING.json` + this
+  packet are the freeze documents; the manifest lists every artifact
+  Claude must re-hash in terminal C0-R.
+- STOP A boundary respected: no C1 candidate is produced in this batch
   (offline; CARLA runtime not consulted).
 

@@ -63,7 +63,7 @@ def _resolve(repo: Path, ref: str):
 
 def _freeze_repo(tmp: Path, *, tag: str = "c0r_freeze_test",
                  annotated: bool = True, at_head: bool = True,
-                 branch: str = BRANCH) -> Path:
+                 branch: str = BRANCH, with_binding: bool = True) -> Path:
     repo = tmp / "repo"
     repo.mkdir(parents=True, exist_ok=True)
     _git(repo, "init", "-b", branch)
@@ -74,10 +74,20 @@ def _freeze_repo(tmp: Path, *, tag: str = "c0r_freeze_test",
     _git(repo, "add", "-A")
     _git(repo, "commit", "-m", "seed")
     parent = _git(repo, "rev-parse", "HEAD")
+    toplevel = _git(repo, "rev-parse", "--show-toplevel")
 
     r13 = repo / "r13.md"
     r13o = repo / "r13o.json"
+    r13r = repo / "r13r.json"
     _write(r13, "# R13 packet\n")
+    top_rel = toplevel.replace("\\", "/")
+    _write(r13r, json.dumps({
+        "schema": "R13_REPOSITORY_BINDING_V1",
+        "resolved_toplevel": top_rel,
+        "branch": branch,
+        "pre_freeze_head": parent,
+        "worktree_clean_before": True,
+    }))
     _write(r13o, json.dumps({
         "freeze_schema": SCHEMA,
         "branch": branch,
@@ -85,21 +95,32 @@ def _freeze_repo(tmp: Path, *, tag: str = "c0r_freeze_test",
         "parent_commit": parent,
         "r13_packet_path": "r13.md",
         "primary_evidence_manifest_path": "r13p.json",
+        "repository_binding_path": "r13r.json",
         "clean_tree_required": True,
         "head_must_equal_tag_target_at_review": True,
         "no_commit_after_tag_before_review": True,
         "provisional_pre_c0_authority_forbidden": True,
     }))
     r13p = repo / "r13p.json"
-    manifest = {
-        "schema": "R13P_C0_PRIMARY_EVIDENCE_MANIFEST/v1",
-        "entries": [{
-            "path": "r13.md",
-            "sha256": sha256_file(r13),
-            "size_bytes": r13.stat().st_size,
-            "role": "r13_packet",
+    entries = [{
+        "path": "r13.md",
+        "sha256": sha256_file(r13),
+        "size_bytes": r13.stat().st_size,
+        "role": "r13_packet",
+        "immutable_for_review": True,
+    }]
+    if with_binding:
+        entries.append({
+            "path": "r13r.json",
+            "sha256": sha256_file(r13r),
+            "size_bytes": r13r.stat().st_size,
+            "role": "r13_repository_binding",
             "immutable_for_review": True,
-        }],
+        })
+    manifest = {
+        "manifest_schema": "R13_PRIMARY_EVIDENCE_V1",
+        "repository_binding_path": "r13r.json" if with_binding else None,
+        "entries": entries,
     }
     _write(r13p, json.dumps(manifest))
     _git(repo, "add", "-A")
@@ -110,14 +131,21 @@ def _freeze_repo(tmp: Path, *, tag: str = "c0r_freeze_test",
     if annotated:
         target = "HEAD" if at_head else "HEAD^"
         commit, tree, tparent = _resolve(repo, target)
-        message = "\n".join([s for s in [
+        lines = [
             f"freeze_schema={SCHEMA}",
             f"freeze_commit={commit}", f"freeze_tree={tree}",
             f"freeze_parent={tparent}", f"branch={branch}",
+            f"repository={top_rel}",
             f"r13_path=r13.md", f"r13_sha256={sha256_file(r13)}",
             f"r13o_path=r13o.json", f"r13o_sha256={sha256_file(r13o)}",
             f"manifest_path=r13p.json", f"manifest_sha256={sha256_file(r13p)}",
-        ]])
+        ]
+        if with_binding:
+            lines += [
+                f"repository_binding_path=r13r.json",
+                f"repository_binding_sha256={sha256_file(r13r)}",
+            ]
+        message = "\n".join(lines)
         _git(repo, "tag", "-a", tag, target, "-m", message)
     else:
         _git(repo, "tag", tag, "HEAD")
@@ -131,6 +159,7 @@ def _verdict(repo: Path, tag: str = "c0r_freeze_test",
         r13_path=repo / "r13.md",
         r13o_path=repo / "r13o.json",
         r13p_path=repo / "r13p.json",
+        r13r_path=repo / "r13r.json",
     )
     return v.verify().verdict
 
@@ -191,6 +220,11 @@ def test_negative_wrong_branch(tmp_path):
     assert _verdict(repo) == VERDICT_BAD
 
 
+def test_negative_missing_repository_binding(tmp_path):
+    repo = _freeze_repo(tmp_path, with_binding=False)
+    assert _verdict(repo) == VERDICT_BAD
+
+
 # ---------------------------------------------------------------------------
 # Committed (real-repo) freeze-schema + manifest checks (no git mutation)
 # ---------------------------------------------------------------------------
@@ -212,6 +246,8 @@ def test_r13o_is_tag_anchored_not_self_referential():
 def test_r13p_manifest_sorted_hashes_match_no_provisional():
     r13p = R13_DIR / "R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json"
     m = json.loads(r13p.read_text(encoding="utf-8"))
+    assert m["manifest_schema"] == "R13_PRIMARY_EVIDENCE_V1"
+    assert m["freeze_tag"].startswith("c0r_freeze_")
     entries = m["entries"]
     paths = [e["path"] for e in entries]
     assert paths == sorted(paths)
@@ -220,7 +256,7 @@ def test_r13p_manifest_sorted_hashes_match_no_provisional():
         assert e["immutable_for_review"] is True
         assert "provisional" not in (e["path"]).lower() and "r00_pre_gate" not in (e["path"]).lower()
         if e.get("role") == "r13p_evidence_manifest_self":
-            assert e.get("sha256") is None  # fixed-point avoidance
+            assert e.get("sha256") is None  # fixed-point: no self hash
             continue
         f = REPO_ROOT / e["path"]
         assert f.is_file(), e["path"]
@@ -228,3 +264,22 @@ def test_r13p_manifest_sorted_hashes_match_no_provisional():
         assert e["size_bytes"] == f.stat().st_size
         n_hashed += 1
     assert n_hashed == len(entries) - 1
+
+
+def test_r13r_repository_binding_receipt():
+    m = json.loads((R13_DIR / "R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json").read_text(encoding="utf-8"))
+    r13r = R13_DIR / "R13R_REPOSITORY_BINDING.json"
+    assert r13r.is_file()
+    assert m["repository_binding_path"].endswith("R13R_REPOSITORY_BINDING.json")
+    assert any(e["path"] for e in m["entries"] if e["role"] == "r13_repository_binding")
+    b = json.loads(r13r.read_text(encoding="utf-8"))
+    assert b["schema"] == "R13_REPOSITORY_BINDING_V1"
+    assert "carla_-main" in b["resolved_toplevel"]
+    assert b["branch"] == BRANCH
+    assert b["worktree_clean_before"] is True
+    assert b["pre_freeze_head"].startswith("38e0522c")
+
+
+def test_r13o_has_repository_binding_path():
+    r13o = json.loads((R13_DIR / "R13O_C0_REVIEW_FREEZE.json").read_text(encoding="utf-8"))
+    assert r13o["repository_binding_path"].endswith("R13R_REPOSITORY_BINDING.json")

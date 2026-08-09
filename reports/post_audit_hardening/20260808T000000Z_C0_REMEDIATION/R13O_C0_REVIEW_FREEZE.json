@@ -1,17 +1,15 @@
 {
-  "freeze_schema": "C0R_TAG_ANCHORED_V2",
   "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
-  "freeze_tag": "c0r_freeze_20260809_01",
-  "parent_commit": "98dae075a7001dede21a8ffadabd12f6736455a8",
-  "r13_packet_path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_UPDATED_CLAUDE_C0_PACKET.md",
-  "primary_evidence_manifest_path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json",
   "clean_tree_required": true,
+  "freeze_schema": "C0R_TAG_ANCHORED_V2",
+  "freeze_tag": "c0r_freeze_20260809T085442Z_01",
   "head_must_equal_tag_target_at_review": true,
-  "no_commit_after_tag_before_review": true,
-  "provisional_pre_c0_authority_forbidden": true,
   "mutation_scope": {
     "only_mutation": "object:INSERT_OBJECT_CROSSWALK"
   },
+  "no_commit_after_tag_before_review": true,
+  "parent_commit": "38e0522c9232290b9dfc6c1032906cd1ef9d40fa",
+  "primary_evidence_manifest_path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json",
   "protection": {
     "connector_repair_ids": [
       "50003",
@@ -30,9 +28,11 @@
     "protected_digest_categories": 13,
     "semantic_parent_sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470"
   },
+  "provisional_pre_c0_authority_forbidden": true,
+  "r13_packet_path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_UPDATED_CLAUDE_C0_PACKET.md",
+  "repository_binding_path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13R_REPOSITORY_BINDING.json",
   "review_boundary": "STOP A (no C1 candidate generated; offline; CARLA not required)",
   "run_id": "20260808T000000Z_C0_REMEDIATION",
-  "verdict": "R13_TERMINAL_C0_R_PREP_FROZEN",
   "verdicts": {
     "A_branch_metadata": "BRANCH_METADATA_RECONCILED",
     "B_identity_guard": "GOVERNED_PAYLOAD_IDENTITY_GUARD_OK",
