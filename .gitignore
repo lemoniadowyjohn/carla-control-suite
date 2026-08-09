@@ -219,6 +219,15 @@ reports/post_audit_hardening/*/*/preflight_report.json
 reports/post_audit_hardening/*/baseline_g0_preflight/
 
 # ---------------------------------------------------------------------------
+# C2 3D-package: raw interchangeable 3D artifacts (never committed; their
+# hashes are captured in artifacts_fullmap/osm2world_status.json which IS
+# tracked). Small stats JSONs remain tracked.
+# ---------------------------------------------------------------------------
+reports/post_audit_hardening/*/artifacts_fullmap/*.obj
+reports/post_audit_hardening/*/artifacts_fullmap/*.mtl
+reports/post_audit_hardening/*/artifacts_fullmap/*.log
+
+# ---------------------------------------------------------------------------
 # R13 terminal freeze (S01-classified NEVER-COMMIT workspace junk)
 # ---------------------------------------------------------------------------
 # IDE/tooling + local agent governance

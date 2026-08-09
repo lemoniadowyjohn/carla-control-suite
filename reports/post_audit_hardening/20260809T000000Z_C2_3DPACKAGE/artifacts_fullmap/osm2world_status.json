@@ -1,0 +1,70 @@
+{
+  "status": "ok",
+  "reason": "Generated 1 outputs: scene.obj",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "-o",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\scene.obj",
+      "--config",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\osm2world.properties"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {
+    "scene.obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\scene.obj"
+  },
+  "hashes": {
+    "input_osm": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "config": "f9666349cf9737d3b891240c524122e8df05ac0b35c4fe5e3f4d22483e24a2b5",
+    "scene.obj": "46c4a40f8eb653f3c4f0d9de79a4f5236357952ca580cafb33a3979815a8b7d2"
+  },
+  "config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\osm2world.properties",
+  "config_hash": "f9666349cf9737d3b891240c524122e8df05ac0b35c4fe5e3f4d22483e24a2b5",
+  "input_osm_hash": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "cache_key": "ec956bd0478fb2a7",
+  "start_time": "2026-08-09T19:05:13.871075",
+  "end_time": "2026-08-09T19:05:19.022831",
+  "duration_sec": 5.152,
+  "exit_codes": {
+    "scene.obj": 0
+  },
+  "exception": "",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\scene.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+        "-o",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\scene.obj",
+        "--config",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w462314990]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    }
+  ],
+  "glb_valid": null,
+  "glb_validation_reason": "",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "abs_config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 1
+}
