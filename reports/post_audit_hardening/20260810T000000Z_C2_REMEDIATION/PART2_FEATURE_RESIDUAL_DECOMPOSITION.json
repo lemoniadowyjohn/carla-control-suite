@@ -1,0 +1,440 @@
+{
+  "case_study_road_64882": {
+    "classification": "JUNCTION",
+    "note": "R15 945-vertex max 508.3 m and visual-layer ~572 m outliers at road 64882 are SurfaceArea/Elevator/PoleFence/Tree objects (plaza/fence/street-tree clutter), off-road, exempt from the road-associated gate.",
+    "r15_fullmap": {
+      "object_type_counts": {
+        "SurfaceArea Audi - Parkplatz": 45
+      },
+      "residual_m": {
+        "count": 45,
+        "max_m": 508.307,
+        "mean_m": 487.313,
+        "median_m": 492.007,
+        "min_m": 470.198,
+        "p95_m": 503.901,
+        "p99_m": 508.196
+      },
+      "source": "R15 fullmap OBJ",
+      "vertex_count": 45
+    },
+    "road_id": "64882",
+    "visual_layer": {
+      "object_type_counts": {
+        "ChainLinkFence9385": 272,
+        "PoleFence8754": 64,
+        "PoleFence8755": 416,
+        "PoleFence8756": 184,
+        "SurfaceArea12541": 14,
+        "SurfaceArea15819": 2,
+        "SurfaceArea21947": 8,
+        "SurfaceArea33670": 17,
+        "SurfaceArea47398": 8,
+        "SurfaceArea47399": 10,
+        "SurfaceArea47400": 10,
+        "SurfaceArea47401": 25,
+        "SurfaceArea48978": 12,
+        "SurfaceArea48979": 12,
+        "SurfaceArea48980": 14,
+        "SurfaceArea51059": 2,
+        "SurfaceArea51060": 4,
+        "SurfaceArea51062": 2,
+        "SurfaceArea51063": 9,
+        "SurfaceArea51064": 2,
+        "SurfaceArea62676": 5,
+        "SurfaceArea62682": 2,
+        "Tree1500": 11,
+        "Tree1503": 60,
+        "TreeRow8086": 41,
+        "TreeRow8087": 68,
+        "TreeRow8245": 157,
+        "TreeRow8246": 824
+      },
+      "residual_m": {
+        "count": 2255,
+        "max_m": 572.304,
+        "mean_m": 337.637,
+        "median_m": 447.057,
+        "min_m": 12.09,
+        "p95_m": 549.016,
+        "p99_m": 570.995
+      },
+      "source": "visual layer OBJ",
+      "vertex_count": 2255
+    }
+  },
+  "connector_ids_frozen": [
+    "50003",
+    "51425",
+    "51646",
+    "52738",
+    "54261",
+    "56874",
+    "57300",
+    "58404",
+    "62170",
+    "66369",
+    "68135",
+    "69106"
+  ],
+  "corridor_note": "lane half-width 3.5 + collision_lod_policy buffer 3.0; vertices within corridor are road-associated and gated; beyond are off-road clutter (exempt by design)",
+  "corridor_radius_m": 6.5,
+  "crosswalk_reference": {
+    "corners_total": 330,
+    "objects": 66,
+    "residual_m": {
+      "max_m": 13.264,
+      "mean_m": 4.957,
+      "median_m": 4.343,
+      "min_m": 0.222,
+      "p95_m": 10.282
+    },
+    "source": "C2E_CROSSWALK_CORNER_ALIGNMENT.json (governed payload)",
+    "verdict": "CROSSWALK_ALIGNMENT_RESIDUALS_CAPTURED (PASS gate)"
+  },
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "fullmap_r15_c2c_decomposition": {
+    "BRIDGE_TUNNEL": {
+      "offroad_stats_m": null,
+      "road_associated_stats_m": null,
+      "road_count": 0,
+      "verdict": "PASS_NO_DATA",
+      "vertex_count": 0
+    },
+    "CONNECTOR": {
+      "offroad_stats_m": null,
+      "road_associated_stats_m": null,
+      "road_count": 0,
+      "verdict": "PASS_NO_DATA",
+      "vertex_count": 0
+    },
+    "CURVE": {
+      "offroad_stats_m": {
+        "count": 2,
+        "max_m": 33.682,
+        "mean_m": 31.17,
+        "median_m": 31.17,
+        "min_m": 28.659,
+        "p95_m": 33.43,
+        "p99_m": 33.631
+      },
+      "offroad_top_object_types": {
+        "SurfaceArea Franziskanerplatz": 2
+      },
+      "offroad_vertex_count": 2,
+      "road_associated_stats_m": null,
+      "road_associated_vertex_count": 0,
+      "road_count": 1,
+      "verdict": "PASS",
+      "vertex_count": 2
+    },
+    "JUNCTION": {
+      "offroad_stats_m": {
+        "count": 824,
+        "max_m": 508.307,
+        "mean_m": 122.573,
+        "median_m": 60.435,
+        "min_m": 6.604,
+        "p95_m": 483.691,
+        "p99_m": 499.853
+      },
+      "offroad_top_object_types": {
+        "SurfaceArea Audi - Parkplatz": 84,
+        "SurfaceArea Audi Piazza": 89,
+        "SurfaceArea Theaterplatz": 26,
+        "SurfaceArea Viktualienmarkt": 64,
+        "SurfaceArea Zentraler Omnibusbahnhof (ZOB)": 55,
+        "SurfaceArea14": 48,
+        "SurfaceArea2": 201,
+        "SurfaceArea3": 25
+      },
+      "offroad_vertex_count": 824,
+      "road_associated_stats_m": {
+        "count": 73,
+        "max_m": 6.41,
+        "mean_m": 3.27,
+        "median_m": 3.422,
+        "min_m": 0.152,
+        "p95_m": 6.009,
+        "p99_m": 6.41
+      },
+      "road_associated_vertex_count": 73,
+      "road_count": 80,
+      "verdict": "PASS",
+      "vertex_count": 897
+    },
+    "ROUNDABOUT": {
+      "offroad_stats_m": null,
+      "road_associated_stats_m": null,
+      "road_count": 0,
+      "verdict": "PASS_NO_DATA",
+      "vertex_count": 0
+    },
+    "STRAIGHT": {
+      "offroad_stats_m": {
+        "count": 44,
+        "max_m": 473.437,
+        "mean_m": 58.726,
+        "median_m": 34.562,
+        "min_m": 15.696,
+        "p95_m": 107.991,
+        "p99_m": 473.028
+      },
+      "offroad_top_object_types": {
+        "RetainingWall0": 2,
+        "SurfaceArea Josef-Strobl-Platz": 3,
+        "SurfaceArea1": 3,
+        "SurfaceArea2": 36
+      },
+      "offroad_vertex_count": 44,
+      "road_associated_stats_m": {
+        "count": 2,
+        "max_m": 3.742,
+        "mean_m": 3.336,
+        "median_m": 3.336,
+        "min_m": 2.929,
+        "p95_m": 3.702,
+        "p99_m": 3.734
+      },
+      "road_associated_vertex_count": 2,
+      "road_count": 8,
+      "verdict": "PASS",
+      "vertex_count": 46
+    },
+    "obj_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\scene.obj",
+    "origin_native": [
+      839966.726,
+      5465151.361
+    ],
+    "origin_wgs84": [
+      48.749337350000005,
+      11.4324595
+    ],
+    "vertex_count": 945
+  },
+  "primitive_counts": {
+    "curve": 29162,
+    "line": 3548
+  },
+  "producer": "stage_c2_remediation_part2_feature_residuals.py",
+  "road_class_counts": {
+    "BRIDGE_TUNNEL": 310,
+    "CONNECTOR": 12,
+    "CURVE": 157,
+    "JUNCTION": 31937,
+    "ROUNDABOUT": 66,
+    "STRAIGHT": 228
+  },
+  "road_sample_m": 20.0,
+  "roundabout_detection": "OSM junction=roundabout ways matched to XODR centerlines (coverage >= 0.6 of road polyline within 3 m; road 3-60 m; one-way; curved)",
+  "roundabout_road_count": 66,
+  "schema": "C2_PART2_FEATURE_RESIDUAL_DECOMPOSITION/v1",
+  "structure_classifier_verdict": "STRUCTURE_CLASSIFICATION_OK",
+  "verdict": "PART2_FEATURE_DECOMPOSITION_PASS",
+  "visual_layer_decomposition": {
+    "BRIDGE_TUNNEL": {
+      "offroad_stats_m": {
+        "count": 23097,
+        "max_m": 1776.159,
+        "mean_m": 362.744,
+        "median_m": 291.236,
+        "min_m": 6.517,
+        "p95_m": 1128.281,
+        "p99_m": 1328.953
+      },
+      "offroad_top_object_types": {
+        "Forest34523": 636,
+        "Forest37345": 574,
+        "Forest60401": 940,
+        "Forest60867": 2876,
+        "PoleFence8158": 464,
+        "TreeRow4856": 418,
+        "TreeRow6140": 433,
+        "TreeRow6727": 2742
+      },
+      "offroad_vertex_count": 23097,
+      "road_associated_stats_m": {
+        "count": 951,
+        "max_m": 6.496,
+        "mean_m": 3.186,
+        "median_m": 2.999,
+        "min_m": 0.008,
+        "p95_m": 6.163,
+        "p99_m": 6.364
+      },
+      "road_associated_vertex_count": 951,
+      "road_count": 117,
+      "verdict": "PASS",
+      "vertex_count": 24048
+    },
+    "CONNECTOR": {
+      "offroad_stats_m": null,
+      "offroad_top_object_types": {},
+      "offroad_vertex_count": 0,
+      "road_associated_stats_m": {
+        "count": 18,
+        "max_m": 1.907,
+        "mean_m": 1.093,
+        "median_m": 1.034,
+        "min_m": 0.49,
+        "p95_m": 1.907,
+        "p99_m": 1.907
+      },
+      "road_associated_vertex_count": 18,
+      "road_count": 1,
+      "verdict": "PASS",
+      "vertex_count": 18
+    },
+    "CURVE": {
+      "offroad_stats_m": {
+        "count": 231480,
+        "max_m": 2693.694,
+        "mean_m": 743.253,
+        "median_m": 677.929,
+        "min_m": 6.507,
+        "p95_m": 1715.371,
+        "p99_m": 1868.602
+      },
+      "offroad_top_object_types": {
+        "Forest28977": 2946,
+        "Forest34631": 3243,
+        "Forest37939": 27499,
+        "Railing5536": 3544,
+        "TreeRow4480": 3464,
+        "TreeRow5328": 3196,
+        "TreeRow5338": 2872,
+        "TreeRow9503": 4140
+      },
+      "offroad_vertex_count": 231480,
+      "road_associated_stats_m": {
+        "count": 3141,
+        "max_m": 6.496,
+        "mean_m": 3.396,
+        "median_m": 3.393,
+        "min_m": 0.016,
+        "p95_m": 6.114,
+        "p99_m": 6.409
+      },
+      "road_associated_vertex_count": 3141,
+      "road_count": 118,
+      "verdict": "PASS",
+      "vertex_count": 234621
+    },
+    "JUNCTION": {
+      "offroad_stats_m": {
+        "count": 2651844,
+        "max_m": 3099.61,
+        "mean_m": 305.667,
+        "median_m": 105.823,
+        "min_m": 6.5,
+        "p95_m": 1490.987,
+        "p99_m": 2252.382
+      },
+      "offroad_top_object_types": {
+        "Forest Hochholz": 14252,
+        "Forest10884": 21152,
+        "Forest24883": 12260,
+        "Forest34631": 13276,
+        "Forest37939": 14892,
+        "Forest61663": 65023,
+        "Forest61669": 76095,
+        "Railing9352": 10476
+      },
+      "offroad_vertex_count": 2651844,
+      "road_associated_stats_m": {
+        "count": 197670,
+        "max_m": 6.5,
+        "mean_m": 3.261,
+        "median_m": 3.276,
+        "min_m": 0.0,
+        "p95_m": 6.154,
+        "p99_m": 6.433
+      },
+      "road_associated_vertex_count": 197670,
+      "road_count": 12259,
+      "verdict": "PASS",
+      "vertex_count": 2849514
+    },
+    "ROUNDABOUT": {
+      "offroad_stats_m": {
+        "count": 120,
+        "max_m": 101.13,
+        "mean_m": 31.661,
+        "median_m": 11.068,
+        "min_m": 6.509,
+        "p95_m": 85.236,
+        "p99_m": 99.833
+      },
+      "offroad_top_object_types": {
+        "Building21474": 2,
+        "Building25705": 4,
+        "Building27011": 26,
+        "Building27013": 4,
+        "Building35350": 4,
+        "Building35351": 6,
+        "Building51161": 6,
+        "Forest10110": 54
+      },
+      "offroad_vertex_count": 120,
+      "road_associated_stats_m": {
+        "count": 79,
+        "max_m": 6.416,
+        "mean_m": 2.5,
+        "median_m": 1.807,
+        "min_m": 0.004,
+        "p95_m": 6.124,
+        "p99_m": 6.393
+      },
+      "road_associated_vertex_count": 79,
+      "road_count": 7,
+      "verdict": "PASS",
+      "vertex_count": 199
+    },
+    "STRAIGHT": {
+      "offroad_stats_m": {
+        "count": 49247,
+        "max_m": 1818.667,
+        "mean_m": 169.457,
+        "median_m": 95.005,
+        "min_m": 6.506,
+        "p95_m": 581.974,
+        "p99_m": 940.959
+      },
+      "offroad_top_object_types": {
+        "Forest51547": 1062,
+        "Forest51551": 1765,
+        "TreeRow4261": 1610,
+        "TreeRow4262": 1760,
+        "TreeRow4263": 3069,
+        "TreeRow5137": 1273,
+        "TreeRow5887": 1929,
+        "TreeRow9652": 824
+      },
+      "offroad_vertex_count": 49247,
+      "road_associated_stats_m": {
+        "count": 2075,
+        "max_m": 6.492,
+        "mean_m": 3.324,
+        "median_m": 3.333,
+        "min_m": 0.02,
+        "p95_m": 6.19,
+        "p99_m": 6.423
+      },
+      "road_associated_vertex_count": 2075,
+      "road_count": 157,
+      "verdict": "PASS",
+      "vertex_count": 51322
+    },
+    "obj_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\scene.obj",
+    "origin_native": [
+      839966.712,
+      5465151.575
+    ],
+    "origin_wgs84": [
+      48.74933925,
+      11.43245975
+    ],
+    "vertex_count": 3159722
+  },
+  "xodr_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+}

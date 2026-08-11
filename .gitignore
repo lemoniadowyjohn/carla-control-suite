@@ -228,6 +228,24 @@ reports/post_audit_hardening/*/artifacts_fullmap/*.mtl
 reports/post_audit_hardening/*/artifacts_fullmap/*.log
 
 # ---------------------------------------------------------------------------
+# C2 R2 remediation (20260810T000000Z_C2_REMEDIATION): raw 3D interchange
+# artifacts + large regenerable dumps never committed; byte-exact disk hashes
+# captured in fullmap_mesh/fullmap_mesh_status.json and raw_artifacts_status.json
+# (both tracked). Small stats JSONs remain tracked.
+# ---------------------------------------------------------------------------
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/fullmap_mesh/*.obj
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/fullmap_mesh/*.mtl
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/*.obj
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/*.mtl
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/*.log
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/scene.fbx
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/*.log
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/blender_status.json
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/scene.blender_manifest.json
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_osm_raw/
+reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_osm_merged/
+
+# ---------------------------------------------------------------------------
 # R13 terminal freeze (S01-classified NEVER-COMMIT workspace junk)
 # ---------------------------------------------------------------------------
 # IDE/tooling + local agent governance

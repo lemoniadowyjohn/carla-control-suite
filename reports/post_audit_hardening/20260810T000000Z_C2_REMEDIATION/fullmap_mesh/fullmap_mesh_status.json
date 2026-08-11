@@ -1,0 +1,16 @@
+{
+  "bytes": {
+    "scene.obj": 398450258,
+    "scene_roads.obj": 16611751
+  },
+  "governed_xodr_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+  "hashes": {
+    "scene.obj": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e",
+    "scene_roads.obj": "27b6052bed266b428c371c8189933e6178c08d35f5a94f0e3a4f03267d4d9903"
+  },
+  "line_endings": "lf",
+  "note": "byte-exact disk sha256 (LF-normalized OBJ line endings, no CRLF drift)",
+  "producer": "stage_c2_remediation_part3_fullmap_mesh.py",
+  "schema": "C2_FULLMAP_MESH_STATUS/v1",
+  "sha256_byte_exact": true
+}
