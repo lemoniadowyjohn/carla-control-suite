@@ -1,0 +1,49 @@
+{
+  "annotation_contract": {
+    "commit_message_annotation_carries": [
+      "freeze_commit",
+      "freeze_tree",
+      "branch",
+      "r15_sha256",
+      "r15b_sha256",
+      "manifest_sha256",
+      "governed_payload_sha256",
+      "mesh_sha256"
+    ],
+    "governed_payload_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+  },
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "candidate": {
+    "crosswalk_objects": 66,
+    "identity_guard_pass": true,
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+    "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+  },
+  "flags": {
+    "head_commit_recorded": false,
+    "no_commits_after_tag": true,
+    "returns_commit_recorded": false,
+    "tag_object_sha_recorded": false
+  },
+  "freeze_tag": "c2_freeze_20260810T000000Z_C2R2",
+  "parent_commit": "e554da2ce1cdc77e74f7c72baeeac9a48b799c7f",
+  "parent_xodr": {
+    "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr",
+    "sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f"
+  },
+  "protected_digest_categories": [
+    "PLANVIEW_DIGEST",
+    "ROAD_LINK_DIGEST",
+    "JUNCTION_DIGEST",
+    "LANELINK_DIGEST",
+    "LANESECTION_DIGEST",
+    "ELEVATION_DIGEST",
+    "COMBINED_STRUCTURAL_DIGEST",
+    "SIGNAL_ELEMENT_DIGEST",
+    "SIGNAL_REFERENCE_DIGEST",
+    "CONTROLLER_DIGEST",
+    "COMBINED_TRAFFIC_CONTROL_DIGEST"
+  ],
+  "review_anchor_commit": "8b400351d13634104090b31e535ced6e6d748648",
+  "schema": "C2R_TAG_ANCHORED_V2"
+}
