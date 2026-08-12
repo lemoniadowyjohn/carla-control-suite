@@ -229,8 +229,44 @@ def default_opendrive_generation_params(carla_mod) -> object:
     params.wall_height = 0.0
     params.additional_width = 0.0
     params.vertex_distance = float(os.environ.get("UP_OD_VERTEX_DISTANCE", "1.0"))
-    params.smooth_junctions = True
+    params.smooth_junctions = _env_bool("UP_OD_SMOOTH_JUNCTIONS", default=True)
     return params
+
+
+def repair_road_lengths(xodr_text: str, margin: float = 1e-3) -> str:
+    """Normalize each <road length> so geometry extent never exceeds the declared length.
+
+    CARLA 0.9.16's mesh builder asserts `s <= road->GetLength()` and samples the
+    OpenDRIVE geometry boundary; on OSM-derived maps the geometry `s+length` can
+    exceed the declared road length by floating-point residue (~1e-8 m), triggering a
+    deterministic LowLevelFatalError crash ~10 min into `generate_opendrive_world`.
+    This clamps the declared length to `max(declared, max_geometry_s+len) + margin`
+    using full float precision, a sub-millimeter, topologically-nil semantic change.
+    """
+    import xml.etree.ElementTree as ET
+
+    root = ET.fromstring(xodr_text)
+    for road in root.findall("road"):
+        try:
+            decl = float(road.get("length"))
+        except (TypeError, ValueError):
+            decl = 0.0
+        geos = road.findall("planView/geometry")
+        if not geos:
+            continue
+        geom_end = max((_f(g.get("s")) + _f(g.get("length")) for g in geos), default=decl)
+        if geom_end > decl:
+            target = repr(geom_end + margin)
+            if abs(float(target) - decl) > 0.0:
+                road.set("length", target)
+    return ET.tostring(root, encoding="unicode", xml_declaration=False)
+
+
+def _f(v, default=0.0):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return default
 
 
 def load_builtin_world(
@@ -412,7 +448,8 @@ def load_opendrive_world_from_file(
     timeout_s: float = 180.0,
     retries: int = 2,
     do_reload: bool = True,
-fallback_enabled: Optional[bool] = None,
+    ready_timeout_s: Optional[float] = None,
+    fallback_enabled: Optional[bool] = None,
     fallback_maps: Optional[Sequence[str]] = None,
     source_sha256: str = "",
     governed_payload_sha256: str = "",
