@@ -43,11 +43,32 @@ OUTPUT = EVIDENCE_DIR / "candidate_g_semantic_enriched.xodr"
 sys.setrecursionlimit(10000)
 
 
+def _parse_args() -> tuple[Path, Path, str]:
+    """Allow replaying Phase H onto an alternate parent (e.g. the corrected,
+    length-invariant candidate) without overwriting the accepted chain.
+
+    --parent PATH   parent XODR to enrich (default: ingolstadt_fixed_final.xodr)
+    --out PATH      output XODR path (default: accepted candidate_g_semantic_enriched)
+    --run-id ID     evidence run id / evidence dir name
+    """
+    global PARENT, OUTPUT, RUN_ID, EVIDENCE_DIR
+    args = sys.argv[1:]
+    if "--parent" in args:
+        PARENT = Path(args[args.index("--parent") + 1]).resolve()
+    if "--out" in args:
+        OUTPUT = Path(args[args.index("--out") + 1]).resolve()
+    if "--run-id" in args:
+        RUN_ID = args[args.index("--run-id") + 1]
+        EVIDENCE_DIR = REPO_ROOT / "reports" / "post_audit_hardening" / RUN_ID
+    return PARENT, OUTPUT, RUN_ID
+
+
 def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def main() -> int:
+    parent_path, out_path, run_id = _parse_args()
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
     parent_text = PARENT.read_text(encoding="utf-8")
     parent_sha = sha256_text(parent_text)
@@ -90,11 +111,12 @@ def main() -> int:
     audit = audit_clean(root)
     integrity_ok = audit["clean"]
 
-    OUTPUT.write_text(ET.tostring(root, encoding="unicode"), encoding="utf-8")
-    out_sha = sha256_text(ET.tostring(root, encoding="unicode"))
+    out_text = ET.tostring(root, encoding="unicode")
+    OUTPUT.write_text(out_text, encoding="utf-8")
+    out_sha = sha256_text(out_text)
 
     from phase_q.semantic_evidence import extract_semantic_inventory, inventory_counts
-    inv = extract_semantic_inventory(ET.tostring(root, encoding="unicode"))
+    inv = extract_semantic_inventory(out_text)
     counts = inventory_counts(inv)
 
     verdict = "PHASE_H_REPLAY_PASS"
@@ -102,14 +124,18 @@ def main() -> int:
         verdict = "PHASE_H_REPLAY_BLOCKED_INTEGRITY"
     elif not idempotent:
         verdict = "PHASE_H_REPLAY_BLOCKED_IDEMPOTENCY"
+    if verdict == "PHASE_H_REPLAY_PASS" and str(parent_path) != str(
+        (REPO_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "candidate" / "ingolstadt_fixed_final.xodr").resolve()
+    ):
+        verdict = "PHASE_H_REPLAY_PASS_ON_CORRECTED_PARENT"
 
     report = {
-        "run_id": RUN_ID,
+        "run_id": run_id,
         "producer": "replay_phase_h_on_repaired.py",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "parent": str(PARENT),
+        "parent": str(parent_path),
         "parent_sha256": parent_sha,
-        "output": str(OUTPUT),
+        "output": str(out_path),
         "output_sha256": out_sha,
         "crs_verdict": survey["crs_verdict"],
         "counters": counters,
@@ -124,7 +150,7 @@ def main() -> int:
     print(f"G replay verdict: {verdict}")
     print(f"signals={counts.get('signals', 0)} speed_limits={counts.get('speed_limits', 0)}")
     print(OUTPUT)
-    return 0 if verdict == "PHASE_H_REPLAY_PASS" else 1
+    return 0 if verdict in ("PHASE_H_REPLAY_PASS", "PHASE_H_REPLAY_PASS_ON_CORRECTED_PARENT") else 1
 
 
 if __name__ == "__main__":

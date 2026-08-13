@@ -1,0 +1,64 @@
+{
+  "schema": "C3_P8_PACKAGE_BUILD_CORRECTED/v1",
+  "run_id": "20260811T000000Z_C3_PROTOCOL",
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "verdict": "P8_SERVER_AVAILABLE_COOKING_BLOCKED",
+  "correction_of": "P8_PACKAGE_BUILD_BLOCKED (20260811T000000Z_C3_PROTOCOL)",
+  "correction_reason": "Path-detection bug: prior search only covered C:/D:, missed E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe which launched successfully in 2026-08-05 run (L1=PASS, L_ALL_PASS).",
+  "server_status": {
+    "carlaue4_exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+    "exe_exists": true,
+    "exe_sha256": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+    "server_version": "0.9.16",
+    "client_version": "0.9.16",
+    "launch_verified": true,
+    "launch_run_id": "20260805T122525Z",
+    "launch_verdict": "L_ALL_PASS",
+    "gpu": "NVIDIA Quadro P3200 Max-Q (4 GB VRAM)",
+    "quality_level_tested": "Low"
+  },
+  "cooking_status": {
+    "verdict": "COOKING_BLOCKED",
+    "missing_dependency": {
+      "unreal_engine": "Unreal Engine 4.26 Editor (not installed; required for .umap cooking, semantic materials, pedestrian navmesh)",
+      "carla_source_build": "CARLA 0.9.16 source build (required to cook custom maps; packaged server cannot cook)",
+      "carla_root_env": "CARLA_ROOT (unset; should be E:\\CARLA\\CARLA_0.9.16)"
+    }
+  },
+  "client_available": {
+    "carla_client_version": "0.9.16",
+    "carla_client_source": "venv .venv/Lib/site-packages/carla (pip carla-0.9.16.dist-info)"
+  },
+  "artifacts_ready_on_disk": {
+    "governed_xodr": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+      "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "bytes": 81007405
+    },
+    "full_map_fbx": {
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/scene.fbx",
+      "sha256": "TBD_FBX_SHA",
+      "bytes": 226279516
+    },
+    "full_map_obj": {
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/fullmap_mesh/scene.obj",
+      "sha256": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e",
+      "bytes": 398450258
+    },
+    "visual_layer_obj": {
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/scene.obj",
+      "sha256": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e",
+      "bytes": 390751147
+    }
+  },
+  "procedural_path": "SERVER_AVAILABLE → load_opendrive_world(governed XODR) → immediate procedural Ingolstadt perception (roads/signs/crosswalks; no buildings/visual env until cooked)",
+  "required_next_for_cooked": [
+    "Install Unreal Engine 4.26 Editor",
+    "Build CARLA 0.9.16 from source",
+    "Import governed XODR 248ffbbe + full-map FBX (mesh a147f4fe) into UE4.26",
+    "Cook .umap; generate collision + semantic materials + pedestrian navmesh",
+    "Register map (Carla/Maps/...)",
+    "Produce package manifest with UMAP/asset shas, cold-start load evidence, byte-exact identity record"
+  ],
+  "note": "Server dependency RESOLVED (E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe). Cooking dependency REAL (UE4.26 Editor + CARLA source build). Procedural perception unblocked NOW."
+}

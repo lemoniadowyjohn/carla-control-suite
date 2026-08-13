@@ -31,7 +31,7 @@ from phase_q.certifier_decision import assess
 VALID_FPS = 30
 VALID_SPAWNS = 12
 
-SIGNED_REPAIRED_SHA = "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+SIGNED_REPAIRED_SHA = "6bac3570ce8f4230836ace27ec26155bbed58171567a6e0afd47e710c86dcb02"
 SIGNED_RUNTIME_SHA = "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80"
 
 RUNTIME_INV = {
@@ -101,6 +101,7 @@ def make_valid_bundle() -> Dict[str, Any]:
         "l11": {"status": "PASS", "differences": ["roadMark type difference"]},
         "stage7": {"strict_gate_errors": 0, "idempotent": True},
         "p1": {"changed_road_count": 12, "unexpected_mutations": []},
+        "length_invariant": {"violations": 0, "roads_checked": 32710},
         "semantic_equiv": {"verdict": "SEMANTIC_EQUIVALENCE_PASS"},
         "semantic_counts": semantic_counts,
         "authority_ok": {c: True for c in CATS},
@@ -152,6 +153,10 @@ def apply_negative(bundle: Dict[str, Any], case: str) -> Dict[str, Any]:
         b["semantic_counts"] = {c: {"count": 0,
                                     "disposition": "PACKAGE_DEPENDENT_AND_VALIDATED_LATER"}
                                 for c in CATS}
+    elif case == "length_invariant_violations":
+        b["length_invariant"] = {"violations": 767, "roads_checked": 32710}
+    elif case == "missing_length_invariant_evidence":
+        b.pop("length_invariant", None)
     else:
         raise ValueError("unknown negative case: {}".format(case))
     return b
@@ -171,6 +176,8 @@ NEGATIVE_CASES: List[Tuple[str, str, str]] = [
     ("manually_edited_pass_json", "MANUALLY_EDITED_PASS_JSON", "PHASE_N_CERTIFIER_REJECTED"),
     ("dirty_worktree_claimed_clean", "PROVENANCE_INCONSISTENT", "PHASE_N_CERTIFIER_REJECTED"),
     ("missing_package_evidence", "SEMANTIC_EMPTINESS_POLICY_OR_EQUIV", "PHASE_N_CERTIFIER_REJECTED"),
+    ("length_invariant_violations", "LENGTH_INVARIANT_VIOLATIONS", "PHASE_N_CERTIFIER_REJECTED"),
+    ("missing_length_invariant_evidence", "NO_LENGTH_INVARIANT_EVIDENCE", "PHASE_N_CERTIFIER_REJECTED"),
 ]
 
 

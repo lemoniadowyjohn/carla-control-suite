@@ -1,0 +1,52 @@
+{
+  "run_id": "20260813T075853Z",
+  "generated_at": "2026-08-13T07:59:04.678092+00:00",
+  "scope": "run-local",
+  "entries": [
+    {
+      "path": "G00_GATE_MATRIX.md",
+      "size_bytes": 1311,
+      "sha256": "be585597c5e3c027f9b30d6bf7b584dba83c6177aae1e8db91f39a9c01232765"
+    },
+    {
+      "path": "N00_EXECUTIVE_SUMMARY.md",
+      "size_bytes": 701,
+      "sha256": "40889e54f9c87e0bfc247c8bcbd72eb72d7c8aa0ff8974a3d614ef07b5d15ae0"
+    },
+    {
+      "path": "N00_GATE_MATRIX.json",
+      "size_bytes": 4146,
+      "sha256": "f1c68fba1c0ce72ee19f709abca0feedcb5bd2fbd5f37af6a380636b14b98acc"
+    },
+    {
+      "path": "N0_PHASE_L_EVIDENCE_AUDIT.json",
+      "size_bytes": 1542,
+      "sha256": "713d499d9940c0bfddbad5a1fc0387d56e706f95b9868d8e56d5f887156f8d4d"
+    },
+    {
+      "path": "N18_FINAL_RELEASE_VERDICT.json",
+      "size_bytes": 5669,
+      "sha256": "4c2699b3d34ead8289fdcc0dad5b960a74ea8e1fa6b654f2b188f9691f7ff7e0"
+    },
+    {
+      "path": "PHASE_N_Q1_RELATED_PROVENANCE.json",
+      "size_bytes": 605,
+      "sha256": "4cbff3660c7e2e62cb06e6b9772a19a5d0a9031326073ea88f82d371186da562"
+    },
+    {
+      "path": "Q00_WORKTREE_PROVENANCE.json",
+      "size_bytes": 8681,
+      "sha256": "e6c458568233785af06825885105773b3e12e7e5244c45cf81f63630c58cf7c6"
+    },
+    {
+      "path": "Q01_SCRIPT_HASH_REGISTRY.json",
+      "size_bytes": 2673,
+      "sha256": "8fdec2e52852f696743084d90d228d52e1c72bda434eb0d2937a3d1059935143"
+    },
+    {
+      "path": "Q02_EVIDENCE_COMMIT_CHAIN.md",
+      "size_bytes": 9224,
+      "sha256": "1f976a33bf52391f89e6a08fa46bf02c3adccda361201ea2efb6d59d20d153d0"
+    }
+  ]
+}

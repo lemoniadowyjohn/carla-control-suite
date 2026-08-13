@@ -26,7 +26,16 @@ from phase_q.semantic_policy import (
 # Expected signed-off candidate identity (published by the campaign).
 EXPECTED_BRANCH = "fix/post-audit-phase-e-junctions-roundabouts-20260803"
 EXPECTED_COMMIT = "f5aabc0a4f170e564aa03efcb906966880859a9f"
-EXPECTED_REPAIRED_SHA = "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+# Candidate 80ebb005... (ingolstadt_fixed_final.xodr) was RETIRED: it exhibits
+# 767 roads violating the CARLA length invariant (s <= road->GetLength()) and
+# carries 0 Phase-H signals.  The governed repaired candidate is the
+# length-invariant-preserving, semantics-complete artifact
+# ingolstadt_perception_final_repaired.xodr (3467 signals, 66 crosswalks,
+# 0 length violations).
+EXPECTED_REPAIRED_SHA = "6bac3570ce8f4230836ace27ec26155bbed58171567a6e0afd47e710c86dcb02"
+# Runtime sha stays pinned until the next certified CARLA run loads a governed
+# payload regenerated from the crash-safe lineage; a mismatched runtime sha is
+# a HARD rejection (fail-closed) until re-certification evidence exists.
 EXPECTED_RUNTIME_SHA = "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80"
 
 # run IDs may change; a mismatched run_id is a hard rejection.
@@ -50,6 +59,7 @@ GATE_SCHEMA = {
     "G16": ("worktree_provenance", "provenance recorded and consistent"),
     "G17": ("manifest_order", "evidence manifest must follow evidence completion"),
     "G18": ("manual_edit_signature", "PASS JSON must carry a valid artifact digest"),
+    "G19": ("length_invariant", "no road may violate s <= road->GetLength()"),
 }
 
 
@@ -288,6 +298,24 @@ def assess(bundle: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
     gate("G18", g18_pass,
          "signature_present={}".format(bool(signature)),
          "MANUALLY_EDITED_PASS_JSON", "manual-edit guard")
+
+    # ---------------- G19: length invariant ----------------
+    # CARLA's mesh builder asserts `s <= road->GetLength()`; a candidate whose
+    # planView extent exceeds the declared road length (even by float residue)
+    # crashes generate_opendrive_world.  Zero violations is a hard requirement
+    # for the repaired candidate under every profile.
+    li = bundle.get("length_invariant")
+    if li is None:
+        gate("G19", False, "length_invariant=<missing>", "NO_LENGTH_INVARIANT_EVIDENCE",
+             "length-invariant evidence absent")
+    elif _as_int(li.get("violations")) != 0:
+        gate("G19", False, "violations={}".format(li.get("violations")),
+             "LENGTH_INVARIANT_VIOLATIONS",
+             "roads with planView extent exceeding declared length must be zero")
+    else:
+        gate("G19", True,
+             "violations=0 roads_checked={}".format(li.get("roads_checked")),
+             "ok", "length invariant holds")
 
     # ---------------- Final verdict ----------------
     blocked_evidence = [g for g, v in gates.items() if v["status"] in ("BLOCKED", "INCOMPLETE")]

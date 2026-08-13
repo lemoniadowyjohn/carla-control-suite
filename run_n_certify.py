@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime, timezone
+from pathlib import Path
 
 from phase_q.common import PROJECT_ROOT, make_run_id, save_json, save_text, sha256_file
 from phase_q.certifier_decision import assess
@@ -41,6 +42,36 @@ PROFILES = {
 def _load_json(rel):
     with open(rel, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _length_invariant_evidence(candidate_xodr):
+    """Count roads whose planView extent exceeds the declared road length.
+
+    CARLA's mesh builder asserts `s <= road->GetLength()`; this evidence feeds
+    gate G19.  Non-positive lengths are excluded from the check but included
+    in roads_checked.
+    """
+    import xml.etree.ElementTree as ET
+
+    root = ET.parse(candidate_xodr).getroot()
+    violations = 0
+    roads_checked = 0
+    for road in root.findall("road"):
+        try:
+            rlen = float(road.get("length"))
+        except (TypeError, ValueError):
+            continue
+        roads_checked += 1
+        for g in road.findall("planView/geometry"):
+            try:
+                s = float(g.get("s"))
+                glen = float(g.get("length"))
+            except (TypeError, ValueError):
+                continue
+            if s + glen - rlen > 1e-9:
+                violations += 1
+                break
+    return {"violations": violations, "roads_checked": roads_checked}
 
 
 def build_bundle(args):
@@ -97,6 +128,10 @@ def build_bundle(args):
         "p1": p1,
         "semantic_equiv": {"verdict": "SEMANTIC_EQUIVALENCE_PENDING"},
         "semantic_counts": semantic_counts,
+        "length_invariant": _length_invariant_evidence(
+            args.get("candidate_xodr")
+            or os.path.join("campaigns", "ingolstadt_cooked_perception_v1",
+                            "candidate", "ingolstadt_perception_final_repaired.xodr")),
         "evidence_manifest": {},
     }
     return bundle
@@ -110,16 +145,19 @@ def main():
                         default="perception")
     parser.add_argument("--semantic-counts", default=None,
                         help="JSON with per-category semantic counts/dispositions")
+    parser.add_argument("--candidate-xodr", default=None,
+                        help="governed repaired candidate XODR (G19 length-invariant evidence)")
     args_p = parser.parse_args()
     profile = PROFILES[args_p.profile]
     bundle = build_bundle({"profile": args_p.profile,
                            "semantic_counts": args_p.semantic_counts,
-                           "expected_run_id": None})
+                           "expected_run_id": None,
+                           "candidate_xodr": args_p.candidate_xodr})
 
     # Q0 - provenance capture (offline, git-based)
     from phase_q import provenance as prov
-    os.makedirs(OUT_DIR, exist_ok=True)
-    prov_q = prov.write_q0_outputs(OUT_DIR)
+    Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
+    prov_q = prov.write_q0_outputs(Path(OUT_DIR))
     bundle["provenance"] = prov.capture_worktree_provenance()
 
     result = assess(bundle, {

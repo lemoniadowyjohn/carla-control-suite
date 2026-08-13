@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-08-13T07:59:00.673963+00:00",
+  "python_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+  "python_version": "3.12.2",
+  "module_import_paths": {
+    "sys_path": [
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+      "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip",
+      "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\DLLs",
+      "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib",
+      "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages",
+      "__editable__.ultimate_pipeline-0.1.0.finder.__path_hook__",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\win32",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\win32\\lib",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\Pythonwin"
+    ],
+    "phase_q_resolved": {
+      "phase_q": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\phase_q\\__init__.py"
+    }
+  },
+  "scripts": [
+    {
+      "path": "phase_l_validation.py",
+      "sha256": "6585aa697b4f606bfbdfc071997277eac8f06d766e109fb342657802e6f28624",
+      "size_bytes": 20865,
+      "exists": true
+    },
+    {
+      "path": "run_n_certify.py",
+      "sha256": "6e6baedf06399ee760917a203fcfb28c84aa3d30ca14c683fbf687d459b20380",
+      "size_bytes": 9284,
+      "exists": true
+    },
+    {
+      "path": "run_q_phase.py",
+      "sha256": null,
+      "size_bytes": null,
+      "exists": false
+    },
+    {
+      "path": "ultimate_pipeline/core/carla_opendrive_loader.py",
+      "sha256": "6150be72f452cb8721ef38f8683fe918265e95ecc219fe88877a65e7c51ff948",
+      "size_bytes": 18329,
+      "exists": true
+    },
+    {
+      "path": "ultimate_pipeline/quality/check_carla_opendrive_compat.py",
+      "sha256": "2e41a19236561f21659373cf2261ae56cdc58d6cd8bbc47d39272ddc3de3c98d",
+      "size_bytes": 14989,
+      "exists": true
+    },
+    {
+      "path": "ultimate_pipeline/tools/load_final_into_carla.py",
+      "sha256": "12405f16aad7808b625b2de7234f27b5ae118c5249957415193d191842088a8b",
+      "size_bytes": 1013,
+      "exists": true
+    }
+  ]
+}

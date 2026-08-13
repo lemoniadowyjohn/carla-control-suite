@@ -1,0 +1,177 @@
+{
+  "run_id": "20260813T075853Z",
+  "timestamp": "2026-08-13T07:59:04.666094+00:00",
+  "profile": "PERCEPTION_RELEASE",
+  "verdict": "PHASE_N_CERTIFIER_REJECTED",
+  "gate_summary": {
+    "passed": 13,
+    "failed": 7,
+    "missing": 0
+  },
+  "gate_results": {
+    "G0": {
+      "status": "PASS",
+      "evidence": "map_name=Carla/Maps/OpenDriveMap",
+      "code": "OK",
+      "description": "not a builtin Town"
+    },
+    "G1": {
+      "status": "PASS",
+      "evidence": "runtime_sha256=9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80 length=81301200",
+      "code": "ok_runtime",
+      "description": "runtime to_openddrive present"
+    },
+    "G2": {
+      "status": "FAIL",
+      "evidence": "rep_sha256=80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+      "code": "WRONG_CANDIDATE_HASH",
+      "description": "candidate hash does not match signed candidate"
+    },
+    "G3": {
+      "status": "PASS",
+      "evidence": "runtime_sha256 matches",
+      "code": "G3 ok",
+      "description": "runtime SHA matches signed runtime"
+    },
+    "G4": {
+      "status": "PASS",
+      "evidence": "sensors=['rgb', 'depth', 'semantic_segmentation', 'lidar', 'gnss', 'imu'] captured=['rgb', 'depth', 'semantic_segmentation', 'lidar']",
+      "code": "runtime_ok",
+      "description": "sensor evidence present"
+    },
+    "G5": {
+      "status": "FAIL",
+      "evidence": "fps=0 status=PASS",
+      "code": "ZERO_FPS_MARKED_PASS",
+      "description": "zero FPS marked PASS"
+    },
+    "G6": {
+      "status": "FAIL",
+      "evidence": "spawns=0 status=PASS",
+      "code": "ZERO_VEHICLE_SPAWNS_MARKED_PASS",
+      "description": "zero vehicle spawns marked PASS"
+    },
+    "G7": {
+      "status": "FAIL",
+      "evidence": "status=PASS differences=[]",
+      "code": "MISSING_OLD_VS_NEW_MARKED_PASS",
+      "description": "old-vs-new missing evidence marked PASS"
+    },
+    "G8": {
+      "status": "PASS",
+      "evidence": "run_id=20260805T122525Z",
+      "code": "ok",
+      "description": "run identity matches"
+    },
+    "G9": {
+      "status": "PASS",
+      "evidence": "roads src=32710 runt=32710, juncs src=3646 runt=3646",
+      "code": "SRC_RUNTIME_DIVERGENCE",
+      "description": "source/runtime structural identity"
+    },
+    "G10": {
+      "status": "PASS",
+      "evidence": "missing=0 unexpected=0",
+      "code": "ROAD_JUNC_CNT_MISMATCH",
+      "description": "road/junction counts match campaign"
+    },
+    "G11": {
+      "status": "PASS",
+      "evidence": "changed_road_count=12 unexpected_mutations=[]",
+      "code": "MUTATION_AUDIT_ERROR",
+      "description": "repair mutation audit clean"
+    },
+    "G12": {
+      "status": "PASS",
+      "evidence": "strict_gate_errors=0",
+      "code": "STRICT_GATE_FAIL",
+      "description": "strict acceptance gate passes"
+    },
+    "G13": {
+      "status": "PASS",
+      "evidence": "idempotent=True",
+      "code": "NOT_IDEMPOTENT",
+      "description": "repair idempotent"
+    },
+    "G14": {
+      "status": "FAIL",
+      "evidence": "semantic_equiv_verdict=SEMANTIC_EQUIVALENCE_PENDING",
+      "code": "SEMANTIC_EQUIVALENCE",
+      "description": "semantic equivalence ok for this compatible profile"
+    },
+    "G15": {
+      "status": "FAIL",
+      "evidence": "no semantic counts",
+      "code": "NO_SEMANTIC_COUNTS",
+      "description": "no semantic category counts"
+    },
+    "G16": {
+      "status": "PASS",
+      "evidence": "classification=DIRTY_WORKTREE_EVIDENCE_RUN_WITH_PATCH_HASH clean_committed=None",
+      "code": "PROVENANCE_INCONSISTENT",
+      "description": "worktree provenance recorded and consistent"
+    },
+    "G17": {
+      "status": "PASS",
+      "evidence": "manifest_generated=None evidence_completed=None",
+      "code": "MANIFEST_BEFORE_EVIDENCE",
+      "description": "manifest must follow evidence completion"
+    },
+    "G18": {
+      "status": "FAIL",
+      "evidence": "signature_present=False",
+      "code": "MANUALLY_EDITED_PASS_JSON",
+      "description": "manual-edit guard"
+    },
+    "G19": {
+      "status": "PASS",
+      "evidence": "violations=0 roads_checked=32710",
+      "code": "ok",
+      "description": "length invariant holds"
+    }
+  },
+  "rejections": [
+    {
+      "gate": "G2",
+      "code": "WRONG_CANDIDATE_HASH",
+      "reason": "candidate hash does not match signed candidate",
+      "evidence": "rep_sha256=80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+    },
+    {
+      "gate": "G5",
+      "code": "ZERO_FPS_MARKED_PASS",
+      "reason": "zero FPS marked PASS",
+      "evidence": "fps=0 status=PASS"
+    },
+    {
+      "gate": "G6",
+      "code": "ZERO_VEHICLE_SPAWNS_MARKED_PASS",
+      "reason": "zero vehicle spawns marked PASS",
+      "evidence": "spawns=0 status=PASS"
+    },
+    {
+      "gate": "G7",
+      "code": "MISSING_OLD_VS_NEW_MARKED_PASS",
+      "reason": "old-vs-new missing evidence marked PASS",
+      "evidence": "status=PASS differences=[]"
+    },
+    {
+      "gate": "G14",
+      "code": "SEMANTIC_EQUIVALENCE",
+      "reason": "semantic equivalence ok for this compatible profile",
+      "evidence": "semantic_equiv_verdict=SEMANTIC_EQUIVALENCE_PENDING"
+    },
+    {
+      "gate": "G15",
+      "code": "NO_SEMANTIC_COUNTS",
+      "reason": "no semantic category counts",
+      "evidence": "no semantic counts"
+    },
+    {
+      "gate": "G18",
+      "code": "MANUALLY_EDITED_PASS_JSON",
+      "reason": "manual-edit guard",
+      "evidence": "signature_present=False"
+    }
+  ]
+}

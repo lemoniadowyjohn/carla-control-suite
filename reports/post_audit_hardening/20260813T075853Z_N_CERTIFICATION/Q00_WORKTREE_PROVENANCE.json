@@ -1,0 +1,237 @@
+{
+  "captured_at": "2026-08-13T07:58:57.332882+00:00",
+  "repo_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+  "git": {
+    "head_commit": "0149d1cc4583dc43e76fd954bb1026d9a6d01508",
+    "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+    "head_short": "0149d1cc4583",
+    "status_porcelain": " M phase_q/certifier_decision.py\n M phase_q/certifier_validation.py\n M replay_phase_h_on_repaired.py\n M run_n_certify.py\n?? campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final_repaired.xodr\n?? campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final_repaired_v2.xodr\n?? reports/post_audit_hardening/20260811T000000Z_C3_PROTOCOL/P8_PACKAGE_BUILD_CORRECTED.json\n?? reports/post_audit_hardening/20260811T100609Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T101508Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T102003Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T105402Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T135605Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T182907Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260813T000000Z_C3_REGOVERN/\n?? reports/post_audit_hardening/OPENDDRIVE_GEN_PROBE/\n?? reports/post_audit_hardening/OPENDDRIVE_GEN_WATCH.json\n?? reports/post_audit_hardening/OPENDDRIVE_SMOOTH_TEST.json\n?? reports/post_audit_hardening/_gen_watch_log/\n?? reports/post_audit_hardening/_proc_smoke_log/\n?? scripts/\n?? submission/infrastructure/ultimate_pipeline/core/opendrive_gen_diagnostic.py\n?? tests/unit/test_opendrive_gen_diagnostic.py\n?? ultimate_pipeline/core/opendrive_gen_diagnostic.py\n",
+    "status_exit": 0,
+    "submodule_status": "",
+    "submodule_exit": 0,
+    "lfs_status": "On branch fix/post-audit-phase-e-junctions-roundabouts-20260803\nObjects to be pushed to origin/fix/post-audit-phase-e-junctions-roundabouts-20260803:\n\n\nObjects to be committed:\n\n\nObjects not staged for commit:\n\n\tphase_q/certifier_decision.py (Git: 4cb56ae -> File: fc97954)\n\tphase_q/certifier_validation.py (Git: f2f4237 -> File: 81841b7)\n\treplay_phase_h_on_repaired.py (Git: 2f2131a -> File: ae6d79d)\n\trun_n_certify.py (Git: c44b71d -> File: 6e6baed)\n\n",
+    "lfs_exit": 0
+  },
+  "patch_hashes": {
+    "working_tree_patch_sha256": "0311d943a69018a33d35e84a8d2e5549abf8c2c6f4a0bff0bc943756da5aa688",
+    "staged_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "working_tree_patch_bytes": 12238,
+    "staged_patch_bytes": 0
+  },
+  "untracked": [
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final_repaired.xodr",
+      "size_bytes": 82593544,
+      "is_dir": false
+    },
+    {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final_repaired_v2.xodr",
+      "size_bytes": 81007367,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T000000Z_C3_PROTOCOL/P8_PACKAGE_BUILD_CORRECTED.json",
+      "size_bytes": 3291,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T100609Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 395,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T101508Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 580,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T102003Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 581,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T105402Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 581,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T135605Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 1088,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260811T182907Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 617,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260813T000000Z_C3_REGOVERN/G_REPLAY_PHASE_H.json",
+      "size_bytes": 2426,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/20260813T000000Z_C3_REGOVERN/candidate_g_semantic_enriched_corrected_parent.xodr",
+      "size_bytes": 82511103,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/OPENDDRIVE_GEN_PROBE/OPENDDRIVE_GEN_PROBE.json",
+      "size_bytes": 382,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/OPENDDRIVE_GEN_WATCH.json",
+      "size_bytes": 244,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/OPENDDRIVE_SMOOTH_TEST.json",
+      "size_bytes": 197,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/client_probe.txt",
+      "size_bytes": 9747,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/client_probe_err.txt",
+      "size_bytes": 0,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/ingolstadt_len_fixed_v2.xodr",
+      "size_bytes": 82653190,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/ingolstadt_length_fixed.xodr",
+      "size_bytes": 82589203,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/ingolstadt_nojunctions.xodr",
+      "size_bytes": 72354230,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/ingolstadt_stub_fixed.xodr",
+      "size_bytes": 82589203,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/server_stderr.txt",
+      "size_bytes": 62,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/server_stdout.txt",
+      "size_bytes": 564,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_gen_watch_log/smoke_proc.pid",
+      "size_bytes": 17,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_proc_smoke_log/stderr.txt",
+      "size_bytes": 343,
+      "is_dir": false
+    },
+    {
+      "path": "reports/post_audit_hardening/_proc_smoke_log/stdout.txt",
+      "size_bytes": 198635,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/analyze_xodr_s_length.py",
+      "size_bytes": 2930,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/client_waypoint_probe.py",
+      "size_bytes": 734,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/find_carla_server.py",
+      "size_bytes": 2138,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/opendrive_gen_probe.py",
+      "size_bytes": 6205,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/opendrive_gen_watch.py",
+      "size_bytes": 6397,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/opendrive_smooth_test.py",
+      "size_bytes": 3807,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/patch_lengths_fullprec.py",
+      "size_bytes": 1332,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/patch_stub_roads.py",
+      "size_bytes": 1261,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/proc_smoke.py",
+      "size_bytes": 15793,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/reports/post_audit_hardening/20260811T100452Z_PROC_SMOKE/PROC_SMOKE.json",
+      "size_bytes": 585,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/run_full_v10.py",
+      "size_bytes": 633,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/scan_s_sources.py",
+      "size_bytes": 1891,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/strip_junctions.py",
+      "size_bytes": 1207,
+      "is_dir": false
+    },
+    {
+      "path": "scripts/xodr_bisect.py",
+      "size_bytes": 6188,
+      "is_dir": false
+    },
+    {
+      "path": "submission/infrastructure/ultimate_pipeline/core/opendrive_gen_diagnostic.py",
+      "size_bytes": 7993,
+      "is_dir": false
+    },
+    {
+      "path": "tests/unit/test_opendrive_gen_diagnostic.py",
+      "size_bytes": 4655,
+      "is_dir": false
+    },
+    {
+      "path": "ultimate_pipeline/core/opendrive_gen_diagnostic.py",
+      "size_bytes": 7993,
+      "is_dir": false
+    }
+  ],
+  "classification": "DIRTY_WORKTREE_EVIDENCE_RUN_WITH_PATCH_HASH",
+  "run_id": "20260813T075857Z",
+  "untracked_count": 42,
+  "clean_worktree": false
+}
