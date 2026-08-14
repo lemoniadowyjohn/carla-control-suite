@@ -210,9 +210,46 @@ def test_length_invariant_compliant_road_clean(tmp_path):
     assert out["roads_checked"] == 1
 
 
-def test_length_invariant_non_positive_length_excluded(tmp_path):
+def test_length_invariant_zero_length_zero_geometry_no_violation(tmp_path):
+    # Degenerate: a zero-length road whose geometry also has zero extent does
+    # not exceed the length (0 > 1e-9 is false), so no violation. It is still
+    # counted in roads_checked. This is the ONLY non-positive case that is clean.
     p = tmp_path / "zero_length.xodr"
     p.write_text(_minimal_xodr([("0.0", [("0.0", "0.0")])]), encoding="utf-8")
     out = _length_invariant_evidence(str(p))
     assert out["violations"] == 0
     assert out["roads_checked"] == 1
+
+
+def test_length_invariant_non_positive_length_with_geometry_violates(tmp_path):
+    # Crash-safe intent: a road with length <= 0 that carries real geometry WILL
+    # trip CARLA's `s <= GetLength()` assert, so it MUST register a violation
+    # (not be exempted). Locks the corrected G19 semantics against regression.
+    p = tmp_path / "nonpos.xodr"
+    p.write_text(_minimal_xodr([("0.0", [("0.0", "10.0")])]), encoding="utf-8")
+    out = _length_invariant_evidence(str(p))
+    assert out["violations"] >= 1
+    assert out["roads_checked"] == 1
+
+
+def test_length_invariant_negative_length_with_geometry_violates(tmp_path):
+    p = tmp_path / "neg.xodr"
+    p.write_text(_minimal_xodr([("-5.0", [("0.0", "1.0")])]), encoding="utf-8")
+    out = _length_invariant_evidence(str(p))
+    assert out["violations"] >= 1
+    assert out["roads_checked"] == 1
+
+
+def test_length_invariant_missing_length_skipped(tmp_path):
+    # A road with no parseable length attribute cannot be evaluated: it is
+    # skipped entirely and NOT counted in roads_checked.
+    p = tmp_path / "missing.xodr"
+    p.write_text(
+        '<?xml version="1.0" encoding="UTF-8"?><OpenDRIVE>'
+        '<road id="r"><planView><geometry s="0.0" length="10.0" x="0" y="0" hdg="0"/>'
+        "</planView></road></OpenDRIVE>",
+        encoding="utf-8",
+    )
+    out = _length_invariant_evidence(str(p))
+    assert out["roads_checked"] == 0
+    assert out["violations"] == 0

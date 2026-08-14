@@ -47,9 +47,18 @@ def _load_json(rel):
 def _length_invariant_evidence(candidate_xodr):
     """Count roads whose planView extent exceeds the declared road length.
 
-    CARLA's mesh builder asserts `s <= road->GetLength()`; this evidence feeds
-    gate G19.  Non-positive lengths are excluded from the check but included
-    in roads_checked.
+    CARLA's mesh builder asserts `s <= road->GetLength()`; a road trips it (and
+    crashes the cook) when any geometry satisfies `s + geometry.length >
+    road.length + 1e-9`.  This evidence feeds gate G19.
+
+    Length handling (matches the crash-safe intent, fail-closed):
+    - A road with a missing or unparseable ``length`` attribute is skipped
+      entirely (NOT counted in ``roads_checked``) -- it cannot be evaluated.
+    - A road with a parseable declared length is counted in ``roads_checked``.
+      A non-positive declared length is NOT exempted: since any positive
+      geometry extent then exceeds a length <= 0, such a road registers a
+      violation whenever it carries geometry, because it is a genuine crash
+      risk under the same assert.
     """
     import xml.etree.ElementTree as ET
 
