@@ -299,3 +299,7 @@ POST_AUDIT_HARDENING_PROMPT.md
 /reports/post_audit_hardening/20260805*
 /reports/post_audit_hardening/20260807T000000Z.backup_cornerGlobal/
 /ultimate_pipeline/reports/
+
+# Windows redirect accident junk (0-byte, reserved names)
+/nul
+/vehicle.
