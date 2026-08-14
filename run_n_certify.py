@@ -24,13 +24,14 @@ from phase_q.semantic_policy import (
     PROFILE_PACKAGED_MAP,
     PROFILE_STRUCTURAL_XODR,
 )
+from ultimate_pipeline.tools.cert_runtime.runtime_config import (
+    assert_candidate_consistency,
+    resolve_cert_runtime_config,
+)
 
 BASE = "reports/post_audit_hardening"
 RUN_ID = make_run_id()
 OUT_DIR = os.path.join(BASE, "{}_N_CERTIFICATION".format(RUN_ID))
-
-PHASE_L_EVIDENCE_DIR = os.path.join(BASE, "20260805T122525Z")
-P4_EVIDENCE_DIR = os.path.join(BASE, "20260805T115947Z_P4_RUNTIME_EQUIVALENCE")
 
 PROFILES = {
     "structural": PROFILE_STRUCTURAL_XODR,
@@ -83,7 +84,7 @@ def _length_invariant_evidence(candidate_xodr):
     return {"violations": violations, "roads_checked": roads_checked}
 
 
-def build_bundle(args):
+def build_bundle(args, *, phase_l_evidence_dir, p4_evidence_dir):
     """Assemble the evidence bundle exactly as the engine consumes it."""
     l = {}
     names = (
@@ -94,8 +95,8 @@ def build_bundle(args):
         "PHASE_L_RUNTIME_VALIDATION.json",
     )
     for fn in names:
-        l[fn] = _load_json(os.path.join(PHASE_L_EVIDENCE_DIR, fn))
-    p4 = _load_json(os.path.join(P4_EVIDENCE_DIR, "P04_RAW_RUNTIME_EVIDENCE.json"))
+        l[fn] = _load_json(os.path.join(phase_l_evidence_dir, fn))
+    p4 = _load_json(os.path.join(p4_evidence_dir, "P04_RAW_RUNTIME_EVIDENCE.json"))
     stage7 = _load_json("_stage7_acceptance_results.json")
     p1 = _load_json("P04_REPAIR_MUTATION_SUMMARY.json")
 
@@ -156,12 +157,33 @@ def main():
                         help="JSON with per-category semantic counts/dispositions")
     parser.add_argument("--candidate-xodr", default=None,
                         help="governed repaired candidate XODR (G19 length-invariant evidence)")
+    parser.add_argument("--run-id", default=None, help="certification run ID override")
+    parser.add_argument("--phase-l-dir", default=None, help="Phase L evidence directory override")
+    parser.add_argument("--p4-dir", default=None, help="P4 evidence directory override")
     args_p = parser.parse_args()
     profile = PROFILES[args_p.profile]
-    bundle = build_bundle({"profile": args_p.profile,
-                           "semantic_counts": args_p.semantic_counts,
-                           "expected_run_id": None,
-                           "candidate_xodr": args_p.candidate_xodr})
+    runtime = resolve_cert_runtime_config(
+        candidate_xodr=args_p.candidate_xodr,
+        run_id=args_p.run_id,
+        phase_l_dir=args_p.phase_l_dir,
+        p4_dir=args_p.p4_dir,
+    )
+    bundle = build_bundle(
+        {
+            "profile": args_p.profile,
+            "semantic_counts": args_p.semantic_counts,
+            "expected_run_id": None,
+            "candidate_xodr": str(runtime.candidate_xodr),
+        },
+        phase_l_evidence_dir=str(runtime.phase_l_dir),
+        p4_evidence_dir=str(runtime.p4_dir),
+    )
+
+    assert_candidate_consistency(
+        p4_rep_sha256=(bundle.get("p4") or {}).get("rep_sha256"),
+        phase_l_l2_sha256=(bundle.get("l2") or {}).get("opendrive_sha256"),
+        candidate_xodr=runtime.candidate_xodr,
+    )
 
     # Q0 - provenance capture (offline, git-based)
     from phase_q import provenance as prov
@@ -180,6 +202,9 @@ def main():
         "phase_l_verdict": bundle["run_manifest"]["commit"],
         "verdict": result["verdict"],
         "rejections": result["rejections"],
+        "candidate_xodr": str(runtime.candidate_xodr),
+        "phase_l_dir": str(runtime.phase_l_dir),
+        "p4_dir": str(runtime.p4_dir),
     })
     _write("N18_FINAL_RELEASE_VERDICT.json", {
         "run_id": RUN_ID,
@@ -229,7 +254,7 @@ def executive_summary(result):
     for r in result["rejections"]:
         lines.append("- `{}` {}".format(r["code"], r["reason"]))
     lines.append("")
-    lines.append("Evidence provenance: {}".format(PHASE_L_EVIDENCE_DIR))
+    lines.append("Evidence provenance: {}".format(BASE))
     return "\n".join(lines)
 
 

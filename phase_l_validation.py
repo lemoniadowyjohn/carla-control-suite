@@ -9,9 +9,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-
-import carla
+from ultimate_pipeline.tools.cert_runtime.runtime_config import resolve_cert_runtime_config
 
 RUN_ID = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 REPORTS_BASE = Path(__file__).parent / "reports" / "post_audit_hardening"
@@ -22,7 +20,13 @@ CARLA_HOST = "127.0.0.1"
 CARLA_PORT = 2000
 CARLA_TIMEOUT = 30.0
 
-INGOLSTADT_XODR = Path(__file__).parent / "campaigns" / "ingolstadt_cooked_perception_v1" / "candidate" / "ingolstadt_fixed_final.xodr"
+DEFAULT_CANDIDATE_XODR = (
+    Path(__file__).parent
+    / "campaigns"
+    / "ingolstadt_cooked_perception_v1"
+    / "candidate"
+    / "ingolstadt_perception_final_repaired.xodr"
+)
 EXPECTED_MAP_NAME = "Carla/Maps/OpenDriveMap"
 
 
@@ -54,6 +58,8 @@ def get_sha256_str(s):
 
 
 def connect_client():
+    import carla
+
     client = carla.Client(CARLA_HOST, CARLA_PORT)
     client.set_timeout(CARLA_TIMEOUT)
     return client
@@ -61,6 +67,8 @@ def connect_client():
 
 def step_l1_preflight(client):
     """L1: CARLA server preflight details."""
+    import carla
+
     result = {}
     world = client.get_world()
     m = world.get_map()
@@ -448,11 +456,32 @@ def step_l13_outputs(client, all_results):
     return result
 
 
-def main():
+def main(argv=None):
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Phase L runtime validation")
+    parser.add_argument("--candidate-xodr", default=None)
+    parser.add_argument("--run-id", default=None)
+    parser.add_argument("--phase-l-dir", default=None)
+    parser.add_argument("--p4-dir", default=None)
+    args = parser.parse_args(argv)
+
+    config = resolve_cert_runtime_config(
+        candidate_xodr=args.candidate_xodr or DEFAULT_CANDIDATE_XODR,
+        run_id=args.run_id,
+        phase_l_dir=args.phase_l_dir,
+        p4_dir=args.p4_dir,
+    )
+    global RUN_ID, RUN_DIR, ARTIFACTS_DIR
+    RUN_ID = config.run_id
+    RUN_DIR = Path(config.phase_l_dir)
+    ARTIFACTS_DIR = RUN_DIR / "artifacts"
+
     ensure_dirs()
 
     print(f"Phase L Runtime Validation - Run ID: {RUN_ID}")
     print(f"Report directory: {RUN_DIR}")
+    print(f"Candidate XODR: {config.candidate_xodr}")
 
     client = connect_client()
     print("Connected to CARLA server")
@@ -555,6 +584,7 @@ def main():
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
         "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f",
+        "candidate_xodr": str(config.candidate_xodr),
         "verdict": l13["verdict"],
         "steps": all_results,
     }
