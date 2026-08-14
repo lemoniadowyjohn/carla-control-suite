@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import pytest
 
+from run_n_certify import _length_invariant_evidence
 from ultimate_pipeline.core.opendrive_gen_diagnostic import (
     MIN_SUCCESSFUL_LOADS,
     classify_failure,
     detect_stall,
     determinism_verdict,
     load_diagnostic_release,
+    sample_vram_mb,
     summarize_loads_jsonl,
 )
 
@@ -145,3 +147,72 @@ def test_release_gate_pass_two_successes(tmp_path):
     }
     out = load_diagnostic_release(ev)
     assert out["pass"]
+
+
+def test_summarize_loads_jsonl_fields(tmp_path):
+    p = tmp_path / "loads.jsonl"
+    p.write_text(
+        "\n".join(
+            [
+                '{"attempt": 1, "outcome": "SUCCESS", "map_name": "OpenDriveMap", "started_at": 0.0}',
+                '{"attempt": 2, "outcome": "SUCCESS", "map_name": "OpenDriveMap", "started_at": 10.0}',
+                '{"attempt": 3, "outcome": "OOM", "map_name": "OpenDriveMap", "started_at": 20.0}',
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    summ = summarize_loads_jsonl(str(p))
+    assert [a["attempt"] for a in summ["attempts"]] == [1, 2, 3]
+    assert [a["outcome"] for a in summ["attempts"]] == ["SUCCESS", "SUCCESS", "OOM"]
+    dv = summ["verdict"]
+    assert dv["verdict"] == "LOADS_CRASHED"
+    assert dv["successes"] == 2
+    assert dv["memory_pattern"] == "OOM_PRESENT"
+
+
+def test_sample_vram_mb_returns_int():
+    vram = sample_vram_mb()
+    assert isinstance(vram, int)
+    assert vram == -1 or vram >= 0
+
+
+def _minimal_xodr(roads):
+    """roads: iterable of (length, [(s, length), ...]) -> minimal XODR text."""
+    body = []
+    for rlen, geoms in roads:
+        plan = "".join(
+            f'<geometry s="{s}" length="{glen}" x="0" y="0" hdg="0"/>' for s, glen in geoms
+        )
+        body.append(f'<road id="r" length="{rlen}"><planView>{plan}</planView></road>')
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<OpenDRIVE>" + "".join(body) + "</OpenDRIVE>"
+    )
+
+
+def test_length_invariant_exceeding_geometry_violates(tmp_path):
+    p = tmp_path / "violating.xodr"
+    p.write_text(_minimal_xodr([("100.0", [("0.0", "150.0")])]), encoding="utf-8")
+    out = _length_invariant_evidence(str(p))
+    assert out["violations"] >= 1
+    assert out["roads_checked"] == 1
+
+
+def test_length_invariant_compliant_road_clean(tmp_path):
+    p = tmp_path / "compliant.xodr"
+    p.write_text(
+        _minimal_xodr([("100.0", [("0.0", "100.0"), ("100.0", "0.0")])]),
+        encoding="utf-8",
+    )
+    out = _length_invariant_evidence(str(p))
+    assert out["violations"] == 0
+    assert out["roads_checked"] == 1
+
+
+def test_length_invariant_non_positive_length_excluded(tmp_path):
+    p = tmp_path / "zero_length.xodr"
+    p.write_text(_minimal_xodr([("0.0", [("0.0", "0.0")])]), encoding="utf-8")
+    out = _length_invariant_evidence(str(p))
+    assert out["violations"] == 0
+    assert out["roads_checked"] == 1

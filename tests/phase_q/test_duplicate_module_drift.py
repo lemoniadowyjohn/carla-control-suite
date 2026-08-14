@@ -5,6 +5,7 @@ import pytest
 CRITICAL_MIRRORED_FILES = [
     "core/carla_opendrive_loader.py",
     "core/xodr_hash_gate.py",
+    "core/opendrive_gen_diagnostic.py",
     "carla_tools/map_identity_guard.py",
     "quality/check_carla_opendrive_compat.py",
     "tools/load_final_into_carla.py",
