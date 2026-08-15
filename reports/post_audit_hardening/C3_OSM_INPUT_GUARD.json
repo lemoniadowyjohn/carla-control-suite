@@ -1,0 +1,35 @@
+{
+  "schema": "C3_OSM_INPUT_GUARD/v1",
+  "date": "2026-08-15",
+  "verdict": "OSM_INPUT_GUARD_WIRED_GREEN",
+  "problem": "Existing OSM paths could be reused or converted without first proving they were real non-empty OSM XML, so HTML/Overpass error pages could enter the generation path.",
+  "changes": {
+    "ultimate_pipeline/osm/osm_downloader.py": [
+      "Added OSMInputValidationError.",
+      "Added looks_like_html_or_api_error.",
+      "Added validate_osm_xml_input.",
+      "Validated existing OSM XML before reuse.",
+      "Validated downloaded OSM XML before returning it."
+    ],
+    "ultimate_pipeline/osm/osm_to_xodr_wrapper.py": [
+      "Validated OSM XML before conversion."
+    ],
+    "ultimate_pipeline/osm/osm_to_xodr.py": [
+      "Validated OSM XML before direct converter read."
+    ],
+    "tests/unit/test_osm_input_guard.py": [
+      "Valid OSM accepted.",
+      "Empty file rejected.",
+      "HTML/API-error payload rejected.",
+      "Wrong XML root rejected.",
+      "Existing bad OSM rejected before reuse."
+    ]
+  },
+  "targeted_tests": {
+    "red": "ImportError: cannot import name 'OSMInputValidationError' from 'ultimate_pipeline.osm.osm_downloader'",
+    "green": "12 passed in 0.25s",
+    "direct_script_help": "ultimate_pipeline/osm/osm_to_xodr.py --help exited 0"
+  },
+  "full_suite": "721 passed, 49 warnings in 164.96s",
+  "escalate_to_claude": []
+}

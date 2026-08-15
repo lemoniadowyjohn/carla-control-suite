@@ -32,6 +32,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Sequence
 
+from ultimate_pipeline.osm.osm_downloader import validate_osm_xml_input
+
 
 @dataclass
 class OSMToXODRConfig:
@@ -298,6 +300,7 @@ def convert_osm_to_xodr(
 
     if not osm_path.exists():
         raise FileNotFoundError(f"OSM file not found: {osm_path}")
+    validate_osm_xml_input(osm_path)
 
     if xodr_path.exists() and not cfg.overwrite:
         return xodr_path

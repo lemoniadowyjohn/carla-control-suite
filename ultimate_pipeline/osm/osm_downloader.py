@@ -30,6 +30,7 @@ except Exception:
 
 import time
 import os
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -54,6 +55,69 @@ OVERPASS_ENDPOINTS = [
     "https://overpass.openstreetmap.fr/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
 ]
+
+
+class OSMInputValidationError(RuntimeError):
+    """Raised when an OSM XML input is missing, malformed, or not real map data."""
+
+
+def looks_like_html_or_api_error(data: bytes | str) -> bool:
+    """Detect common Overpass/html failure payloads before XML conversion."""
+    if isinstance(data, bytes):
+        text = data[:4096].decode("utf-8", errors="ignore")
+    else:
+        text = str(data)[:4096]
+    lower = text.lstrip("\ufeff \t\r\n").lower()
+    return any(
+        marker in lower
+        for marker in (
+            "<!doctype html",
+            "<html",
+            "<body",
+            "overpass api error",
+            "osm3s runtime error",
+            "runtime error:",
+            "query timed out",
+            "too many requests",
+            "rate limit",
+            "gateway timeout",
+        )
+    )
+
+
+def validate_osm_xml_input(osm_path: str | Path, *, min_features: int = 1) -> Path:
+    """Fail closed unless ``osm_path`` is a non-empty OSM 0.6-style XML extract."""
+    path = Path(osm_path)
+    if not path.exists():
+        raise OSMInputValidationError(f"OSM input file not found: {path}")
+    if not path.is_file():
+        raise OSMInputValidationError(f"OSM input path is not a file: {path}")
+    if path.stat().st_size <= 0:
+        raise OSMInputValidationError(f"OSM input is empty: {path}")
+
+    head = path.read_bytes()[:4096]
+    if looks_like_html_or_api_error(head):
+        raise OSMInputValidationError(
+            f"OSM input looks like an HTML/API error response, not OSM XML: {path}"
+        )
+
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        raise OSMInputValidationError(f"OSM input is not parseable XML: {path}: {exc}") from exc
+
+    if root.tag != "osm":
+        raise OSMInputValidationError(
+            f"OSM input root element must be <osm>, got <{root.tag}>: {path}"
+        )
+
+    feature_count = sum(len(root.findall(tag)) for tag in ("node", "way", "relation"))
+    if feature_count < int(min_features):
+        raise OSMInputValidationError(
+            f"OSM input has no OSM nodes/ways/relations: {path}"
+        )
+
+    return path
 
 # ================================================================
 # Internal query builders
@@ -181,6 +245,7 @@ class OSMDownloader:
         with open(out_path, "wb") as f:
             f.write(data)
 
+        validate_osm_xml_input(out_path)
         print(f"   ✔ OSM XML saved → {out_path}")
         return str(out_path)
 
@@ -221,10 +286,12 @@ class OSMDownloader:
             if _force_refresh_enabled():
                 if requests is None:
                     print(f"⚠️ [OSM] Force refresh requested but requests not available; using existing → {osm_path}")
+                    validate_osm_xml_input(osm_path)
                     return str(osm_path)
                 print(f"📥 [OSM] Force refresh enabled — re-downloading xml…")
                 _backup_existing(osm_path)
             else:
+                validate_osm_xml_input(osm_path)
                 print(f"✔ OSM XML already exists → {osm_path}")
                 return str(osm_path)
 

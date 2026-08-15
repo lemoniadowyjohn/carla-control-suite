@@ -12,6 +12,14 @@ import sys
 
 from pathlib import Path
 
+try:
+    from ultimate_pipeline.osm.osm_downloader import validate_osm_xml_input
+except ModuleNotFoundError:
+    repo_root = Path(__file__).resolve().parents[2]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    from ultimate_pipeline.osm.osm_downloader import validate_osm_xml_input
+
 
 def _auto_detect_carla_root() -> Path | None:
     here = Path(__file__).resolve()
@@ -80,6 +88,7 @@ def _import_carla(carla_root: str | None = None):
     return carla
 def convert(args):
     carla = _import_carla(getattr(args, 'carla_root', None))
+    validate_osm_xml_input(args.input_path)
     # Read the .osm data
     with open(args.input_path, mode="r", encoding="utf-8") as osmFile:
         osm_data = osmFile.read()
