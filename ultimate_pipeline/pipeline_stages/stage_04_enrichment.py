@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import os
+
 def _inject_main_pipeline_globals():
     # Import is inside to avoid import-time side effects/cycles.
     from ultimate_pipeline import main_pipeline as _mp  # type: ignore
@@ -15,6 +17,47 @@ def _inject_main_pipeline_globals():
             continue
         # Don't overwrite locally-defined names (e.g., stage functions).
         g.setdefault(k, v)
+
+
+def _env_flag(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _offline_only_enabled(settings) -> bool:
+    return bool(getattr(settings, "OFFLINE_ONLY", False)) or _env_flag("UP_OFFLINE_ONLY")
+
+
+def resolve_buildings_geojson_for_stage4(
+    *,
+    settings,
+    gps_bounds,
+    buildings_path: str | None,
+    downloader_factory=None,
+) -> str | None:
+    if not buildings_path:
+        return None
+    if os.path.exists(buildings_path):
+        print(f"🏙️ buildings.geojson already present → {buildings_path}")
+        return buildings_path
+    if _offline_only_enabled(settings):
+        print(
+            "🏙️ buildings.geojson missing and offline mode is enabled → "
+            "skipping download; OSM XML fallback will be used."
+        )
+        return None
+
+    print("🏙️ buildings.geojson missing → auto-downloading…")
+    os.makedirs(os.path.dirname(buildings_path), exist_ok=True)
+    try:
+        if downloader_factory is None:
+            downloader_factory = globals()["OSMDownloader"]
+        downloader_factory().ensure_osm_geojson_exists(gps_bounds, buildings_path)
+        print(f"   📥 buildings.geojson downloaded → {buildings_path}")
+        return buildings_path
+    except Exception as e:
+        print(f"   ❌ Failed to download buildings.geojson: {e}")
+        print("   ⚠️ No buildings will be inserted.")
+        return None
 
 
 def _step4_enrichment(self, topo_fixed: str) -> str:
@@ -74,20 +117,11 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         print("⏭️ Traffic light inference disabled.")
 
     # Buildings: ensure buildings.geojson exists
-    buildings_path = s.OSM_BUILDINGS_GEOJSON
-    if not os.path.exists(buildings_path):
-        print("🏙️ buildings.geojson missing → auto-downloading…")
-        os.makedirs(os.path.dirname(buildings_path), exist_ok=True)
-        try:
-            OSMDownloader().ensure_osm_geojson_exists(gps, buildings_path)
-
-            print(f"   📥 buildings.geojson downloaded → {buildings_path}")
-        except Exception as e:
-            print(f"   ❌ Failed to download buildings.geojson: {e}")
-            print("   ⚠️ No buildings will be inserted.")
-            buildings_path = None
-    else:
-        print(f"🏙️ buildings.geojson already present → {buildings_path}")
+    buildings_path = resolve_buildings_geojson_for_stage4(
+        settings=s,
+        gps_bounds=gps,
+        buildings_path=s.OSM_BUILDINGS_GEOJSON,
+    )
 
     # Building extrusion
     if getattr(s, "ENABLE_BUILDINGS", True):

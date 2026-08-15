@@ -1612,6 +1612,7 @@ class Settings:
             "UP_STRICT_QUALITY_GATES", self.STRICT_QUALITY_GATES
         )
         self.THESIS_STRICT = _env_bool("UP_THESIS_STRICT", self.THESIS_STRICT)
+        self.OFFLINE_ONLY = _env_bool("UP_OFFLINE_ONLY", self.OFFLINE_ONLY)
         self.PREANCHOR_INPUT_XODR = _env_bool(
             "UP_PREANCHOR_INPUT_XODR", self.PREANCHOR_INPUT_XODR
         )
