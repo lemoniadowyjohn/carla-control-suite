@@ -1,0 +1,40 @@
+{
+  "schema": "A5_CLASS_WEIGHTED_LOSS/v1",
+  "date": "2026-08-15",
+  "verdict": "CLASS_WEIGHTS_GREEN",
+  "problem": "Segmentation training used unweighted CrossEntropyLoss despite heavily imbalanced CARLA semantic classes.",
+  "changes": {
+    "ultimate_pipeline/perception/class_weights.py": [
+      "Added median-frequency and inverse-frequency class-weight computation.",
+      "Added raw semantic PNG class-count scanning."
+    ],
+    "ultimate_pipeline/perception/min_train_segmentation.py": [
+      "Class weights are enabled by default.",
+      "Added --no-class-weights opt-out.",
+      "Added --class-weight-scheme.",
+      "Records class counts and weights in metrics.json."
+    ],
+    "ultimate_pipeline/perception/train_launcher.py": [
+      "Class weights are enabled by default.",
+      "Added --no-class-weights opt-out.",
+      "Added --class-weight-scheme."
+    ],
+    "tests/unit/test_class_weights.py": [
+      "Rare classes receive higher weights than common classes.",
+      "Uniform distributions produce equal present-class weights.",
+      "Absent classes receive zero weight.",
+      "Synthetic PNG raw-id counting is correct.",
+      "Out-of-range class ids fail closed.",
+      "CLI default is weighted with explicit opt-out."
+    ]
+  },
+  "targeted_tests": {
+    "red": "ModuleNotFoundError: No module named 'ultimate_pipeline.perception.class_weights'",
+    "green": "6 passed in 4.68s",
+    "compatibility": "10 passed, 3 warnings in 4.67s"
+  },
+  "full_suite": "727 passed, 49 warnings in 162.41s",
+  "escalate_to_claude": [
+    "Weighted CE reduces imbalance bias but does not replace experiment-design choices: convergence epochs, train/val/test splits, and baselines still need methodology approval."
+  ]
+}

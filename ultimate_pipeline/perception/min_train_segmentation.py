@@ -29,6 +29,10 @@ import torchvision
 from torchvision.transforms import functional as TF
 
 from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
+from ultimate_pipeline.perception.class_weights import (
+    compute_class_weights,
+    scan_dataset_class_counts,
+)
 from ultimate_pipeline.perception.semantic_classes import (
     CARLA_SEMANTIC_NUM_CLASSES,
     validate_num_classes,
@@ -69,6 +73,12 @@ def parse_args():
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--num-classes", type=int, default=CARLA_SEMANTIC_NUM_CLASSES)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument(
+        "--class-weight-scheme",
+        choices=("median_frequency", "inverse_frequency"),
+        default="median_frequency",
+    )
+    ap.add_argument("--no-class-weights", action="store_true")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     return ap.parse_args()
 
@@ -89,9 +99,31 @@ def main():
     model.to(args.device)
 
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
-    loss_fn = torch.nn.CrossEntropyLoss()
+    class_counts = None
+    class_weights = None
+    if not args.no_class_weights:
+        class_counts = scan_dataset_class_counts(
+            ds_root,
+            camera=args.camera,
+            limit=args.limit,
+            num_classes=num_classes,
+        )
+        class_weights = compute_class_weights(
+            class_counts,
+            num_classes=num_classes,
+            scheme=args.class_weight_scheme,
+        ).to(args.device)
+    loss_fn = torch.nn.CrossEntropyLoss(weight=class_weights)
 
-    metrics = {"loss": []}
+    metrics = {
+        "loss": [],
+        "class_weighting": {
+            "enabled": not args.no_class_weights,
+            "scheme": args.class_weight_scheme if not args.no_class_weights else None,
+            "counts": class_counts.tolist() if class_counts is not None else None,
+            "weights": class_weights.detach().cpu().tolist() if class_weights is not None else None,
+        },
+    }
     model.train()
     for ep in range(args.epochs):
         total = 0.0

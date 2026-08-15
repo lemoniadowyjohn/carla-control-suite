@@ -32,3 +32,30 @@ learned. Offline-testable weight computation; opt-out flag to preserve current b
 ## Deliverables / verdict
 `perception/class_weights.py` + tests + wiring; report reports/post_audit_hardening/A5_CLASS_WEIGHTED_LOSS.md.
 Push (explicit pathspec); local==remote; suite green. Verdict: CLASS_WEIGHTS_GREEN | PARTIAL | BLOCKED.
+
+## Execution Report
+
+Date: 2026-08-15
+
+Verdict: `CLASS_WEIGHTS_GREEN`
+
+The segmentation trainers now use class-weighted `CrossEntropyLoss` by default. This reduces the training bias toward dominant CARLA semantic classes while preserving an explicit `--no-class-weights` opt-out for ablation/comparison runs.
+
+Changes:
+- Added `ultimate_pipeline/perception/class_weights.py`.
+- Implemented median-frequency balancing and inverse-frequency balancing.
+- Added class-id pixel counting from raw semantic PNG masks under `semseg_raw/<camera>/`.
+- Wired `min_train_segmentation.py` to scan labels, build weights, pass them into `CrossEntropyLoss`, and record counts/weights in `metrics.json`.
+- Wired `train_launcher.py` to use the same default weighted loss and opt-out flags.
+
+Tests:
+
+```text
+Red: ModuleNotFoundError: No module named 'ultimate_pipeline.perception.class_weights'
+Targeted: 6 passed in 4.68s
+Compatibility: 10 passed, 3 warnings in 4.67s
+Full suite: 727 passed, 49 warnings in 162.41s
+```
+
+ESCALATE_TO_CLAUDE:
+- Weighted CE reduces imbalance bias but does not replace experiment-design choices: convergence epochs, train/val/test splits, and baselines still need methodology approval.

@@ -36,6 +36,10 @@ from torchvision import models
 from torchvision.transforms import functional as TF
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.perception.class_weights import (
+    compute_class_weights,
+    scan_dataset_class_counts,
+)
 from ultimate_pipeline.perception.min_train_segmentation import SemanticSegDataset
 
 
@@ -100,6 +104,12 @@ def main() -> None:
     parser.add_argument("--device", type=str, default=SETTINGS.TRAIN_DEVICE)
     parser.add_argument("--num-workers", type=int, default=SETTINGS.TRAIN_NUM_WORKERS)
     parser.add_argument("--ddp", action="store_true", default=SETTINGS.TRAIN_USE_DDP)
+    parser.add_argument(
+        "--class-weight-scheme",
+        choices=("median_frequency", "inverse_frequency"),
+        default="median_frequency",
+    )
+    parser.add_argument("--no-class-weights", action="store_true")
     args = parser.parse_args()
 
     dataset_root = Path(args.dataset) if args.dataset else Path()
@@ -152,7 +162,26 @@ def main() -> None:
             torch.cuda.set_device(local_rank)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank] if device.type == "cuda" else None)
 
-    criterion = nn.CrossEntropyLoss()
+    class_weights = None
+    if not args.no_class_weights:
+        class_counts = scan_dataset_class_counts(
+            dataset_root,
+            camera=args.camera,
+            limit=args.limit,
+            num_classes=args.num_classes,
+        )
+        class_weights = compute_class_weights(
+            class_counts,
+            num_classes=args.num_classes,
+            scheme=args.class_weight_scheme,
+        ).to(device)
+        if is_main:
+            present = int((class_weights > 0).sum().item())
+            print(
+                f"   class_weights={args.class_weight_scheme} "
+                f"present_classes={present}/{args.num_classes}"
+            )
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
     optimizer = optim.Adam(model.parameters(), lr=float(args.lr))
 
     model.train()
