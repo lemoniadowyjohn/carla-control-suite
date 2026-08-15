@@ -5,7 +5,7 @@ Perception gap feature proxy (lightweight, no torch required).
 
 Goal:
 - Provide a deterministic, dependency-light feature vector for images, suitable for
-  quick domain-gap proxies (e.g., CORAL/MMD on feature vectors).
+  quick domain-gap proxies (e.g., CORAL or mean matching on feature vectors).
 
 This is intentionally NOT a learned embedding. It's a "cheap and cheerful" proxy.
 

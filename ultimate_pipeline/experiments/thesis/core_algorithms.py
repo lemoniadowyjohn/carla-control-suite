@@ -6,6 +6,8 @@ ML stacks are not installed.
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 
 
@@ -93,16 +95,22 @@ def apply_coral(Xs: np.ndarray, Xt: np.ndarray, *, eps: float = 1e-6) -> tuple[n
     return Xs_coral.astype(np.float32), Xt.astype(np.float32)
 
 
-def apply_mmd(Xs: np.ndarray, Xt: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Very small 'MMD-style' alignment (mean matching).
-
-    Full kernel mean matching is heavier; for our use (robustness + thesis
-    experiments), mean matching is a decent baseline and keeps this repo
-    dependency-light.
-    """
+def apply_mean_matching(Xs: np.ndarray, Xt: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Align source feature means to target feature means; this is not kernel MMD."""
     Xs = _as_2d(Xs)
     Xt = _as_2d(Xt)
     mu_s = Xs.mean(axis=0, keepdims=True)
     mu_t = Xt.mean(axis=0, keepdims=True)
     Xs_shift = Xs - mu_s + mu_t
     return Xs_shift.astype(np.float32), Xt.astype(np.float32)
+
+
+def apply_mmd(Xs: np.ndarray, Xt: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Deprecated compatibility alias for :func:`apply_mean_matching`."""
+    warnings.warn(
+        "apply_mmd is a deprecated mean-matching alias; use apply_mean_matching. "
+        "Use mmd_loss for the true RBF-kernel MMD metric.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return apply_mean_matching(Xs, Xt)

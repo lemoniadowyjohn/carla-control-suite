@@ -226,7 +226,7 @@ def export_perception_metrics(run_out: str, out_name: str = "perception_metrics_
         var = feats.var(axis=0)
 
         # Keep a small sample of feature vectors so downstream can compute
-        # MMD/Wasserstein/mean-gap without needing the full dataset.
+        # true MMD, Wasserstein, or mean-gap metrics without needing the full dataset.
         max_samples = 256
         if feats.shape[0] <= max_samples:
             sample_idx = None

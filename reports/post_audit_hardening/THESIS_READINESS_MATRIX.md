@@ -33,7 +33,7 @@ lon[11.422268084715878, 11.47882091528412] matches `agent_sync.yaml` exactly. Se
   `calib_data.json` rig for both maps) or the perceptual gap is confounded.
 
 ## Critical path
-The analysis toolkit (alignment, perceptual gap, CORAL/MMD adaptation, GNN, natural-DR experiment) is largely
+The analysis toolkit (alignment, perceptual gap, CORAL/mean-matching adaptation, true MMD metric, GNN, natural-DR experiment) is largely
 built. The three things between "code ready" and "thesis tasks accomplished" are:
 1. **B1/B3/B4** — produce the determinism verdict and pinned auto-vs-manual structural result. *Prompts.*
 2. **Real Ingolstadt dataset** — unblocks R8. *Data acquisition (yours).*

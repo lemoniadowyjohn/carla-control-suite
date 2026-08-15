@@ -50,7 +50,7 @@ Controls to define:
 - Real-data upper bound if labels exist: train or fine-tune on labeled real data, then evaluate on held-out real.
 - Null/random baseline: untrained or randomly initialized model to bound meaningless scores.
 - Majority/background baseline for segmentation masks.
-- Optional domain-adaptation baseline such as CORAL/MMD if already implemented.
+- Optional domain-adaptation baseline such as CORAL/mean matching, with true kernel MMD cited only when using `mmd_loss`.
 
 Minimum recommendation:
 

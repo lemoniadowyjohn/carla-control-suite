@@ -32,3 +32,35 @@ gap" numbers — a core research question. But:
 tests/unit/test_domain_adaptation.py + reports/post_audit_hardening/A7_ADAPTATION.md.
 Push (explicit pathspec); local==remote; suite green.
 Verdict: ADAPTATION_CHARACTERIZED | PARTIAL | BLOCKED_NEEDS_DECISION.
+
+## Execution Report
+
+Date: 2026-08-15
+
+Verdict: `ADAPTATION_CHARACTERIZED_GREEN`
+
+Resolution shipped: option (a), safe default.
+
+- CORAL math was left unchanged and characterized on deterministic synthetic matrices.
+- `domain_gap/adaptation.apply_mmd` is now a deprecated compatibility alias.
+- The actual alignment helper is `apply_mean_matching`.
+- `DomainAdaptation` now reports the method as `mean_matching`, not `MMD`.
+- `DomainAdaptation` now destructures `apply_coral` correctly.
+- `sklearn` is now imported lazily inside `_eval`, so the module remains importable in offline environments without sklearn.
+- Thesis core keeps true kernel MMD as `mmd_loss`; its alignment helper is also renamed to `apply_mean_matching` with `apply_mmd` as a deprecated alias.
+
+Targeted tests:
+
+```text
+Red: ModuleNotFoundError: No module named 'sklearn' during adaptation_runner import
+Green: 7 passed, 4 warnings in 7.75s
+```
+
+Full suite:
+
+```text
+739 passed, 49 warnings in 164.64s (0:02:44)
+```
+
+ESCALATE_TO_CLAUDE:
+- Thesis text/results must cite this alignment method as mean matching unless using `mmd_loss`, which is the true RBF-kernel MMD metric.

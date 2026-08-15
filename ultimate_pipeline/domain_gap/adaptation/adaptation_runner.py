@@ -1,14 +1,11 @@
 from __future__ import annotations
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from .coral import apply_coral
-from .mmd import apply_mmd
+from .mmd import apply_mean_matching
 
 
 class DomainAdaptation:
     """
-    Unified CORAL + MMD adaptation pipeline.
+    Unified CORAL + mean-matching adaptation pipeline.
     """
 
     def run(self, feature_data, labels):
@@ -37,12 +34,12 @@ class DomainAdaptation:
                 city_result["baseline"] = self._eval(Xs, ys, Xt, yt)
 
                 # coral
-                Xs_coral = apply_coral(Xs, Xt)
-                city_result["CORAL"] = self._eval(Xs_coral, ys, Xt, yt)
+                Xs_coral, Xt_coral = apply_coral(Xs, Xt)
+                city_result["CORAL"] = self._eval(Xs_coral, ys, Xt_coral, yt)
 
-                # mmd
-                Xs_mmd, Xt_mmd = apply_mmd(Xs, Xt)
-                city_result["MMD"] = self._eval(Xs_mmd, ys, Xt_mmd, yt)
+                # mean matching; this is intentionally not labeled as kernel MMD.
+                Xs_mm, Xt_mm = apply_mean_matching(Xs, Xt)
+                city_result["mean_matching"] = self._eval(Xs_mm, ys, Xt_mm, yt)
 
                 results[src][tgt] = city_result
 
@@ -50,6 +47,9 @@ class DomainAdaptation:
 
     @staticmethod
     def _eval(Xs, ys, Xt, yt):
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.model_selection import train_test_split
+
         X_train, X_test, y_train, y_test = train_test_split(
             Xt, yt, test_size=0.3, random_state=42, stratify=yt
         )

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 
 
@@ -12,11 +14,22 @@ def _as_2d(x: np.ndarray) -> np.ndarray:
     return x
 
 
-def apply_mmd(Xs: np.ndarray, Xt: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Lightweight mean-matching alignment (MMD-inspired baseline)."""
+def apply_mean_matching(Xs: np.ndarray, Xt: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Lightweight source mean alignment baseline; this is not kernel MMD."""
     Xs = _as_2d(Xs)
     Xt = _as_2d(Xt)
     mu_s = Xs.mean(axis=0, keepdims=True)
     mu_t = Xt.mean(axis=0, keepdims=True)
     Xs_shift = Xs - mu_s + mu_t
     return Xs_shift.astype(np.float32), Xt.astype(np.float32)
+
+
+def apply_mmd(Xs: np.ndarray, Xt: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Deprecated compatibility alias for :func:`apply_mean_matching`."""
+    warnings.warn(
+        "apply_mmd is a deprecated mean-matching alias; use apply_mean_matching "
+        "unless you intend to compute a true kernel MMD metric.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return apply_mean_matching(Xs, Xt)

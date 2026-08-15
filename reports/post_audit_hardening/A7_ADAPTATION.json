@@ -1,0 +1,42 @@
+{
+  "schema": "A7_ADAPTATION/v1",
+  "date": "2026-08-15",
+  "verdict": "ADAPTATION_CHARACTERIZED_GREEN",
+  "decision": "safe_default_rename_mean_matching",
+  "changes": {
+    "ultimate_pipeline/domain_gap/adaptation/coral.py": [
+      "No math change; characterized by tests."
+    ],
+    "ultimate_pipeline/domain_gap/adaptation/mmd.py": [
+      "Added apply_mean_matching.",
+      "Kept apply_mmd as a deprecated compatibility alias.",
+      "Documented that mean matching is not kernel MMD."
+    ],
+    "ultimate_pipeline/domain_gap/adaptation/adaptation_runner.py": [
+      "Reports mean_matching instead of MMD.",
+      "Destructures apply_coral tuple output correctly.",
+      "Imports sklearn lazily inside _eval."
+    ],
+    "ultimate_pipeline/experiments/thesis/core_algorithms.py": [
+      "Added apply_mean_matching.",
+      "Kept apply_mmd as a deprecated compatibility alias.",
+      "Preserved true RBF-kernel MMD metric as mmd_loss."
+    ],
+    "tests/unit/test_domain_adaptation.py": [
+      "CORAL identical source/target near no-op.",
+      "CORAL aligns covariance to target.",
+      "CORAL finite under singular covariance.",
+      "Mean matching aligns source means to target means.",
+      "Deprecated apply_mmd aliases warn and match apply_mean_matching.",
+      "DomainAdaptation reports mean_matching and not MMD."
+    ]
+  },
+  "targeted_tests": {
+    "red": "ModuleNotFoundError: No module named 'sklearn' during adaptation_runner import",
+    "green": "7 passed, 4 warnings in 7.75s"
+  },
+  "full_suite": "739 passed, 49 warnings in 164.64s (0:02:44)",
+  "escalate_to_claude": [
+    "Thesis text/results must cite this alignment method as mean matching unless using mmd_loss, which is the true RBF-kernel MMD metric."
+  ]
+}
