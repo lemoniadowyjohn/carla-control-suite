@@ -1,0 +1,23 @@
+{
+  "schema": "A6_TILING_SEAM_TESTS/v1",
+  "date": "2026-08-15",
+  "verdict": "SEAM_CHECKERS_CHARACTERIZED",
+  "scope": "Characterization tests only; no checker logic changes.",
+  "checkers": {
+    "GeometrySeamChecker": [
+      "continuous line endpoint seam -> ok",
+      "1.0 m endpoint discontinuity -> fail"
+    ],
+    "LaneSeamChecker": [
+      "continuous driving-lane pair -> no warnings",
+      "0.5 m matched lateral break -> warning",
+      "0.2 rad matched heading break -> warning"
+    ]
+  },
+  "targeted_tests": {
+    "initial": "4 passed, 1 failed due test bug: math.approx",
+    "green": "5 passed in 0.13s"
+  },
+  "full_suite": "732 passed, 49 warnings in 163.16s",
+  "escalate_to_claude": []
+}

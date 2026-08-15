@@ -32,3 +32,33 @@ seam break (not just pass everything).
 ## Deliverables / verdict
 tests/unit/test_tiling_seam_continuity.py; report reports/post_audit_hardening/A6_TILING_SEAM_TESTS.md.
 Push (explicit pathspec); local==remote; suite green. Verdict: SEAM_CHECKERS_CHARACTERIZED | PARTIAL | BLOCKED.
+
+## Execution Report
+
+Date: 2026-08-15
+
+Verdict: `SEAM_CHECKERS_CHARACTERIZED`
+
+The existing seam checkers were characterized on synthetic two-tile OpenDRIVE fixtures:
+
+- `GeometrySeamChecker` accepts a continuous line endpoint seam.
+- `GeometrySeamChecker` flags a 1.0 m endpoint discontinuity as `fail`.
+- `LaneSeamChecker` accepts a continuous driving-lane pair.
+- `LaneSeamChecker` flags a matched 0.5 m lateral break.
+- `LaneSeamChecker` flags a matched 0.2 rad heading break.
+
+Targeted tests:
+
+```text
+tests/unit/test_tiling_seam_continuity.py .....                          [100%]
+5 passed in 0.13s
+```
+
+Full suite:
+
+```text
+732 passed, 49 warnings in 163.16s
+```
+
+ESCALATE_TO_CLAUDE:
+- None.
