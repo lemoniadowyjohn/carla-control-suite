@@ -256,7 +256,7 @@ class DominikSensorSetup:
 
     Thesis contracts implemented here:
     - Use K_undistortion only (ignore K and D).
-    - Camera extrinsics: cTv is vehicle->camera; for CARLA attachment use inverse(cTv).
+    - Camera extrinsics: cTv is vehicle->camera; do not invert cTv.
     - LiDAR extrinsics: vTl is lidar->vehicle; invert for CARLA attachment.
     - Axis convention mismatch: legacy behavior flips translation Y only (kept by default).
     """
@@ -422,7 +422,7 @@ class DominikSensorSetup:
             "sensor_spawn_tick": int(sensor_spawn_tick),
             "rig_contract": {
                 "camera_intrinsics": "K_undistortion_only",
-                "camera_extrinsics": "cTv_inverted_for_attachment",
+                "camera_extrinsics": "cTv_direct_not_inverted",
                 "lidar_extrinsics": "vTl_inverted_for_attachment",
                 "axis_handling": "legacy_translation_y_flip" if self.flip_vehicle_y else "none",
                 "resolution_override": list(self.resolution_override) if self.resolution_override else None,

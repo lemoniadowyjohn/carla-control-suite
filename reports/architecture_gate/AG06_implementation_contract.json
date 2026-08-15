@@ -7,7 +7,7 @@
     "P5-1_artifact_transactions": "add hashing.py + locking.py (9/9 modules) + tests",
     "P5-2_map_registry": "register Grid0821/Grid0828 by SHA; resolve mislabeled grid0828 file (holds Grid0821)",
     "P5-3_governance_enforcer": "fail-closed on registry mismatch / identity drift",
-    "P5-4_calibration_contract": "resolve use_K_undistortion vs ignore_K/ignore_D first, then codify",
+    "P5-4_calibration_contract": "D2_RESOLVED_AND_CODIFIED_IN_ultimate_pipeline/sensors/calibration_contract.py; review legacy attach_sensors_safe.py before evidence use",
     "P5-5_elevation_guard": "wire elevation/+dem/ with tests",
     "P5-6_promotion_rollback_immutability": "atomic promotion + tested rollback + validator immutability",
     "P5-7_failure_injection_tests": "offline+geometry+cross-comparison green; guards proven to fire"

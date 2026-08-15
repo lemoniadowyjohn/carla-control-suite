@@ -54,13 +54,13 @@
     "blender_role": "NONE",
     "tiling": "LEGACY_CARLA_LARGE_MAP_TILES_target",
     "coordinate_contract": "WGS84->projCRS_EPSG32632->OpenDRIVE_m->FBX->UE_cm_LH->CARLA",
-    "vertical_contract": "UNKNOWN_MUST_RESOLVE",
+    "vertical_contract": "D1_RESOLVED_DEM_ELEVATED_VISUAL_MESH_D1B_PARTIAL_REVIEW_REQUIRED",
     "semantic_strategy": "carla_ue4_tagger_deferred",
     "collision_strategy": "per_semantic_class_deferred",
     "navigation_strategy": "recast_deferred",
     "traffic_control_strategy": "xodr_signals_to_carla_actors_must_resolve",
     "session_owner": "ultimate_pipeline/carla_tools/session.py",
-    "sensor_contract": "use_K_undistortion=T,ignore_K=T,ignore_D=T,ctv_inverted=F,vtl_inverted=T_CLARIFY"
+    "sensor_contract": "D2_RESOLVED_CARLA_IDEAL_PINHOLE_IGNORE_RAW_KD_USE_K_UNDISTORTION_IMAGE_SIZE_CTV_DIRECT_VTL_INVERTED"
   },
   "thesis_boundary": {
     "historical_evidence": "submission/results/structural_gap_run11 (immutable)",

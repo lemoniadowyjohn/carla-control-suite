@@ -6,7 +6,7 @@ This file records the remaining code-addressable visual/perception pipeline work
 
 ## D1 - Vertical Datum Resolution
 
-Status: implemented in this branch as an offline DEM warp tool and a generated uncommitted OBJ artifact.
+Status: implemented in this branch as an offline DEM warp tool and a generated uncommitted OBJ artifact. D1b residual decomposition is implemented separately and remains `PARTIAL_REVIEW_REQUIRED` because the largest at-grade residuals exceed the review threshold.
 
 Task:
 
@@ -24,13 +24,21 @@ Acceptance:
 
 ## D2 - Sensor Calibration Semantics
 
-Status: pending.
+Status: implemented in this branch.
 
 Task:
 
 - Resolve the `use_K_undistortion=true` with `ignore_K=true` / `ignore_D=true` contradiction.
 - Codify the effective CARLA ideal-pinhole interpretation or escalate if the intended semantics differ.
 - Add rig tests for `cTv` vehicle-to-camera direction, `vTl` LiDAR-to-vehicle inversion, image size, and effective intrinsics.
+
+Resolution:
+
+- CARLA sim cameras use ideal pinhole intrinsics derived from `K_undistortion` plus `image_size`.
+- Raw `K` and `D` are ignored.
+- `cTv` is vehicle-to-camera and is not inverted.
+- `vTl` is LiDAR-to-vehicle and is inverted.
+- Evidence is tracked in `reports/post_audit_hardening/D2_SENSOR_CALIBRATION_SEMANTICS.md`.
 
 ## D3 - Alignment Transform Verifier
 

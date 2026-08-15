@@ -34,7 +34,7 @@
 
 - `bbox`: lat `48.74936–48.77444`, lon `11.42227–11.47882` → **Ingolstadt** extent.
 - `sensor_rig`: `use_K_undistortion=true`, `ignore_K=true`, `ignore_D=true`, `ctv_inverted=false`, `vtl_inverted=true`, `rig_verification_required=true`, `screenshot_required=true`.
-  - ⚠ **Flagged tension** (carried to AG04/AG06): `use_K_undistortion=true` **with** `ignore_K=true`/`ignore_D=true` is internally contradictory on its face and must be clarified before it is treated as a binding calibration contract.
+  - **2026-08-15 D2 update:** the apparent `use_K_undistortion` / `ignore_K,D` tension is resolved as CARLA ideal-pinhole semantics: ignore raw `K/D`, derive simulator intrinsics from `K_undistortion` + `image_size`, use `cTv` directly, invert `vTl`. Evidence: `reports/post_audit_hardening/D2_SENSOR_CALIBRATION_SEMANTICS.md`.
 - `determinism.required_signature_fields`: `xodr_sha256`, `tile_metadata_sha256`, `tile_count`, `road_count`, `junction_count` — this is the **dataset identity contract**, enforced at runtime by `carla_tools/map_identity_guard.py`.
 
 ## 4. Authority-chain verdict

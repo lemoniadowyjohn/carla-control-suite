@@ -27,7 +27,10 @@
     "ignore_D": true,
     "ctv_inverted": false,
     "vtl_inverted": true,
-    "flag": "use_K_undistortion=true contradicts ignore_K/ignore_D=true; clarify before treating as binding"
+    "flag": "use_K_undistortion=true contradicts ignore_K/ignore_D=true; clarify before treating as binding",
+    "flag_status": "RESOLVED_BY_D2_2026_08_15",
+    "resolution": "CARLA ideal pinhole; ignore raw K/D; derive effective simulator intrinsics from K_undistortion plus image_size; use cTv directly; invert vTl",
+    "evidence": "reports/post_audit_hardening/D2_SENSOR_CALIBRATION_SEMANTICS.md"
   },
   "dataset_identity_signature_fields": ["xodr_sha256", "tile_metadata_sha256", "tile_count", "road_count", "junction_count"],
   "authority_chain_verdict": "CONSISTENT_NECESSARY_NOT_SUFFICIENT"

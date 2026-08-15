@@ -21,7 +21,7 @@
     "authoritative_xodr": "UNKNOWN_MUST_RESOLVE_BLOCKER",
     "authoritative_fbx": "ABSENT_MUST_RESOLVE_BLOCKER",
     "coordinate_transform": "WGS84->projCRS->OpenDRIVE_m->FBX->UE_cm_LH_Xfwd_Yright_Zup->CARLA; CRS_PROJ_UNKNOWN_MUST_RESOLVE",
-    "vertical_transform": "UNKNOWN_MUST_RESOLVE_flat_vs_xodr_vs_dem",
+    "vertical_transform": "D1_RESOLVED_DEM_ELEVATED_VISUAL_MESH_D1B_PARTIAL_REVIEW_REQUIRED",
     "reference_map_role": "Grid0821_Grid0828_evaluation_reference_only",
     "tiling": "LEGACY_CARLA_LARGE_MAP_TILES_not_world_partition",
     "tile_size_experiment": "500_1000_2000_deferred",
@@ -30,7 +30,7 @@
     "collision_strategy": "per_semantic_class_deferred",
     "navigation_strategy": "recast_pedestrian_deferred",
     "runtime_session_owner": "ultimate_pipeline/carla_tools/session.py",
-    "sensor_contract": "use_K_undistortion=T,ignore_K=T,ignore_D=T,ctv_inverted=F,vtl_inverted=T_CLARIFY",
+    "sensor_contract": "D2_RESOLVED_CARLA_IDEAL_PINHOLE_IGNORE_RAW_KD_USE_K_UNDISTORTION_IMAGE_SIZE_CTV_DIRECT_VTL_INVERTED",
     "dataset_identity_contract": "xodr_sha256,tile_metadata_sha256,tile_count,road_count,junction_count"
   },
   "path_A_to_E": [

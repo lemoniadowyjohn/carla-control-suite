@@ -13,15 +13,31 @@
     "must_prove_applied_once": true,
     "do_not_rederive": true
   },
-  "vertical_datum": "UNKNOWN_MUST_RESOLVE_flat_vs_xodr_vs_dem",
+  "vertical_datum": {
+    "status": "D1_RESOLVED_D1B_PARTIAL_REVIEW_REQUIRED",
+    "source": "DEM-elevated visual mesh plus elevated XODR",
+    "evidence": [
+      "reports/post_audit_hardening/D1_VISUAL_VERTICAL_DATUM.md",
+      "reports/post_audit_hardening/D1_VISUAL_VERTICAL_DATUM_RUN.json",
+      "reports/post_audit_hardening/D1B_ELEVATION_RESIDUAL_DECOMPOSITION.json"
+    ],
+    "caveat": "D1b at-grade p95 is within threshold, but max at-grade residual exceeds review threshold; top roads require human/Claude review before cook."
+  },
   "vertical_support_code": ["ultimate_pipeline/elevation", "ultimate_pipeline/dem", "run_11/elevation_stats_auto.json", "run_11/dem_fallback_diagnosis.json"],
   "sensor_calibration_clarify": {
+    "status": "D2_RESOLVED",
     "use_K_undistortion": true,
     "ignore_K": true,
     "ignore_D": true,
-    "contradiction": "use_K_undistortion vs ignore_K/ignore_D",
-    "likely_intent": "CARLA ideal pinhole; ignore real-camera K/D; use_K_undistortion legacy/no-op",
-    "action": "confirm_and_document_before_binding"
+    "resolution": "CARLA ideal pinhole; ignore raw real-camera K/D; derive effective simulator FOV/intrinsics from K_undistortion plus image_size.",
+    "cTv": "vehicle_to_camera_used_directly_not_inverted",
+    "vTl": "lidar_to_vehicle_inverted_to_vehicle_to_lidar",
+    "canonical_calib": "ultimate_pipeline/sensors/calib_data.json",
+    "evidence": [
+      "reports/post_audit_hardening/D2_SENSOR_CALIBRATION_SEMANTICS.md",
+      "reports/post_audit_hardening/D2_SENSOR_CALIBRATION_SEMANTICS.json",
+      "tests/unit/test_sensor_calibration_semantics.py"
+    ]
   },
   "must_run_detectors": ["scale_1_100", "scale_100_1", "xy_swap", "y_inversion", "z_inversion", "rh_lh_double_reflection", "double_scale", "double_origin", "double_offset", "yaw_sign", "deg_rad", "latlon_axis_order", "crs_mismatch", "height_offset", "tile_origin_duplication"]
 }

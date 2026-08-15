@@ -20,15 +20,19 @@ Per cooking-prompt §36A.2, a governed transform likely already exists in the st
 - `submission/results/structural_gap_run11/alignment.json` (tracked) and `auto_aligned_rigid.xodr` — a **rigid + scale** alignment. There is also `tests/unit/test_geo_alignment_rigid_scale_lock.py` locking that convention.
 - The cook must **reuse** this governed transform (state source artifact + hash, convention, matrix order, units, whether it applies to XODR/FBX/both, whether the XODR `<offset>` is already incorporated, and prove it is applied **exactly once**). Do **not** derive a new visual alignment independently.
 
-## 3. Vertical / elevation datum — **UNKNOWN → must-resolve**
+## 3. Vertical / elevation datum — **D1 resolved; D1b review pending**
 
-- Model not yet pinned: flat vs XODR-elevated vs DEM. Supporting code exists (`ultimate_pipeline/{elevation,dem}/`) and `run_11/elevation_stats_auto.json` + `dem_fallback_diagnosis.json`.
-- Must record: vertical datum + units, bridge-deck/lower-road separation, tunnel clearance, terrain-to-road offsets, tile-edge elevation continuity, collision-Z vs visual-Z vs waypoint-Z.
+- D1 pins the visual mesh vertical datum to the same DEM source used by the elevated XODR road network. See `reports/post_audit_hardening/D1_VISUAL_VERTICAL_DATUM.md` and `D1_VISUAL_VERTICAL_DATUM_RUN.json`.
+- D1b decomposes road-to-DEM residuals by F3 structure class. At-grade p95 is within threshold, but the at-grade max tail breaches the review threshold, so bridge/deck separation does **not** fully explain the tail. See `reports/post_audit_hardening/D1B_ELEVATION_RESIDUAL_DECOMPOSITION.md`.
+- Still required before cook: bridge-deck/lower-road separation review for the residual tail, tunnel clearance, tile-edge elevation continuity, collision-Z vs visual-Z vs waypoint-Z, and D3 exact-once transform verification.
 
-## 4. Sensor calibration coupling (from `agent_sync.yaml`) — **CLARIFY before binding**
+## 4. Sensor calibration coupling (from `agent_sync.yaml`) — **D2 resolved**
 
-- `use_K_undistortion=true` **with** `ignore_K=true` and `ignore_D=true` is contradictory on its face. Likely intended semantics: CARLA cameras are **ideal pinhole (no lens distortion)**, so `ignore_K/ignore_D` = "do not apply real-camera intrinsics/distortion" and the effective intrinsics come from resolution+FOV. If so, `use_K_undistortion` is a **legacy/no-op flag** for the sim path. **This must be confirmed and documented** — it directly affects any RGB↔depth↔semantic↔LiDAR registration claim (cooking-prompt §36A.10).
-- `ctv_inverted=false`, `vtl_inverted=true` — camera↔vehicle and vehicle↔LiDAR extrinsic storage conventions; must be verified by a rig round-trip.
+- CARLA cameras are treated as ideal pinhole cameras with no simulated lens distortion. `ignore_K=true` and `ignore_D=true` mean the raw real-camera `K` and `D` matrices are not applied in the simulator.
+- `use_K_undistortion=true` is retained as a legacy contract flag meaning: derive the effective CARLA camera intrinsics/FOV from rectified `K_undistortion` plus `image_size`, not from raw `K` or `D`.
+- `ctv_inverted=false` is locked as `cTv` vehicle-to-camera used directly, not inverted.
+- `vtl_inverted=true` is locked as `vTl` LiDAR-to-vehicle inverted to produce the CARLA vehicle-to-LiDAR attachment transform.
+- The canonical calibration file is now `ultimate_pipeline/sensors/calib_data.json`; D2 round-trip evidence is tracked in `reports/post_audit_hardening/D2_SENSOR_CALIBRATION_SEMANTICS.md` and `.json`.
 
 ## 5. Detectors the cook must run (from §8)
 

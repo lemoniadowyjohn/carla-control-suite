@@ -1,9 +1,12 @@
 import math
+import xml.etree.ElementTree as ET
 
 import pytest
 
 from ultimate_pipeline.tools.visual_mesh_elevation_warp import (
     ObjOrigin,
+    decompose_xodr_dem_elevation_residuals,
+    structure_bucket_for_class,
     local_obj_to_lonlat,
     summarize_abs_residuals,
     warp_obj_lines,
@@ -69,3 +72,67 @@ def test_summarize_abs_residuals_reports_p95_and_max():
     assert summary["median_abs_m"] == pytest.approx(2.0)
     assert summary["p95_abs_m"] == pytest.approx(10.0)
     assert summary["max_abs_m"] == pytest.approx(20.0)
+
+
+def test_structure_bucket_for_class_separates_grade_separated_from_at_grade():
+    assert structure_bucket_for_class("bridge") == "grade_separated"
+    assert structure_bucket_for_class("deck_linear") == "grade_separated"
+    assert structure_bucket_for_class("elevated") == "grade_separated"
+    assert structure_bucket_for_class("tunnel") == "grade_separated"
+    assert structure_bucket_for_class("terrain_following") == "at_grade"
+    assert structure_bucket_for_class("unknown") == "unknown_fail_closed"
+
+
+def test_decompose_residuals_buckets_grade_separated_tail(tmp_path):
+    xodr = tmp_path / "tiny.xodr"
+    root = ET.Element("OpenDRIVE")
+    road_a = ET.SubElement(root, "road", id="1", length="10.0")
+    pv_a = ET.SubElement(road_a, "planView")
+    ET.SubElement(pv_a, "geometry", s="0.0", x="1.0", y="2.0", hdg="0.0", length="10.0")
+    ep_a = ET.SubElement(road_a, "elevationProfile")
+    ET.SubElement(ep_a, "elevation", s="0.0", a="100.25", b="0", c="0", d="0")
+
+    road_b = ET.SubElement(root, "road", id="2", length="10.0")
+    pv_b = ET.SubElement(road_b, "planView")
+    ET.SubElement(pv_b, "geometry", s="0.0", x="3.0", y="4.0", hdg="0.0", length="10.0")
+    ep_b = ET.SubElement(road_b, "elevationProfile")
+    ET.SubElement(ep_b, "elevation", s="0.0", a="108.0", b="0", c="0", d="0")
+    ET.ElementTree(root).write(xodr, encoding="utf-8", xml_declaration=True)
+
+    report = decompose_xodr_dem_elevation_residuals(
+        xodr,
+        sample_dem=lambda lon, lat: 100.0,
+        road_class_by_id={"1": "terrain_following", "2": "bridge"},
+        xodr_to_lonlat=lambda x, y: (x, y),
+        sample_limit=0,
+        at_grade_max_threshold_m=10.0,
+    )
+
+    assert report["verdict"] == "PASS"
+    assert report["buckets"]["at_grade"]["residual_summary"]["max_abs_m"] == pytest.approx(0.25)
+    assert report["buckets"]["grade_separated"]["residual_summary"]["max_abs_m"] == pytest.approx(8.0)
+    assert report["tail_interpretation"]["largest_residual_bucket"] == "grade_separated"
+
+
+def test_decompose_residuals_marks_large_at_grade_max_for_review(tmp_path):
+    xodr = tmp_path / "tiny_at_grade_tail.xodr"
+    root = ET.Element("OpenDRIVE")
+    road = ET.SubElement(root, "road", id="1", length="10.0")
+    pv = ET.SubElement(road, "planView")
+    ET.SubElement(pv, "geometry", s="0.0", x="1.0", y="2.0", hdg="0.0", length="10.0")
+    ep = ET.SubElement(road, "elevationProfile")
+    ET.SubElement(ep, "elevation", s="0.0", a="112.0", b="0", c="0", d="0")
+    ET.ElementTree(root).write(xodr, encoding="utf-8", xml_declaration=True)
+
+    report = decompose_xodr_dem_elevation_residuals(
+        xodr,
+        sample_dem=lambda lon, lat: 100.0,
+        road_class_by_id={"1": "terrain_following"},
+        xodr_to_lonlat=lambda x, y: (x, y),
+        sample_limit=0,
+        at_grade_p95_threshold_m=5.0,
+        at_grade_max_threshold_m=10.0,
+    )
+
+    assert report["verdict"] == "PARTIAL_REVIEW_REQUIRED"
+    assert report["tail_interpretation"]["at_grade_max_ok"] is False

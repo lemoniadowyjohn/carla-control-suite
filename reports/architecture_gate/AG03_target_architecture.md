@@ -28,7 +28,7 @@
 | 13 | Authoritative XODR | **UNKNOWN → must-resolve.** `settings.INPUT_XODR` = computed path `{CITY}_osm_auto.xodr` to a non-tracked runtime file; `MANUAL_MAP_XODR` default `""`; only tracked XODR is a results artifact | **BLOCKER (B2)** **[07-31 #2: CLOSED]** |
 | 14 | Authoritative FBX/visual input | **ABSENT → must-resolve** (0 tracked FBX) | **BLOCKER (B3)** **[07-31 #2: CLOSED]** |
 | 15 | Coordinate transform | WGS84 → projected CRS → OpenDRIVE metric → FBX → UE cm (LH, X-fwd, Y-right, Z-up) → CARLA world. bbox pinned (Ingolstadt). **CRS/PROJ string UNKNOWN → must-resolve** (no `geoReference`/EPSG tracked) | must-resolve |
-| 16 | Vertical transform | **UNKNOWN → must-resolve** (flat vs XODR-elevated vs DEM). `ultimate_pipeline/{elevation,dem}/` exist; `run_11` has `elevation_stats_auto.json` | must-resolve |
+| 16 | Vertical transform | **2026-08-15 D1 update:** visual mesh is DEM-elevated to match the elevated XODR source; D1b residual decomposition remains partial because top at-grade residuals exceed review threshold | resolved with caveat |
 | 17 | Manual/reference map role | Grid0821/Grid0828 = **evaluation reference only**, not production input. Provenance drift (mislabeled `grid0828` file carrying Grid0821 content) is a **P5 registry** task, not P4 | HIGH |
 | 18 | Monolithic vs tiled | **TARGET:** `LEGACY_CARLA_LARGE_MAP_TILES` (UE4.26). **NOT** UE5 World Partition | MEDIUM (default full-scale) |
 | 19 | Tile-size experiment | Evaluate 500 m / 1000 m / 2000 m; pick smallest tile count within memory/streaming limits (cook-time) | deferred |
@@ -37,7 +37,7 @@
 | 22 | Collision strategy | Per-semantic-class (continuous driveable roads; simplified buildings; explicit curb/bridge policy) | deferred |
 | 23 | Navigation strategy | Recast pedestrian nav after geometry/collision stable | deferred |
 | 24 | Runtime session owner | `ultimate_pipeline/carla_tools/session.py` (+ `map_identity_guard.py`, `sensor_registry.py`) — **current authoritative owner** | HIGH |
-| 25 | Sensor calibration contract | `agent_sync.yaml`: `use_K_undistortion=T`, `ignore_K=T`, `ignore_D=T`, `ctv_inverted=F`, `vtl_inverted=T`. ⚠ **Clarify** `use_K_undistortion` vs `ignore_K/ignore_D` contradiction | pinned + clarify |
+| 25 | Sensor calibration contract | `agent_sync.yaml`: `use_K_undistortion=T`, `ignore_K=T`, `ignore_D=T`, `ctv_inverted=F`, `vtl_inverted=T`. **2026-08-15 D2 update:** resolved as CARLA ideal-pinhole semantics: ignore raw `K/D`, use `K_undistortion` + `image_size`, direct `cTv`, inverted `vTl` | pinned + resolved |
 | 26 | Dataset identity contract | determinism signature = `xodr_sha256`, `tile_metadata_sha256`, `tile_count`, `road_count`, `junction_count`; enforced by `map_identity_guard` | HIGH |
 
 ## 3. Path A → E (what must happen, in order)

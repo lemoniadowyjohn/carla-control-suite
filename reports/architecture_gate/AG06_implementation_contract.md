@@ -13,7 +13,7 @@ P5 is **governance & artifact-safety integration** — code + tests only. Diffic
 | P5-1 | Complete artifact-transaction layer | `ultimate_pipeline/artifacts/hashing.py`, `locking.py` | 9/9 modules; unit tests; integrates with existing `store/transaction/promotion/recovery` |
 | P5-2 | Map registry + SHA registration | new module + registry file | Register Grid0821 & Grid0828 by content SHA; resolve the **mislabeled** `manual_ingolstadt_grid0828.xodr` (holds Grid0821 content) deterministically |
 | P5-3 | Governance enforcer | new module | Fail-closed on registry mismatch / unregistered map / identity drift |
-| P5-4 | Calibration contract | codify `agent_sync.yaml` sensor rig | **First resolve** the `use_K_undistortion` vs `ignore_K/ignore_D` contradiction (AG04 §4) before codifying |
+| P5-4 | Calibration contract | codify `agent_sync.yaml` sensor rig | **2026-08-15 D2 update:** resolved and codified in `ultimate_pipeline/sensors/calibration_contract.py`; review legacy `attach_sensors_safe.py` before using it for evidence |
 | P5-5 | Elevation guard wiring | wire `elevation/`+`dem/` into a guard | Vertical-datum guard with tests |
 | P5-6 | Promotion / rollback / validator-immutability | extend `promotion.py`/`recovery.py` | Atomic promotion + tested rollback + validator-immutability proof |
 | P5-7 | Failure-injection + full test suite | `tests/` | Offline + geometry + cross-comparison green; failure injection proves guards fire |

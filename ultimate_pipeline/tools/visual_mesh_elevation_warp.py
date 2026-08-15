@@ -17,7 +17,7 @@ import statistics
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Callable, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from ultimate_pipeline.enrichment.coordinate_control import (
     VERIFIED_XODR_FRAME,
@@ -27,6 +27,10 @@ from ultimate_pipeline.enrichment.coordinate_control import (
 
 
 DemSampler = Callable[[float, float], Optional[float]]
+XodrToLonLat = Callable[[float, float], Tuple[float, float]]
+
+GRADE_SEPARATED_CLASSES = {"bridge", "deck_linear", "elevated", "tunnel", "underpass"}
+AT_GRADE_CLASSES = {"terrain_following", "embankment", "cutting", "covered"}
 
 
 @dataclass(frozen=True)
@@ -342,6 +346,180 @@ def summarize_abs_residuals(residuals: Sequence[float]) -> dict:
         "median_abs_m": float(statistics.median(values)),
         "p95_abs_m": float(values[p95_index]),
         "max_abs_m": float(values[-1]),
+    }
+
+
+def structure_bucket_for_class(road_class: str) -> str:
+    normalized = str(road_class or "unknown").strip().lower()
+    if normalized in GRADE_SEPARATED_CLASSES:
+        return "grade_separated"
+    if normalized in AT_GRADE_CLASSES:
+        return "at_grade"
+    return "unknown_fail_closed"
+
+
+def load_structure_class_map(structure_path: Path) -> Dict[str, str]:
+    payload = json.loads(Path(structure_path).read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        return {}
+    per_road = payload.get("per_road") if isinstance(payload, dict) else None
+    if not isinstance(per_road, dict):
+        # Older F3 evidence records only deck-linear ids. It is still useful for
+        # tail attribution, but any non-listed road remains unknown/fail-closed.
+        return {
+            str(rid): "deck_linear"
+            for rid in payload.get("deck_linear_road_ids", [])
+        }
+    out: Dict[str, str] = {}
+    for road_id, rec in per_road.items():
+        if isinstance(rec, dict):
+            out[str(road_id)] = str(rec.get("class", "unknown"))
+    return out
+
+
+def _native_xodr_to_lonlat_transformer() -> XodrToLonLat:
+    try:
+        from pyproj import CRS, Transformer
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError(f"pyproj unavailable for XODR coordinate transform: {exc}") from exc
+
+    transformer = Transformer.from_crs(
+        CRS.from_proj4(VERIFIED_XODR_GEOMETRY_CRS_PROJ4),
+        "EPSG:4326",
+        always_xy=True,
+    )
+
+    def _to_lonlat(x: float, y: float) -> Tuple[float, float]:
+        lon, lat = transformer.transform(float(x), float(y))
+        return float(lon), float(lat)
+
+    return _to_lonlat
+
+
+def _summarize_residual_records(records: Sequence[dict]) -> dict:
+    residuals = [float(rec["residual_m"]) for rec in records]
+    top = sorted(records, key=lambda rec: abs(float(rec["residual_m"])), reverse=True)[:20]
+    return {
+        "count": int(len(records)),
+        "residual_summary": summarize_abs_residuals(residuals),
+        "top_abs_residuals": top,
+    }
+
+
+def decompose_xodr_dem_elevation_residuals(
+    xodr_path: Path,
+    *,
+    sample_dem: DemSampler,
+    road_class_by_id: Optional[Dict[str, str]] = None,
+    xodr_to_lonlat: Optional[XodrToLonLat] = None,
+    sample_limit: int = 0,
+    at_grade_p95_threshold_m: float = 5.0,
+    at_grade_max_threshold_m: float = 10.0,
+) -> dict:
+    """Decompose XODR-vs-DEM elevation residuals by F3 structure class."""
+    road_class_by_id = road_class_by_id or {}
+    to_lonlat = xodr_to_lonlat or _native_xodr_to_lonlat_transformer()
+    root = ET.parse(str(xodr_path)).getroot()
+
+    records_by_bucket: Dict[str, List[dict]] = {
+        "at_grade": [],
+        "grade_separated": [],
+        "unknown_fail_closed": [],
+    }
+    sampled_points = 0
+    dem_missing = 0
+    for road in root.findall("./road"):
+        road_id = str(road.get("id", ""))
+        road_class = str(road_class_by_id.get(road_id, "unknown"))
+        if road_class == "deck_linear":
+            road_class = "elevated"
+        bucket = structure_bucket_for_class(road_class)
+        for geom in road.findall("./planView/geometry"):
+            if sample_limit and sampled_points >= int(sample_limit):
+                break
+            x = _safe_float(geom.get("x"), 0.0)
+            y = _safe_float(geom.get("y"), 0.0)
+            s = _safe_float(geom.get("s"), 0.0)
+            try:
+                lon, lat = to_lonlat(x, y)
+            except Exception:
+                dem_missing += 1
+                sampled_points += 1
+                continue
+            dem_height = sample_dem(lon, lat)
+            sampled_points += 1
+            if dem_height is None:
+                dem_missing += 1
+                continue
+            xodr_height = _eval_road_elevation_at_s(road, s)
+            residual = float(xodr_height) - float(dem_height)
+            records_by_bucket[bucket].append(
+                {
+                    "road_id": road_id,
+                    "road_class": road_class,
+                    "bucket": bucket,
+                    "s": float(s),
+                    "x": float(x),
+                    "y": float(y),
+                    "lon": float(lon),
+                    "lat": float(lat),
+                    "xodr_elevation_m": float(xodr_height),
+                    "dem_elevation_m": float(dem_height),
+                    "residual_m": float(residual),
+                    "abs_residual_m": abs(float(residual)),
+                }
+            )
+        if sample_limit and sampled_points >= int(sample_limit):
+            break
+
+    buckets = {
+        bucket: _summarize_residual_records(records)
+        for bucket, records in records_by_bucket.items()
+    }
+    all_records: List[dict] = []
+    for records in records_by_bucket.values():
+        all_records.extend(records)
+    overall = _summarize_residual_records(all_records)
+    largest = overall["top_abs_residuals"][0] if overall["top_abs_residuals"] else None
+    at_grade_p95 = buckets["at_grade"]["residual_summary"].get("p95_abs_m")
+    at_grade_max = buckets["at_grade"]["residual_summary"].get("max_abs_m")
+    at_grade_ok = (
+        at_grade_p95 is not None
+        and float(at_grade_p95) <= float(at_grade_p95_threshold_m)
+    )
+    at_grade_max_ok = (
+        at_grade_max is not None
+        and float(at_grade_max) <= float(at_grade_max_threshold_m)
+    )
+    return {
+        "schema": "D1B_ELEVATION_RESIDUAL_DECOMPOSITION/v1",
+        "verdict": (
+            "PASS"
+            if all_records and at_grade_ok and at_grade_max_ok
+            else "PARTIAL_REVIEW_REQUIRED"
+        ),
+        "xodr_path": str(xodr_path),
+        "xodr_geometry_frame": VERIFIED_XODR_FRAME,
+        "xodr_geometry_crs_proj4": VERIFIED_XODR_GEOMETRY_CRS_PROJ4,
+        "sample_limit": int(sample_limit),
+        "sampled_points": int(sampled_points),
+        "dem_missing": int(dem_missing),
+        "missing_ratio": 1.0 if sampled_points <= 0 else float(dem_missing) / float(sampled_points),
+        "at_grade_p95_threshold_m": float(at_grade_p95_threshold_m),
+        "at_grade_max_threshold_m": float(at_grade_max_threshold_m),
+        "overall": overall,
+        "buckets": buckets,
+        "tail_interpretation": {
+            "largest_residual_bucket": largest.get("bucket") if largest else None,
+            "largest_residual_road_class": largest.get("road_class") if largest else None,
+            "largest_residual_abs_m": largest.get("abs_residual_m") if largest else None,
+            "at_grade_p95_ok": bool(at_grade_ok),
+            "at_grade_max_ok": bool(at_grade_max_ok),
+        },
+        "note": (
+            "Grade-separated buckets may legitimately differ from ground DEM; "
+            "at-grade residuals are the alignment-error signal."
+        ),
     }
 
 

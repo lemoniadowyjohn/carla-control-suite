@@ -80,14 +80,14 @@ OSM2WORLD ROLE:            supplementary, referenced-but-source-absent, NOT inte
 BLENDER ROLE:              NONE (absent)
 TILING:                    target LEGACY_CARLA_LARGE_MAP_TILES (not World Partition); tile-size experiment deferred
 COORDINATE CONTRACT:       WGS84→projCRS(EPSG:32632)→OpenDRIVE m→FBX→UE cm(LH,X-fwd,Y-right,Z-up)→CARLA
-VERTICAL CONTRACT:         UNKNOWN — must-resolve (flat vs XODR-elevated vs DEM)
+VERTICAL CONTRACT:         D1 DEM-elevated visual mesh; D1b partial review required for at-grade residual tail
 
 SEMANTIC STRATEGY:         CARLA UE4 tagger (deferred to cook)
 COLLISION STRATEGY:        per-semantic-class (deferred to cook)
 NAVIGATION STRATEGY:       Recast pedestrian nav after geometry stable (deferred)
 TRAFFIC CONTROL STRATEGY:  XODR signals → CARLA actors (must-resolve; records-only today)
 SESSION OWNER:            ultimate_pipeline/carla_tools/session.py (+ map_identity_guard, sensor_registry)
-SENSOR CONTRACT:          use_K_undistortion=T, ignore_K=T, ignore_D=T, ctv_inverted=F, vtl_inverted=T  (CLARIFY contradiction)
+SENSOR CONTRACT:          D2 resolved: CARLA ideal pinhole; ignore raw K/D; use K_undistortion+image_size; cTv direct; vTl inverted
 
 UNREAL PROMPT READY:      NO — parameterized (AG05/UNREAL_COOKING_PARAMETERS.md), not authorized
 CODEX 5.5 AUTHORIZED:     C55V01b ONLY (structural validation + horizontal freeze, candidate-only; NO cook/runtime; REAL MAP MUTATION: NO)
