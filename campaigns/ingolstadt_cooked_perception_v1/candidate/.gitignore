@@ -1,5 +1,6 @@
 # *.xodr now governed by repository Git LFS rule (see .gitattributes)
 ingolstadt_perception_elevated_safe.xodr
+ingolstadt_perception_elevated_safe_loadable.xodr
 !manifest.json
 !osm_to_xodr_conversion_status.json
 !.gitignore
