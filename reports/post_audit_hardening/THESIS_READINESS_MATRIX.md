@@ -15,7 +15,7 @@ lon[11.422268084715878, 11.47882091528412] matches `agent_sync.yaml` exactly. Se
 | R1 | OSM→CARLA pipeline, correct GPS bbox | ⚠️ strengthen | bbox exact; E2 elevated offline-loadable candidate exists | live run + visual cook | runtime/toolchain |
 | R2 | Same OSM→same map? / natural DR | 🔴 inconclusive | verdicts **4 DET / 4 NONDET** | conclusive N-run study | **codex B1** |
 | R3 | Structural diff auto vs manual | ⚠️ strengthen | `manual_vs_auto_comparator.py`, `exp_domain_gap_manual_vs_auto.py`, alignment tested | manual-map provenance; not yet run | **codex B3+B4** |
-| R4 | Perceptual diff + perception generalization | ⚠️ strengthen / toolchain-blocked | semantic labels real; GNN untested; both maps still need cook/capture | GNN verification + cook both maps | **codex A2** + toolchain |
+| R4 | Perceptual diff + perception generalization | ⚠️ strengthen / toolchain-blocked | semantic labels real; GNN math/encoder characterized; both maps still need cook/capture | real-data GNN run + cook both maps | toolchain/runtime |
 | R5 | Generate many maps, analyze natural DR | ⚠️ strengthen | `exp_natural_domain_randomization.py`, `realism_augmentor.py` | tied to B1 verdict | **codex B1** |
 | R6 | Objects on map + visual check | 🔴 blocked | 66 objects; no cooked map | Unreal cook | toolchain (human) |
 | R7 | Sensors from calib_data.json on ego | ⚠️ strengthen | rich rig + contract test; calib rules correct | `calib_data.json` not in canonical tree | **codex B2** |
@@ -23,7 +23,7 @@ lon[11.422268084715878, 11.47882091528412] matches `agent_sync.yaml` exactly. Se
 
 ## Blockers by fixer
 
-- **Codex-fixable (queued):** A1 done (semantic labels characterized; quality guard added), A2/A3 (verify gap engine + GNN), A4 (mock honesty),
+- **Codex-fixable (queued):** A1 done (semantic labels characterized; quality guard added), A2 done (GNN characterized), A3 (verify gap metrics), A4 (mock honesty),
   B1 (determinism verdict), B2 (calib placement), B3 (manual-map registry), B4 (run auto-vs-manual),
   E1/E1B/E2 done (map quality). Structural arc R1/R2/R3/R5/R7 is completable in code plus runtime/toolchain proof.
 - **DATA — NOT codex-fixable (yours):** real-world unlabeled Ingolstadt imagery/LiDAR (R8). No prompt fixes this.
@@ -35,7 +35,7 @@ lon[11.422268084715878, 11.47882091528412] matches `agent_sync.yaml` exactly. Se
 ## Critical path
 The analysis toolkit (alignment, perceptual gap, CORAL/MMD adaptation, GNN, natural-DR experiment) is largely
 built. The three things between "code ready" and "thesis tasks accomplished" are:
-1. **A2/A3** — characterize the GNN and domain-gap metrics before relying on their thesis numbers. *Prompts.*
+1. **A3** — characterize the domain-gap metrics before relying on their thesis numbers. *Prompt.*
 2. **Real Ingolstadt dataset** — unblocks R8. *Data acquisition (yours).*
 3. **Unreal cook of both maps** — unblocks perceptual R4/R6. *Toolchain + human.*
 

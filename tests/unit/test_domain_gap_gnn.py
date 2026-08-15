@@ -1,8 +1,8 @@
-"""A2 — characterization tests for the domain_gap_gnn engine (was 0 tests).
+"""A2 characterization tests for the domain_gap_gnn engine (was 0 tests).
 
 Deterministic, CPU-only, offline. Locks the behavior the thesis's perceptual
 domain-gap numbers depend on. A failure here is a discovered defect, not a flaky
-test — escalate rather than loosen the assertion.
+test; escalate rather than loosen the assertion.
 """
 from __future__ import annotations
 
@@ -103,6 +103,6 @@ def test_map_encoder_forward_shape_norm_and_determinism():
         z1 = model(batch)
         z2 = model(batch)
     assert z1.shape == (1, cfg.out_dim)
-    assert torch.allclose(z1, z2)  # eval + dropout=0 -> deterministic forward
+    assert torch.allclose(z1, z2)  # eval + dropout=0 gives deterministic forward
     # normalize_embedding defaults True -> unit-norm embedding
     assert abs(float(z1.norm().item()) - 1.0) < 1e-5
