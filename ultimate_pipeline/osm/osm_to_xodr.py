@@ -140,7 +140,8 @@ def main():
     )
     argparser.add_argument(
         '--lane-width',
-        default=6.0,
+        type=float,
+        default=3.5,
         help='width of each road lane in meters')
     argparser.add_argument(
         '--traffic-lights',

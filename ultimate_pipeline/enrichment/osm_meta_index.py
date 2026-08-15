@@ -2,10 +2,11 @@
 """
 Build a lightweight OSM way-id → metadata dict from a raw .osm XML file.
 
-Extracts only the tags needed by the three Tier-2 enrichment writers:
+Extracts only the tags needed by Tier-2 enrichment writers:
   - maxspeed     → speed_limit_writer
   - turn:lanes   → turn_lanes_writer
   - traffic_sign → regulatory_sign_writer
+  - highway/lanes/width -> lane_width_policy
 
 Returns:
     Dict[str, dict]  keyed by OSM way id (as string), e.g. "7765".
@@ -24,7 +25,45 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from typing import Dict
 
-_TAGS_OF_INTEREST = {"maxspeed", "turn:lanes", "turn_lanes", "traffic_sign"}
+_TAGS_OF_INTEREST = {
+    "maxspeed",
+    "maxspeed:type",
+    "turn:lanes",
+    "turn_lanes",
+    "traffic_sign",
+    "highway",
+    "lanes",
+    "lanes:forward",
+    "lanes:backward",
+    "width",
+    "est_width",
+}
+
+_LANE_WIDTH_HIGHWAYS = {
+    "motorway",
+    "motorway_link",
+    "trunk",
+    "trunk_link",
+    "primary",
+    "primary_link",
+    "secondary",
+    "secondary_link",
+    "tertiary",
+    "tertiary_link",
+    "unclassified",
+    "residential",
+    "living_street",
+    "service",
+    "track",
+}
+
+
+def _has_enrichment_interest(tags: dict) -> bool:
+    if any(k in tags for k in ("maxspeed", "maxspeed:type", "turn:lanes", "turn_lanes", "traffic_sign")):
+        return True
+    if any(k in tags for k in ("lanes", "lanes:forward", "lanes:backward", "width", "est_width")):
+        return True
+    return str(tags.get("highway", "")).strip().lower() in _LANE_WIDTH_HIGHWAYS
 
 
 def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
@@ -36,6 +75,9 @@ def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
         "maxspeed":    str | None,
         "turn_lanes":  str | None,   # consolidated from turn:lanes or turn_lanes
         "traffic_sign": str | None,
+        "highway": str | None,
+        "lanes": str | None,
+        "width": str | None,
       }
 
     Returns an empty dict on any error (safe — callers handle missing entries).
@@ -59,16 +101,16 @@ def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
                     current_tags[k] = v
 
             elif event == "end" and elem.tag == "way" and current_way_id is not None:
-                if current_tags:
+                if current_tags and _has_enrichment_interest(current_tags):
                     entry: dict = {}
-                    if "maxspeed" in current_tags:
-                        entry["maxspeed"] = current_tags["maxspeed"]
+                    for key in sorted(current_tags):
+                        if key in ("turn:lanes", "turn_lanes"):
+                            continue
+                        entry[key] = current_tags[key]
                     # Normalise turn:lanes → turn_lanes
                     tl = current_tags.get("turn:lanes") or current_tags.get("turn_lanes")
                     if tl:
                         entry["turn_lanes"] = tl
-                    if "traffic_sign" in current_tags:
-                        entry["traffic_sign"] = current_tags["traffic_sign"]
                     if entry:
                         result[current_way_id] = entry
                 current_way_id = None

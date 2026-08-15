@@ -16,39 +16,29 @@ Key guarantees:
 
 from __future__ import annotations
 import xml.etree.ElementTree as ET
+from typing import Mapping, Any
 
-DEFAULT_WIDTH = 3.5
+from ultimate_pipeline.enrichment.lane_width_policy import (
+    DEFAULT_DRIVING_WIDTH_M,
+    HIGHWAY_DEFAULT_WIDTH_M,
+    target_driving_width_m,
+)
+
+DEFAULT_WIDTH = DEFAULT_DRIVING_WIDTH_M
 CENTER_WIDTH = 0.20   # dummy center lane width
 
-# ---------------------------------------------------------------------------
-# RASt 06 / German road-type lane width table (meters)
-# Applied only to non-junction roads.  Values are clamped by LaneWidthClamp.
-# ---------------------------------------------------------------------------
-_RAST06_WIDTH: dict = {
-    "motorway":      3.75,
-    "motorway_link": 3.75,
-    "trunk":         3.75,
-    "trunk_link":    3.5,
-    "primary":       3.5,
-    "primary_link":  3.5,
-    "secondary":     3.5,
-    "secondary_link": 3.25,
-    "tertiary":      3.25,
-    "tertiary_link": 3.25,
-    "unclassified":  3.0,
-    "residential":   3.25,
-    "living_street": 3.0,
-    "service":       3.0,
-    "track":         3.0,
-    "path":          2.0,
-    "cycleway":      1.5,
-    "footway":       1.5,
-    "pedestrian":    2.0,
-}
+_RAST06_WIDTH: dict = dict(HIGHWAY_DEFAULT_WIDTH_M)
+_RAST06_WIDTH.update({"path": 2.0, "cycleway": 1.5, "footway": 1.5, "pedestrian": 2.0})
 
 
-def _road_type_width(road: ET.Element) -> float:
+def _road_type_width(
+    road: ET.Element,
+    osm_meta: Mapping[str, Mapping[str, Any]] | None = None,
+) -> float:
     """Return per-type lane width for non-junction roads; falls back to DEFAULT_WIDTH."""
+    decision = target_driving_width_m(road, osm_meta=osm_meta)
+    if decision.source != "fallback":
+        return decision.width_m
     type_elem = road.find("type")
     if type_elem is None:
         return DEFAULT_WIDTH
@@ -112,7 +102,11 @@ class LaneGenerator:
 
     # ---------------------------------------------------------------
     @staticmethod
-    def ensure_lanes(root: ET.Element, verbose=True) -> int:
+    def ensure_lanes(
+        root: ET.Element,
+        verbose=True,
+        osm_meta: Mapping[str, Mapping[str, Any]] | None = None,
+    ) -> int:
         created = 0
 
         for road in root.findall("road"):
@@ -155,7 +149,10 @@ class LaneGenerator:
 
                 r = ET.SubElement(right, "lane",
                                   id="-1", type="driving", level="false")
-                LaneGenerator._add_width(r, DEFAULT_WIDTH)
+                LaneGenerator._add_width(
+                    r,
+                    target_driving_width_m(road, osm_meta=osm_meta).width_m,
+                )
 
                 created += 1
                 if verbose:
@@ -167,7 +164,7 @@ class LaneGenerator:
             # NORMAL ROAD: Left + Center (dummy) + Right
             # Use per-type width from RASt 06 table for non-junction roads.
             # -------------------------------------------------------
-            road_w = _road_type_width(road)
+            road_w = _road_type_width(road, osm_meta=osm_meta)
 
             c = ET.SubElement(center, "lane",
                               id="0", type="none", level="false")

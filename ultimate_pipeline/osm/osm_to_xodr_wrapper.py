@@ -43,7 +43,7 @@ class OSMToXODRConfig:
     extra_args: tuple[str, ...] = ()
 
     # --- CARLA PythonAPI settings (used when available) ---
-    lane_width: float = 6.0
+    lane_width: float = 3.5
     generate_traffic_lights: bool = False
     all_junctions_with_traffic_lights: bool = False
     center_map: bool = False

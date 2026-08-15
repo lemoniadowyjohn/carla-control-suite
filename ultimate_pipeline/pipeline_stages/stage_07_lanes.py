@@ -24,9 +24,22 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
 
     tree, root = load_xodr(cont_out)
     self._assert_geometry_frozen(root, "STEP 7")
+    osm_meta = {}
+    try:
+        osm_file = getattr(s, "OSM_FILE", "")
+        if osm_file and os.path.exists(osm_file):
+            from ultimate_pipeline.enrichment.osm_meta_index import build_osm_meta_index
+
+            osm_meta = build_osm_meta_index(osm_file)
+            print(f"[STEP 7] Lane-width OSM metadata: {len(osm_meta)} indexed ways.")
+        else:
+            print("[STEP 7] Lane-width OSM metadata unavailable; using documented fallback widths.")
+    except Exception as e:
+        osm_meta = {}
+        print(f"⚠️ Lane-width OSM metadata failed: {e}; using documented fallback widths.")
 
     # --- Ensure driving lanes exist ---
-    created_lanes = LaneGenerator.ensure_lanes(root, verbose=True)
+    created_lanes = LaneGenerator.ensure_lanes(root, verbose=True, osm_meta=osm_meta)
     if created_lanes:
         print(
             f"[STEP 7] LaneGenerator created driving lanes for {created_lanes} roads."
@@ -69,7 +82,26 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         )
 
     LaneSectionBoundaryFixer.fix(root)
-    LaneRepair.standardize(root)
+    lane_width_policy_report = LaneRepair.standardize(root, osm_meta=osm_meta)
+    lane_width_policy_path = os.path.join(self.out_dir, "lane_width_policy_report.json")
+    try:
+        with open(lane_width_policy_path, "w", encoding="utf-8") as f:
+            json.dump(
+                lane_width_policy_report,
+                f,
+                indent=2,
+                ensure_ascii=True,
+                sort_keys=True,
+            )
+        self.vreport.add_dict("lane_width_policy", lane_width_policy_report)
+        print(
+            "[STEP 7] Lane-width policy: "
+            f"updated={lane_width_policy_report.get('totals', {}).get('driving_widths_updated', 0)} "
+            f"six_meter={lane_width_policy_report.get('totals', {}).get('six_meter_placeholders_found', 0)} "
+            f"-> {lane_width_policy_path}"
+        )
+    except Exception as e:
+        print(f"⚠️ Failed to write lane-width policy report: {e}")
     LaneRepair.enforce_width_continuity(root)
 
     LaneOffsetSmoother.smooth(root)

@@ -1,0 +1,100 @@
+{
+  "schema": "C5_LANE_WIDTH_FIDELITY/v1",
+  "date": "2026-08-15",
+  "verdict": "LANE_WIDTH_CONFUND_REMOVED_GREEN_WITH_FALLBACK_CAVEAT",
+  "parent": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_drivable.xodr",
+    "sha256": "352c9003e653027f41ecda5ef11f59a11b07b0ce7294ea1d7d21e4bcc7e63c52"
+  },
+  "output": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_drivable_width_faithful.xodr",
+    "sha256": "928e5b2397c9eb85448542178766ce8093f4f4457dabf4a7e2c86952b5898b2b",
+    "committed": false
+  },
+  "lane_widths": {
+    "parent": {
+      "driving_width_count": 34679,
+      "unique_width_count": 2,
+      "six_meter_placeholders": 34675,
+      "min_m": 3.2,
+      "mean_m": 5.999677,
+      "median_m": 6.0,
+      "max_m": 6.0,
+      "distribution": {
+        "3.2": 4,
+        "6.0": 34675
+      }
+    },
+    "output": {
+      "driving_width_count": 34679,
+      "unique_width_count": 4,
+      "six_meter_placeholders": 0,
+      "min_m": 3.0,
+      "mean_m": 3.476975,
+      "median_m": 3.5,
+      "max_m": 3.75,
+      "distribution": {
+        "3.0": 462,
+        "3.25": 2355,
+        "3.5": 31777,
+        "3.75": 85
+      }
+    },
+    "policy_source_counts_per_road": {
+      "osm_highway": 3335,
+      "fallback": 29375
+    }
+  },
+  "preservation": {
+    "roads": {
+      "parent": 32710,
+      "output": 32710
+    },
+    "junctions": {
+      "parent": 3646,
+      "output": 3646
+    },
+    "signals": {
+      "parent": 3467,
+      "output": 3467
+    },
+    "objects": {
+      "parent": 66,
+      "output": 66
+    },
+    "elevation_records": {
+      "parent": 418243,
+      "output": 418243
+    },
+    "nonzero_elevation_records": {
+      "parent": 418243,
+      "output": 418243
+    },
+    "g19_violations": {
+      "parent": 0,
+      "output": 0
+    },
+    "strict_validator_errors": {
+      "parent": 0,
+      "output": 0
+    },
+    "xml_uniqueness_issues": {
+      "parent": 0,
+      "output": 0
+    },
+    "preflight": {
+      "output_status": "ok",
+      "output_errors": 0,
+      "output_warnings": 80265
+    }
+  },
+  "tests": {
+    "targeted_final": "6 passed in 0.11s",
+    "baseline_full_suite": "688 passed, 49 warnings in 50.33s",
+    "final_full_suite": "694 passed, 49 warnings in 161.53s"
+  },
+  "escalate_to_claude": [
+    "Fallback coverage remains high because most E2 XODR roads lack direct OSM way metadata.",
+    "Lane counts are not reconstructed; B4 must not overinterpret lane-count differences as pure map-generation fidelity."
+  ]
+}
