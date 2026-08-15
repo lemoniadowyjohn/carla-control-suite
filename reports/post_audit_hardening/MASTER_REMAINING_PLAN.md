@@ -8,8 +8,9 @@ This file records the remaining thesis/completion work after E1/E1B/E2, harness 
 
 | ID | Area | Status | Purpose |
 | --- | --- | --- | --- |
+| C0 | Auto map regeneration | New required gate | Re-run the fixed pipeline so the map artifact of record actually contains C5/D1/D2/class-policy-era fixes. |
 | C5 | Lane-width fidelity | Implemented in this change | Remove the constant 6.0 m auto-map lane-width confound before RQ1 structural comparison. |
-| C1 | Auto map of record | Pending | Pin `352c9003` / successor by digest and provenance. |
+| C1 | Auto map of record | Pending after C0 | Pin the regenerated candidate by digest and provenance; do not pin stale `352c9003`/older artifacts by default. |
 | C2/B3 | Manual map registry and loadability | Pending | Bring the manual reference onto the branch, content-address it, and verify or repair loadability. |
 | C6 | Object/prop density | Pending | Increase XODR-representable props beyond 66 where grounded. |
 | C3 | OSM input guard | Pending | Fail closed on HTML/error/empty OSM in the main entry. |
@@ -35,4 +36,4 @@ These cannot be closed by offline Codex work:
 
 ## Current Priority
 
-C5 is addressed at the code/tooling level and a new width-faithful E2-derived candidate was produced as an uncommitted artifact. D1 is addressed at the code/tooling level and a DEM-elevated visual OBJ was produced as an uncommitted artifact, but D1b found an at-grade residual tail that needs review before cook. D2/B2 is addressed at the contract/test level with canonical calibration placement and locked cTv/vTl semantics. The next code dependency for RQ1 is B3/C2: pin and verify the manual reference before running B4. The next visual dependency is D3 before D4 cook dry-run scaffolding.
+C5 is addressed at the code/tooling level and a new width-faithful E2-derived candidate was produced as an uncommitted artifact. D1 is addressed at the code/tooling level and a DEM-elevated visual OBJ was produced as an uncommitted artifact, but D1b found an at-grade residual tail that needs review before cook. D2/B2 is addressed at the contract/test level with canonical calibration placement and locked cTv/vTl semantics. The next gating dependency is C0/C1: regenerate the auto map through the fixed pipeline and pin that regenerated candidate as the auto map of record. After that, the next RQ1 dependency is B3/C2: pin and verify the manual reference before running B4. The next visual dependency is D3 before D4 cook dry-run scaffolding.
