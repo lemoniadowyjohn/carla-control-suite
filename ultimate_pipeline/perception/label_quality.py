@@ -1,10 +1,10 @@
 """Per-frame semantic-label quality checks for the segmentation dataset.
 
 R8 trains a segmentation model on synthetic (auto-map) frames and evaluates the
-sim→real gap. A frame whose label mask is all-background (or dominated by one
+sim-to-real gap. A frame whose label mask is all-background (or dominated by one
 class, e.g. empty sky/road) contributes nothing to training and can bias the
 gap measurement. These helpers quantify per-frame label quality so degenerate
-frames can be flagged/filtered. Pure numpy — no CARLA dependency (offline-safe).
+frames can be flagged/filtered. Pure numpy; no CARLA dependency (offline-safe).
 """
 from __future__ import annotations
 
