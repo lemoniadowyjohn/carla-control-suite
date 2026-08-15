@@ -14,7 +14,7 @@ into an only partially characterized analysis stack produces research conclusion
 | domain_gap_gnn | 1506 | 12 | A2 characterized cosine helpers, latent gaps, and encoder forward |
 | domain_gap | 8684 | core+aggregator characterized | A3 pinned composite aggregation + topology/geometry helpers |
 | perception | 8310 | 1 | YOLO placeholders; semantic labels characterized by A1 |
-| carla_tools | 10362 | 1 | mock fallbacks that can mask failure |
+| carla_tools | 10362 | A4 honesty tests | strict no-CARLA fail-closed + explicit mock marker |
 | enrichment | 8117 | 1 | thin |
 | tiling | 1885 | 0 | zero |
 | lane | — | 0 | zero |
@@ -42,9 +42,9 @@ coverage and end-to-end GNN data wiring on real XODR/tile fixtures.
 Fix: small XODR fixture characterization plus B4 real auto-vs-manual run; real-data integration remains a run task.
 
 ## Lesser findings
-- `carla_tools/fixed_traffic_manager.py`: returns a silent `MockTM` when CARLA is absent (no-op spawns) →
-  mock results can be mistaken for real. `sensor_rig.py:147`: rotation extraction is a placeholder
-  (calibration precision). Fix: prompt **A4**.
+- `carla_tools/fixed_traffic_manager.py`: A4 fixed the silent no-CARLA `MockTM` fallback. Strict mode now raises,
+  and dev mock mode requires `UP_ALLOW_MOCK_TRAFFIC_MANAGER=1` plus an explicit `MOCK - NOT REAL EVIDENCE` marker.
+  `sensor_rig.py` remains deprecated, but its rotation extraction is now a named/tested helper.
 - `main_pipeline.py`: the historical mock harness (`mock_data_generation`/`mock_domain_analysis`) shows no mock
   markers now — appears cleaned; re-audit if reused.
 - Map-quality chain (separate program): E1 produced an elevated+crash-safe candidate (`7709d5c9`); E1B repaired
@@ -57,6 +57,6 @@ Fix: small XODR fixture characterization plus B4 real auto-vs-manual run; real-d
 | A1_perception_labels | D1 corrected; semantic label quality guard | Codex 5.x high | yes |
 | A2_domain_gap_gnn_tests | D2 GNN characterized | Codex 5.x high (torch) | yes |
 | A3_domain_gap_metric_tests | D2 core domain-gap characterized | Codex 5.x mid/high | yes |
-| A4_carla_tools_honesty | mock fallbacks / calib | Codex 5.x mid | yes |
-A4 and B-series work remain; none touch map artifacts or certifier gates except map/run tasks explicitly scoped elsewhere.
+| A4_carla_tools_honesty | mock fallback honesty / rotation helper | Codex 5.x mid | yes |
+B-series work remains; none touch map artifacts or certifier gates except map/run tasks explicitly scoped elsewhere.
 A1 semantic-mask characterization is offline-green; capture-loop guard wiring still needs a live CARLA capture.

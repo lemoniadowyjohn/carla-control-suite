@@ -17,6 +17,40 @@ if not os.environ.get("UP_SILENCE_DEPRECATIONS"):
     )
 
 
+TRUE_ENV_VALUES = {"1", "true", "yes", "on"}
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return bool(default)
+    return raw.strip().lower() in TRUE_ENV_VALUES
+
+
+def rotation_matrix_to_carla_euler_degrees(matrix):
+    """Extract CARLA pitch/yaw/roll degrees from a 4x4 ZYX rotation matrix."""
+    a = np.asarray(matrix, dtype=float)
+    if a.shape != (4, 4):
+        raise ValueError("rotation extraction requires a 4x4 homogeneous matrix")
+    if not np.all(np.isfinite(a[:3, :3])):
+        raise ValueError("rotation extraction requires finite rotation matrix values")
+
+    r = a[:3, :3]
+    sy = math.sqrt(float(r[0, 0] ** 2 + r[1, 0] ** 2))
+    singular = sy < 1e-9
+    if not singular:
+        pitch = math.degrees(math.atan2(-r[2, 0], sy))
+        yaw = math.degrees(math.atan2(r[1, 0], r[0, 0]))
+        roll = math.degrees(math.atan2(r[2, 1], r[2, 2]))
+    else:
+        if _env_bool("UP_THESIS_STRICT", False):
+            raise ValueError("rotation extraction is singular for ZYX euler conversion")
+        pitch = math.degrees(math.atan2(-r[2, 0], sy))
+        yaw = math.degrees(math.atan2(-r[0, 1], r[1, 1]))
+        roll = 0.0
+    return float(pitch), float(yaw), float(roll)
+
+
 class SensorRig:
     def __init__(self, calib_file_path):
         with open(calib_file_path, 'r') as f:
@@ -121,10 +155,6 @@ class SensorRig:
         # Extract Translation
         x, y, z = matrix[0, 3], matrix[1, 3], matrix[2, 3]
 
-        # Extract Rotation (assuming ZYX euler or similar, simplified here)
-        # A robust implementation uses scipy.spatial.transform.Rotation
-        # Here we use a CARLA helper if available, or manual matrix decompose.
-
         # MATH HACK: CARLA uses LHS, standard matrices are RHS.
         # This usually requires swapping Y axis or Pitch/Yaw.
         # For this snippet, we assume the matrix is ALREADY in CARLA coordinates
@@ -135,19 +165,7 @@ class SensorRig:
         # Create a transform from the matrix values directly
         # (This implies matrix is already in UE4 coords: X-fwd, Y-right, Z-up)
 
-        # Converting rotation matrix to pitch/yaw/roll is complex without SciPy.
-        # We will use CARLA's Transfrom constructor if we can, or just set Location
-        # and assume simpler rotation for the thesis prototype if not specified.
-
-        # FOR THESIS RIGOR: You should probably use `carla.Transform(carla.Location(x,y,z), carla.Rotation(...))`
-        # But deriving rotation from a raw 3x3 matrix manually is error-prone.
-        # Recommendation: Ensure `calib_data.json` matrices are converted to [x,y,z,roll,pitch,yaw] lists beforehand
-        # OR use a helper library.
-
-        # Placeholder for exact rotation extraction:
-        pitch = math.degrees(math.atan2(-matrix[2, 0], math.sqrt(matrix[0, 0] ** 2 + matrix[1, 0] ** 2)))
-        yaw = math.degrees(math.atan2(matrix[1, 0], matrix[0, 0]))
-        roll = math.degrees(math.atan2(matrix[2, 1], matrix[2, 2]))
+        pitch, yaw, roll = rotation_matrix_to_carla_euler_degrees(matrix)
 
         return carla.Transform(carla.Location(x=float(x), y=float(y), z=float(z)),
                                carla.Rotation(pitch=float(pitch), yaw=float(yaw), roll=float(roll)))

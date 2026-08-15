@@ -1,9 +1,32 @@
 # ultimate_pipeline/carla_tools/fixed_traffic_manager.py
 
 import logging
+import os
 import random
 
 logger = logging.getLogger(__name__)
+
+TRUE_ENV_VALUES = {"1", "true", "yes", "on"}
+MOCK_NOT_EVIDENCE_MARKER = "MOCK - NOT REAL EVIDENCE"
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return bool(default)
+    return raw.strip().lower() in TRUE_ENV_VALUES
+
+
+def _carla_runtime_available() -> bool:
+    return bool(CARLA_AVAILABLE) and not _env_bool("UP_DISABLE_CARLA", False)
+
+
+def _strict_mode() -> bool:
+    return _env_bool("UP_THESIS_STRICT", False)
+
+
+def _allow_mock_traffic_manager() -> bool:
+    return _env_bool("UP_ALLOW_MOCK_TRAFFIC_MANAGER", False)
 
 # -----------------------------------------------------------
 # CARLA availability check
@@ -48,7 +71,7 @@ class FixedTrafficManager:
         self.client = client
         self.world = world
 
-        if not CARLA_AVAILABLE:
+        if not _carla_runtime_available():
             print("⚠ No CARLA — using mock mode.")
             return False
 
@@ -73,7 +96,7 @@ class FixedTrafficManager:
     # -------------------------------------------------------
     def spawn_vehicles(self, count=20):
         """Spawn vehicles safely without requiring Traffic Manager."""
-        if not CARLA_AVAILABLE or not self.world:
+        if not _carla_runtime_available() or not self.world:
             print("❌ CARLA not available")
             return 0
 
@@ -130,7 +153,7 @@ class FixedTrafficManager:
     # PEDESTRIAN SPAWNING
     # -------------------------------------------------------
     def spawn_pedestrians(self, count=10):
-        if not CARLA_AVAILABLE or not self.world:
+        if not _carla_runtime_available() or not self.world:
             print("❌ CARLA not available")
             return 0
 
@@ -249,19 +272,57 @@ class FixedTrafficManager:
 # ===========================================================
 def create_traffic_manager():
     """Factory that returns a real or mock TM."""
-    if CARLA_AVAILABLE:
+    if _carla_runtime_available():
         return FixedTrafficManager()
 
+    if _strict_mode():
+        raise RuntimeError(
+            "CARLA unavailable: refusing to create mock traffic manager under UP_THESIS_STRICT."
+        )
+
+    if not _allow_mock_traffic_manager():
+        raise RuntimeError(
+            "CARLA unavailable: set UP_ALLOW_MOCK_TRAFFIC_MANAGER=1 for explicit dev mock mode. "
+            "Mock traffic manager output is not evidence."
+        )
+
     class MockTM:
+        is_mock = True
+        marker = MOCK_NOT_EVIDENCE_MARKER
+
         @staticmethod
-        def initialize(*args, **kwargs): return True
+        def _print_marker(action):
+            print(f"{MOCK_NOT_EVIDENCE_MARKER}: traffic manager {action}")
+
+        def initialize(self, *args, **kwargs):
+            self._print_marker("initialize")
+            return True
+
         @staticmethod
-        def spawn_vehicles(count=20): print("Mock vehicles:", count)
+        def spawn_vehicles(count=20):
+            MockTM._print_marker(f"spawn_vehicles requested={count}")
+            return 0
+
         @staticmethod
-        def spawn_pedestrians(count=10): print("Mock walkers:", count)
-        def clear_vehicles(self): pass
-        def clear_pedestrians(self): pass
+        def spawn_pedestrians(count=10):
+            MockTM._print_marker(f"spawn_pedestrians requested={count}")
+            return 0
+
+        def clear_vehicles(self):
+            self._print_marker("clear_vehicles")
+
+        def clear_pedestrians(self):
+            self._print_marker("clear_pedestrians")
+
         @staticmethod
-        def get_traffic_status(): return {}
+        def get_traffic_status():
+            return {
+                "vehicles": 0,
+                "pedestrians": 0,
+                "total": 0,
+                "mock": True,
+                "evidence_valid": False,
+                "marker": MOCK_NOT_EVIDENCE_MARKER,
+            }
 
     return MockTM()

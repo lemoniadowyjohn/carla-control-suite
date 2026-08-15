@@ -23,7 +23,7 @@ lon[11.422268084715878, 11.47882091528412] matches `agent_sync.yaml` exactly. Se
 
 ## Blockers by fixer
 
-- **Codex-fixable (queued):** A1 done (semantic labels characterized; quality guard added), A2 done (GNN characterized), A3 done (core gap metrics characterized), A4 (mock honesty),
+- **Codex-fixable (queued):** A1 done (semantic labels characterized; quality guard added), A2 done (GNN characterized), A3 done (core gap metrics characterized), A4 done (mock honesty),
   B1 (determinism verdict), B2 (calib placement), B3 (manual-map registry), B4 (run auto-vs-manual),
   E1/E1B/E2 done (map quality). Structural arc R1/R2/R3/R5/R7 is completable in code plus runtime/toolchain proof.
 - **DATA — NOT codex-fixable (yours):** real-world unlabeled Ingolstadt imagery/LiDAR (R8). No prompt fixes this.
