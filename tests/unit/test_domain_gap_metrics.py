@@ -1,9 +1,9 @@
-"""A3 — characterization tests for domain_gap metrics (untested subset).
+"""A3 characterization tests for domain_gap metrics (untested subset).
 
 Deterministic, offline. Focuses on the DomainGapAggregator's academic contract
 (composite in [0,1], 0=identical, disabled/missing components never influence it)
 plus untested pure helpers of topology_gap / geometry_gap. A failure here is a
-discovered defect — escalate, don't loosen. XODR-path metrics
+discovered defect; escalate, don't loosen. XODR-path metrics
 (structural/semantic/topology.compute) still need fixtures (see A3 report).
 """
 from __future__ import annotations

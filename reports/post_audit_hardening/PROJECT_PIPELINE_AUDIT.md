@@ -12,7 +12,7 @@ into an only partially characterized analysis stack produces research conclusion
 | Subsystem | LOC | test files | note |
 |---|--:|--:|---|
 | domain_gap_gnn | 1506 | 12 | A2 characterized cosine helpers, latent gaps, and encoder forward |
-| domain_gap | 8684 | 2 | orphaned from pipeline_stages/cli (standalone run_full_domain_gap.py) |
+| domain_gap | 8684 | core+aggregator characterized | A3 pinned composite aggregation + topology/geometry helpers |
 | perception | 8310 | 1 | YOLO placeholders; semantic labels characterized by A1 |
 | carla_tools | 10362 | 1 | mock fallbacks that can mask failure |
 | enrichment | 8117 | 1 | thin |
@@ -33,11 +33,13 @@ path consumes those masks. A1 added offline label-quality checks and characteriz
 extraction. Remaining work is live-capture wiring for degenerate-frame accounting, plus a decision on whether to
 implement or delete the unused YOLO/detection path.
 
-### D2 — Analysis engine partially characterized
-`domain_gap_gnn` is now characterized by A2: cosine helpers, latent gap combination, encoder forward shape,
-determinism, and unit-norm output are pinned by 12 CPU-only tests. The remaining overclaiming risk is the broader
-`domain_gap` metric suite and the end-to-end GNN data wiring on real XODR/tile fixtures.
-Fix: prompt **A3** for core domain-gap metrics; real-data integration remains a run task.
+### D2 — Analysis engine core characterized
+`domain_gap_gnn` is characterized by A2: cosine helpers, latent gap combination, encoder forward shape,
+determinism, and unit-norm output are pinned by 12 CPU-only tests. `domain_gap` is characterized by A3 at the
+core contract level: composite aggregation, disabled/missing component handling, topology normalization helpers,
+and geometry helper behavior are pinned by 9 CPU-only tests. The remaining overclaiming risk is XODR-entrypoint
+coverage and end-to-end GNN data wiring on real XODR/tile fixtures.
+Fix: small XODR fixture characterization plus B4 real auto-vs-manual run; real-data integration remains a run task.
 
 ## Lesser findings
 - `carla_tools/fixed_traffic_manager.py`: returns a silent `MockTM` when CARLA is absent (no-op spawns) →
@@ -54,7 +56,7 @@ Fix: prompt **A3** for core domain-gap metrics; real-data integration remains a 
 |---|---|---|---|
 | A1_perception_labels | D1 corrected; semantic label quality guard | Codex 5.x high | yes |
 | A2_domain_gap_gnn_tests | D2 GNN characterized | Codex 5.x high (torch) | yes |
-| A3_domain_gap_metric_tests | D2 (metrics unverified) | Codex 5.x mid/high | yes |
+| A3_domain_gap_metric_tests | D2 core domain-gap characterized | Codex 5.x mid/high | yes |
 | A4_carla_tools_honesty | mock fallbacks / calib | Codex 5.x mid | yes |
-A3/A4 remain in different subsystems and are runnable in parallel; none touch map artifacts or certifier gates.
+A4 and B-series work remain; none touch map artifacts or certifier gates except map/run tasks explicitly scoped elsewhere.
 A1 semantic-mask characterization is offline-green; capture-loop guard wiring still needs a live CARLA capture.
