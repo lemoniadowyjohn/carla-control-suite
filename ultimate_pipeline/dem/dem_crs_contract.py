@@ -118,6 +118,62 @@ def header_bounds_from_xodr(xodr_path: str) -> Optional[Dict[str, float]]:
         return None
 
 
+def _default_header_offset() -> Dict[str, float]:
+    return {"x": 0.0, "y": 0.0, "z": 0.0, "hdg": 0.0}
+
+
+def header_offset_from_xodr(xodr_path: str) -> Dict[str, float]:
+    try:
+        tree = ET.parse(xodr_path)
+    except Exception:
+        return _default_header_offset()
+    root = tree.getroot()
+    header = root.find("header")
+    if header is None:
+        return _default_header_offset()
+    off = header.find("offset")
+    if off is None:
+        return _default_header_offset()
+    out = _default_header_offset()
+    for key in ("x", "y", "z", "hdg"):
+        try:
+            out[key] = float(off.get(key, out[key]))
+        except Exception:
+            out[key] = 0.0
+    return out
+
+
+def _apply_header_offset_to_point(
+    x: float, y: float, offset: Dict[str, float]
+) -> Tuple[float, float]:
+    hdg = float(offset.get("hdg", 0.0))
+    ox = float(offset.get("x", 0.0))
+    oy = float(offset.get("y", 0.0))
+    cos_h = math.cos(hdg)
+    sin_h = math.sin(hdg)
+    return (float(x) * cos_h - float(y) * sin_h + ox, float(x) * sin_h + float(y) * cos_h + oy)
+
+
+def _bounds_with_header_offset(
+    bounds: Optional[Dict[str, float]], offset: Dict[str, float]
+) -> Optional[Dict[str, float]]:
+    if bounds is None:
+        return None
+    corners = (
+        (float(bounds["west"]), float(bounds["south"])),
+        (float(bounds["west"]), float(bounds["north"])),
+        (float(bounds["east"]), float(bounds["south"])),
+        (float(bounds["east"]), float(bounds["north"])),
+    )
+    xs = []
+    ys = []
+    for x, y in corners:
+        xx, yy = _apply_header_offset_to_point(x, y, offset)
+        xs.append(xx)
+        ys.append(yy)
+    return {"west": min(xs), "east": max(xs), "south": min(ys), "north": max(ys)}
+
+
 def _geometry_endpoint(
     x: float, y: float, hdg: float, length: float, prim: ET.Element
 ) -> tuple:
@@ -299,16 +355,23 @@ def verify_crs_contract(
             "reason": "osm_source_unavailable",
             "osm_bounds": None,
         }
-    header_bounds = header_bounds_from_xodr(xodr_path)
-    if header_bounds is None:
-        header_bounds = _planview_bbox(xodr_path)
-    if header_bounds is None:
+    header_bounds_raw = header_bounds_from_xodr(xodr_path)
+    geometry_bounds = _planview_bbox(xodr_path)
+    bounds_source = "header"
+    if header_bounds_raw is None:
+        header_bounds_raw = geometry_bounds
+        bounds_source = "planView"
+    if header_bounds_raw is None:
         return {
             "verdict": "UNRESOLVED",
             "reason": "no_geometry_bounds",
             "osm_bounds": osm_bounds,
         }
-    geometry_bounds = _planview_bbox(xodr_path)
+    header_offset = header_offset_from_xodr(xodr_path)
+    header_bounds = _bounds_with_header_offset(header_bounds_raw, header_offset)
+    geometry_bounds_with_offset = _bounds_with_header_offset(
+        geometry_bounds, header_offset
+    )
 
     expanded = _expanded(osm_bounds, PLAUSIBILITY_MARGIN_DEG)
 
@@ -365,8 +428,12 @@ def verify_crs_contract(
         "reason": reason,
         "osm_bounds": osm_bounds,
         "osm_bounds_expanded_deg": PLAUSIBILITY_MARGIN_DEG,
-        "header_bounds": header_bounds,
+        "bounds_source": bounds_source,
+        "header_bounds": header_bounds_raw,
+        "header_offset": header_offset,
+        "header_bounds_with_offset": header_bounds,
         "geometry_bounds": geometry_bounds,
+        "geometry_bounds_with_offset": geometry_bounds_with_offset,
         "claimed_crs": str(claimed_crs) if claimed_crs is not None else None,
         "claimed_proj4": claimed_raw,
         "claimed_crs_reason": claimed_reason,

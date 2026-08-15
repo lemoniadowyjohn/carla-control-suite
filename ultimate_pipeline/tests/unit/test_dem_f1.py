@@ -55,7 +55,7 @@ INGOLSTADT_OSM_BOUNDS = {
 }
 
 
-def _xodr_with_header(bounds: dict, georef: str) -> str:
+def _xodr_with_header(bounds: dict, georef: str, offset: dict | None = None) -> str:
     root = ET.Element(
         "OpenDRIVE",
         {"version": "1.4"},
@@ -72,6 +72,17 @@ def _xodr_with_header(bounds: dict, georef: str) -> str:
     )
     geo = ET.SubElement(header, "geoReference")
     geo.text = f"<![CDATA[{georef}]]>"
+    if offset is not None:
+        ET.SubElement(
+            header,
+            "offset",
+            {
+                "x": str(offset.get("x", 0.0)),
+                "y": str(offset.get("y", 0.0)),
+                "z": str(offset.get("z", 0.0)),
+                "hdg": str(offset.get("hdg", 0.0)),
+            },
+        )
     road = ET.SubElement(
         root,
         "road",
@@ -127,6 +138,33 @@ class TestVerifyCrsContract:
     def test_native_frame_matches_osm(self, tmp_path):
         xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         rec = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
+        nw = rec["native_frame_header_bounds_wgs84"]
+        margin = 0.15
+        assert nw["lon_min"] >= INGOLSTADT_OSM_BOUNDS["lon_min"] - margin
+        assert nw["lon_max"] <= INGOLSTADT_OSM_BOUNDS["lon_max"] + margin
+        assert nw["lat_min"] >= INGOLSTADT_OSM_BOUNDS["lat_min"] - margin
+        assert nw["lat_max"] <= INGOLSTADT_OSM_BOUNDS["lat_max"] + margin
+
+    def test_local_bounds_with_header_offset_match_osm(self, tmp_path):
+        local_bounds = {
+            "north": 14072.79,
+            "south": 0.0,
+            "east": 13267.13,
+            "west": 0.0,
+        }
+        offset = {
+            "x": 832671.61,
+            "y": 5458670.93,
+            "z": 0.0,
+            "hdg": 0.0,
+        }
+        xodr = _xodr_with_header(local_bounds, "+proj=tmerc", offset=offset)
+
+        rec = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
+
+        assert rec["verdict"] in {"OSM2ODR_NATIVE_VERIFIED", "AMBIGUOUS"}
+        assert rec["header_offset"]["x"] == offset["x"]
+        assert rec["header_bounds_with_offset"]["west"] == offset["x"]
         nw = rec["native_frame_header_bounds_wgs84"]
         margin = 0.15
         assert nw["lon_min"] >= INGOLSTADT_OSM_BOUNDS["lon_min"] - margin

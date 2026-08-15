@@ -1,0 +1,43 @@
+{
+  "schema": "C0_F1_CRS_OFFSET_REPAIR/v1",
+  "date": "2026-08-15",
+  "verdict": "F1_CRS_OFFSET_REPAIR_GREEN",
+  "failure": {
+    "stage": "geometry",
+    "reason": "no_frame_matches_osm_source",
+    "message": "F1 CRS contract unresolved because local header bounds were evaluated without applying header offset."
+  },
+  "fix": {
+    "file": "ultimate_pipeline/dem/dem_crs_contract.py",
+    "behavior": [
+      "Parse header offset.",
+      "Record raw and offset-applied bounds.",
+      "Use offset-applied bounds for CRS plausibility checks.",
+      "Keep fail-closed unresolved behavior when no frame matches the OSM source."
+    ]
+  },
+  "tests": {
+    "targeted_red": "1 failed, 12 passed",
+    "targeted_green": "13 passed in 0.72s",
+    "full_suite": "740 passed, 49 warnings in 166.29s (0:02:46)"
+  },
+  "exact_failed_artifact_after_fix": {
+    "resolution_source": "claimed_geoReference_ambiguous",
+    "verdict": "AMBIGUOUS",
+    "header_bounds_with_offset": {
+      "west": 832671.61,
+      "east": 845938.74,
+      "south": 5458670.93,
+      "north": 5472743.72
+    },
+    "native_frame_header_bounds_wgs84": {
+      "lon_min": 11.32219608663943,
+      "lon_max": 11.52755410069615,
+      "lat_min": 48.684204609829884,
+      "lat_max": 48.82601117945944
+    }
+  },
+  "escalate_to_claude": [
+    "Rerun C0 only after this fix is committed so provenance records the code that actually resolves DEM CRS."
+  ]
+}
