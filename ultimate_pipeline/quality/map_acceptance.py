@@ -34,18 +34,36 @@ def _reason_from_report(report: Dict[str, Any]) -> str:
         value = report.get(key)
         if isinstance(value, str) and value:
             return value
+    decision = report.get("decision")
+    if isinstance(decision, dict):
+        value = decision.get("reason")
+        if isinstance(value, str) and value:
+            return value
     if "issues" in report:
         return f"issues={len(report.get('issues') or [])}"
     if "failures" in report:
         return f"failures={len(report.get('failures') or [])}"
+    if "still_broken_count" in report:
+        return f"still_broken_count={report.get('still_broken_count')}"
     if "broken_count" in report:
         return f"broken_count={report.get('broken_count')}"
     return "gate_failed"
 
 
+def _determine_report_ok(report: Dict[str, Any]) -> Optional[bool]:
+    if "ok" in report:
+        return bool(report.get("ok"))
+    decision = report.get("decision")
+    if isinstance(decision, dict) and "pass" in decision:
+        return bool(decision.get("pass"))
+    return None
+
+
 def _determine_lane_ok(report: Dict[str, Any]) -> Optional[bool]:
     if "ok" in report:
         return bool(report.get("ok"))
+    if "still_broken_count" in report:
+        return int(report.get("still_broken_count") or 0) == 0
     if "broken_count" in report:
         return int(report.get("broken_count") or 0) == 0
     if "num_issues" in report:
@@ -56,6 +74,8 @@ def _determine_lane_ok(report: Dict[str, Any]) -> Optional[bool]:
 
 
 def _lane_missing_count(report: Dict[str, Any]) -> Optional[int]:
+    if "still_broken_count" in report:
+        return int(report.get("still_broken_count") or 0)
     if "broken_count" in report:
         return int(report.get("broken_count") or 0)
     if "num_issues" in report:
@@ -119,11 +139,12 @@ def build_map_acceptance(
 
     geom = reports.get("geometric_continuity")
     if isinstance(geom, dict):
-        metrics["geometric_continuity_ok"] = bool(geom.get("ok")) if "ok" in geom else None
+        geom_ok = _determine_report_ok(geom)
+        metrics["geometric_continuity_ok"] = geom_ok
         art = _artifact_path_from_report(geom)
         if art:
             linked_artifacts["geometric_continuity"] = art
-        if geom.get("ok") is False:
+        if geom_ok is False:
             hard_fail_reasons.append({"gate": "geometric_continuity", "reason": _reason_from_report(geom)})
 
     lane_section = reports.get("lane_section_successors")

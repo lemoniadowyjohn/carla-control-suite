@@ -1,0 +1,110 @@
+{
+  "acceptance_rebuild_after_patch": {
+    "failed_gates": [
+      "geometric_continuity"
+    ],
+    "hard_fail_reasons": [
+      {
+        "gate": "geometric_continuity",
+        "reason": "27193 offending segments exceed continuity thresholds"
+      }
+    ],
+    "valid_for_experiments": false
+  },
+  "blocking_evidence": {
+    "geometric_continuity": {
+      "fail_closed_active_in_original_run": false,
+      "heading_jump_rad_max": 3.14159265277757,
+      "heading_jump_rad_p95": 2.773059480574232,
+      "offending_segments": 27193,
+      "pass": false,
+      "reason": "27193 offending segments exceed continuity thresholds",
+      "seam_distance_m_max": 4666.076853696104,
+      "seam_distance_m_p95": 288.7118704883217
+    },
+    "post_tiling": {
+      "geometric_continuity_ok": false,
+      "geometric_continuity_tiles_ok": false,
+      "post_tiling_integrity_ok": false
+    },
+    "provenance": {
+      "c0_provenance_json_written": false,
+      "run_status_stage": "domain_gap",
+      "run_status_status": "running",
+      "wrapper_stopped_in_optional_domain_gap": true
+    },
+    "signals": {
+      "signal_references": 0,
+      "signals": 0
+    },
+    "warnings": {
+      "preflight_warning_count": 134,
+      "preflight_warning_codes": {
+        "road_length_mismatch": 134
+      }
+    }
+  },
+  "candidate": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_clean_regen_crashsafe_20260815.xodr",
+    "sha256": "83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e"
+  },
+  "inputs": {
+    "dem": {
+      "path": "cities/ingolstadt/dem/dem_ing.tif",
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8"
+    },
+    "manual_crs_reference": {
+      "path": "E:/CARLA/CARLA_0.9.16/CarlaUE4/Content/Grid0828/Maps/Grid0828/OpenDrive/Grid0828.xodr",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+    },
+    "osm": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+    },
+    "seed_xodr_sha256": "f02fe381a2c9be9db81b3c7dc0fdf094d8f8225e2b3413c0fe97f2ce6b382075"
+  },
+  "passing_evidence": {
+    "driving_widths": {
+      "max": 3.5,
+      "mean": 3.5,
+      "median": 3.5,
+      "min": 3.5,
+      "n": 34316,
+      "six_meter_count": 0
+    },
+    "elevation": {
+      "max_m": 408.671165,
+      "min_m": 361.85043,
+      "nonzero_records": 32297,
+      "records": 32297
+    },
+    "elevation_seams": {
+      "max_jump_m": 2.464224999999999,
+      "ok": true,
+      "p95_jump_m": 0.16355499999997392
+    },
+    "g19": {
+      "after_violations": 0,
+      "before_violations": 867,
+      "roads_checked": 32297,
+      "roads_length_adjusted": 867
+    },
+    "lane_successors": {
+      "broken_before_count": 10565,
+      "still_broken_count": 0
+    },
+    "preflight": {
+      "error_count": 0,
+      "status": "ok",
+      "warning_count": 134
+    },
+    "structure": {
+      "junctions": 3568,
+      "nonpositive_geometries": 0,
+      "objects": 46112,
+      "roads": 32297
+    }
+  },
+  "pipeline_commit": "3085e522d61d4e425580384999dc2ba619257b3a",
+  "verdict": "PARTIAL_CANDIDATE_PRODUCED_NOT_PINNED"
+}

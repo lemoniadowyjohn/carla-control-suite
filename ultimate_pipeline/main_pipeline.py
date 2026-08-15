@@ -2083,11 +2083,26 @@ if str(_repo_root) not in sys.path:
         try:
             from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
 
+            acceptance_reports = {
+                "origin_sanity": origin_report,
+                "elevation_seams": seam_report,
+            }
+            for report_key, report_name in (
+                ("geometric_continuity", "geometric_continuity_gate.json"),
+                ("lane_section_successors", "lane_successor_autofix_report.json"),
+            ):
+                report_path = os.path.join(self.out_dir, report_name)
+                if os.path.exists(report_path):
+                    try:
+                        with open(report_path, "r", encoding="utf-8") as f:
+                            acceptance_reports[report_key] = json.load(f)
+                    except Exception as load_exc:
+                        print(
+                            f"[STEP 8] map_acceptance skipped {report_name}: {load_exc}"
+                        )
+
             map_acceptance = build_map_acceptance(
-                {
-                    "origin_sanity": origin_report,
-                    "elevation_seams": seam_report,
-                },
+                acceptance_reports,
                 run_id=os.path.basename(os.path.normpath(self.out_dir)),
                 final_xodr_path=final_out,
                 out_dir=self.out_dir,
