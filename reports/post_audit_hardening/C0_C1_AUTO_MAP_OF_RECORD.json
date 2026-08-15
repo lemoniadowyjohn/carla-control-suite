@@ -1,0 +1,71 @@
+{
+  "schema": "C0_C1_AUTO_MAP_OF_RECORD/v1",
+  "date": "2026-08-15",
+  "verdict": "PARTIAL_VERIFIED_RETROFIT_NOT_PINNED",
+  "reason": "The width-faithful candidate passes offline structural, width, elevation, G19, and loadability checks, but provenance shows it was produced as a C5 file-level repair of the E2 candidate, not as a clean current-HEAD OSM-to-XODR regeneration. C1 pinning is intentionally withheld.",
+  "inputs": {
+    "osm": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "bytes": 11154738,
+      "root_tag": "osm",
+      "version": "0.6",
+      "generator": "Overpass API 0.7.62.8 e802775f",
+      "looks_html_or_api_error": false
+    },
+    "dem": {
+      "path": "cities/ingolstadt/dem/dem_ing.tif",
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "bytes": 1711684
+    }
+  },
+  "candidate_checked": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_drivable_width_faithful.xodr",
+    "sha256": "928e5b2397c9eb85448542178766ce8093f4f4457dabf4a7e2c86952b5898b2b",
+    "bytes": 109317143,
+    "provenance": "C5 retrofit over campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_drivable.xodr",
+    "parent_sha256": "352c9003e653027f41ecda5ef11f59a11b07b0ce7294ea1d7d21e4bcc7e63c52",
+    "committed": false
+  },
+  "verification": {
+    "roads": 32710,
+    "junctions": 3646,
+    "signals": 3467,
+    "objects": 66,
+    "driving_width_count": 34679,
+    "driving_width_distribution_m": {
+      "3.0": 462,
+      "3.25": 2355,
+      "3.5": 31777,
+      "3.75": 85
+    },
+    "driving_width_min_m": 3.0,
+    "driving_width_mean_m": 3.476974537904784,
+    "driving_width_median_m": 3.5,
+    "driving_width_max_m": 3.75,
+    "six_meter_placeholder_count": 0,
+    "elevation_records": 418243,
+    "nonzero_elevation_records": 418243,
+    "elevation_min_m": 360.79471,
+    "elevation_max_m": 412.890089,
+    "g19_roads_checked": 32710,
+    "g19_violations": 0,
+    "g19_max_excess_m": 0.0,
+    "preflight_status": "ok",
+    "preflight_errors": 0,
+    "preflight_warnings": 80265,
+    "preflight_warning_top_codes": {
+      "geom_xy_large": 80261,
+      "elev_jump": 4
+    }
+  },
+  "pinning": {
+    "pinned": false,
+    "blocked_reason": "Strict C0 acceptance requires a clean governed regeneration from tracked code and recorded inputs. The current artifact is verified but retrofit-provenance.",
+    "required_next_step": "Run governed OSM-to-XODR regeneration at current HEAD or explicitly approve retrofit provenance as the auto map of record before updating map_registry.py."
+  },
+  "escalate_to_claude": [
+    "Decide whether retrofit provenance is acceptable for the auto map of record or whether a full current-HEAD regeneration is mandatory.",
+    "If full regeneration is mandatory, identify the governed generation entrypoint and required environment/config because ultimate_pipeline.cli does not expose a production map-generation command."
+  ]
+}
