@@ -28,6 +28,12 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision
 from torchvision.transforms import functional as TF
 
+from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
+from ultimate_pipeline.perception.semantic_classes import (
+    CARLA_SEMANTIC_NUM_CLASSES,
+    validate_num_classes,
+)
+
 
 class SegDataset(Dataset):
     def __init__(self, root: Path, cam: str, limit: int = 0):
@@ -47,7 +53,9 @@ class SegDataset(Dataset):
         lab = Image.open(lab_path).convert("L")
 
         x = TF.to_tensor(img)
-        y = torch.from_numpy(np.array(lab, dtype=np.uint8).astype(np.int64))
+        arr = np.array(lab, dtype=np.uint8)
+        assert_label_ids_in_range(arr)
+        y = torch.from_numpy(arr.astype(np.int64))
         return x, y
 
 
@@ -59,7 +67,7 @@ def parse_args():
     ap.add_argument("--epochs", type=int, default=3)
     ap.add_argument("--batch", type=int, default=4)
     ap.add_argument("--lr", type=float, default=1e-4)
-    ap.add_argument("--num-classes", type=int, default=256)
+    ap.add_argument("--num-classes", type=int, default=CARLA_SEMANTIC_NUM_CLASSES)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     return ap.parse_args()
@@ -76,7 +84,8 @@ def main():
     ds = SegDataset(ds_root, args.camera, limit=args.limit)
     dl = DataLoader(ds, batch_size=args.batch, shuffle=True, num_workers=2, pin_memory=True)
 
-    model = torchvision.models.segmentation.fcn_resnet50(weights=None, num_classes=args.num_classes)
+    num_classes = validate_num_classes(args.num_classes)
+    model = torchvision.models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
     model.to(args.device)
 
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)

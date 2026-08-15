@@ -29,6 +29,12 @@ import torch
 import torch.nn.functional as F
 from torchvision import models
 
+from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
+from ultimate_pipeline.perception.semantic_classes import (
+    CARLA_SEMANTIC_NUM_CLASSES,
+    validate_num_classes,
+)
+
 
 def _find_paired_files(
     dataset_root: Path, camera: str
@@ -69,6 +75,7 @@ def _load_semseg(path: Path, resize: Optional[Tuple[int, int]] = None) -> torch.
     if arr.ndim == 3:
         # Use red channel as class index (CARLA convention)
         arr = arr[:, :, 0]
+    assert_label_ids_in_range(arr)
     return torch.from_numpy(arr.astype(np.int64))
 
 
@@ -109,7 +116,7 @@ def evaluate_model(
     model_path: Path,
     dataset_root: Path,
     camera: str,
-    num_classes: int = 256,
+    num_classes: int = CARLA_SEMANTIC_NUM_CLASSES,
     device: str = "cpu",
     limit: int = 0,
 ) -> Dict:
@@ -119,6 +126,7 @@ def evaluate_model(
         Dict with mIoU, pixel_accuracy, per_class_iou, frames_count
     """
     device_obj = torch.device(device if (device != "cuda" or torch.cuda.is_available()) else "cpu")
+    num_classes = validate_num_classes(num_classes)
 
     # Load model
     model = models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
@@ -196,7 +204,7 @@ def parse_args():
     ap.add_argument("--dataset", required=True, help="Dataset root with rgb/<cam>/ and semseg_raw/<cam>/")
     ap.add_argument("--camera", default="front_left_camera", help="Camera subdirectory name")
     ap.add_argument("--out-json", default="sim_labeled_eval.json", help="Output JSON path")
-    ap.add_argument("--num-classes", type=int, default=256)
+    ap.add_argument("--num-classes", type=int, default=CARLA_SEMANTIC_NUM_CLASSES)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--limit", type=int, default=0, help="Max frames to evaluate (0=all)")
     return ap.parse_args()

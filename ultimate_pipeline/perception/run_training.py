@@ -22,6 +22,7 @@ import subprocess
 from pathlib import Path
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.perception.semantic_classes import CARLA_SEMANTIC_NUM_CLASSES
 
 
 def _detect_backend() -> str:
@@ -72,7 +73,7 @@ python -m ultimate_pipeline.perception.train_launcher \
         epochs=int(getattr(SETTINGS, "TRAIN_EPOCHS", 3)),
         batch=int(getattr(SETTINGS, "TRAIN_BATCH", 4)),
         lr=float(getattr(SETTINGS, "TRAIN_LR", 1e-4)),
-        classes=int(getattr(SETTINGS, "TRAIN_NUM_CLASSES", 256)),
+        classes=int(getattr(SETTINGS, "TRAIN_NUM_CLASSES", CARLA_SEMANTIC_NUM_CLASSES)),
         limit=int(getattr(SETTINGS, "TRAIN_LIMIT", 0)),
     )
 

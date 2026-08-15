@@ -33,6 +33,11 @@ import torch
 import torch.nn.functional as F
 from torchvision import models
 
+from ultimate_pipeline.perception.semantic_classes import (
+    CARLA_SEMANTIC_NUM_CLASSES,
+    validate_num_classes,
+)
+
 
 def _iter_images(folder: Path) -> Iterable[Path]:
     exts = {".png", ".jpg", ".jpeg", ".bmp"}
@@ -90,7 +95,7 @@ def parse_args():
     ap.add_argument("--model", required=True, help="path to model checkpoint (state_dict)")
     ap.add_argument("--real-dir", required=True, help="folder with real RGB images")
     ap.add_argument("--out-json", default="real_eval_report.json")
-    ap.add_argument("--num-classes", type=int, default=256)
+    ap.add_argument("--num-classes", type=int, default=CARLA_SEMANTIC_NUM_CLASSES)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--resize", default="", help="e.g. 1024x512 to match simulator")
     ap.add_argument("--sim-dataset", default="", help="optional simulator dataset root (for FID-like distance)")
@@ -141,7 +146,8 @@ def main() -> None:
         w, h = args.resize.lower().split("x")
         resize = (int(w), int(h))
 
-    model = models.segmentation.fcn_resnet50(weights=None, num_classes=int(args.num_classes))
+    num_classes = validate_num_classes(args.num_classes)
+    model = models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
     sd = torch.load(args.model, map_location="cpu")
     model.load_state_dict(sd, strict=False)
     model.to(device)

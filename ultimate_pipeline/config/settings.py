@@ -22,6 +22,7 @@ import warnings
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from ultimate_pipeline.perception.semantic_classes import CARLA_SEMANTIC_NUM_CLASSES
 from ultimate_pipeline.utils.paths import repo_root, city_dir, resolve_path
 
 
@@ -59,6 +60,16 @@ def _env_float(env_key: str, default: float) -> float:
         return float(v)
     except Exception:
         return float(default)
+
+
+def _env_int(env_key: str, default: int) -> int:
+    v = os.getenv(env_key, "").strip()
+    if not v:
+        return int(default)
+    try:
+        return int(v)
+    except Exception:
+        return int(default)
 
 
 def _env_bool(env_key: str, default: bool) -> bool:
@@ -1452,7 +1463,7 @@ class Settings:
     TRAIN_EPOCHS: int = 3
     TRAIN_BATCH: int = 4
     TRAIN_LR: float = 1e-4
-    TRAIN_NUM_CLASSES: int = 256
+    TRAIN_NUM_CLASSES: int = _env_int("UP_TRAIN_NUM_CLASSES", CARLA_SEMANTIC_NUM_CLASSES)
     TRAIN_LIMIT: int = 0  # 0 = no limit
     TRAIN_DEVICE: str = "cuda"  # "cuda" or "cpu"
     TRAIN_NUM_WORKERS: int = 2
