@@ -47,8 +47,9 @@ Fix: prompts **A2** (GNN) + **A3** (domain_gap metrics).
   (calibration precision). Fix: prompt **A4**.
 - `main_pipeline.py`: the historical mock harness (`mock_data_generation`/`mock_domain_analysis`) shows no mock
   markers now — appears cleaned; re-audit if reused.
-- Map-quality chain (separate program): E1 produced an elevated+crash-safe candidate (`7709d5c9`), but its
-  loadability preflight FAILs (24 errors + 1560 elev_jumps) → prompt E2 already queued.
+- Map-quality chain (separate program): E1 produced an elevated+crash-safe candidate (`7709d5c9`); E1B repaired
+  the zero-length connector loadability errors (`90f1e4f7`); E2 produced the current offline-loadable elevated
+  candidate (`352c9003`) with G19=0 and preflight errors=0. Live CARLA proof remains separate.
 
 ## Targeted prompts (this audit)
 | Prompt | Fixes | Model | Independent? |
