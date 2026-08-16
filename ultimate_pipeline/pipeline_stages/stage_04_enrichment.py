@@ -27,6 +27,23 @@ def _offline_only_enabled(settings) -> bool:
     return bool(getattr(settings, "OFFLINE_ONLY", False)) or _env_flag("UP_OFFLINE_ONLY")
 
 
+def _pinned_buildings_fallback(settings) -> str | None:
+    """CODEX C7: tracked, offline, digest-pinned building source fallback.
+
+    Returns the pinned campaign building source path if it exists and is
+    non-empty, else None. Never touches the network.
+    """
+    pinned = getattr(settings, "PINNED_BUILDINGS_SOURCE", None)
+    if not pinned:
+        return None
+    try:
+        if os.path.exists(pinned) and os.path.getsize(pinned) > 0:
+            return pinned
+    except OSError:
+        return None
+    return None
+
+
 def resolve_buildings_geojson_for_stage4(
     *,
     settings,
@@ -40,8 +57,16 @@ def resolve_buildings_geojson_for_stage4(
         print(f"🏙️ buildings.geojson already present → {buildings_path}")
         return buildings_path
     if _offline_only_enabled(settings):
+        pinned = _pinned_buildings_fallback(settings)
+        if pinned:
+            print(
+                "🏙️ buildings.geojson missing and offline mode is enabled → "
+                f"falling back to pinned campaign building source → {pinned}"
+            )
+            return pinned
         print(
             "🏙️ buildings.geojson missing and offline mode is enabled → "
+            "no pinned building source available either; "
             "skipping download; OSM XML fallback will be used."
         )
         return None
@@ -56,8 +81,47 @@ def resolve_buildings_geojson_for_stage4(
         return buildings_path
     except Exception as e:
         print(f"   ❌ Failed to download buildings.geojson: {e}")
+        pinned = _pinned_buildings_fallback(settings)
+        if pinned:
+            print(f"   🏙️ Falling back to pinned campaign building source → {pinned}")
+            return pinned
         print("   ⚠️ No buildings will be inserted.")
         return None
+
+
+def enforce_buildings_fail_closed(
+    *,
+    inserted_count: int,
+    buildings_source: str | None,
+) -> None:
+    """CODEX C7 (W1): fail-closed guard for the enriched map of record.
+
+    A rebuilt "enriched map of record" with ~0 buildings must NOT silently
+    pass -- buildings are the dominant semantic class for an urban
+    perception domain-gap study. Raises RuntimeError unless the explicit
+    escape hatch UP_ALLOW_EMPTY_BUILDINGS=1 is set (for non-perception smoke
+    runs against tiny synthetic fixtures that intentionally carry no
+    buildings).
+    """
+    if int(inserted_count) > 0:
+        return
+    if _env_flag("UP_ALLOW_EMPTY_BUILDINGS"):
+        print(
+            "⚠️ [BUILDINGS] 0 buildings inserted but UP_ALLOW_EMPTY_BUILDINGS=1 "
+            "→ continuing (NOT the enriched map of record)."
+        )
+        return
+    raise RuntimeError(
+        "Enrichment produced 0 buildings (source="
+        f"{buildings_source!r}). Buildings are the dominant semantic class "
+        "for the perception domain-gap study; refusing to silently produce "
+        "a near-empty enriched map of record. Pin/repair the building "
+        "source (see campaigns/ingolstadt_cooked_perception_v1/source/"
+        "manifest.json 'source_buildings' and "
+        "ultimate_pipeline/config/settings.py PINNED_BUILDINGS_SOURCE), or "
+        "set UP_ALLOW_EMPTY_BUILDINGS=1 to explicitly opt out for a "
+        "non-perception smoke run."
+    )
 
 
 def _step4_enrichment(self, topo_fixed: str) -> str:
@@ -137,6 +201,14 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         )
 
         save_xodr(tree, topo_fixed)
+
+        # CODEX C7 (W1): fail-closed guard -- do NOT silently produce a
+        # near-empty (0/1 building) "enriched map of record". Escape hatch:
+        # UP_ALLOW_EMPTY_BUILDINGS=1 for intentional non-perception smoke runs.
+        enforce_buildings_fail_closed(
+            inserted_count=num_buildings,
+            buildings_source=buildings_path,
+        )
     else:
         print("⏭️ Building extrusion disabled.")
 

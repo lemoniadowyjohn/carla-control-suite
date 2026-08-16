@@ -21,6 +21,16 @@ from typing import Dict, List, Tuple
 
 from ultimate_pipeline.core.xodr_sanitizer import _safe_float
 from ultimate_pipeline.enrichment.object_injector import OSMObject
+from ultimate_pipeline.signals.signal_enrichment import (
+    SignalEnrichment,
+    build_controller,
+    enrich_signals_idempotent,
+)
+
+# OpenDRIVE 1.7 generic signal catalog: 1000001 = "Signal, traffic light"
+# (the same code CARLA's OpenDRIVE importer keys off of to spawn a
+# functional, controllable traffic light actor rather than a static prop).
+TRAFFIC_LIGHT_SIGNAL_TYPE = "1000001"
 
 
 # =====================================================================
@@ -137,12 +147,16 @@ class TrafficLightInferer:
     def infer_and_insert(root: ET.Element) -> int:
         """
         Inserts traffic lights as standard OpenDRIVE <object> elements under the
-        corresponding incoming <road>/<objects> element (road-relative placement).
+        corresponding incoming <road>/<objects> element (road-relative placement),
+        AND as paired, functional <signal> elements (CODEX C7 / W2) so that CARLA's
+        OpenDRIVE importer creates real traffic-light actors rather than treating
+        the traffic light as a static mesh prop. Signals for the same junction are
+        grouped under one <controller> so CARLA can cycle them coherently.
 
         This avoids non-standard <positionWorld> extensions and is generally safer
         for CARLA/OpenDRIVE parsers.
 
-        Returns number of inserted TLs.
+        Returns number of inserted TLs (== number of <object> == number of <signal>).
         """
         roads = {r.get("id"): r for r in root.findall("road") if r.get("id")}
 
@@ -156,6 +170,8 @@ class TrafficLightInferer:
             if len(conns) < 3:
                 continue
 
+            junction_id = junc.get("id", "J")
+            signal_records: List[SignalEnrichment] = []
             idx = 0
             for c in conns:
                 incoming = c.get("incomingRoad")
@@ -171,34 +187,85 @@ class TrafficLightInferer:
                 # place ~BACK_OFFSET meters before road end (clamped)
                 s_pos = max(0.0, length - TrafficLightInferer.BACK_OFFSET)
 
-                tl_id = f"tl_{junc.get('id','J')}_{idx}"
+                tl_id = f"tl_{junction_id}_{idx}"
 
                 # ensure <objects> under road
                 road_objs = road.find("objects")
                 if road_objs is None:
                     road_objs = ET.SubElement(road, "objects")
 
-                ET.SubElement(road_objs, "object", {
-                    "id": tl_id,
-                    "name": tl_id,
-                    "type": "traffic_light",
-                    "s": f"{s_pos:.3f}",
-                    "t": "0.0",
-                    "zOffset": "0.0",
-                    "hdg": f"{hdg:.6f}",
-                    "pitch": "0.0",
-                    "roll": "0.0",
-                    "orientation": "none",
-                    "dynamic": "no",
-                    "height": f"{TrafficLightInferer.HEIGHT:.3f}",
-                    "length": f"{TrafficLightInferer.SIZE:.3f}",
-                    "width": f"{TrafficLightInferer.SIZE:.3f}",
-                })
+                existing_obj_ids = {o.get("id") for o in road_objs.findall("object")}
+                if tl_id not in existing_obj_ids:
+                    ET.SubElement(road_objs, "object", {
+                        "id": tl_id,
+                        "name": tl_id,
+                        "type": "traffic_light",
+                        "s": f"{s_pos:.3f}",
+                        "t": "0.0",
+                        "zOffset": "0.0",
+                        "hdg": f"{hdg:.6f}",
+                        "pitch": "0.0",
+                        "roll": "0.0",
+                        "orientation": "none",
+                        "dynamic": "no",
+                        "height": f"{TrafficLightInferer.HEIGHT:.3f}",
+                        "length": f"{TrafficLightInferer.SIZE:.3f}",
+                        "width": f"{TrafficLightInferer.SIZE:.3f}",
+                    })
+                    count += 1
 
-                count += 1
+                signal_records.append(SignalEnrichment(
+                    source_entity=f"traffic_light_infer:{tl_id}",
+                    confidence="inferred",
+                    road_id=incoming,
+                    s=s_pos,
+                    t=0.0,
+                    signal_type=TRAFFIC_LIGHT_SIGNAL_TYPE,
+                    subtype="-1",
+                    dynamic="yes",
+                    z_offset=TrafficLightInferer.HEIGHT,
+                    h_offset=0.0,
+                    country="OpenDRIVE",
+                    name=tl_id,
+                ))
+
                 idx += 1
 
+            if signal_records:
+                result = enrich_signals_idempotent(root, signal_records)
+                inserted_ids = list(result.get("inserted_signal_ids") or [])
+                if not inserted_ids:
+                    # Idempotent re-run: signals already present from a
+                    # prior call -- find them via provenance for the
+                    # controller instead of skipping controller creation.
+                    inserted_ids = TrafficLightInferer._signal_ids_for_junction(
+                        root, junction_id
+                    )
+                if inserted_ids:
+                    build_controller(
+                        root,
+                        controller_id=f"ctrl_tl_{junction_id}",
+                        name=f"Traffic lights @ junction {junction_id}",
+                        signals=inserted_ids,
+                    )
+
         return count
+
+    # -----------------------------------------------------------------
+
+    @staticmethod
+    def _signal_ids_for_junction(root: ET.Element, junction_id: str) -> List[str]:
+        """Find previously-inserted signal ids for a junction via provenance."""
+        prefix = f"traffic_light_infer:tl_{junction_id}_"
+        ids: List[str] = []
+        for signal in root.findall(".//signal"):
+            prov = signal.find("./userData/provenance")
+            if prov is None:
+                continue
+            src = prov.get("source_entity") or ""
+            if src.startswith(prefix):
+                ids.append(signal.get("id"))
+        return ids
 
     # -----------------------------------------------------------------
     # Post-inference validation of signal → lane references

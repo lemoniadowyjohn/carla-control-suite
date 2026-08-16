@@ -35,5 +35,30 @@
     "missing_way_node_refs": 0,
     "validation": "USE_EXISTING_VALID_OSM"
   },
+  "source_buildings": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json",
+    "sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "byte_size": 3869473,
+    "format": "overpass_json",
+    "generator": "Overpass API 0.7.62.11 87bfad18",
+    "source_date": "2026-08-16T14:20:51Z",
+    "license": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+    "query": "[out:json][timeout:180];(way[\"building\"]({lat_min},{lon_min},{lat_max},{lon_max});relation[\"building\"]({lat_min},{lon_min},{lat_max},{lon_max}););out geom;",
+    "endpoint": "https://overpass-api.de/api/interpreter",
+    "study_bounds_wgs84": {
+      "lat_min": 48.74935649548228,
+      "lat_max": 48.77444431571603,
+      "lon_min": 11.422268084715878,
+      "lon_max": 11.47882091528412,
+      "region": "Ingolstadt"
+    },
+    "counts": {
+      "way_count": 5693,
+      "relation_count": 19,
+      "building_way_count": 5693
+    },
+    "fetch_note": "C7 (2026-08-16): road OSM b9e07465 is roads-only (building_way_count=1) and OSM_BUILDINGS_GEOJSON auto-download had previously failed transiently. Re-ran the SAME Overpass mechanism (ultimate_pipeline/osm/osm_downloader.py-style POST query) reshaped as a building-tagged out:json/out geom query per C7 spec guidance. First attempt (no User-Agent) hit 406/403/429 across all three mirrors (overpass-api.de, overpass.openstreetmap.fr, overpass.kumi.systems) -- kumi explicitly requires a meaningful User-Agent. Second attempt with a descriptive User-Agent succeeded on overpass-api.de attempt 2/3 (200 OK). This is a one-time operator fetch, not something the offline test suite executes.",
+    "validation": "FETCHED_AND_PINNED_20260816"
+  },
   "verdict": "USE_EXISTING_VALID_OSM"
 }

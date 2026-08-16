@@ -2158,11 +2158,21 @@ if str(_repo_root) not in sys.path:
                             f"[STEP 8] map_acceptance skipped {report_name}: {load_exc}"
                         )
 
+            # CODEX C7: only require enrichment completeness (buildings +
+            # functional signals) when this run was actually configured to
+            # enrich the map (ENABLE_BUILDINGS and ENABLE_TRAFFIC_LIGHTS).
+            # Profiles like STRUCTURAL_RELEASE intentionally disable both to
+            # test bare geometry/topology and must not be broken by this gate.
+            require_enrichment = bool(
+                getattr(s, "ENABLE_BUILDINGS", False)
+                and getattr(s, "ENABLE_TRAFFIC_LIGHTS", False)
+            )
             map_acceptance = build_map_acceptance(
                 acceptance_reports,
                 run_id=os.path.basename(os.path.normpath(self.out_dir)),
                 final_xodr_path=final_out,
                 out_dir=self.out_dir,
+                require_enrichment=require_enrichment,
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")

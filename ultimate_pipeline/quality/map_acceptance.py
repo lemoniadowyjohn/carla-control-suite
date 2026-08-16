@@ -104,12 +104,38 @@ def _write_acceptance(out_dir: Optional[str], run_id: Optional[str], payload: Di
         return None
 
 
+def _enrichment_completeness_counts(final_xodr_path: str) -> Optional[Dict[str, int]]:
+    """CODEX C7: count buildings + functional signals directly from the XODR.
+
+    Reconciles the "signals" metric so a genuinely enriched map (traffic
+    lights represented as paired <object>+<signal>, see
+    ultimate_pipeline/enrichment/traffic_light_infer.py) is never reported
+    as signals=0 just because the legacy prop-only representation is also
+    present.
+    """
+    try:
+        root = ET.parse(final_xodr_path).getroot()
+    except Exception:
+        return None
+
+    buildings_count = len(root.findall(".//object[@type='building']"))
+    functional_signals_count = len(root.findall(".//signal"))
+    traffic_light_object_count = len(root.findall(".//object[@type='traffic_light']"))
+
+    return {
+        "buildings_count": buildings_count,
+        "functional_signals_count": functional_signals_count,
+        "traffic_light_object_count": traffic_light_object_count,
+    }
+
+
 def build_map_acceptance(
     reports: Dict[str, Any],
     *,
     run_id: str | None = None,
     final_xodr_path: str | None = None,
     out_dir: str | None = None,
+    require_enrichment: bool = False,
 ) -> Dict[str, Any]:
     hard_fail_reasons: List[Dict[str, str]] = []
     soft_warnings: List[Dict[str, str]] = []
@@ -231,6 +257,36 @@ def build_map_acceptance(
                 hard_fail_reasons.append({"gate": "origin_sanity", "reason": _reason_from_report(origin)})
             else:
                 soft_warnings.append({"gate": "origin_sanity", "reason": _reason_from_report(origin)})
+
+    # CODEX C7: enrichment completeness (buildings + functional signals).
+    # Always measured (visible in metrics) so the map is never silently
+    # reported as signals=0 when it actually carries <signal> elements or
+    # traffic_light <object> props. Only hard-fails when the caller opts in
+    # via require_enrichment=True (the "enriched map of record" build path);
+    # manual/geometry-only reference maps legitimately have 0 of either and
+    # must not be broken by this gate.
+    if final_xodr_path and os.path.exists(final_xodr_path):
+        enrich_counts = _enrichment_completeness_counts(final_xodr_path)
+        if enrich_counts is not None:
+            metrics["buildings_count"] = enrich_counts["buildings_count"]
+            metrics["functional_signals_count"] = enrich_counts["functional_signals_count"]
+            metrics["traffic_light_object_count"] = enrich_counts["traffic_light_object_count"]
+            if require_enrichment:
+                reasons = []
+                if enrich_counts["buildings_count"] <= 0:
+                    reasons.append("buildings_count=0")
+                if (
+                    enrich_counts["functional_signals_count"] <= 0
+                    and enrich_counts["traffic_light_object_count"] <= 0
+                ):
+                    reasons.append("functional_signals_count=0 and traffic_light_object_count=0")
+                if reasons:
+                    hard_fail_reasons.append(
+                        {
+                            "gate": "enrichment_completeness",
+                            "reason": "; ".join(reasons),
+                        }
+                    )
 
     valid_for_experiments = len(hard_fail_reasons) == 0
     payload = {

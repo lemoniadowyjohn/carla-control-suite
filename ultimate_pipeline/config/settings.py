@@ -880,6 +880,28 @@ class Settings:
             default=city_dir(CITY_NAME) / "osm" / "buildings.geojson",
         )
     )
+    # CODEX C7: tracked, pinned, digest-recorded building source (Overpass JSON,
+    # `way["building"]`/`relation["building"]` for the exact thesis study bbox).
+    # Used as an offline fallback by stage_04_enrichment when the mutable
+    # OSM_BUILDINGS_GEOJSON path above is absent -- avoids re-fetching from
+    # Overpass at map-build time. See
+    # campaigns/ingolstadt_cooked_perception_v1/source/manifest.json
+    # ("source_buildings") for provenance + sha256.
+    PINNED_BUILDINGS_SOURCE: str = str(
+        resolve_path(
+            os.getenv("UP_PINNED_BUILDINGS_SOURCE", None)
+            or PROJECT_ROOT
+            / "campaigns"
+            / "ingolstadt_cooked_perception_v1"
+            / "source"
+            / "ingolstadt_buildings_overpass.json",
+            default=PROJECT_ROOT
+            / "campaigns"
+            / "ingolstadt_cooked_perception_v1"
+            / "source"
+            / "ingolstadt_buildings_overpass.json",
+        )
+    )
     ENRICHMENTS_RUNTIME_DIRNAME: str = str(
         os.getenv("UP_ENRICHMENTS_RUNTIME_DIRNAME", "enrichments") or "enrichments"
     ).strip() or "enrichments"
@@ -1541,6 +1563,9 @@ class Settings:
         self.OSM_FILE = _env_path("UP_OSM_FILE", self.OSM_FILE)
         self.OSM_BUILDINGS_GEOJSON = _env_path(
             "UP_OSM_BUILDINGS_GEOJSON", self.OSM_BUILDINGS_GEOJSON
+        )
+        self.PINNED_BUILDINGS_SOURCE = _env_path(
+            "UP_PINNED_BUILDINGS_SOURCE", self.PINNED_BUILDINGS_SOURCE
         )
         self.COORDINATES_JSON = _env_path("UP_COORDINATES_JSON", self.COORDINATES_JSON)
         self.DEM_MIN_ELEVATION_VARIANCE = _env_float(

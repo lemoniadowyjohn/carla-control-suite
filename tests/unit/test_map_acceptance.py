@@ -114,3 +114,154 @@ def test_map_acceptance_accepts_resolved_lane_successor_autofix_report():
     assert acceptance["valid_for_experiments"] is True
     assert acceptance["metrics"]["lane_ok"] is True
     assert acceptance["metrics"]["lane_successor_missing_count"] == 0
+
+
+# --------------------------------------------------------------------------
+# CODEX C7: enrichment completeness (buildings + functional signals) metrics
+# --------------------------------------------------------------------------
+
+_XODR_NO_ENRICHMENT = (
+    '<?xml version="1.0" encoding="utf-8"?>'
+    "<OpenDRIVE>"
+    '<header revMajor="1" revMinor="6"/>'
+    '<road id="1" length="10" junction="-1">'
+    '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+    "</road>"
+    "</OpenDRIVE>"
+)
+
+_XODR_WITH_ENRICHMENT = (
+    '<?xml version="1.0" encoding="utf-8"?>'
+    "<OpenDRIVE>"
+    '<header revMajor="1" revMinor="6"/>'
+    '<road id="1" length="10" junction="-1">'
+    '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+    "<objects>"
+    '<object id="b1" type="building" s="1" t="1" zOffset="0" height="10"/>'
+    '<object id="b2" type="building" s="2" t="1" zOffset="0" height="10"/>'
+    '<object id="tl1" type="traffic_light" s="3" t="0" zOffset="0" height="5" dynamic="no"/>'
+    "</objects>"
+    "<signals>"
+    '<signal id="s1" s="3" t="0" zOffset="5" hOffset="0" dynamic="yes" type="1000001" subtype="-1"/>'
+    "</signals>"
+    "</road>"
+    "</OpenDRIVE>"
+)
+
+
+def test_map_acceptance_reports_zero_buildings_and_signals_metrics(tmp_path):
+    xodr = tmp_path / "no_enrichment.xodr"
+    xodr.write_text(_XODR_NO_ENRICHMENT, encoding="utf-8")
+
+    acceptance = build_map_acceptance({}, run_id="run", final_xodr_path=str(xodr))
+
+    assert acceptance["metrics"]["buildings_count"] == 0
+    assert acceptance["metrics"]["functional_signals_count"] == 0
+    assert acceptance["metrics"]["traffic_light_object_count"] == 0
+
+
+def test_map_acceptance_counts_buildings_and_functional_signals(tmp_path):
+    xodr = tmp_path / "enriched.xodr"
+    xodr.write_text(_XODR_WITH_ENRICHMENT, encoding="utf-8")
+
+    acceptance = build_map_acceptance({}, run_id="run", final_xodr_path=str(xodr))
+
+    assert acceptance["metrics"]["buildings_count"] == 2
+    assert acceptance["metrics"]["functional_signals_count"] == 1
+    assert acceptance["metrics"]["traffic_light_object_count"] == 1
+
+
+def test_map_acceptance_does_not_hard_fail_on_empty_enrichment_by_default(tmp_path):
+    """Manual/geometry-only reference maps legitimately have 0 buildings/signals
+    in the OpenDRIVE sense -- must not break existing manual-map acceptance."""
+    xodr = tmp_path / "no_enrichment.xodr"
+    xodr.write_text(_XODR_NO_ENRICHMENT, encoding="utf-8")
+
+    acceptance = build_map_acceptance({}, run_id="run", final_xodr_path=str(xodr))
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["failed_gates"] == []
+
+
+def test_map_acceptance_hard_fails_on_zero_buildings_when_enrichment_required(tmp_path):
+    xodr = tmp_path / "no_enrichment.xodr"
+    xodr.write_text(_XODR_NO_ENRICHMENT, encoding="utf-8")
+
+    acceptance = build_map_acceptance(
+        {}, run_id="run", final_xodr_path=str(xodr), require_enrichment=True
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "enrichment_completeness" in acceptance["failed_gates"]
+
+
+def test_map_acceptance_hard_fails_on_zero_functional_signals_when_required(tmp_path):
+    # Neither <signal> nor the <object type="traffic_light"> fallback is
+    # present -- zero light representation of any kind must hard-fail.
+    xodr_text = (
+        _XODR_WITH_ENRICHMENT.replace(
+            '<signal id="s1" s="3" t="0" zOffset="5" hOffset="0" dynamic="yes" type="1000001" subtype="-1"/>',
+            "",
+        ).replace(
+            '<object id="tl1" type="traffic_light" s="3" t="0" zOffset="0" height="5" dynamic="no"/>',
+            "",
+        )
+    )
+    xodr = tmp_path / "buildings_only.xodr"
+    xodr.write_text(xodr_text, encoding="utf-8")
+
+    acceptance = build_map_acceptance(
+        {}, run_id="run", final_xodr_path=str(xodr), require_enrichment=True
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "enrichment_completeness" in acceptance["failed_gates"]
+
+
+def test_map_acceptance_hard_fails_when_signal_absent_and_light_kept_as_prop_only(tmp_path):
+    """If traffic lights remain <object>-only (no paired <signal>), that is
+    still evidence of light presence per the C7 spec's counting rule ('if
+    lights remain <object>, count <object type=traffic_light>') -- it must
+    NOT hard-fail the enrichment gate on its own."""
+    xodr_text = _XODR_WITH_ENRICHMENT.replace(
+        '<signal id="s1" s="3" t="0" zOffset="5" hOffset="0" dynamic="yes" type="1000001" subtype="-1"/>',
+        "",
+    )
+    xodr = tmp_path / "object_only_light.xodr"
+    xodr.write_text(xodr_text, encoding="utf-8")
+
+    acceptance = build_map_acceptance(
+        {}, run_id="run", final_xodr_path=str(xodr), require_enrichment=True
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert "enrichment_completeness" not in acceptance["failed_gates"]
+
+
+def test_map_acceptance_passes_enrichment_gate_when_buildings_and_signals_present(tmp_path):
+    xodr = tmp_path / "enriched.xodr"
+    xodr.write_text(_XODR_WITH_ENRICHMENT, encoding="utf-8")
+
+    acceptance = build_map_acceptance(
+        {}, run_id="run", final_xodr_path=str(xodr), require_enrichment=True
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert "enrichment_completeness" not in acceptance["failed_gates"]
+
+
+def test_map_acceptance_counts_traffic_light_objects_as_signals_fallback(tmp_path):
+    """If lights remain <object> (no <signal> emitted for some reason), the
+    traffic_light_object_count metric must still be visible/non-zero so the
+    map is not falsely reported as having zero light representation."""
+    xodr_text = _XODR_WITH_ENRICHMENT.replace(
+        '<signal id="s1" s="3" t="0" zOffset="5" hOffset="0" dynamic="yes" type="1000001" subtype="-1"/>',
+        "",
+    )
+    xodr = tmp_path / "objects_only.xodr"
+    xodr.write_text(xodr_text, encoding="utf-8")
+
+    acceptance = build_map_acceptance({}, run_id="run", final_xodr_path=str(xodr))
+
+    assert acceptance["metrics"]["functional_signals_count"] == 0
+    assert acceptance["metrics"]["traffic_light_object_count"] == 1
