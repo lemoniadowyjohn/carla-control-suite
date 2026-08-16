@@ -31,6 +31,67 @@ def _choose_best_target(src_id: int, next_ids: List[int]) -> Optional[int]:
     cand = same_sign if same_sign else next_ids
     return min(cand, key=lambda x: (abs(x - src_id), abs(x)))
 
+def _lane_width_average(lane_el: ET.Element) -> float:
+    vals = []
+    for width in lane_el.findall("width"):
+        try:
+            vals.append(float(width.get("a") or 0.0))
+        except Exception:
+            pass
+    return (sum(vals) / len(vals)) if vals else 0.0
+
+def _lane_map_by_id(section: ET.Element) -> Dict[int, ET.Element]:
+    out: Dict[int, ET.Element] = {}
+    for lane in section.findall(".//lane"):
+        lane_id = _lane_id_int(lane)
+        if lane_id is not None:
+            out[lane_id] = lane
+    return out
+
+def _is_drivable_type(lane_el: Optional[ET.Element], lane_types: Tuple[str, ...]) -> bool:
+    return lane_el is not None and lane_el.get("type") in lane_types
+
+def _reclassify_linked_none_or_restricted_lanes(
+    lane_sections: List[ET.Element],
+    *,
+    lane_types: Tuple[str, ...],
+) -> int:
+    if not lane_types:
+        return 0
+    target_type = lane_types[0]
+    section_maps = [_lane_map_by_id(section) for section in lane_sections]
+    reclassified = 0
+
+    for idx, section in enumerate(lane_sections):
+        prev_map = section_maps[idx - 1] if idx > 0 else {}
+        next_map = section_maps[idx + 1] if idx + 1 < len(section_maps) else {}
+        for lane in section.findall(".//lane"):
+            lane_id = _lane_id_int(lane)
+            if lane_id is None or lane_id == 0:
+                continue
+            if lane.get("type") not in {"none", "restricted"}:
+                continue
+            width = _lane_width_average(lane)
+            if not (2.5 <= width <= 6.0):
+                continue
+
+            linked_to_driving = _is_drivable_type(prev_map.get(lane_id), lane_types)
+            linked_to_driving = linked_to_driving or _is_drivable_type(next_map.get(lane_id), lane_types)
+
+            pred = _get_lane_link_child(lane, "predecessor")
+            if pred is not None:
+                pred_id = _lane_id_int(pred)
+                linked_to_driving = linked_to_driving or _is_drivable_type(prev_map.get(pred_id), lane_types)
+            succ = _get_lane_link_child(lane, "successor")
+            if succ is not None:
+                succ_id = _lane_id_int(succ)
+                linked_to_driving = linked_to_driving or _is_drivable_type(next_map.get(succ_id), lane_types)
+
+            if linked_to_driving:
+                lane.set("type", target_type)
+                reclassified += 1
+    return reclassified
+
 def repair_and_assert_lane_section_successors(
     xodr_path: str,
     out_path: Optional[str] = None,
@@ -48,6 +109,7 @@ def repair_and_assert_lane_section_successors(
 
     failures = []
     repairs = 0
+    reclassified = 0
 
     for road in root.findall(".//road"):
         road_id = road.get("id", "?")
@@ -63,6 +125,10 @@ def repair_and_assert_lane_section_successors(
                 return 0.0
 
         lane_sections.sort(key=s_val)
+        reclassified += _reclassify_linked_none_or_restricted_lanes(
+            lane_sections,
+            lane_types=lane_types,
+        )
 
         # helper: collect lane ids by laneSection
         def collect_ids(ls: ET.Element) -> List[int]:
@@ -79,6 +145,12 @@ def repair_and_assert_lane_section_successors(
             a_ids = collect_ids(a)
             b_ids = collect_ids(b)
             b_idset = set(b_ids)
+            a_driving_ids = [
+                lid
+                for lid, lane in _lane_map_by_id(a).items()
+                if lane.get("type") in lane_types
+            ]
+            a_driving_idset = set(a_driving_ids)
 
             # lanes in A that we care about
             for lane in a.findall(".//lane"):
@@ -143,7 +215,39 @@ def repair_and_assert_lane_section_successors(
                     pred.set("id", str(src_id))
                     repairs += 1
 
-    report = {"repairs": repairs, "failures": failures, "input": xodr_path}
+            # Mirror pass for driving lanes in B: repair a missing predecessor
+            # only when A has a compatible driving lane. Do not fabricate
+            # links from newly-born lanes back to sidewalks/non-driving lanes.
+            for lane in b.findall(".//lane"):
+                if lane.get("type") not in lane_types:
+                    continue
+                dst_id = _lane_id_int(lane)
+                if dst_id is None:
+                    continue
+                link = _ensure_link(lane)
+                pred = link.find("predecessor")
+                pred_id = None
+                if pred is not None:
+                    try:
+                        pred_id = int(pred.get("id"))
+                    except Exception:
+                        pred_id = None
+                if pred_id in a_driving_idset:
+                    continue
+                best = _choose_best_target(dst_id, a_driving_ids)
+                if best is None:
+                    continue
+                if pred is None:
+                    pred = ET.SubElement(link, "predecessor")
+                pred.set("id", str(best))
+                repairs += 1
+
+    report = {
+        "repairs": repairs,
+        "reclassified_none_or_restricted_lanes": reclassified,
+        "failures": failures,
+        "input": xodr_path,
+    }
     if out_path:
         tree.write(out_path, encoding="utf-8", xml_declaration=True)
         report["output"] = out_path

@@ -272,6 +272,143 @@ class TestMixedChain:
             os.unlink(tmp)
 
 
+class TestOpenDriveRoadLinkContactPointSemantics:
+    def _write(self, tmp_path, body: str):
+        path = tmp_path / "links.xodr"
+        path.write_text(
+            '<?xml version="1.0" encoding="utf-8"?>'
+            "<OpenDRIVE>"
+            '<header revMajor="1" revMinor="6"/>'
+            f"{body}"
+            "</OpenDRIVE>",
+            encoding="utf-8",
+        )
+        return str(path)
+
+    def test_successor_to_start_uses_source_end_and_same_heading(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<link><successor elementType="road" elementId="2" contactPoint="start"/></link>'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="2" length="5" junction="-1">'
+                '<planView><geometry s="0" x="10" y="0" hdg="0" length="5"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is True
+        assert report["num_issues"] == 0
+
+    def test_successor_to_end_allows_opposite_heading_at_shared_endpoint(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<link><successor elementType="road" elementId="2" contactPoint="end"/></link>'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="2" length="5" junction="-1">'
+                f'<planView><geometry s="0" x="15" y="0" hdg="{math.pi}" length="5"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is True
+        assert report["num_issues"] == 0
+
+    def test_predecessor_to_end_uses_source_start_and_same_heading(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="2" length="5" junction="-1">'
+                '<link><predecessor elementType="road" elementId="1" contactPoint="end"/></link>'
+                '<planView><geometry s="0" x="10" y="0" hdg="0" length="5"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is True
+        assert report["num_issues"] == 0
+
+    def test_contact_point_semantics_still_reject_position_break(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<link><successor elementType="road" elementId="2" contactPoint="start"/></link>'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="2" length="5" junction="-1">'
+                '<planView><geometry s="0" x="20" y="0" hdg="0" length="5"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is False
+        assert report["num_issues"] == 1
+        assert report["issues"][0]["dxy"] == pytest.approx(10.0)
+
+    def test_contact_point_semantics_still_reject_heading_break(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<link><successor elementType="road" elementId="2" contactPoint="start"/></link>'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="2" length="5" junction="-1">'
+                f'<planView><geometry s="0" x="10" y="0" hdg="{math.pi / 2}" length="5"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is False
+        assert report["num_issues"] == 1
+        assert report["issues"][0]["dhdg"] == pytest.approx(math.pi / 2)
+
+    def test_junction_connector_reference_line_offset_is_diagnostic_not_hard_fail(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="100" length="5" junction="10">'
+                '<link><predecessor elementType="road" elementId="1" contactPoint="end"/></link>'
+                '<planView><geometry s="0" x="10" y="3.5" hdg="0" length="5"><line/></geometry></planView>'
+                "</road>"
+                '<junction id="10">'
+                '<connection id="0" incomingRoad="1" connectingRoad="100" contactPoint="start">'
+                '<laneLink from="-1" to="-1"/>'
+                "</connection>"
+                "</junction>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is True
+        assert report["num_issues"] == 0
+        assert report["num_junction_connector_issues"] == 1
+        assert report["junction_connector_issues"][0]["dxy"] == pytest.approx(3.5)
+
+
 class TestContainmentFlags:
     def test_flags_default_false(self):
         from ultimate_pipeline.config.settings import SETTINGS

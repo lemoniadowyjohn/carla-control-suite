@@ -318,12 +318,36 @@ def _road_length(road_el: ET.Element) -> float:
     return _safe_float(road_el.get("length"))
 
 
-def _road_links(road_el: ET.Element) -> List[Tuple[str, str, str]]:
+def _normalize_contact_point(value: Optional[str]) -> Optional[str]:
+    raw = str(value or "").strip().lower()
+    if raw in {"start", "end"}:
+        return raw
+    return None
+
+
+def _endpoint_s(endpoint: str, road_length: float) -> float:
+    return 0.0 if str(endpoint).strip().lower() == "start" else float(max(0.0, road_length))
+
+
+def _source_endpoint_for_link(link_kind: str) -> str:
+    # OpenDRIVE road links are anchored at the source road start for
+    # predecessor links and at the source road end for successor links.
+    return "start" if str(link_kind).strip().lower() == "predecessor" else "end"
+
+
+def _expected_heading_delta_rad(source_endpoint: str, target_endpoint: str) -> float:
+    # A start<->end join is same-direction along the reference line. A
+    # start<->start or end<->end join is geometrically valid only when the
+    # reference-line tangents face opposite directions at the shared point.
+    return math.pi if str(source_endpoint) == str(target_endpoint) else 0.0
+
+
+def _road_links(road_el: ET.Element) -> List[Tuple[str, str, str, Optional[str]]]:
     """
-    Return list of (link_kind, elementType, elementId) for predecessor/successor.
+    Return list of (link_kind, elementType, elementId, contactPoint) for predecessor/successor.
     link_kind in {"predecessor","successor"}.
     """
-    out: List[Tuple[str, str, str]] = []
+    out: List[Tuple[str, str, str, Optional[str]]] = []
     link_el = road_el.find("link")
     if link_el is None:
         return out
@@ -334,8 +358,9 @@ def _road_links(road_el: ET.Element) -> List[Tuple[str, str, str]]:
             continue
         etype = (el.get("elementType") or "").strip()
         eid = (el.get("elementId") or "").strip()
+        cp = _normalize_contact_point(el.get("contactPoint"))
         if etype and eid:
-            out.append((kind, etype, eid))
+            out.append((kind, etype, eid, cp))
     return out
 
 
@@ -568,7 +593,14 @@ def check_geometric_continuity(
     eps_hdg: float = 0.01,
 ) -> Dict[str, Any]:
     """
-    Check geometric continuity at road boundaries for road-to-road links.
+    Check geometric continuity at road boundaries for ordinary road-to-road links.
+
+    Links involving junction connector roads are reported separately because
+    OpenDRIVE junction routing is governed by <junction><connection><laneLink>
+    semantics. Their reference lines may join at lane centers rather than at
+    the non-junction road reference line, so they are diagnostic evidence for
+    G4/G6-style junction-lane audits, not hard failures of this generic road
+    reference-line gate.
 
     Returns a report dict:
       {
@@ -577,7 +609,9 @@ def check_geometric_continuity(
         "eps_hdg": float,
         "num_roads": int,
         "num_links_checked": int,
+        "num_junction_connector_links_checked": int,
         "num_issues": int,
+        "num_junction_connector_issues": int,
         "issues": [
            {
              "from_road": "12",
@@ -601,8 +635,11 @@ def check_geometric_continuity(
         "eps_hdg": eps_hdg,
         "num_roads": 0,
         "num_links_checked": 0,
+        "num_junction_connector_links_checked": 0,
         "num_issues": 0,
+        "num_junction_connector_issues": 0,
         "issues": [],
+        "junction_connector_issues": [],
         "warnings": [],
     }
 
@@ -636,6 +673,7 @@ def check_geometric_continuity(
         return geom_cache[rid]
 
     issues: List[Dict[str, Any]] = []
+    junction_connector_issues: List[Dict[str, Any]] = []
     warnings_global: List[str] = []
 
     for r in roads:
@@ -644,7 +682,7 @@ def check_geometric_continuity(
             continue
 
         links = _road_links(r)
-        for link_kind, etype, eid in links:
+        for link_kind, etype, eid, contact_point in links:
             if etype != "road":
                 continue
             if eid not in road_by_id:
@@ -659,20 +697,32 @@ def check_geometric_continuity(
                 )
                 continue
 
+            target_road = road_by_id[eid]
+            source_is_junction_connector = str(r.get("junction") or "-1").strip() != "-1"
+            target_is_junction_connector = str(target_road.get("junction") or "-1").strip() != "-1"
+            is_junction_connector_link = source_is_junction_connector or target_is_junction_connector
+
             geoms_a, warn_a = get_geoms(rid)
             geoms_b, warn_b = get_geoms(eid)
 
             len_a = _road_length(r)
+            len_b = _road_length(target_road)
 
-            pose_end_a, warn_eval_a = _pose_at_s(geoms_a, len_a)
-            pose_start_b, warn_eval_b = _pose_at_s(geoms_b, 0.0)
+            from_endpoint = _source_endpoint_for_link(link_kind)
+            to_endpoint = contact_point or "start"
+            pose_from, warn_eval_a = _pose_at_s(geoms_a, _endpoint_s(from_endpoint, len_a))
+            pose_to, warn_eval_b = _pose_at_s(geoms_b, _endpoint_s(to_endpoint, len_b))
+            expected_heading_delta = _expected_heading_delta_rad(from_endpoint, to_endpoint)
 
-            dx = pose_start_b.x - pose_end_a.x
-            dy = pose_start_b.y - pose_end_a.y
+            dx = pose_to.x - pose_from.x
+            dy = pose_to.y - pose_from.y
             dxy = math.hypot(dx, dy)
-            dhdg = abs(_angle_diff(pose_start_b.hdg, pose_end_a.hdg))
+            dhdg = abs(_angle_diff(pose_to.hdg, pose_from.hdg + expected_heading_delta))
 
-            report["num_links_checked"] += 1
+            if is_junction_connector_link:
+                report["num_junction_connector_links_checked"] += 1
+            else:
+                report["num_links_checked"] += 1
 
             warn = []
             warn.extend(warn_a)
@@ -681,23 +731,33 @@ def check_geometric_continuity(
             warn.extend(warn_eval_b)
 
             if dxy > eps_xy or dhdg > eps_hdg:
-                issues.append(
-                    {
-                        "from_road": rid,
-                        "to_road": eid,
-                        "link_kind": link_kind,
-                        "dx": dx,
-                        "dy": dy,
-                        "dxy": dxy,
-                        "dhdg": dhdg,
-                        "from_pose_end": {"x": pose_end_a.x, "y": pose_end_a.y, "hdg": pose_end_a.hdg},
-                        "to_pose_start": {"x": pose_start_b.x, "y": pose_start_b.y, "hdg": pose_start_b.hdg},
-                        "warnings": warn,
-                    }
-                )
+                record = {
+                    "from_road": rid,
+                    "to_road": eid,
+                    "link_kind": link_kind,
+                    "contact_point": contact_point,
+                    "from_endpoint": from_endpoint,
+                    "to_endpoint": to_endpoint,
+                    "source_is_junction_connector": source_is_junction_connector,
+                    "target_is_junction_connector": target_is_junction_connector,
+                    "dx": dx,
+                    "dy": dy,
+                    "dxy": dxy,
+                    "dhdg": dhdg,
+                    "expected_heading_delta_rad": expected_heading_delta,
+                    "from_pose": {"x": pose_from.x, "y": pose_from.y, "hdg": pose_from.hdg},
+                    "to_pose": {"x": pose_to.x, "y": pose_to.y, "hdg": pose_to.hdg},
+                    "warnings": warn,
+                }
+                if is_junction_connector_link:
+                    junction_connector_issues.append(record)
+                else:
+                    issues.append(record)
 
     report["issues"] = issues
+    report["junction_connector_issues"] = junction_connector_issues
     report["num_issues"] = len(issues)
+    report["num_junction_connector_issues"] = len(junction_connector_issues)
     report["ok"] = len(issues) == 0
 
     for rid, (_, warns) in geom_cache.items():

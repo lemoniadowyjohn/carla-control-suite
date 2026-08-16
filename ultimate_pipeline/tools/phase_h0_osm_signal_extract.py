@@ -59,6 +59,40 @@ def _localname(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
 
+def _read_header_offset(xodr_path: str) -> Dict[str, float]:
+    out = {"x": 0.0, "y": 0.0, "z": 0.0, "hdg": 0.0}
+    try:
+        root = ET.parse(xodr_path).getroot()
+        header = root.find("header")
+        offset = header.find("offset") if header is not None else None
+        if offset is None:
+            return out
+        for key in out:
+            try:
+                out[key] = float(offset.get(key) or 0.0)
+            except Exception:
+                out[key] = 0.0
+    except Exception:
+        return out
+    return out
+
+
+def _project_native_to_planview_frame(
+    x_native: float,
+    y_native: float,
+    header_offset: Dict[str, float],
+) -> Tuple[float, float]:
+    """Inverse of the OpenDRIVE header offset transform for planView matching."""
+    dx = float(x_native) - float(header_offset.get("x", 0.0) or 0.0)
+    dy = float(y_native) - float(header_offset.get("y", 0.0) or 0.0)
+    hdg = float(header_offset.get("hdg", 0.0) or 0.0)
+    cos_h = math.cos(hdg)
+    sin_h = math.sin(hdg)
+    local_x = dx * cos_h + dy * sin_h
+    local_y = -dx * sin_h + dy * cos_h
+    return float(local_x), float(local_y)
+
+
 class OSMSignalExtractor:
     """Parse the authoritative OSM and emit provenance-bearing candidates."""
 
@@ -72,6 +106,7 @@ class OSMSignalExtractor:
         self.transformer, self.crs_record = _wgs84_to_native_transformer(
             xodr_path, osm_path
         )
+        self.header_offset = _read_header_offset(xodr_path)
         self.nodes: Dict[str, Tuple[float, float]] = {}
         self.ways: Dict[str, Dict[str, Any]] = {}
         self.counters: Dict[str, int] = {}
@@ -85,7 +120,11 @@ class OSMSignalExtractor:
                         lat = float(el.get("lat"))
                         lon = float(el.get("lon"))
                         x, y = self.transformer.transform(float(lon), float(lat))
-                        self.nodes[el.get("id")] = (float(x), float(y))
+                        self.nodes[el.get("id")] = _project_native_to_planview_frame(
+                            float(x),
+                            float(y),
+                            self.header_offset,
+                        )
                     except Exception:
                         pass
                     el.clear()

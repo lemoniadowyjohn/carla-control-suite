@@ -53,6 +53,10 @@ def _from_endpoint_for_link(link_kind: str, contact_point: Optional[str]) -> str
     return "start" if kind == "predecessor" else "end"
 
 
+def _expected_heading_delta_rad(from_endpoint: str, to_endpoint: str) -> float:
+    return math.pi if str(from_endpoint) == str(to_endpoint) else 0.0
+
+
 def _percentile(values: List[float], q: float) -> Optional[float]:
     if not values:
         return None
@@ -136,12 +140,14 @@ def _eval_link_with_target(
     to_pose, to_warn = _pose_at_s(to_ctx.geoms, to_s)
 
     dxy = math.hypot(to_pose.x - from_pose.x, to_pose.y - from_pose.y)
-    dhdg = abs(_angle_diff(to_pose.hdg, from_pose.hdg))
+    expected_heading_delta = _expected_heading_delta_rad(from_endpoint, to_endpoint)
+    dhdg = abs(_angle_diff(to_pose.hdg, from_pose.hdg + expected_heading_delta))
     return {
         "ok": True,
         "error": "",
         "from_endpoint": str(from_endpoint),
         "to_endpoint": str(to_endpoint),
+        "expected_heading_delta_rad": float(expected_heading_delta),
         "from_pose": {
             "x": float(from_pose.x),
             "y": float(from_pose.y),
@@ -327,6 +333,7 @@ def _road_endpoint_catalog(
 def _search_best_nearby_endpoint(
     *,
     from_road_id: str,
+    from_endpoint: str,
     from_pose: Dict[str, float],
     current_target: str,
     allow_new_self_link: bool,
@@ -355,7 +362,15 @@ def _search_best_nearby_endpoint(
             )
             if dxy > radius + 1e-9:
                 continue
-            dhdg = abs(float(_angle_diff(float(endpoint.pose_hdg), float(from_pose["hdg"]))))
+            expected_heading_delta = _expected_heading_delta_rad(from_endpoint, endpoint.endpoint)
+            dhdg = abs(
+                float(
+                    _angle_diff(
+                        float(endpoint.pose_hdg),
+                        float(from_pose["hdg"]) + expected_heading_delta,
+                    )
+                )
+            )
             endpoint_rank = 0 if str(endpoint.endpoint) == "start" else 1
             score = (
                 float(dxy),
@@ -371,6 +386,7 @@ def _search_best_nearby_endpoint(
                         "to_endpoint": str(endpoint.endpoint),
                         "dxy_m": float(dxy),
                         "dhdg_rad": float(dhdg),
+                        "expected_heading_delta_rad": float(expected_heading_delta),
                     },
                 )
             )
@@ -516,6 +532,7 @@ def repair_road_link_targets(
                 if bool(cur_eval.get("ok", False)):
                     fp = cur_eval.get("from_pose")
                     if isinstance(fp, dict) and {"x", "y", "hdg"} <= set(fp.keys()):
+                        from_endpoint_for_search = str(cur_eval.get("from_endpoint") or _from_endpoint_for_link(link_kind, cp_norm))
                         from_pose_for_search = {
                             "x": float(fp["x"]),
                             "y": float(fp["y"]),
@@ -527,6 +544,7 @@ def repair_road_link_targets(
                         from_endpoint = _from_endpoint_for_link(link_kind, cp_norm)
                         from_s = _endpoint_s(from_endpoint, from_ctx.length)
                         from_pose, _ = _pose_at_s(from_ctx.geoms, from_s)
+                        from_endpoint_for_search = str(from_endpoint)
                         from_pose_for_search = {
                             "x": float(from_pose.x),
                             "y": float(from_pose.y),
@@ -535,6 +553,7 @@ def repair_road_link_targets(
                 if from_pose_for_search is not None:
                     best_near = _search_best_nearby_endpoint(
                         from_road_id=from_road_id,
+                        from_endpoint=from_endpoint_for_search,
                         from_pose=from_pose_for_search,
                         current_target=to_road_id,
                         allow_new_self_link=False,

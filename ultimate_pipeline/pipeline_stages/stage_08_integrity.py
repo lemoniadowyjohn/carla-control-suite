@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -426,6 +427,84 @@ def _unsafe_lanelink_regen_enabled(settings_obj) -> bool:
     return unsafe_lanelink_regen_enabled(settings_obj)
 
 
+def _enforce_final_length_invariant(final_out: str, out_dir: str) -> None:
+    _inject_main_pipeline_globals()
+    from ultimate_pipeline.tools.crash_safe_length_repair import (
+        apply_c3_violation_length_repair,
+        length_invariant_summary,
+    )
+
+    tree, root = load_xodr(final_out)
+    before = length_invariant_summary(root)
+    repair = {
+        "applied": False,
+        "roads_length_adjusted": 0,
+        "mode": "not_needed",
+    }
+    if int(before.get("violations", 0) or 0) > 0:
+        repair = apply_c3_violation_length_repair(root)
+        save_xodr(tree, final_out)
+        tree, root = load_xodr(final_out)
+
+    after = length_invariant_summary(root)
+    report = {
+        "input_output_xodr": final_out,
+        "before": before,
+        "repair": repair,
+        "after": after,
+        "ok": int(after.get("violations", 0) or 0) == 0,
+    }
+    report_path = os.path.join(out_dir, "final_length_invariant_repair.json")
+    try:
+        with open(report_path, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2, ensure_ascii=True, sort_keys=True)
+    except Exception as exc:
+        print(f"[length_invariant] Evidence write skipped: {exc}")
+
+    if not report["ok"]:
+        raise RuntimeError(
+            "Final length-invariant repair failed: "
+            f"{after.get('violations')} violation(s) remain. See {report_path}"
+        )
+    if int(before.get("violations", 0) or 0) > 0:
+        print(
+            "[length_invariant] Repaired "
+            f"{repair.get('roads_length_adjusted', 0)} road length invariant violation(s)."
+        )
+    else:
+        print("[length_invariant] Final length invariant already clean.")
+
+
+def _env_truthy(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _apply_optional_native_signal_enrichment(final_out: str, out_dir: str, settings_obj) -> None:
+    enabled = _env_truthy("UP_ENABLE_NATIVE_SIGNAL_ENRICHMENT") or bool(
+        getattr(settings_obj, "ENABLE_NATIVE_SIGNAL_ENRICHMENT", False)
+    )
+    required = _env_truthy("UP_REQUIRE_NATIVE_SIGNALS") or bool(
+        getattr(settings_obj, "REQUIRE_NATIVE_SIGNALS", False)
+    )
+    if not enabled and not required:
+        return
+
+    osm_path = str(os.getenv("UP_OSM_FILE", "").strip() or getattr(settings_obj, "OSM_FILE", ""))
+    report_path = os.path.join(out_dir, "native_signal_enrichment.json")
+    from ultimate_pipeline.signals.native_signal_enrichment import apply_native_signal_enrichment
+
+    report = apply_native_signal_enrichment(
+        xodr_path=final_out,
+        osm_path=osm_path,
+        report_path=report_path,
+        min_signals=1 if required else 0,
+    )
+    print(
+        "[native_signals] Applied native signal enrichment: "
+        f"signals={report.get('signals_after')} matched={report.get('matching', {}).get('matched')}"
+    )
+
+
 def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     _inject_main_pipeline_globals()
     s = self.settings
@@ -751,6 +830,9 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         self._maybe_override_final_georef(final_out)
     except Exception as e:
         print(f"[STEP 8] georef override skipped: {e}")
+
+    _enforce_final_length_invariant(final_out, self.out_dir)
+    _apply_optional_native_signal_enrichment(final_out, self.out_dir, s)
 
     if getattr(self.settings, "ENABLE_SPAWN_VALIDATION_STEP8", False):
         self._step8c_spawn_validation(final_out)
