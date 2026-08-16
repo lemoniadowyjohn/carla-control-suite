@@ -1,0 +1,37 @@
+{
+  "manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
+  "schema_version": "1.0",
+  "campaign": "ingolstadt_cooked_perception_v1",
+  "generated_by": "C11 reproducibility hardening (fix/c11-reproducibility)",
+  "notes": [
+    "Fail-closed guard: ultimate_pipeline.governance.inputs_manifest.verify_inputs_manifest",
+    "aborts a generation run if any 'pinned' entry's on-disk sha256/bytes no",
+    "longer match this manifest. 'pending' entries are documented but not",
+    "yet pinned and are never digest-checked.",
+    "The DEM/building network fetch is a documented operator step that",
+    "PRODUCES these pinned artifacts; it is not performed at map-build time."
+  ],
+  "inputs": {
+    "roads_osm": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "bytes": 11154738,
+      "status": "pinned",
+      "note": "Overpass API export, source_date 2025-10-11T11:50:27Z; see source/manifest.json for full provenance (bounds, counts, license)."
+    },
+    "dem": {
+      "path": "cities/ingolstadt/dem/dem_ing.tif",
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "bytes": 1711684,
+      "status": "pinned",
+      "note": "settings.DEM_TIF == DEM_DIR/DEM_FILENAME. Pinned 2026-08-16 as part of C11; original fetch/generation provenance not separately recorded prior to this pin."
+    },
+    "buildings": {
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "status": "pending",
+      "note": "Building source not yet available (C7 buildings work is in progress on a sibling branch and has not landed). Do not fabricate a digest. Once C7 lands, populate path/sha256/bytes and flip status to 'pinned' -- no schema change required."
+    }
+  }
+}

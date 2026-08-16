@@ -157,6 +157,44 @@ def _validate_global_safety_settings(settings_obj: Any) -> None:
                 f"❌ Perception enabled but SENSOR_CALIB_JSON not found: {calib}"
             )
 
+    _check_proj_environment_startup()
+
+
+def _check_proj_environment_startup() -> None:
+    """C11: startup PROJ/proj.db environment guard.
+
+    Default is a loud warning (not fail-closed): as of this fix, this
+    repo's pinned venv itself resolves a proj.db reporting
+    DATABASE.LAYOUT.VERSION.MINOR=4, below the recommended >=6, so a
+    fail-closed default would break every run until the environment is
+    repaired. Set UP_PROJ_ENV_FAIL_CLOSED=1 to make this hard-fail instead
+    (recommended once the operator remediation in
+    reports/post_audit_hardening/C11_REPRODUCIBILITY.md has been applied).
+    """
+    try:
+        from ultimate_pipeline.governance.proj_env_guard import (
+            ProjEnvironmentError,
+            check_proj_environment,
+        )
+
+        fail_closed = os.getenv("UP_PROJ_ENV_FAIL_CLOSED", "").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        )
+        report = check_proj_environment(min_layout_minor=6, fail_closed=fail_closed)
+        if not report.ok:
+            for w in report.warnings:
+                print(f"⚠️ [PROJ-ENV] {w}")
+    except ProjEnvironmentError:
+        raise
+    except Exception as exc:
+        # This guard must never itself crash a run for reasons unrelated to
+        # the check it performs (e.g. pyproj not importable in some minimal
+        # environment) -- report and continue.
+        print(f"⚠️ [PROJ-ENV] PROJ environment check could not run: {exc!r}")
+
 
 # ----------------- 🎲 Determinism helpers -----------------
 
@@ -1075,9 +1113,22 @@ class MainPipeline:
             os.getenv("UP_THESIS_STRICT", "").strip().lower() in ("1", "true", "yes", "on")
             or bool(getattr(self.settings, "THESIS_STRICT", False))
         )
-        if thesis_strict and not manual_present:
+        # C11: THESIS_STRICT alone no longer hard-fails Phase-1 auto-map
+        # GENERATION when no manual reference is present -- that coupled
+        # generation to a Phase-2 comparison input it doesn't need. The
+        # hard-fail is now gated behind a separate, explicit flag so callers
+        # that specifically require the manual-vs-auto comparison (e.g. a
+        # thesis figure/report step) can still opt in.
+        require_manual_for_crs = (
+            os.getenv("UP_REQUIRE_MANUAL_FOR_CRS", "").strip().lower()
+            in ("1", "true", "yes", "on")
+            or bool(getattr(self.settings, "REQUIRE_MANUAL_FOR_CRS", False))
+        )
+        manual_deferred = thesis_strict and not manual_present
+        if manual_deferred and require_manual_for_crs:
             raise RuntimeError(
-                "Thesis strict CRS comparability requires a manual reference XODR. "
+                "Thesis strict CRS comparability requires a manual reference XODR "
+                "(REQUIRE_MANUAL_FOR_CRS is set). "
                 "Set UP_MANUAL_XODR to a valid .xodr path (or settings.MANUAL_MAP_XODR)."
             )
 
@@ -1130,6 +1181,12 @@ class MainPipeline:
 
         report = {
             "schema_version": "1.0",
+            # C11: "manual_deferred" when THESIS_STRICT wanted a manual
+            # comparison but none was present and REQUIRE_MANUAL_FOR_CRS was
+            # not set to force it -- generation proceeded, comparison is
+            # deferred to whenever a manual map becomes available. "ok"
+            # otherwise (unchanged legacy behavior).
+            "status": "manual_deferred" if manual_deferred else "ok",
             "manual": {
                 "xodr_path": manual_xodr if manual_present else None,
                 "xodr_sha256": manual_hash if manual_present else None,

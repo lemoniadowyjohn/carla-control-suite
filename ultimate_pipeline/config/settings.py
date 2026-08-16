@@ -699,7 +699,13 @@ class Settings:
     # -----------------------------------------------------------------
     # 2) INPUT / OUTPUT PATHS
     # -----------------------------------------------------------------
-    PREANCHOR_INPUT_XODR: bool = _env_bool("UP_PREANCHOR_INPUT_XODR", True)
+    # C11: default OFF. tools/preanchor_xodr.py is not present in this repo;
+    # a default-True value makes a clean-checkout default run crash with
+    # ImportError before stage 01 whenever GPS bounds are available.
+    # Preanchoring re-frames off the Osm2Odr tmerc(0,0) frame that the DEM
+    # contract needs, and no known working run used it. Explicit opt-in via
+    # UP_PREANCHOR_INPUT_XODR=1 remains available.
+    PREANCHOR_INPUT_XODR: bool = _env_bool("UP_PREANCHOR_INPUT_XODR", False)
     INPUT_XODR: str = str(
         resolve_path(
             os.getenv("UP_INPUT_XODR", None)
@@ -1613,6 +1619,9 @@ class Settings:
             "UP_STRICT_QUALITY_GATES", self.STRICT_QUALITY_GATES
         )
         self.THESIS_STRICT = _env_bool("UP_THESIS_STRICT", self.THESIS_STRICT)
+        self.REQUIRE_MANUAL_FOR_CRS = _env_bool(
+            "UP_REQUIRE_MANUAL_FOR_CRS", self.REQUIRE_MANUAL_FOR_CRS
+        )
         self.OFFLINE_ONLY = _env_bool("UP_OFFLINE_ONLY", self.OFFLINE_ONLY)
         self.SUMO_REPAIR_PRESERVE_FRAME = _env_bool(
             "UP_SUMO_REPAIR_PRESERVE_FRAME", self.SUMO_REPAIR_PRESERVE_FRAME
@@ -2055,7 +2064,19 @@ class Settings:
     ENABLE_GPS_QA_CROP = True
     STRICT_QUALITY_GATES: bool = False
     THESIS_STRICT: bool = True
-    PREANCHOR_INPUT_XODR: bool = _env_bool("UP_PREANCHOR_INPUT_XODR", True)
+    # C11: decouples Phase-1 auto-map GENERATION from the Phase-2 manual-map
+    # COMPARISON. THESIS_STRICT alone must no longer force
+    # _write_crs_comparability() to raise when no manual map is present --
+    # that coupled ordinary generation runs to an input they don't need.
+    # Default False: generation writes a status="manual_deferred" record
+    # instead of raising. Set True (or UP_REQUIRE_MANUAL_FOR_CRS=1) to
+    # restore the old hard-fail-without-manual-map behavior for callers that
+    # specifically need the manual-vs-auto CRS comparison to be mandatory.
+    REQUIRE_MANUAL_FOR_CRS: bool = _env_bool("UP_REQUIRE_MANUAL_FOR_CRS", False)
+    # C11: default OFF — see the declaration above (~line 708) for rationale.
+    # This second field of the same name (both live in the one Settings
+    # dataclass body) is the one that actually wins as the dataclass default.
+    PREANCHOR_INPUT_XODR: bool = _env_bool("UP_PREANCHOR_INPUT_XODR", False)
 
     # -----------------------------
     # PIPELINE OUTPUT DIRECTORIES
