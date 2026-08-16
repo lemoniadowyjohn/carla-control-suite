@@ -17,18 +17,21 @@ This version:
 ✅ Uses DominikSensorSetup (calib_data.json) so camera poses match your thesis rig
 ✅ Uses synchronous mode (deterministic, aligned frames)
 ✅ Records one camera OR all calibrated cameras
-✅ Saves images via CARLA save_to_disk (cv2 optional only for augmented copies)
-✅ Writes YOLO label placeholders (empty) in a consistent layout
+✅ Saves images via the shared capture_writer (rgb/<cam>/ layout, unified
+   with dataset_generator.py so layout can't drift between capture modules)
+✅ Detection (no semantic sensor in this module) is an explicit, logged
+   no-op — no fabricated empty YOLO label files
 ✅ “Augmentor adapter”: works if your augmentor exposes apply_random() OR apply_all()
 
-Output layout:
+Output layout (C8 fix — unified with dataset_generator.py /
+min_train_segmentation.py via ultimate_pipeline.perception.capture_writer):
 datasets/<dataset_name>/
-  images/<camera_name>/00001234.png
-  labels/<camera_name>/00001234.txt
-  images/<camera_name>/00001234_aug1.png (optional)
-  labels/<camera_name>/00001234_aug1.txt
+  rgb/<camera_name>/00001234.png
+  rgb/<camera_name>/00001234_aug1.png (optional)
   meta/run_info.json
   meta/frames.jsonl
+  meta/label_schema.json (detection_status=explicit_noop; this module does
+    not attach a semantic-segmentation sensor, so no semseg_raw/ is written)
 """
 
 from __future__ import annotations
@@ -46,6 +49,7 @@ import numpy as np
 
 from ultimate_pipeline.config.settings import SETTINGS
 from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
+from ultimate_pipeline.perception.capture_writer import save_capture_frame
 
 # Optional OpenCV (only needed if you want augmented image writing from numpy)
 try:
@@ -105,10 +109,6 @@ def _spawn_ego(world: carla.World, vehicle_bp_id: str = "vehicle.audi.a2") -> ca
         if ego is not None:
             return ego
     raise RuntimeError("Failed to spawn ego after multiple tries.")
-
-
-def _empty_yolo_label(path: Path) -> None:
-    path.write_text("", encoding="utf-8")
 
 
 def _image_to_rgb_np(image: carla.Image) -> np.ndarray:
@@ -279,8 +279,6 @@ class PerceptionRunnerLocalAug:
         Returns dataset directory path.
         """
         dataset_dir = _ensure_dir(self.dataset_root / dataset_name)
-        images_dir = _ensure_dir(dataset_dir / "images")
-        labels_dir = _ensure_dir(dataset_dir / "labels")
         meta_dir = _ensure_dir(dataset_dir / "meta")
         frames_jsonl = meta_dir / "frames.jsonl"
 
@@ -358,6 +356,22 @@ class PerceptionRunnerLocalAug:
         }
         (meta_dir / "run_info.json").write_text(json.dumps(run_info, indent=2), encoding="utf-8")
 
+        # This module attaches RGB cameras only (no semantic-segmentation
+        # sensor), so detection labels are an explicit, logged no-op — no
+        # fabricated empty YOLO .txt files. See capture_writer.save_capture_frame.
+        label_schema = {
+            "schema_version": 2,
+            "label_mode": "none",
+            "detection_status": "explicit_noop",
+            "note": (
+                "PerceptionRunnerLocalAug attaches RGB cameras only; no 2D "
+                "bounding-box projector exists in this codebase. Detection "
+                "labels are an explicit no-op and no fabricated empty label "
+                "files are written."
+            ),
+        }
+        (meta_dir / "label_schema.json").write_text(json.dumps(label_schema, indent=2), encoding="utf-8")
+
         if self.verbose:
             print(f"🚗 Capturing {num_frames} frames for dataset: {dataset_name}")
             print(f"   cameras: {cams_to_record}")
@@ -424,16 +438,21 @@ class PerceptionRunnerLocalAug:
 
                 # Save each camera sample for this frame
                 for cn, img in imgs_for_frame.items():
-                    cam_img_dir = _ensure_dir(images_dir / cn)
-                    cam_lbl_dir = _ensure_dir(labels_dir / cn)
-
                     base = f"{frame_id:08d}"
-                    img_path = cam_img_dir / f"{base}.png"
-                    lbl_path = cam_lbl_dir / f"{base}.txt"
 
-                    # save raw (CARLA-native)
-                    img.save_to_disk(str(img_path))
-                    _empty_yolo_label(lbl_path)
+                    # Save via the shared writer: rgb/<cam>/ (unified layout;
+                    # no semantic sensor here, so label_mode="none" -> explicit
+                    # no-op, no fabricated empty YOLO label).
+                    write_result = save_capture_frame(
+                        dataset_dir,
+                        camera=cn,
+                        frame=frame_id,
+                        rgb_image=img,
+                        seg_image=None,
+                        label_mode="none",
+                    )
+                    cam_img_dir = _ensure_dir(dataset_dir / "rgb" / cn)
+                    img_path = write_result.rgb_path
 
                     # augmentation (only if cv2 available to write numpy)
                     if self.enable_augmentation and _HAS_CV2:
@@ -442,18 +461,18 @@ class PerceptionRunnerLocalAug:
                             aug = self._apply_aug(rgb)
                             aug_name = f"{base}_aug{k+1}"
                             aug_img_path = cam_img_dir / f"{aug_name}.png"
-                            aug_lbl_path = cam_lbl_dir / f"{aug_name}.txt"
 
                             # cv2 expects BGR
                             cv2.imwrite(str(aug_img_path), cv2.cvtColor(aug, cv2.COLOR_RGB2BGR))
-                            _empty_yolo_label(aug_lbl_path)
+                            # No fabricated detection label for augmented
+                            # copies either (explicit no-op).
 
                     # per-frame metadata (one line per camera sample)
                     meta = {
                         "frame": int(frame_id),
                         "camera": cn,
-                        "image_path": str(img_path),
-                        "label_path": str(lbl_path),
+                        "image_path": str(img_path) if img_path else "",
+                        "detection_status": write_result.detection_status,
                     }
                     try:
                         if self.ego is not None:

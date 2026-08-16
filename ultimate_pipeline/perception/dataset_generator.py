@@ -16,7 +16,7 @@ This version
 ✅ Uses DominikSensorSetup (calib_data.json) correctly
 ✅ Runs CARLA in synchronous mode (deterministic, aligned frames)
 ✅ Records ONE chosen calibrated camera (or all cameras) using save_to_disk (no cv2 required)
-? Supports label_mode=semantic (PNG masks) or none (empty YOLO txt)
+✅ Supports label_mode=semantic (raw class-id PNG masks) or none (explicit no-op, no fabricated labels)
 ✅ Augmentation is optional and auto-disables if OpenCV isn’t installed
 ✅ Database logging is optional and guarded
 
@@ -30,9 +30,19 @@ python -m ultimate_pipeline.perception.dataset_generator \
   --camera front_left_camera \
   --fps 20
 
-Label schema:
-- labels/<camera>/<frame>.png for label_mode=semantic (CityScapes palette)
+Label schema (C8 fix — unified with min_train_segmentation / eval_sim_labeled
+/ class_weights, via ultimate_pipeline.perception.capture_writer):
+- rgb/<camera>/<frame>.png              RGB image
+- semseg_raw/<camera>/<frame>.png       label_mode=semantic training label:
+                                         single-channel uint8, R channel of
+                                         the raw sensor buffer == class id
+                                         (NOT CityScapes-palette colorized)
+- semseg_viz/<camera>/<frame>.png       optional human-viewable palette copy
+                                         (never read by any trainer/eval)
 - meta/label_schema.json records label_mode and format
+- label_mode="none" (detection): explicit no-op, no fabricated empty
+  YOLO .txt labels (no 2D bbox projector exists in this codebase; see C8
+  spec boundaries)
 """
 
 from __future__ import annotations
@@ -52,6 +62,7 @@ from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
 from ultimate_pipeline.core.carla_opendrive_loader import load_opendrive_world, load_builtin_world
 
 from ultimate_pipeline.carla_tools.reload_ready_for_sensors import _reload_ready_for_sensors
+from ultimate_pipeline.perception.capture_writer import save_capture_frame
 # Optional dependencies (don’t crash on HPC)
 try:
     import cv2  # type: ignore
@@ -130,10 +141,6 @@ def _spawn_ego(world: carla.World, vehicle_filter: str = "vehicle.audi.a2") -> c
     raise RuntimeError("Failed to spawn ego vehicle after multiple tries")
 
 
-def _empty_yolo_label(path: Path) -> None:
-    path.write_text("", encoding="utf-8")
-
-
 def _augment_numpy_rgb(rgb: np.ndarray) -> np.ndarray:
     """
     Very lightweight augmentation (no geometry change).
@@ -194,11 +201,10 @@ class DatasetGenerator:
         else:
             self.world = self.client.get_world()
 
-        # Output dirs
+        # Output dirs (rgb/ + semseg_raw/ unified layout; created lazily by
+        # capture_writer.save_capture_frame per-camera as frames are saved)
         dataset_name = getattr(SETTINGS, "AUTO_DATASET_NAME", "auto_dataset") if map_type == "auto" else getattr(SETTINGS, "MANUAL_DATASET_NAME", "manual_dataset")
         self.dataset_dir = _ensure_dir(self.output_root / dataset_name)
-        self.images_dir = _ensure_dir(self.dataset_dir / "images")
-        self.labels_dir = _ensure_dir(self.dataset_dir / "labels")
         self.meta_dir = _ensure_dir(self.dataset_dir / "meta")
 
         # Optional DB / augmentor
@@ -319,11 +325,25 @@ class DatasetGenerator:
 
         if self.label_mode == "semantic":
             schema = {
-                "schema_version": 1,
+                "schema_version": 2,
                 "label_mode": "semantic",
                 "format": "png",
-                "palette": "carla_cityscapes",
-                "path_template": "labels/<camera>/<frame>.png",
+                "encoding": "raw_class_id",
+                "path_template": "semseg_raw/<camera>/<frame>.png",
+                "viz_path_template": "semseg_viz/<camera>/<frame>.png",
+                "viz_palette": "carla_cityscapes",
+            }
+            (self.meta_dir / "label_schema.json").write_text(json.dumps(schema, indent=2), encoding="utf-8")
+        else:
+            schema = {
+                "schema_version": 2,
+                "label_mode": "none",
+                "detection_status": "explicit_noop",
+                "note": (
+                    "No 2D bounding-box projector exists in this codebase; "
+                    "detection labels are an explicit no-op and no fabricated "
+                    "empty label files are written."
+                ),
             }
             (self.meta_dir / "label_schema.json").write_text(json.dumps(schema, indent=2), encoding="utf-8")
 
@@ -400,20 +420,24 @@ class DatasetGenerator:
                         if seg_img is None:
                             continue
 
-                    # Save image: use CARLA save_to_disk (no cv2 needed)
-                    cam_out_dir = _ensure_dir(self.images_dir / cn)
-                    img_path = cam_out_dir / f"{frame:08d}.png"
-                    img.save_to_disk(str(img_path))
+                    # Save via the shared writer: rgb/<cam>/ + semseg_raw/<cam>/
+                    # (raw class ids; palette conversion applied only to the
+                    # optional semseg_viz/ artifact, never to the training
+                    # label). Detection (label_mode != "semantic") is an
+                    # explicit no-op — no fabricated empty YOLO labels.
+                    write_result = save_capture_frame(
+                        self.dataset_dir,
+                        camera=cn,
+                        frame=frame,
+                        rgb_image=img,
+                        seg_image=seg_img if self.label_mode == "semantic" else None,
+                        label_mode=self.label_mode,
+                        write_viz=(self.label_mode == "semantic"),
+                    )
+                    img_path = write_result.rgb_path
+                    label_path = write_result.semseg_raw_path
 
-                    # Labels placeholder
-                    label_out_dir = _ensure_dir(self.labels_dir / cn)
-                    if self.label_mode == "semantic":
-                        label_path = label_out_dir / f"{frame:08d}.png"
-                        seg_img.convert(carla.ColorConverter.CityScapesPalette)
-                        seg_img.save_to_disk(str(label_path))
-                    else:
-                        label_path = label_out_dir / f"{frame:08d}.txt"
-                        _empty_yolo_label(label_path)
+                    cam_out_dir = _ensure_dir(self.dataset_dir / "rgb" / cn)
 
                     # Optional augmentation (only if cv2 exists)
                     if self.apply_augmentation and _HAS_CV2:
@@ -423,10 +447,8 @@ class DatasetGenerator:
                         aug_path = cam_out_dir / f"{frame:08d}_aug.png"
                         # cv2 wants BGR
                         cv2.imwrite(str(aug_path), cv2.cvtColor(aug, cv2.COLOR_RGB2BGR))
-
-                        aug_label_path = label_out_dir / f"{frame:08d}_aug.txt"
-                        if self.label_mode != "semantic":
-                            _empty_yolo_label(aug_label_path)
+                        # Note: augmented copies are RGB-only; no fabricated
+                        # detection label is written for them either.
 
                     # Optional DB logging (guarded)
                     if self.db is not None:
@@ -434,8 +456,8 @@ class DatasetGenerator:
                             self.db.log_dataset_entry(
                                 timestamp=str(frame),
                                 dataset_name=self.dataset_dir.name,
-                                image_path=str(img_path),
-                                label_path=str(label_path),
+                                image_path=str(img_path) if img_path else "",
+                                label_path=str(label_path) if label_path else "",
                                 map_type=self.map_type,
                                 augmentation=0,
                                 metadata_json="{}",
