@@ -931,6 +931,7 @@ class Settings:
     # 6) CORE PIPELINE TOGGLES
     # -----------------------------------------------------------------
     ENABLE_SUMO_REPAIR: bool = True
+    SUMO_REPAIR_PRESERVE_FRAME: bool = True
     ENABLE_CARLA_TEST_EARLY: bool = False
     ENABLE_CARLA_TEST_LATE: bool = True
     ENABLE_AUTOPILOT_VALIDATION: bool = True
@@ -1613,6 +1614,9 @@ class Settings:
         )
         self.THESIS_STRICT = _env_bool("UP_THESIS_STRICT", self.THESIS_STRICT)
         self.OFFLINE_ONLY = _env_bool("UP_OFFLINE_ONLY", self.OFFLINE_ONLY)
+        self.SUMO_REPAIR_PRESERVE_FRAME = _env_bool(
+            "UP_SUMO_REPAIR_PRESERVE_FRAME", self.SUMO_REPAIR_PRESERVE_FRAME
+        )
         self.PREANCHOR_INPUT_XODR = _env_bool(
             "UP_PREANCHOR_INPUT_XODR", self.PREANCHOR_INPUT_XODR
         )
