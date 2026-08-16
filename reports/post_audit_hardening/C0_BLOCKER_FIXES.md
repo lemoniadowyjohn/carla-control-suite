@@ -2,7 +2,9 @@
 
 Date: 2026-08-16
 
-Verdict: PARTIAL_BLOCKERS_REDUCED_G6_REMAINS
+Verdict: SUPERSEDED_BY_C0_G6_COVERAGE_FIX
+
+Update: the residual G6 blocker documented here was resolved by `C0_G6_COVERAGE_FIX.md`. This report remains the evidence for the preceding blocker-reduction pass.
 
 ## Scope
 

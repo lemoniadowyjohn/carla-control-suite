@@ -9,18 +9,18 @@ Validates every <junction><connection><laneLink> element:
 - to-lane must exist in the connecting road's contacted section (start
   section when contactPoint=start, last section when contactPoint=end)
 - per connection: no duplicate from-lane
-- driving coverage (per junction + incoming road): every driving lane of
-  the incoming road's contacted section must appear as a `from` in at least
-  one connection of that junction; every driving lane of the connecting
-  road's contacted section must appear as a `to`
+- driving coverage (per junction + incoming road): every driving lane that
+  flows into the incoming road's contacted endpoint must appear as a `from`
+  in at least one connection of that junction; every driving lane that flows
+  away from the connecting road's contacted endpoint must appear as a `to`
 - lane type compatibility between from-lane and to-lane classes
 - advisory consistency: when the connecting road carries an explicit lane
   link at the contacted end pointing at the incoming road, its target lane
   must equal the LaneLink `from` lane
 
-Coverage gaps are REPAIRED: an uncovered driving lane U converges onto the
-driving target lanes of its routed neighbour (inner neighbour preferred,
-outer neighbour fallback) within each connection of the junction.  Each
+Coverage gaps are REPAIRED iteratively: an uncovered driving lane U converges
+onto the driving target lanes of its routed neighbour (inner neighbour
+preferred, outer neighbour fallback) within each connection of the junction. Each
 repair adds:
 - the junction <laneLink from="U" to="T"/> element
 - the mirror lane link on the connecting road's lane T at the junction end
@@ -127,6 +127,58 @@ def _lane_map(section: ET.Element) -> dict:
     return out
 
 
+def _lane_id_int(lane_id: str):
+    try:
+        return int(lane_id)
+    except Exception:
+        return None
+
+
+def _lane_reaches_contacted_end(lane_id: str, contacted_end: str) -> bool:
+    """Whether a conventional OpenDRIVE lane flows into a road endpoint."""
+    lid = _lane_id_int(lane_id)
+    if lid is None or lid == 0:
+        return False
+    # In the generated right-hand traffic maps, negative lanes follow the
+    # road reference-line direction and therefore reach the road end; positive
+    # lanes travel toward the road start. Requiring both signs at one endpoint
+    # creates false junction-coverage gaps for opposite-direction lanes.
+    return (contacted_end == "end" and lid < 0) or (contacted_end == "start" and lid > 0)
+
+
+def _lane_leaves_contacted_end(lane_id: str, contacted_end: str) -> bool:
+    """Whether a conventional OpenDRIVE lane leaves a road endpoint."""
+    lid = _lane_id_int(lane_id)
+    if lid is None or lid == 0:
+        return False
+    return (contacted_end == "start" and lid < 0) or (contacted_end == "end" and lid > 0)
+
+
+def _required_incoming_driving_lanes(lane_map: dict, incoming_end: str) -> list:
+    return [
+        lid for lid, lt in lane_map.items()
+        if lt in DRIVABLE and _lane_reaches_contacted_end(lid, incoming_end)
+    ]
+
+
+def _required_connecting_driving_lanes(lane_map: dict, contact_point: str) -> list:
+    return [
+        lid for lid, lt in lane_map.items()
+        if lt in DRIVABLE and _lane_leaves_contacted_end(lid, contact_point)
+    ]
+
+
+def _dedupe_items(items: list) -> list:
+    seen_keys = set()
+    uniq = []
+    for item in items:
+        key = tuple(sorted(item.items()))
+        if key not in seen_keys:
+            seen_keys.add(key)
+            uniq.append(item)
+    return uniq
+
+
 def audit_junction_lanelinks(root: ET.Element) -> dict:
     roads = {r.get("id"): r for r in root.findall("road")}
     missing_from = []
@@ -216,30 +268,24 @@ def audit_junction_lanelinks(root: ET.Element) -> dict:
             # driving coverage: per (junction, incoming) and
             # (junction, connecting), aggregated over all connections
             if in_sec is not None:
-                for lid, lt in in_map.items():
-                    if lt in DRIVABLE and lid not in routed_from.get(c.get("incomingRoad"), set()):
+                for lid in _required_incoming_driving_lanes(in_map, in_end):
+                    if lid not in routed_from.get(c.get("incomingRoad"), set()):
                         missing_driving_from.append({
                             "junction": jid, "connection": c.get("id"),
                             "incoming": c.get("incomingRoad"), "lane": lid,
                         })
             if conn_sec is not None:
-                for lid, lt in conn_map.items():
-                    if lt in DRIVABLE and lid not in reached_to.get(c.get("connectingRoad"), set()):
+                for lid in _required_connecting_driving_lanes(conn_map, cp):
+                    if lid not in reached_to.get(c.get("connectingRoad"), set()):
                         missing_driving_to.append({
                             "junction": jid, "connection": c.get("id"),
                             "connecting": c.get("connectingRoad"), "lane": lid,
                         })
 
-    # dedupe coverage flags (aggregated at junction level)
-    for key in ("missing_driving_from", "missing_driving_to"):
-        seen_keys = set()
-        uniq = []
-        for item in locals()[key]:
-            k = tuple(sorted(item.items()))
-            if k not in seen_keys:
-                seen_keys.add(k)
-                uniq.append(item)
-        locals()[key] = uniq
+    # Dedupe coverage flags (aggregated at junction level). Do this with real
+    # assignments; writing through locals() is not reliable in function scope.
+    missing_driving_from = _dedupe_items(missing_driving_from)
+    missing_driving_to = _dedupe_items(missing_driving_to)
 
     return {
         "connections_audited": connections_audited,
@@ -286,8 +332,8 @@ def _uncovered_driving_lanes(root: ET.Element) -> list:
             if in_sec is None:
                 continue
             covered = routed.get(inc_id, set())
-            for lid, lt in _lane_map(in_sec).items():
-                if lt in DRIVABLE and lid not in covered:
+            for lid in _required_incoming_driving_lanes(_lane_map(in_sec), in_end):
+                if lid not in covered:
                     out.append({"junction": jid, "incoming": inc_id,
                                 "lane": lid, "incoming_end": in_end})
     # dedupe (junction, incoming, lane)
@@ -305,8 +351,13 @@ def _routed_neighbour_targets(root: ET.Element, jid: str, inc_id: str,
                               lane: str) -> tuple:
     """(inner_targets, outer_targets) of routed driving neighbours."""
     roads = {r.get("id"): r for r in root.findall("road")}
-    inner = str(int(lane) + 1)
-    outer = str(int(lane) - 1)
+    lane_int = int(lane)
+    if lane_int < 0:
+        inner = str(lane_int + 1)
+        outer = str(lane_int - 1)
+    else:
+        inner = str(lane_int - 1)
+        outer = str(lane_int + 1)
     inner_t, outer_t = set(), set()
     for j in root.findall("junction"):
         if j.get("id") != jid:
@@ -337,54 +388,71 @@ def repair_coverage_gaps(root: ET.Element) -> dict:
     roads = {r.get("id"): r for r in root.findall("road")}
     added = []
     issues = []
-    for item in _uncovered_driving_lanes(root):
-        jid = item["junction"]
-        inc_id = item["incoming"]
-        lane = item["lane"]
-        inner_t, outer_t = _routed_neighbour_targets(root, jid, inc_id, lane)
-        targets = inner_t or outer_t
-        if not targets:
-            issues.append(item)
-            continue
-        inc = roads[inc_id]
-        in_end = item["incoming_end"]
-        for conn_id, tgt in targets:
-            # find connection element
-            conn_el = None
-            for j in root.findall("junction"):
-                if j.get("id") != jid:
-                    continue
-                for c in j.findall("connection"):
-                    if c.get("id") == conn_id:
-                        conn_el = c
-            if conn_el is None:
+    max_passes = 8
+    for _pass in range(max_passes):
+        pass_added = 0
+        unresolved = []
+        for item in _uncovered_driving_lanes(root):
+            jid = item["junction"]
+            inc_id = item["incoming"]
+            lane = item["lane"]
+            inner_t, outer_t = _routed_neighbour_targets(root, jid, inc_id, lane)
+            targets = inner_t or outer_t
+            if not targets:
+                unresolved.append(item)
                 continue
-            ll = ET.SubElement(conn_el, "laneLink")
-            ll.set("from", lane)
-            ll.set("to", tgt)
-            # mirror on connecting road lane tgt at the junction end
-            cp = conn_el.get("contactPoint")
-            conn = roads.get(conn_el.get("connectingRoad"))
-            if conn is not None:
-                conn_sec = _contacted_section(conn, cp)
-                if conn_sec is not None:
-                    for lane_el in conn_sec.findall(".//lane"):
-                        if lane_el.get("id") != tgt:
-                            continue
-                        link_el = lane_el.find("link")
-                        if link_el is None:
-                            link_el = ET.SubElement(lane_el, "link")
-                        tag = "predecessor" if cp == "start" else "successor"
-                        exists = any(
-                            x.get("id") == lane for x in link_el.findall(tag)
-                        )
-                        if not exists:
-                            el = ET.SubElement(link_el, tag)
-                            el.set("id", lane)
-            added.append({
-                "junction": jid, "connection": conn_id,
-                "incoming": inc_id, "lane": lane, "target": tgt,
-            })
+            for conn_id, tgt in targets:
+                # find connection element
+                conn_el = None
+                for j in root.findall("junction"):
+                    if j.get("id") != jid:
+                        continue
+                    for c in j.findall("connection"):
+                        if c.get("id") == conn_id:
+                            conn_el = c
+                if conn_el is None:
+                    continue
+                exists = any(
+                    ll.get("from") == lane and ll.get("to") == tgt
+                    for ll in conn_el.findall("laneLink")
+                )
+                if not exists:
+                    ll = ET.SubElement(conn_el, "laneLink")
+                    ll.set("from", lane)
+                    ll.set("to", tgt)
+                    pass_added += 1
+                # mirror on connecting road lane tgt at the junction end
+                cp = conn_el.get("contactPoint")
+                conn = roads.get(conn_el.get("connectingRoad"))
+                if conn is not None:
+                    conn_sec = _contacted_section(conn, cp)
+                    if conn_sec is not None:
+                        for lane_el in conn_sec.findall(".//lane"):
+                            if lane_el.get("id") != tgt:
+                                continue
+                            link_el = lane_el.find("link")
+                            if link_el is None:
+                                link_el = ET.SubElement(lane_el, "link")
+                            tag = "predecessor" if cp == "start" else "successor"
+                            mirror_exists = any(
+                                x.get("id") == lane for x in link_el.findall(tag)
+                            )
+                            if not mirror_exists:
+                                el = ET.SubElement(link_el, tag)
+                                el.set("id", lane)
+                added.append({
+                    "junction": jid, "connection": conn_id,
+                    "incoming": inc_id, "lane": lane, "target": tgt,
+                    "repair_pass": _pass + 1,
+                })
+        if not _uncovered_driving_lanes(root):
+            issues = []
+            break
+        if pass_added == 0:
+            issues = unresolved
+            break
+    else:
+        issues = _uncovered_driving_lanes(root)
     return {"added_lanelinks": added, "repair_issues": issues}
 
 
@@ -487,13 +555,13 @@ def build_fixture(kind: str) -> dict:
         )
         return {"root": ET.fromstring(xml),
                 "expect": {"missing_from_lanes": 1,
-                           "missing_driving_from_coverage": 2}}
+                           "missing_driving_from_coverage": 1}}
 
     if kind == "missing_coverage":
         xml = (
             f'<OpenDRIVE><header version="1.7"/>'
-            + _road_xml("A", FIXTURE_LANES["driving2"], junction="9")
-            + _road_xml("B", FIXTURE_LANES["driving2"], junction="9")
+            + _road_xml("A", FIXTURE_LANES["driving3"], junction="9")
+            + _road_xml("B", FIXTURE_LANES["driving3"], junction="9")
             + '<junction id="9"><connection id="0" incomingRoad="A" '
             'connectingRoad="B" contactPoint="start">'
             '<laneLink from="-1" to="-1"/></connection></junction></OpenDRIVE>'
