@@ -9,9 +9,14 @@ from __future__ import annotations
 
 import json
 import os
+import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 
 from ultimate_pipeline.utils.file_hashing import safe_sha256_file
+from ultimate_pipeline.tools.crash_safe_length_repair import (
+    TOL_M as LENGTH_INVARIANT_TOL_M,
+    length_invariant_summary,
+)
 
 
 def _run_id_from_out_dir(out_dir: Optional[str]) -> Optional[str]:
@@ -172,6 +177,47 @@ def build_map_acceptance(
             linked_artifacts["lane_connectivity"] = art
         if lane_ok is False:
             hard_fail_reasons.append({"gate": "lane_connectivity", "reason": _reason_from_report(lane_conn)})
+
+    length_invariant = reports.get("length_invariant")
+    if isinstance(length_invariant, dict) and "violations" in length_invariant:
+        # A pre-computed evidence dict was supplied (e.g. from the
+        # certifier's _length_invariant_evidence). Trust it as-is -- do NOT
+        # recompute with a different tolerance.
+        li_violations = int(length_invariant.get("violations") or 0)
+        metrics["length_invariant_violations"] = li_violations
+        metrics["length_invariant_tol_m"] = LENGTH_INVARIANT_TOL_M
+        art = _artifact_path_from_report(length_invariant)
+        if art:
+            linked_artifacts["length_invariant"] = art
+        if li_violations > 0:
+            hard_fail_reasons.append(
+                {
+                    "gate": "length_invariant",
+                    "reason": f"violations={li_violations} (tol={LENGTH_INVARIANT_TOL_M:g}m)",
+                }
+            )
+    elif final_xodr_path and os.path.exists(final_xodr_path):
+        # No pre-computed evidence was supplied: measure directly from the
+        # final candidate using the EXACT same helper (and tolerance,
+        # 1e-9) as run_n_certify._length_invariant_evidence, so the
+        # acceptance gate and the certifier can never disagree due to a
+        # tolerance mismatch. A sub-1e-6 excess must be caught by both.
+        try:
+            li_root = ET.parse(final_xodr_path).getroot()
+            li_summary = length_invariant_summary(li_root)
+        except Exception:
+            li_summary = None
+        if li_summary is not None:
+            li_violations = int(li_summary.get("violations") or 0)
+            metrics["length_invariant_violations"] = li_violations
+            metrics["length_invariant_tol_m"] = LENGTH_INVARIANT_TOL_M
+            if li_violations > 0:
+                hard_fail_reasons.append(
+                    {
+                        "gate": "length_invariant",
+                        "reason": f"violations={li_violations} (tol={LENGTH_INVARIANT_TOL_M:g}m)",
+                    }
+                )
 
     origin = reports.get("origin_sanity")
     if isinstance(origin, dict):

@@ -79,9 +79,16 @@ def _road_length(road_el: ET.Element) -> float:
     return _safe_float(road_el.get("length"))
 
 
-def _road_links(road_el: ET.Element) -> List[Tuple[str, str, str]]:
-    """Return list of (link_kind, elementType, elementId) for predecessor/successor."""
-    out: List[Tuple[str, str, str]] = []
+def _normalize_contact_point(value: Optional[str]) -> Optional[str]:
+    raw = str(value or "").strip().lower()
+    if raw in {"start", "end"}:
+        return raw
+    return None
+
+
+def _road_links(road_el: ET.Element) -> List[Tuple[str, str, str, Optional[str]]]:
+    """Return list of (link_kind, elementType, elementId, contactPoint) for predecessor/successor."""
+    out: List[Tuple[str, str, str, Optional[str]]] = []
     link_el = road_el.find("link")
     if link_el is None:
         return out
@@ -92,8 +99,9 @@ def _road_links(road_el: ET.Element) -> List[Tuple[str, str, str]]:
             continue
         etype = (el.get("elementType") or "").strip()
         eid = (el.get("elementId") or "").strip()
+        cp = _normalize_contact_point(el.get("contactPoint"))
         if etype and eid:
-            out.append((kind, etype, eid))
+            out.append((kind, etype, eid, cp))
     return out
 
 
@@ -111,6 +119,24 @@ def check_elevation_continuity(
     eps_z : float
         Maximum allowed Z difference at road joins (meters).
 
+    Endpoint selection mirrors the geometric-continuity checker
+    (check_geometric_continuity.py): the source endpoint is implied by the
+    link kind (predecessor -> source road START, successor -> source road
+    END), while the TARGET endpoint is taken from the link's declared
+    ``contactPoint`` attribute (defaulting to "start" only when
+    contactPoint is absent/invalid) rather than being hardcoded per link
+    kind. This avoids silently comparing the wrong end of the linked road
+    when contactPoint="end".
+
+    Links where either the source or target road belongs to a junction
+    (junction != "-1") are reported separately under
+    ``junction_connector_issues`` / ``num_junction_connector_issues``, since
+    junction connector roads join at lane centers (governed by
+    <junction><connection><laneLink> semantics and per-lane offsets) rather
+    than at the plain road reference-line elevation, and mixing them into
+    ``issues`` would dilute genuine ordinary-road z-steps with expected
+    junction-lane-offset artifacts.
+
     Returns
     -------
     dict
@@ -119,18 +145,22 @@ def check_elevation_continuity(
             "eps_z": float,
             "num_roads": int,
             "num_links_checked": int,
+            "num_junction_connector_links_checked": int,
             "num_issues": int,
+            "num_junction_connector_issues": int,
             "issues": [
                 {
                     "from_road": str,
                     "to_road": str,
                     "link_kind": str,
+                    "contact_point": Optional[str],
                     "z_from_end": float,
                     "z_to_start": float,
                     "dz": float,
                     "warnings": [str]
                 }, ...
             ],
+            "junction_connector_issues": [...same shape as issues...],
             "warnings": [str]
         }
     """
@@ -139,8 +169,11 @@ def check_elevation_continuity(
         "eps_z": eps_z,
         "num_roads": 0,
         "num_links_checked": 0,
+        "num_junction_connector_links_checked": 0,
         "num_issues": 0,
+        "num_junction_connector_issues": 0,
         "issues": [],
+        "junction_connector_issues": [],
         "warnings": [],
     }
 
@@ -162,6 +195,7 @@ def check_elevation_continuity(
             road_by_id[rid] = r
 
     issues: List[Dict[str, Any]] = []
+    junction_connector_issues: List[Dict[str, Any]] = []
 
     for r in roads:
         rid = (r.get("id") or "").strip()
@@ -170,8 +204,9 @@ def check_elevation_continuity(
 
         road_len = _road_length(r)
         links = _road_links(r)
+        source_is_junction_connector = str(r.get("junction") or "-1").strip() != "-1"
 
-        for link_kind, etype, eid in links:
+        for link_kind, etype, eid, contact_point in links:
             if etype != "road":
                 continue
             if eid not in road_by_id:
@@ -184,41 +219,59 @@ def check_elevation_continuity(
                 })
                 continue
 
-            report["num_links_checked"] += 1
-
             linked_road = road_by_id[eid]
             linked_len = _road_length(linked_road)
+            target_is_junction_connector = str(linked_road.get("junction") or "-1").strip() != "-1"
+            is_junction_connector_link = source_is_junction_connector or target_is_junction_connector
 
-            # Successor: current end -> linked start
-            # Predecessor: current start -> linked end
+            if is_junction_connector_link:
+                report["num_junction_connector_links_checked"] += 1
+            else:
+                report["num_links_checked"] += 1
+
+            # Target endpoint is selected by the link's declared
+            # contactPoint (default "start" when absent), NOT hardcoded by
+            # link kind -- a successor link with contactPoint="end" must be
+            # evaluated at the linked road's END, not its start.
+            target_endpoint = contact_point or "start"
+            target_s = 0.0 if target_endpoint == "start" else linked_len
+
+            # Successor: current end -> linked target endpoint
+            # Predecessor: current start -> linked target endpoint
             if link_kind == "successor":
                 z_from, warn_from = _get_elevation_at_s(r, road_len)
-                z_to, warn_to = _get_elevation_at_s(linked_road, 0.0)
                 from_label = "z_from_end"
-                to_label = "z_to_start"
             else:
                 z_from, warn_from = _get_elevation_at_s(r, 0.0)
-                z_to, warn_to = _get_elevation_at_s(linked_road, linked_len)
                 from_label = "z_from_start"
-                to_label = "z_to_end"
+
+            z_to, warn_to = _get_elevation_at_s(linked_road, target_s)
+            to_label = "z_to_start" if target_endpoint == "start" else "z_to_end"
 
             dz = abs(z_from - z_to)
 
             warn = warn_from + warn_to
 
             if dz > eps_z:
-                issues.append({
+                record = {
                     "from_road": rid,
                     "to_road": eid,
                     "link_kind": link_kind,
+                    "contact_point": contact_point,
                     from_label: z_from,
                     to_label: z_to,
                     "dz": dz,
                     "warnings": warn,
-                })
+                }
+                if is_junction_connector_link:
+                    junction_connector_issues.append(record)
+                else:
+                    issues.append(record)
 
     report["issues"] = issues
+    report["junction_connector_issues"] = junction_connector_issues
     report["num_issues"] = len(issues)
+    report["num_junction_connector_issues"] = len(junction_connector_issues)
     report["ok"] = len(issues) == 0
 
     return report

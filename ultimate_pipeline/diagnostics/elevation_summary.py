@@ -27,6 +27,11 @@ def _stats(values: List[float]) -> Dict[str, Optional[float]]:
     return {"min": min(values), "max": max(values)}
 
 
+def _eval_elevation_poly(a: float, b: float, c: float, d: float, s_local: float) -> float:
+    """Evaluate the OpenDRIVE elevation cubic z = a + b*s + c*s^2 + d*s^3."""
+    return a + b * s_local + c * s_local * s_local + d * s_local * s_local * s_local
+
+
 def summarize_elevation(xodr_path: str) -> Dict[str, Any]:
     _tree, root = load_xodr(xodr_path)
     roads = root.findall(".//road")
@@ -36,6 +41,7 @@ def summarize_elevation(xodr_path: str) -> Dict[str, Any]:
     roads_with_elevation_profile = 0
     elevation_segment_count = 0
     max_abs_grade_estimate: Optional[float] = None
+    true_elevation_values: List[float] = []
 
     for road in roads:
         segments = road.findall("./elevationProfile/elevation")
@@ -66,6 +72,7 @@ def summarize_elevation(xodr_path: str) -> Dict[str, Any]:
                     value = 0.0
                 coeffs[key].append(value)
 
+            a = parsed["a"] if parsed["a"] is not None else 0.0
             b = parsed["b"] if parsed["b"] is not None else 0.0
             c = parsed["c"] if parsed["c"] is not None else 0.0
             d = parsed["d"] if parsed["d"] is not None else 0.0
@@ -75,7 +82,37 @@ def summarize_elevation(xodr_path: str) -> Dict[str, Any]:
             if max_abs_grade_estimate is None or local_max > max_abs_grade_estimate:
                 max_abs_grade_estimate = local_max
 
+            # Sample the true absolute elevation (the cubic evaluated over
+            # the segment), not just the 'a' coefficient at the segment
+            # start, so a sloped single-record segment reports its real
+            # min/max rather than only its local offset.
+            true_elevation_values.append(_eval_elevation_poly(a, b, c, d, 0.0))
+            true_elevation_values.append(_eval_elevation_poly(a, b, c, d, ds))
+            # Interior extremum of the quadratic derivative (grade), when it
+            # falls inside the segment, can be a local min/max of elevation.
+            if abs(d) > 1e-15:
+                # dz/ds = b + 2c*s + 3d*s^2 = 0
+                disc = (2.0 * c) ** 2 - 4.0 * (3.0 * d) * b
+                if disc >= 0.0:
+                    sqrt_disc = math.sqrt(disc)
+                    for s_extremum in (
+                        (-2.0 * c + sqrt_disc) / (6.0 * d),
+                        (-2.0 * c - sqrt_disc) / (6.0 * d),
+                    ):
+                        if 0.0 < s_extremum < ds:
+                            true_elevation_values.append(
+                                _eval_elevation_poly(a, b, c, d, s_extremum)
+                            )
+            elif abs(c) > 1e-15:
+                s_extremum = -b / (2.0 * c)
+                if 0.0 < s_extremum < ds:
+                    true_elevation_values.append(_eval_elevation_poly(a, b, c, d, s_extremum))
+
     mode = "flat_or_missing" if elevation_segment_count == 0 else "elevation_profile"
+    true_stats = _stats(true_elevation_values)
+    true_min = true_stats["min"]
+    true_max = true_stats["max"]
+    span = (true_max - true_min) if (true_min is not None and true_max is not None) else None
     return {
         "xodr_path": xodr_path,
         "mode": mode,
@@ -84,6 +121,9 @@ def summarize_elevation(xodr_path: str) -> Dict[str, Any]:
         "elevation_segment_count": elevation_segment_count,
         "invalid_coefficient_count": invalid_coefficients,
         "max_abs_grade_estimate": max_abs_grade_estimate,
+        "min": true_min,
+        "max": true_max,
+        "span": span,
         "coefficient_stats": {
             "a": _stats(coeffs["a"]),
             "b": _stats(coeffs["b"]),

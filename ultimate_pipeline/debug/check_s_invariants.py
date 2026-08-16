@@ -21,6 +21,18 @@ import os
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Tuple
 
+# Single source of truth for the road-length invariant tolerance.
+#
+# This MUST match run_n_certify._length_invariant_evidence's tolerance
+# (1e-9), which is itself derived from CARLA's mesh-builder assert:
+# `s + geometry.length > road.length + 1e-9` crashes the cook. Reporting a
+# "0" here with a looser tolerance (the old value was 1e-6, and measured
+# only the geometry START s rather than s + length) could hide genuine
+# sub-1e-6 length-invariant violations that the certifier -- and CARLA's own
+# assert -- would still catch. See also
+# ultimate_pipeline.tools.crash_safe_length_repair.TOL_M (same value).
+LENGTH_INVARIANT_TOL_M = 1e-9
+
 
 def scan_s_invariants(xodr_path: str) -> Dict[str, Any]:
     tree = ET.parse(xodr_path)
@@ -43,6 +55,8 @@ def scan_s_invariants(xodr_path: str) -> Dict[str, Any]:
         # planView geometries
         geoms = road.findall("./planView/geometry")
         s_list: List[float] = []
+        max_geom_end: float = 0.0
+        have_geom_end = False
         for g in geoms:
             s = g.get("s")
             if s is None:
@@ -55,6 +69,16 @@ def scan_s_invariants(xodr_path: str) -> Dict[str, Any]:
             if sv < 0:
                 add(rid, "neg_s_geometry", sv, "planView/geometry")
 
+            glen_raw = g.get("length")
+            try:
+                glen = float(glen_raw) if glen_raw is not None else 0.0
+            except Exception:
+                glen = 0.0
+            geom_end = sv + glen
+            if not have_geom_end or geom_end > max_geom_end:
+                max_geom_end = geom_end
+                have_geom_end = True
+
         if s_list:
             if s_list[0] != 0.0:
                 add(rid, "first_geom_s_not_zero", s_list[0], "first planView/geometry s")
@@ -63,10 +87,21 @@ def scan_s_invariants(xodr_path: str) -> Dict[str, Any]:
                 if b < a:
                     add(rid, "non_monotonic_geometry_s", b, f"geometry s decreased ({a} -> {b})")
 
-            # check geometry end vs road length (approx using next s or road length)
-            max_s = max(s_list)
-            if rlen > 0 and max_s > rlen + 1e-6:
-                add(rid, "geom_s_exceeds_road_length", max_s, f"max geom s={max_s} > road length={rlen}")
+            # Length invariant: compare the declared road length against the
+            # FURTHEST geometry END (s + geometry.length), not just the
+            # furthest geometry START s. A geometry can start well inside
+            # the declared length yet still extend past it once its own
+            # length is added -- that violation is invisible if only
+            # max(s_list) is checked. Uses the same tolerance as the
+            # certifier (LENGTH_INVARIANT_TOL_M == 1e-9) so a "0" here can
+            # never hide a sub-1e-6 violation the certifier would still flag.
+            if have_geom_end and max_geom_end > rlen + LENGTH_INVARIANT_TOL_M:
+                add(
+                    rid,
+                    "geom_s_exceeds_road_length",
+                    max_geom_end,
+                    f"max geom end (s+length)={max_geom_end} > road length={rlen}",
+                )
 
         # laneOffset / elevation / superelevation
         for tag, xp in [

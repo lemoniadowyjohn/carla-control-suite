@@ -2,7 +2,45 @@ from __future__ import annotations
 
 import math
 import xml.etree.ElementTree as ET
-from typing import Any
+from typing import Any, Optional
+
+
+def _safe_float(value: Any, default: float = 0.0) -> float:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return default
+    return parsed if math.isfinite(parsed) else default
+
+
+def _elevation_at_s(road: ET.Element, s_abs: float) -> Optional[float]:
+    """Evaluate a road's elevation cubic (a + b*s + c*s^2 + d*s^3) at s_abs,
+    selecting the applicable <elevation> record by its declared s.
+
+    Returns None if the road has no elevationProfile records.
+    """
+    elev_profile = road.find("elevationProfile")
+    if elev_profile is None:
+        return None
+    elevs = elev_profile.findall("elevation")
+    if not elevs:
+        return None
+
+    sorted_elevs = sorted(elevs, key=lambda e: _safe_float(e.get("s")))
+    selected = sorted_elevs[0]
+    for e in sorted_elevs:
+        if _safe_float(e.get("s")) <= s_abs + 1e-9:
+            selected = e
+        else:
+            break
+
+    s0 = _safe_float(selected.get("s"))
+    a = _safe_float(selected.get("a"))
+    b = _safe_float(selected.get("b"))
+    c = _safe_float(selected.get("c"))
+    d = _safe_float(selected.get("d"))
+    s_local = max(0.0, s_abs - s0)
+    return a + b * s_local + c * s_local * s_local + d * s_local * s_local * s_local
 
 
 class FullMapMetricsScanner:
@@ -104,6 +142,47 @@ class FullMapMetricsScanner:
                                 "prev_geometry_index": i - 1,
                                 "gap_m": round(gap, 3),
                             })
+
+        # Cross-road elevation gradient sampling.
+        #
+        # The within-road loop above only compares consecutive <elevation>
+        # records inside the SAME road's elevationProfile. In this map's
+        # common encoding, most roads carry exactly one elevation record
+        # each, so that loop alone always yields num_segments==0 even on a
+        # sloped map -- a dead sub-metric that silently "passes". Sample the
+        # elevation gradient across road-to-road successor links as well, so
+        # real elevation change between consecutive roads is measured.
+        for road in roads:
+            link_elem = road.find("link")
+            if link_elem is None:
+                continue
+            succ = link_elem.find("successor")
+            if succ is None:
+                continue
+            if (succ.get("elementType") or "").strip() != "road":
+                continue
+            succ_id = succ.get("elementId", "")
+            succ_road = road_ids.get(succ_id)
+            if succ_road is None:
+                continue
+
+            road_len = _safe_float(road.get("length"))
+            contact_point = (succ.get("contactPoint") or "start").strip().lower()
+            succ_len = _safe_float(succ_road.get("length"))
+            succ_s = 0.0 if contact_point != "end" else succ_len
+
+            z_from = _elevation_at_s(road, road_len)
+            z_to = _elevation_at_s(succ_road, succ_s)
+            if z_from is None or z_to is None:
+                continue
+
+            # Use the s-distance between the two sampled points (along each
+            # road's own arc length) as a deterministic, always-positive
+            # denominator for the gradient estimate.
+            ds = max(1e-6, road_len - 0.0) if road_len > 0 else 1e-6
+            gradient = abs(z_to - z_from) / ds
+            max_elevation_gradient = max(max_elevation_gradient, gradient)
+            elevation_variance.append(gradient)
 
         graph_components = FullMapMetricsScanner._compute_connected_components(
             roads, junctions
