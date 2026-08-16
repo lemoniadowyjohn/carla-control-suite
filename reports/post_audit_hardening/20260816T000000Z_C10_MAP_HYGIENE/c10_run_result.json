@@ -1,0 +1,134 @@
+{
+  "after_stage1_graph_components": {
+    "count": 8,
+    "sizes": [
+      36632,
+      12,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  "after_stage2_lane_geom_n_issues": 0,
+  "after_stage2_lane_width_num_issues": 0,
+  "after_stage3_elevation_num_issues_true": 0,
+  "after_stage3_elevation_num_junction_connector_issues": 0,
+  "before": {
+    "elevation_num_issues_true": 0,
+    "elevation_num_junction_connector_issues": 0,
+    "graph_components": {
+      "count": 15,
+      "sizes": [
+        36632,
+        20,
+        6,
+        6,
+        4,
+        4,
+        4,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "lane_geom_n_issues": 0,
+    "lane_width_num_issues": 0
+  },
+  "final_graph_components": {
+    "count": 8,
+    "sizes": [
+      36632,
+      12,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  "island_report": {
+    "component_count_before": 15,
+    "component_sizes_before": [
+      32672,
+      16,
+      4,
+      4,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "count_quarantined": 38,
+    "min_component_roads": 20,
+    "quarantined_road_ids": [
+      "39868",
+      "39937",
+      "39956",
+      "40060",
+      "40062",
+      "40063",
+      "40321",
+      "40696",
+      "40953",
+      "41510",
+      "41842",
+      "42479",
+      "42480",
+      "43031",
+      "43545",
+      "43972",
+      "44320",
+      "44426",
+      "45774",
+      "46729",
+      "47462",
+      "47463",
+      "48741",
+      "49323",
+      "59896",
+      "59897",
+      "63369",
+      "63370",
+      "63371",
+      "63372",
+      "63373",
+      "63374",
+      "63375",
+      "63376",
+      "63377",
+      "67079",
+      "67080",
+      "68473"
+    ],
+    "remaining_road_count": 32672,
+    "total_roads": 32710
+  },
+  "lane_report": {
+    "details_sample": [],
+    "min_lane_width": 0.1,
+    "quarantined_count": 0,
+    "repaired_count": 0
+  },
+  "zseam_report": {
+    "eps_z": 0.5,
+    "issues_after": 0,
+    "issues_before": 0,
+    "roads_modified": 0
+  }
+}
