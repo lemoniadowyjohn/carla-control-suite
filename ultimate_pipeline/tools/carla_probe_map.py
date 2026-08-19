@@ -80,6 +80,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--host", default="127.0.0.1", help="CARLA host")
     ap.add_argument("--port", type=int, default=2000, help="CARLA RPC port")
     ap.add_argument("--frames", type=int, default=50, help="Number of ticks to run after load")
+    ap.add_argument(
+        "--load-timeout",
+        type=float,
+        default=600.0,
+        help="Client RPC timeout + world-load timeout in seconds (large maps can take minutes)",
+    )
     return ap.parse_args()
 
 
@@ -120,7 +126,7 @@ def main() -> int:
             print(json.dumps(payload, indent=2))
             return 1
 
-        readiness = wait_for_carla_ready(args.host, args.port, timeout_s=45.0, require_tick=True)
+        readiness = wait_for_carla_ready(args.host, args.port, timeout_s=60.0, require_tick=True)
         if not readiness.get("ok", False):
             payload = {
                 "status": "FAIL",
@@ -139,14 +145,14 @@ def main() -> int:
         from ultimate_pipeline.core.carla_opendrive_loader import load_opendrive_world, ensure_world_ticks
 
         client = carla.Client(args.host, args.port)
-        client.set_timeout(45.0)
+        client.set_timeout(args.load_timeout)
 
         xodr_text = args.xodr.read_text(encoding="utf-8", errors="ignore")
         world = load_opendrive_world(
             client,
             xodr_text,
             params=None,
-            timeout_s=45.0,
+            timeout_s=args.load_timeout,
             retries=0,
             do_reload=True,
             fallback_enabled=False,

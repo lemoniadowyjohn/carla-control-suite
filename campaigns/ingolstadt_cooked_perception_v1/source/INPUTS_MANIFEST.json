@@ -27,11 +27,11 @@
       "note": "settings.DEM_TIF == DEM_DIR/DEM_FILENAME. Pinned 2026-08-16 as part of C11; original fetch/generation provenance not separately recorded prior to this pin."
     },
     "buildings": {
-      "path": null,
-      "sha256": null,
-      "bytes": null,
-      "status": "pending",
-      "note": "Building source not yet available (C7 buildings work is in progress on a sibling branch and has not landed). Do not fabricate a digest. Once C7 lands, populate path/sha256/bytes and flip status to 'pinned' -- no schema change required."
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json",
+      "sha256": "92300f0a0158980d08b04ae4cd855fe2d242ed71d32023410bd017f795196832",
+      "bytes": 4046946,
+      "status": "pinned",
+      "note": "C7 Overpass export (2026-08-16T14:20:51Z, 5693 building ways / 19 relations; see source/manifest.json). RE-PINNED 2026-08-17: the pinned file was re-serialized (pretty-print, CRLF) after the original C7 pin, changing bytes/sha256 without changing data (counts, generator, timestamp identical). Files under source/ must not be re-saved after pinning; re-pin deliberately if formatting must change."
     }
   }
 }

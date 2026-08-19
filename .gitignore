@@ -242,6 +242,20 @@ reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifa
 reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/*.log
 reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/blender_status.json
 reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_fbx/scene.blender_manifest.json
+
+# ---------------------------------------------------------------------------
+# Map-of-record candidates + large regenerable OpenDRIVE artifacts (up to
+# ~130 MB). These are content-addressed via sha256 in acceptance JSONs and
+# the C1 pin packages (c1_pin_package.json) and regenerable by
+# scripts/regen_map_of_record.py; the binaries themselves never enter git.
+# ---------------------------------------------------------------------------
+campaigns/*/candidate/
+reports/post_audit_hardening/_e2_proto.xodr
+reports/post_audit_hardening/_e2_proto_linkoffset.xodr
+reports/post_audit_hardening/_e2_proto_locked.xodr
+reports/post_audit_hardening/_gen_watch_log/
+reports/post_audit_hardening/20260813T000000Z_C3_REGOVERN/candidate_g_semantic_enriched_corrected_parent.xodr
+reports/post_audit_hardening/20260814T000000Z_E1_CRASH_SAFE_ELEVATION/candidate_h_elevated_enriched_crash_safe.xodr
 reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_osm_raw/
 reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_osm_merged/
 
