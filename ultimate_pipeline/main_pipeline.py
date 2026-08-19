@@ -1590,9 +1590,53 @@ if str(_repo_root) not in sys.path:
     # -----------------------------------------------------
     # 🔧 INTERNAL PIPELINE
     # -----------------------------------------------------
+    def _verify_pinned_inputs(self) -> None:
+        """C11: fail-closed digest guard for pinned generation inputs.
+
+        Active only when a manifest is configured (settings.INPUTS_MANIFEST
+        or UP_INPUTS_MANIFEST). When active, every 'pinned' entry must still
+        match its recorded sha256/bytes on disk or the run ABORTS — drifted
+        inputs must never silently regenerate a map-of-record.
+        """
+        manifest_path = str(getattr(self.settings, "INPUTS_MANIFEST", "") or "").strip()
+        if not manifest_path:
+            return
+        if not os.path.isabs(manifest_path):
+            repo_root = Path(__file__).resolve().parents[1]
+            manifest_path = os.path.normpath(os.path.join(repo_root, manifest_path))
+        if not os.path.isfile(manifest_path):
+            raise FileNotFoundError(
+                "❌ Pinned-input guard configured (INPUTS_MANIFEST) but manifest "
+                f"not found: {manifest_path}"
+            )
+
+        from ultimate_pipeline.governance.inputs_manifest import (
+            InputsManifestError,
+            InputsManifestMismatchError,
+            verify_inputs_manifest,
+        )
+
+        try:
+            result = verify_inputs_manifest(
+                manifest_path,
+                base_dir=Path(__file__).resolve().parents[1],
+            )
+        except (InputsManifestMismatchError, InputsManifestError) as exc:
+            raise RuntimeError(f"❌ Pinned-input guard ABORT: {exc}") from exc
+
+        checked = sorted(result.get("checked", []))
+        pending = sorted(result.get("pending", []))
+        print(
+            f"✅ [INPUTS-MANIFEST] verified {manifest_path}: "
+            f"{checked} pinned (sha256+bytes match), {pending} pending"
+        )
+
     def _run_internal(self) -> None:
         s = self.settings
         print("🔥 Ultimate OSM→OpenDRIVE→CARLA pipeline (consolidated)")
+
+        # C11: fail-closed pinned-input digest guard (opt-in via INPUTS_MANIFEST)
+        self._verify_pinned_inputs()
 
         # ---------------------------------------------------------
         # 📚 ARCHIVE OLD RUNS (disk hygiene + provenance)
@@ -2238,7 +2282,26 @@ if str(_repo_root) not in sys.path:
         # 8F) Optional CARLA elevation verification hook (thesis evidence)
         self._step8f_optional_carla_elevation_validation(final_out)
 
-        # 8G) Drivable-surface hole analysis
+        # 8G) Map hygiene (C10): island quarantine + degenerate-lane floor
+        # repair + genuine z-seam chaining on the final artifact, then
+        # re-verify the gates most affected by these repairs.
+        self._mark_stage("map_hygiene")
+        final_out = self._step8h_map_hygiene(final_out)
+        self._run_geometric_continuity_gate(final_out, "after_map_hygiene")
+        seam_report = self._stage_gate(
+            "08H_hygiene",
+            "elevation_seams",
+            lambda: self.qgate.gate_elevation_seams(final_out),
+        )
+        seam_path = os.path.join(self.out_dir, "elevation_seam_report.json")
+        try:
+            with open(seam_path, "w", encoding="utf-8") as f:
+                json.dump(seam_report, f, indent=2, default=str)
+            print(f"[STEP 8H] elevation_seam_report.json (post-hygiene) -> {seam_path}")
+        except Exception as e:
+            print(f"[STEP 8H] elevation_seam_report.json write skipped: {e}")
+
+        # 8H) Drivable-surface hole analysis
         self._mark_stage("drivable_surface_scan")
         if getattr(self.settings, "ENABLE_DRIVABLE_SURFACE_HOLE_SCAN", True):
             from ultimate_pipeline.quality.drivable_surface_scanner import (
@@ -2676,6 +2739,10 @@ if str(_repo_root) not in sys.path:
         return _impl(self, lanes_out, final_out)
     def _step8d_preflight_validation(self, final_out: str) -> None:
         from ultimate_pipeline.pipeline_stages.stage_08_integrity import _step8d_preflight_validation as _impl
+        return _impl(self, final_out)
+
+    def _step8h_map_hygiene(self, final_out: str) -> str:
+        from ultimate_pipeline.pipeline_stages.stage_08_hygiene import _step8h_map_hygiene as _impl
         return _impl(self, final_out)
     def _step8c_carla_safety_prune(self, final_out: str) -> str:
         from ultimate_pipeline.pipeline_stages.stage_08_integrity import _step8c_carla_safety_prune as _impl

@@ -1079,6 +1079,27 @@ class Settings:
         "on",
         "y",
     )
+    # C10: offline map-hygiene repairs applied to the final XODR before the
+    # drivable-surface / full-map-metrics gates and tiling — quarantine of
+    # island components, degenerate-lane floor repair, and genuine z-seam
+    # chain repair (quality/map_hygiene.py). Deterministic and offline.
+    ENABLE_MAP_HYGIENE: bool = str(
+        os.getenv("UP_ENABLE_MAP_HYGIENE", "1")
+    ).strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+        "y",
+    )
+    # C11: optional fail-closed digest guard for pinned generation inputs
+    # (governance/inputs_manifest.py). Empty = guard inactive. Set to the
+    # campaign's INPUTS_MANIFEST.json path (e.g.
+    # campaigns/<name>/source/INPUTS_MANIFEST.json, repo-root relative or
+    # absolute) to make every run abort on drifted inputs.
+    INPUTS_MANIFEST: str = str(
+        os.getenv("UP_INPUTS_MANIFEST", "")
+    ).strip()
     # ===============================
     # CARLA LOAD POLICY
     # ===============================
@@ -1690,6 +1711,27 @@ class Settings:
             "UP_ENABLE_TRAFFIC_LIGHTS",
             bool(self.ENABLE_TRAFFIC_LIGHTS),
         )
+        self.ENABLE_MAP_HYGIENE = _env_bool(
+            "UP_ENABLE_MAP_HYGIENE",
+            bool(self.ENABLE_MAP_HYGIENE),
+        )
+        _manifest_env = os.getenv("UP_INPUTS_MANIFEST")
+        if _manifest_env is not None:
+            self.INPUTS_MANIFEST = _manifest_env.strip()
+        else:
+            self.INPUTS_MANIFEST = str(self.INPUTS_MANIFEST).strip()
+        if not self.INPUTS_MANIFEST and _manifest_env is None:
+            # Default ON (C11): when no manifest is configured, use the campaign
+            # of record's manifest if it exists on disk. Other cities' runs are
+            # unaffected (no file -> guard stays a no-op). Explicit bypass:
+            # UP_INPUTS_MANIFEST="" (an env var present-but-empty is distinct
+            # from unset, so the default must not re-engage).
+            default_manifest = str(
+                Path(__file__).resolve().parents[2]
+                / "campaigns" / "ingolstadt_cooked_perception_v1" / "source" / "INPUTS_MANIFEST.json"
+            )
+            if Path(default_manifest).is_file():
+                self.INPUTS_MANIFEST = default_manifest
         self.CARLA_DEFAULT_MAP = str(
             os.getenv("UP_CARLA_DEFAULT_MAP", str(self.CARLA_DEFAULT_MAP))
         ).strip()
