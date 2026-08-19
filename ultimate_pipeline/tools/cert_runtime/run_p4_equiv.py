@@ -56,7 +56,7 @@ def collect_runtime_evidence(
     client: Any = None,
     load_world_fn: Optional[Callable[..., Any]] = None,
     client_timeout_s: float = 90.0,
-    load_timeout_s: float = 240.0,
+    load_timeout_s: float = 600.0,
     log_fn: Callable[[str], None] = log,
 ) -> dict[str, Any]:
     source_xodr = Path(source_xodr)
