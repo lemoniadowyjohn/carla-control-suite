@@ -1,0 +1,17 @@
+{
+  "carla_readiness": {
+    "attempts": 1,
+    "host": "127.0.0.1",
+    "last_error": "",
+    "ok": true,
+    "port": 2000,
+    "require_tick": true,
+    "timeout_s": 60.0
+  },
+  "failure_reason": "",
+  "frames": 50,
+  "host": "127.0.0.1",
+  "port": 2000,
+  "screenshot_path": "reports\\post_audit_hardening\\C1_LIVE_CARLA_LOAD_20260817\\probe_screenshot.png",
+  "status": "PASS"
+}

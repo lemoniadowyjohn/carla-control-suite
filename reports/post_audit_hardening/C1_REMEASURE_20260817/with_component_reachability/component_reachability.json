@@ -1,0 +1,9 @@
+{
+  "component_count": 45,
+  "isolated_lane_component_count": 34,
+  "lane_count": 34316,
+  "largest_component_fraction": 0.995833,
+  "largest_component_lane_count": 34173,
+  "ok": null,
+  "unmatched_cross_links": 0
+}

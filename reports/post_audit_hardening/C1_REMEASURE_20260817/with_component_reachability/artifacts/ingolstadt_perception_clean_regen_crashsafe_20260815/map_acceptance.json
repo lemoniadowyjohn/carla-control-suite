@@ -1,0 +1,47 @@
+{
+  "failed_gates": [],
+  "final_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_clean_regen_crashsafe_20260815.xodr",
+  "final_xodr_sha256": "83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e",
+  "hard_fail_reasons": [],
+  "linked_artifacts": {},
+  "metrics": {
+    "buildings_count": 1,
+    "dem_coverage_ratio": 1.0,
+    "elevation_stats": {
+      "z_max": 408.671165,
+      "z_min": 361.85043,
+      "z_range": 46.82073499999996
+    },
+    "functional_signals_count": 0,
+    "geometric_continuity_ok": true,
+    "isolated_lane_component_count": 34,
+    "lane_component_count": 45,
+    "lane_count_total": 34316,
+    "lane_ok": true,
+    "lane_successor_missing_count": 0,
+    "largest_component_fraction": 0.995833,
+    "largest_component_lane_count": 34173,
+    "length_invariant_tol_m": 1e-09,
+    "length_invariant_violations": 0,
+    "origin_centroid_distance_m": 9669.770063043077,
+    "seam_stats": {
+      "bad_fraction": 0.00016153840751223828,
+      "count": 46,
+      "max_bad_fraction": 0.002,
+      "max_jump": 2.464224999999999,
+      "p95_jump": 0.16355499999997392,
+      "total_jump_samples": 284762
+    },
+    "traffic_light_object_count": 21171,
+    "unmatched_cross_links": 0
+  },
+  "run_id": "ingolstadt_perception_clean_regen_crashsafe_20260815",
+  "soft_warnings": [
+    {
+      "gate": "component_reachability",
+      "reason": "34 isolated lane components (largest=0.995833)"
+    }
+  ],
+  "valid": true,
+  "valid_for_experiments": true
+}

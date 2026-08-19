@@ -1,0 +1,18 @@
+{
+  "bbox": {
+    "max_x": 13267.133299,
+    "max_y": 14071.04565692,
+    "min_x": 0.07026437,
+    "min_y": 0.17042047
+  },
+  "centroid": {
+    "x": 6633.601781685,
+    "y": 7035.608038695
+  },
+  "centroid_distance_m": 9669.770063043077,
+  "fail_distance_m": 500000.0,
+  "ok": true,
+  "warn_distance_m": 50000.0,
+  "warnings": [],
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_clean_regen_crashsafe_20260815.xodr"
+}

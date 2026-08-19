@@ -1,0 +1,46 @@
+{
+  "registry": "B3 content-addressed map pin ledger (2026-08-17)",
+  "principle": "Pins bind CONTENT (sha256), not names. Two different files that claim the same map name must never both be 'the' pin.",
+  "entries": {
+    "auto_ingolstadt_perception_clean_regen_crashsafe": {
+      "map_role": "AUTO (generated, perception candidate)",
+      "status": "PINNED_INTERIM",
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_clean_regen_crashsafe_20260815.xodr",
+      "sha256": "83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e",
+      "acceptance_20260817": "PASS (valid_for_experiments=true, require_enrichment=true)",
+      "live_carla_20260817": "PASS (loaded, 47059 spawn points, autopilot drive 10.1m @ 7.46 m/s, 600 ticks, on_road=1.0)",
+      "pin_governance": "C1 pin package: reports/post_audit_hardening/C1_PIN_20260817/c1_pin_package.json",
+      "caveats": [
+        "buildings_count=1 (predates C7 pinned-source wiring)",
+        "functional_signals_count=0 (predates C7 paired <signal> emission)",
+        "FINAL pin of the enriched map of record requires canonical regen (SUMO needed)"
+      ]
+    },
+    "Grid0821": {
+      "map_role": "MANUAL (hand-built Ingolstadt reference)",
+      "status": "ABSENT_ON_DISK",
+      "expected_paths": [
+        "manual_maps/Grid0821.xodr",
+        "_pair_capture_manual/Grid0821_20260125_204453/xodr_hardened.xodr",
+        "_pair_capture_manual/Grid0821_20260125_204339/xodr_hardened.xodr"
+      ],
+      "blocker": "File never committed / not present on this machine; cannot be pinned or measured (B4 RQ1 blocked). Operator must restore the file."
+    },
+    "Grid0828": {
+      "map_role": "MANUAL (hand-built Ingolstadt reference)",
+      "status": "ABSENT_ON_DISK",
+      "expected_paths": [
+        "manual_maps/manual_ingolstadt_grid0828.xodr",
+        "_perception_runs/manual_town_Grid0828_20260125_205531/xodr_hardened.xodr",
+        "artifacts/final_runs/scenario_b_audit/evidence/strict_evidence/_normalized_input.xodr"
+      ],
+      "blocker": "File never committed / not present on this machine; cannot be pinned or measured (B4 RQ1 blocked). Operator must restore the file.",
+      "drift_note": "Name<->content drift (Grid0821/0828 name confusion) is exactly what this ledger prevents: restore + record sha256 + verify BEFORE any acceptance call."
+    }
+  },
+  "structural_gap_rq1": {
+    "status": "BLOCKED",
+    "blocker": "manual XODR absent (Grid0821/0828); cooked towns Grid0821/0828 also unavailable on the running CARLA server",
+    "needs": "restore manual XODR files -> run thesis structural domain-gap experiments (exp_domain_gap_manual_vs_auto) on the PINNED auto candidate"
+  }
+}

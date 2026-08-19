@@ -1,0 +1,48 @@
+{
+  "pin_id": "C1-20260817-83418373",
+  "candidate_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_clean_regen_crashsafe_20260815.xodr",
+  "candidate_sha256": "83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e",
+  "candidate_bytes": 134100000,
+  "pin_status": "PINNED_GOVERNED_PENDING_HUMAN_REVIEW",
+  "generated_at_utc": "2026-08-17T00:00:00Z",
+  "generation_command": "hand-assembled driver (pre-canonical regen); canonical entrypoint scripts/regen_map_of_record.py now exists",
+  "git": {
+    "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+    "worktree_dirty": true
+  },
+  "inputs": {
+    "roads_osm": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "dem": "cities/ingolstadt/dem/dem_ing.tif",
+    "buildings": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json (pinned, sha256 92300f0a0158980d08b04ae4cd855fe2d242ed71d32023410bd017f795196832)"
+  },
+  "acceptance_20260817": {
+    "valid_for_experiments": true,
+    "geometric_continuity": "ok=True (C6-corrected checker; the historical 27193 count was a checker artifact)",
+    "lane_connectivity": "ok=True, 0 broken",
+    "lane_section_successors": "0 missing",
+    "elevation_seams": "ok=True, bad_fraction=0.000162, max_jump=2.46m, p95=0.164m",
+    "length_invariant_violations": 0,
+    "origin_sanity": "ok=True, centroid 9669.8m from origin (local frame)",
+    "dem_coverage": "1.0 (250000/250000 samples)",
+    "elevation": "32297 roads with profiles, 361.85-408.67m",
+    "buildings_count": 1,
+    "functional_signals_count": 0,
+    "traffic_light_object_count": 21171
+  },
+  "live_carla_20260817": {
+    "server": "CARLA 0.9.16 at E:\\CARLA\\CARLA_0.9.16 (started 2026-08-17)",
+    "load": "PASS - OpenDRIVE world loaded (47,059 spawn points)",
+    "drive_route": "PASS - ego autopilot 600 ticks, 10.13m, max 7.46 m/s, on_road_fraction=1.0, no crash",
+    "float32_precision": "max |coordinate|=1956.3m (local frame, OK)",
+    "screenshot": "reports/post_audit_hardening/C1_LIVE_CARLA_LOAD_20260817/probe_screenshot.png"
+  },
+  "known_gaps_blocking_FINAL_pin": [
+    "buildings_count=1: candidate predates C7 enrichment wiring; map of record must be regenerated with PINNED_BUILDINGS_SOURCE (5692 buildings expected)",
+    "functional_signals_count=0: candidate predates C7 paired <signal> emission",
+    "regen requires SUMO (netconvert) which is not installed on this machine"
+  ],
+  "human_review_required": [
+    "approve pin of the geometry-passing candidate as intermediate evidence (C1-PRE) OR wait for the enriched regen",
+    "verify screenshot at reports/post_audit_hardening/C1_LIVE_CARLA_LOAD_20260817/probe_screenshot.png"
+  ]
+}

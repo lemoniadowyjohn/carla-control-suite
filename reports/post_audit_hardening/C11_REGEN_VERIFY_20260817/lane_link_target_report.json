@@ -1,0 +1,14 @@
+{
+  "issues": [],
+  "num_issues": 0,
+  "ok": true,
+  "totals": {
+    "allow_dead_ends": true,
+    "lane_types": [
+      "driving"
+    ],
+    "max_issues": 2000,
+    "roads_scanned": 32297
+  },
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_clean_regen_crashsafe_20260815.xodr"
+}
