@@ -77,7 +77,7 @@ except Exception:
     Database = None  # type: ignore
 
 try:
-    from ultimate_pipeline.augmentation.realism import RealismAugmentor  # type: ignore
+    from ultimate_pipeline.augmentation.realism_augmentor import RealismAugmentor  # type: ignore
 except Exception:
     RealismAugmentor = None  # type: ignore
 

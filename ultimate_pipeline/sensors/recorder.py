@@ -361,6 +361,26 @@ class SensorRecorder:
         return safe or "sensor"
 
     @staticmethod
+    def _canonical_sensor_subdir(sensor_name: str, sensor_kind: str) -> str:
+        """Map a sensor name to its per-camera dataset subdirectory.
+
+        Live-capture rigs name semantic cameras ``semseg_<cam>`` (thesis rig)
+        or ``seg_<cam>`` (dominik rig) and RGB cameras ``<cam>`` /
+        ``rgb_<cam>``.  The training/eval readers pair RGB with semantic
+        labels by using ONE camera name for both ``rgb/<cam>/`` and
+        ``semseg_raw/<cam>/`` roots, so the modality prefix must be stripped
+        here to keep the two subdirectories pairable (C8).
+        """
+        name = str(sensor_name)
+        if sensor_kind in {"rgb", "semseg_raw"}:
+            lower = name.lower()
+            for prefix in ("semseg_", "seg_", "rgb_"):
+                if lower.startswith(prefix) and len(name) > len(prefix):
+                    name = name[len(prefix):]
+                    break
+        return SensorRecorder._sanitize_name(name)
+
+    @staticmethod
     def _sensor_kind(sensor_name: str, sensor: Any) -> str:
         type_id = str(getattr(sensor, "type_id", "")).lower()
         name_lower = str(sensor_name).lower()
@@ -390,7 +410,11 @@ class SensorRecorder:
                 return int(self._fallback_frame_counter)
 
     def _output_path(self, sensor_name: str, sensor_kind: str, frame_id: int, ext: str) -> Path:
-        sensor_dir = self.out_dir / sensor_kind / self._sanitize_name(sensor_name)
+        sensor_dir = (
+            self.out_dir
+            / sensor_kind
+            / self._canonical_sensor_subdir(sensor_name, sensor_kind)
+        )
         sensor_dir.mkdir(parents=True, exist_ok=True)
         return sensor_dir / f"{int(frame_id):08d}.{ext}"
 
@@ -504,9 +528,54 @@ class SensorRecorder:
             return count
         return sum(1 for _ in sensor_dir.glob("*"))
 
+    @staticmethod
+    def _write_semseg_raw_png(data: Any, out_path: Path) -> None:
+        """Write a single-channel uint8 label PNG whose pixel value is the
+        CARLA semantic class id (R channel of the BGRA sensor buffer).
+
+        This is the training-label contract shared with capture_writer
+        (rgb/+semseg_raw/, raw ids, never palette-colorized) — the C8 fix.
+        Works on real carla.Image objects and offline duck-typed fakes.
+        """
+        import numpy as np
+
+        arr = np.frombuffer(
+            data.raw_data, dtype=np.uint8
+        ).reshape((int(data.height), int(data.width), 4))
+        class_id = np.ascontiguousarray(arr[:, :, 2])  # BGRA -> index 2 is R
+        try:
+            from PIL import Image as PILImage
+
+            PILImage.fromarray(class_id, mode="L").save(out_path.as_posix())
+        except Exception:
+            import imageio.v2 as imageio
+
+            imageio.imwrite(out_path.as_posix(), class_id.astype(np.uint8))
+
+    @staticmethod
+    def _write_semseg_viz_png(data: Any, out_path: Path) -> bool:
+        """Best-effort CityScapes-palette copy for human viewing ONLY.
+
+        Written under semseg_viz/<cam>/ so it can never be mistaken for a
+        training label; never read by any trainer/eval/class-weight code.
+        """
+        try:
+            import carla  # type: ignore
+
+            if hasattr(data, "convert"):
+                data.convert(carla.ColorConverter.CityScapesPalette)
+                data.save_to_disk(str(out_path))
+                return True
+        except Exception:
+            pass
+        return False
+
     def _save_camera_frame(
         self, data: Any, *, out_path: Path, apply_cityscapes: bool
     ) -> None:
+        # NOTE: apply_cityscapes must only ever be True for the semseg_viz
+        # copy (see _make_sensor_callback). Training labels in semseg_raw/
+        # are always written by _write_semseg_raw_png from the raw R channel.
         if apply_cityscapes:
             try:
                 import carla  # type: ignore
@@ -516,6 +585,21 @@ class SensorRecorder:
             except Exception:
                 pass
         data.save_to_disk(str(out_path))
+
+    def _write_semseg_frame(
+        self, data: Any, *, out_path: Path, viz_path: Optional[Path] = None
+    ) -> None:
+        """Persist one semantic frame: raw class-id training label first,
+        then (optionally) a palette copy for human viewing.  The palette
+        conversion mutates the image in place, so it must run AFTER the raw
+        label has been written — never before (C8)."""
+        self._write_semseg_raw_png(data, out_path)
+        if viz_path is not None:
+            try:
+                viz_path.parent.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            self._write_semseg_viz_png(data, viz_path)
 
     def _save_lidar_frame(self, data: Any, *, out_path: Path) -> Path:
         lidar_format = str(getattr(self.cfg, "lidar_format", "npz") or "npz").lower()
@@ -573,28 +657,55 @@ class SensorRecorder:
                 if sensor_kind in {"rgb", "semseg_raw", "other"}:
                     image_ext = str(getattr(self.cfg, "image_format", "png") or "png")
                     image_ext = image_ext.lstrip(".").lower() or "png"
-                    out_path = self._output_path(
-                        sensor_name=sensor_name,
-                        sensor_kind=sensor_kind if sensor_kind != "other" else "rgb",
-                        frame_id=frame_id,
-                        ext=image_ext,
-                    )
-                    apply_cityscapes = (
-                        sensor_kind == "semseg_raw"
-                        and str(
-                            getattr(self.cfg, "segmentation_mode", "cityscapes") or ""
-                        ).lower()
-                        == "cityscapes"
-                    )
                     effective_sensor_kind = (
                         sensor_kind if sensor_kind != "other" else "rgb"
+                    )
+                    if sensor_kind == "semseg_raw":
+                        # C8: semseg_raw/ must hold raw class-id labels. The
+                        # palette is only ever written as a separate human
+                        # viz copy (segmentation_mode="cityscapes"), never
+                        # into the training label.
+                        out_path = self._output_path(
+                            sensor_name=sensor_name,
+                            sensor_kind="semseg_raw",
+                            frame_id=frame_id,
+                            ext=image_ext,
+                        )
+                        write_viz = str(
+                            getattr(self.cfg, "segmentation_mode", "cityscapes") or ""
+                        ).lower() in ("cityscapes", "viz")
+                        viz_path: Optional[Path] = None
+                        if write_viz:
+                            viz_dir = (
+                                self.out_dir
+                                / "semseg_viz"
+                                / self._canonical_sensor_subdir(
+                                    sensor_name, "semseg_raw"
+                                )
+                            )
+                            viz_path = viz_dir / f"{int(frame_id):08d}.{image_ext}"
+                        self._queue_write_job(
+                            sensor_name=sensor_name,
+                            sensor_kind="semseg_raw",
+                            frame_id=frame_id,
+                            write_fn=lambda data=data, out_path=out_path, viz_path=viz_path: self._write_semseg_frame(
+                                data, out_path=out_path, viz_path=viz_path
+                            ),
+                        )
+                        return
+
+                    out_path = self._output_path(
+                        sensor_name=sensor_name,
+                        sensor_kind=effective_sensor_kind,
+                        frame_id=frame_id,
+                        ext=image_ext,
                     )
                     self._queue_write_job(
                         sensor_name=sensor_name,
                         sensor_kind=effective_sensor_kind,
                         frame_id=frame_id,
-                        write_fn=lambda data=data, out_path=out_path, apply_cityscapes=apply_cityscapes: self._save_camera_frame(
-                            data, out_path=out_path, apply_cityscapes=apply_cityscapes
+                        write_fn=lambda data=data, out_path=out_path: self._save_camera_frame(
+                            data, out_path=out_path, apply_cityscapes=False
                         ),
                     )
                     return
@@ -732,7 +843,11 @@ class SensorRecorder:
                 sensor = self.sensors.get(sensor_name)
                 sensor_kind = self._sensor_kind_for_manifest(sensor_name, sensor)
                 frame_count_mem = int(self._sensor_frame_counts.get(sensor_name, 0))
-                sensor_dir = self.out_dir / sensor_kind / self._sanitize_name(sensor_name)
+                sensor_dir = (
+                    self.out_dir
+                    / sensor_kind
+                    / self._canonical_sensor_subdir(sensor_name, sensor_kind)
+                )
                 frame_count_disk = self._count_sensor_files(
                     sensor_dir, sensor_kind, image_ext
                 )

@@ -1278,8 +1278,10 @@ def main(argv: Optional[list[str]] = None) -> int:
         "fixed_delta_seconds": 1.0 / float(args.fps),
         "lidar_format": str(args.lidar_format),
         "image_format": "png",
-        # seg_converter is a CLI option; some RecorderConfig versions may not accept it.
-        "seg_converter": str(args.seg_converter),
+        # seg_converter maps to RecorderConfig.segmentation_mode: semseg_raw/
+        # always holds raw class-id labels; "cityscapes" additionally writes
+        # a human-viewable palette copy to semseg_viz/ (C8).
+        "segmentation_mode": str(args.seg_converter),
         "flip_vehicle_y": bool(args.flip_vehicle_y),
         "opencv_camera_axes": bool(args.opencv_camera_axes),
         "write_sensor_transforms": True,
@@ -1299,7 +1301,6 @@ def main(argv: Optional[list[str]] = None) -> int:
         # If RecorderConfig isn't a dataclass, fall back to a safe subset
         _filtered = {k: v for k, v in cfg_kwargs.items() if k != "seg_converter"}
         cfg = RecorderConfig(**_filtered)
-
     # Apply low-mem resolution override (both recorder + sensor setup consume this)
     resolution_override: Optional[Tuple[int, int]] = None
     if bool(args.low_mem):

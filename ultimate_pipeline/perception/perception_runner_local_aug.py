@@ -59,19 +59,16 @@ except Exception:
     cv2 = None  # type: ignore
     _HAS_CV2 = False
 
-# Optional augmentation module(s) (repo variants)
+# Optional augmentation module (repo variants). NOTE: the legacy
+# ultimate_pipeline.augmentation.realism name does not exist (C12) — any
+# import of it silently disabled DR; do NOT reintroduce a fallback for it.
 RealismAugmentor = None
 AugmentationConfig = None
 try:
     from ultimate_pipeline.augmentation.realism_augmentor import RealismAugmentor, AugmentationConfig  # type: ignore
-except Exception:
-    try:
-        # some repos use ultimate_pipeline.augmentation.realism
-        from ultimate_pipeline.augmentation.realism import RealismAugmentor  # type: ignore
-        AugmentationConfig = None  # type: ignore
-    except Exception:
-        RealismAugmentor = None  # type: ignore
-        AugmentationConfig = None  # type: ignore
+except Exception:  # noqa: BLE001
+    RealismAugmentor = None  # type: ignore
+    AugmentationConfig = None  # type: ignore
 
 
 def _ensure_dir(p: Path) -> Path:

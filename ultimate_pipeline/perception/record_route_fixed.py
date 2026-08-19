@@ -1504,6 +1504,10 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
         "fixed_delta_seconds": 1.0 / float(args.fps),
         "lidar_format": str(args.lidar_format),
         "image_format": "png",
+        # seg_converter is honored as segmentation_mode: semseg_raw/ always
+        # holds raw class-id labels; "cityscapes" additionally writes a
+        # human-viewable palette copy to semseg_viz/ (C8).
+        "segmentation_mode": str(args.seg_converter),
         "flip_vehicle_y": True,
         "opencv_camera_axes": True,
         "write_sensor_transforms": True,
