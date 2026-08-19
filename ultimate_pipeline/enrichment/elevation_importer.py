@@ -736,6 +736,17 @@ class ElevationImporter:
             else:
                 linear_grade = False
 
+        # Max allowed |grade| (b coefficient) for a road elevation profile.
+        # Endpoint-based linear grade (DEM) can produce physically implausible
+        # near-vertical ramps when the DEM samples the two ends of a short road
+        # at different vertical layers (overpass/underpass artifacts). Clamp on
+        # generation so the checker's UP_ELEVATION_MAX_GRADE (default 0.2)
+        # never sees a violation from this writer.
+        try:
+            max_grade = float(os.getenv("UP_ELEVATION_MAX_GRADE", "0.2"))
+        except Exception:
+            max_grade = 0.2
+
         sampled_points = 0
         nodata_points = 0
         sample_values: List[float] = []
@@ -744,6 +755,7 @@ class ElevationImporter:
         applied_road_ids: List[str] = []
         fallback_road_ids: List[str] = []
         linear_grade_road_ids: List[str] = []
+        grade_clamped_road_ids: List[str] = []
         endpoint_nodata_road_ids: List[str] = []
         extrapolated_road_ids: List[str] = []
         propagated_road_ids: List[str] = []
@@ -753,6 +765,10 @@ class ElevationImporter:
         fallback_active = bool(getattr(sampler, "_dem_fallback_active", False))
 
         def _set_flat_elevation(road_elem: ET.Element, z_value: float, b_coeff: float = 0.0) -> None:
+            # Defensive grade clamp at the writer: no elevation segment may
+            # exceed |max_grade| regardless of caller.
+            if abs(b_coeff) > max_grade:
+                b_coeff = max(-max_grade, min(max_grade, b_coeff))
             elev_elem = road_elem.find("elevationProfile")
             if elev_elem is None:
                 elev_elem = ET.SubElement(road_elem, "elevationProfile")
@@ -884,6 +900,9 @@ class ElevationImporter:
 
                     if valid_end and z_end is not None:
                         b_coeff = (z_end - z0) / road_length
+                        if abs(b_coeff) > max_grade:
+                            b_coeff = max(-max_grade, min(max_grade, b_coeff))
+                            grade_clamped_road_ids.append(rid)
                         linear_grade_road_ids.append(rid)
                     else:
                         # Record endpoint no-data violation; F2 gate will handle strict/audit behavior
@@ -1099,6 +1118,9 @@ class ElevationImporter:
                 "fallback_road_ids": sorted(set(fallback_road_ids)),
                 "linear_grade_enabled": bool(linear_grade),
                 "linear_grade_road_ids": sorted(set(linear_grade_road_ids)),
+                "max_grade": float(max_grade),
+                "grade_clamped_road_ids": sorted(set(grade_clamped_road_ids)),
+                "grade_clamped_count": int(len(set(grade_clamped_road_ids))),
                 "endpoint_nodata_road_ids": sorted(set(endpoint_nodata_road_ids)),
                 "extrapolated_road_ids": sorted(set(extrapolated_road_ids)),
                 "extrapolated_count": int(len(set(extrapolated_road_ids))),
