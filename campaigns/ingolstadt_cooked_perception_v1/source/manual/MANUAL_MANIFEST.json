@@ -1,0 +1,38 @@
+{
+  "manifest": "campaigns/ingolstadt_cooked_perception_v1/source/manual/MANUAL_MANIFEST.json",
+  "role": "manual_reference",
+  "maps": {
+    "Grid0828": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "origin": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "bytes": 66530869,
+      "frame": "UTM-32N (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+      "status": "pinned"
+    }
+  },
+  "name_content_drift": {
+    "Grid0821_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "Grid0828_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "identical": true,
+    "note": "Grid0821.xodr and Grid0828.xodr under CARLA Content are BYTE-IDENTICAL (same sha256). Only ONE distinct manual XODR exists under two names; the thesis manual reference is Grid0828. Any registry name->content resolution must fail-closed on this so a mislabeled name cannot silently substitute content."
+  },
+  "acceptance": {
+    "measured_without_require_enrichment": true,
+    "valid_for_experiments": false,
+    "hard_fail_reasons": [
+      {
+        "gate": "origin_sanity",
+        "reason": "gate_failed"
+      }
+    ],
+    "carla_fatal_structural_gates": {
+      "geometric_continuity_ok": true,
+      "lane_successor_missing_count": 0,
+      "lane_count_total": 11352,
+      "isolated_lane_component_count": 16,
+      "largest_component_fraction": 0.904246
+    },
+    "verdict": "ACCEPTED_AS_REFERENCE: all CARLA-fatal structural gates pass (continuity ok, 0 missing successors, connectivity ok). The single hard-fail origin_sanity is a UTM-32N frame artifact (centroid ~5.45e6 m from origin), NOT a structural defect; Grid0828 loads as a cooked UE map in CARLA. For C17 path-A (OpenDRIVE-standalone), the manual XODR needs its own local rebase at capture time."
+  }
+}

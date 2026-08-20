@@ -1,0 +1,54 @@
+{
+  "failed_gates": [
+    "origin_sanity"
+  ],
+  "final_xodr_path": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr",
+  "final_xodr_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+  "hard_fail_reasons": [
+    {
+      "gate": "origin_sanity",
+      "reason": "gate_failed"
+    }
+  ],
+  "linked_artifacts": {},
+  "metrics": {
+    "buildings_count": 993,
+    "dem_coverage_ratio": 1.0,
+    "elevation_stats": {
+      "z_max": 374.4362725468851,
+      "z_min": 362.4238054183,
+      "z_range": 12.012467128585115
+    },
+    "functional_signals_count": 5000,
+    "geometric_continuity_ok": true,
+    "isolated_lane_component_count": 16,
+    "lane_component_count": 84,
+    "lane_count_total": 11352,
+    "lane_ok": true,
+    "lane_successor_missing_count": 0,
+    "largest_component_fraction": 0.904246,
+    "largest_component_lane_count": 10265,
+    "length_invariant_tol_m": 1e-09,
+    "length_invariant_violations": 0,
+    "origin_centroid_distance_m": 5446586.88469006,
+    "seam_stats": {
+      "bad_fraction": 0.0,
+      "count": 0,
+      "max_bad_fraction": 0.002,
+      "max_jump": 0.47552207275549563,
+      "p95_jump": 0.16487273995305138,
+      "total_jump_samples": 10247
+    },
+    "traffic_light_object_count": 0,
+    "unmatched_cross_links": 41
+  },
+  "run_id": "Grid0828",
+  "soft_warnings": [
+    {
+      "gate": "component_reachability",
+      "reason": "16 isolated lane components (largest=0.904246)"
+    }
+  ],
+  "valid": false,
+  "valid_for_experiments": false
+}

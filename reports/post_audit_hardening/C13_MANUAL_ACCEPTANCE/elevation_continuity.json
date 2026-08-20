@@ -1,0 +1,23 @@
+{
+  "eps_z": 0.5,
+  "issues": [],
+  "junction_connector_issues": [
+    {
+      "contact_point": "start",
+      "dz": 0.5067340889754632,
+      "from_road": "3003810",
+      "link_kind": "successor",
+      "to_road": "1014000",
+      "warnings": [],
+      "z_from_end": 365.23165438762453,
+      "z_to_start": 365.7383884766
+    }
+  ],
+  "num_issues": 0,
+  "num_junction_connector_issues": 1,
+  "num_junction_connector_links_checked": 1450,
+  "num_links_checked": 10,
+  "num_roads": 993,
+  "ok": true,
+  "warnings": []
+}

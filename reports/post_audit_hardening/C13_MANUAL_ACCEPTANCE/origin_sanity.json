@@ -1,0 +1,20 @@
+{
+  "bbox": {
+    "max_x": 682410.5096099,
+    "max_y": 5405403.332598,
+    "min_x": 678015.8009219,
+    "min_y": 5402486.14794
+  },
+  "centroid": {
+    "x": 680213.1552659,
+    "y": 5403944.740269
+  },
+  "centroid_distance_m": 5446586.88469006,
+  "fail_distance_m": 500000.0,
+  "ok": false,
+  "warn_distance_m": 50000.0,
+  "warnings": [
+    "centroid distance 5446586.9m exceeds fail threshold"
+  ],
+  "xodr_path": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr"
+}

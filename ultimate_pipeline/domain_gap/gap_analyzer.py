@@ -223,5 +223,59 @@ class DomainGapAnalyzer:
             json.dump(scores.to_dict(), f, indent=2)
 
     @classmethod
-    def compare_xodr_to_xodr(cls, reference_stats, generated_stats):
-        pass
+    def compare_xodr_to_xodr(
+        cls,
+        reference_stats,
+        generated_stats,
+        *,
+        lane_width_scale_m: float = 3.5,
+    ) -> DomainGapScores:
+        """Structural domain gap between two XODR maps.
+
+        `reference_stats` is treated as ground truth (e.g. the manual map); mirrors
+        `compare()` but for XODR<->XODR, using only XODR-comparable features. Missing
+        optional fields (num_buildings/road_type_counts) default to empty/0.
+        """
+        ref, gen = reference_stats, generated_stats
+
+        lane_width_gap = _relative_gap(
+            float(getattr(ref, "avg_lane_width", 0.0) or 0.0),
+            float(getattr(gen, "avg_lane_width", 0.0) or 0.0),
+            scale=lane_width_scale_m,
+        )
+        curvature_gap = _l1_hist_gap(
+            list(getattr(ref, "curvature_samples", []) or []),
+            list(getattr(gen, "curvature_samples", []) or []),
+        )
+
+        ref_len = float(getattr(ref, "total_road_length", 0.0) or 0.0)
+        gen_len = float(getattr(gen, "total_road_length", 0.0) or 0.0)
+        if ref_len > 0:
+            road_length_gap = min(1.0, abs(1.0 - gen_len / ref_len))
+        else:
+            road_length_gap = 0.0
+
+        tl_ref = _density(int(getattr(ref, "num_traffic_lights", 0) or 0), ref_len)
+        tl_gen = _density(int(getattr(gen, "num_traffic_lights", 0) or 0), gen_len)
+        traffic_light_density_gap = _relative_gap(tl_ref, tl_gen, scale=max(tl_ref, 1.0))
+
+        bld_ref = _density(int(getattr(ref, "num_buildings", 0) or 0), ref_len)
+        bld_gen = _density(int(getattr(gen, "num_buildings", 0) or 0), gen_len)
+        building_density_gap = _relative_gap(bld_ref, bld_gen, scale=max(bld_ref, 1.0))
+
+        ref_types = getattr(ref, "road_type_counts", {}) or {}
+        gen_types = getattr(gen, "road_type_counts", {}) or {}
+        if not ref_types:
+            road_type_coverage_gap = 0.0
+        else:
+            missing = sum(1 for t in ref_types if t not in gen_types)
+            road_type_coverage_gap = missing / len(ref_types)
+
+        return DomainGapScores(
+            lane_width_gap=lane_width_gap,
+            curvature_gap=curvature_gap,
+            road_length_gap=road_length_gap,
+            traffic_light_density_gap=traffic_light_density_gap,
+            building_density_gap=building_density_gap,
+            road_type_coverage_gap=road_type_coverage_gap,
+        )

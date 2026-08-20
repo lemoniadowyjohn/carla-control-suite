@@ -1,0 +1,36 @@
+{
+  "rq": "RQ1 structural domain gap (auto vs manual), pinned pair",
+  "auto_map": {
+    "path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+    "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+  },
+  "manual_map": {
+    "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+    "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "frame": "UTM-32N"
+  },
+  "scores": {
+    "lane_width_gap": 0.0415145202899021,
+    "curvature_gap": 1.0,
+    "road_length_gap": 1.0,
+    "traffic_light_density_gap": 1.0,
+    "building_density_gap": 0.7950785267578812,
+    "road_type_coverage_gap": 0.0
+  },
+  "coverage_context": {
+    "manual": {
+      "num_roads": 993,
+      "num_junctions": 119
+    },
+    "auto": {
+      "num_roads": 32297,
+      "num_junctions": 3568
+    }
+  },
+  "claim_boundaries": [
+    "full_network_metrics != local_registration_quality: these are whole-map stat differences, not a registered/aligned local geometry error.",
+    "CONSTRUCTION ARTIFACTS (not pure domain gap): the manual map is hand-modeled in UTM-32N as a cooked UE level; the auto map is Osm2Odr+DEM. Differences in elevation encoding and building/object density reflect construction METHOD, not a 'domain' difference. Report elevation/object gaps WITH this caveat.",
+    "frame difference (auto=local tmerc(0,0) rebased, manual=UTM-32N) does not affect these stats (counts/lengths/curvature are frame-invariant); positional registration is a separate (deferred) step."
+  ],
+  "method": "ManualAutoComparator.compare_maps (XODR-only, manual=ground-truth, no OSM priors)"
+}
