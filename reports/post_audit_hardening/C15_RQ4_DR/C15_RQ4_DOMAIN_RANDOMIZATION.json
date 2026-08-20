@@ -1,0 +1,23 @@
+{
+  "rq": "RQ4 \u2014 does domain randomization occur naturally in the OSM->CARLA pipeline?",
+  "determinism_arm": {
+    "runs": 3,
+    "byte_sha_unique": 3,
+    "byte_deterministic": false,
+    "structurally_deterministic": true,
+    "structure_signature_identical": "num_roads=32920, num_junctions=3717, total_road_length=1498527.5916156755 identical across all runs",
+    "finding": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT."
+  },
+  "answer": "Natural domain randomization does NOT occur: the pipeline reproduces the same map structure on every run; byte-level differences are non-semantic serialization noise, not randomization. Therefore the thesis's domain randomization must be EXPLICIT.",
+  "explicit_dr": {
+    "module": "ultimate_pipeline/augmentation/realism_augmentor.py",
+    "apply_n_produces_distinct_variants": 5,
+    "changes_input": true,
+    "deterministic_same_seed": true,
+    "varies_across_seeds": true,
+    "mechanism": "image-space augmentation (weather/lighting/texture) at capture time; seeded local RNGs (no global seeding)."
+  },
+  "reproducibility_nuance": "Osm2Odr byte-non-determinism means exact-sha reproduction of the seed XODR (and possibly the final candidate) is NOT guaranteed -- only STRUCTURAL reproduction. Pinning-by-sha (C11) assumes byte-determinism; document that provenance guarantees structural, not byte-exact, reproduction across re-conversions.",
+  "multi_map_arm_note": "generate_n_runs runs the FULL pipeline N times (~1.5h each). Since the pipeline is structurally deterministic, N runs on the same OSM re-confirm determinism (no natural spread). Distinct maps for a DR study require EXPLICIT parameter/seed variation, not natural randomization. Heavy n>=5 generation deferred as it does not change the RQ4 answer.",
+  "claim_boundary": "Do NOT claim natural DR. Report: natural DR absent -> explicit DR (RealismAugmentor) applied."
+}
