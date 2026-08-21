@@ -386,6 +386,139 @@ def resolve_available_load_world_targets(
     }
 
 
+# =============================================================================
+# C13 — Content-addressed pin registry (drift guard)
+# =============================================================================
+# Separate concern from the name-normalization registry above: this binds
+# canonical map roles to CONTENT (sha256), not just names. RQ1/RQ2 need the
+# auto<->manual pair referenced by digest so a mutated/mismatched file can
+# never silently masquerade as "the" pinned map.
+#
+# Real drift this guards against (see source/manual/MANUAL_MANIFEST.json):
+# Grid0821.xodr and Grid0828.xodr under CARLA Content are byte-identical
+# today (same sha256) -- only one distinct manual XODR exists under two
+# names. If they ever diverge, or a name gets pointed at the wrong file,
+# verify_pinned_map() must fail closed rather than silently resolve.
+
+from ultimate_pipeline.governance.inputs_manifest import sha256_file as _sha256_file
+
+
+class MapRegistryDriftError(Exception):
+    """A registry name resolved to file content that doesn't match its pin.
+
+    Fail-closed: callers must not proceed with a mismatched, missing, or
+    unresolved (LFS pointer not smudged) pinned map.
+    """
+
+
+def _repo_root() -> Path:
+    # ultimate_pipeline/carla_tools/map_registry.py -> repo root
+    return Path(__file__).resolve().parents[2]
+
+
+PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
+    "auto_map_of_record": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260819_160350.xodr",
+        "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+        "bytes": 144142210,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
+    },
+    "manual_grid0828": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+        "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+        "bytes": 66530869,
+        "role": "manual",
+        "frame": "UTM-32N (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+        # Grid0821 is byte-identical to Grid0828 on this machine (verified
+        # sha256 match) -- both names resolve to this ONE pinned entry.
+        "aliases": ["manual_grid0828", "Grid0828", "Grid0821", "manual", "manual_reference"],
+    },
+}
+
+_ALIAS_TO_KEY: Dict[str, str] = {}
+for _key, _entry in PINNED_MAP_REGISTRY.items():
+    for _alias in _entry.get("aliases", [_key]):
+        _ALIAS_TO_KEY[_alias.lower()] = _key
+
+
+def verify_pinned_map(
+    name: str,
+    *,
+    base_dir: Optional[Path] = None,
+    registry: Optional[Dict[str, Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
+    """Resolve ``name`` to its pinned registry entry and verify on-disk content.
+
+    Fail-closed: raises MapRegistryDriftError if the file is missing, its
+    sha256 doesn't match the pin (drift), or it's an un-smudged git-lfs
+    pointer stub masquerading as the real content. Raises LookupError for
+    an unregistered name (never silently falls back to "unknown").
+
+    Args:
+        name: canonical key or any registered alias (case-insensitive).
+        base_dir: repo root for resolving relative paths (default: this
+            file's actual repo root -- override only for tests).
+        registry: pin registry to resolve against (default: the real,
+            module-level PINNED_MAP_REGISTRY -- override only for tests).
+
+    Returns:
+        The matched registry entry dict (path/sha256/bytes/role/frame),
+        proven to match the on-disk file at call time.
+    """
+    reg = registry if registry is not None else PINNED_MAP_REGISTRY
+    if registry is not None:
+        alias_map: Dict[str, str] = {}
+        for key, entry in reg.items():
+            for alias in entry.get("aliases", [key]):
+                alias_map[alias.lower()] = key
+    else:
+        alias_map = _ALIAS_TO_KEY
+
+    key = alias_map.get(str(name).lower())
+    if key is None:
+        raise LookupError(
+            f"'{name}' is not a registered pinned map (known: {sorted(alias_map)})"
+        )
+    entry = reg[key]
+
+    raw_path = str(entry["path"])
+    path = Path(raw_path)
+    if not path.is_absolute():
+        root = base_dir if base_dir is not None else _repo_root()
+        path = Path(root) / raw_path
+
+    if not path.is_file():
+        raise MapRegistryDriftError(
+            f"pinned map '{name}' -> '{key}': file not found at {path}"
+        )
+
+    # A real git-lfs pointer stub is a small text file starting with the
+    # spec header; catch it before hashing so the error is actionable
+    # instead of a confusing sha256 mismatch.
+    try:
+        head = path.read_bytes()[:64]
+    except OSError as exc:
+        raise MapRegistryDriftError(f"pinned map '{name}' -> '{key}': cannot read {path}: {exc}") from exc
+    if head.startswith(b"version https://git-lfs"):
+        raise MapRegistryDriftError(
+            f"pinned map '{name}' -> '{key}': {path} is an un-smudged git-LFS pointer, "
+            "not the real content. Run `git lfs pull` (or `git lfs install` first)."
+        )
+
+    actual_sha256 = _sha256_file(path)
+    expected_sha256 = str(entry["sha256"])
+    if actual_sha256 != expected_sha256:
+        raise MapRegistryDriftError(
+            f"pinned map '{name}' -> '{key}': content drift at {path} "
+            f"(expected sha256={expected_sha256}, actual={actual_sha256})"
+        )
+
+    return dict(entry)
+
+
 def copy_latest_carla_log(out_dir: Path) -> str:
     """Best-effort copy of the newest CARLA log to ``out_dir/carla_latest.log``."""
     output_dir = Path(out_dir)

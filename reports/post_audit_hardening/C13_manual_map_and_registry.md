@@ -53,3 +53,37 @@ registry, so every downstream RQ references maps by sha256, not by mutable name.
   resolved name↔content drift.
 - Push (explicit pathspec); local==remote; full suite green.
 - **Verdict:** `PAIR_PINNED auto=<sha> manual=<sha> loadable=<PASS|DEFERRED> drift=RESOLVED` | PARTIAL | BLOCKED.
+
+---
+
+## Closure (2026-08-21, Sonnet) — step 4, the registry + drift guard
+
+Steps 1-3 were already done (commit `fd6951c7`): manual XODR pinned, acceptance run, C14's structural
+comparator implemented. Step 4 (the content-addressed registry itself + its TDD drift guard) was still
+open — this closes it.
+
+`ultimate_pipeline/carla_tools/map_registry.py` gets a new, separate content-addressed section
+(`PINNED_MAP_REGISTRY` + `verify_pinned_map()`), distinct from the existing map-*name*-normalization
+registry already in that file. `verify_pinned_map(name)` resolves any registered alias (`"Grid0828"`,
+`"Grid0821"`, `"auto_map_of_record"`, `"map_of_record"`, ...) to its pinned entry, then fails closed
+(`MapRegistryDriftError`) if the file is missing, is an un-smudged git-LFS pointer stub (distinct,
+actionable message — not a confusing hash mismatch), or its on-disk sha256 doesn't match the pin.
+
+Both real pins independently re-verified (sha256 recomputed directly from disk, not taken from any
+report/commit-message text):
+- auto: `69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e`
+- manual: `5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c`
+- `Grid0821` resolves to the same content as `Grid0828`, as `MANUAL_MANIFEST.json` already documented.
+
+**Tests:** `tests/unit/test_map_registry_pinning.py` (10 tests) — positive/negative controls on
+synthetic fixtures (the TDD-mandated "a name→wrong-sha must fail" case), missing-file guard,
+unregistered-name guard, alias resolution, LFS-pointer detection, plus 4 integration-style checks
+against the real repo pins.
+
+Full offline suite: 3006 passed, 78 skipped, 0 failed (one `test_writer_lock.py` timing flake,
+confirmed unrelated — passes standalone).
+
+Loadability (step 5) is **DEFERRED**: CARLA is currently occupied by concurrent GPU-diagnostic work
+on this machine (C20), not attempted here to avoid interfering with that live probe.
+
+**Updated verdict:** `PAIR_PINNED auto=69b1f520 manual=5eaece23 loadable=DEFERRED drift=RESOLVED`
