@@ -201,6 +201,57 @@ def _main_payload(repo_root: Path) -> Dict[str, Any]:
     }
 
 
+def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
+    """C19 step 2 (current era) -- audit the C12-C18 evidence via the C19
+    step-1 export, independent of the legacy run11/thesis_sensor_rig checks
+    above (which predate the C6-C20 remediation arc and audit a different,
+    older evidence layout). Fails closed: any row missing an explicit
+    status, or RQ2/RQ3/RQ5 rows lacking a stated deferral reason, is
+    reported as a contract violation rather than silently passing.
+    """
+    rq_tables_path = repo_root / "reports" / "post_audit_hardening" / "C19_THESIS_ASSEMBLY" / "rq_tables.json"
+    rq_tables = _read_json_dict(rq_tables_path)
+    if not rq_tables:
+        return {
+            "rq_tables_found": False,
+            "rq_tables_path": rq_tables_path.as_posix(),
+            "violations": ["rq_tables.json not found -- run tools/export_thesis_tables.py first"],
+        }
+
+    valid_statuses = {"AUTHORITATIVE", "BOUNDED", "PROTOTYPE", "DEFERRED", "MISSING"}
+    violations: list[str] = []
+    rows = rq_tables.get("rows", [])
+    for row in rows:
+        status = row.get("status")
+        if status not in valid_statuses:
+            violations.append(f"row {row.get('rq')}/{row.get('metric')}: invalid or missing status {status!r}")
+        if status in {"DEFERRED", "MISSING"} and not str(row.get("note") or "").strip():
+            violations.append(f"row {row.get('rq')}/{row.get('metric')}: {status} with no reason given")
+
+    rq_covered = {row.get("rq") for row in rows}
+    expected_rqs = {"RQ1", "RQ2", "RQ3", "RQ4", "RQ5", "RQ3/RQ5"}
+    # RQ3 and RQ5 may appear standalone or combined with the GNN row's "RQ3/RQ5" tag.
+    missing_rq_coverage = {
+        rq for rq in ("RQ1", "RQ2", "RQ4")
+        if rq not in rq_covered
+    }
+    if not ({"RQ3", "RQ3/RQ5"} & rq_covered):
+        missing_rq_coverage.add("RQ3")
+    if not ({"RQ5", "RQ3/RQ5"} & rq_covered):
+        missing_rq_coverage.add("RQ5")
+    if missing_rq_coverage:
+        violations.append(f"RQs with zero rows: {sorted(missing_rq_coverage)}")
+
+    return {
+        "rq_tables_found": True,
+        "rq_tables_path": rq_tables_path.as_posix(),
+        "row_count": len(rows),
+        "counts_by_status": rq_tables.get("counts_by_status", {}),
+        "violations": violations,
+        "ok": not violations,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Audit whether the repo exposes conservative thesis-topic contract outputs."
@@ -210,6 +261,7 @@ def main() -> int:
 
     repo_root = _repo_root()
     payload = _main_payload(repo_root)
+    payload["current_rq_tables_audit"] = _current_rq_tables_audit(repo_root)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
         json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",

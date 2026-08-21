@@ -1,0 +1,89 @@
+{
+  "calibration_contract": {
+    "camera_cTv_direct_enforced": true,
+    "camera_image_size_enforced": true,
+    "camera_uses_K_undistortion": true,
+    "lidar_vTl_inversion_enforced": true,
+    "validation_method_present": true
+  },
+  "current_rq_tables_audit": {
+    "counts_by_status": {
+      "AUTHORITATIVE": 3,
+      "BOUNDED": 6,
+      "DEFERRED": 4,
+      "PROTOTYPE": 1
+    },
+    "ok": true,
+    "row_count": 14,
+    "rq_tables_found": true,
+    "rq_tables_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
+    "violations": []
+  },
+  "generalization_status": {
+    "claim_boundary_present": true,
+    "component_status_fields_present": true,
+    "machine_readable_status_present": true,
+    "overall_status_enum_present": true
+  },
+  "generated_at_utc": "2026-08-21T13:49:21.927086+00:00",
+  "perception_labels": {
+    "pair_result_class_present": true,
+    "pair_result_reason_present": true,
+    "single_arm_result_class_present": true,
+    "supported_result_classes": [
+      "paired_manual_vs_auto_ingolstadt",
+      "proxy_cross_map_comparison",
+      "smoke_test_only",
+      "capture_failed",
+      "bounded_partial_result"
+    ],
+    "visual_qa_contract_present": true
+  },
+  "repo_root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "run11": {
+    "addendum_parsed": false,
+    "conservative_interpretation": {},
+    "coverage_context": {},
+    "coverage_context_present": false,
+    "elevation_context": {},
+    "elevation_stats_parsed": false,
+    "fit_metric_exact_source_revision_status": "missing",
+    "fit_metric_primary_safe_conclusion": "",
+    "full_network_vs_local_claim_boundary_present": false,
+    "governed_addenda": {
+      "elevation_stats_auto_json": false,
+      "run_11_audit_addendum_json": false,
+      "supplementary_metrics_json": false
+    },
+    "source_available": false,
+    "source_dir": "",
+    "supplementary_metrics_parsed": false,
+    "true_divergence_supported": false
+  },
+  "schema_version": 2,
+  "unresolved_or_unverified": [
+    {
+      "detail": "Code-path contract exists, but no CARLA runtime probe was executed in this reconciliation pass.",
+      "status": "missing_runtime_evidence",
+      "topic": "visual_qa_runtime_verification_this_pass"
+    }
+  ],
+  "variability_experiment_classes": {
+    "multi_map_variability": {
+      "reason": "multiple generated maps are being compared as a variability/randomization experiment class",
+      "value": "multi_map_variability_natural_randomization"
+    },
+    "same_input_repeat": {
+      "reason": "repeated conversion of the same OSM input measures determinism/noise, not multi-map natural randomization",
+      "value": "same_input_repeat_determinism"
+    },
+    "separation_status": "explicit_machine_readable_labels_available"
+  },
+  "visual_qa_contract": {
+    "capture_visual_contract_path": "perception_status.json + visual_qa_contract.json",
+    "probe_world_identity_key_present": true,
+    "probe_world_loaded_key_present": true,
+    "runtime_verification_status": "missing_runtime_evidence",
+    "runtime_verified_this_pass": false
+  }
+}

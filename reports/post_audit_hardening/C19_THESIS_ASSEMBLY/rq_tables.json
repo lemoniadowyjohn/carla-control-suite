@@ -1,0 +1,137 @@
+{
+  "counts_by_status": {
+    "AUTHORITATIVE": 3,
+    "BOUNDED": 6,
+    "DEFERRED": 4,
+    "PROTOTYPE": 1
+  },
+  "row_count": 14,
+  "rows": [
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "lane_width_gap",
+      "note": "genuine, small -- directly comparable, maps agree",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.0415145202899021
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "curvature_gap",
+      "note": "real (fixed 2026-08-21, was a 1.0 measurement artifact); range-sensitive histogram-L1, treat as 'moderate' not a precise scalar",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.09311717328016497
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "road_length_gap",
+      "note": "construction/scope artifact (full OSM extraction vs curated subset), not domain gap",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 1.0
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "traffic_light_density_gap",
+      "note": "construction artifact",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 1.0
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "building_density_gap",
+      "note": "construction artifact",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.7950785267578812
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "road_type_coverage_gap",
+      "note": "manual road types are a subset of auto's",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.0
+    },
+    {
+      "artifact": "reports\\post_audit_hardening\\C17_rq2_perception_capture.md",
+      "metric": "perceptual_gap",
+      "note": "paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)",
+      "rq": "RQ2",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "map_encoder_epoch50.pt",
+      "metric": "gnn_latent_cosine_distance",
+      "note": "one-sided (auto-only) training makes the manual map OOD for the encoder -- conflates true structural gap with distribution shift; corroborates RQ1, not an independent authoritative measurement",
+      "rq": "RQ3/RQ5",
+      "sha256": "0f9cc638da2030eea4cf8657dac0a663",
+      "status": "PROTOTYPE",
+      "value": 1.142302393913269
+    },
+    {
+      "artifact": "",
+      "metric": "miou_auto_train_manual_eval",
+      "note": "needs C17 paired captures (blocked -- see RQ2)",
+      "rq": "RQ3",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "",
+      "metric": "real_unlabeled_shift_metrics",
+      "note": "no real-world Ingolstadt dataset available on this machine (independent of the CARLA blocker)",
+      "rq": "RQ5",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "",
+      "metric": "domain_adaptation_coral_mmd",
+      "note": "needs C17 paired captures (blocked -- see RQ2)",
+      "rq": "RQ3",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py",
+      "metric": "natural_dr_present",
+      "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
+      "rq": "RQ4",
+      "sha256": "",
+      "status": "AUTHORITATIVE",
+      "value": false
+    },
+    {
+      "artifact": "",
+      "metric": "structurally_deterministic",
+      "note": "3 runs, 3 distinct sha256 (byte-non-deterministic serialization, structure identical)",
+      "rq": "RQ4",
+      "sha256": "",
+      "status": "AUTHORITATIVE",
+      "value": true
+    },
+    {
+      "artifact": "ultimate_pipeline/augmentation/realism_augmentor.py",
+      "metric": "explicit_dr_wired",
+      "note": "apply_n produces 5 distinct variants; deterministic given a seed, varies across seeds",
+      "rq": "RQ4",
+      "sha256": "",
+      "status": "AUTHORITATIVE",
+      "value": true
+    }
+  ]
+}

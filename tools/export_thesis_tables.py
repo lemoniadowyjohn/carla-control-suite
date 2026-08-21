@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""C19 (step 1) — export honest, provenance-cited per-RQ tables.
+
+Reads the actual C12-C18 evidence artifacts on disk (never re-derives or
+guesses numbers) and assembles one machine-readable table per research
+question, each row citing the artifact it came from and its sha256 where
+the artifact is a pinned file. A row with no evidence file present is
+reported as MISSING, not silently omitted -- the honesty gate (C19 step 2,
+audit_thesis_topic_contract.py) checks that every row has an explicit
+status.
+
+Status vocabulary (kept consistent with ultimate_pipeline.config.thesis_contract):
+    AUTHORITATIVE - full result, methodology sound, ready to cite as-is
+    BOUNDED       - real result but with an explicit scope/method caveat
+    PROTOTYPE     - real result but not yet validated (single run, no CI, etc.)
+    DEFERRED      - genuinely not computed yet, with a stated reason
+    MISSING       - evidence file this table row depends on was not found
+"""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+AUTHORITATIVE = "AUTHORITATIVE"
+BOUNDED = "BOUNDED"
+PROTOTYPE = "PROTOTYPE"
+DEFERRED = "DEFERRED"
+MISSING = "MISSING"
+
+
+def _read_json(path: Path) -> Optional[Dict[str, Any]]:
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _row(rq: str, metric: str, value: Any, status: str, *, artifact: str = "",
+         sha256: str = "", note: str = "") -> Dict[str, Any]:
+    return {
+        "rq": rq, "metric": metric, "value": value, "status": status,
+        "artifact": artifact, "sha256": sha256, "note": note,
+    }
+
+
+def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
+    ev_dir = root / "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP"
+    curvature = _read_json(ev_dir / "curvature_recompute.json")
+    main = _read_json(ev_dir / "C14_RQ1_STRUCTURAL_GAP.json")
+    if main is None:
+        return [_row("RQ1", "structural_gap_composite", None, MISSING,
+                      note="C14_RQ1_STRUCTURAL_GAP.json not found -- RQ1 not computed")]
+
+    scores = (curvature or {}).get("all_scores") or main.get("scores") or {}
+    auto = main.get("auto_map", {})
+    manual = main.get("manual_map", {})
+    artifact = f"{auto.get('path', '')} vs {manual.get('path', '')}"
+    rows = [
+        _row("RQ1", "lane_width_gap", scores.get("lane_width_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""),
+             note="genuine, small -- directly comparable, maps agree"),
+        _row("RQ1", "curvature_gap", scores.get("curvature_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""),
+             note="real (fixed 2026-08-21, was a 1.0 measurement artifact); "
+                  "range-sensitive histogram-L1, treat as 'moderate' not a precise scalar"),
+        _row("RQ1", "road_length_gap", scores.get("road_length_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""),
+             note="construction/scope artifact (full OSM extraction vs curated subset), not domain gap"),
+        _row("RQ1", "traffic_light_density_gap", scores.get("traffic_light_density_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""), note="construction artifact"),
+        _row("RQ1", "building_density_gap", scores.get("building_density_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""), note="construction artifact"),
+        _row("RQ1", "road_type_coverage_gap", scores.get("road_type_coverage_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""), note="manual road types are a subset of auto's"),
+    ]
+    return rows
+
+
+def _rq2_rows(root: Path) -> List[Dict[str, Any]]:
+    ev = root / "reports/post_audit_hardening/C17_rq2_perception_capture.md"
+    return [_row("RQ2", "perceptual_gap", None, DEFERRED,
+                  artifact=str(ev.relative_to(root)) if ev.is_file() else "",
+                  note="paired capture not executed -- needs a live CARLA server "
+                       "(currently blocked by a livelock, see C20_TIER1_PROBE_20260821) "
+                       "or the C16 UE cook (blocked on a human operator)")]
+
+
+def _rq3_rq5_rows(root: Path) -> List[Dict[str, Any]]:
+    ev_dir = root / "reports/post_audit_hardening/C18_GNN_LATENT_GAP"
+    gnn = _read_json(ev_dir / "gnn_training_report.json")
+    rows: List[Dict[str, Any]] = []
+    if gnn is not None:
+        metrics = ((gnn.get("latent_gap") or {}).get("metrics")) or {}
+        ckpt_md5 = ((gnn.get("latent_gap") or {}).get("encoder") or {}).get("checkpoint_md5", "")
+        rows.append(_row(
+            "RQ3/RQ5", "gnn_latent_cosine_distance", metrics.get("cosine_distance"), PROTOTYPE,
+            artifact="map_encoder_epoch50.pt", sha256=ckpt_md5,
+            note="one-sided (auto-only) training makes the manual map OOD for the encoder -- "
+                 "conflates true structural gap with distribution shift; corroborates RQ1, "
+                 "not an independent authoritative measurement",
+        ))
+    else:
+        rows.append(_row("RQ3/RQ5", "gnn_latent_cosine_distance", None, MISSING,
+                          note="gnn_training_report.json not found"))
+    rows.append(_row("RQ3", "miou_auto_train_manual_eval", None, DEFERRED,
+                      note="needs C17 paired captures (blocked -- see RQ2)"))
+    rows.append(_row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED,
+                      note="no real-world Ingolstadt dataset available on this machine "
+                           "(independent of the CARLA blocker)"))
+    rows.append(_row("RQ3", "domain_adaptation_coral_mmd", None, DEFERRED,
+                      note="needs C17 paired captures (blocked -- see RQ2)"))
+    return rows
+
+
+def _rq4_rows(root: Path) -> List[Dict[str, Any]]:
+    ev_dir = root / "reports/post_audit_hardening/C15_RQ4_DR"
+    data = _read_json(ev_dir / "C15_RQ4_DOMAIN_RANDOMIZATION.json")
+    if data is None:
+        return [_row("RQ4", "natural_dr", None, MISSING, note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found")]
+    det = data.get("determinism_arm", {})
+    dr = data.get("explicit_dr", {})
+    return [
+        _row("RQ4", "natural_dr_present", False, AUTHORITATIVE,
+             artifact="ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py",
+             note=det.get("finding", "")),
+        _row("RQ4", "structurally_deterministic", det.get("structurally_deterministic"), AUTHORITATIVE,
+             note=f"{det.get('runs', 0)} runs, {det.get('byte_sha_unique', 0)} distinct sha256 "
+                  "(byte-non-deterministic serialization, structure identical)"),
+        _row("RQ4", "explicit_dr_wired", dr.get("changes_input"), AUTHORITATIVE,
+             artifact=dr.get("module", ""),
+             note=f"apply_n produces {dr.get('apply_n_produces_distinct_variants')} distinct variants; "
+                  "deterministic given a seed, varies across seeds"),
+    ]
+
+
+def build_tables(root: Path) -> Dict[str, Any]:
+    rows = (
+        _rq1_rows(root) + _rq2_rows(root) + _rq3_rq5_rows(root) + _rq4_rows(root)
+    )
+    by_status: Dict[str, int] = {}
+    for r in rows:
+        by_status[r["status"]] = by_status.get(r["status"], 0) + 1
+    return {"rows": rows, "counts_by_status": by_status, "row_count": len(rows)}
+
+
+def _to_markdown(payload: Dict[str, Any]) -> str:
+    lines = ["# Thesis RQ tables (C19)", "", "| RQ | metric | value | status | note |", "|---|---|---|---|---|"]
+    for r in payload["rows"]:
+        val = r["value"]
+        val_s = "—" if val is None else str(val)
+        lines.append(f"| {r['rq']} | {r['metric']} | {val_s} | {r['status']} | {r['note']} |")
+    lines.append("")
+    lines.append(f"Counts by status: {payload['counts_by_status']}")
+    return "\n".join(lines) + "\n"
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--out", type=Path, required=True, help="output directory")
+    args = ap.parse_args()
+
+    payload = build_tables(REPO_ROOT)
+    args.out.mkdir(parents=True, exist_ok=True)
+    (args.out / "rq_tables.json").write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    (args.out / "rq_tables.md").write_text(_to_markdown(payload), encoding="utf-8")
+    print(f"[export_thesis_tables] {payload['row_count']} rows -> {args.out}")
+    print(f"[export_thesis_tables] counts_by_status: {payload['counts_by_status']}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
