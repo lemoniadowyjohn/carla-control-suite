@@ -1,5 +1,11 @@
 # C21 (HIGH) — GNN latent gap: PROTOTYPE → AUTHORITATIVE
 
+> **DISPATCH CORRECTION (2026-08-21):** Step 6 cites `tools/export_thesis_tables.py::_rq3_rq5_rows` — that function
+> does **not** exist there (`export_thesis_tables.py` has only `collect_run_row`/`main`). Before editing, **trace the
+> actual generator** of `reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json` (the real GNN/RQ3 row
+> source) and change *that*; do not edit `export_thesis_tables.py` for the GNN row. Also: **land this AFTER C23**
+> (which retires `run_11` + makes C14 canonical RQ1) to avoid a concurrent edit to the thesis-tables/audit layer.
+
 Repo: C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main
 Branch: `fix/post-audit-phase-e-junctions-roundabouts-20260803` · Interp: `./.venv/Scripts/python.exe` · UP_DISABLE_CARLA=1 (fully offline)
 Rules: TDD for code changes; full-suite green; **EXPLICIT-PATHSPEC commit**; conservative claim boundaries.

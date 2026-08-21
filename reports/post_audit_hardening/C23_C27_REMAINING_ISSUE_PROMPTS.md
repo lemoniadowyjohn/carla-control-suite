@@ -28,6 +28,11 @@ curvature fix + `local_registration.json` with the 4.5–6× road-network findin
 `ultimate_pipeline/run_full_domain_gap.py`, `ultimate_pipeline/tests/unit/test_run_full_domain_gap_reproducibility.py`,
 and the C19 tables (`reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json`).
 
+**Precise location (verified 2026-08-21):** the `run_11` code is `audit_thesis_topic_contract.py::_main_payload()`
+**legacy section (≈lines 43–117**, `thesis_results/structural_gap_v1/run_11`) — **separate** from
+`_current_rq_tables_audit` (≈line 204+, the C19 honesty-gate; **do NOT touch it**). Retiring the legacy section is
+confirmed safe: the C19 gate was re-run against the new local-registration rows → `ok=True`, 0 violations.
+
 **Task (judgment per consumer — do NOT blindly delete):**
 1. Make C14 (+ local_registration) the canonical RQ1 entry in the C19 rq_tables + audit.
 2. For `run_11`: either (a) mark it `superseded_by=C14` in the audit so its missing-provenance flags are no longer an
