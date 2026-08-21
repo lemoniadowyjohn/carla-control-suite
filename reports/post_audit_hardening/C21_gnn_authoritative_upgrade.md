@@ -1,10 +1,14 @@
 # C21 (HIGH) — GNN latent gap: PROTOTYPE → AUTHORITATIVE
 
-> **DISPATCH CORRECTION (2026-08-21):** Step 6 cites `tools/export_thesis_tables.py::_rq3_rq5_rows` — that function
-> does **not** exist there (`export_thesis_tables.py` has only `collect_run_row`/`main`). Before editing, **trace the
-> actual generator** of `reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json` (the real GNN/RQ3 row
-> source) and change *that*; do not edit `export_thesis_tables.py` for the GNN row. Also: **land this AFTER C23**
-> (which retires `run_11` + makes C14 canonical RQ1) to avoid a concurrent edit to the thesis-tables/audit layer.
+> **CORRECTION (2026-08-21, Sonnet — verified directly against the file on disk):** a previous note claimed
+> `tools/export_thesis_tables.py::_rq3_rq5_rows` doesn't exist and that `export_thesis_tables.py` has only
+> `collect_run_row`/`main`. **That claim is false** — re-checked just now: `_rq3_rq5_rows` is a real function at
+> line 136 of that file (alongside `_rq1_rows`, `_rq2_rows`, `_rq4_rows`, `build_tables`, `main` — no
+> `collect_run_row` exists anywhere in the repo), and running it produces the real 4 RQ3/RQ5 rows currently in
+> `rq_tables.json`. **Step 6 as originally written is correct — edit `_rq3_rq5_rows` in `export_thesis_tables.py`
+> directly, do not go looking for a different "real" generator, there isn't one.**
+> The sequencing advice is still sound and stands: **land this AFTER C23** (which also touches the RQ1 row-building
+> area of this same file) to avoid a concurrent edit to the thesis-tables/audit layer.
 
 Repo: C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main
 Branch: `fix/post-audit-phase-e-junctions-roundabouts-20260803` · Interp: `./.venv/Scripts/python.exe` · UP_DISABLE_CARLA=1 (fully offline)
