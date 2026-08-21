@@ -1,0 +1,38 @@
+{
+  "pair": {
+    "auto": "69b1f520",
+    "manual": "Grid0828 (5eaece23)"
+  },
+  "before": {
+    "curvature_gap": 1.0,
+    "reason": "auto curvature_samples=[] (arc-only extractor)"
+  },
+  "after": {
+    "curvature_gap": 0.093117,
+    "manual_curvature": {
+      "name": "manual",
+      "n": 22959,
+      "abs_mean": 0.03600486237169924,
+      "abs_median": 0.014962297629848402,
+      "abs_p95": 0.12099811265523902,
+      "abs_max": 0.6455567272508815
+    },
+    "auto_curvature": {
+      "name": "auto",
+      "n": 104007,
+      "abs_mean": 0.027142423105562766,
+      "abs_median": 0.004502569067168563,
+      "abs_p95": 0.1417103375056247,
+      "abs_max": 0.9960614683986619
+    },
+    "method": "paramPoly3+arc+spiral sampled at s-fractions 0.25/0.5/0.75; L1 30-bin density hist"
+  },
+  "all_scores": {
+    "lane_width_gap": 0.0415145202899021,
+    "curvature_gap": 0.09311717328016497,
+    "road_length_gap": 1.0,
+    "traffic_light_density_gap": 1.0,
+    "building_density_gap": 0.7950785267578812,
+    "road_type_coverage_gap": 0.0
+  }
+}

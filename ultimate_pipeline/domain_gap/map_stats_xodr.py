@@ -9,6 +9,8 @@ from dataclasses import dataclass, asdict
 from typing import Dict, List, Tuple, Any
 
 from ultimate_pipeline.core.xodr_sanitizer import _safe_float
+from opendrive_geometry.primitives import param_poly3_curvature_at
+from opendrive_geometry.errors import ParamPoly3Error
 
 
 # ============================================================
@@ -67,6 +69,16 @@ class XODRMapStatsExtractor:
     """
 
     MAX_CURVATURE_SAMPLES = 100_000
+
+    # Interior arc-length fractions at which paramPoly3/spiral curvature is sampled.
+    # Interior points avoid endpoint tangent degeneracies (s=0 cusps).
+    CURVATURE_SAMPLE_FRACTIONS = (0.25, 0.5, 0.75)
+
+    # Physical upper bound on |curvature| (1/m); radius >= 1 m. Values above this arise from
+    # degenerate/ill-conditioned paramPoly3 segments (near-cusp tangent), not real road
+    # centerlines, and are excluded so a handful of spikes cannot dominate downstream
+    # histograms (a single kappa=37 outlier otherwise stretches the L1-hist range).
+    MAX_PHYSICAL_CURVATURE = 1.0
 
     # -----------------------------
     # Public API
@@ -148,7 +160,11 @@ class XODRMapStatsExtractor:
             object_counts=object_counts,
             assumptions={
                 "lane_width_sampling": "width polynomial coefficient a at sOffset=0",
-                "curvature_sampling": "arc curvature values only",
+                "curvature_sampling": (
+                    "arc + spiral + paramPoly3 (sampled at interior arc-length "
+                    "fractions 0.25/0.5/0.75); <line> excluded; |curvature|<=1.0 1/m "
+                    "physical bound (degenerate segments dropped)"
+                ),
                 "roundabout_detection": "road type=roundabout OR short road with arc geometry",
                 "units": "meters, radians",
                 "curvature_cap": str(XODRMapStatsExtractor.MAX_CURVATURE_SAMPLES),
@@ -206,14 +222,57 @@ class XODRMapStatsExtractor:
     @staticmethod
     def _collect_curvatures(road: ET.Element) -> List[float]:
         """
-        Collect curvature values from arc geometries.
+        Collect curvature values from curved planView geometry.
+
+        Handles the three OpenDRIVE curvature-bearing primitives:
+          - <arc curvature="k">          -> constant curvature k
+          - <spiral curvStart curvEnd>   -> curvature is linear in s (clothoid)
+          - <paramPoly3 ...>             -> curvature sampled at interior arc-length points
+        <line> segments carry no curvature and contribute nothing.
+
+        paramPoly3 is the dominant format emitted by both Osm2Odr/SUMO (auto) and
+        RoadRunner (manual); collecting arc-only (the previous behaviour) yielded empty
+        or near-empty samples and made the RQ1 curvature gap a measurement artifact.
         """
         curv: List[float] = []
 
         for geom in road.findall("./planView/geometry"):
             arc = geom.find("arc")
             if arc is not None:
-                k = _safe_float(arc.get("curvature", "0"), 0.0)
-                curv.append(k)
+                curv.append(_safe_float(arc.get("curvature", "0"), 0.0))
+                continue
 
-        return curv
+            spiral = geom.find("spiral")
+            if spiral is not None:
+                cs = _safe_float(spiral.get("curvStart", "0"), 0.0)
+                ce = _safe_float(spiral.get("curvEnd", "0"), 0.0)
+                # Clothoid curvature is linear in the arc-length fraction.
+                curv.extend(
+                    cs + (ce - cs) * f
+                    for f in XODRMapStatsExtractor.CURVATURE_SAMPLE_FRACTIONS
+                )
+                continue
+
+            ppoly = geom.find("paramPoly3")
+            if ppoly is not None:
+                length = _safe_float(geom.get("length", "0"), 0.0)
+                if length <= 0.0:
+                    continue
+                p_range = ppoly.get("pRange")  # "normalized" | "arcLength" | None
+                coeffs = [
+                    _safe_float(ppoly.get(name, "0"), 0.0)
+                    for name in ("aU", "bU", "cU", "dU", "aV", "bV", "cV", "dV")
+                ]
+                for f in XODRMapStatsExtractor.CURVATURE_SAMPLE_FRACTIONS:
+                    s = length * f
+                    try:
+                        k = param_poly3_curvature_at(*coeffs, p_range, length, s)
+                    except (ParamPoly3Error, ValueError, ArithmeticError):
+                        continue
+                    if math.isfinite(k):
+                        curv.append(k)
+
+        # Exclude non-physical curvature from degenerate/ill-conditioned segments so it
+        # cannot dominate downstream distribution comparisons.
+        bound = XODRMapStatsExtractor.MAX_PHYSICAL_CURVATURE
+        return [k for k in curv if abs(k) <= bound]
