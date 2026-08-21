@@ -1,7 +1,17 @@
 # C20 — CARLA runtime unblock (RPC-hang root cause + tiered fix)
 
+> **⚠ ROOT CAUSE CORRECTED (2026-08-21) — the GPU/VRAM/thermal conclusion in this doc was FALSIFIED.**
+> A `-nullrhi` control run (`C20_TIER1_PROBE_20260821/FINDINGS.md`, commit `68ec1744`) held **VRAM at 0 MiB** for
+> 390 s yet CARLA hung identically → the stall is **NOT** render/GPU/VRAM-bound. The 96% VRAM + 82 °C measured
+> under `-RenderOffScreen` were a *symptom* of rendering, not the cause. **Actual signature: a CPU livelock** —
+> process alive, 59 threads burning CPU, working-set flat, no UE log/crash (stuck before logging flushes).
+> **Consequence:** Tier 2 (driver/thermal) and Tier 4 (bigger GPU) below are GPU-targeted and **misdirected**;
+> the real next step is process-level introspection (thread stacks / Event Viewer / a different machine). The
+> probe *evidence* below is still valid — only the *conclusion* was wrong. Tier 3 code hardening was done
+> separately (commit `828d1c47`).
+
 **Goal:** unblock the persistent CARLA RPC-hang that gates the live-drive + RQ2/RQ3/RQ5 perception.
-This is an **environment/GPU** problem, not a map or pipeline defect — established by probe below.
+This is an **environment** problem (a CPU livelock in the CARLA server), not a map or pipeline defect.
 
 ## Evidence-based diagnosis (2026-08-21 probes)
 
