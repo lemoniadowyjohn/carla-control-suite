@@ -25,6 +25,35 @@
 ## Honest RQ1 answer
 Where directly comparable (lane width), auto and manual **agree** (gap 0.04). The large gaps are **scope + construction method**, not a domain difference. A meaningful structural domain-gap number requires either (a) restricting the auto map to the manual map's drivable subset before comparison, or (b) reporting per-aspect with these boundaries — done here.
 
+## Local registration (RQ1 refinement — crop auto to Grid0828 footprint, 2026-08-21)
+The whole-map scores are dominated by **scope** (auto = full OSM 32,297 roads over ~13×14 km; manual = curated
+~4.4×2.9 km patch). To measure a *local* structural gap, the auto map is cropped to Grid0828's geographic footprint
+via CRS registration (auto bare-`+proj=tmerc` + header offset ↔ manual UTM-32N, through WGS84 lat/lon;
+`ultimate_pipeline/domain_gap/local_registration.py`, TDD `tests/unit/test_local_registration.py`, 7 tests).
+Grid0828 lands at auto-local x[6155..10906] y[6427..9875]; **32,297 → 6,079 auto roads (18.8%)** kept.
+
+**Local road-network structural comparison (same footprint):**
+| metric | value | reading |
+|---|---|---|
+| road_length ratio (auto/manual) | **4.5×** | 240.8 km vs 53.5 km |
+| junction ratio (auto/manual) | **6.0×** | 720 vs 119 |
+| road_count ratio (auto/manual) | **6.1×** | 6,079 vs 993 |
+| lane_width_gap | **0.042** | agree (same as whole-map) |
+| curvature_gap | **0.224** | local (sharper than whole-map 0.093) |
+
+**Finding:** even within the *same* area the auto map has **~4.5–6× the road length/junctions** of Grid0828 — a
+genuine **road-network-completeness** domain gap: OSM captures every service road/driveway/footway, while the
+hand-modeled Grid0828 contains only the *drivable* network. This is the real RQ1 structural gap the whole-map view
+obscured as a 28× scope artifact. Lane widths still agree (0.04); curvature differs more locally (0.22).
+
+**Excluded (construction layers, not road structure):** buildings + traffic-lights. Both maps model buildings
+(Grid0828 993 spatially; auto 5,686 on a single *container* road → not spatially croppable); traffic-lights are
+modeled by auto (3,920 in-footprint) but not Grid0828. Construction differences, reported at whole-map level.
+
+**Claim boundary:** the *ratios* are the interpretable signal; the raw `DomainGapScores` road_length/tl/building
+gaps cap at 1.0 and conflate construction with structure. Crop rule = road kept if its planView centroid is inside
+the footprint polygon (boundary roads balance out). Machine-readable: `local_registration.json`.
+
 ## Curvature (RQ1 refinement — paramPoly3 sampling fix, 2026-08-21)
 `XODRMapStatsExtractor._collect_curvatures` previously read `<arc>` only; both maps store curves
 as `<paramPoly3>`, so the auto map yielded 0 samples and the gap capped at 1.0. Fixed via TDD

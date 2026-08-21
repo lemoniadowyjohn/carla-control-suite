@@ -1,0 +1,78 @@
+{
+  "note": "LOCAL structural gap: auto map cropped to Grid0828's geographic footprint (removes scope artifact).",
+  "local_structural_summary": {
+    "road_network_structural": {
+      "lane_width_gap": 0.0415,
+      "curvature_gap": 0.2239,
+      "road_length_ratio_auto_over_manual": 4.5,
+      "junction_ratio_auto_over_manual": 6.05,
+      "road_count_ratio_auto_over_manual": 6.122
+    },
+    "construction_differences_excluded": {
+      "reason": "buildings + traffic lights are construction layers, not road-network structure. Excluded from the LOCAL structural gap because the auto map's buildings are all attached to a single container road (not spatially distributed), so they cannot be cropped to the footprint. Note both maps DO model buildings (Grid0828 spatially; auto on a container road); traffic-lights are modeled by the auto map but not Grid0828. Reported at whole-map level as construction artifacts.",
+      "cropped_auto_buildings": 0,
+      "cropped_auto_traffic_lights": 3920,
+      "manual_buildings": 993,
+      "manual_traffic_lights": 0
+    },
+    "footprint": {
+      "auto_roads_kept": 6079,
+      "auto_roads_total": 32297,
+      "kept_fraction": 0.1882
+    }
+  },
+  "local_gap_raw": {
+    "lane_width_gap": 0.0415,
+    "curvature_gap": 0.2239,
+    "road_length_gap": 1.0,
+    "traffic_light_density_gap": 1.0,
+    "building_density_gap": 1.0,
+    "road_type_coverage_gap": 0.0
+  },
+  "whole_map_gap": {
+    "lane_width_gap": 0.0415,
+    "curvature_gap": 0.0931,
+    "road_length_gap": 1.0,
+    "traffic_light_density_gap": 1.0,
+    "building_density_gap": 0.7951,
+    "road_type_coverage_gap": 0.0
+  },
+  "crop": {
+    "full_auto_road_count": 32297,
+    "cropped_auto_road_count": 6079,
+    "manual_road_count": 993,
+    "cropped_auto_total_length_m": 240842,
+    "manual_total_length_m": 53525,
+    "cropped_auto_junctions": 720,
+    "manual_junctions": 119,
+    "cropped_auto_buildings": 0,
+    "cropped_auto_traffic_lights": 3920,
+    "footprint_local_bounds": [
+      6155.1,
+      6426.8,
+      10906.1,
+      9874.8
+    ]
+  },
+  "provenance": {
+    "auto_offset": [
+      832671.676,
+      5458671.104
+    ],
+    "auto_proj4": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+    "manual_proj4": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "manual_bbox_native": [
+      678015.8009219,
+      5402486.14794,
+      682410.5096099,
+      5405403.332598
+    ],
+    "footprint_local_bounds": [
+      6155.144823907409,
+      6426.7976663559675,
+      10906.068001429201,
+      9874.803019691259
+    ],
+    "crop_rule": "road kept if planView-geometry centroid inside manual footprint polygon"
+  }
+}
