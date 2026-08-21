@@ -1,0 +1,26 @@
+kill + settle...
+VRAM at launch (should be low): 0, 66, 0
+launching: E:\CARLA\CARLA_0.9.16\CarlaUE4.exe -RenderOffScreen -quality-level=Low -nosound -carla-rpc-port=2000
+[9s] port listening=True
+[0s] waiting for RPC... vram/temp/util = [5925, 68, 100]  alive=True
+[23s] waiting for RPC... vram/temp/util = [5923, 81, 76]  alive=True
+[46s] waiting for RPC... vram/temp/util = [5923, 82, 90]  alive=True
+[69s] waiting for RPC... vram/temp/util = [5914, 82, 56]  alive=True
+[93s] waiting for RPC... vram/temp/util = [5914, 82, 89]  alive=True
+[116s] waiting for RPC... vram/temp/util = [5914, 82, 89]  alive=True
+[139s] waiting for RPC... vram/temp/util = [5914, 82, 95]  alive=True
+[162s] waiting for RPC... vram/temp/util = [5914, 82, 91]  alive=True
+[185s] waiting for RPC... vram/temp/util = [5914, 81, 72]  alive=True
+[208s] waiting for RPC... vram/temp/util = [5914, 82, 89]  alive=True
+[231s] waiting for RPC... vram/temp/util = [5914, 82, 48]  alive=True
+[254s] waiting for RPC... vram/temp/util = [5914, 82, 70]  alive=True
+[278s] waiting for RPC... vram/temp/util = [5914, 82, 85]  alive=True
+[301s] waiting for RPC... vram/temp/util = [5914, 82, 79]  alive=True
+[324s] waiting for RPC... vram/temp/util = [5914, 82, 87]  alive=True
+[347s] waiting for RPC... vram/temp/util = [5914, 82, 47]  alive=True
+[370s] waiting for RPC... vram/temp/util = [5914, 82, 75]  alive=True
+[393s] waiting for RPC... vram/temp/util = [5914, 82, 70]  alive=True
+[416s] waiting for RPC... vram/temp/util = [5914, 82, 74]  alive=True
+[440s] waiting for RPC... vram/temp/util = [5914, 82, 70]  alive=True
+[463s] waiting for RPC... vram/temp/util = [5914, 82, 54]  alive=True
+>>> RESULT: no RPC after 480s — genuine deadlock (not mere slowness).
