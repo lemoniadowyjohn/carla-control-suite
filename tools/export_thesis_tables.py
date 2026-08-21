@@ -53,6 +53,7 @@ def _row(rq: str, metric: str, value: Any, status: str, *, artifact: str = "",
 def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
     ev_dir = root / "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP"
     curvature = _read_json(ev_dir / "curvature_recompute.json")
+    local = _read_json(ev_dir / "local_registration.json")
     main = _read_json(ev_dir / "C14_RQ1_STRUCTURAL_GAP.json")
     if main is None:
         return [_row("RQ1", "structural_gap_composite", None, MISSING,
@@ -62,6 +63,46 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
     auto = main.get("auto_map", {})
     manual = main.get("manual_map", {})
     artifact = f"{auto.get('path', '')} vs {manual.get('path', '')}"
+    local_summary = (local or {}).get("local_structural_summary") or {}
+    local_network = local_summary.get("road_network_structural") or {}
+    local_footprint = local_summary.get("footprint") or {}
+    local_construction = local_summary.get("construction_differences_excluded") or {}
+    if local_network:
+        return [
+            _row("RQ1", "local_lane_width_gap", local_network.get("lane_width_gap"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree"),
+            _row("RQ1", "local_curvature_gap", local_network.get("curvature_gap"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="LOCAL manual-footprint comparison; range-sensitive histogram-L1, "
+                      "treat as a bounded structural signal, not a precise scalar"),
+            _row("RQ1", "local_road_length_ratio_auto_over_manual",
+                 local_network.get("road_length_ratio_auto_over_manual"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area"),
+            _row("RQ1", "local_junction_ratio_auto_over_manual",
+                 local_network.get("junction_ratio_auto_over_manual"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area"),
+            _row("RQ1", "local_road_count_ratio_auto_over_manual",
+                 local_network.get("road_count_ratio_auto_over_manual"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="LOCAL manual-footprint ratio; separates structural completeness from whole-map scope"),
+            _row("RQ1", "local_auto_footprint_kept_fraction",
+                 local_footprint.get("kept_fraction"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note=f"manual-footprint crop kept {local_footprint.get('auto_roads_kept')} / "
+                      f"{local_footprint.get('auto_roads_total')} auto roads; whole-map stats are scope context"),
+            _row("RQ1", "whole_map_construction_layers_excluded_from_local_gap", True, BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note=local_construction.get("reason", "traffic-light/building density are construction layers, "
+                                             "not the local road-network structural gap")),
+            _row("RQ1", "whole_map_road_type_coverage_gap_context",
+                 scores.get("road_type_coverage_gap"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="whole-map context only; manual road types are a subset of auto's"),
+        ]
+
     rows = [
         _row("RQ1", "lane_width_gap", scores.get("lane_width_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""),

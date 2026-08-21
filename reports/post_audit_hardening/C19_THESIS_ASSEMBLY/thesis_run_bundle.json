@@ -3,51 +3,63 @@
   "c19_step_outputs": {
     "contract_audit.json": {
       "present": true,
-      "sha256": "c70476aba5341d3b5cc61fd84f7489391232aed2ccd35a7c556830755025b69a"
+      "sha256": "09523d5e1fecceda70ac85d613f0fcf7f7f622eca315e028d40b86bc62d68cf7"
     },
     "provenance_validation.json": {
       "present": true,
-      "sha256": "089a3aea0d6a12ee99ee23d1e891c3c6321bd4d2db90707819e319bfd3967127"
+      "sha256": "7958b9468d8cd037202a9884f0e91e91444603842083483aef1a5b2f3be76314"
     },
     "rq_tables.json": {
       "present": true,
-      "sha256": "38cf5ca9f8c9bff5c036de75626d41d274b8a52ec815df2d5ad9c758f70d0d4b"
+      "sha256": "82e6851b9c0df77e2aed2c7173aedca0608e3eec7f912eb0b742da0516975acb"
     }
   },
   "claim_boundaries": [
     {
-      "metric": "lane_width_gap",
-      "note": "genuine, small -- directly comparable, maps agree",
+      "metric": "local_lane_width_gap",
+      "note": "LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
     {
-      "metric": "curvature_gap",
-      "note": "real (fixed 2026-08-21, was a 1.0 measurement artifact); range-sensitive histogram-L1, treat as 'moderate' not a precise scalar",
+      "metric": "local_curvature_gap",
+      "note": "LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
     {
-      "metric": "road_length_gap",
-      "note": "construction/scope artifact (full OSM extraction vs curated subset), not domain gap",
+      "metric": "local_road_length_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
     {
-      "metric": "traffic_light_density_gap",
-      "note": "construction artifact",
+      "metric": "local_junction_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
     {
-      "metric": "building_density_gap",
-      "note": "construction artifact",
+      "metric": "local_road_count_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; separates structural completeness from whole-map scope",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
     {
-      "metric": "road_type_coverage_gap",
-      "note": "manual road types are a subset of auto's",
+      "metric": "local_auto_footprint_kept_fraction",
+      "note": "manual-footprint crop kept 6079 / 32297 auto roads; whole-map stats are scope context",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "whole_map_construction_layers_excluded_from_local_gap",
+      "note": "buildings + traffic lights are construction layers, not road-network structure. Excluded from the LOCAL structural gap because the auto map's buildings are all attached to a single container road (not spatially distributed), so they cannot be cropped to the footprint. Note both maps DO model buildings (Grid0828 spatially; auto on a container road); traffic-lights are modeled by the auto map but not Grid0828. Reported at whole-map level as construction artifacts.",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "whole_map_road_type_coverage_gap_context",
+      "note": "whole-map context only; manual road types are a subset of auto's",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
@@ -104,7 +116,7 @@
     {
       "path": "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_REPORT.md",
       "present": true,
-      "sha256": "edd79cd7a5522cc1fe6793ee9f43200378679e0a4ebe049cb48ab4f6b8e596e3"
+      "sha256": "1b7db2c6313615bba3319f2892efe8e2297db0b38f52c4a6053ff42bd26f6901"
     },
     {
       "path": "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_REPORT.md",
@@ -129,7 +141,7 @@
     {
       "path": "reports/post_audit_hardening/C20_CARLA_RUNTIME_UNBLOCK.md",
       "present": true,
-      "sha256": "a89f68b2387fb47274265e765a0e5a4b6959b55cee11f1d258f238d0ad2426dd"
+      "sha256": "5bd16e0706e2beeae9da418580761144eff767088fa965a2aac20044074a0ecf"
     },
     {
       "path": "reports/post_audit_hardening/C20_TIER1_PROBE_20260821/FINDINGS.md",
@@ -154,7 +166,7 @@
   "protocol_snapshot": {
     "canonical_regen_entrypoint": "scripts/regen_map_of_record.py",
     "git_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
-    "git_commit": "dbe2bc977d30385eef285eb5dba3957bbdc3cdf9",
+    "git_commit": "d11f262bf6e048729c15d1a738eba2e87d596a48",
     "git_dirty": true,
     "inputs_manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
     "note": "No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead."

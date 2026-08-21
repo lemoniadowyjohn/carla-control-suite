@@ -6,7 +6,7 @@
 
 ## Protocol snapshot
 - note: `No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead.`
-- git_commit: `dbe2bc977d30385eef285eb5dba3957bbdc3cdf9`
+- git_commit: `d11f262bf6e048729c15d1a738eba2e87d596a48`
 - git_branch: `fix/post-audit-phase-e-junctions-roundabouts-20260803`
 - git_dirty: `True`
 - canonical_regen_entrypoint: `scripts/regen_map_of_record.py`
@@ -22,12 +22,14 @@
 - [✓] reports/post_audit_hardening/C20_TIER1_PROBE_20260821/FINDINGS.md
 
 ## Claim boundaries (per RQ metric)
-- **RQ1/lane_width_gap** [BOUNDED]: genuine, small -- directly comparable, maps agree
-- **RQ1/curvature_gap** [BOUNDED]: real (fixed 2026-08-21, was a 1.0 measurement artifact); range-sensitive histogram-L1, treat as 'moderate' not a precise scalar
-- **RQ1/road_length_gap** [BOUNDED]: construction/scope artifact (full OSM extraction vs curated subset), not domain gap
-- **RQ1/traffic_light_density_gap** [BOUNDED]: construction artifact
-- **RQ1/building_density_gap** [BOUNDED]: construction artifact
-- **RQ1/road_type_coverage_gap** [BOUNDED]: manual road types are a subset of auto's
+- **RQ1/local_lane_width_gap** [BOUNDED]: LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree
+- **RQ1/local_curvature_gap** [BOUNDED]: LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar
+- **RQ1/local_road_length_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area
+- **RQ1/local_junction_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area
+- **RQ1/local_road_count_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; separates structural completeness from whole-map scope
+- **RQ1/local_auto_footprint_kept_fraction** [BOUNDED]: manual-footprint crop kept 6079 / 32297 auto roads; whole-map stats are scope context
+- **RQ1/whole_map_construction_layers_excluded_from_local_gap** [BOUNDED]: buildings + traffic lights are construction layers, not road-network structure. Excluded from the LOCAL structural gap because the auto map's buildings are all attached to a single container road (not spatially distributed), so they cannot be cropped to the footprint. Note both maps DO model buildings (Grid0828 spatially; auto on a container road); traffic-lights are modeled by the auto map but not Grid0828. Reported at whole-map level as construction artifacts.
+- **RQ1/whole_map_road_type_coverage_gap_context** [BOUNDED]: whole-map context only; manual road types are a subset of auto's
 - **RQ2/perceptual_gap** [DEFERRED]: paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)
 - **RQ3/RQ5/gnn_latent_cosine_distance** [PROTOTYPE]: one-sided (auto-only) training makes the manual map OOD for the encoder -- conflates true structural gap with distribution shift; corroborates RQ1, not an independent authoritative measurement
 - **RQ3/miou_auto_train_manual_eval** [DEFERRED]: needs C17 paired captures (blocked -- see RQ2)

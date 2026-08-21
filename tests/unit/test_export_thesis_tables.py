@@ -61,6 +61,43 @@ def test_rq1_prefers_corrected_curvature_over_stale_main_json(tmp_path: Path) ->
     assert curvature_row["value"] == 0.093117
 
 
+def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
+        "auto_map": {"path": "auto.xodr", "sha256": "aa" * 32},
+        "manual_map": {"path": "manual.xodr", "sha256": "bb" * 32},
+        "scores": {"lane_width_gap": 0.04, "curvature_gap": 0.093, "road_length_gap": 1.0,
+                   "traffic_light_density_gap": 1.0, "building_density_gap": 0.8, "road_type_coverage_gap": 0.0},
+    })
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json", {
+        "local_structural_summary": {
+            "road_network_structural": {
+                "lane_width_gap": 0.0415,
+                "curvature_gap": 0.2239,
+                "road_length_ratio_auto_over_manual": 4.5,
+                "junction_ratio_auto_over_manual": 6.05,
+                "road_count_ratio_auto_over_manual": 6.122,
+            },
+            "construction_differences_excluded": {
+                "reason": "construction layers excluded from local gap",
+                "cropped_auto_traffic_lights": 3920,
+                "manual_buildings": 993,
+            },
+            "footprint": {
+                "auto_roads_kept": 6079,
+                "auto_roads_total": 32297,
+                "kept_fraction": 0.1882,
+            },
+        },
+    })
+    payload = build_tables(tmp_path)
+    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
+    assert rq1["local_curvature_gap"]["value"] == 0.2239
+    assert rq1["local_road_length_ratio_auto_over_manual"]["value"] == 4.5
+    assert rq1["local_auto_footprint_kept_fraction"]["value"] == 0.1882
+    assert rq1["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
+    assert "road_length_gap" not in rq1
+
+
 def test_rq4_authoritative_when_evidence_present(tmp_path: Path) -> None:
     _mk(tmp_path, "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_DOMAIN_RANDOMIZATION.json", {
         "determinism_arm": {"runs": 3, "byte_sha_unique": 3, "structurally_deterministic": True,
@@ -91,6 +128,9 @@ def test_against_real_repo_root_does_not_crash_and_finds_real_evidence() -> None
     repo_root = Path(__file__).resolve().parents[2]
     payload = build_tables(repo_root)
     assert payload["row_count"] > 0
-    curvature_row = next(r for r in payload["rows"] if r["rq"] == "RQ1" and r["metric"] == "curvature_gap")
-    # Must be the corrected value (~0.093), not the stale 1.0 artifact.
+    curvature_row = next(
+        r for r in payload["rows"]
+        if r["rq"] == "RQ1" and r["metric"] in {"local_curvature_gap", "curvature_gap"}
+    )
+    # Must be a corrected/local value, not the stale 1.0 artifact.
     assert curvature_row["value"] is not None and curvature_row["value"] < 0.5

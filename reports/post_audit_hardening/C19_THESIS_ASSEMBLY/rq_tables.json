@@ -1,61 +1,79 @@
 {
   "counts_by_status": {
     "AUTHORITATIVE": 3,
-    "BOUNDED": 6,
+    "BOUNDED": 8,
     "DEFERRED": 4,
     "PROTOTYPE": 1
   },
-  "row_count": 14,
+  "row_count": 16,
   "rows": [
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "lane_width_gap",
-      "note": "genuine, small -- directly comparable, maps agree",
+      "metric": "local_lane_width_gap",
+      "note": "LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree",
       "rq": "RQ1",
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
-      "value": 0.0415145202899021
+      "value": 0.0415
     },
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "curvature_gap",
-      "note": "real (fixed 2026-08-21, was a 1.0 measurement artifact); range-sensitive histogram-L1, treat as 'moderate' not a precise scalar",
+      "metric": "local_curvature_gap",
+      "note": "LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar",
       "rq": "RQ1",
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
-      "value": 0.09311717328016497
+      "value": 0.2239
     },
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "road_length_gap",
-      "note": "construction/scope artifact (full OSM extraction vs curated subset), not domain gap",
+      "metric": "local_road_length_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area",
       "rq": "RQ1",
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
-      "value": 1.0
+      "value": 4.5
     },
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "traffic_light_density_gap",
-      "note": "construction artifact",
+      "metric": "local_junction_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area",
       "rq": "RQ1",
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
-      "value": 1.0
+      "value": 6.05
     },
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "building_density_gap",
-      "note": "construction artifact",
+      "metric": "local_road_count_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; separates structural completeness from whole-map scope",
       "rq": "RQ1",
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
-      "value": 0.7950785267578812
+      "value": 6.122
     },
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "road_type_coverage_gap",
-      "note": "manual road types are a subset of auto's",
+      "metric": "local_auto_footprint_kept_fraction",
+      "note": "manual-footprint crop kept 6079 / 32297 auto roads; whole-map stats are scope context",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.1882
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "whole_map_construction_layers_excluded_from_local_gap",
+      "note": "buildings + traffic lights are construction layers, not road-network structure. Excluded from the LOCAL structural gap because the auto map's buildings are all attached to a single container road (not spatially distributed), so they cannot be cropped to the footprint. Note both maps DO model buildings (Grid0828 spatially; auto on a container road); traffic-lights are modeled by the auto map but not Grid0828. Reported at whole-map level as construction artifacts.",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": true
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "whole_map_road_type_coverage_gap_context",
+      "note": "whole-map context only; manual road types are a subset of auto's",
       "rq": "RQ1",
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",

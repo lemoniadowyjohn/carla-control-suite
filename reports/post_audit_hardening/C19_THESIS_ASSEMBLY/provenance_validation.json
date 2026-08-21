@@ -37,37 +37,49 @@
   "rq_table_claims": {
     "claims_checked": [
       {
-        "metric": "lane_width_gap",
+        "metric": "local_lane_width_gap",
         "provenance": "PASS",
         "rq": "RQ1",
         "via": "map_registry:auto_map_of_record"
       },
       {
-        "metric": "curvature_gap",
+        "metric": "local_curvature_gap",
         "provenance": "PASS",
         "rq": "RQ1",
         "via": "map_registry:auto_map_of_record"
       },
       {
-        "metric": "road_length_gap",
+        "metric": "local_road_length_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",
         "via": "map_registry:auto_map_of_record"
       },
       {
-        "metric": "traffic_light_density_gap",
+        "metric": "local_junction_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",
         "via": "map_registry:auto_map_of_record"
       },
       {
-        "metric": "building_density_gap",
+        "metric": "local_road_count_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",
         "via": "map_registry:auto_map_of_record"
       },
       {
-        "metric": "road_type_coverage_gap",
+        "metric": "local_auto_footprint_kept_fraction",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "whole_map_construction_layers_excluded_from_local_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "whole_map_road_type_coverage_gap_context",
         "provenance": "PASS",
         "rq": "RQ1",
         "via": "map_registry:auto_map_of_record"
