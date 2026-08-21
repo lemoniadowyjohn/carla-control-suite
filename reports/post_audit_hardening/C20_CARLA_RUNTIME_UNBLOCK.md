@@ -9,6 +9,13 @@
 > the real next step is process-level introspection (thread stacks / Event Viewer / a different machine). The
 > probe *evidence* below is still valid — only the *conclusion* was wrong. Tier 3 code hardening was done
 > separately (commit `828d1c47`).
+>
+> **UPDATE (Event Viewer, `C20_GPU_TDR_20260821/FINDINGS.md`):** the machine logs **chronic GPU watchdog TDR**
+> (`LiveKernelEvent 141`, hundreds/hour across 3 days, with WATCHDOG dumps). This **re-elevates a GPU driver
+> clean-reinstall / GPU-health check** as the cause-directed next step — but as a *driver-stability* fix (the
+> watchdog is timing out), **not** the VRAM-capacity/thermal mechanism I originally (wrongly) claimed. Net: the
+> GPU/driver *is* implicated after all, via TDR; the `-nullrhi` CPU-livelock may be an additional separate
+> signature. Fix belongs to the environment (driver/hardware), not CARLA/maps.
 
 **Goal:** unblock the persistent CARLA RPC-hang that gates the live-drive + RQ2/RQ3/RQ5 perception.
 This is an **environment** problem (a CPU livelock in the CARLA server), not a map or pipeline defect.
