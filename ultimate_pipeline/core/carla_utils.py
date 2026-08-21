@@ -128,6 +128,31 @@ def _carla_ready_timeout_s(default: float = 600.0) -> float:
         return default
 
 
+def _gpu_tdr_preflight() -> dict:
+    from ultimate_pipeline.core.gpu_tdr_preflight import windows_gpu_tdr_preflight_from_env
+
+    return windows_gpu_tdr_preflight_from_env()
+
+
+def _format_gpu_tdr_block(report: dict) -> str:
+    reason = report.get("reason")
+    sampled = report.get("event_count_sampled")
+    lookback = report.get("lookback_hours")
+    return (
+        "GPU watchdog/TDR preflight blocked CARLA runtime evidence "
+        f"(reason={reason}, sampled_events={sampled}, lookback_hours={lookback}). "
+        "Fix the NVIDIA driver/hardware TDR stream first; see "
+        "reports/post_audit_hardening/C20_GPU_TDR_20260821/FINDINGS.md."
+    )
+
+
+def _require_gpu_tdr_clean_for_carla() -> dict:
+    report = _gpu_tdr_preflight()
+    if not report.get("ok", False):
+        raise RuntimeError(_format_gpu_tdr_block(report))
+    return report
+
+
 # ============================================================
 # Crash cleanup (NEW)
 # ============================================================
@@ -278,6 +303,12 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
     )
 
     print("💀 Restarting CARLA server...")
+
+    try:
+        _require_gpu_tdr_clean_for_carla()
+    except RuntimeError as exc:
+        print(f"❌ {exc}")
+        return False
 
     _cleanup_carla_crash_artifacts()
     _kill_stuck_carla()
@@ -493,6 +524,8 @@ def autostart_carla_if_needed(
     streaming_skip_probe = _streaming_skip_probe()
 
     streaming_status: str | None = None
+
+    _require_gpu_tdr_clean_for_carla()
 
     def _determine_streaming_status() -> str:
         """Check streaming port once; return status. Warn-once on refusal."""

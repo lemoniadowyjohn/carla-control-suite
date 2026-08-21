@@ -177,6 +177,7 @@ def _patch_restart_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, cl
     monkeypatch.setattr(cu.SETTINGS, "CARLA_STREAMING_PORT", 2001, raising=False)
     monkeypatch.setattr(cu, "_cleanup_carla_crash_artifacts", lambda: None)
     monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: None)
+    monkeypatch.setattr(cu, "_gpu_tdr_preflight", lambda: {"ok": True, "skipped": True})
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
     monkeypatch.setattr(cu, "_vram_preflight", lambda: None)
     monkeypatch.setattr(cu, "_carla_module", lambda: _FakeCarlaModule(client))
@@ -198,6 +199,23 @@ def test_restart_carla_rejects_port_open_but_rpc_never_ready(monkeypatch: pytest
     monkeypatch.setattr(cu, "_wait_for_ports", lambda *a, **k: True)
     monkeypatch.setenv("UP_CARLA_READY_TIMEOUT_S", "0.01")
     assert cu.restart_carla() is False
+
+
+def test_restart_carla_blocks_when_gpu_tdr_preflight_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    cmds = _patch_restart_common(monkeypatch, tmp_path, client=_FlakyClient(fail_count=0))
+    monkeypatch.setattr(
+        cu,
+        "_gpu_tdr_preflight",
+        lambda: {
+            "ok": False,
+            "reason": "recent_livekernelevent_141",
+            "event_count_sampled": 1,
+            "lookback_hours": 24.0,
+        },
+    )
+
+    assert cu.restart_carla() is False
+    assert cmds == []
 
 
 def test_restart_carla_succeeds_when_rpc_actually_responds(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

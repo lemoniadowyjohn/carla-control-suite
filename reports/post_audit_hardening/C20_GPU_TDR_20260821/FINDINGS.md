@@ -37,3 +37,8 @@ tried") reveals a **chronic GPU/display watchdog failure** independent of any si
 This is an **environment/hardware fault on this machine**, not a CARLA, map, or pipeline defect. The maps
 (`69b1f520`, `Grid0828`) remain fully exonerated. Perception RQ2/RQ3 realistically need either a driver fix that
 stops the TDR stream **or** a different GPU/machine.
+
+## Runtime guard
+Follow-up hardening added a CARLA lifecycle preflight for recent Windows `LiveKernelEvent 141` records. CARLA
+launch/connect now fails closed when the TDR stream is present, so future live evidence cannot silently run on this
+known-bad GPU state. See `RUNTIME_GUARD.md`.
