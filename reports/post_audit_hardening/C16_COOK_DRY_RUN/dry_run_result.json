@@ -1,0 +1,108 @@
+{
+  "source": "representative_fixture (no real OSM2World/FBX export found on disk -- this validates the scaffold mechanism, not real cook output)",
+  "tag_report": {
+    "mesh_count": 15,
+    "tags": [
+      {
+        "label": "Roads",
+        "label_id": 1,
+        "matched_via": "name",
+        "mesh": "Road_main_carriageway_001"
+      },
+      {
+        "label": "RoadLines",
+        "label_id": 24,
+        "matched_via": "name",
+        "mesh": "RoadLine_dashed_center_001"
+      },
+      {
+        "label": "Sidewalks",
+        "label_id": 2,
+        "matched_via": "name",
+        "mesh": "Sidewalk_north_001"
+      },
+      {
+        "label": "Buildings",
+        "label_id": 3,
+        "matched_via": "name",
+        "mesh": "Building_residential_042"
+      },
+      {
+        "label": "Walls",
+        "label_id": 4,
+        "matched_via": "name",
+        "mesh": "Wall_freestanding_boundary_003"
+      },
+      {
+        "label": "Fences",
+        "label_id": 5,
+        "matched_via": "name",
+        "mesh": "Fence_garden_012"
+      },
+      {
+        "label": "Poles",
+        "label_id": 6,
+        "matched_via": "name",
+        "mesh": "StreetLamp_pole_017"
+      },
+      {
+        "label": "TrafficLight",
+        "label_id": 7,
+        "matched_via": "name",
+        "mesh": "TrafficLight_junction_A_head1"
+      },
+      {
+        "label": "TrafficSigns",
+        "label_id": 8,
+        "matched_via": "name",
+        "mesh": "TrafficSign_speed_limit_30_009"
+      },
+      {
+        "label": "Vegetation",
+        "label_id": 9,
+        "matched_via": "name",
+        "mesh": "Tree_broadleaf_large_128"
+      },
+      {
+        "label": "RailTrack",
+        "label_id": 27,
+        "matched_via": "name",
+        "mesh": "RailTrack_segment_004"
+      },
+      {
+        "label": "GuardRail",
+        "label_id": 28,
+        "matched_via": "name",
+        "mesh": "GuardRail_highway_segment_022"
+      },
+      {
+        "label": "Water",
+        "label_id": 23,
+        "matched_via": "name",
+        "mesh": "River_water_surface_001"
+      },
+      {
+        "label": "Bridge",
+        "label_id": 26,
+        "matched_via": "name",
+        "mesh": "Bridge_deck_concrete_001"
+      },
+      {
+        "label": "Terrain",
+        "label_id": 10,
+        "matched_via": "name",
+        "mesh": "Meadow_terrain_patch_055"
+      }
+    ],
+    "unmatched_count": 0,
+    "unmatched_meshes": []
+  },
+  "validation": {
+    "invalid_label_meshes": [],
+    "mesh_count": 15,
+    "ok": true,
+    "unmatched_meshes": [],
+    "verdict": "SEMANTIC_TAGS_OK"
+  },
+  "verdict": "COOK_SCAFFOLD_READY dry_run=OK"
+}
