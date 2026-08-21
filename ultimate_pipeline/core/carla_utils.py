@@ -98,6 +98,36 @@ def _get_carla_log_path() -> str | None:
     return getattr(SETTINGS, "CARLA_SERVER_LOG", None)
 
 
+def _resolve_carla_log_path_for_launch() -> str:
+    """C20 Tier 3: never discard the server log. Defined but never called before
+    this fix -- restart_carla() sent stdout/stderr straight to DEVNULL, so every
+    past hang was undiagnosable after the fact. Falls back to a timestamped path
+    under reports/ so a log always exists, even with no explicit configuration.
+    """
+    configured = _get_carla_log_path()
+    if configured:
+        return configured
+    ts = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    default_dir = Path("reports") / "post_audit_hardening" / "_carla_server_logs"
+    default_dir.mkdir(parents=True, exist_ok=True)
+    return str(default_dir / f"carla_server_{ts}.log")
+
+
+def _carla_ready_timeout_s(default: float = 600.0) -> float:
+    """C20 Tier 3: configurable readiness timeout. The old hardcoded 30s
+    (ensure_carla_ready's retries=30 * delay_s=1.0 default) is far too short
+    for a slow-starting server and, worse, gave restart_carla() no way to
+    honestly confirm RPC responds before printing a misleading success
+    message based on the TCP port alone."""
+    raw = os.environ.get("UP_CARLA_READY_TIMEOUT_S")
+    if raw is None or not str(raw).strip():
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
 # ============================================================
 # Crash cleanup (NEW)
 # ============================================================
@@ -268,55 +298,109 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
     )
     ports = [port] if streaming_disabled else [port, streaming_port]
 
+    # C20 Tier 3: minimal-render / nullrhi diagnostic flags, opt-in via env so
+    # normal callers are unaffected. -nullrhi disables the render hardware
+    # interface entirely (no cameras/sensors -- confirmed via C20_TIER1_PROBE
+    # to isolate render/VRAM-bound stalls from other causes); UP_CARLA_MIN_RENDER
+    # shrinks the render target to cut VRAM/fill cost without disabling it.
+    render_flags: list[str]
+    if _env_flag("UP_CARLA_NULLRHI", False):
+        render_flags = ["-nullrhi", "-nosound"]
+    elif _env_flag("UP_CARLA_MIN_RENDER", False):
+        render_flags = ["-RenderOffScreen", "-quality-level=Low", "-nosound", "-ResX=64", "-ResY=64", "-windowed"]
+    else:
+        render_flags = ["-RenderOffScreen", "-quality-level=Low", "-nosound", "-windowed", "-ResX=800", "-ResY=600"]
+
     # Try a couple of common flag styles for different CARLA builds.
     map_arg = [default_map_name] if default_map_name else []
     launch_variants = [
         [
-            exe,
-            "-RenderOffScreen",
-            "-quality-level=Low",
-            "-nosound",
-            "-windowed", "-ResX=800", "-ResY=600",
+            exe, *render_flags,
             f"-carla-rpc-port={port}",
             *([] if streaming_disabled else [f"-carla-streaming-port={streaming_port}"]),
             *map_arg,
         ],
         [
-            exe,
-            "-RenderOffScreen",
-            "-quality-level=Low",
-            "-nosound",
-            "-windowed", "-ResX=800", "-ResY=600",
+            exe, *render_flags,
             f"-carla-port={port}",
             *([] if streaming_disabled else [f"-carla-streaming-port={streaming_port}"]),
             *map_arg,
         ],
     ]
 
+    _vram_preflight()
+
     for cmd in launch_variants:
+        # C20 Tier 3: stop discarding the server log -- every past hang was
+        # undiagnosable after the fact because stdout/stderr went to DEVNULL.
+        log_path = _resolve_carla_log_path_for_launch()
+        cmd = [*cmd, "-log"]
+        try:
+            log_file = open(log_path, "w", encoding="utf-8", errors="replace")
+        except OSError:
+            log_file = subprocess.DEVNULL  # type: ignore[assignment]
+            log_path = "<unavailable>"
         try:
             subprocess.Popen(
                 cmd,
-                stdout=subprocess.DEVNULL,
+                stdout=log_file,
                 stderr=subprocess.STDOUT,
             )
         except Exception as e:
             print(f"❌ Failed to start CARLA: {e}")
             continue
+        finally:
+            if log_file is not subprocess.DEVNULL:
+                log_file.close()  # type: ignore[union-attr]
+        print(f"[carla] server log -> {log_path}")
 
         if _wait_for_ports(host, ports, timeout_s=120.0):
-            if streaming_disabled:
-                print(f"✅ CARLA restarted and listening on {host}:{port} (streaming disabled)")
-            else:
-                print(f"✅ CARLA restarted and listening on {host}:{port} (streaming {streaming_port})")
-            return True
+            # C20 Tier 3: the port opening is NOT the same as CARLA being ready
+            # -- the UE game thread can bind the TCP port while never servicing
+            # its first RPC tick (a livelock, confirmed via C20_TIER1_PROBE).
+            # Verify RPC actually responds before claiming success; the old
+            # port-only check produced a misleading "restarted and listening"
+            # message on exactly this failure mode.
+            client = _carla_module().Client(host, port)
+            client.set_timeout(2.0)
+            rpc_ready = ensure_carla_ready(client, timeout_s=_carla_ready_timeout_s())
+            if rpc_ready:
+                if streaming_disabled:
+                    print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
+                else:
+                    print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming {streaming_port})")
+                return True
+            print(
+                f"⚠ CARLA port {port} opened but RPC never responded within "
+                f"{_carla_ready_timeout_s():.0f}s (see {log_path}) -- treating as not ready."
+            )
 
-        # If the port(s) never appeared, kill and retry next launch variant.
+        # If the port(s) never appeared, or RPC never responded, kill and
+        # retry the next launch variant.
         _kill_stuck_carla()
         time.sleep(2)
 
     print("❌ CARLA did not come back after restart.")
     return False
+
+
+def _vram_preflight(*, max_used_mib: float = 500.0) -> None:
+    """C20 Tier 3: warn and clean up before launch if a stale CARLA instance
+    is still holding significant VRAM -- a leaked prior instance at high VRAM
+    usage guarantees the next launch is GPU-starved from the start."""
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=10, check=False,
+        ).stdout.strip()
+        used_mib = float(out.splitlines()[0]) if out else 0.0
+    except Exception:
+        return  # no nvidia-smi available (or not an NVIDIA GPU) -- skip silently
+    if used_mib > max_used_mib:
+        print(f"⚠ [carla-preflight] {used_mib:.0f} MiB VRAM already in use before launch "
+              f"(>{max_used_mib:.0f} MiB threshold) -- killing stale CARLA instances.")
+        _kill_stuck_carla()
+        time.sleep(2)
 
 
 # ============================================================
@@ -329,6 +413,7 @@ def ensure_carla_ready(
     retries: int = 30,
     delay_s: float = 1.0,
     require_map: bool = False,
+    timeout_s: float | None = None,
 ) -> bool:
     """Check if CARLA responds.
 
@@ -338,9 +423,19 @@ def ensure_carla_ready(
     - On Windows restarts, the RPC port can be open before the simulator is fully ready.
       A single `get_world()` probe is often too optimistic.
     - `require_map=True` waits until `world.get_map()` also succeeds.
+    - C20 Tier 3: pass `timeout_s` for a wall-clock deadline instead of a fixed
+      retry count -- overrides `retries` when given (retries*delay_s was a
+      hardcoded ~30s ceiling, far too short for a slow-starting server).
     """
     last_exc: Exception | None = None
-    for _ in range(max(1, int(retries))):
+    deadline = (time.time() + float(timeout_s)) if timeout_s is not None else None
+    attempts = 0
+    while True:
+        attempts += 1
+        if deadline is None and attempts > max(1, int(retries)):
+            break
+        if deadline is not None and time.time() >= deadline:
+            break
         try:
             world = client.get_world()
             if require_map:
