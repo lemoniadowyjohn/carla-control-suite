@@ -1,0 +1,122 @@
+{
+  "inputs_manifest": {
+    "inputs": {
+      "buildings": {
+        "actual": "92300f0a0158980d08b04ae4cd855fe2d242ed71d32023410bd017f795196832",
+        "expected": "92300f0a0158980d08b04ae4cd855fe2d242ed71d32023410bd017f795196832",
+        "ok": true
+      },
+      "dem": {
+        "actual": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+        "expected": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+        "ok": true
+      },
+      "roads_osm": {
+        "actual": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+        "expected": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "ok": true,
+  "pinned_maps": [
+    {
+      "artifact": "auto_map_of_record",
+      "ok": true,
+      "role": "auto",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "artifact": "manual_grid0828",
+      "ok": true,
+      "role": "manual",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+    }
+  ],
+  "rq_table_claims": {
+    "claims_checked": [
+      {
+        "metric": "lane_width_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "curvature_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "road_length_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "traffic_light_density_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "building_density_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "road_type_coverage_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
+        "metric": "perceptual_gap",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ2"
+      },
+      {
+        "metric": "gnn_latent_cosine_distance",
+        "provenance": "PASS",
+        "rq": "RQ3/RQ5",
+        "via": "direct_hash:map_encoder_epoch50.pt"
+      },
+      {
+        "metric": "miou_auto_train_manual_eval",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ3"
+      },
+      {
+        "metric": "real_unlabeled_shift_metrics",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ5"
+      },
+      {
+        "metric": "domain_adaptation_coral_mmd",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ3"
+      },
+      {
+        "metric": "natural_dr_present",
+        "note": "claim made but no artifact digest cited",
+        "provenance": "UNPINNED",
+        "rq": "RQ4"
+      },
+      {
+        "metric": "structurally_deterministic",
+        "note": "claim made but no artifact digest cited",
+        "provenance": "UNPINNED",
+        "rq": "RQ4"
+      },
+      {
+        "metric": "explicit_dr_wired",
+        "note": "claim made but no artifact digest cited",
+        "provenance": "UNPINNED",
+        "rq": "RQ4"
+      }
+    ],
+    "ok": true
+  }
+}
