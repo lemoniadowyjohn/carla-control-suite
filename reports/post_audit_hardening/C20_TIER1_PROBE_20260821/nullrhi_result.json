@@ -1,0 +1,318 @@
+{
+  "variant": "nullrhi",
+  "cmd": [
+    "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+    "-carla-rpc-port=2000",
+    "-log",
+    "-nullrhi",
+    "-nosound"
+  ],
+  "timeout_s": 300.0,
+  "gpu_before_launch": {
+    "vram_used_mib": 0,
+    "vram_total_mib": 6144,
+    "temp_c": 64,
+    "util_pct": 0
+  },
+  "server_ready": false,
+  "server_version": null,
+  "ready_elapsed_s": null,
+  "total_wait_elapsed_s": 307.1,
+  "world_loaded": false,
+  "map_name": null,
+  "gpu_final": {
+    "vram_used_mib": 0,
+    "vram_total_mib": 6144,
+    "temp_c": 62,
+    "util_pct": 2
+  },
+  "gpu_after_kill": {
+    "vram_used_mib": 0,
+    "vram_total_mib": 6144,
+    "temp_c": 61,
+    "util_pct": 2
+  },
+  "gpu_samples": [
+    {
+      "elapsed_s": 0.0,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 7.1,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 16.7,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 24.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 31.7,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 39.5,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 47.3,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 54.8,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 64,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 62.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 69.8,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 77.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 84.9,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 92.7,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 100.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 108.0,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 115.9,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 123.1,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 130.3,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 138.1,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 146.0,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 63,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 153.2,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 160.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 168.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 176.7,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 184.1,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 191.4,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 199.3,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 206.5,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 213.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 223.4,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 230.6,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 238.4,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 245.9,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 253.7,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 261.0,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 0
+    },
+    {
+      "elapsed_s": 268.8,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 276.1,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 283.9,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 61,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 291.2,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 62,
+      "util_pct": 2
+    },
+    {
+      "elapsed_s": 299.2,
+      "vram_used_mib": 0,
+      "vram_total_mib": 6144,
+      "temp_c": 61,
+      "util_pct": 0
+    }
+  ],
+  "server_log": "reports\\post_audit_hardening\\C20_TIER1_PROBE_20260821\\nullrhi_server.log"
+}
