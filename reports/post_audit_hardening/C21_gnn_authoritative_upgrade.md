@@ -9,6 +9,15 @@
 > directly, do not go looking for a different "real" generator, there isn't one.**
 > The sequencing advice is still sound and stands: **land this AFTER C23** (which also touches the RQ1 row-building
 > area of this same file) to avoid a concurrent edit to the thesis-tables/audit layer.
+>
+> **UPDATE (2026-08-26): C23 has landed** (`c20ee0c2`, merged @ `b34a154a` — `run_11` marked
+> `superseded_by=C14_RQ1_STRUCTURAL_GAP` in `audit_thesis_topic_contract.py`). **The sequencing blocker is
+> cleared — C21 is READY TO DISPATCH.** Note: `local_registration.py`/`gap_analyzer.py`/`export_thesis_tables.py`
+> were independently rewritten twice on 2026-08-26 (C24 Wasserstein + C26 hull/building-recovery, hand-merged);
+> re-check `git log` on those three files immediately before starting step 5's RQ1 cross-validation, since the
+> per-aspect gap numbers cited in this prompt's step 5 (from the pre-C24/C26 C14 report) are now stale — use
+> current `reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_REPORT.md` values instead (hull-footprint
+> ratios ~2.7-3.8x, not the original 4.5-6x; curvature_wasserstein_gap now exists as a companion metric).
 
 Repo: C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main
 Branch: `fix/post-audit-phase-e-junctions-roundabouts-20260803` · Interp: `./.venv/Scripts/python.exe` · UP_DISABLE_CARLA=1 (fully offline)
