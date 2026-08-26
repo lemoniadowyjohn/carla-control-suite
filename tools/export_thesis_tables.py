@@ -91,6 +91,12 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint comparison; range-sensitive histogram-L1, "
                       "treat as a bounded structural signal, not a precise scalar" + footprint_note),
+            _row("RQ1", "local_curvature_wasserstein_gap",
+                 local_network.get("curvature_wasserstein_gap"), BOUNDED,
+                 artifact=artifact, sha256=auto.get("sha256", ""),
+                 note="LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature "
+                      "distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1"
+                      + footprint_note),
             _row("RQ1", "local_road_length_ratio_auto_over_manual",
                  local_network.get("road_length_ratio_auto_over_manual"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
@@ -140,6 +146,10 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
              artifact=artifact, sha256=auto.get("sha256", ""),
              note="real (fixed 2026-08-21, was a 1.0 measurement artifact); "
                   "range-sensitive histogram-L1, treat as 'moderate' not a precise scalar"),
+        _row("RQ1", "curvature_wasserstein_gap", scores.get("curvature_wasserstein_gap"), BOUNDED,
+             artifact=artifact, sha256=auto.get("sha256", ""),
+             note="Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; "
+                  "range-robust companion to histogram-L1"),
         _row("RQ1", "road_length_gap", scores.get("road_length_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""),
              note="construction/scope artifact (full OSM extraction vs curated subset), not domain gap"),

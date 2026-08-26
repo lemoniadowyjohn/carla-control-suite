@@ -6,7 +6,7 @@
 
 ## Protocol snapshot
 - note: `No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead.`
-- git_commit: `d11f262bf6e048729c15d1a738eba2e87d596a48`
+- git_commit: `692320bab616f1f0ee27dea5c3362e8a7504e9b6`
 - git_branch: `fix/post-audit-phase-e-junctions-roundabouts-20260803`
 - git_dirty: `True`
 - canonical_regen_entrypoint: `scripts/regen_map_of_record.py`
@@ -24,6 +24,7 @@
 ## Claim boundaries (per RQ metric)
 - **RQ1/local_lane_width_gap** [BOUNDED]: LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree
 - **RQ1/local_curvature_gap** [BOUNDED]: LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar
+- **RQ1/local_curvature_wasserstein_gap** [BOUNDED]: LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1
 - **RQ1/local_road_length_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area
 - **RQ1/local_junction_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area
 - **RQ1/local_road_count_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; separates structural completeness from whole-map scope

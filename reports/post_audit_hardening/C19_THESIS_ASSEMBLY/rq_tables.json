@@ -1,11 +1,11 @@
 {
   "counts_by_status": {
     "AUTHORITATIVE": 3,
-    "BOUNDED": 8,
+    "BOUNDED": 9,
     "DEFERRED": 4,
     "PROTOTYPE": 1
   },
-  "row_count": 16,
+  "row_count": 17,
   "rows": [
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
@@ -24,6 +24,15 @@
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
       "value": 0.2239
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_curvature_wasserstein_gap",
+      "note": "LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.074
     },
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",

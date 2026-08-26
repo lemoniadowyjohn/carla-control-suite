@@ -6,6 +6,7 @@
       "road_network_structural": {
         "lane_width_gap": 0.0415,
         "curvature_gap": 0.2192,
+        "curvature_wasserstein_gap": 0.0747,
         "road_length_ratio_auto_over_manual": 2.692,
         "junction_ratio_auto_over_manual": 3.782,
         "road_count_ratio_auto_over_manual": 3.565
@@ -92,6 +93,7 @@
       "road_network_structural": {
         "lane_width_gap": 0.0415,
         "curvature_gap": 0.2239,
+        "curvature_wasserstein_gap": 0.074,
         "road_length_ratio_auto_over_manual": 4.5,
         "junction_ratio_auto_over_manual": 6.05,
         "road_count_ratio_auto_over_manual": 6.123

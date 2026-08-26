@@ -275,6 +275,10 @@ def local_structural_summary(result: LocalRegistrationResult) -> Dict:
         "road_network_structural": {
             "lane_width_gap": round(result.local_gap.lane_width_gap, 4),
             "curvature_gap": round(result.local_gap.curvature_gap, 4),
+            "curvature_wasserstein_gap": round(
+                getattr(result.local_gap, "curvature_wasserstein_gap", 0.0),
+                4,
+            ),
             "road_length_ratio_auto_over_manual": _ratio(ca.total_road_length, m.total_road_length),
             "junction_ratio_auto_over_manual": _ratio(ca.num_junctions, m.num_junctions),
             "road_count_ratio_auto_over_manual": _ratio(ca.num_roads, m.num_roads),
