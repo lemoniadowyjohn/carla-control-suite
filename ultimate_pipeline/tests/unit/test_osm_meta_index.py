@@ -47,11 +47,22 @@ def _minimal_osm(*ways: dict) -> str:
     return "\n".join(lines)
 
 
-def _xodr_with_roads(*road_ids: str) -> ET.Element:
-    """Build a minimal XODR root element with driving lanes for given road IDs."""
+def _xodr_with_roads(*roads) -> ET.Element:
+    """Build a minimal XODR root element with driving lanes.
+
+    Each entry in *roads* is either a bare id string (road gets no `name`
+    attribute) or an (id, name) tuple -- osm_meta_index keys by street NAME,
+    not XODR road id (see osm_meta_index.py docstring: the two are disjoint
+    numbering schemes, verified 2026-08-26), so writer-integration tests must
+    set a matching `name` attribute to exercise a real match.
+    """
     root = ET.Element("OpenDRIVE")
-    for rid in road_ids:
-        road = ET.SubElement(root, "road", id=rid)
+    for entry in roads:
+        rid, name = entry if isinstance(entry, tuple) else (entry, None)
+        attrs = {"id": rid}
+        if name:
+            attrs["name"] = name
+        road = ET.SubElement(root, "road", attrs)
         lanes = ET.SubElement(road, "lanes")
         ls = ET.SubElement(lanes, "laneSection")
         right = ET.SubElement(ls, "right")
@@ -66,45 +77,45 @@ def _xodr_with_roads(*road_ids: str) -> ET.Element:
 class TestBuildOsmMetaIndex:
     def test_extracts_maxspeed(self):
         path = _write_osm(_minimal_osm(
-            {"id": "100", "tags": {"highway": "secondary", "maxspeed": "50"}}
+            {"id": "100", "tags": {"name": "Hauptstraße", "highway": "secondary", "maxspeed": "50"}}
         ))
         try:
             idx = build_osm_meta_index(path)
         finally:
             os.unlink(path)
-        assert "100" in idx
-        assert idx["100"]["maxspeed"] == "50"
+        assert "Hauptstraße" in idx
+        assert idx["Hauptstraße"]["maxspeed"] == "50"
 
     def test_extracts_turn_lanes_colon_variant(self):
         path = _write_osm(_minimal_osm(
-            {"id": "200", "tags": {"highway": "primary", "turn:lanes": "left|straight|right"}}
+            {"id": "200", "tags": {"name": "Industriestraße", "highway": "primary", "turn:lanes": "left|straight|right"}}
         ))
         try:
             idx = build_osm_meta_index(path)
         finally:
             os.unlink(path)
-        assert "200" in idx
-        assert idx["200"]["turn_lanes"] == "left|straight|right"
+        assert "Industriestraße" in idx
+        assert idx["Industriestraße"]["turn_lanes"] == "left|straight|right"
 
     def test_extracts_turn_lanes_underscore_variant(self):
         path = _write_osm(_minimal_osm(
-            {"id": "201", "tags": {"turn_lanes": "through|right"}}
+            {"id": "201", "tags": {"name": "Schulstraße", "turn_lanes": "through|right"}}
         ))
         try:
             idx = build_osm_meta_index(path)
         finally:
             os.unlink(path)
-        assert idx["201"]["turn_lanes"] == "through|right"
+        assert idx["Schulstraße"]["turn_lanes"] == "through|right"
 
     def test_extracts_traffic_sign(self):
         path = _write_osm(_minimal_osm(
-            {"id": "300", "tags": {"traffic_sign": "de:206"}}
+            {"id": "300", "tags": {"name": "Kirchgasse", "traffic_sign": "de:206"}}
         ))
         try:
             idx = build_osm_meta_index(path)
         finally:
             os.unlink(path)
-        assert idx["300"]["traffic_sign"] == "de:206"
+        assert idx["Kirchgasse"]["traffic_sign"] == "de:206"
 
     def test_omits_ways_without_enrichment_tags(self):
         path = _write_osm(_minimal_osm(
@@ -130,9 +141,9 @@ class TestBuildOsmMetaIndex:
 
     def test_multiple_ways(self):
         path = _write_osm(_minimal_osm(
-            {"id": "1", "tags": {"maxspeed": "30"}},
-            {"id": "2", "tags": {"turn:lanes": "left|right"}},
-            {"id": "3", "tags": {"traffic_sign": "de:205"}},
+            {"id": "1", "tags": {"name": "Erste Straße", "maxspeed": "30"}},
+            {"id": "2", "tags": {"name": "Zweite Straße", "turn:lanes": "left|right"}},
+            {"id": "3", "tags": {"name": "Dritte Straße", "traffic_sign": "de:205"}},
             {"id": "4", "tags": {"name": "Hauptstraße"}},  # no enrichment tag
         ))
         try:
@@ -140,7 +151,7 @@ class TestBuildOsmMetaIndex:
         finally:
             os.unlink(path)
         assert len(idx) == 3
-        assert "4" not in idx
+        assert "Hauptstraße" not in idx
 
 
 # ---------------------------------------------------------------------------
@@ -177,8 +188,8 @@ class TestWriterIntegration:
             os.unlink(path)
 
     def test_speed_limit_applied_to_matching_road(self):
-        idx = self._index_from_ways({"id": "7765", "tags": {"maxspeed": "50"}})
-        root = _xodr_with_roads("7765")
+        idx = self._index_from_ways({"id": "7765", "tags": {"name": "Teststraße", "maxspeed": "50"}})
+        root = _xodr_with_roads(("7765", "Teststraße"))
         n = apply_speed_limits(root, idx)
         assert n == 1
         speed_elem = root.find(".//lane/speed")
@@ -193,8 +204,8 @@ class TestWriterIntegration:
         assert n == 0
 
     def test_turn_lane_marking_inserted(self):
-        idx = self._index_from_ways({"id": "500", "tags": {"turn:lanes": "left|straight"}})
-        root = _xodr_with_roads("500")
+        idx = self._index_from_ways({"id": "500", "tags": {"name": "Bahnhofstraße", "turn:lanes": "left|straight"}})
+        root = _xodr_with_roads(("500", "Bahnhofstraße"))
         n = apply_turn_lanes(root, idx)
         assert n == 1
         ud = root.find(".//road/userData")
@@ -204,8 +215,8 @@ class TestWriterIntegration:
         assert vec.get("value") == "left|straight"
 
     def test_regulatory_sign_inserted(self):
-        idx = self._index_from_ways({"id": "600", "tags": {"traffic_sign": "de:206"}})
-        root = _xodr_with_roads("600")
+        idx = self._index_from_ways({"id": "600", "tags": {"name": "Münchener Straße", "traffic_sign": "de:206"}})
+        root = _xodr_with_roads(("600", "Münchener Straße"))
         n = apply_regulatory_signs(root, idx)
         assert n == 1
         obj = root.find(".//road/objects/object")
@@ -220,8 +231,9 @@ class TestWriterIntegration:
         assert apply_regulatory_signs(root, {}) == 0
 
     def test_duplicate_speed_not_inserted_twice(self):
-        idx = self._index_from_ways({"id": "42", "tags": {"maxspeed": "70"}})
-        root = _xodr_with_roads("42")
-        apply_speed_limits(root, idx)
+        idx = self._index_from_ways({"id": "42", "tags": {"name": "Ringstraße", "maxspeed": "70"}})
+        root = _xodr_with_roads(("42", "Ringstraße"))
+        n1 = apply_speed_limits(root, idx)
+        assert n1 == 1  # sanity: the first call actually matched and inserted
         n2 = apply_speed_limits(root, idx)  # second call
         assert n2 == 0  # lane already has <speed>
