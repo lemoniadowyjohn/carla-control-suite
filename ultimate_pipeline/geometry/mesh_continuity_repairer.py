@@ -471,4 +471,22 @@ class MeshContinuityRepairer:
             last.set("s", f"{min(length - 0.01, float(last.get('s', '0'))):.8f}")
 
     def scan_for_discontinuities(self):
-        pass
+        """
+        Return a continuity report for this file using the C6-corrected,
+        actively-maintained checker (ultimate_pipeline.quality.
+        check_geometric_continuity.check_geometric_continuity), which
+        correctly accounts for link_kind (predecessor/successor) and
+        contactPoint rather than this class's older `scan_roads()` diagnostic
+        (which naively compares chained x/y/hdg along sorted geometries and
+        predates the C6 fix).
+
+        Historically this method had zero callers and was a dead `pass`
+        stub; it now delegates instead of staying dead, so callers get a
+        real report dict ({"ok", "num_issues", "issues", ...}) instead of
+        None.
+        """
+        from ultimate_pipeline.quality.check_geometric_continuity import (
+            check_geometric_continuity,
+        )
+
+        return check_geometric_continuity(self.xodr_path)
