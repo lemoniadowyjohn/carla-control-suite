@@ -25,34 +25,89 @@
 ## Honest RQ1 answer
 Where directly comparable (lane width), auto and manual **agree** (gap 0.04). The large gaps are **scope + construction method**, not a domain difference. A meaningful structural domain-gap number requires either (a) restricting the auto map to the manual map's drivable subset before comparison, or (b) reporting per-aspect with these boundaries — done here.
 
-## Local registration (RQ1 refinement — crop auto to Grid0828 footprint, 2026-08-21)
+## Local registration (RQ1 refinement — crop auto to Grid0828 footprint, 2026-08-21; hardened 2026-08-26, C26)
 The whole-map scores are dominated by **scope** (auto = full OSM 32,297 roads over ~13×14 km; manual = curated
 ~4.4×2.9 km patch). To measure a *local* structural gap, the auto map is cropped to Grid0828's geographic footprint
 via CRS registration (auto bare-`+proj=tmerc` + header offset ↔ manual UTM-32N, through WGS84 lat/lon;
-`ultimate_pipeline/domain_gap/local_registration.py`, TDD `tests/unit/test_local_registration.py`, 7 tests).
-Grid0828 lands at auto-local x[6155..10906] y[6427..9875]; **32,297 → 6,079 auto roads (18.8%)** kept.
+`ultimate_pipeline/domain_gap/local_registration.py`, TDD `tests/unit/test_local_registration.py`, 19 tests).
 
-**Local road-network structural comparison (same footprint):**
-| metric | value | reading |
+**C26 update (2026-08-26): footprint tightened from bounding-box to convex hull.** The original (2026-08-21)
+footprint was the axis-aligned bounding box of Grid0828's planView geometry — always ≥ the true footprint in area,
+since Grid0828 is not rectangular. The footprint now defaults to the **convex hull** of that same geometry (hull
+area ≤ bbox area for any point set, so this can only shrink or keep-equal the cropped road/building set — never
+grow it). Both are reported below side-by-side, since the hull crop changes the ratios **materially**.
+
+**Footprint comparison — hull (default) vs. bbox (legacy):**
+| metric | hull (tighter) | bbox (legacy) | reading |
+|---|---|---|---|
+| auto roads kept | 3,539 / 32,297 (10.96%) | 6,079 / 32,297 (18.82%) | hull excludes ~42% of the roads bbox kept |
+| road_length ratio (auto/manual) | **2.69×** (144.1 km vs 53.5 km) | **4.5×** (240.8 km vs 53.5 km) | **materially lower under hull** |
+| junction ratio (auto/manual) | **3.78×** (450 vs 119) | **6.05×** (720 vs 119) | **materially lower under hull** |
+| road_count ratio (auto/manual) | **3.57×** (3,539 vs 993) | **6.12×** (6,079 vs 993) | **materially lower under hull** |
+| lane_width_gap | 0.0415 | 0.0415 | unchanged (construction-choice metric, footprint-insensitive) |
+| curvature_gap | 0.2192 | 0.2239 | ~unchanged |
+
+**Does the 4.5–6× road-network finding still hold? Partially — direction yes, magnitude no.** Under the tighter
+hull footprint the ratios drop to **~2.7–3.8×** (from 4.5–6.1× under bbox). The *qualitative* finding is unchanged
+and, if anything, more defensible: even in the geometrically-tightest footprint that actually contains Grid0828,
+the auto map still has **~2.7–3.8× the road length/junctions/road-count** — a genuine road-network-completeness gap,
+not a bbox-corner artifact (the bbox's corner regions, which the hull rightly excludes, were padding the auto-side
+counts with roads outside Grid0828's real extent). The magnitude claim in the original 2026-08-21 report ("4.5–6×")
+should be read as the **bbox-footprint number**; the hull-footprint number (**~2.7–3.8×**) is now the primary,
+more accurate figure. Both are retained in `local_registration.json` (`hull` / `bbox` top-level blocks) rather than
+overwriting one with the other.
+
+**Finding (updated):** even within the *tightest defensible same-area footprint* the auto map has **~2.7–3.8× the
+road length/junctions/road-count** of Grid0828 — a genuine **road-network-completeness** domain gap: OSM captures
+every service road/driveway/footway, while the hand-modeled Grid0828 contains only the *drivable* network. This
+remains the real RQ1 structural gap the whole-map view obscured as a 28× scope artifact; the hull crop shows the
+earlier 4.5–6× figure was itself inflated by ~35-45% from bbox over-inclusion, not that the gap is an artifact.
+Lane widths still agree (0.04); curvature differs more locally (0.22, footprint-insensitive between hull/bbox).
+
+**Buildings — C26 update: RECOVERABLE and now included (previously excluded).** The 2026-08-21 report excluded
+buildings because the auto map's 5,686 buildings are all attached to one *container* road at s=0/t=0, so a
+road-centroid crop always zeroed them out. Investigation (C26) found each building `<object>` carries a full
+absolute-position `<outline><cornerGlobal x y z/></outline>` polygon — independent of the s=0/t=0 road attachment —
+so buildings ARE spatially croppable once collected map-wide instead of per-container-road
+(`collect_building_objects`, `building_global_centroid`, `crop_buildings_to_polygon` in `local_registration.py`).
+
+A second, independent bug was found and fixed while wiring this up: the auto map's building `cornerGlobal` points
+are NOT in the same local frame as its road planView geometry, despite both notionally being "local meters".
+`ultimate_pipeline/enrichment/osm_polygon_loader.py` projects OSM building lon/lat via
+`+proj=tmerc +lat_0=<OSM bbox lat_min> +lon_0=<OSM bbox lon_min> +x_0=0 +y_0=0`, a *different* tmerc origin than
+the road network's bare-`+proj=tmerc` (lat_0=lon_0=0) + header `<offset>` frame — on the pinned pair the two origins
+are offset by **(+6547.4, +6368.8) m**. Without correcting for this, every building's centroid lands far outside
+any real footprint and 100% get cropped out regardless of footprint shape (verified: this was the actual behavior
+before the fix — 0/5,686 kept under both hull and bbox). `building_frame_shift_to_auto_local()` recovers the
+correction by projecting the OSM bbox's `(lon_min, lat_min)` through the auto map's own bare-tmerc + offset
+pipeline (mirrors how the manual-map footprint is itself registered); `compute_local_registration(...,
+building_frame_shift="auto")` resolves it from `ultimate_pipeline.config.settings.SETTINGS.load_gps_bounds()` by
+default. This coordinate-frame bug lives in the building-enrichment step (`osm_polygon_loader.py` /
+`building_extruder.py`), not in the crop logic itself — flagged here as a real, previously-undetected defect,
+out of scope to fix at the source for this task (RQ1 measurement, not enrichment-pipeline surgery).
+
+**Building density, in-footprint (frame-corrected):**
+| metric | hull | bbox |
 |---|---|---|
-| road_length ratio (auto/manual) | **4.5×** | 240.8 km vs 53.5 km |
-| junction ratio (auto/manual) | **6.0×** | 720 vs 119 |
-| road_count ratio (auto/manual) | **6.1×** | 6,079 vs 993 |
-| lane_width_gap | **0.042** | agree (same as whole-map) |
-| curvature_gap | **0.224** | local (sharper than whole-map 0.093) |
+| auto buildings kept | 3,779 / 5,686 (66.5%) | 5,232 / 5,686 (92.0%) |
+| manual (Grid0828) buildings | 993 | 993 |
+| auto buildings / km | 26.23 | 21.72 |
+| manual buildings / km | 18.55 | 18.55 |
+| `building_density_gap` | 0.414 | 0.171 |
 
-**Finding:** even within the *same* area the auto map has **~4.5–6× the road length/junctions** of Grid0828 — a
-genuine **road-network-completeness** domain gap: OSM captures every service road/driveway/footway, while the
-hand-modeled Grid0828 contains only the *drivable* network. This is the real RQ1 structural gap the whole-map view
-obscured as a 28× scope artifact. Lane widths still agree (0.04); curvature differs more locally (0.22).
+**Finding:** both maps now show comparable, plausible building density once correctly cropped and frame-aligned
+(auto ~1.2–1.4× manual per km) — a real, moderate density difference rather than the artificial 1.0-cap "excluded"
+placeholder from the 2026-08-21 report. Reported here as `building_density_comparison`, not excluded.
 
-**Excluded (construction layers, not road structure):** buildings + traffic-lights. Both maps model buildings
-(Grid0828 993 spatially; auto 5,686 on a single *container* road → not spatially croppable); traffic-lights are
-modeled by auto (3,920 in-footprint) but not Grid0828. Construction differences, reported at whole-map level.
+**Excluded (construction layer, not road structure): traffic-lights only.** Grid0828 does not model traffic lights
+at all (0, whole-map), so there is nothing in-footprint to compare against — this is a modeling-choice difference,
+independent of croppability (auto models 2,194 in-footprint under hull / 3,920 under bbox). Reported at whole-map
+level.
 
-**Claim boundary:** the *ratios* are the interpretable signal; the raw `DomainGapScores` road_length/tl/building
-gaps cap at 1.0 and conflate construction with structure. Crop rule = road kept if its planView centroid is inside
-the footprint polygon (boundary roads balance out). Machine-readable: `local_registration.json`.
+**Claim boundary:** the *ratios* are the interpretable signal; the raw `DomainGapScores` road_length/tl gaps cap at
+1.0 and conflate construction with structure. Crop rule = road/building kept if its (frame-corrected) centroid is
+inside the footprint polygon (boundary roads balance out). Machine-readable: `local_registration.json` (now has
+`hull` and `bbox` top-level blocks, both populated, plus `source_files` sha256 provenance).
 
 ## Curvature (RQ1 refinement — paramPoly3 sampling fix, 2026-08-21)
 `XODRMapStatsExtractor._collect_curvatures` previously read `<arc>` only; both maps store curves
