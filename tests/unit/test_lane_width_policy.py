@@ -56,12 +56,17 @@ def test_osm_to_xodr_default_lane_width_is_not_six_meter_placeholder() -> None:
 
 
 def test_osm_meta_index_includes_lane_width_inputs(tmp_path) -> None:
+    # Keyed by street NAME, not way id (OSM way ids and Osm2Odr/netconvert-assigned
+    # XODR road ids are disjoint numbering schemes -- verified 2026-08-26 against the
+    # real pinned map: 0.0000% direct-id match rate). A way with no name tag cannot
+    # be matched by any real consumer and is correctly excluded from the index.
     osm = tmp_path / "roads.osm"
     osm.write_text(
         """<osm>
   <way id="42">
     <nd ref="1" />
     <nd ref="2" />
+    <tag k="name" v="Bahnhofstrasse" />
     <tag k="highway" v="residential" />
     <tag k="lanes" v="2" />
     <tag k="width" v="6.6 m" />
@@ -73,9 +78,10 @@ def test_osm_meta_index_includes_lane_width_inputs(tmp_path) -> None:
 
     meta = build_osm_meta_index(str(osm))
 
-    assert meta["42"]["highway"] == "residential"
-    assert meta["42"]["lanes"] == "2"
-    assert meta["42"]["width"] == "6.6 m"
+    assert "42" not in meta
+    assert meta["Bahnhofstrasse"]["highway"] == "residential"
+    assert meta["Bahnhofstrasse"]["lanes"] == "2"
+    assert meta["Bahnhofstrasse"]["width"] == "6.6 m"
 
 
 def test_width_policy_replaces_converter_six_meter_lane_from_highway_metadata() -> None:

@@ -78,8 +78,10 @@ def apply_speed_limits(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int
 
     Args:
         root:             Parsed XODR root element (modified in-place).
-        osm_roads_by_id:  Mapping from XODR road id (str) → object with .maxspeed
-                          attribute (or dict with 'maxspeed' key).  May be empty.
+        osm_roads_by_id:  Mapping from street NAME (str, matches build_osm_meta_index's
+                          real output -- XODR road id and OSM way id are disjoint
+                          numbering schemes, verified 2026-08-26) to an object with a
+                          .maxspeed attribute (or dict with 'maxspeed' key). May be empty.
 
     Returns:
         Number of <speed> elements inserted.
@@ -89,8 +91,10 @@ def apply_speed_limits(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int
 
     inserted = 0
     for road in root.findall("road"):
-        road_id = road.get("id", "")
-        osm = osm_roads_by_id.get(road_id)
+        road_name = road.get("name", "").strip()
+        if not road_name:
+            continue
+        osm = osm_roads_by_id.get(road_name)
         if osm is None:
             continue
 

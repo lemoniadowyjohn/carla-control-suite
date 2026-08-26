@@ -1,6 +1,6 @@
 # ultimate_pipeline/enrichment/osm_meta_index.py
 """
-Build a lightweight OSM way-id → metadata dict from a raw .osm XML file.
+Build a lightweight OSM street-name → metadata dict from a raw .osm XML file.
 
 Extracts only the tags needed by Tier-2 enrichment writers:
   - maxspeed     → speed_limit_writer
@@ -9,14 +9,30 @@ Extracts only the tags needed by Tier-2 enrichment writers:
   - highway/lanes/width -> lane_width_policy
 
 Returns:
-    Dict[str, dict]  keyed by OSM way id (as string), e.g. "7765".
+    Dict[str, dict]  keyed by street name (OSM way `name` tag, exact string match).
 
-The XODR road id produced by osm2xodr / netconvert equals the OSM way id, so
-this dict can be passed directly as osm_roads_by_id to any of the three writers.
+CORRECTED (2026-08-26): the original design keyed by OSM way id under the assumption
+"XODR road id == OSM way id". Verified FALSE against the real pinned pair: XODR road
+ids are Osm2Odr/netconvert-assigned sequence numbers (e.g. "42330"), OSM way ids are
+the original OSM entity ids (e.g. "4058127") -- disjoint numbering schemes, 0.0000%
+direct-id match rate on 32,297 real roads. The feature silently inserted nothing on
+every real regen (fails open, not closed -- no error was ever raised).
+
+Matching by street NAME instead is verified viable (90.3% of distinct enrichment-
+tagged OSM way names match a real XODR road name on the pinned pair) but is a
+many-to-many correspondence at the STREET level: one street is commonly both several
+OSM ways (this module merges their tags) *and* several XODR road segments after
+netconvert splits it at intersections (all matching segments receive the same entry).
+This is semantically fine for a street-level attribute like maxspeed, but an HONEST
+CAVEAT for position-specific tags (turn:lanes, traffic_sign): a value that originally
+described only one specific way/intersection-approach may now be applied to every
+XODR segment sharing that street name. Not silently hidden -- callers writing those
+two tags should treat matches as approximate, not exact.
 
 Failure modes:
   - If the OSM file does not exist or is not valid XML: returns empty dict (safe).
-  - Ways without any of the three tags are omitted from the result.
+  - A way with enrichment tags but no `name` tag cannot be matched by name and is
+    correctly excluded (not indexed under an empty-string key).
   - Large files (>100 MB) are handled via iterparse to avoid OOM.
 """
 
@@ -26,6 +42,7 @@ import xml.etree.ElementTree as ET
 from typing import Dict
 
 _TAGS_OF_INTEREST = {
+    "name",
     "maxspeed",
     "maxspeed:type",
     "turn:lanes",
@@ -68,17 +85,21 @@ def _has_enrichment_interest(tags: dict) -> bool:
 
 def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
     """
-    Parse *osm_path* and return a dict mapping OSM way id → metadata dict.
+    Parse *osm_path* and return a dict mapping street name → metadata dict.
 
-    Each metadata dict contains only the keys that were present in the OSM file:
+    Each metadata dict contains only the keys that were present in the OSM file(s)
+    contributing to that street name:
       {
-        "maxspeed":    str | None,
-        "turn_lanes":  str | None,   # consolidated from turn:lanes or turn_lanes
-        "traffic_sign": str | None,
-        "highway": str | None,
-        "lanes": str | None,
-        "width": str | None,
+        "maxspeed":    str,
+        "turn_lanes":  str,   # consolidated from turn:lanes or turn_lanes
+        "traffic_sign": str,
+        "highway": str,
+        "lanes": str,
+        "width": str,
       }
+    When multiple OSM ways share the same street name, their tags are MERGED
+    (first-seen value wins per key on conflict) rather than the later way
+    silently discarding the earlier one's data.
 
     Returns an empty dict on any error (safe — callers handle missing entries).
     """
@@ -101,10 +122,11 @@ def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
                     current_tags[k] = v
 
             elif event == "end" and elem.tag == "way" and current_way_id is not None:
-                if current_tags and _has_enrichment_interest(current_tags):
+                name = current_tags.get("name", "").strip()
+                if name and current_tags and _has_enrichment_interest(current_tags):
                     entry: dict = {}
                     for key in sorted(current_tags):
-                        if key in ("turn:lanes", "turn_lanes"):
+                        if key in ("name", "turn:lanes", "turn_lanes"):
                             continue
                         entry[key] = current_tags[key]
                     # Normalise turn:lanes → turn_lanes
@@ -112,7 +134,9 @@ def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
                     if tl:
                         entry["turn_lanes"] = tl
                     if entry:
-                        result[current_way_id] = entry
+                        existing = result.setdefault(name, {})
+                        for key, value in entry.items():
+                            existing.setdefault(key, value)  # first-seen wins on conflict
                 current_way_id = None
                 current_tags = {}
                 elem.clear()  # free memory

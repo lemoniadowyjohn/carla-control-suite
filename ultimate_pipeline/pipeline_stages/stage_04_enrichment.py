@@ -227,7 +227,9 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         print("⏭️ Realism module disabled.")
 
     # OSM metadata enrichment: speed limits, turn:lanes, regulatory signs
-    # Uses osm_meta_index to map OSM way IDs → XODR road IDs (they are equal).
+    # Uses osm_meta_index, keyed by STREET NAME (fixed 2026-08-26): the original
+    # "OSM way id == XODR road id" assumption was verified FALSE (disjoint numbering
+    # schemes; 0.0000% match on the real pinned map). See osm_meta_index.py.
     try:
         from ultimate_pipeline.enrichment.osm_meta_index import build_osm_meta_index
         from ultimate_pipeline.enrichment.speed_limit_writer import apply_speed_limits

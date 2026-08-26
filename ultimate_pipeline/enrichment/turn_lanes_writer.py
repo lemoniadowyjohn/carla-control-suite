@@ -30,8 +30,15 @@ def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
 
     Args:
         root:             Parsed XODR root element (modified in-place).
-        osm_roads_by_id:  Mapping from XODR road id (str) → OSMRoad (or dict with
-                          'turn_lanes' key).  May be empty.
+        osm_roads_by_id:  Mapping from street NAME (str, matches build_osm_meta_index's
+                          real output -- XODR road id and OSM way id are disjoint
+                          numbering schemes, verified 2026-08-26) to an OSMRoad (or
+                          dict with 'turn_lanes' key). May be empty.
+
+    CAVEAT: turn:lanes is position-specific in OSM (one intersection approach), but
+    matching is by street name -- a value may be applied to every XODR road segment
+    sharing that name, not just the one it originally described. See
+    osm_meta_index.py's module docstring.
 
     Returns:
         Number of roads stamped with turnMarking userData.
@@ -41,8 +48,10 @@ def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
 
     stamped = 0
     for road in root.findall("road"):
-        road_id = road.get("id", "")
-        osm = osm_roads_by_id.get(road_id)
+        road_name = road.get("name", "").strip()
+        if not road_name:
+            continue
+        osm = osm_roads_by_id.get(road_name)
         if osm is None:
             continue
 

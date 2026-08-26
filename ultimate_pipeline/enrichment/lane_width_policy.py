@@ -125,11 +125,16 @@ def road_lane_width_metadata(
     road: ET.Element,
     osm_meta: Optional[Mapping[str, Mapping[str, Any]]] = None,
 ) -> Dict[str, str]:
-    """Collect width-relevant OSM metadata from direct map input and XODR provenance."""
+    """Collect width-relevant OSM metadata from direct map input and XODR provenance.
+
+    osm_meta (from build_osm_meta_index) is keyed by street NAME, not XODR road id --
+    OSM way ids and Osm2Odr/netconvert-assigned XODR road ids are disjoint numbering
+    schemes (verified 2026-08-26; see osm_meta_index.py's module docstring).
+    """
     meta: Dict[str, str] = {}
-    road_id = road.get("id") or ""
-    if osm_meta and road_id in osm_meta:
-        for key, value in osm_meta[road_id].items():
+    road_name = (road.get("name") or "").strip()
+    if osm_meta and road_name and road_name in osm_meta:
+        for key, value in osm_meta[road_name].items():
             if value is not None:
                 meta[_clean_key(str(key))] = _clean_value(value)
     meta.update(_metadata_from_attrs(road))

@@ -48,8 +48,15 @@ def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any]) ->
 
     Args:
         root:             Parsed XODR root element (modified in-place).
-        osm_roads_by_id:  Mapping from XODR road id (str) → object/dict with
+        osm_roads_by_id:  Mapping from street NAME (str, matches build_osm_meta_index's
+                          real output -- XODR road id and OSM way id are disjoint
+                          numbering schemes, verified 2026-08-26) to an object/dict with
                           'traffic_sign' attribute/key (string value, e.g. "de:206").
+
+    CAVEAT: traffic_sign is position-specific in OSM (one exact location), but
+    matching is by street name -- a sign may be applied to every XODR road segment
+    sharing that name, not just the one it originally described. See
+    osm_meta_index.py's module docstring.
 
     Returns:
         Number of <object> elements inserted.
@@ -61,8 +68,10 @@ def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any]) ->
     obj_counter: Dict[str, int] = {}
 
     for road in root.findall("road"):
-        road_id = road.get("id", "")
-        osm = osm_roads_by_id.get(road_id)
+        road_name = road.get("name", "").strip()
+        if not road_name:
+            continue
+        osm = osm_roads_by_id.get(road_name)
         if osm is None:
             continue
 
