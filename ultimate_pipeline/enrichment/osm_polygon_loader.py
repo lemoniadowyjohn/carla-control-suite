@@ -331,5 +331,37 @@ class OSMPolygonLoader:
                 props.setdefault("id", f"osm_bld_{elem.get('id')}")
             _append_building(buildings, ring, props)
 
+        # --- multipolygon relation buildings (C28) ----------------------------
+        # Overpass "out geom" relations carry `building` on the RELATION, not the
+        # member ways, and each member already embeds its own ordered point list
+        # (no node-ref table to stitch, unlike the OSM-XML path in
+        # load_buildings_from_osm / C25). Emit the OUTER member ring(s); inner
+        # rings (courtyards) are a documented minor over-fill (no hole support).
+        for elem in data.get("elements", []):
+            if elem.get("type") != "relation":
+                continue
+            tags = dict(elem.get("tags", {}) or {})
+            if tags.get("type") != "multipolygon" or "building" not in tags:
+                continue
+            rel_id = elem.get("id")
+            props = dict(tags)
+            props.setdefault("id", f"osm_bld_rel_{rel_id}" if rel_id is not None else None)
+            for mem in elem.get("members", []):
+                if mem.get("type") != "way" or mem.get("role") not in ("outer", "", None):
+                    continue
+                geometry = mem.get("geometry") or []
+                if len(geometry) < 3:
+                    continue
+                ring = []
+                for pt in geometry:
+                    try:
+                        ring.append((float(pt["lon"]), float(pt["lat"])))
+                    except Exception:
+                        ring = []
+                        break
+                if len(ring) < 3:
+                    continue
+                _append_building(buildings, ring, props)
+
         print(f"[BUILDINGS] Loaded {len(buildings)} building footprints from Overpass JSON")
         return buildings
