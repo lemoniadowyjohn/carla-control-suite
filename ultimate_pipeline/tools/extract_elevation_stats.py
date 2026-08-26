@@ -13,6 +13,16 @@ from ultimate_pipeline.core.xodr_statistics import XODRStatistics
 from ultimate_pipeline.quality.check_elevation_continuity import check_elevation_continuity
 from ultimate_pipeline.quality.check_elevation_seams import check_elevation_seams
 
+# C23: RQ1's canonical result is C14 (reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/),
+# not the legacy thesis_results/structural_gap_v1/run_11. run_11 remains a valid input to
+# run_full_domain_gap.py's use_authoritative_alignment_bundle short-circuit (a separate,
+# file-gated alignment-cache consumer) -- unaffected by this note update.
+THESIS_IMPACT_NOTE = (
+    "This artifact is suitable only as supplementary pipeline capability evidence. "
+    "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_REPORT.md "
+    "(whole-map + local-registration) remains the authoritative structural thesis result."
+)
+
 
 def _sha256_file(path: Path) -> str:
     h = hashlib.sha256()
@@ -398,10 +408,7 @@ def build_report(
             "The manual Ingolstadt reference contains nonzero elevation profiles, but no directly comparable "
             "auto-vs-manual elevation-gap metric is produced by this verifier."
         ),
-        "thesis_impact": (
-            "This artifact is suitable only as supplementary pipeline capability evidence. "
-            "thesis_results/structural_gap_v1/run_11/full_report.json remains the authoritative structural thesis result."
-        ),
+        "thesis_impact": THESIS_IMPACT_NOTE,
         "analysis_scope_note": (
             "This verifier proves artifact-level DEM-backed elevation behavior and structural operability only; "
             "it does not replace the thesis-authoritative planar structural evaluation."
