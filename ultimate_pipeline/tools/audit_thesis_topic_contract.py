@@ -55,6 +55,25 @@ def _bool(value: Any) -> bool:
     return bool(value)
 
 
+# run_11 (thesis_results/structural_gap_v1/run_11) has been superseded as the
+# *canonical RQ1 result* by C14 (reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/),
+# which carries a provenanced whole-map gap, a curvature-sampling fix, and a
+# local-registration refinement (auto map cropped to Grid0828's footprint, revealing
+# the real 4.5-6x road-network-completeness gap the whole-map view obscured as scope).
+# This does NOT affect thesis_results/structural_gap_v1/run_11/alignment.json or
+# auto_aligned_rigid.xodr as inputs to run_full_domain_gap.py's
+# use_authoritative_alignment_bundle short-circuit -- that is a separate, file-gated
+# alignment-cache consumer of the same directory, untouched by this supersession.
+RUN11_SUPERSEDED_BY = "C14_RQ1_STRUCTURAL_GAP"
+RUN11_SUPERSEDED_BY_DETAIL = (
+    "RQ1's canonical result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ "
+    "(C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, "
+    "local_registration.json). run_11's missing-provenance flags below describe the "
+    "legacy artifact only and are not an unaddressed gap in the current RQ1 result; see "
+    "unresolved_or_unverified for the explicit resolution record."
+)
+
+
 def _main_payload(repo_root: Path) -> Dict[str, Any]:
     source_run11 = _find_run11_source(repo_root)
     governed_run11 = repo_root / "thesis_results" / "structural_gap_v1" / "run_11"
@@ -106,11 +125,31 @@ def _main_payload(repo_root: Path) -> Dict[str, Any]:
         }
     )
 
+    # run_11's missing-provenance flags (source_available, governed_addenda,
+    # coverage_context_present, fit_metric_exact_source_revision_status, etc.) are a
+    # real, honestly-reported fact about the legacy artifact on this machine -- but
+    # they must not be reported as a silent, unaddressed gap now that C14 is the
+    # canonical RQ1 result. Record the resolution explicitly rather than omitting
+    # run_11 from the unresolved list.
+    unresolved.append(
+        {
+            "topic": "run11_provenance_gap",
+            "status": "resolved_via_supersession",
+            "detail": (
+                f"run_11's unprovenanced legacy fields (source_available, governed_addenda, "
+                f"coverage_context_present, fit_metric_exact_source_revision_status) are resolved "
+                f"via supersession, not by re-provenancing run_11 itself. {RUN11_SUPERSEDED_BY_DETAIL}"
+            ),
+        }
+    )
+
     return {
         "schema_version": 2,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "repo_root": repo_root.as_posix(),
         "run11": {
+            "superseded_by": RUN11_SUPERSEDED_BY,
+            "superseded_by_detail": RUN11_SUPERSEDED_BY_DETAIL,
             "source_dir": source_run11.as_posix() if source_run11 else "",
             "source_available": bool(source_run11),
             "governed_addenda": {
