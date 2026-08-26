@@ -13,7 +13,7 @@ If your UE4 map uses different layer names, adapt `_layer_name_for_tile`.
 """
 
 from __future__ import annotations
-from typing import Set
+from typing import Optional, Set
 
 try:  # pragma: no cover
     import carla  # type: ignore
@@ -112,5 +112,13 @@ class MeshStreamer:
             except RuntimeError as e:
                 print(f"[MeshStreamer] FAILED to unload layer {lname}: {e}")
 
-    def update(self):
-        pass
+    def update(self, required_tiles: Optional[Set[str]] = None):
+        """
+        Per-tick entry point (mirrors TileStreamer.stream_once / ActorStreamManager.update).
+
+        `required_tiles` is the set of tile filenames (e.g. "tile_0_0.xodr")
+        that should currently be streamed in, typically the sibling
+        TileStreamer's `loaded_tiles` for the current ego position. Delegates
+        to `update_layers`, which already does the load/unload diffing.
+        """
+        self.update_layers(required_tiles or set())

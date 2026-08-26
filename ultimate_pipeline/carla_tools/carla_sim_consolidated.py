@@ -440,10 +440,16 @@ class CarlaSimulation:
             except Exception as e:
                 print(f"[TileStreamer] Error: {e}")
 
-        # Mesh streaming: update visible static meshes
+        # Mesh streaming: update visible static meshes around ego.
+        # Reuses the TileStreamer's per-tick "currently relevant tiles" set
+        # (loaded_tiles) so mesh layers track the same tiles being streamed,
+        # rather than re-deriving tile membership from scratch.
         if self.mesh_streamer:
             try:
-                self.mesh_streamer.update()
+                required_tiles = (
+                    self.tile_streamer.loaded_tiles if self.tile_streamer else set()
+                )
+                self.mesh_streamer.update(required_tiles)
             except Exception as e:
                 print(f"[MeshStreamer] Error: {e}")
 
