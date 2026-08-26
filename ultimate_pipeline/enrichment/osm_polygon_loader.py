@@ -20,22 +20,24 @@ import math
 
 from pyproj import Transformer
 
-from ultimate_pipeline.config.settings import SETTINGS
 from ultimate_pipeline.enrichment.building_extruder import BuildingFootprint
 
 
 # ---------------------------------------------------------------------
 # Coordinate system / transformer
 # ---------------------------------------------------------------------
-# Use the same CRS as <geoReference>, driven by coordinates.json
-_gps = SETTINGS.load_gps_bounds()
-_lat0 = _gps["lat_min"]
-_lon0 = _gps["lon_min"]
-
-PROJ_STRING = (
-    f"+proj=tmerc +lat_0={_lat0} +lon_0={_lon0} "
-    "+k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
-)
+# Use the SAME frame as the road network's <geoReference>: a BARE tmerc projection
+# (implicit lat_0=0/lon_0=0 -- the global equator/prime-meridian origin), matching
+# Osm2Odr's own convention and
+# ultimate_pipeline.domain_gap.local_registration.BARE_TMERC_DEFAULT.
+#
+# C29 (2026-08-26): this used to be `+lat_0=<gps.lat_min> +lon_0=<gps.lon_min>` -- a
+# DIFFERENT tmerc origin (the configured GPS bbox corner) than roads. Verified on the
+# real pinned map: building cornerGlobal centroid was 7,665m from the road centroid as
+# a direct result. Buildings must project through the same global frame roads use so
+# that scripts/regen_map_of_record.py's _rebase_to_local (which also had to be extended
+# to shift cornerGlobal points, see the same C29 fix) produces a consistent local frame.
+PROJ_STRING = "+proj=tmerc +datum=WGS84 +units=m +no_defs"
 
 # Global transformer: WGS84 (lon, lat) → local tmerc (x, y) in meters
 TRANSFORMER = Transformer.from_crs(

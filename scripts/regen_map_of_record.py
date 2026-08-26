@@ -146,8 +146,12 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
     The SUMO frame-preservation path (--offset.disable-normalization) keeps
     global tmerc(0,0) coordinates (~832k/5458k for Ingolstadt) through the
     pipeline. Raw geometry that far from the origin breaks float32 precision
-    in CARLA and fails the origin_sanity gate. Translation-invariant: only
-    planView geometry x/y are shifted; the original frame is preserved in the
+    in CARLA and fails the origin_sanity gate. Translation-invariant: planView
+    geometry x/y AND building <object><outline><cornerGlobal> x/y are shifted
+    by the SAME (dx, dy) (C29: cornerGlobal was previously left un-rebased,
+    which -- combined with a separate building-projection-origin bug fixed in
+    osm_polygon_loader.py -- produced a verified 7,665m building/road centroid
+    drift on the real pinned map). The original frame is preserved in the
     header <offset> element and in the returned report.
     """
     import xml.etree.ElementTree as _ET
@@ -174,6 +178,9 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
     for g in root.findall(".//planView/geometry"):
         g.set("x", f"{float(g.get('x', '0')) - dx:.6f}")
         g.set("y", f"{float(g.get('y', '0')) - dy:.6f}")
+    for c in root.findall(".//object/outline/cornerGlobal"):
+        c.set("x", f"{float(c.get('x', '0')) - dx:.6f}")
+        c.set("y", f"{float(c.get('y', '0')) - dy:.6f}")
     header = root.find("header")
     if header is None:
         header = _ET.SubElement(root, "header")
