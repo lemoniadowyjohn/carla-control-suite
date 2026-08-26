@@ -61,7 +61,73 @@ def test_rq1_prefers_corrected_curvature_over_stale_main_json(tmp_path: Path) ->
     assert curvature_row["value"] == 0.093117
 
 
+def _local_structural_summary_payload():
+    return {
+        "road_network_structural": {
+            "lane_width_gap": 0.0415,
+            "curvature_gap": 0.2192,
+            "road_length_ratio_auto_over_manual": 2.692,
+            "junction_ratio_auto_over_manual": 3.782,
+            "road_count_ratio_auto_over_manual": 3.565,
+        },
+        "building_density_comparison": {
+            "building_density_gap": 0.4139,
+            "cropped_auto_buildings": 3779,
+            "manual_buildings": 993,
+        },
+        "construction_differences_excluded": {
+            "reason": "traffic lights excluded from local gap",
+            "cropped_auto_traffic_lights": 2194,
+            "manual_traffic_lights": 0,
+        },
+        "footprint": {
+            "auto_roads_kept": 3539,
+            "auto_roads_total": 32297,
+            "kept_fraction": 0.1096,
+        },
+    }
+
+
 def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
+    """C26 schema: local_registration.json has top-level hull/bbox blocks, each with its own
+    local_structural_summary. hull (tighter, default) must be preferred over bbox."""
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
+        "auto_map": {"path": "auto.xodr", "sha256": "aa" * 32},
+        "manual_map": {"path": "manual.xodr", "sha256": "bb" * 32},
+        "scores": {"lane_width_gap": 0.04, "curvature_gap": 0.093, "road_length_gap": 1.0,
+                   "traffic_light_density_gap": 1.0, "building_density_gap": 0.8, "road_type_coverage_gap": 0.0},
+    })
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json", {
+        "hull": {"local_structural_summary": _local_structural_summary_payload()},
+        "bbox": {"local_structural_summary": {
+            "road_network_structural": {
+                "lane_width_gap": 0.0415,
+                "curvature_gap": 0.2239,
+                "road_length_ratio_auto_over_manual": 4.5,
+                "junction_ratio_auto_over_manual": 6.05,
+                "road_count_ratio_auto_over_manual": 6.122,
+            },
+            "construction_differences_excluded": {
+                "reason": "construction layers excluded from local gap",
+                "cropped_auto_traffic_lights": 3920,
+            },
+            "footprint": {"auto_roads_kept": 6079, "auto_roads_total": 32297, "kept_fraction": 0.1882},
+        }},
+    })
+    payload = build_tables(tmp_path)
+    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
+    # hull values win (tighter/preferred), not the bbox ones present in the same file
+    assert rq1["local_curvature_gap"]["value"] == 0.2192
+    assert rq1["local_road_length_ratio_auto_over_manual"]["value"] == 2.692
+    assert rq1["local_auto_footprint_kept_fraction"]["value"] == 0.1096
+    assert rq1["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
+    assert rq1["local_building_density_gap"]["value"] == 0.4139
+    assert "road_length_gap" not in rq1
+
+
+def test_rq1_falls_back_to_legacy_flat_local_registration_schema(tmp_path: Path) -> None:
+    """Pre-C26 local_registration.json had a flat top-level local_structural_summary (no
+    hull/bbox nesting) -- must still be read, not silently treated as MISSING."""
     _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
         "auto_map": {"path": "auto.xodr", "sha256": "aa" * 32},
         "manual_map": {"path": "manual.xodr", "sha256": "bb" * 32},
