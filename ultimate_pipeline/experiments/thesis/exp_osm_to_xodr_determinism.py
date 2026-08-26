@@ -20,10 +20,32 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from ultimate_pipeline.osm.osm_to_xodr_wrapper import convert_osm_to_xodr, OSMToXODRConfig
+
+# Osm2Odr's only known source of byte-level nondeterminism under fixed inputs: a wall-clock
+# timestamp written in exactly two places. Verified directly against 3 real repeated
+# conversions (reports/post_audit_hardening/C15_RQ4_DR/determinism/run_00{0,1,2}.xodr): the
+# raw diff between any two runs is exactly these two lines -- bbox (north/south/east/west)
+# and every other byte match. See THESIS_VS_CURRENT_STATE_COMPARISON item #13.
+_TIMESTAMP_PATTERNS = (
+    (re.compile(r"generated on [^\n]* by"), "generated on TIMESTAMP by"),
+    (re.compile(r'date="[^"]*"'), 'date="TIMESTAMP"'),
+)
+
+
+def _normalize_timestamps(text: str) -> str:
+    for pattern, replacement in _TIMESTAMP_PATTERNS:
+        text = pattern.sub(replacement, text)
+    return text
+
+
+def _sha256_normalized_text(path: Path) -> str:
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return hashlib.sha256(_normalize_timestamps(text).encode("utf-8")).hexdigest()
 
 
 def _sha256(path: Path) -> str:
@@ -88,6 +110,7 @@ def main() -> None:
                 "i": i,
                 "xodr": str(out_xodr),
                 "sha256": _sha256(out_xodr),
+                "sha256_normalized": _sha256_normalized_text(out_xodr),
                 "md5": _md5(out_xodr),
                 "signature": _signature(out_xodr),
             }
@@ -95,15 +118,29 @@ def main() -> None:
         print(f"[{i}] sha256={runs[-1]['sha256']} md5={runs[-1]['md5']} sig={runs[-1]['signature']}")
 
     stable = all(r.get("sha256") == runs[0].get("sha256") for r in runs)
-    report = {"stable": stable, "runs": runs}
+    # "Normalized" strips the two known timestamp locations (see _TIMESTAMP_PATTERNS) before
+    # hashing. stable=False + stable_normalized=True means the ONLY source of byte-level
+    # nondeterminism is the timestamp -- no other (bbox float accumulation, XML element
+    # order, etc.) source is present. stable_normalized=False would mean a real, unexplained
+    # secondary source exists and needs investigating.
+    stable_normalized = all(
+        r.get("sha256_normalized") == runs[0].get("sha256_normalized") for r in runs
+    )
+    report = {"stable": stable, "stable_normalized": stable_normalized, "runs": runs}
     (out_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     if stable:
-        print(f"✅ Deterministic: all {len(runs)} conversions identical")
+        print(f"✅ Deterministic: all {len(runs)} conversions byte-identical")
+    elif stable_normalized:
+        print(
+            f"⚠ Not byte-identical, but identical modulo the known timestamp fields "
+            f"({len(runs)} runs) -- no other source of nondeterminism detected"
+        )
+        print("unique raw hashes:", sorted(set(r.get("sha256") for r in runs)))
     else:
-        print(f"⚠ Not deterministic: hashes differ across runs")
-        # Show unique hashes for quick reading
-        print("unique hashes:", sorted(set(r.get("sha256") for r in runs)))
+        print(f"❌ Not deterministic even after normalizing known timestamps -- a real, unexplained source exists")
+        print("unique raw hashes:", sorted(set(r.get("sha256") for r in runs)))
+        print("unique normalized hashes:", sorted(set(r.get("sha256_normalized") for r in runs)))
 
 
 if __name__ == "__main__":
