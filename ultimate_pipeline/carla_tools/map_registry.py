@@ -418,13 +418,21 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
+        # C29 promotion (2026-08-26): buildings' cornerGlobal surgically
+        # corrected (remediation option b -- see
+        # reports/post_audit_hardening/C29_PINNED_MAP_BUILDING_PATCH_APPLIED.md).
+        # Only building object outline corners changed (single deterministic
+        # shift); roads/lanes/signals/elevation/header offset are byte-for-
+        # byte identical to the superseded pin below. The pre-patch file
+        # remains in git history/LFS for provenance, not deleted.
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
-        "ingolstadt_perception_map_of_record_20260819_160350.xodr",
-        "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-        "bytes": 144142210,
+        "ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+        "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8",
+        "bytes": 144385542,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
+        "supersedes_sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
     },
     "manual_grid0828": {
         "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
