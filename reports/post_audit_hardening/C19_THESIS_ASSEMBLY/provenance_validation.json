@@ -91,6 +91,12 @@
         "via": "map_registry:auto_map_of_record"
       },
       {
+        "metric": "local_building_density_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
         "metric": "perceptual_gap",
         "provenance": "n/a (deferred/missing)",
         "rq": "RQ2"
@@ -99,7 +105,7 @@
         "metric": "gnn_latent_cosine_distance",
         "provenance": "PASS",
         "rq": "RQ3/RQ5",
-        "via": "direct_hash:map_encoder_epoch50.pt"
+        "via": "direct_hash:aggregate_stats.json"
       },
       {
         "metric": "miou_auto_train_manual_eval",

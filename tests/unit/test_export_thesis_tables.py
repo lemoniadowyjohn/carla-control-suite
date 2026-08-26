@@ -192,6 +192,50 @@ def test_gnn_row_is_prototype_not_authoritative(tmp_path: Path) -> None:
     assert gnn_row["value"] == 1.14
 
 
+def test_gnn_row_is_authoritative_when_c21_ensemble_ci_excludes_zero(tmp_path: Path) -> None:
+    # C21: union-training (both maps' tiles) + 5-seed ensemble supersedes the C18
+    # single-run PROTOTYPE result when its CI excludes zero (no-gap).
+    _mk(tmp_path, "reports/post_audit_hardening/C18_GNN_LATENT_GAP/gnn_training_report.json", {
+        "latent_gap": {"metrics": {"cosine_distance": 1.14}, "encoder": {"checkpoint_md5": "deadbeef"}},
+    })
+    _mk(tmp_path, "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json", {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {"values": [1.13, 1.33, 1.17, 1.11, 1.04], "mean": 1.1537, "std": 0.1083,
+                             "ci95_bootstrap": [1.0803, 1.2476]},
+        "cosine_similarity": {"values": [-0.13, -0.33, -0.17, -0.11, -0.04], "mean": -0.1537, "std": 0.1083,
+                               "ci95_bootstrap": [-0.2445, -0.0803]},
+        "ci_excludes_zero_similarity": True,
+    })
+    payload = build_tables(tmp_path)
+    gnn_rows = [r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance"]
+    assert len(gnn_rows) == 1  # supersedes, does not duplicate, the C18 row
+    gnn_row = gnn_rows[0]
+    assert gnn_row["status"] == AUTHORITATIVE
+    assert gnn_row["value"] == 1.1537
+    assert "5" in gnn_row["note"] and "union" in gnn_row["note"].lower()
+    # provenance: sha256 must be the REAL hash of the cited artifact (independently
+    # re-verifiable by validate_thesis_claim_provenance.py), not left UNPINNED.
+    import hashlib
+    expected = hashlib.sha256(
+        (tmp_path / "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json")
+        .read_bytes()
+    ).hexdigest()
+    assert gnn_row["sha256"] == expected
+
+
+def test_gnn_row_stays_bounded_when_c21_ensemble_ci_includes_zero(tmp_path: Path) -> None:
+    _mk(tmp_path, "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json", {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {"values": [1.0, 1.0, 1.0, 1.0, 1.0], "mean": 1.0, "std": 0.5,
+                             "ci95_bootstrap": [0.5, 1.5]},
+        "cosine_similarity": {"values": [0.0] * 5, "mean": 0.0, "std": 0.3, "ci95_bootstrap": [-0.3, 0.3]},
+        "ci_excludes_zero_similarity": False,
+    })
+    payload = build_tables(tmp_path)
+    gnn_row = next(r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance")
+    assert gnn_row["status"] == BOUNDED
+
+
 def test_against_real_repo_root_does_not_crash_and_finds_real_evidence() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     payload = build_tables(repo_root)

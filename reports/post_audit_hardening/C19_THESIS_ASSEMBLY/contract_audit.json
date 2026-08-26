@@ -8,13 +8,12 @@
   },
   "current_rq_tables_audit": {
     "counts_by_status": {
-      "AUTHORITATIVE": 3,
-      "BOUNDED": 9,
-      "DEFERRED": 4,
-      "PROTOTYPE": 1
+      "AUTHORITATIVE": 4,
+      "BOUNDED": 10,
+      "DEFERRED": 4
     },
     "ok": true,
-    "row_count": 17,
+    "row_count": 18,
     "rq_tables_found": true,
     "rq_tables_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
     "violations": []
@@ -25,7 +24,7 @@
     "machine_readable_status_present": true,
     "overall_status_enum_present": true
   },
-  "generated_at_utc": "2026-08-26T10:15:31.761953+00:00",
+  "generated_at_utc": "2026-08-26T14:33:53.739867+00:00",
   "perception_labels": {
     "pair_result_class_present": true,
     "pair_result_reason_present": true,
@@ -57,6 +56,8 @@
     },
     "source_available": false,
     "source_dir": "",
+    "superseded_by": "C14_RQ1_STRUCTURAL_GAP",
+    "superseded_by_detail": "RQ1's canonical result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ (C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, local_registration.json). run_11's missing-provenance flags below describe the legacy artifact only and are not an unaddressed gap in the current RQ1 result; see unresolved_or_unverified for the explicit resolution record.",
     "supplementary_metrics_parsed": false,
     "true_divergence_supported": false
   },
@@ -66,6 +67,11 @@
       "detail": "Code-path contract exists, but no CARLA runtime probe was executed in this reconciliation pass.",
       "status": "missing_runtime_evidence",
       "topic": "visual_qa_runtime_verification_this_pass"
+    },
+    {
+      "detail": "run_11's unprovenanced legacy fields (source_available, governed_addenda, coverage_context_present, fit_metric_exact_source_revision_status) are resolved via supersession, not by re-provenancing run_11 itself. RQ1's canonical result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ (C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, local_registration.json). run_11's missing-provenance flags below describe the legacy artifact only and are not an unaddressed gap in the current RQ1 result; see unresolved_or_unverified for the explicit resolution record.",
+      "status": "resolved_via_supersession",
+      "topic": "run11_provenance_gap"
     }
   ],
   "variability_experiment_classes": {

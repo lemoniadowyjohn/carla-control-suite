@@ -19,6 +19,7 @@ Status vocabulary (kept consistent with ultimate_pipeline.config.thesis_contract
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -172,23 +173,51 @@ def _rq2_rows(root: Path) -> List[Dict[str, Any]]:
                        "or the C16 UE cook (blocked on a human operator)")]
 
 
-def _rq3_rq5_rows(root: Path) -> List[Dict[str, Any]]:
+def _gnn_row(root: Path) -> Dict[str, Any]:
+    # C21: union-training (auto + manual tiles, resolving the C18 OOD caveat) + a
+    # 5-seed ensemble (resolving the C18 single-run caveat) supersedes the C18
+    # PROTOTYPE result IF its bootstrap CI excludes zero similarity (no-gap) --
+    # exactly the bar the C21 governed prompt itself set for AUTHORITATIVE.
+    c21_dir = root / "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE"
+    agg_path = c21_dir / "aggregate_stats.json"
+    agg = _read_json(agg_path)
+    if agg is not None:
+        cd = agg.get("cosine_distance", {})
+        cs = agg.get("cosine_similarity", {})
+        ci_excludes_zero = bool(agg.get("ci_excludes_zero_similarity"))
+        seeds = agg.get("seeds", [])
+        status = AUTHORITATIVE if ci_excludes_zero else BOUNDED
+        agg_sha256 = hashlib.sha256(agg_path.read_bytes()).hexdigest()
+        return _row(
+            "RQ3/RQ5", "gnn_latent_cosine_distance", cd.get("mean"), status,
+            artifact="C21_GNN_AUTHORITATIVE/aggregate_stats.json", sha256=agg_sha256,
+            note=(
+                f"{len(seeds)}-seed ensemble (seeds={seeds}) trained on the UNION of both "
+                f"maps' tiles (resolves C18's OOD one-sided-training caveat); "
+                f"cosine_distance 95% bootstrap CI={cd.get('ci95_bootstrap')}, "
+                f"cosine_similarity 95% CI={cs.get('ci95_bootstrap')} "
+                f"({'excludes' if ci_excludes_zero else 'includes'} zero/no-gap)"
+            ),
+        )
     ev_dir = root / "reports/post_audit_hardening/C18_GNN_LATENT_GAP"
     gnn = _read_json(ev_dir / "gnn_training_report.json")
-    rows: List[Dict[str, Any]] = []
     if gnn is not None:
         metrics = ((gnn.get("latent_gap") or {}).get("metrics")) or {}
         ckpt_md5 = ((gnn.get("latent_gap") or {}).get("encoder") or {}).get("checkpoint_md5", "")
-        rows.append(_row(
+        return _row(
             "RQ3/RQ5", "gnn_latent_cosine_distance", metrics.get("cosine_distance"), PROTOTYPE,
             artifact="map_encoder_epoch50.pt", sha256=ckpt_md5,
             note="one-sided (auto-only) training makes the manual map OOD for the encoder -- "
                  "conflates true structural gap with distribution shift; corroborates RQ1, "
                  "not an independent authoritative measurement",
-        ))
-    else:
-        rows.append(_row("RQ3/RQ5", "gnn_latent_cosine_distance", None, MISSING,
-                          note="gnn_training_report.json not found"))
+        )
+    return _row("RQ3/RQ5", "gnn_latent_cosine_distance", None, MISSING,
+                note="neither C21_GNN_AUTHORITATIVE/aggregate_stats.json nor "
+                     "C18_GNN_LATENT_GAP/gnn_training_report.json found")
+
+
+def _rq3_rq5_rows(root: Path) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = [_gnn_row(root)]
     rows.append(_row("RQ3", "miou_auto_train_manual_eval", None, DEFERRED,
                       note="needs C17 paired captures (blocked -- see RQ2)"))
     rows.append(_row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED,
