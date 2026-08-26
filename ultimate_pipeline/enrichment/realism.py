@@ -161,3 +161,132 @@ class RealismModule:
         if "residential" in t:
             return 30
         return None
+
+    # ---------------------------------------------------------
+    # RULES MODE helpers (2026-08-26)
+    #
+    # ENABLE_REALISM_RULES/ENABLE_GUARDRAILS/ENABLE_BENCHES/ENABLE_SMART_LAMPS/
+    # ENABLE_TRASH_BINS all default True, but enrich()'s RULES MODE branch
+    # guards every feature behind hasattr(RealismModule, "..."). None of these
+    # 5 methods existed -- despite every flag reading "enabled", benches/
+    # guardrails/trash bins were never generated on any real regen, silently,
+    # with no error. street_furniture_rules.py already defined the rule
+    # constants; only this placement logic was missing.
+    # ---------------------------------------------------------
+
+    @staticmethod
+    def _estimate_curvature(road: ET.Element) -> float:
+        """Representative |curvature| (1/m) for `road` -- reuses the same
+        arc/spiral/paramPoly3 sampler as domain_gap/map_stats_xodr.py (C14),
+        not a separate implementation. 0.0 for a straight road / no samples."""
+        from ultimate_pipeline.domain_gap.map_stats_xodr import XODRMapStatsExtractor
+
+        samples = XODRMapStatsExtractor._collect_curvatures(road)
+        return max((abs(k) for k in samples), default=0.0)
+
+    @staticmethod
+    def _rule_lamps(road: ET.Element, spacing: float, offset: float) -> int:
+        """Same placement as _simple_lamps, parameterized by the governed
+        StreetFurnitureRules constants instead of hardcoded values."""
+        length = float(road.get("length", "0"))
+        count = 0
+        num_posts = int(length // spacing) if spacing > 0 else 0
+        for i in range(num_posts):
+            s = i * spacing
+            ET.SubElement(RealismModule._ensure_objects(road), "object", {
+                "type": "lamp_post",
+                "id": f"lamp_{road.get('id')}_{i}",
+                "s": f"{s:.2f}",
+                "t": str(offset),
+                "zOffset": "0.0",
+                "hdg": "0.0",
+                "pitch": "0.0",
+                "roll": "0.0",
+                "orientation": "none",
+                "dynamic": "no",
+                "height": "5.0",
+                "length": "0.5",
+                "width": "0.5",
+            })
+            count += 1
+        return count
+
+    @staticmethod
+    def _benches(road: ET.Element) -> int:
+        """Place a bench every StreetFurnitureRules.BENCH_INTERVAL meters."""
+        length = float(road.get("length", "0"))
+        interval = StreetFurnitureRules.BENCH_INTERVAL
+        count = 0
+        num = int(length // interval) if interval > 0 else 0
+        for i in range(num):
+            s = (i + 1) * interval
+            ET.SubElement(RealismModule._ensure_objects(road), "object", {
+                "type": "bench",
+                "id": f"bench_{road.get('id')}_{i}",
+                "s": f"{s:.2f}",
+                "t": "5.5",
+                "zOffset": "0.0",
+                "hdg": "0.0",
+                "pitch": "0.0",
+                "roll": "0.0",
+                "orientation": "none",
+                "dynamic": "no",
+                "height": "0.9",
+                "length": "1.5",
+                "width": "0.6",
+            })
+            count += 1
+        return count
+
+    @staticmethod
+    def _trash_bins(road: ET.Element) -> int:
+        """Place a trash bin every StreetFurnitureRules.TRASH_EVERY meters."""
+        length = float(road.get("length", "0"))
+        interval = StreetFurnitureRules.TRASH_EVERY
+        count = 0
+        num = int(length // interval) if interval > 0 else 0
+        for i in range(num):
+            s = (i + 1) * interval
+            ET.SubElement(RealismModule._ensure_objects(road), "object", {
+                "type": "trash_bin",
+                "id": f"trashbin_{road.get('id')}_{i}",
+                "s": f"{s:.2f}",
+                "t": "-5.5",
+                "zOffset": "0.0",
+                "hdg": "0.0",
+                "pitch": "0.0",
+                "roll": "0.0",
+                "orientation": "none",
+                "dynamic": "no",
+                "height": "0.9",
+                "length": "0.5",
+                "width": "0.5",
+            })
+            count += 1
+        return count
+
+    @staticmethod
+    def _guardrail(road: ET.Element) -> int:
+        """Place one guard_rail object spanning the road when curvature exceeds
+        StreetFurnitureRules.MAX_CURVATURE_FOR_GUARDRAIL. Self-checks curvature
+        (safe to call standalone, not just via enrich()'s external gate)."""
+        curv = RealismModule._estimate_curvature(road)
+        if not StreetFurnitureRules.needs_guardrail(curv):
+            return 0
+        length = float(road.get("length", "0"))
+        ET.SubElement(RealismModule._ensure_objects(road), "object", {
+            "type": "guard_rail",
+            "id": f"guardrail_{road.get('id')}",
+            "s": "0.0",
+            "t": "5.0",
+            "zOffset": "0.0",
+            "hdg": "0.0",
+            "pitch": "0.0",
+            "roll": "0.0",
+            "orientation": "none",
+            "dynamic": "no",
+            "height": "0.75",
+            "length": f"{length:.2f}",
+            "width": "0.1",
+        })
+        return 1
