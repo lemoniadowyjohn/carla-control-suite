@@ -69,6 +69,7 @@ def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
     ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--out-dir", type=Path, default=Path("thesis_results") / "gnn_v1")
+    ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args(list(argv))
 
@@ -123,7 +124,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--out_dir",
         str(checkpoints_dir),
         "--seed",
-        "42",
+        str(int(args.seed)),
     ]
 
     if args.dry_run:
