@@ -303,6 +303,7 @@ def _emit_candidate(final_xodr: Path, out_dir: Path, name: str, acceptance: Dict
         "seed_xodr_sha256": _sha256_file(out_dir / "seed_from_osm.xodr") if (out_dir / "seed_from_osm.xodr").is_file() else None,
         "final_xodr_sha256": _sha256_file(final_xodr),
         "emitted_candidate_sha256": _sha256_file(target),
+        "structural_signature": compute_structural_signature(target),
         "candidate_path": str(target),
         "acceptance": {k: acceptance.get(k) for k in ("valid_for_experiments", "hard_fail_reasons", "soft_warnings", "metrics")},
         "settings_snapshot": _settings_snapshot(),
@@ -311,6 +312,49 @@ def _emit_candidate(final_xodr: Path, out_dir: Path, name: str, acceptance: Dict
     print(f"[emit] candidate -> {target} sha256={provenance['emitted_candidate_sha256']}")
     print(f"[emit] provenance -> {out_dir / 'regen_provenance.json'}")
     return target
+
+
+def compute_structural_signature(xodr_path: Path) -> Dict[str, Any]:
+    """Frame-invariant reproducibility anchor: {num_roads, num_junctions, total_road_length}.
+
+    Osm2Odr is byte-non-deterministic (C15/C11_REPRODUCIBILITY_NUANCE.md) -- re-running the
+    canonical regen from the same pinned inputs reproduces the map STRUCTURALLY, not
+    byte-exactly. Pinning-by-sha256 identifies a specific artifact; this signature is what
+    actually verifies "the same map was regenerated" across two candidates or runs.
+    """
+    from ultimate_pipeline.domain_gap.map_stats_xodr import XODRMapStatsExtractor
+
+    stats = XODRMapStatsExtractor.from_file(str(xodr_path))
+    return {
+        "num_roads": stats.num_roads,
+        "num_junctions": stats.num_junctions,
+        "total_road_length": stats.total_road_length,
+    }
+
+
+def structural_signatures_match(a: Dict[str, Any], b: Dict[str, Any], *, length_tol_m: float = 1e-3) -> bool:
+    return (
+        a.get("num_roads") == b.get("num_roads")
+        and a.get("num_junctions") == b.get("num_junctions")
+        and abs(float(a.get("total_road_length", 0.0)) - float(b.get("total_road_length", 0.0))) <= length_tol_m
+    )
+
+
+def cmd_verify_structural(args: argparse.Namespace) -> int:
+    """--verify-structural <a.xodr> <b.xodr>: structural (not byte-sha) reproduction check."""
+    a_path, b_path = (Path(p).expanduser().resolve() for p in args.verify_structural)
+    for p in (a_path, b_path):
+        if not p.is_file():
+            print(f"ERROR: candidate not found: {p}", file=sys.stderr)
+            return 2
+    sig_a = compute_structural_signature(a_path)
+    sig_b = compute_structural_signature(b_path)
+    match = structural_signatures_match(sig_a, sig_b)
+    print(f"[structural-signature] {a_path.name}: {sig_a}")
+    print(f"[structural-signature] {b_path.name}: {sig_b}")
+    print(f"[structural-signature] {'MATCH' if match else 'MISMATCH'} "
+          f"(byte-sha differs is EXPECTED per Osm2Odr non-determinism; structural equality is the real check)")
+    return 0 if match else 1
 
 
 def cmd_verify_only(args: argparse.Namespace) -> int:
@@ -383,6 +427,9 @@ def cmd_regen(args: argparse.Namespace) -> int:
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Canonical regen of the map of record (C11 step 4).")
     ap.add_argument("--verify-only", type=str, default=None, metavar="XODR", help="Measure an existing candidate only (no pipeline).")
+    ap.add_argument("--verify-structural", type=str, default=None, nargs=2, metavar=("A_XODR", "B_XODR"),
+                     help="Compare two candidates' structural signature (num_roads/junctions/length) -- "
+                          "the honest reproducibility check, since Osm2Odr is byte-non-deterministic.")
     ap.add_argument("--out-dir", type=str, default=None, help="Run/output directory (default: campaign/regen/<ts>).")
     ap.add_argument("--profile", type=str, default=DEFAULT_PROFILE, choices=["DEVELOPMENT", "STRUCTURAL_RELEASE", "CARLA_RELEASE", "VISUAL_RELEASE", "PERCEPTION_RELEASE"], help="Release profile (default: PERCEPTION_RELEASE).")
     ap.add_argument("--candidate-name", type=str, default=None, help="Emitted candidate filename (default: map_of_record timestamped).")
@@ -393,6 +440,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.verify_structural:
+        return cmd_verify_structural(args)
     if args.verify_only:
         return cmd_verify_only(args)
     return cmd_regen(args)
