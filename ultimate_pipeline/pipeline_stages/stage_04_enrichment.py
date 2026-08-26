@@ -260,6 +260,38 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         print(f"⚠️ OSM meta enrichment failed: {e}")
         self.vreport.add("osm_meta_enrichment", "error", str(e))
 
+    # Crosswalk enrichment: real OSM footway=crossing geometry, geometrically
+    # matched to a road (not name/id matching -- crosswalk_writer.py, added
+    # 2026-08-26). Separate try/except so a failure here doesn't affect the
+    # osm_meta_enrichment block above, or vice versa.
+    try:
+        from ultimate_pipeline.enrichment.crosswalk_writer import (
+            extract_osm_crossings,
+            project_crossing_to_local,
+            apply_crosswalks,
+        )
+        from ultimate_pipeline.domain_gap.local_registration import read_offset
+
+        osm_crossings = extract_osm_crossings(s.OSM_FILE)
+        if osm_crossings:
+            offset = read_offset(root)
+            for c in osm_crossings:
+                c["nodes_local"] = project_crossing_to_local(c["nodes"], offset)
+            n_crosswalks = apply_crosswalks(root, osm_crossings)
+            if n_crosswalks:
+                save_xodr(tree, topo_fixed)
+            self.vreport.add_dict("crosswalk_enrichment", {
+                "osm_crossings_found": len(osm_crossings),
+                "crosswalks_inserted": n_crosswalks,
+            })
+            print(f"🚸 Crosswalks: {n_crosswalks}/{len(osm_crossings)} OSM crossings matched to a road")
+        else:
+            print("⏭️ Crosswalk enrichment skipped (no OSM file or no footway=crossing ways found)")
+            self.vreport.add_dict("crosswalk_enrichment", {"osm_crossings_found": 0})
+    except Exception as e:
+        print(f"⚠️ Crosswalk enrichment failed: {e}")
+        self.vreport.add("crosswalk_enrichment", "error", str(e))
+
     # XODR statistics after enrichment
     stats = XODRStatistics.compute(topo_fixed)
     # Important: STEP 4 is pre-lane by design
