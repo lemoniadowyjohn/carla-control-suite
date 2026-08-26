@@ -54,8 +54,11 @@ def test_pooled_logits_dimension_matches_right_sized_head():
 
 def test_label_ids_fail_closed_outside_carla_segmentation_range():
     assert_label_ids_in_range(torch.tensor([0, 7, 28]))
+    # 200 is genuine corruption -- neither a named class (0-28) nor carla.CityObjectLabel.Any
+    # (255, now accepted; verified against the installed carla package, see C27).
     with pytest.raises(ValueError, match="0, 28"):
-        assert_label_ids_in_range(torch.tensor([0, 255]))
+        assert_label_ids_in_range(torch.tensor([0, 200]))
+    assert_label_ids_in_range(torch.tensor([0, 255]))  # Any sentinel must not raise
 
 
 def test_settings_train_num_classes_env_override(monkeypatch):

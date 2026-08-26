@@ -33,7 +33,17 @@ def test_assert_label_ids_in_range_rejects_out_of_range():
     with pytest.raises(ValueError):
         assert_label_ids_in_range(np.array([0, 29], dtype=np.int64))
     with pytest.raises(ValueError):
-        assert_label_ids_in_range(np.array([255], dtype=np.uint8))
+        # 200 is neither a named class (0-28) nor carla.CityObjectLabel.Any (255) --
+        # genuine corruption. 255 is now accepted: it's CARLA's real Any sentinel,
+        # not corruption (verified against the installed carla package; see C27).
+        assert_label_ids_in_range(np.array([200], dtype=np.uint8))
+
+
+def test_assert_label_ids_in_range_accepts_any_sentinel():
+    # carla.CityObjectLabel.Any == 255 (verified against the installed carla package)
+    # -- a real, common value in captures (unclassified/miscellaneous pixels), not
+    # corruption. Must not be rejected.
+    assert_label_ids_in_range(np.array([0, 7, 255], dtype=np.uint8))
 
 
 def test_assert_label_ids_in_range_empty_is_ok():

@@ -44,10 +44,18 @@ def test_scan_label_class_counts_counts_raw_id_pngs(tmp_path):
 
 def test_scan_label_class_counts_rejects_out_of_range_ids(tmp_path):
     label = tmp_path / "bad.png"
-    Image.fromarray(np.array([[0, 255]], dtype=np.uint8), mode="L").save(label)
+    # 200 is genuine corruption -- neither a named class (0-28) nor carla.CityObjectLabel.Any
+    # (255, now accepted; verified against the installed carla package, see C27).
+    Image.fromarray(np.array([[0, 200]], dtype=np.uint8), mode="L").save(label)
 
     with pytest.raises(ValueError, match="0, 28"):
         scan_label_class_counts([label], num_classes=29)
+
+
+def test_scan_label_class_counts_accepts_any_sentinel_without_raising(tmp_path):
+    label = tmp_path / "any.png"
+    Image.fromarray(np.array([[0, 255]], dtype=np.uint8), mode="L").save(label)
+    scan_label_class_counts([label], num_classes=29)  # must not raise
 
 
 def test_min_train_class_weights_default_on_and_opt_out(monkeypatch):
