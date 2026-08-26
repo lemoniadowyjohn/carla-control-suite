@@ -28,7 +28,10 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision
 from torchvision.transforms import functional as TF
 
-from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
+from ultimate_pipeline.perception.carla_classes import (
+    CARLA_SEMANTIC_ANY_CLASS_ID,
+    assert_label_ids_in_range,
+)
 from ultimate_pipeline.perception.class_weights import (
     compute_class_weights,
     scan_dataset_class_counts,
@@ -113,7 +116,10 @@ def main():
             num_classes=num_classes,
             scheme=args.class_weight_scheme,
         ).to(args.device)
-    loss_fn = torch.nn.CrossEntropyLoss(weight=class_weights)
+    # ignore_index: CARLA's Any(255) sentinel is a legitimate label value (unclassified/
+    # miscellaneous pixels), but is not one of the model's num_classes output channels --
+    # without this, CrossEntropyLoss raises on the first batch containing an Any pixel.
+    loss_fn = torch.nn.CrossEntropyLoss(weight=class_weights, ignore_index=CARLA_SEMANTIC_ANY_CLASS_ID)
 
     metrics = {
         "loss": [],
