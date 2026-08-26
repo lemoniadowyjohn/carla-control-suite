@@ -154,6 +154,73 @@ class OSMPolygonLoader:
                 )
             )
 
+        # --- multipolygon relation buildings (C25) ---------------------------
+        # The way-loop above handles standalone `<way building=...>`. OSM also
+        # models buildings as `<relation type="multipolygon">` (courtyards,
+        # multi-part footprints) whose `building` tag is on the RELATION, not the
+        # member ways — so those ways are skipped above and the relation was never
+        # assembled. Emit the OUTER ring(s); BuildingFootprint has no hole support,
+        # so inner rings (courtyards) are a documented minor over-fill.
+        ways_raw: Dict[str, List[str]] = {}
+        for w in root.findall("way"):
+            wid = w.get("id")
+            if wid is not None:
+                ways_raw[wid] = [nd.get("ref") for nd in w.findall("nd") if nd.get("ref") is not None]
+
+        def _stitch_rings(way_ids: List[str]) -> List[List[str]]:
+            """Chain member ways by shared endpoints into closed node-ref rings."""
+            segs = [list(ways_raw[w]) for w in way_ids if w in ways_raw and len(ways_raw[w]) >= 2]
+            rings: List[List[str]] = []
+            while segs:
+                ring = segs.pop(0)
+                progressed = True
+                while ring and ring[0] != ring[-1] and progressed:
+                    progressed = False
+                    for i, seg in enumerate(segs):
+                        if seg[0] == ring[-1]:
+                            ring += seg[1:]; segs.pop(i); progressed = True; break
+                        if seg[-1] == ring[-1]:
+                            ring += list(reversed(seg))[1:]; segs.pop(i); progressed = True; break
+                        if seg[-1] == ring[0]:
+                            ring = seg[:-1] + ring; segs.pop(i); progressed = True; break
+                        if seg[0] == ring[0]:
+                            ring = list(reversed(seg))[:-1] + ring; segs.pop(i); progressed = True; break
+                if len(ring) >= 4 and ring[0] == ring[-1]:
+                    rings.append(ring)  # else: unclosable -> skip (fail-open)
+            return rings
+
+        def _emit_ring(node_refs: List[str], rtags: Dict[str, str], obj_id: Optional[str]) -> None:
+            coords_xy: List[Tuple[float, float]] = []
+            for nid in node_refs:
+                if nid in nodes:
+                    lat, lon = nodes[nid]
+                    coords_xy.append(TRANSFORMER.transform(lon, lat))
+            if len(coords_xy) < 3:
+                return
+            if coords_xy[0] != coords_xy[-1]:
+                coords_xy.append(coords_xy[0])
+            if polygon_area(coords_xy) < min_area:
+                return
+            h = 10.0
+            if "building:levels" in rtags:
+                try:
+                    h = float(rtags["building:levels"]) * 3.0
+                except Exception:
+                    pass
+            buildings.append(BuildingFootprint(footprint=coords_xy, height=h, id=obj_id, name=rtags.get("name")))
+
+        for rel in root.findall("relation"):
+            rtags = {t.get("k"): t.get("v") for t in rel.findall("tag")}
+            if rtags.get("type") != "multipolygon" or "building" not in rtags:
+                continue
+            outer_ids = [
+                m.get("ref") for m in rel.findall("member")
+                if m.get("type") == "way" and m.get("role") in ("outer", "", None) and m.get("ref")
+            ]
+            rid = rel.get("id")
+            for ring in _stitch_rings(outer_ids):
+                _emit_ring(ring, rtags, f"osm_bld_rel_{rid}" if rid else None)
+
         return buildings
 
     # ------------------------------------------------------------------
