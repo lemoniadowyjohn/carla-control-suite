@@ -36,6 +36,7 @@ from torchvision import models
 from torchvision.transforms import functional as TF
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.perception.carla_classes import CARLA_SEMANTIC_ANY_CLASS_ID
 from ultimate_pipeline.perception.class_weights import (
     compute_class_weights,
     scan_dataset_class_counts,
@@ -138,7 +139,7 @@ def main() -> None:
         print(f"   epochs={args.epochs} batch={args.batch} lr={args.lr} classes={args.num_classes}")
         print(f"   device={device} ddp={ddp_enabled} world_size={world_size}")
 
-    ds = SemanticSegDataset(dataset_root, camera=args.camera, limit=args.limit if args.limit > 0 else None)
+    ds = SemanticSegDataset(dataset_root, cam=args.camera, limit=args.limit if args.limit > 0 else None)
     if ddp_enabled:
         sampler = torch.utils.data.distributed.DistributedSampler(ds, shuffle=True)
         shuffle = False
@@ -181,7 +182,10 @@ def main() -> None:
                 f"   class_weights={args.class_weight_scheme} "
                 f"present_classes={present}/{args.num_classes}"
             )
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    # ignore_index: CARLA's Any(255) sentinel is a legitimate label value, not one of
+    # the model's num_classes output channels -- see C27 (same fix applied to
+    # min_train_segmentation.py's independently-constructed loss function).
+    criterion = nn.CrossEntropyLoss(weight=class_weights, ignore_index=CARLA_SEMANTIC_ANY_CLASS_ID)
     optimizer = optim.Adam(model.parameters(), lr=float(args.lr))
 
     model.train()
