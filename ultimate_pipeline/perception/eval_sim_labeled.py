@@ -29,7 +29,10 @@ import torch
 import torch.nn.functional as F
 from torchvision import models
 
-from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
+from ultimate_pipeline.perception.carla_classes import (
+    CARLA_SEMANTIC_ANY_CLASS_ID,
+    assert_label_ids_in_range,
+)
 from ultimate_pipeline.perception.semantic_classes import (
     CARLA_SEMANTIC_NUM_CLASSES,
     validate_num_classes,
@@ -105,8 +108,20 @@ def _compute_iou_per_class(
     return iou_per_class
 
 
-def _compute_pixel_accuracy(pred: torch.Tensor, target: torch.Tensor) -> float:
-    """Compute overall pixel accuracy."""
+def _compute_pixel_accuracy(
+    pred: torch.Tensor, target: torch.Tensor, ignore_index: Optional[int] = None
+) -> float:
+    """Compute overall pixel accuracy.
+
+    `ignore_index` excludes pixels unanswerable by construction (e.g. CARLA's
+    Any=255 sentinel, which a fixed-num_classes segmentation head can never
+    predict) from both numerator and denominator, matching how
+    `_compute_iou_per_class` already excludes them from per-class IoU.
+    """
+    if ignore_index is not None:
+        mask = target != ignore_index
+        pred = pred[mask]
+        target = target[mask]
     correct = (pred == target).sum().item()
     total = target.numel()
     return float(correct / total) if total > 0 else 0.0
@@ -178,7 +193,9 @@ def evaluate_model(
                     all_class_ious[c] = []
                 all_class_ious[c].append(iou)
 
-            pixel_acc = _compute_pixel_accuracy(pred, target)
+            pixel_acc = _compute_pixel_accuracy(
+                pred, target, ignore_index=CARLA_SEMANTIC_ANY_CLASS_ID
+            )
             pixel_accuracies.append(pixel_acc)
 
     # Aggregate
