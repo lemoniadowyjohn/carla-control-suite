@@ -4,6 +4,7 @@
     "road_network_structural": {
       "lane_width_gap": 0.0415,
       "curvature_gap": 0.2239,
+      "curvature_wasserstein_gap": 0.074,
       "road_length_ratio_auto_over_manual": 4.5,
       "junction_ratio_auto_over_manual": 6.05,
       "road_count_ratio_auto_over_manual": 6.122
@@ -24,6 +25,7 @@
   "local_gap_raw": {
     "lane_width_gap": 0.0415,
     "curvature_gap": 0.2239,
+    "curvature_wasserstein_gap": 0.07398195152408996,
     "road_length_gap": 1.0,
     "traffic_light_density_gap": 1.0,
     "building_density_gap": 1.0,
@@ -32,6 +34,7 @@
   "whole_map_gap": {
     "lane_width_gap": 0.0415,
     "curvature_gap": 0.0931,
+    "curvature_wasserstein_gap": 0.0741,
     "road_length_gap": 1.0,
     "traffic_light_density_gap": 1.0,
     "building_density_gap": 0.7951,

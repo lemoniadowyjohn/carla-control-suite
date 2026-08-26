@@ -11,7 +11,8 @@
   },
   "scores": {
     "lane_width_gap": 0.0415145202899021,
-    "curvature_gap": 1.0,
+    "curvature_gap": 0.09311717328016497,
+    "curvature_wasserstein_gap": 0.07413802792389068,
     "road_length_gap": 1.0,
     "traffic_light_density_gap": 1.0,
     "building_density_gap": 0.7950785267578812,

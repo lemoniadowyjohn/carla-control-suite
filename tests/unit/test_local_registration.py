@@ -67,7 +67,11 @@ def test_local_structural_summary_reports_ratios_and_excludes_construction():
                         num_buildings=0, num_traffic_lights=0)
     ca = SimpleNamespace(total_road_length=240842.0, num_junctions=720, num_roads=6079,
                          num_buildings=0, num_traffic_lights=3920)
-    gap = SimpleNamespace(lane_width_gap=0.0415, curvature_gap=0.2239)
+    gap = SimpleNamespace(
+        lane_width_gap=0.0415,
+        curvature_gap=0.2239,
+        curvature_wasserstein_gap=0.0642,
+    )
     res = LocalRegistrationResult(
         local_gap=gap, manual_stats=m, cropped_auto_stats=ca,
         full_auto_road_count=32297, cropped_auto_road_count=6079,
@@ -77,6 +81,7 @@ def test_local_structural_summary_reports_ratios_and_excludes_construction():
     assert abs(rn["road_length_ratio_auto_over_manual"] - 4.5) < 0.1
     assert abs(rn["junction_ratio_auto_over_manual"] - 6.05) < 0.2
     assert rn["lane_width_gap"] == 0.0415
+    assert rn["curvature_wasserstein_gap"] == 0.0642
     # construction differences are separated out, not folded into the structural gap
     assert s["construction_differences_excluded"]["cropped_auto_traffic_lights"] == 3920
 

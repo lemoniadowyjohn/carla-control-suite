@@ -3,15 +3,15 @@
   "c19_step_outputs": {
     "contract_audit.json": {
       "present": true,
-      "sha256": "09523d5e1fecceda70ac85d613f0fcf7f7f622eca315e028d40b86bc62d68cf7"
+      "sha256": "6b614d654b7de3595488c61fe4759d20b1d8ed13e5b97f55d2cce0483c5474bd"
     },
     "provenance_validation.json": {
       "present": true,
-      "sha256": "7958b9468d8cd037202a9884f0e91e91444603842083483aef1a5b2f3be76314"
+      "sha256": "b40c706a3f5b1c41086152f740f6ab4bf3d9f1cf9c12e66b3149ce5a5ab834c5"
     },
     "rq_tables.json": {
       "present": true,
-      "sha256": "82e6851b9c0df77e2aed2c7173aedca0608e3eec7f912eb0b742da0516975acb"
+      "sha256": "2305110428fc6aa96e2e3af4c7626a20086af4f42b2bcaf98dddb28e6d3eeb5a"
     }
   },
   "claim_boundaries": [
@@ -24,6 +24,12 @@
     {
       "metric": "local_curvature_gap",
       "note": "LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_curvature_wasserstein_gap",
+      "note": "LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1",
       "rq": "RQ1",
       "status": "BOUNDED"
     },
@@ -116,7 +122,7 @@
     {
       "path": "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_REPORT.md",
       "present": true,
-      "sha256": "1b7db2c6313615bba3319f2892efe8e2297db0b38f52c4a6053ff42bd26f6901"
+      "sha256": "99a2dd1dbda12da45c5148e3d799185f207c34d2f8a2d455d4fcc15d47a1c072"
     },
     {
       "path": "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_REPORT.md",
@@ -166,7 +172,7 @@
   "protocol_snapshot": {
     "canonical_regen_entrypoint": "scripts/regen_map_of_record.py",
     "git_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
-    "git_commit": "d11f262bf6e048729c15d1a738eba2e87d596a48",
+    "git_commit": "692320bab616f1f0ee27dea5c3362e8a7504e9b6",
     "git_dirty": true,
     "inputs_manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
     "note": "No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead."

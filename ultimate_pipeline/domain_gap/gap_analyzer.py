@@ -5,6 +5,7 @@ from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional
 
 import numpy as np
+from scipy.stats import wasserstein_distance
 
 from .map_stats_xodr import XODRMapStats
 from .map_stats_osm import OSMMapStats
@@ -58,6 +59,42 @@ def _l1_hist_gap(
     return float(0.5 * np.abs(hist_x - hist_y).sum())
 
 
+def _finite_abs_curvatures(xs: List[float]) -> List[float]:
+    vals: List[float] = []
+    for x in xs:
+        try:
+            v = float(x)
+        except (TypeError, ValueError):
+            continue
+        if np.isfinite(v):
+            vals.append(abs(v))
+    return vals
+
+
+def _curvature_wasserstein_gap(
+    xs: List[float],
+    ys: List[float],
+    *,
+    scale_per_m: float = 0.2,
+) -> float:
+    """Range-robust W1 distance between absolute-curvature distributions.
+
+    `curvature_gap` intentionally remains the historical 30-bin L1 histogram.
+    This companion metric avoids data-range stretching by outliers; the physical
+    normalization maps a 0.2 1/m mean transport distance to a saturated gap.
+    """
+    x = _finite_abs_curvatures(xs)
+    y = _finite_abs_curvatures(ys)
+    if not x and not y:
+        return 0.0
+    if not x or not y:
+        return 1.0
+    if scale_per_m <= 0.0:
+        return 0.0
+    raw = float(wasserstein_distance(x, y))
+    return min(1.0, max(0.0, raw / scale_per_m))
+
+
 def _relative_gap(a: float, b: float, scale: float) -> float:
     """
     Relative difference normalized by a scale.
@@ -98,6 +135,7 @@ class DomainGapScores:
     traffic_light_density_gap: float
     building_density_gap: float
     road_type_coverage_gap: float
+    curvature_wasserstein_gap: float = 0.0
 
     def to_dict(self) -> Dict[str, float]:
         return asdict(self)
@@ -146,6 +184,10 @@ class DomainGapAnalyzer:
         # Curvature distribution gap
         # ------------------------------------------------------------
         curvature_gap = _l1_hist_gap(
+            osm_stats.curvature_samples,
+            xodr_stats.curvature_samples,
+        )
+        curvature_wasserstein_gap = _curvature_wasserstein_gap(
             osm_stats.curvature_samples,
             xodr_stats.curvature_samples,
         )
@@ -211,6 +253,7 @@ class DomainGapAnalyzer:
             traffic_light_density_gap=traffic_light_density_gap,
             building_density_gap=building_density_gap,
             road_type_coverage_gap=road_type_coverage_gap,
+            curvature_wasserstein_gap=curvature_wasserstein_gap,
         )
 
     # -------------------------------------------------------------------------
@@ -247,6 +290,10 @@ class DomainGapAnalyzer:
             list(getattr(ref, "curvature_samples", []) or []),
             list(getattr(gen, "curvature_samples", []) or []),
         )
+        curvature_wasserstein_gap = _curvature_wasserstein_gap(
+            list(getattr(ref, "curvature_samples", []) or []),
+            list(getattr(gen, "curvature_samples", []) or []),
+        )
 
         ref_len = float(getattr(ref, "total_road_length", 0.0) or 0.0)
         gen_len = float(getattr(gen, "total_road_length", 0.0) or 0.0)
@@ -278,4 +325,5 @@ class DomainGapAnalyzer:
             traffic_light_density_gap=traffic_light_density_gap,
             building_density_gap=building_density_gap,
             road_type_coverage_gap=road_type_coverage_gap,
+            curvature_wasserstein_gap=curvature_wasserstein_gap,
         )

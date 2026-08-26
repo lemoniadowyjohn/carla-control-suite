@@ -14,12 +14,13 @@
 | traffic_light_density | 1.00 | construction artifact |
 | building_density | 0.795 | construction artifact |
 | curvature | **0.093** (0.09–0.27, range-sensitive) | **REAL, fixed** — was a 1.0 artifact (auto samples empty). Now paramPoly3-sampled; maps broadly agree on curvature scale/tail (see Curvature note) |
+| curvature_wasserstein | **0.074** | range-robust companion metric over absolute-curvature distributions, normalized by 0.2 1/m |
 | road_type_coverage | 0.00 | manual road types ⊆ auto |
 
 ## Claim boundaries (mandatory — carried per the thesis contract)
 1. **full_network_metrics ≠ local_registration_quality** — these are whole-map stat differences, not registered local geometry error.
 2. **Construction artifacts, not domain gap:** road_length / traffic_light / building gaps reflect that the auto map is a full OSM+DEM+enrichment extraction while Grid0828 is a hand-modeled subset. Report WITH this caveat.
-3. **curvature gap — FIXED (was a measurement artifact).** The old 1.0 came from `XODRMapStatsExtractor` collecting curvature from `<arc>` only, while both maps store curves as `<paramPoly3>` (auto had 0 arcs → empty samples). Fixed to sample paramPoly3 (+spiral) curvature at interior arc-length fractions and to drop non-physical degenerate spikes (|κ|>1.0 1/m); auto now yields 104k samples, manual 23k. New gap **0.093** (native, |κ|≤1.0). **Caveat:** the histogram-L1 metric is *range-sensitive* (0.093 at |κ|≤1.0, 0.25 at |κ|≤0.5) — treat as "moderate," not a precise scalar; the robust comparison is the distributional summary below.
+3. **curvature gap — FIXED (was a measurement artifact).** The old 1.0 came from `XODRMapStatsExtractor` collecting curvature from `<arc>` only, while both maps store curves as `<paramPoly3>` (auto had 0 arcs → empty samples). Fixed to sample paramPoly3 (+spiral) curvature at interior arc-length fractions and to drop non-physical degenerate spikes (|κ|>1.0 1/m); auto now yields 104k samples, manual 23k. New histogram-L1 gap **0.093** (native, |κ|≤1.0) plus Wasserstein absolute-curvature gap **0.074**. **Caveat:** the histogram-L1 metric is *range-sensitive* (0.093 at |κ|≤1.0, 0.25 at |κ|≤0.5) — treat it as "moderate," not a precise scalar; use the Wasserstein metric and distributional summary as the range-robust companion.
 4. **Frame difference** (auto local-tmerc rebased vs manual UTM-32N) does not affect these stats (counts/lengths are frame-invariant); positional registration is a separate deferred step.
 
 ## Honest RQ1 answer
@@ -40,11 +41,13 @@ Grid0828 lands at auto-local x[6155..10906] y[6427..9875]; **32,297 → 6,079 au
 | road_count ratio (auto/manual) | **6.1×** | 6,079 vs 993 |
 | lane_width_gap | **0.042** | agree (same as whole-map) |
 | curvature_gap | **0.224** | local (sharper than whole-map 0.093) |
+| curvature_wasserstein_gap | **0.074** | local range-robust companion; consistent with whole-map 0.074 |
 
 **Finding:** even within the *same* area the auto map has **~4.5–6× the road length/junctions** of Grid0828 — a
 genuine **road-network-completeness** domain gap: OSM captures every service road/driveway/footway, while the
 hand-modeled Grid0828 contains only the *drivable* network. This is the real RQ1 structural gap the whole-map view
-obscured as a 28× scope artifact. Lane widths still agree (0.04); curvature differs more locally (0.22).
+obscured as a 28× scope artifact. Lane widths still agree (0.04); the histogram curvature differs more locally
+(0.22), while the robust absolute-curvature Wasserstein signal remains modest (0.074).
 
 **Excluded (construction layers, not road structure):** buildings + traffic-lights. Both maps model buildings
 (Grid0828 993 spatially; auto 5,686 on a single *container* road → not spatially croppable); traffic-lights are
@@ -77,6 +80,8 @@ near-straight roads into many low-curvature paramPoly3 segments, so its bulk sit
 genuine, interpretable structural nuance — consistent with the lane-width agreement (0.04), not a
 domain gap. The scalar histogram-L1 gap (0.09–0.27, range-sensitive) is reported as "moderate"
 with this distributional detail rather than as a precise number, per claim-boundary discipline.
+The Wasserstein absolute-curvature gap is **0.074**, which is the range-robust scalar cited beside
+the legacy histogram-L1 value.
 
 Machine-readable: `curvature_recompute.json`.
 

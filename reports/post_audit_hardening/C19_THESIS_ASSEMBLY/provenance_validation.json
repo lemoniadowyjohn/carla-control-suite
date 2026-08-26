@@ -49,6 +49,12 @@
         "via": "map_registry:auto_map_of_record"
       },
       {
+        "metric": "local_curvature_wasserstein_gap",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "map_registry:auto_map_of_record"
+      },
+      {
         "metric": "local_road_length_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",

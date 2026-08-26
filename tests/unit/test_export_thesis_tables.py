@@ -73,6 +73,7 @@ def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
             "road_network_structural": {
                 "lane_width_gap": 0.0415,
                 "curvature_gap": 0.2239,
+                "curvature_wasserstein_gap": 0.0642,
                 "road_length_ratio_auto_over_manual": 4.5,
                 "junction_ratio_auto_over_manual": 6.05,
                 "road_count_ratio_auto_over_manual": 6.122,
@@ -92,6 +93,7 @@ def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
     payload = build_tables(tmp_path)
     rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
     assert rq1["local_curvature_gap"]["value"] == 0.2239
+    assert rq1["local_curvature_wasserstein_gap"]["value"] == 0.0642
     assert rq1["local_road_length_ratio_auto_over_manual"]["value"] == 4.5
     assert rq1["local_auto_footprint_kept_fraction"]["value"] == 0.1882
     assert rq1["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
@@ -130,7 +132,12 @@ def test_against_real_repo_root_does_not_crash_and_finds_real_evidence() -> None
     assert payload["row_count"] > 0
     curvature_row = next(
         r for r in payload["rows"]
-        if r["rq"] == "RQ1" and r["metric"] in {"local_curvature_gap", "curvature_gap"}
+        if r["rq"] == "RQ1" and r["metric"] in {
+            "local_curvature_wasserstein_gap",
+            "curvature_wasserstein_gap",
+            "local_curvature_gap",
+            "curvature_gap",
+        }
     )
     # Must be a corrected/local value, not the stale 1.0 artifact.
     assert curvature_row["value"] is not None and curvature_row["value"] < 0.5
