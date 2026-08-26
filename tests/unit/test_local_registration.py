@@ -7,6 +7,7 @@ manual Grid0828 uses UTM-32N. Registration = manual footprint -> lat/lon -> auto
 """
 import xml.etree.ElementTree as ET
 
+import pytest
 from shapely.geometry import Polygon
 
 
@@ -151,6 +152,63 @@ def test_transform_manual_points_to_auto_local_identity_projection():
     from shapely.geometry import MultiPoint
     expected = MultiPoint(pts).convex_hull
     assert abs(poly.convex_hull.area - expected.area) < 1.0
+
+
+def test_transform_auto_points_to_manual_local_identity_projection():
+    """Mirror of transform_manual_points_to_auto_local, opposite direction. With identical
+    proj4 and zero auto offset, round-tripping auto-local points through lat/lon and back
+    into "manual's" CRS (the same CRS here) should reproduce the input points."""
+    from ultimate_pipeline.domain_gap.local_registration import transform_auto_points_to_manual_local
+    proj = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    pts = [(500100.0, 5400000.0), (500200.0, 5400050.0), (500150.0, 5400120.0)]
+    out = transform_auto_points_to_manual_local(
+        pts, auto_proj4=proj, auto_offset=(0.0, 0.0), manual_proj4=proj)
+    assert len(out) == len(pts)
+    for (ox, oy), (ix, iy) in zip(out, pts):
+        assert abs(ox - ix) < 1e-3
+        assert abs(oy - iy) < 1e-3
+
+
+def test_transform_auto_points_to_manual_local_applies_auto_offset_before_reprojection():
+    """A nonzero auto_offset must be added to the raw auto-local points BEFORE the CRS
+    round-trip -- shifting the offset should shift the output by the same amount (same CRS
+    on both sides, so the offset survives the round-trip almost exactly)."""
+    from ultimate_pipeline.domain_gap.local_registration import transform_auto_points_to_manual_local
+    proj = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    pts = [(100.0, 200.0)]
+    no_offset = transform_auto_points_to_manual_local(
+        pts, auto_proj4=proj, auto_offset=(0.0, 0.0), manual_proj4=proj)
+    with_offset = transform_auto_points_to_manual_local(
+        pts, auto_proj4=proj, auto_offset=(50.0, -30.0), manual_proj4=proj)
+    assert with_offset[0][0] - no_offset[0][0] == pytest.approx(50.0, abs=1e-3)
+    assert with_offset[0][1] - no_offset[0][1] == pytest.approx(-30.0, abs=1e-3)
+
+
+def test_transform_auto_points_to_manual_local_is_inverse_of_manual_to_auto():
+    """Round-tripping a point manual->auto->manual (via the two mirror functions, with
+    DIFFERENT real proj4s -- bare tmerc for auto, UTM-32N-style for manual, matching the
+    real Ingolstadt auto/manual pair) should recover the original point."""
+    from ultimate_pipeline.domain_gap.local_registration import (
+        transform_manual_points_to_auto_local,
+        transform_auto_points_to_manual_local,
+        BARE_TMERC_DEFAULT,
+    )
+    manual_proj = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    auto_proj = BARE_TMERC_DEFAULT
+    auto_offset = (832671.676, 5458671.104)
+    manual_point = (505000.0, 5403000.0)
+
+    # A single-point convex hull degenerates to a shapely Point (no .exterior).
+    auto_hull = transform_manual_points_to_auto_local(
+        [manual_point], manual_proj4=manual_proj, auto_proj4=auto_proj, auto_offset=auto_offset
+    )
+    auto_local_point = list(auto_hull.coords)[0]
+
+    back = transform_auto_points_to_manual_local(
+        [auto_local_point], auto_proj4=auto_proj, auto_offset=auto_offset, manual_proj4=manual_proj
+    )
+    assert back[0][0] == pytest.approx(manual_point[0], abs=1e-2)
+    assert back[0][1] == pytest.approx(manual_point[1], abs=1e-2)
 
 
 def test_hull_polygon_is_subset_of_bbox_polygon_never_larger():

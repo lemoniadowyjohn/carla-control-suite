@@ -196,6 +196,33 @@ def transform_manual_points_to_auto_local(
     return MultiPoint(local).convex_hull
 
 
+def transform_auto_points_to_manual_local(
+    auto_points: Sequence[Tuple[float, float]],
+    auto_proj4: str,
+    auto_offset: Tuple[float, float],
+    manual_proj4: str,
+) -> List[Tuple[float, float]]:
+    """Mirror of `transform_manual_points_to_auto_local`: auto-local (x,y)* -> plus offset
+    -> auto global bare-tmerc -> lat/lon -> manual's own native CRS.
+
+    `compute_local_registration` only ever needs manual's footprint expressed in auto's
+    frame (to crop auto roads by centroid). Metrics that need genuine POINT-LEVEL
+    correspondence between the two maps -- e.g. a curve-similarity metric like discrete
+    Fréchet distance, where "does this auto road's shape match this manual road's shape"
+    requires both centerlines in one common frame -- need the opposite direction. Vectorized
+    (list in, list out) since callers typically reproject many points per road across many
+    roads.
+    """
+    ox, oy = auto_offset
+    to_ll = Transformer.from_crs(CRS.from_proj4(auto_proj4), "EPSG:4326", always_xy=True)
+    to_manual = Transformer.from_crs("EPSG:4326", CRS.from_proj4(manual_proj4), always_xy=True)
+    xs = [float(x) + ox for x, _ in auto_points]
+    ys = [float(y) + oy for _, y in auto_points]
+    lons, lats = to_ll.transform(xs, ys)
+    mxs, mys = to_manual.transform(lons, lats)
+    return list(zip(mxs, mys))
+
+
 def transform_manual_bbox_to_auto_local(
     manual_bbox: Tuple[float, float, float, float],
     manual_proj4: str,
