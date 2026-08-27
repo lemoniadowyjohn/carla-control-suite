@@ -137,6 +137,21 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
                      "outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded"
                      + footprint_note,
             ))
+        frechet = _read_json(ev_dir / "frechet_distance_local.json")
+        if frechet and frechet.get("matched_pair_count"):
+            rows.append(_row(
+                "RQ1", "local_frechet_distance_median_m", frechet.get("median_m"), BOUNDED,
+                artifact=artifact, sha256=auto.get("sha256", ""),
+                note=(
+                    "Thesis future-work #14, recomputed against the current local-registration "
+                    f"methodology: mean={frechet.get('mean_m')}m p90={frechet.get('p90_m')}m over "
+                    f"{frechet.get('matched_pair_count')} matched road pairs "
+                    f"(spacing={frechet.get('spacing_m')}m, threshold={frechet.get('match_threshold_m')}m); "
+                    "~30-50x smaller than the delivered thesis's uncropped whole-network SE(2) number "
+                    "on every statistic -- see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md"
+                    + footprint_note
+                ),
+            ))
         return rows
 
     rows = [

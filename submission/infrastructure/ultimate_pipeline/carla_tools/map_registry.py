@@ -432,7 +432,14 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
+        # Historical claims (e.g. C14_RQ1_STRUCTURAL_GAP.json) that cite the pre-promotion
+        # pin by sha are still valid -- the file remains committed/on-disk unmodified, and
+        # everything those claims measured (road/lane/signal geometry) is byte-identical to
+        # the current pin. tools/validate_thesis_claim_provenance.py resolves such claims
+        # against supersedes_sha256/supersedes_path rather than failing them as drift.
         "supersedes_sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260819_160350.xodr",
     },
     "manual_grid0828": {
         "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",

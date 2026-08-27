@@ -1,10 +1,10 @@
 {
   "counts_by_status": {
     "AUTHORITATIVE": 4,
-    "BOUNDED": 10,
+    "BOUNDED": 11,
     "DEFERRED": 4
   },
-  "row_count": 18,
+  "row_count": 19,
   "rows": [
     {
       "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
@@ -95,6 +95,15 @@
       "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
       "status": "BOUNDED",
       "value": 0.4139
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_frechet_distance_median_m",
+      "note": "Thesis future-work #14, recomputed against the current local-registration methodology: mean=55.27961477346578m p90=128.01454419021908m over 895 matched road pairs (spacing=5.0m, threshold=50.0m); ~30-50x smaller than the delivered thesis's uncropped whole-network SE(2) number on every statistic -- see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md [footprint=hull]",
+      "rq": "RQ1",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 35.258309336315136
     },
     {
       "artifact": "reports\\post_audit_hardening\\C17_rq2_perception_capture.md",

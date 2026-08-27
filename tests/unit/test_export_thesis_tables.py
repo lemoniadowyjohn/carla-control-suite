@@ -125,6 +125,51 @@ def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
     assert "road_length_gap" not in rq1
 
 
+def test_rq1_includes_frechet_row_when_evidence_present(tmp_path: Path) -> None:
+    """Thesis future-work #14 (discrete Frechet distance, recomputed 2026-08-27 against the
+    current local-registration methodology): frechet_distance_local.json, when present,
+    contributes a BOUNDED local_frechet_distance_median_m row citing mean/p90/matched-pair
+    count in its note."""
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
+        "auto_map": {"path": "auto.xodr", "sha256": "aa" * 32},
+        "manual_map": {"path": "manual.xodr", "sha256": "bb" * 32},
+        "scores": {"lane_width_gap": 0.04, "curvature_gap": 0.093, "road_length_gap": 1.0,
+                   "traffic_light_density_gap": 1.0, "building_density_gap": 0.8, "road_type_coverage_gap": 0.0},
+    })
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json", {
+        "hull": {"local_structural_summary": _local_structural_summary_payload()},
+    })
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/frechet_distance_local.json", {
+        "matched_pair_count": 895, "mean_m": 55.28, "median_m": 35.26, "p90_m": 128.01,
+        "spacing_m": 5.0, "match_threshold_m": 50.0, "footprint": "hull",
+    })
+    payload = build_tables(tmp_path)
+    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
+    row = rq1["local_frechet_distance_median_m"]
+    assert row["value"] == 35.26
+    assert row["status"] == BOUNDED
+    assert "55.28" in row["note"] or "55.28" in str(row["note"])  # mean cited
+    assert "895" in row["note"]  # matched-pair count cited
+
+
+def test_rq1_omits_frechet_row_when_evidence_absent(tmp_path: Path) -> None:
+    """No frechet_distance_local.json -- row is simply absent (like local_building_density_gap
+    when buildings weren't recovered), not forced into an explicit MISSING placeholder; the
+    other RQ1 local rows are unaffected."""
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
+        "auto_map": {"path": "auto.xodr", "sha256": "aa" * 32},
+        "manual_map": {"path": "manual.xodr", "sha256": "bb" * 32},
+        "scores": {},
+    })
+    _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json", {
+        "hull": {"local_structural_summary": _local_structural_summary_payload()},
+    })
+    payload = build_tables(tmp_path)
+    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
+    assert "local_frechet_distance_median_m" not in rq1
+    assert "local_curvature_gap" in rq1  # unaffected
+
+
 def test_rq1_falls_back_to_legacy_flat_local_registration_schema(tmp_path: Path) -> None:
     """Pre-C26 local_registration.json had a flat top-level local_structural_summary (no
     hull/bbox nesting) -- must still be read, not silently treated as MISSING."""

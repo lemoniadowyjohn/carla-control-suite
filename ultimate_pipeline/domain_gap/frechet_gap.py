@@ -328,3 +328,34 @@ def compute_frechet_gap(
         "auto_road_count_cropped": len(auto_roads_cropped),
         "manual_road_count": len(manual_roads_all),
     }
+
+
+def _main() -> int:
+    import argparse
+    import json as _json
+
+    parser = argparse.ArgumentParser(description="Compute and persist the local Frechet-distance evidence row.")
+    parser.add_argument("auto_xodr")
+    parser.add_argument("manual_xodr")
+    parser.add_argument("--out", required=True, help="output JSON path")
+    parser.add_argument("--spacing-m", type=float, default=5.0)
+    parser.add_argument("--match-threshold-m", type=float, default=50.0)
+    parser.add_argument("--footprint", default="hull", choices=("hull", "bbox"))
+    args = parser.parse_args()
+
+    result = compute_frechet_gap(
+        args.auto_xodr, args.manual_xodr,
+        spacing_m=args.spacing_m, match_threshold_m=args.match_threshold_m, footprint=args.footprint,
+    )
+    from pathlib import Path
+
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(_json.dumps(result, indent=2), encoding="utf-8")
+    print(f"[frechet_gap] {result}")
+    print(f"[frechet_gap] wrote {out_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main())

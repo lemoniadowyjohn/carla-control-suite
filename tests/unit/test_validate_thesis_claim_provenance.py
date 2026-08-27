@@ -92,8 +92,95 @@ def test_negative_control_claim_with_no_hash_flagged_unpinned(tmp_path: Path) ->
     assert result["claims_checked"][0]["provenance"] == "UNPINNED"
 
 
+def test_claim_citing_a_superseded_pin_sha_still_passes(tmp_path: Path) -> None:
+    """A registry promotion (e.g. C29) moves the LIVE pin to a new sha, but historical
+    claims computed against the previous pin remain true as long as that file is still on
+    disk with the same content -- they must not start failing just because the registry's
+    live pointer moved on. Resolved via the registry entry's supersedes_sha256/
+    supersedes_path, not by rewriting the historical claim."""
+    old_file = tmp_path / "old_pin.xodr"
+    old_file.write_bytes(b"old pinned content")
+    old_sha = hashlib.sha256(b"old pinned content").hexdigest()
+
+    new_file = tmp_path / "new_pin.xodr"
+    new_file.write_bytes(b"new pinned content")
+    new_sha = hashlib.sha256(b"new pinned content").hexdigest()
+
+    rq_path = tmp_path / "rq_tables.json"
+    rq_path.write_text(json.dumps({"rows": [
+        {"rq": "RQ1", "metric": "local_curvature_gap", "status": "BOUNDED",
+         "artifact": "old_pin.xodr vs manual.xodr", "sha256": old_sha},
+    ]}), encoding="utf-8")
+
+    fake_registry = {
+        "auto_map_of_record": {
+            "path": "new_pin.xodr", "sha256": new_sha, "bytes": len(b"new pinned content"),
+            "role": "auto", "aliases": ["auto_map_of_record"],
+            "supersedes_sha256": old_sha, "supersedes_path": "old_pin.xodr",
+        },
+    }
+
+    import tools.validate_thesis_claim_provenance as mod
+    old_root = mod.REPO_ROOT
+    old_registry = mod.PINNED_MAP_REGISTRY
+    mod.REPO_ROOT = tmp_path
+    mod.PINNED_MAP_REGISTRY = fake_registry
+    try:
+        result = _verify_rq_table_claims(rq_path)
+    finally:
+        mod.REPO_ROOT = old_root
+        mod.PINNED_MAP_REGISTRY = old_registry
+
+    assert result["ok"] is True, result
+    assert result["claims_checked"][0]["provenance"] == "PASS"
+    assert "superseded" in result["claims_checked"][0]["via"]
+
+
+def test_claim_citing_a_superseded_sha_fails_if_the_old_file_itself_has_drifted(tmp_path: Path) -> None:
+    """The supersession path must still hash-verify the old file -- it's a documented
+    escape hatch for legitimate historical claims, not a way to silently skip verification
+    of anything whose sha happens to match a supersedes_sha256 value."""
+    old_file = tmp_path / "old_pin.xodr"
+    old_file.write_bytes(b"DRIFTED content, not what was actually measured")
+
+    rq_path = tmp_path / "rq_tables.json"
+    original_old_sha = hashlib.sha256(b"old pinned content").hexdigest()
+    rq_path.write_text(json.dumps({"rows": [
+        {"rq": "RQ1", "metric": "local_curvature_gap", "status": "BOUNDED",
+         "artifact": "old_pin.xodr vs manual.xodr", "sha256": original_old_sha},
+    ]}), encoding="utf-8")
+
+    fake_registry = {
+        "auto_map_of_record": {
+            "path": "new_pin.xodr", "sha256": "b" * 64, "bytes": 0,
+            "role": "auto", "aliases": ["auto_map_of_record"],
+            "supersedes_sha256": original_old_sha, "supersedes_path": "old_pin.xodr",
+        },
+    }
+
+    import tools.validate_thesis_claim_provenance as mod
+    old_root = mod.REPO_ROOT
+    old_registry = mod.PINNED_MAP_REGISTRY
+    mod.REPO_ROOT = tmp_path
+    mod.PINNED_MAP_REGISTRY = fake_registry
+    try:
+        result = _verify_rq_table_claims(rq_path)
+    finally:
+        mod.REPO_ROOT = old_root
+        mod.PINNED_MAP_REGISTRY = old_registry
+
+    assert result["ok"] is False
+    assert result["claims_checked"][0]["provenance"] == "FAIL"
+
+
 def test_against_real_repo_pinned_maps_and_inputs_verify() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     result = validate(repo_root)
     assert all(r["ok"] for r in result["pinned_maps"]), result["pinned_maps"]
     assert result["inputs_manifest"]["ok"] is True, result["inputs_manifest"]
+    # This is the check that was missing when the C29 pin promotion silently broke every
+    # RQ1 claim's provenance verification (they cited the pre-promotion sha, which stopped
+    # matching PINNED_MAP_REGISTRY the moment the live pointer moved) -- nothing exercised
+    # _verify_rq_table_claims against the real rq_tables.json, so 648+/648+ "full suite
+    # green" runs never caught it. Assert it here so it can't regress silently again.
+    assert result["rq_table_claims"]["ok"] is True, result["rq_table_claims"]

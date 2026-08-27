@@ -141,6 +141,43 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
                 ok = False
             continue
 
+        # A registry promotion (e.g. C29) moves the LIVE pin to a new sha, but historical
+        # claims computed against the previous pin remain true as long as that file is
+        # still on disk with unchanged content -- they must not start failing just because
+        # the registry's live pointer moved on. Check each entry's documented
+        # supersedes_sha256/supersedes_path before falling through to the generic artifact
+        # search (which can't resolve RQ1's "auto_path vs manual_path" combined artifact
+        # string as a literal path).
+        superseded_match = None
+        for key, entry in PINNED_MAP_REGISTRY.items():
+            if entry.get("supersedes_sha256") == sha and entry.get("supersedes_path"):
+                superseded_match = (key, entry)
+                break
+
+        if superseded_match:
+            key, entry = superseded_match
+            superseded_path = REPO_ROOT / entry["supersedes_path"]
+            if not superseded_path.is_file():
+                checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL",
+                                 "error": f"superseded pin for {key!r} not found: {superseded_path}"})
+                ok = False
+                continue
+            try:
+                actual = _hash_file(superseded_path, sha)
+            except ValueError as exc:
+                checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL", "error": str(exc)})
+                ok = False
+                continue
+            if actual == sha:
+                checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "PASS",
+                                 "via": f"superseded_pin:{key}"})
+            else:
+                checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL",
+                                 "error": f"hash mismatch for superseded pin {superseded_path}: "
+                                          f"expected {sha}, got {actual}"})
+                ok = False
+            continue
+
         # Not a pinned map -- try to hash the cited artifact path directly.
         candidate_path = REPO_ROOT / artifact if artifact and not Path(artifact).is_absolute() else Path(artifact)
         # artifact may be a filename only (e.g. "map_encoder_epoch50.pt"); search evidence dirs.
