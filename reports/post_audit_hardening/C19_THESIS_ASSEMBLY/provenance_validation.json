@@ -25,7 +25,7 @@
       "artifact": "auto_map_of_record",
       "ok": true,
       "role": "auto",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
     },
     {
       "artifact": "manual_grid0828",
@@ -40,61 +40,67 @@
         "metric": "local_lane_width_gap",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_curvature_gap",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_curvature_wasserstein_gap",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_road_length_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_junction_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_road_count_ratio_auto_over_manual",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_auto_footprint_kept_fraction",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "whole_map_construction_layers_excluded_from_local_gap",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "whole_map_road_type_coverage_gap_context",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "local_building_density_gap",
         "provenance": "PASS",
         "rq": "RQ1",
-        "via": "map_registry:auto_map_of_record"
+        "via": "superseded_pin:auto_map_of_record"
+      },
+      {
+        "metric": "local_frechet_distance_median_m",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "superseded_pin:auto_map_of_record"
       },
       {
         "metric": "perceptual_gap",

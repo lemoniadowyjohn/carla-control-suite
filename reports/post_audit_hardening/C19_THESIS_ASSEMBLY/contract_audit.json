@@ -9,11 +9,11 @@
   "current_rq_tables_audit": {
     "counts_by_status": {
       "AUTHORITATIVE": 4,
-      "BOUNDED": 10,
+      "BOUNDED": 11,
       "DEFERRED": 4
     },
     "ok": true,
-    "row_count": 18,
+    "row_count": 19,
     "rq_tables_found": true,
     "rq_tables_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
     "violations": []
@@ -24,7 +24,7 @@
     "machine_readable_status_present": true,
     "overall_status_enum_present": true
   },
-  "generated_at_utc": "2026-08-26T14:33:53.739867+00:00",
+  "generated_at_utc": "2026-08-27T09:18:00.591884+00:00",
   "perception_labels": {
     "pair_result_class_present": true,
     "pair_result_reason_present": true,
