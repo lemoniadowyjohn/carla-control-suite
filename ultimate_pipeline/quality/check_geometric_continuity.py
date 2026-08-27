@@ -771,16 +771,30 @@ def check_geometric_continuity(
 def check_planview_internal_seams(
     xodr_path: str,
     eps_xy: float = 0.2,
+    eps_hdg_only_deg: float = 5.0,
 ) -> Dict[str, Any]:
     """
     Check continuity between consecutive geometries within each road planView.
 
     A seam is reported when the previous geometry endpoint and next geometry
     start point are farther than eps_xy meters.
+
+    Additionally (purely additive, does not affect `ok`/`seams`/`num_seams`/`max_seam_m`):
+    when position IS continuous (dxy <= eps_xy) but the heading jumps by more than
+    `eps_hdg_only_deg` degrees, that pair is recorded in `heading_only_discontinuities`.
+    This case was previously silently skipped entirely -- `hdg_delta_rad` was computed but
+    only ever used to classify an already-detected position seam, never checked on its own.
+    A position-continuous heading jump is a real visible kink in the road centerline (the
+    road doesn't jump in space, but its tangent direction snaps to a new angle instantly).
+    Kept separate from `seams`/`ok` deliberately: this function participates in a live
+    pipeline gate (stage_06_links.py, stage_09_tiling.py) with auto-repair triggering and
+    UP_STRICT_QUALITY_GATES blocking semantics -- changing existing pass/fail behavior here
+    needs an explicit decision, not a side effect of adding new diagnostic visibility.
     """
     report: Dict[str, Any] = {
         "ok": True,
         "eps_xy_m": float(eps_xy),
+        "eps_hdg_only_deg": float(eps_hdg_only_deg),
         "num_roads": 0,
         "num_pairs_checked": 0,
         "num_seams": 0,
@@ -789,6 +803,8 @@ def check_planview_internal_seams(
         "max_seam_m": 0.0,
         "worst_road_id": "",
         "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
         "warnings": [],
     }
 
@@ -823,6 +839,17 @@ def check_planview_internal_seams(
             hdg_delta_rad = _angle_diff(float(next_start_pose.hdg), float(pose_end.hdg))
             report["num_pairs_checked"] += 1
             if dxy <= float(eps_xy):
+                if math.degrees(abs(float(hdg_delta_rad))) > float(eps_hdg_only_deg):
+                    report["heading_only_discontinuities"].append(
+                        {
+                            "road_id": rid,
+                            "from_geom_index": int(i),
+                            "to_geom_index": int(i + 1),
+                            "xy_gap_m": float(dxy),
+                            "hdg_delta_rad": float(hdg_delta_rad),
+                            "hdg_delta_deg": float(math.degrees(hdg_delta_rad)),
+                        }
+                    )
                 continue
             classification = _classify_seam(
                 seam_distance_m=float(dxy),
@@ -871,6 +898,7 @@ def check_planview_internal_seams(
     report["num_seams"] = len(seams)
     report["roads_checked"] = int(roads_checked)
     report["seams_found"] = int(len(seams))
+    report["num_heading_only_discontinuities"] = len(report["heading_only_discontinuities"])
     if seams:
         worst = max(seams, key=lambda s: float(s.get("seam_distance_m", 0.0)))
         report["max_seam_m"] = float(worst.get("seam_distance_m", 0.0))
