@@ -298,6 +298,3 @@ class Database:
 
         conn.commit()
         conn.close()
-
-    def _get_connection(self):
-        pass
