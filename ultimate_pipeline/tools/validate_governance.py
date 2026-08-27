@@ -66,7 +66,7 @@ TASK_STATUS_LINE_RE = re.compile(r"^\s*-\s+Status:\s*(.+?)\s*$", flags=re.MULTIL
 TASK_PATCH_READY_LINE_RE = re.compile(r"^\s*-\s+Patch Ready:\s*(.+?)\s*$", flags=re.MULTILINE)
 TASK_CLASS_LINE_RE = re.compile(r"^\s*-\s+Task Class:\s*(.+?)\s*$", flags=re.MULTILINE)
 TASK_PRIORITY_LINE_RE = re.compile(r"^\s*-\s+Priority:\s*(.+?)\s*$", flags=re.MULTILINE)
-TASK_TARGET_FILES_LINE_RE = re.compile(r"^\s*-\s+Target Files:\s*(.*?)\s*$", flags=re.MULTILINE)
+TASK_TARGET_FILES_LINE_RE = re.compile(r"^\s*-\s+Target Files:[ \t]*(.*?)\s*$", flags=re.MULTILINE)
 TASK_ACTIVE_BRANCH_LINE_RE = re.compile(r"^\s*-\s+Active Branch:\s*(.+?)\s*$", flags=re.MULTILINE)
 TASK_MIN_VERIF_LINE_RE = re.compile(r"^\s*-\s+Minimum Verification:\s*(.+?)\s*$", flags=re.MULTILINE)
 TASK_GEMINI_FIRST_LINE_RE = re.compile(r"^\s*-\s+Gemini First:\s*(.+?)\s*$", flags=re.MULTILINE)
@@ -283,7 +283,7 @@ def _section_allows_tmp(h2_section: str, h3_section: str) -> bool:
 
 def _resolved_tmp_is_diagnostic_promoted(line: str) -> bool:
     text = str(line or "")
-    if "[DIAGNOSTIC] original:" not in text.upper():
+    if "[DIAGNOSTIC] ORIGINAL:" not in text.upper():
         return False
     return bool(PROMOTED_PATH_RE.search(text))
 
