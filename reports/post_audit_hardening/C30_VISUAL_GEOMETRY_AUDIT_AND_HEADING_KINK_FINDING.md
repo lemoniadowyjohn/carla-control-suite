@@ -88,7 +88,31 @@ visibility, and was deliberately not made here without explicit sign-off.
   live-CARLA verification this session has been blocked from running throughout (GPU TDR).
 - The 48 affected roads are not fixed here (no attempt made to repair their geometry) — this
   pass only makes the defect visible/measurable where it was previously silently skipped by
-  the established gate. Repairing 48 specific roads' geometry (likely a paramPoly3/spiral
-  authoring issue in the upstream Osm2Odr conversion or an enrichment stage) is a separate,
-  follow-up task, not attempted in this pass given the need to first understand which
-  pipeline stage introduces the kink.
+  the established gate.
+
+## Follow-up root-cause characterization (offline, no fix attempted)
+Broke down the 82 kink instances by the geometry-type pair at the transition:
+`line->line`: 46, `poly3->line`: 19, `line->poly3`: 16, `poly3->poly3`: 1. The dominant
+case (`line->line`, 46/82) is unambiguous: two consecutive raw `<line>` primitives share the
+exact same start point but have genuinely different stated `hdg` values — no curve-fitting
+interpretation involved, just two straight segments pointing in different directions at the
+same point. Since this session's pipeline does not rewrite raw planView `<line>`/`<paramPoly3>`
+geometry by default (only adds enrichment data), this is most plausibly an inherent
+characteristic of Osm2Odr's own conversion output on these specific short/complex OSM ways,
+not something introduced by this pipeline's own stages — not independently confirmed by
+tracing Osm2Odr's own (external, C++, not in this repo) source, so held as a plausible
+explanation, not a verified one.
+
+**The pipeline already has a purpose-built fix for exactly this class**:
+`PlanViewSmoother.smooth_heading_jumps(root, threshold_deg=12.0)`
+(`ultimate_pipeline/pipeline_stages/stage_06_links.py:435`), gated behind
+`ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING` (default `False` — part of the same "unsafe planview
+mutations" family as short-segment-merge, small-geometry-merge, and curvature-only-clamp,
+all off by default in the governed/production release profile). This was a deliberate
+decision by prior work to keep the mutation off, not an oversight. Enabling it would need a
+full pipeline regen to validate it doesn't introduce new seams/connectivity issues elsewhere
+(smoothing a road's own heading can shift its endpoint pose, which the road's own link
+partners assume is fixed) — a real cost/risk tradeoff, not a quick flag flip. **Deliberately
+not enabled in this pass** — flagged as the natural next step if the user wants to pursue it,
+not decided unilaterally, matching this session's standing discipline for "unsafe"-flagged
+pipeline mutations.
