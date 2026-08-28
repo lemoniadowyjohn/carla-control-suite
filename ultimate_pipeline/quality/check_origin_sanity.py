@@ -73,7 +73,14 @@ def check_origin_sanity(
     report["centroid"] = {"x": cx, "y": cy}
     report["centroid_distance_m"] = dist
 
-    if dist > fail_distance_m:
+    # NaN/Inf from a corrupt planView x/y makes `dist` non-finite; a magnitude
+    # comparison against NaN is always False in IEEE-754 (`nan > fail_distance_m`
+    # is False), so the checks below would silently never fire without an
+    # explicit guard.
+    if not math.isfinite(dist):
+        report["ok"] = False
+        report["warnings"].append(f"centroid distance is non-finite ({dist!r}) -- corrupt planView x/y coordinate")
+    elif dist > fail_distance_m:
         report["ok"] = False
         report["warnings"].append(f"centroid distance {dist:.1f}m exceeds fail threshold")
     elif dist > warn_distance_m:

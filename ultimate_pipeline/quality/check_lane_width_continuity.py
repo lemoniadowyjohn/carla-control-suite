@@ -97,7 +97,11 @@ def check_lane_width_continuity(
                 lane_id = lane.get("id")
                 widths = lane.findall("width")
                 start_width = _width_at_s(widths, 0.0)
-                if start_width is not None and start_width <= min_width:
+                # NaN/Inf from a corrupt width coefficient makes `start_width`
+                # non-finite (but not None); `nan <= min_width` is always False in
+                # IEEE-754, so this check would silently never fire without an
+                # explicit guard.
+                if start_width is not None and (not math.isfinite(start_width) or start_width <= min_width):
                     issues.append({
                         "type": "nonpositive_width",
                         "road": rid,
@@ -125,7 +129,8 @@ def check_lane_width_continuity(
                     continue
 
                 delta = abs(next_start_width - end_width)
-                if delta > max_jump:
+                # Same NaN/Inf-defeats-magnitude-comparison guard as above.
+                if not math.isfinite(delta) or delta > max_jump:
                     issues.append({
                         "type": "width_jump",
                         "road": rid,

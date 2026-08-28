@@ -9,6 +9,7 @@ Detects discontinuities in laneOffset and lane width functions at laneSection bo
 
 from __future__ import annotations
 
+import math
 import os
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Tuple
@@ -138,7 +139,10 @@ def check_lane_geometry_continuity(
             next_offset = _lane_offset_at(road, boundary_s + eps_s)
             if prev_offset is not None and next_offset is not None:
                 delta = abs(next_offset - prev_offset)
-                if delta > lane_offset_eps:
+                # NaN/Inf from a corrupt laneOffset coefficient makes `delta`
+                # non-finite; `nan > lane_offset_eps` is always False in IEEE-754,
+                # so this check would silently never fire without an explicit guard.
+                if not math.isfinite(delta) or delta > lane_offset_eps:
                     report["issues"].append(
                         {
                             "type": "lane_offset",
@@ -168,7 +172,10 @@ def check_lane_geometry_continuity(
                 if prev_w is None or next_w is None:
                     continue
                 delta = abs(next_w - prev_w)
-                if delta > lane_width_eps:
+                # NaN/Inf from a corrupt lane-width coefficient makes `delta`
+                # non-finite; `nan > lane_width_eps` is always False in IEEE-754,
+                # so this check would silently never fire without an explicit guard.
+                if not math.isfinite(delta) or delta > lane_width_eps:
                     report["issues"].append(
                         {
                             "type": "lane_width",

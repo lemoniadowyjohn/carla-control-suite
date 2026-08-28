@@ -730,7 +730,12 @@ def check_geometric_continuity(
             warn.extend(warn_eval_a)
             warn.extend(warn_eval_b)
 
-            if dxy > eps_xy or dhdg > eps_hdg:
+            # NaN/Inf propagated from a corrupt planView attribute makes `dxy`/`dhdg`
+            # non-finite; a magnitude comparison against NaN is always False in
+            # IEEE-754 (`nan > eps_xy` is False), so the check below would silently
+            # never fire. Guard explicitly instead of relying on the magnitude
+            # comparison to catch it.
+            if not math.isfinite(dxy) or not math.isfinite(dhdg) or dxy > eps_xy or dhdg > eps_hdg:
                 record = {
                     "from_road": rid,
                     "to_road": eid,
