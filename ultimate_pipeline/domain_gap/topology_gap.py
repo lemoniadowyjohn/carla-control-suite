@@ -78,4 +78,4 @@ class TopologyGap:
                 "disabled": False,
             }
         except Exception as e:
-            return {"disabled": False, "error": str(e)}
+            return {"disabled": True, "error": str(e)}

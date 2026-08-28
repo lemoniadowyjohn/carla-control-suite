@@ -5013,7 +5013,7 @@ def run_full_domain_gap(
                 whole_geom_gap["disabled"] = False
             except Exception as e:
                 whole_geom_gap = {
-                    "disabled": False,
+                    "disabled": True,
                     "error": str(e),
                     "rmse": None,
                     "hausdorff": None,
@@ -5040,7 +5040,7 @@ def run_full_domain_gap(
             whole_curv_gap = CurvatureGap.compute(reference_xodr, aligned_auto)
             whole_curv_gap["disabled"] = False
         except Exception as e:
-            whole_curv_gap = {"disabled": False, "error": str(e), "kl_divergence": None}
+            whole_curv_gap = {"disabled": True, "error": str(e), "kl_divergence": None}
             log.warning("Curvature gap computation failed (%s)", e)
 
     # ---------------------------------------------------------------
@@ -5068,7 +5068,7 @@ def run_full_domain_gap(
             whole_inter_gap = _call_intersection_gap(reference_xodr, aligned_auto)
             whole_inter_gap["disabled"] = False
         except Exception as e:
-            whole_inter_gap = {"disabled": False, "error": str(e)}
+            whole_inter_gap = {"disabled": True, "error": str(e)}
             log.warning("Intersection gap computation failed (%s)", e)
 
     # ---------------------------------------------------------------
@@ -5081,7 +5081,7 @@ def run_full_domain_gap(
             whole_sem_gap = _call_semantic_gap(reference_xodr, aligned_auto)
             whole_sem_gap["disabled"] = False
         except Exception as e:
-            whole_sem_gap = {"disabled": False, "error": str(e)}
+            whole_sem_gap = {"disabled": True, "error": str(e)}
             log.warning("Semantic gap computation failed (%s)", e)
     if isinstance(whole_sem_gap, dict) and not whole_sem_gap.get("disabled"):
         road_types = _safe_dict(whole_sem_gap.get("road_types"))
@@ -5101,7 +5101,7 @@ def run_full_domain_gap(
             whole_class_gap = RoadClassificationGap.compute(reference_xodr, aligned_auto)
             whole_class_gap["disabled"] = False
         except Exception as e:
-            whole_class_gap = {"disabled": False, "error": str(e)}
+            whole_class_gap = {"disabled": True, "error": str(e)}
             log.warning("Road classification gap failed (%s)", e)
     if isinstance(whole_class_gap, dict) and not whole_class_gap.get("disabled"):
         class_manual = _safe_dict(whole_class_gap.get("manual_counts"))
@@ -5120,7 +5120,7 @@ def run_full_domain_gap(
             whole_conn_gap = ConnectivityGap.compute(reference_xodr, aligned_auto)
             whole_conn_gap["disabled"] = False
         except Exception as e:
-            whole_conn_gap = {"disabled": False, "error": str(e)}
+            whole_conn_gap = {"disabled": True, "error": str(e)}
             log.warning("Connectivity gap computation failed (%s)", e)
 
     # Save whole-map raw gaps early

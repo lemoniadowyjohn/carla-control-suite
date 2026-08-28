@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from ultimate_pipeline.domain_gap.domain_gap_aggregator import DomainGapAggregator as Agg
 from ultimate_pipeline.domain_gap.geometry_gap import _estimate_hausdorff_time, _safe_float
-from ultimate_pipeline.domain_gap.topology_gap import _norm_diff, _safe_int
+from ultimate_pipeline.domain_gap.topology_gap import TopologyGap, _norm_diff, _safe_int
 
 
 # ---- DomainGapAggregator: the composite contract --------------------------
@@ -80,3 +80,38 @@ def test_geometry_safe_float_and_hausdorff_estimate():
     assert _safe_float(None, default=0.0) == 0.0
     assert _estimate_hausdorff_time(0) == 0.0
     assert _estimate_hausdorff_time(1000) > _estimate_hausdorff_time(100) > 0.0
+
+
+# ---- TopologyGap.compute(): error-path "disabled" flag correctness --------
+def test_topology_gap_compute_error_path_sets_disabled_true(tmp_path):
+    """compute() must report disabled=True when it hits an exception (e.g. missing
+    XODR file) -- callers key off 'disabled' to decide whether a component's gap
+    value is trustworthy. A False here would silently tell downstream aggregation
+    the component succeeded while `error` is populated and manual/auto are absent."""
+    missing_manual = str(tmp_path / "does_not_exist_manual.xodr")
+    missing_auto = str(tmp_path / "does_not_exist_auto.xodr")
+
+    result = TopologyGap.compute(missing_manual, missing_auto)
+
+    assert "error" in result
+    assert result["disabled"] is True
+
+
+def test_topology_gap_compute_success_path_sets_disabled_false(tmp_path):
+    import xml.etree.ElementTree as ET
+
+    def _write(path, n_roads):
+        root = ET.Element("OpenDRIVE")
+        for i in range(n_roads):
+            ET.SubElement(root, "road", id=str(i), junction="-1")
+        ET.ElementTree(root).write(str(path), encoding="utf-8", xml_declaration=True)
+
+    manual = tmp_path / "manual.xodr"
+    auto = tmp_path / "auto.xodr"
+    _write(manual, 2)
+    _write(auto, 3)
+
+    result = TopologyGap.compute(str(manual), str(auto))
+
+    assert "error" not in result
+    assert result["disabled"] is False

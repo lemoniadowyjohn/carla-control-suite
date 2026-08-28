@@ -1,8 +1,11 @@
+import inspect
 import json
+import re
 from pathlib import Path
 
 import pytest
 
+import ultimate_pipeline.run_full_domain_gap as run_full_domain_gap_module
 from ultimate_pipeline.run_full_domain_gap import (
     _finalize_smoke_results,
     _normalize_connectivity_gap_payload,
@@ -113,6 +116,25 @@ def test_normalize_connectivity_gap_no_flat_aliases_when_disabled():
     assert "auto_predecessor_declared_rate" not in result
 
 
+def test_normalize_connectivity_gap_does_not_mark_exception_payload_as_computed():
+    """Reproduces the run_full_domain_gap.py whole-map-gap except-branch bug: when
+    ConnectivityGap.compute() raises, the call site built `{"disabled": False,
+    "error": str(e)}` -- i.e. it labeled a FAILED computation as not-disabled. Fed
+    through the normalizer, that used to yield status="computed" with an empty
+    reason, silently telling report consumers the connectivity gap succeeded when
+    it actually raised and carries no manual/auto/gap data at all. The call site
+    must report disabled=True on the exception path so this normalizer (and
+    everything downstream that reads its `disabled`/`status` output) can correctly
+    flag the run as having a missing/failed connectivity-gap component."""
+    exception_payload = {"disabled": True, "error": "XML parse failure: mismatched tag"}
+
+    result = _normalize_connectivity_gap_payload(exception_payload)
+
+    assert result["disabled"] is True
+    assert result["status"] == "skipped"
+    assert result["error"] == "XML parse failure: mismatched tag"
+
+
 def test_normalize_connectivity_gap_flat_aliases_do_not_overwrite_existing():
     """setdefault semantics: pre-existing top-level keys must not be overwritten."""
     payload = {
@@ -171,3 +193,37 @@ def test_smoke_report_has_all_required_schema_keys(tmp_path: Path):
     assert full_report["smoke"] is True
     assert full_report["elevation_included"] is False
     assert full_report["parity_check"]["disabled"] is True
+
+
+# ---------------------------------------------------------------------------
+# Source-level regression guard: whole-map gap except-branches must not report
+# disabled=False on a failed computation (found 2026-08-28 during the RQ1
+# core-gap-metric correctness sweep). run_full_domain_gap() is a ~2000-line
+# function driving the live pipeline; the six whole-map gap stages (geometry,
+# curvature, intersection, semantic, road_classification, connectivity) each
+# wrap their *_Gap.compute() call in its own try/except and previously built
+# the exact same buggy literal `{"disabled": False, "error": str(e)}` on
+# failure -- i.e. every one of them told downstream report consumers the
+# metric succeeded even though it raised and carries no real data. Verified
+# concretely for connectivity_gap: feeding that literal through
+# _normalize_connectivity_gap_payload() produced status="computed" for a
+# component that had actually thrown. A static source check is used here
+# (rather than driving the full ~2000-line function end-to-end, which needs
+# live XODR fixtures/CARLA-adjacent setup well beyond this bug) so the
+# anti-pattern can never silently reappear at any of the six call sites.
+# ---------------------------------------------------------------------------
+
+def test_whole_map_gap_except_branches_never_hardcode_disabled_false():
+    source = inspect.getsource(run_full_domain_gap_module)
+    # Target only the crash-handling literals: `"error": str(e)` marks an actual
+    # exception was caught (as opposed to a deliberate, non-exception skip like
+    # `"error": None, "skip_reason": ...` for a CRS-mismatch precondition, which
+    # is a different, intentional code path this guard leaves alone).
+    offending = re.findall(r'"disabled":\s*False\s*,\s*"error":\s*str\(e\)', source)
+    assert not offending, (
+        "Found except-branch dict literal(s) hardcoding \"disabled\": False "
+        "alongside \"error\": str(e) in run_full_domain_gap.py -- a failed "
+        "whole-map gap computation must report disabled=True so downstream "
+        "consumers (aggregation, full_report.json, thesis tables) don't treat "
+        f"it as a successful, trustworthy result. Matches: {offending}"
+    )

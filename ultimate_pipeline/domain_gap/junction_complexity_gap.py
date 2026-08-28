@@ -113,7 +113,7 @@ class JunctionComplexityGap:
                 "disabled": False,
             }
         except Exception as e:
-            return {"disabled": False, "error": str(e)}
+            return {"disabled": True, "error": str(e)}
 
     @staticmethod
     def compare(manual_xodr: str, auto_xodr: str, *, epsilon: float = 1e-6) -> Dict[str, Any]:

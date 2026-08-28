@@ -1,6 +1,14 @@
 """ultimate_pipeline/domain_gap/junction_complexity_gap.py -- compares junction
 connection-count distributions (manual vs. auto-generated map) via a histogram + JS
-divergence, feeding RQ1 structural-gap evidence (wired into run_full_domain_gap.py).
+divergence.
+
+NOTE (verified 2026-08-28): despite the module's own docstring describing it as an
+RQ1 structural-gap component, it is NOT actually invoked anywhere in
+run_full_domain_gap.py or DomainGapAggregator.aggregate() -- the orchestrator only
+carries a dead `JunctionComplexityGap = None` lazy-load placeholder that is never
+reassigned. This module is exercised only by this test file, directly. Do not assume
+its output reaches any thesis-reported number without re-verifying wiring first.
+
 Pure, deterministic math (percentile interpolation, Jensen-Shannon divergence) that is
 easy to get subtly wrong. Found untested via the orphaned-.pyc sweep.
 """
@@ -155,7 +163,11 @@ def test_compute_different_maps_positive_divergence(tmp_path: Path):
 
 def test_compute_missing_file_returns_error_not_raise(tmp_path: Path):
     result = JunctionComplexityGap.compute(str(tmp_path / "nope.xodr"), str(tmp_path / "also_nope.xodr"))
-    assert result["disabled"] is False
+    # A failed compute() must be flagged disabled=True: callers key off "disabled" to
+    # decide whether a component's gap value is trustworthy, and disabled=False here
+    # would silently tell downstream aggregation/reporting the component succeeded
+    # while "error" is populated and manual/auto stats are entirely absent.
+    assert result["disabled"] is True
     assert "error" in result
 
 
