@@ -3,8 +3,13 @@
 """
 Compute perceptual domain gap between two perception runs.
 
-Requires that perception_metrics_exporter.py was run with --dump_features,
-so each run has a *_features.npz with per-image embeddings.
+Reads the metrics JSON written by
+`ultimate_pipeline.perception.perception_metrics_exporter.export_perception_metrics`
+for each run. That JSON carries per-image feature vectors inline under the
+"feature_samples" key (a subsample, capped at 256 rows, of the full embedding
+set -- see export_perception_metrics). A "features_npz" key (an external .npz
+of per-image embeddings) is also accepted if some future exporter mode writes
+one, but nothing in this codebase currently produces it.
 
 Outputs:
   - perception_gap.json
@@ -28,19 +33,35 @@ def _load_metrics_json(p: Path) -> Dict[str, Any]:
 
 
 def _load_feats(metrics: Dict[str, Any], run_dir: Path) -> np.ndarray:
+    # Preferred: an external .npz of per-image embeddings, if some exporter mode
+    # ever writes one (currently nothing in this codebase does).
     npz = metrics.get("features_npz", None)
-    if not npz:
-        raise RuntimeError("metrics json does not contain 'features_npz' (run exporter with --dump_features)")
-    npz_path = Path(npz)
-    if not npz_path.is_absolute():
-        npz_path = (run_dir / npz_path).resolve()
-    if not npz_path.exists():
-        raise FileNotFoundError(f"features_npz not found: {npz_path}")
-    data = np.load(npz_path)
-    feats = data["feats"]
-    if feats.ndim != 2 or feats.shape[0] < 2:
-        raise RuntimeError(f"unexpected feats shape: {feats.shape}")
-    return feats.astype(np.float32)
+    if npz:
+        npz_path = Path(npz)
+        if not npz_path.is_absolute():
+            npz_path = (run_dir / npz_path).resolve()
+        if not npz_path.exists():
+            raise FileNotFoundError(f"features_npz not found: {npz_path}")
+        data = np.load(npz_path)
+        feats = data["feats"]
+        if feats.ndim != 2 or feats.shape[0] < 2:
+            raise RuntimeError(f"unexpected feats shape: {feats.shape}")
+        return feats.astype(np.float32)
+
+    # Actual schema written by export_perception_metrics(): an inline
+    # "feature_samples" list (subsampled, capped at 256 rows).
+    samples = metrics.get("feature_samples", None)
+    if samples:
+        feats = np.asarray(samples, dtype=np.float32)
+        if feats.ndim != 2 or feats.shape[0] < 2:
+            raise RuntimeError(f"unexpected feature_samples shape: {feats.shape}")
+        return feats
+
+    raise RuntimeError(
+        "metrics json does not contain 'features_npz' or 'feature_samples'. "
+        "Run perception_metrics_exporter.export_perception_metrics() on this "
+        "run's output directory first."
+    )
 
 
 def main() -> int:
