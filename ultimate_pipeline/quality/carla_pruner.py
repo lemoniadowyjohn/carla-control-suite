@@ -410,7 +410,8 @@ class CarlaSafetyPruner:
                 continue
 
             # Prune tiny roads that can't reasonably be driven (CARLA often hates these)
-            if _lane_length_estimate(road) < self.min_road_length_m:
+            _road_len_est = _lane_length_estimate(road)
+            if not math.isfinite(_road_len_est) or _road_len_est < self.min_road_length_m:
                 dangling.append(k)
                 continue
 

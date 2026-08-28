@@ -132,7 +132,11 @@ class GeometryValidator:
         # --------------------------------------------------------------
         cleaned = []
         for d in parsed:
-            if d["length"] is None or d["length"] <= GeometryValidator.MIN_SEG_LEN:
+            if (
+                d["length"] is None
+                or not math.isfinite(d["length"])
+                or d["length"] <= GeometryValidator.MIN_SEG_LEN
+            ):
                 issues.append(f"removed_zero_length_segment_at_s={d['s']}")
                 diff_log.add(
                     "geometry_validator",
@@ -188,7 +192,7 @@ class GeometryValidator:
                 cs = _safe_float(spiral.attrib.get("curvStart"))
                 ce = _safe_float(spiral.attrib.get("curvEnd"))
 
-                if cs is not None and abs(cs) > GeometryValidator.MAX_CURV:
+                if cs is not None and (not math.isfinite(cs) or abs(cs) > GeometryValidator.MAX_CURV):
                     old = cs
                     clamped = max(-GeometryValidator.MAX_CURV, min(cs, GeometryValidator.MAX_CURV))
                     spiral.attrib["curvStart"] = str(clamped)
@@ -199,7 +203,7 @@ class GeometryValidator:
                         {"fix": "clamped_curvStart", "original": old, "clamped": clamped},
                     )
 
-                if ce is not None and abs(ce) > GeometryValidator.MAX_CURV:
+                if ce is not None and (not math.isfinite(ce) or abs(ce) > GeometryValidator.MAX_CURV):
                     old = ce
                     clamped = max(-GeometryValidator.MAX_CURV, min(ce, GeometryValidator.MAX_CURV))
                     spiral.attrib["curvEnd"] = str(clamped)

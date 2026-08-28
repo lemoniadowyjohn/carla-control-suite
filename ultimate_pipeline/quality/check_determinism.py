@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 
@@ -212,7 +213,8 @@ def check_determinism(
             if hash_a[key] != hash_b[key]:
                 diffs[key] = {"a": hash_a[key], "b": hash_b[key]}
 
-        if abs(hash_a["total_road_length"] - hash_b["total_road_length"]) > 0.1:
+        _len_delta = abs(hash_a["total_road_length"] - hash_b["total_road_length"])
+        if not math.isfinite(_len_delta) or _len_delta > 0.1:
             diffs["total_road_length"] = {"a": hash_a["total_road_length"], "b": hash_b["total_road_length"]}
 
         # Check for missing/extra roads

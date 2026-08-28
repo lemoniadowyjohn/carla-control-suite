@@ -344,16 +344,19 @@ class LaneSeamChecker:
                 **stats,
             })
 
-            max_lat = max(max_lat, stats["lateral_offset"])
-            max_hdg = max(max_hdg, stats["heading_error"])
-            max_ele = max(max_ele, stats["elevation_jump"])
+            _lat = stats["lateral_offset"]
+            _hdg = stats["heading_error"]
+            _ele = stats["elevation_jump"]
+            max_lat = _lat if not math.isfinite(_lat) else max(max_lat, _lat)
+            max_hdg = _hdg if not math.isfinite(_hdg) else max(max_hdg, _hdg)
+            max_ele = _ele if not math.isfinite(_ele) else max(max_ele, _ele)
 
         # Warnings (heuristics)
-        if max_lat > 0.10:
+        if not math.isfinite(max_lat) or max_lat > 0.10:
             warnings.append(f"Lateral offset exceeds 10 cm: {max_lat:.3f} m")
-        if max_hdg > 0.10:
+        if not math.isfinite(max_hdg) or max_hdg > 0.10:
             warnings.append(f"Heading jump > 0.10 rad: {max_hdg:.3f}")
-        if max_ele > 0.05:
+        if not math.isfinite(max_ele) or max_ele > 0.05:
             warnings.append(f"Elevation jump > 5 cm: {max_ele:.3f} m")
         if marking_mismatch_pairs > 0:
             warnings.append(f"{marking_mismatch_pairs} lane pairs have marking presence mismatch across seam.")

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -96,7 +97,7 @@ def check_invariants(xodr_path: str) -> Dict[str, Any]:
             lane_ids: Set[int] = set()
 
             # --- Invariant 1: No negative s ---
-            if ls_s < 0.0:
+            if not math.isfinite(ls_s) or ls_s < 0.0:
                 violations.append(InvariantViolation(
                     code="negative_s",
                     road_id=rid,
@@ -105,7 +106,7 @@ def check_invariants(xodr_path: str) -> Dict[str, Any]:
                 ))
 
             # Check s is within road length
-            if road_length > 0 and ls_s > road_length + 1e-3:
+            if road_length > 0 and (not math.isfinite(ls_s) or ls_s > road_length + 1e-3):
                 violations.append(InvariantViolation(
                     code="s_exceeds_length",
                     road_id=rid,

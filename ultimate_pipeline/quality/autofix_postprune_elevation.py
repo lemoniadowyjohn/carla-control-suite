@@ -86,7 +86,7 @@ def _pose_line(g: _Geometry, s_local: float) -> Tuple[float, float]:
 
 def _pose_arc(g: _Geometry, s_local: float) -> Tuple[float, float]:
     k = g.curvature
-    if abs(k) < 1e-12:
+    if not math.isfinite(k) or abs(k) < 1e-12:
         return _pose_line(g, s_local)
     dx_local = math.sin(k * s_local) / k
     dy_local = (1.0 - math.cos(k * s_local)) / k
@@ -178,7 +178,7 @@ def apply_postprune_elevation_autofix(
         report["roads_total"] += 1
         rid = (road.get("id") or "").strip()
         length = _safe_float(road.get("length"))
-        if length <= 0:
+        if not math.isfinite(length) or length <= 0:
             continue
         geoms = _parse_geometries(road)
         if not geoms:

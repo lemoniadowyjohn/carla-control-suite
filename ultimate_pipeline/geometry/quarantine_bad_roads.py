@@ -71,8 +71,12 @@ def _parse_continuity_report(report: Optional[Dict[str, Any]]) -> Dict[str, Dict
             entry["continuity_issue_count"] += 1
             dxy = _safe_float(issue.get("dxy"), 0.0)
             dhdg = abs(_safe_float(issue.get("dhdg"), 0.0))
-            entry["continuity_dxy_max_m"] = max(entry["continuity_dxy_max_m"], dxy)
-            entry["continuity_dhdg_max_deg"] = max(entry["continuity_dhdg_max_deg"], dhdg)
+            entry["continuity_dxy_max_m"] = (
+                dxy if not math.isfinite(dxy) else max(entry["continuity_dxy_max_m"], dxy)
+            )
+            entry["continuity_dhdg_max_deg"] = (
+                dhdg if not math.isfinite(dhdg) else max(entry["continuity_dhdg_max_deg"], dhdg)
+            )
     return scores
 
 
@@ -105,13 +109,20 @@ def _collect_geometry_metrics(root: ET.Element) -> Dict[str, Dict[str, Any]]:
                 curvature = _safe_float(child.get("curvature"), 0.0)
             else:
                 curvature = 0.0
-            curvature_abs_max = max(curvature_abs_max, abs(curvature))
+            curv_abs = abs(curvature)
+            curvature_abs_max = (
+                curv_abs if not math.isfinite(curv_abs) else max(curvature_abs_max, curv_abs)
+            )
             if prev_hdg is not None:
-                heading_jump_max_deg = max(
-                    heading_jump_max_deg, math.degrees(_angle_diff_rad(hdg, prev_hdg))
+                hdg_jump = math.degrees(_angle_diff_rad(hdg, prev_hdg))
+                heading_jump_max_deg = (
+                    hdg_jump if not math.isfinite(hdg_jump) else max(heading_jump_max_deg, hdg_jump)
                 )
             if prev_curv is not None:
-                curvature_jump_max = max(curvature_jump_max, abs(curvature - prev_curv))
+                curv_jump = abs(curvature - prev_curv)
+                curvature_jump_max = (
+                    curv_jump if not math.isfinite(curv_jump) else max(curvature_jump_max, curv_jump)
+                )
             prev_hdg = hdg
             prev_curv = curvature
         metrics[rid] = {
@@ -147,9 +158,9 @@ def _score_and_reasons(entry: Dict[str, Any], thresholds: Dict[str, float]) -> T
         threshold = float(thresholds.get(threshold_key, 0.0))
         if threshold <= 0:
             return
-        if value > threshold:
+        if not math.isfinite(value) or value > threshold:
             reasons.append(reason)
-            score = max(score, value / threshold)
+            score = max(score, value / threshold) if math.isfinite(value) else float("inf")
 
     _check(
         float(entry.get("continuity_dxy_max_m", 0.0)),

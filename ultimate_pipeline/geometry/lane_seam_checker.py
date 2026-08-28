@@ -41,7 +41,7 @@ def _sample_geometry(geom: ET.Element, step: float = 2.0) -> List[XY]:
         return pts
 
     curvature = _safe_float(arc.get("curvature", "0"))
-    if abs(curvature) < 1e-9:
+    if not math.isfinite(curvature) or abs(curvature) < 1e-9:
         n = max(2, int(length / step))
         for i in range(n + 1):
             ds = length * (i / n)
@@ -139,7 +139,7 @@ class LaneSeamChecker:
         max_hdg = 0.0
         max_dz = 0.0
 
-        if max_lat > 0.10:
+        if not math.isfinite(max_lat) or max_lat > 0.10:
             warnings.append(f"Lateral offset exceeds 10 cm: {max_lat:.3f} m")
 
         return SeamReport(
