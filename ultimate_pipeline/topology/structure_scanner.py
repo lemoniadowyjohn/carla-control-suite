@@ -280,7 +280,28 @@ class StructureScanner:
             if len(sections) <= 1:
                 continue
 
-            # sort sections by s
+            # as-declared s values (XML document order) -- OpenDRIVE requires
+            # laneSections to appear in strictly increasing s order, so this
+            # check must run BEFORE any sorting, against the order the file
+            # actually declares. (Sorting first and then checking the sorted
+            # list for "non-monotonicity" can, by construction, only ever
+            # detect exact ties -- it can never see the file listed sections
+            # out of order, since sorting silently fixes the very defect
+            # being checked for.)
+            declared_s_values = [_safe_float(ls.get("s"), 0.0) for ls in sections]
+
+            # 1) monotonic check (strictly increasing, as declared in the file)
+            for i in range(len(declared_s_values) - 1):
+                if declared_s_values[i + 1] <= declared_s_values[i]:
+                    non_monotonic.append({
+                        "road_id": rid,
+                        "s_values": declared_s_values,
+                    })
+                    break
+
+            # sort sections by s for the width-jump analysis below, which
+            # cares about width deltas along increasing s regardless of
+            # whether the file declared them in order.
             sec_info = []
             for ls in sections:
                 s = _safe_float(ls.get("s"), 0.0)
@@ -288,15 +309,6 @@ class StructureScanner:
             sec_info.sort(key=lambda x: x[0])
 
             s_values = [s for s, _ in sec_info]
-
-            # 1) monotonic check
-            for i in range(len(s_values) - 1):
-                if s_values[i + 1] <= s_values[i]:
-                    non_monotonic.append({
-                        "road_id": rid,
-                        "s_values": s_values,
-                    })
-                    break
 
             # 2) total width per section
             widths = []

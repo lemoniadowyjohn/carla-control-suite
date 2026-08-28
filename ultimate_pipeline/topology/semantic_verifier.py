@@ -96,7 +96,11 @@ class SemanticVerifier:
                     risk += 3
 
             # 8) Roads too far from global center (stray outliers)
-            if xs and ys:
+            # Guard: roads with zero planView geometries (already penalized by
+            # check 1 above) have no geoms[0] to sample; without this guard
+            # analyze_xodr crashes with IndexError on the very condition it is
+            # meant to flag as high-risk.
+            if xs and ys and geoms:
                 x0 = float(geoms[0].get("x", "0"))
                 y0 = float(geoms[0].get("y", "0"))
                 if abs(x0) > global_span * 1.5 or abs(y0) > global_span * 1.5:
