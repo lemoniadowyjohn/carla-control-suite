@@ -35,6 +35,7 @@ trigger their class.
 from __future__ import annotations
 
 import json
+import math
 import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -132,10 +133,10 @@ def audit_roadmarks(root: ET.Element) -> dict:
                         invalid_lanechange.append({"road": rid, "lane": lid, "laneChange": lc})
                     width = _safe_float(rm.get("width"), 0.0)
                     if t in VISIBLE_TYPES:
-                        if width <= 0:
+                        if not math.isfinite(width) or width <= 0:
                             visible_zero_width.append(
                                 {"road": rid, "lane": lid, "type": t, "width": rm.get("width")})
-                        if width < 0:
+                        if not math.isfinite(width) or width < 0:
                             visible_neg_width.append(
                                 {"road": rid, "lane": lid, "type": t, "width": rm.get("width")})
                         if t == "solid":
@@ -178,7 +179,7 @@ def repair_roadmarks(root: ET.Element) -> dict:
                 for rm in lane.findall("roadMark"):
                     t = rm.get("type")
                     width = _safe_float(rm.get("width"), 0.0)
-                    if t in VISIBLE_TYPES and width <= 0:
+                    if t in VISIBLE_TYPES and (not math.isfinite(width) or width <= 0):
                         rm.set("width", STANDARD_WIDTH)
                         n_width += 1
                     if t == "solid" and rm.get("laneChange") is None:

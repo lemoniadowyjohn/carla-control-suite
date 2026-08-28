@@ -228,8 +228,11 @@ def optional_repair_drop_bad_links(xodr_path: Path, out_path: Path, tol_m: float
             a_pt = a_start if dir_tag == "predecessor" else a_end
             d1 = _hypot(a_pt.x - b_start.x, a_pt.y - b_start.y)
             d2 = _hypot(a_pt.x - b_end.x, a_pt.y - b_end.y)
-            d = min(d1, d2)
-            if d > tol_m:
+            if not math.isfinite(d1) or not math.isfinite(d2):
+                d = float("nan")
+            else:
+                d = min(d1, d2)
+            if not math.isfinite(d) or d > tol_m:
                 links.remove(el)
                 dropped += 1
 

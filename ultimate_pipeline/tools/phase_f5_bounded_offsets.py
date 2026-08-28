@@ -21,6 +21,7 @@ Evidence is written to reports/post_audit_hardening/<RUN_ID>/ and the
 verdict printed on stdout.  Exit code 0 iff F5_BOUNDED_OFFSETS_PASS.
 """
 import hashlib
+import math
 import os
 import shutil
 import sys
@@ -122,7 +123,7 @@ def _seam_deltas(root) -> dict:
     return {
         "count": len(deltas),
         "max": max(deltas) if deltas else 0.0,
-        "over_threshold": sum(1 for d in deltas if d > MAX_SEAM_BOUND_M),
+        "over_threshold": sum(1 for d in deltas if not math.isfinite(d) or d > MAX_SEAM_BOUND_M),
         "skipped": skipped,
     }
 
