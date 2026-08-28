@@ -156,11 +156,6 @@ def check_lane_geometry_continuity(
             for lane_id in sorted(set(prev_lanes.keys()) & set(next_lanes.keys())):
                 prev_lane = prev_lanes[lane_id]
                 next_lane = next_lanes[lane_id]
-                # Lane-type transition across the boundary (e.g. sidewalk <->
-                # driving) changes the lane's identity; width comparison there
-                # is a false positive (road 46620, DEEP_QUALITY_SWEEP 20260817).
-                if prev_lane.get("type") != next_lane.get("type"):
-                    continue
                 s_rel_prev = max(0.0, (boundary_s - eps_s) - s_prev)
                 s_rel_next = max(0.0, (boundary_s + eps_s) - s_next)
                 prev_w = _lane_width_at(prev_lane, s_rel_prev)

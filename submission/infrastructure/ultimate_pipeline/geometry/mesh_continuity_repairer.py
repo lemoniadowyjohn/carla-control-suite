@@ -45,13 +45,6 @@ class MeshContinuityRepairer:
         self.enable_interp = getattr(SETTINGS, "ENABLE_GAP_INTERPOLATION", True)
         self.enable_hdg_damp = getattr(SETTINGS, "ENABLE_HEADING_DAMPING", True)
         self.enable_curv_smooth = getattr(SETTINGS, "ENABLE_CURVATURE_SMOOTHING", False)
-        if self.enable_curv_smooth:
-            print(
-                "⚠️ ENABLE_CURVATURE_SMOOTHING is set but has no effect: no curvature-smoothing "
-                "step is implemented in MeshContinuityRepairer. moderate_fix() only applies gap "
-                "interpolation (ENABLE_GAP_INTERPOLATION) and heading damping "
-                "(ENABLE_HEADING_DAMPING)."
-            )
 
         # internal flag to know if we actually modified anything
         self.modified = False

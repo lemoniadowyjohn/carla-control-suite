@@ -112,12 +112,6 @@ def check_lane_width_continuity(
                 next_lane = next_ls.find(f".//lane[@id='{lane_id}']")
                 if next_lane is None:
                     continue
-                # Lane-type transition (e.g. sidewalk <-> driving between
-                # adjacent lane sections) means the lane's identity changes;
-                # comparing widths across it is a false positive (road 46620,
-                # DEEP_QUALITY_SWEEP 20260817). Only compare same-type lanes.
-                if next_lane.get("type") != lane.get("type"):
-                    continue
                 next_widths = next_lane.findall("width")
                 end_width = _width_at_s(widths, section_len)
                 next_start_width = _width_at_s(next_widths, 0.0)
