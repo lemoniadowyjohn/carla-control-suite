@@ -185,14 +185,18 @@ def fix_elevation_seams(
             other = roads.get(el.get("elementId"))
             if other is None:
                 continue
-            # A.end -> B.start for predecessor; A.start -> B.end for successor
+            # A.end -> B.start for predecessor; A.end -> B.start for successor
+            # too (road's OWN end connects to the successor's start) -- in both
+            # branches z_a is the fixed anchor (target) and z_b is the current
+            # value of `downstream`'s shared boundary, so delta = z_a - z_b is
+            # the correction to apply to `downstream` in either case.
             if direction == "predecessor":
                 z_a = _road_end_z(other, "end")
                 z_b = _road_end_z(road, "start")
                 downstream = road
             else:
-                z_a = _road_end_z(other, "start")
-                z_b = _road_end_z(road, "end")
+                z_a = _road_end_z(road, "end")
+                z_b = _road_end_z(other, "start")
                 downstream = other
             if z_a is None or z_b is None:
                 stats["seams_skipped_empty_profile"] += 1

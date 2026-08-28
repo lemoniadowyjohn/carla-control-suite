@@ -49,9 +49,14 @@ class ElevationGateReport:
 
 def _safe_float(v: Optional[str], default: float = 0.0) -> float:
     try:
-        return float(v) if v is not None else float(default)
+        value = float(v) if v is not None else float(default)
     except Exception:
         return float(default)
+    # float("nan")/float("inf") parse without raising; a non-finite elevation
+    # coefficient must fail closed to `default` rather than silently poison
+    # every downstream comparison (NaN comparisons are always False, so the
+    # "cliff" gate would otherwise never fire for that road).
+    return value if math.isfinite(value) else float(default)
 
 
 def _parse_elevation_segments(road: ET.Element) -> List[tuple[float, float, float, float, float]]:

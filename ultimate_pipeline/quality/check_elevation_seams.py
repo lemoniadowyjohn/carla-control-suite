@@ -17,9 +17,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 def _safe_float(value: Optional[str], default: float = 0.0) -> float:
     try:
-        return float(value) if value is not None else default
+        parsed = float(value) if value is not None else default
     except Exception:
         return default
+    # float("nan")/float("inf") parse without raising; a non-finite elevation
+    # coefficient must fail closed to `default` rather than silently poison
+    # every downstream comparison (NaN comparisons are always False, so the
+    # seam-jump gate would otherwise never fire for that road).
+    return parsed if math.isfinite(parsed) else default
 
 
 def _percentile(values: List[float], pct: float) -> Optional[float]:

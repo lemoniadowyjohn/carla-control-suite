@@ -27,9 +27,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 def _safe_float(x: Optional[str], default: float = 0.0) -> float:
     try:
-        return float(x) if x is not None else default
+        value = float(x) if x is not None else default
     except Exception:
         return default
+    # float("nan")/float("inf") parse without raising; a non-finite elevation
+    # coefficient must fail closed to `default` rather than silently poison
+    # every downstream comparison (NaN comparisons are always False, so a
+    # discontinuity gate would otherwise never fire for that road).
+    return value if math.isfinite(value) else default
 
 
 def _eval_elevation_poly(a: float, b: float, c: float, d: float, s_local: float) -> float:

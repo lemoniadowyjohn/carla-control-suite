@@ -27,9 +27,15 @@ MIN_PIECEWISE_ROAD_LENGTH_M = 60.0
 
 def _safe_float(value: Optional[str], default: float = 0.0) -> float:
     try:
-        return float(value) if value is not None else default
+        parsed = float(value) if value is not None else default
     except Exception:
         return default
+    # float("nan")/float("inf") parse without raising; a non-finite elevation
+    # coefficient must fail closed to `default` rather than silently poison
+    # every downstream comparison (NaN comparisons are always False, so the
+    # ELV-003/ELV-004 ordering/continuity checks would otherwise never fire
+    # for that road).
+    return parsed if math.isfinite(parsed) else default
 
 
 def _parse_profile(road: ET.Element) -> List[Tuple[float, float, float, float, float]]:

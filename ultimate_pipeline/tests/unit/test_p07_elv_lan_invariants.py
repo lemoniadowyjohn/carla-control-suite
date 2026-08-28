@@ -132,6 +132,44 @@ class TestSeamFixer:
         assert stats["seams_fixed"] == 0
         assert any("failed to parse" in w for w in stats["warnings"])
 
+    def test_fixes_gap_via_successor_only_link(self, tmp_path):
+        """Elevation-subsystem audit (post-audit-phase-e): the existing seam-fixer
+        tests only exercise the `predecessor` branch (road 2 links back to road 1
+        via a predecessor element). The `successor` branch of fix_elevation_seams
+        is symmetric code that has never been exercised by a test in isolation.
+
+        With ONLY a successor link declared (road 1 -> successor -> road 2, and
+        road 2 has NO reciprocal predecessor link back to road 1), the fixer must
+        still align road 2's start to road 1's end. Before the fix, the successor
+        branch computed dz with an inverted sign (dz = other.start - road.end
+        applied to `other`, instead of dz = road.end - other.start), which moved
+        the downstream road's start further from the true target instead of
+        toward it -- doubling a 10 m seam into a 20 m residual gap.
+        """
+        a = _elevation_profile(
+            _road("1", 20.0, {"elementType": "road", "elementId": "2", "contactPoint": "start"}, "successor"),
+            [(0.0, 0.0, 0.5, 0.0, 0.0)],  # z(0)=0, z(20)=10 -> road 1 ends at z=10
+        )
+        b = _elevation_profile(_road("2", 30.0), [(0.0, 0.0, 0.0, 0.0, 0.0)])  # starts at z=0, no back-link
+        src = tmp_path / "in.xodr"
+        out = tmp_path / "out.xodr"
+        _write_xodr(str(src), [a, b])
+
+        stats = fix_elevation_seams(str(src), str(out), max_snap_m=50.0, blend_length_m=25.0)
+
+        assert stats["seams_checked"] == 1
+        assert stats["seams_fixed"] == 1
+        tree = ET.parse(str(out))
+        fixed = {r.get("id"): r for r in tree.getroot().findall("road")}
+        road1_end_z = _z_at(fixed["1"], 20.0)
+        road2_start_z = _z_at(fixed["2"], 0.0)
+        assert road1_end_z == pytest.approx(10.0)
+        assert road2_start_z == pytest.approx(road1_end_z), (
+            f"successor-branch seam fix must move road 2's start toward road 1's "
+            f"end (10.0), got {road2_start_z} (residual gap "
+            f"{abs(road1_end_z - road2_start_z):.3f} m)"
+        )
+
 
 # -------------------------------------------------------------- provenance
 class TestDemProvenance:
