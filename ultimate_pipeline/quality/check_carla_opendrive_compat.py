@@ -256,7 +256,10 @@ class StrictCarlaOpendriveGate:
                     if k not in e.attrib:
                         out.append(Issue("elevation_missing_attr", "warn", "Elevation element missing coefficient.", {"road": rid, "attr": k}))
                         continue
-                    if not _is_finite(_safe_float(e.get(k), 0.0)):
+                    # _safe_float would silently substitute a finite default for a non-finite
+                    # input, making this check unreachable; _parse_float_strict returns None
+                    # for non-finite/unparseable values instead, so the check actually fires.
+                    if _parse_float_strict(e.get(k)) is None:
                         out.append(Issue("elevation_nonfinite", "error", "Elevation coefficient must be finite.", {"road": rid, "attr": k, "value": e.get(k)}))
 
         return out
