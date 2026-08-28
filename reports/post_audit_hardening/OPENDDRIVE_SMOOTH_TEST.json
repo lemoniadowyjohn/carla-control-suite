@@ -1,0 +1,10 @@
+{
+  "verdict": "PASS",
+  "vertex_distance": 3.0,
+  "smooth_junctions": true,
+  "stages": {
+    "server_ready_s": 9.4
+  },
+  "generation_s": 647.5,
+  "map_name": "Carla/Maps/OpenDriveMap"
+}
