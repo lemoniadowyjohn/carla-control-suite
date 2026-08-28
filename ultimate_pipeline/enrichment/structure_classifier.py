@@ -243,7 +243,7 @@ def _geometry_polyline(geom: ET.Element, spacing_m: float) -> List[Tuple[float, 
                for t in (i / (n - 1) for i in range(n))]
     elif lname == "arc":
         k = _safe_float(prim.get("curvature"), 0.0)
-        if abs(k) < 1e-12:
+        if not math.isfinite(k) or abs(k) < 1e-12:
             pts = [(x + t * length * math.cos(hdg), y + t * length * math.sin(hdg))
                    for t in (i / (n - 1) for i in range(n))]
         else:

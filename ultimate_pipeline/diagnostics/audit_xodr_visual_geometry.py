@@ -485,7 +485,7 @@ def _build_lane_rows(root: ET.Element) -> List[Dict[str, Any]]:
             coeff = max(
                 abs(_safe_float(lane_offset.get(k), 0.0)) for k in ("a", "b", "c", "d")
             )
-            if coeff > 10.0:
+            if not math.isfinite(coeff) or coeff > 10.0:
                 rows.append(
                     {
                         "road_id": road_id,

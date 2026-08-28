@@ -25,6 +25,7 @@ Enabled only when UP_ELEVATION_CONTINUITY_OFFSETS=1 (default OFF).
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from pathlib import Path
@@ -208,6 +209,11 @@ def apply_link_offset_correction_root(root: ET.Element) -> Dict:
                 if u not in comp_set or v not in comp_set:
                     continue
                 err = offsets[u] - offsets[v] + float(rhs_uv)  # want 0
+                if not math.isfinite(err):
+                    # A non-finite edge constraint (e.g. NaN elevation coefficient
+                    # upstream) must not be silently skipped nor allowed to poison
+                    # neighboring offsets via the relaxation update below.
+                    continue
                 if abs(err) < 1e-9:
                     continue
                 max_err = max(max_err, abs(err))
@@ -226,6 +232,10 @@ def apply_link_offset_correction_root(root: ET.Element) -> Dict:
     max_abs_offset = 0.0
     for rid, prof in profs.items():
         d = float(offsets.get(rid, 0.0))
+        if not math.isfinite(d):
+            # Never write a non-finite offset into the XODR; treat as no-op for
+            # this road rather than silently corrupting its elevation profile.
+            continue
         max_abs_offset = max(max_abs_offset, abs(d))
         if abs(d) < 1e-9:
             continue

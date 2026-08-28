@@ -52,7 +52,7 @@ def _extract_centerlines(
             hdg = _safe_float(g.get("hdg"))
             length = _safe_float(g.get("length"))
 
-            if length <= 0:
+            if not math.isfinite(length) or length <= 0:
                 continue
 
             s_vals = np.linspace(0.0, length, samples_per_geom)

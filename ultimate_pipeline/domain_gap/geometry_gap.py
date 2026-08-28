@@ -85,7 +85,7 @@ def _extract_polylines(
         hdg = _safe_float(geom.get("hdg"))
         length = _safe_float(geom.get("length"))
 
-        if length <= 0:
+        if not math.isfinite(length) or length <= 0:
             continue
 
         step = max(sample_step_m, 0.1)

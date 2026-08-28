@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import xml.etree.ElementTree as ET
@@ -51,7 +52,7 @@ def _bounds_from_xodr(path: str) -> Optional[Tuple[float, float, float, float]]:
     for g in root.findall(".//planView/geometry"):
         x = _safe_float(g.get("x"))
         y = _safe_float(g.get("y"))
-        if x is None or y is None:
+        if x is None or y is None or not math.isfinite(x) or not math.isfinite(y):
             continue
         xs.append(x)
         ys.append(y)
@@ -64,11 +65,11 @@ def _infer_tile_size_from_bbox(b: Tuple[float, float, float, float], buffer_m: f
     minx, miny, maxx, maxy = b
     w = maxx - minx
     h = maxy - miny
-    if w <= 0 or h <= 0:
+    if not math.isfinite(w) or not math.isfinite(h) or w <= 0 or h <= 0:
         return None
     # tiles are usually square-ish; width ~= tile_size + 2*buffer
     size = ((w + h) / 2.0) - 2.0 * buffer_m
-    if size <= 0:
+    if not math.isfinite(size) or size <= 0:
         return None
     # snap to nearest 10m to avoid floating jitter
     return float(round(size / 10.0) * 10.0)
