@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 
 def plot_iou_histogram(tile_ious: dict, out_png: str):

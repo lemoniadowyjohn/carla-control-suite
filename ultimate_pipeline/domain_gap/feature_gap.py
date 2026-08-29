@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 from scipy import stats
 

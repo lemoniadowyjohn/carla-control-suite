@@ -6,6 +6,8 @@ import json
 import os
 from typing import Dict, Any, Tuple
 
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 import numpy as np
 

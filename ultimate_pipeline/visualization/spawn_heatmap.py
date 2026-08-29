@@ -14,6 +14,8 @@ import os
 import json
 from typing import Dict, Any
 
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 
 

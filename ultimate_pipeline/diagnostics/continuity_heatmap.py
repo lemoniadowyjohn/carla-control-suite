@@ -4,6 +4,8 @@ import math
 import os
 from typing import Dict, Any, Tuple, List
 
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 from ultimate_pipeline.diagnostics.continuity_metrics import compute_severity_per_road
 

@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List
 
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 import pandas as pd
 

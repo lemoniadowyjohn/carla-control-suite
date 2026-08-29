@@ -6,6 +6,15 @@ import os
 import xml.etree.ElementTree as ET
 from typing import List, Tuple
 
+# Force a headless backend before importing pyplot: this system's (and any
+# server/CI environment's) matplotlib default can be an interactive GUI
+# backend (e.g. tkagg) that requires a display and crashes with a TclError
+# when Tk isn't properly installed. run_full_domain_gap.py imports
+# overlay_maps directly without first importing visualization/map_plotter.py
+# (the sibling module that already does this), so there is no other safety
+# net for this call path. Same fix as heatmap_plotter.py.
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from opendrive_geometry.evaluator import LineArcEvaluator, EvaluationPolicy, RangePolicy

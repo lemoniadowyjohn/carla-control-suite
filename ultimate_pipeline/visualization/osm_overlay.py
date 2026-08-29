@@ -5,6 +5,8 @@ import math
 import xml.etree.ElementTree as ET
 from typing import Dict, Tuple, List
 
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 
 

@@ -1,4 +1,6 @@
 from __future__ import annotations
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 from shapely.geometry import LineString
 import numpy as np

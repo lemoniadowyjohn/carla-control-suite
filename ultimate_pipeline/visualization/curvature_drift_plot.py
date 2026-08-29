@@ -1,5 +1,7 @@
 from __future__ import annotations
 import xml.etree.ElementTree as ET
+import matplotlib
+matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a display
 import matplotlib.pyplot as plt
 from typing import Dict
 
