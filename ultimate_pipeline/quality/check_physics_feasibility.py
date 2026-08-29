@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import List, Dict, Any
 from xml.etree.ElementTree import Element
 
@@ -39,7 +40,27 @@ class PhysicsFeasibilityChecker:
                 if lane_type not in PhysicsFeasibilityChecker.DRIVEABLE_LANE_TYPES:
                     continue
                 for width in lane.findall("width"):
-                    a = float(width.get("a", "3.5"))
+                    raw_a = width.get("a", "3.5")
+                    try:
+                        a = float(raw_a)
+                    except (TypeError, ValueError):
+                        a = float("nan")
+                    # A bare float() only catches parse *exceptions* --
+                    # float("nan") parses without error, and `nan < MIN` /
+                    # `nan > MAX` are both always False in IEEE-754, so a
+                    # corrupted width coefficient would silently produce zero
+                    # issues instead of being flagged as physically
+                    # infeasible/unverifiable.
+                    if not math.isfinite(a):
+                        issues.append(
+                            {
+                                "road_id": rid,
+                                "lane_type": lane_type,
+                                "type": "lane_width_non_finite",
+                                "value": raw_a,
+                            }
+                        )
+                        continue
                     if a < PhysicsFeasibilityChecker.MIN_LANE_WIDTH:
                         issues.append(
                             {
