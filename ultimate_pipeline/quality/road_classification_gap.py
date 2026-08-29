@@ -12,7 +12,7 @@ class RoadClassificationGap:
     Compare road "class" / "type" distributions between manual and auto XODR.
 
     We look at:
-      - <type roadType="...">
+      - <type type="...">  (real OpenDRIVE road-type attribute)
       - or <userData> tags like <param name="road_class" value="...">
     """
 
