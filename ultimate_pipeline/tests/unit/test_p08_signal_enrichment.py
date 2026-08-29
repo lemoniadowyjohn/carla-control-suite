@@ -154,6 +154,18 @@ class TestDuplicates:
         res = detect_duplicate_signals(root)
         assert any(g["kind"] == "spatial_grouping" for g in res["duplicate_groups"])
 
+    def test_spatial_grouping_flags_nonfinite_position(self):
+        # abs(sa - sb) <= spatial_radius_m is always False when either s is
+        # NaN (IEEE-754), so a signal with a corrupted position could
+        # silently escape SIG-005 spatial-duplicate detection instead of
+        # being flagged for review.
+        root = _root([_road("1")])
+        signals = ET.SubElement(root.find("road"), "signals")
+        ET.SubElement(signals, "signal", id="a", s="10.0", t="0.0")
+        ET.SubElement(signals, "signal", id="b", s="nan", t="0.0")
+        res = detect_duplicate_signals(root)
+        assert any(g["kind"] == "spatial_grouping" for g in res["duplicate_groups"])
+
 
 class TestController:
     def test_build_controller_native(self):

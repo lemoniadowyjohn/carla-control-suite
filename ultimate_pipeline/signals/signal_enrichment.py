@@ -149,7 +149,12 @@ def detect_duplicate_signals(root: ET.Element, *, spatial_radius_m: float = 3.0)
         items = [(sig, _safe_float(sig.get("s"))) for sig in signals.findall("signal")]
         for i, (a, sa) in enumerate(items):
             for b, sb in items[i + 1:]:
-                if abs(sa - sb) <= spatial_radius_m:
+                delta = abs(sa - sb)
+                # NaN/Inf from a corrupted `s` attribute makes `delta` non-finite;
+                # `nan <= spatial_radius_m` is always False in IEEE-754, so a
+                # signal with a corrupted position would silently escape SIG-005
+                # spatial-duplicate detection. Flag it for review instead.
+                if not math.isfinite(delta) or delta <= spatial_radius_m:
                     duplicates.append({
                         "source_entity": "spatial",
                         "road_id": road.get("id"),
