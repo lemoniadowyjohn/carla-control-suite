@@ -1,0 +1,15 @@
+{
+  "phase": "P1-diag",
+  "verdict": "PASS",
+  "stages": {
+    "launch": 0.005,
+    "rpc_port_ready": 6.56,
+    "world_ready": 8.472,
+    "start_generate": 1786447979.747,
+    "generate_done": 6.08,
+    "post_generate_map": "Carla/Maps/OpenDriveMap"
+  },
+  "error": null,
+  "map_name": "Carla/Maps/OpenDriveMap",
+  "note": "MINI_XODR procedural generation succeeded"
+}

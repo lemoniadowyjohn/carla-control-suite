@@ -1,0 +1,16 @@
+{
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "checks": {
+    "server_launch": {
+      "ok": true
+    },
+    "xodr_load": {
+      "error": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\admin\\\\PycharmProjects\\\\gpt4\\\\pythonProject3\\\\carla_-main\\\\scripts\\\\campaigns\\\\ingolstadt_cooked_perception_v1\\\\candidate\\\\ingolstadt_perception_final.xodr'",
+      "ok": false
+    }
+  },
+  "run_id": "20260811T100452Z_PROC_SMOKE",
+  "schema": "PROC_SMOKE/v1",
+  "timestamp": "2026-08-11T10:04:52.100519+00:00",
+  "verdict": "FAIL"
+}

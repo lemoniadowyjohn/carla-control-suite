@@ -1,0 +1,346 @@
+{
+  "after": {
+    "counts": {
+      "crosswalk_objects": 0,
+      "elevation_segments": 418243,
+      "junctions": 3646,
+      "nonzero_elevation_segments": 418243,
+      "objects": 0,
+      "roads": 32710,
+      "roads_with_elevation_profile": 32710,
+      "signal_references": 0,
+      "signals": 3467
+    },
+    "g19": {
+      "examples": [],
+      "max_excess_m": 0.0,
+      "roads_checked": 32710,
+      "violations": 0
+    }
+  },
+  "before": {
+    "counts": {
+      "crosswalk_objects": 0,
+      "elevation_segments": 418243,
+      "junctions": 3646,
+      "nonzero_elevation_segments": 418243,
+      "objects": 0,
+      "roads": 32710,
+      "roads_with_elevation_profile": 32710,
+      "signal_references": 0,
+      "signals": 3467
+    },
+    "g19": {
+      "examples": [
+        {
+          "declared_length_m": 83.49269889,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 83.49269890000001,
+          "road_id": "39851"
+        },
+        {
+          "declared_length_m": 7.91046012,
+          "excess_m": 1.000000082740371e-08,
+          "max_geometry_end_m": 7.910460130000001,
+          "road_id": "39853"
+        },
+        {
+          "declared_length_m": 48.28015401,
+          "excess_m": 1.000000082740371e-08,
+          "max_geometry_end_m": 48.28015402,
+          "road_id": "39877"
+        },
+        {
+          "declared_length_m": 335.3366321,
+          "excess_m": 1.0000064776249928e-08,
+          "max_geometry_end_m": 335.33663211000004,
+          "road_id": "39896"
+        },
+        {
+          "declared_length_m": 247.80556405,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 247.80556406,
+          "road_id": "39903"
+        },
+        {
+          "declared_length_m": 32.48349,
+          "excess_m": 9.999993721976352e-09,
+          "max_geometry_end_m": 32.48349001,
+          "road_id": "39929"
+        },
+        {
+          "declared_length_m": 120.28117036,
+          "excess_m": 9.999993721976352e-09,
+          "max_geometry_end_m": 120.28117037,
+          "road_id": "39939"
+        },
+        {
+          "declared_length_m": 511.49835819,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 511.4983582,
+          "road_id": "39953"
+        },
+        {
+          "declared_length_m": 9.85009421,
+          "excess_m": 9.99999905104687e-09,
+          "max_geometry_end_m": 9.850094219999999,
+          "road_id": "39967"
+        },
+        {
+          "declared_length_m": 359.71302968,
+          "excess_m": 1.0000064776249928e-08,
+          "max_geometry_end_m": 359.71302969000004,
+          "road_id": "39979"
+        },
+        {
+          "declared_length_m": 32.17931479,
+          "excess_m": 1.000000082740371e-08,
+          "max_geometry_end_m": 32.1793148,
+          "road_id": "39982"
+        },
+        {
+          "declared_length_m": 622.30052522,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 622.3005252300001,
+          "road_id": "39990"
+        },
+        {
+          "declared_length_m": 141.9319872,
+          "excess_m": 9.999979511121637e-09,
+          "max_geometry_end_m": 141.93198721,
+          "road_id": "39995"
+        },
+        {
+          "declared_length_m": 65.19820334,
+          "excess_m": 9.999993721976352e-09,
+          "max_geometry_end_m": 65.19820335,
+          "road_id": "39996"
+        },
+        {
+          "declared_length_m": 70.74710929,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 70.7471093,
+          "road_id": "39997"
+        },
+        {
+          "declared_length_m": 179.74803598,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 179.74803599,
+          "road_id": "40004"
+        },
+        {
+          "declared_length_m": 195.23989091,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 195.23989092000002,
+          "road_id": "40008"
+        },
+        {
+          "declared_length_m": 59.99765837,
+          "excess_m": 1.000000082740371e-08,
+          "max_geometry_end_m": 59.997658380000004,
+          "road_id": "40009"
+        },
+        {
+          "declared_length_m": 52.74330531,
+          "excess_m": 1.0000007932831068e-08,
+          "max_geometry_end_m": 52.743305320000005,
+          "road_id": "40012"
+        },
+        {
+          "declared_length_m": 79.65780001,
+          "excess_m": 9.999993721976352e-09,
+          "max_geometry_end_m": 79.65780002,
+          "road_id": "40046"
+        }
+      ],
+      "max_excess_m": 1.000012161966879e-08,
+      "roads_checked": 32710,
+      "violations": 767
+    }
+  },
+  "generated_at_utc": "2026-08-14T11:03:40.760346+00:00",
+  "input_sha256": "8050ade947111513af7fb4042a41b788b12fbee876d150e1c75f7113bfff7cd7",
+  "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T050000Z\\candidate_h_signal_enrichment.xodr",
+  "output_sha256": "ed2b8529ae400b3ef4259603c9935765f2966b25f44a2090e097b0a812987ac7",
+  "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260814T000000Z_E1_CRASH_SAFE_ELEVATION\\candidate_h_elevated_enriched_crash_safe.xodr",
+  "preservation": {
+    "crosswalk_objects": true,
+    "elevation_segments": true,
+    "junctions": true,
+    "nonzero_elevation_segments": true,
+    "objects": true,
+    "roads": true,
+    "roads_with_elevation_profile": true,
+    "signal_references": true,
+    "signals": true
+  },
+  "repair": {
+    "examples": [
+      {
+        "declared_before_m": 83.09712835,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "83.09812835000001",
+        "length_before": "83.09712835",
+        "max_geometry_end_m": 83.09712835,
+        "road_id": "39830"
+      },
+      {
+        "declared_before_m": 84.36207371,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "84.36307371000001",
+        "length_before": "84.36207371",
+        "max_geometry_end_m": 84.36207371,
+        "road_id": "39831"
+      },
+      {
+        "declared_before_m": 10.0967673,
+        "delta_m": 0.0009999999999994458,
+        "length_after": "10.0977673",
+        "length_before": "10.09676730",
+        "max_geometry_end_m": 10.0967673,
+        "road_id": "39832"
+      },
+      {
+        "declared_before_m": 109.27911509,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "109.28011509000001",
+        "length_before": "109.27911509",
+        "max_geometry_end_m": 109.27911509,
+        "road_id": "39833"
+      },
+      {
+        "declared_before_m": 40.49172181,
+        "delta_m": 0.0009999999999976694,
+        "length_after": "40.49272181",
+        "length_before": "40.49172181",
+        "max_geometry_end_m": 40.49172181,
+        "road_id": "39834"
+      },
+      {
+        "declared_before_m": 24.01758218,
+        "delta_m": 0.0010000000000012221,
+        "length_after": "24.018582180000003",
+        "length_before": "24.01758218",
+        "max_geometry_end_m": 24.01758218,
+        "road_id": "39835"
+      },
+      {
+        "declared_before_m": 173.24142705,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "173.24242705",
+        "length_before": "173.24142705",
+        "max_geometry_end_m": 173.24142705,
+        "road_id": "39836"
+      },
+      {
+        "declared_before_m": 173.51219257,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "173.51319257",
+        "length_before": "173.51219257",
+        "max_geometry_end_m": 173.51219257,
+        "road_id": "39837"
+      },
+      {
+        "declared_before_m": 62.31034696,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "62.31134696",
+        "length_before": "62.31034696",
+        "max_geometry_end_m": 62.310346960000004,
+        "road_id": "39838"
+      },
+      {
+        "declared_before_m": 144.7481782,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "144.74917820000002",
+        "length_before": "144.74817820",
+        "max_geometry_end_m": 144.7481782,
+        "road_id": "39839"
+      },
+      {
+        "declared_before_m": 239.12045229,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "239.12145229",
+        "length_before": "239.12045229",
+        "max_geometry_end_m": 239.12045229,
+        "road_id": "39840"
+      },
+      {
+        "declared_before_m": 180.94938198,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "180.95038198",
+        "length_before": "180.94938198",
+        "max_geometry_end_m": 180.94938197,
+        "road_id": "39841"
+      },
+      {
+        "declared_before_m": 189.10893666,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "189.10993666000002",
+        "length_before": "189.10893666",
+        "max_geometry_end_m": 189.10893666,
+        "road_id": "39842"
+      },
+      {
+        "declared_before_m": 301.87364828,
+        "delta_m": 0.0009999999999763531,
+        "length_after": "301.87464828",
+        "length_before": "301.87364828",
+        "max_geometry_end_m": 301.87364828,
+        "road_id": "39843"
+      },
+      {
+        "declared_before_m": 376.96370571,
+        "delta_m": 0.0009999999999763531,
+        "length_after": "376.96470571",
+        "length_before": "376.96370571",
+        "max_geometry_end_m": 376.96370571,
+        "road_id": "39844"
+      },
+      {
+        "declared_before_m": 5.73624881,
+        "delta_m": 0.001000000000000334,
+        "length_after": "5.7372488100000005",
+        "length_before": "5.73624881",
+        "max_geometry_end_m": 5.73624881,
+        "road_id": "39845"
+      },
+      {
+        "declared_before_m": 37.93817989,
+        "delta_m": 0.0009999999999976694,
+        "length_after": "37.93917989",
+        "length_before": "37.93817989",
+        "max_geometry_end_m": 37.93817989,
+        "road_id": "39846"
+      },
+      {
+        "declared_before_m": 15.10622773,
+        "delta_m": 0.0009999999999994458,
+        "length_after": "15.10722773",
+        "length_before": "15.10622773",
+        "max_geometry_end_m": 15.106227729999999,
+        "road_id": "39847"
+      },
+      {
+        "declared_before_m": 160.74229151,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "160.74329151",
+        "length_before": "160.74229151",
+        "max_geometry_end_m": 160.74229151,
+        "road_id": "39848"
+      },
+      {
+        "declared_before_m": 180.7178627,
+        "delta_m": 0.0010000000000047748,
+        "length_after": "180.71886270000002",
+        "length_before": "180.71786270",
+        "max_geometry_end_m": 180.71786269999998,
+        "road_id": "39849"
+      }
+    ],
+    "margin_m": 0.001,
+    "mode": "c3_fullprec_all_geometry_roads",
+    "roads_length_adjusted": 32710
+  },
+  "schema": "crash_safe_length_repair_v1",
+  "verdict": "CRASH_SAFE_LENGTH_REPAIR_PASS"
+}

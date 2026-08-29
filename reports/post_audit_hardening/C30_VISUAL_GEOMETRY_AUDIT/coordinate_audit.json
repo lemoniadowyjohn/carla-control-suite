@@ -1,0 +1,17 @@
+{
+  "appears_centered_near_origin": false,
+  "header": {
+    "geoReference_present": true,
+    "geoReference_text": "+proj=tmerc",
+    "offset_hdg": 0.0,
+    "offset_x": 832671.676,
+    "offset_y": 5458671.104,
+    "offset_z": 0.0
+  },
+  "huge_coordinate_suspected": false,
+  "huge_coordinate_threshold_m": 100000.0,
+  "max_abs_planview": {
+    "max_abs_x": 13267.063267,
+    "max_abs_y": 14072.620850698548
+  }
+}
