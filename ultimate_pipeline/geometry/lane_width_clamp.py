@@ -9,7 +9,11 @@ class LaneWidthClamp:
 
     @staticmethod
     def clamp(root: ET.Element):
-        for width in root.findall(".//lanes/lane/width"):
+        # Real OpenDRIVE nests width three levels below <lanes>:
+        # lanes/laneSection/{left,center,right}/lane/width -- ".//lanes/lane/width"
+        # requires <lane> to be a DIRECT child of <lanes>, which never matches
+        # real data, making this safety clamp a silent no-op.
+        for width in root.findall(".//lane/width"):
             a = _safe_float(width.get("a", "0"), 0.0)
 
             if a < LaneWidthClamp.MIN_WIDTH:
