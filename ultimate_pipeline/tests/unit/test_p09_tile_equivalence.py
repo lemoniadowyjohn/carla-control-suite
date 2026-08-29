@@ -90,6 +90,19 @@ class TestCurveAwareBounds:
         road = _road("1", [_line_geom(0, 0, 0.0, 50.0)], width=3.5)
         assert road_max_lane_half_width(road) == pytest.approx(3.5)
 
+    def test_nonfinite_width_not_silently_dropped(self):
+        # max(half, abs(_safe_float(...))) silently drops a NaN candidate:
+        # Python's max(a, b) keeps `a` when `b > a` is False, and `nan > 0.0`
+        # is always False in IEEE-754. A corrupted width coefficient must not
+        # be treated as narrower than a real one -- TIL-001 requires the tile
+        # margin to be inflated enough that "no lane escapes the tile".
+        road = _road("1", [_line_geom(0, 0, 0.0, 50.0)], width=3.5)
+        lanes = road.find("lanes")
+        section = lanes.find("laneSection")
+        left_lane = section.find("left/lane")
+        ET.SubElement(left_lane, "width", sOffset="10", a="nan")
+        assert not math.isfinite(road_max_lane_half_width(road))
+
 
 class TestOwnership:
     def test_midpoint_policy(self):

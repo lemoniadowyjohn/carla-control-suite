@@ -164,7 +164,13 @@ def road_max_lane_half_width(road: ET.Element) -> float:
                 road.findall("./lanes/laneSection/right/lane") + \
                 road.findall("./lanes/laneSection/center/lane"):
         for w in lane.findall("width"):
-            half = max(half, abs(_safe_float(w.get("a"))))
+            a = abs(_safe_float(w.get("a")))
+            # max(half, a) silently drops a NaN `a` (nan > half is always False
+            # in IEEE-754); propagate non-finite instead so a corrupted width
+            # can never be mistaken for a narrower/absent one -- TIL-001
+            # requires the tile margin to be inflated enough that no lane
+            # escapes the tile.
+            half = a if not math.isfinite(a) else max(half, a)
     return half
 
 
