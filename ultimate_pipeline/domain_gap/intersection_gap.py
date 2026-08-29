@@ -13,9 +13,16 @@ Classification is based on ROAD connectivity, not lane-level connections.
 
 from __future__ import annotations
 
+import re
 import xml.etree.ElementTree as ET
 from typing import Dict, Set
 from collections import Counter
+
+# Word-boundary match for the roundabout markers: a raw substring check
+# (e.g. "rb" in name_blob) would false-positive on any junction name/id
+# that happens to contain that substring mid-word -- a real risk for
+# German street names like "Silberburgstrasse".
+_ROUNDABOUT_MARKER_RE = re.compile(r"\b(?:roundabout|rb)\b")
 
 
 class IntersectionGap:
@@ -57,11 +64,11 @@ class IntersectionGap:
 
         # --- Roundabout heuristic ---
         name_blob = (
-            (junction.get("name") or "") +
+            (junction.get("name") or "") + " " +
             (junction.get("id") or "")
         ).lower()
 
-        if "roundabout" in name_blob or "rb" in name_blob:
+        if _ROUNDABOUT_MARKER_RE.search(name_blob):
             return "roundabout"
 
         # --- Structural classification ---
