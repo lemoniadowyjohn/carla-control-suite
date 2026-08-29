@@ -3,8 +3,18 @@
 from __future__ import annotations
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 from typing import Dict, Tuple, Optional
+
+# Force a headless backend before importing pyplot: this system's (and any
+# server/CI environment's) matplotlib default can be an interactive GUI
+# backend (e.g. tkagg) that requires a display and crashes with a TclError
+# when Tk isn't properly installed. run_full_domain_gap.py imports this
+# module directly without first importing visualization/map_plotter.py
+# (the sibling module that already does this), so there is no other
+# safety net for this call path.
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
 class TileHeatmapPlotter:
