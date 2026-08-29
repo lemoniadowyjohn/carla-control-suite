@@ -44,7 +44,11 @@ class ElevationSmoothnessGate:
                 dz = a1 - a0
                 slope = abs(dz) / ds
 
-                if slope > ElevationSmoothnessGate.MAX_DZ_PER_M:
+                # A corrupted elevation coefficient makes `slope` non-finite;
+                # `nan > MAX_DZ_PER_M` is always False in IEEE-754, so this
+                # would silently never count as spiky without an explicit
+                # guard.
+                if not math.isfinite(slope) or slope > ElevationSmoothnessGate.MAX_DZ_PER_M:
                     spiky += 1
 
             if spiky > ElevationSmoothnessGate.MAX_SPIKY_SEGMENTS_PER_ROAD:

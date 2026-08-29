@@ -82,7 +82,11 @@ class DrivableSurfaceScanner:
                             succ_start_geo["x"] - pred_end_geo["x"],
                             succ_start_geo["y"] - pred_end_geo["y"],
                         )
-                        if geo_gap > hole_threshold_m:
+                        # A corrupted planView x/y makes `geo_gap` non-finite;
+                        # `nan > hole_threshold_m` is always False in
+                        # IEEE-754, so this would silently never flag a hole
+                        # without an explicit guard.
+                        if not math.isfinite(geo_gap) or geo_gap > hole_threshold_m:
                             holes.append({
                                 "road_id": rid,
                                 "s": sect_s,
@@ -95,7 +99,8 @@ class DrivableSurfaceScanner:
                         hdg_diff = DrivableSurfaceScanner._heading_diff(
                             pred_end_geo["hdg"], succ_start_geo["hdg"]
                         )
-                        if hdg_diff > seam_threshold_deg:
+                        # Same NaN/Inf-defeats-magnitude-comparison guard as above.
+                        if not math.isfinite(hdg_diff) or hdg_diff > seam_threshold_deg:
                             seams.append({
                                 "road_id": rid,
                                 "s": sect_s,
@@ -112,7 +117,8 @@ class DrivableSurfaceScanner:
                         )
                         if z_pred is not None and z_succ is not None:
                             z_diff = abs(z_succ - z_pred)
-                            if z_diff > drop_threshold_m:
+                            # Same NaN/Inf-defeats-magnitude-comparison guard as above.
+                            if not math.isfinite(z_diff) or z_diff > drop_threshold_m:
                                 drops.append({
                                     "road_id": rid,
                                     "s": sect_s,
