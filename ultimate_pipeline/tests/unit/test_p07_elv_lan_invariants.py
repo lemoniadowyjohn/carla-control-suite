@@ -314,3 +314,20 @@ class TestLaneStructure:
         res = validate_lane_structure(self._root([road]))
         assert res["ok"] is False
         assert any(i["rule"] == "LAN-009" for i in res["issues"])
+
+    def test_nonfinite_road_length_fails(self):
+        # A corrupt/non-finite `length` attribute makes `_safe_float` return NaN
+        # (it only catches parse *exceptions*, not NaN/Inf). Every downstream
+        # `length > 0.0` guard is then always False in IEEE-754, silently
+        # skipping the LAN-001/LAN-009 "exceeds road length" checks instead of
+        # flagging the corrupt length itself.
+        road = ET.Element("road", id="1", length="nan")
+        lanes = ET.SubElement(road, "lanes")
+        section = ET.SubElement(lanes, "laneSection", s="0.0")
+        ET.SubElement(section, "center").append(ET.Element("lane", id="0"))
+        res = validate_lane_structure(self._root([road]))
+        assert res["ok"] is False
+        assert any(
+            i["rule"] == "LAN-001" and "non-finite" in i["detail"]
+            for i in res["issues"]
+        )

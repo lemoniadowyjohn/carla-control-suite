@@ -81,6 +81,9 @@ def validate_lane_structure(
     for road in roads:
         rid = (road.get("id") or "").strip()
         length = _safe_float(road.get("length"))
+        if not math.isfinite(length):
+            issues.append({"road_id": rid, "rule": "LAN-001", "severity": "fail",
+                           "detail": f"road length is non-finite ({length!r})"})
         sections = _lane_sections(road)
 
         if not sections:
