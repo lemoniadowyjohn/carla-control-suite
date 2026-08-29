@@ -12,7 +12,12 @@ class LaneSectionBoundaryFixer:
             if not sections:
                 continue
 
-            # sort laneSections
+            # Sort laneSections by s (Python-list only -- does not reorder
+            # the actual <laneSection> XML siblings under <lanes>). Real
+            # generators always emit sections in ascending document order
+            # already, so this is currently safe; if that ever changes, the
+            # fixed s-values below would stay numerically monotonic while
+            # document order silently stays stale.
             sections.sort(key=lambda s: _safe_float(s.get("s", "0"), 0.0))
 
             # clamp any negative starts (CARLA hard requirement)
