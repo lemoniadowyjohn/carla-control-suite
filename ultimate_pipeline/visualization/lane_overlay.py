@@ -31,14 +31,20 @@ class LaneOverlay:
         if lanes_elem is None:
             return 0
 
-        for side_tag in ("left", "right"):
-            side = lanes_elem.find(side_tag)
-            if side is None:
-                continue
-            for lane in side.findall("lane"):
-                ltype = lane.get("type", "")
-                if ltype in LaneOverlay.DRIVING_TYPES:
-                    count += 1
+        # Real OpenDRIVE nests left/right one level below <lanes>, under
+        # <laneSection> (lanes/laneSection/{left,right}/lane) --
+        # lanes_elem.find("left"/"right") requires them to be DIRECT
+        # children of <lanes>, which never matches real data, making the
+        # lane-count coloring permanently return 0 for every road.
+        for section in lanes_elem.findall("laneSection"):
+            for side_tag in ("left", "right"):
+                side = section.find(side_tag)
+                if side is None:
+                    continue
+                for lane in side.findall("lane"):
+                    ltype = lane.get("type", "")
+                    if ltype in LaneOverlay.DRIVING_TYPES:
+                        count += 1
 
         return count
 
