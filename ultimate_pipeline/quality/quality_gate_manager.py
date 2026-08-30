@@ -278,7 +278,7 @@ class QualityGateManager:
 
     def gate_junction_integrity(
         self, xodr_path_or_root, *, stage: str | None = None
-    ) -> None:
+    ) -> Dict[str, Any]:
         """Validate junction references and connection consistency."""
         from ultimate_pipeline.quality.check_junction_integrity import (
             JunctionIntegrityGate,
@@ -289,6 +289,7 @@ class QualityGateManager:
             rep, f"{(stage or 'junction_integrity')}_junction_integrity"
         )
         self._finalize_gate("junction_integrity", rep)
+        return rep
 
     # ---------------- lane / geometry continuity gates ----------------
 

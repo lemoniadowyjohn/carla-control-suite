@@ -31,7 +31,18 @@ class CumulativeGateRunner:
         t0 = time.perf_counter()
         try:
             report = fn()
-            ok = bool(report.get("ok", False)) if isinstance(report, dict) else True
+            if isinstance(report, dict):
+                ok = bool(report.get("ok", False))
+            else:
+                # A gate function is contractually Callable[[], dict]. A
+                # non-dict return (e.g. a gate implementation missing its
+                # `return rep` statement) is a broken gate, not a passing
+                # one -- fail closed instead of silently tallying it as ok.
+                ok = False
+                report = {
+                    "ok": False,
+                    "error": f"gate function returned non-dict: {report!r}",
+                }
             elapsed = time.perf_counter() - t0
             self.results.append(GateRunRecord(stage, gate, ok, report, elapsed))
             return report
