@@ -164,6 +164,7 @@ def patch_junction_links(
 
     changes: List[dict] = []
     suspicious: List[dict] = []
+    conflicts: List[dict] = []
     for rec in connection_records:
         junction_id = rec["junction_id"]
         incoming = rec["incoming_road"]
@@ -203,29 +204,36 @@ def patch_junction_links(
             )
 
         if d_end <= d_start:
-            successor = ET.SubElement(link, "successor")
-            successor.attrib = {
-                "elementType": "junction",
-                "elementId": junction_id,
-                "contactPoint": "start",
-            }
-            changes.append(
-                {"road_id": incoming, "junction_id": junction_id, "added": "successor"}
-            )
+            slot, tag = "successor", "successor"
         else:
-            predecessor = ET.SubElement(link, "predecessor")
-            predecessor.attrib = {
-                "elementType": "junction",
-                "elementId": junction_id,
-                "contactPoint": "end",
-            }
-            changes.append(
+            slot, tag = "predecessor", "predecessor"
+
+        # A road may have at most one predecessor and one successor in valid
+        # OpenDRIVE. If the target slot is already occupied (e.g. by a link
+        # to a plain road, or to a different junction), blindly appending a
+        # second <predecessor>/<successor> element would produce an invalid,
+        # ambiguous document instead of a fix. Record the conflict and leave
+        # the existing link untouched rather than silently corrupting it.
+        existing = link.find(tag)
+        if existing is not None:
+            conflicts.append(
                 {
                     "road_id": incoming,
                     "junction_id": junction_id,
-                    "added": "predecessor",
+                    "slot": slot,
+                    "existing_element_type": existing.attrib.get("elementType"),
+                    "existing_element_id": existing.attrib.get("elementId"),
                 }
             )
+            continue
+
+        new_el = ET.SubElement(link, tag)
+        new_el.attrib = {
+            "elementType": "junction",
+            "elementId": junction_id,
+            "contactPoint": "start" if tag == "successor" else "end",
+        }
+        changes.append({"road_id": incoming, "junction_id": junction_id, "added": tag})
 
     missing_after_ids: List[str] = []
     for incoming_id in sorted(incoming_referenced):
@@ -269,6 +277,11 @@ def patch_junction_links(
         notes.append(
             f"{len(missing_after_ids)} road(s) still missing required junction links after patch."
         )
+    if conflicts:
+        notes.append(
+            f"{len(conflicts)} road(s) had a junction link that could not be added because "
+            "the predecessor/successor slot was already occupied by a different link."
+        )
 
     report = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -281,6 +294,7 @@ def patch_junction_links(
             len(remaining_unlinked_nonjunction_ids)
         ),
         "suspicious_matches": suspicious,
+        "link_slot_conflicts": conflicts,
         "notes": notes,
         # Legacy keys kept for backward compatibility.
         "missing_link_roads_non_junction_before": int(
