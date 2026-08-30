@@ -139,7 +139,7 @@ class LaneLinkBuilder:
                 else:
                     con_sec = get_edge_section(connecting, at_start=True)
 
-                if not inc_sec or not con_sec:
+                if inc_sec is None or con_sec is None:
                     if verbose:
                         print(f"⚠️ Junction {junc_id}, conn {incoming}->{connecting}: missing laneSections.")
                     continue
@@ -156,8 +156,12 @@ class LaneLinkBuilder:
 
                 count = 0
                 for from_id, to_id in right_pairs + left_pairs:
-                    from_lane = in_right.get(from_id) or in_left.get(from_id)
-                    to_lane = con_right.get(to_id) or con_left.get(to_id)
+                    from_lane = in_right.get(from_id)
+                    if from_lane is None:
+                        from_lane = in_left.get(from_id)
+                    to_lane = con_right.get(to_id)
+                    if to_lane is None:
+                        to_lane = con_left.get(to_id)
 
                     if from_lane is None or to_lane is None:
                         continue
