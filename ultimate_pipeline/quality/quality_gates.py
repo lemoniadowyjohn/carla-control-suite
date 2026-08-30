@@ -90,7 +90,12 @@ def run_quality_gates(
             qgate.passed(label + "_skipped")
             vreport.add("quality_gates", label + "_skipped", {"status": "skip", "reason": str(e)})
         except Exception as e:
-            qgate.fail(label + "_error", {"error": str(e)})
+            # Record under the SAME bare name a clean ok=False failure would
+            # use (see e.g. gate_xml_integrity's own self.fail("xml_integrity",
+            # ...)) -- DRIVABILITY_GATES matches on bare names, so a suffixed
+            # key here would make a crashed gate invisible to the hard
+            # drivability check even though a cleanly-failed one is caught.
+            qgate.fail(label, {"error": str(e)})
 
     _try("xml_integrity", lambda: qgate.gate_xml_integrity(xodr_path))
     _try("junction_integrity", lambda: qgate.gate_junction_integrity(root, stage="final"))
@@ -145,7 +150,8 @@ def run_quality_gates(
             qgate.passed("external_libopendrive_skipped")
     except Exception as e:
         external_rep = {"status": "error", "error": str(e)}
-        qgate.fail("external_libopendrive_error", external_rep)
+        # Bare name, matching DRIVABILITY_GATES -- see the _try() comment above.
+        qgate.fail("external_libopendrive", external_rep)
 
     failures = qgate.get_failures()
 
