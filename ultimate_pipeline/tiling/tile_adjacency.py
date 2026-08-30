@@ -124,8 +124,12 @@ class TileAdjacency:
         if not isinstance(g, dict):
             return False
 
-        # Missing keys? Treat as not adjacent (safe default).
-        if prev_name not in g and next_name not in g:
+        # Missing keys? Treat as not adjacent (safe default). Either name
+        # being absent is enough -- a tile that isn't a key in the graph
+        # at all (e.g. pruned/quarantined after the graph was built) can't
+        # be confirmed adjacent, even if a stale reference to it still
+        # lingers in some other tile's neighbors list.
+        if prev_name not in g or next_name not in g:
             return False
 
         # Undirected check (graph should be symmetric, but don't assume).
