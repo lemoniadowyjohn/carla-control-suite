@@ -182,6 +182,7 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
         "overall_ok": True,
         "gates": {},
         "per_stage_failures": {},
+        "malformed_gate_reports": [],
         "tolerances": {},
         "run_metadata": {
             "map_name": None,
@@ -200,6 +201,14 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
                 path = os.path.join(stage_dir, fname)
                 report = _load_json(path)
                 if not report:
+                    # The file was enumerated by listdir(), so it definitely
+                    # exists -- this is unambiguously a malformed/unparseable
+                    # report (e.g. a stage that crashed mid-write), not a
+                    # gate that simply never applied to this run. Flag it
+                    # explicitly so it can't be silently indistinguishable
+                    # from "nothing to report here".
+                    stage, gate = _parse_stage_gate(fname)
+                    summary["malformed_gate_reports"].append(f"{stage}/{gate}")
                     continue
                 stage, gate = _parse_stage_gate(fname)
                 _merge_gate_entry(summary["gates"], gate, report, f"stage:{stage}")
@@ -239,7 +248,7 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
         pass
 
     try:
-        overall_ok = True
+        overall_ok = not summary["malformed_gate_reports"]
         for gate_data in summary["gates"].values():
             if not gate_data.get("ok", True):
                 overall_ok = False
