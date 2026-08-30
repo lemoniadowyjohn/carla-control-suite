@@ -35,9 +35,24 @@ def download_dem_for_bounds(
     if r.status_code != 200:
         raise RuntimeError(f"DEM download failed: HTTP {r.status_code}")
 
-    with open(out_path, "wb") as f:
-        for chunk in r.iter_content(chunk_size=8192):
-            f.write(chunk)
+    # Stream to a temp file first and only move it into place once the
+    # download fully succeeds. Writing straight to out_path would leave a
+    # truncated/corrupted file there if the connection dropped mid-stream
+    # -- and ensure_dem_exists()'s os.path.exists(dem_path) check would
+    # then silently treat that corrupted file as a valid, already-
+    # downloaded DEM on any later run.
+    tmp_path = f"{out_path}.part"
+    try:
+        with open(tmp_path, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+    except Exception:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+        raise
+    os.replace(tmp_path, out_path)
 
     print(f"   ✅ DEM downloaded → {out_path}")
     return out_path
