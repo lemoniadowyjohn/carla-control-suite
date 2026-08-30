@@ -177,8 +177,19 @@ def downgrade_broken_driving_lanes_to_none(
                 if (road_id, str(lane_id)) not in broken_keys:
                     continue
 
-                lane.set("type", "none")
+                # broken_keys is (road_id, lane_id) only -- not laneSection-
+                # specific. Roads with multiple laneSections commonly reuse
+                # the same lane id across sections (e.g. a lane-count/width
+                # transition), so this key alone cannot tell apart "this
+                # exact lane is broken" from "a DIFFERENT laneSection's lane
+                # with the same id is broken". Re-derive this specific
+                # lane's own broken/not-broken state (same test
+                # find_broken_lanes_detailed uses) before mutating it.
                 link = lane.find("link")
+                if link is not None and link.find("successor") is not None:
+                    continue
+
+                lane.set("type", "none")
                 if link is not None:
                     lane.remove(link)
 
