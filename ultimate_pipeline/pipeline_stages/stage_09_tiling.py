@@ -237,9 +237,12 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
     )
 
     # 🎯 Invariant: every produced tile MUST have metadata
-    assert set(tile_health.keys()) == {
+    # (a bare `assert` here would be silently stripped under `python -O`,
+    # letting a real tiler/metadata desync through undetected)
+    if set(tile_health.keys()) != {
         os.path.splitext(os.path.basename(p))[0] for p in tiles
-    }, "Tile/metadata mismatch — tiler and metadata out of sync"
+    }:
+        raise RuntimeError("Tile/metadata mismatch — tiler and metadata out of sync")
 
     print(f"[INFO] Tile metadata written → {metadata_path}")
     print(f"[INFO] Tile manifest written -> {manifest_path}")
@@ -427,6 +430,7 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
         "true",
         "yes",
         "y",
+        "on",
     ):
         qa_out_dir = os.path.join(self.out_dir, "tile_qa_subprocess")
         os.makedirs(qa_out_dir, exist_ok=True)
