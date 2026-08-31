@@ -102,13 +102,19 @@ def _step2_topology_semantics(self, sanitized: str, sumo_fixed: str) -> str:
     # 2B: SUMO repair (global junctions)
     if s.ENABLE_SUMO_REPAIR:
         sumo_fixed_result = SUMORepair.repair(sanitized, sumo_fixed)
-        sumo_fixed_path = str(sumo_fixed_result)
         if isinstance(getattr(sumo_fixed_result, "meta", None), dict):
             sumo_repair_meta = dict(sumo_fixed_result.meta)
-        if sumo_fixed_path is None:
+        if sumo_fixed_result is None:
+            # Checked on the raw result, BEFORE any str() coercion --
+            # str(None) is the 4-character string "None", not the None
+            # object, so checking `str(sumo_fixed_result) is None` (the
+            # prior code) could never be true regardless of what
+            # SUMORepair.repair() returns, silently skipping this
+            # fallback path.
             print("⚠️ SUMO repair skipped/failed; continuing with sanitized file.")
             sumo_fixed_path = sanitized
         else:
+            sumo_fixed_path = str(sumo_fixed_result)
             print(f"✅ SUMO repaired map → {sumo_fixed_path}")
 
         if s.QA_AUTOVIS and self._carla_allowed("pre_lane_preview"):
