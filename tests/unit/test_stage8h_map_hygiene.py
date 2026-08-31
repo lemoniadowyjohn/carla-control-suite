@@ -19,6 +19,7 @@ All repairs are offline (pure XML); no CARLA server is required.
 """
 
 import xml.etree.ElementTree as ET
+from unittest import mock
 
 import pytest
 
@@ -144,6 +145,41 @@ def test_hygiene_disabled_returns_input_untouched(tmp_path):
 
     assert out == str(src)
     assert not (tmp_path / "out").exists() or not (tmp_path / "out" / "map_hygiene_report.json").exists()
+
+
+def test_hygiene_combined_ok_reflects_a_failed_sub_stage(tmp_path):
+    """map_hygiene_report.json's top-level "ok" must reflect whether every
+    sub-stage actually succeeded, not be hardcoded True regardless.
+    repair_true_zseams() has a real, meaningful ok=(issues_after==0)
+    signal (its repair loop can legitimately give up early without
+    resolving every seam) -- the combined report must not silently
+    discard that."""
+    src = tmp_path / "final.xodr"
+    _build_xodr(src, with_island=False, degenerate_road=None)
+    mp = _make_pipeline(tmp_path)
+
+    failing_zseam_report = {
+        "ok": False,
+        "eps_z": 0.05,
+        "issues_before": 3,
+        "issues_after": 2,
+        "roads_modified": 1,
+        "roads_modified_ids": ["0"],
+        "input_xodr": "x",
+        "output_xodr": "y",
+    }
+    with mock.patch(
+        "ultimate_pipeline.quality.map_hygiene.repair_true_zseams",
+        return_value=failing_zseam_report,
+    ):
+        mp._step8h_map_hygiene(str(src))
+
+    report = mp.map_hygiene_report
+    assert report["stages"]["true_zseams"]["ok"] is False
+    assert report["ok"] is False, (
+        "a failed z-seam repair must flip the combined report's ok field, "
+        "not be silently discarded behind a hardcoded True"
+    )
 
 
 def test_hygiene_is_idempotent_on_clean_map(tmp_path):
