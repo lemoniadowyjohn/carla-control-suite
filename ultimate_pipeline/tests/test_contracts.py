@@ -357,6 +357,172 @@ class TestReleaseProfilePolicy:
             unsafe_planview_mutations_enabled(Settings())
 
     # ------------------------------------------------------------------
+    # stage_06_links.py / stage_05_geometry.py unsafe-mutation gates
+    # (unsafe_short_segment_merge_enabled, unsafe_heading_only_smoothing_enabled,
+    # unsafe_small_geometry_merge_enabled, unsafe_curvature_only_clamp_enabled,
+    # straight_chord_connector_fallback_enabled) -- all route through the same
+    # _unsafe_feature_enabled(settings_obj, attr, env) helper as the two policies
+    # above, so they share the identical opt-in-AND-profile-permission matrix.
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        ("func_name", "attr", "env"),
+        [
+            (
+                "unsafe_short_segment_merge_enabled",
+                "ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+                "UP_ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+            ),
+            (
+                "unsafe_heading_only_smoothing_enabled",
+                "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+                "UP_ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+            ),
+            (
+                "unsafe_small_geometry_merge_enabled",
+                "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE",
+                "UP_ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE",
+            ),
+            (
+                "unsafe_curvature_only_clamp_enabled",
+                "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+                "UP_ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+            ),
+            (
+                "straight_chord_connector_fallback_enabled",
+                "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK",
+                "UP_ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK",
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
+        ("profile", "settings_enabled", "env_value", "expected"),
+        [
+            ("structural_release", False, None, False),
+            ("structural_release", True, None, False),
+            ("structural_release", False, "true", False),
+            ("debug", False, None, False),
+            ("debug", True, None, True),
+            ("debug", False, "true", True),
+            ("debug", True, "false", False),
+            ("visual_build", True, None, False),
+            ("scenario_augmentation", True, None, False),
+            ("experimental_unsafe", True, None, True),
+            ("", True, None, False),
+            ("unknown-profile", True, None, False),
+        ],
+    )
+    def test_unsafe_geometry_mutation_gate_policy(
+        self,
+        monkeypatch,
+        func_name,
+        attr,
+        env,
+        profile,
+        settings_enabled,
+        env_value,
+        expected,
+    ):
+        import ultimate_pipeline.contracts.release_profile as release_profile
+
+        func = getattr(release_profile, func_name)
+
+        class Settings:
+            pass
+
+        setattr(Settings, "RELEASE_PROFILE", profile)
+        setattr(Settings, attr, settings_enabled)
+
+        if env_value is None:
+            monkeypatch.delenv(env, raising=False)
+        else:
+            monkeypatch.setenv(env, env_value)
+
+        assert func(Settings()) is expected
+
+    def test_unsafe_short_segment_merge_invalid_env_fails_closed(self, monkeypatch):
+        from ultimate_pipeline.contracts.release_profile import (
+            unsafe_short_segment_merge_enabled,
+        )
+
+        class Settings:
+            RELEASE_PROFILE = "debug"
+            ENABLE_UNSAFE_SHORT_SEGMENT_MERGE = False
+
+        monkeypatch.setenv("UP_ENABLE_UNSAFE_SHORT_SEGMENT_MERGE", "maybe")
+        with pytest.raises(ValueError):
+            unsafe_short_segment_merge_enabled(Settings())
+
+    # ------------------------------------------------------------------
+    # unsafe_geometry_start_recompute_enabled (legacy-flag compat shim)
+    # ------------------------------------------------------------------
+
+    def test_geometry_start_recompute_modern_flag_only(self, monkeypatch):
+        from ultimate_pipeline.contracts.release_profile import (
+            unsafe_geometry_start_recompute_enabled,
+        )
+
+        class Settings:
+            RELEASE_PROFILE = "debug"
+            ENABLE_GEOMETRY_START_RECOMPUTE = False
+            ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE = True
+
+        monkeypatch.delenv("UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE", raising=False)
+        assert unsafe_geometry_start_recompute_enabled(Settings()) is True
+
+    def test_geometry_start_recompute_legacy_flag_maps_to_modern(self, monkeypatch):
+        """Legacy ENABLE_GEOMETRY_START_RECOMPUTE=True (and modern flag unset)
+        must still require profile permission -- opt-in alone is not enough."""
+        from ultimate_pipeline.contracts.release_profile import (
+            unsafe_geometry_start_recompute_enabled,
+        )
+
+        class SettingsUnsafeProfile:
+            RELEASE_PROFILE = "debug"
+            ENABLE_GEOMETRY_START_RECOMPUTE = True
+            ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE = False
+
+        class SettingsReleaseProfile:
+            RELEASE_PROFILE = "structural_release"
+            ENABLE_GEOMETRY_START_RECOMPUTE = True
+            ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE = False
+
+        monkeypatch.delenv("UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE", raising=False)
+        assert unsafe_geometry_start_recompute_enabled(SettingsUnsafeProfile()) is True
+        assert unsafe_geometry_start_recompute_enabled(SettingsReleaseProfile()) is False
+
+    def test_geometry_start_recompute_neither_flag_set(self, monkeypatch):
+        from ultimate_pipeline.contracts.release_profile import (
+            unsafe_geometry_start_recompute_enabled,
+        )
+
+        class Settings:
+            RELEASE_PROFILE = "debug"
+            ENABLE_GEOMETRY_START_RECOMPUTE = False
+            ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE = False
+
+        monkeypatch.delenv("UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE", raising=False)
+        assert unsafe_geometry_start_recompute_enabled(Settings()) is False
+
+    def test_geometry_start_recompute_env_override_applies_under_legacy_shim(
+        self, monkeypatch
+    ):
+        """Even when the legacy-shim branch fires, a live env override for the
+        modern env var name must still be honored (it reads real os.environ,
+        not the synthetic _Compat settings object)."""
+        from ultimate_pipeline.contracts.release_profile import (
+            unsafe_geometry_start_recompute_enabled,
+        )
+
+        class Settings:
+            RELEASE_PROFILE = "debug"
+            ENABLE_GEOMETRY_START_RECOMPUTE = True
+            ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE = False
+
+        monkeypatch.setenv("UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE", "false")
+        assert unsafe_geometry_start_recompute_enabled(Settings()) is False
+
+    # ------------------------------------------------------------------
     # resolve_strict_quality_gates
     # ------------------------------------------------------------------
 
