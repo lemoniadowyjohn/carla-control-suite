@@ -135,8 +135,14 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
 
     header.set("geometryFrozen", "true")
 
+    # Hash the *frozen output file's own* serialized bytes (with
+    # geometryFrozen set but before geometryFreezeHash exists), not
+    # cont_out's bytes -- _verify_geometry_freeze_hash later re-hashes
+    # frozen_before_elev itself, so the embedded hash must be reproducible
+    # from that file's own content, not a different (pre-freeze) file's.
+    save_xodr(tree, frozen_before_elev)
     freeze_hash = hashlib.sha256()
-    with open(cont_out, "rb") as f:
+    with open(frozen_before_elev, "rb") as f:
         freeze_hash.update(f.read())
     freeze_hex = freeze_hash.hexdigest()
     header.set("geometryFreezeHash", freeze_hex)

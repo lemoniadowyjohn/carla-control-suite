@@ -2631,6 +2631,8 @@ if str(_repo_root) not in sys.path:
         """
         import xml.etree.ElementTree as ET_xml
         import hashlib as _hlib
+        import tempfile
+        from ultimate_pipeline.core.odr_io import save_xodr as _save_xodr
 
         try:
             tree = ET_xml.parse(xodr_path)
@@ -2643,10 +2645,28 @@ if str(_repo_root) not in sys.path:
             if not expected:
                 print("[FREEZE-HASH] No geometryFreezeHash attribute — freeze hash not verified.")
                 return None
-            actual = _hlib.sha256()
-            with open(xodr_path, "rb") as f:
-                actual.update(f.read())
-            actual_hex = actual.hexdigest()
+            # Reproduce the hash the same way stage_05 computed it at freeze
+            # time: serialize with geometryFreezeHash removed (it did not
+            # exist yet when the original hash was taken), then hash those
+            # bytes. Must go through save_xodr (not tree.write to a buffer)
+            # since ElementTree serializes path-targets and file-like
+            # targets differently (path targets get platform newline
+            # translation), and the freeze-time hash was computed on a
+            # path-targeted save.
+            del header.attrib["geometryFreezeHash"]
+            tmp_fd, tmp_path = tempfile.mkstemp(suffix=".xodr")
+            os.close(tmp_fd)
+            try:
+                _save_xodr(tree, tmp_path)
+                actual = _hlib.sha256()
+                with open(tmp_path, "rb") as f:
+                    actual.update(f.read())
+                actual_hex = actual.hexdigest()
+            finally:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
             if actual_hex != expected:
                 print(
                     f"[FREEZE-HASH] MISMATCH: header={expected} live={actual_hex} "
