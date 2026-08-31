@@ -140,6 +140,21 @@ def _step12_domain_gap(self, final_out: str) -> None:
         sdg = combined_gap.get("structural_domain_gap", {})
         pt = combined_gap.get("per_tile_structural_gap", {})
 
+        # pt is keyed by TILE NAME (see run_full_domain_gap.py's
+        # _combine_per_tile_structural_gap: {"tile_0_0.xodr": {"geometry":
+        # {...}, "curvature": {...}}, ...}), not by metric name -- extract
+        # each metric across all tiles into its own tile-keyed dict.
+        per_tile_geometry = {
+            tile: entry.get("geometry", {})
+            for tile, entry in pt.items()
+            if isinstance(entry, dict)
+        }
+        per_tile_curvature = {
+            tile: entry.get("curvature", {})
+            for tile, entry in pt.items()
+            if isinstance(entry, dict)
+        }
+
         summary = {
             "whole_geometry_gap": sdg.get("geometry", {}),
             "whole_curvature_gap": sdg.get("curvature", {}),
@@ -147,8 +162,8 @@ def _step12_domain_gap(self, final_out: str) -> None:
             "whole_semantic_gap": sdg.get("semantics", {}),
             "whole_road_class_gap": sdg.get("road_classification", {}),
             "whole_connectivity_gap": sdg.get("connectivity", {}),
-            "per_tile_geometry_gap": pt.get("geometry", {}),
-            "per_tile_curvature_gap": pt.get("curvature", {}),
+            "per_tile_geometry_gap": per_tile_geometry,
+            "per_tile_curvature_gap": per_tile_curvature,
             "tile_seam_statistics": self.vreport.data.get("seam_statistics", []),
         }
 
