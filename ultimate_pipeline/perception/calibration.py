@@ -15,8 +15,16 @@ def compute_ece(confidences, labels, n_bins=15):
     bins = np.linspace(0.0, 1.0, int(n_bins) + 1)
     ece = 0.0
 
+    last_bin = int(n_bins) - 1
     for i in range(int(n_bins)):
-        mask = (confidences >= bins[i]) & (confidences < bins[i + 1])
+        if i == last_bin:
+            # Inclusive upper edge on the final bin only, so a confidence
+            # of exactly 1.0 (the top edge of the [0, 1] range) lands in
+            # a bin instead of matching none of them and being silently
+            # dropped from the weighted sum entirely.
+            mask = (confidences >= bins[i]) & (confidences <= bins[i + 1])
+        else:
+            mask = (confidences >= bins[i]) & (confidences < bins[i + 1])
         if np.sum(mask) == 0:
             continue
         acc = np.mean(labels[mask])
