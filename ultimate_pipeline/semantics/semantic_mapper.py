@@ -256,10 +256,6 @@ def main() -> int:
     mapper = SemanticMapper(mapping_path=mapping_path)
     stats = analyze_osm_semantics(osm_path, mapper, top_unmapped=args.top_unmapped)
 
-
-    mapper = SemanticMapper(mapping_path=mapping_path)
-    stats = analyze_osm_semantics(osm_path, mapper, top_unmapped=args.top_unmapped)
-
     out_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "osm_path": str(osm_path),
