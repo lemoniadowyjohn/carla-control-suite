@@ -40,7 +40,7 @@ def _step3_topology_repair(
             )
             _tot = _rep.get("totals", {})
             print(
-                f"🛣️ Lane width invariants (full map): found {_tot.get('missing_width_found', 0)}, fixed {_tot.get('missing_width_fixed', 0)} → {_rep_path}"
+                f"🛣️ Lane width invariants (full map): found {_tot.get('missing_width_lanes_found', 0)}, fixed {_tot.get('missing_width_lanes_fixed', 0)} → {_rep_path}"
             )
         except Exception as _e:
             print(f"⚠️ Lane width invariant guard failed (full map): {_e}")
