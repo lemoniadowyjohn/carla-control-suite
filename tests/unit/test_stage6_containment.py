@@ -225,3 +225,40 @@ def test_stage6_governed_profiles_are_contained() -> None:
 
     assert stage_06_links._stage6_governed_containment(Release()) is True
     assert stage_06_links._stage6_governed_containment(Experimental()) is False
+
+
+def test_stage6_governed_containment_development_profile_is_not_contained() -> None:
+    class Development:
+        RELEASE_PROFILE = "DEVELOPMENT"
+        THESIS_STRICT = False
+
+    assert stage_06_links._stage6_governed_containment(Development()) is False
+
+
+def test_stage6_governed_containment_named_profile_without_thesis_strict_is_contained() -> None:
+    # A non-DEVELOPMENT, non-EXPERIMENTAL_UNSAFE profile is contained by
+    # name alone -- THESIS_STRICT is not the only path to containment.
+    class Structural:
+        RELEASE_PROFILE = "STRUCTURAL_RELEASE"
+        THESIS_STRICT = False
+
+    assert stage_06_links._stage6_governed_containment(Structural()) is True
+
+
+def test_stage6_governed_containment_no_profile_no_strict_is_not_contained() -> None:
+    class Bare:
+        RELEASE_PROFILE = ""
+        THESIS_STRICT = False
+
+    assert stage_06_links._stage6_governed_containment(Bare()) is False
+
+
+def test_stage6_governed_containment_thesis_strict_overrides_experimental_unsafe() -> None:
+    # THESIS_STRICT must win even if a profile explicitly opts into
+    # EXPERIMENTAL_UNSAFE -- academic-validity containment cannot be
+    # bypassed by profile choice alone.
+    class StrictExperimental:
+        RELEASE_PROFILE = "EXPERIMENTAL_UNSAFE"
+        THESIS_STRICT = True
+
+    assert stage_06_links._stage6_governed_containment(StrictExperimental()) is True
