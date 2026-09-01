@@ -439,8 +439,14 @@ def _merge_metrics(matches: List[dict], metrics_a: Dict[str, dict], metrics_b: D
 
 
 def evaluate(args: argparse.Namespace) -> int:
-    a_meta = _load_meta(Path(args.a_meta))
-    b_meta = _load_meta(Path(args.b_meta))
+    try:
+        a_meta = _load_meta(Path(args.a_meta))
+    except (OSError, json.JSONDecodeError):
+        a_meta = {}
+    try:
+        b_meta = _load_meta(Path(args.b_meta))
+    except (OSError, json.JSONDecodeError):
+        b_meta = {}
 
     if not a_meta:
         print(f"ERROR: failed to load A metadata from {args.a_meta}")
