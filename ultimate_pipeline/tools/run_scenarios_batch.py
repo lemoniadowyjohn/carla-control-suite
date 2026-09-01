@@ -18,7 +18,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Sequence
 
 from ultimate_pipeline.tools.carla_preflight import run_preflight
-from ultimate_pipeline.tools import validate_thesis_run
 
 
 def _expand_runs(tokens: Sequence[str]) -> List[Path]:
@@ -37,11 +36,17 @@ def _write_json(path: Path, payload: Dict[str, Any]) -> None:
 
 
 def _resolve_run_dir(p: Path) -> Path:
-    try:
-        resolved, _meta = validate_thesis_run._resolve_real_run_dir(p)  # type: ignore[attr-defined]
-        return resolved
-    except Exception:
-        return p
+    # Historically attempted to call
+    # validate_thesis_run._resolve_real_run_dir(p) to resolve a "wrapper"
+    # run dir to the actual run root -- that function was never defined
+    # anywhere in this codebase (confirmed via repo-wide search), so every
+    # call raised AttributeError and silently fell through to `return p`
+    # unchanged. validate_thesis_run.py has no "resolve a run dir" concept
+    # at all -- it only validates artifacts within an already-resolved
+    # run_root. Rather than invent new, unspecified "wrapper dir"
+    # resolution logic, this is now honest about what it has always
+    # actually done: pass the given path through unchanged.
+    return p
 
 
 def _scenario_name_from_xosc(xosc: Path, override: str | None) -> str:
@@ -52,7 +57,7 @@ def _scenario_name_from_xosc(xosc: Path, override: str | None) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--runs", nargs="+", required=True, help="Run dirs (wrapper or resolved). Globs supported.")
+    ap.add_argument("--runs", nargs="+", required=True, help="Run dirs (already resolved). Globs supported.")
     ap.add_argument("--xosc", required=True, type=Path, help="OpenSCENARIO .xosc file")
     ap.add_argument("--scenario-name", default=None)
     ap.add_argument("--host", default=os.getenv("UP_CARLA_HOST", "127.0.0.1"))
