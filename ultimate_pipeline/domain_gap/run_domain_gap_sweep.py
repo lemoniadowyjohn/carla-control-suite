@@ -12,6 +12,22 @@ from ultimate_pipeline.config.settings import SETTINGS
 from ultimate_pipeline.run_full_domain_gap import run_full_domain_gap
 
 
+def _find_auto_xodr(out_dir: str) -> str:
+    # os.listdir() order is arbitrary/OS-dependent, and a real "08_final"
+    # stage writes several variants (plain, semantic copy,
+    # laneSectionFixed repair, semantic re-copy of the repair) --
+    # `next(...)` over an unordered listing could pick any of them
+    # non-deterministically. mtime-newest matches the already-established
+    # convention elsewhere (artifact_locator.py, run_gap_ablation_experiment.py)
+    # and correctly picks the post-repair map.
+    candidates = sorted(
+        (f for f in os.listdir(out_dir) if f.startswith("08_final") and f.endswith(".xodr")),
+        key=lambda f: os.path.getmtime(os.path.join(out_dir, f)),
+        reverse=True,
+    )
+    return os.path.join(out_dir, candidates[0])
+
+
 # ============================================================
 # CONFIG — single source of truth
 # ============================================================
@@ -110,11 +126,7 @@ def run_domain_gap_sweep() -> None:
 
         out_dir = _run_pipeline_with_seed(seed)
 
-        auto_xodr = next(
-            os.path.join(out_dir, f)
-            for f in os.listdir(out_dir)
-            if f.startswith("08_final") and f.endswith(".xodr")
-        )
+        auto_xodr = _find_auto_xodr(out_dir)
 
         gap_out = os.path.join(out_dir, SETTINGS.DOMAIN_GAP_OUT_DIR)
 
