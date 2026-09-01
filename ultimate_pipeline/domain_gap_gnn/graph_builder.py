@@ -43,8 +43,12 @@ class MapGraphBuilder:
         (road_id, laneSection_s, lane_id)
 
     Edge:
-        laneLink successor / predecessor (preferred),
-        road-level successor fallback
+        laneLink successor / predecessor, resolved to the target
+        laneSection (next/previous laneSection within the same road, or
+        the linked road's boundary laneSection via contactPoint). Links
+        that resolve through a junction are skipped: tile-scoped XODR
+        files carry no <junction> definitions to resolve them against, so
+        no edge is added rather than guessing.
 
     Features:
         - lane type (one-hot)
@@ -146,8 +150,64 @@ class MapGraphBuilder:
         x = torch.tensor([nodes[k] for k in keys], dtype=torch.float32)
 
         # -----------------------------
-        # Build edges (laneLink first)
+        # Build edges (laneLink)
         # -----------------------------
+        # A lane's <link><successor id="X"/> (or predecessor) refers to a lane
+        # in a DIFFERENT laneSection: either the next/previous laneSection of
+        # the SAME road, or (at a road boundary) a laneSection of a DIFFERENT
+        # road reached via that road's own <link> element. Resolve that
+        # target (road_id, laneSection_s) explicitly instead of assuming it's
+        # the source lane's own laneSection -- otherwise every edge collapses
+        # into a self-loop.
+        road_link: Dict[str, ET.Element] = {}
+        lane_sections_by_road: Dict[str, List[float]] = {}
+        for road in root.findall("road"):
+            rid = road.get("id", "")
+            link_el = road.find("link")
+            if link_el is not None:
+                road_link[rid] = link_el
+            lanes_el = road.find("lanes")
+            if lanes_el is not None:
+                lane_sections_by_road[rid] = sorted(
+                    _safe_float(ls.get("s", "0.0"))
+                    for ls in lanes_el.findall("laneSection")
+                )
+
+        def _resolve_target_section(
+            road_id: str, sec_s: float, direction: str
+        ) -> Optional[Tuple[str, float]]:
+            """Resolve the (road_id, laneSection_s) reached by following
+            `direction` ("successor" or "predecessor") from the laneSection
+            at `sec_s` in `road_id`. Returns None when unresolvable from
+            tile-local data alone (e.g. the connection is junction-mediated,
+            and tile-scoped XODR files carry no <junction> definitions to
+            resolve which lane that maps to)."""
+            secs = lane_sections_by_road.get(road_id, [])
+            try:
+                pos = secs.index(sec_s)
+            except ValueError:
+                pos = None
+            if pos is not None:
+                if direction == "successor" and pos + 1 < len(secs):
+                    return road_id, secs[pos + 1]
+                if direction == "predecessor" and pos > 0:
+                    return road_id, secs[pos - 1]
+
+            # At a road boundary: follow the road-level link, if it points to
+            # another road (not a junction, which we can't resolve here).
+            link_el = road_link.get(road_id)
+            if link_el is None:
+                return None
+            boundary_el = link_el.find(direction)
+            if boundary_el is None or boundary_el.get("elementType") != "road":
+                return None
+            target_road = boundary_el.get("elementId", "")
+            target_secs = lane_sections_by_road.get(target_road)
+            if not target_secs:
+                return None
+            contact = boundary_el.get("contactPoint", "start" if direction == "successor" else "end")
+            return target_road, (target_secs[0] if contact == "start" else target_secs[-1])
+
         edges: List[Tuple[int, int]] = []
 
         for road in root.findall("road"):
@@ -170,27 +230,18 @@ class MapGraphBuilder:
                         if link is None:
                             continue
 
-                        for succ in link.findall("successor"):
-                            to_lane = succ.get("id")
-                            dst = (road_id, sec_s, to_lane)
+                        for direction in ("successor", "predecessor"):
+                            link_target = link.find(direction)
+                            if link_target is None:
+                                continue
+                            to_lane = link_target.get("id")
+                            resolved = _resolve_target_section(road_id, sec_s, direction)
+                            if resolved is None:
+                                continue
+                            t_road, t_sec_s = resolved
+                            dst = (t_road, t_sec_s, to_lane)
                             if dst in idx:
                                 edges.append((idx[src], idx[dst]))
-
-        # fallback: road-level successor
-        if not edges:
-            for road in root.findall("road"):
-                road_id = road.get("id", "")
-                link = road.find("link")
-                if link is None:
-                    continue
-
-                for succ in link.findall("successor"):
-                    if succ.get("elementType") == "road":
-                        succ_id = succ.get("elementId")
-                        for k1 in keys:
-                            for k2 in keys:
-                                if k1[0] == road_id and k2[0] == succ_id:
-                                    edges.append((idx[k1], idx[k2]))
 
         edge_index = (
             torch.tensor(edges, dtype=torch.long).t().contiguous()
