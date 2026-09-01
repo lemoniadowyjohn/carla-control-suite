@@ -336,9 +336,8 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
     _inject_main_pipeline_globals()
     s = self.settings
 
-    assert getattr(s, "FORCE_LIGHT_LOAD_IN_STEP_8", True), (
-        "FULL map load in STEP 8 is forbidden"
-    )
+    if not getattr(s, "FORCE_LIGHT_LOAD_IN_STEP_8", True):
+        raise RuntimeError("FULL map load in STEP 8 is forbidden")
 
     stage_name = "final_spawn_validation_light"
 

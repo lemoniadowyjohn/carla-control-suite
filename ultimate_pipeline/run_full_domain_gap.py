@@ -3929,7 +3929,10 @@ def _finalize_results(
     combined["manual_xodr_source"] = run_meta.get("manual_xodr_source")
     _attach_auto_georef_metadata(combined, run_meta)
 
-    assert "connectivity_gap" in combined, "connectivity_gap must always be present in full_report.json (CLAUDE.md P0)"
+    if "connectivity_gap" not in combined:
+        raise RuntimeError(
+            "connectivity_gap must always be present in full_report.json (CLAUDE.md P0)"
+        )
 
     try:
         _safe_dump_json(os.path.join(output_dir, "full_report.json"), combined)
@@ -4110,7 +4113,10 @@ def _finalize_smoke_results(
     combined.setdefault("dem_qc", {"disabled": True, "reason": "smoke_mode"})
     combined.setdefault("elevation_included", False)
     combined.setdefault("sumo_repair", {"disabled": True, "reason": "smoke_mode"})
-    assert "connectivity_gap" in combined, "connectivity_gap must always be present in full_report.json (CLAUDE.md P0)"
+    if "connectivity_gap" not in combined:
+        raise RuntimeError(
+            "connectivity_gap must always be present in full_report.json (CLAUDE.md P0)"
+        )
     _safe_dump_json(os.path.join(output_dir, "full_report.json"), combined)
     return combined
 
@@ -6559,7 +6565,10 @@ def run_full_domain_gap(
     combined["reproducibility_hash"] = combined_repro_hash
 
     combined["tile_pairing_provenance"] = tile_pairing_provenance or {}
-    assert "connectivity_gap" in combined, "connectivity_gap must always be present in full_report.json (CLAUDE.md P0)"
+    if "connectivity_gap" not in combined:
+        raise RuntimeError(
+            "connectivity_gap must always be present in full_report.json (CLAUDE.md P0)"
+        )
     _safe_dump_json(os.path.join(output_dir, "full_report.json"), combined)
 
     # Always write carla_status.json (this script doesn't invoke CARLA)

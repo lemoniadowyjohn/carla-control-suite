@@ -2554,9 +2554,8 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 "streaming_unavailable:initial_sync_tick_timeout"
             ) from sync_tick_exc
         raise
-    assert (
-        bool(getattr(world.get_settings(), "synchronous_mode", False)) is True
-    ), "sync must be on before listen"
+    if not bool(getattr(world.get_settings(), "synchronous_mode", False)):
+        raise RuntimeError("sync must be on before listen")
 
     recorder = SensorRecorder(output_dir=str(out_dir), config=cfg)
     recorder.attach(world, ego, sensors)
