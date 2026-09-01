@@ -140,23 +140,8 @@ class UnifiedRunner:
         """
         start_time = time.time()
 
-        # Setup artifacts
-        self.setup_artifacts()
-
-        # Setup logging to file
-        log_file = self.artifacts.logs_dir / "run.log"
-        file_handler = logging.FileHandler(log_file, encoding="utf-8")
-        file_handler.setFormatter(logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        ))
-        logging.getLogger().addHandler(file_handler)
-
-        self.logger.info(f"Starting experiment: {self.config.experiment_id}")
-        self.logger.info(f"Run ID: {self.artifacts.run_id}")
-        self.logger.info(f"Output: {self.artifacts.run_dir}")
-
         result: Dict[str, Any] = {
-            "run_id": self.artifacts.run_id,
+            "run_id": None,
             "experiment_id": self.config.experiment_id,
             "success": False,
             "metrics": {},
@@ -165,7 +150,30 @@ class UnifiedRunner:
             "warnings": [],
         }
 
+        file_handler: Optional[logging.FileHandler] = None
+
         try:
+            # Setup artifacts. Kept inside the try block (not before it) so a
+            # setup failure (bad artifact_root, permission denied, disk full)
+            # still returns the documented result dict with "error" set,
+            # instead of raising past callers that trust the "always returns
+            # a dict" contract (e.g. cli.py's `test smoke`/`test e2e`
+            # commands call run_experiment() with no try/except at all).
+            self.setup_artifacts()
+            result["run_id"] = self.artifacts.run_id
+
+            # Setup logging to file
+            log_file = self.artifacts.logs_dir / "run.log"
+            file_handler = logging.FileHandler(log_file, encoding="utf-8")
+            file_handler.setFormatter(logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            ))
+            logging.getLogger().addHandler(file_handler)
+
+            self.logger.info(f"Starting experiment: {self.config.experiment_id}")
+            self.logger.info(f"Run ID: {self.artifacts.run_id}")
+            self.logger.info(f"Output: {self.artifacts.run_dir}")
+
             # Validate agent_sync (non-blocking warning for now)
             if not self.validate_agent_sync():
                 result["warnings"].append("Agent sync validation failed")
@@ -214,9 +222,11 @@ class UnifiedRunner:
                     duration_s=duration,
                 )
 
-            # Remove file handler
-            logging.getLogger().removeHandler(file_handler)
-            file_handler.close()
+            # Remove file handler (may never have been created if setup
+            # failed before reaching that point)
+            if file_handler is not None:
+                logging.getLogger().removeHandler(file_handler)
+                file_handler.close()
 
         self.logger.info(
             f"Experiment {'succeeded' if result['success'] else 'failed'} "
