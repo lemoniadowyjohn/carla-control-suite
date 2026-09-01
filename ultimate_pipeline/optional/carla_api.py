@@ -16,7 +16,13 @@ def _probe_carla_module() -> Optional[ModuleType]:
         import carla  # pragma: no cover
 
         _CARLA_MODULE = carla
-    except ModuleNotFoundError:
+    except ImportError:
+        # Covers both "not installed at all" (ModuleNotFoundError) and
+        # "installed but unloadable" (DLL load failure, native-extension
+        # ABI mismatch against this Python build, etc. -- these surface as
+        # a plain ImportError, not ModuleNotFoundError, but are equally a
+        # "CARLA is missing" condition for this function's documented
+        # contract).
         _CARLA_MODULE = None
     finally:
         _CARLA_CHECKED = True
