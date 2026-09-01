@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, json, xml.etree.ElementTree as ET
+import argparse, json, math, xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 from ultimate_pipeline.core.georef_utils import parse_georeference
@@ -17,10 +17,18 @@ def _extract_planview_points_stream(xodr_path: Path) -> List[Tuple[float,float]]
             stack.append(name)
             if name=="geometry" and len(stack)>=2 and stack[-2]=="planView":
                 x=el.attrib.get("x"); y=el.attrib.get("y")
-                if x is None or y is None: 
+                if x is None or y is None:
                     continue
-                try: pts.append((float(x), float(y)))
-                except Exception: pass
+                try:
+                    fx, fy = float(x), float(y)
+                except Exception:
+                    continue
+                # float() accepts "nan"/"inf" strings; a non-finite point
+                # here would silently corrupt min()/max() in _bbox (NaN
+                # comparisons are always False, so the result depends on
+                # iteration order rather than being a real bound).
+                if math.isfinite(fx) and math.isfinite(fy):
+                    pts.append((fx, fy))
         else:
             if stack: stack.pop()
             el.clear()
@@ -43,10 +51,11 @@ def main() -> int:
     geo_ref=None; offset=None
     geo_norm=None
     geo_params_complete=None
+    geo_valid=None
     if header is not None:
         gr=header.find("geoReference")
         geo_ref=(gr.text.strip() if gr is not None and gr.text else None)
-        valid, params_complete, norm = parse_georeference(geo_ref)
+        geo_valid, params_complete, norm = parse_georeference(geo_ref)
         geo_norm = norm or None
         geo_params_complete = bool(params_complete)
         off=header.find("offset")
@@ -61,6 +70,7 @@ def main() -> int:
         "xodr": str(args.xodr.resolve()),
         "geoReference": geo_ref,
         "geoReference_norm": geo_norm,
+        "geoReference_valid": geo_valid,
         "geoReference_params_complete": geo_params_complete,
         "offset": offset,
         "planView_geometry_points": len(pts),
