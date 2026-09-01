@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
@@ -17,17 +18,17 @@ class BoundingBox(SerializableContract):
     max_z: float
 
     def __post_init__(self) -> None:
+        if not all(
+            isinstance(v, (int, float)) and math.isfinite(v)
+            for v in (self.min_x, self.min_y, self.min_z, self.max_x, self.max_y, self.max_z)
+        ):
+            raise RoadRunnerContractError("bounding box values must be finite numbers")
         if self.min_x > self.max_x:
             raise RoadRunnerContractError("min_x must not exceed max_x")
         if self.min_y > self.max_y:
             raise RoadRunnerContractError("min_y must not exceed max_y")
         if self.min_z > self.max_z:
             raise RoadRunnerContractError("min_z must not exceed max_z")
-        if not all(
-            isinstance(v, (int, float)) and v == v
-            for v in (self.min_x, self.min_y, self.min_z, self.max_x, self.max_y, self.max_z)
-        ):
-            raise RoadRunnerContractError("bounding box values must be finite numbers")
 
 
 @dataclass(frozen=True)

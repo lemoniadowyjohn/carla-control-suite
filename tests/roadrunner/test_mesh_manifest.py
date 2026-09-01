@@ -26,6 +26,17 @@ class TestBoundingBox:
         with pytest.raises(RoadRunnerContractError, match="finite"):
             BoundingBox(min_x=0, min_y=0, min_z=0, max_x=float("nan"), max_y=20, max_z=5)
 
+    def test_rejects_positive_infinity(self) -> None:
+        # __post_init__ previously checked `v == v` (true for inf, only rejects
+        # NaN) instead of math.isfinite(v), so an infinite bound silently
+        # passed a check whose own error message claims "must be finite".
+        with pytest.raises(RoadRunnerContractError, match="finite"):
+            BoundingBox(min_x=0, min_y=0, min_z=0, max_x=float("inf"), max_y=20, max_z=5)
+
+    def test_rejects_negative_infinity(self) -> None:
+        with pytest.raises(RoadRunnerContractError, match="finite"):
+            BoundingBox(min_x=float("-inf"), min_y=0, min_z=0, max_x=10, max_y=20, max_z=5)
+
 
 class TestMaterialBinding:
     def test_valid_binding(self) -> None:
