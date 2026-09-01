@@ -72,11 +72,20 @@ def _list_tiles(tiles_dir: Path) -> List[Path]:
     return tiles
 
 
+def _checkpoint_epoch_number(path: Path) -> int:
+    match = re.search(r"map_encoder_epoch(\d+)\.pt$", path.name)
+    return int(match.group(1)) if match else -1
+
+
 def _resolve_checkpoint(checkpoint_dir: Path) -> Path:
-    candidates = sorted(checkpoint_dir.glob("map_encoder_epoch*.pt"))
+    candidates = list(checkpoint_dir.glob("map_encoder_epoch*.pt"))
     if not candidates:
         raise RuntimeError(f"No checkpoint generated in: {checkpoint_dir}")
-    return candidates[-1]
+    # Sort numerically by epoch number, not lexicographically by filename --
+    # "epoch100.pt" < "epoch90.pt" as strings, which would silently pick a
+    # less-trained checkpoint as the "latest" one once epoch counts cross a
+    # digit-width boundary.
+    return max(candidates, key=_checkpoint_epoch_number)
 
 
 def _parse_final_loss(stdout_text: str) -> float:
@@ -151,8 +160,8 @@ def _compute_metrics(
     }
 
 
-def _checkpoint_final_epoch_path(train_out_dir: Path) -> Path:
-    return train_out_dir / "map_encoder_epoch50.pt"
+def _checkpoint_final_epoch_path(train_out_dir: Path, epochs: int) -> Path:
+    return train_out_dir / f"map_encoder_epoch{int(epochs)}.pt"
 
 
 def _load_existing_final_losses(out_dir: Path) -> Dict[int, float]:
@@ -258,7 +267,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 shutil.copy2(src, temp_dir / src.name)
 
             train_out_dir = run_root / f"k_{int(k)}"
-            if _checkpoint_final_epoch_path(train_out_dir).is_file():
+            if _checkpoint_final_epoch_path(train_out_dir, args.epochs).is_file():
                 checkpoint = _resolve_checkpoint(train_out_dir)
                 training = {
                     "checkpoint": checkpoint,

@@ -58,6 +58,16 @@ def perturb_graph(batch, noise_std: float):
     return batch
 
 
+def _should_save_checkpoint(epoch_idx: int, total_epochs: int) -> bool:
+    """epoch_idx is 0-based, matching `for epoch in range(total_epochs)`.
+
+    Save every 10th epoch, and always save the final epoch regardless of
+    where it falls relative to that cadence.
+    """
+    epoch_num = epoch_idx + 1
+    return epoch_num % 10 == 0 or epoch_num == total_epochs
+
+
 def _nt_xent_loss(z_a: "torch.Tensor", z_b: "torch.Tensor", temperature: float = 0.5) -> "torch.Tensor":
     """
     NT-Xent loss (SimCLR). z_a and z_b are already L2-normalized (shape [N, D]).
@@ -161,7 +171,7 @@ def main():
         print(f"[epoch {epoch+1:03d}/{args.epochs}] loss = {avg_loss:.6f}")
 
         # Save checkpoint
-        if (epoch + 1) % 10 == 0 or epoch == args.epochs:
+        if _should_save_checkpoint(epoch, args.epochs):
             ckpt_path = os.path.join(
                 args.out_dir, f"map_encoder_epoch{epoch+1}.pt"
             )
