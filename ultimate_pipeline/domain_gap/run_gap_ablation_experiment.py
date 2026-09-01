@@ -66,11 +66,20 @@ def _run_pipeline(seed: int) -> str:
 
 
 def _find_auto_xodr(out_dir: str) -> str:
-    return next(
-        os.path.join(out_dir, f)
-        for f in os.listdir(out_dir)
-        if f.startswith("08_final") and f.endswith(".xodr")
+    # os.listdir() order is arbitrary/OS-dependent, and a real "08_final"
+    # stage writes several variants (plain, semantic copy,
+    # laneSectionFixed repair, semantic re-copy of the repair) --
+    # `next(...)` over an unordered listing could pick any of them
+    # non-deterministically. mtime-newest matches the already-established
+    # convention elsewhere (artifact_locator.py, export_thesis_tables.py)
+    # and correctly picks the post-repair map, which the repair step
+    # exists specifically to make CARLA-safe.
+    candidates = sorted(
+        (f for f in os.listdir(out_dir) if f.startswith("08_final") and f.endswith(".xodr")),
+        key=lambda f: os.path.getmtime(os.path.join(out_dir, f)),
+        reverse=True,
     )
+    return os.path.join(out_dir, candidates[0])
 
 
 # ============================================================

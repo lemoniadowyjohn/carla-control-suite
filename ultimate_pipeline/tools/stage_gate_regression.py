@@ -12,7 +12,14 @@ def _write_json(path: Path, data: Dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
 
 def _find_stage_xodr(run_dir: Path, prefix: str) -> Path | None:
-    cands = sorted(run_dir.glob(f"{prefix}*.xodr"))
+    # A real "08_final" stage writes several variants in sequence (plain,
+    # semantic copy, laneSectionFixed repair, semantic re-copy of the
+    # repair) -- lexicographic sort picks the stale pre-repair file
+    # ("." < "_" in ASCII), the exact one the repair exists to supersede.
+    # mtime-newest matches the already-established convention elsewhere
+    # (artifact_locator.py, export_thesis_tables.py) and is also correct
+    # for the other (single-candidate) stage prefixes.
+    cands = sorted(run_dir.glob(f"{prefix}*.xodr"), key=lambda p: p.stat().st_mtime, reverse=True)
     return cands[0] if cands else None
 
 def main() -> int:
