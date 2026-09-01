@@ -2076,8 +2076,8 @@ def _assert_supported_carla_version() -> None:
         return
 
     ver = str(getattr(carla, "__version__", ""))
-    if ver:
-        assert ver.startswith("0.9."), f"Unsupported CARLA version: {ver}"
+    if ver and not ver.startswith("0.9."):
+        raise RuntimeError(f"Unsupported CARLA version: {ver}")
 
 
 # Stable screenshot filenames (thesis requirement)
