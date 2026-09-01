@@ -53,3 +53,26 @@ def test_different_seeds_produce_different_out_dirs_when_caller_uses_seed_suffix
         report = json.loads((out_dir / "gnn_training_report.json").read_text(encoding="utf-8"))
         cmd = report["training_command"]
         assert cmd[cmd.index("--seed") + 1] == str(seed)
+
+
+# 2026-09-01: _resolve_checkpoint() sorted checkpoint paths lexicographically
+# ("epoch100.pt" < "epoch90.pt" as strings), which could silently pick a
+# less-trained checkpoint as "the latest" once epoch counts cross a
+# digit-width boundary. Same bug class already found and fixed in
+# run_ksweep.py's own _resolve_checkpoint(); fixed here too while in the area.
+def test_resolve_checkpoint_picks_numerically_latest_not_lexicographically(tmp_path):
+    ckpt_dir = tmp_path / "checkpoints"
+    ckpt_dir.mkdir()
+    for n in (10, 20, 30, 40, 50, 60, 70, 80, 90, 100):
+        (ckpt_dir / f"map_encoder_epoch{n}.pt").touch()
+
+    result = run_gnn_pipeline._resolve_checkpoint(ckpt_dir)
+
+    assert result.name == "map_encoder_epoch100.pt"
+
+
+def test_resolve_checkpoint_no_candidates_returns_none(tmp_path):
+    ckpt_dir = tmp_path / "empty"
+    ckpt_dir.mkdir()
+
+    assert run_gnn_pipeline._resolve_checkpoint(ckpt_dir) is None

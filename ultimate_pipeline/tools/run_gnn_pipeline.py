@@ -51,11 +51,20 @@ def _parse_epochs(stdout_text: str) -> int:
         return 0
 
 
+def _checkpoint_epoch_number(path: Path) -> int:
+    match = re.search(r"epoch(\d+)\.pt$", path.name)
+    return int(match.group(1)) if match else -1
+
+
 def _resolve_checkpoint(checkpoint_dir: Path) -> Path | None:
-    candidates = sorted(glob.glob(str(checkpoint_dir / "*.pt")))
+    candidates = [Path(p) for p in glob.glob(str(checkpoint_dir / "*.pt"))]
     if not candidates:
         return None
-    return Path(candidates[-1])
+    # Sort numerically by epoch number, not lexicographically by filename --
+    # "epoch100.pt" < "epoch90.pt" as strings, which would silently pick a
+    # less-trained checkpoint as the "latest" one once epoch counts cross a
+    # digit-width boundary.
+    return max(candidates, key=_checkpoint_epoch_number)
 
 
 def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
