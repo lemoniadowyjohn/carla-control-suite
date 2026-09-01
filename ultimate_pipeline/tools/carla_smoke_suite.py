@@ -84,12 +84,24 @@ def _resolve_run_dir(run_dir_arg: Optional[str]) -> Path:
 
 
 def _find_xodr_in_run(run_dir: Path) -> Tuple[Optional[Path], str]:
-    candidates = [run_dir / "tiles" / "tile_0_0.xodr"]
-    candidates += sorted(run_dir.glob("08_final*.xodr"))
-    candidates += sorted(run_dir.rglob("*.xodr"))
-    for c in candidates:
-        if c.exists():
-            return c, str(c)
+    tile = run_dir / "tiles" / "tile_0_0.xodr"
+    if tile.exists():
+        return tile, str(tile)
+
+    # mtime-newest, not lexicographic: a run dir can carry multiple
+    # 08_final*.xodr variants (plain pre-repair, semantic copy,
+    # laneSectionFixed repair) -- lexicographic sort picks the pre-repair
+    # file ("." < "_" in ASCII), the exact one the repair exists to
+    # supersede (prevents CARLA MapBuilder.cpp asserts on load -- directly
+    # relevant to this being a CARLA smoke-test tool). Matches the
+    # convention already established in artifact_locator.py.
+    finals = sorted(run_dir.glob("08_final*.xodr"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if finals:
+        return finals[0], str(finals[0])
+
+    others = sorted(run_dir.rglob("*.xodr"))
+    if others:
+        return others[0], str(others[0])
     return None, "not_found"
 
 
