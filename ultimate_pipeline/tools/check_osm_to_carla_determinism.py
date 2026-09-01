@@ -39,6 +39,15 @@ def _select_final_xodr(run_dir: Path) -> Tuple[Path | None, List[Path]]:
     if semantic_candidates:
         return semantic_candidates[0], finals
 
+    # If the semantic copy is missing (e.g. that copy step failed) but the
+    # laneSection-successor repair still produced its output, prefer that
+    # over the plain pre-repair file -- same "AUTHORITATIVE MAP SWITCH"
+    # semantics stage_08_integrity.py itself uses, and the same defect
+    # class already fixed in artifact_locator.py::find_final_xodr().
+    fixed_candidates = [fx for fx in finals if "lanesectionfixed" in fx.name.lower()]
+    if fixed_candidates:
+        return fixed_candidates[0], finals
+
     return finals[0], finals
 
 
