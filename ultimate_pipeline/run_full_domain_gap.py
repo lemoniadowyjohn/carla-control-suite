@@ -768,15 +768,18 @@ def resolve_manual_xodr(manual_map_name: str) -> Path:
             # NOTE: do NOT fall back to Grid0828 here — wrong map, silent misalignment
         ],
     }
-    # Generic bounded fallback for ad-hoc named manual maps.
+    # Generic bounded fallback for ad-hoc named manual maps. Only tries
+    # spelling/layout variants of the REQUESTED name -- must never fall
+    # back to a different, specific known manual town (that's exactly the
+    # "wrong map, silent misalignment" risk the GRID0821 branch above
+    # explicitly guards against; an unrecognized/typo'd --manual-map name
+    # silently resolving to Grid0828's map would corrupt whatever
+    # domain-gap comparison follows with zero warning).
     if manual_map_name.upper() not in fallbacks:
         fallbacks[manual_map_name.upper()] = [
             _REPO_ROOT / "manual_maps" / f"{manual_map_name}.xodr",
             _REPO_ROOT / "manual_maps" / f"{manual_map_name.upper()}.xodr",
             _REPO_ROOT / "manual_maps" / manual_map_name / f"{manual_map_name}.xodr",
-            _REPO_ROOT / "manual_maps" / "manual_ingolstadt_grid0828.xodr",
-            _REPO_ROOT / "manual_maps" / "Grid0821.xodr",
-            _REPO_ROOT / "manual_maps" / "Grid0828.xodr",
         ]
     for cand in fallbacks.get(manual_map_name.upper(), []):
         try:
