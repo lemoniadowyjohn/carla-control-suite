@@ -149,10 +149,20 @@ def _pick_final_xodr(run_dir: Path, override: Optional[str]) -> Path:
             raise FileNotFoundError(p)
         return p
 
-    candidates = sorted(run_dir.glob("08_final*_laneSectionFixed.xodr"))
+    # mtime-newest, not lexicographic: a run dir can carry multiple
+    # 08_final*.xodr variants (plain pre-repair, semantic copy,
+    # laneSectionFixed repair) -- lexicographic sort picks the pre-repair
+    # file ("." < "_" in ASCII), the exact one the repair exists to
+    # supersede. Matches the convention already established in
+    # artifact_locator.py/export_thesis_tables.py/run_determinism_audit.py.
+    candidates = sorted(
+        run_dir.glob("08_final*_laneSectionFixed.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     if candidates:
         return candidates[0]
-    candidates = sorted(run_dir.glob("08_final*.xodr"))
+    candidates = sorted(
+        run_dir.glob("08_final*.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     if candidates:
         return candidates[0]
     raise FileNotFoundError(f"No final XODR found in {run_dir}")
