@@ -198,6 +198,7 @@ def snap_junction_connectors(
     skipped_missing_connecting = 0
     skipped_missing_geometries = 0
     skipped_missing_pose = 0
+    skipped_end_contact_point = 0
 
     for junction in root.findall("./junction"):
         for connection in junction.findall("./connection"):
@@ -213,6 +214,18 @@ def snap_junction_connectors(
                 skipped_missing_connecting += 1
                 continue
             if not _is_connector_road(connecting):
+                continue
+
+            contact_point = str(connection.get("contactPoint") or "start").strip().lower()
+            if contact_point == "end":
+                # The connecting road's true attach point to `incoming` is its
+                # END geometry, not its start (OpenDRIVE contactPoint="end").
+                # Snapping and forward-rechaining from geoms[0] here would move
+                # the WRONG end of the road. Correctly handling this needs
+                # backward geometry propagation, which this narrow tool does
+                # not implement -- see topology/junction_connector_rebuild.py
+                # for the full bidirectional rebuild. Skip rather than corrupt.
+                skipped_end_contact_point += 1
                 continue
 
             connectors_examined += 1
@@ -254,6 +267,7 @@ def snap_junction_connectors(
         "skipped_missing_connecting": skipped_missing_connecting,
         "skipped_missing_geometries": skipped_missing_geometries,
         "skipped_missing_pose": skipped_missing_pose,
+        "skipped_end_contact_point": skipped_end_contact_point,
     }
 
 
@@ -298,6 +312,7 @@ def run_snap(input_path: Path, output_path: Path, max_gap_m: float) -> Dict[str,
         "skipped_missing_connecting": repair["skipped_missing_connecting"],
         "skipped_missing_geometries": repair["skipped_missing_geometries"],
         "skipped_missing_pose": repair["skipped_missing_pose"],
+        "skipped_end_contact_point": repair["skipped_end_contact_point"],
     }
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     return report
