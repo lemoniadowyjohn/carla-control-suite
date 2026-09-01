@@ -1,0 +1,31 @@
+{
+  "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+  "epochs_completed": 50,
+  "final_loss": 2.424527,
+  "latent_gap": {
+    "determinism": {
+      "seed": 42,
+      "torch_deterministic": true
+    },
+    "enabled": true,
+    "encoder": {
+      "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "8fe52ea5b2626809a1021ae443e87b98",
+      "device": "cpu"
+    },
+    "metrics": {
+      "cosine_distance": 1.3281395435333252,
+      "cosine_similarity": -0.3281395733356476,
+      "l1_mean": 0.11854363977909088,
+      "l2": 1.6298094987869263,
+      "mse": 0.020752180367708206
+    }
+  },
+  "pyg_available": true,
+  "status": "COMPLETE",
+  "tile_count": 562,
+  "tiles_dir": "reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\union_tiles",
+  "timestamp": "2026-08-26T13:23:39.130779+00:00",
+  "torch_available": true,
+  "train_returncode": 0
+}

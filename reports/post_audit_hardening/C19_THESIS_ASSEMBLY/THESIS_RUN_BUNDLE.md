@@ -6,7 +6,7 @@
 
 ## Protocol snapshot
 - note: `No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead.`
-- git_commit: `74a5ee6e6ec541aa97632798a85f1b80c6795d4b`
+- git_commit: `127506519f5a35635d06aecc08d5ca51b85d8c84`
 - git_branch: `fix/post-audit-phase-e-junctions-roundabouts-20260803`
 - git_dirty: `True`
 - canonical_regen_entrypoint: `scripts/regen_map_of_record.py`
@@ -34,7 +34,7 @@
 - **RQ1/local_building_density_gap** [BOUNDED]: LOCAL manual-footprint building density comparison (C26): buildings recovered via outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded [footprint=hull]
 - **RQ1/local_frechet_distance_median_m** [BOUNDED]: Thesis future-work #14, recomputed against the current local-registration methodology: mean=55.27961477346578m p90=128.01454419021908m over 895 matched road pairs (spacing=5.0m, threshold=50.0m); ~30-50x smaller than the delivered thesis's uncropped whole-network SE(2) number on every statistic -- see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md [footprint=hull]
 - **RQ2/perceptual_gap** [DEFERRED]: paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)
-- **RQ3/RQ5/gnn_latent_cosine_distance** [AUTHORITATIVE]: 5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[1.0803263425827025, 1.2475571155548095], cosine_similarity 95% CI=[-0.24446440041065215, -0.08032630681991577] (excludes zero/no-gap)
+- **RQ3/RQ5/gnn_latent_cosine_distance** [AUTHORITATIVE]: 5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[0.616146469116211, 0.6760465860366821], cosine_similarity 95% CI=[0.32272505164146426, 0.3838535487651825] (excludes zero/no-gap)
 - **RQ3/miou_auto_train_manual_eval** [DEFERRED]: needs C17 paired captures (blocked -- see RQ2)
 - **RQ5/real_unlabeled_shift_metrics** [DEFERRED]: no real-world Ingolstadt dataset available on this machine (independent of the CARLA blocker)
 - **RQ3/domain_adaptation_coral_mmd** [DEFERRED]: needs C17 paired captures (blocked -- see RQ2)

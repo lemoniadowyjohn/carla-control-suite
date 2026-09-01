@@ -117,11 +117,11 @@
     {
       "artifact": "C21_GNN_AUTHORITATIVE/aggregate_stats.json",
       "metric": "gnn_latent_cosine_distance",
-      "note": "5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[1.0803263425827025, 1.2475571155548095], cosine_similarity 95% CI=[-0.24446440041065215, -0.08032630681991577] (excludes zero/no-gap)",
+      "note": "5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[0.616146469116211, 0.6760465860366821], cosine_similarity 95% CI=[0.32272505164146426, 0.3838535487651825] (excludes zero/no-gap)",
       "rq": "RQ3/RQ5",
-      "sha256": "c47286a47dc1abd777882e98f587ff78e4c10638bbcb9abbfd6354e212ad5ab4",
+      "sha256": "98271d19f9043a0578031059f19d2bff9bd7734bc8fedb7892cdba260ce0e532",
       "status": "AUTHORITATIVE",
-      "value": 1.153711485862732
+      "value": 0.6433733820915222
     },
     {
       "artifact": "",

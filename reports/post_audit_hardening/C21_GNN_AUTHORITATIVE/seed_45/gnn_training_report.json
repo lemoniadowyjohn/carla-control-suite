@@ -1,7 +1,7 @@
 {
-  "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+  "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_RETRAIN_20260901\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
   "epochs_completed": 50,
-  "final_loss": 2.377754,
+  "final_loss": 2.298491,
   "latent_gap": {
     "determinism": {
       "seed": 42,
@@ -9,23 +9,23 @@
     },
     "enabled": true,
     "encoder": {
-      "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
-      "checkpoint_md5": "056acbeb8749cf4fa83a32041496998d",
+      "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_RETRAIN_20260901\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "91d494d1a24d0f6e9ef5583bda272cb7",
       "device": "cpu"
     },
     "metrics": {
-      "cosine_distance": 1.111219882965088,
-      "cosine_similarity": -0.11121983826160431,
-      "l1_mean": 0.10749682039022446,
-      "l2": 1.4907848834991455,
-      "mse": 0.01736280880868435
+      "cosine_distance": 0.6553576588630676,
+      "cosine_similarity": 0.3446423411369324,
+      "l1_mean": 0.08098852634429932,
+      "l2": 1.144864797592163,
+      "mse": 0.010239964351058006
     }
   },
   "pyg_available": true,
   "status": "COMPLETE",
   "tile_count": 562,
-  "tiles_dir": "reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\union_tiles",
-  "timestamp": "2026-08-26T13:55:33.612073+00:00",
+  "tiles_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\union_tiles",
+  "timestamp": "2026-09-01T09:25:15.252036+00:00",
   "torch_available": true,
   "train_returncode": 0
 }
