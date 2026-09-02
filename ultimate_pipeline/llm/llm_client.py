@@ -41,11 +41,16 @@ class LLMClient:
         if self.config.backend != "ollama":
             raise RuntimeError(f"Unsupported LLM backend: {self.config.backend}")
 
-        # Make sure Ollama is running before sending prompts
-        ensure_ollama_ready()
-
+        # Check installation first: ensure_ollama_ready() would otherwise try
+        # to `subprocess.Popen(["ollama", "serve"], ...)` when Ollama isn't
+        # running, which raises an unhandled FileNotFoundError (not caught
+        # anywhere in ollama_bootstrap.py) if the binary isn't installed at
+        # all -- masking this intended, friendlier error with an uglier one.
         if shutil.which("ollama") is None:
             raise RuntimeError("Ollama is not installed or not in PATH.")
+
+        # Make sure Ollama is running before sending prompts
+        ensure_ollama_ready()
 
 
     def ask(self, prompt: str) -> str:
