@@ -251,9 +251,27 @@ def _run_pipeline(seed: Path, out_dir: Path, profile: str, disable_carla: bool) 
 
 
 def _find_final_xodr(run_dir: Path) -> Path:
-    patterns = list(run_dir.glob("**/08_final*.xodr")) + list(run_dir.glob("**/*DROP_BAD_LINKS*.xodr"))
+    # C10 map-hygiene (stage_08_hygiene.py, added 2026-08-19) writes its
+    # corrected output as 08h1_island_quarantined.xodr ->
+    # 08h2_degenerate_lanes_repaired.xodr -> 08h3_zseams_repaired.xodr --
+    # none of which match "08_final*" (different prefix: "08h", not
+    # "08_final"). Without this pattern, this function always fell back to
+    # the pre-hygiene 08_final*_linkpatched.xodr, silently discarding every
+    # hygiene repair (island quarantine, degenerate-lane floor-repair,
+    # z-seam repair) from every governed regen since hygiene was wired in --
+    # confirmed by direct reproduction: a real regen's 08h1_island_quarantined.xodr
+    # correctly had 30 fewer roads than the pre-hygiene file, but the
+    # candidate this function picked (and thus the emitted map-of-record)
+    # still had all 30, because it never looked at "08h*" files at all.
+    patterns = (
+        list(run_dir.glob("**/08_final*.xodr"))
+        + list(run_dir.glob("**/*DROP_BAD_LINKS*.xodr"))
+        + list(run_dir.glob("**/08h*.xodr"))
+    )
     if not patterns:
-        raise FileNotFoundError(f"No 08_final*.xodr / DROP_BAD_LINKS*.xodr found under {run_dir}")
+        raise FileNotFoundError(
+            f"No 08_final*.xodr / DROP_BAD_LINKS*.xodr / 08h*.xodr found under {run_dir}"
+        )
     patterns.sort(key=lambda p: p.stat().st_mtime, reverse=True)
     return patterns[0]
 
