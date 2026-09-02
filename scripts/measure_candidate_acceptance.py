@@ -31,6 +31,7 @@ from ultimate_pipeline.quality.check_elevation_seams import check_elevation_seam
 from ultimate_pipeline.quality.check_elevation_continuity import check_elevation_continuity
 from ultimate_pipeline.quality.check_dem_full_coverage import check_dem_full_coverage
 from ultimate_pipeline.quality.check_origin_sanity import check_origin_sanity
+from ultimate_pipeline.quality.check_junction_integrity import JunctionIntegrityGate
 from ultimate_pipeline.diagnostics.elevation_summary import summarize_elevation
 from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
@@ -78,6 +79,11 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports["origin_sanity"] = rep
     _write_json(out_dir / "origin_sanity.json", rep)
     print(f"[gate] origin_sanity: ok={rep.get('ok')} centroid_dist_m={rep.get('centroid_distance_m')}")
+
+    rep = JunctionIntegrityGate.validate(str(xodr))
+    reports["junction_integrity"] = rep
+    _write_json(out_dir / "junction_integrity.json", rep)
+    print(f"[gate] junction_integrity: ok={rep.get('ok')} issue_count={rep.get('issue_count')}")
 
     if dem is not None and dem.is_file():
         rep = check_dem_full_coverage(str(xodr), str(dem), str(out_dir / "dem_coverage.json"))

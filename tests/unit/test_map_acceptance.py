@@ -82,6 +82,65 @@ def test_map_acceptance_accepts_successful_geometric_continuity_gate_decision():
     assert acceptance["metrics"]["geometric_continuity_ok"] is True
 
 
+# ---------------------------------------------------------------------------
+# junction_integrity gate wiring
+#
+# WS1.4 follow-up (2026-09-02): _measure_acceptance()'s gate set never ran
+# JunctionIntegrityGate at all, so a real regen's hygiene-corrected candidate
+# with 28 dangling junction-connection references (produced by a separate,
+# now-fixed map_hygiene.py bug) still measured valid_for_experiments=True.
+# Wire it in unconditionally (like geometric_continuity/lane_connectivity),
+# not behind an opt-in flag, since dangling junction references are a
+# structural defect a "valid" map should never have.
+# ---------------------------------------------------------------------------
+
+
+def test_map_acceptance_hard_fails_on_junction_integrity_issues():
+    acceptance = build_map_acceptance(
+        {
+            "junction_integrity": {
+                "ok": False,
+                "issue_count": 2,
+                "issues": [
+                    {"type": "missing_incoming_road", "junction_id": "500", "connection_id": "0"},
+                    {"type": "missing_connecting_road", "junction_id": "500", "connection_id": "0"},
+                ],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "junction_integrity" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["junction_integrity_ok"] is False
+    assert acceptance["metrics"]["junction_integrity_issue_count"] == 2
+
+
+def test_map_acceptance_passes_when_junction_integrity_clean():
+    acceptance = build_map_acceptance(
+        {
+            "junction_integrity": {"ok": True, "issue_count": 0, "issues": []},
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["junction_integrity_ok"] is True
+    assert acceptance["metrics"]["junction_integrity_issue_count"] == 0
+
+
+def test_map_acceptance_junction_integrity_absent_from_reports_does_not_fail():
+    """No report supplied (e.g. a caller that hasn't run the gate yet) must
+    not be treated as a failure -- absence is not the same as ok=False."""
+    acceptance = build_map_acceptance(
+        {"geometric_continuity": {"decision": {"pass": True, "reason": "ok"}}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert "junction_integrity" not in acceptance["metrics"]
+
+
 def test_map_acceptance_rejects_unresolved_lane_successor_autofix_report():
     acceptance = build_map_acceptance(
         {

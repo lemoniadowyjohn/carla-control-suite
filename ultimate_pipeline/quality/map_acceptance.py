@@ -493,6 +493,28 @@ def build_map_acceptance(
             else:
                 soft_warnings.append({"gate": "origin_sanity", "reason": _reason_from_report(origin)})
 
+    # Junction integrity (WS1.4 follow-up, 2026-09-02): dangling
+    # <junction><connection> references (incoming/connecting road or lane
+    # missing) build an unusable junction -- CARLA/SUMO can crash on load or
+    # silently drop the connector. Discovered live: map_hygiene.py's island
+    # quarantine left exactly this kind of dangling reference behind for
+    # every road it removed, and nothing in the acceptance pipeline caught
+    # it. Always a hard fail when present, matching geometric_continuity/
+    # lane_connectivity -- not opt-in, since a dangling junction reference is
+    # a genuine structural defect a "valid" map should never have.
+    junction_integrity = reports.get("junction_integrity")
+    if isinstance(junction_integrity, dict):
+        ji_ok = junction_integrity.get("ok")
+        metrics["junction_integrity_ok"] = ji_ok
+        metrics["junction_integrity_issue_count"] = junction_integrity.get("issue_count")
+        art = _artifact_path_from_report(junction_integrity)
+        if art:
+            linked_artifacts["junction_integrity"] = art
+        if ji_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "junction_integrity", "reason": _reason_from_report(junction_integrity)}
+            )
+
     # CODEX C7: enrichment completeness (buildings + functional signals).
     # Always measured (visible in metrics) so the map is never silently
     # reported as signals=0 when it actually carries <signal> elements or
