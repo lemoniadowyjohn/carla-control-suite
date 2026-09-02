@@ -1,0 +1,35 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install CPU-only torch/torchvision first
+        # Avoids pulling a multi-GB CUDA build from the default PyPI index --
+        # this repo's local dev venv already runs the CPU build (no GPU
+        # needed for the test suite; live CARLA/GPU work is out of scope for
+        # CI, see requirements.txt's header comment).
+        run: |
+          pip install --upgrade pip
+          pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install remaining dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install the local package (editable)
+        run: pip install -e .
+
+      - name: Run pytest
+        run: python -m pytest -q
