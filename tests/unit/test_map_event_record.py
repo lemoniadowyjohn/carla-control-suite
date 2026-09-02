@@ -8,7 +8,7 @@ by_content_change below: get_map_hash() caches map_hash.sha256 keyed only by out
 basename), not by final_xodr_path content. If the same out_dir is ever reused across two prune()
 calls with DIFFERENT xodr content (e.g. a retry, or a non-timestamped/reused output directory),
 the second call silently returns the FIRST call's stale hash. In every real call site found
-(carla_pruner.py, stage_08_integrity.py/stage_08_final_integrity.py) out_dir is derived from a
+(carla_pruner.py, stage_08_integrity.py) out_dir is derived from a
 per-run output path, so this is not exercised in practice today -- documenting the actual
 behavior here rather than asserting it is correct, since fixing it would require confirming no
 call site ever reuses an out_dir across content changes.

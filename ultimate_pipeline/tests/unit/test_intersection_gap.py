@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Tests for IntersectionGap (ultimate_pipeline/domain_gap/intersection_gap.py).
 
-Live: imported by run_full_domain_gap.py, pipeline_stages/stage_11_12_sim_domain.py,
-stage_12_domain_gap.py -- feeds the RQ1 intersection-type domain-gap metric.
+Live: imported by run_full_domain_gap.py, pipeline_stages/stage_12_domain_gap.py --
+feeds the RQ1 intersection-type domain-gap metric.
 Zero prior test coverage.
 """
 from __future__ import annotations

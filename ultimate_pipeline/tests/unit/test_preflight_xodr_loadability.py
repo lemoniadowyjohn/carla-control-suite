@@ -1,7 +1,9 @@
 # ultimate_pipeline/tools/preflight_xodr_loadability.py -- zero prior test
 # coverage. Live: run_preflight() is imported and called directly from
-# stage_08_integrity.py, stage_08_final_integrity.py (the final XODR
-# integrity gate), phase_g8_acceptance.py, and smoke_load_xodr.py.
+# stage_08_integrity.py (the final XODR integrity gate), phase_g8_acceptance.py,
+# and smoke_load_xodr.py. (stage_08_final_integrity.py also calls it but is
+# itself dead code -- deleted 2026-09-02, WS5 repo-hygiene pass -- confirmed
+# zero references from anywhere outside its own file.)
 #
 # Real bug found: main() (the CLI entrypoint) duplicated the ENTIRE ~115
 # line body of run_preflight() (the programmatic entrypoint the live

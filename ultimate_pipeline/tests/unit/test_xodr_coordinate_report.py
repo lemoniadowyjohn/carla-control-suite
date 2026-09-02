@@ -1,7 +1,7 @@
 # ultimate_pipeline/tools/xodr_coordinate_report.py -- zero prior test
 # coverage. Live: invoked as a subprocess (`python -m
-# ultimate_pipeline.tools.xodr_coordinate_report`) from both
-# stage_11_12_sim_domain.py and stage_12_domain_gap.py to produce
+# ultimate_pipeline.tools.xodr_coordinate_report`) from
+# stage_12_domain_gap.py to produce
 # coord_manual.json/coord_auto.json "thesis evidence" for RQ1 domain-gap
 # coordinate-frame diagnostics. The JSON is write-only (never read back by
 # the pipeline), so bugs here affect evidence quality, not pipeline
