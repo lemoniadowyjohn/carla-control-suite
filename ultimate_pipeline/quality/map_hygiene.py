@@ -210,6 +210,35 @@ def quarantine_island_roads(
         if rid in quarantine_set:
             root.remove(road)
 
+    # Removing a road can leave <junction><connection> elements dangling: a
+    # connection references its incoming/connecting road by id only, not by
+    # XML reference, so deleting the <road> element above does not clean up
+    # any <connection> that pointed at it. An unquarantined junction can
+    # still legitimately reference a quarantined road's neighbor in the SAME
+    # small component (also quarantined), producing a connection with BOTH
+    # ends gone, or a junction most of whose connections survive but one or
+    # two don't. Confirmed via a real regen: JunctionIntegrityGate flagged
+    # missing_incoming_road/missing_connecting_road for exactly the road ids
+    # this function had just quarantined. Drop only the dangling
+    # <connection> elements (not necessarily the whole junction -- a
+    # junction with some surviving, still-valid connections remains
+    # meaningful); if a junction ends up with zero connections left, remove
+    # the junction element too (an empty junction is not meaningful and
+    # would itself be a separate integrity issue).
+    junctions_dropped = 0
+    connections_dropped = 0
+    if quarantine_set:
+        for junction in list(root.findall("junction")):
+            for conn in list(junction.findall("connection")):
+                inc = (conn.get("incomingRoad") or "").strip()
+                cnx = (conn.get("connectingRoad") or "").strip()
+                if inc in quarantine_set or cnx in quarantine_set:
+                    junction.remove(conn)
+                    connections_dropped += 1
+            if len(junction.findall("connection")) == 0:
+                root.remove(junction)
+                junctions_dropped += 1
+
     out_dir = os.path.dirname(out_xodr)
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
@@ -227,6 +256,8 @@ def quarantine_island_roads(
         "quarantined_road_ids": sorted(quarantine_ids, key=lambda x: (len(x), x)),
         "count": len(quarantine_set),
         "remaining_road_count": remaining_road_count,
+        "dangling_connections_dropped": connections_dropped,
+        "empty_junctions_dropped": junctions_dropped,
         "input_xodr": xodr_in,
         "output_xodr": out_xodr,
     }

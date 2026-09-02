@@ -91,6 +91,18 @@ def _wrap(roads_xml: str) -> str:
     return '<?xml version="1.0" encoding="utf-8"?><OpenDRIVE>' + roads_xml + "</OpenDRIVE>"
 
 
+def _junction(jid: str, connections: list) -> str:
+    """Build a single <junction> XML fragment. `connections` is a list of
+    (conn_id, incoming_road, connecting_road) tuples."""
+    conn_entries = []
+    for conn_id, incoming, connecting in connections:
+        conn_entries.append(
+            f'<connection id="{conn_id}" incomingRoad="{incoming}" '
+            f'connectingRoad="{connecting}" contactPoint="start"/>'
+        )
+    return f'<junction id="{jid}" name="J{jid}">' + "".join(conn_entries) + "</junction>"
+
+
 # ---------------------------------------------------------------------------
 # 1. Island quarantine
 # ---------------------------------------------------------------------------
@@ -172,6 +184,127 @@ def test_quarantine_island_roads_writes_report_with_sizes_and_ids(tmp_path: Path
     assert report["count"] == 1
     assert report["total_roads"] == 22
     assert report["min_component_roads"] == 20
+
+
+def test_quarantine_island_roads_drops_dangling_connections_both_ends_quarantined(
+    tmp_path: Path,
+) -> None:
+    """A junction whose ONLY connection references two roads that are both
+    in the quarantined island must have that dangling connection dropped,
+    and since it has zero connections left, the junction itself must be
+    removed too. Confirmed via a real regen: leaving these in place produces
+    JunctionIntegrityGate missing_incoming_road/missing_connecting_road
+    issues for road ids this function had just quarantined."""
+    main_roads = []
+    for i in range(1, 26):
+        succ = str(i + 1) if i < 25 else None
+        pred = str(i - 1) if i > 1 else None
+        main_roads.append(_road(str(i), successor=succ, predecessor=pred))
+
+    island_roads = [
+        _road("101", successor="102"),
+        _road("102", predecessor="101"),
+    ]
+    dangling_junction = _junction("500", [("0", "101", "102")])
+
+    xodr = _write(
+        tmp_path,
+        "islands_with_junction.xodr",
+        _wrap("".join(main_roads) + "".join(island_roads) + dangling_junction),
+    )
+    out_xodr = str(tmp_path / "islands_with_junction_out.xodr")
+
+    report = quarantine_island_roads(xodr, out_xodr, min_component_roads=20)
+
+    assert set(report["quarantined_road_ids"]) == {"101", "102"}
+    assert report["dangling_connections_dropped"] == 1
+    assert report["empty_junctions_dropped"] == 1
+
+    out_root = ET.parse(out_xodr).getroot()
+    assert out_root.findall("junction") == []
+
+
+def test_quarantine_island_roads_leaves_unrelated_junction_untouched(
+    tmp_path: Path,
+) -> None:
+    """A junction entirely within the SURVIVING main component must be left
+    completely alone (no connections dropped, junction not removed), while a
+    separate junction entirely within the quarantined island is fully
+    removed. Note: a single junction cannot legitimately reference roads in
+    BOTH the island and the main component here -- doing so would bridge
+    the two into one connected component via `_build_adjacency`'s
+    junction-connection edges, which would itself prevent the island from
+    being quarantined in the first place. So the realistic "partial loss"
+    case is two independent junctions, not one junction with mixed
+    connections."""
+    main_roads = []
+    for i in range(1, 26):
+        succ = str(i + 1) if i < 25 else None
+        pred = str(i - 1) if i > 1 else None
+        main_roads.append(_road(str(i), successor=succ, predecessor=pred))
+
+    island_roads = [
+        _road("101", successor="102"),
+        _road("102", predecessor="101"),
+    ]
+    dangling_junction = _junction("500", [("0", "101", "102")])
+    valid_junction = _junction("600", [("0", "1", "2")])
+
+    xodr = _write(
+        tmp_path,
+        "islands_two_junctions.xodr",
+        _wrap(
+            "".join(main_roads)
+            + "".join(island_roads)
+            + dangling_junction
+            + valid_junction
+        ),
+    )
+    out_xodr = str(tmp_path / "islands_two_junctions_out.xodr")
+
+    report = quarantine_island_roads(xodr, out_xodr, min_component_roads=20)
+
+    assert set(report["quarantined_road_ids"]) == {"101", "102"}
+    assert report["dangling_connections_dropped"] == 1
+    assert report["empty_junctions_dropped"] == 1
+
+    out_root = ET.parse(out_xodr).getroot()
+    surviving_junctions = out_root.findall("junction")
+    assert len(surviving_junctions) == 1
+    assert surviving_junctions[0].get("id") == "600"
+    remaining_connections = surviving_junctions[0].findall("connection")
+    assert len(remaining_connections) == 1
+    assert remaining_connections[0].get("incomingRoad") == "1"
+    assert remaining_connections[0].get("connectingRoad") == "2"
+
+
+def test_quarantine_island_roads_no_dangling_connections_when_nothing_quarantined(
+    tmp_path: Path,
+) -> None:
+    """Positive control: when no road is quarantined, no connection may be
+    dropped and the dangling-connection counters must be zero, not merely
+    absent -- callers rely on these keys always being present."""
+    roads = []
+    for i in range(1, 26):
+        succ = str(i + 1) if i < 25 else None
+        pred = str(i - 1) if i > 1 else None
+        roads.append(_road(str(i), successor=succ, predecessor=pred))
+    junction = _junction("500", [("0", "1", "2")])
+
+    xodr = _write(
+        tmp_path, "no_island_junction.xodr", _wrap("".join(roads) + junction)
+    )
+    out_xodr = str(tmp_path / "no_island_junction_out.xodr")
+
+    report = quarantine_island_roads(xodr, out_xodr, min_component_roads=20)
+
+    assert report["quarantined_road_ids"] == []
+    assert report["dangling_connections_dropped"] == 0
+    assert report["empty_junctions_dropped"] == 0
+
+    out_root = ET.parse(out_xodr).getroot()
+    assert len(out_root.findall("junction")) == 1
+    assert len(out_root.findall("junction")[0].findall("connection")) == 1
 
 
 # ---------------------------------------------------------------------------
