@@ -270,6 +270,7 @@ def _measure_acceptance(final_xodr: Path, out_dir: Path) -> Dict[str, Any]:
         final_xodr_path=str(final_xodr),
         out_dir=str(out_dir),
         require_enrichment=True,
+        require_component_reachability=True,
     )
     _write_json(out_dir / "map_acceptance.json", acceptance)
     print(f"[acceptance] valid_for_experiments={acceptance['valid_for_experiments']}")
