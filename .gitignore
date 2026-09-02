@@ -277,6 +277,15 @@ reports/post_audit_hardening/_e2_proto_locked.xodr
 reports/post_audit_hardening/_gen_watch_log/
 reports/post_audit_hardening/_proc_smoke_log/
 reports/post_audit_hardening/_manual_reverify_*/
+# Orphaned leftover from an old, diverged branch lineage (commit ec332359,
+# 2026-03-16, "feat(rq2): complete multireference structural comparison
+# baseline artifacts" -- not an ancestor of this branch). Content (sha256
+# 69ee3498e0...) does not match the current pinned Grid0828/Grid0821 manual
+# reference and is not cited by any report/evidence on this branch --
+# confirmed via a repo-wide search before excluding. Happens to share a path
+# with an argparse default in run_full_domain_gap.py/run_gnn_pipeline.py,
+# but that default is unused by this branch's current pipeline flow.
+cities/ingolstadt/manual_grid0821.xodr
 reports/post_audit_hardening/20260813T000000Z_C3_REGOVERN/candidate_g_semantic_enriched_corrected_parent.xodr
 reports/post_audit_hardening/20260814T000000Z_E1_CRASH_SAFE_ELEVATION/candidate_h_elevated_enriched_crash_safe.xodr
 reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_osm_raw/
