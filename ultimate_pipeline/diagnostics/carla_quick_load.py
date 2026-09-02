@@ -78,24 +78,26 @@ def crop_xodr(input_xodr: str, output_xodr: str, radius_m: float = 300.0) -> Non
 
     # Remove junctions that have no remaining roads referencing them (best-effort)
     # (Safe even if missed; CARLA is tolerant to unused junction elements.)
+    # <junction> elements are direct children of <OpenDRIVE>, not wrapped in
+    # a <junctions> container (there is no such wrapper anywhere in this
+    # codebase's XODR convention) -- root.find("junctions") always returned
+    # None, silently skipping this cleanup for every cropped preview.
     existing_road_ids = {r.get("id") for r in root.findall("road") if r.get("id") is not None}
-    junctions = root.find("junctions")
-    if junctions is not None:
-        for j in list(junctions.findall("junction")):
-            # If no road references this junction id, drop it.
-            jid = j.get("id")
-            if not jid:
-                continue
-            referenced = False
-            for r in root.findall("road"):
-                if r.get("junction") == jid:
-                    referenced = True
-                    break
-            if not referenced:
-                try:
-                    junctions.remove(j)
-                except Exception:
-                    pass
+    for j in list(root.findall("junction")):
+        # If no road references this junction id, drop it.
+        jid = j.get("id")
+        if not jid:
+            continue
+        referenced = False
+        for r in root.findall("road"):
+            if r.get("junction") == jid:
+                referenced = True
+                break
+        if not referenced:
+            try:
+                root.remove(j)
+            except Exception:
+                pass
 
     os.makedirs(os.path.dirname(output_xodr), exist_ok=True)
     tree.write(output_xodr, encoding="utf-8", xml_declaration=True)
