@@ -418,25 +418,55 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
-        # C29 promotion (2026-08-26): buildings' cornerGlobal surgically
-        # corrected (remediation option b -- see
-        # reports/post_audit_hardening/C29_PINNED_MAP_BUILDING_PATCH_APPLIED.md).
-        # Only building object outline corners changed (single deterministic
-        # shift); roads/lanes/signals/elevation/header offset are byte-for-
-        # byte identical to the superseded pin below. The pre-patch file
-        # remains in git history/LFS for provenance, not deleted.
+        # WS1.4 promotion (2026-09-02): fresh canonical regen through the
+        # CURRENT pipeline, superseding the 2026-08-19/26 pin which predates
+        # dozens of subsequent fixes (elevation seam-fixer sign bug, C29
+        # building-frame fix, the NaN-gate sweep, junction/lane repairs).
+        # Also carries two fixes discovered and landed during THIS
+        # promotion's own verification pass (see
+        # reports/post_audit_hardening/WS1_4_MAP_OF_RECORD_PROMOTION_20260902.md):
+        # (1) regen_map_of_record.py::_find_final_xodr() never matched C10
+        # map-hygiene's "08h*" output filenames, so every governed regen
+        # since 2026-08-19 silently shipped WITHOUT island quarantine/
+        # degenerate-lane repair/z-seam repair despite hygiene genuinely
+        # running (fixed @1121e7c1); (2) map_hygiene.py::quarantine_island_
+        # roads() removed quarantined <road> elements but left their
+        # <junction><connection> references dangling, producing 28
+        # JunctionIntegrityGate issues on the first hygiene-corrected
+        # candidate (fixed @bbf32d3d). This pin is generated with BOTH
+        # fixes applied: road-level graph_islands = 0 (was 9 components/30
+        # roads), JunctionIntegrityGate issue_count = 0 (was 28 on the
+        # first, pre-fix hygiene-corrected attempt).
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+        "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802",
+        "bytes": 148757286,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
+        # Historical claims (e.g. C14_RQ1_STRUCTURAL_GAP.json) that cite an earlier
+        # pin by sha are still valid for what they measured -- resolved against this
+        # supersedes chain by tools/validate_thesis_claim_provenance.py rather than
+        # failing as drift. Chain: 69b1f520 (pre-C29) -> 744757f3 (C29 building patch,
+        # 2026-08-26) -> a5bd01be (this pin, 2026-09-02).
+        "supersedes_sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+    },
+    # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
+    # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
+    # still resolve claims that cite the PRE-C29 sha (69b1f520...) two promotions back.
+    # That resolver iterates every PINNED_MAP_REGISTRY entry looking for a
+    # supersedes_sha256 match, not just "auto_map_of_record", so this chain-link entry
+    # is sufficient without adding multi-hop walking to the resolver itself.
+    "auto_map_of_record_c29_superseded": {
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
         "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8",
         "bytes": 144385542,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
-        "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
-        # Historical claims (e.g. C14_RQ1_STRUCTURAL_GAP.json) that cite the pre-promotion
-        # pin by sha are still valid -- the file remains committed/on-disk unmodified, and
-        # everything those claims measured (road/lane/signal geometry) is byte-identical to
-        # the current pin. tools/validate_thesis_claim_provenance.py resolves such claims
-        # against supersedes_sha256/supersedes_path rather than failing them as drift.
+        "aliases": ["auto_map_of_record_c29_superseded"],
         "supersedes_sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
         "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260819_160350.xodr",

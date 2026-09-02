@@ -106,14 +106,14 @@ def test_real_grid0821_alias_resolves_to_same_content_as_grid0828() -> None:
 
 
 def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
-    # C29 promotion (2026-08-26): buildings' cornerGlobal surgically corrected
-    # (remediation option b, see C29_PINNED_MAP_BUILDING_PATCH_APPLIED.md).
-    # Supersedes the pre-patch pin
-    # 69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e, which
-    # remains in git history/LFS for provenance but is no longer "the" auto
-    # map of record.
+    # WS1.4 promotion (2026-09-02): fresh canonical regen with the
+    # map-hygiene glob fix and the dangling-junction-connection fix both
+    # applied (see WS1_4_MAP_OF_RECORD_PROMOTION_20260902.md). Supersedes
+    # the C29 pin 744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699a
+    # a73aec8, which remains on disk for provenance but is no longer "the"
+    # auto map of record.
     result = verify_pinned_map("auto_map_of_record")
-    assert result["sha256"] == "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    assert result["sha256"] == "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
     assert result["role"] == "auto"
 
 
