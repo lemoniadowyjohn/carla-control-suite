@@ -21,12 +21,22 @@ WP1_CANDIDATES = REPO_ROOT / "reports" / "ingolstadt_map_quality_v2" / "work_pac
 COORDINATE_TESTS_JSON = WP1_CANDIDATES / "coordinate_tests.json"
 ACTUAL_REPROJECTION_XODR = WP1_CANDIDATES / "candidate_actual_reprojection.xodr"
 
-# Expected hashes (published in 03_ARTIFACT_HASH_REGISTRY.json)
+# Expected hashes. 03_ARTIFACT_HASH_REGISTRY.json (a static, "external"-tracked publication
+# record from a different local environment, not read by any code) cites CRLF-inflated values
+# for these 4 files -- left as historical record, not corrected. These below are the real,
+# platform-invariant LF hashes (2026-09-04): the 4 candidate_*.xodr files were marked
+# filter=lfs in .gitattributes but had never actually been migrated to real LFS storage
+# (git cat-file -s returned full ~81MB content, not a small pointer), so their on-disk bytes
+# had silently drifted to CRLF over time despite -text being set (ineffective while the LFS
+# filter was non-functional). Migrated via `git add --renormalize` after a fresh checkout
+# restored the correct LF content; verified byte-for-byte that CRLF-converting this LF content
+# reproduces the OLD hardcoded hashes exactly, so this is a platform-invariance fix, not a
+# real content change.
 EXPECTED_HASHES = {
-    "candidate_actual_reprojection.xodr": "3d55a86e47192e6d8558820d8acfd553eb7f665cf9726e67853f9f1a060bc702",
-    "candidate_alignment_transform_only.xodr": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
-    "candidate_correct_georeference.xodr": "f31563ebff32a5320618f21c10a01be0a9cc4743bdc09d152f2c94084881c4f0",
-    "candidate_metadata_only.xodr": "45a8693f33d7dcae6ea77969672ed08249b7b06076dc93614caab6340d190b34",
+    "candidate_actual_reprojection.xodr": "8a21a4bf8bea37fa9b3e980f25cb96c99df375372dbc42ff9e2961eaeb7b52d2",
+    "candidate_alignment_transform_only.xodr": "943e921fea47b409d02ace408b42776545773290f0fdcc71a0d48bf2caddc02b",
+    "candidate_correct_georeference.xodr": "db4554e403b87f98474c6a01861a6b31b4787949852cb93998fb364ba8d8ff56",
+    "candidate_metadata_only.xodr": "b3094f4e7e72034395284877e0b03204d7666b0b4416141593275942f79f53d4",
 }
 
 
