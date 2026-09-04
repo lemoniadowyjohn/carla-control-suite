@@ -85,6 +85,30 @@ geometry discrepancy), presented the full breakdown and asked how far to take it
 **User chose: stop here, document as final** rather than keep expanding scope. 12 real, verified
 fixes landed; 3 well-understood root causes documented as open follow-up work, not guessed at.
 
+## Follow-up: the geometry discrepancy investigated and fixed (same day)
+
+The user asked for a dedicated investigation of item 3 (the Linux/Windows
+`test_local_registration.py` failure). Root-caused via direct reproduction, not guesswork:
+
+- The synthetic manual road had only 2 points, so `transform_manual_points_to_auto_local`'s
+  `MultiPoint(...).convex_hull` degenerated to a zero-area `LineString` (confirmed directly:
+  `poly.geom_type == "LineString"`, `poly.area == 0.0`).
+- The test placed its "inside" building at the exact bbox midpoint of that line -- a point sitting
+  exactly ON a zero-width boundary (`poly.distance(Point(cx,cy)) == 0.0`, confirmed).
+- Whether "exactly on a zero-width line" counts as `contains()` depends on GEOS's floating-point
+  collinearity predicate. `shapely` vendors its own GEOS build per platform wheel, even for the
+  identical `shapely==2.1.2` pin -- resolved `True` on Windows (GEOS 3.13.1, confirmed locally),
+  evidently `False` on whatever GEOS build ships in the Linux wheel.
+- Not a `compute_local_registration` bug: real maps always yield genuine 2D polygons with real
+  area. Fixed by giving the manual road 4 non-collinear points (a real ~10x10m quadrilateral,
+  `area ~101 m^2`) -- verified directly that the "inside" point now has ~5m of real margin from
+  every edge. Committed @c7f1751e.
+- **Re-verified against real Linux CI** (run 33851488880, `workflow_dispatch`): the fixed test now
+  shows `......................` (all 22 sub-tests in the file passing) and is absent from the
+  failure list. Confirmed real improvement: 12 failed -> **11 failed**, 5572 -> **5573 passed**.
+  The remaining 11 are exactly the previously-documented 3 categories (CRLF pinning x3,
+  never-migrated-LFS x4, expected-by-design x4 incl. the 1 known flake) -- nothing new surfaced.
+
 ## State of PR #2 / the workflow
 
 PR #2 (`ci-verify-throwaway` -> `fix/post-audit-phase-e-junctions-roundabouts-20260803`) served
