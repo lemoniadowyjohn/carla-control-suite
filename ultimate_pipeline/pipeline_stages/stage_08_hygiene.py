@@ -45,6 +45,7 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
     from ultimate_pipeline.quality.map_hygiene import (
         quarantine_island_roads,
         repair_degenerate_lanes,
+        repair_lane_width_discontinuities,
         repair_true_zseams,
     )
 
@@ -108,6 +109,20 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
         f"{int(zseam_report.get('issues_before', 0) or 0)} after="
         f"{int(zseam_report.get('issues_after', 0) or 0)} "
         f"(roads modified={int(zseam_report.get('roads_modified', 0) or 0)})"
+    )
+
+    # ---- 8H-4: lane-width discontinuity repair --------------------------
+    lane_width_out = out_dir / "08h4_lane_width_discontinuities_repaired.xodr"
+    lane_width_report = repair_lane_width_discontinuities(
+        str(current_path), str(lane_width_out)
+    )
+    reports["lane_width_discontinuities"] = lane_width_report
+    current_path = lane_width_out
+    print(
+        f"[STEP 8H] Lane-width discontinuities: before="
+        f"{int(lane_width_report.get('issues_before', 0) or 0)} after="
+        f"{int(lane_width_report.get('issues_after', 0) or 0)} "
+        f"(roads modified={len(lane_width_report.get('roads_modified', []) or [])})"
     )
 
     combined = {

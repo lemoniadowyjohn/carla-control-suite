@@ -89,7 +89,7 @@ def test_hygiene_removes_islands_and_floors_degenerate_lanes(tmp_path):
 
     out = mp._step8h_map_hygiene(str(src))
 
-    assert out.endswith("08h3_zseams_repaired.xodr"), out
+    assert out.endswith("08h4_lane_width_discontinuities_repaired.xodr"), out
     final_ids = _road_ids(out)
     assert "100" not in final_ids and "101" not in final_ids and "102" not in final_ids
     for i in range(25):
@@ -114,6 +114,7 @@ def test_hygiene_removes_islands_and_floors_degenerate_lanes(tmp_path):
     for name in ("08h1_island_quarantined.xodr",
                  "08h2_degenerate_lanes_repaired.xodr",
                  "08h3_zseams_repaired.xodr",
+                 "08h4_lane_width_discontinuities_repaired.xodr",
                  "map_hygiene_report.json"):
         assert (tmp_path / "out" / name).is_file(), name
 
@@ -168,9 +169,20 @@ def test_hygiene_combined_ok_reflects_a_failed_sub_stage(tmp_path):
         "input_xodr": "x",
         "output_xodr": "y",
     }
+
+    def _fake_zseam_repair(xodr_in, out_xodr):
+        # A real repair_true_zseams() always writes out_xodr even when it
+        # can't resolve every issue -- step 8H-4 (added round 5) now reads
+        # this stage's output, so the mock must be faithful about that too,
+        # not just return a canned report dict.
+        import shutil
+
+        shutil.copy2(xodr_in, out_xodr)
+        return failing_zseam_report
+
     with mock.patch(
         "ultimate_pipeline.quality.map_hygiene.repair_true_zseams",
-        return_value=failing_zseam_report,
+        side_effect=_fake_zseam_repair,
     ):
         mp._step8h_map_hygiene(str(src))
 
@@ -195,4 +207,44 @@ def test_hygiene_is_idempotent_on_clean_map(tmp_path):
     assert report["stages"]["island_quarantine"]["count"] == 0
     assert report["stages"]["degenerate_lanes"]["repaired_count"] == 0
     assert report["stages"]["true_zseams"]["issues_after"] == 0
+    assert report["stages"]["lane_width_discontinuities"]["repaired_count"] == 0
     assert _road_ids(out) == {str(i) for i in range(25)}
+
+
+def test_hygiene_repairs_lane_width_discontinuity(tmp_path):
+    """Round-4/5 gap: repair_lane_width_discontinuities() existed and was
+    tested since round 2 (road 46620's 3.5m->3.0m instant width step) but
+    was never actually wired into this live pipeline stage -- confirmed by
+    a real regen this session hitting the exact same defect and getting
+    correctly rejected by acceptance. Step 8H-4 must now catch and repair
+    a same-lane-id/type width discontinuity at a laneSection boundary."""
+    src = tmp_path / "final.xodr"
+    root = ET.Element("OpenDRIVE")
+    ET.SubElement(root, "header", revMajor="1", revMinor="4")
+
+    road = ET.Element("road", id="0", length="10.0", junction="-1")
+    elev = ET.SubElement(road, "elevationProfile")
+    ET.SubElement(elev, "elevation", s="0.000000", a="0.000000", b="0.000000", c="0.000000", d="0.000000")
+    lanes = ET.SubElement(road, "lanes")
+    ls0 = ET.SubElement(lanes, "laneSection", s="0.000000")
+    right0 = ET.SubElement(ls0, "right")
+    lane0 = ET.SubElement(right0, "lane", id="-1", type="driving", level="false")
+    ET.SubElement(lane0, "width", sOffset="0.000000", a="3.5", b="0.000000", c="0.000000", d="0.000000")
+    ls1 = ET.SubElement(lanes, "laneSection", s="0.050000")
+    right1 = ET.SubElement(ls1, "right")
+    lane1 = ET.SubElement(right1, "lane", id="-1", type="driving", level="false")
+    ET.SubElement(lane1, "width", sOffset="0.000000", a="3.0", b="0.000000", c="0.000000", d="0.000000")
+    root.append(road)
+    ET.ElementTree(root).write(str(src), encoding="utf-8", xml_declaration=True)
+
+    mp = _make_pipeline(tmp_path)
+    out = mp._step8h_map_hygiene(str(src))
+
+    report = mp.map_hygiene_report
+    lw_report = report["stages"]["lane_width_discontinuities"]
+    assert lw_report["issues_before"] == 1
+    assert lw_report["issues_after"] == 0
+    assert lw_report["repaired_count"] == 1
+    assert lw_report["ok"] is True
+    assert report["ok"] is True
+    assert (tmp_path / "out" / "08h4_lane_width_discontinuities_repaired.xodr").is_file()
