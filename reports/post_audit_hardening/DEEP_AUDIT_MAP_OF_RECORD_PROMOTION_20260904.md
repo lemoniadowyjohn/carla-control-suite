@@ -113,6 +113,24 @@ faith), matching this session's "verify before touching" discipline:
 No fixes needed; all 6 are either diagnostic-only, unreachable in practice, or false positives on
 closer reading.
 
+## Follow-up: wired the 3 remaining lower-stakes gates too (user-requested)
+
+User asked "any more improvements or hardening?" after the above was done. Wired the final 3
+unwired checkers from the original gate-wiring audit (`check_semantic_overlap`,
+`check_randomness_entropy`, `collision_mesh`) into `run_gates()`/`build_map_acceptance()` as
+**soft-info reports only** -- unlike the 5 structural gates, all 3 are self-documented by their own
+authors as heuristic/diagnostic/non-fatal (`SemanticOverlapChecker`: "not necessarily wrong, but
+something to review"; `collision_mesh`: "diagnostic only... unless enforced elsewhere", off by
+default). Forcing these to hard-fail would impose a stricter policy than intended and would likely
+make `semantic_overlap` fire on any normally-enriched real map. 16 new tests, RED-verified.
+Committed @c9d1eb12.
+
+Checked directly against the real promoted candidate: `semantic_overlap` 0 issues,
+`randomness_entropy` 0.965 (healthy, well above the 0.05 floor -- confirms Ingolstadt's real,
+organic street layout), `collision_mesh` 0 issues (no-op, disabled by default as designed). No
+surprises; no re-promotion needed since these are soft-only and don't affect
+`valid_for_experiments`.
+
 ## Final status
 
 All 5 workstreams of the deep-audit plan closed. The map-of-record now passes every wired
