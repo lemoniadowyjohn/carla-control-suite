@@ -26,6 +26,7 @@ from ultimate_pipeline.quality.map_hygiene import (
     quarantine_island_roads,
     repair_degenerate_lanes,
     repair_true_zseams,
+    repair_lane_width_discontinuities,
 )
 
 
@@ -495,3 +496,181 @@ def test_repair_true_zseams_ignores_junction_connector_offset(tmp_path: Path) ->
     out_root = ET.parse(out_xodr).getroot()
     elev9 = out_root.find("road[@id='9']/elevationProfile/elevation")
     assert float(elev9.get("a")) == pytest.approx(401.2, abs=1e-9)
+
+
+# ---------------------------------------------------------------------------
+# 4. Lane width discontinuity repair (deep-audit follow-up, 2026-09-04)
+#
+# Wiring check_lane_geometry_continuity into map acceptance (WS-A of the
+# deep-audit plan) surfaced a real, previously-invisible defect: road 46620's
+# right driving lane steps 3.5m -> 3.0m over a 0.05m laneSection -- an instant
+# width change, not a taper. Root-caused to stage_07_lanes.py (present as of
+# that pipeline stage's own output, not introduced by a later repair), but
+# fixing lane-generation logic used for all 32,267 roads to address a single
+# outlier was judged too broad-blast-radius; a targeted, minimally-invasive
+# post-generation repair (matching this file's established pattern) is safer.
+# ---------------------------------------------------------------------------
+
+
+def _road_with_two_lane_sections(
+    rid: str,
+    *,
+    length: float,
+    boundary_s: float,
+    width_before: float,
+    width_after: float,
+    lane_id: str = "-1",
+    lane_type: str = "driving",
+    lane_type_after: str | None = None,
+) -> str:
+    """A road with exactly 2 laneSections split at boundary_s, both carrying
+    a single flat-width lane at `lane_id`. `lane_type_after` lets a test
+    deliberately create a type mismatch (the same false-positive class
+    check_lane_geometry_continuity already excludes)."""
+    lane_type_after = lane_type_after or lane_type
+    return (
+        f'<road id="{rid}" length="{length}" junction="-1">'
+        f'<planView><geometry s="0" x="0" y="0" hdg="0" length="{length}"><line/></geometry></planView>'
+        f'<elevationProfile><elevation s="0" a="0.0" b="0" c="0" d="0"/></elevationProfile>'
+        "<lanes>"
+        f'<laneSection s="0">'
+        f'<right><lane id="{lane_id}" type="{lane_type}" level="false">'
+        f'<width sOffset="0" a="{width_before}" b="0" c="0" d="0"/>'
+        "</lane></right>"
+        "</laneSection>"
+        f'<laneSection s="{boundary_s}">'
+        f'<right><lane id="{lane_id}" type="{lane_type_after}" level="false">'
+        f'<width sOffset="0" a="{width_after}" b="0" c="0" d="0"/>'
+        "</lane></right>"
+        "</laneSection>"
+        "</lanes>"
+        "</road>"
+    )
+
+
+def test_repair_lane_width_discontinuities_fixes_short_leading_section(tmp_path: Path) -> None:
+    """Matches the real road-46620 case: a short (0.05m) leading section
+    with a width that disagrees with the much-longer trailing section --
+    the SHORTER (leading) section must be the one adjusted, since that
+    alters the least amount of road."""
+    xodr = _write(
+        tmp_path,
+        "narrowing.xodr",
+        _wrap(
+            _road_with_two_lane_sections(
+                "1", length=214.74, boundary_s=0.05, width_before=3.5, width_after=3.0
+            )
+        ),
+    )
+    out_xodr = str(tmp_path / "narrowing_repaired.xodr")
+
+    report = repair_lane_width_discontinuities(xodr, out_xodr, eps=0.10)
+
+    assert report["issues_before"] == 1
+    assert report["issues_after"] == 0
+    assert report["ok"] is True
+    assert report["repaired_count"] == 1
+    assert report["roads_modified"] == ["1"]
+    assert report["details"][0]["adjusted_section"] == "prev"
+
+    out_root = ET.parse(out_xodr).getroot()
+    sections = out_root.find("road[@id='1']/lanes").findall("laneSection")
+    first_width = sections[0].find("right/lane/width")
+    second_width = sections[1].find("right/lane/width")
+    # The short leading section's width now matches the long trailing
+    # section's width (3.0), not the other way around.
+    assert float(first_width.get("a")) == pytest.approx(3.0, abs=1e-6)
+    assert float(second_width.get("a")) == pytest.approx(3.0, abs=1e-6)
+
+
+def test_repair_lane_width_discontinuities_adjusts_shorter_trailing_section(tmp_path: Path) -> None:
+    """When the LATER section is the shorter one, that side must be
+    adjusted instead -- always the section that alters less road length."""
+    xodr = _write(
+        tmp_path,
+        "widening.xodr",
+        _wrap(
+            _road_with_two_lane_sections(
+                "1", length=100.0, boundary_s=99.9, width_before=3.0, width_after=3.6
+            )
+        ),
+    )
+    out_xodr = str(tmp_path / "widening_repaired.xodr")
+
+    report = repair_lane_width_discontinuities(xodr, out_xodr, eps=0.10)
+
+    assert report["issues_before"] == 1
+    assert report["issues_after"] == 0
+    assert report["details"][0]["adjusted_section"] == "next"
+
+    out_root = ET.parse(out_xodr).getroot()
+    sections = out_root.find("road[@id='1']/lanes").findall("laneSection")
+    first_width = sections[0].find("right/lane/width")
+    second_width = sections[1].find("right/lane/width")
+    assert float(first_width.get("a")) == pytest.approx(3.0, abs=1e-6)
+    assert float(second_width.get("a")) == pytest.approx(3.0, abs=1e-6)
+
+
+def test_repair_lane_width_discontinuities_ignores_lane_type_mismatch(tmp_path: Path) -> None:
+    """A sidewalk<->driving transition (the established false-positive
+    class, road 46620's ORIGINAL DEEP_QUALITY_SWEEP finding) must not be
+    touched -- check_lane_geometry_continuity itself already excludes it,
+    and this repair must inherit that exclusion by only acting on issues
+    the checker actually reports."""
+    xodr = _write(
+        tmp_path,
+        "type_transition.xodr",
+        _wrap(
+            _road_with_two_lane_sections(
+                "1",
+                length=100.0,
+                boundary_s=0.05,
+                width_before=2.0,
+                width_after=3.5,
+                lane_id="1",
+                lane_type="sidewalk",
+                lane_type_after="driving",
+            )
+        ),
+    )
+    out_xodr = str(tmp_path / "type_transition_repaired.xodr")
+
+    report = repair_lane_width_discontinuities(xodr, out_xodr, eps=0.10)
+
+    assert report["issues_before"] == 0
+    assert report["repaired_count"] == 0
+    assert report["roads_modified"] == []
+
+    out_root = ET.parse(out_xodr).getroot()
+    sections = out_root.find("road[@id='1']/lanes").findall("laneSection")
+    assert float(sections[0].find("right/lane/width").get("a")) == pytest.approx(2.0, abs=1e-6)
+    assert float(sections[1].find("right/lane/width").get("a")) == pytest.approx(3.5, abs=1e-6)
+
+
+def test_repair_lane_width_discontinuities_positive_control_clean_map_untouched(
+    tmp_path: Path,
+) -> None:
+    """A map with no width discontinuity must be reported clean and left
+    byte-for-byte unmodified in content."""
+    xodr = _write(
+        tmp_path,
+        "clean.xodr",
+        _wrap(
+            _road_with_two_lane_sections(
+                "1", length=100.0, boundary_s=50.0, width_before=3.5, width_after=3.55
+            )
+        ),
+    )
+    out_xodr = str(tmp_path / "clean_out.xodr")
+
+    report = repair_lane_width_discontinuities(xodr, out_xodr, eps=0.10)
+
+    assert report["issues_before"] == 0
+    assert report["issues_after"] == 0
+    assert report["repaired_count"] == 0
+    assert report["roads_modified"] == []
+
+    out_root = ET.parse(out_xodr).getroot()
+    sections = out_root.find("road[@id='1']/lanes").findall("laneSection")
+    assert float(sections[0].find("right/lane/width").get("a")) == pytest.approx(3.5, abs=1e-6)
+    assert float(sections[1].find("right/lane/width").get("a")) == pytest.approx(3.55, abs=1e-6)

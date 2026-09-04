@@ -43,6 +43,9 @@ from typing import Any, Dict, List, Optional, Tuple
 from ultimate_pipeline.quality.check_elevation_continuity import (
     check_elevation_continuity,
 )
+from ultimate_pipeline.quality.check_lane_geometry_continuity import (
+    check_lane_geometry_continuity,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -574,6 +577,153 @@ def repair_true_zseams(
         "issues_after": issues_after,
         "roads_modified": len(roads_modified),
         "roads_modified_ids": sorted(roads_modified, key=lambda x: (len(x), x)),
+        "input_xodr": xodr_in,
+        "output_xodr": out_xodr,
+    }
+
+
+# ---------------------------------------------------------------------------
+# 4. Lane width discontinuity repair (deep-audit follow-up, 2026-09-04)
+# ---------------------------------------------------------------------------
+
+
+def _find_lane_by_id(section: ET.Element, lane_id: str) -> Optional[ET.Element]:
+    for side in ("left", "right"):
+        side_elem = section.find(side)
+        if side_elem is None:
+            continue
+        lane = side_elem.find(f"lane[@id='{lane_id}']")
+        if lane is not None:
+            return lane
+    return None
+
+
+def repair_lane_width_discontinuities(
+    xodr_in: str,
+    out_xodr: str,
+    eps: Optional[float] = None,
+) -> Dict[str, Any]:
+    """
+    Use check_lane_geometry_continuity (imported, never reimplemented) to
+    find genuine same-lane-id/type width discontinuities at laneSection
+    boundaries (deep-audit follow-up, 2026-09-04: wiring this checker into
+    map acceptance surfaced a real, previously-invisible defect -- road
+    46620's right driving lane stepped 3.5m -> 3.0m over a 0.05m laneSection,
+    an instant width change rather than a taper), then repair each by
+    nudging the SHORTER of the two bracketing sections' boundary-adjacent
+    <width> record's constant term ("a") by the residual delta needed to
+    close the gap -- preserving any existing b/c/d taper shape (matching
+    repair_true_zseams's "shift the constant term by the residual" pattern),
+    while minimizing how much of the road's length is altered by always
+    adjusting the shorter section. laneOffset-type issues (a distinct
+    defect class from lane width) are out of scope for this repair.
+    """
+    if eps is None:
+        eps = _env_float("UP_LANE_WIDTH_CONT_EPS", 0.10)
+
+    tree = ET.parse(xodr_in)
+    root = tree.getroot()
+
+    road_by_id: Dict[str, ET.Element] = {}
+    for r in root.findall("road"):
+        rid = (r.get("id") or "").strip()
+        if rid:
+            road_by_id[rid] = r
+
+    before_report = check_lane_geometry_continuity(xodr_in, lane_width_eps=eps)
+    issues_before = int(before_report.get("n_issues", 0))
+
+    details: List[Dict[str, Any]] = []
+    roads_modified: set = set()
+
+    for issue in before_report.get("issues", []):
+        if issue.get("type") != "lane_width":
+            continue
+        rid = str(issue.get("road_id", ""))
+        lane_id = str(issue.get("lane_id", ""))
+        boundary_s = _safe_float(issue.get("boundary_s"))
+        road = road_by_id.get(rid)
+        if road is None:
+            continue
+        road_len = _safe_float(road.get("length"))
+        lanes_elem = road.find("lanes")
+        if lanes_elem is None:
+            continue
+        sections = sorted(
+            lanes_elem.findall("laneSection"),
+            key=lambda el: _safe_float(el.get("s")),
+        )
+
+        prev_sec = next_sec = None
+        for idx in range(len(sections) - 1):
+            if abs(_safe_float(sections[idx + 1].get("s")) - boundary_s) < 1e-6:
+                prev_sec, next_sec = sections[idx], sections[idx + 1]
+                break
+        if prev_sec is None or next_sec is None:
+            continue
+
+        s_prev = _safe_float(prev_sec.get("s"))
+        s_next = _safe_float(next_sec.get("s"))
+        s_after_next = road_len
+        for later in sections:
+            s_l = _safe_float(later.get("s"))
+            if s_l > s_next + 1e-9:
+                s_after_next = s_l
+                break
+        prev_len = max(0.0, s_next - s_prev)
+        next_len = max(0.0, s_after_next - s_next)
+
+        prev_lane = _find_lane_by_id(prev_sec, lane_id)
+        next_lane = _find_lane_by_id(next_sec, lane_id)
+        if prev_lane is None or next_lane is None:
+            continue
+
+        current_prev_end = _safe_float(issue.get("prev"))
+        current_next_start = _safe_float(issue.get("next"))
+
+        if prev_len <= next_len:
+            widths = sorted(prev_lane.findall("width"), key=lambda w: _safe_float(w.get("sOffset")))
+            if not widths:
+                continue
+            w = widths[-1]  # the width record governing the END of this section
+            delta = current_next_start - current_prev_end
+        else:
+            widths = sorted(next_lane.findall("width"), key=lambda w: _safe_float(w.get("sOffset")))
+            if not widths:
+                continue
+            w = widths[0]  # the width record governing the START of this section
+            delta = current_prev_end - current_next_start
+
+        new_a = _safe_float(w.get("a")) + delta
+        w.set("a", f"{new_a:.6f}")
+        roads_modified.add(rid)
+        details.append(
+            {
+                "road_id": rid,
+                "lane_id": lane_id,
+                "boundary_s": boundary_s,
+                "before_prev": current_prev_end,
+                "before_next": current_next_start,
+                "adjusted_section": "prev" if prev_len <= next_len else "next",
+            }
+        )
+
+    out_dir = os.path.dirname(out_xodr)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    tree.write(out_xodr, encoding="utf-8", xml_declaration=True)
+
+    after_report = check_lane_geometry_continuity(out_xodr, lane_width_eps=eps)
+    issues_after = int(after_report.get("n_issues", 0))
+
+    return {
+        "ok": issues_after == 0,
+        "eps": eps,
+        "issues_before": issues_before,
+        "issues_after": issues_after,
+        "repaired_count": len(details),
+        "roads_modified": sorted(roads_modified, key=lambda x: (len(x), x)),
+        "details": details,
         "input_xodr": xodr_in,
         "output_xodr": out_xodr,
     }
