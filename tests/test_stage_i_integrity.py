@@ -28,7 +28,10 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[1]
 R = REPO / "reports" / "post_audit_hardening" / "20260807T000000Z"
-PY = str(REPO / ".venv" / "Scripts" / "python.exe")
+# sys.executable (not a hardcoded ".venv/Scripts/python.exe") -- that layout
+# is Windows-only; Linux venvs use ".venv/bin/python". sys.executable is the
+# portable way to spawn "the interpreter currently running this test".
+PY = sys.executable
 
 CAND = R / "candidate_crosswalk_enriched.xodr"
 PARENT = R / "candidate_g_semantic_enriched.xodr"

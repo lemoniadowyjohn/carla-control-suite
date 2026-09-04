@@ -215,4 +215,8 @@ def test_allowed_paths(tmp_path: Path) -> None:
 
 
 def test_canonical_path() -> None:
-    assert str(CANONICAL_LOCK_PATH) == ".agent_locks\\writer.lock"
+    # Path str() renders with the OS-native separator (backslash on Windows,
+    # forward slash on Linux/Mac); compare via Path equality, which
+    # normalizes both operands the same way, rather than a hardcoded
+    # separator literal.
+    assert CANONICAL_LOCK_PATH == Path(".agent_locks") / "writer.lock"
