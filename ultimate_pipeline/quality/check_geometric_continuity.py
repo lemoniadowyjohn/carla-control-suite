@@ -510,8 +510,24 @@ def recompute_geometry_starts_chained_inplace(root: ET.Element, *, eps_change: f
 
         for i in range(1, len(geoms_el)):
             prev_model = models[i - 1]
-            prev_end = _pose_for_geometry(prev_model, max(float(prev_model.length), 0.0))
             cur_model = models[i]
+
+            # Guard: a paramPoly3 whose declared `length` doesn't match its
+            # polynomial's actual parametric arc length is a known OpenDRIVE-
+            # authoring gotcha from OSM/SUMO conversion (C33_HEADING_SMOOTHING_
+            # V2_RECOMPUTE_STILL_UNSAFE.md: 96% of residual seams involved
+            # paramPoly3 as the preceding segment). When pRange="arcLength",
+            # _pose_param_poly3 evaluates the polynomial at p=declared_length
+            # directly rather than the true parametric endpoint, producing a
+            # wrong position that this function would otherwise chain the
+            # next geometry onto -- introducing a NEW seam instead of fixing
+            # one. Leave the next geometry as-authored rather than trust an
+            # untrustworthy endpoint.
+            if prev_model.kind == "paramPoly3" and str(prev_model.param_p_range or "").strip() == "arcLength":
+                models[i] = cur_model
+                continue
+
+            prev_end = _pose_for_geometry(prev_model, max(float(prev_model.length), 0.0))
 
             # Guard: preserve spatial anchors — do not reposition geometry
             # that is intentionally placed far from the previous endpoint.
