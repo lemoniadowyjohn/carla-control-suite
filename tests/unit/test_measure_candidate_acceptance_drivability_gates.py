@@ -309,3 +309,90 @@ def test_run_gates_physics_feasibility_clean(tmp_path: Path) -> None:
     assert rep is not None
     assert rep["ok"] is True
     assert rep["issue_count"] == 0
+
+
+# ---------------------------------------------------------------------------
+# Deep-audit follow-up, round 2 (2026-09-04): semantic_overlap,
+# randomness_entropy, collision_mesh -- all 3 self-documented as heuristic/
+# diagnostic/non-fatal, so they're wired as soft-info reports (see
+# test_map_acceptance.py for the acceptance-side soft-warning-only handling).
+# ---------------------------------------------------------------------------
+
+
+def test_run_gates_reports_semantic_overlap(tmp_path: Path) -> None:
+    xodr = tmp_path / "overlap.xodr"
+    xodr.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+    <objects>
+      <object id="1" type="sidewalk" s="0" t="0" zOffset="0" length="0" width="0" hdg="0"/>
+      <object id="2" type="building" s="0" t="0" zOffset="0" length="0" width="0" hdg="0"/>
+    </objects>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("semantic_overlap")
+    assert rep is not None
+    assert rep["ok"] is False
+    assert rep["issue_count"] >= 1
+    assert (tmp_path / "out" / "semantic_overlap.json").is_file()
+
+
+def test_run_gates_semantic_overlap_clean(tmp_path: Path) -> None:
+    xodr = tmp_path / "clean.xodr"
+    _write_clean_xodr(xodr)
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("semantic_overlap")
+    assert rep is not None
+    assert rep["ok"] is True
+
+
+def test_run_gates_reports_low_randomness_entropy(tmp_path: Path) -> None:
+    xodr = tmp_path / "grid.xodr"
+    xodr.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="0" x="0" y="0" hdg="0.0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+  </road>
+  <road id="2" length="10.0" junction="-1">
+    <planView><geometry s="0" x="0" y="0" hdg="0.0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("randomness_entropy")
+    assert rep is not None
+    assert rep["ok"] is False
+    assert rep["entropy"] < 0.05
+    assert (tmp_path / "out" / "randomness_entropy.json").is_file()
+
+
+def test_run_gates_reports_collision_mesh_disabled_by_default(tmp_path: Path) -> None:
+    """CollisionMeshValidator is off by default (SETTINGS.ENABLE_SHAPELY_GEOMETRY_QA);
+    run_gates() must still call it and record a clean, well-formed report."""
+    xodr = tmp_path / "clean.xodr"
+    _write_clean_xodr(xodr)
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("collision_mesh")
+    assert rep is not None
+    assert rep["ok"] is True
+    assert (tmp_path / "out" / "collision_mesh.json").is_file()

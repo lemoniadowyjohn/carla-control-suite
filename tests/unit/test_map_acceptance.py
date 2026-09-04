@@ -303,6 +303,97 @@ def test_map_acceptance_passes_when_physics_feasibility_clean():
     assert acceptance["metrics"]["physics_feasibility_issue_count"] == 0
 
 
+# ---------------------------------------------------------------------------
+# Deep-audit follow-up (2026-09-04), round 2: semantic_overlap,
+# randomness_entropy, collision_mesh are self-documented as heuristic/
+# diagnostic/non-fatal by their own authors -- unlike the 5 structural gates
+# above, these must only ever produce a SOFT warning, never a hard fail.
+# ---------------------------------------------------------------------------
+
+
+def test_map_acceptance_soft_warns_on_semantic_overlap_issues_never_hard_fails():
+    acceptance = build_map_acceptance(
+        {
+            "semantic_overlap": {
+                "ok": False,
+                "issue_count": 1,
+                "issues": [{"road_id": "1", "type": "sidewalk_building_overlap_candidate"}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert "semantic_overlap" not in acceptance["failed_gates"]
+    assert acceptance["metrics"]["semantic_overlap_ok"] is False
+    assert acceptance["metrics"]["semantic_overlap_issue_count"] == 1
+    assert any(w["gate"] == "semantic_overlap" for w in acceptance["soft_warnings"])
+
+
+def test_map_acceptance_passes_when_semantic_overlap_clean():
+    acceptance = build_map_acceptance(
+        {"semantic_overlap": {"ok": True, "issue_count": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["semantic_overlap_ok"] is True
+    assert acceptance["soft_warnings"] == []
+
+
+def test_map_acceptance_soft_warns_on_low_randomness_entropy_never_hard_fails():
+    acceptance = build_map_acceptance(
+        {"randomness_entropy": {"ok": False, "entropy": 0.01}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert "randomness_entropy" not in acceptance["failed_gates"]
+    assert acceptance["metrics"]["randomness_entropy_ok"] is False
+    assert acceptance["metrics"]["randomness_entropy_entropy"] == 0.01
+    assert any(w["gate"] == "randomness_entropy" for w in acceptance["soft_warnings"])
+
+
+def test_map_acceptance_passes_when_randomness_entropy_clean():
+    acceptance = build_map_acceptance(
+        {"randomness_entropy": {"ok": True, "entropy": 0.87}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["randomness_entropy_ok"] is True
+    assert acceptance["soft_warnings"] == []
+
+
+def test_map_acceptance_soft_warns_on_collision_mesh_issues_never_hard_fails():
+    acceptance = build_map_acceptance(
+        {
+            "collision_mesh": {
+                "ok": False,
+                "issue_count": 1,
+                "issues": ["Road 1: failed to build buffered geometry"],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert "collision_mesh" not in acceptance["failed_gates"]
+    assert acceptance["metrics"]["collision_mesh_ok"] is False
+    assert any(w["gate"] == "collision_mesh" for w in acceptance["soft_warnings"])
+
+
+def test_map_acceptance_passes_when_collision_mesh_clean_or_disabled():
+    acceptance = build_map_acceptance(
+        {"collision_mesh": {"ok": True, "issue_count": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["collision_mesh_ok"] is True
+    assert acceptance["soft_warnings"] == []
+
+
 def test_map_acceptance_new_gates_absent_from_reports_does_not_fail():
     """As with junction_integrity: no report supplied must not be treated as
     a failure -- absence is not the same as ok=False."""
@@ -318,6 +409,9 @@ def test_map_acceptance_new_gates_absent_from_reports_does_not_fail():
         "elevation_missing_and_cliffs",
         "elevation_smoothness",
         "physics_feasibility",
+        "semantic_overlap",
+        "randomness_entropy",
+        "collision_mesh",
     ):
         assert key not in acceptance["metrics"]
 

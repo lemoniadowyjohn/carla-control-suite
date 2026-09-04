@@ -39,6 +39,9 @@ from ultimate_pipeline.quality.check_elevation_missing_and_cliffs import (
 )
 from ultimate_pipeline.quality.check_elevation_smoothness import ElevationSmoothnessGate
 from ultimate_pipeline.quality.check_physics_feasibility import PhysicsFeasibilityChecker
+from ultimate_pipeline.quality.check_semantic_overlap import SemanticOverlapChecker
+from ultimate_pipeline.quality.check_randomness_entropy import RandomnessEntropyMetric
+from ultimate_pipeline.quality.collision_mesh import CollisionMeshValidator
 from ultimate_pipeline.diagnostics.elevation_summary import summarize_elevation
 from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
@@ -123,6 +126,32 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports["physics_feasibility"] = rep
     _write_json(out_dir / "physics_feasibility.json", rep)
     print(f"[gate] physics_feasibility: ok={rep['ok']} issue_count={rep['issue_count']}")
+
+    # Deep-audit follow-up (2026-09-04): 3 more unwired checkers, all
+    # self-documented as heuristic/diagnostic/non-fatal ("not necessarily
+    # wrong, but something to review" -- SemanticOverlapChecker;
+    # "diagnostic only (non-fatal unless enforced elsewhere)" -- collision_mesh),
+    # unlike the 5 structural gates above. Wired as soft-info reports here
+    # (build_map_acceptance treats them as soft warnings, never hard-fail),
+    # matching what their own authors intended rather than imposing a
+    # stricter policy than documented.
+    semantic_issues = SemanticOverlapChecker.validate(physics_root)
+    rep = {"ok": len(semantic_issues) == 0, "issue_count": len(semantic_issues), "issues": semantic_issues}
+    reports["semantic_overlap"] = rep
+    _write_json(out_dir / "semantic_overlap.json", rep)
+    print(f"[info] semantic_overlap: ok={rep['ok']} issue_count={rep['issue_count']}")
+
+    entropy_score = RandomnessEntropyMetric.compute(physics_root)
+    rep = {"ok": entropy_score >= 0.05, "entropy": entropy_score}
+    reports["randomness_entropy"] = rep
+    _write_json(out_dir / "randomness_entropy.json", rep)
+    print(f"[info] randomness_entropy: ok={rep['ok']} entropy={entropy_score}")
+
+    collision_issues = CollisionMeshValidator.validate(physics_root)
+    rep = {"ok": len(collision_issues) == 0, "issue_count": len(collision_issues), "issues": collision_issues}
+    reports["collision_mesh"] = rep
+    _write_json(out_dir / "collision_mesh.json", rep)
+    print(f"[info] collision_mesh: ok={rep['ok']} issue_count={rep['issue_count']}")
 
     if dem is not None and dem.is_file():
         rep = check_dem_full_coverage(str(xodr), str(dem), str(out_dir / "dem_coverage.json"))

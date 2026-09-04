@@ -597,6 +597,36 @@ def build_map_acceptance(
                 {"gate": "physics_feasibility", "reason": _reason_from_report(physics_feasibility)}
             )
 
+    # Deep-audit follow-up (2026-09-04): 3 more unwired checkers, each
+    # self-documented by its own author as heuristic/diagnostic/non-fatal --
+    # SemanticOverlapChecker: "not necessarily wrong, but something to
+    # review"; collision_mesh: "diagnostic only (non-fatal unless enforced
+    # elsewhere)", off by default. Always measured (visible in metrics) but
+    # only ever a soft warning, never a hard fail -- unlike the 5 structural
+    # gates above, forcing these to block promotion would impose a stricter
+    # policy than their own authors intended, and (for semantic_overlap
+    # specifically) would likely fail on any normally-enriched real map,
+    # since roads legitimately carry both sidewalks and nearby buildings.
+    for key, label in (
+        ("semantic_overlap", "semantic_overlap"),
+        ("randomness_entropy", "randomness_entropy"),
+        ("collision_mesh", "collision_mesh"),
+    ):
+        rep = reports.get(key)
+        if not isinstance(rep, dict):
+            continue
+        ok = rep.get("ok")
+        metrics[f"{label}_ok"] = ok
+        if "issue_count" in rep:
+            metrics[f"{label}_issue_count"] = rep.get("issue_count")
+        if "entropy" in rep:
+            metrics[f"{label}_entropy"] = rep.get("entropy")
+        art = _artifact_path_from_report(rep)
+        if art:
+            linked_artifacts[key] = art
+        if ok is False:
+            soft_warnings.append({"gate": key, "reason": _reason_from_report(rep)})
+
     # CODEX C7: enrichment completeness (buildings + functional signals).
     # Always measured (visible in metrics) so the map is never silently
     # reported as signals=0 when it actually carries <signal> elements or
