@@ -106,14 +106,18 @@ def test_real_grid0821_alias_resolves_to_same_content_as_grid0828() -> None:
 
 
 def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
-    # Deep-audit promotion (2026-09-04): 5 more quality gates wired into map
-    # acceptance surfaced one real violation (road 46620's lane-width
-    # discontinuity), fixed via map_hygiene.py::repair_lane_width_discontinuities.
-    # Supersedes the WS1.4 junctionfix pin
-    # a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802, which
+    # Round-5 promotion (2026-09-04): repair_lane_width_discontinuities()
+    # (round 2's fix for road 46620) had only ever been applied as a one-off
+    # manual repair, never wired into stage_08_hygiene.py's live C10 hygiene
+    # stage -- every canonical regen since round 2 was silently exposed to
+    # the same rejection. Wired in as step 8H-4; a real end-to-end regen
+    # confirms the fix (map_hygiene_report.json: issues_before=1 ->
+    # issues_after=0 for road 46620) and valid_for_experiments=True.
+    # Supersedes the deep-audit pin
+    # e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2, which
     # remains on disk for provenance but is no longer "the" auto map of record.
     result = verify_pinned_map("auto_map_of_record")
-    assert result["sha256"] == "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    assert result["sha256"] == "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
     assert result["role"] == "auto"
 
 
