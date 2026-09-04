@@ -10,3 +10,14 @@ reports/post_audit_hardening/**/_*_work_copy.xodr filter=lfs diff=lfs merge=lfs 
 reports/post_audit_hardening/20260803T160000Z/_f5_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/20260803T170000Z/_f6_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
 reports/post_audit_hardening/**/governed_payload.xodr filter=lfs diff=lfs merge=lfs -text
+
+# Governance-pinned inputs whose exact byte size/sha256 is checked by
+# ultimate_pipeline.governance.inputs_manifest.verify_inputs_manifest (fail-closed
+# on any drift). Not LFS-worthy (well under a few MB), but MUST checkout byte-identical
+# on every platform, or the pinned sha256/bytes recorded in INPUTS_MANIFEST.json can only
+# ever be correct on one platform's line-ending convention. -text disables git's
+# autocrlf/eol conversion entirely for these paths (verified 2026-09-04: the pinned value
+# had been captured from a CRLF-converted Windows checkout, which is 177473 bytes larger
+# than the actual LF git blob and fails on any non-Windows checkout despite zero real
+# content difference).
+campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json -text
