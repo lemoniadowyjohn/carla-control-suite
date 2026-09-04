@@ -178,17 +178,42 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
                 ok = False
             continue
 
-        # Not a pinned map -- try to hash the cited artifact path directly.
-        candidate_path = REPO_ROOT / artifact if artifact and not Path(artifact).is_absolute() else Path(artifact)
-        # artifact may be a filename only (e.g. "map_encoder_epoch50.pt"); search evidence dirs.
+        # Not a pinned map -- try to hash the cited artifact path directly. Artifact
+        # strings here are relative to reports/post_audit_hardening/ (e.g.
+        # "C21_GNN_AUTHORITATIVE/aggregate_stats.json"), NOT repo-root-relative, so
+        # REPO_ROOT / artifact alone never resolves -- kept as a fallback in case a
+        # future row ever cites a genuinely repo-root-relative path.
         found = None
-        if artifact and candidate_path.is_file():
-            found = candidate_path
-        elif artifact:
-            for hit in REPO_ROOT.glob(f"reports/post_audit_hardening/**/{Path(artifact).name}"):
-                if hit.is_file():
-                    found = hit
+        if artifact and not Path(artifact).is_absolute():
+            for base in (REPO_ROOT / "reports" / "post_audit_hardening", REPO_ROOT):
+                candidate_path = base / artifact
+                if candidate_path.is_file():
+                    found = candidate_path
                     break
+        elif artifact:
+            candidate_path = Path(artifact)
+            if candidate_path.is_file():
+                found = candidate_path
+
+        # artifact may be a filename only (e.g. "map_encoder_epoch50.pt"); search evidence
+        # dirs. Fail closed on ambiguity (2026-09-04: two on-disk aggregate_stats.json --
+        # a live one and a deliberately-kept C21_GNN_AUTHORITATIVE_PREBUGFIX_20260826
+        # comparison snapshot -- caused this glob to silently pick whichever one the
+        # filesystem's directory-iteration order happened to return first, matching
+        # locally by luck and mismatching on GitHub Actions' Linux runner).
+        if found is None and artifact:
+            hits = [hit for hit in REPO_ROOT.glob(f"reports/post_audit_hardening/**/{Path(artifact).name}") if hit.is_file()]
+            if len(hits) == 1:
+                found = hits[0]
+            elif len(hits) > 1:
+                checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL",
+                                 "error": f"ambiguous artifact {artifact!r}: {len(hits)} files named "
+                                          f"{Path(artifact).name!r} found under reports/post_audit_hardening/ "
+                                          f"({[str(h.relative_to(REPO_ROOT)) for h in hits]}) -- cite the full "
+                                          f"relative path to disambiguate"})
+                ok = False
+                continue
+
         if found is None:
             checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL",
                              "error": f"cited artifact {artifact!r} (sha {sha[:12]}...) not found on disk"})

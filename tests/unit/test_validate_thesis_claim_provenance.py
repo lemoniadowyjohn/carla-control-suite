@@ -82,6 +82,72 @@ def test_negative_control_missing_artifact_fails(tmp_path: Path) -> None:
     assert "not found" in result["claims_checked"][0]["error"]
 
 
+def test_artifact_resolves_directly_even_with_a_same_named_file_elsewhere(tmp_path: Path) -> None:
+    """2026-09-04: a claim citing 'C21_GNN_AUTHORITATIVE/aggregate_stats.json' must
+    resolve to exactly that path, not fall into the ambiguous glob fallback just
+    because another same-named file exists in a sibling directory (real repo has
+    both C21_GNN_AUTHORITATIVE/ and C21_GNN_AUTHORITATIVE_PREBUGFIX_20260826/,
+    each with their own aggregate_stats.json -- the glob-only resolution picked
+    whichever the filesystem's directory-iteration order returned first, which
+    matched locally by luck and mismatched on GitHub Actions' Linux runner)."""
+    real_dir = tmp_path / "reports" / "post_audit_hardening" / "C21_GNN_AUTHORITATIVE"
+    real_dir.mkdir(parents=True)
+    (real_dir / "aggregate_stats.json").write_bytes(b"real content")
+    real_sha = hashlib.sha256(b"real content").hexdigest()
+
+    decoy_dir = tmp_path / "reports" / "post_audit_hardening" / "C21_GNN_AUTHORITATIVE_PREBUGFIX_20260826"
+    decoy_dir.mkdir(parents=True)
+    (decoy_dir / "aggregate_stats.json").write_bytes(b"stale decoy content")
+
+    rq_path = tmp_path / "rq_tables.json"
+    rq_path.write_text(json.dumps({"rows": [
+        {"rq": "RQ3/RQ5", "metric": "gnn", "status": "AUTHORITATIVE",
+         "artifact": "C21_GNN_AUTHORITATIVE/aggregate_stats.json", "sha256": real_sha},
+    ]}), encoding="utf-8")
+
+    import tools.validate_thesis_claim_provenance as mod
+    old_root = mod.REPO_ROOT
+    mod.REPO_ROOT = tmp_path
+    try:
+        result = _verify_rq_table_claims(rq_path)
+    finally:
+        mod.REPO_ROOT = old_root
+
+    assert result["ok"] is True
+    assert result["claims_checked"][0]["provenance"] == "PASS"
+
+
+def test_ambiguous_bare_filename_fails_closed_instead_of_guessing(tmp_path: Path) -> None:
+    """A claim citing only a bare filename (no directory) that matches MULTIPLE
+    files under reports/post_audit_hardening/ must fail closed with an
+    'ambiguous' error, not silently pick whichever glob returns first."""
+    dir_a = tmp_path / "reports" / "post_audit_hardening" / "A"
+    dir_a.mkdir(parents=True)
+    (dir_a / "aggregate_stats.json").write_bytes(b"content a")
+
+    dir_b = tmp_path / "reports" / "post_audit_hardening" / "B"
+    dir_b.mkdir(parents=True)
+    (dir_b / "aggregate_stats.json").write_bytes(b"content b")
+
+    rq_path = tmp_path / "rq_tables.json"
+    rq_path.write_text(json.dumps({"rows": [
+        {"rq": "RQ3/RQ5", "metric": "gnn", "status": "AUTHORITATIVE",
+         "artifact": "aggregate_stats.json", "sha256": hashlib.sha256(b"content a").hexdigest()},
+    ]}), encoding="utf-8")
+
+    import tools.validate_thesis_claim_provenance as mod
+    old_root = mod.REPO_ROOT
+    mod.REPO_ROOT = tmp_path
+    try:
+        result = _verify_rq_table_claims(rq_path)
+    finally:
+        mod.REPO_ROOT = old_root
+
+    assert result["ok"] is False
+    assert result["claims_checked"][0]["provenance"] == "FAIL"
+    assert "ambiguous" in result["claims_checked"][0]["error"]
+
+
 def test_negative_control_claim_with_no_hash_flagged_unpinned(tmp_path: Path) -> None:
     rq_path = tmp_path / "rq_tables.json"
     rq_path.write_text(json.dumps({"rows": [
