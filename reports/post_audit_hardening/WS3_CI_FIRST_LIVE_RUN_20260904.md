@@ -164,6 +164,38 @@ Confirmed real improvement: 11 failed -> **9 failed**, 5573 -> **5575 passed**. 
 frozen), 4 expected-by-design (gitignored `campaigns/*/regen/` and `campaigns/*/candidate/` +
 the 1 known flake).
 
+## Follow-up: LFS migration gap fixed and verified on real Linux CI
+
+Migrated the 4 `candidate_*.xodr` files (`reports/ingolstadt_map_quality_v2/work_package_01_coordinate_truth/candidates/`)
+to real LFS storage via `git add --renormalize` (after `git reset --hard` to a fresh checkout,
+which correctly produced clean content per the pre-existing `-text` attribute -- the previously
+observed CRLF-inflated disk copies were stale local state from before `-text` existed on this
+path, not an ongoing checkout bug). No history rewrite -- existing commits untouched, only a new
+commit's blobs changed to LFS pointers. **Process note**: an initial attempt via
+`git lfs migrate import --no-rewrite` alone left the local LFS object cache unpopulated
+(`git lfs ls-files` showed `-` not `*`), turning the working tree into unsmudged pointer stubs.
+Caught before pushing (the commit was never pushed), reset with explicit user authorization
+(`git reset --hard`, correctly blocked by the safety classifier until confirmed), and redone via
+the standard `git add --renormalize` path, which correctly populates the cache.
+
+Also found and fixed the SAME CRLF-hardcoding pattern as the buildings.json case:
+`test_ingolstadt_coordinate_verification.py`'s `EXPECTED_HASHES` dict was pinned to the
+CRLF-inflated values. Verified byte-for-byte that CRLF-converting the real LF content reproduces
+the old hardcoded hashes exactly (zero real content difference) before updating. Deliberately left
+`03_ARTIFACT_HASH_REGISTRY.json` untouched -- a static "external"-tracked publication record from
+a different local environment, cited only in a comment, never programmatically read.
+
+Committed @2cb2a4c4, pushed (323MB of LFS objects uploaded). **Re-verified against real Linux CI**
+(run 33859833410): `test_ingolstadt_coordinate_verification.py` shows all 13 sub-tests passing
+(all dots). Confirmed real improvement: 9 failed -> **6 failed**, 5575 -> **5578 passed**.
+
+All 3 originally-identified CI issues (CRLF pinning, LFS-migration gap, Linux/Windows geometry
+discrepancy) are now closed -- 2 fixed and verified, 1 (R13 CRLF) deliberately left frozen and
+documented. Remaining 6 failures: R13 CRLF (frozen, by design), 2 expected-by-design (gitignored
+dirs + known flake), and `test_recorder_semseg_layout.py::test_trainer_reads_recorder_output_round_trip`
+which reappeared in this run after being absent from the prior 2 runs' failure lists -- likely
+flaky/order-dependent, unrelated to map drivability, not investigated this pass.
+
 ## State of PR #2 / the workflow
 
 PR #2 (`ci-verify-throwaway` -> `fix/post-audit-phase-e-junctions-roundabouts-20260803`) served
