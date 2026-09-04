@@ -32,6 +32,13 @@ from ultimate_pipeline.quality.check_elevation_continuity import check_elevation
 from ultimate_pipeline.quality.check_dem_full_coverage import check_dem_full_coverage
 from ultimate_pipeline.quality.check_origin_sanity import check_origin_sanity
 from ultimate_pipeline.quality.check_junction_integrity import JunctionIntegrityGate
+from ultimate_pipeline.quality.check_lane_width_continuity import check_lane_width_continuity
+from ultimate_pipeline.quality.check_lane_geometry_continuity import check_lane_geometry_continuity
+from ultimate_pipeline.quality.check_elevation_missing_and_cliffs import (
+    check_elevation_missing_and_cliffs,
+)
+from ultimate_pipeline.quality.check_elevation_smoothness import ElevationSmoothnessGate
+from ultimate_pipeline.quality.check_physics_feasibility import PhysicsFeasibilityChecker
 from ultimate_pipeline.diagnostics.elevation_summary import summarize_elevation
 from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
@@ -84,6 +91,38 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports["junction_integrity"] = rep
     _write_json(out_dir / "junction_integrity.json", rep)
     print(f"[gate] junction_integrity: ok={rep.get('ok')} issue_count={rep.get('issue_count')}")
+
+    rep = check_lane_width_continuity(str(xodr))
+    reports["lane_width_continuity"] = rep
+    _write_json(out_dir / "lane_width_continuity.json", rep)
+    print(f"[gate] lane_width_continuity: ok={rep.get('ok')} num_issues={rep.get('num_issues')}")
+
+    rep = check_lane_geometry_continuity(str(xodr))
+    reports["lane_geometry_continuity"] = rep
+    _write_json(out_dir / "lane_geometry_continuity.json", rep)
+    print(f"[gate] lane_geometry_continuity: ok={rep.get('ok')} n_issues={rep.get('n_issues')}")
+
+    rep = check_elevation_missing_and_cliffs(str(xodr))
+    reports["elevation_missing_and_cliffs"] = rep
+    _write_json(out_dir / "elevation_missing_and_cliffs.json", rep)
+    print(
+        f"[gate] elevation_missing_and_cliffs: ok={rep.get('ok')} "
+        f"zero_ratio={rep.get('zero_ratio')} max_link_dz={rep.get('max_link_dz')}"
+    )
+
+    physics_root = ET.parse(str(xodr)).getroot()
+
+    elev_issues = ElevationSmoothnessGate.validate(physics_root)
+    rep = {"ok": len(elev_issues) == 0, "issue_count": len(elev_issues), "issues": elev_issues}
+    reports["elevation_smoothness"] = rep
+    _write_json(out_dir / "elevation_smoothness.json", rep)
+    print(f"[gate] elevation_smoothness: ok={rep['ok']} issue_count={rep['issue_count']}")
+
+    physics_issues = PhysicsFeasibilityChecker.validate(physics_root)
+    rep = {"ok": len(physics_issues) == 0, "issue_count": len(physics_issues), "issues": physics_issues}
+    reports["physics_feasibility"] = rep
+    _write_json(out_dir / "physics_feasibility.json", rep)
+    print(f"[gate] physics_feasibility: ok={rep['ok']} issue_count={rep['issue_count']}")
 
     if dem is not None and dem.is_file():
         rep = check_dem_full_coverage(str(xodr), str(dem), str(out_dir / "dem_coverage.json"))

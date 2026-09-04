@@ -515,6 +515,88 @@ def build_map_acceptance(
                 {"gate": "junction_integrity", "reason": _reason_from_report(junction_integrity)}
             )
 
+    # Deep-audit follow-up (2026-09-04): 5 more checkers existed in the codebase,
+    # complete and correct, already used mid-pipeline or as an opt-in live-CARLA
+    # perception gate, but never reached final map-of-record acceptance -- the
+    # exact same shape as the junction_integrity gap above. A candidate could have
+    # a lane narrower than a car, a 45-degree slope, or a road with no elevation
+    # data at all and still measure valid_for_experiments=True. All 5 are genuine
+    # structural/physical defects, so all 5 hard-fail unconditionally, matching
+    # geometric_continuity/lane_connectivity/junction_integrity, not the opt-in
+    # class (enrichment/component_reachability).
+
+    lane_width_continuity = reports.get("lane_width_continuity")
+    if isinstance(lane_width_continuity, dict):
+        lwc_ok = lane_width_continuity.get("ok")
+        metrics["lane_width_continuity_ok"] = lwc_ok
+        metrics["lane_width_continuity_issue_count"] = lane_width_continuity.get("num_issues")
+        art = _artifact_path_from_report(lane_width_continuity)
+        if art:
+            linked_artifacts["lane_width_continuity"] = art
+        if lwc_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "lane_width_continuity", "reason": _reason_from_report(lane_width_continuity)}
+            )
+
+    lane_geometry_continuity = reports.get("lane_geometry_continuity")
+    if isinstance(lane_geometry_continuity, dict):
+        lgc_ok = lane_geometry_continuity.get("ok")
+        metrics["lane_geometry_continuity_ok"] = lgc_ok
+        metrics["lane_geometry_continuity_issue_count"] = lane_geometry_continuity.get("n_issues")
+        art = _artifact_path_from_report(lane_geometry_continuity)
+        if art:
+            linked_artifacts["lane_geometry_continuity"] = art
+        if lgc_ok is False:
+            hard_fail_reasons.append(
+                {
+                    "gate": "lane_geometry_continuity",
+                    "reason": _reason_from_report(lane_geometry_continuity),
+                }
+            )
+
+    elevation_missing_and_cliffs = reports.get("elevation_missing_and_cliffs")
+    if isinstance(elevation_missing_and_cliffs, dict):
+        emc_ok = elevation_missing_and_cliffs.get("ok")
+        metrics["elevation_missing_and_cliffs_ok"] = emc_ok
+        metrics["elevation_zero_ratio"] = elevation_missing_and_cliffs.get("zero_ratio")
+        metrics["elevation_max_link_dz_m"] = elevation_missing_and_cliffs.get("max_link_dz")
+        art = _artifact_path_from_report(elevation_missing_and_cliffs)
+        if art:
+            linked_artifacts["elevation_missing_and_cliffs"] = art
+        if emc_ok is False:
+            hard_fail_reasons.append(
+                {
+                    "gate": "elevation_missing_and_cliffs",
+                    "reason": _reason_from_report(elevation_missing_and_cliffs),
+                }
+            )
+
+    elevation_smoothness = reports.get("elevation_smoothness")
+    if isinstance(elevation_smoothness, dict):
+        es_ok = elevation_smoothness.get("ok")
+        metrics["elevation_smoothness_ok"] = es_ok
+        metrics["elevation_smoothness_issue_count"] = elevation_smoothness.get("issue_count")
+        art = _artifact_path_from_report(elevation_smoothness)
+        if art:
+            linked_artifacts["elevation_smoothness"] = art
+        if es_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "elevation_smoothness", "reason": _reason_from_report(elevation_smoothness)}
+            )
+
+    physics_feasibility = reports.get("physics_feasibility")
+    if isinstance(physics_feasibility, dict):
+        pf_ok = physics_feasibility.get("ok")
+        metrics["physics_feasibility_ok"] = pf_ok
+        metrics["physics_feasibility_issue_count"] = physics_feasibility.get("issue_count")
+        art = _artifact_path_from_report(physics_feasibility)
+        if art:
+            linked_artifacts["physics_feasibility"] = art
+        if pf_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "physics_feasibility", "reason": _reason_from_report(physics_feasibility)}
+            )
+
     # CODEX C7: enrichment completeness (buildings + functional signals).
     # Always measured (visible in metrics) so the map is never silently
     # reported as signals=0 when it actually carries <signal> elements or

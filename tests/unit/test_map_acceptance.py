@@ -141,6 +141,187 @@ def test_map_acceptance_junction_integrity_absent_from_reports_does_not_fail():
     assert "junction_integrity" not in acceptance["metrics"]
 
 
+# ---------------------------------------------------------------------------
+# Deep-audit follow-up (2026-09-04): 5 more checkers existed in the codebase,
+# complete and correct, already used mid-pipeline or as an opt-in live-CARLA
+# perception gate, but never reached final map-of-record acceptance -- same
+# shape as the junction_integrity gap above. Wired in unconditionally, since
+# a lane narrower than a car or a 45-degree slope is a genuine structural
+# defect, not an opt-in completeness nicety.
+# ---------------------------------------------------------------------------
+
+
+def test_map_acceptance_hard_fails_on_lane_width_continuity_issues():
+    acceptance = build_map_acceptance(
+        {
+            "lane_width_continuity": {
+                "ok": False,
+                "num_issues": 1,
+                "issues": [{"road_id": "1", "type": "width_too_narrow"}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "lane_width_continuity" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["lane_width_continuity_ok"] is False
+    assert acceptance["metrics"]["lane_width_continuity_issue_count"] == 1
+
+
+def test_map_acceptance_passes_when_lane_width_continuity_clean():
+    acceptance = build_map_acceptance(
+        {"lane_width_continuity": {"ok": True, "num_issues": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["lane_width_continuity_ok"] is True
+    assert acceptance["metrics"]["lane_width_continuity_issue_count"] == 0
+
+
+def test_map_acceptance_hard_fails_on_lane_geometry_continuity_issues():
+    acceptance = build_map_acceptance(
+        {
+            "lane_geometry_continuity": {
+                "ok": False,
+                "n_issues": 1,
+                "issues": [{"road_id": "1", "type": "lane_offset_discontinuity"}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "lane_geometry_continuity" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["lane_geometry_continuity_ok"] is False
+    assert acceptance["metrics"]["lane_geometry_continuity_issue_count"] == 1
+
+
+def test_map_acceptance_passes_when_lane_geometry_continuity_clean():
+    acceptance = build_map_acceptance(
+        {"lane_geometry_continuity": {"ok": True, "n_issues": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["lane_geometry_continuity_ok"] is True
+    assert acceptance["metrics"]["lane_geometry_continuity_issue_count"] == 0
+
+
+def test_map_acceptance_hard_fails_on_elevation_missing_and_cliffs_issues():
+    acceptance = build_map_acceptance(
+        {
+            "elevation_missing_and_cliffs": {
+                "ok": False,
+                "zero_ratio": 0.5,
+                "max_link_dz": 120.0,
+                "error": "zero_ratio 0.5 exceeds max_zero_ratio 0.01",
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "elevation_missing_and_cliffs" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["elevation_missing_and_cliffs_ok"] is False
+    assert acceptance["metrics"]["elevation_zero_ratio"] == 0.5
+    assert acceptance["metrics"]["elevation_max_link_dz_m"] == 120.0
+
+
+def test_map_acceptance_passes_when_elevation_missing_and_cliffs_clean():
+    acceptance = build_map_acceptance(
+        {
+            "elevation_missing_and_cliffs": {
+                "ok": True,
+                "zero_ratio": 0.0,
+                "max_link_dz": 0.3,
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["elevation_missing_and_cliffs_ok"] is True
+
+
+def test_map_acceptance_hard_fails_on_elevation_smoothness_issues():
+    acceptance = build_map_acceptance(
+        {
+            "elevation_smoothness": {
+                "ok": False,
+                "issue_count": 3,
+                "issues": [{"road_id": "1", "type": "slope_too_steep"}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "elevation_smoothness" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["elevation_smoothness_ok"] is False
+    assert acceptance["metrics"]["elevation_smoothness_issue_count"] == 3
+
+
+def test_map_acceptance_passes_when_elevation_smoothness_clean():
+    acceptance = build_map_acceptance(
+        {"elevation_smoothness": {"ok": True, "issue_count": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["elevation_smoothness_ok"] is True
+    assert acceptance["metrics"]["elevation_smoothness_issue_count"] == 0
+
+
+def test_map_acceptance_hard_fails_on_physics_feasibility_issues():
+    acceptance = build_map_acceptance(
+        {
+            "physics_feasibility": {
+                "ok": False,
+                "issue_count": 1,
+                "issues": [{"road_id": "1", "type": "lane_too_narrow", "value": 0.3}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "physics_feasibility" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["physics_feasibility_ok"] is False
+    assert acceptance["metrics"]["physics_feasibility_issue_count"] == 1
+
+
+def test_map_acceptance_passes_when_physics_feasibility_clean():
+    acceptance = build_map_acceptance(
+        {"physics_feasibility": {"ok": True, "issue_count": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["physics_feasibility_ok"] is True
+    assert acceptance["metrics"]["physics_feasibility_issue_count"] == 0
+
+
+def test_map_acceptance_new_gates_absent_from_reports_does_not_fail():
+    """As with junction_integrity: no report supplied must not be treated as
+    a failure -- absence is not the same as ok=False."""
+    acceptance = build_map_acceptance(
+        {"geometric_continuity": {"decision": {"pass": True, "reason": "ok"}}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    for key in (
+        "lane_width_continuity",
+        "lane_geometry_continuity",
+        "elevation_missing_and_cliffs",
+        "elevation_smoothness",
+        "physics_feasibility",
+    ):
+        assert key not in acceptance["metrics"]
+
+
 def test_map_acceptance_rejects_unresolved_lane_successor_autofix_report():
     acceptance = build_map_acceptance(
         {
