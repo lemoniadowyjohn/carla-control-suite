@@ -109,6 +109,51 @@ The user asked for a dedicated investigation of item 3 (the Linux/Windows
   The remaining 11 are exactly the previously-documented 3 categories (CRLF pinning x3,
   never-migrated-LFS x4, expected-by-design x4 incl. the 1 known flake) -- nothing new surfaced.
 
+## Follow-up: the CRLF pinning drift -- fixed for the live governance guard, deliberately left for the frozen R13 bundle
+
+User asked to fix the CRLF pinning drift. Split into two genuinely different cases on
+investigation, not treated uniformly:
+
+**Fixed: `INPUTS_MANIFEST.json`'s `buildings` entry** (live, ongoing governance guard, not tied to
+any freeze/tag mechanism). Root-fixed via `.gitattributes` (`-text` on
+`ingolstadt_buildings_overpass.json`, disabling line-ending conversion entirely on every platform)
+rather than just re-pinning to whatever this machine currently produces -- the pin is now
+genuinely platform-invariant, not re-synced to Windows again. Re-checked-out the working copy to
+match the real LF git blob (3869473 bytes, sha256 `f3e82001...`), updated the manifest, verified
+locally (all `test_inputs_manifest.py`/`test_c11_inputs_manifest_guard.py` tests pass, full suite
+5585 passed/1 known flake), committed @3bd8615f, pushed.
+
+**Deliberately left frozen, documented, NOT fixed: the R13 evidence bundle.** A systematic sweep
+of every entry in `R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json` (not just the one that surfaced in CI --
+`test_r13p_manifest_sorted_hashes_match_no_provisional`'s loop `assert`s per-entry and stops at
+the first failure, so it only ever reported 1 of what are actually **7** CRLF-drifted entries)
+found: `R13G_CROSSWALK_COORDINATE_FIXTURES.csv`, `R13H_CROSSWALK_SUBTYPE_AUTHORITY.csv`,
+`R13K_PEDESTRIAN_SOURCE_AUTHORITY.csv`, `R13M_PEDESTRIAN_CLASSIFICATION_REPRESENTATION.csv`,
+`R13O_C0_REVIEW_FREEZE.json`, `R13R_REPOSITORY_BINDING.json`, and
+`R13_UPDATED_CLAUDE_C0_PACKET.md` -- all confirmed pure CRLF/LF drift (LF-normalizing each
+reproduces its pinned sha256 exactly, zero real content difference), same root cause as the
+buildings JSON.
+
+But 4 of those 7 (`R13`, `R13O`, `R13P` itself, `R13R`) are anchored by an ACTUAL GIT TAG
+(`c0r_freeze_20260809T085442Z_01`) whose message permanently records their CRLF-based sha256
+hashes as the frozen ground truth for review integrity -- verified directly via
+`git tag -l --format='%(contents)' c0r_freeze_20260809T085442Z_01`, and checked by a separate,
+more authoritative tool (`phase_q/c0r_tag_freeze.py`, "on-disk SHA-256 of R13/R13O/R13P == machine
+lines in the tag message"). Editing any of these 4 files -- even purely to fix line endings --
+would change their hash and break that tag anchor, which is a deliberate, stronger integrity
+mechanism than the CRLF cosmetic issue itself. Same class of constraint as the pre-existing
+`submission/infrastructure/` frozen-snapshot rule: fixing a cosmetic issue here would corrupt
+something meant to be immutable. And since fixing the other 3 (the CSVs) requires editing R13P's
+own embedded pin values -- which changes R13P's file hash -- even those are unreachable without
+also breaking the tag anchor.
+
+Explicit user decision: leave the whole R13 bundle frozen exactly as-is, document only. This
+specific evidence bundle is Windows/CRLF-native by (undocumented, now-discovered) construction and
+will always fail `test_r13p_manifest_sorted_hashes_match_no_provisional` on a genuinely
+LF-checkout environment (Linux CI) -- by design of the freeze, not a bug to chase further. If this
+is ever revisited, the only real fix is creating a NEW freeze tag with corrected values, which is
+a deliberate re-freeze decision, not a mechanical CRLF fix.
+
 ## State of PR #2 / the workflow
 
 PR #2 (`ci-verify-throwaway` -> `fix/post-audit-phase-e-junctions-roundabouts-20260803`) served
