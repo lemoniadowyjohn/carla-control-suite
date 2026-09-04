@@ -77,17 +77,53 @@ Full local suite: 5611 passed, same 1 known pre-existing flake. All pin-related 
 (`test_map_registry_pinning.py`, `test_map_registry_verify_pinned_map.py`,
 `test_validate_thesis_claim_provenance.py`, `test_planview_internal_seams_heading_only.py`) green.
 
-## Remaining work from this audit
+## WS-D — Second island-quarantine pass: nothing to do
 
-- **WS-D** (cheap check, not yet run): a second `quarantine_island_roads()` pass against the new
-  candidate, to see if the 7 residual small road components clear (quarantine is idempotent; only
-  one pass has ever been run against this map-of-record lineage).
-- **WS-E** (lower priority, not yet started): independently verify the 6 code passages flagged by
-  the coverage-survey agent (silent exception→None in `stage_06_links.py::_geom_endpoint`, a
-  `setattr` that fails silently in `stage_05_geometry.py`'s flat-elevation fallback, elevation
-  variance computed on a malformed-value-filtered subset, a NaN-`s` duplicate signal
-  flagged-but-not-rejected in `signal_enrichment.py`, plus 2 more) before treating any as real.
-- Unchanged from before this audit: the 82 heading-only planView kinks (deferred, unsafe fix), the
-  R13 evidence bundle's CRLF drift (git-tag-anchored freeze), 19 unparsed multipolygon buildings
-  (0.3%, explicitly accepted), 2 medium/1 low-stakes still-unwired gates (`semantic_overlap`,
-  `randomness_entropy`, `collision_mesh` — not in primary scope).
+Ran `quarantine_island_roads()` against the new candidate: `component_sizes_before: [32267]` — a
+single connected component, zero islands. The "7 residual small road components" claim from the
+open-issues research agent was based on stale information (`C10_MAP_HYGIENE.md`'s own 2026-08-16
+snapshot, predating the WS1.4 hygiene-glob fix from earlier this session, which already fully
+resolved road-level fragmentation for this map-of-record lineage). No action needed; documented so
+this stale claim isn't re-surfaced as a live TODO in a future pass.
+
+## WS-E — Verified the 6 flagged code passages: none are real, live defects
+
+Independently confirmed each via direct reading + tracing actual call sites (not agent-report
+faith), matching this session's "verify before touching" discipline:
+
+- **`stage_06_links.py::_geom_endpoint`/`_diagnostic_records_for_operation`** (2 items): both feed
+  `_observe_planview_operation`'s `mode: "READ_ONLY_DIAGNOSTIC"` path, which deep-copies the root
+  and mutates only the copy — a parse failure here degrades diagnostic-report completeness, never
+  the actually-generated map.
+- **`stage_05_geometry.py`'s `setattr` in the flat-elevation fallback**: `setattr` on a plain
+  Python function object cannot realistically fail; even if it somehow did, `_dem_fallback_active`
+  only feeds a bookkeeping list (`fallback_road_ids`) and a metadata flag, not the actual elevation
+  value written (`_set_flat_elevation` runs unconditionally).
+- **`stage_05_geometry.py` elevation variance on a malformed-value-filtered subset**: checked the
+  real candidate directly -- 0 of 32,267 `<elevation>` elements fail to parse. The hypothesized
+  "80% malformed" scenario has no real-world manifestation on this map.
+- **`lane_generator.py`'s connector lane width**: false positive. `target_driving_width_m()` has
+  no code path returning `None` -- every branch constructs a `LaneWidthDecision` with a clamped,
+  rounded float `.width_m`.
+- **`signal_enrichment.py`'s NaN-`s` duplicate signal not rejected**: already covered upstream.
+  `validate_placement` (SIG-003) explicitly rejects non-finite placement attributes and the caller
+  `continue`s past rejected records *before* `_build_signal` ever inserts them into the tree -- a
+  NaN-`s` signal can never reach the duplicate-detection code (SIG-005) in normal pipeline flow.
+
+No fixes needed; all 6 are either diagnostic-only, unreachable in practice, or false positives on
+closer reading.
+
+## Final status
+
+All 5 workstreams of the deep-audit plan closed. The map-of-record now passes every wired
+structural gate cleanly (0 hard-fail reasons across 10 gates), the road-level connectivity graph
+is a single component (0 islands), and the 6 speculatively-flagged code passages were run to
+ground and found to be non-issues rather than left as unresolved question marks.
+
+Unchanged from before this audit (already correctly settled, not re-opened): the 82 heading-only
+planView kinks (deferred, unsafe fix confirmed 3x over), the R13 evidence bundle's CRLF drift
+(git-tag-anchored freeze), 19 unparsed multipolygon buildings (0.3%, explicitly accepted), 2
+medium/1 low-stakes still-unwired gates (`semantic_overlap`, `randomness_entropy`,
+`collision_mesh` -- not in primary scope, genuine completeness/diagnostic checks rather than
+drivability blockers), 27 isolated lane-level components (soft warning only, distinct connectivity
+model from the road-level graph, already characterized in `C32_ROAD_CONNECTIVITY_CHARACTERIZATION.md`).
