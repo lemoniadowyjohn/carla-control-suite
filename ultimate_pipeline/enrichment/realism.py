@@ -147,6 +147,46 @@ class RealismModule:
 
     @staticmethod
     def _infer_speed(road: ET.Element):
+        """Real per-road speed (km/h, rounded), preferring the road's own
+        <lane><speed> data over the <type> heuristic below.
+
+        This pipeline's own base OSM-to-XODR conversion stamps max="X" (no
+        unit attribute == OpenDRIVE's documented m/s default) on nearly
+        every driving/restricted lane (34,285/34,291 on the real
+        map-of-record candidate, confirmed 2026-09-04); speed_limit_writer.py's
+        separate, OSM-street-name-matched km/h writer only inserts a
+        <speed> where one is not already present, so in practice it almost
+        never fires -- the base-conversion value is the actual,
+        near-universal-coverage signal, not an OSM-only one.
+
+        Every road this pipeline generates carries <type type="town">
+        (OpenDRIVE-standard vocabulary), which never matches the
+        motorway/primary/secondary/residential substrings below -- that
+        fallback is kept only for fixtures/other maps using the OSM-style
+        <type> vocabulary and lacking any <speed> data at all.
+        """
+        for lane in road.iter("lane"):
+            if lane.get("type") not in ("driving", "restricted"):
+                continue
+            sp = lane.find("speed")
+            if sp is None:
+                continue
+            raw = sp.get("max")
+            if raw is None:
+                continue
+            try:
+                value = float(raw)
+            except (TypeError, ValueError):
+                continue
+            unit = sp.get("unit")
+            if unit == "km/h":
+                kmh = value
+            elif unit == "mph":
+                kmh = value * 1.60934
+            else:  # None or "m/s" -- OpenDRIVE's documented default unit
+                kmh = value * 3.6
+            return round(kmh)
+
         typ = road.find("type")
         if typ is None:
             return None
