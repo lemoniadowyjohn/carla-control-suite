@@ -418,29 +418,24 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
-        # WS1.4 promotion (2026-09-02): fresh canonical regen through the
-        # CURRENT pipeline, superseding the 2026-08-19/26 pin which predates
-        # dozens of subsequent fixes (elevation seam-fixer sign bug, C29
-        # building-frame fix, the NaN-gate sweep, junction/lane repairs).
-        # Also carries two fixes discovered and landed during THIS
-        # promotion's own verification pass (see
-        # reports/post_audit_hardening/WS1_4_MAP_OF_RECORD_PROMOTION_20260902.md):
-        # (1) regen_map_of_record.py::_find_final_xodr() never matched C10
-        # map-hygiene's "08h*" output filenames, so every governed regen
-        # since 2026-08-19 silently shipped WITHOUT island quarantine/
-        # degenerate-lane repair/z-seam repair despite hygiene genuinely
-        # running (fixed @1121e7c1); (2) map_hygiene.py::quarantine_island_
-        # roads() removed quarantined <road> elements but left their
-        # <junction><connection> references dangling, producing 28
-        # JunctionIntegrityGate issues on the first hygiene-corrected
-        # candidate (fixed @bbf32d3d). This pin is generated with BOTH
-        # fixes applied: road-level graph_islands = 0 (was 9 components/30
-        # roads), JunctionIntegrityGate issue_count = 0 (was 28 on the
-        # first, pre-fix hygiene-corrected attempt).
+        # Deep-audit promotion (2026-09-04): direct verification found 5 more
+        # quality checkers (lane_width_continuity, lane_geometry_continuity,
+        # ElevationSmoothnessGate, PhysicsFeasibilityChecker,
+        # elevation_missing_and_cliffs) that existed, complete and correct,
+        # but were never wired into map-acceptance -- same shape as the
+        # junction_integrity/component_reachability gap fixed 2026-09-02. Once
+        # wired, re-measuring the prior pin against the hardened gate set found
+        # ONE real violation: road 46620's right driving lane stepped
+        # 3.5m -> 3.0m over a 0.05m laneSection (an instant width change, not
+        # a taper) -- root-caused to stage_07_lanes.py's own output, fixed via
+        # a new targeted repair (map_hygiene.py::repair_lane_width_discontinuities)
+        # rather than touching lane-generation logic used for all 32,267
+        # roads. This pin is generated with the repair applied: 0 hard-fail
+        # reasons across all 10 structural gates (was 1: lane_geometry_continuity).
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
-        "ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
-        "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802",
-        "bytes": 148757286,
+        "ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+        "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2",
+        "bytes": 148757289,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
@@ -448,15 +443,35 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         # pin by sha are still valid for what they measured -- resolved against this
         # supersedes chain by tools/validate_thesis_claim_provenance.py rather than
         # failing as drift. Chain: 69b1f520 (pre-C29) -> 744757f3 (C29 building patch,
-        # 2026-08-26) -> a5bd01be (this pin, 2026-09-02).
+        # 2026-08-26) -> a5bd01be (WS1.4 junctionfix, 2026-09-02) -> e281367e (this
+        # pin, 2026-09-04).
+        "supersedes_sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+    },
+    # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
+    # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
+    # still resolve claims that cite the WS1.4 junctionfix sha (a5bd01be...) one
+    # promotion back. That resolver iterates every PINNED_MAP_REGISTRY entry looking
+    # for a supersedes_sha256 match, not just "auto_map_of_record", so this
+    # chain-link entry is sufficient without adding multi-hop walking to the
+    # resolver itself.
+    "auto_map_of_record_junctionfix_superseded": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+        "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802",
+        "bytes": 148757286,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto_map_of_record_junctionfix_superseded"],
         "supersedes_sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8",
         "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
     },
     # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
     # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
-    # still resolve claims that cite the PRE-C29 sha (69b1f520...) two promotions back.
-    # That resolver iterates every PINNED_MAP_REGISTRY entry looking for a
+    # still resolve claims that cite the PRE-C29 sha (69b1f520...) three promotions
+    # back. That resolver iterates every PINNED_MAP_REGISTRY entry looking for a
     # supersedes_sha256 match, not just "auto_map_of_record", so this chain-link entry
     # is sufficient without adding multi-hop walking to the resolver itself.
     "auto_map_of_record_c29_superseded": {

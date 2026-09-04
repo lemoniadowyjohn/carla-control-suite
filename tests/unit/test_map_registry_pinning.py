@@ -106,14 +106,14 @@ def test_real_grid0821_alias_resolves_to_same_content_as_grid0828() -> None:
 
 
 def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
-    # WS1.4 promotion (2026-09-02): fresh canonical regen with the
-    # map-hygiene glob fix and the dangling-junction-connection fix both
-    # applied (see WS1_4_MAP_OF_RECORD_PROMOTION_20260902.md). Supersedes
-    # the C29 pin 744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699a
-    # a73aec8, which remains on disk for provenance but is no longer "the"
-    # auto map of record.
+    # Deep-audit promotion (2026-09-04): 5 more quality gates wired into map
+    # acceptance surfaced one real violation (road 46620's lane-width
+    # discontinuity), fixed via map_hygiene.py::repair_lane_width_discontinuities.
+    # Supersedes the WS1.4 junctionfix pin
+    # a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802, which
+    # remains on disk for provenance but is no longer "the" auto map of record.
     result = verify_pinned_map("auto_map_of_record")
-    assert result["sha256"] == "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    assert result["sha256"] == "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
     assert result["role"] == "auto"
 
 
