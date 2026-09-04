@@ -396,3 +396,172 @@ def test_run_gates_reports_collision_mesh_disabled_by_default(tmp_path: Path) ->
     assert rep is not None
     assert rep["ok"] is True
     assert (tmp_path / "out" / "collision_mesh.json").is_file()
+
+
+# ---------------------------------------------------------------------------
+# Round-3 map-quality improvement pass (2026-09-04): elevation_continuity's
+# report was already computed by run_gates() (and written to disk) but the
+# line storing it into reports[...] was simply never added -- invisible to
+# build_map_acceptance() entirely, not even as a metric. Plus 3 more
+# checkers (post_tiling_integrity, carla_import_s, carla_opendrive_compat)
+# that exist, are complete, and are CARLA-crash-prevention-class in their
+# own docstrings, but were never called by run_gates() either.
+# ---------------------------------------------------------------------------
+
+
+def test_run_gates_reports_elevation_continuity(tmp_path: Path) -> None:
+    xodr = tmp_path / "clean.xodr"
+    _write_clean_xodr(xodr)
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("elevation_continuity")
+    assert rep is not None
+    assert rep["ok"] is True
+    assert (tmp_path / "out" / "elevation_continuity.json").is_file()
+
+
+def test_run_gates_reports_post_tiling_integrity(tmp_path: Path) -> None:
+    xodr = tmp_path / "dup_ids.xodr"
+    xodr.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+  </road>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="0" x="100" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("post_tiling_integrity")
+    assert rep is not None
+    assert rep["ok"] is False
+    assert len(rep["issues"]) >= 1
+    assert (tmp_path / "out" / "post_tiling_integrity.json").is_file()
+
+
+def test_run_gates_post_tiling_integrity_clean(tmp_path: Path) -> None:
+    xodr = tmp_path / "clean.xodr"
+    _write_clean_xodr(xodr)
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("post_tiling_integrity")
+    assert rep is not None
+    assert rep["ok"] is True
+
+
+def test_run_gates_reports_carla_import_s_issues(tmp_path: Path) -> None:
+    xodr = tmp_path / "negative_s.xodr"
+    xodr.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="-5" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("carla_import_s")
+    assert rep is not None
+    assert rep["ok"] is False
+    assert rep["issue_count"] >= 1
+    assert (tmp_path / "out" / "carla_import_s.json").is_file()
+
+
+def test_run_gates_carla_import_s_clean(tmp_path: Path) -> None:
+    xodr = tmp_path / "clean.xodr"
+    _write_clean_xodr(xodr)
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("carla_import_s")
+    assert rep is not None
+    assert rep["ok"] is True
+    assert rep["issue_count"] == 0
+
+
+def test_run_gates_reports_carla_opendrive_compat_issues(tmp_path: Path) -> None:
+    xodr = tmp_path / "no_center_lane.xodr"
+    xodr.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+    <lanes>
+      <laneSection s="0">
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0" a="3.5" b="0" c="0" d="0"/>
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("carla_opendrive_compat")
+    assert rep is not None
+    assert rep["ok"] is False
+    assert rep["issue_count"] >= 1
+    assert (tmp_path / "out" / "carla_opendrive_compat.json").is_file()
+
+
+def test_run_gates_carla_opendrive_compat_clean(tmp_path: Path) -> None:
+    # _write_clean_xodr() is "clean" for the other gates but has no <header>
+    # or <center> lane -- StrictCarlaOpendriveGate is the only wired gate
+    # that checks those, so it needs its own fully-compliant fixture.
+    xodr = tmp_path / "clean.xodr"
+    xodr.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <header revMajor="1" revMinor="4" name="" version="1.00" date="" north="0" south="0" east="0" west="0">
+    <geoReference><![CDATA[+proj=utm +zone=32 +datum=WGS84]]></geoReference>
+    <offset x="0" y="0" z="0" hdg="0"/>
+  </header>
+  <road id="1" length="10.0" junction="-1">
+    <planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="0" b="0" c="0" d="0"/></elevationProfile>
+    <lanes>
+      <laneSection s="0">
+        <center>
+          <lane id="0" type="none" level="false"/>
+        </center>
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0" a="3.5" b="0" c="0" d="0"/>
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+    reports = run_gates(xodr, tmp_path / "out", dem=None)
+
+    rep = reports.get("carla_opendrive_compat")
+    assert rep is not None
+    assert rep["ok"] is True
+    assert rep["issue_count"] == 0

@@ -42,6 +42,9 @@ from ultimate_pipeline.quality.check_physics_feasibility import PhysicsFeasibili
 from ultimate_pipeline.quality.check_semantic_overlap import SemanticOverlapChecker
 from ultimate_pipeline.quality.check_randomness_entropy import RandomnessEntropyMetric
 from ultimate_pipeline.quality.collision_mesh import CollisionMeshValidator
+from ultimate_pipeline.quality.check_post_tiling_integrity import check_post_tiling_integrity
+from ultimate_pipeline.quality.check_carla_import_s import CarlaImportSChecker
+from ultimate_pipeline.quality.check_carla_opendrive_compat import StrictCarlaOpendriveGate
 from ultimate_pipeline.diagnostics.elevation_summary import summarize_elevation
 from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
@@ -82,8 +85,9 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     print(f"[gate] elevation_seams: ok={rep.get('ok')}")
 
     rep = check_elevation_continuity(str(xodr), eps_z=0.5)
+    reports["elevation_continuity"] = rep
     _write_json(out_dir / "elevation_continuity.json", rep)
-    print(f"[gate] elevation_continuity (info): ok={rep.get('ok')}")
+    print(f"[gate] elevation_continuity: ok={rep.get('ok')}")
 
     rep = check_origin_sanity(str(xodr))
     reports["origin_sanity"] = rep
@@ -152,6 +156,28 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports["collision_mesh"] = rep
     _write_json(out_dir / "collision_mesh.json", rep)
     print(f"[info] collision_mesh: ok={rep['ok']} issue_count={rep['issue_count']}")
+
+    # Round-3 map-quality improvement pass (2026-09-04): 3 more structural
+    # checkers that exist, are complete, and are CARLA-crash-prevention-class
+    # in their own docstrings, but were never called by run_gates() either.
+    # All wired unconditionally (hard-fail), matching geometric_continuity/
+    # junction_integrity's class.
+    rep = check_post_tiling_integrity(str(xodr))
+    reports["post_tiling_integrity"] = rep
+    _write_json(out_dir / "post_tiling_integrity.json", rep)
+    print(f"[gate] post_tiling_integrity: ok={rep.get('ok')} issue_count={len(rep.get('issues', []))}")
+
+    s_issues = CarlaImportSChecker.validate(physics_root)
+    rep = {"ok": len(s_issues) == 0, "issue_count": len(s_issues), "issues": s_issues}
+    reports["carla_import_s"] = rep
+    _write_json(out_dir / "carla_import_s.json", rep)
+    print(f"[gate] carla_import_s: ok={rep['ok']} issue_count={rep['issue_count']}")
+
+    compat_issues = StrictCarlaOpendriveGate.validate(physics_root)
+    rep = {"ok": len(compat_issues) == 0, "issue_count": len(compat_issues), "issues": compat_issues}
+    reports["carla_opendrive_compat"] = rep
+    _write_json(out_dir / "carla_opendrive_compat.json", rep)
+    print(f"[gate] carla_opendrive_compat: ok={rep['ok']} issue_count={rep['issue_count']}")
 
     if dem is not None and dem.is_file():
         rep = check_dem_full_coverage(str(xodr), str(dem), str(out_dir / "dem_coverage.json"))

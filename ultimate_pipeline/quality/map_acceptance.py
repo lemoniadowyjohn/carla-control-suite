@@ -391,6 +391,27 @@ def build_map_acceptance(
         if seam.get("ok") is False:
             hard_fail_reasons.append({"gate": "elevation_seams", "reason": _reason_from_report(seam)})
 
+    # Round-3 map-quality improvement pass (2026-09-04): this report was
+    # already computed by run_gates() (written to elevation_continuity.json)
+    # but the line storing it into reports[...] was simply never added, so
+    # it was invisible to this function entirely -- not even as a metric.
+    # Road-to-road Z-boundary mismatches are exactly the class of defect
+    # C10 hygiene's repair_true_zseams is supposed to close before a
+    # candidate reaches acceptance; without this wired in, a residual seam
+    # that repair couldn't fully close (e.g. hitting its bounded-pass limit)
+    # would go completely undetected.
+    elevation_continuity = reports.get("elevation_continuity")
+    if isinstance(elevation_continuity, dict):
+        ec_ok = elevation_continuity.get("ok")
+        metrics["elevation_continuity_ok"] = ec_ok
+        art = _artifact_path_from_report(elevation_continuity)
+        if art:
+            linked_artifacts["elevation_continuity"] = art
+        if ec_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "elevation_continuity", "reason": _reason_from_report(elevation_continuity)}
+            )
+
     dem = reports.get("dem_coverage")
     if isinstance(dem, dict):
         ratio = dem.get("coverage_ratio")
@@ -626,6 +647,29 @@ def build_map_acceptance(
             linked_artifacts[key] = art
         if ok is False:
             soft_warnings.append({"gate": key, "reason": _reason_from_report(rep)})
+
+    # Round-3 map-quality improvement pass (2026-09-04): 3 more checkers that
+    # exist, are complete, and are explicitly CARLA-import-crash-prevention
+    # in their own docstrings (duplicate IDs, orphan road-links, negative/
+    # non-monotonic planView s-coordinates, missing center lane, driving
+    # lanes with zero <width> records) but were never called by run_gates()
+    # either. All hard-fail unconditionally, matching geometric_continuity/
+    # junction_integrity's class -- these are the same "CARLA can crash or
+    # build an undrivable map" severity, not a heuristic.
+    for key in ("post_tiling_integrity", "carla_import_s", "carla_opendrive_compat"):
+        rep = reports.get(key)
+        if not isinstance(rep, dict):
+            continue
+        ok = rep.get("ok")
+        metrics[f"{key}_ok"] = ok
+        issues = rep.get("issues")
+        if issues is not None:
+            metrics[f"{key}_issue_count"] = len(issues)
+        art = _artifact_path_from_report(rep)
+        if art:
+            linked_artifacts[key] = art
+        if ok is False:
+            hard_fail_reasons.append({"gate": key, "reason": _reason_from_report(rep)})
 
     # CODEX C7: enrichment completeness (buildings + functional signals).
     # Always measured (visible in metrics) so the map is never silently

@@ -304,6 +304,128 @@ def test_map_acceptance_passes_when_physics_feasibility_clean():
 
 
 # ---------------------------------------------------------------------------
+# Round-3 map-quality improvement pass (2026-09-04): 4 more checkers that
+# exist, are complete, and are CARLA-crash-prevention-class in their own
+# docstrings, but were never called by run_gates() either. All wired
+# unconditionally (hard-fail), matching geometric_continuity/
+# junction_integrity's class.
+# ---------------------------------------------------------------------------
+
+
+def test_map_acceptance_hard_fails_on_elevation_continuity_issues():
+    acceptance = build_map_acceptance(
+        {
+            "elevation_continuity": {
+                "ok": False,
+                "issues": [{"road_id": "1", "type": "z_seam_mismatch", "dz": 1.2}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "elevation_continuity" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["elevation_continuity_ok"] is False
+
+
+def test_map_acceptance_passes_when_elevation_continuity_clean():
+    acceptance = build_map_acceptance(
+        {"elevation_continuity": {"ok": True, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["elevation_continuity_ok"] is True
+
+
+def test_map_acceptance_hard_fails_on_post_tiling_integrity_issues():
+    acceptance = build_map_acceptance(
+        {
+            "post_tiling_integrity": {
+                "ok": False,
+                "issues": [{"type": "duplicate_road_id", "road_id": "1"}],
+                "seam_endpoint_issues": [],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "post_tiling_integrity" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["post_tiling_integrity_ok"] is False
+    assert acceptance["metrics"]["post_tiling_integrity_issue_count"] == 1
+
+
+def test_map_acceptance_passes_when_post_tiling_integrity_clean():
+    acceptance = build_map_acceptance(
+        {"post_tiling_integrity": {"ok": True, "issues": [], "seam_endpoint_issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["post_tiling_integrity_ok"] is True
+    assert acceptance["metrics"]["post_tiling_integrity_issue_count"] == 0
+
+
+def test_map_acceptance_hard_fails_on_carla_import_s_issues():
+    acceptance = build_map_acceptance(
+        {
+            "carla_import_s": {
+                "ok": False,
+                "issue_count": 1,
+                "issues": [{"road_id": "1", "type": "negative_s"}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "carla_import_s" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["carla_import_s_ok"] is False
+    assert acceptance["metrics"]["carla_import_s_issue_count"] == 1
+
+
+def test_map_acceptance_passes_when_carla_import_s_clean():
+    acceptance = build_map_acceptance(
+        {"carla_import_s": {"ok": True, "issue_count": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["carla_import_s_ok"] is True
+    assert acceptance["metrics"]["carla_import_s_issue_count"] == 0
+
+
+def test_map_acceptance_hard_fails_on_carla_opendrive_compat_issues():
+    acceptance = build_map_acceptance(
+        {
+            "carla_opendrive_compat": {
+                "ok": False,
+                "issue_count": 1,
+                "issues": [{"road_id": "1", "type": "missing_center_lane"}],
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert "carla_opendrive_compat" in acceptance["failed_gates"]
+    assert acceptance["metrics"]["carla_opendrive_compat_ok"] is False
+    assert acceptance["metrics"]["carla_opendrive_compat_issue_count"] == 1
+
+
+def test_map_acceptance_passes_when_carla_opendrive_compat_clean():
+    acceptance = build_map_acceptance(
+        {"carla_opendrive_compat": {"ok": True, "issue_count": 0, "issues": []}},
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["carla_opendrive_compat_ok"] is True
+    assert acceptance["metrics"]["carla_opendrive_compat_issue_count"] == 0
+
+
+# ---------------------------------------------------------------------------
 # Deep-audit follow-up (2026-09-04), round 2: semantic_overlap,
 # randomness_entropy, collision_mesh are self-documented as heuristic/
 # diagnostic/non-fatal by their own authors -- unlike the 5 structural gates
@@ -409,6 +531,10 @@ def test_map_acceptance_new_gates_absent_from_reports_does_not_fail():
         "elevation_missing_and_cliffs",
         "elevation_smoothness",
         "physics_feasibility",
+        "elevation_continuity",
+        "post_tiling_integrity",
+        "carla_import_s",
+        "carla_opendrive_compat",
         "semantic_overlap",
         "randomness_entropy",
         "collision_mesh",
