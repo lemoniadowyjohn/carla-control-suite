@@ -154,6 +154,16 @@ LF-checkout environment (Linux CI) -- by design of the freeze, not a bug to chas
 is ever revisited, the only real fix is creating a NEW freeze tag with corrected values, which is
 a deliberate re-freeze decision, not a mechanical CRLF fix.
 
+**Re-verified against real Linux CI** (run 33854302449, `workflow_dispatch`): both
+`test_c11_inputs_manifest_guard.py` and `test_inputs_manifest.py` show every sub-test passing
+(all dots, zero failures) -- the buildings-JSON fix confirmed working for real, not just locally.
+`test_r13p_manifest_sorted_hashes_match_no_provisional` still fails exactly as expected (the
+deliberately-frozen R13 bundle, unchanged, not newly broken by anything else touched this pass).
+Confirmed real improvement: 11 failed -> **9 failed**, 5573 -> **5575 passed**. Remaining 9:
+4 never-migrated-LFS (`test_ingolstadt_coordinate_verification.py`), 1 R13 CRLF (intentionally
+frozen), 4 expected-by-design (gitignored `campaigns/*/regen/` and `campaigns/*/candidate/` +
+the 1 known flake).
+
 ## State of PR #2 / the workflow
 
 PR #2 (`ci-verify-throwaway` -> `fix/post-audit-phase-e-junctions-roundabouts-20260803`) served
