@@ -376,7 +376,17 @@ def test_compute_local_registration_recovers_and_crops_buildings(tmp_path):
   {objects_xml}
 </OpenDRIVE>""", encoding="utf-8")
 
-    # Manual map: single small road near origin (UTM-32N), defines a tight footprint.
+    # Manual map: single small road near origin (UTM-32N), 4 non-collinear points so the
+    # convex hull is a REAL polygon with area, not a degenerate 2-point line. (The original
+    # 2-point version made transform_manual_points_to_auto_local's convex_hull degenerate to
+    # a zero-area LineString, and placing the "inside" building at the exact bbox midpoint
+    # then hinged on a point sitting EXACTLY on that zero-width line -- a floating-point
+    # coincidence in GEOS's collinearity predicate that happened to resolve True on this
+    # machine's bundled GEOS build but False on CI's, since shapely vendors GEOS separately
+    # per-platform wheel even for the identical shapely version. Confirmed by direct
+    # reproduction: poly.geom_type was "LineString", poly.area was 0.0, distance from the
+    # "inside" point to the line was 0.0. A real quadrilateral gives the bbox-center point
+    # many meters of margin from every edge, immune to that class of platform difference.)
     manual_path = tmp_path / "manual.xodr"
     _write_xodr(
         manual_path,
@@ -384,7 +394,9 @@ def test_compute_local_registration_recovers_and_crops_buildings(tmp_path):
             '<road id="1" junction="-1" length="10">'
             '<planView>'
             '<geometry s="0" x="500000" y="5400000" hdg="0" length="10"/>'
-            '<geometry s="10" x="500010" y="5400010" hdg="0" length="10"/>'
+            '<geometry s="10" x="500010" y="5400000" hdg="0" length="10"/>'
+            '<geometry s="20" x="500010" y="5400010" hdg="0" length="10"/>'
+            '<geometry s="30" x="500000" y="5400010" hdg="0" length="10"/>'
             '</planView></road>'
         ),
         bare=False,
