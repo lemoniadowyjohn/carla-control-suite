@@ -12,8 +12,10 @@ import xml.etree.ElementTree as ET
 from ultimate_pipeline.enrichment.sidewalk_builder import SidewalkBuilder
 
 
-def _road(rid="1", junction="-1", driving=True, right_ids=(-1,), left_ids=()):
+def _road(rid="1", junction="-1", driving=True, right_ids=(-1,), left_ids=(), name=None):
     road = ET.Element("road", id=rid, junction=junction, length="10.0")
+    if name is not None:
+        road.set("name", name)
     lanes = ET.SubElement(road, "lanes")
     section = ET.SubElement(lanes, "laneSection", s="0")
     left = ET.SubElement(section, "left")
@@ -172,6 +174,91 @@ def test_add_sidewalks_created_lane_has_width_and_roadmark():
     sidewalk = section.find("right").find("lane[@type='sidewalk']")
     assert sidewalk.find("width") is not None
     assert sidewalk.find("roadMark") is not None
+
+
+# ---------------------------------------------------------------------------
+# _get_osm_highway / add_sidewalks -- road-classification filter (round 5,
+# WS-A: the blanket "has driving lane -> add sidewalks" fallback fired for
+# ANY road, including motorway/trunk classes with no real sidewalk
+# expectation; confirmed nothing in the pipeline ever wrote the more-precise
+# <userData> sidewalk hint this module already read for, so every eligible
+# road fell through to the blanket fallback 100% of the time on real regens)
+# ---------------------------------------------------------------------------
+
+def test_get_osm_highway_matches_by_street_name():
+    road = _road(name="Bundesautobahn 9")
+    osm_meta = {"Bundesautobahn 9": {"highway": "motorway"}}
+    assert SidewalkBuilder._get_osm_highway(road, osm_meta) == "motorway"
+
+
+def test_get_osm_highway_none_when_osm_meta_absent():
+    road = _road(name="Bundesautobahn 9")
+    assert SidewalkBuilder._get_osm_highway(road, None) is None
+
+
+def test_get_osm_highway_none_when_road_name_missing():
+    road = _road(name=None)
+    osm_meta = {"Bundesautobahn 9": {"highway": "motorway"}}
+    assert SidewalkBuilder._get_osm_highway(road, osm_meta) is None
+
+
+def test_get_osm_highway_none_when_street_not_in_index():
+    road = _road(name="Some Unindexed Street")
+    osm_meta = {"Bundesautobahn 9": {"highway": "motorway"}}
+    assert SidewalkBuilder._get_osm_highway(road, osm_meta) is None
+
+
+def test_add_sidewalks_skips_motorway_class_road_via_osm_meta():
+    road = _road(name="Bundesautobahn 9", right_ids=(-1,))  # has a driving lane, no OSM hint
+    osm_meta = {"Bundesautobahn 9": {"highway": "motorway"}}
+    root = _xodr(road)
+    added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
+    assert added == 0
+    section = road.find("lanes/laneSection")
+    assert len(section.find("right").findall("lane[@type='sidewalk']")) == 0
+
+
+def test_add_sidewalks_skips_trunk_link_class_road_via_osm_meta():
+    road = _road(name="Ramp X", right_ids=(-1,))
+    osm_meta = {"Ramp X": {"highway": "trunk_link"}}
+    root = _xodr(road)
+    added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
+    assert added == 0
+
+
+def test_add_sidewalks_residential_class_road_unaffected_by_osm_meta():
+    road = _road(name="Hauptstrasse", right_ids=(-1,))
+    osm_meta = {"Hauptstrasse": {"highway": "residential"}}
+    root = _xodr(road)
+    added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
+    assert added == 2
+
+
+def test_add_sidewalks_explicit_hint_wins_over_motorway_classification():
+    road = _road(name="Bundesautobahn 9", right_ids=(-1,))
+    ud = ET.SubElement(road, "userData")
+    ET.SubElement(ud, "vector", key="sidewalk", value="both")
+    osm_meta = {"Bundesautobahn 9": {"highway": "motorway"}}
+    root = _xodr(road)
+    added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
+    assert added == 2  # explicit OSM hint takes priority over the classification filter
+
+
+def test_add_sidewalks_no_osm_meta_preserves_prior_blanket_behavior():
+    """Regression guard: osm_meta defaults to None, must reproduce exactly
+    today's behavior (every road with a driving lane gets sidewalks)."""
+    road = _road(name="Bundesautobahn 9", right_ids=(-1,))
+    root = _xodr(road)
+    added = SidewalkBuilder.add_sidewalks(root)
+    assert added == 2
+
+
+def test_add_sidewalks_road_unmatched_in_osm_meta_falls_back_to_blanket_heuristic():
+    road = _road(name="Some Unindexed Street", right_ids=(-1,))
+    osm_meta = {"Bundesautobahn 9": {"highway": "motorway"}}  # doesn't contain this road
+    root = _xodr(road)
+    added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
+    assert added == 2  # unknown classification -> fall back to blanket heuristic, not skip
 
 
 # ---------------------------------------------------------------------------

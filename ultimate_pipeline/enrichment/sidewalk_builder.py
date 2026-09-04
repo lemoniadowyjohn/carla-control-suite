@@ -1,7 +1,13 @@
 # ultimate_pipeline/enrichment/sidewalk_builder.py
 
 import xml.etree.ElementTree as ET
-from typing import Optional
+from typing import Dict, Optional
+
+# OSM highway= classes with no legal/physical sidewalk expectation -- grade-
+# separated or rural roads that pedestrians don't walk alongside. Matches
+# the classes speed_limit_writer.py/turn_lanes_writer.py already treat as
+# a distinct road tier via the same osm_meta_index.py "highway" key.
+_NO_SIDEWALK_HIGHWAY_CLASSES = {"motorway", "motorway_link", "trunk", "trunk_link"}
 
 
 class SidewalkBuilder:
@@ -113,14 +119,43 @@ class SidewalkBuilder:
         return count
 
     @staticmethod
-    def add_sidewalks(root: ET.Element, default_both_sides: bool = True) -> int:
+    def _get_osm_highway(road: ET.Element, osm_meta: Optional[Dict[str, dict]]) -> Optional[str]:
+        """Look up this road's OSM highway= class from an osm_meta_index.py-shaped
+        dict (keyed by street name, same convention as speed_limit_writer.py's
+        apply_speed_limits). Returns None if no OSM context is available or no
+        match is found -- callers must treat that as "unknown", not "no sidewalk"."""
+        if not osm_meta:
+            return None
+        road_name = (road.get("name") or "").strip()
+        if not road_name:
+            return None
+        entry = osm_meta.get(road_name)
+        if not entry:
+            return None
+        highway = entry.get("highway")
+        return highway.strip().lower() if highway else None
+
+    @staticmethod
+    def add_sidewalks(
+        root: ET.Element,
+        default_both_sides: bool = True,
+        osm_meta: Optional[Dict[str, dict]] = None,
+    ) -> int:
         """
         Add sidewalk lanes to roads that should have them.
 
         Strategy:
         - Look at OSM hint (if present).
-        - Otherwise, if road has 'urban' or low speedLimit -> add both sides.
+        - Otherwise, if road has 'urban' or low speedLimit -> add both sides,
+          UNLESS its OSM highway= class is motorway/motorway_link/trunk/
+          trunk_link (grade-separated/rural roads with no sidewalk
+          expectation) and osm_meta identifies it as such.
         - Never overwrite existing sidewalk lanes.
+
+        `osm_meta` is optional and keyed by street name (osm_meta_index.py's
+        build_osm_meta_index() output); when omitted, behavior is unchanged
+        from before this parameter existed (every road with a driving lane
+        gets sidewalks via the blanket fallback).
         """
         added = 0
         for road in root.findall("road"):
@@ -144,8 +179,11 @@ class SidewalkBuilder:
             elif hint == "right":
                 add_right = True
             elif default_both_sides:
+                highway = SidewalkBuilder._get_osm_highway(road, osm_meta)
+                if highway in _NO_SIDEWALK_HIGHWAY_CLASSES:
+                    pass  # motorway/trunk-class road: no sidewalk expectation
                 # Better heuristic: if it has a driving lane, it likely deserves sidewalks.
-                if SidewalkBuilder._road_has_driving_lane(road):
+                elif SidewalkBuilder._road_has_driving_lane(road):
                     add_left = add_right = True
 
             if not (add_left or add_right):

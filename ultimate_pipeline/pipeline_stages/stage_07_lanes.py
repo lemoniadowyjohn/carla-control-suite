@@ -188,7 +188,7 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     if getattr(s, "ENABLE_SIDEWALKS", True):
         print("Adding sidewalks...")
         tree, root = load_xodr(lanes_out)
-        sidewalks_added = SidewalkBuilder.add_sidewalks(root)
+        sidewalks_added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
         save_xodr(tree, lanes_out)
         MapPlotter.save_preview(lanes_out, self.out_dir, stage="06_sidewalks")
         self.vreport.add("enrichment", "sidewalks_added", str(sidewalks_added))
