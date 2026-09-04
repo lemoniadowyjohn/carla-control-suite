@@ -21,3 +21,12 @@ reports/post_audit_hardening/**/governed_payload.xodr filter=lfs diff=lfs merge=
 # than the actual LF git blob and fails on any non-Windows checkout despite zero real
 # content difference).
 campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json -text
+
+# Same class of bug, found 2026-09-04 via tools/validate_thesis_claim_provenance.py's
+# rq_table_claims check failing on GitHub Actions (Linux) while passing 100% locally
+# (Windows) and on a fresh Windows clone -- only a genuine Linux checkout (WSL Ubuntu,
+# reproduced directly since GitHub Actions runners aren't locally inspectable) exposed
+# the mismatch. rq_tables.json's recorded sha256 for gnn_latent_cosine_distance had been
+# captured from a CRLF-converted Windows checkout (788 bytes) instead of the actual LF
+# git blob (749 bytes) -- zero real content difference, confirmed byte-for-byte.
+reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json -text
