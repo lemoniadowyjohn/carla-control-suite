@@ -8,6 +8,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.validate_thesis_claim_provenance import _hash_file, _verify_rq_table_claims, validate
@@ -184,9 +186,12 @@ def test_against_real_repo_pinned_maps_and_inputs_verify() -> None:
     # _verify_rq_table_claims against the real rq_tables.json, so 648+/648+ "full suite
     # green" runs never caught it. Assert it here so it can't regress silently again.
     #
-    # Only the FAILING entries are surfaced in the assertion message (not the whole
-    # claims_checked list): a CI-only CRLF-hash mismatch (2026-09-04) hid behind pytest's
-    # default repr truncation for hours because the passing entries alone filled the
-    # visible width -- a genuine Linux repro (WSL) was needed to find the real error.
+    # Only the FAILING entries are surfaced (not the whole claims_checked list), and as
+    # pretty-printed multi-line JSON rather than a single dict repr: a CI-only hash
+    # mismatch (2026-09-04) hid behind pytest's line-width truncation for hours -- both
+    # the whole-list repr AND a single long "hash mismatch: expected X, got Y" string
+    # got cut off mid-hash, because pytest truncates individual rendered LINES, not just
+    # list length. json.dumps(..., indent=2) keeps every line short enough to survive.
     failing = [c for c in result["rq_table_claims"]["claims_checked"] if c.get("provenance") == "FAIL"]
-    assert result["rq_table_claims"]["ok"] is True, failing
+    if failing:
+        pytest.fail(f"rq_table_claims failed:\n{json.dumps(failing, indent=2)}")
