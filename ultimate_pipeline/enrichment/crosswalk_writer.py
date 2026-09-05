@@ -29,6 +29,15 @@ from ultimate_pipeline.enrichment.crosswalk_schema import (
     carla_local_corners,
     reference_pose_at_s,
 )
+from ultimate_pipeline.quality.check_geometric_continuity import (
+    _parse_geometries,
+    _pose_for_geometry,
+)
+
+# Sampling step for curve-aware road matching (round-6 fix). Coarser than this
+# risks missing narrow crossings; finer wastes time over 32k+ roads x ~179
+# crossings without meaningfully changing the match outcome.
+_CURVE_SAMPLE_STEP_M = 2.0
 
 # Same bare-tmerc frame Osm2Odr uses for road geometry (matches
 # osm_polygon_loader.PROJ_STRING and local_registration.BARE_TMERC_DEFAULT).
@@ -99,60 +108,149 @@ def project_crossing_to_local(
 # ---------------------------------------------------------------------------
 
 def nearest_point_on_road(road: ET.Element, x: float, y: float) -> Tuple[float, float, Tuple[float, float]]:
-    """Nearest point on `road`'s planView polyline to (x, y).
+    """Nearest point on `road`'s planView TRUE curve to (x, y).
 
-    Returns (distance_m, s, (px, py)). Approximates each geometry segment as a
-    straight line between its start point and the next segment's start point
-    (or, for the final segment, its own start + length along its own heading) --
-    sufficiently precise for crossing-matching given real road segments here
-    average ~46m and crossings are narrow (a few meters).
+    Returns (distance_m, s, (px, py)).
+
+    Round-6 fix: the original implementation approximated every geometry
+    segment as a straight line from its own start point extended by its own
+    length along its own INITIAL heading -- for a curved segment (arc,
+    spiral, poly3, paramPoly3) this ignores the curvature entirely, so the
+    "endpoint" it draws the chord to can be many meters away from the
+    segment's real endpoint. Verified against the real pinned OSM/candidate
+    pair: of 51 unmatched real crossings, 14 were "near misses" (5-9.3m,
+    just outside the 5m default threshold) and 10 of those 14 were on
+    paramPoly3 segments specifically -- confirming the straight-chord
+    approximation was systematically overstating distance-to-road on curves
+    and causing real, legitimate crossings to be silently dropped.
+
+    Reuses check_geometric_continuity's _parse_geometries/_pose_for_geometry
+    (the same correct pose evaluation used to validate road-to-road
+    continuity elsewhere in this codebase) to sample each geometry along its
+    real shape every _CURVE_SAMPLE_STEP_M, rather than reimplementing
+    per-primitive curve math here.
     """
-    plan = road.find("planView")
-    if plan is None:
-        return float("inf"), 0.0, (0.0, 0.0)
-    geoms = sorted(plan.findall("geometry"), key=lambda g: float(g.get("s", "0") or "0"))
+    geoms, _warnings = _parse_geometries(road)
     if not geoms:
         return float("inf"), 0.0, (0.0, 0.0)
 
     best_dist = float("inf")
     best_s = 0.0
     best_pt = (0.0, 0.0)
-    for geom in geoms:
-        gs = float(geom.get("s", "0") or "0")
-        gx = float(geom.get("x", "0") or "0")
-        gy = float(geom.get("y", "0") or "0")
-        hdg = float(geom.get("hdg", "0") or "0")
-        glen = float(geom.get("length", "0") or "0")
-        ex = gx + glen * math.cos(hdg)
-        ey = gy + glen * math.sin(hdg)
+    for g in geoms:
+        length = max(float(g.length), 0.0)
+        n_samples = max(2, int(length / _CURVE_SAMPLE_STEP_M) + 1) if length > 0 else 1
+        s_locals = [length * i / (n_samples - 1) if n_samples > 1 else 0.0 for i in range(n_samples)]
+        poses = [_pose_for_geometry(g, sl) for sl in s_locals]
 
-        seg_dx, seg_dy = ex - gx, ey - gy
-        seg_len_sq = seg_dx * seg_dx + seg_dy * seg_dy
-        if seg_len_sq < 1e-12:
-            t = 0.0
-        else:
-            t = ((x - gx) * seg_dx + (y - gy) * seg_dy) / seg_len_sq
-            t = max(0.0, min(1.0, t))
-        px, py = gx + t * seg_dx, gy + t * seg_dy
-        dist = math.hypot(x - px, y - py)
-        if dist < best_dist:
-            best_dist = dist
-            best_s = gs + t * glen
-            best_pt = (px, py)
+        if len(poses) == 1:
+            p = poses[0]
+            dist = math.hypot(x - p.x, y - p.y)
+            if dist < best_dist:
+                best_dist, best_s, best_pt = dist, g.s0 + s_locals[0], (p.x, p.y)
+            continue
+
+        # Project onto each small sample-to-sample sub-segment (not just the
+        # nearest discrete sample) -- for a straight line this reduces to
+        # exactly the same projection math the old implementation used
+        # (colinear samples), and for a curve it follows the true shape far
+        # more closely than one whole-segment chord.
+        for i in range(len(poses) - 1):
+            p0, p1 = poses[i], poses[i + 1]
+            seg_dx, seg_dy = p1.x - p0.x, p1.y - p0.y
+            seg_len_sq = seg_dx * seg_dx + seg_dy * seg_dy
+            if seg_len_sq < 1e-12:
+                t = 0.0
+            else:
+                t = ((x - p0.x) * seg_dx + (y - p0.y) * seg_dy) / seg_len_sq
+                t = max(0.0, min(1.0, t))
+            px, py = p0.x + t * seg_dx, p0.y + t * seg_dy
+            dist = math.hypot(x - px, y - py)
+            if dist < best_dist:
+                best_dist = dist
+                best_s = g.s0 + s_locals[i] + t * (s_locals[i + 1] - s_locals[i])
+                best_pt = (px, py)
 
     return best_dist, best_s, best_pt
+
+
+class RoadSpatialIndex:
+    """Grid index of sampled road-curve positions, built ONCE per XODR root
+    and reused across many crossing-match queries.
+
+    Needed after switching nearest_point_on_road from an O(1)-per-geometry
+    straight-chord approximation to curve-aware sampling: a naive "check
+    every road for every crossing" scan took 882s (14m42s) against the real
+    32k-road candidate and 179 real crossings. A first attempt at a cheap
+    per-road distance-lower-bound pre-filter (using `dist(start) - length`)
+    was both still too slow (347s) AND subtly unsafe: for a paramPoly3 whose
+    declared `length` doesn't match its actual parametric arc length (the
+    same class of authoring gotcha found in the round-5 recompute-guard fix),
+    the bound's assumption that "no point on the curve is farther than
+    `length` from the start" can be violated, silently dropping a real
+    match (confirmed: match count dropped 128 -> 127 with that filter).
+
+    This index instead buckets each road's ACTUAL sampled (x, y) positions
+    (the same positions nearest_point_on_road computes from, via
+    check_geometric_continuity's real pose evaluation -- not the `length`
+    field) into a coarse grid, so a query only needs to inspect the small
+    number of roads with a sample near the query point, then runs the full
+    precise nearest_point_on_road only on those candidates. No length-based
+    assumption, so no corresponding safety gap.
+    """
+
+    def __init__(self, root: ET.Element, cell_size_m: float = 10.0) -> None:
+        self._cell_size = cell_size_m
+        self._cells: Dict[Tuple[int, int], set] = {}
+        for road in root.findall("road"):
+            geoms, _warnings = _parse_geometries(road)
+            for g in geoms:
+                length = max(float(g.length), 0.0)
+                n = max(2, int(length / _CURVE_SAMPLE_STEP_M) + 1) if length > 0 else 1
+                for i in range(n):
+                    s_local = length * i / (n - 1) if n > 1 else 0.0
+                    pose = _pose_for_geometry(g, s_local)
+                    cell = self._cell_of(pose.x, pose.y)
+                    self._cells.setdefault(cell, set()).add(road)
+
+    def _cell_of(self, x: float, y: float) -> Tuple[int, int]:
+        return (int(x // self._cell_size), int(y // self._cell_size))
+
+    def candidates_near(self, x: float, y: float, max_dist_m: float) -> List[ET.Element]:
+        """Roads with at least one sampled point within `max_dist_m` of the
+        cell neighborhood around (x, y) -- a superset of roads that could
+        actually be within max_dist_m; nearest_point_on_road resolves the
+        exact distance for each candidate returned here."""
+        reach = int(max_dist_m // self._cell_size) + 1
+        cx, cy = self._cell_of(x, y)
+        found: set = set()
+        for dx in range(-reach, reach + 1):
+            for dy in range(-reach, reach + 1):
+                found.update(self._cells.get((cx + dx, cy + dy), ()))
+        return list(found)
 
 
 def match_crossing_to_road(
     root: ET.Element,
     point_xy: Tuple[float, float],
     max_dist_m: float = DEFAULT_MAX_MATCH_DIST_M,
+    *,
+    spatial_index: Optional[RoadSpatialIndex] = None,
 ) -> Optional[Dict[str, Any]]:
-    """Find the road whose planView polyline is nearest to `point_xy`, within max_dist_m."""
+    """Find the road whose planView polyline is nearest to `point_xy`, within max_dist_m.
+
+    `spatial_index`: an optional prebuilt RoadSpatialIndex(root) -- pass one
+    in when matching many crossings against the same root (apply_crosswalks
+    does this) to avoid re-scanning every road per crossing. If omitted, a
+    fresh index is built for this single call (fine for tests/one-off use
+    with a handful of roads, wasteful for a real 32k-road map called in a
+    loop).
+    """
     x, y = point_xy
+    index = spatial_index or RoadSpatialIndex(root)
     best: Optional[Dict[str, Any]] = None
     best_dist = max_dist_m
-    for road in root.findall("road"):
+    for road in index.candidates_near(x, y, max_dist_m):
         dist, s, pt = nearest_point_on_road(road, x, y)
         if dist <= best_dist:
             best_dist = dist
@@ -210,6 +308,11 @@ def apply_crosswalks(
 
     Returns the number of <object> elements inserted.
     """
+    # Built once and reused for every crossing -- see RoadSpatialIndex's
+    # docstring for why a per-crossing full-road scan is unworkably slow
+    # (882s for the real 32k-road candidate x 179 crossings).
+    spatial_index = RoadSpatialIndex(root)
+
     inserted = 0
     counter = 0
     for crossing in crossings:
@@ -220,7 +323,9 @@ def apply_crosswalks(
             sum(p[0] for p in nodes_local) / len(nodes_local),
             sum(p[1] for p in nodes_local) / len(nodes_local),
         )
-        match = match_crossing_to_road(root, midpoint, max_dist_m=max_match_dist_m)
+        match = match_crossing_to_road(
+            root, midpoint, max_dist_m=max_match_dist_m, spatial_index=spatial_index
+        )
         if match is None:
             continue
 

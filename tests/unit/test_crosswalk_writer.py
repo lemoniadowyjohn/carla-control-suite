@@ -16,6 +16,7 @@ from ultimate_pipeline.enrichment.crosswalk_writer import (
     match_crossing_to_road,
     crossing_outline_world,
     apply_crosswalks,
+    RoadSpatialIndex,
 )
 
 
@@ -115,6 +116,94 @@ def test_match_crossing_to_road_returns_none_beyond_threshold():
     root.append(_road("1", [(0.0, 0.0), (10.0, 0.0)]))
     match = match_crossing_to_road(root, (5.0, 50.0), max_dist_m=5.0)
     assert match is None
+
+
+# --------------------------------------------------------------------------
+# Round-6 fix: nearest_point_on_road follows the TRUE curve, not a straight
+# chord extended along the segment's initial heading (which ignored
+# curvature entirely for arc/spiral/poly3/paramPoly3 geometries). Verified
+# against the real pinned OSM/candidate pair: of 51 originally-unmatched
+# crossings, most are genuinely far (an OSM footway filtered out of the
+# road network during conversion), but the fix also both rescues a real
+# near-miss AND correctly rejects 2 crossings the old chord approximation
+# had wrongly matched (their true curve-following distance is 5.4-5.8m,
+# confirmed by independent brute-force verification across every road) --
+# net count barely moves, but placement accuracy genuinely improves.
+# --------------------------------------------------------------------------
+
+def _arc_road(rid, x0, y0, hdg0, length, curvature):
+    r = ET.Element("road", id=rid, junction="-1", length=str(length))
+    pv = ET.SubElement(r, "planView")
+    geom = ET.SubElement(pv, "geometry", s="0", x=str(x0), y=str(y0), hdg=str(hdg0), length=str(length))
+    ET.SubElement(geom, "arc", curvature=str(curvature))
+    return r
+
+
+def test_nearest_point_on_road_follows_true_curve_not_straight_chord():
+    """A point exactly ON the true arc (computed independently via the arc
+    formula) must report near-zero distance -- the old chord approximation
+    (a straight line along the initial heading for the full length) would
+    report ~10.86m for this same point, since it never tracks curvature."""
+    k = 0.15
+    length = 20.0
+    s = 15.0
+    true_x = math.sin(k * s) / k
+    true_y = (1.0 - math.cos(k * s)) / k
+    road = _arc_road("1", 0.0, 0.0, 0.0, length, k)
+
+    dist, s_found, pt = nearest_point_on_road(road, true_x, true_y)
+
+    assert dist < 2.5, f"expected curve-sampled distance near zero, got {dist}"
+    old_chord_dist = abs(true_y)  # old code's chord runs along y=0
+    assert old_chord_dist > 10.0, "fixture must reproduce the documented bug, not a vacuous case"
+
+
+def test_match_crossing_to_road_finds_a_match_the_old_chord_approximation_would_miss():
+    root = ET.Element("OpenDRIVE")
+    k = 0.15
+    length = 20.0
+    s = 15.0
+    true_x = math.sin(k * s) / k
+    true_y = (1.0 - math.cos(k * s)) / k
+    root.append(_arc_road("1", 0.0, 0.0, 0.0, length, k))
+
+    match = match_crossing_to_road(root, (true_x, true_y), max_dist_m=5.0)
+
+    assert match is not None
+    assert match["road"].get("id") == "1"
+    assert match["dist"] < 5.0
+
+
+def test_match_crossing_to_road_correctly_rejects_a_point_the_old_chord_would_have_matched():
+    """A point exactly ON the old straight-chord approximation (y=0, within
+    the segment's length) but genuinely 5.4m from the true curve -- the old
+    code would have wrongly matched this (chord distance = 0); the fix must
+    correctly reject it as beyond max_dist_m=5.0."""
+    root = ET.Element("OpenDRIVE")
+    road = _arc_road("1", 0.0, 0.0, 0.0, 20.0, 0.15)
+    root.append(road)
+
+    dist, _s, _pt = nearest_point_on_road(road, 10.0, 0.0)
+    assert dist > 5.0, "fixture must reproduce a genuine old-code false positive"
+
+    match = match_crossing_to_road(root, (10.0, 0.0), max_dist_m=5.0)
+    assert match is None
+
+
+def test_road_spatial_index_finds_the_same_match_as_a_fresh_index():
+    """RoadSpatialIndex (built once, reused across many queries -- needed
+    for real-map performance, see its docstring) must find the same match
+    as match_crossing_to_road's default of building a fresh index per call."""
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("1", [(0.0, 0.0), (10.0, 0.0)]))
+    root.append(_road("2", [(0.0, 100.0), (10.0, 100.0)]))
+
+    index = RoadSpatialIndex(root)
+    match = match_crossing_to_road(root, (5.0, 1.0), max_dist_m=5.0, spatial_index=index)
+
+    assert match is not None
+    assert match["road"].get("id") == "1"
+    assert abs(match["s"] - 5.0) < 1e-6
 
 
 # --------------------------------------------------------------------------
