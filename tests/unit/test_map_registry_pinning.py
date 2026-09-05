@@ -106,18 +106,19 @@ def test_real_grid0821_alias_resolves_to_same_content_as_grid0828() -> None:
 
 
 def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
-    # Round-5 promotion (2026-09-04): repair_lane_width_discontinuities()
-    # (round 2's fix for road 46620) had only ever been applied as a one-off
-    # manual repair, never wired into stage_08_hygiene.py's live C10 hygiene
-    # stage -- every canonical regen since round 2 was silently exposed to
-    # the same rejection. Wired in as step 8H-4; a real end-to-end regen
-    # confirms the fix (map_hygiene_report.json: issues_before=1 ->
-    # issues_after=0 for road 46620) and valid_for_experiments=True.
-    # Supersedes the deep-audit pin
-    # e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2, which
+    # Round-6 promotion (2026-09-05): wired structure_classifier.py's
+    # bridge/tunnel/elevated/underpass elevation policy into apply_dem
+    # (stage_05_geometry.py) -- 339 real bridge-tagged + 229 tunnel-tagged
+    # OSM ways existed but were never consulted by DEM elevation. A real
+    # regen with the wiring caught 2 more pre-existing structure_classifier.py
+    # bugs (a CRS AMBIGUOUS-verdict rejection, and a >10 minute O(n*m) scan
+    # fixed with a spatial index). End-to-end regen confirms the fix:
+    # structure_elevation_report.json shows 281 roads correctly deck_linear,
+    # and valid_for_experiments=True. Supersedes the round-5 hygiene-fix pin
+    # 60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75, which
     # remains on disk for provenance but is no longer "the" auto map of record.
     result = verify_pinned_map("auto_map_of_record")
-    assert result["sha256"] == "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    assert result["sha256"] == "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
     assert result["role"] == "auto"
 
 

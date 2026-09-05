@@ -418,26 +418,34 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
-        # Round-5 promotion (2026-09-04): repair_lane_width_discontinuities()
-        # (added round 2 to fix road 46620's 3.5m->3.0m instant width step)
-        # had only ever been applied as a one-off manual repair to the prior
-        # pin -- verified directly that stage_08_hygiene.py's live C10 hygiene
-        # stage never actually called it, so every canonical regen since
-        # round 2 was silently exposed to the same rejection. Wired it in as
-        # step 8H-4. Re-running the canonical regen end-to-end from the
-        # pinned OSM input confirms the fix: map_hygiene_report.json shows
-        # lane_width_discontinuities issues_before=1 (road 46620, same
-        # defect) -> issues_after=0, and final acceptance is
-        # valid_for_experiments=True with 0 hard-fail reasons. Also carries
-        # this same regen's WS-A sidewalk-classification fix (motorway/
-        # trunk-class roads no longer get sidewalks; verified 0/17 real
-        # motorway/trunk roads carry them) and the round-3 WS-G bench-
-        # placement fix, both baked into an emitted candidate for the first
-        # time (1122 benches, matching the earlier in-memory simulation).
+        # Round-6 promotion (2026-09-05): wired structure_classifier.py's
+        # bridge/tunnel/elevated/underpass elevation policy into the live
+        # apply_dem call (stage_05_geometry.py) -- verified directly that
+        # 339 real bridge-tagged + 229 tunnel-tagged OSM ways existed but
+        # were never consulted by DEM elevation, flattening grade-separated
+        # structures to raw ground height. A real regen with the wiring
+        # caught 2 more pre-existing structure_classifier.py bugs (a CRS
+        # AMBIGUOUS-verdict rejection that DEM sampling itself already
+        # tolerated, and a >10 minute O(n*m) brute-force scan -- fixed with
+        # a spatial grid index, same pattern as this round's crosswalk fix).
+        # Re-running the canonical regen end-to-end confirms the fix:
+        # structure_elevation_report.json shows status=ok, gate=PASS, 281
+        # roads correctly flagged deck_linear (10 bridge + 164 elevated +
+        # 64 tunnel + 43 underpass); spot-checked real <elevation> b
+        # coefficients show genuine non-zero slopes on longer structures
+        # (e.g. +0.017, -0.2 clamped at UP_ELEVATION_MAX_GRADE) and correct
+        # near-zero on short connector-fragment stubs. Final acceptance:
+        # all 15 gates ok=True, elevation_summary min=361.9 max=406.3 (real
+        # DEM variation), component_reachability isolated=27 (same stable
+        # count as every prior round), valid_for_experiments=True. Also
+        # carries this round's crosswalk-writer.py curve-following fix
+        # (OSM footway=crossing matching now follows true road curvature
+        # instead of a straight chord, with a spatial index for real-map
+        # performance).
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
-        "ingolstadt_perception_map_of_record_20260904_214501.xodr",
-        "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75",
-        "bytes": 148950126,
+        "ingolstadt_perception_map_of_record_20260905_131617.xodr",
+        "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46",
+        "bytes": 148949722,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
@@ -446,14 +454,34 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         # supersedes chain by tools/validate_thesis_claim_provenance.py rather than
         # failing as drift. Chain: 69b1f520 (pre-C29) -> 744757f3 (C29 building patch,
         # 2026-08-26) -> a5bd01be (WS1.4 junctionfix, 2026-09-02) -> e281367e (deep-audit,
-        # 2026-09-04) -> 60a36325 (this pin, round-5 hygiene-stage fix, 2026-09-04).
+        # 2026-09-04) -> 60a36325 (round-5 hygiene-stage fix, 2026-09-04) ->
+        # cb85fc14 (this pin, round-6 bridge/tunnel elevation fix, 2026-09-05).
+        "supersedes_sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260904_214501.xodr",
+    },
+    # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
+    # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
+    # still resolve claims that cite the round-5 hygiene-stage-fix sha (60a36325...)
+    # one promotion back. That resolver iterates every PINNED_MAP_REGISTRY entry
+    # looking for a supersedes_sha256 match, not just "auto_map_of_record", so this
+    # chain-link entry is sufficient without adding multi-hop walking to the
+    # resolver itself.
+    "auto_map_of_record_round5_hygienefix_superseded": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260904_214501.xodr",
+        "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75",
+        "bytes": 148950126,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto_map_of_record_round5_hygienefix_superseded"],
         "supersedes_sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2",
         "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
     },
     # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
     # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
-    # still resolve claims that cite the deep-audit sha (e281367e...) one promotion
+    # still resolve claims that cite the deep-audit sha (e281367e...) two promotions
     # back. That resolver iterates every PINNED_MAP_REGISTRY entry looking for a
     # supersedes_sha256 match, not just "auto_map_of_record", so this chain-link
     # entry is sufficient without adding multi-hop walking to the resolver itself.
