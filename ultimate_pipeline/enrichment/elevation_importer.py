@@ -698,6 +698,7 @@ class ElevationImporter:
         *,
         collect_qc: bool = False,
         linear_grade: Optional[bool] = None,
+        structure_road_ids: Optional[set] = None,
     ) -> Optional[Dict[str, Any]]:
         from ultimate_pipeline.enrichment.elevation_fallback_policy import (
             elevation_fallback_policy,
@@ -791,6 +792,7 @@ class ElevationImporter:
 
         for road in root.findall("road"):
             rid = str(road.get("id", "UNKNOWN"))
+            road_forced_linear_grade = bool(structure_road_ids) and rid in structure_road_ids
             plan = road.find("planView")
             if plan is None:
                 continue
@@ -853,9 +855,11 @@ class ElevationImporter:
             sample_values.append(float(z0))
             valid_samples.append((float(x0), float(y0), float(z0)))
 
-            # Compute linear grade if enabled: sample road end to get slope
+            # Compute linear grade if enabled (globally, or forced per-road for
+            # bridge/tunnel/elevated/underpass structures via structure_road_ids):
+            # sample road end to get slope.
             b_coeff = 0.0
-            if linear_grade:
+            if linear_grade or road_forced_linear_grade:
                 try:
                     road_length = float(road.get("length", "0"))
                 except Exception:

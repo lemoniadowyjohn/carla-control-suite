@@ -35,6 +35,51 @@ def _resolve_preferred_dem_path(settings, dem_path: str | None) -> tuple[str | N
     return dem_path, False
 
 
+def _resolve_structure_road_ids(
+    xodr_path: str, osm_path: str, *, thesis_strict: bool
+) -> "tuple[set | None, dict]":
+    """F3 structure classification (bridge/tunnel/elevated/underpass) for the
+    live pipeline. Returns (structure_road_id_set, report). Fails open (returns
+    (None, {"status": "failed", ...})) unless thesis_strict, in which case a
+    classification failure raises -- mirrors apply_dem's own THESIS_STRICT
+    resolution and this file's other DEM-failure escalation points."""
+    try:
+        from ultimate_pipeline.enrichment.structure_classifier import (
+            classify_xodr_roads,
+            structure_road_ids,
+            apply_dem_structure_gate,
+        )
+
+        if not osm_path or not os.path.exists(osm_path):
+            raise RuntimeError(
+                f"OSM source unavailable for structure classification: {osm_path!r}"
+            )
+        classification = classify_xodr_roads(xodr_path, osm_path=osm_path)
+        gate = apply_dem_structure_gate(classification, strict=thesis_strict)
+        road_id_set = set(structure_road_ids(classification))
+        report = {
+            "status": "ok",
+            "verdict": classification.get("verdict"),
+            "class_counts": classification.get("class_counts"),
+            "deck_linear_road_ids": sorted(road_id_set),
+            "deck_linear_road_count": len(road_id_set),
+            "gate": gate,
+        }
+        print(
+            f"[STRUCTURE] Classification OK: {classification.get('roads_total')} roads, "
+            f"{len(road_id_set)} deck_linear (bridge/elevated/tunnel/underpass)."
+        )
+        return road_id_set, report
+    except Exception as exc:
+        report = {"status": "failed", "reason": str(exc)}
+        if thesis_strict:
+            raise RuntimeError(
+                f"[F3] Structure classification failed in THESIS_STRICT mode: {exc}"
+            ) from exc
+        print(f"⚠️ Structure classification failed (continuing, no deck_linear override): {exc}")
+        return None, report
+
+
 def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     """
     📐 GEOMETRY AUTHORITY (merged STEP 5 + STEP 6, hardened order)
@@ -494,6 +539,29 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
             self.vreport.add_dict("elevation_stats", {"DEM_disabled": True})
             sampler = _flat_sampler_or_raise(f"DEM full coverage check failed: {e}", e)
 
+    # Structure classification (F3): identify bridge/tunnel/elevated/underpass
+    # roads so apply_dem can give them a deck_linear (endpoint-interpolated)
+    # profile instead of flattening them to a single ground-DEM sample. Net-new
+    # in the live pipeline -- must never newly block a regen that previously
+    # succeeded, so a classification failure degrades to structure_road_id_set
+    # = None (byte-identical to pre-fix apply_dem behavior) unless THESIS_STRICT.
+    thesis_strict_structure = bool(getattr(s, "THESIS_STRICT", False)) or (
+        os.getenv("UP_THESIS_STRICT", "").strip().lower() in ("1", "true", "yes", "on")
+    )
+    structure_road_id_set, structure_report = _resolve_structure_road_ids(
+        topo_fixed,
+        str(getattr(s, "OSM_FILE", "") or ""),
+        thesis_strict=thesis_strict_structure,
+    )
+
+    structure_report_path = os.path.join(self.out_dir, "structure_elevation_report.json")
+    try:
+        with open(structure_report_path, "w", encoding="utf-8") as f:
+            json.dump(structure_report, f, indent=2, ensure_ascii=True, sort_keys=True)
+    except Exception as e:
+        print(f"⚠️ Failed to write structure elevation report: {e}")
+    self.vreport.add_dict("structure_elevation", structure_report)
+
     # Apply DEM elevation
     dem_apply_stats = {
         "sampled_points": 0,
@@ -505,7 +573,9 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
         "fallback_road_ids": [],
     }
     try:
-        collected = ElevationImporter.apply_dem(root, sampler, collect_qc=True)
+        collected = ElevationImporter.apply_dem(
+            root, sampler, collect_qc=True, structure_road_ids=structure_road_id_set
+        )
         if isinstance(collected, dict):
             dem_apply_stats = collected
         print("✅ DEM elevation applied to map.")
@@ -694,7 +764,8 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                         "sample_values": [],
                     }
                     retry_collected = ElevationImporter.apply_dem(
-                        root, sampler, collect_qc=True
+                        root, sampler, collect_qc=True,
+                        structure_road_ids=structure_road_id_set,
                     )
                     if isinstance(retry_collected, dict):
                         retry_stats = retry_collected
