@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import random
 import sys
 import xml.etree.ElementTree as ET
@@ -123,6 +124,12 @@ class RLFuzzer:
                     a = float(width.get("a", "0"))
                 except (TypeError, ValueError):
                     continue
+                if not math.isfinite(a):
+                    # NaN/Inf comparisons are always False, so the "<= 0.0"
+                    # drop check below would silently let a non-finite width
+                    # through and write it back verbatim -- guard explicitly.
+                    clamped += 1
+                    continue
                 new_a = a * scale
                 if new_a <= 0.0:
                     clamped += 1
@@ -143,8 +150,11 @@ class RLFuzzer:
                 curvature = float(arc.get("curvature", "0"))
             except (TypeError, ValueError):
                 continue
+            if not math.isfinite(curvature):
+                continue
             new_curvature = curvature + self.rng.uniform(-noise, noise)
             if abs(new_curvature) > MAX_ABS_CURVATURE:
+                new_curvature = math.copysign(MAX_ABS_CURVATURE, new_curvature)
                 clamped += 1
             arc.set("curvature", f"{new_curvature:.9f}")
             modified += 1
