@@ -418,33 +418,18 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
-        # Round-6 promotion (2026-09-05): wired structure_classifier.py's
-        # bridge/tunnel/elevated/underpass elevation policy into the live
-        # apply_dem call (stage_05_geometry.py) -- verified directly that
-        # 339 real bridge-tagged + 229 tunnel-tagged OSM ways existed but
-        # were never consulted by DEM elevation, flattening grade-separated
-        # structures to raw ground height. A real regen with the wiring
-        # caught 2 more pre-existing structure_classifier.py bugs (a CRS
-        # AMBIGUOUS-verdict rejection that DEM sampling itself already
-        # tolerated, and a >10 minute O(n*m) brute-force scan -- fixed with
-        # a spatial grid index, same pattern as this round's crosswalk fix).
-        # Re-running the canonical regen end-to-end confirms the fix:
-        # structure_elevation_report.json shows status=ok, gate=PASS, 281
-        # roads correctly flagged deck_linear (10 bridge + 164 elevated +
-        # 64 tunnel + 43 underpass); spot-checked real <elevation> b
-        # coefficients show genuine non-zero slopes on longer structures
-        # (e.g. +0.017, -0.2 clamped at UP_ELEVATION_MAX_GRADE) and correct
-        # near-zero on short connector-fragment stubs. Final acceptance:
-        # all 15 gates ok=True, elevation_summary min=361.9 max=406.3 (real
-        # DEM variation), component_reachability isolated=27 (same stable
-        # count as every prior round), valid_for_experiments=True. Also
-        # carries this round's crosswalk-writer.py curve-following fix
-        # (OSM footway=crossing matching now follows true road curvature
-        # instead of a straight chord, with a spatial index for real-map
-        # performance).
+        # Reproducibility re-promotion (2026-09-05): no code changes since the
+        # round-6 bridge/tunnel elevation fix pin (cb85fc14) -- this is a fresh
+        # canonical regen from the same pinned OSM input on a clean worktree,
+        # re-run purely to re-confirm the pipeline reproduces cleanly end-to-end.
+        # Byte-different from cb85fc14 (Osm2Odr is not byte-deterministic) but
+        # structurally equivalent: all 15 gates ok=True, elevation_summary
+        # min=361.9 max=406.3 (same real DEM variation), component_reachability
+        # isolated=27 (same stable count as every regen this week),
+        # valid_for_experiments=True.
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
-        "ingolstadt_perception_map_of_record_20260905_131617.xodr",
-        "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46",
+        "ingolstadt_perception_map_of_record_20260905_180515.xodr",
+        "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb",
         "bytes": 148949722,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
@@ -455,7 +440,27 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         # failing as drift. Chain: 69b1f520 (pre-C29) -> 744757f3 (C29 building patch,
         # 2026-08-26) -> a5bd01be (WS1.4 junctionfix, 2026-09-02) -> e281367e (deep-audit,
         # 2026-09-04) -> 60a36325 (round-5 hygiene-stage fix, 2026-09-04) ->
-        # cb85fc14 (this pin, round-6 bridge/tunnel elevation fix, 2026-09-05).
+        # cb85fc14 (round-6 bridge/tunnel elevation fix, 2026-09-05) ->
+        # 847d41bd (this pin, reproducibility re-regen, same code, 2026-09-05).
+        "supersedes_sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_131617.xodr",
+    },
+    # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
+    # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
+    # still resolve claims that cite the round-6 elevation-fix sha (cb85fc14...) one
+    # promotion back. That resolver iterates every PINNED_MAP_REGISTRY entry looking
+    # for a supersedes_sha256 match, not just "auto_map_of_record", so this
+    # chain-link entry is sufficient without adding multi-hop walking to the
+    # resolver itself.
+    "auto_map_of_record_round6_elevationfix_superseded": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_131617.xodr",
+        "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46",
+        "bytes": 148949722,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto_map_of_record_round6_elevationfix_superseded"],
         "supersedes_sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75",
         "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260904_214501.xodr",
