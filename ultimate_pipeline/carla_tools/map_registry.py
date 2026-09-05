@@ -418,18 +418,23 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
-        # Reproducibility re-promotion (2026-09-05): no code changes since the
-        # round-6 bridge/tunnel elevation fix pin (cb85fc14) -- this is a fresh
-        # canonical regen from the same pinned OSM input on a clean worktree,
-        # re-run purely to re-confirm the pipeline reproduces cleanly end-to-end.
-        # Byte-different from cb85fc14 (Osm2Odr is not byte-deterministic) but
-        # structurally equivalent: all 15 gates ok=True, elevation_summary
-        # min=361.9 max=406.3 (same real DEM variation), component_reachability
-        # isolated=27 (same stable count as every regen this week),
-        # valid_for_experiments=True.
+        # Second reproducibility re-promotion (2026-09-05): no map-generation code
+        # changed since the prior pin (847d41bd) -- the only work in between was
+        # rl_fuzzer.py bug fixes (a standalone experimental tool, not part of the
+        # live regen pipeline) and a 103-module read-only audit of pipeline_stages/,
+        # enrichment/, quality/, topology/ that found zero functional bugs. This is
+        # a fresh canonical regen from the same pinned OSM input, re-run to keep the
+        # pin current. Byte-different from 847d41bd (Osm2Odr is not byte-
+        # deterministic) but structurally equivalent: all 15 gates ok=True,
+        # elevation_summary min=361.9 max=406.3, component_reachability isolated=27
+        # (same stable count as every regen this week), valid_for_experiments=True.
+        # Static CARLA-compatibility preflight (StrictXodrValidator +
+        # StrictCarlaOpendriveGate) also verified clean: 0 errors, 134 warnings (all
+        # road_length_mismatch on short junction-connector fragments, a known benign
+        # converter quirk, not a hard failure).
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
-        "ingolstadt_perception_map_of_record_20260905_180515.xodr",
-        "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb",
+        "ingolstadt_perception_map_of_record_20260905_202847.xodr",
+        "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
         "bytes": 148949722,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
@@ -441,7 +446,27 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         # 2026-08-26) -> a5bd01be (WS1.4 junctionfix, 2026-09-02) -> e281367e (deep-audit,
         # 2026-09-04) -> 60a36325 (round-5 hygiene-stage fix, 2026-09-04) ->
         # cb85fc14 (round-6 bridge/tunnel elevation fix, 2026-09-05) ->
-        # 847d41bd (this pin, reproducibility re-regen, same code, 2026-09-05).
+        # 847d41bd (reproducibility re-regen, 2026-09-05) ->
+        # 2ca342d8 (this pin, second reproducibility re-regen, 2026-09-05).
+        "supersedes_sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_180515.xodr",
+    },
+    # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
+    # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
+    # still resolve claims that cite the first reproducibility-re-regen sha
+    # (847d41bd...) one promotion back. That resolver iterates every
+    # PINNED_MAP_REGISTRY entry looking for a supersedes_sha256 match, not just
+    # "auto_map_of_record", so this chain-link entry is sufficient without adding
+    # multi-hop walking to the resolver itself.
+    "auto_map_of_record_reproregen1_superseded": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_180515.xodr",
+        "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb",
+        "bytes": 148949722,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto_map_of_record_reproregen1_superseded"],
         "supersedes_sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46",
         "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260905_131617.xodr",

@@ -106,17 +106,20 @@ def test_real_grid0821_alias_resolves_to_same_content_as_grid0828() -> None:
 
 
 def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
-    # Reproducibility re-promotion (2026-09-05): no code changes since the
-    # round-6 bridge/tunnel elevation fix pin (cb85fc14) -- a fresh canonical
-    # regen from the same pinned OSM input, re-run purely to re-confirm the
-    # pipeline reproduces cleanly end-to-end on a clean worktree. Byte-different
-    # from cb85fc14 (Osm2Odr is not byte-deterministic) but structurally
-    # equivalent: all 15 gates ok=True, component_reachability isolated=27
-    # (same stable count as every regen this week), valid_for_experiments=True.
-    # Supersedes cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46,
-    # which remains on disk for provenance but is no longer "the" auto map of record.
+    # Second reproducibility re-promotion (2026-09-05): no map-generation code
+    # changed since the prior pin (847d41bd) -- only rl_fuzzer.py bug fixes
+    # (a standalone experimental tool, not part of the live regen pipeline) and
+    # a 103-module read-only audit (zero functional bugs found) happened in
+    # between. Fresh canonical regen from the same pinned OSM input. Byte-
+    # different (Osm2Odr is not byte-deterministic) but structurally equivalent:
+    # all 15 gates ok=True, component_reachability isolated=27 (same stable
+    # count as every regen this week), valid_for_experiments=True. Static CARLA
+    # preflight also verified clean (0 errors, 134 benign warnings on short
+    # junction-connector fragments). Supersedes
+    # 847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb, which
+    # remains on disk for provenance but is no longer "the" auto map of record.
     result = verify_pinned_map("auto_map_of_record")
-    assert result["sha256"] == "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    assert result["sha256"] == "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
     assert result["role"] == "auto"
 
 
