@@ -14,6 +14,8 @@ from pyproj import CRS, Transformer
 
 from ultimate_pipeline.enrichment.structure_classifier import (
     OSM2ODR_NATIVE_PROJ4,
+    _classify_road_centreline,
+    _wgs84_to_native_transformer,
     apply_dem_structure_gate,
     classify_xodr_roads,
     structure_road_ids,
@@ -95,6 +97,98 @@ def _write_fixture(tmp_path: Path, monkeypatch) -> tuple[str, str, dict]:
     )
 
     return str(xodr_path), str(osm_path), {"bridge_road": "bridge_road", "plain_road": "plain_road"}
+
+
+class TestWgs84ToNativeTransformerCrsFallback:
+    """Round-6 real-regen catch: the real Ingolstadt candidate's F1 CRS
+    contract resolves to AMBIGUOUS (both the claimed geoReference and the
+    Osm2Odr native frame are geographically plausible against the OSM
+    bounds) -- resolve_sampling_crs (what DEM sampling itself uses) already
+    handles this by falling back to the claimed CRS with a warning, but
+    _wgs84_to_native_transformer only ever accepted the narrower
+    OSM2ODR_NATIVE_VERIFIED verdict, so structure classification always
+    raised on the real map even though DEM elevation sampling succeeded fine
+    for the exact same file. This broke a real end-to-end regen."""
+
+    def test_ambiguous_verdict_succeeds_via_claimed_crs_fallback(self, tmp_path, monkeypatch):
+        claimed_crs = CRS.from_proj4(OSM2ODR_NATIVE_PROJ4)
+        record = {"verdict": "AMBIGUOUS", "reason": "both_frames_plausible;prefer_claimed_with_warning"}
+        monkeypatch.setattr(
+            "ultimate_pipeline.enrichment.structure_classifier.resolve_sampling_crs",
+            lambda xodr_path, osm_path=None, strict=True: (claimed_crs, "claimed_geoReference_ambiguous", record),
+        )
+        tf, returned_record = _wgs84_to_native_transformer("whatever.xodr", "whatever.osm")
+        x, y = tf.transform(11.0, 48.0)
+        assert x != 0.0 or y != 0.0
+        assert returned_record["verdict"] == "AMBIGUOUS"
+
+    def test_unresolved_verdict_still_raises(self, tmp_path, monkeypatch):
+        def _raise(xodr_path, osm_path=None, strict=True):
+            raise RuntimeError("F1 CRS contract unresolved: cannot establish the geographic frame")
+
+        monkeypatch.setattr(
+            "ultimate_pipeline.enrichment.structure_classifier.resolve_sampling_crs", _raise
+        )
+        with pytest.raises(RuntimeError, match="F1 CRS contract unresolved"):
+            _wgs84_to_native_transformer("whatever.xodr", "whatever.osm")
+
+
+class _BruteForceIndex:
+    """Reference oracle: candidate set = every structure, regardless of
+    query point (i.e. the pre-fix behavior of scanning all structures per
+    point). Used to prove the real spatial index never drops a true match."""
+
+    def __init__(self, n: int) -> None:
+        self._all = list(range(n))
+
+    def candidate_indices_near(self, x: float, y: float, max_dist_m: float) -> list:
+        return self._all
+
+
+class TestClassifyRoadCentrelineSpatialIndexEquivalence:
+    """Round-6 perf fix: classify_xodr_roads took >10 minutes on the real
+    32,267-road map because _classify_road_centreline scanned every OSM
+    structure way for every sampled road point (same bug class as
+    crosswalk_writer.py's nearest_point_on_road, fixed earlier this round).
+    _StructureSpatialIndex must return results identical to the brute-force
+    full scan, not just "fast" -- these tests hold it to that bar directly."""
+
+    def _scattered_structures(self):
+        import itertools
+
+        classes = ["bridge", "tunnel", "covered", "embankment"]
+        structures = []
+        for i, (gx, gy) in enumerate(itertools.product(range(0, 2000, 100), range(0, 2000, 400))):
+            structures.append({
+                "way_id": f"w{i}",
+                "class": classes[i % len(classes)],
+                "polyline_m": [(float(gx), float(gy)), (float(gx) + 60.0, float(gy) + 15.0)],
+            })
+        return structures
+
+    def test_spatial_index_matches_brute_force_full_scan(self):
+        import math as _math
+
+        structures = self._scattered_structures()
+        pts = [
+            (float(x), 20.0 + 8.0 * _math.sin(x / 137.0))
+            for x in range(0, 2000, 5)
+        ]
+        buffer_m = 12.0
+        class_fraction = 0.6
+
+        fast_index = None  # let _classify_road_centreline build its real spatial index
+        fast_result = _classify_road_centreline(
+            pts, structures, buffer_m, class_fraction, spatial_index=fast_index
+        )
+        brute_result = _classify_road_centreline(
+            pts, structures, buffer_m, class_fraction,
+            spatial_index=_BruteForceIndex(len(structures)),
+        )
+        assert fast_result["class"] == brute_result["class"]
+        assert fast_result["coverage_by_class"] == brute_result["coverage_by_class"]
+        assert fast_result["matched_structures"] == brute_result["matched_structures"]
+        assert abs(fast_result["matched_length_m"] - brute_result["matched_length_m"]) < 1e-9
 
 
 class TestClassifyXodrRoads:

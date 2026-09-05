@@ -45,7 +45,6 @@ except Exception:  # pragma: no cover
 from ultimate_pipeline.dem.dem_crs_contract import (
     OSM2ODR_NATIVE_PROJ4,
     resolve_sampling_crs,
-    verify_crs_contract,
 )
 
 TERRAIN_FOLLOWING = "terrain_following"
@@ -91,19 +90,24 @@ def _safe_float(value: Optional[str], default: float = 0.0) -> float:
 
 
 def _wgs84_to_native_transformer(xodr_path: str, osm_path: str) -> Tuple[Any, Dict[str, Any]]:
-    """WGS84 -> verified Osm2Odr native frame transformer (F1 contract)."""
-    record = verify_crs_contract(xodr_path, osm_path=osm_path)
-    verdict = str(record.get("verdict", ""))
-    if verdict != "OSM2ODR_NATIVE_VERIFIED":
-        raise RuntimeError(
-            f"[F3] cannot classify: F1 CRS contract not verified "
-            f"(verdict={verdict!r})"
-        )
-    native = record.get("native_frame") or OSM2ODR_NATIVE_PROJ4
+    """WGS84 -> verified DEM-sampling-frame transformer (F1 contract).
+
+    Uses resolve_sampling_crs -- the SAME CRS resolution DEM elevation
+    sampling itself uses -- rather than a narrower native-frame-only check.
+    A real regen showed the two disagreeing: the real Ingolstadt candidate's
+    F1 contract resolves to AMBIGUOUS (both the claimed geoReference and the
+    Osm2Odr native frame are plausible against the OSM bounds), which
+    resolve_sampling_crs already handles by falling back to the claimed CRS
+    with a warning -- DEM sampling proceeds fine. The old native-only check
+    here rejected AMBIGUOUS outright, so structure classification always
+    failed on the real map even though elevation sampling succeeded for the
+    exact same file. Fails closed only when resolve_sampling_crs itself does
+    (a true UNRESOLVED contract).
+    """
     if not _PYPROJ_OK:
         raise RuntimeError("[F3] pyproj unavailable; cannot project OSM structures")
+    dst, _source, record = resolve_sampling_crs(xodr_path, osm_path=osm_path, strict=True)
     src = CRS.from_epsg(4326)
-    dst = CRS.from_proj4(native)
     tf = Transformer.from_crs(src, dst, always_xy=True)
     return tf, record
 
@@ -328,11 +332,58 @@ def _polyline_length(poly: List[Tuple[float, float]]) -> float:
     )
 
 
+class _StructureSpatialIndex:
+    """Grid index of OSM structure-way polylines for fast buffer_m proximity
+    queries. classify_xodr_roads's per-sampled-point-per-structure brute-force
+    scan (32,267 roads x hundreds of real bridge/tunnel/etc. ways) took over
+    10 minutes on the real Ingolstadt map -- unacceptable for a pipeline
+    stage. Built once per classify_xodr_roads call, reused for every road's
+    every sampled point, mirroring crosswalk_writer.py's RoadSpatialIndex
+    fix for the same class of bug."""
+
+    def __init__(self, structures: List[Dict[str, Any]], cell_size_m: float) -> None:
+        self._cell_size = cell_size_m
+        self._cells: Dict[Tuple[int, int], List[int]] = {}
+        for idx, s in enumerate(structures):
+            self._insert_polyline(idx, s["polyline_m"])
+
+    def _cell_of(self, x: float, y: float) -> Tuple[int, int]:
+        return (int(x // self._cell_size), int(y // self._cell_size))
+
+    def _insert_polyline(self, idx: int, poly: List[Tuple[float, float]]) -> None:
+        if not poly:
+            return
+        if len(poly) == 1:
+            self._cells.setdefault(self._cell_of(*poly[0]), []).append(idx)
+            return
+        step = max(self._cell_size / 2.0, 1.0)
+        for a, b in zip(poly, poly[1:]):
+            seg_len = math.hypot(b[0] - a[0], b[1] - a[1])
+            n = max(1, int(seg_len / step))
+            for i in range(n + 1):
+                t = i / n if n else 0.0
+                cell = self._cell_of(a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]))
+                bucket = self._cells.setdefault(cell, [])
+                if not bucket or bucket[-1] != idx:
+                    bucket.append(idx)
+
+    def candidate_indices_near(self, x: float, y: float, max_dist_m: float) -> List[int]:
+        reach = int(max_dist_m // self._cell_size) + 1
+        cx, cy = self._cell_of(x, y)
+        found: set = set()
+        for dx in range(-reach, reach + 1):
+            for dy in range(-reach, reach + 1):
+                found.update(self._cells.get((cx + dx, cy + dy), ()))
+        return sorted(found)
+
+
 def _classify_road_centreline(
     pts: List[Tuple[float, float]],
     structures: List[Dict[str, Any]],
     buffer_m: float,
     class_fraction: float,
+    *,
+    spatial_index: Optional[_StructureSpatialIndex] = None,
 ) -> Dict[str, Any]:
     """Return dominant structure class + covered length fractions per class."""
     if not pts:
@@ -344,12 +395,14 @@ def _classify_road_centreline(
             "coverage_by_class": {},
             "matched_structures": [],
         }
+    index = spatial_index or _StructureSpatialIndex(structures, max(buffer_m, 20.0))
     total = _polyline_length(pts)
     covered_by_class: Dict[str, float] = {}
     matched_ids: List[str] = []
     for pt in pts:
         hit_class: Optional[str] = None
-        for s in structures:
+        for idx in index.candidate_indices_near(pt[0], pt[1], buffer_m):
+            s = structures[idx]
             if _point_polyline_dist(pt[0], pt[1], s["polyline_m"]) <= buffer_m:
                 hit_class = s["class"]
                 if s["way_id"] not in matched_ids:
@@ -394,6 +447,7 @@ def classify_xodr_roads(
         osm_path, xodr_path=xodr_path, buffer_m=buffer_m
     )
     structures = structures_record["structures"]
+    spatial_index = _StructureSpatialIndex(structures, max(buffer_m, 20.0))
 
     if not os.path.exists(xodr_path):
         raise FileNotFoundError(f"[F3] XODR missing: {xodr_path}")
@@ -408,7 +462,8 @@ def classify_xodr_roads(
         rid = str(road.get("id", "UNKNOWN"))
         pts = road_centerline_polyline(road, spacing_m=sample_spacing_m)
         result = _classify_road_centreline(
-            pts, structures, buffer_m=buffer_m, class_fraction=class_fraction
+            pts, structures, buffer_m=buffer_m, class_fraction=class_fraction,
+            spatial_index=spatial_index,
         )
         cls = result["class"]
         counts[cls] = counts.get(cls, 0) + 1
