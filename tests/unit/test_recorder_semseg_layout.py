@@ -122,10 +122,26 @@ def _make_recorder(
     )
 
 
-def _fire_and_finalize(recorder: SensorRecorder, frames: list) -> None:
-    for sensor in recorder.sensors.values():
+def _fire_and_finalize(recorder: SensorRecorder, frames_by_sensor: dict) -> None:
+    """Fire each sensor's own designated frame(s) into that sensor's own
+    callback only.
+
+    A prior version of this helper fed every frame in a flat list to every
+    sensor's callback indiscriminately. Since the recorder writes to disk via
+    a background ThreadPoolExecutor, feeding an RGB noise frame into the
+    semseg sensor's callback (and vice versa) raced against the correct
+    write for the same output path: whichever write happened to finish last
+    won, so the test flaked depending on thread scheduling
+    (test_trainer_reads_recorder_output_round_trip failed in CI with
+    "CARLA semantic label ids must be in [0, 28]..., got range [4, 247]" --
+    exactly the noise range of the wrongly-routed RGB frame). Real CARLA
+    sensors never receive another sensor's frames, so routing explicitly by
+    sensor name matches production behavior.
+    """
+    for sensor_name, imgs in frames_by_sensor.items():
+        sensor = recorder.sensors[sensor_name]
         assert sensor._callback is not None, "recorder must have attached a callback"
-        for fake_img in frames:
+        for fake_img in imgs:
             sensor._callback(fake_img)
     recorder.prepare_for_destroy()
 
@@ -138,7 +154,7 @@ def test_semseg_raw_labels_are_raw_class_ids_not_palette(tmp_path):
         tmp_path,
         {"front_left_camera": _FakeSensor("sensor.camera.semantic_segmentation")},
     )
-    _fire_and_finalize(recorder, [seg_img])
+    _fire_and_finalize(recorder, {"front_left_camera": [seg_img]})
 
     label_path = tmp_path / "rec" / "semseg_raw" / "front_left_camera" / "00000001.png"
     assert label_path.is_file(), "semseg_raw/<cam>/<frame>.png must exist"
@@ -168,7 +184,10 @@ def test_semseg_subdir_pairs_with_rgb_camera_name(tmp_path):
             ),
         },
     )
-    _fire_and_finalize(recorder, [rgb_img, seg_img])
+    _fire_and_finalize(
+        recorder,
+        {"front_left_camera": [rgb_img], "semseg_front_left_camera": [seg_img]},
+    )
 
     rgb_dir = tmp_path / "rec" / "rgb" / "front_left_camera"
     seg_dir = tmp_path / "rec" / "semseg_raw" / "front_left_camera"
@@ -193,7 +212,10 @@ def test_dominik_style_rgb_and_seg_prefixes_are_stripped(tmp_path):
             ),
         },
     )
-    _fire_and_finalize(recorder, [rgb_img, seg_img])
+    _fire_and_finalize(
+        recorder,
+        {"rgb_front_left_camera": [rgb_img], "seg_front_left_camera": [seg_img]},
+    )
 
     assert (tmp_path / "rec" / "rgb" / "front_left_camera" / "00000001.png").is_file()
     assert (tmp_path / "rec" / "semseg_raw" / "front_left_camera" / "00000001.png").is_file()
@@ -208,7 +230,7 @@ def test_cityscapes_mode_writes_viz_under_semseg_viz_not_semseg_raw(tmp_path):
         {"cam_a": _FakeSensor("sensor.camera.semantic_segmentation")},
         segmentation_mode="cityscapes",
     )
-    _fire_and_finalize(recorder, [seg_img])
+    _fire_and_finalize(recorder, {"cam_a": [seg_img]})
 
     raw = tmp_path / "rec" / "semseg_raw" / "cam_a" / "00000001.png"
     viz = tmp_path / "rec" / "semseg_viz" / "cam_a" / "00000001.png"
@@ -228,7 +250,7 @@ def test_raw_mode_does_not_write_semseg_viz(tmp_path):
         {"cam_a": _FakeSensor("sensor.camera.semantic_segmentation")},
         segmentation_mode="raw",
     )
-    _fire_and_finalize(recorder, [seg_img])
+    _fire_and_finalize(recorder, {"cam_a": [seg_img]})
 
     assert (tmp_path / "rec" / "semseg_raw" / "cam_a" / "00000001.png").is_file()
     assert not (tmp_path / "rec" / "semseg_viz").exists()
@@ -248,13 +270,55 @@ def test_trainer_reads_recorder_output_round_trip(tmp_path):
         },
         segmentation_mode="raw",
     )
-    _fire_and_finalize(recorder, [rgb_img, seg_img])
+    _fire_and_finalize(
+        recorder,
+        {"front_left_camera": [rgb_img], "semseg_front_left_camera": [seg_img]},
+    )
 
     ds = SegDataset(tmp_path / "rec", cam="front_left_camera")
     assert len(ds) > 0, "SegDataset must find the rgb/semseg_raw pair"
     x, y = ds[0]
     assert x.shape[0] == 3
     assert np.array_equal(y.numpy().astype(np.uint8), ids)
+
+
+def test_rgb_and_semseg_frames_never_cross_write_under_repeated_firing(tmp_path):
+    """Regression contract for the fixed dispatch bug: repeat the RGB+semseg
+    round trip many times so a reintroduced "every callback gets every
+    frame" dispatch would very likely resurface the executor write race
+    (RGB noise landing in the semseg label, or vice versa) rather than
+    passing by luck on a single run."""
+    for i in range(20):
+        rgb_img, seg_img, ids = _make_frame(seed=i, frame=1)
+        recorder = _make_recorder(
+            tmp_path / f"trial_{i}",
+            {
+                "front_left_camera": _FakeSensor("sensor.camera.rgb"),
+                "semseg_front_left_camera": _FakeSensor(
+                    "sensor.camera.semantic_segmentation"
+                ),
+            },
+            segmentation_mode="raw",
+        )
+        _fire_and_finalize(
+            recorder,
+            {"front_left_camera": [rgb_img], "semseg_front_left_camera": [seg_img]},
+        )
+
+        label_path = (
+            tmp_path / f"trial_{i}" / "rec" / "semseg_raw" / "front_left_camera" / "00000001.png"
+        )
+        with PILImage.open(label_path) as img:
+            saved = np.array(img)
+        assert np.array_equal(saved, ids), f"trial {i}: semseg label was corrupted"
+
+        rgb_path = tmp_path / f"trial_{i}" / "rec" / "rgb" / "front_left_camera" / "00000001.png"
+        with PILImage.open(rgb_path) as img:
+            saved_rgb = np.array(img)
+        # The RGB frame's raw bytes are BGRA->RGB converted by save_to_disk;
+        # a cross-written frame would instead carry the segmentation buffer's
+        # near-binary class-id pattern (only values 7 and 10 per channel row).
+        assert set(np.unique(saved_rgb)) != {7, 10}, f"trial {i}: rgb output was corrupted by the semseg frame"
 
 
 def test_manifest_records_canonical_output_dirs(tmp_path):
@@ -271,7 +335,10 @@ def test_manifest_records_canonical_output_dirs(tmp_path):
         },
         segmentation_mode="raw",
     )
-    _fire_and_finalize(recorder, [rgb_img, seg_img])
+    _fire_and_finalize(
+        recorder,
+        {"front_left_camera": [rgb_img], "semseg_front_left_camera": [seg_img]},
+    )
     recorder.close()
 
     manifest = json.loads(
