@@ -48,6 +48,21 @@ The single blocking condition is **process, not code**: the release-defining CI 
 
 This is why the verdict is **CONDITIONAL**, not GO.
 
+### First live run of the release gates (2026-09-06, after push)
+
+Pushing the stack executed the six-job workflow for the first time (stabilize run `34042959307`). Outcome — **FAILURE**, exactly the risk the audit flagged:
+
+| Job | Result |
+|---|---|
+| governance integrity | ✅ |
+| package / wheel smoke | ✅ — **resolves the Check E residual**: clean-venv install with declared deps only, `up --help`, and `pip check` all pass on Linux |
+| thesis RQ contract | ✅ |
+| research provenance | ❌ → **fixed on this branch** |
+| offline tests | ❌ (1 of 5821: same cause) → **fixed on this branch** |
+| repository health | ⏭️ skipped (gated on the five above) |
+
+**One root cause, two red jobs — a genuine Windows→Linux portability bug in Codex's stabilization work:** the committed `rq_tables.json` serialized cited-artifact paths with Windows backslashes (`reports\post_audit_hardening\...`); `validate_thesis_claim_provenance.py` treated them as literal filenames on Linux and reported every RQ1 artifact "not found on disk." It passed on Windows (and every prior local run) only because `\` is a path separator there — the precise class of defect that unpushed gates were hiding. Fixed by normalizing `\`→`/` in the validator before path resolution (proven against a `PurePosixPath` Linux simulation); no evidence mutated. The `repository-health` job was only skipped (not failed), so once the two gates go green it will run and the release can move CONDITIONAL GO → GO.
+
 ---
 
 ## Live CARLA runtime

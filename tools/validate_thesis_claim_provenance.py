@@ -106,7 +106,14 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
     for row in rows:
         status = row.get("status")
         sha = str(row.get("sha256") or "").strip()
-        artifact = str(row.get("artifact") or "").strip()
+        # rq_tables.json is regenerated on whatever OS ran the export, so cited
+        # artifact paths may carry Windows backslash separators (e.g.
+        # "reports\\post_audit_hardening\\..."). On Linux CI a backslash is a
+        # literal filename character, not a separator, so every such path was
+        # reported "not found on disk" (breaking this validator and
+        # test_validate_thesis_claim_provenance's real-repo check). Normalize to
+        # forward slashes, which pathlib resolves identically on both platforms.
+        artifact = str(row.get("artifact") or "").strip().replace("\\", "/")
 
         if status in NO_CLAIM_STATUSES:
             # No artifact expected -- the claim is explicitly not made.
