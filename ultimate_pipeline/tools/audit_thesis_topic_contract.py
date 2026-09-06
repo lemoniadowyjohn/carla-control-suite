@@ -41,12 +41,11 @@ def _contains(path: Path, needle: str) -> bool:
 
 
 def _find_run11_source(repo_root: Path) -> Path | None:
+    # Portable, repo-relative resolution only. A previous version added a
+    # `repo_root.parent / "carla_-main" / ...` sibling fallback that hard-coded
+    # this dev machine's checkout directory name and would silently mis-resolve
+    # (or no-op) on any other clone or CI runner; removed for portability.
     local = repo_root / "thesis_results" / "structural_gap_v1" / "run_11"
-    if local.is_dir() and (local / "full_report.json").is_file():
-        return local
-    sibling = repo_root.parent / "carla_-main" / "thesis_results" / "structural_gap_v1" / "run_11"
-    if sibling.is_dir():
-        return sibling
     if local.is_dir():
         return local
     return None

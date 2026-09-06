@@ -1,0 +1,105 @@
+# CLAUDE Independent Technical & Research-Integrity Review
+
+**Role:** Independent reviewer / research-integrity auditor. The implementation agent was Codex; none of its conclusions were taken on trust. Every finding below was re-derived from the live repository.
+
+- **Repository:** `lemoniadowyjohn/carla-control-suite`
+- **Branch under review:** `stabilize/research-release-20260905`
+- **HEAD:** `33d5d815b1d7cec9052157cb03ef2f7c9a7204dc`
+- **Worktree:** clean
+- **Stabilization delta reviewed:** `ebeff542..HEAD` = 14 commits, 63 files, +3575/-492
+- **Date:** 2026-09-06
+- **Thesis source of truth:** `submission/thesis_source/Chapter1/chap1.tex:24-28` (read directly; the immutable RQ labels match verbatim)
+
+---
+
+## Bottom line
+
+**CONDITIONAL GO.**
+
+The stabilization work is genuine, careful, and root-cause-oriented. Every adversarial check (A–J) passed on the merits, several of them impressively so (RQ semantics, R13 frozen-evidence integrity, repo-health fail-closed logic). The research claims are correctly bounded: no post-thesis novelty is asserted for results the thesis already established, RQ2 map-improvement is explicitly marked *incomparable/not-run*, and RQ3/RQ5 remain deferred.
+
+The single blocking condition is **process, not code**: the release-defining CI has never actually run on this HEAD. The branch is unpushed; the last green GitHub CI run validated `b059a9d0` (commit 6 of 14) using the *old* single-job workflow, and the new six-job "offline research gates" workflow — the gates that certify the release — was added *after* that run and has zero runtime evidence.
+
+---
+
+## What each check found
+
+| Check | Area | Verdict | Key evidence |
+|---|---|---|---|
+| A | Global print/import state | **PASS** | Independent both-order import probes keep `builtins.print` identity; JSON stays parseable; module-scope `enable_timestamped_print()` removed from `cli.py`/`run_pipeline.py`; remaining calls inside `__main__`/`main()`. Root-cause fix, not a timestamp-strip. |
+| B | Semantic recorder round-trip | **PASS** (offline) | Per-sensor callback routing; 20-trial cross-write race regression; `semseg_raw` is mode-`L` raw ids; `SegDataset` round-trip; `[0..28]∪{255}` enforced in `carla_classes.py:26`, 255 = CARLA `Any` sentinel, not relaxed. Uses faithful CARLA fakes (live path is out of offline scope). |
+| C | Determinism on clean clone | **PASS** (note) | Portable `report.json` check (3 distinct sha256, identical structural signature); raw `run_*.xodr` gitignored + clean skip; narrow `_normalize_timestamps`; positive + negative controls both present. Note: `report.json` lacks tool/version binding (acceptable — claim is `BOUNDED`). |
+| D | R13 frozen evidence | **PASS** | **Blob-OID identity** at freeze commit `5f98a666` vs HEAD proves content unchanged since freeze; line-ending explanation *proven* (manifest CRLF hash == frozen tag `manifest_sha256`; override == real LF blob hash); additive tolerant comparator + one documented override, no frozen file mutated; 18/18 tests incl. tamper negatives. |
+| E | Wheel packaging | **PASS** (completeness) | Wheel contains `ultimate_pipeline` (791), `opendrive_geometry` (10), `phase_q` (21), `sensors`/`tools` (namespace); installs to a clean venv (`--no-deps`), nested subpackages import from the wheel (editable avoided). Residual: the untested `package-wheel-smoke` CI gate; `up --help`/`pip check` under declared-deps-only unverifiable offline. |
+| F | Thesis RQ semantics | **PASS** | Labels match `chap1.tex` verbatim; `metric_allowed_for_rq` fails closed and is wired into the audit (0 violations live); all "reject" mappings correctly placed; **regenerated `rq_tables.json` is byte-identical to committed** → evidence is producer-emitted, not hand-edited. |
+| G+H | Novelty + statistics | **PASS** | Novelty correctly classified (see `CLAUDE_RESEARCH_CLAIM_AUDIT.json`); RQ2 map-improvement `NOT_RUN`/incomparable; RQ4 bounded as a multi-seed *extension* (thesis p<0.001 preserved). Caveats: RQ4 n=5 bootstrap is fragile; C21 stats omit tile split. |
+| I | Repo health + CLI authority | **PASS** | `_overall_status` fail-closed: runtime `NOT_RUN` → `INCOMPLETE` (never a false `PASS`); live run = `INCOMPLETE` with 6 evidence sections `PASS`; canonical `up` group coherent (`up health`, `up research status`). Notes: `authoritative_lineage` hardcoded to parent branch; CLI version `2.0.0` ≠ pyproject `0.1.0`. |
+| J | Documentation (README) | **PASS** | Covers purpose, CARLA 0.9.16, branches, canonical `up`, map-of-record (file exists + matches pin `2ca342d8`), reproducibility, RQ1–5 status (matches `up research status`), evidence location. Minor: manual Grid0828 reference not explicitly named; CI section doesn't disclose the branch is unpushed. |
+
+---
+
+## CI status — the one that matters
+
+- `stabilize/research-release-20260905` has **no upstream and 0 CI runs**.
+- Most recent **success**: run `34025666555` on `b059a9d0` (branch `fix/post-audit-phase-e-…`), **old single-`pytest` workflow**.
+- `b059a9d0` is commit **6 of 14**; the 8 later commits — including `2ad41e76` which *adds the six-job workflow* — have never been through GitHub CI.
+- Consequence: `package-wheel-smoke`, `governance-integrity`, `thesis-rq-contract`, `research-provenance`, and the gated `repository-health` jobs have **zero runtime evidence**.
+- Local offline suite at HEAD (this machine, Windows/Py3.12): **5743 passed, 79 skipped, 0 failed** — but local-green ≠ Linux-CI-green (repo history is full of CRLF/GEOS bugs that only surfaced on Linux).
+
+This is why the verdict is **CONDITIONAL**, not GO.
+
+### First live run of the release gates (2026-09-06, after push)
+
+Pushing the stack executed the six-job workflow for the first time (stabilize run `34042959307`). Outcome — **FAILURE**, exactly the risk the audit flagged:
+
+| Job | Result |
+|---|---|
+| governance integrity | ✅ |
+| package / wheel smoke | ✅ — **resolves the Check E residual**: clean-venv install with declared deps only, `up --help`, and `pip check` all pass on Linux |
+| thesis RQ contract | ✅ |
+| research provenance | ❌ → **fixed on this branch** |
+| offline tests | ❌ (1 of 5821: same cause) → **fixed on this branch** |
+| repository health | ⏭️ skipped (gated on the five above) |
+
+**One root cause, two red jobs — a genuine Windows→Linux portability bug in Codex's stabilization work:** the committed `rq_tables.json` serialized cited-artifact paths with Windows backslashes (`reports\post_audit_hardening\...`); `validate_thesis_claim_provenance.py` treated them as literal filenames on Linux and reported every RQ1 artifact "not found on disk." It passed on Windows (and every prior local run) only because `\` is a path separator there — the precise class of defect that unpushed gates were hiding. Fixed by normalizing `\`→`/` in the validator before path resolution (proven against a `PurePosixPath` Linux simulation); no evidence mutated.
+
+**Second, layered bug exposed by the first fix (run `34043793920`):** once the paths resolved, the validator's raw `sha256` check failed on Linux because `rq_tables.json`'s `evidence_sha256` for the RQ1 text artifacts was computed against **Windows CRLF** working-tree bytes, while Linux checks out the **LF** git blob (e.g. C15 report: CRLF `fcdb6d6f…` vs LF `9c75bb8f…`; `.gitattributes` doesn't normalize `.json`). This is the same class as the R13 finding. Fixed by making the validator's digest comparison **line-ending tolerant** (accepts raw, CRLF-, or LF-normalized forms) — checkout portability, not a relaxation: a genuine content change still fails all three forms. Verified against a Linux simulation over the git-blob bytes of every direct-hash artifact.
+
+The `repository-health` job was only skipped (not failed), so once the two gates go green it will run and the release can move CONDITIONAL GO → GO.
+
+---
+
+## Live CARLA runtime
+
+**LIVE CARLA RUNTIME: UNVERIFIED.** No runtime evidence was inspected and none exists on this machine; the pipeline's own reports characterize a persistent CARLA RPC-hang (isolated via `-nullrhi`, independent of the GPU driver). Correctness of any live-CARLA path is **not** inferred from the passing unit tests. RQ3 and RQ5 remain bounded/deferred precisely because of this.
+
+---
+
+## Minor issues found (non-blocking; recommend fixing, not blocking release)
+
+1. `ultimate_pipeline/tools/repo_health.py` — `authoritative_lineage` hardcoded to `fix/post-audit-phase-e-…`, stale vs the actual `stabilize/research-release-20260905`. (README carries the same dual labeling but is at least explicit about both.)
+2. `ultimate_pipeline/cli.py` — `@click.version_option(version="2.0.0")` disagrees with `pyproject.toml` `version = "0.1.0"`.
+3. `reports/.../C15_RQ4_DR/determinism/report.json` — no tool/version binding for the "timestamps are the only byte-level source" claim (claim is `BOUNDED`, so acceptable, but a version stamp would close it).
+4. `reports/.../C21_GNN_AUTHORITATIVE/aggregate_stats.json` — omits tile counts and train/eval split; record them to fully exclude tile-overlap pseudo-replication for the RQ4 diagnostic.
+5. RQ4 bootstrap CI rests on n=5 seeds — state the small-sample limitation next to the CI.
+6. `README.md` — name the manual reference (Grid0828) explicitly and disclose the true CI state (last green SHA + branch-unpushed) for a research-integrity reviewer.
+7. `audit_thesis_topic_contract._find_run11_source` — Windows dev-machine sibling-path fallback; harmless but non-portable.
+
+None of these are falsifications, integrity failures, or test weakenings. They are documentation/robustness polish.
+
+**Remediation status (applied on this review branch):** all seven addressed.
+1. `repo_health.py` now emits a live `release_branch` (from git) alongside the historical `authoritative_lineage`.
+2. `cli.py` derives its version from `importlib.metadata` (`up --version` → `0.1.0`, matching `pyproject.toml`).
+3. Determinism producer now records a `tool_versions` block on every new `report.json`; existing report left unmodified with an additive `PROVENANCE_NOTE.md`.
+4. Added `reports/.../C21_GNN_AUTHORITATIVE/C21_STATISTICAL_PROVENANCE.md` documenting the 562 union-tile design, seeds, and the in-sample-diagnostic boundary (sha256-anchored `aggregate_stats.json` left untouched).
+5. RQ4 n=5 small-sample caveat added to `THESIS_TO_CURRENT_PROGRESS.md` and the C21 provenance sidecar.
+6. `README.md` now names the manual Grid0828 reference and discloses the true CI state (last green SHA + push-required).
+7. `audit_thesis_topic_contract._find_run11_source` sibling-path dev-machine hack removed (portable resolution only).
+
+No test was weakened; no frozen or sha256-anchored evidence was mutated; no version/tile value was fabricated. Verified: 58 coupled unit tests pass; `up --version`/`up --help`, the contract audit (0 violations), and `repo_health` all confirmed post-fix.
+
+---
+
+## Highest-priority unresolved action
+
+**Push `stabilize/research-release-20260905` to origin and confirm the full six-job `offline research gates` workflow passes on HEAD `33d5d815` on Linux CI.** The gates that define this release (packaging, governance, RQ contract, provenance, repository-health) have never executed; until they do, "CI green" for this HEAD is unproven.

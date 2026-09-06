@@ -1,0 +1,65 @@
+{
+  "audit": "CLAUDE_RESEARCH_CLAIM_AUDIT",
+  "auditor": "independent technical reviewer (Claude)",
+  "generated_at_utc": "2026-09-06",
+  "head": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc",
+  "novelty_classes_used": ["NEW_RESULT", "STRONGER_METHOD", "REPRODUCIBILITY_IMPROVEMENT", "ENGINEERING_ENABLEMENT", "REANALYSIS", "NOT_NEW", "UNVERIFIED"],
+  "defensible_summary_supported": "Substantial post-thesis methodological and engineering progress with new/extended governed evidence for RQ1, RQ2 and RQ4; direct paired perception (RQ3) and downstream model-transfer (RQ5) remain open. No stronger statement is made by the repo.",
+  "per_rq": {
+    "RQ1": {
+      "thesis_baseline": "byte-level nondeterministic; structurally/topologically stable under governed repeated runs; source not fully isolated",
+      "current_status": "AUTHORITATIVE (structural signature repeatability) + BOUNDED (timestamp-normalized byte equality; byte_nondeterminism_source='timestamp metadata suspected')",
+      "post_thesis_classification": "STRONGER_METHOD + REANALYSIS",
+      "did_it_isolate_the_source_more_precisely": "YES, modestly: 3 repeated Osm2Odr runs differ only where timestamps appear (comment + header date), normalized hash collapses to one; identifies timestamp metadata as the observed source",
+      "quantitatively_supported": "partial - 3-run report.json (roads=32920, junctions=3717, len=1498527.59 identical; 3 distinct raw sha256). Gap: no tool/version binding recorded; claim correctly kept BOUNDED, not exhaustive",
+      "boundary_ok": true
+    },
+    "RQ2": {
+      "thesis_baseline": "whole-map comparison; delivered discrete-Frechet on uncropped/misaligned network; run_11 era baseline",
+      "current_status": "BOUNDED local (manual-footprint) structural gap",
+      "map_quality_improved": "UNVERIFIED / INCOMPARABLE",
+      "evaluation_method_improved": "STRONGER_METHOD / REANALYSIS (local hull-footprint registration, curvature-sampling fix, local Frechet recompute closing thesis future-work #14)",
+      "like_for_like_comparison": "reports/post_audit_hardening/rq2_thesis_vs_current_comparison.json is status=NOT_RUN with thesis_value=null, current_value=null, comparisons=[], and an explicit claim_boundary: 'Current local evidence is not a thesis-vs-current controlled comparison and cannot prove improved map quality.' Required controls (CRS, footprint, registration, road_sampling, matching_threshold, metric_implementation) enumerated.",
+      "footprint_change_flagged": "2.7-3.8x (convex-hull footprint) vs earlier 4.5-6x (bbox footprint) is a MEASUREMENT-SETTING change, correctly marked as not a map-quality improvement",
+      "verdict": "CORRECT - no map-improvement claim made"
+    },
+    "RQ3": {
+      "thesis_baseline": "direct generated/manual paired perception NOT completed; Town10HD validated sensor-rig capability only",
+      "current_status": "DEFERRED_RUNTIME",
+      "post_thesis_classification": "ENGINEERING_ENABLEMENT (blocker precisely characterized: CARLA RPC never becomes responsive, isolated via -nullrhi and independent of GPU driver) - NOT_NEW as a perceptual-gap answer",
+      "verdict": "CORRECT - infrastructure progress not presented as an answered perceptual question; Town10HD not relabeled as an RQ3 answer"
+    },
+    "RQ4": {
+      "thesis_baseline": "NT-Xent fixed representation collapse; latent separation with K=1000 permutation test p<0.001 (already statistically supported IN the thesis)",
+      "current_status": "AUTHORITATIVE extension",
+      "post_thesis_classification": "STRONGER_METHOD (5-seed union-domain robustness ensemble; resolves C18 one-sided-training OOD caveat) + REANALYSIS (numbers changed 2026-09-01 after fixing a graph-construction self-loop bug affecting ~99.8% of edges)",
+      "quantitative_result": "cosine_distance mean 0.6434, 95% bootstrap CI [0.616, 0.676]; cosine_similarity mean 0.357, CI [0.323, 0.384] excludes zero; seeds [42,43,44,45,46]",
+      "statistical_caveats": [
+        "n=5 seeds is a small sample for a bootstrap CI (fragile tails); mitigated because all 5 raw similarity values are 0.30-0.39 (clearly non-zero) and the thesis K=1000 permutation p<0.001 remains the primary support",
+        "C21/aggregate_stats.json does not record tile counts or train/eval split; tile-overlap pseudo-replication cannot be fully excluded from this file alone (defensible for a diagnostic latent-separation claim, but should be documented)"
+      ],
+      "boundary_ok": "YES - explicitly 'strengthens the thesis RQ4 result; does not make RQ4 wholly new post-thesis work'; comparability='extension'"
+    },
+    "RQ5": {
+      "thesis_baseline": "no completed model-transfer experiment; deferred",
+      "current_status": "RQ5(a) DEFERRED_RUNTIME (needs RQ3 datasets), RQ5(b) DEFERRED_EXTERNAL_DATA (no real-world Ingolstadt dataset)",
+      "post_thesis_classification": "UNVERIFIED / NOT_RUN",
+      "verdict": "CORRECT - unlabeled distribution shift / CORAL / MMD explicitly NOT relabeled as model-generalization accuracy; no frozen generated-trained checkpoint evaluated on manual holdout"
+    }
+  },
+  "statistics_red_flag_scan": {
+    "train_test_leakage": "not evidenced against; RQ4 tile split undocumented in evidence file (see RQ4 caveat)",
+    "tile_overlap_leakage": "cannot fully exclude for RQ4 from aggregate_stats.json alone",
+    "target_domain_leakage": "N/A - RQ5 not run",
+    "inappropriate_seed_reuse": "RQ4 seeds 42-46 distinct; no reuse detected",
+    "pseudo_replication": "possible concern for RQ4 (5 seeds, in-sample latent distance) - bounded as diagnostic extension, not a generalization claim",
+    "sample_size_ambiguity": "RQ4 sample_size=5 stated explicitly (seeds); RQ2 rows sample_size=null (scalar structural metrics, acceptable)",
+    "missing_confidence_intervals": "RQ4 has bootstrap CI; RQ1/RQ2 are deterministic/structural (CIs not applicable)",
+    "multiple_comparison_issues": "not applicable at current claim scope",
+    "cherry_picked_k": "k_sweep is a listed RQ4 metric; not observed to be cherry-picked in committed evidence",
+    "cherry_picked_seed": "all 5 seeds reported (no selection); PASS",
+    "map_footprint_change": "FLAGGED and correctly handled as INCOMPARABLE (hull vs bbox) for RQ2",
+    "crs_alignment_change": "required-control listed in rq2 comparison; comparison correctly NOT_RUN",
+    "matching_threshold_change": "required-control listed; comparison correctly NOT_RUN"
+  }
+}

@@ -32,12 +32,24 @@ except ImportError:
     pass
 
 
+# Single source of truth for the CLI version: the installed distribution
+# (pyproject.toml [project].version). Deriving it here prevents the version
+# reported by `up --version` from drifting away from the packaged version.
+try:
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as _pkg_version
+
+    _UP_VERSION = _pkg_version("ultimate-pipeline")
+except (PackageNotFoundError, ImportError):
+    _UP_VERSION = "0.1.0"
+
+
 # =============================================================================
 # Main CLI Group
 # =============================================================================
 
 @click.group()
-@click.version_option(version="2.0.0", prog_name="up")
+@click.version_option(version=_UP_VERSION, prog_name="up")
 def cli() -> None:
     """
     Ultimate Pipeline CLI (up)

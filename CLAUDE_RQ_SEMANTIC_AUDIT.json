@@ -1,0 +1,42 @@
+{
+  "audit": "CLAUDE_RQ_SEMANTIC_AUDIT",
+  "auditor": "independent technical reviewer (Claude), not the implementation agent",
+  "generated_at_utc": "2026-09-06",
+  "repo": "lemoniadowyjohn/carla-control-suite",
+  "head": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc",
+  "thesis_source_of_truth": "submission/thesis_source/Chapter1/chap1.tex:24-28 (independently read; matches immutable labels verbatim)",
+  "verdict": "PASS",
+  "immutable_labels_confirmed": {
+    "RQ1": "Determinism",
+    "RQ2": "Structural domain gap",
+    "RQ3": "Perceptual domain gap",
+    "RQ4": "Structural variability and latent representation",
+    "RQ5": "Generalization and transfer"
+  },
+  "contract_wiring": {
+    "machine_contract": "research/thesis_rq_contract.yaml",
+    "python_allowlist": "ultimate_pipeline/config/thesis_rq_contract.py (metric_allowed_for_rq, fails closed on unknown RQ)",
+    "enforced_by": "ultimate_pipeline/tools/audit_thesis_topic_contract.py:285 (_current_rq_tables_audit calls metric_allowed_for_rq per row)",
+    "live_audit_result": "audit_ok=True, 22 rows, 0 violations",
+    "producer_reproducibility": "regenerated rq_tables.json from tools/export_thesis_tables.py is byte-identical to the committed evidence in every (rq, metric, status) tuple and every value -> committed evidence is producer-emitted, not hand-edited"
+  },
+  "metric_to_rq_map_verified": {
+    "RQ1": ["raw_hash_repeatability", "normalized_hash_repeatability", "structural_signature_repeatability", "byte_nondeterminism_source", "natural_dr_present"],
+    "RQ2": ["local_lane_width_gap", "local_curvature_gap", "local_curvature_wasserstein_gap", "local_road_length_ratio_auto_over_manual", "local_junction_ratio_auto_over_manual", "local_road_count_ratio_auto_over_manual", "local_auto_footprint_kept_fraction", "local_building_density_gap", "local_frechet_distance_median_m", "whole_map_construction_layers_excluded_from_local_gap", "whole_map_road_type_coverage_gap_context"],
+    "RQ3": ["perceptual_gap (status=DEFERRED_RUNTIME, Town10HD bounded)"],
+    "RQ4": ["gnn_latent_cosine_distance", "explicit_dr_wired"],
+    "RQ5": ["miou_auto_train_manual_eval", "domain_adaptation_coral_mmd", "real_unlabeled_shift_metrics (all DEFERRED)"]
+  },
+  "rejected_mappings_check": [
+    {"mapping": "lane_width_gap -> RQ1", "present_in_repo": false, "actual": "RQ2", "status": "CORRECTLY_REJECTED"},
+    {"mapping": "curvature_gap -> RQ1", "present_in_repo": false, "actual": "RQ2", "status": "CORRECTLY_REJECTED"},
+    {"mapping": "structural_frechet -> RQ1", "present_in_repo": false, "actual": "RQ2 (local_frechet_distance_median_m)", "status": "CORRECTLY_REJECTED"},
+    {"mapping": "perceptual_gap -> RQ2", "present_in_repo": false, "actual": "RQ3", "status": "CORRECTLY_REJECTED"},
+    {"mapping": "GNN_latent_distance -> RQ5", "present_in_repo": false, "actual": "RQ4", "status": "CORRECTLY_REJECTED"}
+  ],
+  "drift_fix_commit": "6dd45274 (export_thesis_tables.py RQ-numbering drift corrected: structural gap was RQ1, perceptual RQ2, GNN RQ3/RQ5 -> now RQ2/RQ3/RQ4). Values unchanged, only labels corrected; regression now caught by fail-closed allow-list.",
+  "notes": [
+    "audit validates a committed rq_tables.json; the anti-laundering guarantee is the byte-identical regeneration from the producer, which I verified independently.",
+    "audit_thesis_topic_contract._find_run11_source has a Windows dev-machine sibling-path fallback (repo_root.parent/carla_-main/...); harmless (primary local path resolves first) but non-portable."
+  ]
+}

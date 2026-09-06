@@ -1,0 +1,44 @@
+{
+  "audit": "CLAUDE_EVIDENCE_INTEGRITY_AUDIT",
+  "auditor": "independent technical reviewer (Claude)",
+  "generated_at_utc": "2026-09-06",
+  "head": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc",
+  "verdict": "PASS",
+  "checks": {
+    "A_global_print_state": {
+      "verdict": "PASS",
+      "method": "independent subprocess probes, both import orders (cli->main_pipeline and reverse+quality_gates+determinism), plus Codex's test suite",
+      "evidence": "builtins.print identity SAME in both orders; JSON via print() and sys.stdout.write parseable; module-scope enable_timestamped_print() removed from cli.py and run_pipeline.py; remaining calls all inside __main__/main() guards (run_quality_gates.py:76, run_determinism_audit.py:1108); 5/5 tests pass",
+      "root_cause_fix": true,
+      "test_strip_only": false
+    },
+    "B_semantic_recorder": {
+      "verdict": "PASS_OFFLINE_SCOPE",
+      "evidence": "per-sensor callback routing (RGB->RGB, semseg->semseg); 20-trial cross-write race regression; semseg_raw is mode-L raw class ids equal to injected ids; SegDataset round-trip; [0..28]+255 contract enforced in ultimate_pipeline/perception/carla_classes.py:26 with 255=carla.CityObjectLabel.Any, NOT relaxed",
+      "caveat": "all tests use faithful duck-typed CARLA fakes (R-channel=class id matches CARLA convention); the live sensor path is not runtime-verified (live-CARLA boundary)"
+    },
+    "C_determinism_clean_clone": {
+      "verdict": "PASS_WITH_MINOR_NOTE",
+      "evidence": "portable test reads committed report.json (3 distinct sha256, identical structural signature roads=32920/junctions=3717/length=1498527.59); raw run_*.xodr gitignored + clean skip (not skip-abuse); _normalize_timestamps uses two narrow regexes ('generated on..by', date=\"..\") that do NOT touch geometry/topology/id attributes; positive control (timestamp-only -> equal) and negative control (bbox 2.0->9.9 -> different) both present",
+      "note": "report.json carries no software/tool version binding for the 'timestamps are the only byte-level source' claim; acceptable only because that claim is marked BOUNDED (byte_nondeterminism_source) not AUTHORITATIVE"
+    },
+    "D_r13_frozen_evidence": {
+      "verdict": "PASS",
+      "byte_level_proof": "all 4 R13 frozen files (R13 packet, R13O, R13P manifest, R13R binding) have IDENTICAL git blob OIDs at freeze_commit 5f98a666 and at HEAD -> content cryptographically unchanged since the freeze; frozen delta ebeff542..HEAD is empty",
+      "line_ending_explanation_proven": "manifest CRLF-normalization hashes to the frozen tag's manifest_sha256=b0c4ee34...; override value 93a85453... equals the real LF git-blob hash of R13_UPDATED_CLAUDE_C0_PACKET.md; tag r13_sha256=139aeb1f... is genuinely unrecoverable from any clean checkout (documented mixed 85-CRLF+2-LF Windows working-tree origin) -> this is why the single documented LF override exists",
+      "mutation": "NONE. Fix is a tolerant comparator (_sha256_matches_line_ending_tolerant) + one documented override, NOT an edit to any frozen file; additive/supersession approach as required",
+      "tamper_detection_preserved": "18/18 tests pass incl. negative tamper controls; a genuine content change alters the blob OID and fails all normalizations",
+      "note": "the freeze tag's per-file r13_sha256 for the .md is now a Windows-working-tree-only historical artifact (unsatisfiable on a clean checkout); integrity is upheld by blob-OID identity + the LF override"
+    },
+    "packaging_evidence": {
+      "verdict": "PASS_COMPLETENESS",
+      "see": "CLAUDE_REPO_HEALTH_AUDIT.json:packaging"
+    }
+  },
+  "skip_xfail_audit": {
+    "xfail_count": 0,
+    "verdict": "no xfail-masking anywhere",
+    "skip_reasons": "all legitimate environment/artifact gates (rasterio, carla, sklearn, shapely, 'no real fixture available in this checkout'); no skip-to-dodge-failure detected",
+    "full_suite": "5743 passed, 79 skipped, 0 failed (local Windows, HEAD 33d5d815, 6m15s)"
+  }
+}

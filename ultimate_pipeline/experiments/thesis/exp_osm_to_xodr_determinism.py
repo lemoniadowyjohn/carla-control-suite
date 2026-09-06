@@ -90,6 +90,40 @@ def parse_args():
     return ap.parse_args()
 
 
+def _tool_versions(cfg: "OSMToXODRConfig") -> dict:
+    """Best-effort version binding for the determinism claim.
+
+    The claim "timestamps are the only byte-level source of nondeterminism"
+    is only meaningful relative to a specific Osm2Odr/CARLA build. Record what
+    produced this report so a future reader can bind the result to a version.
+    Unknown fields are recorded as null rather than guessed. (The historical
+    committed report.json predates this capture; see PROVENANCE_NOTE.md.)
+    """
+    import platform
+
+    versions: dict = {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "carla": None,
+        "osm2odr": None,
+        "carla_root": getattr(cfg, "carla_root", None),
+        "tool_path": getattr(cfg, "tool_path", None),
+    }
+    try:
+        import carla  # type: ignore
+
+        versions["carla"] = getattr(carla, "__version__", None)
+    except Exception:
+        pass
+    try:
+        from importlib.metadata import version as _dist_version
+
+        versions["osm2odr"] = _dist_version("osm2odr")
+    except Exception:
+        pass
+    return versions
+
+
 def main() -> None:
     args = parse_args()
     out_dir = Path(args.out_dir)
@@ -126,7 +160,12 @@ def main() -> None:
     stable_normalized = all(
         r.get("sha256_normalized") == runs[0].get("sha256_normalized") for r in runs
     )
-    report = {"stable": stable, "stable_normalized": stable_normalized, "runs": runs}
+    report = {
+        "stable": stable,
+        "stable_normalized": stable_normalized,
+        "tool_versions": _tool_versions(cfg),
+        "runs": runs,
+    }
     (out_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     if stable:
