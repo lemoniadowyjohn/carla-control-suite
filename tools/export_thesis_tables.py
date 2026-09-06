@@ -51,14 +51,37 @@ def _row(rq: str, metric: str, value: Any, status: str, *, artifact: str = "",
     }
 
 
-def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
+def _rq1_determinism_rows(root: Path) -> List[Dict[str, Any]]:
+    """Thesis RQ1 -- Determinism (OSM->OpenDRIVE structural/topological
+    stability and byte-level nondeterminism origin). Reads the same C15
+    evidence file as _rq4_variability_rows below (that file's
+    "determinism_arm" section is this RQ's content; "explicit_dr" is RQ4's).
+    """
+    ev_dir = root / "reports/post_audit_hardening/C15_RQ4_DR"
+    data = _read_json(ev_dir / "C15_RQ4_DOMAIN_RANDOMIZATION.json")
+    if data is None:
+        return [_row("RQ1", "natural_dr", None, MISSING, note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found")]
+    det = data.get("determinism_arm", {})
+    return [
+        _row("RQ1", "natural_dr_present", False, AUTHORITATIVE,
+             artifact="ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py",
+             note=det.get("finding", "")),
+        _row("RQ1", "structurally_deterministic", det.get("structurally_deterministic"), AUTHORITATIVE,
+             note=f"{det.get('runs', 0)} runs, {det.get('byte_sha_unique', 0)} distinct sha256 "
+                  "(byte-non-deterministic serialization, structure identical)"),
+    ]
+
+
+def _rq2_structural_gap_rows(root: Path) -> List[Dict[str, Any]]:
+    """Thesis RQ2 -- Structural domain gap (automatic OSM map vs. manually
+    modeled CARLA map of the same region)."""
     ev_dir = root / "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP"
     curvature = _read_json(ev_dir / "curvature_recompute.json")
     local = _read_json(ev_dir / "local_registration.json")
     main = _read_json(ev_dir / "C14_RQ1_STRUCTURAL_GAP.json")
     if main is None:
-        return [_row("RQ1", "structural_gap_composite", None, MISSING,
-                      note="C14_RQ1_STRUCTURAL_GAP.json not found -- RQ1 not computed")]
+        return [_row("RQ2", "structural_gap_composite", None, MISSING,
+                      note="C14_RQ1_STRUCTURAL_GAP.json not found -- RQ2 not computed")]
 
     scores = (curvature or {}).get("all_scores") or main.get("scores") or {}
     auto = main.get("auto_map", {})
@@ -84,54 +107,54 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
     if local_network:
         footprint_note = f" [footprint={footprint_kind}]" if footprint_kind != "unknown" else ""
         rows = [
-            _row("RQ1", "local_lane_width_gap", local_network.get("lane_width_gap"), BOUNDED,
+            _row("RQ2", "local_lane_width_gap", local_network.get("lane_width_gap"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree"
                       + footprint_note),
-            _row("RQ1", "local_curvature_gap", local_network.get("curvature_gap"), BOUNDED,
+            _row("RQ2", "local_curvature_gap", local_network.get("curvature_gap"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint comparison; range-sensitive histogram-L1, "
                       "treat as a bounded structural signal, not a precise scalar" + footprint_note),
-            _row("RQ1", "local_curvature_wasserstein_gap",
+            _row("RQ2", "local_curvature_wasserstein_gap",
                  local_network.get("curvature_wasserstein_gap"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature "
                       "distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1"
                       + footprint_note),
-            _row("RQ1", "local_road_length_ratio_auto_over_manual",
+            _row("RQ2", "local_road_length_ratio_auto_over_manual",
                  local_network.get("road_length_ratio_auto_over_manual"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area"
                       + footprint_note + " -- hull is tighter/preferred, bbox kept in local_registration.json "
                       "for comparison (hull materially lowers this ratio vs. the legacy bbox footprint)"),
-            _row("RQ1", "local_junction_ratio_auto_over_manual",
+            _row("RQ2", "local_junction_ratio_auto_over_manual",
                  local_network.get("junction_ratio_auto_over_manual"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area"
                       + footprint_note),
-            _row("RQ1", "local_road_count_ratio_auto_over_manual",
+            _row("RQ2", "local_road_count_ratio_auto_over_manual",
                  local_network.get("road_count_ratio_auto_over_manual"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="LOCAL manual-footprint ratio; separates structural completeness from whole-map scope"
                       + footprint_note),
-            _row("RQ1", "local_auto_footprint_kept_fraction",
+            _row("RQ2", "local_auto_footprint_kept_fraction",
                  local_footprint.get("kept_fraction"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note=f"manual-footprint crop kept {local_footprint.get('auto_roads_kept')} / "
                       f"{local_footprint.get('auto_roads_total')} auto roads; whole-map stats are scope context"
                       + footprint_note),
-            _row("RQ1", "whole_map_construction_layers_excluded_from_local_gap", True, BOUNDED,
+            _row("RQ2", "whole_map_construction_layers_excluded_from_local_gap", True, BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note=local_construction.get("reason", "traffic-light density is a construction layer, "
                                              "not the local road-network structural gap")),
-            _row("RQ1", "whole_map_road_type_coverage_gap_context",
+            _row("RQ2", "whole_map_road_type_coverage_gap_context",
                  scores.get("road_type_coverage_gap"), BOUNDED,
                  artifact=artifact, sha256=auto.get("sha256", ""),
                  note="whole-map context only; manual road types are a subset of auto's"),
         ]
         if local_buildings:
             rows.append(_row(
-                "RQ1", "local_building_density_gap", local_buildings.get("building_density_gap"), BOUNDED,
+                "RQ2", "local_building_density_gap", local_buildings.get("building_density_gap"), BOUNDED,
                 artifact=artifact, sha256=auto.get("sha256", ""),
                 note="LOCAL manual-footprint building density comparison (C26): buildings recovered via "
                      "outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded"
@@ -140,7 +163,7 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
         frechet = _read_json(ev_dir / "frechet_distance_local.json")
         if frechet and frechet.get("matched_pair_count"):
             rows.append(_row(
-                "RQ1", "local_frechet_distance_median_m", frechet.get("median_m"), BOUNDED,
+                "RQ2", "local_frechet_distance_median_m", frechet.get("median_m"), BOUNDED,
                 artifact=artifact, sha256=auto.get("sha256", ""),
                 note=(
                     "Thesis future-work #14, recomputed against the current local-registration "
@@ -155,40 +178,42 @@ def _rq1_rows(root: Path) -> List[Dict[str, Any]]:
         return rows
 
     rows = [
-        _row("RQ1", "lane_width_gap", scores.get("lane_width_gap"), BOUNDED,
+        _row("RQ2", "lane_width_gap", scores.get("lane_width_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""),
              note="genuine, small -- directly comparable, maps agree"),
-        _row("RQ1", "curvature_gap", scores.get("curvature_gap"), BOUNDED,
+        _row("RQ2", "curvature_gap", scores.get("curvature_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""),
              note="real (fixed 2026-08-21, was a 1.0 measurement artifact); "
                   "range-sensitive histogram-L1, treat as 'moderate' not a precise scalar"),
-        _row("RQ1", "curvature_wasserstein_gap", scores.get("curvature_wasserstein_gap"), BOUNDED,
+        _row("RQ2", "curvature_wasserstein_gap", scores.get("curvature_wasserstein_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""),
              note="Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; "
                   "range-robust companion to histogram-L1"),
-        _row("RQ1", "road_length_gap", scores.get("road_length_gap"), BOUNDED,
+        _row("RQ2", "road_length_gap", scores.get("road_length_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""),
              note="construction/scope artifact (full OSM extraction vs curated subset), not domain gap"),
-        _row("RQ1", "traffic_light_density_gap", scores.get("traffic_light_density_gap"), BOUNDED,
+        _row("RQ2", "traffic_light_density_gap", scores.get("traffic_light_density_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""), note="construction artifact"),
-        _row("RQ1", "building_density_gap", scores.get("building_density_gap"), BOUNDED,
+        _row("RQ2", "building_density_gap", scores.get("building_density_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""), note="construction artifact"),
-        _row("RQ1", "road_type_coverage_gap", scores.get("road_type_coverage_gap"), BOUNDED,
+        _row("RQ2", "road_type_coverage_gap", scores.get("road_type_coverage_gap"), BOUNDED,
              artifact=artifact, sha256=auto.get("sha256", ""), note="manual road types are a subset of auto's"),
     ]
     return rows
 
 
-def _rq2_rows(root: Path) -> List[Dict[str, Any]]:
+def _rq3_perceptual_gap_rows(root: Path) -> List[Dict[str, Any]]:
+    """Thesis RQ3 -- Perceptual domain gap (how structural differences shift
+    perception outputs under identical sensor rig/route protocol)."""
     ev = root / "reports/post_audit_hardening/C17_rq2_perception_capture.md"
-    return [_row("RQ2", "perceptual_gap", None, DEFERRED,
+    return [_row("RQ3", "perceptual_gap", None, DEFERRED,
                   artifact=str(ev.relative_to(root)) if ev.is_file() else "",
                   note="paired capture not executed -- needs a live CARLA server "
                        "(currently blocked by a livelock, see C20_TIER1_PROBE_20260821) "
                        "or the C16 UE cook (blocked on a human operator)")]
 
 
-def _gnn_row(root: Path) -> Dict[str, Any]:
+def _gnn_latent_row(root: Path) -> Dict[str, Any]:
     # C21: union-training (auto + manual tiles, resolving the C18 OOD caveat) + a
     # 5-seed ensemble (resolving the C18 single-run caveat) supersedes the C18
     # PROTOTYPE result IF its bootstrap CI excludes zero similarity (no-gap) --
@@ -204,7 +229,7 @@ def _gnn_row(root: Path) -> Dict[str, Any]:
         status = AUTHORITATIVE if ci_excludes_zero else BOUNDED
         agg_sha256 = hashlib.sha256(agg_path.read_bytes()).hexdigest()
         return _row(
-            "RQ3/RQ5", "gnn_latent_cosine_distance", cd.get("mean"), status,
+            "RQ4", "gnn_latent_cosine_distance", cd.get("mean"), status,
             artifact="C21_GNN_AUTHORITATIVE/aggregate_stats.json", sha256=agg_sha256,
             note=(
                 f"{len(seeds)}-seed ensemble (seeds={seeds}) trained on the UNION of both "
@@ -220,53 +245,61 @@ def _gnn_row(root: Path) -> Dict[str, Any]:
         metrics = ((gnn.get("latent_gap") or {}).get("metrics")) or {}
         ckpt_md5 = ((gnn.get("latent_gap") or {}).get("encoder") or {}).get("checkpoint_md5", "")
         return _row(
-            "RQ3/RQ5", "gnn_latent_cosine_distance", metrics.get("cosine_distance"), PROTOTYPE,
+            "RQ4", "gnn_latent_cosine_distance", metrics.get("cosine_distance"), PROTOTYPE,
             artifact="map_encoder_epoch50.pt", sha256=ckpt_md5,
             note="one-sided (auto-only) training makes the manual map OOD for the encoder -- "
-                 "conflates true structural gap with distribution shift; corroborates RQ1, "
+                 "conflates true structural gap with distribution shift; corroborates RQ2, "
                  "not an independent authoritative measurement",
         )
-    return _row("RQ3/RQ5", "gnn_latent_cosine_distance", None, MISSING,
+    return _row("RQ4", "gnn_latent_cosine_distance", None, MISSING,
                 note="neither C21_GNN_AUTHORITATIVE/aggregate_stats.json nor "
                      "C18_GNN_LATENT_GAP/gnn_training_report.json found")
 
 
-def _rq3_rq5_rows(root: Path) -> List[Dict[str, Any]]:
-    rows: List[Dict[str, Any]] = [_gnn_row(root)]
-    rows.append(_row("RQ3", "miou_auto_train_manual_eval", None, DEFERRED,
-                      note="needs C17 paired captures (blocked -- see RQ2)"))
-    rows.append(_row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED,
-                      note="no real-world Ingolstadt dataset available on this machine "
-                           "(independent of the CARLA blocker)"))
-    rows.append(_row("RQ3", "domain_adaptation_coral_mmd", None, DEFERRED,
-                      note="needs C17 paired captures (blocked -- see RQ2)"))
-    return rows
-
-
-def _rq4_rows(root: Path) -> List[Dict[str, Any]]:
+def _rq4_variability_rows(root: Path) -> List[Dict[str, Any]]:
+    """Thesis RQ4 -- Structural variability and latent representation (does
+    repeated generation introduce measurable structural variability; can a
+    latent representation support robustness analysis). Combines the GNN
+    latent-space result with the explicit domain-randomization wiring check
+    (both are about induced/measured structural variability, not
+    determinism -- see _rq1_determinism_rows for that)."""
+    rows: List[Dict[str, Any]] = [_gnn_latent_row(root)]
     ev_dir = root / "reports/post_audit_hardening/C15_RQ4_DR"
     data = _read_json(ev_dir / "C15_RQ4_DOMAIN_RANDOMIZATION.json")
     if data is None:
-        return [_row("RQ4", "natural_dr", None, MISSING, note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found")]
-    det = data.get("determinism_arm", {})
+        rows.append(_row("RQ4", "explicit_dr_wired", None, MISSING,
+                          note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found"))
+        return rows
     dr = data.get("explicit_dr", {})
+    rows.append(_row("RQ4", "explicit_dr_wired", dr.get("changes_input"), AUTHORITATIVE,
+                      artifact=dr.get("module", ""),
+                      note=f"apply_n produces {dr.get('apply_n_produces_distinct_variants')} distinct variants; "
+                           "deterministic given a seed, varies across seeds"))
+    return rows
+
+
+def _rq5_transfer_rows(root: Path) -> List[Dict[str, Any]]:
+    """Thesis RQ5 -- Generalization and transfer (do perception models
+    trained on generated maps generalize to (a) the manual simulated map and
+    (b) unlabeled real-world data)."""
     return [
-        _row("RQ4", "natural_dr_present", False, AUTHORITATIVE,
-             artifact="ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py",
-             note=det.get("finding", "")),
-        _row("RQ4", "structurally_deterministic", det.get("structurally_deterministic"), AUTHORITATIVE,
-             note=f"{det.get('runs', 0)} runs, {det.get('byte_sha_unique', 0)} distinct sha256 "
-                  "(byte-non-deterministic serialization, structure identical)"),
-        _row("RQ4", "explicit_dr_wired", dr.get("changes_input"), AUTHORITATIVE,
-             artifact=dr.get("module", ""),
-             note=f"apply_n produces {dr.get('apply_n_produces_distinct_variants')} distinct variants; "
-                  "deterministic given a seed, varies across seeds"),
+        _row("RQ5", "miou_auto_train_manual_eval", None, DEFERRED,
+             note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)"),
+        _row("RQ5", "domain_adaptation_coral_mmd", None, DEFERRED,
+             note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)"),
+        _row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED,
+             note="RQ5(b): no real-world Ingolstadt dataset available on this machine "
+                  "(independent of the CARLA blocker)"),
     ]
 
 
 def build_tables(root: Path) -> Dict[str, Any]:
     rows = (
-        _rq1_rows(root) + _rq2_rows(root) + _rq3_rq5_rows(root) + _rq4_rows(root)
+        _rq1_determinism_rows(root)
+        + _rq2_structural_gap_rows(root)
+        + _rq3_perceptual_gap_rows(root)
+        + _rq4_variability_rows(root)
+        + _rq5_transfer_rows(root)
     )
     by_status: Dict[str, int] = {}
     for r in rows:

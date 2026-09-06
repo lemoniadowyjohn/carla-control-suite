@@ -14,6 +14,7 @@ from ultimate_pipeline.config.thesis_contract import (
     PERCEPTION_RESULT_SMOKE,
     classify_variability_experiment,
 )
+from ultimate_pipeline.config.thesis_rq_contract import ALL_RQS, metric_allowed_for_rq
 
 
 def _repo_root() -> Path:
@@ -262,22 +263,30 @@ def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
     rows = rq_tables.get("rows", [])
     for row in rows:
         status = row.get("status")
+        rq = row.get("rq")
+        metric = row.get("metric")
         if status not in valid_statuses:
-            violations.append(f"row {row.get('rq')}/{row.get('metric')}: invalid or missing status {status!r}")
+            violations.append(f"row {rq}/{metric}: invalid or missing status {status!r}")
         if status in {"DEFERRED", "MISSING"} and not str(row.get("note") or "").strip():
-            violations.append(f"row {row.get('rq')}/{row.get('metric')}: {status} with no reason given")
+            violations.append(f"row {rq}/{metric}: {status} with no reason given")
+        # Metric->RQ semantic check (ultimate_pipeline.config.thesis_rq_contract):
+        # this is what would have caught the 2026-09 RQ-numbering drift, where
+        # every row had a valid status but the wrong RQ number for its content.
+        if not metric_allowed_for_rq(rq, metric):
+            violations.append(
+                f"row {rq}/{metric}: metric not in the allowed set for {rq} "
+                "(check for RQ-label drift against ultimate_pipeline.config.thesis_rq_contract)"
+            )
 
+    # RQ numbers here follow the actual submitted thesis (submission/thesis_source/
+    # Chapter1/chap1.tex): RQ1=determinism, RQ2=structural gap, RQ3=perceptual gap,
+    # RQ4=structural variability/latent representation, RQ5=generalization/transfer.
+    # export_thesis_tables.py used a drifted numbering (structural gap as "RQ1",
+    # perceptual gap as "RQ2", GNN work as "RQ3/RQ5") until this was corrected
+    # 2026-09-06 -- every row now carries a single, correct, standalone tag, so no
+    # combined-tag special-casing is needed here anymore.
     rq_covered = {row.get("rq") for row in rows}
-    expected_rqs = {"RQ1", "RQ2", "RQ3", "RQ4", "RQ5", "RQ3/RQ5"}
-    # RQ3 and RQ5 may appear standalone or combined with the GNN row's "RQ3/RQ5" tag.
-    missing_rq_coverage = {
-        rq for rq in ("RQ1", "RQ2", "RQ4")
-        if rq not in rq_covered
-    }
-    if not ({"RQ3", "RQ3/RQ5"} & rq_covered):
-        missing_rq_coverage.add("RQ3")
-    if not ({"RQ5", "RQ3/RQ5"} & rq_covered):
-        missing_rq_coverage.add("RQ5")
+    missing_rq_coverage = ALL_RQS - rq_covered
     if missing_rq_coverage:
         violations.append(f"RQs with zero rows: {sorted(missing_rq_coverage)}")
 

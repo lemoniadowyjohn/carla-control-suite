@@ -7,154 +7,10 @@
   "row_count": 19,
   "rows": [
     {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_lane_width_gap",
-      "note": "LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 0.0415
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_curvature_gap",
-      "note": "LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 0.2192
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_curvature_wasserstein_gap",
-      "note": "LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1 [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 0.0747
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_road_length_ratio_auto_over_manual",
-      "note": "LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area [footprint=hull] -- hull is tighter/preferred, bbox kept in local_registration.json for comparison (hull materially lowers this ratio vs. the legacy bbox footprint)",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 2.692
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_junction_ratio_auto_over_manual",
-      "note": "LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 3.782
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_road_count_ratio_auto_over_manual",
-      "note": "LOCAL manual-footprint ratio; separates structural completeness from whole-map scope [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 3.565
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_auto_footprint_kept_fraction",
-      "note": "manual-footprint crop kept 3539 / 32297 auto roads; whole-map stats are scope context [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 0.1096
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "whole_map_construction_layers_excluded_from_local_gap",
-      "note": "traffic lights are a construction layer, not road-network structure, and are excluded from the LOCAL structural gap because Grid0828 does not model traffic lights at all (0 in the manual map) -- there is nothing in-footprint to compare against, independent of croppability. Reported at whole-map level as a construction/modeling-choice artifact.",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": true
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "whole_map_road_type_coverage_gap_context",
-      "note": "whole-map context only; manual road types are a subset of auto's",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 0.0
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_building_density_gap",
-      "note": "LOCAL manual-footprint building density comparison (C26): buildings recovered via outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 0.4139
-    },
-    {
-      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
-      "metric": "local_frechet_distance_median_m",
-      "note": "Thesis future-work #14, recomputed against the current local-registration methodology: mean=55.27961477346578m p90=128.01454419021908m over 895 matched road pairs (spacing=5.0m, threshold=50.0m); ~30-50x smaller than the delivered thesis's uncropped whole-network SE(2) number on every statistic -- see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md [footprint=hull]",
-      "rq": "RQ1",
-      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
-      "status": "BOUNDED",
-      "value": 35.258309336315136
-    },
-    {
-      "artifact": "reports\\post_audit_hardening\\C17_rq2_perception_capture.md",
-      "metric": "perceptual_gap",
-      "note": "paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)",
-      "rq": "RQ2",
-      "sha256": "",
-      "status": "DEFERRED",
-      "value": null
-    },
-    {
-      "artifact": "C21_GNN_AUTHORITATIVE/aggregate_stats.json",
-      "metric": "gnn_latent_cosine_distance",
-      "note": "5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[0.616146469116211, 0.6760465860366821], cosine_similarity 95% CI=[0.32272505164146426, 0.3838535487651825] (excludes zero/no-gap)",
-      "rq": "RQ3/RQ5",
-      "sha256": "e66a455284584b562cd3124dd62c057d1a348152cc1b86b3d106ce6a8ffe3bd9",
-      "status": "AUTHORITATIVE",
-      "value": 0.6433733820915222
-    },
-    {
-      "artifact": "",
-      "metric": "miou_auto_train_manual_eval",
-      "note": "needs C17 paired captures (blocked -- see RQ2)",
-      "rq": "RQ3",
-      "sha256": "",
-      "status": "DEFERRED",
-      "value": null
-    },
-    {
-      "artifact": "",
-      "metric": "real_unlabeled_shift_metrics",
-      "note": "no real-world Ingolstadt dataset available on this machine (independent of the CARLA blocker)",
-      "rq": "RQ5",
-      "sha256": "",
-      "status": "DEFERRED",
-      "value": null
-    },
-    {
-      "artifact": "",
-      "metric": "domain_adaptation_coral_mmd",
-      "note": "needs C17 paired captures (blocked -- see RQ2)",
-      "rq": "RQ3",
-      "sha256": "",
-      "status": "DEFERRED",
-      "value": null
-    },
-    {
       "artifact": "ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py",
       "metric": "natural_dr_present",
       "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
-      "rq": "RQ4",
+      "rq": "RQ1",
       "sha256": "",
       "status": "AUTHORITATIVE",
       "value": false
@@ -163,10 +19,127 @@
       "artifact": "",
       "metric": "structurally_deterministic",
       "note": "3 runs, 3 distinct sha256 (byte-non-deterministic serialization, structure identical)",
-      "rq": "RQ4",
+      "rq": "RQ1",
       "sha256": "",
       "status": "AUTHORITATIVE",
       "value": true
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_lane_width_gap",
+      "note": "LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.0415
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_curvature_gap",
+      "note": "LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.2192
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_curvature_wasserstein_gap",
+      "note": "LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1 [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.0747
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_road_length_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area [footprint=hull] -- hull is tighter/preferred, bbox kept in local_registration.json for comparison (hull materially lowers this ratio vs. the legacy bbox footprint)",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 2.692
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_junction_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 3.782
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_road_count_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; separates structural completeness from whole-map scope [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 3.565
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_auto_footprint_kept_fraction",
+      "note": "manual-footprint crop kept 3539 / 32297 auto roads; whole-map stats are scope context [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.1096
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "whole_map_construction_layers_excluded_from_local_gap",
+      "note": "traffic lights are a construction layer, not road-network structure, and are excluded from the LOCAL structural gap because Grid0828 does not model traffic lights at all (0 in the manual map) -- there is nothing in-footprint to compare against, independent of croppability. Reported at whole-map level as a construction/modeling-choice artifact.",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": true
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "whole_map_road_type_coverage_gap_context",
+      "note": "whole-map context only; manual road types are a subset of auto's",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.0
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_building_density_gap",
+      "note": "LOCAL manual-footprint building density comparison (C26): buildings recovered via outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 0.4139
+    },
+    {
+      "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr vs campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "metric": "local_frechet_distance_median_m",
+      "note": "Thesis future-work #14, recomputed against the current local-registration methodology: mean=55.27961477346578m p90=128.01454419021908m over 895 matched road pairs (spacing=5.0m, threshold=50.0m); ~30-50x smaller than the delivered thesis's uncropped whole-network SE(2) number on every statistic -- see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md [footprint=hull]",
+      "rq": "RQ2",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+      "status": "BOUNDED",
+      "value": 35.258309336315136
+    },
+    {
+      "artifact": "reports\\post_audit_hardening\\C17_rq2_perception_capture.md",
+      "metric": "perceptual_gap",
+      "note": "paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)",
+      "rq": "RQ3",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "C21_GNN_AUTHORITATIVE/aggregate_stats.json",
+      "metric": "gnn_latent_cosine_distance",
+      "note": "5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[0.616146469116211, 0.6760465860366821], cosine_similarity 95% CI=[0.32272505164146426, 0.3838535487651825] (excludes zero/no-gap)",
+      "rq": "RQ4",
+      "sha256": "e66a455284584b562cd3124dd62c057d1a348152cc1b86b3d106ce6a8ffe3bd9",
+      "status": "AUTHORITATIVE",
+      "value": 0.6433733820915222
     },
     {
       "artifact": "ultimate_pipeline/augmentation/realism_augmentor.py",
@@ -176,6 +149,33 @@
       "sha256": "",
       "status": "AUTHORITATIVE",
       "value": true
+    },
+    {
+      "artifact": "",
+      "metric": "miou_auto_train_manual_eval",
+      "note": "RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
+      "rq": "RQ5",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "",
+      "metric": "domain_adaptation_coral_mmd",
+      "note": "RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
+      "rq": "RQ5",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
+    },
+    {
+      "artifact": "",
+      "metric": "real_unlabeled_shift_metrics",
+      "note": "RQ5(b): no real-world Ingolstadt dataset available on this machine (independent of the CARLA blocker)",
+      "rq": "RQ5",
+      "sha256": "",
+      "status": "DEFERRED",
+      "value": null
     }
   ]
 }

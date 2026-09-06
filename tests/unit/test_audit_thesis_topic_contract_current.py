@@ -27,15 +27,32 @@ def test_reports_not_found_when_rq_tables_missing(tmp_path: Path) -> None:
 
 def test_positive_control_clean_rows_pass(tmp_path: Path) -> None:
     _write_rq_tables(tmp_path, [
-        {"rq": "RQ1", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
-        {"rq": "RQ2", "metric": "perceptual_gap", "status": "DEFERRED", "note": "blocked on CARLA"},
-        {"rq": "RQ3", "metric": "miou", "status": "DEFERRED", "note": "blocked"},
-        {"rq": "RQ5", "metric": "shift", "status": "DEFERRED", "note": "no real dataset"},
-        {"rq": "RQ4", "metric": "natural_dr_present", "status": "AUTHORITATIVE", "note": "measured"},
+        {"rq": "RQ1", "metric": "natural_dr_present", "status": "AUTHORITATIVE", "note": "measured"},
+        {"rq": "RQ2", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
+        {"rq": "RQ3", "metric": "perceptual_gap", "status": "DEFERRED", "note": "blocked on CARLA"},
+        {"rq": "RQ4", "metric": "gnn_latent_cosine_distance", "status": "BOUNDED", "note": "prototype result"},
+        {"rq": "RQ5", "metric": "miou_auto_train_manual_eval", "status": "DEFERRED", "note": "blocked"},
     ])
     result = _current_rq_tables_audit(tmp_path)
     assert result["ok"] is True
     assert result["violations"] == []
+
+
+def test_negative_control_metric_rq_mismatch_flagged(tmp_path: Path) -> None:
+    """The exact 2026-09 drift this contract guards against: every row has a
+    valid status, but a metric is tagged with the wrong RQ number."""
+    _write_rq_tables(tmp_path, [
+        {"rq": "RQ1", "metric": "natural_dr_present", "status": "AUTHORITATIVE", "note": "measured"},
+        # Structural-gap metric mistakenly tagged RQ1 instead of RQ2.
+        {"rq": "RQ1", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
+        {"rq": "RQ2", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
+        {"rq": "RQ3", "metric": "perceptual_gap", "status": "DEFERRED", "note": "blocked on CARLA"},
+        {"rq": "RQ4", "metric": "gnn_latent_cosine_distance", "status": "BOUNDED", "note": "prototype result"},
+        {"rq": "RQ5", "metric": "miou_auto_train_manual_eval", "status": "DEFERRED", "note": "blocked"},
+    ])
+    result = _current_rq_tables_audit(tmp_path)
+    assert result["ok"] is False
+    assert any("not in the allowed set for RQ1" in v for v in result["violations"])
 
 
 def test_negative_control_bare_deferred_flagged(tmp_path: Path) -> None:

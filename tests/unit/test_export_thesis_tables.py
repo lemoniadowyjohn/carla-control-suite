@@ -2,8 +2,16 @@
 
 Core invariant this protects: every RQ metric this tool knows about must
 get an explicit status (never silently omitted), and when both a stale and
-a corrected evidence file exist for the same metric (RQ1's curvature gap),
-the corrected value must win.
+a corrected evidence file exist for the same metric (structural gap's
+curvature gap), the corrected value must win.
+
+RQ numbering here follows the actual submitted thesis (submission/
+thesis_source/Chapter1/chap1.tex): RQ1=determinism, RQ2=structural domain
+gap, RQ3=perceptual domain gap, RQ4=structural variability/latent
+representation, RQ5=generalization/transfer. A semantic drift (structural
+gap tagged "RQ1", perceptual gap tagged "RQ2", GNN work tagged "RQ3/RQ5")
+was corrected 2026-09-06 -- see export_thesis_tables.py's per-function
+docstrings for which thesis RQ each one covers.
 """
 from __future__ import annotations
 
@@ -24,18 +32,23 @@ def _mk(tmp_path: Path, rel: str, payload: dict) -> None:
 
 def test_missing_evidence_reports_missing_not_omitted(tmp_path: Path) -> None:
     payload = build_tables(tmp_path)
-    statuses = {r["status"] for r in payload["rows"] if r["rq"] == "RQ1"}
-    assert statuses == {MISSING}
+    # RQ1 = determinism, sourced from the same (here: absent) C15 evidence file.
+    statuses1 = {r["status"] for r in payload["rows"] if r["rq"] == "RQ1"}
+    assert statuses1 == {MISSING}
+    # RQ2 = structural gap, sourced from the (here: absent) C14 evidence file.
+    statuses2 = {r["status"] for r in payload["rows"] if r["rq"] == "RQ2"}
+    assert statuses2 == {MISSING}
+    # RQ4 = GNN latent + explicit-DR wiring, both unresolvable with no evidence at all.
     statuses4 = {r["status"] for r in payload["rows"] if r["rq"] == "RQ4"}
     assert statuses4 == {MISSING}
 
 
-def test_rq2_always_deferred_with_reason(tmp_path: Path) -> None:
+def test_rq3_perceptual_gap_always_deferred_with_reason(tmp_path: Path) -> None:
     payload = build_tables(tmp_path)
-    rq2 = [r for r in payload["rows"] if r["rq"] == "RQ2"]
-    assert len(rq2) == 1
-    assert rq2[0]["status"] == DEFERRED
-    assert rq2[0]["note"]  # must state why, never a bare DEFERRED
+    rq3 = [r for r in payload["rows"] if r["rq"] == "RQ3"]
+    assert len(rq3) == 1
+    assert rq3[0]["status"] == DEFERRED
+    assert rq3[0]["note"]  # must state why, never a bare DEFERRED
 
 
 def test_every_row_has_explicit_status(tmp_path: Path) -> None:
@@ -45,7 +58,7 @@ def test_every_row_has_explicit_status(tmp_path: Path) -> None:
         assert row["rq"] and row["metric"]
 
 
-def test_rq1_prefers_corrected_curvature_over_stale_main_json(tmp_path: Path) -> None:
+def test_rq2_prefers_corrected_curvature_over_stale_main_json(tmp_path: Path) -> None:
     _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
         "auto_map": {"path": "auto.xodr", "sha256": "aa" * 32},
         "manual_map": {"path": "manual.xodr", "sha256": "bb" * 32},
@@ -57,7 +70,7 @@ def test_rq1_prefers_corrected_curvature_over_stale_main_json(tmp_path: Path) ->
                         "traffic_light_density_gap": 1.0, "building_density_gap": 0.8, "road_type_coverage_gap": 0.0},
     })
     payload = build_tables(tmp_path)
-    curvature_row = next(r for r in payload["rows"] if r["rq"] == "RQ1" and r["metric"] == "curvature_gap")
+    curvature_row = next(r for r in payload["rows"] if r["rq"] == "RQ2" and r["metric"] == "curvature_gap")
     assert curvature_row["value"] == 0.093117
 
 
@@ -88,7 +101,7 @@ def _local_structural_summary_payload():
     }
 
 
-def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
+def test_rq2_uses_local_registration_when_present(tmp_path: Path) -> None:
     """C26 schema: local_registration.json has top-level hull/bbox blocks, each with its own
     local_structural_summary. hull (tighter, default) must be preferred over bbox."""
     _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
@@ -115,17 +128,17 @@ def test_rq1_uses_local_registration_when_present(tmp_path: Path) -> None:
         }},
     })
     payload = build_tables(tmp_path)
-    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
+    rq2 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ2"}
     # hull values win (tighter/preferred), not the bbox ones present in the same file
-    assert rq1["local_curvature_gap"]["value"] == 0.2192
-    assert rq1["local_road_length_ratio_auto_over_manual"]["value"] == 2.692
-    assert rq1["local_auto_footprint_kept_fraction"]["value"] == 0.1096
-    assert rq1["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
-    assert rq1["local_building_density_gap"]["value"] == 0.4139
-    assert "road_length_gap" not in rq1
+    assert rq2["local_curvature_gap"]["value"] == 0.2192
+    assert rq2["local_road_length_ratio_auto_over_manual"]["value"] == 2.692
+    assert rq2["local_auto_footprint_kept_fraction"]["value"] == 0.1096
+    assert rq2["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
+    assert rq2["local_building_density_gap"]["value"] == 0.4139
+    assert "road_length_gap" not in rq2
 
 
-def test_rq1_includes_frechet_row_when_evidence_present(tmp_path: Path) -> None:
+def test_rq2_includes_frechet_row_when_evidence_present(tmp_path: Path) -> None:
     """Thesis future-work #14 (discrete Frechet distance, recomputed 2026-08-27 against the
     current local-registration methodology): frechet_distance_local.json, when present,
     contributes a BOUNDED local_frechet_distance_median_m row citing mean/p90/matched-pair
@@ -144,15 +157,15 @@ def test_rq1_includes_frechet_row_when_evidence_present(tmp_path: Path) -> None:
         "spacing_m": 5.0, "match_threshold_m": 50.0, "footprint": "hull",
     })
     payload = build_tables(tmp_path)
-    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
-    row = rq1["local_frechet_distance_median_m"]
+    rq2 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ2"}
+    row = rq2["local_frechet_distance_median_m"]
     assert row["value"] == 35.26
     assert row["status"] == BOUNDED
     assert "55.28" in row["note"] or "55.28" in str(row["note"])  # mean cited
     assert "895" in row["note"]  # matched-pair count cited
 
 
-def test_rq1_omits_frechet_row_when_evidence_absent(tmp_path: Path) -> None:
+def test_rq2_omits_frechet_row_when_evidence_absent(tmp_path: Path) -> None:
     """No frechet_distance_local.json -- row is simply absent (like local_building_density_gap
     when buildings weren't recovered), not forced into an explicit MISSING placeholder; the
     other RQ1 local rows are unaffected."""
@@ -165,12 +178,12 @@ def test_rq1_omits_frechet_row_when_evidence_absent(tmp_path: Path) -> None:
         "hull": {"local_structural_summary": _local_structural_summary_payload()},
     })
     payload = build_tables(tmp_path)
-    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
-    assert "local_frechet_distance_median_m" not in rq1
-    assert "local_curvature_gap" in rq1  # unaffected
+    rq2 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ2"}
+    assert "local_frechet_distance_median_m" not in rq2
+    assert "local_curvature_gap" in rq2  # unaffected
 
 
-def test_rq1_falls_back_to_legacy_flat_local_registration_schema(tmp_path: Path) -> None:
+def test_rq2_falls_back_to_legacy_flat_local_registration_schema(tmp_path: Path) -> None:
     """Pre-C26 local_registration.json had a flat top-level local_structural_summary (no
     hull/bbox nesting) -- must still be read, not silently treated as MISSING."""
     _mk(tmp_path, "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_STRUCTURAL_GAP.json", {
@@ -202,16 +215,33 @@ def test_rq1_falls_back_to_legacy_flat_local_registration_schema(tmp_path: Path)
         },
     })
     payload = build_tables(tmp_path)
-    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
-    assert rq1["local_curvature_gap"]["value"] == 0.2239
-    assert rq1["local_curvature_wasserstein_gap"]["value"] == 0.0642
-    assert rq1["local_road_length_ratio_auto_over_manual"]["value"] == 4.5
-    assert rq1["local_auto_footprint_kept_fraction"]["value"] == 0.1882
-    assert rq1["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
-    assert "road_length_gap" not in rq1
+    rq2 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ2"}
+    assert rq2["local_curvature_gap"]["value"] == 0.2239
+    assert rq2["local_curvature_wasserstein_gap"]["value"] == 0.0642
+    assert rq2["local_road_length_ratio_auto_over_manual"]["value"] == 4.5
+    assert rq2["local_auto_footprint_kept_fraction"]["value"] == 0.1882
+    assert rq2["whole_map_construction_layers_excluded_from_local_gap"]["value"] is True
+    assert "road_length_gap" not in rq2
 
 
-def test_rq4_authoritative_when_evidence_present(tmp_path: Path) -> None:
+def test_rq1_determinism_authoritative_when_evidence_present(tmp_path: Path) -> None:
+    _mk(tmp_path, "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_DOMAIN_RANDOMIZATION.json", {
+        "determinism_arm": {"runs": 3, "byte_sha_unique": 3, "structurally_deterministic": True,
+                             "finding": "structurally deterministic, byte-varying"},
+        "explicit_dr": {"module": "x.py", "apply_n_produces_distinct_variants": 5, "changes_input": True},
+    })
+    payload = build_tables(tmp_path)
+    rq1 = [r for r in payload["rows"] if r["rq"] == "RQ1"]
+    assert all(r["status"] == AUTHORITATIVE for r in rq1)
+    natural_dr_row = next(r for r in rq1 if r["metric"] == "natural_dr_present")
+    assert natural_dr_row["value"] is False
+
+
+def test_rq4_explicit_dr_authoritative_when_evidence_present(tmp_path: Path) -> None:
+    """RQ4's explicit_dr_wired row is independent of the GNN row's own
+    evidence (which this fixture doesn't provide, so it reports MISSING --
+    the two RQ4 metrics have separate evidence sources and separate
+    statuses)."""
     _mk(tmp_path, "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_DOMAIN_RANDOMIZATION.json", {
         "determinism_arm": {"runs": 3, "byte_sha_unique": 3, "structurally_deterministic": True,
                              "finding": "structurally deterministic, byte-varying"},
@@ -219,9 +249,11 @@ def test_rq4_authoritative_when_evidence_present(tmp_path: Path) -> None:
     })
     payload = build_tables(tmp_path)
     rq4 = [r for r in payload["rows"] if r["rq"] == "RQ4"]
-    assert all(r["status"] == AUTHORITATIVE for r in rq4)
-    natural_dr_row = next(r for r in rq4 if r["metric"] == "natural_dr_present")
-    assert natural_dr_row["value"] is False
+    dr_row = next(r for r in rq4 if r["metric"] == "explicit_dr_wired")
+    assert dr_row["status"] == AUTHORITATIVE
+    assert dr_row["value"] is True
+    gnn_row = next(r for r in rq4 if r["metric"] == "gnn_latent_cosine_distance")
+    assert gnn_row["status"] == MISSING  # no C18/C21 evidence in this fixture
 
 
 def test_gnn_row_is_prototype_not_authoritative(tmp_path: Path) -> None:
@@ -233,6 +265,7 @@ def test_gnn_row_is_prototype_not_authoritative(tmp_path: Path) -> None:
     })
     payload = build_tables(tmp_path)
     gnn_row = next(r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance")
+    assert gnn_row["rq"] == "RQ4"
     assert gnn_row["status"] == PROTOTYPE
     assert gnn_row["value"] == 1.14
 
@@ -287,7 +320,7 @@ def test_against_real_repo_root_does_not_crash_and_finds_real_evidence() -> None
     assert payload["row_count"] > 0
     curvature_row = next(
         r for r in payload["rows"]
-        if r["rq"] == "RQ1" and r["metric"] in {
+        if r["rq"] == "RQ2" and r["metric"] in {
             "local_curvature_wasserstein_gap",
             "curvature_wasserstein_gap",
             "local_curvature_gap",

@@ -2,8 +2,8 @@
   "inputs_manifest": {
     "inputs": {
       "buildings": {
-        "actual": "92300f0a0158980d08b04ae4cd855fe2d242ed71d32023410bd017f795196832",
-        "expected": "92300f0a0158980d08b04ae4cd855fe2d242ed71d32023410bd017f795196832",
+        "actual": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+        "expected": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
         "ok": true
       },
       "dem": {
@@ -25,6 +25,42 @@
       "artifact": "auto_map_of_record",
       "ok": true,
       "role": "auto",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "artifact": "auto_map_of_record_reproregen1_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "artifact": "auto_map_of_record_round6_elevationfix_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "artifact": "auto_map_of_record_round5_hygienefix_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "artifact": "auto_map_of_record_deepaudit_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "artifact": "auto_map_of_record_junctionfix_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "artifact": "auto_map_of_record_c29_superseded",
+      "ok": true,
+      "role": "auto",
       "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
     },
     {
@@ -37,114 +73,114 @@
   "rq_table_claims": {
     "claims_checked": [
       {
-        "metric": "local_lane_width_gap",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_curvature_gap",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_curvature_wasserstein_gap",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_road_length_ratio_auto_over_manual",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_junction_ratio_auto_over_manual",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_road_count_ratio_auto_over_manual",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_auto_footprint_kept_fraction",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "whole_map_construction_layers_excluded_from_local_gap",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "whole_map_road_type_coverage_gap_context",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_building_density_gap",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "local_frechet_distance_median_m",
-        "provenance": "PASS",
-        "rq": "RQ1",
-        "via": "superseded_pin:auto_map_of_record"
-      },
-      {
-        "metric": "perceptual_gap",
-        "provenance": "n/a (deferred/missing)",
-        "rq": "RQ2"
-      },
-      {
-        "metric": "gnn_latent_cosine_distance",
-        "provenance": "PASS",
-        "rq": "RQ3/RQ5",
-        "via": "direct_hash:aggregate_stats.json"
-      },
-      {
-        "metric": "miou_auto_train_manual_eval",
-        "provenance": "n/a (deferred/missing)",
-        "rq": "RQ3"
-      },
-      {
-        "metric": "real_unlabeled_shift_metrics",
-        "provenance": "n/a (deferred/missing)",
-        "rq": "RQ5"
-      },
-      {
-        "metric": "domain_adaptation_coral_mmd",
-        "provenance": "n/a (deferred/missing)",
-        "rq": "RQ3"
-      },
-      {
         "metric": "natural_dr_present",
         "note": "claim made but no artifact digest cited",
         "provenance": "UNPINNED",
-        "rq": "RQ4"
+        "rq": "RQ1"
       },
       {
         "metric": "structurally_deterministic",
         "note": "claim made but no artifact digest cited",
         "provenance": "UNPINNED",
-        "rq": "RQ4"
+        "rq": "RQ1"
+      },
+      {
+        "metric": "local_lane_width_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_curvature_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_curvature_wasserstein_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_road_length_ratio_auto_over_manual",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_junction_ratio_auto_over_manual",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_road_count_ratio_auto_over_manual",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_auto_footprint_kept_fraction",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "whole_map_construction_layers_excluded_from_local_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "whole_map_road_type_coverage_gap_context",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_building_density_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_frechet_distance_median_m",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "perceptual_gap",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ3"
+      },
+      {
+        "metric": "gnn_latent_cosine_distance",
+        "provenance": "PASS",
+        "rq": "RQ4",
+        "via": "direct_hash:aggregate_stats.json"
       },
       {
         "metric": "explicit_dr_wired",
         "note": "claim made but no artifact digest cited",
         "provenance": "UNPINNED",
         "rq": "RQ4"
+      },
+      {
+        "metric": "miou_auto_train_manual_eval",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ5"
+      },
+      {
+        "metric": "domain_adaptation_coral_mmd",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ5"
+      },
+      {
+        "metric": "real_unlabeled_shift_metrics",
+        "provenance": "n/a (deferred/missing)",
+        "rq": "RQ5"
       }
     ],
     "ok": true
