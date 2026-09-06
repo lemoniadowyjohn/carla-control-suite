@@ -234,7 +234,23 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
             checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL", "error": str(exc)})
             ok = False
             continue
-        if actual == sha:
+        matched = actual == sha
+        if not matched and len(sha) == 64:
+            # evidence_sha256 is computed from the exporter's working tree, which
+            # is CRLF on Windows; a Linux checkout of the same git blob is LF, so
+            # a raw digest legitimately differs for a text artifact. Accept the
+            # CRLF- and LF-normalized forms too -- this is checkout portability,
+            # NOT a relaxation of tamper detection (a genuine content change
+            # still fails every form), mirroring the R13 frozen-evidence
+            # line-ending tolerance.
+            raw = found.read_bytes()
+            lf = raw.replace(b"\r\n", b"\n")
+            crlf = lf.replace(b"\n", b"\r\n")
+            matched = (
+                hashlib.sha256(crlf).hexdigest() == sha
+                or hashlib.sha256(lf).hexdigest() == sha
+            )
+        if matched:
             checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "PASS",
                              "via": f"direct_hash:{found.name}"})
         else:
