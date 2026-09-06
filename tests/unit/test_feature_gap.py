@@ -1,6 +1,6 @@
 """ultimate_pipeline/domain_gap/feature_gap.py -- FeatureDomainGap.
 
-This is the actual math behind RQ2's perceptual-gap numbers once real manual/auto
+This is the actual math behind RQ3's perceptual-gap numbers once real manual/auto
 perception captures exist: PerceptionGap.compare()'s feature_proxy branch (see
 ultimate_pipeline/domain_gap/perception_gap.py) and
 ultimate_pipeline/tools/compute_perception_gap.py both call

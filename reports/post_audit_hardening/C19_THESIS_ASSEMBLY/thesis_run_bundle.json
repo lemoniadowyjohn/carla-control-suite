@@ -3,27 +3,45 @@
   "c19_step_outputs": {
     "contract_audit.json": {
       "present": true,
-      "sha256": "4fa55b4e357e2ff7021a80558898c100b22bbb574d7a93ec711da626d855f3f3"
+      "sha256": "ce99a803654d345c8e1ea19b05c97ba92b40692c117a8abc2b49662f7d684b6b"
     },
     "provenance_validation.json": {
       "present": true,
-      "sha256": "a6398b33403f1fb9bdd1991cba420f56332c915422d4a57cba2ba6df884db195"
+      "sha256": "7eff90424c271b7d5ca98d1c880ccded15542acccb102fe319f80f1f5f542154"
     },
     "rq_tables.json": {
       "present": true,
-      "sha256": "efa099d69e62f7b022afca28eca9bf30bd4629fcc31638f3ff3313a30afb453d"
+      "sha256": "4beb36788b507413cef188312cef54ffc75b9b759f3fd0902cf5da749048509a"
     }
   },
   "claim_boundaries": [
     {
-      "metric": "natural_dr_present",
-      "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
+      "metric": "raw_hash_repeatability",
+      "note": "3 runs, 3 distinct raw sha256 values",
       "rq": "RQ1",
       "status": "AUTHORITATIVE"
     },
     {
-      "metric": "structurally_deterministic",
+      "metric": "normalized_hash_repeatability",
+      "note": "Portable committed fixture proves timestamp-only changes normalize to one hash and structural changes remain detectable; large raw C15 XODRs remain optional integration artifacts",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "structural_signature_repeatability",
       "note": "3 runs, 3 distinct sha256 (byte-non-deterministic serialization, structure identical)",
+      "rq": "RQ1",
+      "status": "AUTHORITATIVE"
+    },
+    {
+      "metric": "byte_nondeterminism_source",
+      "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "natural_dr_present",
+      "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
       "rq": "RQ1",
       "status": "AUTHORITATIVE"
     },
@@ -97,7 +115,7 @@
       "metric": "perceptual_gap",
       "note": "paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)",
       "rq": "RQ3",
-      "status": "DEFERRED"
+      "status": "DEFERRED_RUNTIME"
     },
     {
       "metric": "gnn_latent_cosine_distance",
@@ -115,19 +133,19 @@
       "metric": "miou_auto_train_manual_eval",
       "note": "RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
       "rq": "RQ5",
-      "status": "DEFERRED"
+      "status": "DEFERRED_RUNTIME"
     },
     {
       "metric": "domain_adaptation_coral_mmd",
       "note": "RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
       "rq": "RQ5",
-      "status": "DEFERRED"
+      "status": "DEFERRED_RUNTIME"
     },
     {
       "metric": "real_unlabeled_shift_metrics",
       "note": "RQ5(b): no real-world Ingolstadt dataset available on this machine (independent of the CARLA blocker)",
       "rq": "RQ5",
-      "status": "DEFERRED"
+      "status": "DEFERRED_EXTERNAL_DATA"
     }
   ],
   "evidence_reports": [
@@ -219,8 +237,8 @@
   },
   "protocol_snapshot": {
     "canonical_regen_entrypoint": "scripts/regen_map_of_record.py",
-    "git_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
-    "git_commit": "eb5dd83adc691f451796ba34ffed5e49a2800aaa",
+    "git_branch": "stabilize/research-release-20260905",
+    "git_commit": "ff02e22bd42589d36580ea7dc6498a36a69dfee6",
     "git_dirty": true,
     "inputs_manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
     "note": "No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead."

@@ -1,6 +1,6 @@
 """ultimate_pipeline/tools/compute_perception_gap.py vs. perception_metrics_exporter.py.
 
-This CLI tool is the RQ2 perceptual-gap script a human would actually run against
+This CLI tool is the RQ3 perceptual-gap script a human would actually run against
 real captured manual/auto perception runs once live CARLA is available. Its own
 docstring says it "Requires that perception_metrics_exporter.py was run with
 --dump_features, so each run has a *_features.npz with per-image embeddings" and

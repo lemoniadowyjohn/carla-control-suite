@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for PerceptionGap/PerceptionMetrics (ultimate_pipeline/domain_gap/perception_gap.py).
 
-Live: imported by run_full_domain_gap.py -- feeds the RQ2/RQ3 perceptual
+Live: imported by run_full_domain_gap.py -- feeds the RQ3 perceptual
 domain-gap metric. Zero prior test coverage.
 """
 from __future__ import annotations

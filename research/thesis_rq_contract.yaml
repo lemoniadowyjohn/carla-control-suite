@@ -1,0 +1,96 @@
+schema_version: 1
+authority: submitted_bachelor_thesis
+created_for_lineage: fix/post-audit-phase-e-junctions-roundabouts-20260803
+critical_rule: Never redefine or renumber these research questions to fit repository artifacts.
+research_questions:
+  RQ1:
+    title: DETERMINISM
+    question: "Does the OSM→OpenDRIVE pipeline preserve stable structural and topological signatures under fixed inputs, and where does byte-level nondeterminism arise?"
+    valid_metrics:
+      - raw_hash_repeatability
+      - normalized_hash_repeatability
+      - structural_signature_repeatability
+      - byte_nondeterminism_source
+    aliases:
+      natural_dr_present: raw_hash_repeatability
+      structurally_deterministic: structural_signature_repeatability
+  RQ2:
+    title: STRUCTURAL DOMAIN GAP
+    question: "How do automatically generated OSM-based CARLA maps differ structurally from a manually modeled CARLA map of the same region?"
+    valid_metrics:
+      - lane_width_gap
+      - curvature_gap
+      - curvature_wasserstein_gap
+      - road_count_ratio
+      - road_length_ratio
+      - junction_ratio
+      - building_density_gap
+      - frechet_distance
+      - connectivity_gap
+      - semantic_object_gap
+    aliases:
+      road_length_gap: road_length_ratio
+      road_type_coverage_gap: semantic_object_gap
+      traffic_light_density_gap: semantic_object_gap
+      local_lane_width_gap: lane_width_gap
+      local_curvature_gap: curvature_gap
+      local_curvature_wasserstein_gap: curvature_wasserstein_gap
+      local_road_length_ratio_auto_over_manual: road_length_ratio
+      local_junction_ratio_auto_over_manual: junction_ratio
+      local_road_count_ratio_auto_over_manual: road_count_ratio
+      local_building_density_gap: building_density_gap
+      local_frechet_distance_median_m: frechet_distance
+      local_auto_footprint_kept_fraction: connectivity_gap
+      whole_map_construction_layers_excluded_from_local_gap: semantic_object_gap
+      whole_map_road_type_coverage_gap_context: semantic_object_gap
+      structural_gap_composite: connectivity_gap
+  RQ3:
+    title: PERCEPTUAL DOMAIN GAP
+    question: "How do those structural differences shift perception outputs when an identical sensor rig and route protocol are used?"
+    valid_metrics:
+      - paired_camera_distribution_shift
+      - paired_lidar_distribution_shift
+      - semantic_sensor_distribution_shift
+      - paired_sensor_domain_metrics
+    aliases:
+      perceptual_gap: paired_sensor_domain_metrics
+  RQ4:
+    title: STRUCTURAL VARIABILITY AND LATENT REPRESENTATION
+    question: "Does repeated automatic generation from the same pinned inputs introduce measurable structural variability, and can a latent representation of that variability support robustness analysis?"
+    valid_metrics:
+      - structural_coefficient_of_variation
+      - natural_structural_variability
+      - GNN_latent_distance
+      - GNN_collapse_diagnostics
+      - k_sweep
+      - explicit_domain_randomization
+    aliases:
+      gnn_latent_cosine_distance: GNN_latent_distance
+      explicit_dr_wired: explicit_domain_randomization
+  RQ5:
+    title: GENERALIZATION AND TRANSFER
+    question: |-
+      To what extent do perception models trained on automatically generated maps generalize to:
+      (a) a manually simulated map, and
+      (b) unlabeled real-world data?
+    valid_metrics:
+      - generated_train_generated_test_accuracy
+      - generated_train_manual_test_accuracy
+      - mIoU_transfer_degradation
+      - per_class_target_IoU
+      - real_world_model_transfer_evaluation
+    aliases:
+      miou_auto_train_manual_eval: generated_train_manual_test_accuracy
+      domain_adaptation_coral_mmd: real_world_model_transfer_evaluation
+      real_unlabeled_shift_metrics: real_world_model_transfer_evaluation
+claim_boundaries:
+  RQ3: Town10HD may only be used as sensor-rig smoke/control evidence, not as an RQ3 answer.
+  RQ5: Unlabeled distribution shift alone is not model-generalization accuracy.
+statuses:
+  - AUTHORITATIVE
+  - BOUNDED
+  - PROTOTYPE
+  - DEFERRED_RUNTIME
+  - DEFERRED_EXTERNAL_DATA
+  - SUPERSEDED
+  - NOT_RUN

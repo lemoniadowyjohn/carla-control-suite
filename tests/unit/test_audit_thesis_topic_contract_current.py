@@ -1,6 +1,6 @@
 """C19 step 2 (current era) — audit_thesis_topic_contract.py's new
 current_rq_tables_audit section: fails closed on missing status / bare
-DEFERRED-with-no-reason, independent of the legacy run11-era checks.
+no-claim status with no reason, independent of the legacy run11-era checks.
 """
 from __future__ import annotations
 
@@ -29,9 +29,9 @@ def test_positive_control_clean_rows_pass(tmp_path: Path) -> None:
     _write_rq_tables(tmp_path, [
         {"rq": "RQ1", "metric": "natural_dr_present", "status": "AUTHORITATIVE", "note": "measured"},
         {"rq": "RQ2", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
-        {"rq": "RQ3", "metric": "perceptual_gap", "status": "DEFERRED", "note": "blocked on CARLA"},
+        {"rq": "RQ3", "metric": "perceptual_gap", "status": "DEFERRED_RUNTIME", "note": "blocked on CARLA"},
         {"rq": "RQ4", "metric": "gnn_latent_cosine_distance", "status": "BOUNDED", "note": "prototype result"},
-        {"rq": "RQ5", "metric": "miou_auto_train_manual_eval", "status": "DEFERRED", "note": "blocked"},
+        {"rq": "RQ5", "metric": "miou_auto_train_manual_eval", "status": "DEFERRED_RUNTIME", "note": "blocked"},
     ])
     result = _current_rq_tables_audit(tmp_path)
     assert result["ok"] is True
@@ -46,9 +46,9 @@ def test_negative_control_metric_rq_mismatch_flagged(tmp_path: Path) -> None:
         # Structural-gap metric mistakenly tagged RQ1 instead of RQ2.
         {"rq": "RQ1", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
         {"rq": "RQ2", "metric": "lane_width_gap", "status": "BOUNDED", "note": "fine"},
-        {"rq": "RQ3", "metric": "perceptual_gap", "status": "DEFERRED", "note": "blocked on CARLA"},
+        {"rq": "RQ3", "metric": "perceptual_gap", "status": "DEFERRED_RUNTIME", "note": "blocked on CARLA"},
         {"rq": "RQ4", "metric": "gnn_latent_cosine_distance", "status": "BOUNDED", "note": "prototype result"},
-        {"rq": "RQ5", "metric": "miou_auto_train_manual_eval", "status": "DEFERRED", "note": "blocked"},
+        {"rq": "RQ5", "metric": "miou_auto_train_manual_eval", "status": "DEFERRED_RUNTIME", "note": "blocked"},
     ])
     result = _current_rq_tables_audit(tmp_path)
     assert result["ok"] is False
@@ -58,9 +58,9 @@ def test_negative_control_metric_rq_mismatch_flagged(tmp_path: Path) -> None:
 def test_negative_control_bare_deferred_flagged(tmp_path: Path) -> None:
     _write_rq_tables(tmp_path, [
         {"rq": "RQ1", "metric": "x", "status": "BOUNDED", "note": "ok"},
-        {"rq": "RQ2", "metric": "y", "status": "DEFERRED", "note": ""},  # no reason given
-        {"rq": "RQ3", "metric": "z", "status": "DEFERRED", "note": "ok"},
-        {"rq": "RQ5", "metric": "w", "status": "DEFERRED", "note": "ok"},
+        {"rq": "RQ2", "metric": "y", "status": "DEFERRED_RUNTIME", "note": ""},  # no reason given
+        {"rq": "RQ3", "metric": "z", "status": "DEFERRED_RUNTIME", "note": "ok"},
+        {"rq": "RQ5", "metric": "w", "status": "DEFERRED_EXTERNAL_DATA", "note": "ok"},
         {"rq": "RQ4", "metric": "v", "status": "AUTHORITATIVE", "note": "ok"},
     ])
     result = _current_rq_tables_audit(tmp_path)
@@ -71,9 +71,9 @@ def test_negative_control_bare_deferred_flagged(tmp_path: Path) -> None:
 def test_negative_control_invalid_status_flagged(tmp_path: Path) -> None:
     _write_rq_tables(tmp_path, [
         {"rq": "RQ1", "metric": "x", "status": "SOMETHING_MADE_UP", "note": "ok"},
-        {"rq": "RQ2", "metric": "y", "status": "DEFERRED", "note": "ok"},
-        {"rq": "RQ3", "metric": "z", "status": "DEFERRED", "note": "ok"},
-        {"rq": "RQ5", "metric": "w", "status": "DEFERRED", "note": "ok"},
+        {"rq": "RQ2", "metric": "y", "status": "DEFERRED_RUNTIME", "note": "ok"},
+        {"rq": "RQ3", "metric": "z", "status": "DEFERRED_RUNTIME", "note": "ok"},
+        {"rq": "RQ5", "metric": "w", "status": "DEFERRED_EXTERNAL_DATA", "note": "ok"},
         {"rq": "RQ4", "metric": "v", "status": "AUTHORITATIVE", "note": "ok"},
     ])
     result = _current_rq_tables_audit(tmp_path)

@@ -73,13 +73,31 @@
   "rq_table_claims": {
     "claims_checked": [
       {
-        "metric": "natural_dr_present",
-        "note": "claim made but no artifact digest cited",
-        "provenance": "UNPINNED",
-        "rq": "RQ1"
+        "metric": "raw_hash_repeatability",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:C15_RQ4_DOMAIN_RANDOMIZATION.json"
       },
       {
-        "metric": "structurally_deterministic",
+        "metric": "normalized_hash_repeatability",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:test_exp_osm_to_xodr_determinism_normalized.py"
+      },
+      {
+        "metric": "structural_signature_repeatability",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:C15_RQ4_DOMAIN_RANDOMIZATION.json"
+      },
+      {
+        "metric": "byte_nondeterminism_source",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:C15_RQ4_DOMAIN_RANDOMIZATION.json"
+      },
+      {
+        "metric": "natural_dr_present",
         "note": "claim made but no artifact digest cited",
         "provenance": "UNPINNED",
         "rq": "RQ1"
@@ -152,7 +170,7 @@
       },
       {
         "metric": "perceptual_gap",
-        "provenance": "n/a (deferred/missing)",
+        "provenance": "n/a (no claim)",
         "rq": "RQ3"
       },
       {
@@ -169,17 +187,17 @@
       },
       {
         "metric": "miou_auto_train_manual_eval",
-        "provenance": "n/a (deferred/missing)",
+        "provenance": "n/a (no claim)",
         "rq": "RQ5"
       },
       {
         "metric": "domain_adaptation_coral_mmd",
-        "provenance": "n/a (deferred/missing)",
+        "provenance": "n/a (no claim)",
         "rq": "RQ5"
       },
       {
         "metric": "real_unlabeled_shift_metrics",
-        "provenance": "n/a (deferred/missing)",
+        "provenance": "n/a (no claim)",
         "rq": "RQ5"
       }
     ],

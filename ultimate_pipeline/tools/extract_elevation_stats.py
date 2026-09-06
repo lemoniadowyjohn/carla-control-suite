@@ -13,8 +13,9 @@ from ultimate_pipeline.core.xodr_statistics import XODRStatistics
 from ultimate_pipeline.quality.check_elevation_continuity import check_elevation_continuity
 from ultimate_pipeline.quality.check_elevation_seams import check_elevation_seams
 
-# C23: RQ1's canonical result is C14 (reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/),
-# not the legacy thesis_results/structural_gap_v1/run_11. run_11 remains a valid input to
+# C23: RQ2's canonical structural-domain-gap result is the legacy-named C14 artifact
+# (reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/), not the legacy
+# thesis_results/structural_gap_v1/run_11. run_11 remains a valid input to
 # run_full_domain_gap.py's use_authoritative_alignment_bundle short-circuit (a separate,
 # file-gated alignment-cache consumer) -- unaffected by this note update.
 THESIS_IMPACT_NOTE = (

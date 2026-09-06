@@ -10,8 +10,8 @@ hash is independently re-verified against the actual file on disk here --
 this must NOT just re-read the same claim and agree with itself.
 
 Fail-closed: any claim whose cited artifact is missing, whose hash doesn't
-match, or that cites no artifact at all for a non-DEFERRED/MISSING status
-is reported as a provenance FAILURE, not silently skipped.
+match, or that cites no artifact at all for a status that makes a claim is
+reported as a provenance FAILURE or visible UNPINNED gap, not silently skipped.
 """
 from __future__ import annotations
 
@@ -38,6 +38,8 @@ from ultimate_pipeline.governance.inputs_manifest import (  # noqa: E402
 INPUTS_MANIFEST_PATH = (
     REPO_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "source" / "INPUTS_MANIFEST.json"
 )
+
+NO_CLAIM_STATUSES = {"DEFERRED_RUNTIME", "DEFERRED_EXTERNAL_DATA", "NOT_RUN", "DEFERRED", "MISSING"}
 
 
 def _hash_file(path: Path, hex_digest: str) -> str:
@@ -106,9 +108,9 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
         sha = str(row.get("sha256") or "").strip()
         artifact = str(row.get("artifact") or "").strip()
 
-        if status in ("DEFERRED", "MISSING"):
+        if status in NO_CLAIM_STATUSES:
             # No artifact expected -- the claim is explicitly not made.
-            checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "n/a (deferred/missing)"})
+            checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "n/a (no claim)"})
             continue
 
         if not sha:
