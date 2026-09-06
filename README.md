@@ -1,10 +1,23 @@
-# carla-control-suite
+# CARLA Control Suite
 
 An automated OSM-to-OpenDRIVE map-generation pipeline for CARLA, built to support a thesis studying
 the domain gap between automatically generated maps and manually authored ones. Given an OSM extract,
 `ultimate_pipeline` runs sanitization, topology repair, enrichment (lanes, elevation, crosswalks,
 buildings), tiling, and validation to produce a CARLA-loadable `.xodr` map, plus a set of quality
 gates and domain-gap/perception analysis tools used to evaluate the result.
+
+This is a research repository for reproducible OSM to OpenDRIVE generation and controlled CARLA
+domain-gap experiments. It is not a claim that every thesis question is complete.
+
+- CARLA target: `0.9.16`.
+- Authoritative lineage: `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
+- Stabilization branch: `stabilize/research-release-20260905`.
+- Canonical command: `up` (or `python -m ultimate_pipeline.cli`).
+- Map of record: `campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr`.
+- Health: offline gates are executable; live CARLA verification is `NOT_RUN` unless a self-hosted runtime workflow is executed.
+- Thesis relationship: `submission/` is frozen evidence; current work is measured against the immutable RQ contract.
+
+RQ1 is authoritative for structural determinism and bounded for timestamp-normalized bytes. RQ2 is bounded. RQ4 is authoritative with explicit thesis-baseline caveats. RQ3 and RQ5 remain deferred and are not inferred from Town10HD or unlabeled shift metrics.
 
 ## Canonical entrypoints
 
@@ -13,10 +26,12 @@ python -m ultimate_pipeline.cli doctor          # environment/config sanity chec
 python -m ultimate_pipeline.cli exp list         # list available experiments
 python -m ultimate_pipeline.cli exp run <id> --config <path>
 python -m ultimate_pipeline.cli test smoke       # fast smoke test
-python -m ultimate_pipeline.run_pipeline         # run the full generation pipeline
+up pipeline run                                  # run the full generation pipeline
+up health                                        # emit repo_health.json and REPO_HEALTH.md
+up research status                               # show thesis-aligned RQ statuses
 ```
 
-`ultimate_pipeline/cli.py` is the single supported CLI (`up` in its own `--help` text); other
+`ultimate_pipeline/cli.py` is the single supported CLI; other
 top-level scripts under `scripts/` and `tools/` are one-off diagnostics, audits, and evidence-export
 utilities for specific research questions (see their docstrings/`--help`).
 
@@ -42,6 +57,9 @@ python scripts/regen_map_of_record.py
 pip install -r requirements.txt
 pytest
 ```
+
+The reproducibility entrypoint is [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md). Run
+`up doctor` before CARLA work and `up health` after the offline gates.
 
 `pytest.ini` scopes collection to `ultimate_pipeline/tests/`, `tests/`, and several package-local
 `tests/` directories — running bare `pytest` from the repo root picks up all of them.
