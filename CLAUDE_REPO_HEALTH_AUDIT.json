@@ -1,0 +1,66 @@
+{
+  "audit": "CLAUDE_REPO_HEALTH_AUDIT",
+  "auditor": "independent technical reviewer (Claude)",
+  "generated_at_utc": "2026-09-06",
+  "repo": "lemoniadowyjohn/carla-control-suite",
+  "branch": "stabilize/research-release-20260905",
+  "head": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc",
+  "worktree": "clean",
+  "ci": {
+    "provider": "GitHub Actions",
+    "authed_as": "lemoniadowyjohn (gh CLI)",
+    "stabilize_branch_pushed": false,
+    "stabilize_branch_ci_runs": 0,
+    "last_green_run": {
+      "run_id": "34025666555",
+      "conclusion": "success",
+      "head_sha": "b059a9d04ebb91c827224ca89406d16b0fe61d5e",
+      "head_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+      "created_at": "2026-09-06T09:48:12Z",
+      "jobs": "single 'pytest' job (OLD workflow at b059a9d0)"
+    },
+    "finding": "The last green CI run validated b059a9d0, which is commit 6 of the 14-commit stabilization stack. 8 commits (incl. the NEW 6-job workflow added in 2ad41e76) sit between it and HEAD and have NEVER run in GitHub CI. The package/research-integrity/governance/provenance/health gates that DEFINE the release have zero runtime evidence.",
+    "new_workflow_jobs_never_executed": ["offline-tests", "package-wheel-smoke", "governance-integrity", "thesis-rq-contract", "research-provenance", "repository-health"],
+    "carla_runtime_workflow": ".github/workflows/carla-runtime.yml added but not an active GitHub-hosted job (correctly, live CARLA cannot run in hosted CI)"
+  },
+  "local_offline_suite_at_head": {
+    "command": "python -m pytest -q",
+    "result": "5743 passed, 79 skipped, 0 failed",
+    "duration_s": 375,
+    "platform": "win32 / Python 3.12.2",
+    "caveat": "local Windows green != Linux CI green; repo history documents multiple CRLF/GEOS platform bugs that only surfaced on Linux. Only Linux-CI-green evidence is at b059a9d0 (8 commits back)."
+  },
+  "packaging": {
+    "verdict": "PASS_COMPLETENESS",
+    "wheel_built": "ultimate_pipeline-0.1.0-py3-none-any.whl (2.2MB) + sdist",
+    "subpackages_in_wheel": {"ultimate_pipeline": "791 py", "opendrive_geometry": "10 py", "phase_q": "21 py", "ultimate_pipeline/sensors": "9 py (namespace, no __init__)", "ultimate_pipeline/tools": "140 py (namespace, no __init__)"},
+    "clean_env_install": "installed --no-deps --no-index into fresh venv; nested subpackages + submodules import with __file__/__path__ resolving INTO the installed wheel (editable install explicitly avoided per instruction)",
+    "console_script": "up.exe generated; entry point 'up = ultimate_pipeline.cli:main' registered",
+    "eb5dd83a_fix": "genuine (opendrive_geometry + phase_q previously excluded, now included)",
+    "residual": [
+      "package-wheel-smoke CI gate never executed; representative-import step de-risked (no top-level torch/shapely imports in listed packages' __init__), but 'up --help' and 'pip check' under declared-deps-only (click/numpy/pydantic) could not be verified offline (no network in audit sandbox)",
+      "sensors/ and tools/ are PEP 420 namespace packages (no __init__.py) - included and importable, minor robustness note"
+    ]
+  },
+  "governance_integrity": {
+    "verdict": "PASS",
+    "thesis_contract_audit": "0 violations (live)",
+    "r13_frozen_evidence": "cryptographically intact (blob-OID identity vs freeze commit)",
+    "provenance_validation": "reports/.../provenance_validation.json present and ok"
+  },
+  "repo_health_tool": {
+    "path": "ultimate_pipeline/tools/repo_health.py",
+    "fail_closed_logic_verified": true,
+    "behavior": "any required section FAIL -> overall FAIL; runtime_verification NOT_RUN -> overall INCOMPLETE (can NEVER be PASS without live CARLA); absent evidence (tests/provenance NOT_RUN) -> INCOMPLETE",
+    "live_run_overall_status": "INCOMPLETE",
+    "live_run_sections": {"package": "PASS", "dependency_integrity": "PASS", "research_contract": "PASS", "research_provenance": "PASS", "map_identity": "PASS", "evidence_completeness": "PASS", "tests": "NOT_RUN", "runtime_verification": "NOT_RUN"},
+    "carla_required_version_stated": "0.9.16",
+    "canonical_cli": "up health wires to build_repo_health/write_repo_health; up research status works; single 'up' click group is the coherent authority",
+    "notes": [
+      "authoritative_lineage is hardcoded to the parent phase-E branch, stale vs the actual stabilize/research-release-20260905 release branch",
+      "tests section result is caller-asserted (CI passes --test-result PASS); gated by CI 'needs:' on offline-tests, but a local operator could assert PASS without running tests",
+      "cli.py version_option '2.0.0' != pyproject version '0.1.0'"
+    ]
+  },
+  "release_gate_conclusion": "Repo health is HONESTLY INCOMPLETE (never falsely PASS). But the release cannot be certified GREEN because the very CI gates that enforce the release have not executed on HEAD; that is a process gap, not a repo_health logic defect."
+}
