@@ -7,5 +7,6 @@ name = "ultimate-pipeline"
 version = "0.1.0"
 requires-python = ">=3.10"
 
-[tool.setuptools]
-packages = ["ultimate_pipeline"]
+[tool.setuptools.packages.find]
+include = ["ultimate_pipeline*", "opendrive_geometry*", "phase_q*"]
+exclude = ["tests*"]
