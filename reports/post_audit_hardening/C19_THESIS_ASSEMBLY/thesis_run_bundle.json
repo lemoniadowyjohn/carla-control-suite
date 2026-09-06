@@ -3,7 +3,7 @@
   "c19_step_outputs": {
     "contract_audit.json": {
       "present": true,
-      "sha256": "ce99a803654d345c8e1ea19b05c97ba92b40692c117a8abc2b49662f7d684b6b"
+      "sha256": "5c3fb0abf462e9c3426fe6958c62f136df36dcd4769776d5c7944f898e6b6016"
     },
     "provenance_validation.json": {
       "present": true,
@@ -11,7 +11,7 @@
     },
     "rq_tables.json": {
       "present": true,
-      "sha256": "4beb36788b507413cef188312cef54ffc75b9b759f3fd0902cf5da749048509a"
+      "sha256": "be5f78e6802c309e9e7784b17d31dcb25187a1d7d51119cc0065b8e16bfa8f4c"
     }
   },
   "claim_boundaries": [
@@ -238,7 +238,7 @@
   "protocol_snapshot": {
     "canonical_regen_entrypoint": "scripts/regen_map_of_record.py",
     "git_branch": "stabilize/research-release-20260905",
-    "git_commit": "ff02e22bd42589d36580ea7dc6498a36a69dfee6",
+    "git_commit": "0d8f2859244911e7497ea5a419828fafea55dc53",
     "git_dirty": true,
     "inputs_manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
     "note": "No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead."

@@ -25,7 +25,7 @@
     "machine_readable_status_present": true,
     "overall_status_enum_present": true
   },
-  "generated_at_utc": "2026-09-06T11:03:42.988025+00:00",
+  "generated_at_utc": "2026-09-06T11:07:28.084059+00:00",
   "perception_labels": {
     "pair_result_class_present": true,
     "pair_result_reason_present": true,

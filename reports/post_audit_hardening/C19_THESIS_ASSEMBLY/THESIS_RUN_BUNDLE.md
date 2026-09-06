@@ -12,7 +12,7 @@
 
 ## Protocol snapshot
 - note: `No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead.`
-- git_commit: `ff02e22bd42589d36580ea7dc6498a36a69dfee6`
+- git_commit: `0d8f2859244911e7497ea5a419828fafea55dc53`
 - git_branch: `stabilize/research-release-20260905`
 - git_dirty: `True`
 - canonical_regen_entrypoint: `scripts/regen_map_of_record.py`
