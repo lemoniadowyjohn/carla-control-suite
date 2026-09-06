@@ -179,7 +179,12 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
     summary: Dict[str, Any] = {
         "generated_at_utc": _utc_now(),
         "out_dir": out_dir,
-        "overall_ok": True,
+        "overall_ok": False,
+        "status": "NOT_RUN",
+        "evidence_complete": False,
+        "required_gates": [],
+        "passed_gates": [],
+        "not_run_gates": [],
         "gates": {},
         "per_stage_failures": {},
         "malformed_gate_reports": [],
@@ -248,14 +253,39 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
         pass
 
     try:
-        overall_ok = not summary["malformed_gate_reports"]
-        for gate_data in summary["gates"].values():
-            if not gate_data.get("ok", True):
-                overall_ok = False
-                break
-        summary["overall_ok"] = overall_ok
+        # No gate evidence at all (no qa_stage_reports/ dir, no optional
+        # artifact files, and no malformed-but-present reports either) is a
+        # DIFFERENT condition from "every gate ran and passed" -- it means
+        # this summary was built against an incomplete/absent run, and must
+        # never be reported as a clean overall_ok=True pass.
+        evidence_complete = bool(summary["gates"]) or bool(summary["malformed_gate_reports"])
+        summary["evidence_complete"] = evidence_complete
+        summary["required_gates"] = sorted(summary["gates"].keys())
+        summary["passed_gates"] = sorted(
+            name for name, data in summary["gates"].items() if data.get("ok", True)
+        )
+        # No external "expected gates" registry exists in this codebase, so
+        # there is no independent list of gate names to diff against what
+        # was actually observed -- always empty, kept as an explicit field
+        # (rather than omitted) so a future registry-backed implementation
+        # has a stable place to report into without a schema change.
+        summary["not_run_gates"] = []
+
+        if not evidence_complete:
+            summary["overall_ok"] = False
+            summary["status"] = "NOT_RUN"
+        else:
+            overall_ok = not summary["malformed_gate_reports"]
+            for gate_data in summary["gates"].values():
+                if not gate_data.get("ok", True):
+                    overall_ok = False
+                    break
+            summary["overall_ok"] = overall_ok
+            summary["status"] = "PASS" if overall_ok else "FAIL"
     except Exception:
-        summary["overall_ok"] = True
+        summary["overall_ok"] = False
+        summary["status"] = "NOT_RUN"
+        summary["evidence_complete"] = False
 
     try:
         map_stats = _load_json(os.path.join(out_dir, "map_statistics.json")) or {}

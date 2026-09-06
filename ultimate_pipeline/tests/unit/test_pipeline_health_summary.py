@@ -172,7 +172,57 @@ def test_write_pipeline_health_summary_writes_valid_json_file(tmp_path):
 
 
 def test_missing_stage_reports_dir_does_not_crash(tmp_path):
-    # No qa_stage_reports/ directory at all -- must not raise.
+    # No qa_stage_reports/ directory at all -- must not raise, and must NOT
+    # be reported as a clean pass (regression: this used to default to
+    # overall_ok=True purely because the empty gates dict has nothing to
+    # fail on -- "no evidence" is not the same as "everything passed").
     summary = build_pipeline_health_summary(str(tmp_path))
-    assert summary["overall_ok"] is True
     assert summary["gates"] == {}
+    assert summary["overall_ok"] is False
+    assert summary["status"] == "NOT_RUN"
+    assert summary["evidence_complete"] is False
+
+
+def test_zero_evidence_never_reports_overall_ok_true(tmp_path):
+    """The core regression this guards against, stated directly: an empty
+    out_dir (no qa_stage_reports/, no optional artifact files, nothing)
+    must never produce overall_ok=True."""
+    summary = build_pipeline_health_summary(str(tmp_path))
+    assert summary["overall_ok"] is not True
+    assert summary["evidence_complete"] is False
+    assert summary["required_gates"] == []
+    assert summary["passed_gates"] == []
+
+
+def test_evidence_complete_true_and_required_passed_gates_populated_when_gates_exist(tmp_path):
+    stage_dir = tmp_path / "qa_stage_reports"
+    stage_dir.mkdir()
+    (stage_dir / "stage07__gate_a.json").write_text(json.dumps({"ok": True}))
+    (stage_dir / "stage09__gate_b.json").write_text(json.dumps({"ok": False}))
+    summary = build_pipeline_health_summary(str(tmp_path))
+    assert summary["evidence_complete"] is True
+    assert summary["status"] == "FAIL"
+    assert set(summary["required_gates"]) == {"gate_a", "gate_b"}
+    assert summary["passed_gates"] == ["gate_a"]
+
+
+def test_all_passing_gates_report_status_pass(tmp_path):
+    stage_dir = tmp_path / "qa_stage_reports"
+    stage_dir.mkdir()
+    (stage_dir / "stage07__gate_a.json").write_text(json.dumps({"ok": True}))
+    summary = build_pipeline_health_summary(str(tmp_path))
+    assert summary["status"] == "PASS"
+    assert summary["evidence_complete"] is True
+
+
+def test_malformed_only_report_counts_as_evidence_present_but_still_fails(tmp_path):
+    """A malformed report (file exists, parse failed) is itself a form of
+    evidence -- distinct from "nothing was ever collected" -- and must still
+    fail overall_ok, not be conflated with the zero-evidence NOT_RUN case."""
+    stage_dir = tmp_path / "qa_stage_reports"
+    stage_dir.mkdir()
+    (stage_dir / "stage08__gate_crashed.json").write_text("{not valid json")
+    summary = build_pipeline_health_summary(str(tmp_path))
+    assert summary["evidence_complete"] is True
+    assert summary["overall_ok"] is False
+    assert summary["status"] == "FAIL"
