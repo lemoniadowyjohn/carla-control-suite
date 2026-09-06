@@ -68,6 +68,17 @@ This is why the verdict is **CONDITIONAL**, not GO.
 
 None of these are falsifications, integrity failures, or test weakenings. They are documentation/robustness polish.
 
+**Remediation status (applied on this review branch):** all seven addressed.
+1. `repo_health.py` now emits a live `release_branch` (from git) alongside the historical `authoritative_lineage`.
+2. `cli.py` derives its version from `importlib.metadata` (`up --version` → `0.1.0`, matching `pyproject.toml`).
+3. Determinism producer now records a `tool_versions` block on every new `report.json`; existing report left unmodified with an additive `PROVENANCE_NOTE.md`.
+4. Added `reports/.../C21_GNN_AUTHORITATIVE/C21_STATISTICAL_PROVENANCE.md` documenting the 562 union-tile design, seeds, and the in-sample-diagnostic boundary (sha256-anchored `aggregate_stats.json` left untouched).
+5. RQ4 n=5 small-sample caveat added to `THESIS_TO_CURRENT_PROGRESS.md` and the C21 provenance sidecar.
+6. `README.md` now names the manual Grid0828 reference and discloses the true CI state (last green SHA + push-required).
+7. `audit_thesis_topic_contract._find_run11_source` sibling-path dev-machine hack removed (portable resolution only).
+
+No test was weakened; no frozen or sha256-anchored evidence was mutated; no version/tile value was fabricated. Verified: 58 coupled unit tests pass; `up --version`/`up --help`, the contract audit (0 violations), and `repo_health` all confirmed post-fix.
+
 ---
 
 ## Highest-priority unresolved action

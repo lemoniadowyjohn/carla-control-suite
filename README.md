@@ -14,6 +14,8 @@ domain-gap experiments. It is not a claim that every thesis question is complete
 - Stabilization branch: `stabilize/research-release-20260905`.
 - Canonical command: `up` (or `python -m ultimate_pipeline.cli`).
 - Map of record: `campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr`.
+- Manual reference: `campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr` — the manually modeled CARLA map that is the RQ2 structural-gap baseline (verify via `verify_pinned_map('manual_grid0828')`).
+- CI: the offline gates are defined in `.github/workflows/tests.yml` (six jobs: offline tests, wheel smoke, governance, RQ contract, provenance, repository health). The last green GitHub run was on `b059a9d0` under the earlier single-job workflow; the current six-job workflow and any newer HEAD must be pushed and re-run before "CI green" applies to them.
 - Health: offline gates are executable; live CARLA verification is `NOT_RUN` unless a self-hosted runtime workflow is executed.
 - Thesis relationship: `submission/` is frozen evidence; current work is measured against the immutable RQ contract.
 

@@ -236,7 +236,13 @@ def build_repo_health(
         "schema_version": 1,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "repo": "lemoniadowyjohn/carla-control-suite",
+        # The thesis-contract lineage the RQ contract was created for
+        # (research/thesis_rq_contract.yaml:created_for_lineage). This is a
+        # historical label, NOT the branch currently under review -- read
+        # `release_branch` (sourced live from git) for that, so the two never
+        # get conflated when the release moves onto a new branch.
         "authoritative_lineage": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+        "release_branch": git_state.get("branch", "UNKNOWN"),
         "git": git_state,
         "python": {"executable": sys.executable, "version": platform.python_version()},
         "sections": sections,
