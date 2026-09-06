@@ -28,12 +28,6 @@ try:
 except ImportError:
     pass
 
-try:
-    from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
-    enable_timestamped_print()
-except ImportError:
-    pass
-
 
 # =============================================================================
 # Main CLI Group
@@ -623,6 +617,13 @@ def generate_dataset(dataset, frames, fps, calib, camera, all_cameras, no_aug):
 
 def main():
     """Main entry point."""
+    # Enabled here (not at module import time): importing this module must
+    # never mutate builtins.print process-wide for whoever imported it.
+    try:
+        from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
+        enable_timestamped_print()
+    except ImportError:
+        pass
     cli()
 
 

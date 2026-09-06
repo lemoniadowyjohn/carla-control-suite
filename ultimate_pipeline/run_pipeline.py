@@ -23,9 +23,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
-enable_timestamped_print()
-
 def _import_pipeline_and_settings():
     """Import pipeline + settings robustly for both package and repo-root execution."""
     try:
@@ -42,6 +39,11 @@ def _import_pipeline_and_settings():
 
 
 def main() -> int:
+    # Enabled here (not at module import time): importing this module must
+    # never mutate builtins.print process-wide for whoever imported it.
+    from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
+    enable_timestamped_print()
+
     print("\n==============================================")
     print("      🚀 ULTIMATE PIPELINE — ENTRYPOINT")
     print("==============================================\n")

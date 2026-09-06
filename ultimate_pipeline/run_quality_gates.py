@@ -17,9 +17,6 @@ from ultimate_pipeline.quality.quality_gate_manager import QualityGateManager
 from ultimate_pipeline.core.validation_report import ValidationReport
 
 
-from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
-enable_timestamped_print()
-
 def run_quality_gates(xodr_path: str):
     print("\n=== Running Quality Gates ===\n")
 
@@ -71,6 +68,13 @@ def run_quality_gates(xodr_path: str):
 
 if __name__ == "__main__":
     import argparse
+
+    # Enabled here (not at module import time): importing this module (e.g.
+    # via tools/stage_gate_regression.py or the import-smoke test suite) must
+    # never mutate builtins.print process-wide for whoever imported it.
+    from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
+    enable_timestamped_print()
+
     ap = argparse.ArgumentParser()
     ap.add_argument("xodr")
     args = ap.parse_args()

@@ -36,10 +36,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 
-from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
-
-enable_timestamped_print()
-
 OUTPUT_DIR_RE = re.compile(r"(?:^|\n).*?Output dir:\s*(.+)$", re.MULTILINE)
 ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -1105,6 +1101,12 @@ def _compare_all_manifests(manifests: List[Dict[str, str]]) -> Dict[str, Any]:
 
 
 def main() -> int:
+    # Enabled here (not at module import time): importing this module (e.g.
+    # for its pure classification/comparison functions, as the unit tests do)
+    # must never mutate builtins.print process-wide for whoever imported it.
+    from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
+    enable_timestamped_print()
+
     ap = argparse.ArgumentParser(description="Determinism audit for ultimate_pipeline")
     ap.add_argument(
         "--export-thesis-table",
