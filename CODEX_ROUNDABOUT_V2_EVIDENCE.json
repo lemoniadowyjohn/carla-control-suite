@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
-  "implementation_sha": "PENDING_COMMIT",
+  "implementation_sha": "1a59cb20f95f430db88274a6be27a353b04ba9ff",
   "branch": "feature/roundabout-reconstruction-v2-20260907",
   "dirty": false,
   "algorithm": {"mode": "offline_candidate_analysis_and_transactional_segment_builder", "release_enabled": false, "carla": "NOT_RUN", "preserve_first": true, "non_circular_action": "PRESERVE_SOURCE"},
