@@ -102,36 +102,46 @@ def _build_adjacency(
     <link><predecessor/successor> and via junction <connection> entries are
     adjacent. Reused here (not reimplemented independently) so the
     before/after component counts always agree with the 08H metric."""
+    # Roads and junctions occupy different namespaces in OpenDRIVE. Prefixing
+    # keys prevents road "12" from colliding with junction "12".
     adj: Dict[str, set] = {}
+    road_key = lambda value: f"road:{value}"
+    junction_key = lambda value: f"junction:{value}"
     for road in roads:
         rid = road.get("id", "")
-        adj.setdefault(rid, set())
+        node = road_key(rid)
+        adj.setdefault(node, set())
         link_elem = road.find("link")
         if link_elem is None:
             continue
         for succ in link_elem.findall("./successor"):
             succ_id = succ.get("elementId", "")
             if succ_id:
-                adj[rid].add(succ_id)
-                adj.setdefault(succ_id, set()).add(rid)
+                target = road_key(succ_id)
+                adj[node].add(target)
+                adj.setdefault(target, set()).add(node)
         for pred in link_elem.findall("./predecessor"):
             pred_id = pred.get("elementId", "")
             if pred_id:
-                adj[rid].add(pred_id)
-                adj.setdefault(pred_id, set()).add(rid)
+                target = road_key(pred_id)
+                adj[node].add(target)
+                adj.setdefault(target, set()).add(node)
 
     for junction in junctions:
         jid = junction.get("id", "")
-        adj.setdefault(jid, set())
+        node = junction_key(jid)
+        adj.setdefault(node, set())
         for conn in junction.findall("connection"):
             inc = conn.get("incomingRoad", "")
             conn_r = conn.get("connectingRoad", "")
             if inc:
-                adj[jid].add(inc)
-                adj.setdefault(inc, set()).add(jid)
+                target = road_key(inc)
+                adj[node].add(target)
+                adj.setdefault(target, set()).add(node)
             if conn_r:
-                adj[jid].add(conn_r)
-                adj.setdefault(conn_r, set()).add(jid)
+                target = road_key(conn_r)
+                adj[node].add(target)
+                adj.setdefault(target, set()).add(node)
 
     return adj
 
@@ -190,7 +200,7 @@ def quarantine_island_roads(
     # Road-only component sizes (exclude junction-id nodes from the count).
     road_components: List[set] = []
     for comp in components:
-        comp_roads = comp & road_ids
+        comp_roads = {node.removeprefix("road:") for node in comp if node.startswith("road:")} & road_ids
         if comp_roads:
             road_components.append(comp_roads)
 

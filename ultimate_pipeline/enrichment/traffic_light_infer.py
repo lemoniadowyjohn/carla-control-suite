@@ -276,29 +276,23 @@ class TrafficLightInferer:
         Validate that every <signalReference laneId="X"> refers to an existing lane.
         Returns list[str] with human-readable errors.
         """
-        # collect all lane ids
-        lane_ids = set()
-        for lane in root.findall(".//lane"):
-            lid = lane.get("id")
-            if lid is not None:
-                lane_ids.add(lid)
-
         bad_refs = []
-
-        # check all signalReference nodes
+        roads_with_refs=set()
+        for road in root.findall("road"):
+            roads_with_refs.update(road.findall(".//signalReference"))
+            sections=sorted(road.findall("./lanes/laneSection"), key=lambda e: float(e.get("s", "0")))
+            for sig_ref in road.findall(".//signalReference"):
+                sig_id=sig_ref.get("id", "UNKNOWN"); lane_id=sig_ref.get("laneId")
+                if lane_id is None:
+                    bad_refs.append(f"signalReference id={sig_id}: missing laneId attribute."); continue
+                try: ref_s=float(sig_ref.get("s", "0"))
+                except ValueError: ref_s=0.0
+                active=max((section for section in sections if float(section.get("s", "0")) <= ref_s), key=lambda e: float(e.get("s", "0")), default=None)
+                lane_ids={lane.get("id") for lane in active.findall("./left/lane") + active.findall("./right/lane") if lane.get("id") is not None} if active is not None else set()
+                if lane_id not in lane_ids:
+                    bad_refs.append(f"signalReference id={sig_id}: laneId={lane_id} does not exist on road {road.get('id')} at s={ref_s}.")
         for sig_ref in root.findall(".//signalReference"):
-            sig_id = sig_ref.get("id", "UNKNOWN")
-            lane_id = sig_ref.get("laneId")
-
-            if lane_id is None:
-                bad_refs.append(
-                    f"signalReference id={sig_id}: missing laneId attribute."
-                )
-                continue
-
-            if lane_id not in lane_ids:
-                bad_refs.append(
-                    f"signalReference id={sig_id}: laneId={lane_id} does not exist in this map."
-                )
+            if sig_ref not in roads_with_refs:
+                bad_refs.append(f"signalReference id={sig_ref.get('id', 'UNKNOWN')}: reference is not scoped to a road.")
 
         return bad_refs

@@ -14,6 +14,7 @@
 # ------------------------------------------------------------
 
 import os
+import hashlib
 import xml.etree.ElementTree as ET
 from ultimate_pipeline.core.georef_utils import normalize_georeference
 from typing import List, Tuple, Dict, Optional, Iterable
@@ -158,7 +159,7 @@ def _lane_predecessor_points_outside_tile(lane: ET.Element, tile_road_ids: set) 
 # ------------------------------------------------------------
 # Deterministic per-road cache: _road_bounds is invoked once per road per
 # tile cell; bounds never change for an unmutated source root.
-_BOUNDS_CACHE: Dict[str, Tuple[float, float, float, float]] = {}
+_BOUNDS_CACHE: Dict[Tuple[str, str], Tuple[float, float, float, float]] = {}
 
 
 def _road_bounds(road: ET.Element) -> Tuple[float, float, float, float]:
@@ -169,8 +170,11 @@ def _road_bounds(road: ET.Element) -> Tuple[float, float, float, float]:
     so no lane and no curve extremum ever escapes the tile bounds.
     """
     rid = road.get("id")
-    if rid is not None and rid in _BOUNDS_CACHE:
-        return _BOUNDS_CACHE[rid]
+    plan_view = road.find("planView")
+    geometry_hash = hashlib.sha256(ET.tostring(plan_view if plan_view is not None else ET.Element("planView"), encoding="utf-8")).hexdigest()
+    cache_key = (rid, geometry_hash) if rid is not None else None
+    if cache_key is not None and cache_key in _BOUNDS_CACHE:
+        return _BOUNDS_CACHE[cache_key]
     try:
         from ultimate_pipeline.tiling.tile_equivalence import (
             road_bounds_curve_aware,
@@ -189,8 +193,8 @@ def _road_bounds(road: ET.Element) -> Tuple[float, float, float, float]:
             result = (0.0, 0.0, 0.0, 0.0)
         else:
             result = (min(xs), min(ys), max(xs), max(ys))
-    if rid is not None:
-        _BOUNDS_CACHE[rid] = result
+    if cache_key is not None:
+        _BOUNDS_CACHE[cache_key] = result
     return result
 
 
