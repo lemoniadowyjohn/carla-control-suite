@@ -47,6 +47,8 @@ class StructureScanner:
     # Tunable thresholds (kept conservative)
     CURVATURE_ABS_MIN_THRESHOLD = 0.5        # 1/m, anything above this is suspicious for city roads
     CURVATURE_PERCENTILE = 0.99              # use 99th percentile + abs min
+    CURVATURE_ESTIMATE_MIN_SEGMENT_LENGTH_M = 0.1  # below this, a heading-delta/length estimate is a
+                                                     # division-by-near-zero-length artifact, not signal
     LANE_WIDTH_JUMP_THRESH = 3.0             # meters, sudden total-width change between laneSections
     ELEVATION_JUMP_DZ_MIN = 5.0              # meters, big vertical step
     ELEVATION_SLOPE_MIN = 1.0                # dz/ds, very steep
@@ -182,10 +184,19 @@ class StructureScanner:
                 for i in range(len(geos) - 1):
                     g0 = geos[i]
                     g1 = geos[i + 1]
+                    length = _safe_float(g0.get("length"), 0.01)
+                    if length < StructureScanner.CURVATURE_ESTIMATE_MIN_SEGMENT_LENGTH_M:
+                        # A heading-delta/length estimate over a near-zero-length
+                        # segment is a division-by-near-zero artifact (confirmed
+                        # against a real map: a genuine 0.148rad delta over a
+                        # 1.4cm segment produced k~10.6, the single highest score
+                        # in the whole map, dwarfing every genuine sharp turn),
+                        # not a meaningful curvature signal. Skip it rather than
+                        # let it dominate the per-road max.
+                        continue
                     hdg0 = _safe_float(g0.get("hdg"), 0.0)
                     hdg1 = _safe_float(g1.get("hdg"), 0.0)
                     dpsi = StructureScanner._wrap_angle(hdg1 - hdg0)
-                    length = max(_safe_float(g0.get("length"), 0.01), 1e-3)
                     k_est = abs(dpsi) / length  # very rough estimate
                     max_abs_k = max(max_abs_k, k_est)
 
@@ -454,6 +465,8 @@ class StructureScanner:
         """
         per_road = []
         all_slopes = []
+        single_record_road_count = 0
+        multi_record_road_count = 0
 
         for rid, road in roads.items():
             ep = road.find("elevationProfile")
@@ -467,8 +480,19 @@ class StructureScanner:
                 elevs.append((s0, a))
 
             if len(elevs) < 2:
+                # This generator's real output gives most roads exactly one
+                # elevation record (a single polynomial per road) -- this is
+                # NOT an anomaly, but it means the within-road slope
+                # comparison below cannot run for this road. Count it
+                # separately so the aggregate report can distinguish "checked
+                # and found clean" from "nothing was checkable", rather than
+                # letting num_slope_segments=0 look like a clean bill of
+                # health when it may mean zero comparisons were possible.
+                if elevs:
+                    single_record_road_count += 1
                 continue
 
+            multi_record_road_count += 1
             elevs.sort(key=lambda x: x[0])
 
             max_dz = 0.0
@@ -514,17 +538,29 @@ class StructureScanner:
             mean_slope = 0.0
             max_slope = 0.0
 
+        global_stats = {
+            "num_slope_segments": len(all_slopes),
+            "mean_abs_slope": mean_slope,
+            "max_abs_slope": max_slope,
+            "single_record_road_count": single_record_road_count,
+            "multi_record_road_count": multi_record_road_count,
+        }
+        if single_record_road_count and not multi_record_road_count:
+            global_stats["note"] = (
+                "every road with elevation data had exactly one <elevation> record; "
+                "the within-road slope comparison this check performs never ran -- "
+                "num_slope_segments=0 reflects zero possible comparisons, not a "
+                "verified-smooth map. For cross-road seam continuity, see "
+                "ultimate_pipeline/quality/check_elevation_continuity.py."
+            )
+
         return {
             "per_road": per_road,
             "thresholds": {
                 "dz_min": StructureScanner.ELEVATION_JUMP_DZ_MIN,
                 "slope_min": StructureScanner.ELEVATION_SLOPE_MIN,
             },
-            "global_stats": {
-                "num_slope_segments": len(all_slopes),
-                "mean_abs_slope": mean_slope,
-                "max_abs_slope": max_slope,
-            },
+            "global_stats": global_stats,
         }
 
     # ======================================================================
