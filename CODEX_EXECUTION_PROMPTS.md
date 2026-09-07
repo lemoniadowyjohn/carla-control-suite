@@ -409,6 +409,69 @@ COMPARISON_LOGGED: PASS | FAIL
 FULL_OFFLINE_TESTS: PASS | FAIL
 ```
 
+## WAVE 4, PROMPT 1B — Restore strict-mode fail() for semantic_overlap (follow-up to GAP-006)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Isolated branch: feature/semantic-overlap-strict-fix-<date>.
+Base: feature/semantic-overlap-wiring-20260907 (this continues that work; do not start from main).
+
+CONFIRMED (independent review, 2026-09-07): the GAP-006 wiring commit
+(affd2b42, quality_gate_manager.py::gate_semantic_overlap) removed the only call to self.fail()
+in that method. Previously, when the heuristic checker (check_semantic_overlap.py) found issues,
+self.fail("semantic_overlap", issues) was called, which matters specifically under
+UP_STRICT_QUALITY_GATES=1 (quality_gates.py: "if strict_mode and failures: raise ...").
+Now, regardless of whether either checker (heuristic or the new real polygon checker) finds
+issues, the method only ever calls self.passed() or logs a "warn" via vreport.add() -- it never
+calls self.fail() at all. This means strict mode's "any gate failure raises" contract is silently
+untestable for semantic_overlap specifically, in both directions (neither checker can trigger it
+anymore).
+
+Note: UP_STRICT_QUALITY_GATES is not set in any tracked CI config or release profile today, so
+this has zero live impact right now -- but it's an undisclosed contract change that should either
+be reverted or explicitly documented as an intentional policy change, not silently absorbed into
+a wiring commit.
+
+TASK: decide and implement ONE of:
+(a) Restore self.fail("semantic_overlap", issues) for the polygon checker's issues (the real,
+    non-heuristic signal) so strict mode's contract still holds, while keeping the map_acceptance.py
+    non-fatal/soft behavior for the DEFAULT (non-strict) path exactly as GAP-006 intended.
+(b) If soft-only is genuinely the intended new policy even under strict mode, say so explicitly in
+    the commit message and in a code comment at the exact line, and add a regression test proving
+    strict mode does NOT raise when polygon issues are present (currently untested either way).
+
+Either choice is acceptable -- what is not acceptable is leaving it undocumented and untested.
+
+End with:
+STRICT_MODE_CONTRACT: RESTORED | EXPLICITLY_DOCUMENTED_AS_SOFT
+TEST_ADDED: PASS | FAIL
+FULL_OFFLINE_TESTS: PASS | FAIL
+```
+
+---
+
+## WAVE 4, PROMPT 2B — GAP-024 standalone (heading-smoothing re-verification)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Isolated branch: feature/gap-024-heading-smoothing-<date>.
+GAP-021/022/023 from the original Wave 4 Prompt 2 batch are already done (GAP-021 by Codex on
+feature/quality-gate-fixes-20260907 @8b12cc47; GAP-022/023 by Claude directly on the same branch
+@cb82079f, both independently verified). Only GAP-024 remains open from that batch.
+
+TASK: re-run the full heading-smoothing + geometry-start-recompute experiment
+(ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING + ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE,
+EXPERIMENTAL_UNSAFE profile only, offline, non-CARLA) against the 2026-09-04 paramPoly3 guard
+(commit 21cc6430) to determine whether it actually resolves the previously-documented
+410-residual-seam regression, or merely prevents it from silently corrupting data. Document the
+result as a dated report (successor to the existing C33 report). This is an EXPERIMENT, not a
+production change -- do not enable these flags in any release profile as part of this task.
+
+End with:
+GAP-024: PASS | FAIL | INCOMPLETE -- <one-line result>
+FULL_OFFLINE_TESTS: PASS | FAIL
+```
+
+---
+
 ## WAVE 4, PROMPT 2 — Small fixes batch (GAP-021, GAP-022, GAP-023, GAP-024)
 
 ```text
