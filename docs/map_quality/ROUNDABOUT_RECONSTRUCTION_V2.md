@@ -26,11 +26,14 @@ are rejected by the validator.
 Circle fitting uses all samples and reports residual diagnostics. A residual above the configured
 threshold selects `SOURCE_PRESERVED_NON_CIRCULAR`; V2 does not force an ellipse or asymmetric source
 geometry into a circle. `reconstruct_transactional()` analyzes a deep copy and returns diagnostics,
-leaving the authoritative root unchanged.
+leaving the authoritative root unchanged. `reconstruct_ring_transactional()` builds a segmented ring
+from source-backed anchors, validates the complete clone, and returns the original root on failure.
+Segment roads use endpoint-constrained normalized paramPoly3 curves, deterministic closed road links,
+and preserved lane IDs. `build_junction_lane_links()` emits only validated source/target references.
 
 ## Deliberate candidate limits
 
-The current candidate does not yet emit segmented OpenDRIVE ring roads, reconstruct junction laneLinks,
-fit endpoint-constrained non-circular geometry, or run against materialized Ingolstadt/Munich map
+The candidate does not yet replace the pipeline release-path V1 call site, perform junction-wide
+approach mapping without caller-supplied anchors, or run against materialized Ingolstadt/Munich map
 payloads. Those are explicit blockers, not silently treated as passing production behavior. No release
 profile enables V2, no CARLA process is started, and no pinned artifact is changed.

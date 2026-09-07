@@ -2,7 +2,11 @@ from __future__ import annotations
 import math
 import xml.etree.ElementTree as ET
 import pytest
-from ultimate_pipeline.topology.roundabout_v2 import detect_candidates, evaluate_elevation, extract_endpoint_anchors, sample_road, validate_lane_mapping, fit_circle, RoundaboutV2Reconstructor, validate_elevation_records
+from ultimate_pipeline.topology.roundabout_v2 import (Anchor, build_junction_lane_links, build_segment_roads,
+    build_segment_specs, detect_candidates, evaluate, evaluate_elevation, extract_endpoint_anchors,
+    fit_circle, hermite_coefficients, map_lanes, RoundaboutV2Reconstructor, sample_road,
+    validate_lane_mapping, validate_elevation_records, validate_segmented_ring)
+from ultimate_pipeline.topology.roundabout_v2 import lane_provenance_report
 
 def road(rid, primitive, x=0, y=0, hdg=0, length=10):
     r=ET.Element("road", {"id":rid,"length":str(length)}); pv=ET.SubElement(r,"planView"); g=ET.SubElement(pv,"geometry",{"s":"0","x":str(x),"y":str(y),"hdg":str(hdg),"length":str(length)}); g.append(primitive)
@@ -50,3 +54,44 @@ def test_reconstructor_is_transactional_and_does_not_enable_release_path():
 def test_elevation_records_reject_duplicate_s_and_nan_coefficients():
     assert validate_elevation_records([{"s":0,"a":0,"b":0,"c":0,"d":0},{"s":1,"a":0,"b":0,"c":0,"d":0}])["status"]=="PASS"
     assert validate_elevation_records([{"s":0,"a":0,"b":0,"c":0,"d":0},{"s":0,"a":0,"b":0,"c":0,"d":0}])["status"]=="FAIL"
+
+def test_hermite_elevation_hits_both_values_and_grades():
+    coeffs=hermite_coefficients(10.0, 0.2, 14.0, -0.1, 20.0)
+    start={"s":0, **dict(zip("abcd", coeffs))}
+    assert evaluate(start, 0)==pytest.approx((10.0, .2))
+    assert evaluate(start, 20)==pytest.approx((14.0, -.1))
+
+def test_segmented_ring_preserves_endpoints_links_and_multiple_lanes():
+    anchors=[Anchor("a","in-a","end",(-1,-2),10,0,None,math.pi/2,"entry"),
+             Anchor("b","in-b","end",(-1,-2),0,10,None,math.pi,"entry"),
+             Anchor("c","in-c","end",(-1,-2),-10,0,None,-math.pi/2,"entry")]
+    specs=build_segment_specs(anchors,0,0,900)
+    roads=build_segment_roads(specs,"j")
+    assert len(roads)==3
+    assert all(len(r.findall("./lanes/laneSection/right/lane"))==2 for r in roads)
+    assert roads[0].find("./link/predecessor").get("elementId")=="902"
+    sampled=sample_road(roads[0], .25)
+    assert (sampled[0].x,sampled[0].y)==pytest.approx((10,0))
+    assert (sampled[-1].x,sampled[-1].y)==pytest.approx((0,10), abs=1e-8)
+    assert validate_segmented_ring(roads)["status"]=="PASS"
+
+def test_lane_mapping_and_serialization_are_fail_closed():
+    links=map_lanes({-1,-2},{-1,-2})
+    assert [(x.source_lane_id,x.target_lane_id) for x in links]==[(-1,-1),(-2,-2)]
+    xml=build_junction_lane_links("in","ring","c",{-1,-2},{-1,-2})
+    assert len(xml.findall("laneLink"))==2
+    with pytest.raises(ValueError): build_junction_lane_links("in","ring","c",{-1},{-1,-2})
+
+def test_segmented_ring_validator_rejects_dangling_link():
+    anchors=[Anchor("a","x","end",(-1,),10,0,None,math.pi/2,"entry"),
+             Anchor("b","y","end",(-1,),0,10,None,math.pi,"entry"),
+             Anchor("c","z","end",(-1,),-10,0,None,-math.pi/2,"entry")]
+    roads=build_segment_roads(build_segment_specs(anchors,0,0,910),"j")
+    roads[0].find("./link/predecessor").set("elementId","missing")
+    assert validate_segmented_ring(roads)["status"]=="FAIL"
+
+def test_lane_provenance_is_explicit_and_deterministic():
+    roads=[road("b",ET.Element("line")), road("a",ET.Element("line"))]
+    report=lane_provenance_report(roads)
+    assert [item["road_id"] for item in report["roads"]]==["a","b"]
+    assert report["roads"][0]["lanes"][0]["source"]=="existing_xodr"

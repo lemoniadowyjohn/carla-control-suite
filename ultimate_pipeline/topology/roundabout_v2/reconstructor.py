@@ -2,7 +2,8 @@ from __future__ import annotations
 import copy
 import xml.etree.ElementTree as ET
 from .core import RoundaboutModel, choose_geometry_model, detect_candidates, extract_endpoint_anchors, infer_lane_model, sample_road
-from .validator import validate_model
+from .validator import validate_model, validate_segmented_ring
+from .ring import build_segment_roads, build_segment_specs
 
 class RoundaboutV2Reconstructor:
     """Opt-in analysis candidate. It never mutates the supplied XML root."""
@@ -36,3 +37,35 @@ class RoundaboutV2Reconstructor:
         for model in self.analyze(clone):
             diagnostics.append({"junction_ids":model.candidate.junction_ids,"action":model.action,"geometry_kind":model.geometry_kind,"circle_fit":model.circle_fit,"validation":validate_model(model)})
         return clone,diagnostics
+
+    def reconstruct_ring_transactional(self, root: ET.Element, *, junction_id: str,
+                                       anchors, first_road_id: int,
+                                       z_start: float = 0.0) -> tuple[ET.Element, dict]:
+        """Build a segmented ring on a clone and commit it only after validation.
+
+        This low-level API deliberately requires caller-supplied, source-backed
+        anchors.  It does not delete source roads or rewrite unrelated junctions.
+        """
+        if len(anchors) < 3:
+            return root, {"status":"PRESERVE_ORIGINAL", "reason":"fewer_than_three_anchors"}
+        points = [(a.x, a.y) for a in anchors]
+        center_x = sum(x for x, _ in points) / len(points)
+        center_y = sum(y for _, y in points) / len(points)
+        try:
+            specs = build_segment_specs(list(anchors), center_x, center_y, int(first_road_id))
+            roads = build_segment_roads(specs, junction_id, z_start=z_start)
+            validation = validate_segmented_ring(roads)
+            if validation["status"] != "PASS":
+                return root, {"status":"PRESERVE_ORIGINAL", "reason":";".join(validation["failures"])}
+            clone = copy.deepcopy(root)
+            existing = {r.get("id") for r in clone.findall("road")}
+            if any(r.get("id") in existing for r in roads):
+                raise ValueError("generated road id already exists")
+            for road in roads:
+                clone.append(road)
+            return clone, {"status":"PASS", "action":"RECONSTRUCT_SEGMENTED_RING",
+                           "road_ids":[r.get("id") for r in roads],
+                           "source_road_ids":sorted({a.road_id for a in anchors}),
+                           "validation":validation}
+        except (TypeError, ValueError, OverflowError) as exc:
+            return root, {"status":"PRESERVE_ORIGINAL", "reason":str(exc)}

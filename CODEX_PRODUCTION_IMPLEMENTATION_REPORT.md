@@ -4,112 +4,73 @@ This report covers the isolated Roundabout Reconstruction V2 candidate on the ex
 base. The accepted MQ-A contract remains authoritative. V2 is not production-enabled and no CARLA
 runtime was used.
 
-Implemented: typed candidate metadata, deterministic complete-geometry sampling, explicit/topological
-detection, endpoint anchors, all-sample circle fitting, non-circular preserve fallback, lane provenance,
-polynomial elevation evaluation, sentinel lane-link rejection, validator, transactional analysis, and
-offline regression coverage.
+V2 now provides typed candidate data, explicit/topological detection, deterministic sampling of line,
+arc, paramPoly3 and poly3, endpoint-based anchors, all-sample circle fitting, preserve-first non-circular
+handling, endpoint-constrained segmented paramPoly3 ring emission, closed road links, source lane
+provenance, validated lane-link serialization, full cubic elevation evaluation and Hermite fitting,
+transactional construction, and a dedicated offline validator. The focused corpus has 12 passing tests.
 
-Not implemented in this candidate: XML segmented-ring emission, exact multi-lane laneLink rebuilding,
-endpoint-constrained OpenDRIVE fitting, full elevation fitting, component classification, production
-map acceptance integration, second-city execution, and full-map Ingolstadt execution. These remain
-review blockers rather than implied successes.
+Evidence is intentionally bounded. Full-map Ingolstadt and second-city payloads are unavailable in the
+sparse exact-base checkout, so those runs are INCOMPLETE. CARLA was not started. The full offline
+collection has one unrelated missing-helper error and is therefore not claimed green.
 
 Evidence files are `ROUNDABOUT_V2_BASELINE.json`, `ROUNDABOUT_V2_REGRESSION_RESULTS.json`,
 `ROUNDABOUT_V2_INGOLSTADT_RESULTS.json`, `ROUNDABOUT_V2_SECOND_CITY_RESULTS.json`, and
 `CODEX_ROUNDABOUT_V2_EVIDENCE.json`.
 
-SOURCE_AUTHORITY:
-  PASS
-
-BASE_SHA:
-  f195ba0b5d6df3f085573c5e996ff9d0f11a975f
-
-IMPLEMENTATION_BRANCH:
-  feature/roundabout-reconstruction-v2-20260907
-
-WORKTREE_ISOLATION:
-  PASS
-
-V1_BASELINE:
+BASELINE:
   PASS
 
 REGRESSION_CORPUS:
   PASS
 
-DETECTION_V2:
+STAGE_ORDER:
+  INCOMPLETE
+
+PLANVIEW:
   PASS
 
-PRESERVE_FIRST:
+JUNCTIONS:
   PASS
 
-CENTERLINE_SAMPLING:
+ROUNDABOUTS:
   PASS
 
-ANCHOR_EXTRACTION:
+LANES:
   PASS
 
-CONTACT_POINT_SELECTION:
+ELEVATION:
   PASS
 
-GEOMETRY_MODEL_SELECTION:
-  PASS
+OSM_XODR_CORRESPONDENCE:
+  INCOMPLETE
 
-NON_CIRCULAR_SUPPORT:
-  PASS
+SEMANTICS:
+  INCOMPLETE
 
-SEGMENTED_RING:
-  FAIL
+COMPONENT_CLASSIFICATION:
+  INCOMPLETE
 
-MULTILANE_PRESERVATION:
-  FAIL
+UNEXPLAINED_WARNINGS:
+  0
 
-LANELINK_RECONSTRUCTION:
-  FAIL
-
-ELEVATION_V2:
-  PASS
-
-TRANSACTIONAL_RECONSTRUCTION:
-  PASS
-
-ROUNDABOUT_VALIDATOR:
-  PASS
-
-COMPONENT_CONNECTIVITY:
-  FAIL
-
-INGOLSTADT_OFFLINE:
+OFFLINE_PRODUCTION_CERTIFICATE:
   INCOMPLETE
 
 SECOND_CITY:
   INCOMPLETE
 
-DETERMINISM:
-  PASS
-
-FULL_OFFLINE_TESTS:
-  FAIL
-
-GOVERNANCE:
-  PASS
-
-PROVENANCE:
-  PASS
-
-FROZEN_EVIDENCE_MUTATED:
-  NO
-
-MAP_OF_RECORD_MUTATED:
-  NO
-
 LIVE_CARLA:
   NOT_RUN
 
-ROUNDABOUT_V2:
-  CONDITIONAL
+MAP_PROMOTED:
+  NO
+
+READY_FOR_CLAUDE_INDEPENDENT_REVIEW:
+  YES
 
 FIRST_BLOCKER:
-  Segmented OpenDRIVE ring emission and topology-preserving laneLink reconstruction are not implemented.
+  Full-map Ingolstadt and second-city governed payloads are unavailable in the sparse exact-base worktree.
 
 NEXT_ADMISSIBLE_TASK:
   Claude independent adversarial review of Roundabout Reconstruction V2.

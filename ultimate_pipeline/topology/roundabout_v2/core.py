@@ -118,8 +118,12 @@ def extract_endpoint_anchors(root: ET.Element, junction: ET.Element, ring_road_i
         cp=(c.get("contactPoint") or "").lower()
         if cp not in {"start","end"}: raise ValueError("ambiguous contact point")
         s=sample_road(road); p=s[0] if cp == "start" else s[-1]; z=None
-        e=road.find("./elevationProfile/elevation")
-        if e is not None: z=float(e.get("a","0"))
+        records=[]
+        for e in road.findall("./elevationProfile/elevation"):
+            records.append({k:float(e.get(k,"0")) for k in ("s","a","b","c","d")})
+        if records:
+            active=max((r for r in records if r["s"] <= p.s), key=lambda r:r["s"], default=records[0])
+            z,_=evaluate_elevation(active,p.s)
         out.append(Anchor(f"{junction.get('id')}:{c.get('id')}:{rid}",rid,cp,_lanes(road),p.x,p.y,z,p.heading,"entry",c.get("id")))
     return out
 
