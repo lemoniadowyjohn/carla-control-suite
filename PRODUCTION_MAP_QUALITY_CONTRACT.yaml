@@ -1,0 +1,172 @@
+# Production Map Quality Contract
+#
+# Unifies the existing, extensive quality-gate system (ultimate_pipeline/quality/*,
+# scripts/measure_candidate_acceptance.py, ultimate_pipeline/quality/map_acceptance.py) into three
+# explicit acceptance profiles. This document does NOT duplicate the gate implementations -- it
+# defines which existing gates are required for which profile, and the status vocabulary every
+# gate result must be reported in.
+#
+# Source audit: reports/production_readiness/20260906T170000Z/, MAP_QUALITY_GAP_REGISTER.json.
+# Baseline: 2e020d9b (review/claude-independent-audit-20260906).
+
+schema: PRODUCTION_MAP_QUALITY_CONTRACT/v1
+
+status_vocabulary:
+  # Every validator result MUST be reported as exactly one of these. SKIPPED is not a valid
+  # status -- a gate that didn't run must report NOT_RUN or BLOCKED_EXTERNAL, never be silently
+  # treated as PASS. This is the explicit fix for the gap the audit brief called out: "required
+  # validators must not treat SKIPPED as PASS."
+  values:
+    - PASS
+    - FAIL
+    - INCOMPLETE       # gate ran but could not reach a conclusive result (e.g. insufficient data)
+    - NOT_RUN           # gate was never invoked this run
+    - BLOCKED_EXTERNAL  # gate requires something unavailable in this environment (e.g. live CARLA)
+    - WAIVED            # gate result is FAIL/INCOMPLETE but an explicit, on-record waiver applies
+
+waiver_schema:
+  # A WAIVED status is only valid if accompanied by a record matching this schema, stored
+  # alongside the gate's own evidence output.
+  required_fields:
+    - identifier          # unique waiver ID, e.g. WAIVER-2026-09-06-001
+    - gate_id              # which gate/check this waives
+    - exact_issue           # precise description of what's failing and why
+    - owner                 # who authorized the waiver
+    - evidence               # path(s) to the evidence the waiver decision was based on
+    - rationale               # why waiving is acceptable for this profile
+    - expiration_or_review_trigger  # a date, or a condition ("re-review when X changes")
+  rule: "No anonymous warning suppression. A gate with unresolved FAIL/INCOMPLETE status and no
+    matching waiver record blocks the profile it's required for."
+
+profiles:
+  research_release:
+    description: >
+      May contain bounded caveats. This is the profile the current thesis-adjacent research work
+      operates under -- BOUNDED/DEFERRED research-question status is expected and documented, not
+      a defect. Matches the existing AUTHORITATIVE/BOUNDED/PROTOTYPE/DEFERRED/MISSING vocabulary
+      used by tools/export_thesis_tables.py and ultimate_pipeline/config/thesis_contract.py for
+      RQ-level claims -- this profile is about the MAP artifact's own quality gates, a separate
+      (but related) concern from RQ evidence status.
+    required_gates:
+      - xodr_xml_integrity
+      - carla_structural_compatibility   # StrictCarlaOpendriveGate
+      - component_reachability            # 27 isolated lanes is an ACCEPTED, classified,
+                                           # documented condition under this profile (GAP-003) --
+                                           # not a blocker, provided every isolated component has
+                                           # an explicit non-UNKNOWN classification
+      - junction_integrity                 # JunctionIntegrityGate, already an unconditional hard-fail
+      - lane_link_targets_exist
+      - lane_width_continuity
+      - lane_geometry_continuity
+      - elevation_continuity
+      - elevation_smoothness
+      - elevation_seams
+      - dem_full_coverage
+      - map_registry_identity               # sha256 pin matches PINNED_MAP_REGISTRY
+    allows_waived: true
+    allows_incomplete: true
+    fails_closed_on: [FAIL]   # INCOMPLETE and NOT_RUN do not block this profile, only FAIL does
+
+  production_candidate:
+    description: >
+      Must fail closed. This is the profile a map has to pass before it can be proposed as a
+      REPLACEMENT for the current map-of-record with a "production-grade" claim attached. No gate
+      may report SKIPPED-as-PASS; NOT_RUN and INCOMPLETE are treated as blocking unless an
+      explicit WAIVED record exists.
+    required_gates:
+      # everything from research_release, plus:
+      - xodr_xml_integrity
+      - carla_structural_compatibility
+      - component_reachability
+      - junction_integrity
+      - connector_pose_validation          # NEW, see GAP-004/PRODUCTION_MAP_TASK_GRAPH.json --
+                                            # does not exist yet, required for this profile once built
+      - connector_boundary_offset          # NEW, see GAP-002 -- currently measured but not gated;
+                                            # must become gating for this profile
+      - lane_link_targets_exist
+      - lane_link_direction_validity        # NEW, see GAP-011
+      - lane_width_continuity
+      - lane_geometry_continuity
+      - lane_count_provenance                # NEW, see GAP-001/GAP-019 -- every lane must carry a
+                                              # source (osm_lanes / osm_width_per_lane / osm_width /
+                                              # osm_highway / fallback) recorded in the output
+      - lane_section_successors
+      - elevation_continuity
+      - elevation_smoothness
+      - elevation_seams
+      - elevation_structure_separation       # NEW, see GAP-009/GAP-010
+      - dem_full_coverage
+      - semantic_overlap_geometric            # MUST be the real polygon-intersection
+                                               # implementation (currently dead code, see GAP-006),
+                                               # not the currently-wired co-attachment heuristic
+      - osm_correspondence_confidence          # NEW, see GAP-005 -- position-specific metadata
+                                                # (turn:lanes, signs) may only propagate through a
+                                                # scored, non-ambiguous spatial match, or must be
+                                                # skipped with a recorded reason
+      - crosswalk_signal_sign_geometric_validity
+      - collision_mesh
+      - external_validator                     # xodr_strict_validator / preflight_xodr_loadability
+      - deterministic_provenance                # C15/C13-style byte-vs-structural determinism check
+      - map_registry_identity
+      - visual_cooked_map_certificate            # see below, offline-only fields required, live
+                                                  # fields explicitly NOT_RUN is acceptable for this
+                                                  # profile (not BLOCKED for the whole profile)
+    allows_waived: true   # but every waiver must be reviewed against MAP_QUALITY_GAP_REGISTER.json
+    allows_incomplete: false
+    fails_closed_on: [FAIL, INCOMPLETE, NOT_RUN]   # unless WAIVED
+
+  runtime_certified:
+    description: >
+      Requires a live CARLA certificate. This is the profile needed before any RQ3/RQ5-style
+      live-perception claim, or any "this map is fully validated in CARLA" claim, can be made.
+    required_gates:
+      # everything from production_candidate, plus:
+      - carla_world_loads
+      - carla_ego_spawns_on_valid_surface
+      - carla_waypoint_graph_matches_visible_roads
+      - carla_no_detached_road_slabs_live
+      - visual_cooked_map_certificate_live_fields   # the currently NOT_RUN fields of the same
+                                                     # certificate become required here
+    allows_waived: false   # runtime certification cannot be waived by policy -- either it ran and
+                            # passed, or this profile is not satisfied
+    allows_incomplete: false
+    fails_closed_on: [FAIL, INCOMPLETE, NOT_RUN, BLOCKED_EXTERNAL]
+    current_status: BLOCKED_EXTERNAL
+    current_status_reason: >
+      Live CARLA runtime is confirmed unverified as of this audit (no process, no listening
+      socket, zero self-hosted CI runners registered; see the prior Stage-A runtime-admission
+      audit, reports/production_readiness/ predecessor CODEX_RUNTIME_ADMISSION_EVIDENCE.json in
+      this session's scratchpad). This profile cannot currently be satisfied by any amount of
+      further code work.
+
+visual_and_cooked_map_certificate:
+  # A0-A15's A10 requirement: "Define one future VISUAL_AND_COOKED_MAP_CERTIFICATE." Does not
+  # exist as a unified artifact today -- Phase J tooling (see GAP-013) produces most of the
+  # OFFLINE evidence pieces below but is not wired into the pipeline and has only been run at
+  # smoke-test scale.
+  offline_fields:
+    - no_detached_road_slabs            # detached_slab_check.py -- real, tested at smoke scale only
+    - no_malformed_junction_patches      # partial -- degenerate-face detection only
+    - no_severe_z_fighting                # NOT IMPLEMENTED anywhere (GAP-027)
+    - no_road_terrain_penetration          # covered by floating_slab_check -- real, smoke-scale only
+    - no_floating_roads                     # same mechanism as above
+    - collision_surface_follows_drivable_surface   # collision_lod_policy.py -- real, AABB-approximate,
+                                                    # smoke-scale only
+    - building_transforms_sane               # partial, via coordinate_control_check
+  live_fields:
+    - ego_vehicle_rests_on_valid_surface     # NOT_RUN, requires live CARLA
+    - waypoint_graph_corresponds_to_visible_roads   # NOT_RUN, requires live CARLA
+  current_status: INCOMPLETE
+  current_status_reason: >
+    All offline fields have real implementations (not scaffolds) but have only ever been executed
+    against a 19-vertex smoke-test scene, never the actual ~149MB map-of-record. Live fields are
+    correctly NOT_RUN pending CARLA runtime availability. To reach a meaningful offline-only
+    certificate (sufficient for production_candidate), Phase J needs to be wired into
+    main_pipeline.py and run at full map scale at least once -- see PRODUCTION_MAP_TASK_GRAPH.json.
+
+do_not_duplicate:
+  # Explicit acknowledgment per the audit brief: "the existing quality system is extensive. Do NOT
+  # duplicate it. Unify it." This contract references existing gate implementations by name; it
+  # does not propose reimplementing any of them. New gates listed above with "NEW" are the only
+  # ones requiring new code; everything else is wiring/status-vocabulary alignment of what already
+  # exists.
