@@ -328,7 +328,10 @@ class QualityGateManager:
         )
 
         xodr_path = self._require_path(xodr_path, "gate_geometric_continuity")
-        rep = check_geometric_continuity(xodr_path)
+        # Connector boundary offsets are mandatory for the orchestrated gate.
+        # The standalone diagnostic keeps its historical default for callers
+        # that explicitly only want ordinary road continuity.
+        rep = check_geometric_continuity(xodr_path, gate_junction_connectors=True)
         self._persist_optional(rep, stage or "geometric_continuity")
         self._finalize_gate("geometric_continuity", rep)
         return rep

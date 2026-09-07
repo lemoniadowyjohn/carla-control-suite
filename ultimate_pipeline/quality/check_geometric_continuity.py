@@ -607,6 +607,8 @@ def check_geometric_continuity(
     xodr_path: str,
     eps_xy: float = 0.05,
     eps_hdg: float = 0.01,
+    *,
+    gate_junction_connectors: bool = False,
 ) -> Dict[str, Any]:
     """
     Check geometric continuity at road boundaries for ordinary road-to-road links.
@@ -657,6 +659,7 @@ def check_geometric_continuity(
         "issues": [],
         "junction_connector_issues": [],
         "warnings": [],
+        "gate_junction_connectors": bool(gate_junction_connectors),
     }
 
     try:
@@ -779,7 +782,13 @@ def check_geometric_continuity(
     report["junction_connector_issues"] = junction_connector_issues
     report["num_issues"] = len(issues)
     report["num_junction_connector_issues"] = len(junction_connector_issues)
-    report["ok"] = len(issues) == 0
+    report["ok"] = len(issues) == 0 and (
+        not gate_junction_connectors or len(junction_connector_issues) == 0
+    )
+    if gate_junction_connectors and junction_connector_issues:
+        report["warnings"].append(
+            "junction connector boundary offsets are mandatory gate failures"
+        )
 
     for rid, (_, warns) in geom_cache.items():
         for w in warns:
