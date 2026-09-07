@@ -1,0 +1,99 @@
+{
+  "audit_timestamp_utc": "2026-09-06T17:00:00Z",
+  "prompt_stated_baseline": {
+    "repository": "lemoniadowyjohn/carla-control-suite",
+    "expected_release_branch": "stabilize/research-release-20260905",
+    "expected_release_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+    "verification_result": "SHA_NOT_FOUND",
+    "verification_detail": "git cat-file -t f195ba0b5d6df3f085573c5e996ff9d0f11a975f fails (object not found in local repo). git log --all finds no matching commit. This SHA does not correspond to any real commit in this repository. Re-confirmed identically in the immediately preceding audit pass this session; unchanged."
+  },
+  "actual_authoritative_state": {
+    "stabilize_research_release_20260905": {
+      "local_sha": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc",
+      "remote_sha": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc",
+      "note": "This IS a real branch/SHA in the repo, and matches what prior session memory recorded as the release commit. The prompt's stated SHA appears to be a typo, hallucination, or reference to a release that was never actually created/pushed."
+    },
+    "review_claude_independent_audit_20260906": {
+      "sha": "2e020d9b8ed5e21ae0a2e4a93ef1e71116082eef",
+      "is_descendant_of_stabilize_branch": true,
+      "additional_commits_beyond_stabilize_branch": [
+        "7ded064b review(audit): independent technical + research-integrity review packet",
+        "8893d688 review(remediation): apply 7 minor polish fixes from the independent audit",
+        "bf01dd78 fix(provenance): resolve cited-artifact paths portably (Windows->Linux)",
+        "2e020d9b fix(provenance): line-ending-tolerant digest check (Windows CRLF vs Linux LF)"
+      ],
+      "is_current_active_checkout": true,
+      "checkout_status": "clean (git status --porcelain=v2 empty)",
+      "upstream": "origin/review/claude-independent-audit-20260906 (pushed, in sync)"
+    }
+  },
+  "baseline_decision": {
+    "status": "RE_BASELINED_BY_OPERATOR_DECISION",
+    "chosen_baseline_branch": "review/claude-independent-audit-20260906",
+    "chosen_baseline_sha": "2e020d9b8ed5e21ae0a2e4a93ef1e71116082eef",
+    "rationale": "Direct descendant of the named release branch, current active checkout, clean working tree, and the exact SHA with the fully-green 6-job CI run (see ci_evidence below). Operator explicitly selected this as the corrected baseline given the prompt's stated SHA does not exist.",
+    "not_a_silent_choice": "This was surfaced to the operator via AskUserQuestion before proceeding, per this audit's own required stop-condition ('If release authority has moved: STOP mutation. Report: BASELINE_AUTHORITY_CHANGED and require re-baselining')."
+  },
+  "ci_evidence": {
+    "run_id": 34044481507,
+    "head_sha": "2e020d9b8ed5e21ae0a2e4a93ef1e71116082eef",
+    "conclusion": "success",
+    "trigger": "pull_request",
+    "completed_at": "2026-09-06T16:08:15Z",
+    "duration": "10m19s",
+    "jobs": [
+      "package / wheel smoke: success",
+      "offline tests: success",
+      "research provenance: success",
+      "thesis RQ contract: success",
+      "governance integrity: success",
+      "repository health: success"
+    ],
+    "re_confirmed_still_current": true,
+    "re_confirmation_note": "Re-checked via gh run list immediately before writing this file -- still the latest run on this branch, no newer commits have landed."
+  },
+  "expected_state_cross_check": {
+    "six_offline_linux_release_gates_green": true,
+    "package_wheel_smoke_green": true,
+    "governance_green": true,
+    "thesis_rq_contract_green": true,
+    "provenance_green": true,
+    "repository_health_green": true,
+    "carla_runtime_not_run": true,
+    "rq3_not_run": true,
+    "rq5_not_run": true,
+    "note": "All 9 expected-state claims from the prompt are CONFIRMED TRUE against the corrected baseline (2e020d9b), even though the prompt's own named SHA was wrong. The narrative/expected-state description was accurate; only the specific SHA citation was stale/incorrect."
+  },
+  "worktrees_and_dirty_state": {
+    "active_worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+    "active_worktree_dirty": false,
+    "other_worktree_count": 17,
+    "other_worktrees_overlap_this_branch": false,
+    "note": "Full worktree list captured in the previous Stage A pass (CODEX_RUNTIME_ADMISSION_EVIDENCE.json in this same scratchpad session) -- not repeated here in full, cross-reference that file."
+  },
+  "map_registry_and_manual_pin_cross_check": {
+    "auto_map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "auto_map_of_record_verify_result": "PASS (verify_pinned_map, no drift)",
+    "grid0828_manual_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "grid0828_verify_result": "PASS (verify_pinned_map, no drift)",
+    "note": "Re-confirmed via the same tool as the previous Stage A pass; no change since then."
+  },
+  "governance_ledger_cross_check": {
+    "AGENT_TASK_LEDGER.md": {
+      "present_on_this_branch": true,
+      "last_touched_commit": "0eac8946 (2026-07-31)",
+      "self_declared_authoritative_branch": "integration/governed-map-quality-20260729",
+      "authoritative_for_current_baseline": false,
+      "note": "This file's own header states it is authoritative on a DIFFERENT, older branch (integration/governed-map-quality-20260729, last active 2026-07-31), which shares distant history with the current baseline but was not carried forward. Its tracked items (P4, P5, S01, MAP-REPAIR) show BLOCKED/READY, not RESOLVED, as of that branch's last update -- this reflects a separate, apparently-superseded initiative, not the current stabilization/production-readiness work."
+    },
+    "agent_sync.yaml": {
+      "present_on_this_branch": true,
+      "last_touched_commit": "3eb1717b (2026-07-31)",
+      "note": "Same staleness pattern as AGENT_TASK_LEDGER.md."
+    }
+  },
+  "verdict": {
+    "BASE_AUTHORITY": "INCOMPLETE_AS_STATED_BUT_RESOLVED_BY_OPERATOR_RE_BASELINE",
+    "detail": "The prompt's own stated SHA fails verification (does not exist). Per the operator's explicit decision (not a unilateral Claude choice), the corrected baseline is review/claude-independent-audit-20260906 @ 2e020d9b, which independently satisfies every one of the prompt's 9 'expected state' claims. Proceeding with the rest of the A0-A15 audit against this corrected baseline."
+  }
+}
