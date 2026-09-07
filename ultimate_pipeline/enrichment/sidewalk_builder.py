@@ -178,6 +178,9 @@ class SidewalkBuilder:
                 add_left = True
             elif hint == "right":
                 add_right = True
+            elif hint == "no":
+                # An explicit OSM prohibition overrides the heuristic fallback.
+                continue
             elif default_both_sides:
                 highway = SidewalkBuilder._get_osm_highway(road, osm_meta)
                 if highway in _NO_SIDEWALK_HIGHWAY_CLASSES:

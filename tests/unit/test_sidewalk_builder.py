@@ -97,6 +97,14 @@ def test_add_sidewalks_hint_left_only():
     assert len(section.find("right").findall("lane[@type='sidewalk']")) == 0
 
 
+def test_add_sidewalks_explicit_no_honors_osm_prohibition():
+    road = _road(right_ids=(-1,))
+    road.set("sidewalk", "no")
+    root = _xodr(road)
+    assert SidewalkBuilder.add_sidewalks(root, default_both_sides=True) == 0
+    assert SidewalkBuilder.count_sidewalk_lanes(root) == 0
+
+
 def test_add_sidewalks_no_hint_but_has_driving_lane_defaults_both_sides():
     road = _road(right_ids=(-1,))  # a real driving lane, no OSM hint
     root = _xodr(road)
