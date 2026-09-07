@@ -134,9 +134,14 @@ def evaluate_elevation(record: dict, s: float) -> tuple[float,float]:
     return z,grade
 
 def validate_lane_mapping(mapping: dict[str,int], *, source_lane_ids: set[int], target_lane_ids: set[int]) -> None:
+    """Validate explicit lane IDs; ``-1`` is valid when present in both sections.
+
+    The former implementation treated the rightmost driving lane ID as an
+    unknown sentinel.  Missing or implicit mappings are rejected by the
+    caller, while an explicit OpenDRIVE ``-1`` lane reference is legitimate.
+    """
     for source,target in mapping.items():
         source,target=int(source),int(target)
-        if source == -1 and target == -1: raise ValueError("lane-link sentinel is not accepted")
         if source not in source_lane_ids or target not in target_lane_ids: raise ValueError("lane-link references missing lane")
 
 def infer_lane_model(roads: list[ET.Element]) -> tuple[tuple[int,...], tuple[dict,...]]:

@@ -30,6 +30,8 @@ leaving the authoritative root unchanged. `reconstruct_ring_transactional()` bui
 from source-backed anchors, validates the complete clone, and returns the original root on failure.
 Segment roads use endpoint-constrained normalized paramPoly3 curves, deterministic closed road links,
 and preserved lane IDs. `build_junction_lane_links()` emits only validated source/target references.
+Generated ring lanes currently use a 3.5 m width fallback, and Hermite elevation boundaries use zero
+grade when source grades are unavailable; both are explicit candidate limitations, not source truth.
 
 ## Deliberate candidate limits
 

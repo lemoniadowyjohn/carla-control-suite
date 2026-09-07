@@ -9,6 +9,8 @@ arc, paramPoly3 and poly3, endpoint-based anchors, all-sample circle fitting, pr
 handling, endpoint-constrained segmented paramPoly3 ring emission, closed road links, source lane
 provenance, validated lane-link serialization, full cubic elevation evaluation and Hermite fitting,
 transactional construction, and a dedicated offline validator. The focused corpus has 12 passing tests.
+The independent review verified 44 legacy roundabout tests; the current sparse worktree rerun exposes
+39 legacy tests, also passing. This count difference is recorded rather than silently normalized.
 
 Evidence is intentionally bounded. Full-map Ingolstadt and second-city payloads are unavailable in the
 sparse exact-base checkout, so those runs are INCOMPLETE. CARLA was not started. The full offline

@@ -38,7 +38,8 @@ def test_detection_explicit_semantics_and_anchor_endpoint():
 
 def test_elevation_and_lane_sentinel_contract():
     z,g=evaluate_elevation({"s":10,"a":2,"b":.5,"c":.1,"d":-.01},12); assert z==pytest.approx(2+.5*2+.1*4-.01*8); assert g==pytest.approx(.5+.2*2-.03*4)
-    with pytest.raises(ValueError): validate_lane_mapping({"-1":-1},source_lane_ids={-1},target_lane_ids={-1})
+    validate_lane_mapping({"-1":-1},source_lane_ids={-1},target_lane_ids={-1})
+    with pytest.raises(ValueError): validate_lane_mapping({"-1":-1},source_lane_ids=set(),target_lane_ids={-1})
 
 def test_circle_fit_uses_all_samples_and_non_circular_model_is_preserved():
     root=ET.Element("OpenDRIVE"); ring=[]
