@@ -12,28 +12,20 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, Sequence
 import xml.etree.ElementTree as ET
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as kernel_sample
+
 
 
 def _road_samples(road: ET.Element, spacing: float = 1.0) -> list[tuple[float, float]]:
-    """Deterministically sample the supported reference-line primitives."""
+    """Sample every XODR primitive through the canonical geometry kernel."""
     samples: list[tuple[float, float]] = []
     for geometry in sorted(road.findall("./planView/geometry"), key=lambda g: float(g.get("s", 0))):
-        x0, y0 = float(geometry.get("x", 0)), float(geometry.get("y", 0))
-        hdg, length = float(geometry.get("hdg", 0)), float(geometry.get("length", 0))
-        primitive = next(iter(geometry), None)
-        kind = "line" if primitive is None else primitive.tag.rsplit("}", 1)[-1]
-        count = max(1, int(math.ceil(length / spacing)))
-        for i in range(count + 1):
-            s = length * i / count
-            if kind == "arc":
-                curvature = float(primitive.get("curvature", 0))
-                if abs(curvature) < 1e-12:
-                    lx, ly = s, 0.0
-                else:
-                    lx, ly = math.sin(curvature * s) / curvature, (1 - math.cos(curvature * s)) / curvature
-            else:
-                lx, ly = s, 0.0
-            point = (x0 + math.cos(hdg) * lx - math.sin(hdg) * ly, y0 + math.sin(hdg) * lx + math.cos(hdg) * ly)
+        try:
+            poses = kernel_sample(geometry, spacing)
+        except (TypeError, ValueError, ZeroDivisionError):
+            continue
+        for pose in poses:
+            point = (float(pose.x), float(pose.y))
             if not samples or _distance(samples[-1], point) > 1e-9:
                 samples.append(point)
     return samples
@@ -41,6 +33,40 @@ def _road_samples(road: ET.Element, spacing: float = 1.0) -> list[tuple[float, f
 
 def _nearest_distance(points: Sequence[tuple[float, float]], query: tuple[float, float]) -> float:
     return min((_distance(point, query) for point in points), default=math.inf)
+
+
+class RoadSampleIndex:
+    """Deterministic grid index over cached XODR reference-line samples."""
+
+    def __init__(self, roads: Iterable[ET.Element], *, cell_size_m: float = 25.0, spacing_m: float = 1.0):
+        self.cell_size_m = float(cell_size_m)
+        if not math.isfinite(self.cell_size_m) or self.cell_size_m <= 0:
+            raise ValueError("cell_size_m must be positive and finite")
+        self.samples: dict[str, list[tuple[float, float]]] = {}
+        self.roads: dict[str, ET.Element] = {}
+        self.cells: dict[tuple[int, int], set[str]] = {}
+        for road in sorted(roads, key=lambda r: str(r.get("id", ""))):
+            road_id = str(road.get("id", ""))
+            if not road_id:
+                continue
+            points = _road_samples(road, spacing_m)
+            self.roads[road_id] = road
+            self.samples[road_id] = points
+            for x, y in points:
+                self.cells.setdefault(self._cell(x, y), set()).add(road_id)
+
+    def _cell(self, x: float, y: float) -> tuple[int, int]:
+        return math.floor(x / self.cell_size_m), math.floor(y / self.cell_size_m)
+
+    def candidates_near(self, points: Sequence[tuple[float, float]], radius_m: float) -> list[ET.Element]:
+        span = max(0, math.ceil(float(radius_m) / self.cell_size_m))
+        ids: set[str] = set()
+        for x, y in points:
+            cx, cy = self._cell(x, y)
+            for dx in range(-span, span + 1):
+                for dy in range(-span, span + 1):
+                    ids.update(self.cells.get((cx + dx, cy + dy), ()))
+        return [self.roads[road_id] for road_id in sorted(ids)]
 
 
 @dataclass(frozen=True)
@@ -92,6 +118,7 @@ def match_osm_way_to_xodr(
     *,
     max_distance_m: float = 5.0,
     ambiguity_margin_m: float = 0.25,
+    sample_cache: Mapping[str, Sequence[tuple[float, float]]] | None = None,
 ) -> MatchResult:
     """Match one OSM way against candidate roads using spatial evidence."""
     way_id = str(osm_way.get("id", osm_way.get("way_id", "")))
@@ -105,7 +132,9 @@ def match_osm_way_to_xodr(
     source_class = str(osm_way.get("highway", "")).strip()
     for road in candidates:
         try:
-            distances = [_nearest_distance(_road_samples(road), (x, y)) for x, y in points]
+            road_id = str(road.get("id", ""))
+            road_points = sample_cache.get(road_id) if sample_cache is not None else _road_samples(road)
+            distances = [_nearest_distance(road_points or (), (x, y)) for x, y in points]
         except (TypeError, ValueError, IndexError):
             continue
         mean_distance = sum(distances) / len(distances)
@@ -146,4 +175,12 @@ def match_osm_way_to_xodr(
 
 def build_correspondence(osm_ways: Iterable[Mapping[str, Any]], root: ET.Element, **kwargs: Any) -> list[MatchResult]:
     roads = sorted(root.findall("./road"), key=lambda r: str(r.get("id", "")))
-    return [match_osm_way_to_xodr(way, roads, **kwargs) for way in sorted(osm_ways, key=lambda w: str(w.get("id", w.get("way_id", ""))))]
+    max_distance = float(kwargs.get("max_distance_m", 5.0))
+    index = RoadSampleIndex(roads, cell_size_m=float(kwargs.pop("cell_size_m", 25.0)), spacing_m=float(kwargs.pop("sample_spacing_m", 1.0)))
+    ways = sorted(osm_ways, key=lambda w: str(w.get("id", w.get("way_id", ""))))
+    results: list[MatchResult] = []
+    for way in ways:
+        points = _way_points(way)
+        candidates = index.candidates_near(points, max_distance) if points else []
+        results.append(match_osm_way_to_xodr(way, candidates, sample_cache=index.samples, **kwargs))
+    return results
