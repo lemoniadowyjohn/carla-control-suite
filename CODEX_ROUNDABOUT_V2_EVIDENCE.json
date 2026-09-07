@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_sha": "53d783ec",
+  "branch": "feature/roundabout-reconstruction-v2-20260907",
+  "dirty": false,
+  "algorithm": {"mode": "offline_candidate_analysis", "release_enabled": false, "carla": "NOT_RUN"},
+  "regression_corpus": {"status": "PASS", "tests_passed": 7},
+  "ingolstadt": {"status": "INCOMPLETE", "reason": "large pinned map is not materialized in sparse checkout"},
+  "second_city": {"status": "INCOMPLETE", "reason": "no governed secondary payload is materialized in sparse checkout"},
+  "determinism": {"status": "PASS", "basis": "sorted IDs, deterministic spacing, deterministic algebraic fit"},
+  "tests": {"focused": "7 passed", "full_offline": "NOT_RUN"},
+  "warnings": [],
+  "known_limitations": ["segmented ring XML emission pending", "exact laneLink reconstruction pending", "full-map validation pending"],
+  "live_carla": "NOT_RUN"
+}
