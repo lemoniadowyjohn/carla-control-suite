@@ -28,6 +28,7 @@ import json
 from xml.etree.ElementTree import Element
 
 from ultimate_pipeline.core.repair_diff import diff_log
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as geometry_endpoint
 
 
 # ---------------------------------------------------------------------
@@ -226,11 +227,14 @@ class GeometryValidator:
                 if "x" in prev["elem"].attrib and "y" in prev["elem"].attrib:
                     px = _safe_float(prev["elem"].attrib["x"])
                     py = _safe_float(prev["elem"].attrib["y"])
-                    h = prev["hdg"] if prev["hdg"] is not None else 0.0
-                    dx = math.cos(h) * prev["length"]
-                    dy = math.sin(h) * prev["length"]
-                    cur["elem"].attrib["x"] = str(px + dx)
-                    cur["elem"].attrib["y"] = str(py + dy)
+                    try:
+                        end = geometry_endpoint(prev["elem"])
+                        dx, dy = end.x - px, end.y - py
+                    except (TypeError, ValueError):
+                        # A malformed predecessor cannot safely provide a pose.
+                        continue
+                    cur["elem"].attrib["x"] = str(end.x)
+                    cur["elem"].attrib["y"] = str(end.y)
                     issues.append(f"backfilled_xy_at_index={i}")
                     diff_log.add(
                         "geometry_validator",
