@@ -377,6 +377,188 @@ PINNED_MAP_STRUCTURE_FLAGS: <count of bridges/tunnels flagged as implausible, or
 FULL_OFFLINE_TESTS: PASS | FAIL
 ```
 
+## WAVE 2, PROMPT 4 — Junction lane-link geometry-awareness (GAP-011)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Prerequisite: Wave 1's geometry kernel
+(feature/geometry-kernel-v1-20260907, verified PASS 2026-09-07) and lane-count-from-OSM
+(feature/lane-count-from-osm-v1-20260907, verified PASS 2026-09-07) should both be available --
+this task gets more consequential once roads can genuinely have >1 lane per side. Isolated branch:
+feature/junction-lanelink-geometry-v1-<date>.
+
+CONFIRMED (independently re-verified 2026-09-07): ultimate_pipeline/lanes/lanelink_builder.py::
+LaneLinkBuilder.regenerate_lane_links pairs lanes purely by sign and |id| ordering via a nested
+match_by_direction() helper (positive-to-positive, negative-to-negative, inner-first) -- no
+geometry or heading input at all. The module's own validation entrypoint,
+sanitize_junction_lane_links(), is a confirmed hardcoded stub:
+    """Stub for laneLink sanity check."""
+    print(f"   [INFO] LaneLink Sanity Check: {label} (STUB)")
+    return {"status": "ok", "summary_metrics": {}}
+It always reports "ok" regardless of input, so there is currently no independent check that would
+catch a mispairing even if one existed.
+
+TASK:
+1. Extend match_by_direction (or replace it) to use the geometry kernel's pose_at_s/endpoint to
+   compare each candidate lane pair's actual centerline position and heading at the junction seam,
+   not just sign+|id| order. Where index-order and geometry agree, keep the fast path; where they
+   disagree, prefer geometry and record the disagreement (this is a real signal that GAP-011 exists
+   in the input, worth surfacing even if you can't fix the input road itself in this pass).
+2. Implement sanitize_junction_lane_links() for real: verify every generated lane link's endpoints
+   are geometrically coincident (within a documented tolerance) and headings are continuous, using
+   the same kernel. Return real summary_metrics (counts of checked/passed/failed links), not the
+   hardcoded stub.
+3. Regression fixtures: a junction where index-order pairing would be wrong (e.g. lane cardinality
+   changes across the junction, or one side's lanes are geometrically reversed relative to sorted
+   |id| order) -- construct at least one synthetic case where naive pairing fails and prove your
+   geometry-aware version gets it right.
+
+Re-run scripts/measure_candidate_acceptance.py against the pinned map-of-record before and after;
+report the diff. This module runs on every regen, so a subtle behavior change here is high-blast-
+radius -- do not merge without full offline tests green and the acceptance diff explained.
+
+End with:
+GEOMETRY_AWARE_PAIRING: PASS | FAIL | INCOMPLETE
+SANITIZE_STUB_REPLACED: PASS | FAIL
+MISPAIRING_FIXTURE_PROVEN: PASS | FAIL
+MAP_OF_RECORD_ACCEPTANCE_DELTA: <diff summary or "no measurable change">
+FULL_OFFLINE_TESTS: PASS | FAIL
+FIRST_BLOCKER: <one exact blocker or NONE>
+```
+
+## WAVE 2, PROMPT 5 — Turn-lane and cycle-lane geometric generation (GAP-017, GAP-025)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Prerequisite: lane-count-from-OSM
+(feature/lane-count-from-osm-v1-20260907, verified PASS) -- this task extends the same
+driving_lane_counts()/ensure_lanes() machinery it just built, do not build a parallel path.
+Isolated branch: feature/turn-cycle-lanes-v1-<date>.
+
+CONFIRMED (this session's audit): ultimate_pipeline/enrichment/turn_lanes_writer.py::apply_turn_lanes
+only writes a <userData><vector key="turnMarking"/></userData> metadata hint from OSM turn:lanes;
+its own docstring states geometry is not modified -- no dedicated left/right-turn <lane> element is
+ever created. Separately, lane_generator.py's width table has a "cycleway" entry (2.0m) that is dead
+for its apparent purpose: no code path ever emits a type="biking" lane.
+
+TASK:
+1. Turn lanes: where OSM turn:lanes indicates a dedicated turn lane at an intersection approach
+   (distinct from through-traffic lanes, e.g. "left|through|through|right"), emit it as a real
+   additional <lane type="driving"> with appropriate width and the existing turnMarking userData
+   hint retained for consumers that read it. Scope this to the approach segment near the junction,
+   not the full road length, unless OSM tagging indicates otherwise.
+2. Cycle lanes: where OSM tags a genuine dedicated cycleway (cycleway=lane/track, not
+   cycleway=shared_lane or a separate cycleway=* way), emit a type="biking" lane using the existing
+   2.0m width-table entry.
+3. Both must carry the same lane_count_source/confidence/lane_count provenance userData pattern
+   feature/lane-count-from-osm-v1-20260907 already established -- do not invent a second provenance
+   scheme.
+4. Downstream impact: same caution as GAP-001's own prompt -- re-run lanelink_builder's test suite
+   and scripts/measure_candidate_acceptance.py against the pinned map before/after, report what
+   changed. If a junction's connector-road infrastructure can't represent an added turn/cycle lane
+   without breaking, report it as a known limitation rather than silently dropping it.
+
+End with:
+TURN_LANES_GEOMETRIC: PASS | FAIL | INCOMPLETE
+CYCLE_LANES_GEOMETRIC: PASS | FAIL | INCOMPLETE
+PROVENANCE_CONSISTENT: PASS | FAIL
+MAP_OF_RECORD_ACCEPTANCE_DELTA: <diff summary or "no measurable change">
+FULL_OFFLINE_TESTS: PASS | FAIL
+FIRST_BLOCKER: <one exact blocker or NONE>
+```
+
+## WAVE 2, PROMPT 6 — Lane-count-change gate (GAP-020)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Prerequisite: lane-count-from-OSM
+(feature/lane-count-from-osm-v1-20260907, verified PASS) -- this gate is far more meaningful now
+that lane counts genuinely vary road-to-road instead of being uniformly 1-per-side. Isolated
+branch: feature/lane-count-change-gate-v1-<date>.
+
+CONFIRMED (independently re-verified 2026-09-07): check_lane_section_successors.py's
+repair_and_assert_lane_section_successors() repairs mismatched successor/predecessor lane-ID sets
+across laneSection boundaries but never reports "lane count changed here" as a quality metric --
+it silently repairs to whatever count exists on either side, whether or not that change was
+intentional (e.g. matches OSM's own lane-count tapering) or a generation artifact.
+
+TASK: add a new, separate reporting-only check (do not change repair_and_assert_lane_section_
+successors' repair behavior) that walks road-to-road links via the existing link graph and flags
+any point where driving-lane count changes, with the OSM-derived provenance from GAP-001/019
+(lane_count_source userData) attached so a reviewer can distinguish "OSM says this road tapers from
+2 to 1 lanes here" (expected) from "generation produced a count mismatch with no OSM basis"
+(worth investigating). Wire it into scripts/measure_candidate_acceptance.py as ADVISORY/soft
+(metrics + warning), matching this session's established pattern for newly-wired, uncharacterized
+checks -- do not hard-fail on day one.
+
+Run it against the pinned map-of-record and report the actual counts by category (OSM-explained
+change / unexplained change / no change).
+
+End with:
+LANE_COUNT_CHANGE_GATE: PASS | FAIL | INCOMPLETE
+PINNED_MAP_FINDINGS: <OSM-explained count>, <unexplained count>
+FULL_OFFLINE_TESTS: PASS | FAIL
+```
+
+---
+
+## WAVE 3 — send only after Wave 2's correspondence engine (GAP-005) reports PASS
+
+## WAVE 3, PROMPT 1 — Regulatory signs, signal/speed-limit precedence, turn restrictions (GAP-005 extension, GAP-040)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Prerequisite: Wave 2's OSM<->XODR correspondence
+engine (feature/osm-correspondence-engine-v1-<date>) must be merged/available -- this task consumes
+its confidence-scored association output directly, do not re-derive matching logic. Isolated
+branch: feature/regulatory-precedence-v1-<date>.
+
+Re-verify against the merged correspondence engine's actual output schema before starting (do not
+assume the schema sketched in the Wave 2 prompt is exactly what shipped).
+
+TASK:
+1. Migrate remaining position-specific OSM consumers (regulatory sign placement beyond what GAP-005
+   already migrated, if any remain; speed-limit tags; turn-restriction relations) to require at
+   least HIGH confidence from the correspondence engine, same bar as turn_lanes_writer.py/
+   regulatory_sign_writer.py from Wave 2.
+2. Define and implement explicit source-of-truth precedence where multiple signals could apply to
+   the same road/lane (e.g. an explicit OSM maxspeed tag vs. a highway-class-based default; an
+   explicit stop/give_way relation vs. inferred junction-priority logic) -- document the precedence
+   rule, do not leave it as implementation-order-dependent.
+3. GAP-040 follow-up: the confirm-then-fix batch (feature/confirm-then-fix-batch-20260907) already
+   scoped signal-lane-reference validation to the signal's own road/laneSection. Confirm that fix's
+   test coverage extends to a MULTI-laneSection road with a signal reference at a non-zero s (the
+   existing test only covers a single-section road) -- add that fixture if missing.
+
+End with:
+REGULATORY_MIGRATION: PASS | FAIL | INCOMPLETE
+PRECEDENCE_RULE_DOCUMENTED: PASS | FAIL
+GAP_040_MULTISECTION_COVERAGE: PASS | FAIL | ALREADY_ADEQUATE
+FULL_OFFLINE_TESTS: PASS | FAIL
+```
+
+## WAVE 3, PROMPT 2 — OSM-vs-generated semantic completeness metric (GAP-014)
+
+```text
+Repository: lemoniadowyjohn/carla-control-suite. Prerequisite: Wave 2's correspondence engine is the
+clean way to do this precisely, but a coarser name/area-scoped version could start earlier if you
+want to unblock this independently -- your call, note which approach you took. Isolated branch:
+feature/osm-completeness-metric-v1-<date>.
+
+CONFIRMED (this session's audit): map_acceptance.py::_enrichment_completeness_counts only checks
+generated counts are non-zero (fails only if functional_signals_count<=0 AND
+traffic_light_object_count<=0) -- no comparison against how many traffic_signals/crossing/etc tags
+exist in the source OSM for the same area.
+
+TASK: add a completeness metric comparing source OSM counts (traffic_signals, crossings, stop/
+give_way, speed limits, turn restrictions -- whatever categories the correspondence engine already
+classifies) against generated object counts for the same area, reported as a ratio per category.
+Wire as ADVISORY metrics in map_acceptance.py's report, not a hard fail (no baseline "expected"
+ratio has been established yet). Run against the pinned map-of-record and report the actual ratios.
+
+End with:
+COMPLETENESS_METRIC: PASS | FAIL | INCOMPLETE
+APPROACH_USED: correspondence_engine | name_scoped_coarse
+PINNED_MAP_RATIOS: <per-category ratio summary>
+FULL_OFFLINE_TESTS: PASS | FAIL
+```
+
 ---
 
 ## WAVE 4 — housekeeping, can run any time, low risk

@@ -100,7 +100,8 @@
       "impact": "Bounded severity: ENABLE_ROUNDABOUT_RECONSTRUCTION defaults False in every named release profile, so the live/production map's roundabout geometry currently passes through from the upstream converter largely unmodified by this codebase. Rated P1 (not P0) because the defect is real but not currently exercised by the production path.",
       "owner": "CODEX",
       "affected_files": ["ultimate_pipeline/topology/roundabout_reconstructor.py"],
-      "requires_live_carla": false
+      "requires_live_carla": false,
+      "note": "ARCHITECTURE DECISION NEEDED before dispatching a fix (2026-09-07, Claude): V1 roundabout_reconstructor.py (this gap) sits behind ENABLE_ROUNDABOUT_RECONSTRUCTION=False in every profile; feature/roundabout-reconstruction-v2-20260907 already exists as a substantively more complete candidate replacement (real multi-lane handling, endpoint anchors, validated lane links) but is also unwired. Fixing V1's multi-lane-collapse bug in place risks being wasted effort if V2 supersedes it. Recommend: finish wiring/characterizing V2 first (see PRODUCTION_MAP_TASK_GRAPH.json T-007), then decide whether V1 becomes a deprecation candidate for OpenCode rather than a Codex fix target. Not scheduled into Wave 2 for this reason."
     },
     {
       "id": "GAP-009",
@@ -225,7 +226,9 @@
       "impact": "A downstream consumer reading the XODR file alone cannot tell whether a given lane's width came from OSM, inference, or fallback -- must cross-reference a separate run-scoped JSON report that may not travel with the file.",
       "owner": "CODEX",
       "affected_files": ["ultimate_pipeline/enrichment/lane_width_policy.py", "ultimate_pipeline/enrichment/lane_generator.py"],
-      "requires_live_carla": false
+      "requires_live_carla": false,
+      "status": "RESOLVED_PENDING_MERGE",
+      "resolution": "RESOLVED as a side effect of GAP-001 (2026-09-07, verified by Claude): feature/lane-count-from-osm-v1-20260907 commit 6bf85f1a adds LaneGenerator._add_provenance(), which attaches lane_count_source/lane_count_confidence/lane_count as <userData><vector> entries directly on each generated <lane> element (not just the out-of-band LANE_PROVENANCE_REPORT.json) -- exactly what this gap asked for. Marked pending-merge, not fully closed, until that branch actually lands on the map-of-record generation path."
     },
     {
       "id": "GAP-020",
