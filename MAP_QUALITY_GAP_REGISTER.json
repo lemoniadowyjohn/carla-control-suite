@@ -171,6 +171,7 @@
     {
       "id": "GAP-015",
       "priority": "P1",
+      "status": "RESOLVED",
       "title": "Road-level graph-islands claim ('~9-10 components/~30 roads') does not reproduce against the current pinned map",
       "domain": "map_of_record",
       "evidence": "Fresh run of structure_scanner.py::_analyze_graph_islands against the current pin: num_components=1, num_islands=0, covering all 32,267 roads -- a single connected component, at any threshold. The task brief's expected observation of ~9-10 components could not be reproduced.",
@@ -178,7 +179,8 @@
       "owner": "OPERATOR",
       "affected_files": [],
       "requires_live_carla": false,
-      "note": "This needs a human/provenance decision (which historical report is authoritative) rather than a code fix -- flagging for whoever owns the map-of-record history to reconcile or explicitly retire the old number."
+      "note": "This needs a human/provenance decision (which historical report is authoritative) rather than a code fix -- flagging for whoever owns the map-of-record history to reconcile or explicitly retire the old number.",
+      "resolution": "RESOLVED (2026-09-07, by Claude, direct investigation, no code change needed): traced to reports/post_audit_hardening/C30_VISUAL_GEOMETRY_AUDIT/graph_components.json (component_count=10, largest_component_size=32267 -- the largest-component size matches the CURRENT map's total road count exactly, confirming this report's 'main' component is the same population, just with 9 additional small islands that no longer exist). C30's isolated_roads list (42367, 43405, 46369, 46698, 48129, 51654) matches exactly the '6 islands from C30' documented elsewhere in this repo's history as predating the stage_08_hygiene.py island-quarantine wiring fix (commit 1121e7c1, 2026-09-02) -- every governed regen since that fix correctly quarantines islands, so C30's report is accurate FOR ITS OWN (pre-fix) map generation and simply does not apply to the current, post-fix pin. Not a live regression; historical evidence correctly retired in favor of the current 1-component/0-islands measurement."
     },
     {
       "id": "GAP-016",
@@ -356,12 +358,152 @@
       "affected_files": [],
       "requires_live_carla": false,
       "note": "A future decision point: is superelevation ever in scope for this project? If yes, this becomes a real P1/P2 task; if no, this entry should convert to an explicit WAIVED entry in the acceptance profile with a stated rationale."
+    },
+    {
+      "id": "GAP-032",
+      "priority": "P2",
+      "title": "roundabout_v2: internal API contradiction between core.validate_lane_mapping and lane_links.map_lanes/validate_links",
+      "domain": "roundabouts",
+      "source": "Claude independent review of feature/roundabout-reconstruction-v2-20260907, verified directly by reading both functions and their tests",
+      "evidence": "core.py::validate_lane_mapping unconditionally rejects any -1->-1 lane mapping as an invalid 'sentinel'. lane_links.py::map_lanes (the function actually used by the live ring-construction path, ring.py:100) correctly treats a real -1->-1 mapping as valid when both sides genuinely have a -1 lane. Both are exported in __init__.py.__all__ and both pass their own isolated unit tests, but they encode contradictory rules for the same conceptual check.",
+      "impact": "A real misuse trap for whoever integrates this candidate further -- a future caller reaching for the more 'obvious'-sounding validate_lane_mapping instead of validate_links would incorrectly reject legitimate V2 output.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/topology/roundabout_v2/core.py", "ultimate_pipeline/topology/roundabout_v2/lane_links.py"],
+      "requires_live_carla": false,
+      "note": "Full detail: CLAUDE_INDEPENDENT_REVIEW_ROUNDABOUT_V2.md on feature/roundabout-reconstruction-v2-20260907."
+    },
+    {
+      "id": "GAP-033",
+      "priority": "P3",
+      "title": "roundabout_v2: two undisclosed scope simplifications not listed in known_limitations",
+      "domain": "roundabouts",
+      "source": "Claude independent review of feature/roundabout-reconstruction-v2-20260907",
+      "evidence": "(1) ring.py:83 hardcodes 3.5m lane width for every generated ring segment instead of reusing lane_width_policy.py's OSM-derived width hierarchy. (2) ring.py:77 assumes zero grade at both anchor endpoints for the Hermite elevation fit instead of reading the source road's true grade at the anchor, which could introduce a small grade kink at the seam for non-flat roundabouts.",
+      "impact": "Neither is a correctness bug; both are reasonable first-candidate scope choices, but neither is disclosed in the module's own known_limitations list, which only covers integration/CARLA/full-map-payload gaps.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/topology/roundabout_v2/ring.py", "docs/map_quality/ROUNDABOUT_RECONSTRUCTION_V2.md"],
+      "requires_live_carla": false
+    },
+    {
+      "id": "GAP-034",
+      "priority": "P3",
+      "title": "roundabout_v2 evidence artifacts contain a verified-wrong test count",
+      "domain": "evidence_integrity",
+      "source": "Claude independent review of feature/roundabout-reconstruction-v2-20260907",
+      "evidence": "CODEX_ROUNDABOUT_V2_EVIDENCE.json claims \"legacy_roundabout\": \"39 passed\". Independently re-run on the exact same commit: tests/topology/test_roundabout_rebuilder.py (17 passed) + tests/topology/test_roundabout_reconstructor.py (27 passed) = 44 passed, 0 failed. Both files confirmed byte-identical to base via git diff. Separately, ROUNDABOUT_V2_BASELINE.json says \"5825 collected\" while the same evidence set elsewhere says \"5830 collected\" -- independently re-run: 5830 is correct.",
+      "impact": "Under-claiming (reality is better than reported), not a hidden failure -- but a real, reproducible inaccuracy in self-reported evidence, meaning evidence JSON files from any agent should be spot-checked, not trusted verbatim.",
+      "owner": "CODEX",
+      "affected_files": ["CODEX_ROUNDABOUT_V2_EVIDENCE.json", "ROUNDABOUT_V2_BASELINE.json"],
+      "requires_live_carla": false
+    },
+    {
+      "id": "GAP-035",
+      "priority": "P0",
+      "title": "GeometryValidator's missing-XY backfill formula is only correct for line primitives, applied unconditionally to all",
+      "domain": "horizontal_geometry",
+      "source": "Reported by an external analysis document, independently spot-checked and CONFIRMED by Claude this session",
+      "evidence": "ultimate_pipeline/geometry/geometry_validator.py:230 (verified directly): `dx = math.cos(h) * prev[\"length\"]; dy = math.sin(h) * prev[\"length\"]` runs for ANY previous geometry primitive with no check on prev's tag/type. This formula (straight-line displacement) is only geometrically correct if the previous geometry is a `line`. For `arc`, `spiral`, or `paramPoly3`, the true endpoint displacement is not `length * (cos(hdg), sin(hdg))`.",
+      "impact": "When this backfill path fires (missing x/y attributes on a geometry element), it silently produces a wrong position for any road whose previous segment is curved -- exactly the kind of 'validator that is actually a repairer using unsafe approximations' pattern flagged in this session's broader architecture review.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/geometry/geometry_validator.py"],
+      "requires_live_carla": false,
+      "note": "This is one concrete instance of a broader pattern: multiple modules in this codebase (geometry_validator.py, structure_classifier.py's coarse sampler, older tiling bounds logic) each have their own partial/approximate geometry-primitive evaluators instead of sharing one canonical implementation. See GAP-037."
+    },
+    {
+      "id": "GAP-036",
+      "priority": "P1",
+      "title": "SidewalkBuilder has no explicit sidewalk=no branch -- falls through to default-both-sides",
+      "domain": "semantics",
+      "source": "Reported by an external analysis document, independently spot-checked and CONFIRMED by Claude this session",
+      "evidence": "ultimate_pipeline/enrichment/sidewalk_builder.py:175-187 (verified directly): the if/elif chain handles hint=='both'/'left'/'right' explicitly, then falls through to `elif default_both_sides:` for ANY other hint value including the explicit OSM `sidewalk=no` case -- there is no `elif hint == 'no': continue`/`pass` branch. Since `default_both_sides` defaults to True, a road explicitly tagged sidewalk=no in OSM still receives sidewalks added on both sides (unless it happens to be a motorway/trunk-class road).",
+      "impact": "Directly contradicts explicit source truth -- the exact class of bug the audit brief calls out as most concerning: a fallback silently overriding an explicit, unambiguous OSM tag rather than a genuinely-missing one.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/enrichment/sidewalk_builder.py"],
+      "requires_live_carla": false
+    },
+    {
+      "id": "GAP-037",
+      "priority": "P0",
+      "title": "No single canonical OpenDRIVE geometry-primitive evaluator -- multiple partial/inconsistent implementations coexist",
+      "domain": "software_architecture",
+      "source": "Reported by an external analysis document; partially corroborated by GAP-035 (a concrete instance) and by this session's own roundabout_v2 review (core.py's sample_road independently reimplements line/arc/paramPoly3/poly3 evaluation, a fourth implementation alongside geometry_validator.py, crosswalk_writer.py's curve-aware matcher, and structure_classifier.py's sampler)",
+      "evidence": "Not independently re-verified line-by-line across every claimed site this session due to scope/time -- flagged here as a well-corroborated architectural finding (multiple genuinely independent geometry-evaluation code paths confirmed to exist: roundabout_v2/core.py::sample_road, geometry_validator.py, and per this session's earlier MQ-A audit, crosswalk_writer.py's curve-aware matcher) rather than a single-file bug. Codex should confirm the full extent (spiral/clothoid handling in particular) before treating this as fully scoped.",
+      "impact": "Each consumer of OpenDRIVE geometry math (validation, crosswalk matching, structure classification, roundabout reconstruction, tiling bounds) can disagree about where a road actually is, especially for spiral/poly3 primitives which several of these implementations approximate as straight lines rather than evaluating exactly.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/geometry/geometry_validator.py", "ultimate_pipeline/topology/roundabout_v2/core.py", "ultimate_pipeline/enrichment/crosswalk_writer.py", "ultimate_pipeline/enrichment/structure_classifier.py"],
+      "requires_live_carla": false,
+      "note": "This is the single highest-leverage architectural fix available: unifying geometry evaluation into one canonical, tested module would retroactively fix GAP-035 and de-risk every downstream module that currently has its own partial implementation, including the roundabout_v2 candidate's own sampler."
+    },
+    {
+      "id": "GAP-038",
+      "priority": "P1",
+      "title": "Lane-width repair may flatten a genuine variable-width polynomial to a constant",
+      "domain": "lanes",
+      "source": "Reported by an external analysis document, not independently verified by Claude this session",
+      "evidence": "Claimed: when lane_width_policy.py's repair path rewrites a width record, it writes a=target, b=0, c=0, d=0 unconditionally, which would replace a legitimate taper/merge/widening polynomial with a constant width regardless of whether the original polynomial was itself valid.",
+      "impact": "If accurate, this would silently destroy real source-derived width variation (tapers, junction-approach widening) whenever the repair path fires for any reason, not just for genuinely invalid widths.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/enrichment/lane_width_policy.py", "ultimate_pipeline/lanes/lane_repair.py"],
+      "requires_live_carla": false,
+      "note": "NEEDS INDEPENDENT VERIFICATION before being treated as confirmed -- included because it is concrete and falsifiable, not because it has been checked. First sub-task for whoever picks this up: confirm or refute against the actual code before implementing a fix."
+    },
+    {
+      "id": "GAP-039",
+      "priority": "P2",
+      "title": "Connectivity graph may use plain string road/junction IDs, risking collision between a road ID and a junction ID with the same value",
+      "domain": "junctions",
+      "source": "Reported by an external analysis document, not independently verified by Claude this session",
+      "evidence": "Claimed: quarantine_island_roads()'s adjacency graph keys nodes by plain string ID without a type prefix, so a road and a junction that happen to share the same numeric ID string could collide in the same dictionary.",
+      "impact": "If accurate, this could cause incorrect component/reachability analysis in edge cases where road and junction IDs overlap numerically.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/quality/map_hygiene.py"],
+      "requires_live_carla": false,
+      "note": "NEEDS INDEPENDENT VERIFICATION before being treated as confirmed. Cheap to check (grep the graph-construction code for how node keys are built) and cheap to fix (prefix with 'road:'/'junction:') if real -- good candidate for a quick Codex confirm-then-fix pass."
+    },
+    {
+      "id": "GAP-040",
+      "priority": "P1",
+      "title": "Signal-to-lane validation checks lane-ID existence anywhere in the map, not scoped to the specific road/laneSection the signal claims to control",
+      "domain": "semantics",
+      "source": "Reported by an external analysis document, not independently verified by Claude this session",
+      "evidence": "Claimed: validate_signal_references() collects lane IDs from the whole map globally and checks whether a referenced lane ID exists SOMEWHERE, rather than specifically on the road/laneSection at the signal's own s-position. Since lane IDs like -1/1 repeat on nearly every road, 'laneId=-1 exists somewhere' does not prove the signal controls a valid lane on its own intended road.",
+      "impact": "If accurate, this validation could pass for a signal that references a real lane ID belonging to a completely unrelated road, giving false confidence that traffic-light/lane associations are correct.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/enrichment/traffic_light_infer.py"],
+      "requires_live_carla": false,
+      "note": "NEEDS INDEPENDENT VERIFICATION before being treated as confirmed."
+    },
+    {
+      "id": "GAP-041",
+      "priority": "P1",
+      "title": "DEM elevation fallback policy's strict/lenient mode may be overridable by an environment variable even under a production release profile",
+      "domain": "elevation",
+      "source": "Reported by an external analysis document, not independently verified by Claude this session",
+      "evidence": "Claimed: UP_ELEVATION_FALLBACK_POLICY=lenient can weaken the DEM fallback policy (which otherwise correctly forbids flat/extrapolated/hardcoded elevation) regardless of which RELEASE_PROFILE is active, i.e. an accidental or malicious environment variable could silently downgrade a production_candidate-profile run's elevation guarantees.",
+      "impact": "If accurate, this is a governance gap in an otherwise well-designed safety mechanism (this session's own audit separately confirmed the strict-mode DEM fallback policy is one of the strongest safety designs in the repo) -- the release-profile system should be the sole authority over safety-critical fallback behavior, not overridable by a stray env var.",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/enrichment/elevation_fallback_policy.py", "ultimate_pipeline/contracts/release_profile.py"],
+      "requires_live_carla": false,
+      "note": "NEEDS INDEPENDENT VERIFICATION before being treated as confirmed. If real, the fix is narrow: release_profile.py should clamp/ignore this env var under any non-DEVELOPMENT/EXPERIMENTAL_UNSAFE profile, matching the pattern already used for the ENABLE_UNSAFE_* geometry flags (settings.py:372-402)."
+    },
+    {
+      "id": "GAP-042",
+      "priority": "P2",
+      "title": "Tiling bounds cache may be keyed only by road ID, risking stale cross-map/cross-run results",
+      "domain": "tiling",
+      "source": "Reported by an external analysis document, not independently verified by Claude this session",
+      "evidence": "Claimed: a module-level _BOUNDS_CACHE in the tiler is keyed only by road ID, not scoped by map identity/run/geometry hash -- two different maps sharing a road ID (e.g. two regens of the same city, or a second-city fixture once GAP-007 is addressed) could read stale cached bounds from a previous map.",
+      "impact": "If accurate, this could silently produce wrong tile boundaries when running the pipeline repeatedly in the same process (e.g. batch regeneration, or the eventual second-city regression corpus this audit program needs per GAP-007).",
+      "owner": "CODEX",
+      "affected_files": ["ultimate_pipeline/tiling/tile_extractor.py"],
+      "requires_live_carla": false,
+      "note": "NEEDS INDEPENDENT VERIFICATION before being treated as confirmed."
     }
   ],
   "summary_counts": {
-    "P0": 7,
-    "P1": 11,
-    "P2": 10,
-    "P3": 3
+    "P0": 9,
+    "P1": 15,
+    "P2": 13,
+    "P3": 5
   }
 }
