@@ -822,6 +822,10 @@ class MainPipeline:
             "has_planview": False,
             "has_lanes": False,
         }
+        # Typed state is introduced in parallel; stage migrations are separate
+        # commits until behavior has been compared at every consumer.
+        from ultimate_pipeline.core.stage_context import StageContext
+        self.stage_context = StageContext()
         self._run_stage: str = "init"
         self._gate_runner: CumulativeGateRunner | None = None
 
