@@ -322,18 +322,47 @@ class QualityGateManager:
     def gate_geometric_continuity(
         self, xodr_path: str, *, stage: str | None = None
     ) -> Dict[str, Any]:
-        """Generic geometry continuity checker (path-based)."""
+        """Validate ordinary road reference-line continuity.
+
+        Junction connector boundary offsets deliberately remain diagnostic in
+        this compatibility gate.  A connector's reference line can attach at
+        a lane centre rather than the incoming road reference line, so making
+        those findings mandatory here would change legacy map acceptance.  A
+        production-candidate workflow that requires this additional contract
+        must call :meth:`gate_junction_connector_boundary_alignment`.
+        """
         from ultimate_pipeline.quality.check_geometric_continuity import (
             check_geometric_continuity,
         )
 
         xodr_path = self._require_path(xodr_path, "gate_geometric_continuity")
-        # Connector boundary offsets are mandatory for the orchestrated gate.
-        # The standalone diagnostic keeps its historical default for callers
-        # that explicitly only want ordinary road continuity.
-        rep = check_geometric_continuity(xodr_path, gate_junction_connectors=True)
+        rep = check_geometric_continuity(xodr_path)
         self._persist_optional(rep, stage or "geometric_continuity")
         self._finalize_gate("geometric_continuity", rep)
+        return rep
+
+    def gate_junction_connector_boundary_alignment(
+        self, xodr_path: str, *, stage: str | None = None
+    ) -> Dict[str, Any]:
+        """Fail closed on connector-boundary alignment findings.
+
+        This is intentionally separate from ``gate_geometric_continuity``.
+        It preserves the full connector-offset report while allowing a
+        production-candidate certifier to require zero unresolved offsets
+        without retroactively decertifying the pinned legacy map.
+        """
+        from ultimate_pipeline.quality.check_geometric_continuity import (
+            check_geometric_continuity,
+        )
+
+        xodr_path = self._require_path(
+            xodr_path, "gate_junction_connector_boundary_alignment"
+        )
+        rep = check_geometric_continuity(xodr_path, gate_junction_connectors=True)
+        self._persist_optional(
+            rep, stage or "junction_connector_boundary_alignment"
+        )
+        self._finalize_gate("junction_connector_boundary_alignment", rep)
         return rep
 
     def gate_origin_sanity(
