@@ -4,7 +4,7 @@ Build a lightweight OSM street-name → metadata dict from a raw .osm XML file.
 
 Extracts only the tags needed by Tier-2 enrichment writers:
   - maxspeed     → speed_limit_writer
-  - turn:lanes   → turn_lanes_writer
+  - turn:lanes and directional variants → turn_lanes_writer (hint metadata)
   - traffic_sign → regulatory_sign_writer
   - highway/lanes/width -> lane_width_policy
 
@@ -46,7 +46,12 @@ _TAGS_OF_INTEREST = {
     "maxspeed",
     "maxspeed:type",
     "turn:lanes",
+    "turn:lanes:forward",
+    "turn:lanes:backward",
     "turn_lanes",
+    "cycleway",
+    "cycleway:left",
+    "cycleway:right",
     "traffic_sign",
     "highway",
     "lanes",
@@ -76,7 +81,21 @@ _LANE_WIDTH_HIGHWAYS = {
 
 
 def _has_enrichment_interest(tags: dict) -> bool:
-    if any(k in tags for k in ("maxspeed", "maxspeed:type", "turn:lanes", "turn_lanes", "traffic_sign")):
+    if any(
+        k in tags
+        for k in (
+            "maxspeed",
+            "maxspeed:type",
+            "turn:lanes",
+            "turn:lanes:forward",
+            "turn:lanes:backward",
+            "turn_lanes",
+            "traffic_sign",
+            "cycleway",
+            "cycleway:left",
+            "cycleway:right",
+        )
+    ):
         return True
     if any(k in tags for k in ("lanes", "lanes:forward", "lanes:backward", "width", "est_width")):
         return True
@@ -92,6 +111,9 @@ def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
       {
         "maxspeed":    str,
         "turn_lanes":  str,   # consolidated from turn:lanes or turn_lanes
+        "turn:lanes:forward": str,  # hint-only until road-resolved matching
+        "turn:lanes:backward": str, # hint-only until road-resolved matching
+        "cycleway": str,             # hint-only until road-resolved matching
         "traffic_sign": str,
         "highway": str,
         "lanes": str,
