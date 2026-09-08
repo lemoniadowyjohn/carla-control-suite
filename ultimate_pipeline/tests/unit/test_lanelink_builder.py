@@ -29,10 +29,15 @@ def _road(
     junction: str,
     right_lanes: str = "",
     left_lanes: str = "",
+    *,
+    x: float = 0.0,
+    y: float = 0.0,
+    hdg: float = 0.0,
+    length: float = 10.0,
 ) -> str:
     return (
-        f'<road id="{road_id}" length="10" junction="{junction}">'
-        f'<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        f'<road id="{road_id}" length="{length}" junction="{junction}">'
+        f'<planView><geometry s="0" x="{x}" y="{y}" hdg="{hdg}" length="{length}"><line/></geometry></planView>'
         f'<lanes><laneSection s="0">'
         f"<left>{left_lanes}</left>"
         f'<center><lane id="0" type="driving"/></center>'
@@ -183,6 +188,54 @@ def test_sanitize_junction_lane_links_stub_returns_ok_status():
     result = LaneLinkBuilder.sanitize_junction_lane_links(root, label="test")
     assert result["status"] == "ok"
     assert "summary_metrics" in result
+
+
+def test_geometry_validator_rejects_naive_index_pairing_and_accepts_physical_mapping():
+    """A reversed connector endpoint makes ``-1 -> -1`` physically wrong.
+
+    Sorted absolute lane IDs would produce ``-1 -> -1`` and ``-2 -> -2``.
+    At the connecting road's ``end`` its orientation is reversed, so the
+    physical lane positions are instead ``-1 -> -2`` and ``-2 -> -1``.
+    This is the adversarial decision boundary that an ID-only check misses.
+    """
+    root = _parse(
+        _road(
+            "1",
+            "-1",
+            right_lanes=_lane_xml(-1) + _lane_xml(-2),
+            x=0.0,
+            y=0.0,
+            hdg=0.0,
+        ),
+        _road(
+            "2",
+            "5",
+            right_lanes=_lane_xml(-1) + _lane_xml(-2),
+            x=20.0,
+            y=-7.0,
+            hdg=3.141592653589793,
+        ),
+        _junction("5", "1", "2", contact_point="end"),
+    )
+    connection = root.find(".//junction/connection")
+    assert connection is not None
+
+    # This is the historical index-order pairing.  Both links are displaced by
+    # one lane width and must fail the geometry-aware validator.
+    ET.SubElement(connection, "laneLink", {"from": "-1", "to": "-1"})
+    ET.SubElement(connection, "laneLink", {"from": "-2", "to": "-2"})
+    naive = LaneLinkBuilder.sanitize_junction_lane_links(root, label="naive")
+    assert naive["status"] == "fail"
+    assert naive["summary_metrics"] == {"checked": 2, "passed": 0, "failed": 2}
+
+    for lane_link in list(connection.findall("laneLink")):
+        connection.remove(lane_link)
+    ET.SubElement(connection, "laneLink", {"from": "-1", "to": "-2"})
+    ET.SubElement(connection, "laneLink", {"from": "-2", "to": "-1"})
+
+    physical = LaneLinkBuilder.sanitize_junction_lane_links(root, label="physical")
+    assert physical["status"] == "ok"
+    assert physical["summary_metrics"] == {"checked": 2, "passed": 2, "failed": 0}
 
 
 def test_no_junctions_produces_no_links_and_does_not_crash():
