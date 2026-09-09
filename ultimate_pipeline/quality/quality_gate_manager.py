@@ -122,9 +122,12 @@ class QualityGateManager:
                       "polygon_issue_count": len(issues), "heuristic_issue_count": len(heuristic)}
         self.vreport.add("quality_gates", "semantic_overlap_comparison", comparison)
         self._persist_optional(comparison, "semantic_overlap_comparison")
-        # This gate is diagnostic/soft by the established map-acceptance policy.
+        # The standalone map-acceptance report remains advisory.  Quality-gate
+        # orchestration must nevertheless retain the polygon result as a
+        # failure so UP_STRICT_QUALITY_GATES can enforce its documented
+        # fail-closed contract.
         if issues:
-            self.vreport.add("quality_gates", "semantic_overlap", {"status":"warn", "detail":issues})
+            self.fail("semantic_overlap", issues)
         else:
             self.passed("semantic_overlap")
 
