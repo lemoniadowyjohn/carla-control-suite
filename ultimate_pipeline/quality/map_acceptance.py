@@ -447,6 +447,37 @@ def build_map_acceptance(
         if lane_ok is False:
             hard_fail_reasons.append({"gate": "lane_section_successors", "reason": _reason_from_report(lane_section)})
 
+    lane_count_changes = reports.get("lane_count_changes")
+    if isinstance(lane_count_changes, dict):
+        summary = lane_count_changes.get("summary_metrics")
+        if isinstance(summary, dict):
+            for source_key, metric_key in (
+                ("road_link_boundaries", "lane_count_change_boundary_count"),
+                ("no_change", "lane_count_change_no_change_count"),
+                ("osm_explained_change", "lane_count_change_osm_explained_count"),
+                ("unexplained_change", "lane_count_change_unexplained_count"),
+                ("unresolved_road_links", "lane_count_change_unresolved_road_link_count"),
+            ):
+                value = summary.get(source_key)
+                if isinstance(value, int):
+                    metrics[metric_key] = value
+            unexplained = int(summary.get("unexplained_change") or 0)
+            unresolved = int(summary.get("unresolved_road_links") or 0)
+            if unexplained or unresolved:
+                soft_warnings.append(
+                    {
+                        "gate": "lane_count_changes",
+                        "reason": (
+                            f"unexplained_changes={unexplained}; "
+                            f"unresolved_road_links={unresolved}; "
+                            "advisory review required"
+                        ),
+                    }
+                )
+        art = _artifact_path_from_report(lane_count_changes)
+        if art:
+            linked_artifacts["lane_count_changes"] = art
+
     lane_conn = reports.get("lane_connectivity")
     if isinstance(lane_conn, dict):
         lane_ok = _determine_lane_ok(lane_conn)

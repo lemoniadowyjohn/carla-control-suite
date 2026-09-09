@@ -27,6 +27,7 @@ from ultimate_pipeline.quality.check_lane_link_targets_exist import check_lane_l
 from ultimate_pipeline.quality.check_lane_section_successors import (
     repair_and_assert_lane_section_successors,
 )
+from ultimate_pipeline.quality.check_lane_count_changes import check_lane_count_changes
 from ultimate_pipeline.quality.check_elevation_seams import check_elevation_seams
 from ultimate_pipeline.quality.check_elevation_continuity import check_elevation_continuity
 from ultimate_pipeline.quality.check_dem_full_coverage import check_dem_full_coverage
@@ -78,6 +79,18 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports["lane_section_successors"] = rep
     _write_json(out_dir / "lane_section_successors.json", rep)
     print(f"[gate] lane_section_successors: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
+
+    rep = check_lane_count_changes(str(xodr))
+    rep["artifact_path"] = str(out_dir / "lane_count_changes.json")
+    reports["lane_count_changes"] = rep
+    _write_json(out_dir / "lane_count_changes.json", rep)
+    counts = rep["summary_metrics"]
+    print(
+        "[info] lane_count_changes: "
+        f"osm_explained={counts['osm_explained_change']} "
+        f"unexplained={counts['unexplained_change']} "
+        f"no_change={counts['no_change']}"
+    )
 
     rep = check_elevation_seams(str(xodr))
     reports["elevation_seams"] = rep
