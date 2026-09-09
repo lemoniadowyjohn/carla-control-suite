@@ -960,6 +960,8 @@ class Settings:
     # -----------------------------------------------------------------
     ENABLE_SUMO_REPAIR: bool = True
     SUMO_REPAIR_PRESERVE_FRAME: bool = True
+    # Fail-closed post-SUMO repair for a folded paramPoly3/successor pair.
+    ENABLE_PARAMPOLY3_TANGENT_REVERSAL_REPAIR: bool = True
     ENABLE_CARLA_TEST_EARLY: bool = False
     ENABLE_CARLA_TEST_LATE: bool = True
     ENABLE_AUTOPILOT_VALIDATION: bool = True
@@ -1671,6 +1673,10 @@ class Settings:
         self.OFFLINE_ONLY = _env_bool("UP_OFFLINE_ONLY", self.OFFLINE_ONLY)
         self.SUMO_REPAIR_PRESERVE_FRAME = _env_bool(
             "UP_SUMO_REPAIR_PRESERVE_FRAME", self.SUMO_REPAIR_PRESERVE_FRAME
+        )
+        self.ENABLE_PARAMPOLY3_TANGENT_REVERSAL_REPAIR = _env_bool(
+            "UP_ENABLE_PARAMPOLY3_TANGENT_REVERSAL_REPAIR",
+            self.ENABLE_PARAMPOLY3_TANGENT_REVERSAL_REPAIR,
         )
         self.PREANCHOR_INPUT_XODR = _env_bool(
             "UP_PREANCHOR_INPUT_XODR", self.PREANCHOR_INPUT_XODR
