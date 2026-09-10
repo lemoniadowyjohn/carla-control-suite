@@ -2341,6 +2341,11 @@ if str(_repo_root) not in sys.path:
 
         self._stage_gate("08H", "full_map_metrics", _compute_metrics)
 
+        # Supplemental visual artifacts run after the final structural map is
+        # frozen and never mutate the authoritative OpenDRIVE output.
+        self._mark_stage("osm2world_visual")
+        self._run_osm2world_visual_stage(final_out)
+
         # 9) 🧩 Tiling
         self._mark_stage("tiling")
         graph_path = self._step9_tiling(final_out)
@@ -2398,6 +2403,191 @@ if str(_repo_root) not in sys.path:
     # -----------------------------------------------------
     # 🧱 Sub-blocks
     # -----------------------------------------------------
+
+    def _run_osm2world_visual_stage(self, final_out: str) -> dict:
+        """Run opt-in OSM2World visual enrichment with a durable status receipt.
+
+        OSM2World output is supplemental visual/collision material only.  The
+        final OpenDRIVE artifact remains the road authority and this stage does
+        not modify it.  Missing external tooling is recorded as
+        ``BLOCKED_EXTERNAL``; an explicitly enabled run that fails is raised.
+        """
+        stage_path = Path(self.out_dir) / "osm2world_pipeline_stage.json"
+        enabled = bool(
+            is_osm2world_enabled()
+            or getattr(self.settings, "ENABLE_OSM2WORLD", False)
+        )
+        result: dict = {
+            "enabled": enabled,
+            "status": "NOT_RUN",
+            "final_xodr": str(final_out),
+            "final_xodr_sha256": _hash_file(final_out)
+            if os.path.isfile(final_out)
+            else "",
+            "road_authority": "OpenDRIVE",
+            "artifact_authority": "supplemental_visual_only",
+        }
+        if not result["enabled"]:
+            result["reason"] = (
+                "UP_ENABLE_OSM2WORLD/ENABLE_OSM2WORLD and "
+                "Settings.ENABLE_OSM2WORLD are not enabled"
+            )
+        else:
+            osm_path = str(getattr(self.settings, "OSM_FILE", "") or "")
+            configured_home = str(
+                getattr(self.settings, "OSM2WORLD_HOME", "") or ""
+            ).strip()
+            env_home = os.getenv("OSM2WORLD_HOME", "").strip()
+            repository_home = (
+                Path(__file__).resolve().parents[1]
+                / "carla_governed"
+                / "OSM2World-latest-bin"
+            )
+            osm2world_home = configured_home or env_home
+            if not osm2world_home and repository_home.is_dir():
+                osm2world_home = str(repository_home)
+            runner = OSM2WorldRunner(
+                osm_path=osm_path,
+                output_dir=str(Path(self.out_dir) / "osm2world"),
+                osm2world_home=osm2world_home or None,
+                timeout_sec=int(getattr(self.settings, "OSM2WORLD_TIMEOUT_SEC", 300)),
+                config_path=(
+                    str(getattr(self.settings, "OSM2WORLD_CONFIG", "") or "")
+                    or None
+                ),
+                name_prefix="supplemental_scene",
+            )
+            runner_result = runner.run()
+            runner_payload = runner_result.to_dict()
+            result.update(runner_payload)
+            result["runner_status"] = runner_result.status
+            result["runner_reason"] = runner_payload.get("reason", "")
+            result["osm_path"] = osm_path
+            result["osm2world_home"] = osm2world_home or ""
+            if runner_result.status == "skipped":
+                result["status"] = "BLOCKED_EXTERNAL"
+                result["stage_reason"] = "renderer unavailable or input unsupported"
+            elif runner_result.status in {"ok", "cached"}:
+                result["j1_validation"] = self._validate_osm2world_visual_outputs(
+                    runner_payload
+                )
+                result["status"] = result["j1_validation"]["status"]
+                result["stage_reason"] = (
+                    "J1 output validation completed"
+                    if result["status"] == "PASS"
+                    else "J1 output validation did not satisfy the visual contract"
+                )
+            else:
+                result["status"] = "FAIL"
+                result["stage_reason"] = "renderer failed"
+
+        stage_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(stage_path, "w", encoding="utf-8") as handle:
+            json.dump(result, handle, indent=2, sort_keys=True)
+        self.vreport.add_dict("osm2world_visual", result)
+        print(f"[OSM2WORLD] {result['status']} -> {stage_path}")
+        if result["status"] in {"FAIL", "INCOMPLETE"}:
+            raise RuntimeError(
+                "OSM2World visual stage did not satisfy its required output "
+                "validation while explicitly enabled; "
+                f"inspect {stage_path}"
+            )
+        return result
+
+    @staticmethod
+    def _write_osm2world_provenance(
+        artifact_path: Path,
+        *,
+        input_sha256: str,
+        runner_payload: dict,
+    ) -> Path:
+        """Write the J1 sidecar required to bind a visual artifact to its OSM."""
+        provenance_path = artifact_path.parent / (
+            f"{artifact_path.name}.provenance.json"
+        )
+        provenance = {
+            "artifact": artifact_path.name,
+            "artifact_sha256": _hash_file(str(artifact_path)),
+            "input": runner_payload.get("abs_osm_path", ""),
+            "input_sha256": input_sha256,
+            "generator": "OSM2WorldRunner",
+            "osm2world_version": runner_payload.get("osm2world_version", ""),
+            "cache_key": runner_payload.get("cache_key", ""),
+        }
+        provenance_path.write_text(
+            json.dumps(provenance, indent=2, sort_keys=True), encoding="utf-8"
+        )
+        return provenance_path
+
+    def _validate_osm2world_visual_outputs(self, runner_payload: dict) -> dict:
+        """Run mandatory J1 checks on supplemental artifacts before accepting them.
+
+        OBJ, GLB, and MTL outputs have validators.  An enabled stage that
+        requests an unsupported-only artifact set is incomplete, rather than a
+        false PASS.  The renderer never gains road authority from this step.
+        """
+        from ultimate_pipeline.enrichment.obj_validator import validate_artifact
+
+        outputs = runner_payload.get("outputs") or {}
+        input_sha256 = str(
+            runner_payload.get("input_osm_hash")
+            or (runner_payload.get("hashes") or {}).get("input_osm")
+            or ""
+        )
+        checks: dict[str, dict] = {}
+        unvalidated: list[str] = []
+
+        for output_name, output_path in sorted(outputs.items()):
+            artifact_path = Path(output_path)
+            suffix = artifact_path.suffix.lower()
+            if suffix == ".obj":
+                self._write_osm2world_provenance(
+                    artifact_path,
+                    input_sha256=input_sha256,
+                    runner_payload=runner_payload,
+                )
+                checks[output_name] = validate_artifact(
+                    artifact_path, kind="obj", input_sha256=input_sha256
+                )
+                mtl_candidates = (
+                    Path(f"{artifact_path}.mtl"),
+                    artifact_path.with_suffix(".mtl"),
+                )
+                for mtl_path in mtl_candidates:
+                    if mtl_path.exists():
+                        self._write_osm2world_provenance(
+                            mtl_path,
+                            input_sha256=input_sha256,
+                            runner_payload=runner_payload,
+                        )
+                        checks[f"{output_name}:{mtl_path.name}"] = validate_artifact(
+                            mtl_path, kind="mtl"
+                        )
+                        break
+            elif suffix == ".glb":
+                self._write_osm2world_provenance(
+                    artifact_path,
+                    input_sha256=input_sha256,
+                    runner_payload=runner_payload,
+                )
+                checks[output_name] = validate_artifact(artifact_path, kind="glb")
+            else:
+                unvalidated.append(output_name)
+
+        failed = sorted(name for name, check in checks.items() if not check.get("ok"))
+        if failed:
+            status = "FAIL"
+        elif not checks or unvalidated:
+            status = "INCOMPLETE"
+        else:
+            status = "PASS"
+        return {
+            "status": status,
+            "input_osm_sha256": input_sha256,
+            "checks": checks,
+            "unvalidated_outputs": unvalidated,
+            "failed_outputs": failed,
+        }
 
     def _connect_carla(self) -> None:
         print("\n============== 🚗 CARLA CONNECTION ==============")

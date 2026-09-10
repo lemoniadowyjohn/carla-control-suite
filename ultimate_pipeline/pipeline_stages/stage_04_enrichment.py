@@ -330,64 +330,16 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
     except Exception as e:
         self.vreport.add("warning", "georef_proj_consistency", f"check_failed:{e}")
 
-    # OSM2World: optional 3D scene geometry artifacts (for visual QA / thesis figures)
-    enable_osm2world = is_osm2world_enabled() or bool(
-        getattr(s, "ENABLE_OSM2WORLD", False)
-    )
-    if enable_osm2world:
-        # Allow enabling via Settings (UP_ENABLE_OSM2WORLD) by mirroring into env vars used by the runner.
-        os.environ.setdefault("ENABLE_OSM2WORLD", "1")
-        if getattr(s, "OSM2WORLD_HOME", ""):
-            os.environ.setdefault("OSM2WORLD_HOME", str(s.OSM2WORLD_HOME))
-        if getattr(s, "OSM2WORLD_OUTPUTS", ""):
-            os.environ.setdefault("OSM2WORLD_OUTPUTS", str(s.OSM2WORLD_OUTPUTS))
-        if getattr(s, "OSM2WORLD_TIMEOUT_SEC", 0):
-            os.environ.setdefault(
-                "OSM2WORLD_TIMEOUT_SEC", str(s.OSM2WORLD_TIMEOUT_SEC)
-            )
-        if getattr(s, "OSM2WORLD_CONFIG", ""):
-            os.environ.setdefault("OSM2WORLD_CONFIG", str(s.OSM2WORLD_CONFIG))
-        print("\n🌿 OSM2World: generating scene geometry artifacts...")
-        try:
-            osm2world_out = os.path.join(self.out_dir, "osm2world")
-            os.makedirs(osm2world_out, exist_ok=True)
-            runner = OSM2WorldRunner(
-                osm_path=s.OSM_FILE,
-                output_dir=osm2world_out,
-            )
-            osm2world_result = runner.run()
-            self.vreport.add_dict("osm2world", osm2world_result.to_dict())
-            # Stable handoff artifact for downstream Unreal import/placement.
-            manifest_path = os.path.join(osm2world_out, "osm2world_manifest.json")
-            manifest = {
-                "generated_at_utc": datetime.now(timezone.utc)
-                .isoformat()
-                .replace("+00:00", "Z"),
-                "status": osm2world_result.status,
-                "reason": osm2world_result.reason,
-                "outputs": dict(osm2world_result.outputs or {}),
-                "proj_string": str(getattr(OSMPolygonLoader, "PROJ_STRING", "")),
-                "gps_bounds": gps,
-                "note": "Not integrated into Unreal by default",
-            }
-            with open(manifest_path, "w", encoding="utf-8") as mf:
-                json.dump(manifest, mf, indent=2, sort_keys=True)
-            self.vreport.add("osm2world", "manifest", manifest_path)
-            if osm2world_result.status == "ok":
-                print(f"   ✅ OSM2World: {osm2world_result.reason}")
-                for name, path in osm2world_result.outputs.items():
-                    print(f"      → {name}: {path}")
-            elif osm2world_result.status == "skipped":
-                print(f"   ⏭️ OSM2World skipped: {osm2world_result.reason}")
-            else:
-                print(f"   ⚠️ OSM2World failed: {osm2world_result.reason}")
-        except Exception as e:
-            print(f"   ❌ OSM2World exception: {e}")
-            self.vreport.add("osm2world", "exception", str(e))
-    else:
-        print(
-            "⏭️ OSM2World disabled (set ENABLE_OSM2WORLD=1 or UP_ENABLE_OSM2WORLD=1 to enable)"
-        )
+    # OSM2World cannot run here: Stage 04 is explicitly pre-lane and later
+    # geometry stages can still change the structural map.  MainPipeline runs
+    # the one authoritative opt-in visual stage after the final XODR freeze.
+    visual_stage = {
+        "status": "DEFERRED",
+        "reason": "post_structural_freeze_authority",
+        "scheduled_by": "MainPipeline._run_osm2world_visual_stage",
+    }
+    self.vreport.add_dict("osm2world_visual_deferred", visual_stage)
+    print("⏭️ OSM2World deferred until final structural freeze.")
 
     # semantic contract: enrichment is geometry-only (lanes later)
     self.semantic_state.update(
