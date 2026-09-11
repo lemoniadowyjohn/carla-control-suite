@@ -15,11 +15,13 @@ from pyproj import CRS, Transformer
 from ultimate_pipeline.enrichment.structure_classifier import (
     OSM2ODR_NATIVE_PROJ4,
     _classify_road_centreline,
+    _geometry_polyline,
     _wgs84_to_native_transformer,
     apply_dem_structure_gate,
     classify_xodr_roads,
     structure_road_ids,
 )
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
 
 
 def _native_xy(lon: float, lat: float) -> tuple[float, float]:
@@ -189,6 +191,17 @@ class TestClassifyRoadCentrelineSpatialIndexEquivalence:
         assert fast_result["coverage_by_class"] == brute_result["coverage_by_class"]
         assert fast_result["matched_structures"] == brute_result["matched_structures"]
         assert abs(fast_result["matched_length_m"] - brute_result["matched_length_m"]) < 1e-9
+
+
+def test_structure_classifier_uses_kernel_for_parampoly3_sampling():
+    geometry = ET.fromstring(
+        '<geometry s="0" x="10" y="20" hdg="0.2" length="12">'
+        '<paramPoly3 pRange="normalized" aU="0" bU="12" cU="0" dU="0" '
+        'aV="0" bV="0" cV="2" dV="0"/>'
+        '</geometry>'
+    )
+    expected = [(pose.x, pose.y) for pose in sample_geometry(geometry, 2.0)]
+    assert _geometry_polyline(geometry, 2.0) == expected
 
 
 class TestClassifyXodrRoads:
