@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "status": "CANDIDATE_FOR_INDEPENDENT_REVIEW",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/g6-lane-coverage-repair-v1-20260911",
+  "input": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256_before": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "sha256_after": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "unchanged": true
+  },
+  "current_map_coverage_gaps": {
+    "missing_driving_from_coverage": 135,
+    "missing_driving_to_coverage": 0
+  },
+  "acceptance_graph_before": {
+    "lane_count": 34291,
+    "component_count": 35,
+    "largest_component_fraction": 0.996734,
+    "isolated_lane_component_count": 27,
+    "unmatched_cross_links": 0
+  },
+  "gap_to_isolated_road_overlap": {
+    "isolated_lane_nodes_explained": 26,
+    "isolated_lane_nodes_total": 27,
+    "unexplained_node": "51767:0:-2",
+    "explained_nodes_are_recorded_in_raw_evidence": true
+  },
+  "copy_only_repair": {
+    "attempted": true,
+    "added_lanelinks": 126,
+    "repair_issues": 0,
+    "post_repair_g6_audit": {
+      "missing_from_lanes": 0,
+      "missing_to_lanes": 0,
+      "duplicate_from_lanes": 0,
+      "missing_driving_from_coverage": 0,
+      "missing_driving_to_coverage": 0,
+      "type_incompatible_lanelinks": 0,
+      "lane_link_consistency_advisory": 0
+    },
+    "acceptance_graph_after": {
+      "lane_count": 34291,
+      "component_count": 4,
+      "largest_component_fraction": 0.998104,
+      "isolated_lane_component_count": 1,
+      "unmatched_cross_links": 0
+    },
+    "isolated_count_delta": "27 -> 1"
+  },
+  "semantic_sanity_check": {
+    "status": "PASS_OFFLINE_STRUCTURAL",
+    "boundary": "Five repaired singleton-lane cases were inspected from their source laneLink topology and planView endpoint poses. This is not live CARLA validation and does not establish the real-world intent of every one of the 126 added laneLinks.",
+    "cases": [
+      {
+        "incoming_road": "46778",
+        "junction": "3166",
+        "uncovered_lane": "-3",
+        "existing_neighbor_from_lane": "-1",
+        "target_lane": "-1",
+        "connecting_road": "69049",
+        "endpoint_distance_m": 5.567969319551519e-07,
+        "heading_difference_rad": 0.0,
+        "incoming_width_m": 3.5,
+        "neighbor_width_m": 3.5
+      },
+      {
+        "incoming_road": "46783",
+        "junction": "3169",
+        "uncovered_lane": "-3",
+        "existing_neighbor_from_lane": "-2",
+        "target_lane": "-2",
+        "connecting_road": "69069",
+        "endpoint_distance_m": 4.573918873881265e-07,
+        "heading_difference_rad": 4.440892098500626e-16,
+        "incoming_width_m": 3.5,
+        "neighbor_width_m": 3.5
+      },
+      {
+        "incoming_road": "46891",
+        "junction": "3209",
+        "uncovered_lane": "-3",
+        "existing_neighbor_from_lane": "-2",
+        "target_lane": "-2",
+        "connecting_road": "69197",
+        "endpoint_distance_m": 6.133875664729522e-07,
+        "heading_difference_rad": 0.0,
+        "incoming_width_m": 3.5,
+        "neighbor_width_m": 3.5
+      },
+      {
+        "incoming_road": "46923",
+        "junction": "3223",
+        "uncovered_lane": "-2",
+        "existing_neighbor_from_lane": "-1",
+        "target_lane": "-1",
+        "connecting_road": "69241",
+        "endpoint_distance_m": 2.8023001804204574e-07,
+        "heading_difference_rad": 0.0,
+        "incoming_width_m": 3.5,
+        "neighbor_width_m": 3.5
+      },
+      {
+        "incoming_road": "47062",
+        "junction": "3267",
+        "uncovered_lane": "-3",
+        "existing_neighbor_from_lane": "-2",
+        "target_lane": "-2",
+        "connecting_road": "69365",
+        "endpoint_distance_m": 2.542402125500731e-07,
+        "heading_difference_rad": 0.0,
+        "incoming_width_m": 3.5,
+        "neighbor_width_m": 3.5
+      }
+    ]
+  },
+  "artifacts": {
+    "investigation_tool": "ultimate_pipeline/tools/investigate_g6_lane_coverage.py",
+    "raw_measurement": {
+      "path": "D:/carla-control-suite-experiments/g6-lane-coverage-repair-v1-20260911/20260911T111500Z/G6_LANE_COVERAGE_INVESTIGATION.json",
+      "sha256": "36844c14c7398c158c506990ab49f963d88ef3aed0492b65e47c4e50fe1e44c4"
+    },
+    "candidate": {
+      "path": "D:/carla-control-suite-experiments/g6-lane-coverage-repair-v1-20260911/20260911T111500Z/g6_lane_coverage_candidate.xodr",
+      "sha256": "3c0b95546d98bacd54661981fa71aa4e999c4ee7adadad190c3714cb65dc47dc"
+    },
+    "semantic_cases": {
+      "path": "D:/carla-control-suite-experiments/g6-lane-coverage-repair-v1-20260911/20260911T111500Z/G6_SEMANTIC_SANITY_CASES.json",
+      "sha256": "9e55b7aaf14dea175e70223ca5023735668c00a0eaf300363eea3c4b465d3d38"
+    }
+  },
+  "pipeline_wiring_changed": false,
+  "map_of_record_mutated": false,
+  "live_carla": "NOT_RUN",
+  "recommendation": "Independent adversarial review of the 126-link candidate, with particular review of the 121 repairs not in the five inspected examples. Do not wire or promote G6 until that review decides whether a component-targeted repair scope is required."
+}
