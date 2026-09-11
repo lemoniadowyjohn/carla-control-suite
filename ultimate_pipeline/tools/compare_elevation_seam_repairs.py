@@ -112,7 +112,7 @@ def structure_snapshot(root: ET.Element) -> Dict[str, Any]:
         "road_link_planview_lane_sha256": _digest_strings(structural_rows),
         "elevation_segment_s_bcd_sha256": _digest_strings(elevation_rows),
         "junction_sha256": _digest_strings(
-            ET.tostring(junction, encoding="unicode")
+            _xml_or_none(junction) or ""
             for junction in root.findall("junction")
         ),
     }
@@ -197,6 +197,36 @@ def _write_tree(root: ET.Element, path: Path) -> None:
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
 
 
+def validate_f5_preservation(input_path: Path, f5_path: Path) -> Dict[str, Any]:
+    """Validate F5's non-elevation invariants without rerunning either repair."""
+    source_snapshot = structure_snapshot(ET.parse(input_path).getroot())
+    candidate_snapshot = structure_snapshot(ET.parse(f5_path).getroot())
+    checks = {
+        "road_count_preserved": (
+            source_snapshot["road_count"] == candidate_snapshot["road_count"]
+        ),
+        "road_link_planview_lane_structure_preserved": (
+            source_snapshot["road_link_planview_lane_sha256"]
+            == candidate_snapshot["road_link_planview_lane_sha256"]
+        ),
+        "junction_structure_preserved": (
+            source_snapshot["junction_sha256"] == candidate_snapshot["junction_sha256"]
+        ),
+        "elevation_segment_counts_and_s_bcd_preserved": (
+            source_snapshot["elevation_segment_s_bcd_sha256"]
+            == candidate_snapshot["elevation_segment_s_bcd_sha256"]
+        ),
+    }
+    return {
+        "input": {"path": str(input_path), "sha256": sha256(input_path)},
+        "candidate": {"path": str(f5_path), "sha256": sha256(f5_path)},
+        "source_snapshot": source_snapshot,
+        "candidate_snapshot": candidate_snapshot,
+        "checks": checks,
+        "checks_pass": all(checks.values()),
+    }
+
+
 def compare(input_path: Path, output_dir: Path) -> Dict[str, Any]:
     """Run both repair strategies from identical immutable source bytes."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -217,7 +247,6 @@ def compare(input_path: Path, output_dir: Path) -> Dict[str, Any]:
     f5_seconds = time.perf_counter() - start
     _write_tree(f5_root, f5_path)
     f5_root_after = ET.parse(f5_path).getroot()
-    f5_snapshot = structure_snapshot(f5_root_after)
 
     start = time.perf_counter()
     local_result = repair_true_zseams(str(source_copy), str(local_path), eps_z=0.5)
@@ -228,17 +257,7 @@ def compare(input_path: Path, output_dir: Path) -> Dict[str, Any]:
     f5_checks = {
         "input_copy_unchanged": sha256(source_copy) == copy_sha,
         "solver_ok": bool(f5_solver.get("ok")),
-        "road_link_planview_lane_structure_preserved": (
-            source_snapshot["road_link_planview_lane_sha256"]
-            == f5_snapshot["road_link_planview_lane_sha256"]
-        ),
-        "junction_structure_preserved": (
-            source_snapshot["junction_sha256"] == f5_snapshot["junction_sha256"]
-        ),
-        "elevation_segment_counts_and_s_bcd_preserved": (
-            source_snapshot["elevation_segment_s_bcd_sha256"]
-            == f5_snapshot["elevation_segment_s_bcd_sha256"]
-        ),
+        **validate_f5_preservation(source_copy, f5_path)["checks"],
     }
 
     return {
@@ -304,13 +323,28 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input_xodr", type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument(
+        "--validate-f5-candidate",
+        type=Path,
+        help="Validate an existing F5 candidate without rerunning repairs.",
+    )
     args = parser.parse_args()
 
-    report = compare(args.input_xodr.resolve(), args.output_dir.resolve())
-    report_path = args.output_dir / "F5_VS_LIVE_MEASUREMENT.json"
+    input_path = args.input_xodr.resolve()
+    output_dir = args.output_dir.resolve()
+    if args.validate_f5_candidate is not None:
+        report = validate_f5_preservation(
+            input_path, args.validate_f5_candidate.resolve()
+        )
+        report_path = output_dir / "F5_PRESERVATION_VALIDATION.json"
+        exit_code = 0 if report["checks_pass"] else 2
+    else:
+        report = compare(input_path, output_dir)
+        report_path = output_dir / "F5_VS_LIVE_MEASUREMENT.json"
+        exit_code = 0 if report["f5_graph_relaxation"]["checks_pass"] else 2
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
-    print(json.dumps({"report_path": str(report_path), "f5_checks_pass": report["f5_graph_relaxation"]["checks_pass"]}, sort_keys=True))
-    return 0 if report["f5_graph_relaxation"]["checks_pass"] else 2
+    print(json.dumps({"report_path": str(report_path), "checks_pass": exit_code == 0}, sort_keys=True))
+    return exit_code
 
 
 if __name__ == "__main__":

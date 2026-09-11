@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 
+from pathlib import Path
+
 from ultimate_pipeline.tools.compare_elevation_seam_repairs import (
     canonical_seam_metrics,
     structure_snapshot,
+    validate_f5_preservation,
 )
 
 
@@ -61,3 +64,14 @@ def test_structure_snapshot_is_insensitive_to_serializer_whitespace() -> None:
     ET.indent(indented, space="  ")
 
     assert structure_snapshot(root) == structure_snapshot(indented)
+
+
+def test_validate_f5_preservation_allows_only_elevation_a_changes(tmp_path: Path) -> None:
+    source = tmp_path / "source.xodr"
+    candidate = tmp_path / "candidate.xodr"
+    source.write_text("<OpenDRIVE>" + _road("1", 1.0) + "</OpenDRIVE>")
+    candidate.write_text("<OpenDRIVE>" + _road("1", 2.0) + "</OpenDRIVE>")
+
+    result = validate_f5_preservation(source, candidate)
+
+    assert result["checks_pass"] is True
