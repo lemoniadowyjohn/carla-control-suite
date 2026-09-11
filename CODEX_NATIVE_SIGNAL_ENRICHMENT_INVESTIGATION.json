@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "investigation": "PROMPT O native Phase-H signal enrichment fresh reproduction",
+  "status": "BLOCKED_CURRENT_INPUT_CONTRACT",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/native-signal-enrichment-v1-20260911",
+  "source_map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "fresh_reproduction": {
+    "status": "FAILED",
+    "wall_clock_seconds": 25.823762600077316,
+    "candidate_xodr_sha256_before": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "candidate_xodr_sha256_after": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "failure": {
+      "type": "RuntimeError",
+      "message": "F1 CRS contract unresolved: cannot establish the geographic frame of the candidate XODR (verdict=UNRESOLVED, reason=no_frame_matches_osm_source). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.",
+      "stage": "OSMSignalExtractor initialization, before matching or any write"
+    },
+    "evidence_path": "D:/carla-control-suite-experiments/native-signal-enrichment-v1-20260911/20260911T112500Z/NATIVE_SIGNAL_FRESH_REPRODUCTION.json",
+    "evidence_sha256": "daf530b7637c54c7f09ccdc265593825ee6e4be03dbfa511d34c752b6d5d8af0"
+  },
+  "existing_signal_layer_phase_h3_audit": {
+    "status": "FAIL",
+    "signals_total": 21163,
+    "h_prefixed": 0,
+    "non_h_prefixed": 21163,
+    "clean": false,
+    "failures": {
+      "unknown_type": 21163,
+      "non_governed_prefix": 21163,
+      "missing_provenance": 21163,
+      "duplicate_spatial": 7815,
+      "duplicate_ids": 0,
+      "invalid_validity": 0,
+      "out_of_s": 0,
+      "out_of_t": 0,
+      "unknown_subtype": 0,
+      "unresolved_refs": 0
+    },
+    "interpretation": "Even if the CRS precondition were repaired, Phase H currently audits the pre-existing traffic-signal layer as invalid. Its current clean-audit contract therefore cannot certify the existing map without an explicit governed migration or scope boundary.",
+    "evidence_path": "D:/carla-control-suite-experiments/native-signal-enrichment-v1-20260911/20260911T112500Z/EXISTING_SIGNAL_LAYER_AUDIT.json",
+    "evidence_sha256": "5ad2be71d9b30344cd5a06aa60c64a2ca8f97cace0d8066d29a5d376678f8bf3"
+  },
+  "pipeline_gate": {
+    "introduced_by_commit": "a67824966",
+    "enabled_by_default": false,
+    "settings_attribute_declared": false,
+    "documented_disable_reason_found_in_gate_history": false,
+    "conclusion": "The gate is intentionally opt-in in code, but the current failure reproduction establishes concrete compatibility blockers. This investigation does not infer an undocumented historical rationale."
+  },
+  "stage4_overlap": {
+    "status": "NOT_EXECUTED",
+    "reason": "The native writer never reached matching or writing because strict CRS resolution failed. The Phase-H clean-audit also rejects the existing signal layer. A stage-4/native ordering claim would be unproven.",
+    "source_counts": {
+      "lane_speed_elements": 34285,
+      "regulatory_objects": 0,
+      "signal_objects": 21163,
+      "turn_lane_vectors": 0
+    }
+  },
+  "historical_evidence": {
+    "path": "reports/post_audit_hardening/20260804T050000Z/PHASE_H_SIGNAL_ENRICHMENT.json",
+    "claim": "Historical output reported successful governed enrichment, but it was not reproducible against the current pinned map and current code under the strict CRS contract."
+  },
+  "decision": {
+    "enable_native_signal_enrichment": "NOT_DONE",
+    "release_profile_changed": false,
+    "map_of_record_acceptance_delta": "no measurable change; the external candidate remained byte-identical after the pre-write failure",
+    "first_blocker": "The current pinned map/OSM pair cannot satisfy Phase H's strict CRS contract (no_frame_matches_osm_source).",
+    "additional_blocker": "Phase H's current integrity audit rejects all 21,163 existing map signals as ungoverned and unprovenanced.",
+    "required_follow_up": "Resolve and govern the map CRS contract, then define and test an explicit migration or audit scope for the pre-existing traffic-signal layer before re-running the fresh reproduction."
+  },
+  "tests": {
+    "focused": "python -m pytest -q tests/unit/test_native_signal_enrichment.py",
+    "focused_result": "1 passed",
+    "full_offline": "NOT_RUN_AFTER_STOP_CONDITION"
+  },
+  "live_carla": "NOT_RUN",
+  "frozen_evidence_mutated": false
+}
