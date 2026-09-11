@@ -63,6 +63,14 @@ def _resolve_structure_road_ids(
             "class_counts": classification.get("class_counts"),
             "deck_linear_road_ids": sorted(road_id_set),
             "deck_linear_road_count": len(road_id_set),
+            # This is intentionally limited to classes with an unambiguous
+            # terrain relation. The plausibility gate must not infer that a
+            # building passage or covered road is below/above terrain.
+            "plausibility_road_classes": {
+                str(road_id): str(record.get("class"))
+                for road_id, record in sorted(classification.get("per_road", {}).items())
+                if record.get("class") in {"bridge", "elevated", "tunnel", "underpass", "covered"}
+            },
             "gate": gate,
         }
         print(
@@ -940,6 +948,24 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
     save_xodr(tree, elev_out)
 
     print(f"✅ Elevation smoothed → {elev_out}")
+
+    # No height is synthesized from an OSM structure tag. This gate compares
+    # the final polynomial elevation to the already validated DEM sampler and
+    # records FAIL or INCOMPLETE evidence for later acceptance policy.
+    self._stage_gate(
+        "05_elevation",
+        "structure_elevation_plausibility",
+        lambda: self.qgate.gate_structure_elevation_plausibility(
+            elev_out,
+            road_classes=structure_report.get("plausibility_road_classes"),
+            terrain_sampler=sampler if use_dem else None,
+            sample_spacing_m=float(getattr(s, "STRUCTURE_ELEVATION_SAMPLE_SPACING_M", 5.0)),
+            min_bridge_clearance_m=float(getattr(s, "STRUCTURE_ELEVATION_MIN_BRIDGE_CLEARANCE_M", 0.5)),
+            min_tunnel_cover_m=float(getattr(s, "STRUCTURE_ELEVATION_MIN_TUNNEL_COVER_M", 0.5)),
+            max_violation_ratio=float(getattr(s, "STRUCTURE_ELEVATION_MAX_VIOLATION_RATIO", 0.2)),
+            minimum_interior_samples=int(getattr(s, "STRUCTURE_ELEVATION_MIN_INTERIOR_SAMPLES", 2)),
+        ),
+    )
 
     if s.QA_AUTOVIS and self._carla_allowed("pre_lane_preview"):
         if self._carla_isolation_enabled():

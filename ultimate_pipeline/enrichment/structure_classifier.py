@@ -31,6 +31,7 @@ from __future__ import annotations
 import math
 import os
 import xml.etree.ElementTree as ET
+from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 try:
@@ -46,6 +47,7 @@ from ultimate_pipeline.dem.dem_crs_contract import (
     OSM2ODR_NATIVE_PROJ4,
     resolve_sampling_crs,
 )
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
 
 TERRAIN_FOLLOWING = "terrain_following"
 BRIDGE = "bridge"
@@ -223,66 +225,33 @@ def _classify_tags(tags: Dict[str, str]) -> Optional[str]:
 
 
 def _geometry_polyline(geom: ET.Element, spacing_m: float) -> List[Tuple[float, float]]:
-    """Densified polyline of one planView geometry primitive."""
+    """Densified polyline using the canonical OpenDRIVE primitive kernel.
+
+    Classification must use the same primitive semantics as the geometry
+    validators and correspondence engine.  In particular, silently reducing
+    spirals and poly3 geometries to lines can spatially misclassify structures.
+    A malformed arc curvature retains the historic safe line fallback, but the
+    fallback is evaluated by the kernel on an isolated copy of the geometry.
+    """
     try:
-        x = float(geom.get("x"))
-        y = float(geom.get("y"))
-        hdg = float(geom.get("hdg"))
-        length = float(geom.get("length"))
-    except Exception:
-        return []
-    prim = None
-    for child in list(geom):
-        lname = _localname(child.tag)
-        if lname in ("line", "arc", "paramPoly3", "poly3", "spiral"):
-            prim = child
-            break
-    pts: List[Tuple[float, float]] = []
-    if prim is None:
-        return []
-    lname = _localname(prim.tag)
-    n = max(2, int(math.ceil(length / spacing_m)) + 1)
-    if lname == "line":
-        pts = [(x + t * length * math.cos(hdg), y + t * length * math.sin(hdg))
-               for t in (i / (n - 1) for i in range(n))]
-    elif lname == "arc":
-        k = _safe_float(prim.get("curvature"), 0.0)
-        if not math.isfinite(k) or abs(k) < 1e-12:
-            pts = [(x + t * length * math.cos(hdg), y + t * length * math.sin(hdg))
-                   for t in (i / (n - 1) for i in range(n))]
-        else:
-            pts = []
-            for i in range(n):
-                t = i / (n - 1)
-                s = t * length
-                px = x + (math.sin(hdg + k * s) - math.sin(hdg)) / k
-                py = y + (-math.cos(hdg + k * s) + math.cos(hdg)) / k
-                pts.append((px, py))
-    elif lname == "paramPoly3":
-        p_range = str(prim.get("pRange", "arcLength"))
-        p_max = length if p_range == "arcLength" else 1.0
-        a_u = _safe_float(prim.get("aU"))
-        b_u = _safe_float(prim.get("bU"))
-        c_u = _safe_float(prim.get("cU"))
-        d_u = _safe_float(prim.get("dU"))
-        a_v = _safe_float(prim.get("aV"))
-        b_v = _safe_float(prim.get("bV"))
-        c_v = _safe_float(prim.get("cV"))
-        d_v = _safe_float(prim.get("dV"))
-        cos_h = math.cos(hdg)
-        sin_h = math.sin(hdg)
-        pts = []
-        for i in range(n):
-            t = i / (n - 1)
-            p = t * p_max
-            u = a_u + b_u * p + c_u * p * p + d_u * p * p * p
-            v = a_v + b_v * p + c_v * p * p + d_v * p * p * p
-            pts.append((x + u * cos_h - v * sin_h, y + u * sin_h + v * cos_h))
-    else:
-        # poly3 / spiral: coarse straight-segment approximation
-        pts = [(x + t * length * math.cos(hdg), y + t * length * math.sin(hdg))
-               for t in (i / (n - 1) for i in range(n))]
-    return pts
+        return [(pose.x, pose.y) for pose in sample_geometry(geom, spacing_m)]
+    except (TypeError, ValueError, OverflowError):
+        arc = next((child for child in geom if _localname(child.tag) == "arc"), None)
+        if arc is None:
+            return []
+        try:
+            curvature = float(arc.get("curvature", "nan"))
+        except (TypeError, ValueError):
+            curvature = math.nan
+        if math.isfinite(curvature):
+            return []
+        safe_geom = deepcopy(geom)
+        safe_arc = next(child for child in safe_geom if _localname(child.tag) == "arc")
+        safe_arc.set("curvature", "0")
+        try:
+            return [(pose.x, pose.y) for pose in sample_geometry(safe_geom, spacing_m)]
+        except (TypeError, ValueError, OverflowError):
+            return []
 
 
 def road_centerline_polyline(

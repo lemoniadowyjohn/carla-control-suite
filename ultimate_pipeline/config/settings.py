@@ -833,6 +833,14 @@ class Settings:
     DEM_SUSPICIOUS_TOP_K: int = 10
     STRICT_DEM_SUSPICIOUS_FAIL: bool = False
     DEM_SUSPICIOUS_RATIO_FAIL_THRESHOLD: float = 0.25
+    # Grade-separated structure plausibility is a diagnostic comparison of
+    # final XODR elevation to the same DEM sampler used by Stage 5. It never
+    # fabricates bridge deck or tunnel-floor heights from an OSM tag.
+    STRUCTURE_ELEVATION_SAMPLE_SPACING_M: float = 5.0
+    STRUCTURE_ELEVATION_MIN_BRIDGE_CLEARANCE_M: float = 0.5
+    STRUCTURE_ELEVATION_MIN_TUNNEL_COVER_M: float = 0.5
+    STRUCTURE_ELEVATION_MAX_VIOLATION_RATIO: float = 0.2
+    STRUCTURE_ELEVATION_MIN_INTERIOR_SAMPLES: int = 2
     # 2-point linear grade: sample road start/end and compute b=(z_end - z_start)/length
     # Default OFF: keeps flat (b=0) elevation segments for CARLA stability.
     ELEVATION_LINEAR_GRADE: bool = _env_bool("UP_ELEVATION_LINEAR_GRADE", False)
@@ -1660,6 +1668,33 @@ class Settings:
                 "DEM_SUSPICIOUS_RATIO_FAIL_THRESHOLD",
                 float(self.DEM_SUSPICIOUS_RATIO_FAIL_THRESHOLD),
             ),
+        )
+        self.STRUCTURE_ELEVATION_SAMPLE_SPACING_M = _env_float(
+            "UP_STRUCTURE_ELEVATION_SAMPLE_SPACING_M",
+            float(self.STRUCTURE_ELEVATION_SAMPLE_SPACING_M),
+        )
+        self.STRUCTURE_ELEVATION_MIN_BRIDGE_CLEARANCE_M = _env_float(
+            "UP_STRUCTURE_ELEVATION_MIN_BRIDGE_CLEARANCE_M",
+            float(self.STRUCTURE_ELEVATION_MIN_BRIDGE_CLEARANCE_M),
+        )
+        self.STRUCTURE_ELEVATION_MIN_TUNNEL_COVER_M = _env_float(
+            "UP_STRUCTURE_ELEVATION_MIN_TUNNEL_COVER_M",
+            float(self.STRUCTURE_ELEVATION_MIN_TUNNEL_COVER_M),
+        )
+        self.STRUCTURE_ELEVATION_MAX_VIOLATION_RATIO = _env_float(
+            "UP_STRUCTURE_ELEVATION_MAX_VIOLATION_RATIO",
+            float(self.STRUCTURE_ELEVATION_MAX_VIOLATION_RATIO),
+        )
+        self.STRUCTURE_ELEVATION_MIN_INTERIOR_SAMPLES = int(
+            max(
+                1,
+                round(
+                    _env_float(
+                        "UP_STRUCTURE_ELEVATION_MIN_INTERIOR_SAMPLES",
+                        float(self.STRUCTURE_ELEVATION_MIN_INTERIOR_SAMPLES),
+                    )
+                ),
+            )
         )
         self.STRICT_QUALITY_GATES = _env_bool(
             "UP_STRICT_QUALITY_GATES", self.STRICT_QUALITY_GATES
