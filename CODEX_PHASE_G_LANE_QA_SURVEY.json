@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "survey": "PROMPT R current-map Phase-G lane QA survey",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/phase-g-lane-qa-survey-v1-20260911",
+  "mode": "read_only; no repair function or pipeline stage was invoked",
+  "source_map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256_before": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "sha256_after": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "osm_source": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "used_for_reclassification": "No G5 reclassification candidate exists. Five false-positive samples have no XODR OSM-way provenance, and name-only lookup produces multiple OSM ways, so a source-accurate five-way semantic spot-check cannot be claimed."
+  },
+  "modules": {
+    "G1": {
+      "classification": "VALIDATOR",
+      "runtime_seconds": 5.399106,
+      "verdict": "PHASE_G_LANE_INVENTORY_PASS",
+      "scope": {"roads": 32267, "lane_sections": 32272, "lane_records": 85887, "driving_lane_records": 34291},
+      "finding_count": 0,
+      "significance": "No inventory/schema defect found on the current map."
+    },
+    "G2": {
+      "classification": "VALIDATOR",
+      "runtime_seconds": 5.801882,
+      "verdict": "PHASE_G_POLYNOMIAL_VALIDATION_PASS",
+      "scope": {"width_samples": 1028263, "max_lane_width_m": 3.75, "max_total_width_m": 21.5},
+      "finding_count": 0,
+      "significance": "No width, border, laneOffset, ordering, or finite-value defect found."
+    },
+    "G3": {
+      "classification": "VALIDATOR",
+      "runtime_seconds": 37.809856,
+      "verdict": "PHASE_G_CROSS_SECTION_PASS",
+      "finding_count": 751,
+      "finding_kind": "genuine_non_stub_unavailable_samples silently excluded from the verdict",
+      "measurements": {
+        "roads_audited": 32267,
+        "cross_section_samples": 322077,
+        "unavailable_sections_total": 889,
+        "stub_coverage_sections": 138,
+        "non_stub_unavailable_sections": 751,
+        "planview_length_delta_m": {
+          "positive_count": 2402,
+          "p50": 1.0000007932831068e-08,
+          "p95": 0.06995273,
+          "p99": 0.09845565,
+          "max": 0.09999999000000001,
+          "greater_than_0_1_m": 0
+        }
+      },
+      "significance": "The representation has bounded declared-length/planView-end drift (never more than 0.1 m), but G3 reports unavailable samples and still passes because availability is not a fail-closed check. Do not use G3 as evidence that every current section was evaluated."
+    },
+    "G4": {
+      "classification": "VALIDATOR",
+      "runtime_seconds": 5.052398,
+      "verdict": "PHASE_G_LANE_CONTINUITY_PASS",
+      "scope": {"lane_sections": 32272, "lane_links": 57369},
+      "finding_count": 0,
+      "advisory_terminal_lanes": 10882,
+      "significance": "No missing, directionally wrong, duplicate, or required-unlinked lane link found; terminal lanes are explicitly advisory."
+    },
+    "G5": {
+      "classification": "REPAIR_CAPABLE",
+      "runtime_seconds": 3.977638,
+      "proposed_reclassifications": 0,
+      "restricted_lanes": 0,
+      "reported_walk_lane_not_outermost": 1204,
+      "finding_count": 0,
+      "validator_defect": "The walk-side invariant compares a left-side sidewalk lane (for example +1) against a driving lane on the opposite right side (for example -2). The five inspected examples have the sidewalk outermost on its own side; they are false positives, not lane misclassifications.",
+      "significance": "The repair path has no eligible current-map work and its precondition blocks on a cross-side lane-ID comparison bug. It is not safe to wire or use as a map-quality repair."
+    },
+    "G7": {
+      "classification": "REPAIR_CAPABLE",
+      "runtime_seconds": 4.49652,
+      "finding_count": 2,
+      "genuine_candidate": "Two solid driving-lane roadMarks omit laneChange (roads 46620 and 74522).",
+      "false_positive_class": {
+        "visible_zero_width": 19324,
+        "all_lane_type": "sidewalk",
+        "all_mark_type": "solid",
+        "conclusion": "G7 treats every visible sidewalk boundary mark without a width attribute as a zero-width visible road marking. Its generic repair would write 0.13 m to 19,324 sidewalk marks, a visual change unsupported by this audit."
+      },
+      "significance": "There are two small candidate semantic fixes, but the dominant finding is a lane-type-insensitive false-positive class. Never enable this repair until sidewalk handling is explicitly modeled and regression-tested."
+    }
+  },
+  "priority_order": [
+    {"module": "G7", "reason": "Highest activation risk: its repair would make 19,324 unsupported sidewalk-mark changes; fix classification and add fixtures before considering its two genuine candidates."},
+    {"module": "G3", "reason": "Current verdict overstates coverage by silently passing 751 non-stub unavailable endpoint samples; decide a contractual length tolerance before changing geometry."},
+    {"module": "G5", "reason": "Cross-side outermost logic produces 1,204 false positives and blocks an otherwise empty repair path."},
+    {"module": "G4", "reason": "Clean current map; retain as an offline validator."},
+    {"module": "G2", "reason": "Clean across 1,028,263 width samples; retain as an offline validator."},
+    {"module": "G1", "reason": "Clean inventory/schema audit; lowest current remediation value."}
+  ],
+  "raw_evidence": [
+    {"path": "D:/carla-control-suite-experiments/phase-g-lane-qa-survey-v1-20260911/20260911T113600Z/PHASE_G_CURRENT_MAP_SURVEY.json", "sha256": "1e8e3db637799f087667df7e4d3bcf01ae8c1c451a8acafd25acf79fd5180c3a"},
+    {"path": "D:/carla-control-suite-experiments/phase-g-lane-qa-survey-v1-20260911/20260911T113600Z/PHASE_G_CURRENT_MAP_DEEP_DIVE.json", "sha256": "b252912580933616568a029852419b561b547f49821569e8da48cb2a34fd5973"}
+  ],
+  "pipeline_wiring_changed": false,
+  "candidate_map_created": false,
+  "live_carla": "NOT_RUN",
+  "tests": {
+    "focused_lane_quality": "48 passed: test_check_lane_geometry_continuity, test_check_lane_width_continuity, test_lane_section_successors, test_lane_width_policy, test_lane_link_targets_gate",
+    "module_fixtures": "PASS: G3 all_fixtures_pass; G7 fixtures_ok",
+    "full_offline": "NOT_RUN: this sparse, evidence-only worktree intentionally omits ignored large artifacts. A full-suite result here would test checkout completeness rather than a source change; no source code changed in this survey."
+  }
+}
