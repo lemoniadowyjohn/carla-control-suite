@@ -148,6 +148,29 @@ def _step2_topology_semantics(self, sanitized: str, sumo_fixed: str) -> str:
 
     # Post-SUMO topology validation
     tree, root = load_xodr(sumo_fixed_path)
+    if getattr(s, "ENABLE_PARAMPOLY3_TANGENT_REVERSAL_REPAIR", True):
+        from ultimate_pipeline.geometry.parampoly3_tangent_repair import (
+            repair_parampoly3_tangent_reversals,
+        )
+
+        tangent_reversal_report = repair_parampoly3_tangent_reversals(root)
+        self.vreport.add_dict("parampoly3_tangent_reversal_repair", tangent_reversal_report)
+        if tangent_reversal_report["repaired"]:
+            save_xodr(tree, sumo_fixed_path)
+            print(
+                "[OK] Repaired "
+                f"{tangent_reversal_report['repaired']} folded paramPoly3 tangent reversal(s)."
+            )
+        elif tangent_reversal_report["detected"]:
+            print(
+                "[WARN] Preserved "
+                f"{tangent_reversal_report['preserved']} folded paramPoly3 candidate(s): "
+                "no validated replacement."
+            )
+    else:
+        tangent_reversal_report = {"enabled": False, "detected": 0, "repaired": 0}
+        self.vreport.add_dict("parampoly3_tangent_reversal_repair", tangent_reversal_report)
+        print("[SKIP] paramPoly3 tangent-reversal repair disabled by settings.")
     print("🧪 Post-SUMO topology validation…")
     TopologyLinter.run(root, self.vreport)
 
