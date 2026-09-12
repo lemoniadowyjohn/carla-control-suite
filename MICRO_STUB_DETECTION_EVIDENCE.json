@@ -9,6 +9,15 @@
     "focused_tests": "46 passed: tests/unit/test_micro_stub_detection.py + test_geometric_continuity_migration.py + test_geometric_continuity_contactpoint.py",
     "verified_on_authorized_base": true
   },
+  "authorized_base_remeasurement": {
+    "status": "PASS",
+    "method": "read-only continuity check of the pinned map; bytes re-hashed before and after",
+    "hard_issues": 0,
+    "junction_connector_issues": 8746,
+    "micro_stub_heading_advisory": 430,
+    "total_diagnostic_records": 9176,
+    "map_sha256_unchanged": true
+  },
   "map": {
     "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
     "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
