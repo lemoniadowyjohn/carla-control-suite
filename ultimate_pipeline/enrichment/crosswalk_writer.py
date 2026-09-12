@@ -44,7 +44,14 @@ _CURVE_SAMPLE_STEP_M = 2.0
 _BARE_TMERC = "+proj=tmerc +datum=WGS84 +units=m +no_defs"
 _TO_LOCAL = Transformer.from_crs("EPSG:4326", CRS.from_proj4(_BARE_TMERC), always_xy=True)
 
-DEFAULT_MAX_MATCH_DIST_M = 5.0
+# 5.0m dropped 18 real OSM crossings whose true nearest road was 5.01m-14.53m
+# away (verified against the pinned map/OSM pair: every one either has a
+# healthy gap to its 2nd-nearest candidate road, or the runner-up is the
+# opposite-direction carriageway of the same divided road at ~identical
+# distance -- no plausible wrong-road match at this threshold). 15.0m gives
+# a >2m margin under all 18 real rescues and a >1.5m margin above the nearest
+# genuine far-miss (16.67m), so it does not risk pulling in an unrelated road.
+DEFAULT_MAX_MATCH_DIST_M = 15.0
 DEFAULT_CROSSING_DEPTH_M = 3.0  # typical marked-crossing depth along the road
 
 
