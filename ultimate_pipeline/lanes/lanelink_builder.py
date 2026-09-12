@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+import math
 from typing import Dict, List, Tuple, Optional
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint, pose_at_s
 
 
 class LaneLinkBuilder:
@@ -195,6 +197,75 @@ class LaneLinkBuilder:
 
     @staticmethod
     def sanitize_junction_lane_links(root: ET.Element, label: str = "unlabeled", *args, **kwargs) -> dict:
-        """Stub for laneLink sanity check."""
-        print(f"   [INFO] LaneLink Sanity Check: {label} (STUB)")
-        return {"status": "ok", "summary_metrics": {}}
+        """Validate lane-link existence and endpoint pose continuity."""
+        position_tolerance = float(kwargs.get("position_tolerance_m", 0.25))
+        heading_tolerance = float(kwargs.get("heading_tolerance_rad", math.radians(12.0)))
+        roads = {str(r.get("id")): r for r in root.findall("road") if r.get("id")}
+        checked = passed = failed = 0
+        failures: List[dict] = []
+
+        def edge_pose(road: ET.Element, at_start: bool) -> Optional[tuple[float, float, float]]:
+            geoms = sorted(road.findall("./planView/geometry"), key=lambda g: float(g.get("s", 0)))
+            if not geoms:
+                return None
+            try:
+                p = pose_at_s(geoms[0], 0.0) if at_start else endpoint(geoms[-1])
+                heading = p.heading if at_start else p.heading
+                return float(p.x), float(p.y), float(heading)
+            except (TypeError, ValueError, ZeroDivisionError):
+                return None
+
+        def lane_pose(road: ET.Element, lane_id: int, at_start: bool) -> Optional[tuple[float, float, float]]:
+            base = edge_pose(road, at_start)
+            if base is None:
+                return None
+            sections = sorted(road.findall("./lanes/laneSection"), key=lambda s: float(s.get("s", 0)))
+            if not sections:
+                return None
+            section = sections[0] if at_start else sections[-1]
+            side = section.find("./left" if lane_id > 0 else "./right")
+            if side is None:
+                return None
+            lanes = sorted((lane for lane in side.findall("lane") if lane.get("type", "driving") == "driving"), key=lambda l: abs(int(l.get("id", 0))))
+            selected = next((lane for lane in lanes if int(lane.get("id", 0)) == lane_id), None)
+            if selected is None:
+                return None
+            width = selected.find("./width")
+            if width is None:
+                return None
+            lane_width = float(width.get("a", "nan"))
+            if not math.isfinite(lane_width) or lane_width <= 0:
+                return None
+            preceding_width = 0.0
+            for lane in lanes:
+                if abs(int(lane.get("id", 0))) >= abs(lane_id):
+                    continue
+                preceding = lane.find("./width")
+                if preceding is not None:
+                    preceding_width += float(preceding.get("a", "0"))
+            lateral = (preceding_width + lane_width / 2.0) * (1 if lane_id > 0 else -1)
+            x, y, heading = base
+            return x - math.sin(heading) * lateral, y + math.cos(heading) * lateral, heading
+
+        for junction in root.findall("junction"):
+            for connection in junction.findall("connection"):
+                incoming = roads.get(str(connection.get("incomingRoad")))
+                connecting = roads.get(str(connection.get("connectingRoad")))
+                at_start = connection.get("contactPoint", "start") != "end"
+                if incoming is None or connecting is None:
+                    continue
+                for lane_link in connection.findall("laneLink"):
+                    checked += 1
+                    try:
+                        source = lane_pose(incoming, int(lane_link.get("from")), False)
+                        target = lane_pose(connecting, int(lane_link.get("to")), at_start)
+                    except (TypeError, ValueError):
+                        source = target = None
+                    heading_target = None if target is None else target[2] + (0 if at_start else math.pi)
+                    valid = source is not None and target is not None and math.hypot(source[0] - target[0], source[1] - target[1]) <= position_tolerance and abs((source[2] - heading_target + math.pi) % (2 * math.pi) - math.pi) <= heading_tolerance
+                    if valid:
+                        passed += 1
+                    else:
+                        failed += 1
+                        failures.append({"junction_id": junction.get("id"), "connection_id": connection.get("id"), "from": lane_link.get("from"), "to": lane_link.get("to")})
+        return {"status": "ok" if failed == 0 else "fail", "label": label, "summary_metrics": {"checked": checked, "passed": passed, "failed": failed}, "failures": failures}
