@@ -365,6 +365,7 @@ def build_map_acceptance(
     *,
     run_id: str | None = None,
     final_xodr_path: str | None = None,
+    osm_source_path: str | None = None,
     out_dir: str | None = None,
     require_enrichment: bool = False,
     require_component_reachability: bool = False,
@@ -700,6 +701,32 @@ def build_map_acceptance(
                             "reason": "; ".join(reasons),
                         }
                     )
+
+    # T-012: source-to-output semantic counts are additive evidence only.
+    # Count mismatches are intentionally not promoted to a hard gate here:
+    # traffic lights and regulatory signs do not yet have a universally
+    # one-to-one placement contract. The production-candidate profile may
+    # later set type-specific policy after governed measurements exist.
+    if (
+        final_xodr_path
+        and os.path.exists(final_xodr_path)
+        and osm_source_path
+    ):
+        from ultimate_pipeline.quality.semantic_completeness import (
+            measure_semantic_completeness,
+        )
+
+        semantic_completeness = measure_semantic_completeness(
+            final_xodr_path, osm_source_path
+        )
+        metrics["semantic_completeness"] = semantic_completeness
+        if semantic_completeness.get("ok") is False:
+            soft_warnings.append(
+                {
+                    "gate": "semantic_completeness",
+                    "reason": _reason_from_report(semantic_completeness),
+                }
+            )
 
     # Component reachability (live-probe finding): lanes unreachable from the
     # main drivable component can never be autopilot-routed, so capture spawn
