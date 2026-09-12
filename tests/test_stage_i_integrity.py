@@ -19,6 +19,7 @@ Gates (Section 19):
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -137,16 +138,24 @@ def test_T18_deterministic_two_runs():
     assert n15["run_a_sha256_lf_text"] == n15["run_b_sha256_lf_text"]
 
 
-def test_T19_idempotent_re_enrich():
-    """Functional idempotency: re-run the committed producer; expect 0 new."""
+def test_T19_idempotent_re_enrich(tmp_path):
+    """Functional idempotency is isolated from the governed evidence packet."""
     before = sha256_text(CAND.read_text(encoding="utf-8", errors="replace"))
-    proc = subprocess.run([PY, "stage_i1_crosswalk_writer.py"],
-                          cwd=str(REPO), capture_output=True, text=True)
+    before_n10 = N10.read_text(encoding="utf-8")
+    output_dir = tmp_path / "stage_i_output"
+    env = os.environ.copy()
+    env["UP_STAGE_I_OUTPUT_DIR"] = str(output_dir)
+    proc = subprocess.run([PY, "stage_i1_crosswalk_writer.py"], cwd=str(REPO),
+                          capture_output=True, text=True, env=env)
     assert proc.returncode == 0, proc.stderr
     assert "written=0" in proc.stdout
     assert "existing_skip=66" in proc.stdout
     after = sha256_text(CAND.read_text(encoding="utf-8", errors="replace"))
     assert before == after
+    assert N10.read_text(encoding="utf-8") == before_n10
+    assert sha256_text((output_dir / CAND.name).read_text(encoding="utf-8")) == before
+    assert (output_dir / N09.name).is_file()
+    assert (output_dir / N10.name).is_file()
 
 
 def test_crosswalk_ids_unique_and_typed(candidate_root):
