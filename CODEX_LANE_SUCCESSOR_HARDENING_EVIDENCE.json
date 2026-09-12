@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_commit": "714ed04c",
+  "branch": "feature/lane-successor-hardening-v1-20260912",
+  "scope": "offline latent-risk hardening; no re-derivation of existing cross-road links",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "baseline": {
+    "intra_road_lane_section_successors": {
+      "repairs": 0,
+      "failures": 0,
+      "reclassified_none_or_restricted_lanes": 0
+    },
+    "dormant_cross_road_fixer": {
+      "fixed_count": 0,
+      "fallback_applied": 0,
+      "dead_ends_allowed": 331,
+      "still_broken_count": 0,
+      "output_sink": "NUL"
+    }
+  },
+  "detector_result": {
+    "status": "PASS",
+    "directed_road_boundaries_scanned": 45178,
+    "undirected_boundary_interpretation": 22589,
+    "cross_road_lane_links_checked": 46806,
+    "dangling_cross_road_lane_targets": 0
+  },
+  "implemented": {
+    "cross_road_target_detector": "PASS",
+    "stage_08_advisory_report": "PASS",
+    "same_id_dangling_reference_prevention": "PASS",
+    "geometry_aware_intra_road_fallback": "PASS"
+  },
+  "tests": {
+    "focused": "26 passed: tests/quality/test_lane_link_targets_gate.py, tests/unit/test_lane_successor_hardening.py, tests/unit/test_lane_section_successors.py",
+    "full_offline_suite": "NOT_RUN: governed artifacts are absent from the isolated sparse worktree"
+  },
+  "claim_boundary": "The current map is clean for this detector. This hardens a future regeneration or an explicitly enabled repair path; it does not alter currently correct external-toolchain road-to-road lane links.",
+  "live_carla": "NOT_RUN"
+}

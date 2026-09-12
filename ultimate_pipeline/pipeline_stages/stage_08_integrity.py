@@ -591,6 +591,40 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         f"failures={len(rep.get('failures', []))}"
     )
 
+    # Advisory-only first: direct road-to-road lane targets are not covered
+    # by the intra-road laneSection repair above.  elementType=junction links
+    # remain owned by the dedicated junction laneLink checks.
+    try:
+        from ultimate_pipeline.quality.check_lane_link_targets_exist import (
+            check_lane_link_targets_exist,
+        )
+
+        ordinary_lane_link_report = check_lane_link_targets_exist(fixed_out)
+        ordinary_lane_link_path = os.path.join(
+            self.out_dir, "ordinary_road_lane_link_targets.json"
+        )
+        with open(ordinary_lane_link_path, "w", encoding="utf-8") as handle:
+            json.dump(ordinary_lane_link_report, handle, indent=2, sort_keys=True)
+        cross_road_issues = ordinary_lane_link_report["totals"].get(
+            "cross_road_lane_link_issues", 0
+        )
+        self.vreport.add_dict(
+            "ordinary_road_lane_link_targets", ordinary_lane_link_report
+        )
+        if cross_road_issues:
+            print(
+                "⚠️ Ordinary road lane-link advisory: "
+                f"{cross_road_issues} dangling target(s); "
+                f"report -> {ordinary_lane_link_path}"
+            )
+        else:
+            print(
+                "✅ Ordinary road lane-link targets: "
+                f"{ordinary_lane_link_report['totals'].get('cross_road_lane_links_checked', 0)} checked"
+            )
+    except Exception as e:
+        print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
+
     # 🎯 AUTHORITATIVE MAP SWITCH
     final_out = fixed_out
     try:

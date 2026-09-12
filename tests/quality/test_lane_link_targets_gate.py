@@ -46,6 +46,17 @@ def _road(rid, sections):
     return road
 
 
+def _ordinary_road_link(road, direction, target_road_id, contact_point="start"):
+    link = ET.SubElement(road, "link")
+    ET.SubElement(
+        link,
+        direction,
+        elementType="road",
+        elementId=str(target_road_id),
+        contactPoint=contact_point,
+    )
+
+
 def _write_xodr(path: Path, *roads) -> None:
     root = ET.Element("OpenDRIVE")
     for r in roads:
@@ -174,6 +185,51 @@ def test_single_lane_section_road_no_issues(tmp_path: Path):
     assert report["totals"]["roads_scanned"] == 1
 
 
+def test_cross_road_successor_target_must_exist_at_linked_boundary(tmp_path: Path):
+    source = _road("1", [_lane_section(0, [_lane(-1, succ=-2)])])
+    target = _road("2", [_lane_section(0, [_lane(-1)])])
+    _ordinary_road_link(source, "successor", "2")
+    xodr = tmp_path / "map.xodr"
+    _write_xodr(xodr, source, target)
+
+    report = check_lane_link_targets_exist(str(xodr))
+
+    assert report["ok"] is False
+    assert report["num_issues"] == 1
+    assert report["issues"][0]["direction"] == "successor"
+    assert report["issues"][0]["target_lane_id"] == -2
+    assert "linked ordinary road 2" in report["issues"][0]["message"]
+    assert report["totals"]["cross_road_boundaries_scanned"] == 1
+
+
+def test_cross_road_predecessor_target_must_exist_at_linked_boundary(tmp_path: Path):
+    source = _road("2", [_lane_section(0, [_lane(-1, pred=-2)])])
+    target = _road("1", [_lane_section(0, [_lane(-1)])])
+    _ordinary_road_link(source, "predecessor", "1", contact_point="end")
+    xodr = tmp_path / "map.xodr"
+    _write_xodr(xodr, source, target)
+
+    report = check_lane_link_targets_exist(str(xodr))
+
+    assert report["ok"] is False
+    assert report["issues"][0]["direction"] == "predecessor"
+    assert report["totals"]["cross_road_lane_links_checked"] == 1
+
+
+def test_cross_road_checker_skips_junction_typed_boundary(tmp_path: Path):
+    source = _road("1", [_lane_section(0, [_lane(-1, succ=-2)])])
+    target = _road("2", [_lane_section(0, [_lane(-1)])])
+    link = ET.SubElement(source, "link")
+    ET.SubElement(link, "successor", elementType="junction", elementId="9")
+    xodr = tmp_path / "map.xodr"
+    _write_xodr(xodr, source, target)
+
+    report = check_lane_link_targets_exist(str(xodr))
+
+    assert report["ok"] is True
+    assert report["totals"]["cross_road_boundaries_scanned"] == 0
+
+
 def test_max_issues_truncates_reported_list(tmp_path: Path):
     roads = []
     for i in range(5):
@@ -185,6 +241,19 @@ def test_max_issues_truncates_reported_list(tmp_path: Path):
 
     report = check_lane_link_targets_exist(str(xodr), max_issues=2)
     assert len(report["issues"]) <= 2
+
+
+def test_zero_issue_budget_does_not_add_cross_road_issue(tmp_path: Path):
+    source = _road("1", [_lane_section(0, [_lane(-1, succ=-2)])])
+    target = _road("2", [_lane_section(0, [_lane(-1)])])
+    _ordinary_road_link(source, "successor", "2")
+    xodr = tmp_path / "map.xodr"
+    _write_xodr(xodr, source, target)
+
+    report = check_lane_link_targets_exist(str(xodr), max_issues=0)
+
+    assert report["issues"] == []
+    assert report["num_issues"] == 0
 
 
 # ---------------------------------------------------------------------------
