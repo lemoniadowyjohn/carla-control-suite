@@ -71,7 +71,12 @@ def parse_maxspeed(raw: Any) -> Optional[int]:
     return None
 
 
-def apply_speed_limits(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
+def apply_speed_limits(
+    root: ET.Element,
+    osm_roads_by_id: Dict[str, Any],
+    *,
+    correspondence_by_road_id: Dict[str, Any] | None = None,
+) -> int:
     """
     Write <speed max="X" unit="km/h"/> under each driving/restricted lane for XODR
     roads that have a matching OSM entry with a known maxspeed.
@@ -83,18 +88,31 @@ def apply_speed_limits(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int
                           numbering schemes, verified 2026-08-26) to an object with a
                           .maxspeed attribute (or dict with 'maxspeed' key). May be empty.
 
+    A spatial HIGH/EXACT association is authoritative for its matched XODR
+    road.  It may therefore replace an existing lane speed, including an
+    unprovenanced conversion or realism value.  The legacy street-name mode
+    remains insert-only because its correspondence is many-to-many.
+
     Returns:
-        Number of <speed> elements inserted.
+        Number of lane speed elements written (inserted or authoritative
+        spatial replacements).
     """
-    if not osm_roads_by_id:
+    if not osm_roads_by_id and correspondence_by_road_id is None:
         return 0
 
-    inserted = 0
+    written = 0
+    spatial_mode = correspondence_by_road_id is not None
     for road in root.findall("road"):
-        road_name = road.get("name", "").strip()
-        if not road_name:
-            continue
-        osm = osm_roads_by_id.get(road_name)
+        if correspondence_by_road_id is not None:
+            association = correspondence_by_road_id.get(str(road.get("id", "")))
+            if not association or str(association.get("class", "")) not in {"EXACT", "HIGH"}:
+                continue
+            osm = association.get("metadata", {})
+        else:
+            road_name = road.get("name", "").strip()
+            if not road_name:
+                continue
+            osm = osm_roads_by_id.get(road_name)
         if osm is None:
             continue
 
@@ -111,8 +129,16 @@ def apply_speed_limits(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int
         for lane in road.findall(".//lane"):
             if lane.get("type") not in ("driving", "restricted"):
                 continue
-            if lane.find("speed") is None:
+            speed = lane.find("speed")
+            if speed is None:
                 ET.SubElement(lane, "speed", max=str(speed_kmh), unit="km/h")
-                inserted += 1
+                written += 1
+            elif spatial_mode and (
+                speed.get("max") != str(speed_kmh)
+                or speed.get("unit") != "km/h"
+            ):
+                speed.set("max", str(speed_kmh))
+                speed.set("unit", "km/h")
+                written += 1
 
-    return inserted
+    return written
