@@ -3,6 +3,7 @@
   "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
   "correspondence_dependency_sha": "6889ffdb",
   "implementation_sha": "593fb75f",
+  "speed_precedence_commit": "9563d206",
   "branch": "feature/regulatory-precedence-v1-20260912",
   "scope": "offline source-aware semantic enrichment; no map regeneration, promotion, or CARLA execution",
   "inputs": {
@@ -30,17 +31,29 @@
     "ambiguous_and_conflicting_metadata_fail_closed": "PASS",
     "stage_04_name_matching_fallback_removed": "PASS",
     "precedence_documented": "PASS",
-    "signal_reference_active_lane_section_validation": "PASS"
+    "signal_reference_active_lane_section_validation": "PASS",
+    "authoritative_spatial_speed_override": "PASS"
+  },
+  "authoritative_speed_precedence_replay": {
+    "status": "MEASURED_IN_MEMORY",
+    "elapsed_seconds": 69.12642,
+    "eligible_road_count": 120,
+    "authoritative_lane_speed_writes": 133,
+    "existing_lane_speed_count_before": 34285,
+    "lane_speed_count_after": 34285,
+    "changed_lane_speeds": 133,
+    "map_written": false
   },
   "tests": {
     "focused": "39 passed: tests/unit/test_positioned_osm_metadata.py, tests/unit/test_traffic_light_signals.py, ultimate_pipeline/tests/unit/test_osm_meta_index.py, tests/unit/test_osm_enrichment_writers_name_match.py",
+    "speed_precedence_focused": "35 passed: tests/unit/test_positioned_osm_metadata.py, ultimate_pipeline/tests/unit/test_osm_meta_index.py, tests/unit/test_osm_enrichment_writers_name_match.py",
     "full_offline": "NOT_RUN: sparse feature worktree lacks the governed ignored-artifact corpus"
   },
   "known_limitations": [
     "The 2,048 AMBIGUOUS and 2,629 UNMATCHED source ways are intentionally skipped. No name-based fallback is permitted in Stage 4.",
     "The current regulatory sign table still does not classify every observed OSM traffic_sign value; this task records source association, not expanded sign-catalog coverage.",
     "Turn-restriction relation reconstruction is governed by the dedicated lane-link turn-restriction task and is not duplicated here.",
-    "This evidence measured correspondence only. Writer output requires a future governed offline generation and acceptance run."
+    "The 133 authoritative lane-speed writes were measured in memory only. Writer output still requires a future governed offline generation and acceptance run."
   ],
   "frozen_evidence_mutated": false,
   "map_of_record_mutated": false,
