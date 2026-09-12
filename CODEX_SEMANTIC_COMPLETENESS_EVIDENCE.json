@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_sha": "ca78875a58f98184197c965c5756048bb4db9a49",
+  "branch": "feature/semantic-completeness-metric-v1-20260912",
+  "scope": "offline count-completeness measurement only; no acceptance threshold or release-profile decision is inferred",
+  "inputs": {
+    "osm_path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "result": {
+    "status": "MEASURED",
+    "ok": true,
+    "object_types": {
+      "crosswalks": {
+        "source_count": 179,
+        "generated_count": 127,
+        "generated_to_source_ratio": 0.7094972067039106,
+        "status": "MEASURED",
+        "comparability": "DIRECT_FEATURE_COUNT: one writer object is expected per eligible OSM footway=crossing way, subject to geometric matching."
+      },
+      "regulatory_signs": {
+        "source_count": 529,
+        "generated_count": 0,
+        "generated_to_source_ratio": 0.0,
+        "status": "MEASURED",
+        "comparability": "COUNT_ONLY: current writer maps a street-level OSM traffic_sign value to XODR segments; placement is not yet spatially one-to-one."
+      },
+      "traffic_lights": {
+        "source_count": 0,
+        "generated_count": 21163,
+        "generated_to_source_ratio": null,
+        "status": "NOT_APPLICABLE",
+        "comparability": "COUNT_ONLY: OSM locations versus topology-inferred approach objects are not one-to-one."
+      }
+    }
+  },
+  "tests": {
+    "focused": "45 passed: tests/unit/test_semantic_completeness.py tests/unit/test_map_acceptance.py",
+    "full_offline": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus"
+  },
+  "frozen_evidence_mutated": false,
+  "map_of_record_mutated": false,
+  "live_carla": "NOT_RUN",
+  "known_limitations": [
+    "The OSM traffic-light source definition intentionally counts highway=traffic_signals only; crossing=traffic_signals is a crossing attribute, not a junction-light ground-truth record.",
+    "This metric measures source/output counts and explicit comparability boundaries, not spatial precision or regulatory correctness.",
+    "Production thresholds and waiver policy require the approved production contract rather than this implementation evidence."
+  ]
+}
