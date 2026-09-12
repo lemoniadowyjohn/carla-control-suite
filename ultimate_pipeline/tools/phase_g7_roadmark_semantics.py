@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 """G7 — roadMark semantics.
 
-Audits every <lane><roadMark> element and repairs semantic defects.
+Audits every <lane><roadMark> element and repairs traffic-lane semantic defects.
 
 Audit invariants:
 - roadMark type / weight / color values from the OpenDRIVE 1.7 sets
 - every lane declares a roadMark (presence)
-- a visible marking (solid / broken / ...) must have width > 0
-- a solid marking must forbid crossing: laneChange="none"
+- a visible marking on a traffic-bearing lane (solid / broken / ...) must
+  have width > 0
+- a solid traffic-lane marking must forbid crossing: laneChange="none"
 - "none" markings carry no semantic contradiction (advisory only)
 
 The candidate is encoded with right-hand lanes only (reference line at the
@@ -17,7 +18,7 @@ optional centerline marking).  Lane 0's roadMark is cosmetic in CARLA
 (zero-width lane, no render polygon); it is normalised for consistency
 rather than removed.
 
-Repairs (roadMark attributes only):
+Repairs (roadMark attributes only, traffic-bearing lanes only):
 - R1: visible marking with width 0.00 -> width 0.13 (standard narrow)
 - R2: solid marking without laneChange -> laneChange="none"
 
@@ -74,6 +75,21 @@ VALID_COLORS = {"standard", "blue", "green", "red", "white", "yellow"}
 VALID_LANECHANGE = {"increase", "decrease", "both", "none"}
 VISIBLE_TYPES = {"solid", "broken", "solid solid", "solid broken",
                  "broken solid", "broken broken", "botts dots"}
+# Sidewalk/path boundary marks are valid visual boundaries but do not express a
+# vehicle lane-change permission.  Treating their omitted width as a 0 m
+# traffic marking produced 19,324 false positives on the pinned map.  This set
+# deliberately includes OpenDRIVE lane types that carry motor-vehicle routing
+# semantics and excludes sidewalk, border, shoulder, parking and lane 0.
+TRAFFIC_BEARING_LANE_TYPES = {
+    "driving",
+    "restricted",
+    "entry",
+    "exit",
+    "onRamp",
+    "offRamp",
+    "connectingRamp",
+    "bidirectional",
+}
 STANDARD_WIDTH = "0.13"
 
 PROTECTED_KEYS = [
@@ -114,6 +130,7 @@ def audit_roadmarks(root: ET.Element) -> dict:
             for lane in s.findall(".//lane"):
                 lanes_audited += 1
                 lid = lane.get("id")
+                lane_type = lane.get("type", "none")
                 rms = lane.findall("roadMark")
                 if not rms:
                     missing_roadmark.append({"road": rid, "lane": lid})
@@ -132,7 +149,7 @@ def audit_roadmarks(root: ET.Element) -> dict:
                     if lc is not None and lc not in VALID_LANECHANGE:
                         invalid_lanechange.append({"road": rid, "lane": lid, "laneChange": lc})
                     width = _safe_float(rm.get("width"), 0.0)
-                    if t in VISIBLE_TYPES:
+                    if t in VISIBLE_TYPES and lane_type in TRAFFIC_BEARING_LANE_TYPES:
                         if not math.isfinite(width) or width <= 0:
                             visible_zero_width.append(
                                 {"road": rid, "lane": lid, "type": t, "width": rm.get("width")})
@@ -153,6 +170,15 @@ def audit_roadmarks(root: ET.Element) -> dict:
                                 "kind": "none_with_width",
                                 "width": rm.get("width"),
                             })
+                    elif t in VISIBLE_TYPES:
+                        advisory.append({
+                            "road": rid,
+                            "lane": lid,
+                            "lane_type": lane_type,
+                            "kind": "non_traffic_visible_marking",
+                            "type": t,
+                            "width": rm.get("width"),
+                        })
 
     return {
         "lanes_audited": lanes_audited,
@@ -176,6 +202,9 @@ def repair_roadmarks(root: ET.Element) -> dict:
     for r in root.findall("road"):
         for s in r.findall("lanes/laneSection"):
             for lane in s.findall(".//lane"):
+                lane_type = lane.get("type", "none")
+                if lane_type not in TRAFFIC_BEARING_LANE_TYPES:
+                    continue
                 for rm in lane.findall("roadMark"):
                     t = rm.get("type")
                     width = _safe_float(rm.get("width"), 0.0)
@@ -190,8 +219,8 @@ def repair_roadmarks(root: ET.Element) -> dict:
 
 # ---------------------------------------------------------------- fixtures
 
-def _lane_xml(lid: str, rms_xml: str) -> str:
-    return f'<lane id="{lid}" type="driving"><width sOffset="0" a="3.5"/>{rms_xml}</lane>'
+def _lane_xml(lid: str, rms_xml: str, *, lane_type: str = "driving") -> str:
+    return f'<lane id="{lid}" type="{lane_type}"><width sOffset="0" a="3.5"/>{rms_xml}</lane>'
 
 
 def build_rm_fixture(kind: str) -> dict:
@@ -226,6 +255,15 @@ def build_rm_fixture(kind: str) -> dict:
         )
         return {"root": ET.fromstring(xml),
                 "expect": {"solid_lanechange_missing": 1}}
+    if kind == "sidewalk_boundary":
+        xml = (
+            '<OpenDRIVE><header version="1.7"/>'
+            '<road id="1" length="50"><lanes><laneSection s="0">'
+            '<lane id="0" type="none">' + center_rm + "</lane>"
+            + _lane_xml("-1", '<roadMark sOffset="0" type="solid"/>', lane_type="sidewalk")
+            + "</laneSection></lanes></road></OpenDRIVE>"
+        )
+        return {"root": ET.fromstring(xml), "expect": {}}
     if kind == "solid_crossing":
         xml = (
             '<OpenDRIVE><header version="1.7"/>'
@@ -253,7 +291,7 @@ def build_rm_fixture(kind: str) -> dict:
 def run_fixtures() -> dict:
     results = {}
     all_ok = True
-    for kind in ("clean", "zero_width_solid", "solid_no_lanechange",
+    for kind in ("clean", "zero_width_solid", "solid_no_lanechange", "sidewalk_boundary",
                  "solid_crossing", "invalid_values"):
         fx = build_rm_fixture(kind)
         audit = audit_roadmarks(fx["root"])
