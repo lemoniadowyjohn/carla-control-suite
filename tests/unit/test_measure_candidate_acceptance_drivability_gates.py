@@ -39,6 +39,52 @@ def _write_clean_xodr(path: Path) -> None:
     )
 
 
+def _write_lane_count_change_xodr(path: Path) -> None:
+    path.write_text(
+        """<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <road id="1" length="10.0" junction="-1">
+    <link><successor elementType="road" elementId="2" contactPoint="start"/></link>
+    <planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="1" b="0" c="0" d="0"/></elevationProfile>
+    <lanes><laneSection s="0"><right>
+      <lane id="-1" type="driving"><width sOffset="0" a="3.5" b="0" c="0" d="0"/>
+        <userData><vector key="lane_count_source" value="osm:lanes"/></userData>
+      </lane>
+    </right></laneSection></lanes>
+  </road>
+  <road id="2" length="10.0" junction="-1">
+    <link><predecessor elementType="road" elementId="1" contactPoint="end"/></link>
+    <planView><geometry s="0" x="10" y="0" hdg="0" length="10"><line/></geometry></planView>
+    <elevationProfile><elevation s="0" a="1" b="0" c="0" d="0"/></elevationProfile>
+    <lanes><laneSection s="0"><right>
+      <lane id="-1" type="driving"><width sOffset="0" a="3.5" b="0" c="0" d="0"/>
+        <userData><vector key="lane_count_source" value="osm:lanes"/></userData>
+      </lane>
+      <lane id="-2" type="driving"><width sOffset="0" a="3.5" b="0" c="0" d="0"/>
+        <userData><vector key="lane_count_source" value="osm:lanes"/></userData>
+      </lane>
+    </right></laneSection></lanes>
+  </road>
+</OpenDRIVE>
+""",
+        encoding="utf-8",
+    )
+
+
+def test_run_gates_writes_advisory_lane_count_change_report(tmp_path: Path) -> None:
+    xodr = tmp_path / "lane_count_change.xodr"
+    out_dir = tmp_path / "out"
+    _write_lane_count_change_xodr(xodr)
+
+    reports = run_gates(xodr, out_dir, dem=None)
+
+    report = reports["lane_count_changes"]
+    assert report["advisory"] is True
+    assert report["summary_metrics"]["osm_explained_change"] == 1
+    assert (out_dir / "lane_count_changes.json").is_file()
+
+
 def _write_lane_width_violation_xodr(path: Path) -> None:
     # A single laneSection with a near-zero driving-lane width -- triggers
     # check_lane_width_continuity's "nonpositive_width" (width <= 0.01).
