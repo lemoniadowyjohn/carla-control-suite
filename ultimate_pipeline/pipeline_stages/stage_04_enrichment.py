@@ -243,8 +243,10 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
 
         source_ways = extract_positioned_osm_metadata_ways(s.OSM_FILE)
         positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
-        associations, correspondence_report = build_metadata_associations(positioned_ways, root)
         if positioned_ways:
+            associations, correspondence_report = build_metadata_associations(
+                positioned_ways, root
+            )
             print(
                 "📋 Spatial OSM metadata: "
                 f"{len(positioned_ways)} source ways, "
