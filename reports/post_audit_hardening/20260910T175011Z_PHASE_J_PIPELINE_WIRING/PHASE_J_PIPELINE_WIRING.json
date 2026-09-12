@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-10T17:50:11Z",
+  "task": "GAP-013 Phase J visual/collision QA pipeline wiring",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_commit": "21115492d8dce385f546c180f9c07f36adf61875",
+  "branch": "feature/phase-j-wiring-v1-20260909",
+  "scope": {
+    "pipeline_wiring": "PASS",
+    "map_of_record_mutated": false,
+    "frozen_evidence_mutated": false,
+    "carla_started": false,
+    "carla_rpc_called": false
+  },
+  "implementation": {
+    "authoritative_call_site": "ultimate_pipeline.main_pipeline.MainPipeline._run_internal after full_map_metrics and before tiling",
+    "stage_04_behavior": "DEFERRED until post_structural_freeze_authority",
+    "opt_in": [
+      "UP_ENABLE_OSM2WORLD",
+      "ENABLE_OSM2WORLD",
+      "Settings.ENABLE_OSM2WORLD"
+    ],
+    "road_authority": "OpenDRIVE",
+    "visual_artifact_authority": "supplemental_visual_only",
+    "failure_policy": "An enabled renderer failure, failed J1 validation, or incomplete validation writes osm2world_pipeline_stage.json and raises RuntimeError. Missing tooling is BLOCKED_EXTERNAL."
+  },
+  "toolchain": {
+    "java": {
+      "available": true,
+      "version": "openjdk version 17.0.17 2025-10-21"
+    },
+    "osm2world": {
+      "available": true,
+      "home": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/carla_governed/OSM2World-latest-bin",
+      "jar_sha256": "f20b00e1c5dc50ce211ffab817d874799576dacce4f8190d83c8a7b48cb61fac"
+    },
+    "blender": {
+      "available": true,
+      "version": "Blender 4.3.0",
+      "executed": false,
+      "reason": "J1 failed, so downstream Blender/FBX/collision stages were not admissible"
+    }
+  },
+  "full_scale_input": {
+    "map_of_record": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "osm_source": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "osm_source_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+  },
+  "full_scale_run": {
+    "status": "COMPLETED_WITH_J1_FAILURE",
+    "wall_clock_seconds": 4.052,
+    "runner_status": "ok",
+    "stage_status": "FAIL",
+    "stage_receipt": "D:/carla-control-suite-experiments/phase-j-wiring-v1-20260909/integrated_j1_failure_v2/osm2world_pipeline_stage.json",
+    "stage_receipt_sha256": "406d05e2a54ec7178ed6767021e517feba0b3d119dd14c210b9736b4ad823b45",
+    "artifact": "D:/carla-control-suite-experiments/phase-j-wiring-v1-20260909/integrated_j1_failure_v2/osm2world/supplemental_scene.obj",
+    "artifact_sha256": "9a23d0162a0c0eb3a29267807649ee44d90e6f10195c2fd62819554dbaa73c77",
+    "artifact_bytes": 49212,
+    "vertex_count": 945,
+    "face_count": 876,
+    "object_group_count": 64,
+    "renderer_stderr": "OSM2World reported duplicate-point polygon errors while returning exit code 0; J1 remains the authoritative acceptance decision."
+  },
+  "j_stages": {
+    "J1_structural_artifact_validation": {
+      "status": "FAIL",
+      "passed_checks": [
+        "artifact_hash_match",
+        "input_hash_linkage",
+        "finite_coordinates",
+        "coordinate_magnitude",
+        "degenerate_faces",
+        "material_library",
+        "MTL_validation"
+      ],
+      "failed_check": "duplicate_objects",
+      "duplicate_objects": {
+        "SurfaceArea Audi - Parkplatz": 6,
+        "SurfaceArea Bahnhof Ingolstadt Audi": 2,
+        "SurfaceArea Rathausplatz": 2,
+        "SurfaceArea Zentraler Omnibusbahnhof (ZOB)": 20
+      }
+    },
+    "J2_deterministic_artifact_naming_and_conversion": "INCOMPLETE: one full-scale conversion used a stable stage-local name, but no repeatability run or standalone map/campaign naming-contract validation was executed",
+    "J3_blender_conversion": "NOT_RUN",
+    "J4_semantic_partition": "NOT_RUN",
+    "J5_coordinate_control": "NOT_RUN",
+    "J6_fbx_round_trip": "NOT_RUN",
+    "J7_collision_and_lod": "NOT_RUN",
+    "J8_detached_slab_validation": "NOT_RUN"
+  },
+  "tests": {
+    "phase_j_focused": {
+      "command": "python -m pytest ultimate_pipeline/tests/unit/test_osm2world_pipeline_wiring.py ultimate_pipeline/tests/unit/test_osm2world_runner_helpers.py ultimate_pipeline/tests/unit/test_p10_output_artifacts.py -q",
+      "status": "PASS",
+      "passed": 56,
+      "warnings": 6
+    },
+    "full_offline": {
+      "command": "UP_DISABLE_CARLA=1 UP_THESIS_STREAMING_RECOVERY_WAIT_S=0 python -m pytest -q",
+      "status": "FAIL",
+      "passed": 5663,
+      "failed": 79,
+      "skipped": 85,
+      "errors": 2,
+      "duration_seconds": 118.37,
+      "stdout_sha256": "2e8924d28524ba2886ba6cb93335e60faf208bb33c5aed3e0da8d8108090ba07",
+      "failure_classification": "The isolated sparse worktree does not materialize required campaign candidates, research contract, RoadRunner profiles, calibration configuration, or historical evidence. Phase J focused tests pass; this task does not modify those missing artifacts."
+    }
+  },
+  "verdict": {
+    "pipeline_wiring": "PASS",
+    "full_scale_visual_certification": "FAIL",
+    "production_activation": "NOT_REQUESTED",
+    "live_carla": "NOT_RUN",
+    "next_admissible_task": "Claude independent review of the full-scale J1 duplicate-object failure and Phase J activation boundary"
+  }
+}
