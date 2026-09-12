@@ -113,11 +113,19 @@ class QualityGateManager:
             self.passed("randomness_entropy")
 
     def gate_semantic_overlap(self, root) -> None:
-        from ultimate_pipeline.quality.check_semantic_overlap import (
-            SemanticOverlapChecker,
-        )
+        from ultimate_pipeline.quality.check_semantic_overlap import SemanticOverlapChecker as HeuristicChecker
+        from ultimate_pipeline.quality.semantic_overlap import SemanticOverlapChecker as PolygonChecker
 
-        issues = SemanticOverlapChecker.validate(root)
+        heuristic = HeuristicChecker.validate(root)
+        issues = PolygonChecker.check_xodr(root)
+        comparison = {"polygon_intersection": issues, "heuristic_legacy": heuristic,
+                      "polygon_issue_count": len(issues), "heuristic_issue_count": len(heuristic)}
+        self.vreport.add("quality_gates", "semantic_overlap_comparison", comparison)
+        self._persist_optional(comparison, "semantic_overlap_comparison")
+        # The standalone map-acceptance report remains advisory.  Quality-gate
+        # orchestration must nevertheless retain the polygon result as a
+        # failure so UP_STRICT_QUALITY_GATES can enforce its documented
+        # fail-closed contract.
         if issues:
             self.fail("semantic_overlap", issues)
         else:
