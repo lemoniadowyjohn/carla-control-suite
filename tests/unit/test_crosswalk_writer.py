@@ -8,6 +8,8 @@ ways exist (0 crossing-tagged nodes) -- real, usable data.
 """
 import math
 import xml.etree.ElementTree as ET
+import os
+from pathlib import Path
 
 from ultimate_pipeline.enrichment.crosswalk_writer import (
     extract_osm_crossings,
@@ -291,15 +293,27 @@ def test_apply_crosswalks_skips_unmatched_crossings():
 
 
 def test_apply_crosswalks_real_pinned_data_end_to_end():
-    OSM = "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm"
-    CAND = ("campaigns/ingolstadt_cooked_perception_v1/candidate/"
-            "ingolstadt_perception_map_of_record_20260905_202847.xodr")
+    repo_root = Path(__file__).resolve().parents[2]
+    osm = Path(os.getenv(
+        "UP_GOVERNED_OSM_PATH",
+        repo_root / "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    ))
+    candidate = Path(os.getenv(
+        "UP_GOVERNED_XODR_PATH",
+        repo_root / "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    ))
+    if not osm.is_file() or not candidate.is_file():
+        pytest.skip(
+            "governed crosswalk integration artifacts unavailable; "
+            "set UP_GOVERNED_OSM_PATH and UP_GOVERNED_XODR_PATH"
+        )
     from ultimate_pipeline.domain_gap.local_registration import read_offset
 
-    osm_crossings = extract_osm_crossings(OSM)
+    osm_crossings = extract_osm_crossings(str(osm))
     assert len(osm_crossings) == 179  # matches the pinned OSM source exactly
 
-    root = ET.parse(CAND).getroot()
+    root = ET.parse(candidate).getroot()
     offset = read_offset(root)
     for c in osm_crossings:
         c["nodes_local"] = project_crossing_to_local(c["nodes"], offset)
