@@ -1,8 +1,19 @@
 {
   "schema_version": 1,
-  "base_branch": "feature/micro-stub-detection-v1-20260912",
-  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
-  "branch": "feature/connector-snap-wiring-v1-20260912",
+  "source_branch": "feature/micro-stub-detection-v1-20260912",
+  "base_branch": "stabilize/research-release-20260905",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/connector-snap-wiring-f195-v1-20260912",
+  "authorized_base_remeasurement": {
+    "status": "PASS",
+    "method": "in-memory snap and temporary serialized continuity validation; pinned map bytes re-hashed before and after",
+    "connectors_examined": 22589,
+    "connectors_snapped": 4125,
+    "hard_issues_before_after": [0, 0],
+    "junction_connector_issues_before_after": [9176, 5609],
+    "map_sha256_unchanged": true,
+    "note": "These figures supersede source-branch measurements that included the separate micro-stub advisory reclassification."
+  },
   "map": {
     "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
     "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
