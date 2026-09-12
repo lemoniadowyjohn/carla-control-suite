@@ -68,6 +68,44 @@ class JunctionIntegrityGate:
 
         issues: List[Dict[str, Any]] = []
 
+        # A junction connection is identified by its incoming/connecting road
+        # pair and contact point.  Duplicate rows are almost always generated
+        # by an unsafe rewrite; contradictory rows for the same pair cannot be
+        # interpreted deterministically by downstream OpenDRIVE consumers.
+        for j in root.findall("./junction"):
+            jid = j.get("id", "?")
+            seen_connections: Dict[Tuple[str, str, str], Tuple[str, Tuple[Tuple[str, str], ...]]] = {}
+            for conn in j.findall("./connection"):
+                cid = conn.get("id", "?")
+                key = (
+                    conn.get("incomingRoad", ""),
+                    conn.get("connectingRoad", ""),
+                    conn.get("contactPoint", ""),
+                )
+                lane_links = tuple(sorted(
+                    (ll.get("from", ""), ll.get("to", ""))
+                    for ll in conn.findall("./laneLink")
+                ))
+                previous = seen_connections.get(key)
+                if previous is not None:
+                    previous_id, previous_links = previous
+                    issue_type = (
+                        "conflicting_duplicate_connection"
+                        if previous_links != lane_links
+                        else "duplicate_connection"
+                    )
+                    issues.append({
+                        "type": issue_type,
+                        "junction_id": jid,
+                        "connection_id": cid,
+                        "duplicate_of": previous_id,
+                        "incomingRoad": key[0],
+                        "connectingRoad": key[1],
+                        "contactPoint": key[2],
+                    })
+                else:
+                    seen_connections[key] = (cid, lane_links)
+
         # Validate: for each <junction>, ensure its connections reference real roads.
         for j in root.findall("./junction"):
             jid = j.get("id", "?")
@@ -122,14 +160,47 @@ class JunctionIntegrityGate:
             rid = road.get("id", "?")
             jref = road.get("junction")
             # OpenDRIVE uses -1 for "not part of a junction".
-            if jref is None or jref == "-1":
-                continue
-            if jref not in junction_ids:
+            if jref is not None and jref != "-1" and jref not in junction_ids:
                 issues.append({
                     "type": "road_references_missing_junction",
                     "road_id": rid,
                     "junction": jref,
                 })
+
+            link = road.find("./link")
+            if link is None:
+                continue
+            for relation in ("predecessor", "successor"):
+                element = link.find(f"./{relation}")
+                if element is None:
+                    continue
+                element_type = element.get("elementType")
+                element_id = element.get("elementId")
+                known_ids = road_ids if element_type == "road" else junction_ids if element_type == "junction" else set()
+                if element_type not in {"road", "junction"} or element_id not in known_ids:
+                    issues.append({
+                        "type": f"invalid_{relation}_reference",
+                        "road_id": rid,
+                        "elementType": element_type,
+                        "elementId": element_id,
+                    })
+
+        # A road must not declare two different predecessor/successor records
+        # for the same relation.  XML consumers otherwise disagree on which
+        # endpoint is authoritative.
+        for road in root.findall("./road"):
+            rid = road.get("id", "?")
+            link = road.find("./link")
+            if link is None:
+                continue
+            for relation in ("predecessor", "successor"):
+                records = link.findall(f"./{relation}")
+                if len(records) > 1:
+                    issues.append({
+                        "type": f"conflicting_{relation}_records",
+                        "road_id": rid,
+                        "count": len(records),
+                    })
 
         return {
             "ok": len(issues) == 0,
