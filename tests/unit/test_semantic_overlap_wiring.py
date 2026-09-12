@@ -19,10 +19,40 @@ def test_polygon_checker_detects_building_intersecting_buffered_road():
     issues=SemanticOverlapChecker.check_xodr(root)
     assert issues == [{"building":"b","road":"r"}]
 
-def test_quality_gate_records_polygon_and_legacy_comparison_without_failure():
+def test_quality_gate_records_clean_polygon_and_legacy_comparison_without_failure():
     report=Report(); manager=QualityGateManager(report)
     root=ET.Element("OpenDRIVE")
     manager.gate_semantic_overlap(root)
     comparison=[entry for entry in report.entries if entry[1]=="semantic_overlap_comparison"]
     assert comparison and comparison[0][2]["polygon_issue_count"] == 0
     assert manager.get_failures() == {}
+
+
+def test_quality_gate_exposes_polygon_overlap_to_strict_orchestration():
+    report=Report(); manager=QualityGateManager(report)
+    root=ET.Element("OpenDRIVE")
+    road=ET.SubElement(root,"road",id="r")
+    plan=ET.SubElement(road,"planView")
+    for x in (0,10):
+        geometry=ET.SubElement(plan,"geometry",x=str(x),y="0",hdg="0",length="10",s=str(x))
+        ET.SubElement(geometry,"line")
+    lanes=ET.SubElement(road,"lanes")
+    section=ET.SubElement(lanes,"laneSection",s="0")
+    right=ET.SubElement(section,"right")
+    lane=ET.SubElement(right,"lane",id="-1",type="driving")
+    ET.SubElement(lane,"width",a="3.5")
+    obj=ET.SubElement(road,"objects")
+    building=ET.SubElement(obj,"object",id="b",type="building")
+    outline=ET.SubElement(building,"outline")
+    for x,y in ((4,-1),(6,-1),(6,1),(4,1)):
+        ET.SubElement(outline,"cornerGlobal",x=str(x),y=str(y))
+
+    manager.gate_semantic_overlap(root)
+
+    assert manager.get_failures() == {
+        "semantic_overlap": [{"building":"b","road":"r"}]
+    }
+    assert any(
+        entry[1] == "semantic_overlap" and entry[2]["status"] == "fail"
+        for entry in report.entries
+    )
