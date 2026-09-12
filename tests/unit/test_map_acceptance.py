@@ -576,6 +576,55 @@ def test_map_acceptance_accepts_resolved_lane_successor_autofix_report():
     assert acceptance["metrics"]["lane_successor_missing_count"] == 0
 
 
+def test_map_acceptance_soft_warns_on_unexplained_lane_count_changes():
+    acceptance = build_map_acceptance(
+        {
+            "lane_count_changes": {
+                "ok": True,
+                "advisory": True,
+                "artifact_path": "reports/lane_count_changes.json",
+                "summary_metrics": {
+                    "road_link_boundaries": 12,
+                    "no_change": 8,
+                    "osm_explained_change": 2,
+                    "unexplained_change": 2,
+                    "unresolved_road_links": 1,
+                },
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["lane_count_change_osm_explained_count"] == 2
+    assert acceptance["metrics"]["lane_count_change_unexplained_count"] == 2
+    assert acceptance["linked_artifacts"]["lane_count_changes"] == "reports/lane_count_changes.json"
+    assert any(warning["gate"] == "lane_count_changes" for warning in acceptance["soft_warnings"])
+
+
+def test_map_acceptance_records_clean_lane_count_changes_without_warning():
+    acceptance = build_map_acceptance(
+        {
+            "lane_count_changes": {
+                "ok": True,
+                "advisory": True,
+                "summary_metrics": {
+                    "road_link_boundaries": 10,
+                    "no_change": 8,
+                    "osm_explained_change": 2,
+                    "unexplained_change": 0,
+                    "unresolved_road_links": 0,
+                },
+            }
+        },
+        run_id="run",
+    )
+
+    assert acceptance["valid_for_experiments"] is True
+    assert acceptance["metrics"]["lane_count_change_osm_explained_count"] == 2
+    assert not any(warning["gate"] == "lane_count_changes" for warning in acceptance["soft_warnings"])
+
+
 # --------------------------------------------------------------------------
 # CODEX C7: enrichment completeness (buildings + functional signals) metrics
 # --------------------------------------------------------------------------
