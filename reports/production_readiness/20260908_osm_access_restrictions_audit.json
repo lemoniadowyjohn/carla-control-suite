@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "status": "CORRECTNESS_BUG_FOUND",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "analysis_date_utc": "2026-09-08",
+  "source_osm": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "tagged_way_count": 6312,
+    "tagged_way_counts": {
+      "access": 2016,
+      "bicycle": 2306,
+      "motor_vehicle": 324,
+      "psv": 2777,
+      "vehicle": 133
+    },
+    "strong_motor_restriction_way_count": 2132,
+    "strong_motor_restriction_way_count_in_converter_highway_classes": 93
+  },
+  "xodr": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260819_160350.xodr",
+    "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+  },
+  "matching": {
+    "implementation_commit": "6889ffdb54d89239edb908d616b00e27f66e37bc",
+    "method": "exact_name_and_projected_geometry_direction_independent",
+    "projection": "+proj=tmerc with pinned XODR header offset",
+    "xodr_sample_spacing_m": 3.0,
+    "maximum_xodr_to_osm_mean_distance_m": 2.0,
+    "minimum_xodr_sample_coverage_within_2m": 0.9,
+    "matched_osm_xodr_pairs": 79,
+    "matched_distinct_xodr_roads": 79,
+    "matched_distinct_xodr_roads_with_driving_lanes": 79,
+    "matched_driving_lane_instances": 79,
+    "matched_restriction_tag_counts": {
+      "access=agricultural": 6,
+      "access=destination": 16,
+      "motor_vehicle=destination": 22,
+      "motor_vehicle=no": 6,
+      "vehicle=destination": 28,
+      "vehicle=no": 3
+    }
+  },
+  "examples": [
+    {
+      "osm_way_id": "201201936",
+      "osm_name": "Adam-Smith-Stra\u00dfe",
+      "osm_highway": "unclassified",
+      "restriction_tags": {
+        "motor_vehicle": "no",
+        "vehicle": "no"
+      },
+      "xodr_road_ids": [
+        "43115",
+        "47787"
+      ],
+      "xodr_driving_lanes_per_road": 1,
+      "xodr_restriction_userdata": [],
+      "maximum_mean_geometry_distance_m": 0.015318,
+      "minimum_geometry_coverage_within_2m": 1.0
+    },
+    {
+      "osm_way_id": "155458987",
+      "osm_name": "Baggerweg",
+      "osm_highway": "unclassified",
+      "restriction_tags": {
+        "motor_vehicle": "destination"
+      },
+      "xodr_road_ids": [
+        "42912",
+        "47505"
+      ],
+      "xodr_driving_lanes_per_road": 1,
+      "xodr_restriction_userdata": [],
+      "maximum_mean_geometry_distance_m": 0.000122,
+      "minimum_geometry_coverage_within_2m": 1.0
+    },
+    {
+      "osm_way_id": "107671228",
+      "osm_name": "Proviantstra\u00dfe",
+      "osm_highway": "residential",
+      "restriction_tags": {
+        "vehicle": "destination"
+      },
+      "xodr_road_ids": [
+        "50346"
+      ],
+      "xodr_driving_lanes_per_road": 1,
+      "xodr_restriction_userdata": [],
+      "maximum_mean_geometry_distance_m": 0.000006,
+      "minimum_geometry_coverage_within_2m": 1.0
+    }
+  ],
+  "conclusion": {
+    "metadata_added": "NOT_APPLICABLE",
+    "reason": "The directly matched motor_vehicle=no and vehicle=no roads remain ordinary driving roads with no restriction representation. Advisory userData would preserve provenance but would not restrict route or vehicle semantics.",
+    "required_follow_up": "Define and approve a fail-closed access-restriction policy for OSM-to-XODR inclusion and/or lane/road routing semantics before changing production generation."
+  },
+  "frozen_evidence_modified": false,
+  "map_of_record_modified": false,
+  "live_carla": "NOT_RUN"
+}
