@@ -117,7 +117,6 @@ def test_turn_marking_writer_uses_only_high_confidence_directional_correspondenc
         "turnMarking:backward": "through|right",
     }
 
-
 def test_directional_turn_lanes_become_approach_geometry_with_provenance() -> None:
     root = ET.Element("OpenDRIVE")
     road = _road(
