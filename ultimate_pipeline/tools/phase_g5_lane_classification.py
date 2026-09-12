@@ -8,7 +8,8 @@ contradicts their geometric and topological context.
 Audit invariants:
 - lane types are from the OpenDRIVE 1.7 set
 - walk-side lanes (sidewalk/border/curb/median) are always outermost:
-  |id| of a walk-side lane >= |id| of every driving lane in the section
+  |id| of a walk-side lane >= |id| of every driving lane on the same side
+  of the section
 - lane width plausibility per declared type
 - at most one walk-side lane per side per section
 
@@ -113,6 +114,7 @@ def audit_classification(root: ET.Element) -> dict:
                 if lt in WALK_SIDE:
                     for other in lanes:
                         if (other.get("type") == "driving"
+                                and int(other.get("id")) * lid > 0
                                 and abs(int(other.get("id"))) > abs(lid)):
                             outer_viol.append({
                                 "road": rid,
@@ -229,6 +231,25 @@ def _driving_connection(root: ET.Element, rid: str, lid: int) -> bool:
     return False
 
 
+def _apply_reclassifications(
+    root: ET.Element,
+    reclassifications: list[tuple[str, str | None, int]],
+) -> int:
+    """Apply only the section-qualified restricted-to-driving candidates."""
+    targets = set(reclassifications)
+    changed = 0
+    for road in root.findall("road"):
+        road_id = road.get("id")
+        for section in road.findall("lanes/laneSection"):
+            section_s = section.get("s")
+            for lane in section.findall(".//lane"):
+                target = (road_id, section_s, int(lane.get("id")))
+                if target in targets and lane.get("type") == "restricted":
+                    lane.set("type", "driving")
+                    changed += 1
+    return changed
+
+
 def main() -> int:
     g0 = json.loads(G0_EVIDENCE.read_text(encoding="utf-8"))
     if g0.get("g0_verdict") != "PHASE_G_INPUT_ACCEPTED":
@@ -252,7 +273,7 @@ def main() -> int:
         if (DRIVING_BAND[0] <= w <= DRIVING_BAND[1]
                 and abs(lid) == 1
                 and _driving_connection(root, rid, lid)):
-            reclass.append((rid, lid))
+            reclass.append((rid, item["section_s"], lid))
         else:
             reclass_issues.append(item)
 
@@ -261,15 +282,7 @@ def main() -> int:
         return 1
 
     # mutate: reclassify restricted -> driving
-    n_changed = 0
-    for r in root.findall("road"):
-        if r.get("id") not in [x[0] for x in reclass]:
-            continue
-        for s in r.findall("lanes/laneSection"):
-            for lane in s.findall(".//lane"):
-                if lane.get("type") == "restricted":
-                    lane.set("type", "driving")
-                    n_changed += 1
+    n_changed = _apply_reclassifications(root, reclass)
 
     ET.indent(root, space="  ", level=0)
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
@@ -327,7 +340,10 @@ def main() -> int:
             "width_band_violations": audit["width_band_violations"],
             "multiple_walk_side_lanes": audit["multiple_walk_side_lanes"],
         },
-        "reclassified_lanes": [{"road": r, "lane": l} for r, l in reclass],
+        "reclassified_lanes": [
+            {"road": r, "section_s": s, "lane": l}
+            for r, s, l in reclass
+        ],
         "reclass_issues": reclass_issues,
         "mutations": {
             "lanes_reclassified": n_changed,
