@@ -11,6 +11,8 @@ import xml.etree.ElementTree as ET
 import os
 from pathlib import Path
 
+import pytest
+
 from ultimate_pipeline.enrichment.crosswalk_writer import (
     extract_osm_crossings,
     project_crossing_to_local,
