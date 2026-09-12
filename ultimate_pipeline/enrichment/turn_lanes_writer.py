@@ -24,7 +24,6 @@ import xml.etree.ElementTree as ET
 from typing import Dict, Any
 
 
-<<<<<<< HEAD
 def _metadata_value(osm: Any, key: str) -> Any:
     if isinstance(osm, dict):
         return osm.get(key)
