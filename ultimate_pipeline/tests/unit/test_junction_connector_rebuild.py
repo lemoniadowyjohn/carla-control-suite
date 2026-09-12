@@ -89,7 +89,7 @@ def test_rebuild_parampoly3_connector_prefers_verified_arc(tmp_path: Path) -> No
   </road>
   <road name="outgoing" length="25.0" id="2" junction="-1">
     <link/>
-    <planView><geometry s="0" x="10" y="5" hdg="0" length="25"><line/></geometry></planView>
+    <planView><geometry s="0" x="10" y="5" hdg="0.9272952180016123" length="25"><line/></geometry></planView>
   </road>
   <road name="connector" length="15.0" id="100" junction="10">
     <link>
@@ -101,6 +101,12 @@ def test_rebuild_parampoly3_connector_prefers_verified_arc(tmp_path: Path) -> No
         <paramPoly3 aU="0" bU="15" cU="0" dU="0" aV="0" bV="0" cV="0" dV="0" pRange="normalized"/>
       </geometry>
     </planView>
+    <lanes>
+      <laneSection s="0">
+        <center><lane id="0" type="none" level="false"><roadMark sOffset="0" type="none"/></lane></center>
+        <right><lane id="-1" type="driving" level="false"><width sOffset="0" a="3.5" b="0" c="0" d="0"/></lane></right>
+      </laneSection>
+    </lanes>
   </road>
   <junction id="10">
     <connection id="0" incomingRoad="1" connectingRoad="100" contactPoint="start"/>
