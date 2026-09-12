@@ -67,7 +67,7 @@ def apply_turn_lanes(
     Returns:
         Number of roads stamped with turnMarking userData.
     """
-    if not osm_roads_by_id:
+    if not osm_roads_by_id and correspondence_by_road_id is None:
         return 0
 
     stamped = 0

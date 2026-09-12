@@ -245,36 +245,59 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
     else:
         print("⏭️ Realism module disabled.")
 
-    # OSM metadata enrichment: speed limits, turn:lanes, regulatory signs
-    # Uses osm_meta_index, keyed by STREET NAME (fixed 2026-08-26): the original
-    # "OSM way id == XODR road id" assumption was verified FALSE (disjoint numbering
-    # schemes; 0.0000% match on the real pinned map). See osm_meta_index.py.
+    # Position-sensitive OSM metadata enrichment: maxspeed, turn:lanes, and
+    # regulatory signs.  The former street-name index is intentionally not
+    # used here: way and road IDs are disjoint, and names are many-to-many.
+    # Only HIGH/EXACT spatial associations are eligible; ambiguity is reported
+    # and skipped rather than being assigned by a name collision.
     try:
-        from ultimate_pipeline.enrichment.osm_meta_index import build_osm_meta_index
+        from ultimate_pipeline.enrichment.osm_meta_index import (
+            extract_positioned_osm_metadata_ways,
+            project_positioned_osm_metadata_ways,
+        )
+        from ultimate_pipeline.enrichment.osm_xodr_correspondence import build_metadata_associations
         from ultimate_pipeline.enrichment.speed_limit_writer import apply_speed_limits
         from ultimate_pipeline.enrichment.turn_lanes_writer import apply_turn_lanes
         from ultimate_pipeline.enrichment.regulatory_sign_writer import apply_regulatory_signs
 
-        osm_meta = build_osm_meta_index(s.OSM_FILE)
-        if osm_meta:
-            print(f"📋 OSM meta index: {len(osm_meta)} ways with enrichment tags")
+        source_ways = extract_positioned_osm_metadata_ways(s.OSM_FILE)
+        positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
+        if positioned_ways:
+            associations, correspondence_report = build_metadata_associations(
+                positioned_ways, root
+            )
+            print(
+                "📋 Spatial OSM metadata: "
+                f"{len(positioned_ways)} source ways, "
+                f"{correspondence_report['eligible_road_count']} HIGH/EXACT road matches"
+            )
 
-            n_speed = apply_speed_limits(root, osm_meta)
-            n_turn = apply_turn_lanes(root, osm_meta)
-            n_signs = apply_regulatory_signs(root, osm_meta)
+            n_speed = apply_speed_limits(
+                root, {}, correspondence_by_road_id=associations
+            )
+            n_turn = apply_turn_lanes(
+                root, {}, correspondence_by_road_id=associations
+            )
+            n_signs = apply_regulatory_signs(
+                root, {}, correspondence_by_road_id=associations
+            )
 
             if n_speed or n_turn or n_signs:
                 save_xodr(tree, topo_fixed)
-            self.vreport.add_dict("osm_meta_enrichment", {
-                "ways_indexed": len(osm_meta),
-                "speed_limits_inserted": n_speed,
+            self.vreport.add_dict("osm_spatial_metadata_enrichment", {
+                "source_ways": len(positioned_ways),
+                "correspondence": correspondence_report,
+                "speed_limits_applied": n_speed,
                 "turn_lane_markings": n_turn,
                 "regulatory_signs": n_signs,
             })
             print(f"   → Speed limits: {n_speed}, turn markings: {n_turn}, signs: {n_signs}")
         else:
-            print("⏭️ OSM meta enrichment skipped (no OSM file or no enrichment tags found)")
-            self.vreport.add_dict("osm_meta_enrichment", {"ways_indexed": 0})
+            print("⏭️ Spatial OSM metadata skipped (no usable source way geometry)")
+            self.vreport.add_dict(
+                "osm_spatial_metadata_enrichment",
+                {"source_ways": 0, "eligible_road_count": 0},
+            )
     except Exception as e:
         print(f"⚠️ OSM meta enrichment failed: {e}")
         self.vreport.add("osm_meta_enrichment", "error", str(e))

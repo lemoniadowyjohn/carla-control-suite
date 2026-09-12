@@ -95,3 +95,29 @@ def test_validate_signal_references_accepts_generated_signal_references():
 
     bad_refs = TrafficLightInferer.validate_signal_references(root)
     assert bad_refs == []
+
+
+def test_validate_signal_references_uses_own_road_active_lane_section():
+    """A globally present lane ID cannot mask a local, non-zero-s error."""
+    root = ET.Element("OpenDRIVE")
+
+    owner = ET.SubElement(root, "road", id="owner", length="20")
+    owner_lanes = ET.SubElement(owner, "lanes")
+    first = ET.SubElement(owner_lanes, "laneSection", s="0")
+    ET.SubElement(ET.SubElement(first, "right"), "lane", id="-1", type="driving")
+    second = ET.SubElement(owner_lanes, "laneSection", s="10")
+    ET.SubElement(ET.SubElement(second, "right"), "lane", id="-2", type="driving")
+    owner_signals = ET.SubElement(owner, "signals")
+    ET.SubElement(owner_signals, "signalReference", id="valid", laneId="-2", s="12")
+    ET.SubElement(owner_signals, "signalReference", id="invalid", laneId="-1", s="12")
+
+    other = ET.SubElement(root, "road", id="other", length="20")
+    other_lanes = ET.SubElement(other, "lanes")
+    other_section = ET.SubElement(other_lanes, "laneSection", s="0")
+    ET.SubElement(ET.SubElement(other_section, "right"), "lane", id="-1", type="driving")
+
+    errors = TrafficLightInferer.validate_signal_references(root)
+
+    assert len(errors) == 1
+    assert "id=invalid" in errors[0]
+    assert "road owner at s=12.0" in errors[0]

@@ -7,9 +7,9 @@ Objects are written as <object> (not <signal>) at s=0.0, t=-1.5 (roadside, right
 
 Threading note:
     Requires an osm_roads_by_id dict where each entry carries a `traffic_sign`
-    attribute or dict key (e.g. "de:206", "de:274-50").  This is not yet populated
-    in the main pipeline's OSM loading path — add it when OSM feature tagging is
-    extended.  The module is safe to import and call with an empty dict.
+    attribute or dict key (e.g. "de:206", "de:274-50").  The pipeline's
+    position-sensitive path supplies it through a HIGH/EXACT spatial OSM-to-XODR
+    association; the legacy name-index mode remains for compatibility only.
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any], *,
     Returns:
         Number of <object> elements inserted.
     """
-    if not osm_roads_by_id:
+    if not osm_roads_by_id and correspondence_by_road_id is None:
         return 0
 
     inserted = 0
@@ -96,12 +96,31 @@ def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any], *,
 
         xodr_type, xodr_subtype = entry
         kind = xodr_type
-        obj_counter[kind] = obj_counter.get(kind, 0) + 1
-        obj_id = f"{kind}_{obj_counter[kind]}"
 
         objects_elem = road.find("objects")
         if objects_elem is None:
             objects_elem = ET.SubElement(road, "objects")
+
+        # Explicit, HIGH/EXACT-matched OSM speed-sign evidence outranks the
+        # identifiable heuristic emitted by RealismModule.  Only that precise
+        # object identity is retired; unprovenanced third-party objects remain
+        # untouched.  This makes precedence independent of Stage 4 call order.
+        if correspondence_by_road_id is not None and sign_key.startswith("de:274"):
+            heuristic_id = f"speed_{road.get('id')}"
+            for existing in list(objects_elem.findall("object")):
+                if (
+                    existing.get("id") == heuristic_id
+                    and str(existing.get("type", "")).startswith("speed_")
+                ):
+                    objects_elem.remove(existing)
+
+        # Preserve an existing explicit instance rather than duplicate it on
+        # an idempotent enrichment rerun.
+        if any(obj.get("name", "").strip().lower() == sign_key for obj in objects_elem.findall("object")):
+            continue
+
+        obj_counter[kind] = obj_counter.get(kind, 0) + 1
+        obj_id = f"{kind}_{obj_counter[kind]}"
 
         ET.SubElement(objects_elem, "object", {
             "id": obj_id,

@@ -39,7 +39,7 @@ Failure modes:
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from typing import Dict
+from typing import Any, Dict, Iterable, Mapping
 
 _TAGS_OF_INTEREST = {
     "name",
@@ -59,6 +59,16 @@ _TAGS_OF_INTEREST = {
     "lanes:backward",
     "width",
     "est_width",
+}
+
+_POSITIONED_METADATA_TAGS = {
+    "name",
+    "highway",
+    "maxspeed",
+    "maxspeed:type",
+    "turn:lanes",
+    "turn_lanes",
+    "traffic_sign",
 }
 
 _LANE_WIDTH_HIGHWAYS = {
@@ -171,3 +181,96 @@ def build_osm_meta_index(osm_path: str) -> Dict[str, dict]:
         print(f"[osm_meta_index] ⚠ Unexpected error building index: {exc}")
 
     return result
+
+
+def extract_positioned_osm_metadata_ways(osm_path: str) -> list[dict[str, Any]]:
+    """Extract OSM metadata ways without losing their source geometry.
+
+    ``build_osm_meta_index`` remains the legacy, deliberately low-resolution
+    name index.  Position-sensitive writers must instead consume these records
+    through ``osm_xodr_correspondence.build_metadata_associations``.  Records
+    without a usable polyline are excluded rather than being guessed from a
+    street name.
+    """
+    try:
+        root = ET.parse(osm_path).getroot()
+    except (FileNotFoundError, ET.ParseError):
+        return []
+
+    node_coordinates: dict[str, tuple[float, float]] = {}
+    for node in root.findall("node"):
+        node_id = node.get("id")
+        try:
+            longitude = float(node.get("lon", ""))
+            latitude = float(node.get("lat", ""))
+        except (TypeError, ValueError):
+            continue
+        if node_id is not None:
+            node_coordinates[node_id] = (longitude, latitude)
+
+    records: list[dict[str, Any]] = []
+    for way in root.findall("way"):
+        way_id = way.get("id")
+        if not way_id:
+            continue
+        tags = {
+            tag.get("k", ""): tag.get("v", "")
+            for tag in way.findall("tag")
+            if tag.get("k", "") in _POSITIONED_METADATA_TAGS
+        }
+        metadata = {
+            key: value
+            for key, value in tags.items()
+            if key in {"maxspeed", "maxspeed:type", "traffic_sign"}
+        }
+        turn_lanes = tags.get("turn:lanes") or tags.get("turn_lanes")
+        if turn_lanes:
+            metadata["turn_lanes"] = turn_lanes
+        if not metadata:
+            continue
+
+        points = [
+            node_coordinates[ref]
+            for ref in (node.get("ref") for node in way.findall("nd"))
+            if ref in node_coordinates
+        ]
+        if len(points) < 2:
+            continue
+        records.append(
+            {
+                "id": str(way_id),
+                "name": tags.get("name", ""),
+                "highway": tags.get("highway", ""),
+                "geometry": points,
+                "metadata": metadata,
+            }
+        )
+    return records
+
+
+def project_positioned_osm_metadata_ways(
+    ways: Iterable[Mapping[str, Any]],
+    root: ET.Element,
+) -> list[dict[str, Any]]:
+    """Project WGS84 OSM polylines into the current XODR local frame.
+
+    This deliberately uses the same verified bare-tmerc plus header-offset
+    conversion as crosswalk enrichment.  It does not trust the XODR header's
+    declared CRS, which is metadata-only for the governed Osm2Odr artifacts.
+    """
+    from ultimate_pipeline.domain_gap.local_registration import read_offset
+    from ultimate_pipeline.enrichment.crosswalk_writer import project_crossing_to_local
+
+    offset = read_offset(root)
+    projected: list[dict[str, Any]] = []
+    for way in ways:
+        try:
+            geometry = project_crossing_to_local(list(way["geometry"]), offset)
+        except (KeyError, TypeError, ValueError):
+            continue
+        if len(geometry) < 2:
+            continue
+        record = dict(way)
+        record["geometry"] = geometry
+        projected.append(record)
+    return projected

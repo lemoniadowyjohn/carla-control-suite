@@ -217,3 +217,85 @@ def build_correspondence(osm_ways: Iterable[Mapping[str, Any]], root: ET.Element
         candidates = index.candidates_near(points, max_distance) if points else []
         results.append(match_osm_way_to_xodr(way, candidates, sample_cache=index.samples, **kwargs))
     return results
+
+
+def build_metadata_associations(
+    osm_ways: Iterable[Mapping[str, Any]],
+    root: ET.Element,
+    **kwargs: Any,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """Resolve HIGH/EXACT OSM-way matches into fail-closed road metadata.
+
+    Multiple OSM ways may spatially match a generated XODR road.  Identical
+    metadata is deterministicly coalesced; conflicting values are not selected
+    by incidental iteration order and instead make the target road ineligible
+    for position-sensitive enrichment.
+    """
+    ways = sorted(
+        (dict(way) for way in osm_ways),
+        key=lambda way: str(way.get("id", way.get("way_id", ""))),
+    )
+    ways_by_id = {
+        str(way.get("id", way.get("way_id", ""))): way
+        for way in ways
+    }
+    results = build_correspondence(ways, root, **kwargs)
+    candidates: dict[str, list[tuple[MatchResult, Mapping[str, Any]]]] = {}
+    class_counts = {"EXACT": 0, "HIGH": 0, "AMBIGUOUS": 0, "UNMATCHED": 0}
+    for result in results:
+        class_counts[result.match_class] = class_counts.get(result.match_class, 0) + 1
+        if result.match_class not in {"EXACT", "HIGH"} or not result.xodr_road_id:
+            continue
+        way = ways_by_id.get(result.osm_way_id)
+        if way is None:
+            continue
+        candidates.setdefault(result.xodr_road_id, []).append((result, way))
+
+    associations: dict[str, dict[str, Any]] = {}
+    conflicts: list[dict[str, Any]] = []
+    for road_id in sorted(candidates):
+        matches = sorted(
+            candidates[road_id],
+            key=lambda row: (
+                0 if row[0].match_class == "EXACT" else 1,
+                -row[0].confidence,
+                row[0].osm_way_id,
+            ),
+        )
+        selected_result, selected_way = matches[0]
+        selected_metadata = dict(selected_way.get("metadata", {}))
+        conflicting_way_ids: list[str] = []
+        for candidate_result, candidate_way in matches[1:]:
+            candidate_metadata = dict(candidate_way.get("metadata", {}))
+            shared_keys = set(selected_metadata).intersection(candidate_metadata)
+            if any(
+                selected_metadata[key] != candidate_metadata[key]
+                for key in shared_keys
+            ):
+                conflicting_way_ids.append(candidate_result.osm_way_id)
+        if conflicting_way_ids:
+            conflicts.append(
+                {
+                    "xodr_road_id": road_id,
+                    "selected_osm_way_id": selected_result.osm_way_id,
+                    "conflicting_osm_way_ids": conflicting_way_ids,
+                    "reason": "conflicting_high_confidence_osm_metadata",
+                }
+            )
+            continue
+        associations[road_id] = {
+            "class": selected_result.match_class,
+            "confidence": selected_result.confidence,
+            "osm_way_id": selected_result.osm_way_id,
+            "metadata": selected_metadata,
+            "evidence": dict(selected_result.evidence),
+        }
+
+    report = {
+        "source_way_count": len(ways),
+        "match_class_counts": class_counts,
+        "eligible_road_count": len(associations),
+        "conflicting_road_count": len(conflicts),
+        "conflicts": conflicts,
+    }
+    return associations, report
