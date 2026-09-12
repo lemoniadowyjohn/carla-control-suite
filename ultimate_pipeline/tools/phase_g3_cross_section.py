@@ -326,7 +326,8 @@ def audit_full_map(xodr_path: Path) -> dict:
     section_continuity_jumps = []
     max_jump = 0.0
     stub_coverage_roads = []
-    genuine_unavailable = []
+    non_stub_unavailable_sections = []
+    non_stub_unavailable_samples = 0
 
     for road in roads:
         rid = road.get("id")
@@ -350,6 +351,22 @@ def audit_full_map(xodr_path: Path) -> dict:
                     "kinds": sorted({i["kind"] for i in res["issues"]}),
                     "issues": res["issues"][:20],
                 })
+                unavailable_count = sum(
+                    1 for issue in res["issues"] if issue["kind"] == "unavailable"
+                )
+                # A short (<= 1 m) road whose frozen planView does not cover
+                # its nominal endpoint is a documented stub case.  Any other
+                # unavailable sample means the validator did not evaluate its
+                # claimed cross-section and must not issue a coverage PASS.
+                if unavailable_count and length > 1.0:
+                    non_stub_unavailable_sections.append(
+                        {
+                            "road": rid,
+                            "section_s": _safe_float(section.get("s")),
+                            "unavailable_sample_count": unavailable_count,
+                        }
+                    )
+                    non_stub_unavailable_samples += unavailable_count
             # section-boundary continuity: outer lane boundary t at section
             # end vs start of the next section (same road)
             end_s = section_s[idx + 1] if idx + 1 < len(section_s) else length
@@ -409,7 +426,11 @@ def audit_full_map(xodr_path: Path) -> dict:
         ),
         "section_boundary_continuity": max_jump < 0.1,
         "sections_available": sample_count > 0,
+        "no_non_stub_unavailable_sections": not non_stub_unavailable_sections,
     }
+    coverage_status = (
+        "COMPLETE" if not non_stub_unavailable_sections else "INCOMPLETE"
+    )
     passed = all(checks.values())
     total_issues = len(genuine_kinds)
 
@@ -435,9 +456,18 @@ def audit_full_map(xodr_path: Path) -> dict:
         "bad_roads": genuine_bad[:200],
         "stub_coverage_roads": stub_coverage_roads[:200],
         "stub_coverage_road_count": len(stub_coverage_roads),
+        "coverage": {
+            "status": coverage_status,
+            "non_stub_unavailable_section_count": len(non_stub_unavailable_sections),
+            "non_stub_unavailable_sample_count": non_stub_unavailable_samples,
+            "non_stub_unavailable_sections": non_stub_unavailable_sections[:200],
+        },
         "checks": checks,
         "g3_verdict": (
-            "PHASE_G_CROSS_SECTION_PASS" if passed
+            "PHASE_G_CROSS_SECTION_INCOMPLETE"
+            if coverage_status == "INCOMPLETE"
+            else "PHASE_G_CROSS_SECTION_PASS"
+            if passed
             else "PHASE_G_CROSS_SECTION_BLOCKED"
         ),
     }
@@ -690,7 +720,10 @@ def main() -> int:
         "input_byte_sha256": g0["input_candidate"]["byte_sha256"],
     }
     report["g3_verdict"] = (
-        "PHASE_G_CROSS_SECTION_PASS" if passed
+        "PHASE_G_CROSS_SECTION_INCOMPLETE"
+        if full["coverage"]["status"] == "INCOMPLETE"
+        else "PHASE_G_CROSS_SECTION_PASS"
+        if passed
         else "PHASE_G_CROSS_SECTION_BLOCKED"
     )
     report["fixture_names"] = sorted(fixtures["fixtures"].keys())
