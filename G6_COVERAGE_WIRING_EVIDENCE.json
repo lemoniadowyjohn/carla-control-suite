@@ -10,6 +10,23 @@
     "advisory_exception_receipt": "PASS: retained 8H-4 artifact, no 8H-5 output, persisted status=INCOMPLETE",
     "verified_on_authorized_base": true
   },
+  "authorized_base_remeasurement": {
+    "status": "PASS",
+    "method": "in-memory repair and post-repair audit; pinned map bytes re-hashed before and after",
+    "added_lanelinks": 126,
+    "repair_issues": 0,
+    "audit_after_clean": true,
+    "isolated_lane_components_before_after": [27, 1],
+    "missing_driving_from_coverage_before_after": [135, 0],
+    "lateral_merge_distance_m": {
+      "measured": 118,
+      "unmeasured": 8,
+      "min": 0.14314588586715324,
+      "median": 3.500000194510025,
+      "max": 7.124999766326669
+    },
+    "map_sha256_unchanged": true
+  },
   "history_read_first": "CODEX_PROMPT_P_G6_ISOLATED_LANES_20260909.md, feature/g6-lane-coverage-repair-v1-20260911's CODEX_G6_LANE_COVERAGE_INVESTIGATION.json, and this session's own G6 adversarial review -- this topic has been through an original 3-round investigation (closed 'do not build' under a disambiguation framing that turned out to be the wrong framing), a fresh investigation proving lane convergence resolves 26/27 isolated components, and an independent adversarial review confirming the topology claim exactly while disclosing the true lateral-merge-distance distribution (median 3.5m, max 7.1m, not near-zero as an earlier 5-sample check implied). Operator authorized wiring on the basis of that completed review.",
   "map": {
     "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
