@@ -175,11 +175,14 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     # rather than reconstructing it. Verified on the pinned map-of-record:
     # of a 6-connector sample rebuild.py could only fix 1/6 (blocking the
     # other 5 under its own stricter curvature-safety criteria), snap fixed
-    # 6/6 -- the two tools are complementary, not redundant. Same
-    # structural/release-run caution as the rebuild step above: off unless
-    # explicitly opted in.
+    # 6/6 -- the two tools are complementary, not redundant. Default ON
+    # (unlike junction_connector_rebuild above): full-map verification on
+    # the pinned map-of-record showed 4125/22589 connectors snapped, zero
+    # structural regressions (road/junction/lane counts unchanged), and
+    # junction_connector_issues dropping 8746 -> 5183 with num_issues
+    # staying 0 throughout -- see CONNECTOR_SNAP_WIRING_EVIDENCE.json.
     connector_snap_enabled = os.getenv(
-        "UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "0"
+        "UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "1"
     ).strip().lower() in ("1", "true", "yes", "on")
     if connector_snap_enabled:
         try:

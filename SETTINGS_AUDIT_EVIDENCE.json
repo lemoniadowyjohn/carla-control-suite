@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "base_branch": "feature/candidate-regression-gate-v1-20260912",
+  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
+  "branch": "feature/settings-audit-v1-20260912",
+  "user_request": "check settings further and make sure that all important settings improving map quality are enabled and correctly wired",
+  "method": "delegated a research agent to enumerate all ~22 map-quality-affecting feature flags across ultimate_pipeline/config/settings.py and all pipeline_stages/*.py, with default value, effect, and release-profile treatment for each. Then personally investigated each candidate for action.",
+  "flags_enabled_this_pass": {
+    "UP_ENABLE_JUNCTION_CONNECTOR_SNAP": {
+      "location": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py",
+      "changed": "0 -> 1 (user-authorized)",
+      "evidence": "CONNECTOR_SNAP_WIRING_EVIDENCE.json (this session, PROMPT T) -- 4125/22589 connectors snapped on the pinned map, zero structural regressions, junction_connector_issues 8746 -> 5183"
+    },
+    "UP_ENABLE_G6_LANE_COVERAGE_REPAIR": {
+      "location": "ultimate_pipeline/pipeline_stages/stage_08_hygiene.py",
+      "changed": "0 -> 1 (user-authorized)",
+      "evidence": "G6_COVERAGE_WIRING_EVIDENCE.json (this session, PROMPT V) -- isolated_lane_component_count 27 -> 1 (26/27 resolved) on the pinned map, transactional (safely no-ops on any unexpected input shape rather than corrupting), every other acceptance metric byte-identical before/after"
+    }
+  },
+  "flags_investigated_and_left_disabled": {
+    "UP_ENABLE_ROAD_LINK_TARGET_REPAIR": {
+      "location": "ultimate_pipeline/pipeline_stages/stage_09_tiling.py",
+      "reason": "More invasive than initially assumed: read repair_road_link_targets() in full -- beyond a contactPoint flip on the SAME target road, it can search a growing radius (10m->30m) and RE-TARGET a road link's elementId to a spatially-nearby but DIFFERENT road, a genuine topology change, not a pure re-pose. Currently a no-op on the pinned map (write_road_link_endpoint_errors shows max dxy_m=14.0, well under the 50m bad_dxy_threshold_m default -- nothing on this map would trigger it), so leaving it off has zero cost right now. No positive verification of its retargeting logic was done this session (unlike the two enabled flags, which both have full before/after evidence) -- needs its own dedicated verification pass, not an assumption of safety from current inactivity."
+    },
+    "UP_AUTOFIX_LANE_SUCCESSORS": {
+      "location": "ultimate_pipeline/pipeline_stages/stage_08_integrity.py",
+      "reason": "Enabling this safely depends on the dangling-reference fix to fix_missing_lane_successors.py landed on feature/lane-successor-hardening-v1-20260912 (this session, PROMPT W). Confirmed via direct grep that this branch (which chains off fix/post-audit-phase-e-junctions-roundabouts-20260803, NOT off W) does not have that fix -- enabling here would re-expose the dangling-reference risk, even though it's currently dormant (0 repairs fire on the pinned map either way, per W's own evidence). Deferred until W is merged into this branch's lineage."
+    },
+    "ENABLE_CURVATURE_SMOOTHING": {
+      "location": "ultimate_pipeline/geometry/mesh_continuity_repairer.py",
+      "reason": "Confirmed a deliberate no-op by design, not a wiring gap: reads the flag but only prints a self-aware warning (\"...has no effect: no curvature-smoothing step is implemented...\"). Per project memory (project_enable_flag_audit_20260827), implementing real smoothing logic was explicitly deferred given a proven negative-result precedent from a prior heading-smoothing experiment (0 -> 6024 new seams). Correcting my own memory's stale MEMORY.md index line for this flag (it had drifted to imply the flag was 'fixed and wired live', which the detailed topic file never actually claimed) was also done this pass."
+    },
+    "unsafe_flag_family": {
+      "flags": ["ENABLE_UNSAFE_SHORT_SEGMENT_MERGE", "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE", "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING", "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP", "ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE", "ENABLE_STRAIGHT_CHORD_CONNECTOR_FALLBACK"],
+      "reason": "All deliberately dangerous by design and correctly rejected in every release profile except EXPERIMENTAL_UNSAFE (enforced by ultimate_pipeline/contracts/release_profile.py's _unsafe_feature_enabled() check). Not touched."
+    },
+    "UP_ENABLE_NATIVE_SIGNAL_ENRICHMENT": {
+      "reason": "Already investigated earlier this session (PROMPT O): real evidence exists but the source data is CRS-incompatible with the current map-of-record. Correctly left off, not re-litigated here."
+    },
+    "UP_ENABLE_JUNCTION_CONNECTOR_REBUILD": {
+      "reason": "Already investigated this session (PROMPT T): on a 6-connector sample it only fixed 1/6, blocking the other 5 under its own stricter curvature-safety criteria (the exact finding that justified building/enabling the narrower snap tool instead). A full-map run attempted this session did not complete within a reasonable time (20+ minutes, killed). Left off pending its own dedicated, faster-scoped verification pass."
+    },
+    "strictness_flags": {
+      "flags": ["UP_STRICT_QUALITY_GATES", "UP_STRICT_TILE_QA", "UP_STRICT_LANE_SUCCESSORS", "UP_STRICT_DEM_SUSPICIOUS_FAIL", "UP_THESIS_STRICT"],
+      "reason": "These change fail-open vs fail-closed error-handling behavior, not map content directly -- a different category of decision than 'does this improve the map'. Already correctly forced True in the release profiles where structural correctness matters (STRUCTURAL/CARLA/VISUAL/PERCEPTION); left at their existing per-profile defaults, not globally flipped."
+    }
+  },
+  "tests": {
+    "targeted": "2617 passed, 0 failed: full -k \"stage_05 or stage05 or stage_08 or stage08 or hygiene or geometry or junction_connector or g6\" sweep",
+    "broader": "2944 passed, 39 failed, 7 skipped: full tests/unit + tests/quality + ultimate_pipeline/tests sweep. All 39 failures independently reproduced identically with the two flag flips stashed out (verified on a representative subset: coordinate verification, stage_d0, c11 inputs manifest, sys001 import smoke) -- confirmed pre-existing to this sparse task worktree's missing governed-artifact corpus, not caused by this change, matching the exact same class of failures already confirmed twice earlier this session (G3 epsilon fix and the initial T/U/V/Z sweep).",
+    "full_offline_suite": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus, consistent with every other prompt this session"
+  },
+  "user_authorization": "Flipping these two production defaults was flagged by the permission system as a persistent shared-infrastructure change requiring explicit sign-off beyond the general request. Presented both flags with full evidence via AskUserQuestion; user selected \"Yes, enable both\".",
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}

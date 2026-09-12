@@ -131,15 +131,17 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
     # geometry, does not fabricate new connections. Transactional: only
     # committed if repair_issues is empty AND the post-repair G6 audit is
     # fully clean; otherwise the input is kept unchanged and the reason is
-    # recorded. Advisory-first per this session's adversarial review of this
-    # exact repair: the isolated-component delta and lateral-merge-distance
-    # distribution are surfaced for a human to inspect, but this step never
-    # fails the hygiene stage (this defect class has been tolerated
-    # throughout this map's history; characterizing its resolution should
-    # not itself become a new blocker). Off unless explicitly opted in,
-    # matching this stage's existing convention for geometry-mutating repairs.
+    # recorded, so an unexpected map shape safely no-ops rather than
+    # corrupting anything. Advisory-first: the isolated-component delta and
+    # lateral-merge-distance distribution are surfaced for a human to
+    # inspect, but this step never fails the hygiene stage. Default ON:
+    # verified end-to-end on the real pinned map-of-record via the actual
+    # wired stage function (not a reproduction) -- applied=True, 126 lane
+    # links added, isolated_lane_component_count 27 -> 1 (26/27 resolved),
+    # every other measure_candidate_acceptance.py metric byte-identical
+    # before/after -- see G6_COVERAGE_WIRING_EVIDENCE.json.
     g6_coverage_enabled = os.getenv(
-        "UP_ENABLE_G6_LANE_COVERAGE_REPAIR", "0"
+        "UP_ENABLE_G6_LANE_COVERAGE_REPAIR", "1"
     ).strip().lower() in ("1", "true", "yes", "on")
     if g6_coverage_enabled:
         try:
