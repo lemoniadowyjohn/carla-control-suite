@@ -17,6 +17,7 @@ from ultimate_pipeline.enrichment.crosswalk_writer import (
     crossing_outline_world,
     apply_crosswalks,
     RoadSpatialIndex,
+    DEFAULT_MAX_MATCH_DIST_M,
 )
 
 
@@ -115,6 +116,38 @@ def test_match_crossing_to_road_returns_none_beyond_threshold():
     root = ET.Element("OpenDRIVE")
     root.append(_road("1", [(0.0, 0.0), (10.0, 0.0)]))
     match = match_crossing_to_road(root, (5.0, 50.0), max_dist_m=5.0)
+    assert match is None
+
+
+# --------------------------------------------------------------------------
+# DEFAULT_MAX_MATCH_DIST_M widened 5.0m -> 15.0m: a fixed 5m cutoff silently
+# dropped 18 real OSM crossings whose true nearest road was 5.01m-14.53m away
+# (verified against the pinned map/OSM pair -- every one either has a healthy
+# gap to its 2nd-nearest candidate road, or the runner-up is the opposite-
+# direction carriageway of the same divided road at ~identical distance, so
+# widening the threshold does not introduce a wrong-road match). The nearest
+# genuine far-miss on the real map is 16.67m away, so 15.0m leaves a >1.5m
+# margin without ever reaching that population.
+# --------------------------------------------------------------------------
+
+def test_default_threshold_matches_a_real_near_miss_distance():
+    """A crossing ~12m from its only nearby road (the real near-miss range
+    this fix recovers) must match using the DEFAULT threshold, not just an
+    explicitly-passed one."""
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("1", [(0.0, 0.0), (10.0, 0.0)]))
+    match = match_crossing_to_road(root, (5.0, 12.0), max_dist_m=DEFAULT_MAX_MATCH_DIST_M)
+    assert match is not None
+    assert match["road"].get("id") == "1"
+
+
+def test_default_threshold_still_rejects_a_genuine_far_miss_distance():
+    """A crossing ~17m away (the real far-miss population's floor) must
+    still be rejected at the DEFAULT threshold -- this is the regression
+    guard against silently widening the net further in the future."""
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("1", [(0.0, 0.0), (10.0, 0.0)]))
+    match = match_crossing_to_road(root, (5.0, 17.0), max_dist_m=DEFAULT_MAX_MATCH_DIST_M)
     assert match is None
 
 
@@ -260,16 +293,19 @@ def test_apply_crosswalks_skips_unmatched_crossings():
 def test_apply_crosswalks_real_pinned_data_end_to_end():
     OSM = "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm"
     CAND = ("campaigns/ingolstadt_cooked_perception_v1/candidate/"
-            "ingolstadt_perception_map_of_record_20260819_160350.xodr")
+            "ingolstadt_perception_map_of_record_20260905_202847.xodr")
     from ultimate_pipeline.domain_gap.local_registration import read_offset
 
     osm_crossings = extract_osm_crossings(OSM)
-    assert len(osm_crossings) > 100  # matches the 179 verified this session
+    assert len(osm_crossings) == 179  # matches the pinned OSM source exactly
 
     root = ET.parse(CAND).getroot()
     offset = read_offset(root)
     for c in osm_crossings:
         c["nodes_local"] = project_crossing_to_local(c["nodes"], offset)
 
-    n = apply_crosswalks(root, osm_crossings, max_match_dist_m=8.0)
-    assert n > 0, "expected at least some real crossings to match a real road"
+    # 127/179 matched at the old 5.0m threshold; 145/179 at the current
+    # DEFAULT_MAX_MATCH_DIST_M (15.0m) -- the 18 real near-misses this fix
+    # recovers, with the 32 genuine far-misses (16.67m+) still excluded.
+    n = apply_crosswalks(root, osm_crossings, max_match_dist_m=DEFAULT_MAX_MATCH_DIST_M)
+    assert n == 145
