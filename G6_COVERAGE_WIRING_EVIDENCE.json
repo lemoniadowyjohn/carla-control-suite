@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "base_branch": "feature/connector-snap-wiring-v1-20260912",
+  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
+  "branch": "feature/g6-coverage-wiring-v1-20260912",
+  "history_read_first": "CODEX_PROMPT_P_G6_ISOLATED_LANES_20260909.md, feature/g6-lane-coverage-repair-v1-20260911's CODEX_G6_LANE_COVERAGE_INVESTIGATION.json, and this session's own G6 adversarial review -- this topic has been through an original 3-round investigation (closed 'do not build' under a disambiguation framing that turned out to be the wrong framing), a fresh investigation proving lane convergence resolves 26/27 isolated components, and an independent adversarial review confirming the topology claim exactly while disclosing the true lateral-merge-distance distribution (median 3.5m, max 7.1m, not near-zero as an earlier 5-sample check implied). Operator authorized wiring on the basis of that completed review.",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "task_1_wiring": {
+    "location": "ultimate_pipeline/pipeline_stages/stage_08_hygiene.py, new numbered sub-step 8H-5 (following the file's own 8H-1..8H-4 convention exactly), after lane-width-discontinuity repair",
+    "gating": "UP_ENABLE_G6_LANE_COVERAGE_REPAIR env var, default \"0\" (off) -- consistent with this session's established caution for geometry/topology-mutating steps",
+    "new_functions_added": [
+      "ultimate_pipeline/tools/phase_g6_junction_lanelinks.py::_lane_center_world -- reuses phase_g3_cross_section.reconstruct_section, does not re-derive cross-section math",
+      "ultimate_pipeline/tools/phase_g6_junction_lanelinks.py::compute_repair_lateral_distances -- computes the exact lateral-merge-distance metric this session's adversarial review found missing from the original disclosure"
+    ],
+    "transactional_safety": {
+      "mechanism": "repair runs on a deep copy of the loaded root, never the live root in place; only committed (written out, current_path advanced) if repair_coverage_gaps returns repair_issues == [] AND the post-repair audit_junction_lanelinks/checks_of are ALL True; otherwise the input is kept completely unchanged and applied=False is recorded",
+      "verified_by": "ran the real, unmodified _step8h_map_hygiene function directly (not a reproduction) against a copy of the pinned map with the flag enabled: applied=True, added=126, repair_issues=0, post_repair_audit_clean=True, output XODR and JSON report both written and confirmed to exist on disk"
+    },
+    "persisted_report": {
+      "path": "08h5_g6_lane_coverage_repair_report.json (written to self.out_dir, matching this stage's existing convention)",
+      "fields": "added_lanelinks_count, repair_issues_count, post_repair_audit_clean, isolated_lane_component_count_before/after, lateral_merge_distance_m{measured_count,unmeasured_count,min,median,max,flag_threshold_m,flagged_count}, and the full per-repair 'repairs' list (each with distance_m or a reason if unmeasurable)"
+    }
+  },
+  "task_2_advisory_first": {
+    "hard_fail": "g6_report['ok'] is unconditionally True regardless of whether the repair applied -- declining to repair unsafe cases is correct behavior, not a failure, and must not fail the hygiene stage",
+    "map_acceptance_py_investigation": "Checked whether map_acceptance.py needed new wiring for the isolated-component delta. It does NOT: component_reachability_summary() is already called at build_map_acceptance() line ~719, already exposes metrics['isolated_lane_component_count'], and ALREADY only emits a soft_warning (never a hard_fail) unless a caller explicitly passes require_component_reachability=True (and even then the bar is largest_component_fraction < 0.95, a much coarser threshold than 'any isolated components exist'). This already satisfies 'surfaced clearly, does not block promotion' with zero code changes -- confirmed by direct measure_candidate_acceptance.py runs, see Task 5."
+  },
+  "task_3_lateral_merge_distribution": {
+    "pinned_map_result": {
+      "measured_count": 118,
+      "unmeasured_count": 8,
+      "min_m": 0.14314588586715324,
+      "median_m": 3.500000194510025,
+      "max_m": 7.124999766326669,
+      "flag_threshold_m": 7.0,
+      "flag_threshold_reasoning": "2x this map's dominant driving-lane width (3.5m, confirmed via measure_candidate_acceptance.py's own drivable-width-adjacent metrics and repeatedly observed throughout this session's junction-connector work) -- a merge spanning more than 2 full lane-widths is worth a closer look, without treating the entire, already-adversarially-reviewed 3.5m-median population as suspicious",
+      "flagged_count": 4,
+      "note": "exact reproduction of this session's prior adversarial-review numbers (min/median/max identical) -- confirms compute_repair_lateral_distances is correct, not just plausible"
+    }
+  },
+  "task_4_fresh_regen": {
+    "attempted": false,
+    "reason": "A full OSM-source-to-final-candidate regen requires running main_pipeline.py's entire multi-stage orchestration, which this sparse, disk-constrained task worktree is not provisioned for (see this session's disk-space incident earlier -- C: drive hit 0 bytes free once already from worktree accumulation). Ran against a copy of the pinned map-of-record instead, as PROMPT V's own fallback explicitly allows, and said so here explicitly."
+  },
+  "task_5_acceptance_delta": {
+    "method": "ran scripts/measure_candidate_acceptance.py directly on (a) the unmodified pinned map and (b) a G6-repaired copy produced by the exact same repair_coverage_gaps() call the wired stage step uses",
+    "before": {
+      "isolated_lane_component_count": 27,
+      "lane_component_count": 35,
+      "largest_component_fraction": 0.996734,
+      "largest_component_lane_count": 34179,
+      "soft_warning": "27 isolated lane components (largest=0.996734)"
+    },
+    "after": {
+      "isolated_lane_component_count": 1,
+      "lane_component_count": 4,
+      "largest_component_fraction": 0.998104,
+      "largest_component_lane_count": 34226,
+      "soft_warning": "1 isolated lane components (largest=0.998104)"
+    },
+    "all_other_metrics": "byte-identical before/after (elevation stats, collision mesh, junction integrity, lane width/geometry continuity, physics feasibility, semantic overlap, carla import/compat, randomness entropy, seam stats) -- confirms the repair has zero side effects outside the junction-lanelink domain it targets",
+    "ok_before_and_after": "None / None (unaffected in both states -- no hard_fail_reasons in either run, matching require_component_reachability not being requested by default)",
+    "candidate_promoted_to_auto_map_of_record": false
+  },
+  "tests": {
+    "new": "tests/unit/test_phase_g6_junction_lanelinks.py: 2 new tests for compute_repair_lateral_distances (structural correctness -- farther lane shows larger distance than nearer lane; unmeasurable case reports a reason, not a crash or silent drop)",
+    "targeted": "6 passed: full tests/unit/test_phase_g6_junction_lanelinks.py",
+    "broader": "89 passed: full -k \"g6 or stage_08 or stage08 or hygiene or map_acceptance or component_reachability\" sweep across tests/ and ultimate_pipeline/tests, 0 failures -- includes the existing test_stage8h_map_hygiene.py suite (all pass unchanged, confirming the new step is inert when its flag is off, matching every other test in that file which never sets UP_ENABLE_G6_LANE_COVERAGE_REPAIR)",
+    "full_offline_suite": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus, consistent with every other prompt this session"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}

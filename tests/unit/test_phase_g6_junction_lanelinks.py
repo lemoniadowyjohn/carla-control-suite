@@ -1,8 +1,11 @@
 import xml.etree.ElementTree as ET
 
+import pytest
+
 from ultimate_pipeline.tools.phase_g6_junction_lanelinks import (
     audit_junction_lanelinks,
     checks_of,
+    compute_repair_lateral_distances,
     repair_coverage_gaps,
 )
 
@@ -124,3 +127,55 @@ def test_g6_repair_iterates_chained_lane_merge_coverage() -> None:
         ("-1", 2),
     }
     assert checks_of(after)["complete_driving_from_coverage"] is True
+
+
+def test_compute_repair_lateral_distances_measures_each_addition() -> None:
+    """Verified against the pinned map-of-record this session: a 5-sample
+    spot-check of this exact repair implied near-zero merge distances, but
+    the true population median across all 126 additions was 3.5m (max 7.1m).
+    This function must surface a real, per-addition distance -- not silently
+    assume zero -- and lanes farther from the target must show a larger
+    distance than lanes closer to it."""
+    root = _root(
+        _road(
+            "A",
+            _lane(-1) + _lane(-2) + _lane(-3),
+            '<successor elementType="junction" elementId="9"/>',
+        )
+        + _road("B", _lane(-1), junction="9")
+        + """
+  <junction id="9">
+    <connection id="0" incomingRoad="A" connectingRoad="B" contactPoint="start">
+      <laneLink from="-3" to="-1"/>
+    </connection>
+  </junction>
+"""
+    )
+    repair = repair_coverage_gaps(root)
+
+    distances = compute_repair_lateral_distances(root, repair["added_lanelinks"])
+
+    by_lane = {d["lane"]: d for d in distances}
+    assert by_lane["-1"]["distance_m"] == pytest.approx(10.0, abs=1e-6)
+    assert by_lane["-2"]["distance_m"] == pytest.approx(10.594810050208546, abs=1e-6)
+    # lane -2 is farther from the target than lane -1 -- the distance must
+    # reflect that, not report a flat/near-zero value for every addition.
+    assert by_lane["-2"]["distance_m"] > by_lane["-1"]["distance_m"]
+    assert all(d["reason"] is None for d in distances)
+
+
+def test_compute_repair_lateral_distances_reports_reason_when_unmeasurable() -> None:
+    """An addition referencing a junction/connection that no longer exists
+    in `root` must report distance_m=None with a reason, not raise or
+    silently vanish from the output."""
+    root = _root(_road("A", _lane(-1)))
+    fake_addition = [{
+        "junction": "does-not-exist", "connection": "0",
+        "incoming": "A", "lane": "-1", "target": "-1", "repair_pass": 1,
+    }]
+
+    distances = compute_repair_lateral_distances(root, fake_addition)
+
+    assert len(distances) == 1
+    assert distances[0]["distance_m"] is None
+    assert distances[0]["reason"] == "incoming_road_or_connection_missing"
