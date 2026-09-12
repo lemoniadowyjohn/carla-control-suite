@@ -409,6 +409,75 @@ class TestOpenDriveRoadLinkContactPointSemantics:
         assert report["junction_connector_issues"][0]["dxy"] == pytest.approx(3.5)
 
 
+class TestMicroStubHeadingAdvisory:
+    """Verified against the pinned map-of-record: 430 issues involve a road
+    <= 0.5m long whose position matches its neighbour exactly (dxy <= eps_xy)
+    but whose heading is anomalous (dhdg approaching pi) -- the stub's own
+    underdetermined/convention-mismatched heading, not a real discontinuity.
+    These must land in micro_stub_heading_advisory, not issues, and must NOT
+    suppress a genuine heading break on an ordinary-length road."""
+
+    def _write(self, tmp_path, body: str):
+        path = tmp_path / "micro_stub.xodr"
+        path.write_text(
+            '<?xml version="1.0" encoding="utf-8"?>'
+            "<OpenDRIVE>"
+            '<header revMajor="1" revMinor="6"/>'
+            f"{body}"
+            "</OpenDRIVE>",
+            encoding="utf-8",
+        )
+        return str(path)
+
+    def test_position_correct_heading_flip_on_micro_stub_is_advisory_not_a_hard_issue(self, tmp_path):
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="100" length="0.1" junction="-1">'
+                '<link><predecessor elementType="road" elementId="1" contactPoint="end"/></link>'
+                '<planView><geometry s="0" x="10" y="0" hdg="3.14159265358979" length="0.1"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is True
+        assert report["num_issues"] == 0
+        assert report["num_micro_stub_heading_advisory"] == 1
+        advisory = report["micro_stub_heading_advisory"][0]
+        assert advisory["dxy"] == pytest.approx(0.0, abs=1e-9)
+        assert advisory["dhdg"] == pytest.approx(math.pi, abs=1e-6)
+        assert advisory["source_is_micro_stub"] is True
+
+    def test_same_heading_flip_on_an_ordinary_length_road_still_hard_fails(self, tmp_path):
+        """The reclassification must not generalize into a blanket heading
+        tolerance -- an identical position-correct heading flip on a normal
+        (non-stub) road must still be reported as a real issue."""
+        xodr = self._write(
+            tmp_path,
+            (
+                '<road id="1" length="10" junction="-1">'
+                '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+                "</road>"
+                '<road id="200" length="10" junction="-1">'
+                '<link><predecessor elementType="road" elementId="1" contactPoint="end"/></link>'
+                '<planView><geometry s="0" x="10" y="0" hdg="3.14159265358979" length="10"><line/></geometry></planView>'
+                "</road>"
+            ),
+        )
+
+        report = check_geometric_continuity(xodr)
+
+        assert report["ok"] is False
+        assert report["num_issues"] == 1
+        assert report["num_micro_stub_heading_advisory"] == 0
+        assert report["issues"][0]["dhdg"] == pytest.approx(math.pi, abs=1e-6)
+
+
 class TestContainmentFlags:
     def test_flags_default_false(self):
         from ultimate_pipeline.config.settings import SETTINGS
