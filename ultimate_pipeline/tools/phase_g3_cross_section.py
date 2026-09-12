@@ -66,6 +66,19 @@ SAMPLE_SPACING_M = 5.0
 MAX_SAMPLES_PER_ROAD = 80
 DRIVABLE_TYPES = {"driving", "entry", "exit", "onRamp", "offRamp", "connectingRamp"}
 
+# ultimate_pipeline/core/carla_opendrive_loader.py::repair_road_lengths deliberately
+# pads a road's declared <road length> to (true geometry end + 1e-3) whenever the
+# raw geometry end would otherwise exceed the declared length by floating-point
+# residue -- CARLA 0.9.16's mesh builder asserts s <= road->GetLength() and crashes
+# (LowLevelFatalError, ~10 min into generate_opendrive_world) if that assertion
+# ever fails. That fix is load-bearing and must not be undone here. It does mean a
+# sample taken exactly at s == declared road length can legitimately land up to
+# 1e-3 m past the last real geometry segment on any road that fix touched. This
+# tolerance is 10x that known margin -- enough to absorb it and ordinary float
+# noise, far below the scale of any real coverage gap (every genuine defect this
+# project has found in this class of check has been >= 0.1 m).
+_ROAD_END_TOLERANCE_M = 0.01
+
 
 def _safe_float(v, default=0.0):
     try:
@@ -102,6 +115,15 @@ def _road_geometry_segments(road: ET.Element) -> list:
         segments.append(seg)
     segments.sort(key=lambda s: s["s"])
     return segments
+
+
+def _true_geometry_end(segments: list) -> float:
+    """Real end-of-coverage across all segments (max of each seg's s+length).
+
+    Distinct from a road's declared <road length>, which repair_road_lengths
+    may deliberately pad slightly beyond this value -- see _ROAD_END_TOLERANCE_M.
+    """
+    return max((seg["s"] + seg["length"] for seg in segments), default=0.0)
 
 
 def _pose_at(segments: list, s: float) -> dict:
@@ -268,11 +290,22 @@ def validate_section_samples(road: ET.Element, section: ET.Element,
     issues = []
     drivable_widths = []
     finite_ok = True
+    true_end = None
     for s in samples:
-        cs = reconstruct_section(road, section, ls_s + s, road_length)
+        abs_s = ls_s + s
+        cs = reconstruct_section(road, section, abs_s, road_length)
         if not cs["ok"]:
-            issues.append({"s": s, "kind": "unavailable"})
-            continue
+            if true_end is None:
+                true_end = _true_geometry_end(_road_geometry_segments(road))
+            overrun = abs_s - true_end
+            if 0.0 < overrun <= _ROAD_END_TOLERANCE_M:
+                # abs_s lands in the deliberate repair_road_lengths safety
+                # margin beyond the real geometry -- clamp to the true end
+                # and re-evaluate rather than reporting a coverage gap.
+                cs = reconstruct_section(road, section, true_end, road_length)
+            if not cs["ok"]:
+                issues.append({"s": s, "kind": "unavailable"})
+                continue
         ref = cs["reference"]
         if not all(math.isfinite(v) for v in (ref["x"], ref["y"], ref["hdg"])):
             finite_ok = False
@@ -326,7 +359,8 @@ def audit_full_map(xodr_path: Path) -> dict:
     section_continuity_jumps = []
     max_jump = 0.0
     stub_coverage_roads = []
-    genuine_unavailable = []
+    non_stub_unavailable_sections = []
+    non_stub_unavailable_samples = 0
 
     for road in roads:
         rid = road.get("id")
@@ -350,6 +384,22 @@ def audit_full_map(xodr_path: Path) -> dict:
                     "kinds": sorted({i["kind"] for i in res["issues"]}),
                     "issues": res["issues"][:20],
                 })
+                unavailable_count = sum(
+                    1 for issue in res["issues"] if issue["kind"] == "unavailable"
+                )
+                # A short (<= 1 m) road whose frozen planView does not cover
+                # its nominal endpoint is a documented stub case.  Any other
+                # unavailable sample means the validator did not evaluate its
+                # claimed cross-section and must not issue a coverage PASS.
+                if unavailable_count and length > 1.0:
+                    non_stub_unavailable_sections.append(
+                        {
+                            "road": rid,
+                            "section_s": _safe_float(section.get("s")),
+                            "unavailable_sample_count": unavailable_count,
+                        }
+                    )
+                    non_stub_unavailable_samples += unavailable_count
             # section-boundary continuity: outer lane boundary t at section
             # end vs start of the next section (same road)
             end_s = section_s[idx + 1] if idx + 1 < len(section_s) else length
@@ -409,7 +459,11 @@ def audit_full_map(xodr_path: Path) -> dict:
         ),
         "section_boundary_continuity": max_jump < 0.1,
         "sections_available": sample_count > 0,
+        "no_non_stub_unavailable_sections": not non_stub_unavailable_sections,
     }
+    coverage_status = (
+        "COMPLETE" if not non_stub_unavailable_sections else "INCOMPLETE"
+    )
     passed = all(checks.values())
     total_issues = len(genuine_kinds)
 
@@ -435,9 +489,18 @@ def audit_full_map(xodr_path: Path) -> dict:
         "bad_roads": genuine_bad[:200],
         "stub_coverage_roads": stub_coverage_roads[:200],
         "stub_coverage_road_count": len(stub_coverage_roads),
+        "coverage": {
+            "status": coverage_status,
+            "non_stub_unavailable_section_count": len(non_stub_unavailable_sections),
+            "non_stub_unavailable_sample_count": non_stub_unavailable_samples,
+            "non_stub_unavailable_sections": non_stub_unavailable_sections[:200],
+        },
         "checks": checks,
         "g3_verdict": (
-            "PHASE_G_CROSS_SECTION_PASS" if passed
+            "PHASE_G_CROSS_SECTION_INCOMPLETE"
+            if coverage_status == "INCOMPLETE"
+            else "PHASE_G_CROSS_SECTION_PASS"
+            if passed
             else "PHASE_G_CROSS_SECTION_BLOCKED"
         ),
     }
@@ -690,7 +753,10 @@ def main() -> int:
         "input_byte_sha256": g0["input_candidate"]["byte_sha256"],
     }
     report["g3_verdict"] = (
-        "PHASE_G_CROSS_SECTION_PASS" if passed
+        "PHASE_G_CROSS_SECTION_INCOMPLETE"
+        if full["coverage"]["status"] == "INCOMPLETE"
+        else "PHASE_G_CROSS_SECTION_PASS"
+        if passed
         else "PHASE_G_CROSS_SECTION_BLOCKED"
     )
     report["fixture_names"] = sorted(fixtures["fixtures"].keys())
