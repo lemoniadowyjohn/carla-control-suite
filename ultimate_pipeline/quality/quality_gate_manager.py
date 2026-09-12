@@ -389,6 +389,39 @@ class QualityGateManager:
         self._finalize_gate("elevation_seams", rep)
         return rep
 
+    def gate_structure_elevation_plausibility(
+        self,
+        xodr_path: str,
+        *,
+        road_classes: Dict[str, str] | None,
+        terrain_sampler=None,
+        sample_spacing_m: float = 5.0,
+        min_bridge_clearance_m: float = 0.5,
+        min_tunnel_cover_m: float = 0.5,
+        max_violation_ratio: float = 0.2,
+        minimum_interior_samples: int = 2,
+        stage: str | None = None,
+    ) -> Dict[str, Any]:
+        """Validate classified bridge/tunnel elevations without mutating XODR."""
+        from ultimate_pipeline.quality.check_structure_elevation_plausibility import (
+            check_structure_elevation_plausibility,
+        )
+
+        xodr_path = self._require_path(xodr_path, "gate_structure_elevation_plausibility")
+        rep = check_structure_elevation_plausibility(
+            xodr_path,
+            road_classes=road_classes,
+            terrain_sampler=terrain_sampler,
+            sample_spacing_m=sample_spacing_m,
+            min_bridge_clearance_m=min_bridge_clearance_m,
+            min_tunnel_cover_m=min_tunnel_cover_m,
+            max_violation_ratio=max_violation_ratio,
+            minimum_interior_samples=minimum_interior_samples,
+        )
+        self._persist_optional(rep, stage or "structure_elevation_plausibility")
+        self._finalize_gate("structure_elevation_plausibility", rep)
+        return rep
+
     # ------------------------------- CARLA-stability gates ------------------------
 
     def gate_xodr_strict_carla(self, xodr_path: str) -> None:
