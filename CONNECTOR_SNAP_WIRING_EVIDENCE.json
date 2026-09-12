@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "base_branch": "feature/micro-stub-detection-v1-20260912",
+  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
+  "branch": "feature/connector-snap-wiring-v1-20260912",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "task_1_fresh_validation": {
+    "connectors_examined": 22589,
+    "connectors_snapped": 4125,
+    "geometries_rechained": 0,
+    "geometries_rechained_explanation": "All spot-checked connectors have exactly 1 planView geometry segment, so there is nothing after the first segment to rechain -- expected, not a bug.",
+    "skipped_missing_incoming": 0,
+    "skipped_missing_connecting": 0,
+    "skipped_missing_geometries": 0,
+    "skipped_missing_pose": 0,
+    "skipped_end_contact_point": 0,
+    "skipped_end_contact_point_context": "The pinned map has ZERO contactPoint=\"end\" connections at all (verified directly: 22589/22589 junction <connection> elements are contactPoint=\"start\"). The tool's documented limitation is real for the general case but does not apply to this specific map's current data."
+  },
+  "task_2_post_snap_verification": {
+    "num_issues_before": 0,
+    "num_issues_after": 0,
+    "num_junction_connector_issues_before": 8746,
+    "num_junction_connector_issues_after": 5183,
+    "num_micro_stub_heading_advisory_before": 430,
+    "num_micro_stub_heading_advisory_after": 426,
+    "road_count_before_after": "32267 / 32267 (unchanged)",
+    "junction_count_before_after": "3561 / 3561 (unchanged)",
+    "total_lane_elements_before_after": "85887 / 85887 (unchanged)",
+    "note": "junction_connector_issues dropped by 3563, not the full 4125 snapped -- expected: some snapped connectors still have a smaller residual heading/position delta below the 2.0m snap threshold but above check_geometric_continuity's much stricter 5cm/0.01rad thresholds, or the reverse (already within 2m but flagged by the stricter continuity check)."
+  },
+  "task_3_manual_spotcheck": {
+    "method": "6 real connectors (52026, 52027, 52039, 52042, 52052, 52061) checked individually, before/after, position AND heading",
+    "position_result": "all 6: gap_before=3.500m (the same one-lane-width signature seen throughout this session's junction-connector work) -> gap_after=0.000000m",
+    "heading_result": "sampled 3 in detail: 52026 hdg corrected 3.267...->2.804... (real ~26 degree fix), 52027 hdg nearly unchanged (1.70737148->1.707374990000, was already aimed correctly, only position was off -- confirms a pure lateral lane-offset case), 52039 hdg corrected 4.339...->-2.407... (real fix)",
+    "verdict": "PASS -- all spot-checked results are physically sensible corrections, not numerically-small-but-meaningless changes"
+  },
+  "complementarity_check_not_originally_scoped_but_necessary": {
+    "finding": "ultimate_pipeline/topology/junction_connector_rebuild.py is ALREADY wired into stage_05_geometry.py (gated behind UP_ENABLE_JUNCTION_CONNECTOR_REBUILD, default off) and is documented as 'the full bidirectional rebuild'. Before wiring junction_connector_snap.py alongside it, verified they are complementary, not redundant.",
+    "method": "Extracted a minimal 17-road/4-junction subset containing the same 6 known-problem connectors and ran junction_connector_rebuild's rebuild_displaced_junction_connectors_in_file against it directly (the full 32k-road run was too slow to wait on -- a background attempt ran 20+ minutes without completing, consistent with an O(n*m)-style connector/anchor search across a large map; the subset test gave a fast, direct answer instead).",
+    "result": "rebuild.py fixed only 1/6 (52027) and BLOCKED the other 5/6 with BLOCKED_CONNECTOR_RECONSTRUCTION under its own stricter curvature-safety criteria. snap.py fixed 6/6 on the same set.",
+    "conclusion": "The two tools are genuinely complementary: rebuild.py is a heavier, more cautious reconstruction that often can't act on real data; snap.py is a simpler re-pose (preserving the connector's own existing curve shape) that succeeds precisely on the cases rebuild.py has to block. Wiring snap.py is not redundant."
+  },
+  "task_4_wiring": {
+    "location": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py, immediately after the existing junction_connector_rebuild block, before the horizontal-geometry freeze -- same convention, same stage",
+    "gating": "UP_ENABLE_JUNCTION_CONNECTOR_SNAP env var, default \"0\" (off) -- mirrors UP_ENABLE_JUNCTION_CONNECTOR_REBUILD's exact pattern, not the separate 'unsafe flags' release_profile.py policy framework (confirmed UP_ENABLE_JUNCTION_CONNECTOR_REBUILD itself is also NOT registered in that framework -- this is the correct, established precedent for this specific class of tool)",
+    "max_gap_m_override": "UP_JUNCTION_CONNECTOR_SNAP_MAX_GAP_M env var, default 2.0 (matches the tool's own default)",
+    "strict_mode": "respects the existing UP_STRICT_QUALITY_GATES env var the same way the rebuild block does (re-raises on failure instead of continuing)",
+    "report_output": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py writes junction_connector_snap_report.json to self.out_dir and records it via self.vreport.add_dict, matching the rebuild block's own reporting convention"
+  },
+  "task_5_residual_unfixable": {
+    "count_on_pinned_map": 0,
+    "note": "The tool's documented limitation (cannot fix contactPoint=\"end\" connections without backward geometry propagation) is real and unaddressed in this pass -- deferred to junction_connector_rebuild.py per the tool's own docstring -- but currently affects ZERO real connections on this map, since 100% of connections use contactPoint=\"start\"."
+  },
+  "tests": {
+    "existing_tool_tests_unaffected": "7 passed: ultimate_pipeline/tests/unit/test_junction_connector_snap.py (unmodified, snap_junction_connectors itself was not changed, only wired)",
+    "broader_sweep": "2583 passed, 78 skipped: full -k \"stage_05 or stage05 or geometry or junction_connector\" sweep across tests/ and ultimate_pipeline/tests, 0 failures",
+    "stage_wiring_unit_test": "NOT_ADDED -- confirmed by direct grep that the existing, structurally-identical junction_connector_rebuild wiring in this same file also has zero direct unit tests; this codebase's established convention relies on the underlying tool's own tests (still green, unaffected) plus real-data pipeline verification (this evidence file) for this class of stage-level gating glue, not an isolated unit test of the gating branch itself",
+    "full_offline_suite": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus, consistent with every other prompt this session"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}

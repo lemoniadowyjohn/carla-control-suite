@@ -169,6 +169,58 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     else:
         print("[STEP 6] Junction connector rebuild disabled.")
 
+    # Narrower complement to junction_connector_rebuild above: re-poses a
+    # connector's own start geometry (position AND heading) to the incoming
+    # road's true endpoint, preserving the connector's existing curve shape
+    # rather than reconstructing it. Verified on the pinned map-of-record:
+    # of a 6-connector sample rebuild.py could only fix 1/6 (blocking the
+    # other 5 under its own stricter curvature-safety criteria), snap fixed
+    # 6/6 -- the two tools are complementary, not redundant. Same
+    # structural/release-run caution as the rebuild step above: off unless
+    # explicitly opted in.
+    connector_snap_enabled = os.getenv(
+        "UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "0"
+    ).strip().lower() in ("1", "true", "yes", "on")
+    if connector_snap_enabled:
+        try:
+            import json
+
+            from ultimate_pipeline.tools.junction_connector_snap import (
+                snap_junction_connectors,
+            )
+
+            snap_tree, snap_root = load_xodr(cont_out)
+            snap_report = snap_junction_connectors(
+                snap_root,
+                max_gap_m=float(os.getenv("UP_JUNCTION_CONNECTOR_SNAP_MAX_GAP_M", "2.0")),
+            )
+            if snap_report.get("connectors_snapped", 0) > 0:
+                save_xodr(snap_tree, cont_out)
+            connector_snap_report_path = os.path.join(
+                self.out_dir, "junction_connector_snap_report.json"
+            )
+            with open(connector_snap_report_path, "w", encoding="utf-8") as fh:
+                json.dump(snap_report, fh, indent=2)
+            self.vreport.add_dict("junction_connector_snap", snap_report)
+            print(
+                "[STEP 6] Junction connector snap: "
+                f"examined={snap_report.get('connectors_examined', 0)} "
+                f"snapped={snap_report.get('connectors_snapped', 0)} "
+                f"skipped_end_contact_point={snap_report.get('skipped_end_contact_point', 0)} "
+                f"-> {connector_snap_report_path}"
+            )
+        except Exception as e:
+            print(f"[STEP 6] Junction connector snap failed (continuing): {e}")
+            if os.getenv("UP_STRICT_QUALITY_GATES", "0").strip().lower() in (
+                "1",
+                "true",
+                "yes",
+                "on",
+            ):
+                raise
+    else:
+        print("[STEP 6] Junction connector snap disabled.")
+
     # 🧊 Freeze horizontal geometry BEFORE elevation is applied.
     # This ensures DEM samples z at the final XY positions.
     frozen_before_elev = s.stage_path("06_geometry_frozen")
