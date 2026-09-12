@@ -88,13 +88,20 @@ def apply_speed_limits(
                           numbering schemes, verified 2026-08-26) to an object with a
                           .maxspeed attribute (or dict with 'maxspeed' key). May be empty.
 
+    A spatial HIGH/EXACT association is authoritative for its matched XODR
+    road.  It may therefore replace an existing lane speed, including an
+    unprovenanced conversion or realism value.  The legacy street-name mode
+    remains insert-only because its correspondence is many-to-many.
+
     Returns:
-        Number of <speed> elements inserted.
+        Number of lane speed elements written (inserted or authoritative
+        spatial replacements).
     """
     if not osm_roads_by_id and correspondence_by_road_id is None:
         return 0
 
-    inserted = 0
+    written = 0
+    spatial_mode = correspondence_by_road_id is not None
     for road in root.findall("road"):
         if correspondence_by_road_id is not None:
             association = correspondence_by_road_id.get(str(road.get("id", "")))
@@ -122,8 +129,16 @@ def apply_speed_limits(
         for lane in road.findall(".//lane"):
             if lane.get("type") not in ("driving", "restricted"):
                 continue
-            if lane.find("speed") is None:
+            speed = lane.find("speed")
+            if speed is None:
                 ET.SubElement(lane, "speed", max=str(speed_kmh), unit="km/h")
-                inserted += 1
+                written += 1
+            elif spatial_mode and (
+                speed.get("max") != str(speed_kmh)
+                or speed.get("unit") != "km/h"
+            ):
+                speed.set("max", str(speed_kmh))
+                speed.set("unit", "km/h")
+                written += 1
 
-    return inserted
+    return written

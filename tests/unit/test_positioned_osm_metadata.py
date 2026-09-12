@@ -84,6 +84,36 @@ def test_high_confidence_association_supplies_metadata_to_all_writers():
     assert apply_regulatory_signs(root, {}, correspondence_by_road_id=associations) == 1
 
 
+def test_high_confidence_osm_speed_replaces_existing_unprovenanced_speed():
+    root = _road()
+    lane = root.find("road/lanes/laneSection/right/lane")
+    ET.SubElement(lane, "speed", max="8.33")
+    associations = {
+        "10": {"class": "HIGH", "metadata": {"maxspeed": "30"}}
+    }
+
+    written = apply_speed_limits(root, {}, correspondence_by_road_id=associations)
+
+    speed = lane.find("speed")
+    assert written == 1
+    assert speed.get("max") == "30"
+    assert speed.get("unit") == "km/h"
+    assert apply_speed_limits(root, {}, correspondence_by_road_id=associations) == 0
+
+
+def test_legacy_name_match_does_not_replace_an_existing_speed():
+    root = _road()
+    lane = root.find("road/lanes/laneSection/right/lane")
+    ET.SubElement(lane, "speed", max="8.33")
+
+    written = apply_speed_limits(root, {"Shared Street": {"maxspeed": "30"}})
+
+    speed = lane.find("speed")
+    assert written == 0
+    assert speed.get("max") == "8.33"
+    assert speed.get("unit") is None
+
+
 def test_conflicting_high_confidence_values_fail_closed():
     root = _road()
     source = [

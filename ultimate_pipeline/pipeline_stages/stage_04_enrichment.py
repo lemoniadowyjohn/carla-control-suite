@@ -268,7 +268,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             self.vreport.add_dict("osm_spatial_metadata_enrichment", {
                 "source_ways": len(positioned_ways),
                 "correspondence": correspondence_report,
-                "speed_limits_inserted": n_speed,
+                "speed_limits_applied": n_speed,
                 "turn_lane_markings": n_turn,
                 "regulatory_signs": n_signs,
             })
