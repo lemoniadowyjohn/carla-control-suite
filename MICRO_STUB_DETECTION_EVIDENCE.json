@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "base_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
+  "branch": "feature/micro-stub-detection-v1-20260912",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "task_1_prevalence": {
+    "roads_with_declared_length_le_1.0m": 657,
+    "roads_with_declared_length_le_0.5m": 578,
+    "roads_with_declared_length_le_0.2m": 372,
+    "roads_with_declared_length_le_0": 0,
+    "geometry_segments_le_1.0m_within_any_road": 2370,
+    "distribution_note": "Sub-1m road lengths cluster heavily at round values: 204 roads at exactly 0.2m, 138 at exactly 0.1m, 12 at exactly 0.3m -- a systematic, non-random pattern consistent with an external conversion-tool convention, not organic curve-fitting noise."
+  },
+  "task_2_classification": {
+    "verdict": "LEGITIMATE_STRUCTURAL_FRAGMENT",
+    "reasoning": "Sampled the exact-0.1m population (138 roads): every one is junction-internal (junction != -1), has real predecessor/successor <link> elements of elementType=road with genuine contactPoint values to substantial neighboring roads, and carries a real 'driving' lane. These are functioning junction connector roads, not degenerate geometry -- eliminating them would mean rewriting real junction topology across hundreds of connector roads, a large, invasive, high-risk change explicitly out of scope for this pass.",
+    "additional_finding_not_fixed_here": "137/657 sub-1m roads have a declared <road length> that does NOT match their true planView geometry sum by more than 5mm -- e.g. road 52029 declares length=0.1 but its actual geometry totals 0.00698203m. This is a distinct data-quality gap from the round-number-length population above and from the already-fixed 1mm repair_road_lengths margin (see G3_LENGTH_EPSILON_EVIDENCE.json, a different, smaller, already-understood mechanism). Not investigated further or fixed in this pass -- flagged for a future look."
+  },
+  "task_3_fix": {
+    "shared_helper": "ultimate_pipeline/quality/micro_stub_detection.py::is_micro_stub_segment(length_m, threshold_m=0.5)",
+    "consumers_investigated": {
+      "check_geometric_continuity.py": "FIXED -- see below, concrete real effect found and corrected",
+      "phase_g6_junction_lanelinks.py": "NOT_MODIFIED -- investigated directly (grepped for hdg/heading/curvature usage): does not perform any raw heading/curvature comparison, only lane-topology/coverage logic. Does not need this guard.",
+      "junction_connector_snap.py": "NOT_MODIFIED -- its gap calculation (_road_endpoint_pose, imported from audit_xodr_visual_geometry.py) evaluates a road's 'end' pose using that geometry segment's OWN declared length (geoms[-1], s=geom.length), not the road-level <road length> attribute. It is already correctly using true per-segment geometry and is unaffected by the road-level length inconsistency found in Task 2's additional finding."
+    },
+    "check_geometric_continuity.py_change": {
+      "mechanism": "Directly reproduced the concrete effect: of the 9,176 known junction_connector_issues (Fix 1's territory), 581 involve a road <= 1.0m; of those, 481 do NOT fit the general ~3.5m-multiple lane-offset signature that explains 94% of the broader population. Characterized those 481 precisely: dxy is 0.0000m at the median (position exactly matches its neighbour) while dhdg clusters near pi (up to exactly 180.00 degrees) -- a clean, narrow signature distinct from genuine discontinuities, consistent with a sub-meter/sub-decimeter road's own heading being underdetermined or convention-mismatched, not a real defect.",
+      "implementation": "When a flagged link has dxy <= eps_xy (position already fine) AND either connected road is a micro-stub AND dhdg > eps_hdg, the record is now routed to a new 'micro_stub_heading_advisory' bucket instead of 'issues'/'junction_connector_issues' -- mirroring this function's own existing 'diagnostic evidence, not a hard failure' treatment already used for junction_connector_issues. Genuine ~3.5m-multiple lane-offset issues that happen to involve a micro-stub road are NOT reclassified (only 100/581 fit that pattern and are left exactly where they were).",
+      "pinned_map_result": {
+        "num_issues_before": 0,
+        "num_issues_after": 0,
+        "num_junction_connector_issues_before": 9176,
+        "num_junction_connector_issues_after": 8746,
+        "num_micro_stub_heading_advisory_after": 430,
+        "total_unchanged": "8746 + 430 = 9176 -- confirms records were reclassified, not dropped"
+      }
+    },
+    "regression_fixtures_added": [
+      "tests/unit/test_micro_stub_detection.py (4 tests for the shared helper itself)",
+      "tests/unit/test_geometric_continuity_migration.py::TestMicroStubHeadingAdvisory::test_position_correct_heading_flip_on_micro_stub_is_advisory_not_a_hard_issue",
+      "tests/unit/test_geometric_continuity_migration.py::TestMicroStubHeadingAdvisory::test_same_heading_flip_on_an_ordinary_length_road_still_hard_fails (proves the reclassification does not generalize into a blanket heading tolerance)"
+    ]
+  },
+  "tests": {
+    "targeted": "46 passed: test_geometric_continuity_migration.py + test_geometric_continuity_contactpoint.py + test_micro_stub_detection.py",
+    "broader": "62 passed: full -k \"geometric_continuity or quality_gate_manager or micro_stub\" sweep across tests/ and ultimate_pipeline/tests, 0 failures",
+    "live_gate_compatibility": "ultimate_pipeline/quality/quality_gate_manager.py::gate_geometric_continuity only reads rep['ok'], whose semantics (len(issues) == 0) are unchanged by this fix -- junction_connector_issues/num_junction_connector_issues were already documented as diagnostic-only, never used for gating",
+    "full_offline_suite": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus, consistent with every other prompt this session"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}
