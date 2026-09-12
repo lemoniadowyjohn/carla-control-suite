@@ -42,7 +42,7 @@ SIGN_TABLE: Dict[str, Tuple[str, str]] = {
 }
 
 
-def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
+def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any], *, correspondence_by_road_id: Dict[str, Any] | None = None) -> int:
     """
     Insert XODR <object> elements for regulatory signs.
 
@@ -68,10 +68,16 @@ def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any]) ->
     obj_counter: Dict[str, int] = {}
 
     for road in root.findall("road"):
-        road_name = road.get("name", "").strip()
-        if not road_name:
-            continue
-        osm = osm_roads_by_id.get(road_name)
+        if correspondence_by_road_id is not None:
+            association = correspondence_by_road_id.get(str(road.get("id", "")))
+            if not association or str(association.get("class", "")) not in {"EXACT", "HIGH"}:
+                continue
+            osm = association.get("metadata", {})
+        else:
+            road_name = road.get("name", "").strip()
+            if not road_name:
+                continue
+            osm = osm_roads_by_id.get(road_name)
         if osm is None:
             continue
 

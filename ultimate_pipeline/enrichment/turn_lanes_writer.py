@@ -24,6 +24,7 @@ import xml.etree.ElementTree as ET
 from typing import Dict, Any
 
 
+<<<<<<< HEAD
 def _metadata_value(osm: Any, key: str) -> Any:
     if isinstance(osm, dict):
         return osm.get(key)
@@ -42,7 +43,12 @@ def _set_vector(user_data: ET.Element, key: str, value: str) -> bool:
     return True
 
 
-def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
+def apply_turn_lanes(
+    root: ET.Element,
+    osm_roads_by_id: Dict[str, Any],
+    *,
+    correspondence_by_road_id: Dict[str, Any] | None = None,
+) -> int:
     """
     Stamp <userData><vector key="turnMarking" value="..."/></userData> onto XODR roads
     that have a known OSM turn:lanes value.
@@ -62,15 +68,21 @@ def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
     Returns:
         Number of roads stamped with turnMarking userData.
     """
-    if not osm_roads_by_id:
+    if not osm_roads_by_id and correspondence_by_road_id is None:
         return 0
 
     stamped = 0
     for road in root.findall("road"):
-        road_name = road.get("name", "").strip()
-        if not road_name:
-            continue
-        osm = osm_roads_by_id.get(road_name)
+        if correspondence_by_road_id is not None:
+            association = correspondence_by_road_id.get(str(road.get("id", "")))
+            if not association or str(association.get("class", "")) not in {"EXACT", "HIGH"}:
+                continue
+            osm = association.get("metadata", {})
+        else:
+            road_name = road.get("name", "").strip()
+            if not road_name:
+                continue
+            osm = osm_roads_by_id.get(road_name)
         if osm is None:
             continue
 
