@@ -1,8 +1,15 @@
 {
   "schema_version": 1,
-  "base_branch": "feature/connector-snap-wiring-v1-20260912",
-  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
-  "branch": "feature/g6-coverage-wiring-v1-20260912",
+  "source_branch": "feature/connector-snap-wiring-v1-20260912",
+  "base_branch": "stabilize/research-release-20260905",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/g6-coverage-wiring-f195-v1-20260912",
+  "rebase_verification": {
+    "status": "PASS",
+    "focused_tests": "13 passed: tests/unit/test_stage8h_map_hygiene.py + tests/unit/test_phase_g6_junction_lanelinks.py",
+    "advisory_exception_receipt": "PASS: retained 8H-4 artifact, no 8H-5 output, persisted status=INCOMPLETE",
+    "verified_on_authorized_base": true
+  },
   "history_read_first": "CODEX_PROMPT_P_G6_ISOLATED_LANES_20260909.md, feature/g6-lane-coverage-repair-v1-20260911's CODEX_G6_LANE_COVERAGE_INVESTIGATION.json, and this session's own G6 adversarial review -- this topic has been through an original 3-round investigation (closed 'do not build' under a disambiguation framing that turned out to be the wrong framing), a fresh investigation proving lane convergence resolves 26/27 isolated components, and an independent adversarial review confirming the topology claim exactly while disclosing the true lateral-merge-distance distribution (median 3.5m, max 7.1m, not near-zero as an earlier 5-sample check implied). Operator authorized wiring on the basis of that completed review.",
   "map": {
     "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
