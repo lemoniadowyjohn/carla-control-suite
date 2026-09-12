@@ -8,8 +8,9 @@ this module inserts:
         <vector key="turnMarking" value="left|straight|right"/>
     </userData>
 
-Geometry is NOT modified.  These hints can be consumed by downstream lane-marking
-renderers or used as metadata in domain-gap analysis.
+Geometry is not modified here.  LaneGenerator only creates approach lanes from
+direct XODR OSM provenance or an explicit road-ID correspondence result; this
+name-indexed writer remains hint-only for position-specific tags.
 
 Threading note:
     Like speed_limit_writer, this requires osm_roads_by_id to be available.
@@ -21,6 +22,24 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 from typing import Dict, Any
+
+
+def _metadata_value(osm: Any, key: str) -> Any:
+    if isinstance(osm, dict):
+        return osm.get(key)
+    return getattr(osm, key.replace(":", "_"), None)
+
+
+def _set_vector(user_data: ET.Element, key: str, value: str) -> bool:
+    """Set a direct userData vector and return whether it changed."""
+    for vector in user_data.findall("vector"):
+        if vector.get("key") == key:
+            if vector.get("value") == value:
+                return False
+            vector.set("value", value)
+            return True
+    ET.SubElement(user_data, "vector", key=key, value=value)
+    return True
 
 
 def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
@@ -55,12 +74,12 @@ def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
         if osm is None:
             continue
 
-        turn_lanes = (
-            getattr(osm, "turn_lanes", None)
-            if not isinstance(osm, dict)
-            else osm.get("turn_lanes")
+        forward = _metadata_value(osm, "turn:lanes:forward")
+        backward = _metadata_value(osm, "turn:lanes:backward")
+        combined = _metadata_value(osm, "turn_lanes") or _metadata_value(
+            osm, "turn:lanes"
         )
-        if not turn_lanes:
+        if not forward and not backward and not combined:
             continue
 
         # Ensure <userData> element exists
@@ -68,14 +87,25 @@ def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any]) -> int:
         if ud is None:
             ud = ET.SubElement(road, "userData")
 
-        # Check if turnMarking already present
-        already = any(
-            v.get("key") == "turnMarking" for v in ud.findall("vector")
-        )
-        if already:
-            continue
+        # Directional tags are authoritative.  The historical generic hint is
+        # retained for consumers that do not understand directional vectors.
+        changed = False
+        if forward or backward:
+            if forward:
+                changed = _set_vector(
+                    ud, "turnMarking:forward", str(forward)
+                ) or changed
+            if backward:
+                changed = _set_vector(
+                    ud, "turnMarking:backward", str(backward)
+                ) or changed
+            changed = _set_vector(
+                ud, "turnMarking", str(forward or backward)
+            ) or changed
+        else:
+            changed = _set_vector(ud, "turnMarking", str(combined))
 
-        ET.SubElement(ud, "vector", key="turnMarking", value=str(turn_lanes))
-        stamped += 1
+        if changed:
+            stamped += 1
 
     return stamped
