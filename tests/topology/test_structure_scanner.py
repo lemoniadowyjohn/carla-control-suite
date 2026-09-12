@@ -206,6 +206,41 @@ def test_curvature_estimated_from_heading_delta_when_no_arc():
     assert entry["max_abs_curvature"] > 0.0
 
 
+def test_curvature_microsegment_does_not_inflate_estimate():
+    """GAP-023 regression: a genuinely tiny (1.4cm) geometry segment with a
+    real-but-small heading delta was found, on the actual pinned map-of-record,
+    to produce the single HIGHEST curvature-anomaly score in the whole map
+    (road 51979, k~10.2) -- a division-by-near-zero-length artifact, not a
+    genuinely sharp real-world turn. A road with a large heading delta over a
+    reasonably long segment must still be estimated correctly and must still
+    rank above the microsegment artifact."""
+    root = _root(
+        """
+  <road id="microseg">
+    <planView>
+      <geometry s="0" x="0" y="0" hdg="0.0" length="0.014"/>
+      <geometry s="0.014" x="0.014" y="0" hdg="0.148" length="10"/>
+    </planView>
+  </road>
+  <road id="genuine_turn">
+    <planView>
+      <geometry s="0" x="0" y="0" hdg="0.0" length="5"/>
+      <geometry s="5" x="5" y="0" hdg="1.2" length="5"/>
+    </planView>
+  </road>
+"""
+    )
+    report = StructureScanner.analyze(root)
+    curv = report["curvature_anomalies"]
+    by_road = {e["road_id"]: e["max_abs_curvature"] for e in curv["per_road"]}
+    # Estimate divides the heading delta by the FIRST geometry's length
+    # (StructureScanner._analyze_curvature uses g0's length as the divisor).
+    # Before the fix: microseg's 0.148/0.014 ~= 10.6 dwarfs genuine_turn's
+    # 1.2/5 = 0.24 -- a division-by-near-zero-length artifact outranking a
+    # real, sizeable heading change. After the fix it must not.
+    assert by_road["genuine_turn"] > by_road.get("microseg", 0.0)
+
+
 # ---------------------------------------------------------------------------
 # Lane-section discontinuities
 #
@@ -322,6 +357,28 @@ def test_elevation_single_point_skipped():
     root = _root('<road id="1"><elevationProfile><elevation s="0" a="1.0"/></elevationProfile></road>')
     report = StructureScanner.analyze(root)
     assert report["elevation_anomalies"]["per_road"] == []
+
+
+def test_elevation_all_single_record_roads_reports_uncheckable_not_clean():
+    """GAP-022 regression: this pipeline's real output gives every road exactly
+    one <elevation> record (a single polynomial per road), so the within-road
+    comparison this check performs can NEVER fire across the whole map --
+    num_slope_segments stays 0 not because elevation is smooth, but because
+    zero comparisons were ever possible. Before the fix, global_stats gave no
+    way to distinguish "checked and found clean" from "nothing was checkable",
+    so a report consumer could misread num_slope_segments=0 as a clean bill of
+    health. The fix must make this distinction explicit and machine-readable."""
+    root = _root(
+        """
+  <road id="1"><elevationProfile><elevation s="0" a="1.0"/></elevationProfile></road>
+  <road id="2"><elevationProfile><elevation s="0" a="2.0"/></elevationProfile></road>
+"""
+    )
+    report = StructureScanner.analyze(root)
+    elev = report["elevation_anomalies"]
+    assert elev["global_stats"]["num_slope_segments"] == 0
+    assert elev["global_stats"]["single_record_road_count"] == 2
+    assert elev["global_stats"]["multi_record_road_count"] == 0
 
 
 # ---------------------------------------------------------------------------

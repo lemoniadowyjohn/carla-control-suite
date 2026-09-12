@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-07",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/quality-gate-fixes-20260907",
+  "results": {
+    "GAP-021": {"status": "PASS", "focused_tests": 5},
+    "GAP-022": {"status": "INCOMPLETE", "reason": "structure_scanner.py and equivalent elevation anomaly scanner absent from authoritative base"},
+    "GAP-023": {"status": "INCOMPLETE", "reason": "referenced curvature anomaly scanner absent from authoritative base"},
+    "GAP-024": {"status": "INCOMPLETE", "reason": "referenced C33 report, guard inputs, and experiment entrypoint absent from authoritative base"}
+  },
+  "full_offline_tests": {"status": "INCOMPLETE", "reason": "sparse isolated worktree lacks unrelated optional modules and fixtures"},
+  "live_carla": "NOT_RUN",
+  "frozen_evidence_mutated": false,
+  "map_of_record_mutated": false
+}
