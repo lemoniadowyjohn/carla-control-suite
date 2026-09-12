@@ -1,8 +1,14 @@
 {
   "schema_version": 1,
-  "base_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
-  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
-  "branch": "feature/micro-stub-detection-v1-20260912",
+  "source_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "base_branch": "stabilize/research-release-20260905",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/micro-stub-detection-f195-v1-20260912",
+  "rebase_verification": {
+    "status": "PASS",
+    "focused_tests": "46 passed: tests/unit/test_micro_stub_detection.py + test_geometric_continuity_migration.py + test_geometric_continuity_contactpoint.py",
+    "verified_on_authorized_base": true
+  },
   "map": {
     "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
     "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
