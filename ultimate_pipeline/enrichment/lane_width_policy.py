@@ -152,6 +152,26 @@ def _lane_count_from_meta(meta: Mapping[str, str]) -> Optional[int]:
         return int(forward or 0) + int(backward or 0) or None
     return None
 
+def driving_lane_counts(
+    road: ET.Element,
+    *,
+    osm_meta: Optional[Mapping[str, Mapping[str, Any]]] = None,
+) -> tuple[int, int, str, float]:
+    """Return ``(left/backward, right/forward, source, confidence)``.
+
+    Direction-specific OSM tags are authoritative.  A total ``lanes`` tag is
+    split deterministically because it does not identify carriageway sides.
+    No metadata falls back to the historical one-lane-per-side behavior.
+    """
+    meta=road_lane_width_metadata(road, osm_meta)
+    forward=parse_lane_count(meta.get("lanes:forward")); backward=parse_lane_count(meta.get("lanes:backward"))
+    if forward is not None or backward is not None:
+        return backward or 0, forward or 0, "osm:lanes:forward+backward", 1.0
+    total=parse_lane_count(meta.get("lanes"))
+    if total is not None:
+        return total // 2, total - total // 2, "osm:lanes", 0.9
+    return 1, 1, "fallback", 0.0
+
 
 def target_driving_width_m(
     road: ET.Element,
@@ -318,4 +338,5 @@ __all__ = [
     "parse_width_m",
     "road_lane_width_metadata",
     "target_driving_width_m",
+    "driving_lane_counts",
 ]
