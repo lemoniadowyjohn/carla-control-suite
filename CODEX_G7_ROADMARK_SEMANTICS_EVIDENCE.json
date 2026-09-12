@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_sha": "727e6704",
+  "branch": "feature/g7-roadmark-semantics-v1-20260912",
+  "scope": "offline audit and candidate repair logic only; the map-of-record was read but not rewritten",
+  "input": {
+    "xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "read_only_audit": {
+    "lanes_audited": 85887,
+    "roadmarks_audited": 85887,
+    "traffic_bearing_visible_zero_width": 0,
+    "traffic_bearing_visible_negative_width": 0,
+    "traffic_bearing_solid_lanechange_missing": [
+      {"road": "46620", "lane": "-1"},
+      {"road": "74522", "lane": "-1"}
+    ],
+    "non_traffic_visible_marking_advisory_count": 51596
+  },
+  "behavior": {
+    "sidewalk_boundary_width_rewrite": "PROHIBITED",
+    "traffic_bearing_width_rewrite": "only nonfinite or nonpositive visible markings",
+    "traffic_bearing_solid_lanechange_rewrite": "only missing laneChange -> none",
+    "pipeline_wiring_changed": false
+  },
+  "tests": {
+    "focused": "22 passed: tests/unit/test_phase_g7_roadmark_semantics.py and ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py",
+    "warnings": [
+      "Three settings-path RuntimeWarnings were emitted by an unrelated NaN-sweep module because this sparse worktree omits optional manual-tile/HPC paths."
+    ],
+    "full_offline": "NOT_RUN: governed artifact-complete integration worktree required"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN",
+  "next_required_evidence": "Generate a separate governed candidate and run identity, continuity, and acceptance gates before any activation."
+}
