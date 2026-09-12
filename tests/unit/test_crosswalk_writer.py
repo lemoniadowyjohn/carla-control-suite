@@ -9,6 +9,8 @@ ways exist (0 crossing-tagged nodes) -- real, usable data.
 import math
 import xml.etree.ElementTree as ET
 
+import pytest
+
 from ultimate_pipeline.enrichment.crosswalk_writer import (
     extract_osm_crossings,
     project_crossing_to_local,
@@ -116,6 +118,17 @@ def test_match_crossing_to_road_returns_none_beyond_threshold():
     root.append(_road("1", [(0.0, 0.0), (10.0, 0.0)]))
     match = match_crossing_to_road(root, (5.0, 50.0), max_dist_m=5.0)
     assert match is None
+
+
+def test_match_crossing_to_road_uses_stable_road_id_tie_breaking():
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("10", [(0.0, 0.0), (10.0, 0.0)]))
+    root.append(_road("2", [(0.0, 0.0), (10.0, 0.0)]))
+
+    match = match_crossing_to_road(root, (5.0, 1.0), max_dist_m=5.0)
+
+    assert match is not None
+    assert match["road"].get("id") == "2"
 
 
 # --------------------------------------------------------------------------
@@ -255,6 +268,49 @@ def test_apply_crosswalks_skips_unmatched_crossings():
     crossings = [{"way_id": "99", "nodes_local": [(500.0, 500.0), (500.0, 503.0)]}]
     n = apply_crosswalks(root, crossings, max_match_dist_m=5.0)
     assert n == 0
+
+
+def test_apply_crosswalks_is_idempotent_and_uses_osm_way_id_for_object_id():
+    root = ET.Element("OpenDRIVE")
+    road = _road("1", [(0.0, 0.0), (10.0, 0.0)])
+    root.append(road)
+    crossings = [{"way_id": "42", "nodes_local": [(5.0, -1.5), (5.0, 1.5)]}]
+
+    assert apply_crosswalks(root, crossings, max_match_dist_m=5.0) == 1
+    assert apply_crosswalks(root, crossings, max_match_dist_m=5.0) == 0
+
+    objects = road.findall(".//objects/object[@type='crosswalk']")
+    assert [obj.get("id") for obj in objects] == ["crosswalk_42"]
+    assert [obj.get("name") for obj in objects] == ["osm_way_42"]
+
+
+def test_apply_crosswalks_fails_closed_on_unrelated_existing_object_id_collision():
+    root = ET.Element("OpenDRIVE")
+    road = _road("1", [(0.0, 0.0), (10.0, 0.0)])
+    objects = ET.SubElement(road, "objects")
+    ET.SubElement(objects, "object", id="crosswalk_42", type="barrier")
+    root.append(road)
+    crossings = [{"way_id": "42", "nodes_local": [(5.0, -1.5), (5.0, 1.5)]}]
+
+    with pytest.raises(ValueError, match="crosswalk object ID collision"):
+        apply_crosswalks(root, crossings, max_match_dist_m=5.0)
+
+
+def test_crosswalk_collision_preflight_prevents_partial_insertions():
+    root = ET.Element("OpenDRIVE")
+    road = _road("1", [(0.0, 0.0), (10.0, 0.0)])
+    objects = ET.SubElement(road, "objects")
+    ET.SubElement(objects, "object", id="crosswalk_99", type="barrier")
+    root.append(road)
+    crossings = [
+        {"way_id": "1", "nodes_local": [(2.0, -1.5), (2.0, 1.5)]},
+        {"way_id": "99", "nodes_local": [(8.0, -1.5), (8.0, 1.5)]},
+    ]
+
+    with pytest.raises(ValueError, match="99"):
+        apply_crosswalks(root, crossings, max_match_dist_m=5.0)
+
+    assert road.findall(".//objects/object[@type='crosswalk']") == []
 
 
 def test_apply_crosswalks_real_pinned_data_end_to_end():
