@@ -7,9 +7,9 @@ Objects are written as <object> (not <signal>) at s=0.0, t=-1.5 (roadside, right
 
 Threading note:
     Requires an osm_roads_by_id dict where each entry carries a `traffic_sign`
-    attribute or dict key (e.g. "de:206", "de:274-50").  This is not yet populated
-    in the main pipeline's OSM loading path — add it when OSM feature tagging is
-    extended.  The module is safe to import and call with an empty dict.
+    attribute or dict key (e.g. "de:206", "de:274-50").  The pipeline's
+    position-sensitive path supplies it through a HIGH/EXACT spatial OSM-to-XODR
+    association; the legacy name-index mode remains for compatibility only.
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any], *,
     Returns:
         Number of <object> elements inserted.
     """
-    if not osm_roads_by_id:
+    if not osm_roads_by_id and correspondence_by_road_id is None:
         return 0
 
     inserted = 0
