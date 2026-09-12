@@ -35,6 +35,35 @@ def _nearest_distance(points: Sequence[tuple[float, float]], query: tuple[float,
     return min((_distance(point, query) for point in points), default=math.inf)
 
 
+def sample_distance_evidence(
+    query_points: Sequence[tuple[float, float]],
+    candidate_points: Sequence[tuple[float, float]],
+    *,
+    threshold_m: float,
+) -> dict[str, float]:
+    """Return deterministic nearest-sample evidence for one correspondence.
+
+    Callers that need a stricter domain-specific acceptance contract can use
+    the mean distance and within-threshold coverage without resampling the
+    candidate road.  Empty inputs intentionally produce an infinite distance
+    and zero coverage instead of being treated as a weak match.
+    """
+    if not query_points or not candidate_points:
+        return {
+            "mean_distance_m": math.inf,
+            "max_distance_m": math.inf,
+            "coverage_within_threshold": 0.0,
+        }
+    distances = [_nearest_distance(candidate_points, point) for point in query_points]
+    return {
+        "mean_distance_m": sum(distances) / len(distances),
+        "max_distance_m": max(distances),
+        "coverage_within_threshold": (
+            sum(distance <= threshold_m for distance in distances) / len(distances)
+        ),
+    }
+
+
 class RoadSampleIndex:
     """Deterministic grid index over cached XODR reference-line samples."""
 
@@ -134,10 +163,12 @@ def match_osm_way_to_xodr(
         try:
             road_id = str(road.get("id", ""))
             road_points = sample_cache.get(road_id) if sample_cache is not None else _road_samples(road)
-            distances = [_nearest_distance(road_points or (), (x, y)) for x, y in points]
+            distance_evidence = sample_distance_evidence(
+                points, road_points or (), threshold_m=max_distance_m
+            )
+            mean_distance = distance_evidence["mean_distance_m"]
         except (TypeError, ValueError, IndexError):
             continue
-        mean_distance = sum(distances) / len(distances)
         if mean_distance > max_distance_m:
             continue
         road_heading = None
@@ -156,6 +187,8 @@ def match_osm_way_to_xodr(
         score += 0.10 * max(0.0, 1.0 - (heading_error or math.pi) / math.pi)
         scored.append((score, mean_distance, road, {
             "mean_distance_m": mean_distance,
+            "max_distance_m": distance_evidence["max_distance_m"],
+            "coverage_within_threshold": distance_evidence["coverage_within_threshold"],
             "heading_error_deg": None if heading_error is None else math.degrees(heading_error),
             "name_match": name_match,
             "road_class_match": class_match,
