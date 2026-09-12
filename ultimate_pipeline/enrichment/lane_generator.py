@@ -492,6 +492,57 @@ class LaneGenerator:
                 created += 1
         return created
 
+    @staticmethod
+    def _annotate_existing_lane_count_provenance(
+        road: ET.Element,
+        *,
+        osm_meta: Mapping[str, Mapping[str, Any]] | None,
+        structural_osm_meta: Mapping[str, Mapping[str, Any]] | None,
+    ) -> int:
+        """Annotate existing lanes only when OSM and every section agree.
+
+        Existing OpenDRIVE lane topology is not rewritten here. A road whose
+        section count differs from the exact/high-confidence OSM association is
+        intentionally left unannotated so the acceptance gate can expose the
+        disagreement instead of treating provenance as a repair.
+        """
+        expected_left, expected_right, source, confidence = driving_lane_counts(
+            road,
+            osm_meta=osm_meta,
+            structural_osm_meta=structural_osm_meta,
+        )
+        if source == "fallback":
+            return 0
+
+        lanes_element = road.find("lanes")
+        sections = (
+            LaneGenerator._ordered_lane_sections(lanes_element)
+            if lanes_element is not None
+            else []
+        )
+        driving_lanes: list[ET.Element] = []
+        for section in sections:
+            left = [
+                lane for lane in section.findall("./left/lane")
+                if lane.get("type", "driving") == "driving"
+            ]
+            right = [
+                lane for lane in section.findall("./right/lane")
+                if lane.get("type", "driving") == "driving"
+            ]
+            if len(left) != expected_left or len(right) != expected_right:
+                return 0
+            driving_lanes.extend(left + right)
+
+        for lane in driving_lanes:
+            LaneGenerator._add_provenance(
+                lane,
+                source=source,
+                confidence=confidence,
+                count=expected_left + expected_right,
+            )
+        return len(driving_lanes)
+
     # ---------------------------------------------------------------
     @staticmethod
     def ensure_lanes(
@@ -504,6 +555,7 @@ class LaneGenerator:
         created = 0
         turn_lanes_created = 0
         cycle_lanes_created = 0
+        existing_lanes_provenanced = 0
 
         for road in root.findall("road"):
             rid = road.get("id", "?")
@@ -549,7 +601,11 @@ class LaneGenerator:
                 else:
                     road_w = _road_type_width(road, osm_meta=osm_meta)
                     left_count, right_count, count_source, count_confidence = (
-                        driving_lane_counts(road, osm_meta=osm_meta)
+                        driving_lane_counts(
+                            road,
+                            osm_meta=osm_meta,
+                            structural_osm_meta=structural_osm_meta,
+                        )
                     )
                     center_lane = ET.SubElement(
                         center, "lane", id="0", type="none", level="false"
@@ -588,6 +644,14 @@ class LaneGenerator:
                     created += 1
                     if verbose:
                         print(f"[LaneGenerator] Added full lane profile for road {rid}")
+            else:
+                existing_lanes_provenanced += (
+                    LaneGenerator._annotate_existing_lane_count_provenance(
+                        road,
+                        osm_meta=osm_meta,
+                        structural_osm_meta=structural_osm_meta,
+                    )
+                )
 
             turn_lanes_created += LaneGenerator._apply_turn_lane_geometry(
                 road, structural_osm_meta
@@ -600,7 +664,8 @@ class LaneGenerator:
             print(f"[LaneGenerator] Total new lane assignments: {created}")
             print(
                 "[LaneGenerator] Structural lane features: "
-                f"turn={turn_lanes_created}, cycle={cycle_lanes_created}"
+                f"turn={turn_lanes_created}, cycle={cycle_lanes_created}, "
+                f"existing_provenanced={existing_lanes_provenanced}"
             )
 
         if provenance_report_path is not None:
