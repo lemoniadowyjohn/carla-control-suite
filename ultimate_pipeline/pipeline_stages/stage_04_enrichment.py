@@ -124,6 +124,25 @@ def enforce_buildings_fail_closed(
     )
 
 
+def _mark_geometry_only_stage_contract(pipeline) -> None:
+    """Stage 4 is the first typed-context writer during the migration."""
+    from ultimate_pipeline.core.stage_context import (
+        ensure_stage_context,
+        sync_legacy_semantic_state,
+    )
+
+    context = ensure_stage_context(pipeline)
+    context.replace(
+        has_geometry=True,
+        has_elevation=False,
+        has_planview=False,
+        has_lanes=False,
+    )
+    # Stage 9 and unmigrated code still consume this mapping. Keeping it in
+    # exact lockstep is the compatibility/equivalence contract for this step.
+    sync_legacy_semantic_state(pipeline, context)
+
+
 def _step4_enrichment(self, topo_fixed: str) -> str:
     _inject_main_pipeline_globals()
     s = self.settings
@@ -411,14 +430,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         )
 
     # semantic contract: enrichment is geometry-only (lanes later)
-    self.semantic_state.update(
-        {
-            "has_geometry": True,
-            "has_elevation": False,
-            "has_planview": False,
-            "has_lanes": False,
-        }
-    )
+    _mark_geometry_only_stage_contract(self)
     print(
         "✅ STEP 4 complete — geometry-only semantics (lanes are generated in STEP 7)"
     )
