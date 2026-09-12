@@ -260,6 +260,27 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         print(f"⚠️ OSM meta enrichment failed: {e}")
         self.vreport.add("osm_meta_enrichment", "error", str(e))
 
+    # Access restrictions use a stricter spatial correspondence than the
+    # name-indexed writers above. They carry provenance only: no lane,
+    # connectivity, or routing behavior is changed in this stage.
+    try:
+        from ultimate_pipeline.enrichment.access_restriction_metadata import (
+            apply_access_metadata_from_osm,
+        )
+
+        access_metadata = apply_access_metadata_from_osm(root, s.OSM_FILE)
+        if access_metadata["metadata_records_written"]:
+            save_xodr(tree, topo_fixed)
+        self.vreport.add_dict("osm_access_restriction_metadata", access_metadata)
+        print(
+            "   → Access metadata: "
+            f"{access_metadata['roads_with_access_metadata']} road(s), "
+            f"{access_metadata['metadata_records_written']} record(s)"
+        )
+    except Exception as e:
+        print(f"⚠️ OSM access metadata enrichment failed: {e}")
+        self.vreport.add("osm_access_restriction_metadata", "error", str(e))
+
     # Crosswalk enrichment: real OSM footway=crossing geometry, geometrically
     # matched to a road (not name/id matching -- crosswalk_writer.py, added
     # 2026-08-26). Separate try/except so a failure here doesn't affect the

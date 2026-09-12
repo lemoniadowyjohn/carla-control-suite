@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "dependency_base_sha": "6889ffdb54d89239edb908d616b00e27f66e37bc",
+  "branch": "feature/osm-access-metadata-v1-20260911",
+  "policy": "metadata_only",
+  "source_map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "osm_source": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+  },
+  "algorithm": {
+    "metadata_key": "osm_access_restriction_v1",
+    "match_method": "exact_name_and_projected_geometry_direction_independent",
+    "access_tag_keys": ["access", "motor_vehicle", "vehicle", "psv", "bicycle"],
+    "sample_spacing_m": 3.0,
+    "max_mean_distance_m": 2.0,
+    "minimum_coverage_within_2m": 0.9,
+    "routing_or_lane_behavior_changed": false
+  },
+  "candidate": {
+    "path": "D:/carla-control-suite-experiments/osm-access-metadata-v1-20260911/20260911T120000Z/osm_access_metadata_candidate.xodr",
+    "sha256": "9e9ff162628f1f1887ba5e132115d7ad7337072bded1beedf4f9da072d9c36e5",
+    "wall_clock_seconds": 26.856872000033036,
+    "osm_access_ways_considered": 2041,
+    "matched_way_count": 728,
+    "unmatched_way_count": 1313,
+    "accepted_matches": 2010,
+    "roads_with_access_metadata": 1998,
+    "metadata_records_written": 2010,
+    "tag_type_counts": {
+      "access": 100,
+      "bicycle": 335,
+      "motor_vehicle": 99,
+      "psv": 1789,
+      "vehicle": 31
+    },
+    "metadata_validation": {
+      "parsed_vectors": 2010,
+      "match_class_counts": {"EXACT": 1769, "HIGH": 241},
+      "all_records_have_supported_method": true,
+      "all_confidences_bounded": true,
+      "all_coverages_bounded": true
+    }
+  },
+  "behavior_invariants": {
+    "road_count": {"before": 32267, "after": 32267},
+    "junction_count": {"before": 3561, "after": 3561},
+    "lane_count": {"before": 85887, "after": 85887},
+    "driving_lane_count": {"before": 34291, "after": 34291},
+    "lane_signature_sha256": "219a610567d42ed0307251bf4f2cba0b9e099c4274f0b542380b13674b489dcc",
+    "road_link_signature_sha256": "097ec356bf556d0c760408f10bf153d6c121d8ed9f7215c984330820f43a83d5"
+  },
+  "tests": {
+    "focused": "8 passed",
+    "stage_04_import": "PASS",
+    "compileall": "PASS",
+    "full_offline_suite": "NOT_RUN"
+  },
+  "frozen_evidence_mutated": false,
+  "map_of_record_mutated": false,
+  "live_carla": "NOT_RUN"
+}
