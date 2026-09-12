@@ -11,6 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import (
+    endpoint as canonical_endpoint,
+    pose_at_s as canonical_pose_at_s,
+)
+
 from ultimate_pipeline.quality.check_geometric_continuity import (
     Pose,
     _norm_angle,
@@ -20,18 +25,91 @@ from ultimate_pipeline.quality.check_geometric_continuity import (
 
 
 class ConnectorValidator:
-    def __init__(self, connector_road: ET.Element):
+    def __init__(
+        self,
+        connector_road: ET.Element,
+        *,
+        attach_pose: Optional[Pose] = None,
+        opposite_pose: Optional[Pose] = None,
+        position_tolerance_m: float = 0.05,
+        heading_tolerance_rad: float = math.radians(5.0),
+    ):
         self.road = connector_road
-        
+
+        self.attach_pose = attach_pose
+        self.opposite_pose = opposite_pose
+        self.position_tolerance_m = float(position_tolerance_m)
+        self.heading_tolerance_rad = float(heading_tolerance_rad)
+
+    @staticmethod
+    def _angle_error(a: float, b: float) -> float:
+        return abs((float(a) - float(b) + math.pi) % (2.0 * math.pi) - math.pi)
+
+    @staticmethod
+    def _kernel_road_endpoints(road: ET.Element) -> Optional[Tuple[Pose, Pose]]:
+        geometries = sorted(
+            road.findall("./planView/geometry"),
+            key=lambda element: _safe_float(element.get("s"), 0.0),
+        )
+        if not geometries:
+            return None
+        try:
+            first = canonical_pose_at_s(geometries[0], 0.0)
+            last = canonical_endpoint(geometries[-1])
+        except (TypeError, ValueError, ZeroDivisionError):
+            return None
+        return (
+            Pose(float(first.x), float(first.y), float(_norm_angle(first.heading))),
+            Pose(float(last.x), float(last.y), float(_norm_angle(last.heading))),
+        )
+
+    def _valid_lanes(self) -> bool:
+        lanes = self.road.find("lanes")
+        if lanes is None:
+            return False
+        sections = lanes.findall("./laneSection")
+        if not sections:
+            return False
+        previous_s = -math.inf
+        for section in sections:
+            section_s = _safe_float(section.get("s"), math.nan)
+            if not math.isfinite(section_s) or section_s < previous_s:
+                return False
+            previous_s = section_s
+            lane_elements = section.findall("./left/lane") + section.findall("./center/lane") + section.findall("./right/lane")
+            if not lane_elements:
+                return False
+            for lane in lane_elements:
+                if lane.get("type") == "driving":
+                    widths = lane.findall("./width")
+                    if not widths:
+                        return False
+                    if any(
+                        not math.isfinite(_safe_float(width.get(name), math.nan))
+                        or _safe_float(width.get("a"), math.nan) <= 0.0
+                        for width in widths
+                        for name in ("a",)
+                    ):
+                        return False
+        return True
+
     def validate(self) -> bool:
         # E1.3: validate planView
         if self.road.find("planView") is None: return False
         # E1.4: validate length
-        if float(self.road.get("length", 0)) < 0: return False
-        # E1.5: validate lane sections (SKIP for now)
-        # if self.road.find("lanes") is None: return False
-        # E1.8: validate attachment poses (SKIP for now)
-        # if _road_endpoints(self.road) is None: return False
+        if not math.isfinite(_safe_float(self.road.get("length"), math.nan)) or _safe_float(self.road.get("length"), 0.0) <= 0.0: return False
+        # E1.5: every connector must carry a usable lane section.
+        if not self._valid_lanes(): return False
+        # E1.8: compare both attachment poses against canonical geometry.
+        if self.attach_pose is not None or self.opposite_pose is not None:
+            endpoints = self._kernel_road_endpoints(self.road)
+            if endpoints is None or self.attach_pose is None or self.opposite_pose is None:
+                return False
+            for actual, expected in zip(endpoints, (self.attach_pose, self.opposite_pose)):
+                if math.hypot(actual.x - expected.x, actual.y - expected.y) > self.position_tolerance_m:
+                    return False
+                if self._angle_error(actual.hdg, expected.hdg) > self.heading_tolerance_rad:
+                    return False
         return True
 
 
@@ -652,7 +730,11 @@ def rebuild_displaced_junction_connectors_on_root(
                 continue
             
             # Atomic commit check: validator
-            validator = ConnectorValidator(connector_road)
+            validator = ConnectorValidator(
+                connector_road,
+                attach_pose=plan_start,
+                opposite_pose=plan_end,
+            )
             if not validator.validate():
                 # Revert using original_connector_road_copy
                 connector_road_parent.remove(connector_road)
