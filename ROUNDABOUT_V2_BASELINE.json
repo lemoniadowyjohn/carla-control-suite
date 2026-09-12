@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "base_branch": "stabilize/research-release-20260905",
+  "implementation_branch": "feature/roundabout-reconstruction-v2-20260907",
+  "source_authority": {"remote_ref_verified": true, "rebaseline_authorization": "BASELINE_REBASELINE_AUTHORIZATION.md"},
+  "v1": {
+    "center_estimator": "first geometry point arithmetic mean",
+    "radius_estimator": "mean distance to center",
+    "geometry_model": "single perfect 360-degree arc",
+    "circulating_lane_count": 1,
+    "lane_link_fallback": "from=-1,to=-1",
+    "contact_point_method": "atan2 threshold",
+    "elevation_method": "coefficient a proxy",
+    "transactional": false,
+    "release_enabled": false
+  },
+  "integration": {"call_site": "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py", "duplicate_component": "ultimate_pipeline/topology/roundabout_rebuilder.py"},
+  "map_of_record": {"sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798", "materialized": false},
+  "manual_grid0828": {"sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c", "materialized": false},
+  "metrics": {"test_counts": "5825 collected; 1 collection error (missing package_smoke_check helper in sparse exact-base checkout)", "map_quality": "UNAVAILABLE_IN_SPARSE_CHECKOUT", "carla_warnings": "NOT_RUN"},
+  "frozen_evidence_mutated": false,
+  "map_of_record_mutated": false,
+  "live_carla": "NOT_RUN"
+}

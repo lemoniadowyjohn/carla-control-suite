@@ -1,0 +1,189 @@
+{
+  "audit_timestamp_utc": "2026-09-06T17:00:00Z",
+  "baseline_sha": "2e020d9b8ed5e21ae0a2e4a93ef1e71116082eef",
+  "methodology": "Deep-read of ultimate_pipeline/main_pipeline.py, pipeline_stages/*, contracts/*, geometry/*, quality/* by a dedicated research agent, cross-checked against actual code (not filenames/assumptions). Real stage-calling order verified from main_pipeline.py:2036-2380.",
+  "real_stage_order": [
+    "1_sanitize", "2_topology_semantics", "3_topology_repair", "4_enrichment",
+    "5_geometry_elevation (embeds 6_planview_continuity as its first sub-step)",
+    "7_lanes", "8_integrity_lanelinks", "8H_hygiene", "9_tiling", "10_tile_qa",
+    "11_simulation (interactive-only, effectively dead in automated runs)",
+    "12_domain_gap"
+  ],
+  "stages": [
+    {
+      "id": "1_sanitize",
+      "file": "ultimate_pipeline/pipeline_stages/stage_01_sanitize.py",
+      "reads": ["s.INPUT_XODR"],
+      "writes": ["sanitized xodr"],
+      "domains_touched": ["road identity", "XML validity"],
+      "changes_s_coordinates": false,
+      "changes_planview": false,
+      "changes_lanesection_boundaries": false,
+      "changes_elevation": false,
+      "changes_junction_connectivity": false
+    },
+    {
+      "id": "2_topology_semantics",
+      "file": "ultimate_pipeline/pipeline_stages/stage_02_topology_semantics.py",
+      "reads": ["sanitized xodr"],
+      "writes": ["sumo_fixed/working_topology_input", "sumo_repair.json", "topology_lint.json", "semantic_high_risk_roads.json", "georeference_provenance"],
+      "domains_touched": ["road identity", "geoReference", "junction refs", "topology"],
+      "changes_s_coordinates": false,
+      "changes_planview": false,
+      "changes_lanesection_boundaries": false,
+      "changes_elevation": false,
+      "changes_junction_connectivity": true,
+      "note": "Repairs dangling junction-link references; does not touch lanes/elevation."
+    },
+    {
+      "id": "3_topology_repair",
+      "file": "ultimate_pipeline/pipeline_stages/stage_03_topology_repair.py",
+      "reads": ["working_topology_input"],
+      "writes": ["topo_fixed"],
+      "domains_touched": ["topology", "junction integrity"],
+      "changes_junction_connectivity": true,
+      "note": "Optional early CARLA smoke test."
+    },
+    {
+      "id": "4_enrichment",
+      "file": "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py",
+      "reads": ["topo_fixed", "OSM file", "buildings.geojson"],
+      "writes": ["topo_fixed (in place)"],
+      "domains_touched": ["junctions (roundabout tagging/reconstruction)", "signals", "objects", "buildings", "crosswalks", "signs", "traffic lights", "semantic metadata"],
+      "changes_lanesection_boundaries": false,
+      "changes_planview": "only if ENABLE_ROUNDABOUT_RECONSTRUCTION is set (off by default in every named release profile)",
+      "note": "Explicitly geometry-only/no-lanes-yet by contract: semantic_state['has_lanes']=False set here. ARCHITECTURAL SMELL (not proven to cause defects): buildings/signals/crosswalks run here, BEFORE lanes exist (stage 7) and BEFORE the geometry freeze (stage 5) -- no code dependency found requiring this order, appears to be a historical/monolithic-file artifact rather than a real requirement."
+    },
+    {
+      "id": "5_geometry_elevation",
+      "file": "ultimate_pipeline/pipeline_stages/stage_05_geometry.py",
+      "reads": ["topo_fixed"],
+      "writes": ["elev_out", "frozen_before_elev (geometry-freeze hash)", "dem_qc report", "elevation_suspicious_report.json", "geometry_validator_debug.json"],
+      "domains_touched": ["planView (via embedded stage 6)", "elevation profile", "s-values (via stage 6)", "road length", "collision geometry (curvature clamp)"],
+      "changes_s_coordinates": true,
+      "changes_planview": true,
+      "changes_elevation": true,
+      "note": "Orchestrates: calls stage 6's _step6_planview_continuity FIRST, then freezes XY (geometryFrozen/geometryFreezeHash header attrs + sha256), then applies DEM elevation, then applies PlanViewSmoother.clamp_curvature UNCONDITIONALLY (not gated by any 'unsafe' flag -- this makes the stage-6 gated curvature-clamp flag partially redundant with this ungated path)."
+    },
+    {
+      "id": "6_planview_continuity",
+      "file": "ultimate_pipeline/pipeline_stages/stage_06_links.py",
+      "embedded_in": "5_geometry_elevation",
+      "reads": ["topo_fixed (passed as elev_out param from stage 5)"],
+      "writes": ["geo_out", "cont_out"],
+      "domains_touched": ["planView", "s-values", "road length", "mesh continuity"],
+      "changes_planview": true,
+      "changes_s_coordinates": true,
+      "note": "GOVERNED CONTAINMENT MODE: under any non-DEVELOPMENT profile or THESIS_STRICT, this stage is entirely READ-ONLY/diagnostic -- copies input to output byte-identically for protected tags (planView, elevationProfile, lateralProfile, lanes, signals, objects, LaneLinks, junctions, road.length) and raises BLOCKED_STAGE_ORDER_VIOLATION if a semantic diff is detected. This is a hard architectural fail-safe, not merely unsafe flags defaulting off. See root_cause_analysis below."
+    },
+    {
+      "id": "7_lanes",
+      "file": "ultimate_pipeline/pipeline_stages/stage_07_lanes.py",
+      "reads": ["cont_out (post-freeze)"],
+      "writes": ["lanes_out"],
+      "domains_touched": ["lane sections", "lane widths", "lane offsets", "sidewalks", "collision geometry (cross-section)"],
+      "changes_lanesection_boundaries": true,
+      "changes_planview": false,
+      "asserts_geometry_frozen": true,
+      "note": "Fails hard if 0 driving lanes. Always exactly 1 driving lane per side (see MAP_QUALITY_GAP_REGISTER GAP-001)."
+    },
+    {
+      "id": "8_integrity_lanelinks",
+      "file": "ultimate_pipeline/pipeline_stages/stage_08_integrity.py",
+      "reads": ["lanes_out"],
+      "writes": ["final_out", "map_statistics.json", "final_selected_xodr_status.json"],
+      "domains_touched": ["lane links", "road marks", "collision geometry", "semantic metadata (spawn validation)"],
+      "note": "987 lines, most entangled stage: many sequential intermediate files and conditional branches based on env flags. This is the 'authoritative map switch' point -- final_out becomes canonical after laneSection repair."
+    },
+    {
+      "id": "8H_hygiene",
+      "file": "ultimate_pipeline/pipeline_stages/stage_08_hygiene.py",
+      "reads": ["final_out"],
+      "writes": ["08h1..08h4_*.xodr", "map_hygiene_report.json"],
+      "domains_touched": ["topology (island quarantine)", "lane widths", "elevation (z-seams)"],
+      "note": "Explicitly ordered islands->lanes->z-seams->widths because island removal changes what 'fewest references' means for later repairs. Island quarantine capped at 25% of total roads as a safety valve."
+    },
+    {
+      "id": "9_tiling",
+      "file": "ultimate_pipeline/pipeline_stages/stage_09_tiling.py",
+      "reads": ["final_out"],
+      "writes": ["tiles/*.xodr", "tile_adjacency.json", "road_link_endpoint_errors.json"],
+      "domains_touched": ["tiling", "scenario generation"],
+      "note": "Operates on final_out's already-frozen geometry; does not re-touch planView. Includes post-tiling S-invariant scan/fix for negative s/sOffset (a CARLA-crash class of bug)."
+    },
+    {
+      "id": "10_tile_qa",
+      "file": "ultimate_pipeline/pipeline_stages/stage_10_tile_qa.py",
+      "reads": ["final_out", "tiles/"],
+      "writes": ["CARLA-reachability-gated QA artifacts", "screenshots"],
+      "note": "CARLA-subprocess-isolated. Fully skips if CARLA unreachable/disabled -- most affected by the CARLA-runtime blocker documented elsewhere in this repo's memory."
+    },
+    {
+      "id": "11_simulation",
+      "file": "ultimate_pipeline/pipeline_stages/stage_11_simulation.py",
+      "note": "Interactive-only (UP_INTERACTIVE=1 + ENABLE_SIMULATION_GATE). Effectively dead in automated/CI runs."
+    },
+    {
+      "id": "12_domain_gap",
+      "file": "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py",
+      "reads": ["final_out", "MANUAL_MAP_XODR", "tiles"],
+      "writes": ["domain_gap/domain_gap_summary.json", "coord_manual.json", "coord_auto.json"],
+      "note": "Read-only w.r.t. the XODR itself. No-op if MANUAL_MAP_XODR not configured."
+    }
+  ],
+  "load_bearing_invariant": {
+    "name": "geometry_freeze_hash",
+    "description": "stage 5's geometryFrozen/geometryFreezeHash header attributes + sha256, asserted by stage 7 (_assert_geometry_frozen) and stage 8 (same assertion) at entry. The entire lane/lane-link machinery assumes planView is immutable once frozen.",
+    "risk_if_violated": "Any code path that mutates planView after stage 5's freeze point without updating the hash would silently desync lanes/lane-links from their geometric basis with no detection."
+  },
+  "stage6_containment_root_cause_analysis": {
+    "question": "Is the topology -> enrichment -> geometry -> lanes ordering fundamentally responsible for the Stage-6 containment problem?",
+    "verdict": "NO -- reordering pipeline stages would not fix this. The unsafe mutators are internally incomplete/buggy at the function level, not victims of stage sequencing.",
+    "per_flag_findings": [
+      {
+        "flag": "ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING",
+        "assessment": "genuine structural limitation, confirmed live",
+        "detail": "PlanViewSmoother.smooth_heading_jumps (geometry/planview_smoother.py:147-234) mutates only a geometry's hdg attribute without touching that geometry's or downstream geometries' x/y. Since OpenDRIVE <geometry> elements each declare absolute x/y/hdg independently, this silently displaces every downstream endpoint unless a re-chaining step follows in the same call. Guards were added since the last dated report to skip the last/terminal-anchor geometries, but the core defect (hdg-only mutation with no companion recompute) is unchanged."
+      },
+      {
+        "flag": "ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE",
+        "assessment": "mandatory companion fix, itself has a narrower, now-partially-patched defect",
+        "detail": "recompute_geometry_starts_chained_inplace (quality/check_geometric_continuity.py:490-553) mishandles paramPoly3 geometries whose declared length doesn't match true parametric arc length when pRange='arcLength'. Commit 21cc6430 (2026-09-04, after the prior C33 report) added a guard skipping re-chaining across such a boundary rather than trusting the wrong endpoint. UNVERIFIED: no follow-up end-to-end rerun of the full heading-smoothing scenario against this guard was found (no C34/C35 report exists)."
+      },
+      {
+        "flag": "ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE / ENABLE_UNSAFE_SHORT_SEGMENT_MERGE",
+        "assessment": "previously-fixed-then-hardened, more 'untested-since-hardening' than 'provably still unsafe'",
+        "detail": "Both have explicit spatial-gap anchor guards (planview_smoother.py:298-321, 397-412) with comments describing a prior regression ('100s-1000s m link gaps') that the guard now prevents. No companion report documents a clean rerun with the guard in place, so they remain gated out of caution."
+      },
+      {
+        "flag": "ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP",
+        "assessment": "low-risk, and partially redundant with an already-live ungated path",
+        "detail": "clamp_curvature only rewrites <arc curvature>, cannot desync a chain the way heading/merge operations can. stage_05_geometry.py:1037 already applies PlanViewSmoother.clamp_curvature UNCONDITIONALLY elsewhere in production -- this stage-6 gated flag is largely redundant."
+      }
+    ]
+  },
+  "proposed_target_ordering_assessment": {
+    "matches_live_dependency_reality": "partially",
+    "confirmed_improvements_over_live_order": [
+      "Moving buildings/signals/crosswalks to run AFTER lane/cross-section and structural freeze (proposal) vs. their current position in stage 4 before lanes exist and before freeze (live) better matches the semantic_state contract's own implication that these don't need to precede lane generation. No code dependency found in stage 4 requiring lane generation to happen after it.",
+      "Promoting 'structural freeze' to an explicit named stage: this mechanism already exists (geometryFrozen/geometryFreezeHash + _assert_geometry_frozen) but is buried inside stage 5's function body. Making it a first-class stage with its own gate/report is a real, low-risk architectural win."
+    ],
+    "discrepancies_vs_live_order": [
+      "Proposal orders 'junction/connector geometry' before 'roundabout structural reconstruction', but live order has roundabout reconstruction in stage 4 (before geometry/planView normalization in stage 5/6), and junction-connector rebuild is an opt-in POST-planView-smoothing step inside stage 5 (disabled by default). Whether RoundaboutReconstructor structurally requires pre- or post-normalization geometry was not independently verified against ultimate_pipeline/topology/roundabout_reconstructor.py's own assumptions."
+    ],
+    "not_independently_assessed": "Earliest proposed stages ('pinned input ingest', 'base OSM->XODR conversion') precede ultimate_pipeline's own stage numbering entirely and were out of scope for this pass."
+  },
+  "software_architecture_a13": {
+    "global_injection_pattern": {
+      "confirmed": true,
+      "mechanism": "_inject_main_pipeline_globals() helper present at the top of all 13 pipeline_stages/*.py files, copies the ENTIRE main_pipeline module namespace into each stage module's own globals at call time. Stage functions reference these as bare names with no explicit import.",
+      "example": "stage_06_links.py:408 calls load_xodr(elev_out) with no import; only resolves via injection.",
+      "self_reference_pattern": "Every stage function takes `self` (the live MainPipeline instance) and freely reads/writes its attributes directly (self.settings, self.out_dir, self.vreport, self.qgate used 9-55x per file; self.semantic_state is an untyped plain dict mutated in place by stages 4/5/6/7 as an ad-hoc state machine with no type enforcement)."
+    },
+    "existing_typed_abstractions": {
+      "StageContext_or_StageResult_protocol": "CONFIRMED ABSENT in ultimate_pipeline/contracts/ (checked all 9 files). Closest analog is contracts/gate_runner.py's CumulativeGateRunner/GateRunRecord -- a real, clean, dataclass-based abstraction, but scoped only to quality-gate bookkeeping, not stage I/O. This proves isolated typed contracts CAN coexist with the current architecture."
+    },
+    "migration_feasibility": "plausible as an incremental, stage-by-stage migration, but genuinely large/risky given the implicit-import pattern (would need to make dependencies explicit before a typed context could help). self.semantic_state is the best first migration candidate (small, flat, already well-scoped). Stage 8 (987 lines, most entangled) and stages 5/6 (containment-mechanism-critical) should be migrated LAST, after the pattern is proven safe on low-stakes stages (1, 11, or 12).",
+    "migration_template_available": "stage 6's own _semantic_stage6_diff / geometry-freeze-hash machinery is a working template for how golden-equivalence tests could be written for other stages during migration."
+  }
+}
