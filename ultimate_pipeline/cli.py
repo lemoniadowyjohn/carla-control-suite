@@ -5,10 +5,13 @@ This is the single supported entrypoint for running experiments.
 
 Usage:
     python -m ultimate_pipeline.cli doctor
+    python -m ultimate_pipeline.cli pipeline run
     python -m ultimate_pipeline.cli exp list
     python -m ultimate_pipeline.cli exp run <experiment_id> --config <path>
     python -m ultimate_pipeline.cli test smoke
     python -m ultimate_pipeline.cli test e2e
+    python -m ultimate_pipeline.cli health
+    python -m ultimate_pipeline.cli research status
 """
 
 from __future__ import annotations
@@ -29,12 +32,24 @@ except ImportError:
     pass
 
 
+# Single source of truth for the CLI version: the installed distribution
+# (pyproject.toml [project].version). Deriving it here prevents the version
+# reported by `up --version` from drifting away from the packaged version.
+try:
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as _pkg_version
+
+    _UP_VERSION = _pkg_version("ultimate-pipeline")
+except (PackageNotFoundError, ImportError):
+    _UP_VERSION = "0.1.0"
+
+
 # =============================================================================
 # Main CLI Group
 # =============================================================================
 
 @click.group()
-@click.version_option(version="2.0.0", prog_name="up")
+@click.version_option(version=_UP_VERSION, prog_name="up")
 def cli() -> None:
     """
     Ultimate Pipeline CLI (up)
@@ -44,15 +59,21 @@ def cli() -> None:
     \b
     Commands:
       doctor    Check system configuration and dependencies
+      pipeline  Run the canonical OSM/OpenDRIVE/CARLA pipeline
       exp       Experiment management (list, run)
       test      Run tests (smoke, e2e)
+      health    Write repository health artifacts
+      research  Report thesis RQ status
 
     \b
     Examples:
       up doctor
+      up pipeline run
       up exp list
       up exp run domain_gap_structural --config configs/example.yaml
       up test smoke
+      up health
+      up research status
     """
     pass
 
@@ -198,6 +219,111 @@ def doctor(init_agent_sync: bool, verbose: bool) -> None:
     else:
         click.echo("✗ Some checks failed")
         sys.exit(1)
+
+
+# =============================================================================
+# Pipeline Commands
+# =============================================================================
+
+@cli.group()
+def pipeline() -> None:
+    """Pipeline commands."""
+    pass
+
+
+@pipeline.command("run", context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def pipeline_run(args: tuple[str, ...]) -> None:
+    """Run the canonical OSM/OpenDRIVE/CARLA pipeline implementation."""
+    from ultimate_pipeline.main_pipeline import main as pipeline_main
+
+    raise SystemExit(int(pipeline_main(list(args))))
+
+
+# =============================================================================
+# Repository Health / Research Status
+# =============================================================================
+
+@cli.command("health")
+@click.option("--out-dir", type=click.Path(path_type=Path), default=Path("reports/repo_health/latest"))
+@click.option(
+    "--test-result",
+    type=click.Choice(["PASS", "FAIL", "INCOMPLETE", "NOT_RUN", "BLOCKED_EXTERNAL"]),
+    default="NOT_RUN",
+)
+@click.option("--runtime-status", type=click.Choice(["PASS", "FAIL", "INCOMPLETE", "NOT_RUN", "BLOCKED_EXTERNAL"]), default="NOT_RUN")
+@click.option("--runtime-reason", default="")
+@click.option("--skip-pip-check", is_flag=True)
+@click.option("--skip-map-hash", is_flag=True)
+@click.option("--json", "as_json", is_flag=True, help="Emit only the JSON health payload")
+@click.option("--strict-release", is_flag=True, help="Exit nonzero unless overall_status is PASS")
+def health(
+    out_dir: Path,
+    test_result: str,
+    runtime_status: str,
+    runtime_reason: str,
+    skip_pip_check: bool,
+    skip_map_hash: bool,
+    as_json: bool,
+    strict_release: bool,
+) -> None:
+    """Write repo_health.json and REPO_HEALTH.md."""
+    from ultimate_pipeline.tools.repo_health import build_repo_health, write_repo_health
+
+    payload = build_repo_health(
+        Path.cwd(),
+        test_result=test_result,
+        run_pip_check=not skip_pip_check,
+        verify_maps=not skip_map_hash,
+        runtime_status=runtime_status,
+        runtime_reason=runtime_reason,
+    )
+    paths = write_repo_health(out_dir, payload)
+    payload["output_paths"] = paths
+    if as_json:
+        click.echo(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        click.echo(f"[repo_health] overall_status={payload['overall_status']} -> {paths['json']}")
+    if payload["overall_status"] == "FAIL" or (strict_release and payload["overall_status"] != "PASS"):
+        raise SystemExit(1)
+
+
+@cli.group()
+def research() -> None:
+    """Research evidence commands."""
+    pass
+
+
+@research.command("status")
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
+@click.option(
+    "--rq-tables",
+    type=click.Path(path_type=Path),
+    default=Path("reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json"),
+)
+def research_status(as_json: bool, rq_tables: Path) -> None:
+    """Report the current thesis RQ evidence status."""
+    if not rq_tables.is_file():
+        raise click.ClickException(f"rq_tables.json not found: {rq_tables}")
+    payload = json.loads(rq_tables.read_text(encoding="utf-8"))
+    rows = payload.get("rows", [])
+    by_rq = {}
+    for row in rows:
+        by_rq.setdefault(row.get("rq"), []).append(row)
+    result = {
+        "schema_version": payload.get("schema_version"),
+        "row_count": payload.get("row_count", len(rows)),
+        "counts_by_status": payload.get("counts_by_status", {}),
+        "rq_status": {
+            rq: sorted({str(row.get("status")) for row in rq_rows})
+            for rq, rq_rows in sorted(by_rq.items())
+        },
+    }
+    if as_json:
+        click.echo(json.dumps(result, indent=2, sort_keys=True))
+        return
+    for rq, statuses in result["rq_status"].items():
+        click.echo(f"{rq}: {', '.join(statuses)}")
 
 
 # =============================================================================
@@ -617,13 +743,6 @@ def generate_dataset(dataset, frames, fps, calib, camera, all_cameras, no_aug):
 
 def main():
     """Main entry point."""
-    # Enabled here (not at module import time): importing this module must
-    # never mutate builtins.print process-wide for whoever imported it.
-    try:
-        from ultimate_pipeline.utils.timestamped_print import enable_timestamped_print
-        enable_timestamped_print()
-    except ImportError:
-        pass
     cli()
 
 

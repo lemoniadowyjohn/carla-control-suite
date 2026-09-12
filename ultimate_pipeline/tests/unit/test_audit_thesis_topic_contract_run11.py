@@ -2,7 +2,7 @@
 
 Context: the legacy structural-gap result `thesis_results/structural_gap_v1/run_11`
 is unprovenanced in this worktree (its data files are gitignored and not present on
-disk) and has been functionally superseded as the *canonical RQ1 result* by
+disk) and has been functionally superseded as the *canonical RQ2 structural-domain-gap result* by
 `reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/` (whole-map gap + curvature fix
 + local_registration). This does NOT touch `run_full_domain_gap.py`'s live
 `use_authoritative_alignment_bundle` short-circuit, which is a separate, file-gated
@@ -55,7 +55,7 @@ def test_run11_missing_provenance_not_silently_dropped_from_unresolved_list() ->
 def test_run11_superseded_flag_does_not_depend_on_source_presence() -> None:
     """Whether or not the legacy run_11 data files happen to exist on this
     machine, the supersession pointer must be reported (it is a statement about
-    which result is canonical for RQ1 reporting, not about file presence)."""
+    which result is canonical for RQ2 structural reporting, not about file presence)."""
     payload = _main_payload(_repo_root())
     run11 = payload["run11"]
 

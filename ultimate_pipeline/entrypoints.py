@@ -12,10 +12,20 @@ class Entrypoint:
 
 
 ENTRYPOINTS: Dict[str, Entrypoint] = {
+    "cli": Entrypoint(
+        key="cli",
+        module="ultimate_pipeline.cli",
+        description="Canonical user-facing CLI (`up`)",
+    ),
     "pipeline": Entrypoint(
         key="pipeline",
-        module="ultimate_pipeline.run_pipeline",
+        module="ultimate_pipeline.main_pipeline",
         description="Run the full OSM→XODR→CARLA pipeline",
+    ),
+    "pipeline_legacy_shim": Entrypoint(
+        key="pipeline_legacy_shim",
+        module="ultimate_pipeline.run_pipeline",
+        description="Backwards-compatible thin shim for ultimate_pipeline.main_pipeline",
     ),
     "domain_gap": Entrypoint(
         key="domain_gap",

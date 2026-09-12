@@ -44,23 +44,46 @@ RQ_TITLES: Dict[str, str] = {
     RQ5: "Generalization and transfer",
 }
 
+RQ_QUESTIONS: Dict[str, str] = {
+    RQ1: "Does the OSM→OpenDRIVE pipeline preserve stable structural and topological signatures under fixed inputs, and where does byte-level nondeterminism arise?",
+    RQ2: "How do automatically generated OSM-based CARLA maps differ structurally from a manually modeled CARLA map of the same region?",
+    RQ3: "How do those structural differences shift perception outputs when an identical sensor rig and route protocol are used?",
+    RQ4: "Does repeated automatic generation from the same pinned inputs introduce measurable structural variability, and can a latent representation of that variability support robustness analysis?",
+    RQ5: (
+        "To what extent do perception models trained on automatically generated maps generalize to:\n"
+        "(a) a manually simulated map, and\n"
+        "(b) unlabeled real-world data?"
+    ),
+}
+
 ALL_RQS: FrozenSet[str] = frozenset(RQ_TITLES)
 
-# Metric names as emitted by tools/export_thesis_tables.py's row builders.
+# Canonical thesis metrics plus explicitly mapped repository-local aliases emitted
+# by tools/export_thesis_tables.py. Aliases are kept only when their semantic RQ is
+# unambiguous; wrong-RQ pairings still fail closed.
 ALLOWED_METRICS: Dict[str, FrozenSet[str]] = {
     RQ1: frozenset({
-        "natural_dr",
+        "raw_hash_repeatability",
+        "normalized_hash_repeatability",
+        "structural_signature_repeatability",
+        "byte_nondeterminism_source",
         "natural_dr_present",
         "structurally_deterministic",
     }),
     RQ2: frozenset({
-        "structural_gap_composite",
         "lane_width_gap",
         "curvature_gap",
         "curvature_wasserstein_gap",
+        "road_count_ratio",
+        "road_length_ratio",
+        "junction_ratio",
+        "building_density_gap",
+        "frechet_distance",
+        "connectivity_gap",
+        "semantic_object_gap",
+        "structural_gap_composite",
         "road_length_gap",
         "traffic_light_density_gap",
-        "building_density_gap",
         "road_type_coverage_gap",
         "local_lane_width_gap",
         "local_curvature_gap",
@@ -75,13 +98,28 @@ ALLOWED_METRICS: Dict[str, FrozenSet[str]] = {
         "local_frechet_distance_median_m",
     }),
     RQ3: frozenset({
+        "paired_camera_distribution_shift",
+        "paired_lidar_distribution_shift",
+        "semantic_sensor_distribution_shift",
+        "paired_sensor_domain_metrics",
         "perceptual_gap",
     }),
     RQ4: frozenset({
+        "structural_coefficient_of_variation",
+        "natural_structural_variability",
+        "GNN_latent_distance",
+        "GNN_collapse_diagnostics",
+        "k_sweep",
+        "explicit_domain_randomization",
         "gnn_latent_cosine_distance",
         "explicit_dr_wired",
     }),
     RQ5: frozenset({
+        "generated_train_generated_test_accuracy",
+        "generated_train_manual_test_accuracy",
+        "mIoU_transfer_degradation",
+        "per_class_target_IoU",
+        "real_world_model_transfer_evaluation",
         "miou_auto_train_manual_eval",
         "domain_adaptation_coral_mmd",
         "real_unlabeled_shift_metrics",

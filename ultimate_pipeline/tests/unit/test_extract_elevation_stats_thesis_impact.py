@@ -1,5 +1,5 @@
 """C23 -- extract_elevation_stats.py's `thesis_impact` note must point at the
-current canonical RQ1 result (C14_RQ1_STRUCTURAL_GAP), not the superseded
+current canonical RQ2 structural result (C14_RQ1_STRUCTURAL_GAP), not the superseded
 legacy `run_11` artifact.
 
 run_11 is still a real, valid input to run_full_domain_gap.py's

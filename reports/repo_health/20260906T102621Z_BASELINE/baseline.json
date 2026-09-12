@@ -1,0 +1,139 @@
+{
+  "generated_at_utc": "2026-09-06T10:26:21Z",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "toplevel": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "source_lineage_branch_at_start": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "stabilization_branch": "stabilize/research-release-20260905",
+  "head": "b059a9d04ebb91c827224ca89406d16b0fe61d5e",
+  "user_supplied_observed_baseline_head_2026_09_05": "2a3019cc78eeee726977e244f4a4e3dae296bd77",
+  "dirty_state": {
+    "status_command": "git status --porcelain=v1 --branch",
+    "output": "## stabilize/research-release-20260905",
+    "clean": true,
+    "note": "Status required escalated execution because Git LFS attempted to write under .git/lfs/tmp in the managed sandbox."
+  },
+  "remote": {
+    "origin_fetch": "https://github.com/lemoniadowyjohn/carla-control-suite.git",
+    "origin_push": "https://github.com/lemoniadowyjohn/carla-control-suite.git"
+  },
+  "python": {
+    "version_short": "Python 3.12.2",
+    "version_full": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "test_baseline": {
+    "command": "python -m pytest -q",
+    "collected": 5813,
+    "passed": 5734,
+    "skipped": 79,
+    "failed": 0,
+    "warnings": 130,
+    "duration_seconds": 350.60,
+    "summary": "5734 passed, 79 skipped, 130 warnings in 350.60s (0:05:50)"
+  },
+  "map_of_record": {
+    "auto_map_of_record": {
+      "verification": "ultimate_pipeline.carla_tools.map_registry.verify_pinned_map('auto_map_of_record')",
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+      "bytes": 148949722,
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "supersedes_sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb",
+      "present_on_disk": true
+    },
+    "manual_grid0828": {
+      "verification": "ultimate_pipeline.carla_tools.map_registry.verify_pinned_map('manual_grid0828')",
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "bytes": 66530869,
+      "frame": "UTM-32N (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+      "present_on_disk": true
+    },
+    "pinned_inputs": {
+      "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm": {
+        "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+      },
+      "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json": {
+        "sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5"
+      },
+      "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json": {
+        "sha256": "b28bb033ee7c0f846a85552bfd319c48be825e5df1b4c67bcc84e327a4102182"
+      },
+      "campaigns/ingolstadt_cooked_perception_v1/source/manual/MANUAL_MANIFEST.json": {
+        "sha256": "46b3be07290d31b20be4447494d189504cc79c6d4e2ea486186821ab4cd9dfa5"
+      },
+      "campaigns/ingolstadt_cooked_perception_v1/manifest.json": {
+        "sha256": "d194279ff80a1a91861453c91a62ea61b38d238bc6cd33394ed8012ca52960fa"
+      }
+    },
+    "git_attributes": {
+      "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr": [
+        "diff: lfs",
+        "merge: lfs",
+        "text: unset",
+        "filter: lfs"
+      ],
+      "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm": [
+        "diff: lfs",
+        "merge: lfs",
+        "text: unset",
+        "filter: lfs"
+      ],
+      "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json": [
+        "text: unset"
+      ]
+    }
+  },
+  "worktrees_observed": [
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "head": "b059a9d04ebb91c827224ca89406d16b0fe61d5e",
+      "branch": "refs/heads/stabilize/research-release-20260905"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/work/post-audit-hardening-20260801",
+      "head": "fe2b0053428c11eeb732b1726a30fd303ba3a428",
+      "branch": "refs/heads/fix/post-audit-production-hardening-20260801"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/worktrees/deep-reexamination-20260803",
+      "head": "09b23ad23dc7101cbe34942958aa3699f1aedec0",
+      "branch": "detached"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/worktrees/phase-e-hardening",
+      "head": "875cc1a3e54954a097a44fac0d72410cc5508a98",
+      "branch": "refs/heads/fix/post-audit-phase-e-hardening"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/worktrees/post-audit-hardening-20260730",
+      "head": "168d6ab72d7b09f1d6bc98b0a60bdffd24586bc8",
+      "branch": "refs/heads/fix/post-audit-hardening-20260730"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_full_replay",
+      "head": "36efceab248553efd3fe35c75d052dc76384ded7",
+      "branch": "refs/heads/replay/full-replay-domain-gap-20260802T081541Z"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_audit",
+      "head": "ee561c6c27d9ada8f0e843ee1bb01e76d66f91b0",
+      "branch": "refs/heads/audit/gemini31pro-audit"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_main_governed",
+      "head": "6b915a3083b9be4e50f893320bcf27b547aeee64",
+      "branch": "refs/heads/fix/deepseek-observability-integration-verification"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_rr_recovery",
+      "head": "b576a331bf3b711469faf47c1677ad256b0b7721",
+      "branch": "refs/heads/recovery/roadrunner-capability-integration"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_unreal_fixture",
+      "head": "b4da6dcb1bb9f075d96b32df6a69c50b5bf02f88",
+      "branch": "refs/heads/integration/unreal-fixture-cooking-20260802"
+    }
+  ]
+}

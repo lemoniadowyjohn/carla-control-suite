@@ -41,12 +41,11 @@ def _contains(path: Path, needle: str) -> bool:
 
 
 def _find_run11_source(repo_root: Path) -> Path | None:
+    # Portable, repo-relative resolution only. A previous version added a
+    # `repo_root.parent / "carla_-main" / ...` sibling fallback that hard-coded
+    # this dev machine's checkout directory name and would silently mis-resolve
+    # (or no-op) on any other clone or CI runner; removed for portability.
     local = repo_root / "thesis_results" / "structural_gap_v1" / "run_11"
-    if local.is_dir() and (local / "full_report.json").is_file():
-        return local
-    sibling = repo_root.parent / "carla_-main" / "thesis_results" / "structural_gap_v1" / "run_11"
-    if sibling.is_dir():
-        return sibling
     if local.is_dir():
         return local
     return None
@@ -57,7 +56,8 @@ def _bool(value: Any) -> bool:
 
 
 # run_11 (thesis_results/structural_gap_v1/run_11) has been superseded as the
-# *canonical RQ1 result* by C14 (reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/),
+# *canonical RQ2 structural-domain-gap result* by the legacy-named C14 artifact
+# (reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/),
 # which carries a provenanced whole-map gap, a curvature-sampling fix, and a
 # local-registration refinement (auto map cropped to Grid0828's footprint, revealing
 # the real 4.5-6x road-network-completeness gap the whole-map view obscured as scope).
@@ -67,10 +67,10 @@ def _bool(value: Any) -> bool:
 # alignment-cache consumer of the same directory, untouched by this supersession.
 RUN11_SUPERSEDED_BY = "C14_RQ1_STRUCTURAL_GAP"
 RUN11_SUPERSEDED_BY_DETAIL = (
-    "RQ1's canonical result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ "
+    "RQ2's canonical structural-domain-gap result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ "
     "(C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, "
     "local_registration.json). run_11's missing-provenance flags below describe the "
-    "legacy artifact only and are not an unaddressed gap in the current RQ1 result; see "
+    "legacy artifact only and are not an unaddressed gap in the current RQ2 structural result; see "
     "unresolved_or_unverified for the explicit resolution record."
 )
 
@@ -130,7 +130,7 @@ def _main_payload(repo_root: Path) -> Dict[str, Any]:
     # coverage_context_present, fit_metric_exact_source_revision_status, etc.) are a
     # real, honestly-reported fact about the legacy artifact on this machine -- but
     # they must not be reported as a silent, unaddressed gap now that C14 is the
-    # canonical RQ1 result. Record the resolution explicitly rather than omitting
+    # canonical RQ2 structural result. Record the resolution explicitly rather than omitting
     # run_11 from the unresolved list.
     unresolved.append(
         {
@@ -246,7 +246,7 @@ def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
     step-1 export, independent of the legacy run11/thesis_sensor_rig checks
     above (which predate the C6-C20 remediation arc and audit a different,
     older evidence layout). Fails closed: any row missing an explicit
-    status, or RQ2/RQ3/RQ5 rows lacking a stated deferral reason, is
+    status, or no-claim rows lacking a stated deferral reason, is
     reported as a contract violation rather than silently passing.
     """
     rq_tables_path = repo_root / "reports" / "post_audit_hardening" / "C19_THESIS_ASSEMBLY" / "rq_tables.json"
@@ -258,7 +258,16 @@ def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
             "violations": ["rq_tables.json not found -- run tools/export_thesis_tables.py first"],
         }
 
-    valid_statuses = {"AUTHORITATIVE", "BOUNDED", "PROTOTYPE", "DEFERRED", "MISSING"}
+    valid_statuses = {
+        "AUTHORITATIVE",
+        "BOUNDED",
+        "PROTOTYPE",
+        "DEFERRED_RUNTIME",
+        "DEFERRED_EXTERNAL_DATA",
+        "SUPERSEDED",
+        "NOT_RUN",
+    }
+    no_claim_statuses = {"DEFERRED_RUNTIME", "DEFERRED_EXTERNAL_DATA", "NOT_RUN"}
     violations: list[str] = []
     rows = rq_tables.get("rows", [])
     for row in rows:
@@ -267,7 +276,7 @@ def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
         metric = row.get("metric")
         if status not in valid_statuses:
             violations.append(f"row {rq}/{metric}: invalid or missing status {status!r}")
-        if status in {"DEFERRED", "MISSING"} and not str(row.get("note") or "").strip():
+        if status in no_claim_statuses and not str(row.get("note") or "").strip():
             violations.append(f"row {rq}/{metric}: {status} with no reason given")
         # Metric->RQ semantic check (ultimate_pipeline.config.thesis_rq_contract):
         # this is what would have caught the 2026-09 RQ-numbering drift, where

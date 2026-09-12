@@ -60,6 +60,101 @@ def _lane_sections_in_order(road: ET.Element) -> List[ET.Element]:
     return lane_sections
 
 
+def _boundary_lane_section(
+    road: ET.Element, contact_point: str | None,
+) -> Optional[ET.Element]:
+    """Return the linked road boundary denoted by an OpenDRIVE contactPoint."""
+    sections = _lane_sections_in_order(road)
+    if not sections:
+        return None
+    return sections[-1] if contact_point == "end" else sections[0]
+
+
+def _cross_road_lane_link_issues(
+    root: ET.Element,
+    *,
+    lane_types: Tuple[str, ...],
+    max_issues: int,
+) -> tuple[List[Issue], Dict[str, int]]:
+    """Check terminal lane links across ordinary road-to-road boundaries.
+
+    Intra-road laneSection links are checked by ``check_lane_link_targets_exist``
+    itself.  This companion pass covers only ``elementType=road`` references on
+    ``elementType=junction`` links deliberately remain owned by the junction
+    laneLink validator.  A connector road may itself carry a junction ID but
+    still have an ordinary ``elementType=road`` boundary, which must be
+    validated here.
+    """
+    roads = {road.get("id", "UNKNOWN"): road for road in root.findall("road")}
+    issues: List[Issue] = []
+    totals = {
+        "cross_road_boundaries_scanned": 0,
+        "cross_road_lane_links_checked": 0,
+        "cross_road_lane_link_issues": 0,
+    }
+
+    for road_id, road in roads.items():
+        source_sections = _lane_sections_in_order(road)
+        if not source_sections:
+            continue
+        road_link = road.find("link")
+        if road_link is None:
+            continue
+
+        for direction, source_section in (
+            ("predecessor", source_sections[0]),
+            ("successor", source_sections[-1]),
+        ):
+            boundary_link = road_link.find(direction)
+            if (
+                boundary_link is None
+                or boundary_link.get("elementType") != "road"
+            ):
+                continue
+            target_road_id = boundary_link.get("elementId")
+            target_road = roads.get(target_road_id or "")
+            if target_road is None:
+                continue
+            target_section = _boundary_lane_section(
+                target_road, boundary_link.get("contactPoint")
+            )
+            if target_section is None:
+                continue
+            totals["cross_road_boundaries_scanned"] += 1
+            target_ids = {
+                lane.get("id")
+                for lane in target_section.findall(".//lane")
+                if lane.get("id") is not None
+            }
+            for lane in source_section.findall(".//lane"):
+                if lane_types and lane.get("type", "") not in lane_types:
+                    continue
+                link = lane.find("link")
+                lane_link = link.find(direction) if link is not None else None
+                target_id = lane_link.get("id") if lane_link is not None else None
+                if not target_id:
+                    continue
+                totals["cross_road_lane_links_checked"] += 1
+                if target_id not in target_ids:
+                    issues.append(
+                        Issue(
+                            road_id=road_id,
+                            lane_section_s=source_section.get("s", "0") or "0",
+                            lane_id=lane.get("id", ""),
+                            direction=direction,
+                            target_lane_id=_maybe_int(target_id),
+                            message=(
+                                f"{direction} target lane id not found in linked "
+                                f"ordinary road {target_road_id} boundary laneSection"
+                            ),
+                        )
+                    )
+                    totals["cross_road_lane_link_issues"] += 1
+                    if len(issues) >= max_issues:
+                        return issues, totals
+    return issues, totals
+
+
 def check_lane_link_targets_exist(
     xodr_path: str,
     lane_types: Tuple[str, ...] = ("driving",),
@@ -164,6 +259,22 @@ def check_lane_link_targets_exist(
         if len(issues) >= max_issues:
             break
 
+    remaining = max(0, max_issues - len(issues))
+    if remaining:
+        cross_road_issues, cross_road_totals = _cross_road_lane_link_issues(
+            root,
+            lane_types=lane_types,
+            max_issues=remaining,
+        )
+    else:
+        cross_road_issues = []
+        cross_road_totals = {
+            "cross_road_boundaries_scanned": 0,
+            "cross_road_lane_links_checked": 0,
+            "cross_road_lane_link_issues": 0,
+        }
+    issues.extend(cross_road_issues)
+
     report = {
         "ok": len(issues) == 0,
         "num_issues": len(issues),
@@ -173,6 +284,7 @@ def check_lane_link_targets_exist(
             "lane_types": list(lane_types),
             "allow_dead_ends": bool(allow_dead_ends),
             "max_issues": int(max_issues),
+            **cross_road_totals,
         },
         "xodr_path": str(p),
     }

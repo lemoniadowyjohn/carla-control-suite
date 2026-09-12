@@ -10,8 +10,8 @@ hash is independently re-verified against the actual file on disk here --
 this must NOT just re-read the same claim and agree with itself.
 
 Fail-closed: any claim whose cited artifact is missing, whose hash doesn't
-match, or that cites no artifact at all for a non-DEFERRED/MISSING status
-is reported as a provenance FAILURE, not silently skipped.
+match, or that cites no artifact at all for a status that makes a claim is
+reported as a provenance FAILURE or visible UNPINNED gap, not silently skipped.
 """
 from __future__ import annotations
 
@@ -38,6 +38,8 @@ from ultimate_pipeline.governance.inputs_manifest import (  # noqa: E402
 INPUTS_MANIFEST_PATH = (
     REPO_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "source" / "INPUTS_MANIFEST.json"
 )
+
+NO_CLAIM_STATUSES = {"DEFERRED_RUNTIME", "DEFERRED_EXTERNAL_DATA", "NOT_RUN", "DEFERRED", "MISSING"}
 
 
 def _hash_file(path: Path, hex_digest: str) -> str:
@@ -104,11 +106,18 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
     for row in rows:
         status = row.get("status")
         sha = str(row.get("sha256") or "").strip()
-        artifact = str(row.get("artifact") or "").strip()
+        # rq_tables.json is regenerated on whatever OS ran the export, so cited
+        # artifact paths may carry Windows backslash separators (e.g.
+        # "reports\\post_audit_hardening\\..."). On Linux CI a backslash is a
+        # literal filename character, not a separator, so every such path was
+        # reported "not found on disk" (breaking this validator and
+        # test_validate_thesis_claim_provenance's real-repo check). Normalize to
+        # forward slashes, which pathlib resolves identically on both platforms.
+        artifact = str(row.get("artifact") or "").strip().replace("\\", "/")
 
-        if status in ("DEFERRED", "MISSING"):
+        if status in NO_CLAIM_STATUSES:
             # No artifact expected -- the claim is explicitly not made.
-            checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "n/a (deferred/missing)"})
+            checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "n/a (no claim)"})
             continue
 
         if not sha:
@@ -225,7 +234,23 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
             checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL", "error": str(exc)})
             ok = False
             continue
-        if actual == sha:
+        matched = actual == sha
+        if not matched and len(sha) == 64:
+            # evidence_sha256 is computed from the exporter's working tree, which
+            # is CRLF on Windows; a Linux checkout of the same git blob is LF, so
+            # a raw digest legitimately differs for a text artifact. Accept the
+            # CRLF- and LF-normalized forms too -- this is checkout portability,
+            # NOT a relaxation of tamper detection (a genuine content change
+            # still fails every form), mirroring the R13 frozen-evidence
+            # line-ending tolerance.
+            raw = found.read_bytes()
+            lf = raw.replace(b"\r\n", b"\n")
+            crlf = lf.replace(b"\n", b"\r\n")
+            matched = (
+                hashlib.sha256(crlf).hexdigest() == sha
+                or hashlib.sha256(lf).hexdigest() == sha
+            )
+        if matched:
             checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "PASS",
                              "via": f"direct_hash:{found.name}"})
         else:

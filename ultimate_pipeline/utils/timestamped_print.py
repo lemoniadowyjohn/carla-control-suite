@@ -4,6 +4,7 @@ import builtins
 import datetime
 import threading
 import sys
+from contextlib import contextmanager
 from typing import Any, TextIO
 
 _lock = threading.Lock()
@@ -86,3 +87,18 @@ def enable_timestamped_print(fmt: str = "%Y-%m-%d %H:%M:%S") -> None:
 
     builtins.print = _ts_print
     _enabled = True
+
+
+@contextmanager
+def timestamped_print_scope(fmt: str = "%Y-%m-%d %H:%M:%S"):
+    """Temporarily enable timestamped print output and restore prior state."""
+    was_enabled = _enabled
+    previous_print = builtins.print
+    enable_timestamped_print(fmt)
+    try:
+        yield
+    finally:
+        if was_enabled:
+            builtins.print = previous_print
+        else:
+            disable_timestamped_print()

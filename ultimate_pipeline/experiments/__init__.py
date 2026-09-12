@@ -1,18 +1,16 @@
-"""
-Experiments Module
-
-Provides experiment registration, discovery, and execution.
+"""Experiment registration, discovery, and execution helpers.
 
 Usage:
     from ultimate_pipeline.experiments import get_experiment, list_experiments, run_experiment
 
-    # List available experiments
-    for exp in list_experiments():
-        print(f"{exp.id}: {exp.name}")
-
-    # Run an experiment
-    result = run_experiment("smoke_test")
+Importing this package is intentionally lightweight. Runner objects are
+resolved lazily so a wheel smoke test can verify package discovery without
+requiring the full experiment/runtime dependency stack at package import time.
 """
+
+from __future__ import annotations
+
+from typing import Any
 
 from ultimate_pipeline.experiments.registry import (
     ExperimentDefinition,
@@ -21,11 +19,6 @@ from ultimate_pipeline.experiments.registry import (
     get_experiment,
     list_experiments,
     register_experiment,
-)
-
-from ultimate_pipeline.experiments.unified_runner import (
-    UnifiedRunner,
-    run_experiment,
 )
 
 __all__ = [
@@ -40,3 +33,16 @@ __all__ = [
     "UnifiedRunner",
     "run_experiment",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    if name in {"UnifiedRunner", "run_experiment"}:
+        from ultimate_pipeline.experiments.unified_runner import (
+            UnifiedRunner,
+            run_experiment,
+        )
+
+        globals()["UnifiedRunner"] = UnifiedRunner
+        globals()["run_experiment"] = run_experiment
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

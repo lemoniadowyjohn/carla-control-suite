@@ -21,9 +21,78 @@ def _ensure_link(lane_el: ET.Element) -> ET.Element:
         link = ET.SubElement(lane_el, "link")
     return link
 
-def _choose_best_target(src_id: int, next_ids: List[int]) -> Optional[int]:
+def _lane_center_xy(
+    road: ET.Element,
+    section: ET.Element,
+    lane_id: int,
+    s: float,
+) -> Optional[Tuple[float, float]]:
+    """Return a reconstructed lane center, or None when geometry is unavailable."""
+    try:
+        from ultimate_pipeline.tools.phase_g3_cross_section import reconstruct_section
+
+        road_length = float(road.get("length") or 0.0)
+        cross_section = reconstruct_section(road, section, s, road_length)
+        if not cross_section.get("ok"):
+            return None
+        reference = cross_section["reference"]
+        lane_offset = float(cross_section["lane_offset_t"])
+        import math
+
+        for side in ("left", "right"):
+            previous_t = lane_offset
+            for boundary in cross_section["boundaries"][side]:
+                current_t = float(boundary["t"])
+                if boundary.get("lane_id") == str(lane_id):
+                    center_t = (previous_t + current_t) / 2.0
+                    heading = float(reference["hdg"])
+                    return (
+                        float(reference["x"]) - math.sin(heading) * center_t,
+                        float(reference["y"]) + math.cos(heading) * center_t,
+                    )
+                previous_t = current_t
+    except (ImportError, TypeError, ValueError):
+        return None
+    return None
+
+
+def _choose_best_target(
+    src_id: int,
+    next_ids: List[int],
+    *,
+    source_road: Optional[ET.Element] = None,
+    source_section: Optional[ET.Element] = None,
+    target_road: Optional[ET.Element] = None,
+    target_section: Optional[ET.Element] = None,
+    boundary_s: Optional[float] = None,
+) -> Optional[int]:
     if not next_ids:
         return None
+    if (
+        source_road is not None
+        and source_section is not None
+        and target_road is not None
+        and target_section is not None
+        and boundary_s is not None
+    ):
+        source_center = _lane_center_xy(
+            source_road, source_section, src_id, boundary_s
+        )
+        if source_center is not None:
+            geometric_candidates = []
+            for candidate in next_ids:
+                target_center = _lane_center_xy(
+                    target_road, target_section, candidate, boundary_s
+                )
+                if target_center is None:
+                    continue
+                distance_sq = (
+                    (source_center[0] - target_center[0]) ** 2
+                    + (source_center[1] - target_center[1]) ** 2
+                )
+                geometric_candidates.append((distance_sq, abs(candidate - src_id), abs(candidate), candidate))
+            if geometric_candidates:
+                return min(geometric_candidates)[-1]
     if src_id in next_ids:
         return src_id
     # prefer same sign
@@ -172,7 +241,16 @@ def repair_and_assert_lane_section_successors(
                         succ_id = None
 
                 if succ_id is None or succ_id not in b_idset:
-                    best = _choose_best_target(src_id, b_ids)
+                    boundary_s = s_val(b)
+                    best = _choose_best_target(
+                        src_id,
+                        b_ids,
+                        source_road=road,
+                        source_section=a,
+                        target_road=road,
+                        target_section=b,
+                        boundary_s=boundary_s,
+                    )
                     if best is None:
                         failures.append(
                             {"road": road_id, "laneSection_from": i, "lane_id": src_id, "reason": "no_target_in_next_section"}
@@ -234,7 +312,16 @@ def repair_and_assert_lane_section_successors(
                         pred_id = None
                 if pred_id in a_driving_idset:
                     continue
-                best = _choose_best_target(dst_id, a_driving_ids)
+                boundary_s = s_val(b)
+                best = _choose_best_target(
+                    dst_id,
+                    a_driving_ids,
+                    source_road=road,
+                    source_section=b,
+                    target_road=road,
+                    target_section=a,
+                    boundary_s=boundary_s,
+                )
                 if best is None:
                     continue
                 if pred is None:

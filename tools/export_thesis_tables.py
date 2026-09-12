@@ -3,24 +3,26 @@
 
 Reads the actual C12-C18 evidence artifacts on disk (never re-derives or
 guesses numbers) and assembles one machine-readable table per research
-question, each row citing the artifact it came from and its sha256 where
-the artifact is a pinned file. A row with no evidence file present is
-reported as MISSING, not silently omitted -- the honesty gate (C19 step 2,
-audit_thesis_topic_contract.py) checks that every row has an explicit
-status.
+question, each row carrying provenance, comparability, and claim-boundary
+fields. A row with no evidence file present is reported as NOT_RUN, not
+silently omitted -- the honesty gate (C19 step 2,
+audit_thesis_topic_contract.py) checks that every row has an explicit status.
 
 Status vocabulary (kept consistent with ultimate_pipeline.config.thesis_contract):
     AUTHORITATIVE - full result, methodology sound, ready to cite as-is
     BOUNDED       - real result but with an explicit scope/method caveat
     PROTOTYPE     - real result but not yet validated (single run, no CI, etc.)
-    DEFERRED      - genuinely not computed yet, with a stated reason
-    MISSING       - evidence file this table row depends on was not found
+    DEFERRED_RUNTIME       - blocked by a missing/invalid live runtime arm
+    DEFERRED_EXTERNAL_DATA - blocked by unavailable external data
+    SUPERSEDED             - preserved historical row replaced by newer evidence
+    NOT_RUN                - evidence file/run this table row depends on was not found
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -29,8 +31,41 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 AUTHORITATIVE = "AUTHORITATIVE"
 BOUNDED = "BOUNDED"
 PROTOTYPE = "PROTOTYPE"
-DEFERRED = "DEFERRED"
-MISSING = "MISSING"
+DEFERRED_RUNTIME = "DEFERRED_RUNTIME"
+DEFERRED_EXTERNAL_DATA = "DEFERRED_EXTERNAL_DATA"
+SUPERSEDED = "SUPERSEDED"
+NOT_RUN = "NOT_RUN"
+
+# Backwards-compatible names for older imports; emitted values use the new vocabulary.
+DEFERRED = DEFERRED_RUNTIME
+MISSING = NOT_RUN
+
+VALID_STATUSES = frozenset({
+    AUTHORITATIVE,
+    BOUNDED,
+    PROTOTYPE,
+    DEFERRED_RUNTIME,
+    DEFERRED_EXTERNAL_DATA,
+    SUPERSEDED,
+    NOT_RUN,
+})
+NO_CLAIM_STATUSES = frozenset({DEFERRED_RUNTIME, DEFERRED_EXTERNAL_DATA, NOT_RUN})
+
+
+def _producer_commit(root: Path) -> str:
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(root),
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+    except Exception:
+        return "UNKNOWN"
+    commit = proc.stdout.strip()
+    return commit if proc.returncode == 0 and commit else "UNKNOWN"
 
 
 def _read_json(path: Path) -> Optional[Dict[str, Any]]:
@@ -43,11 +78,69 @@ def _read_json(path: Path) -> Optional[Dict[str, Any]]:
     return payload if isinstance(payload, dict) else None
 
 
-def _row(rq: str, metric: str, value: Any, status: str, *, artifact: str = "",
-         sha256: str = "", note: str = "") -> Dict[str, Any]:
+def _row(
+    rq: str,
+    metric: str,
+    value: Any,
+    status: str,
+    *,
+    artifact: str = "",
+    sha256: str = "",
+    note: str = "",
+    thesis_baseline: str = "",
+    unit: str = "",
+    absolute_delta: Any = None,
+    relative_delta: Any = None,
+    comparability: str = "",
+    method: str = "",
+    producer_commit: str = "UNKNOWN",
+    evidence_path: str | None = None,
+    evidence_sha256: str | None = None,
+    input_auto_sha256: str = "",
+    input_manual_sha256: str = "",
+    software_versions: Dict[str, Any] | None = None,
+    sample_size: Any = None,
+    random_seeds: List[Any] | None = None,
+    confidence_interval: Any = None,
+    claim_boundary: str = "",
+    remaining_blocker: str = "",
+) -> Dict[str, Any]:
+    if status not in VALID_STATUSES:
+        raise ValueError(f"invalid research row status: {status}")
+    if evidence_path is None:
+        evidence_path = artifact
+    if evidence_sha256 is None:
+        evidence_sha256 = sha256
+    if not claim_boundary:
+        claim_boundary = note
+    if status in NO_CLAIM_STATUSES and not remaining_blocker:
+        remaining_blocker = note
     return {
-        "rq": rq, "metric": metric, "value": value, "status": status,
-        "artifact": artifact, "sha256": sha256, "note": note,
+        "rq": rq,
+        "metric": metric,
+        "value": value,
+        "status": status,
+        "artifact": artifact,
+        "sha256": sha256,
+        "note": note,
+        "thesis_baseline": thesis_baseline,
+        "current_value": value,
+        "unit": unit,
+        "absolute_delta": absolute_delta,
+        "relative_delta": relative_delta,
+        "comparability": comparability,
+        "method": method or "C19 evidence-table export",
+        "producer_commit": producer_commit,
+        "evidence_path": evidence_path or "",
+        "evidence_sha256": evidence_sha256 or "",
+        "input_auto_sha256": input_auto_sha256,
+        "input_manual_sha256": input_manual_sha256,
+        "software_versions": software_versions or {},
+        "sample_size": sample_size,
+        "random_seeds": random_seeds or [],
+        "confidence_interval": confidence_interval,
+        "claim_boundary": claim_boundary,
+        "remaining_blocker": remaining_blocker,
     }
 
 
@@ -58,17 +151,62 @@ def _rq1_determinism_rows(root: Path) -> List[Dict[str, Any]]:
     "determinism_arm" section is this RQ's content; "explicit_dr" is RQ4's).
     """
     ev_dir = root / "reports/post_audit_hardening/C15_RQ4_DR"
-    data = _read_json(ev_dir / "C15_RQ4_DOMAIN_RANDOMIZATION.json")
+    ev_path = ev_dir / "C15_RQ4_DOMAIN_RANDOMIZATION.json"
+    data = _read_json(ev_path)
     if data is None:
-        return [_row("RQ1", "natural_dr", None, MISSING, note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found")]
+        return [
+            _row("RQ1", metric, None, NOT_RUN, note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found")
+            for metric in (
+                "raw_hash_repeatability",
+                "normalized_hash_repeatability",
+                "structural_signature_repeatability",
+                "byte_nondeterminism_source",
+            )
+        ]
     det = data.get("determinism_arm", {})
+    runs = det.get("runs", 0)
+    byte_sha_unique = det.get("byte_sha_unique", 0)
+    structurally_deterministic = det.get("structurally_deterministic")
+    ev_rel = str(ev_path.relative_to(root))
+    ev_sha = hashlib.sha256(ev_path.read_bytes()).hexdigest()
+    norm_ev_path = root / "tests/unit/test_exp_osm_to_xodr_determinism_normalized.py"
+    norm_ev_rel = str(norm_ev_path.relative_to(root)) if norm_ev_path.is_file() else ev_rel
+    norm_ev_sha = hashlib.sha256(norm_ev_path.read_bytes()).hexdigest() if norm_ev_path.is_file() else ev_sha
     return [
+        _row("RQ1", "raw_hash_repeatability", byte_sha_unique == 1, AUTHORITATIVE,
+             artifact=ev_rel, sha256=ev_sha, evidence_path=ev_rel, evidence_sha256=ev_sha,
+             unit="boolean", sample_size=runs,
+             thesis_baseline="Byte-level nondeterminism under fixed inputs.",
+             comparability="directly comparable to thesis determinism claim",
+             method="repeated pinned OSM->OpenDRIVE conversions",
+             note=f"{runs} runs, {byte_sha_unique} distinct raw sha256 values"),
+        _row("RQ1", "normalized_hash_repeatability", bool(norm_ev_path.is_file()), BOUNDED,
+             artifact=norm_ev_rel, sha256=norm_ev_sha, evidence_path=norm_ev_rel, evidence_sha256=norm_ev_sha,
+             unit="boolean", sample_size=runs,
+             thesis_baseline="Timestamp-normalized byte comparison was not a completed thesis result.",
+             comparability="bounded: large-artifact normalized-hash evidence exists locally; portable fixture covers CI",
+             method="timestamp-normalized OpenDRIVE hashing where available",
+             note="Portable committed fixture proves timestamp-only changes normalize to one hash and structural changes remain detectable; large raw C15 XODRs remain optional integration artifacts"),
+        _row("RQ1", "structural_signature_repeatability", structurally_deterministic, AUTHORITATIVE,
+             artifact=ev_rel, sha256=ev_sha, evidence_path=ev_rel, evidence_sha256=ev_sha,
+             unit="boolean", sample_size=runs,
+             thesis_baseline="Five governed thesis runs had invariant topological counts.",
+             comparability="directly comparable within structural-signature scope",
+             method="road/junction/total-length signature comparison",
+             note=f"{runs} runs, {byte_sha_unique} distinct sha256 "
+                  "(byte-non-deterministic serialization, structure identical)"),
+        _row("RQ1", "byte_nondeterminism_source", "timestamp metadata suspected", BOUNDED,
+             artifact=ev_rel, sha256=ev_sha, evidence_path=ev_rel, evidence_sha256=ev_sha,
+             unit="classification", sample_size=runs,
+             thesis_baseline="Thesis established byte-level nondeterminism but did not fully isolate its source.",
+             comparability="partial: do not claim exhaustive source isolation until governed artifacts are reproducible",
+             method="C15 determinism artifact plus timestamp-normalized fixture tests",
+             note=det.get("finding", "")),
         _row("RQ1", "natural_dr_present", False, AUTHORITATIVE,
              artifact="ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py",
+             evidence_path=ev_rel, evidence_sha256=ev_sha,
+             sample_size=runs, comparability="directly comparable to same-input repeatability",
              note=det.get("finding", "")),
-        _row("RQ1", "structurally_deterministic", det.get("structurally_deterministic"), AUTHORITATIVE,
-             note=f"{det.get('runs', 0)} runs, {det.get('byte_sha_unique', 0)} distinct sha256 "
-                  "(byte-non-deterministic serialization, structure identical)"),
     ]
 
 
@@ -206,8 +344,12 @@ def _rq3_perceptual_gap_rows(root: Path) -> List[Dict[str, Any]]:
     """Thesis RQ3 -- Perceptual domain gap (how structural differences shift
     perception outputs under identical sensor rig/route protocol)."""
     ev = root / "reports/post_audit_hardening/C17_rq2_perception_capture.md"
-    return [_row("RQ3", "perceptual_gap", None, DEFERRED,
+    return [_row("RQ3", "perceptual_gap", None, DEFERRED_RUNTIME,
                   artifact=str(ev.relative_to(root)) if ev.is_file() else "",
+                  thesis_baseline="Direct generated-vs-manual paired perceptual measurement was not completed.",
+                  comparability="not comparable: both generated and manual Ingolstadt arms are required",
+                  method="requires live CARLA paired capture with identical rig and route",
+                  claim_boundary="Town10HD is sensor-rig smoke/control evidence only, not an RQ3 answer.",
                   note="paired capture not executed -- needs a live CARLA server "
                        "(currently blocked by a livelock, see C20_TIER1_PROBE_20260821) "
                        "or the C16 UE cook (blocked on a human operator)")]
@@ -231,6 +373,16 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
         return _row(
             "RQ4", "gnn_latent_cosine_distance", cd.get("mean"), status,
             artifact="C21_GNN_AUTHORITATIVE/aggregate_stats.json", sha256=agg_sha256,
+            evidence_path="reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json",
+            evidence_sha256=agg_sha256,
+            thesis_baseline="Thesis fixed NT-Xent representation collapse and reported latent separation with K=1000 permutation p<0.001.",
+            unit="cosine_distance",
+            comparability="extension: multi-seed union-domain analysis, not the entire thesis RQ4 result",
+            method="5-seed union-domain GNN ensemble with bootstrap confidence intervals",
+            sample_size=len(seeds),
+            random_seeds=seeds,
+            confidence_interval=cd.get("ci95_bootstrap"),
+            claim_boundary="Current C21 ensemble strengthens the thesis RQ4 result; it does not make RQ4 wholly new post-thesis work.",
             note=(
                 f"{len(seeds)}-seed ensemble (seeds={seeds}) trained on the UNION of both "
                 f"maps' tiles (resolves C18's OOD one-sided-training caveat); "
@@ -247,11 +399,15 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
         return _row(
             "RQ4", "gnn_latent_cosine_distance", metrics.get("cosine_distance"), PROTOTYPE,
             artifact="map_encoder_epoch50.pt", sha256=ckpt_md5,
+            thesis_baseline="Thesis fixed NT-Xent representation collapse and reported latent separation with K=1000 permutation p<0.001.",
+            unit="cosine_distance",
+            comparability="limited: one-sided auto-only training makes manual map out-of-distribution",
+            method="single-run latent gap measurement",
             note="one-sided (auto-only) training makes the manual map OOD for the encoder -- "
                  "conflates true structural gap with distribution shift; corroborates RQ2, "
                  "not an independent authoritative measurement",
         )
-    return _row("RQ4", "gnn_latent_cosine_distance", None, MISSING,
+    return _row("RQ4", "gnn_latent_cosine_distance", None, NOT_RUN,
                 note="neither C21_GNN_AUTHORITATIVE/aggregate_stats.json nor "
                      "C18_GNN_LATENT_GAP/gnn_training_report.json found")
 
@@ -267,12 +423,15 @@ def _rq4_variability_rows(root: Path) -> List[Dict[str, Any]]:
     ev_dir = root / "reports/post_audit_hardening/C15_RQ4_DR"
     data = _read_json(ev_dir / "C15_RQ4_DOMAIN_RANDOMIZATION.json")
     if data is None:
-        rows.append(_row("RQ4", "explicit_dr_wired", None, MISSING,
+        rows.append(_row("RQ4", "explicit_dr_wired", None, NOT_RUN,
                           note="C15_RQ4_DOMAIN_RANDOMIZATION.json not found"))
         return rows
     dr = data.get("explicit_dr", {})
     rows.append(_row("RQ4", "explicit_dr_wired", dr.get("changes_input"), AUTHORITATIVE,
                       artifact=dr.get("module", ""),
+                      thesis_baseline="Thesis RQ4 established latent separation after fixing representation collapse; explicit DR infrastructure is post-thesis support.",
+                      comparability="implementation support, not a governed natural-vs-explicit DR experiment by itself",
+                      method="module wiring evidence from C15 domain-randomization report",
                       note=f"apply_n produces {dr.get('apply_n_produces_distinct_variants')} distinct variants; "
                            "deterministic given a seed, varies across seeds"))
     return rows
@@ -283,11 +442,23 @@ def _rq5_transfer_rows(root: Path) -> List[Dict[str, Any]]:
     trained on generated maps generalize to (a) the manual simulated map and
     (b) unlabeled real-world data)."""
     return [
-        _row("RQ5", "miou_auto_train_manual_eval", None, DEFERRED,
+        _row("RQ5", "miou_auto_train_manual_eval", None, DEFERRED_RUNTIME,
+             thesis_baseline="No downstream generated-train/manual-test model-transfer experiment was completed.",
+             comparability="not comparable: no frozen generated-trained checkpoint evaluated on manual Grid0828 holdout",
+             method="requires valid RQ3 datasets before transfer evaluation",
+             claim_boundary="Do not label manual-target training or unlabeled shift as generated-to-manual generalization.",
              note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)"),
-        _row("RQ5", "domain_adaptation_coral_mmd", None, DEFERRED,
+        _row("RQ5", "domain_adaptation_coral_mmd", None, DEFERRED_RUNTIME,
+             thesis_baseline="No downstream transfer experiment was completed.",
+             comparability="protocol/check only until labeled generated/manual datasets exist",
+             method="requires valid RQ3 datasets; CORAL/MMD alone is not accuracy",
+             claim_boundary="Unlabeled distribution shift alone is not model-generalization accuracy.",
              note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)"),
-        _row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED,
+        _row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED_EXTERNAL_DATA,
+             thesis_baseline="No real-world Ingolstadt transfer evaluation was completed.",
+             comparability="not comparable: no appropriate real-world dataset available",
+             method="requires operator-supplied real-world data and a frozen generated-trained model",
+             claim_boundary="Do not report real-world generalization accuracy from unlabeled shift metrics.",
              note="RQ5(b): no real-world Ingolstadt dataset available on this machine "
                   "(independent of the CARLA blocker)"),
     ]
@@ -302,9 +473,12 @@ def build_tables(root: Path) -> Dict[str, Any]:
         + _rq5_transfer_rows(root)
     )
     by_status: Dict[str, int] = {}
+    producer_commit = _producer_commit(root)
     for r in rows:
         by_status[r["status"]] = by_status.get(r["status"], 0) + 1
-    return {"rows": rows, "counts_by_status": by_status, "row_count": len(rows)}
+        if r.get("producer_commit") in ("", "UNKNOWN"):
+            r["producer_commit"] = producer_commit
+    return {"schema_version": 2, "rows": rows, "counts_by_status": by_status, "row_count": len(rows)}
 
 
 def _to_markdown(payload: Dict[str, Any]) -> str:

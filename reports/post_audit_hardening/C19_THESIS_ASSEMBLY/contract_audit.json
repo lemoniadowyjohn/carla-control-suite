@@ -8,12 +8,13 @@
   },
   "current_rq_tables_audit": {
     "counts_by_status": {
-      "AUTHORITATIVE": 4,
-      "BOUNDED": 11,
-      "DEFERRED": 4
+      "AUTHORITATIVE": 5,
+      "BOUNDED": 13,
+      "DEFERRED_EXTERNAL_DATA": 1,
+      "DEFERRED_RUNTIME": 3
     },
     "ok": true,
-    "row_count": 19,
+    "row_count": 22,
     "rq_tables_found": true,
     "rq_tables_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
     "violations": []
@@ -24,7 +25,7 @@
     "machine_readable_status_present": true,
     "overall_status_enum_present": true
   },
-  "generated_at_utc": "2026-09-06T09:08:38.624165+00:00",
+  "generated_at_utc": "2026-09-06T11:07:28.084059+00:00",
   "perception_labels": {
     "pair_result_class_present": true,
     "pair_result_reason_present": true,
@@ -57,7 +58,7 @@
     "source_available": false,
     "source_dir": "",
     "superseded_by": "C14_RQ1_STRUCTURAL_GAP",
-    "superseded_by_detail": "RQ1's canonical result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ (C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, local_registration.json). run_11's missing-provenance flags below describe the legacy artifact only and are not an unaddressed gap in the current RQ1 result; see unresolved_or_unverified for the explicit resolution record.",
+    "superseded_by_detail": "RQ2's canonical structural-domain-gap result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ (C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, local_registration.json). run_11's missing-provenance flags below describe the legacy artifact only and are not an unaddressed gap in the current RQ2 structural result; see unresolved_or_unverified for the explicit resolution record.",
     "supplementary_metrics_parsed": false,
     "true_divergence_supported": false
   },
@@ -69,7 +70,7 @@
       "topic": "visual_qa_runtime_verification_this_pass"
     },
     {
-      "detail": "run_11's unprovenanced legacy fields (source_available, governed_addenda, coverage_context_present, fit_metric_exact_source_revision_status) are resolved via supersession, not by re-provenancing run_11 itself. RQ1's canonical result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ (C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, local_registration.json). run_11's missing-provenance flags below describe the legacy artifact only and are not an unaddressed gap in the current RQ1 result; see unresolved_or_unverified for the explicit resolution record.",
+      "detail": "run_11's unprovenanced legacy fields (source_available, governed_addenda, coverage_context_present, fit_metric_exact_source_revision_status) are resolved via supersession, not by re-provenancing run_11 itself. RQ2's canonical structural-domain-gap result is now reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/ (C14_RQ1_REPORT.md, manual_vs_auto.json, curvature_recompute.json, local_registration.json). run_11's missing-provenance flags below describe the legacy artifact only and are not an unaddressed gap in the current RQ2 structural result; see unresolved_or_unverified for the explicit resolution record.",
       "status": "resolved_via_supersession",
       "topic": "run11_provenance_gap"
     }

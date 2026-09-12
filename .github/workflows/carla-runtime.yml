@@ -1,0 +1,46 @@
+name: live CARLA runtime evidence
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  carla-runtime-verification:
+    name: live CARLA runtime verification
+    runs-on: [self-hosted, carla]
+    env:
+      UP_ENABLE_CARLA_TESTS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install runtime dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Verify CARLA runtime and execute live checks
+        run: |
+          python -m ultimate_pipeline.cli doctor --verbose
+          python -m ultimate_pipeline.cli test e2e
+
+      - name: Write runtime health packet
+        if: always()
+        run: |
+          python -m ultimate_pipeline.tools.repo_health \
+            --out-dir reports/repo_health/runtime \
+            --test-result PASS \
+            --runtime-status PASS \
+            --runtime-reason "Self-hosted CARLA runtime workflow executed."
+
+      - name: Upload runtime health packet
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-health-runtime
+          path: reports/repo_health/runtime

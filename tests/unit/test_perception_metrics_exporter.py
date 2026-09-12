@@ -1,6 +1,6 @@
 """ultimate_pipeline/perception/perception_metrics_exporter.py.
 
-This is the RQ2/RQ3 perceptual-gap feature producer: export_perception_metrics()
+This is the RQ3 perceptual-gap feature producer: export_perception_metrics()
 discovers images under a run's output directory, embeds them (ResNet18 if torch
 is available, else an RGB-histogram fallback), and writes a metrics JSON that
 ultimate_pipeline/domain_gap/perception_gap.py's PerceptionGap.compare()

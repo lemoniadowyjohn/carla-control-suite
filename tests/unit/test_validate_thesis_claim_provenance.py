@@ -27,12 +27,12 @@ def test_hash_file_detects_algorithm_by_length(tmp_path: Path) -> None:
 def test_deferred_and_missing_rows_need_no_provenance(tmp_path: Path) -> None:
     rq_path = tmp_path / "rq_tables.json"
     rq_path.write_text(json.dumps({"rows": [
-        {"rq": "RQ2", "metric": "x", "status": "DEFERRED", "sha256": ""},
-        {"rq": "RQ1", "metric": "y", "status": "MISSING", "sha256": ""},
+        {"rq": "RQ2", "metric": "x", "status": "DEFERRED_RUNTIME", "sha256": ""},
+        {"rq": "RQ1", "metric": "y", "status": "NOT_RUN", "sha256": ""},
     ]}), encoding="utf-8")
     result = _verify_rq_table_claims(rq_path)
     assert result["ok"] is True
-    assert all(c["provenance"] == "n/a (deferred/missing)" for c in result["claims_checked"])
+    assert all(c["provenance"] == "n/a (no claim)" for c in result["claims_checked"])
 
 
 def test_negative_control_hash_mismatch_fails(tmp_path: Path) -> None:

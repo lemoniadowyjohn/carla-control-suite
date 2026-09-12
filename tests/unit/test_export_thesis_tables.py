@@ -21,7 +21,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.export_thesis_tables import build_tables, DEFERRED, MISSING, AUTHORITATIVE, BOUNDED, PROTOTYPE
+from tools.export_thesis_tables import (
+    AUTHORITATIVE,
+    BOUNDED,
+    DEFERRED_EXTERNAL_DATA,
+    DEFERRED_RUNTIME,
+    MISSING,
+    PROTOTYPE,
+    VALID_STATUSES,
+    build_tables,
+)
 
 
 def _mk(tmp_path: Path, rel: str, payload: dict) -> None:
@@ -47,15 +56,40 @@ def test_rq3_perceptual_gap_always_deferred_with_reason(tmp_path: Path) -> None:
     payload = build_tables(tmp_path)
     rq3 = [r for r in payload["rows"] if r["rq"] == "RQ3"]
     assert len(rq3) == 1
-    assert rq3[0]["status"] == DEFERRED
+    assert rq3[0]["status"] == DEFERRED_RUNTIME
     assert rq3[0]["note"]  # must state why, never a bare DEFERRED
 
 
-def test_every_row_has_explicit_status(tmp_path: Path) -> None:
+def test_every_row_has_explicit_status_and_rich_provenance_schema(tmp_path: Path) -> None:
     payload = build_tables(tmp_path)
+    required_fields = {
+        "rq",
+        "metric",
+        "status",
+        "thesis_baseline",
+        "current_value",
+        "unit",
+        "absolute_delta",
+        "relative_delta",
+        "comparability",
+        "method",
+        "producer_commit",
+        "evidence_path",
+        "evidence_sha256",
+        "input_auto_sha256",
+        "input_manual_sha256",
+        "software_versions",
+        "sample_size",
+        "random_seeds",
+        "confidence_interval",
+        "claim_boundary",
+        "remaining_blocker",
+    }
     for row in payload["rows"]:
-        assert row["status"] in {"AUTHORITATIVE", "BOUNDED", "PROTOTYPE", "DEFERRED", "MISSING"}
+        assert row["status"] in VALID_STATUSES
         assert row["rq"] and row["metric"]
+        assert required_fields <= set(row)
+    assert payload["schema_version"] == 2
 
 
 def test_rq2_prefers_corrected_curvature_over_stale_main_json(tmp_path: Path) -> None:
@@ -231,10 +265,13 @@ def test_rq1_determinism_authoritative_when_evidence_present(tmp_path: Path) -> 
         "explicit_dr": {"module": "x.py", "apply_n_produces_distinct_variants": 5, "changes_input": True},
     })
     payload = build_tables(tmp_path)
-    rq1 = [r for r in payload["rows"] if r["rq"] == "RQ1"]
-    assert all(r["status"] == AUTHORITATIVE for r in rq1)
-    natural_dr_row = next(r for r in rq1 if r["metric"] == "natural_dr_present")
-    assert natural_dr_row["value"] is False
+    rq1 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ1"}
+    assert rq1["raw_hash_repeatability"]["status"] == AUTHORITATIVE
+    assert rq1["structural_signature_repeatability"]["status"] == AUTHORITATIVE
+    assert rq1["normalized_hash_repeatability"]["status"] == BOUNDED
+    assert rq1["byte_nondeterminism_source"]["status"] == BOUNDED
+    assert rq1["raw_hash_repeatability"]["value"] is False
+    assert rq1["structural_signature_repeatability"]["value"] is True
 
 
 def test_rq4_explicit_dr_authoritative_when_evidence_present(tmp_path: Path) -> None:
@@ -254,6 +291,14 @@ def test_rq4_explicit_dr_authoritative_when_evidence_present(tmp_path: Path) -> 
     assert dr_row["value"] is True
     gnn_row = next(r for r in rq4 if r["metric"] == "gnn_latent_cosine_distance")
     assert gnn_row["status"] == MISSING  # no C18/C21 evidence in this fixture
+
+
+def test_rq5_deferrals_distinguish_runtime_from_external_data(tmp_path: Path) -> None:
+    payload = build_tables(tmp_path)
+    rq5 = {r["metric"]: r for r in payload["rows"] if r["rq"] == "RQ5"}
+    assert rq5["miou_auto_train_manual_eval"]["status"] == DEFERRED_RUNTIME
+    assert rq5["domain_adaptation_coral_mmd"]["status"] == DEFERRED_RUNTIME
+    assert rq5["real_unlabeled_shift_metrics"]["status"] == DEFERRED_EXTERNAL_DATA
 
 
 def test_gnn_row_is_prototype_not_authoritative(tmp_path: Path) -> None:
