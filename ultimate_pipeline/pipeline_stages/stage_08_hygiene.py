@@ -232,6 +232,18 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
             )
         except Exception as e:
             print(f"[STEP 8H] G6 lane-coverage repair failed (continuing, advisory-only): {e}")
+            g6_report = {
+                "ok": True,
+                "status": "INCOMPLETE",
+                "applied": False,
+                "reason": "repair_exception",
+                "error": str(e),
+            }
+            reports["g6_lane_coverage_repair"] = g6_report
+            g6_report_path = out_dir / "08h5_g6_lane_coverage_repair_report.json"
+            g6_report_path.write_text(
+                json.dumps(g6_report, indent=2, sort_keys=True), encoding="utf-8"
+            )
     else:
         print("[STEP 8H] G6 lane-coverage repair disabled.")
 

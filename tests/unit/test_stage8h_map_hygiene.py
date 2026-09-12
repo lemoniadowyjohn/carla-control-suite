@@ -248,3 +248,40 @@ def test_hygiene_repairs_lane_width_discontinuity(tmp_path):
     assert lw_report["ok"] is True
     assert report["ok"] is True
     assert (tmp_path / "out" / "08h4_lane_width_discontinuities_repaired.xodr").is_file()
+
+
+def test_g6_advisory_exception_is_persisted_without_mutating_current_artifact(
+    tmp_path, monkeypatch
+):
+    """An opt-in G6 failure is advisory, but it must never be invisible.
+
+    The hygiene stage must retain the completed 8H-4 artifact, write a
+    machine-readable INCOMPLETE report, and avoid a partial 8H-5 output.
+    """
+    src = tmp_path / "final.xodr"
+    _build_xodr(src, with_island=False, degenerate_road=None)
+    mp = _make_pipeline(tmp_path)
+    monkeypatch.setenv("UP_ENABLE_G6_LANE_COVERAGE_REPAIR", "1")
+
+    def _boom(_root):
+        raise RuntimeError("synthetic G6 failure")
+
+    monkeypatch.setattr(
+        "ultimate_pipeline.tools.phase_g6_junction_lanelinks.repair_coverage_gaps",
+        _boom,
+    )
+
+    out = mp._step8h_map_hygiene(str(src))
+
+    assert out.endswith("08h4_lane_width_discontinuities_repaired.xodr")
+    report = mp.map_hygiene_report["stages"]["g6_lane_coverage_repair"]
+    assert report == {
+        "ok": True,
+        "status": "INCOMPLETE",
+        "applied": False,
+        "reason": "repair_exception",
+        "error": "synthetic G6 failure",
+    }
+    assert not (tmp_path / "out" / "08h5_g6_lane_coverage_repaired.xodr").exists()
+    persisted = tmp_path / "out" / "08h5_g6_lane_coverage_repair_report.json"
+    assert persisted.is_file()
