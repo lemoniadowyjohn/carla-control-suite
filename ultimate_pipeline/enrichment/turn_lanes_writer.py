@@ -42,7 +42,12 @@ def _set_vector(user_data: ET.Element, key: str, value: str) -> bool:
     return True
 
 
-def apply_turn_lanes(root: ET.Element, osm_roads_by_id: Dict[str, Any], *, correspondence_by_road_id: Dict[str, Any] | None = None) -> int:
+def apply_turn_lanes(
+    root: ET.Element,
+    osm_roads_by_id: Dict[str, Any],
+    *,
+    correspondence_by_road_id: Dict[str, Any] | None = None,
+) -> int:
     """
     Stamp <userData><vector key="turnMarking" value="..."/></userData> onto XODR roads
     that have a known OSM turn:lanes value.
