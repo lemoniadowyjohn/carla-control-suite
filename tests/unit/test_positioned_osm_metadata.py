@@ -119,3 +119,23 @@ def test_spatial_mode_does_not_fall_back_to_name_matching():
     assert apply_speed_limits(root, legacy_name_index, correspondence_by_road_id={}) == 0
     assert apply_turn_lanes(root, legacy_name_index, correspondence_by_road_id={}) == 0
     assert apply_regulatory_signs(root, legacy_name_index, correspondence_by_road_id={}) == 0
+
+
+def test_explicit_osm_speed_sign_replaces_only_identifiable_heuristic():
+    root = _road()
+    objects = ET.SubElement(root.find("road"), "objects")
+    heuristic = ET.SubElement(objects, "object", id="speed_10", type="speed_50")
+    third_party = ET.SubElement(objects, "object", id="other", type="speed_70")
+    associations = {
+        "10": {
+            "class": "HIGH",
+            "metadata": {"traffic_sign": "de:274-30"},
+        }
+    }
+
+    inserted = apply_regulatory_signs(root, {}, correspondence_by_road_id=associations)
+
+    assert inserted == 1
+    assert heuristic not in list(objects)
+    assert third_party in list(objects)
+    assert objects.find("object[@name='de:274-30']") is not None
