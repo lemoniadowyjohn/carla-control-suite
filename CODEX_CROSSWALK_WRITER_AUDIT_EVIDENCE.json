@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_commit": "7c01f951",
+  "branch": "feature/crosswalk-writer-audit-v1-20260912",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "osm": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+  },
+  "in_memory_stage_4_replay": {
+    "elapsed_seconds": 23.067537,
+    "input_crossings": 179,
+    "existing_crosswalks_before": 127,
+    "existing_provenance_way_ids": 127,
+    "input_way_ids_already_present": 127,
+    "inserted_in_memory": 0,
+    "crosswalks_after": 127,
+    "unique_object_ids_after": 127,
+    "map_written": false
+  },
+  "changes": [
+    "Stable road-ID tie-breaking for equal geometric distances.",
+    "OSM-way-derived crosswalk object IDs instead of per-run counters.",
+    "Idempotent skip for existing osm_way provenance.",
+    "Transactional preflight for global object-ID collisions."
+  ],
+  "tests": {
+    "portable": "17 passed: tests/unit/test_crosswalk_writer.py -k not real_pinned_data_end_to_end",
+    "artifact_integration": "NOT_RUN in pytest: sparse worktree omits the fixture paths; the equivalent pinned-input replay above completed in memory",
+    "full_offline_suite": "NOT_RUN: governed artifacts are absent from the isolated sparse worktree"
+  },
+  "claim_boundary": "This corrects writer determinism and rerun safety. It does not widen the 5 m matching threshold or claim that the remaining 52 OSM crossings should be inserted, and it does not modify the map of record.",
+  "live_carla": "NOT_RUN"
+}
