@@ -241,6 +241,60 @@ def test_curvature_microsegment_does_not_inflate_estimate():
     assert by_road["genuine_turn"] > by_road.get("microseg", 0.0)
 
 
+def test_curvature_detected_for_parampoly3_single_geometry_road():
+    """Real-map regression: ~69% of roads on the pinned map-of-record
+    (ingolstadt_perception_map_of_record_20260905_202847.xodr) are a single
+    paramPoly3 geometry with no <arc> element -- the previous arc-only check
+    silently scored every one of them curvature=0 regardless of the actual
+    curve shape, making the "curvature anomaly" diagnostic blind to the
+    dominant real geometry type. A perfectly straight paramPoly3 (u linear,
+    v constant zero) is used as the negative control to confirm the fix
+    isn't just reporting sampling noise as nonzero curvature."""
+    root = _root(
+        """
+  <road id="curvy">
+    <planView>
+      <geometry s="0" x="0" y="0" hdg="0" length="10">
+        <paramPoly3 aU="0" bU="10" cU="0" dU="0" aV="0" bV="0" cV="2" dV="0" pRange="normalized"/>
+      </geometry>
+    </planView>
+  </road>
+  <road id="straight">
+    <planView>
+      <geometry s="0" x="0" y="0" hdg="0" length="10">
+        <paramPoly3 aU="0" bU="10" cU="0" dU="0" aV="0" bV="0" cV="0" dV="0" pRange="normalized"/>
+      </geometry>
+    </planView>
+  </road>
+"""
+    )
+    report = StructureScanner.analyze(root)
+    curv = report["curvature_anomalies"]
+    by_road = {e["road_id"]: e["max_abs_curvature"] for e in curv["per_road"]}
+    assert by_road.get("curvy", 0.0) > 0.0
+    assert "straight" not in by_road
+
+
+def test_curvature_arc_value_still_exact_via_kernel_sampling():
+    """The kernel-sampling path (added for paramPoly3 coverage) must still
+    give the arc's exact analytic curvature -- an arc's curvature is
+    constant along its length, so sampling it at any point returns the
+    <arc curvature="..."/> value unchanged, not an approximation."""
+    root = _root(
+        """
+  <road id="1">
+    <planView>
+      <geometry s="0" x="0" y="0" hdg="0" length="10"><arc curvature="0.8"/></geometry>
+    </planView>
+  </road>
+"""
+    )
+    report = StructureScanner.analyze(root)
+    curv = report["curvature_anomalies"]
+    entry = next(e for e in curv["per_road"] if e["road_id"] == "1")
+    assert entry["max_abs_curvature"] == pytest.approx(0.8)
+
+
 # ---------------------------------------------------------------------------
 # Lane-section discontinuities
 #

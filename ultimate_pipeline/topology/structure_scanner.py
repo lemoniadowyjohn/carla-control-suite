@@ -29,6 +29,10 @@ from typing import Dict, Any, List, Tuple, Optional
 
 import xml.etree.ElementTree as ET
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as _kernel_sample
+
+_KERNEL_PRIMITIVE_TAGS = {"line", "arc", "spiral", "poly3", "paramPoly3"}
+
 
 def _safe_float(value: Optional[str], default: float = 0.0) -> float:
     """Robust float parsing that never throws and never returns NaN/inf."""
@@ -168,16 +172,34 @@ class StructureScanner:
 
             max_abs_k = 0.0
 
-            # pass 1: use arc curvature where present
+            # pass 1: sample each geometry's own primitive (line/arc/spiral/
+            # poly3/paramPoly3) via the canonical kernel for an exact (arc) or
+            # analytically-derived (everything else) curvature. This matters
+            # because paramPoly3 is this pipeline's dominant real-map geometry
+            # type (~69% of roads on the pinned map-of-record are a single
+            # paramPoly3 segment with no <arc> element) -- the previous
+            # arc-only check silently scored all of them curvature=0
+            # regardless of how sharp the turn actually was. Geometries with
+            # no recognized primitive child (synthetic/degenerate fixtures)
+            # still contribute 0 here, falling through to pass 2 below.
             for g in geos:
-                length = max(_safe_float(g.get("length"), 0.01), 1e-3)
-                arc = g.find("arc")
-                if arc is not None:
-                    k = _safe_float(arc.get("curvature"), 0.0)
-                else:
-                    # no explicit curvature; we'll approximate later if needed
-                    k = 0.0
-                max_abs_k = max(max_abs_k, abs(k))
+                length = _safe_float(g.get("length"), 0.0)
+                if length < StructureScanner.CURVATURE_ESTIMATE_MIN_SEGMENT_LENGTH_M:
+                    continue
+                child = next(iter(g), None)
+                tag = child.tag.rsplit("}", 1)[-1] if child is not None else None
+                if tag not in _KERNEL_PRIMITIVE_TAGS:
+                    continue
+                try:
+                    spacing = max(
+                        length / 10.0,
+                        StructureScanner.CURVATURE_ESTIMATE_MIN_SEGMENT_LENGTH_M,
+                    )
+                    for pose in _kernel_sample(g, spacing):
+                        if pose.curvature is not None and math.isfinite(pose.curvature):
+                            max_abs_k = max(max_abs_k, abs(pose.curvature))
+                except (ValueError, ZeroDivisionError):
+                    continue
 
             # pass 2: estimate curvature from heading deltas if everything was 0
             if max_abs_k == 0.0 and len(geos) > 1:
