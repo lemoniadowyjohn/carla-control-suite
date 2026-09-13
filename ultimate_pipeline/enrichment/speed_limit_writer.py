@@ -71,6 +71,29 @@ def parse_maxspeed(raw: Any) -> Optional[int]:
     return None
 
 
+def _existing_speed_kmh(speed_el: ET.Element) -> Optional[float]:
+    """Convert an existing <speed max=".." unit=".."/> element to km/h.
+
+    Mirrors realism.py::_infer_speed's unit handling exactly (missing unit
+    or explicit "m/s" -- OpenDRIVE's documented default -- times 3.6; "mph"
+    via the standard conversion factor; "km/h" as-is) so both readers agree
+    on what a given element means.
+    """
+    raw = speed_el.get("max")
+    if raw is None:
+        return None
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return None
+    unit = speed_el.get("unit")
+    if unit == "km/h":
+        return value
+    if unit == "mph":
+        return value * 1.60934
+    return value * 3.6  # None or "m/s" -- OpenDRIVE's documented default unit
+
+
 def apply_speed_limits(
     root: ET.Element,
     osm_roads_by_id: Dict[str, Any],
@@ -90,7 +113,20 @@ def apply_speed_limits(
 
     A spatial HIGH/EXACT association is authoritative for its matched XODR
     road.  It may therefore replace an existing lane speed, including an
-    unprovenanced conversion or realism value.  The legacy street-name mode
+    unprovenanced conversion or realism value -- but ONLY when the existing
+    value, correctly unit-interpreted, actually disagrees with the OSM one.
+    Verified on the pinned map-of-record: comparing by raw attribute string
+    (the previous behaviour) treated 123/133 candidates as needing a
+    "correction" when they already agreed once units were normalized (the
+    base conversion's near-universal <speed max="13.89"/> with no unit
+    attribute IS 50 km/h under OpenDRIVE's documented m/s default -- see
+    realism.py::_infer_speed, which every existing consumer already relies
+    on). Rewriting those would have introduced an explicit unit="km/h" on
+    ~92% of touched lanes for zero real-world change, silently mixing two
+    unit conventions across the map for a risk with no matching benefit.
+    Only the remaining ~8%, where the values genuinely differ (one pinned
+    example: 15.7 km/h stored vs. 100 km/h from OSM), are real corrections
+    worth the same authoritative overwrite. The legacy street-name mode
     remains insert-only because its correspondence is many-to-many.
 
     Returns:
@@ -133,12 +169,11 @@ def apply_speed_limits(
             if speed is None:
                 ET.SubElement(lane, "speed", max=str(speed_kmh), unit="km/h")
                 written += 1
-            elif spatial_mode and (
-                speed.get("max") != str(speed_kmh)
-                or speed.get("unit") != "km/h"
-            ):
-                speed.set("max", str(speed_kmh))
-                speed.set("unit", "km/h")
-                written += 1
+            elif spatial_mode:
+                existing_kmh = _existing_speed_kmh(speed)
+                if existing_kmh is None or abs(existing_kmh - speed_kmh) >= 0.5:
+                    speed.set("max", str(speed_kmh))
+                    speed.set("unit", "km/h")
+                    written += 1
 
     return written

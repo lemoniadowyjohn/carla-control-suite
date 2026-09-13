@@ -87,7 +87,14 @@ def test_high_confidence_association_supplies_metadata_to_all_writers():
 def test_high_confidence_osm_speed_replaces_existing_unprovenanced_speed():
     root = _road()
     lane = root.find("road/lanes/laneSection/right/lane")
-    ET.SubElement(lane, "speed", max="8.33")
+    # 13.888...m/s (no unit attribute -- OpenDRIVE's documented default) is
+    # ~50 km/h, genuinely different from OSM's 30 km/h claim below -- a real
+    # disagreement. (8.33 m/s would NOT be: that's ~30 km/h already, i.e.
+    # the exact "already agrees, must not be rewritten" case verified on
+    # the pinned map-of-record and covered by test_speed_limit_writer.py's
+    # own dedicated no-op test -- using it here would silently assert the
+    # opposite of the now-correct behavior.)
+    ET.SubElement(lane, "speed", max="13.888888888888889")
     associations = {
         "10": {"class": "HIGH", "metadata": {"maxspeed": "30"}}
     }
