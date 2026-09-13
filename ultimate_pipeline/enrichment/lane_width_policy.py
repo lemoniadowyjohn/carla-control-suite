@@ -136,17 +136,24 @@ def _metadata_from_attrs(road: ET.Element) -> Dict[str, str]:
 def road_lane_width_metadata(
     road: ET.Element,
     osm_meta: Optional[Mapping[str, Mapping[str, Any]]] = None,
+    structural_osm_meta: Optional[Mapping[str, Mapping[str, Any]]] = None,
 ) -> Dict[str, str]:
     """Collect width-relevant OSM metadata from direct map input and XODR provenance.
 
-    osm_meta (from build_osm_meta_index) is keyed by street NAME, not XODR road id --
-    OSM way ids and Osm2Odr/netconvert-assigned XODR road ids are disjoint numbering
-    schemes (verified 2026-08-26; see osm_meta_index.py's module docstring).
+    ``osm_meta`` is the legacy street-name index. ``structural_osm_meta`` is
+    keyed by XODR road ID and is populated only by an EXACT/HIGH spatial OSM
+    association. Direct XODR provenance remains authoritative over either
+    external index.
     """
     meta: Dict[str, str] = {}
     road_name = (road.get("name") or "").strip()
     if osm_meta and road_name and road_name in osm_meta:
         for key, value in osm_meta[road_name].items():
+            if value is not None:
+                meta[_clean_key(str(key))] = _clean_value(value)
+    road_id = (road.get("id") or "").strip()
+    if structural_osm_meta and road_id and road_id in structural_osm_meta:
+        for key, value in structural_osm_meta[road_id].items():
             if value is not None:
                 meta[_clean_key(str(key))] = _clean_value(value)
     meta.update(_metadata_from_attrs(road))
@@ -168,6 +175,7 @@ def driving_lane_counts(
     road: ET.Element,
     *,
     osm_meta: Optional[Mapping[str, Mapping[str, Any]]] = None,
+    structural_osm_meta: Optional[Mapping[str, Mapping[str, Any]]] = None,
 ) -> tuple[int, int, str, float]:
     """Return ``(left/backward, right/forward, source, confidence)``.
 
@@ -175,7 +183,11 @@ def driving_lane_counts(
     split deterministically because it does not identify carriageway sides.
     No metadata falls back to the historical one-lane-per-side behavior.
     """
-    meta=road_lane_width_metadata(road, osm_meta)
+    meta = road_lane_width_metadata(
+        road,
+        osm_meta=osm_meta,
+        structural_osm_meta=structural_osm_meta,
+    )
     forward=parse_lane_count(meta.get("lanes:forward")); backward=parse_lane_count(meta.get("lanes:backward"))
     if forward is not None or backward is not None:
         return backward or 0, forward or 0, "osm:lanes:forward+backward", 1.0

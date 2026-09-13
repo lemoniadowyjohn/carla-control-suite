@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_commit": "2a6c2a9f",
+  "branch": "feature/g5-lane-type-validation-v1-20260912",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "before": {
+    "walk_lane_not_outermost": 1204,
+    "source": "CODEX_PHASE_G_LANE_QA_SURVEY.json at f11eb48",
+    "interpretation": "False positives caused by cross-side lane-ID comparison."
+  },
+  "after": {
+    "invalid_lane_types": 0,
+    "walk_lane_not_outermost": 0,
+    "width_band_violations": 0,
+    "multiple_walk_side_lanes": 0,
+    "restricted_lanes": 0
+  },
+  "tests": {
+    "focused": "3 passed: tests/unit/test_phase_g5_lane_classification.py",
+    "full_offline_suite": "NOT_RUN: governed artifacts are absent from the isolated sparse worktree"
+  },
+  "changes": [
+    "Compare walk-side and driving lanes only when both are on the same OpenDRIVE lane side.",
+    "Require (road, laneSection s, lane id) when applying a reclassification."
+  ],
+  "claim_boundary": "The validator is corrected and the current map has no G5 repair candidate. This does not alter lane types in the map of record or wire G5 into the production pipeline.",
+  "live_carla": "NOT_RUN"
+}

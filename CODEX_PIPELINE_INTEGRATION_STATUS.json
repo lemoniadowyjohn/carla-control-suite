@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "integration/production-map-quality-v1-20260912",
+  "scope": "offline integration candidate",
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN",
+  "pipeline_wiring": {
+    "stage_02_parampoly3_tangent_repair": "PASS",
+    "stage_04_high_confidence_osm_xodr_correspondence": "PASS",
+    "stage_05_connector_pose_diagnostics": "PASS",
+    "stage_05_connector_pose_snap": "DEFAULT_OFF",
+    "stage_07_structural_osm_lane_provenance": "PASS",
+    "stage_08_cross_road_lane_link_validation": "PASS",
+    "stage_08_g6_lane_coverage_repair": "DEFAULT_OFF",
+    "post_structural_freeze_visual_qa": "OPTIONAL_EXTERNAL"
+  },
+  "focused_tests": {
+    "stage_i_integrity": {
+      "status": "PASS",
+      "passed": 14,
+      "duration_seconds": 59.41,
+      "evidence": "tests/test_stage_i_integrity.py"
+    },
+    "integration_feature_suites": {
+      "status": "PASS",
+      "note": "Focused suites passed after each integrated logical change; see integration commit history."
+    },
+    "full_offline_suite_after_isolation_fix": {
+      "status": "PASS",
+      "collected": 5935,
+      "passed": 5853,
+      "skipped": 82,
+      "failed": 0,
+      "warnings": 133,
+      "duration_seconds": 441.1
+    },
+    "clean_worktree_repetitions": {
+      "status": "PASS",
+      "runs": 2,
+      "collected_per_run": 5935,
+      "passed_per_run": 5853,
+      "skipped_per_run": 82,
+      "failed_per_run": 0,
+      "warnings_per_run": 133,
+      "durations_seconds": [408.24, 426.97]
+    }
+  },
+  "production_certificate": "INCOMPLETE",
+  "package_smoke": {
+    "wheel": "PASS",
+    "sdist": "PASS",
+    "noneditable_wheel_imports": "PASS",
+    "pip_check": "PASS",
+    "note": "Offline temporary environment used copied tested dependency distributions after package-index TLS validation was unavailable."
+  },
+  "second_city": "INCOMPLETE",
+  "runtime_verification": "NOT_RUN",
+  "excluded_or_blocked": {
+    "roundabout_v2": "Requires pinned-map integration validation and independent review.",
+    "native_signal_enrichment": "CRS/frame relationship unverified.",
+    "elevation_graph_relaxation": "No current-data production benefit established.",
+    "bicycle_and_parking_lane_insertion": "Requires new lane topology, continuity, and junction mapping; external converter currently omits it.",
+    "complete_stage_reorder": "Semantic work remains before the full target structural-freeze architecture."
+  },
+  "review_verdict": "CONDITIONAL_FOR_INDEPENDENT_REVIEW"
+}

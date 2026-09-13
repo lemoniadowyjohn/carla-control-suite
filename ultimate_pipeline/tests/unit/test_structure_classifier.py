@@ -211,6 +211,29 @@ class TestClassifyXodrRoads:
         assert result["ok"] is True
         assert result["per_road"][ids["bridge_road"]]["class"] == "bridge"
 
+    def test_local_planview_is_shifted_into_osm_matching_frame(self, tmp_path, monkeypatch):
+        xodr_path, osm_path, ids = _write_fixture(tmp_path, monkeypatch)
+        root = ET.parse(xodr_path).getroot()
+        bridge_geometry = root.find("./road[@id='bridge_road']/planView/geometry")
+        assert bridge_geometry is not None
+        origin_x = float(bridge_geometry.get("x"))
+        origin_y = float(bridge_geometry.get("y"))
+        bridge_geometry.set("x", "0")
+        bridge_geometry.set("y", "0")
+        header = ET.Element("header")
+        ET.SubElement(
+            header,
+            "offset",
+            {"x": str(origin_x), "y": str(origin_y), "z": "0", "hdg": "0"},
+        )
+        root.insert(0, header)
+        ET.ElementTree(root).write(xodr_path, encoding="unicode")
+
+        result = classify_xodr_roads(xodr_path, osm_path=osm_path)
+
+        assert result["ok"] is True
+        assert result["per_road"][ids["bridge_road"]]["class"] == "bridge"
+
     def test_unmatched_road_is_terrain_following(self, tmp_path, monkeypatch):
         xodr_path, osm_path, ids = _write_fixture(tmp_path, monkeypatch)
         result = classify_xodr_roads(xodr_path, osm_path=osm_path)

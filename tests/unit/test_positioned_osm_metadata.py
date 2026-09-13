@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 
-from ultimate_pipeline.enrichment.osm_meta_index import extract_positioned_osm_metadata_ways
+from ultimate_pipeline.enrichment.osm_meta_index import (
+    extract_positioned_osm_metadata_ways,
+    extract_structural_osm_lane_metadata_ways,
+)
 from ultimate_pipeline.enrichment.osm_xodr_correspondence import build_metadata_associations
 from ultimate_pipeline.enrichment.regulatory_sign_writer import apply_regulatory_signs
 from ultimate_pipeline.enrichment.speed_limit_writer import apply_speed_limits
@@ -56,6 +59,36 @@ def test_extract_positioned_metadata_preserves_way_geometry(tmp_path):
             "highway": "residential",
             "geometry": [(11.0, 48.0), (11.1, 48.1)],
             "metadata": {"maxspeed": "30", "turn_lanes": "left|through"},
+        }
+    ]
+
+
+def test_extract_structural_lane_metadata_preserves_directional_and_cycle_tags(tmp_path):
+    osm = tmp_path / "source.osm"
+    osm.write_text(
+        """<osm>
+        <node id="1" lon="11.0" lat="48.0"/><node id="2" lon="11.1" lat="48.1"/>
+        <way id="42"><nd ref="1"/><nd ref="2"/>
+          <tag k="name" v="Source Street"/><tag k="highway" v="residential"/>
+          <tag k="lanes:forward" v="2"/><tag k="lanes:backward" v="1"/>
+          <tag k="turn:lanes:forward" v="left|through"/><tag k="cycleway:right" v="lane"/>
+        </way></osm>""",
+        encoding="utf-8",
+    )
+
+    assert extract_structural_osm_lane_metadata_ways(str(osm)) == [
+        {
+            "id": "42",
+            "name": "Source Street",
+            "highway": "residential",
+            "geometry": [(11.0, 48.0), (11.1, 48.1)],
+            "metadata": {
+                "highway": "residential",
+                "lanes:forward": "2",
+                "lanes:backward": "1",
+                "turn:lanes:forward": "left|through",
+                "cycleway:right": "lane",
+            },
         }
     ]
 

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "base_sha": "3dcd7d6020efc4dcc93e6368cdd01928752e73ea",
+  "implementation_commits": [
+    "d5d381e2fce8a2efcce3f36767e335e8e073cd6e",
+    "7a42365f9a569c800399534c61ecaf737283c328",
+    "6ef858d3905af2348e66419bff9f4282d79fa183",
+    "b003ee4aca97402b21f3988e70de68952247bd96"
+  ],
+  "inputs": {
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "dem_sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8"
+  },
+  "pre_fix_reproduction": {
+    "verdict": "UNRESOLVED",
+    "reason": "no_frame_matches_osm_source",
+    "header_bounds_raw": {
+      "west": 832671.61,
+      "east": 845938.74,
+      "south": 5458670.93,
+      "north": 5472743.72
+    },
+    "header_offset": {
+      "x": 832671.676,
+      "y": 5458671.104,
+      "z": 0.0,
+      "hdg": 0.0
+    },
+    "geometry_bounds_raw": {
+      "west": -0.8153384800876109,
+      "east": 13267.063267,
+      "south": -1.9627421744460878,
+      "north": 14072.620850698548
+    },
+    "geometry_bounds_with_offset": {
+      "west": 832670.8606615199,
+      "east": 845938.739267,
+      "south": 5458669.141257826,
+      "north": 5472743.724850698
+    },
+    "incorrect_header_bounds_with_second_offset": {
+      "west": 1665343.2859999998,
+      "east": 1678610.416,
+      "south": 10917342.034,
+      "north": 10931414.824000001
+    },
+    "incorrect_frame_wgs84": {
+      "lon_min": 118.24823906003998,
+      "lon_max": 118.80755964108141,
+      "lat_min": 73.01036947179135,
+      "lat_max": 73.1705269546698
+    },
+    "osm_wgs84": {
+      "lon_min": 11.3266919,
+      "lon_max": 11.5382271,
+      "lat_min": 48.6843318,
+      "lat_max": 48.8143429
+    }
+  },
+  "post_fix": {
+    "crs_contract_verdict": "AMBIGUOUS",
+    "crs_contract_reason": "both_frames_plausible;prefer_claimed_with_warning",
+    "effective_coordinate_bounds_source": "header_preoffset_matches_geometry_with_offset",
+    "structure_classification_verdict": "STRUCTURE_CLASSIFICATION_OK",
+    "structure_elevation_gate": {
+      "status": "INCOMPLETE",
+      "checked_road_count": 238,
+      "status_counts": {
+        "PASS": 53,
+        "FAIL": 88,
+        "INCOMPLETE": 97
+      }
+    },
+    "primary_evidence_path": "reports/production_readiness/20260913T000000Z_STRUCTURE_ELEVATION_CRS_BLOCKER/BB_STRUCTURE_ELEVATION_CRS_EVIDENCE.json",
+    "primary_evidence_sha256": "2550ced006cbc61204cf319ebdc7c6f1c55f27f9b2fac6b4d8839b3ab2bd2e75"
+  },
+  "test_reconciliation": {
+    "prior_test_coverage": "synthetic fixture only; it did not read the governed map or source OSM",
+    "new_real_map_probe": "ultimate_pipeline.tools.structure_elevation_crs_probe",
+    "focused_tests": {
+      "passed": 40,
+      "failed": 0
+    },
+    "full_offline_tests": {
+      "passed": 5865,
+      "skipped": 82,
+      "failed": 0
+    }
+  },
+  "claim_boundary": "The false CRS resolution blocker is fixed. The governed map is not structure-elevation certified: the real gate remains INCOMPLETE with recorded failures. No quality threshold was relaxed.",
+  "map_of_record_mutated": "NO",
+  "frozen_evidence_mutated": "NO",
+  "live_carla": "NOT_RUN"
+}

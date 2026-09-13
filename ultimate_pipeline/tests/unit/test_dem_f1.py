@@ -22,7 +22,7 @@ from ultimate_pipeline.dem.dem_identity import (
     dem_identity_valid,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 PINNED_CANDIDATE = (
     REPO_ROOT
     / "campaigns"
@@ -36,6 +36,13 @@ OSM_SOURCE = (
     / "ingolstadt_cooked_perception_v1"
     / "source"
     / "ingolstadt_authoritative.osm"
+)
+GOVERNED_MAP_OF_RECORD = (
+    REPO_ROOT
+    / "campaigns"
+    / "ingolstadt_cooked_perception_v1"
+    / "candidate"
+    / "ingolstadt_perception_map_of_record_20260905_202847.xodr"
 )
 
 #: Header bounds of the pinned candidate (native tmerc(0,0) frame).
@@ -55,7 +62,9 @@ INGOLSTADT_OSM_BOUNDS = {
 }
 
 
-def _xodr_with_header(bounds: dict, georef: str, offset: dict | None = None) -> str:
+def _xodr_with_header(
+    tmp_path: Path, bounds: dict, georef: str, offset: dict | None = None
+) -> str:
     root = ET.Element(
         "OpenDRIVE",
         {"version": "1.4"},
@@ -100,15 +109,51 @@ def _xodr_with_header(bounds: dict, georef: str, offset: dict | None = None) -> 
             "length": "10.0",
         },
     ).append(ET.Element("line"))
-    path = REPO_ROOT / "reports" / "post_audit_hardening" / "_f1_test_tmp"
-    path.mkdir(parents=True, exist_ok=True)
-    out = path / f"xodr_{abs(hash(georef))}.xodr"
+    out = tmp_path / "fixture.xodr"
     ET.ElementTree(root).write(out, encoding="utf-8", xml_declaration=True)
     text = out.read_text(encoding="utf-8")
     text = text.replace(
         "&lt;![CDATA[" + georef + "]]&gt;", "<![CDATA[" + georef + "]]>"
     )
     out.write_text(text, encoding="utf-8")
+    return str(out)
+
+
+def _xodr_with_global_header_and_local_planview(tmp_path: Path) -> str:
+    """Write the map-of-record's header/offset convention in miniature."""
+    root = ET.Element("OpenDRIVE", {"version": "1.4"})
+    header = ET.SubElement(
+        root,
+        "header",
+        {
+            "north": str(PINNED_HEADER_BOUNDS["north"]),
+            "south": str(PINNED_HEADER_BOUNDS["south"]),
+            "east": str(PINNED_HEADER_BOUNDS["east"]),
+            "west": str(PINNED_HEADER_BOUNDS["west"]),
+        },
+    )
+    ET.SubElement(header, "geoReference").text = CLAIMED_UTM32N
+    ET.SubElement(
+        header,
+        "offset",
+        {"x": "832672.9", "y": "5458671.57", "z": "0", "hdg": "0"},
+    )
+    road = ET.SubElement(root, "road", {"id": "1", "length": "27339.92", "junction": "-1"})
+    plan_view = ET.SubElement(road, "planView")
+    first = ET.SubElement(
+        plan_view,
+        "geometry",
+        {"s": "0", "x": "0", "y": "0", "hdg": "0", "length": "13270"},
+    )
+    first.append(ET.Element("line"))
+    second = ET.SubElement(
+        plan_view,
+        "geometry",
+        {"s": "13270", "x": "13270", "y": "0", "hdg": str(math.pi / 2), "length": "14069.92"},
+    )
+    second.append(ET.Element("line"))
+    out = tmp_path / "global_header_local_planview.xodr"
+    ET.ElementTree(root).write(out, encoding="utf-8", xml_declaration=True)
     return str(out)
 
 
@@ -120,7 +165,7 @@ CLAIMED_UTM32N = (
 
 class TestVerifyCrsContract:
     def test_pinned_header_claim_is_disproven(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         rec = verify_crs_contract(
             xodr, INGOLSTADT_OSM_BOUNDS, osm_path=str(tmp_path / "none.osm")
         )
@@ -129,14 +174,14 @@ class TestVerifyCrsContract:
         assert rec["native_plausible"] is True
 
     def test_claimed_crs_would_place_map_outside_osm(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         rec = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
         cw = rec["claimed_crs_header_bounds_wgs84"]
         assert cw["lon_min"] > INGOLSTADT_OSM_BOUNDS["lon_max"] + 1.0
         assert cw["lat_min"] > INGOLSTADT_OSM_BOUNDS["lat_max"] + 0.2
 
     def test_native_frame_matches_osm(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         rec = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
         nw = rec["native_frame_header_bounds_wgs84"]
         margin = 0.15
@@ -158,7 +203,7 @@ class TestVerifyCrsContract:
             "z": 0.0,
             "hdg": 0.0,
         }
-        xodr = _xodr_with_header(local_bounds, "+proj=tmerc", offset=offset)
+        xodr = _xodr_with_header(tmp_path, local_bounds, "+proj=tmerc", offset=offset)
 
         rec = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
 
@@ -172,19 +217,34 @@ class TestVerifyCrsContract:
         assert nw["lat_min"] >= INGOLSTADT_OSM_BOUNDS["lat_min"] - margin
         assert nw["lat_max"] <= INGOLSTADT_OSM_BOUNDS["lat_max"] + margin
 
+    def test_global_header_bounds_are_not_offset_twice_when_planview_is_local(self, tmp_path):
+        xodr = _xodr_with_global_header_and_local_planview(tmp_path)
+
+        record = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
+
+        assert record["verdict"] == "OSM2ODR_NATIVE_VERIFIED"
+        assert (
+            record["effective_coordinate_bounds_source"]
+            == "header_preoffset_matches_geometry_with_offset"
+        )
+        assert record["effective_coordinate_bounds"]["west"] == pytest.approx(
+            PINNED_HEADER_BOUNDS["west"]
+        )
+        assert record["header_bounds_with_offset"]["west"] > 1_600_000
+
     def test_wp1_control_point_error_is_isolated_to_claimed_crs(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         rec = verify_crs_contract(xodr, INGOLSTADT_OSM_BOUNDS)
         err = rec["wp1_control_point_error_m_if_claimed_crs"]
         assert err is not None and err > 100_000.0
 
     def test_unresolved_without_osm_source(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         rec = verify_crs_contract(xodr, None, osm_path=str(tmp_path / "missing.osm"))
         assert rec["verdict"] == "UNRESOLVED"
 
     def test_fail_closed_without_osm_source(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         with pytest.raises(RuntimeError):
             resolve_sampling_crs(xodr, strict=True)
 
@@ -193,7 +253,7 @@ class TestResolveSamplingCrs:
     def test_resolves_to_osm2odr_native_for_pinned_candidate(self, tmp_path):
         from pyproj import CRS
 
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         crs, source, record = resolve_sampling_crs(
             xodr, osm_bounds=INGOLSTADT_OSM_BOUNDS
         )
@@ -201,7 +261,7 @@ class TestResolveSamplingCrs:
         assert CRS.from_proj4(OSM2ODR_NATIVE_PROJ4) == crs
 
     def test_native_transform_places_control_point_in_ingolstadt(self, tmp_path):
-        xodr = _xodr_with_header(PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
+        xodr = _xodr_with_header(tmp_path, PINNED_HEADER_BOUNDS, CLAIMED_UTM32N)
         crs, _, _ = resolve_sampling_crs(xodr, osm_bounds=INGOLSTADT_OSM_BOUNDS)
         from pyproj import CRS, Transformer
 
@@ -211,6 +271,50 @@ class TestResolveSamplingCrs:
         )
         assert abs(lon - WP1_CONTROL_POINT["wgs84_lon"]) < 1e-5
         assert abs(lat - WP1_CONTROL_POINT["wgs84_lat"]) < 1e-5
+
+    def test_governed_map_of_record_resolves_without_double_offset(self):
+        if not GOVERNED_MAP_OF_RECORD.exists() or not OSM_SOURCE.exists():
+            pytest.skip("governed map-of-record or OSM artifact is unavailable")
+
+        crs, source, record = resolve_sampling_crs(
+            str(GOVERNED_MAP_OF_RECORD), osm_path=str(OSM_SOURCE)
+        )
+
+        assert record["verdict"] == "AMBIGUOUS"
+        assert source == "claimed_geoReference_ambiguous"
+        assert crs is not None
+        assert (
+            record["effective_coordinate_bounds_source"]
+            == "header_preoffset_matches_geometry_with_offset"
+        )
+
+
+def test_raster_sampler_uses_the_explicit_authoritative_osm_path(monkeypatch):
+    from ultimate_pipeline.enrichment.elevation_importer import _resolve_f1_sampling_crs
+
+    captured = {}
+
+    def fake_resolve(xodr_path, *, osm_path, strict):
+        captured.update(
+            {"xodr_path": xodr_path, "osm_path": osm_path, "strict": strict}
+        )
+        return object(), "fixture", {"verdict": "fixture"}
+
+    monkeypatch.setattr(
+        "ultimate_pipeline.dem.dem_crs_contract.resolve_sampling_crs", fake_resolve
+    )
+    monkeypatch.delenv("UP_OSM_FILE", raising=False)
+    _crs, source, record = _resolve_f1_sampling_crs(
+        "candidate.xodr", osm_path="authoritative.osm", strict=True
+    )
+
+    assert captured == {
+        "xodr_path": "candidate.xodr",
+        "osm_path": "authoritative.osm",
+        "strict": True,
+    }
+    assert source == "fixture"
+    assert record == {"verdict": "fixture"}
 
 
 class TestDemIdentityAndCoverage:

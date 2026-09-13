@@ -681,15 +681,26 @@ def build_dem_qc_report(
     }
 
 
-class ElevationImporter:
-    """
-    Fills OpenDRIVE <elevation> records from a DEM.
+def _resolve_f1_sampling_crs(
+    xodr_path: str, *, osm_path: Optional[str], strict: bool
+):
+    """Resolve the DEM frame from explicit source provenance when available."""
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.dem.dem_crs_contract import resolve_sampling_crs
 
-    Strategy:
-    - You provide a sampler: (x, y) -> z
-    - For each <elevation> element: set a=z, b=c=d=0
-    - If no <elevation> exists but DEM is present: create a single flat segment.
-    """
+    source_path = str(
+        osm_path
+        or os.getenv("UP_OSM_FILE", "").strip()
+        or getattr(SETTINGS, "OSM_FILE", "")
+        or ""
+    ).strip()
+    return resolve_sampling_crs(
+        xodr_path, osm_path=source_path or None, strict=strict
+    )
+
+
+class ElevationImporter:
+    """Fill OpenDRIVE elevation records from a DEM sampler."""
 
     @staticmethod
     def apply_dem(
@@ -1293,6 +1304,8 @@ class ElevationImporter:
         tif_path: str,
         xodr_path: Optional[str] = None,
         utm_zone: Optional[int] = None,
+        *,
+        osm_path: Optional[str] = None,
     ):
         """
         Returns a callable (x, y) -> z using a GeoTIFF DEM.
@@ -1309,6 +1322,10 @@ class ElevationImporter:
             Path to XODR file to extract geoReference for UTM zone detection.
         utm_zone : int, optional
             Override UTM zone (if not provided, parsed from XODR or defaults to 32).
+        osm_path : str, optional
+            Authoritative OSM input used to establish the F1 geographic frame.
+            Stage callers pass this explicitly; independent tools retain a
+            settings/environment fallback for backwards compatibility.
         """
         if rasterio is None:
             raise RuntimeError(
@@ -1369,14 +1386,9 @@ class ElevationImporter:
         f1_crs_contract = None
         if xodr_path:
             try:
-                from ultimate_pipeline.dem.dem_crs_contract import (
-                    resolve_sampling_crs,
-                )
-
-                _f1_osm = os.getenv("UP_OSM_FILE", "").strip()
                 contract_crs, contract_source, contract_record = (
-                    resolve_sampling_crs(
-                        xodr_path, osm_path=_f1_osm or None, strict=strict
+                    _resolve_f1_sampling_crs(
+                        xodr_path, osm_path=osm_path, strict=strict
                     )
                 )
             except Exception as exc:

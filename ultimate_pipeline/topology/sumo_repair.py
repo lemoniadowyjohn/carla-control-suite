@@ -52,12 +52,13 @@ class SUMORepair:
             "-o", temp_net,
             "--opendrive-output", output_xodr,
         ]
-        # F1 CRS contract: keep geometry in the Osm2Odr-native global tmerc(0,0)
-        # frame. By default netconvert normalizes node positions to a local origin
-        # (offset ~832671, ~5458671 for Ingolstadt), silently moving geometry off
-        # the frame the downstream DEM sampler requires -> it then fails closed
-        # (no_frame_matches_osm_source) and no elevation can be imported. Disable
-        # normalization so the round-trip preserves the input frame.
+        # Coordinate-frame policy: retain netconvert's global coordinates where
+        # supported.  Existing governed maps can instead contain local planView
+        # coordinates plus a global OpenDRIVE header offset; F1 accepts that
+        # representation when its header bounds and offset are self-consistent.
+        # This switch alone cannot establish which policy produced a historical
+        # map, so verification remains evidence-based rather than provenance by
+        # configuration assumption.
         if bool(getattr(SETTINGS, "SUMO_REPAIR_PRESERVE_FRAME", True)):
             cmd += ["--offset.disable-normalization", "true"]
         if geometry_remove:

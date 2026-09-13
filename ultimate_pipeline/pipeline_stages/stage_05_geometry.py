@@ -88,6 +88,67 @@ def _resolve_structure_road_ids(
         return None, report
 
 
+def _run_junction_connector_snap(self, xodr_path: str) -> dict | None:
+    """Run the connector pose snap and persist its stage report.
+
+    The narrow snap operation is deliberately separate from the geometry stage
+    orchestration so its strict-mode and write behavior remain directly
+    regression-testable. Default ON (settings-audit decision, 2026-09-12):
+    full-map verification on the pinned map-of-record showed 4125/22589
+    connectors snapped, zero structural regressions (road/junction/lane
+    counts unchanged), and junction_connector_issues dropping 8746 -> 5183
+    with num_issues staying 0 throughout -- see
+    CONNECTOR_SNAP_WIRING_EVIDENCE.json.
+    """
+    enabled = os.getenv("UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "1").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+    if not enabled:
+        print("[STEP 6] Junction connector snap disabled.")
+        return None
+
+    try:
+        import json
+
+        from ultimate_pipeline.tools.junction_connector_snap import (
+            snap_junction_connectors,
+        )
+
+        tree, root = load_xodr(xodr_path)
+        report = snap_junction_connectors(
+            root,
+            max_gap_m=float(os.getenv("UP_JUNCTION_CONNECTOR_SNAP_MAX_GAP_M", "2.0")),
+        )
+        if report.get("connectors_snapped", 0) > 0:
+            save_xodr(tree, xodr_path)
+
+        report_path = os.path.join(self.out_dir, "junction_connector_snap_report.json")
+        with open(report_path, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2)
+        self.vreport.add_dict("junction_connector_snap", report)
+        print(
+            "[STEP 6] Junction connector snap: "
+            f"examined={report.get('connectors_examined', 0)} "
+            f"snapped={report.get('connectors_snapped', 0)} "
+            f"skipped_end_contact_point={report.get('skipped_end_contact_point', 0)} "
+            f"-> {report_path}"
+        )
+        return report
+    except Exception as exc:
+        print(f"[STEP 6] Junction connector snap failed (continuing): {exc}")
+        if os.getenv("UP_STRICT_QUALITY_GATES", "0").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        ):
+            raise
+        return None
+
+
 def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     """
     📐 GEOMETRY AUTHORITY (merged STEP 5 + STEP 6, hardened order)
@@ -184,53 +245,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     # of a 6-connector sample rebuild.py could only fix 1/6 (blocking the
     # other 5 under its own stricter curvature-safety criteria), snap fixed
     # 6/6 -- the two tools are complementary, not redundant. Default ON
-    # (unlike junction_connector_rebuild above): full-map verification on
-    # the pinned map-of-record showed 4125/22589 connectors snapped, zero
-    # structural regressions (road/junction/lane counts unchanged), and
-    # junction_connector_issues dropping 8746 -> 5183 with num_issues
-    # staying 0 throughout -- see CONNECTOR_SNAP_WIRING_EVIDENCE.json.
-    connector_snap_enabled = os.getenv(
-        "UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "1"
-    ).strip().lower() in ("1", "true", "yes", "on")
-    if connector_snap_enabled:
-        try:
-            import json
-
-            from ultimate_pipeline.tools.junction_connector_snap import (
-                snap_junction_connectors,
-            )
-
-            snap_tree, snap_root = load_xodr(cont_out)
-            snap_report = snap_junction_connectors(
-                snap_root,
-                max_gap_m=float(os.getenv("UP_JUNCTION_CONNECTOR_SNAP_MAX_GAP_M", "2.0")),
-            )
-            if snap_report.get("connectors_snapped", 0) > 0:
-                save_xodr(snap_tree, cont_out)
-            connector_snap_report_path = os.path.join(
-                self.out_dir, "junction_connector_snap_report.json"
-            )
-            with open(connector_snap_report_path, "w", encoding="utf-8") as fh:
-                json.dump(snap_report, fh, indent=2)
-            self.vreport.add_dict("junction_connector_snap", snap_report)
-            print(
-                "[STEP 6] Junction connector snap: "
-                f"examined={snap_report.get('connectors_examined', 0)} "
-                f"snapped={snap_report.get('connectors_snapped', 0)} "
-                f"skipped_end_contact_point={snap_report.get('skipped_end_contact_point', 0)} "
-                f"-> {connector_snap_report_path}"
-            )
-        except Exception as e:
-            print(f"[STEP 6] Junction connector snap failed (continuing): {e}")
-            if os.getenv("UP_STRICT_QUALITY_GATES", "0").strip().lower() in (
-                "1",
-                "true",
-                "yes",
-                "on",
-            ):
-                raise
-    else:
-        print("[STEP 6] Junction connector snap disabled.")
+    # (unlike junction_connector_rebuild above) -- see
+    # _run_junction_connector_snap's own docstring for the evidence.
+    _run_junction_connector_snap(self, cont_out)
 
     # 🧊 Freeze horizontal geometry BEFORE elevation is applied.
     # This ensures DEM samples z at the final XY positions.
@@ -419,6 +436,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
             sampler = ElevationImporter.make_raster_sampler(
                 dem_path,
                 xodr_path=topo_fixed,  # For CRS/UTM zone detection
+                osm_path=str(getattr(s, "OSM_FILE", "") or ""),
             )
             print(f"[DEM] Sampler active: {dem_path}")
         except Exception as e:
@@ -542,6 +560,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                         sampler = ElevationImporter.make_raster_sampler(
                             dem_path,
                             xodr_path=topo_fixed,
+                            osm_path=str(getattr(s, "OSM_FILE", "") or ""),
                         )
                         print(f"[DEM] Sampler updated to use expanded DEM")
 
@@ -820,6 +839,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                     sampler = ElevationImporter.make_raster_sampler(
                         retried_dem_path,
                         xodr_path=topo_fixed,
+                        osm_path=str(getattr(s, "OSM_FILE", "") or ""),
                     )
                     retry_stats = {
                         "sampled_points": 0,

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "PORTABILITY_REMEDIATED_WITHOUT_FROZEN_EVIDENCE_REWRITE",
+  "observed_at_utc": "2026-09-13T00:00:00Z",
+  "artifact": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13A_BRANCH_METADATA_RECONCILIATION.json",
+  "manifest": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json",
+  "manifest_sha256": "23b1681c9c79d2b0ecf2406af4e2f1f3d3398c477cf09980d98f59662e40ec7b",
+  "git_blob": {
+    "object_id": "380da8e35c76df16e134da2597292969f4d9ca31",
+    "sha256": "23b1681c9c79d2b0ecf2406af4e2f1f3d3398c477cf09980d98f59662e40ec7b",
+    "byte_count": 1403
+  },
+  "checked_out": {
+    "sha256": "7c9d25c47a25180a40e404fa9dd6729a3c6285da8ace71420b5d4fb5324dc831",
+    "byte_count": 1428
+  },
+  "lf_normalized": {
+    "sha256": "23b1681c9c79d2b0ecf2406af4e2f1f3d3398c477cf09980d98f59662e40ec7b",
+    "byte_count": 1403
+  },
+  "crlf_normalized": {
+    "sha256": "7c9d25c47a25180a40e404fa9dd6729a3c6285da8ace71420b5d4fb5324dc831",
+    "byte_count": 1428
+  },
+  "git_attributes": {
+    "path_specific_attributes": "none",
+    "repository_core_autocrlf": "true"
+  },
+  "history": [
+    {
+      "commit": "25104180066aaa68ab38bdbca73a6f341025dd33",
+      "timestamp": "2026-08-08T21:48:21+02:00",
+      "subject": "R13: terminal C0-R prep - branch metadata reconciliation, governed-payload identity guard, digest v2/v13 discriminators, semantic-parent authority v2, crosswalk fixtures + subtype authority + handoff + object counts, pedestrian source authority, mutation allowlist + parent hard gate, R13C/R13F docs, tests (2669 pass)"
+    },
+    {
+      "commit": "0a5a64603d6ca7645660fd1fa30975cc8d94fc95",
+      "timestamp": "2026-08-09T08:48:49+02:00",
+      "subject": "R13: self-consistent A-sweep (exclude detector + self-record) [25104180+685e403e clone batch]"
+    }
+  ],
+  "conclusion": "The only observed difference is LF-to-CRLF checkout conversion. The frozen manifest and historical artifact were not changed. Verification accepts this single LF-normalized hash in addition to the manifest raw hash; any content change still fails both hashes."
+}

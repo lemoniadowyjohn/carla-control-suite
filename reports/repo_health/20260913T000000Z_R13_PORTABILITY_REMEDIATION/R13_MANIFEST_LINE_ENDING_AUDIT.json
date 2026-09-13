@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "PORTABILITY_REMEDIATED_WITHOUT_FROZEN_EVIDENCE_REWRITE",
+  "manifest": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json",
+  "manifest_entries": 19,
+  "hashed_entries": 18,
+  "checkout_conversion": {
+    "core_autocrlf": "true",
+    "path_specific_git_attributes": "none for audited R13 paths",
+    "rule": "Accept raw, LF-normalized, or CRLF-normalized SHA256 only."
+  },
+  "lf_blob_hash_matches_manifest": [
+    "R13A_BRANCH_METADATA_RECONCILIATION.json",
+    "R13B_GOVERNED_PAYLOAD_IDENTITY_GUARD.json",
+    "R13C_DIGEST_V13_SEMANTIC_PARENT_DOC.md",
+    "R13D_DIGEST_V2_TEST_EVIDENCE.json",
+    "R13E_SEMANTIC_PARENT_AUTHORITY_V2.json",
+    "R13F_CROSSWALK_LEMMA_EVIDENCE_DOC.md",
+    "R13I_PACKAGE_SEMANTIC_HANDOFF.json",
+    "R13J_XML_OBJECT_COUNT_EVIDENCE.json",
+    "R13L_PEDESTRIAN_SOURCE_COUNTS.json",
+    "R13N_MUTATION_ALLOWLIST_AND_PARENT_GATE.json",
+    "R13_PRODUCTION_SUMMARY.json"
+  ],
+  "mixed_line_ending_exception": {
+    "path": "R13_UPDATED_CLAUDE_C0_PACKET.md",
+    "manifest_sha256": "139aeb1fcf591f28ed73618a3f2da9ea587ea2b5044bed73028f3bf2ba0c268d",
+    "lf_normalized_sha256": "93a854531136bea3cd1319d7af197c66021ee0b047282747660487b90c503c15",
+    "handling": "Existing narrow override retained because the original mixed-ending byte pattern cannot be reconstructed from an LF blob."
+  },
+  "history": {
+    "affected_artifacts_introduced_at": "25104180066aaa68ab38bdbca73a6f341025dd33",
+    "subsequent_r13a_self_sweep": "0a5a64603d6ca7645660fd1fa30975cc8d94fc95"
+  },
+  "conclusion": "All 12 raw-hash mismatches reduce exactly to line-ending conversion. No manifest value or frozen artifact was rewritten. A non-line-ending content modification changes all accepted normal forms and remains a failure."
+}

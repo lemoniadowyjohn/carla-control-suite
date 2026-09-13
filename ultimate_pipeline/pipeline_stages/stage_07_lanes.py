@@ -17,6 +17,53 @@ def _inject_main_pipeline_globals():
         g.setdefault(k, v)
 
 
+def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
+    """Resolve lane-structure tags through fail-closed spatial matching.
+
+    The existing name index remains available for broad street-level width
+    policy. Lane-count, turn-lane, and cycle-lane geometry instead receives
+    only a road-ID keyed map derived from EXACT/HIGH OSM-XODR matches.
+    """
+    from pathlib import Path
+
+    if not osm_path or not Path(osm_path).is_file():
+        return {}, {
+            "status": "NOT_RUN",
+            "reason": "osm_source_unavailable",
+            "eligible_road_count": 0,
+        }
+    try:
+        from ultimate_pipeline.enrichment.osm_meta_index import (
+            extract_structural_osm_lane_metadata_ways,
+            project_positioned_osm_metadata_ways,
+        )
+        from ultimate_pipeline.enrichment.osm_xodr_correspondence import (
+            build_metadata_associations,
+        )
+
+        source_ways = extract_structural_osm_lane_metadata_ways(osm_path)
+        positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
+        associations, report = build_metadata_associations(positioned_ways, root)
+        structural_osm_meta = {
+            road_id: dict(association["metadata"])
+            for road_id, association in sorted(associations.items())
+            if association.get("class") in {"EXACT", "HIGH"}
+        }
+        return structural_osm_meta, {
+            "status": "PASS",
+            "source_way_count": len(source_ways),
+            "projected_way_count": len(positioned_ways),
+            "eligible_road_count": len(structural_osm_meta),
+            "correspondence": report,
+        }
+    except Exception as exc:
+        return {}, {
+            "status": "INCOMPLETE",
+            "reason": f"structural_osm_correspondence_failed:{exc}",
+            "eligible_road_count": 0,
+        }
+
+
 def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     _inject_main_pipeline_globals()
     s = self.settings
@@ -38,8 +85,31 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         osm_meta = {}
         print(f"⚠️ Lane-width OSM metadata failed: {e}; using documented fallback widths.")
 
+    structural_osm_meta, structural_osm_report = _build_structural_osm_metadata(
+        root, str(getattr(s, "OSM_FILE", "") or "")
+    )
+    structural_osm_report_path = os.path.join(
+        self.out_dir, "structural_osm_lane_correspondence.json"
+    )
+    with open(structural_osm_report_path, "w", encoding="utf-8") as handle:
+        json.dump(structural_osm_report, handle, indent=2, sort_keys=True)
+    self.vreport.add_dict("structural_osm_lane_correspondence", structural_osm_report)
+    print(
+        "[STEP 7] Structural OSM lane correspondence: "
+        f"{structural_osm_report['status']}, "
+        f"eligible_roads={structural_osm_report['eligible_road_count']}"
+    )
+
     # --- Ensure driving lanes exist ---
-    created_lanes = LaneGenerator.ensure_lanes(root, verbose=True, osm_meta=osm_meta)
+    lane_provenance_path = os.path.join(self.out_dir, "lane_provenance_report.json")
+    created_lanes = LaneGenerator.ensure_lanes(
+        root,
+        verbose=True,
+        osm_meta=osm_meta,
+        structural_osm_meta=structural_osm_meta,
+        provenance_report_path=lane_provenance_path,
+    )
+    self.vreport.add("lanes", "lane_provenance_report", lane_provenance_path)
     if created_lanes:
         print(
             f"[STEP 7] LaneGenerator created driving lanes for {created_lanes} roads."

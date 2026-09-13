@@ -21,6 +21,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -111,8 +112,23 @@ def main() -> int:
     parent_sig_ref = frozen_tc["signal_reference_digest"]
     parent_ctrl = frozen_tc["controller_digest"]
 
-    # Idempotent base: resume from prior enriched output if present.
-    base_path = CANDIDATE if CANDIDATE.exists() else SEMANTIC_PARENT
+    # Tests and experimental reruns may direct only newly-produced files away
+    # from the governed evidence directory.  Inputs always remain governed.
+    output_dir = Path(os.environ.get("UP_STAGE_I_OUTPUT_DIR", str(REPORTS)))
+    output_dir.mkdir(parents=True, exist_ok=True)
+    candidate_output = output_dir / CANDIDATE.name
+    ledger_output = output_dir / N09_LEDGER.name
+    integrity_output = output_dir / N10.name
+
+    # Idempotent base: resume from a prior output in this output directory;
+    # otherwise use the governed candidate as the immutable input.
+    base_path = (
+        candidate_output
+        if candidate_output.exists()
+        else CANDIDATE
+        if CANDIDATE.exists()
+        else SEMANTIC_PARENT
+    )
     base_text = base_path.read_text(encoding="utf-8", errors="replace")
     base_root = ET.fromstring(strip_xml_namespaces(base_text))
 
@@ -120,14 +136,14 @@ def main() -> int:
     stats = CrosswalkInjector.inject(base_root, specs)
 
     out_text = '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(base_root, encoding="unicode")
-    CANDIDATE.write_text(out_text, encoding="utf-8")
+    candidate_output.write_text(out_text, encoding="utf-8")
 
     # ---- N09 mutation ledger (ground truth from on-disk output) ----
     out_root = ET.fromstring(strip_xml_namespaces(out_text))
     written_objs = [o for o in out_root.iter("object")
                     if (o.get("type") or "").lower() == "crosswalk"]
     by_osmid = {s.osm_id: s for s in specs}
-    with open(N09_LEDGER, "w", newline="", encoding="utf-8") as f:
+    with open(ledger_output, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=[
             "object_id", "osm_id", "type", "name", "road_id", "road_ids_all",
             "s", "t", "hdg_deg", "depth_m", "disposition", "reason"])
@@ -168,7 +184,7 @@ def main() -> int:
     n10 = {
         "run_id": RUN_ID, "stage": "I.1",
         "producer": "stage_i1_crosswalk_writer.py",
-        "output_xodr": str(CANDIDATE),
+        "output_xodr": str(candidate_output),
         "output_sha256_lf_text": sha256_text(out_text),
         "parent_sha256_lf_text": parent_sha,
         "parent_hard_gate_pass": (
@@ -218,7 +234,7 @@ def main() -> int:
                 and out_sig_ids == parent_inv.get("signals"))
             else "CROSSWALK_MUTATION_INTEGRITY_FAIL"),
     }
-    N10.write_text(json.dumps(n10, indent=2, sort_keys=True), encoding="utf-8")
+    integrity_output.write_text(json.dumps(n10, indent=2, sort_keys=True), encoding="utf-8")
 
     print(f"Stage I.1: {n10['verdict']}")
     print(f"  written={stats['written']} existing_skip={stats['skipped_existing']} "

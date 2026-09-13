@@ -89,6 +89,34 @@ def test_turn_marking_writer_retains_directional_metadata_without_combining_side
     assert values["turnMarking"] == "left|through"
 
 
+def test_turn_marking_writer_uses_only_high_confidence_directional_correspondence() -> None:
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("9", name="Different Name"))
+
+    assert apply_turn_lanes(
+        root,
+        {},
+        correspondence_by_road_id={
+            "9": {
+                "class": "HIGH",
+                "metadata": {
+                    "turn:lanes:forward": "left|through",
+                    "turn:lanes:backward": "through|right",
+                },
+            }
+        },
+    ) == 1
+
+    values = {
+        vector.get("key"): vector.get("value")
+        for vector in root.findall("./road/userData/vector")
+    }
+    assert values == {
+        "turnMarking": "left|through",
+        "turnMarking:forward": "left|through",
+        "turnMarking:backward": "through|right",
+    }
+
 def test_directional_turn_lanes_become_approach_geometry_with_provenance() -> None:
     root = ET.Element("OpenDRIVE")
     road = _road(

@@ -71,6 +71,24 @@ _POSITIONED_METADATA_TAGS = {
     "traffic_sign",
 }
 
+_STRUCTURAL_LANE_METADATA_TAGS = {
+    "name",
+    "highway",
+    "oneway",
+    "lanes",
+    "lanes:forward",
+    "lanes:backward",
+    "width",
+    "est_width",
+    "turn:lanes",
+    "turn:lanes:forward",
+    "turn:lanes:backward",
+    "turn_lanes",
+    "cycleway",
+    "cycleway:left",
+    "cycleway:right",
+}
+
 _LANE_WIDTH_HIGHWAYS = {
     "motorway",
     "motorway_link",
@@ -229,6 +247,79 @@ def extract_positioned_osm_metadata_ways(osm_path: str) -> list[dict[str, Any]]:
         if not metadata:
             continue
 
+        points = [
+            node_coordinates[ref]
+            for ref in (node.get("ref") for node in way.findall("nd"))
+            if ref in node_coordinates
+        ]
+        if len(points) < 2:
+            continue
+        records.append(
+            {
+                "id": str(way_id),
+                "name": tags.get("name", ""),
+                "highway": tags.get("highway", ""),
+                "geometry": points,
+                "metadata": metadata,
+            }
+        )
+    return records
+
+
+def extract_structural_osm_lane_metadata_ways(
+    osm_path: str,
+) -> list[dict[str, Any]]:
+    """Extract geometry-bearing OSM records for lane structure only.
+
+    Unlike the legacy street-name index, records preserve their source way and
+    polyline. They are intended for EXACT/HIGH spatial correspondence before
+    they can influence lane-count, turn-lane, or cycle-lane structure.
+    """
+    try:
+        root = ET.parse(osm_path).getroot()
+    except (FileNotFoundError, ET.ParseError):
+        return []
+
+    node_coordinates: dict[str, tuple[float, float]] = {}
+    for node in root.findall("node"):
+        node_id = node.get("id")
+        try:
+            longitude = float(node.get("lon", ""))
+            latitude = float(node.get("lat", ""))
+        except (TypeError, ValueError):
+            continue
+        if node_id is not None:
+            node_coordinates[node_id] = (longitude, latitude)
+
+    records: list[dict[str, Any]] = []
+    for way in root.findall("way"):
+        way_id = way.get("id")
+        if not way_id:
+            continue
+        tags = {
+            tag.get("k", ""): tag.get("v", "")
+            for tag in way.findall("tag")
+            if tag.get("k", "") in _STRUCTURAL_LANE_METADATA_TAGS
+        }
+        metadata = {
+            key: value for key, value in tags.items() if key != "name"
+        }
+        if not any(
+            key in metadata
+            for key in (
+                "lanes",
+                "lanes:forward",
+                "lanes:backward",
+                "turn:lanes",
+                "turn:lanes:forward",
+                "turn:lanes:backward",
+                "turn_lanes",
+                "cycleway",
+                "cycleway:left",
+                "cycleway:right",
+            )
+        ):
+            continue
         points = [
             node_coordinates[ref]
             for ref in (node.get("ref") for node in way.findall("nd"))
