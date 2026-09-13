@@ -5,6 +5,7 @@ import json
 import os
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as _kernel_endpoint
 
 GAP_THRESHOLD = getattr(SETTINGS, "MAX_GAP_FOR_FIX", 2.0)
 HDG_THRESHOLD = getattr(SETTINGS, "MAX_HEADING_JUMP_FIX", math.radians(8))
@@ -188,6 +189,20 @@ class MeshContinuityRepairer:
                     "len": seg_len,
                 })
 
+                # `prev` (the element, not just the tracked scalars) must
+                # advance too -- otherwise endpoint() is repeatedly asked
+                # for geoms[0]'s own endpoint for every pair in the chain,
+                # not the actual previous geometry's. This was harmless
+                # while endpoint() only used geo_elem to check its
+                # primitive TAG (arc-or-not) and always computed position
+                # from the (correctly tracked) scalar args regardless; it
+                # became a real bug once endpoint() needed geo_elem's own
+                # x/y/hdg/length for paramPoly3 math, which surfaced this
+                # as a ~440m spurious "gap" for real multi-geometry roads
+                # during that fix's own verification (moderate_fix() and
+                # full_rewrite() already advance `prev` correctly -- this
+                # was scan_roads()-only).
+                prev = geo
                 prev_x, prev_y = real_x, real_y
                 prev_h = real_h
                 prev_len = seg_len
@@ -333,49 +348,34 @@ class MeshContinuityRepairer:
     @staticmethod
     def endpoint(x, y, hdg, length, geo_elem):
         """
-        Compute endpoint of this geometry segment.
-        Supports <arc>; treats <spiral> and <poly3> as straight-line for safety.
+        Compute endpoint of this geometry segment via the canonical kernel
+        (handles line/arc/spiral/poly3/paramPoly3 correctly).
+
+        The previous implementation only computed a real curved endpoint for
+        <arc>, treating <spiral>/<poly3> and (implicitly, via the final
+        line-fallback branch) paramPoly3 as straight lines. paramPoly3 is
+        this pipeline's dominant real geometry type: on the pinned
+        map-of-record, 6803/6807 multi-geometry roads have a non-final
+        paramPoly3 segment, and this endpoint miscalculation caused 16 real,
+        genuinely-continuous roads to be flagged as having a "gap" as large
+        as 8.9m (the true gap, computed correctly, was ~1 micrometer) --
+        moderate_fix() would then blend their geometry 25% toward this
+        wrong position on every pipeline run, silently corrupting otherwise-
+        correct chains. Falls back to the previous straight-line
+        extrapolation (using the x/y/hdg/length arguments actually passed
+        in, not geo_elem's own attributes, since callers may pass an
+        already-adjusted position) only when geo_elem has no recognized
+        primitive at all.
         """
-        # ARC
-        arc = geo_elem.find("arc")
-        if arc is not None:
-            try:
-                k = float(arc.get("curvature", "0"))
-            except Exception:
-                k = 0.0
-
-            if abs(k) < 1e-9:
-                return (
-                    x + length * math.cos(hdg),
-                    y + length * math.sin(hdg),
-                    hdg
-                )
-
-            hdg2 = hdg + k * length
-            x2 = x + (math.sin(hdg2) - math.sin(hdg)) / k
-            y2 = y - (math.cos(hdg2) - math.cos(hdg)) / k
-            return x2, y2, hdg2
-
-        # SPIRAL approx (fallback)
-        if geo_elem.find("spiral") is not None:
+        try:
+            pose = _kernel_endpoint(geo_elem)
+            return pose.x, pose.y, pose.heading
+        except (ValueError, KeyError):
             return (
                 x + length * math.cos(hdg),
                 y + length * math.sin(hdg),
                 hdg
             )
-
-        # POLY3 approx → treat as line (safe)
-        if geo_elem.find("poly3") is not None:
-            return (x + length * math.cos(hdg),
-                    y + length * math.sin(hdg),
-                    hdg)
-
-        # LINE fallback
-        return (
-            x + length * math.cos(hdg),
-            y + length * math.sin(hdg),
-            hdg
-        )
 
     def recompute_s_values_postfix(self):
         for road in self.root.findall("road"):
