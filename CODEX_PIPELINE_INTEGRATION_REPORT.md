@@ -35,14 +35,19 @@ does not rewrite the pinned map's lane topology.
 
 ## Included Changes
 
-The integration branch contains the following reviewed commits, in dependency
-order:
+The following are the direct integration and reconciliation commits, in
+dependency order:
 
 `f89baaa9`, `48520912`, `06e58bf5`, `f0383ec3`, `786ed7a7`, `9d7f9317`,
 `9d8ffae2`, `358edb5c`, `fc7abcc0`, `4f5b896d`, `caec649f`, `58f066fb`,
 `6f7b1c5b`, `c872a0e4`, `0ac39037`, `e6b2dd0d`, `52b589a9`, `240f41ff`,
 `f54107e0`, `35b79eb1`, `44121aba`, `82d49e32`, `91ca93e4`, `713b5401`,
 `395d0170`, `55cf6358`, `56add080`, `0593e4ce`, and `8421f845`.
+
+The branch also inherits the reviewed source commits from the linear dependency
+stack. The complete ordered provenance is the Git range
+`f195ba0b5d6df3f085573c5e996ff9d0f11a975f..793adb5b3061a33e5ab3214c16aca4225d365ce7`
+at the time this report was committed; it contains 91 commits.
 
 They cover the canonical geometry kernel, connector validation, geometry-aware
 junction lane links, spatial OSM correspondence, OSM lane provenance,
