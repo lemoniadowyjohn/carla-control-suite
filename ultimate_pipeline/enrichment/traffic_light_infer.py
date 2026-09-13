@@ -268,6 +268,82 @@ class TrafficLightInferer:
         return ids
 
     # -----------------------------------------------------------------
+    # Perception-readiness transparency: how much of the junction
+    # population received a heuristically-inferred signal.
+    # -----------------------------------------------------------------
+    @staticmethod
+    def junction_coverage_stats(root: ET.Element) -> Dict[str, object]:
+        """Report what fraction of the map's junctions carry an inferred
+        traffic light, and make explicit that every one of them is a
+        topology-only heuristic (connection count >= 3, non-roundabout)
+        with no OSM or other real-world signal-location source (see
+        CODEX_TRAFFIC_LIGHT_GROUND_TRUTH_AUDIT.md).
+
+        The raw insertion count alone (already recorded elsewhere) reads
+        as an unremarkable-looking number; on the pinned map-of-record it
+        actually corresponds to 2724/3561 (76.5%) of ALL junctions being
+        tagged as signal-controlled, which is implausible for a real city
+        and matters directly for anyone training/evaluating a perception
+        model against this map's traffic-light ground truth -- they need
+        this fraction, not just the total, to judge how much to trust it.
+        """
+        junctions = root.findall("junction")
+        total_junctions = len(junctions)
+        roundabout_junctions = sum(
+            1 for j in junctions if j.get("isRoundabout", "false") == "true"
+        )
+        eligible = [
+            j for j in junctions
+            if j.get("isRoundabout", "false") != "true"
+            and len(j.findall("connection")) >= 3
+        ]
+
+        # A single pass building a junction_id -> signal count index, not a
+        # per-junction call to _signal_ids_for_junction (which re-scans the
+        # entire signal population for every junction -- O(eligible_junctions
+        # x total_signals), several minutes on the pinned map's 2724 eligible
+        # junctions x 21163 signals instead of one linear pass).
+        prefix = "traffic_light_infer:tl_"
+        per_junction_counts: Dict[str, int] = {}
+        for signal in root.findall(".//signal"):
+            prov = signal.find("./userData/provenance")
+            if prov is None:
+                continue
+            src = prov.get("source_entity") or ""
+            if not src.startswith(prefix):
+                continue
+            junction_id, _, _idx = src[len(prefix):].rpartition("_")
+            if not junction_id:
+                continue
+            per_junction_counts[junction_id] = per_junction_counts.get(junction_id, 0) + 1
+
+        covered = 0
+        total_signals = 0
+        for j in eligible:
+            n = per_junction_counts.get(j.get("id", "J"), 0)
+            if n:
+                covered += 1
+                total_signals += n
+
+        return {
+            "total_junctions": total_junctions,
+            "roundabout_junctions": roundabout_junctions,
+            "eligible_junctions": len(eligible),
+            "eligible_junctions_with_inferred_signal": covered,
+            "eligible_junction_coverage_fraction": (
+                covered / len(eligible) if eligible else 0.0
+            ),
+            "total_inferred_signals": total_signals,
+            "provenance": (
+                "100% topology-heuristic (junction connection count >= 3, "
+                "non-roundabout); no OSM or other real-world traffic-signal "
+                "source is used. Perception ground truth derived from this "
+                "map should treat traffic-light presence/absence as "
+                "unverified, not real-world-accurate."
+            ),
+        }
+
+    # -----------------------------------------------------------------
     # Post-inference validation of signal → lane references
     # -----------------------------------------------------------------
     @staticmethod

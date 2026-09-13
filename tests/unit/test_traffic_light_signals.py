@@ -89,6 +89,36 @@ def test_infer_and_insert_is_idempotent_for_signals():
     assert second_signal_count == first_signal_count
 
 
+def test_junction_coverage_stats_reports_full_coverage_for_qualifying_junction():
+    root = _load_root()
+    TrafficLightInferer.infer_and_insert(root)
+
+    stats = TrafficLightInferer.junction_coverage_stats(root)
+
+    assert stats["total_junctions"] == 1
+    assert stats["roundabout_junctions"] == 0
+    assert stats["eligible_junctions"] == 1
+    assert stats["eligible_junctions_with_inferred_signal"] == 1
+    assert stats["eligible_junction_coverage_fraction"] == 1.0
+    assert stats["total_inferred_signals"] == 3
+
+
+def test_junction_coverage_stats_excludes_roundabouts_and_sub_threshold_junctions():
+    root = ET.Element("OpenDRIVE")
+    ET.SubElement(root, "junction", id="rab", isRoundabout="true")
+    two_way = ET.SubElement(root, "junction", id="two_way")
+    ET.SubElement(two_way, "connection", id="0", incomingRoad="1")
+    ET.SubElement(two_way, "connection", id="1", incomingRoad="2")
+
+    stats = TrafficLightInferer.junction_coverage_stats(root)
+
+    assert stats["total_junctions"] == 2
+    assert stats["roundabout_junctions"] == 1
+    assert stats["eligible_junctions"] == 0
+    assert stats["eligible_junctions_with_inferred_signal"] == 0
+    assert stats["eligible_junction_coverage_fraction"] == 0.0
+
+
 def test_validate_signal_references_accepts_generated_signal_references():
     root = _load_root()
     TrafficLightInferer.infer_and_insert(root)

@@ -182,6 +182,16 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             save_xodr(tree, topo_fixed)
             print(f"   → Inserted {n_lights} traffic lights.")
 
+            coverage = TrafficLightInferer.junction_coverage_stats(root)
+            self.vreport.add_dict("traffic_light_junction_coverage", coverage)
+            print(
+                "   → Junction signal coverage: "
+                f"{coverage['eligible_junctions_with_inferred_signal']}/"
+                f"{coverage['eligible_junctions']} eligible junctions "
+                f"({coverage['eligible_junction_coverage_fraction']:.1%}), "
+                "100% topology-heuristic, no real-world source."
+            )
+
             print("🧪 Validating traffic light → lane references…")
             bad_refs = TrafficLightInferer.validate_signal_references(root)
             if bad_refs:
