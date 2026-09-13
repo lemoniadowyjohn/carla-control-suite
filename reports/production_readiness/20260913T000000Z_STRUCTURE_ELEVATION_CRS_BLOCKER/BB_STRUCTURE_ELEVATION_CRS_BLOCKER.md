@@ -80,7 +80,7 @@ TASK_4_DISPOSITION: FIXED -- frame selection and explicit OSM propagation correc
 
 TASK_5_REAL_GATE_RESULT: INCOMPLETE -- 238 checked, 53 PASS, 88 FAIL, 97 INCOMPLETE
 
-FULL_OFFLINE_TESTS: pending this branch's full-suite run
+FULL_OFFLINE_TESTS: PASS -- 5,865 passed, 82 skipped, 0 failed
 
 MAP_OF_RECORD_MUTATED: NO
 
