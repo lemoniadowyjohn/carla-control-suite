@@ -70,6 +70,11 @@ fixes: **5,853 passed, 82 skipped, 0 failed** in 441.10 seconds. It collected
 passed runtime evidence. The suite emitted 133 warnings, including absent local
 manual-tile, coordinate, and HPC paths plus third-party deprecations.
 
+Two required clean-worktree repetitions also passed without source changes in
+between: **5,853 passed, 82 skipped, 0 failed** in 408.24 seconds and 426.97
+seconds respectively. This verifies that no test-order-dependent process or
+evidence-state leakage remained in the integrated candidate.
+
 Package smoke also passed: `python -m build` produced
 `ultimate_pipeline-0.1.0-py3-none-any.whl` and
 `ultimate_pipeline-0.1.0.tar.gz`. A no-system-site-packages temporary

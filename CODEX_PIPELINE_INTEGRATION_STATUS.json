@@ -35,6 +35,16 @@
       "failed": 0,
       "warnings": 133,
       "duration_seconds": 441.1
+    },
+    "clean_worktree_repetitions": {
+      "status": "PASS",
+      "runs": 2,
+      "collected_per_run": 5935,
+      "passed_per_run": 5853,
+      "skipped_per_run": 82,
+      "failed_per_run": 0,
+      "warnings_per_run": 133,
+      "durations_seconds": [408.24, 426.97]
     }
   },
   "production_certificate": "INCOMPLETE",
