@@ -12,9 +12,14 @@ import hashlib
 import json
 from collections import Counter
 from pathlib import Path
+from time import perf_counter
 import xml.etree.ElementTree as ET
 
-from ultimate_pipeline.topology.roundabout_v2 import RoundaboutV2Reconstructor
+from ultimate_pipeline.topology.roundabout_v2 import (
+    RoundaboutV2Reconstructor,
+    detect_candidates,
+    detect_osm_spatial_candidates,
+)
 
 
 def _sha256_file(path: Path) -> str:
@@ -74,8 +79,38 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
     root = ET.parse(xodr_path).getroot()
     before_tree_sha256 = _tree_digest(root)
     reconstructor = RoundaboutV2Reconstructor()
-    models = reconstructor.analyze(root)
-    clone, diagnostics = reconstructor.reconstruct_transactional(root)
+    timings: dict[str, float] = {}
+    started = perf_counter()
+    candidates = detect_candidates(root)
+    timings["legacy_detection_seconds"] = round(perf_counter() - started, 6)
+    source_detection = None
+    if resolved_osm_path is not None:
+        started = perf_counter()
+        spatial_candidates, source_detection = detect_osm_spatial_candidates(
+            root, resolved_osm_path
+        )
+        timings["source_aware_detection_seconds"] = round(
+            perf_counter() - started, 6
+        )
+        candidates = sorted(
+            [*candidates, *spatial_candidates],
+            key=lambda candidate: (
+                candidate.detection_method,
+                candidate.osm_way_ids,
+                candidate.junction_ids,
+                candidate.road_ids,
+            ),
+        )
+    started = perf_counter()
+    models = reconstructor.analyze(root, candidates=candidates)
+    timings["model_analysis_seconds"] = round(perf_counter() - started, 6)
+    started = perf_counter()
+    clone, diagnostics = reconstructor.reconstruct_transactional(
+        root, candidates=candidates
+    )
+    timings["transactional_diagnostics_seconds"] = round(
+        perf_counter() - started, 6
+    )
     after_tree_sha256 = _tree_digest(root)
     records = [_model_record(model) for model in models]
     actions = Counter(record["action"] for record in records)
@@ -85,11 +120,11 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
         if str(record["action"]).startswith("RECONSTRUCT")
     )
     acceptance = {
-        "status": "NOT_RUN" if reconstructed == 0 else "INCOMPLETE",
+        "status": "NOT_RUN",
         "reason": (
             "no_reconstructed_roundabout_candidates"
             if reconstructed == 0
-            else "offline_probe_does_not_apply_or_certify_reconstructions"
+            else "v2_analysis_is_transactional_diagnostics_only_and_does_not_apply_candidates"
         ),
     }
     return {
@@ -102,6 +137,9 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
         "analysis": {
             "candidate_count": len(records),
             "action_counts": dict(sorted(actions.items())),
+            "detection_method_counts": dict(
+                sorted(Counter(record["detection_method"] for record in records).items())
+            ),
             "candidates": records,
         },
         "source_osm": (
@@ -109,6 +147,7 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
             if resolved_osm_path is not None
             else None
         ),
+        "source_aware_detection": source_detection,
         "transaction": {
             "clone_distinct": clone is not root,
             "source_tree_sha256_before": before_tree_sha256,
@@ -117,6 +156,7 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
             "diagnostics": diagnostics,
         },
         "acceptance_delta": acceptance,
+        "timings_seconds": timings,
         "map_of_record_mutated": "NO",
         "live_carla": "NOT_RUN",
     }

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "51c45a0ade132eb9e89d896f425ae5a620b7a95d",
+  "base_commit": "6c7434d482707e8b092305e2d01ea2201d01b4f0",
+  "branch": "feature/roundabout-v2-source-aware-detection-v1-20260913",
+  "input_xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "input_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "evidence_path": "reports/production_readiness/20260913T000000Z_SOURCE_AWARE_ROUNDABOUT_V2/EE_SOURCE_AWARE_ROUNDABOUT_DETECTION.json",
+  "evidence_sha256": "60bdf2141c946b1560f4488dd452fb523609441bf067da8df168dc36c017660f",
+  "source_roundabout_count": 135,
+  "projected_roundabout_count": 135,
+  "source_aware_candidate_count": 97,
+  "excluded_reason_counts": {
+    "insufficient_source_coverage": 4,
+    "insufficient_supported_roads": 19,
+    "no_spatial_road_support": 15
+  },
+  "action_counts": {
+    "PRESERVED_VALID": 90,
+    "PRESERVE_ORIGINAL": 4,
+    "RECONSTRUCT_GEOMETRY": 3
+  },
+  "timings_seconds": {
+    "legacy_detection": 0.472022,
+    "source_aware_detection": 17.244919,
+    "model_analysis": 4.068715,
+    "transactional_diagnostics": 6.446319
+  },
+  "full_offline_pytest": {
+    "command": "python -m pytest -q --tb=short",
+    "passed": 5914,
+    "failed": 0,
+    "skipped": 82,
+    "duration_seconds": 398.64,
+    "stdout_path": "reports/production_readiness/20260913T000000Z_SOURCE_AWARE_ROUNDABOUT_V2/EE_FULL_OFFLINE_PYTEST.stdout.log",
+    "stdout_sha256": "97bac53f41b12b5226a6e89070ad21b4fe35a4510a9a4ce5eded012ecd86146a",
+    "stderr_path": "reports/production_readiness/20260913T000000Z_SOURCE_AWARE_ROUNDABOUT_V2/EE_FULL_OFFLINE_PYTEST.stderr.log",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "map_of_record_mutated": "NO",
+  "release_profile_enabled": "NO",
+  "live_carla": "NOT_RUN",
+  "wiring_decision": "NOT_WIRED",
+  "wiring_reason": "Top-level V2 remains diagnostic-only and cannot produce a validated before/after candidate map."
+}

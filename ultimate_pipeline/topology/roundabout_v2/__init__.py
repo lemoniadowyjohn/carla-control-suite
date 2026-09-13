@@ -6,4 +6,9 @@ from .elevation import evaluate, hermite_coefficients, validate_records
 from .lane_links import LaneLink, map_lanes, validate_links
 from .ring import RingSegmentSpec, build_junction_lane_links, build_segment_roads, build_segment_specs
 from .reporting import lane_provenance_report
-__all__ = ["Anchor", "Candidate", "Sample", "RoundaboutModel", "RoundaboutV2Reconstructor", "detect_candidates", "evaluate_elevation", "extract_endpoint_anchors", "sample_road", "validate_lane_mapping", "fit_circle", "choose_geometry_model", "validate_model", "validate_elevation_records", "validate_segmented_ring", "evaluate", "hermite_coefficients", "validate_records", "LaneLink", "map_lanes", "validate_links", "RingSegmentSpec", "build_segment_specs", "build_segment_roads", "build_junction_lane_links", "lane_provenance_report"]
+from .source_aware import (
+    detect_osm_spatial_candidates,
+    detect_osm_spatial_candidates_from_projected_ways,
+    extract_osm_roundabout_ways,
+)
+__all__ = ["Anchor", "Candidate", "Sample", "RoundaboutModel", "RoundaboutV2Reconstructor", "detect_candidates", "detect_osm_spatial_candidates", "detect_osm_spatial_candidates_from_projected_ways", "extract_osm_roundabout_ways", "evaluate_elevation", "extract_endpoint_anchors", "sample_road", "validate_lane_mapping", "fit_circle", "choose_geometry_model", "validate_model", "validate_elevation_records", "validate_segmented_ring", "evaluate", "hermite_coefficients", "validate_records", "LaneLink", "map_lanes", "validate_links", "RingSegmentSpec", "build_segment_specs", "build_segment_roads", "build_junction_lane_links", "lane_provenance_report"]
