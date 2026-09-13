@@ -5,6 +5,8 @@ import math
 import xml.etree.ElementTree as ET
 from typing import Dict, Optional, Tuple
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as _kernel_endpoint
+
 
 def _safe_float(x, default: float = 0.0) -> float:
     try:
@@ -26,33 +28,29 @@ def _angle_diff(a: float, b: float) -> float:
 
 
 def _geometry_endpoint(geom: ET.Element) -> Tuple[float, float, float]:
-    """Return (x_end, y_end, hdg_end) for a <geometry> element (line/arc).
-    Falls back to treating unknown geometry types as straight line."""
-    x0 = _safe_float(geom.get("x"))
-    y0 = _safe_float(geom.get("y"))
-    hdg0 = _safe_float(geom.get("hdg"))
-    length = _safe_float(geom.get("length"))
+    """Return (x_end, y_end, hdg_end) for a <geometry> element via the
+    canonical kernel (handles line/arc/spiral/poly3/paramPoly3 correctly).
 
-    arc = geom.find("arc")
-    if arc is None:
-        # Straight line
+    The previous implementation only recognized <arc> and treated every
+    other primitive -- including paramPoly3, this pipeline's dominant real
+    geometry type (~69% of roads on the pinned map-of-record) -- as a
+    straight line, silently corrupting the computed seam endpoint for most
+    real tile boundaries. Falls back to the old straight-line extrapolation
+    only when the geometry has no recognized primitive at all (truly
+    malformed input), matching the previous graceful-degradation behavior
+    for that specific edge case.
+    """
+    try:
+        pose = _kernel_endpoint(geom)
+        return pose.x, pose.y, pose.heading
+    except (ValueError, KeyError):
+        x0 = _safe_float(geom.get("x"))
+        y0 = _safe_float(geom.get("y"))
+        hdg0 = _safe_float(geom.get("hdg"))
+        length = _safe_float(geom.get("length"))
         x1 = x0 + length * math.cos(hdg0)
         y1 = y0 + length * math.sin(hdg0)
         return x1, y1, hdg0
-
-    curvature = _safe_float(arc.get("curvature"))
-    if abs(curvature) < 1e-12:
-        x1 = x0 + length * math.cos(hdg0)
-        y1 = y0 + length * math.sin(hdg0)
-        return x1, y1, hdg0
-
-    # Arc endpoint
-    R = 1.0 / curvature
-    theta = length * curvature
-    x1 = x0 + R * (math.sin(hdg0 + theta) - math.sin(hdg0))
-    y1 = y0 - R * (math.cos(hdg0 + theta) - math.cos(hdg0))
-    hdg1 = hdg0 + theta
-    return x1, y1, hdg1
 
 
 class GeometrySeamChecker:

@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from typing import List, Dict, Tuple
 import math
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as _kernel_sample
+
 XY = Tuple[float, float]
 
 
@@ -68,43 +70,35 @@ def _lane_type(lane: ET.Element) -> str:
 
 
 def _sample_geometry(geom: ET.Element, step: float = 2.0) -> List[XY]:
-    """Sample a geometry (line or arc) into XY points."""
+    """Sample a geometry into XY points via the canonical kernel (handles
+    line/arc/spiral/poly3/paramPoly3 correctly).
+
+    The previous implementation only recognized <arc> and treated every
+    other primitive -- including paramPoly3, this pipeline's dominant real
+    geometry type (~69% of roads on the pinned map-of-record) -- as a
+    straight line, silently corrupting the sampled polyline (and therefore
+    every seam-matching/offset computation downstream) for most real tile
+    boundaries. Falls back to the old straight-line extrapolation only when
+    the geometry has no recognized primitive at all (truly malformed
+    input), matching the previous graceful-degradation behavior for that
+    specific edge case.
+    """
     x0 = _safe_float(geom.get("x", "0"))
     y0 = _safe_float(geom.get("y", "0"))
     hdg = _safe_float(geom.get("hdg", "0"))
     length = _safe_float(geom.get("length", "0"))
 
-    arc = geom.find("arc")
-    pts: List[XY] = []
-
-    if arc is None:
+    try:
+        return [(pose.x, pose.y) for pose in _kernel_sample(geom, max(step, 1e-3))]
+    except (ValueError, KeyError):
         n = max(2, int(max(length, 0.0) / step))
+        pts: List[XY] = []
         for i in range(n + 1):
             ds = length * (i / n)
             x = x0 + ds * math.cos(hdg)
             y = y0 + ds * math.sin(hdg)
             pts.append((x, y))
         return pts
-
-    curvature = _safe_float(arc.get("curvature", "0"))
-    if abs(curvature) < 1e-12:
-        n = max(2, int(max(length, 0.0) / step))
-        for i in range(n + 1):
-            ds = length * (i / n)
-            x = x0 + ds * math.cos(hdg)
-            y = y0 + ds * math.sin(hdg)
-            pts.append((x, y))
-        return pts
-
-    R = 1.0 / curvature
-    n = max(12, int(max(length, 0.0) / step))
-    for i in range(n + 1):
-        ds = length * (i / n)
-        theta = ds * curvature
-        x = x0 + R * (math.sin(hdg + theta) - math.sin(hdg))
-        y = y0 - R * (math.cos(hdg + theta) - math.cos(hdg))
-        pts.append((x, y))
-    return pts
 
 
 def _planview_polyline(road: ET.Element, step: float = 2.0) -> List[LanePoint]:
