@@ -1,8 +1,10 @@
 import xml.etree.ElementTree as ET
 
 from ultimate_pipeline.enrichment.osm_xodr_correspondence import (
+    _osm_direction,
     _road_samples,
     build_correspondence,
+    build_metadata_associations,
     match_osm_way_to_xodr,
 )
 
@@ -56,3 +58,46 @@ def test_build_correspondence_uses_cached_grid_candidates():
         {"id": "w2", "name": "Main", "geometry": [(0, 0), (10, 0)]},
     ], root)
     assert [result.xodr_road_id for result in results] == ["7", "7"]
+
+
+def test_osm_direction_forward_when_way_and_road_run_the_same_way():
+    # both run +x: same net direction
+    assert _osm_direction([(0, 0), (10, 0)], [(0, 0), (10, 0)]) == "forward"
+
+
+def test_osm_direction_reverse_when_way_runs_opposite_the_road():
+    # way runs -x while road runs +x: opposite net direction
+    assert _osm_direction([(10, 0), (0, 0)], [(0, 0), (10, 0)]) == "reverse"
+
+
+def test_osm_direction_robust_to_curvature_not_just_local_heading():
+    # way's local heading at its start bends away from +x, but its NET
+    # start-to-end displacement still runs +x -- must use net displacement,
+    # not a single local heading sample, to classify this as forward.
+    curved_way = [(0, 0), (2, 3), (5, -2), (10, 0.1)]
+    assert _osm_direction(curved_way, [(0, 0), (10, 0)]) == "forward"
+
+
+def test_osm_direction_none_for_degenerate_inputs():
+    assert _osm_direction([(0, 0)], [(0, 0), (10, 0)]) is None
+    assert _osm_direction([(0, 0), (10, 0)], [(0, 0)]) is None
+    assert _osm_direction([(0, 0), (0, 0)], [(0, 0), (10, 0)]) is None
+
+
+def test_build_metadata_associations_includes_osm_direction():
+    root = ET.fromstring(
+        '<OpenDRIVE><road id="7" name="Main">'
+        '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        "</road></OpenDRIVE>"
+    )
+    associations, report = build_metadata_associations(
+        [{
+            "id": "w1",
+            "name": "Main",
+            "geometry": [(0, 0), (10, 0)],
+            "metadata": {"maxspeed": "50"},
+        }],
+        root,
+    )
+    assert report["eligible_road_count"] == 1
+    assert associations["7"]["osm_direction"] == "forward"

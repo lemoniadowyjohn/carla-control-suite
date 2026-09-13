@@ -141,6 +141,30 @@ def _way_points(way: Mapping[str, Any]) -> list[tuple[float, float]]:
     return [(float(p[0]), float(p[1])) for p in way.get("geometry", ())]
 
 
+def _osm_direction(
+    way_points: Sequence[tuple[float, float]],
+    road_points: Sequence[tuple[float, float]],
+) -> str | None:
+    """'forward' when the OSM way's node order runs the same way as the XODR
+    road's increasing-s direction, 'reverse' when opposite, None when either
+    sequence is too short/degenerate to determine a net direction reliably.
+
+    Uses the overall start-to-end displacement vector, not local heading at
+    one segment -- robust to curvature in either the OSM way or the XODR
+    road, where a single-point heading sample would not be.
+    """
+    if len(way_points) < 2 or len(road_points) < 2:
+        return None
+    way_vec = (way_points[-1][0] - way_points[0][0], way_points[-1][1] - way_points[0][1])
+    road_vec = (road_points[-1][0] - road_points[0][0], road_points[-1][1] - road_points[0][1])
+    way_len = math.hypot(*way_vec)
+    road_len = math.hypot(*road_vec)
+    if way_len < 1e-6 or road_len < 1e-6:
+        return None
+    dot = way_vec[0] * road_vec[0] + way_vec[1] * road_vec[1]
+    return "forward" if dot > 0 else "reverse"
+
+
 def match_osm_way_to_xodr(
     osm_way: Mapping[str, Any],
     xodr_candidates: Iterable[ET.Element],
@@ -240,6 +264,9 @@ def build_metadata_associations(
         for way in ways
     }
     results = build_correspondence(ways, root, **kwargs)
+    roads_by_id = {
+        str(road.get("id")): road for road in root.findall("./road") if road.get("id")
+    }
     candidates: dict[str, list[tuple[MatchResult, Mapping[str, Any]]]] = {}
     class_counts = {"EXACT": 0, "HIGH": 0, "AMBIGUOUS": 0, "UNMATCHED": 0}
     for result in results:
@@ -283,10 +310,14 @@ def build_metadata_associations(
                 }
             )
             continue
+        road_el = roads_by_id.get(road_id)
+        road_points = _road_samples(road_el) if road_el is not None else []
+        osm_direction = _osm_direction(_way_points(selected_way), road_points)
         associations[road_id] = {
             "class": selected_result.match_class,
             "confidence": selected_result.confidence,
             "osm_way_id": selected_result.osm_way_id,
+            "osm_direction": osm_direction,
             "metadata": selected_metadata,
             "evidence": dict(selected_result.evidence),
         }

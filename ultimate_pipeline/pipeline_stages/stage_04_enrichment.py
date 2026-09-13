@@ -292,6 +292,29 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
                 "regulatory_signs": n_signs,
             })
             print(f"   → Speed limits: {n_speed}, turn markings: {n_turn}, signs: {n_signs}")
+
+            # Advisory cross-check: does OSM's turn:lanes tagging agree with
+            # the geometrically-built junction laneLinks (built independently,
+            # from geometry alone -- see lanelink_builder.py)? Reuses the same
+            # spatial `associations` already computed above; never mutates
+            # laneLinks, per turn_restriction_audit.py's own design.
+            try:
+                from ultimate_pipeline.lanes.turn_restriction_audit import (
+                    audit_lane_link_turn_classification,
+                )
+
+                turn_audit = audit_lane_link_turn_classification(root, associations)
+                self.vreport.add_dict("lane_link_turn_classification_audit", turn_audit)
+                turn_audit_summary = turn_audit.get("summary_metrics", {})
+                print(
+                    "   → Lane-link turn-classification audit: "
+                    f"status={turn_audit.get('status')} "
+                    f"agree={turn_audit_summary.get('agree', 0)} "
+                    f"disagree={turn_audit_summary.get('disagree', 0)} "
+                    f"no_osm_data={turn_audit_summary.get('no_osm_turn_data', 0)}"
+                )
+            except Exception as e:
+                print(f"⚠️ Lane-link turn-classification audit failed (continuing): {e}")
         else:
             print("⏭️ Spatial OSM metadata skipped (no usable source way geometry)")
             self.vreport.add_dict(
