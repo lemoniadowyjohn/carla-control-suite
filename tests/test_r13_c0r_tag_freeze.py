@@ -253,7 +253,7 @@ _LF_NORMALIZED_HASH_OVERRIDES = {
 
 def _sha256_matches_line_ending_tolerant(path: Path, expected_sha256: str) -> bool:
     """True if `path`'s content hashes to `expected_sha256` either as raw
-    bytes, or after normalizing to CRLF line endings.
+    bytes, LF line endings, or CRLF line endings.
 
     Root cause (confirmed 2026-09-06, byte-for-byte): several R13 evidence
     files (the CSV fixtures plus a few JSON/MD files) were originally
@@ -261,24 +261,22 @@ def _sha256_matches_line_ending_tolerant(path: Path, expected_sha256: str) -> bo
     converts CRLF -> LF on `git add`/commit (so the blob actually stored in
     git is LF-only) and LF -> CRLF on checkout back to a Windows working
     tree. The frozen R13P manifest's recorded sha256 for these files was
-    computed against the *Windows working-tree bytes* (CRLF) at freeze time
-    -- but a Linux CI runner checks out the *stored blob* (LF) directly and
-    computes a different raw hash for the same logical content, which is
-    exactly CI Failure D's reported mismatch (manifest-recorded/"expected"
-    == the CRLF hash, CI-computed/"actual" == the LF hash). Normalizing
-    toward CRLF (the form the manifest already committed to) makes the
-    comparison checkout-portable without editing the frozen manifest itself
-    -- editing it would change R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json's own
-    file hash, which is embedded directly in the real
-    `c0r_freeze_20260809T085442Z_01` git tag's message
-    (`manifest_sha256=...`), breaking that tag's cryptographic freeze
-    anchor. A genuine content tamper (not a line-ending artifact) still
-    fails both comparisons.
+    computed against either the Windows working-tree bytes (CRLF) or stored
+    Git blob bytes (LF). Both forms are accepted, with one documented
+    mixed-ending exception below. This makes the comparison checkout-portable
+    without editing the frozen manifest itself -- editing it would change
+    R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json's own file hash, which is embedded
+    directly in the real `c0r_freeze_20260809T085442Z_01` tag message. A
+    genuine content tamper still changes raw, LF-normalized, and
+    CRLF-normalized hashes.
     """
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() == expected_sha256:
         return True
-    crlf_normalized = raw.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+    lf_normalized = raw.replace(b"\r\n", b"\n")
+    if hashlib.sha256(lf_normalized).hexdigest() == expected_sha256:
+        return True
+    crlf_normalized = lf_normalized.replace(b"\n", b"\r\n")
     return hashlib.sha256(crlf_normalized).hexdigest() == expected_sha256
 
 
@@ -301,6 +299,16 @@ def test_sha256_matches_line_ending_tolerant_accepts_crlf_vs_lf_variant(tmp_path
     assert _sha256_matches_line_ending_tolerant(p, expected)
 
 
+def test_sha256_matches_line_ending_tolerant_accepts_lf_vs_crlf_variant(tmp_path):
+    """A blob-hash manifest must also survive a Windows CRLF checkout."""
+    lf_bytes = b"line one\nline two\n"
+    p = tmp_path / "f.txt"
+    p.write_bytes(lf_bytes.replace(b"\n", b"\r\n"))
+    assert _sha256_matches_line_ending_tolerant(
+        p, hashlib.sha256(lf_bytes).hexdigest()
+    )
+
+
 def test_sha256_matches_line_ending_tolerant_rejects_real_tamper(tmp_path):
     """A genuine content change (not a line-ending artifact) must still be
     detected -- this must not become a rubber-stamp."""
@@ -308,6 +316,31 @@ def test_sha256_matches_line_ending_tolerant_rejects_real_tamper(tmp_path):
     p.write_bytes(b"tampered content\r\n")
     expected = hashlib.sha256(b"original content\r\n").hexdigest()
     assert not _sha256_matches_line_ending_tolerant(p, expected)
+
+
+def test_r13a_portability_rule_is_exactly_the_manifest_lf_hash():
+    """R13A must stay byte-frozen while checkout conversion remains tolerated."""
+    path = (
+        REPO_ROOT
+        / "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION"
+        / "R13A_BRANCH_METADATA_RECONCILIATION.json"
+    )
+    raw = path.read_bytes()
+    lf = raw.replace(b"\r\n", b"\n")
+    manifest = json.loads(
+        (
+            REPO_ROOT
+            / "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION"
+            / "R13P_C0_PRIMARY_EVIDENCE_MANIFEST.json"
+        ).read_text(encoding="utf-8")
+    )
+    expected = next(
+        entry["sha256"]
+        for entry in manifest["entries"]
+        if entry["path"].endswith("R13A_BRANCH_METADATA_RECONCILIATION.json")
+    )
+    assert hashlib.sha256(raw).hexdigest() != expected
+    assert hashlib.sha256(lf).hexdigest() == expected
 
 
 # ---------------------------------------------------------------------------
