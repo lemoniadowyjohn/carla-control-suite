@@ -111,6 +111,25 @@ def check_lane_width_continuity(
                     })
 
                 if idx + 1 >= len(sections_with_s):
+                    # No next laneSection to jump-compare against -- but this
+                    # lane's own width at the true end of the road (the last
+                    # laneSection's own end, s0 + section_len) is otherwise
+                    # never evaluated by this function at all: every OTHER
+                    # section's end is implicitly checked via the NEXT
+                    # section's start_width, but the final section has no
+                    # "next" to hand that job to. Check it directly here so
+                    # "non-positive widths" (this module's own stated scope)
+                    # isn't silently skipped for every road's final section.
+                    end_width = _width_at_s(widths, section_len)
+                    if end_width is not None and (not math.isfinite(end_width) or end_width <= min_width):
+                        issues.append({
+                            "type": "nonpositive_width_at_road_end",
+                            "road": rid,
+                            "lane": lane_id,
+                            "laneSection_s": s0,
+                            "s": s0 + section_len,
+                            "width": end_width,
+                        })
                     continue
                 _, next_ls = sections_with_s[idx + 1]
                 next_lane = next_ls.find(f".//lane[@id='{lane_id}']")

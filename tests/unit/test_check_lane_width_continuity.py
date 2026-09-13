@@ -86,6 +86,31 @@ def test_nonpositive_width_flagged(tmp_path: Path):
     assert any(i["type"] == "nonpositive_width" for i in report["issues"])
 
 
+def test_nonpositive_width_at_true_end_of_road_flagged(tmp_path: Path):
+    """Every laneSection's start width is checked (via start_width, always
+    computed), and every section's end is implicitly checked too -- EXCEPT
+    the very last laneSection's own end (the true end of the road), which
+    has no "next" section to hand that job to. A lane whose width polynomial
+    is fine at its section start (a=3.5) but tapers to negative by the end
+    of a 10m road (b=-1.0 -> width(10)=3.5-10=-6.5) must still be flagged,
+    not silently pass because only the start was ever evaluated."""
+    lane = _lane(-1, "driving", 3.5)
+    lane.find("width").set("b", "-1.0")
+    road = ET.Element("road", id="1", length="10.0")
+    lanes_el = ET.SubElement(road, "lanes")
+    sec = ET.SubElement(lanes_el, "laneSection", s="0.0")
+    right = ET.SubElement(sec, "right")
+    right.append(lane)
+    xodr = tmp_path / "map.xodr"
+    _write_xodr(xodr, road)
+
+    report = check_lane_width_continuity(str(xodr))
+
+    issue = next(i for i in report["issues"] if i["type"] == "nonpositive_width_at_road_end")
+    assert issue["width"] == -6.5
+    assert issue["s"] == 10.0
+
+
 def test_positive_width_not_flagged(tmp_path: Path):
     lane = _lane(-1, "driving", 3.5)
     road = ET.Element("road", id="1", length="10.0")
