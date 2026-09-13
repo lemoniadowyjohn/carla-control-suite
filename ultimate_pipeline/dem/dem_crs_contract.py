@@ -143,9 +143,10 @@ def header_offset_from_xodr(xodr_path: str) -> Dict[str, float]:
     return out
 
 
-def _apply_header_offset_to_point(
+def apply_header_offset_to_point(
     x: float, y: float, offset: Dict[str, float]
 ) -> Tuple[float, float]:
+    """Transform a local OpenDRIVE planView point into its header frame."""
     hdg = float(offset.get("hdg", 0.0))
     ox = float(offset.get("x", 0.0))
     oy = float(offset.get("y", 0.0))
@@ -168,10 +169,77 @@ def _bounds_with_header_offset(
     xs = []
     ys = []
     for x, y in corners:
-        xx, yy = _apply_header_offset_to_point(x, y, offset)
+        xx, yy = apply_header_offset_to_point(x, y, offset)
         xs.append(xx)
         ys.append(yy)
     return {"west": min(xs), "east": max(xs), "south": min(ys), "north": max(ys)}
+
+
+def _bounds_are_consistent(
+    first: Optional[Dict[str, float]], second: Optional[Dict[str, float]]
+) -> bool:
+    """Return whether two map-scale bounding boxes describe one frame.
+
+    OpenDRIVE generators disagree about whether ``header`` bounds are emitted
+    before or after the optional header offset. We only use this comparison
+    to select that convention when the complete planView extent corroborates
+    it; it is not a geographic plausibility threshold.
+    """
+    if first is None or second is None:
+        return False
+    try:
+        values = [
+            float(first[key])
+            for key in ("west", "east", "south", "north")
+        ] + [
+            float(second[key])
+            for key in ("west", "east", "south", "north")
+        ]
+    except (KeyError, TypeError, ValueError):
+        return False
+    if not all(math.isfinite(value) for value in values):
+        return False
+    spans = (
+        abs(float(first["east"]) - float(first["west"])),
+        abs(float(first["north"]) - float(first["south"])),
+        abs(float(second["east"]) - float(second["west"])),
+        abs(float(second["north"]) - float(second["south"])),
+    )
+    # Header extents are commonly rounded while planView endpoints are not.
+    # Five per mille of map span tolerates that serialization difference while
+    # still rejecting a second application of a city-scale offset.
+    tolerance_m = max(2.0, 0.005 * max(spans, default=0.0))
+    return all(
+        abs(float(first[key]) - float(second[key])) <= tolerance_m
+        for key in ("west", "east", "south", "north")
+    )
+
+
+def _effective_coordinate_bounds(
+    header_bounds: Optional[Dict[str, float]],
+    geometry_bounds: Optional[Dict[str, float]],
+    offset: Dict[str, float],
+) -> Tuple[Optional[Dict[str, float]], str]:
+    """Choose the coordinate-frame bounds without double-applying an offset.
+
+    When raw header bounds match offset-adjusted planView bounds, the producer
+    has already made header bounds global and the offset must not be added
+    again. When raw header and planView bounds match, both are local and the
+    offset is applied once. Inputs without a complete planView retain the
+    legacy behavior but identify it in the evidence record.
+    """
+    header_with_offset = _bounds_with_header_offset(header_bounds, offset)
+    geometry_with_offset = _bounds_with_header_offset(geometry_bounds, offset)
+
+    if _bounds_are_consistent(header_bounds, geometry_with_offset):
+        return header_bounds, "header_preoffset_matches_geometry_with_offset"
+    if _bounds_are_consistent(header_bounds, geometry_bounds):
+        return header_with_offset, "header_local_matches_geometry_raw"
+    if header_bounds is not None:
+        return header_with_offset, "header_offset_applied_without_geometry_confirmation"
+    if geometry_bounds is not None:
+        return geometry_with_offset, "planview_offset_applied"
+    return None, "unavailable"
 
 
 def _geometry_endpoint(
@@ -357,27 +425,35 @@ def verify_crs_contract(
         }
     header_bounds_raw = header_bounds_from_xodr(xodr_path)
     geometry_bounds = _planview_bbox(xodr_path)
-    bounds_source = "header"
-    if header_bounds_raw is None:
-        header_bounds_raw = geometry_bounds
-        bounds_source = "planView"
-    if header_bounds_raw is None:
+    bounds_source = "header" if header_bounds_raw is not None else "planView"
+    if header_bounds_raw is None and geometry_bounds is None:
         return {
             "verdict": "UNRESOLVED",
             "reason": "no_geometry_bounds",
             "osm_bounds": osm_bounds,
         }
     header_offset = header_offset_from_xodr(xodr_path)
-    header_bounds = _bounds_with_header_offset(header_bounds_raw, header_offset)
+    header_bounds_with_offset = _bounds_with_header_offset(
+        header_bounds_raw, header_offset
+    )
     geometry_bounds_with_offset = _bounds_with_header_offset(
         geometry_bounds, header_offset
     )
+    coordinate_bounds, coordinate_bounds_source = _effective_coordinate_bounds(
+        header_bounds_raw, geometry_bounds, header_offset
+    )
+    if coordinate_bounds is None:
+        return {
+            "verdict": "UNRESOLVED",
+            "reason": "no_effective_coordinate_bounds",
+            "osm_bounds": osm_bounds,
+        }
 
     expanded = _expanded(osm_bounds, PLAUSIBILITY_MARGIN_DEG)
 
     claimed_crs, claimed_raw, claimed_reason = claimed_crs_from_xodr(xodr_path)
     claimed_wgs84 = (
-        _bbox_to_wgs84(header_bounds, claimed_crs)
+        _bbox_to_wgs84(coordinate_bounds, claimed_crs)
         if claimed_crs is not None
         else None
     )
@@ -387,7 +463,7 @@ def verify_crs_contract(
 
     native_crs = osm2odr_native_crs()
     native_wgs84 = (
-        _bbox_to_wgs84(header_bounds, native_crs)
+        _bbox_to_wgs84(coordinate_bounds, native_crs)
         if native_crs is not None
         else None
     )
@@ -431,9 +507,11 @@ def verify_crs_contract(
         "bounds_source": bounds_source,
         "header_bounds": header_bounds_raw,
         "header_offset": header_offset,
-        "header_bounds_with_offset": header_bounds,
+        "header_bounds_with_offset": header_bounds_with_offset,
         "geometry_bounds": geometry_bounds,
         "geometry_bounds_with_offset": geometry_bounds_with_offset,
+        "effective_coordinate_bounds": coordinate_bounds,
+        "effective_coordinate_bounds_source": coordinate_bounds_source,
         "claimed_crs": str(claimed_crs) if claimed_crs is not None else None,
         "claimed_proj4": claimed_raw,
         "claimed_crs_reason": claimed_reason,

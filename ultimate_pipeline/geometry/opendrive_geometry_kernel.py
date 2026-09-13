@@ -78,7 +78,7 @@ def endpoint(geometry: Element) -> Pose: return pose_at_s(geometry,_f(geometry,"
 
 def sample(geometry: Element, spacing: float) -> list[Pose]:
     if not math.isfinite(spacing) or spacing <= 0: raise ValueError("spacing must be positive")
-    length=_f(geometry,"length"); n=max(1,math.ceil(length/spacing)); return [pose_at_s(geometry,length*i/n) for i in range(n+1)]
+    length=_f(geometry,"length"); n=max(1,math.ceil(length/spacing)); return [pose_at_s(geometry,length if i == n else length*i/n) for i in range(n+1)]
 
 def bounding_box(geometry: Element, spacing: float = 0.25) -> tuple[float,float,float,float]:
     points=sample(geometry,spacing); xs=[p.x for p in points]; ys=[p.y for p in points]; return min(xs),min(ys),max(xs),max(ys)

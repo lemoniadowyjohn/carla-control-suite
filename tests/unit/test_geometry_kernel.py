@@ -19,6 +19,17 @@ def test_line_oracle():
     assert bounding_box(g)==pytest.approx((0,0,10,0))
     assert project_point(g,4,2)==pytest.approx((4,2,2),abs=1e-6)
 
+
+def test_sampling_uses_the_declared_length_at_a_nonrepresentable_endpoint():
+    # This real map segment length previously rounded above its own declared
+    # OpenDRIVE domain through ``length * n / n`` at the final sample.
+    g = geom("line", 58.86684289)
+
+    points = sample(g, 5.0)
+
+    assert len(points) == 13
+    assert points[-1].x == pytest.approx(58.86684289)
+
 def test_arc_quarter_circle_oracle():
     g=geom("arc",math.pi*5, curvature=.2)
     p=pose_at_s(g,math.pi/2/.2)

@@ -424,6 +424,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
             sampler = ElevationImporter.make_raster_sampler(
                 dem_path,
                 xodr_path=topo_fixed,  # For CRS/UTM zone detection
+                osm_path=str(getattr(s, "OSM_FILE", "") or ""),
             )
             print(f"[DEM] Sampler active: {dem_path}")
         except Exception as e:
@@ -547,6 +548,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                         sampler = ElevationImporter.make_raster_sampler(
                             dem_path,
                             xodr_path=topo_fixed,
+                            osm_path=str(getattr(s, "OSM_FILE", "") or ""),
                         )
                         print(f"[DEM] Sampler updated to use expanded DEM")
 
@@ -825,6 +827,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                     sampler = ElevationImporter.make_raster_sampler(
                         retried_dem_path,
                         xodr_path=topo_fixed,
+                        osm_path=str(getattr(s, "OSM_FILE", "") or ""),
                     )
                     retry_stats = {
                         "sampled_points": 0,

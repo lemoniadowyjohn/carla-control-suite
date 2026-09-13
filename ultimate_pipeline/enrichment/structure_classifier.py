@@ -45,6 +45,8 @@ except Exception:  # pragma: no cover
 
 from ultimate_pipeline.dem.dem_crs_contract import (
     OSM2ODR_NATIVE_PROJ4,
+    apply_header_offset_to_point,
+    header_offset_from_xodr,
     resolve_sampling_crs,
 )
 from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
@@ -255,9 +257,17 @@ def _geometry_polyline(geom: ET.Element, spacing_m: float) -> List[Tuple[float, 
 
 
 def road_centerline_polyline(
-    road: ET.Element, spacing_m: float = DEFAULT_SAMPLE_SPACING_M
+    road: ET.Element,
+    spacing_m: float = DEFAULT_SAMPLE_SPACING_M,
+    header_offset: Optional[Dict[str, float]] = None,
 ) -> List[Tuple[float, float]]:
-    """Densified centreline of one road (concatenated geometry primitives)."""
+    """Densified centreline in the CRS frame selected for OSM matching.
+
+    OpenDRIVE planView coordinates may be local while OSM geometry is projected
+    into the header's global frame.  The optional header offset is applied once
+    here so the spatial index never compares local road coordinates to global
+    OSM coordinates.
+    """
     plan = road.find("planView")
     if plan is None:
         return []
@@ -272,7 +282,9 @@ def road_centerline_polyline(
             if (last[0] - first[0]) ** 2 + (last[1] - first[1]) ** 2 < 1e-6:
                 seg = seg[1:]
         pts.extend(seg)
-    return pts
+    if header_offset is None:
+        return pts
+    return [apply_header_offset_to_point(x, y, header_offset) for x, y in pts]
 
 
 def _point_segment_dist(px: float, py: float, ax: float, ay: float, bx: float, by: float) -> float:
@@ -422,6 +434,7 @@ def classify_xodr_roads(
         raise FileNotFoundError(f"[F3] XODR missing: {xodr_path}")
     tree = ET.parse(xodr_path)
     root = tree.getroot()
+    header_offset = header_offset_from_xodr(xodr_path)
 
     per_road: Dict[str, Dict[str, Any]] = {}
     counts: Dict[str, int] = {}
@@ -429,7 +442,11 @@ def classify_xodr_roads(
     matched_length_m = 0.0
     for road in root.findall("road"):
         rid = str(road.get("id", "UNKNOWN"))
-        pts = road_centerline_polyline(road, spacing_m=sample_spacing_m)
+        pts = road_centerline_polyline(
+            road,
+            spacing_m=sample_spacing_m,
+            header_offset=header_offset,
+        )
         result = _classify_road_centreline(
             pts, structures, buffer_m=buffer_m, class_fraction=class_fraction,
             spatial_index=spatial_index,
