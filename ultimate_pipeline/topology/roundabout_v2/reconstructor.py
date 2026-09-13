@@ -1,7 +1,7 @@
 from __future__ import annotations
 import copy
 import xml.etree.ElementTree as ET
-from .core import RoundaboutModel, choose_geometry_model, detect_candidates, extract_endpoint_anchors, infer_lane_model, sample_road
+from .core import Candidate, RoundaboutModel, choose_geometry_model, detect_candidates, extract_endpoint_anchors, infer_lane_model, sample_road
 from .validator import validate_model, validate_segmented_ring
 from .ring import build_segment_roads, build_segment_specs
 
@@ -12,9 +12,10 @@ class RoundaboutV2Reconstructor:
         if circle_rmse_threshold <= 0 or sample_spacing_m <= 0: raise ValueError("V2 parameters must be positive")
         self.circle_rmse_threshold=circle_rmse_threshold; self.sample_spacing_m=sample_spacing_m
 
-    def analyze(self, root: ET.Element) -> list[RoundaboutModel]:
+    def analyze(self, root: ET.Element, *, osm_path: str | None = None,
+                candidates: list[Candidate] | None = None) -> list[RoundaboutModel]:
         roads={r.get("id"):r for r in root.findall("road") if r.get("id")}; out=[]
-        for candidate in detect_candidates(root):
+        for candidate in candidates if candidates is not None else detect_candidates(root, osm_path=osm_path):
             model=RoundaboutModel(candidate)
             try:
                 model.samples=[p for rid in candidate.road_ids for p in sample_road(roads[rid],self.sample_spacing_m)]
@@ -32,9 +33,10 @@ class RoundaboutV2Reconstructor:
             out.append(model)
         return out
 
-    def reconstruct_transactional(self, root: ET.Element) -> tuple[ET.Element,list[dict]]:
+    def reconstruct_transactional(self, root: ET.Element, *, osm_path: str | None = None,
+                                  candidates: list[Candidate] | None = None) -> tuple[ET.Element,list[dict]]:
         clone=copy.deepcopy(root); diagnostics=[]
-        for model in self.analyze(clone):
+        for model in self.analyze(clone, osm_path=osm_path, candidates=candidates):
             diagnostics.append({"junction_ids":model.candidate.junction_ids,"action":model.action,"geometry_kind":model.geometry_kind,"circle_fit":model.circle_fit,"validation":validate_model(model)})
         return clone,diagnostics
 

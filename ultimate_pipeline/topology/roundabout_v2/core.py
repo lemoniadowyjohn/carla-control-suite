@@ -12,7 +12,7 @@ class Sample:
 @dataclass(frozen=True)
 class Candidate:
     junction_ids: tuple[str, ...]; road_ids: tuple[str, ...]; osm_way_ids: tuple[str, ...]
-    detection_method: Literal["EXACT_OSM", "TOPOLOGY_HIGH", "GEOMETRY_HIGH", "HEURISTIC", "AMBIGUOUS", "REJECTED"]
+    detection_method: Literal["EXACT_OSM", "OSM_SPATIAL", "TOPOLOGY_HIGH", "GEOMETRY_HIGH", "HEURISTIC", "AMBIGUOUS", "REJECTED"]
     detection_confidence: float; reason: str
 
 @dataclass(frozen=True)
@@ -93,7 +93,8 @@ def _marker(road: ET.Element) -> tuple[bool, str | None]:
             return True, node.get("way_id") or node.get("id")
     return False, None
 
-def detect_candidates(root: ET.Element) -> list[Candidate]:
+def detect_candidates(root: ET.Element, *, osm_path: str | None = None) -> list[Candidate]:
+    """Detect V2 candidates, optionally adding fail-closed OSM evidence."""
     roads = {r.get("id"): r for r in root.findall("road") if r.get("id")}; out=[]
     for j in root.findall("junction"):
         ids=sorted({rid for c in j.findall("connection") for rid in (c.get("incomingRoad"),c.get("connectingRoad")) if rid in roads})
@@ -102,7 +103,20 @@ def detect_candidates(root: ET.Element) -> list[Candidate]:
         if ways: out.append(Candidate((j.get("id") or "",),tuple(ids),tuple(ways),"EXACT_OSM",1.0,"explicit OSM semantics")); continue
         curvy=sum(any(g.find("arc") is not None or g.find("spiral") is not None for g in roads[r].findall("./planView/geometry")) for r in ids)
         if curvy >= 3: out.append(Candidate((j.get("id") or "",),tuple(ids),(),"TOPOLOGY_HIGH",0.8,"junction-connected curved component"))
-    return out
+    if osm_path:
+        from .source_aware import detect_osm_spatial_candidates
+
+        spatial_candidates, _ = detect_osm_spatial_candidates(root, osm_path)
+        out.extend(spatial_candidates)
+    return sorted(
+        out,
+        key=lambda candidate: (
+            candidate.detection_method,
+            candidate.osm_way_ids,
+            candidate.junction_ids,
+            candidate.road_ids,
+        ),
+    )
 
 def _lanes(road: ET.Element) -> tuple[int,...]:
     ids=[]
