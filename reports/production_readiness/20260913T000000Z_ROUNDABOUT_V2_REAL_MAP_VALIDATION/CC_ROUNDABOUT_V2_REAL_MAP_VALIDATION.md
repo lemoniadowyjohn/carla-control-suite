@@ -52,7 +52,7 @@ TASK_3_ACCEPTANCE_DELTA: not reached -- no reconstructable candidates
 
 TASK_4_WIRING_DECISION: NOT_WIRED -- 135 source OSM roundabouts but zero V2 candidates in the converted XODR
 
-TASK_5_FULL_OFFLINE_TESTS: pending this branch's full-suite run
+TASK_5_FULL_OFFLINE_TESTS: PASS -- 5,756 passed, 82 skipped, 0 failed
 
 MAP_OF_RECORD_MUTATED: NO
 
