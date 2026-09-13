@@ -91,6 +91,59 @@ def _interior_samples(road: ET.Element, spacing_m: float) -> list[tuple[float, f
     return [sample for sample in samples if endpoint_margin < sample[0] < road_length - endpoint_margin]
 
 
+def evaluate_road_elevation_samples(
+    road: ET.Element,
+    terrain_sampler: Callable[[float, float], Any],
+    *,
+    sample_spacing_m: float,
+) -> dict[str, Any]:
+    """Evaluate the gate's interior samples without assigning a pass/fail verdict.
+
+    The plausibility gate and offline diagnosis tooling share this function so
+    an evidence report cannot silently use different endpoint exclusion,
+    elevation-polynomial, or terrain-validity semantics from the gate it
+    characterises.
+    """
+    samples = _interior_samples(road, sample_spacing_m)
+    observations: list[dict[str, Any]] = []
+    for s, x, y in samples:
+        elevation = elevation_at_s(road, s)
+        terrain = _terrain_value(terrain_sampler, x, y)
+        if elevation is None:
+            status = "MISSING_ELEVATION"
+            delta = None
+        elif terrain is None:
+            status = "MISSING_TERRAIN"
+            delta = None
+        else:
+            status = "EVALUABLE"
+            delta = elevation - terrain
+        observations.append(
+            {
+                "s": s,
+                "x": x,
+                "y": y,
+                "elevation_m": elevation,
+                "terrain_m": terrain,
+                "delta_m": delta,
+                "status": status,
+            }
+        )
+    return {
+        "sample_count": len(samples),
+        "evaluable_sample_count": sum(
+            item["status"] == "EVALUABLE" for item in observations
+        ),
+        "missing_elevation_count": sum(
+            item["status"] == "MISSING_ELEVATION" for item in observations
+        ),
+        "missing_terrain_count": sum(
+            item["status"] == "MISSING_TERRAIN" for item in observations
+        ),
+        "observations": observations,
+    }
+
+
 def check_structure_elevation_plausibility(
     xodr_or_root: str | Path | ET.Element,
     *,
@@ -146,26 +199,24 @@ def check_structure_elevation_plausibility(
             records.append({"road_id": str(road_id), "class": road_class, "status": "INCOMPLETE", "reason": "road_missing"})
             continue
         try:
-            samples = _interior_samples(road, sample_spacing_m)
+            evaluated = evaluate_road_elevation_samples(
+                road, terrain_sampler, sample_spacing_m=sample_spacing_m
+            )
         except (TypeError, ValueError, OverflowError) as exc:
             records.append({"road_id": str(road_id), "class": road_class, "status": "INCOMPLETE", "reason": f"geometry_sampling_failed:{exc}"})
             continue
-        deltas: list[float] = []
-        missing_elevation = 0
-        missing_terrain = 0
-        for s, x, y in samples:
-            elevation = elevation_at_s(road, s)
-            terrain = _terrain_value(terrain_sampler, x, y)
-            if elevation is None:
-                missing_elevation += 1
-            elif terrain is None:
-                missing_terrain += 1
-            else:
-                deltas.append(elevation - terrain)
+        observations = evaluated["observations"]
+        deltas = [
+            float(item["delta_m"])
+            for item in observations
+            if item["status"] == "EVALUABLE"
+        ]
+        missing_elevation = int(evaluated["missing_elevation_count"])
+        missing_terrain = int(evaluated["missing_terrain_count"])
         if len(deltas) < minimum_interior_samples:
             records.append({
                 "road_id": str(road_id), "class": road_class, "status": "INCOMPLETE",
-                "reason": "insufficient_evaluable_interior_samples", "sample_count": len(samples),
+                "reason": "insufficient_evaluable_interior_samples", "sample_count": int(evaluated["sample_count"]),
                 "evaluable_sample_count": len(deltas), "missing_elevation_count": missing_elevation,
                 "missing_terrain_count": missing_terrain,
             })
@@ -180,7 +231,7 @@ def check_structure_elevation_plausibility(
         records.append({
             "road_id": str(road_id), "class": road_class,
             "status": "FAIL" if violation_ratio > max_violation_ratio else "PASS",
-            "expectation": expectation, "sample_count": len(samples),
+            "expectation": expectation, "sample_count": int(evaluated["sample_count"]),
             "evaluable_sample_count": len(deltas), "missing_elevation_count": missing_elevation,
             "missing_terrain_count": missing_terrain, "min_delta_m": min(deltas),
             "max_delta_m": max(deltas), "mean_delta_m": sum(deltas) / len(deltas),

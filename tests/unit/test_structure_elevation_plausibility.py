@@ -6,6 +6,7 @@ from ultimate_pipeline.core.validation_report import ValidationReport
 from ultimate_pipeline.quality.check_structure_elevation_plausibility import (
     check_structure_elevation_plausibility,
     elevation_at_s,
+    evaluate_road_elevation_samples,
 )
 from ultimate_pipeline.quality.quality_gate_manager import QualityGateManager
 
@@ -56,6 +57,19 @@ def test_bridge_at_ground_is_flagged_without_attempting_a_height_correction():
     assert report["status"] == "FAIL"
     assert report["records"][0]["violation_ratio"] == 1.0
     assert elevation_at_s(root.find("./road"), 10.0) == 100.0
+
+
+def test_evaluated_samples_share_gate_elevation_and_terrain_semantics():
+    evaluated = evaluate_road_elevation_samples(
+        _road("bridge", elevation=101.0),
+        lambda x, y: (100.0, True),
+        sample_spacing_m=5.0,
+    )
+
+    assert evaluated["sample_count"] == 3
+    assert evaluated["evaluable_sample_count"] == 3
+    assert {item["status"] for item in evaluated["observations"]} == {"EVALUABLE"}
+    assert {item["delta_m"] for item in evaluated["observations"]} == {1.0}
 
 
 def test_tunnel_below_terrain_passes_and_missing_terrain_is_incomplete():
