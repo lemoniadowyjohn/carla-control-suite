@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "base_commit": "26873ff3babb6999b74088d1a7939fd91b662458",
+  "implementation_commit": "c9d00629396e315b8dc0218d3796d496fe1e99c3",
+  "branch": "feature/structure-elevation-remediation-v1-20260913",
+  "input_xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "input_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "input_dem_sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+  "baseline_gate_evidence_path": "reports/production_readiness/20260913T010000Z_STRUCTURE_ELEVATION_REMEDIATION/DD_BASELINE_REAL_MAP.json",
+  "baseline_gate_evidence_sha256": "2550ced006cbc61204cf319ebdc7c6f1c55f27f9b2fac6b4d8839b3ab2bd2e75",
+  "characterization_evidence_path": "reports/production_readiness/20260913T010000Z_STRUCTURE_ELEVATION_REMEDIATION/DD_REAL_MAP_CHARACTERIZATION.json",
+  "characterization_evidence_sha256": "1b91f4d82ececa912e2ee1caaf42e0688edcae006e0cc7dada77b1ee52292240",
+  "gate_records_equal_to_baseline": true,
+  "gate_status_counts": {
+    "FAIL": 88,
+    "INCOMPLETE": 97,
+    "PASS": 53
+  },
+  "failure_primary_bucket_counts": {
+    "material_other": 62,
+    "mixed_sign": 21,
+    "multi_meter": 3,
+    "near_miss": 2
+  },
+  "failure_axes_counts": {
+    "bridge_or_elevated_entirely_at_or_below_terrain": 17,
+    "maximum_shortfall_at_least_1m": 53,
+    "multi_meter_absolute_delta": 6,
+    "terrain_crossing": 21,
+    "tunnel_entirely_at_or_above_terrain": 38
+  },
+  "incomplete_characterization": {
+    "cause_counts": {
+      "insufficient_interior_geometry_samples": 97
+    },
+    "sample_count_distribution": {
+      "0": 50,
+      "1": 47
+    },
+    "road_length_m": {
+      "min": 0.1,
+      "p25": 0.38982726,
+      "median": 3.35751225,
+      "p75": 7.98789643,
+      "max": 9.04741427
+    }
+  },
+  "disposition": "GENUINE_DATA_GAP",
+  "thresholds_changed": false,
+  "pipeline_gate_wired": false,
+  "map_of_record_mutated": "NO",
+  "live_carla": "NOT_RUN",
+  "full_offline_pytest": {
+    "before": {
+      "passed": 5912,
+      "failed": 0,
+      "skipped": 82,
+      "duration_seconds": 406.95,
+      "stdout_path": "reports/production_readiness/20260913T010000Z_STRUCTURE_ELEVATION_REMEDIATION/DD_FULL_OFFLINE_PYTEST_BEFORE.stdout.log",
+      "stdout_sha256": "faf2a42c388199bf697b66f4da4ba25d466f2af640343b940382ce43dac2fa91",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "after": {
+      "passed": 5915,
+      "failed": 0,
+      "skipped": 82,
+      "duration_seconds": 407.94,
+      "stdout_path": "reports/production_readiness/20260913T010000Z_STRUCTURE_ELEVATION_REMEDIATION/DD_FULL_OFFLINE_PYTEST_AFTER.stdout.log",
+      "stdout_sha256": "1bb24a628ef217739dc3cce56b2ee8ea9ae11afa64543e07701eac63ad3d96c9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
