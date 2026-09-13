@@ -1,0 +1,35 @@
+{
+  "acceptance_delta": {
+    "reason": "no_reconstructed_roundabout_candidates",
+    "status": "NOT_RUN"
+  },
+  "analysis": {
+    "action_counts": {},
+    "candidate_count": 0,
+    "candidates": []
+  },
+  "input": {
+    "xodr_path": "F:\\carla-control-suite-scratch\\roundabout-v2-real-map-validation-20260913\\ingolstadt_map_copy.xodr",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "live_carla": "NOT_RUN",
+  "map_of_record_mutated": "NO",
+  "schema_version": 1,
+  "source_osm": {
+    "osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\worktrees\\g3-cross-section-coverage-v1-20260912\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "roundabout_way_counts": {
+      "roundabout": 135
+    },
+    "roundabout_way_total": 135,
+    "ways_scanned": 17250
+  },
+  "tool": "ultimate_pipeline.tools.roundabout_v2_real_map_probe",
+  "transaction": {
+    "clone_distinct": true,
+    "diagnostics": [],
+    "source_tree_sha256_after": "ad6214d1c4fc8e73a41f87b5fd7808052026892c0f8b0170edba092e53e14c83",
+    "source_tree_sha256_before": "ad6214d1c4fc8e73a41f87b5fd7808052026892c0f8b0170edba092e53e14c83",
+    "source_tree_unchanged": true
+  }
+}
