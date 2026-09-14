@@ -235,3 +235,36 @@ def test_runtime_tile_rejects_vertical_or_rotated_source_offset(tmp_path: Path) 
         assert "unsupported non-zero header offset z or hdg" in str(exc)
     else:
         raise AssertionError("runtime tile builder must reject unsupported source transforms")
+
+
+def test_runtime_tile_rebases_xy_source_header_offset_into_its_local_frame(tmp_path: Path) -> None:
+    source = tmp_path / "source.xodr"
+    output = tmp_path / "runtime.xodr"
+    _write_source(source)
+    tree = ET.parse(source)
+    ET.SubElement(tree.getroot().find("header"), "offset", x="832671.676", y="5458671.104", z="0", hdg="0")
+    tree.write(source, encoding="utf-8", xml_declaration=True)
+
+    result = build_runtime_tile(
+        RuntimeTileRequest(
+            input_xodr=source,
+            output_xodr=output,
+            center_x=5.0,
+            center_y=0.0,
+            tile_size_m=20.0,
+            buffer_m=0.0,
+        )
+    )
+
+    header = ET.parse(output).getroot().find("header")
+    assert header is not None
+    offset = header.find("offset")
+    assert offset is not None
+    assert {key: offset.get(key) for key in ("x", "y", "z", "hdg")} == {
+        "x": "0",
+        "y": "0",
+        "z": "0",
+        "hdg": "0",
+    }
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["local_frame"]["source_header_offset_xy_m"] == [832671.676, 5458671.104]
