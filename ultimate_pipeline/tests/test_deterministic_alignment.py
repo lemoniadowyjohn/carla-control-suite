@@ -65,33 +65,14 @@ def test_alignment_maps_centroid_to_projected_gps_center(tmp_path: Path):
 
 
 # ---------------------------------------------------------------------------
-# Double-translation guard: deterministic_alignment.py's own docstring says it
-# "refuses to translate a map with non-zero <header><offset>...to avoid
-# double-translation corruption". This safety check had zero test coverage --
-# exactly the kind of guard that can silently regress (or never have worked)
-# without anyone noticing, per this session's audit focus.
+# A translated output is in the target CRS.  Retaining a source-frame XY
+# header offset would make consumers apply a second translation.  A non-zero
+# source XY offset must therefore be explicitly rebased to zero in the output;
+# a non-zero header rotation remains unsupported and must fail closed.
 # ---------------------------------------------------------------------------
 
 @pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
-def test_nonzero_header_offset_refuses_alignment_by_default(tmp_path: Path, monkeypatch):
-    monkeypatch.delenv("UP_ALLOW_ALIGNMENT_WITH_HEADER_OFFSET", raising=False)
-    auto = tmp_path / "auto.xodr"
-    _write_minimal_xodr(auto, [0, 10, 5], [0, 10, 5], header_offset=(123.0, 456.0))
-
-    with pytest.raises(RuntimeError, match="non-zero <header><offset>"):
-        deterministic_promote_and_align(
-            auto_xodr_in=auto,
-            manual_proj=_MANUAL_PROJ,
-            gps_bounds=_GPS_BOUNDS,
-            manual_bbox=None,
-            out_aligned_xodr=tmp_path / "auto_aligned.xodr",
-            require_overlap=False,
-        )
-
-
-@pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
-def test_nonzero_header_offset_allowed_with_explicit_env_override(tmp_path: Path, monkeypatch):
-    monkeypatch.setenv("UP_ALLOW_ALIGNMENT_WITH_HEADER_OFFSET", "1")
+def test_nonzero_header_offset_is_rebased_to_target_crs_frame(tmp_path: Path):
     auto = tmp_path / "auto.xodr"
     _write_minimal_xodr(auto, [0, 10, 5], [0, 10, 5], header_offset=(123.0, 456.0))
 
@@ -105,13 +86,17 @@ def test_nonzero_header_offset_allowed_with_explicit_env_override(tmp_path: Path
         require_overlap=False,
     )
     assert validity["status"] == "ok"
-    assert validity["header_offset_xy"]["mag_m"] == pytest.approx(472.297576, rel=1e-3)
+    assert validity["input_header_offset_xy"]["mag_m"] == pytest.approx(472.297576, rel=1e-3)
+    assert validity["output_header_offset_xy"] == {"x": 0.0, "y": 0.0}
+    header = ET.parse(out).getroot().find("header")
+    assert header is not None
+    assert float(header.find("offset").get("x")) == 0.0
+    assert float(header.find("offset").get("y")) == 0.0
+    assert header.find("geoReference").text == _MANUAL_PROJ
 
 
 @pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
-def test_zero_header_offset_does_not_trigger_guard(tmp_path: Path, monkeypatch):
-    """A zero (or absent) header offset must never require the env override."""
-    monkeypatch.delenv("UP_ALLOW_ALIGNMENT_WITH_HEADER_OFFSET", raising=False)
+def test_zero_header_offset_remains_zero_after_alignment(tmp_path: Path):
     auto = tmp_path / "auto.xodr"
     _write_minimal_xodr(auto, [0, 10, 5], [0, 10, 5], header_offset=(0.0, 0.0))
 
@@ -125,7 +110,46 @@ def test_zero_header_offset_does_not_trigger_guard(tmp_path: Path, monkeypatch):
         require_overlap=False,
     )
     assert validity["status"] == "ok"
-    assert validity["header_offset_xy"]["mag_m"] == 0.0
+    assert validity["input_header_offset_xy"]["mag_m"] == 0.0
+    assert validity["output_header_offset_xy"] == {"x": 0.0, "y": 0.0}
+
+
+@pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
+def test_rotated_header_offset_refuses_unhandled_coordinate_transform(tmp_path: Path):
+    auto = tmp_path / "auto.xodr"
+    _write_minimal_xodr(auto, [0, 10, 5], [0, 10, 5], header_offset=(123.0, 456.0))
+    tree = ET.parse(auto)
+    tree.getroot().find("./header/offset").set("hdg", "0.1")
+    tree.write(auto, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(RuntimeError, match="non-zero header offset rotation"):
+        deterministic_promote_and_align(
+            auto_xodr_in=auto,
+            manual_proj=_MANUAL_PROJ,
+            gps_bounds=_GPS_BOUNDS,
+            manual_bbox=None,
+            out_aligned_xodr=tmp_path / "auto_aligned.xodr",
+            require_overlap=False,
+        )
+
+
+@pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
+def test_malformed_header_offset_refuses_alignment_instead_of_assuming_zero(tmp_path: Path):
+    auto = tmp_path / "auto.xodr"
+    _write_minimal_xodr(auto, [0, 10, 5], [0, 10, 5], header_offset=(123.0, 456.0))
+    tree = ET.parse(auto)
+    tree.getroot().find("./header/offset").set("x", "not-a-number")
+    tree.write(auto, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="invalid header offset"):
+        deterministic_promote_and_align(
+            auto_xodr_in=auto,
+            manual_proj=_MANUAL_PROJ,
+            gps_bounds=_GPS_BOUNDS,
+            manual_bbox=None,
+            out_aligned_xodr=tmp_path / "auto_aligned.xodr",
+            require_overlap=False,
+        )
 
 
 @pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
@@ -188,18 +212,23 @@ def test_translate_xodr_geometry_updates_stale_header_bbox(tmp_path: Path):
     header.set("east", "10.0")
     header.set("south", "0.0")
     header.set("north", "10.0")
+    header.set("geometryFrozen", "true")
+    header.set("geometryFreezeHash", "source-freeze-hash")
     tree.getroot().insert(0, header)
     tree.write(auto, encoding="utf-8", xml_declaration=True)
 
     out = tmp_path / "translated.xodr"
     dx, dy = 500000.0, 300000.0
-    translate_xodr_geometry(auto, out, dx, dy)
+    result = translate_xodr_geometry(auto, out, dx, dy)
 
     out_header = ET.parse(out).getroot().find("header")
     assert float(out_header.get("west")) == pytest.approx(0.0 + dx)
     assert float(out_header.get("east")) == pytest.approx(10.0 + dx)
     assert float(out_header.get("south")) == pytest.approx(0.0 + dy)
     assert float(out_header.get("north")) == pytest.approx(10.0 + dy)
+    assert out_header.get("geometryFrozen") is None
+    assert out_header.get("geometryFreezeHash") is None
+    assert result["source_geometry_freeze_invalidated"] is True
 
 
 def test_translate_xodr_geometry_inserts_header_bbox_when_missing(tmp_path: Path):
@@ -210,8 +239,10 @@ def test_translate_xodr_geometry_inserts_header_bbox_when_missing(tmp_path: Path
     dx, dy = 1000.0, 2000.0
     translate_xodr_geometry(auto, out, dx, dy)
 
-    out_header = ET.parse(out).getroot().find("header")
+    out_root = ET.parse(out).getroot()
+    out_header = out_root.find("header")
     assert out_header is not None
+    assert out_root[0] is out_header
     assert float(out_header.get("west")) == pytest.approx(0.0 + dx)
     assert float(out_header.get("east")) == pytest.approx(10.0 + dx)
     assert float(out_header.get("south")) == pytest.approx(0.0 + dy)
