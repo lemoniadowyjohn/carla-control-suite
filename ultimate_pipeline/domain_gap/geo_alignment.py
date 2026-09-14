@@ -720,52 +720,37 @@ class GeoAligner:
                 raise RuntimeError(f"GeoAligner.apply_to_xodr could not build CRS transformer: {exc}") from exc
 
         import xml.etree.ElementTree as ET
-        import copy
-        import logging
         from io import BytesIO
 
         tree = ET.parse(in_xodr)
         root = tree.getroot()
 
-        # Step 1: Handle Road Elevation Preservation (Task 1)
-        # Rigid transform in XY does not affect elevation profile z(s).
+        # Step 1: Handle Road Elevation Preservation.
+        # A rigid transform in XY does not affect the elevation profile z(s), so an
+        # existing elevationProfile is left untouched in place. Only a missing one is
+        # backfilled with a flat placeholder for schema completeness.
+        #
+        # ASAM OpenDRIVE's <road> element is an xs:sequence: elevationProfile (if
+        # present) MUST come immediately after planView and before lateralProfile/
+        # lanes/objects/signals. The previous implementation unconditionally
+        # deepcopy+remove+append'd (or ET.SubElement'd, which also always appends)
+        # the elevationProfile, which pushed it to the END of an already-built road's
+        # children -- after lanes/objects/signals -- silently corrupting element order
+        # on every road that already had lanes, which is every road in a fully
+        # generated map by the time this alignment step runs.
         for road in root.findall("road"):
-            road_id = road.get("id", "UNKNOWN")
             elev_prof = road.find("elevationProfile")
-
-            # Check for non-zero elevation before potential (re-)assignment
-            source_has_non_zero = False
-            if elev_prof is not None:
-                for el in elev_prof.findall("elevation"):
-                    try:
-                        a = float(el.get("a", "0.0"))
-                        if abs(a) > 1e-6:
-                            source_has_non_zero = True
-                            break
-                    except Exception:
-                        pass
-
-            # Re-build/Ensure elevationProfile to match instructions (even if redundant in-place)
-            if elev_prof is not None:
-                # Task: Replace it with: copy the elevationProfile element from the corresponding source road
-                # In this in-place context, we deepcopy it to ensure it's detached from any weirdness
-                new_elev_prof = copy.deepcopy(elev_prof)
-                road.remove(elev_prof)
-                road.append(new_elev_prof)
-            else:
-                # Step 4: If missing, insert flat one
-                new_elev_prof = ET.SubElement(road, "elevationProfile")
-                ET.SubElement(new_elev_prof, "elevation", {"s": "0.0", "a": "0.000000", "b": "0.0", "c": "0.0", "d": "0.0"})
-
-            # Step 5: Warning log if elevation lost (source was non-zero, but output is flat)
-            final_elev = road.find("elevationProfile/elevation")
-            if final_elev is not None:
-                try:
-                    final_a = float(final_elev.get("a", "0.0"))
-                    if source_has_non_zero and abs(final_a) < 1e-6:
-                        logging.warning("elevation_lost road_id=%s", road_id)
-                except Exception:
-                    pass
+            if elev_prof is None:
+                children = list(road)
+                planview = road.find("planView")
+                insert_idx = children.index(planview) + 1 if planview is not None else 0
+                new_elev_prof = ET.Element("elevationProfile")
+                ET.SubElement(
+                    new_elev_prof,
+                    "elevation",
+                    {"s": "0.0", "a": "0.000000", "b": "0.0", "c": "0.0", "d": "0.0"},
+                )
+                road.insert(insert_idx, new_elev_prof)
 
         n = 0
         for geom in root.findall(".//road/planView/geometry"):

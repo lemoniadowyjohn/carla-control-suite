@@ -49,6 +49,60 @@ def _write_xodr(path: Path, x1: float, y1: float, x2: float, y2: float) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+# XODR with a road that already carries a full, schema-ordered set of optional
+# elements (elevationProfile, lateralProfile, objects, signals) around lanes --
+# matches the shape of a fully generated real road, not just planView+lanes.
+FULL_ROAD_XODR = """<?xml version="1.0" encoding="UTF-8"?>
+<OpenDRIVE>
+  <header revMajor="1" revMinor="4" name="test" version="1.00" date="2025-01-01">
+    <geoReference><![CDATA[+proj=utm +zone=32 +datum=WGS84]]></geoReference>
+  </header>
+  <road name="TestRoad" length="50.0" id="1" junction="-1">
+    <planView>
+      <geometry s="0.0" x="0.0" y="0.0" hdg="0.0" length="50.0">
+        <line/>
+      </geometry>
+    </planView>
+    <elevationProfile>
+      <elevation s="0.0" a="12.5" b="0.01" c="0.0" d="0.0"/>
+    </elevationProfile>
+    <lateralProfile/>
+    <lanes>
+      <laneSection s="0.0">
+        <center><lane id="0" type="none" level="false"/></center>
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/>
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+    <objects/>
+    <signals/>
+  </road>
+</OpenDRIVE>
+"""
+
+
+_ROAD_ELEMENT_SEQUENCE = [
+    "link",
+    "type",
+    "planView",
+    "elevationProfile",
+    "lateralProfile",
+    "lanes",
+    "objects",
+    "signals",
+    "surface",
+    "railroad",
+]
+
+
+def _assert_schema_ordered(road: ET.Element) -> None:
+    ranks = [_ROAD_ELEMENT_SEQUENCE.index(c.tag) for c in road if c.tag in _ROAD_ELEMENT_SEQUENCE]
+    assert ranks == sorted(ranks), f"road children out of ASAM OpenDRIVE schema order: {[c.tag for c in road]}"
+
+
 class TestApplyToXodr:
     """Tests for GeoAligner.apply_to_xodr API."""
 
@@ -135,6 +189,45 @@ class TestApplyToXodr:
         assert result is True
         content = out_xodr.read_text(encoding="utf-8")
         assert "50.00000000" in content
+
+    def test_inserts_missing_elevation_profile_before_lanes(self, tmp_path: Path) -> None:
+        """A road with no elevationProfile must get one inserted in schema order
+        (after planView, before lanes), not appended after lanes."""
+        in_xodr = tmp_path / "input.xodr"
+        out_xodr = tmp_path / "aligned.xodr"
+        _write_xodr(in_xodr, 0.0, 0.0, 50.0, 0.0)
+
+        result = GeoAligner.apply_to_xodr(str(in_xodr), str(out_xodr))
+        assert result is True
+
+        tree = ET.parse(out_xodr)
+        road = tree.getroot().find("road")
+        assert road is not None
+        assert road.find("elevationProfile") is not None
+        _assert_schema_ordered(road)
+
+    def test_preserves_existing_elevation_profile_and_schema_order(self, tmp_path: Path) -> None:
+        """A road that already has elevationProfile/lateralProfile/objects/signals
+        (the shape of a fully generated real road) must keep them in schema order
+        after a rigid transform is applied, and elevation data must be untouched
+        since an XY rigid transform does not affect z(s)."""
+        in_xodr = tmp_path / "full_road.xodr"
+        out_xodr = tmp_path / "full_road_aligned.xodr"
+        in_xodr.write_text(FULL_ROAD_XODR, encoding="utf-8")
+
+        transform = {"scale": 1.0, "cos": 1.0, "sin": 0.0, "tx": 100.0, "ty": 200.0}
+        result = GeoAligner.apply_to_xodr(str(in_xodr), str(out_xodr), transform)
+        assert result is True
+
+        tree = ET.parse(out_xodr)
+        road = tree.getroot().find("road")
+        assert road is not None
+        _assert_schema_ordered(road)
+
+        elevation = road.find("elevationProfile/elevation")
+        assert elevation is not None
+        assert float(elevation.get("a")) == pytest.approx(12.5)
+        assert float(elevation.get("b")) == pytest.approx(0.01)
 
 
 class TestEstimateFromXodr:
