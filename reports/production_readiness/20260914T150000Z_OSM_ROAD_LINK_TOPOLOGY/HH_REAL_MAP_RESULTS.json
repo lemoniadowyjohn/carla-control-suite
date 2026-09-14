@@ -1,0 +1,4041 @@
+{
+  "boundaries": [
+    {
+      "adjacent_osm_way_ids": [
+        "146973201"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "47382"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "146973220",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "42357"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "946758638",
+        "1042026729"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "146973220",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "42357"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "116498293"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "116498294",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "42474"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26729144",
+        "113566914"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "116498294",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "42474"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "27204830",
+        "201950243"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "24733964",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "42649"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1302850942"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "24733964",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "42649"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "201742311"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "379613698",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "43155"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "201742309"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "379613698",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "43155"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23199792",
+        "23232311"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "23252508",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "43156"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23618526",
+        "201742310"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "48352"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "23252508",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "43156"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23232207",
+        "23233205"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "23232212",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "43639"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "23232212",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "43639"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26266079",
+        "27056802"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "24734019",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "43941"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26266078",
+        "27056797"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "24734019",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "43941"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334889",
+        "49367058"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42899",
+        "44451",
+        "47492",
+        "49259",
+        "73662",
+        "73663",
+        "73664"
+      ],
+      "expected_xodr_road_ids": [
+        "49259"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "26334896",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "44451"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334885"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "26334896",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "44451"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26729235",
+        "33637951"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44707",
+        "46561",
+        "49581",
+        "50989",
+        "63245",
+        "63246",
+        "63247"
+      ],
+      "expected_xodr_road_ids": [
+        "49581"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "26729236",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "44707"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23442108"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "26729236",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "44707"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "221722604"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44780",
+        "45884",
+        "63627"
+      ],
+      "expected_xodr_road_ids": [
+        "48133"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "32509172",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "44780"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "169739287"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "32509172",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "44780"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32923867"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "39649533",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "45451"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "816287498",
+        "1285324982"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "39649533",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "45451"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "39649520",
+        "39649521"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "49222"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "26334828",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "45803"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334829",
+        "39649521"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44412",
+        "44415",
+        "45803",
+        "49222",
+        "61741",
+        "61742",
+        "61743"
+      ],
+      "expected_xodr_road_ids": [
+        "49222"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "26334828",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "45803"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "35826732",
+        "221722438"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "413332600",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "45883"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "413332601"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "413332600",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "45883"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1377416007",
+        "1377416012"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1066379886",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46269"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1377416013"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1066379886",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46269"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "887656731"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "889393575",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46371"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "480213874",
+        "816603273"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "889393575",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46371"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23776089"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "107418678",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46728"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28050851"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "107418678",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46728"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1068427178"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "116505963",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46832"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "526703012"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "116505963",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46832"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1168452697",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46845"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1168452694",
+        "1168452698"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42489",
+        "46845",
+        "46846",
+        "46848",
+        "64413",
+        "64414",
+        "64415"
+      ],
+      "expected_xodr_road_ids": [
+        "46846"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1168452697",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46845"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "1168452698",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46846"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1168452694",
+        "1168452697"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "46845"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "1168452698",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46846"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25375161",
+        "51105819"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1177230008",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46861"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "39580490"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1177230008",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46861"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32350901"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "118607487",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46900"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "31361632",
+        "167291418"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "118607487",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46900"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "121221534"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "121221545",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "46946"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23037025",
+        "85798984",
+        "121221555"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "121221545",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "46946"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1265563392"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "25794504",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47010"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "39861703"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "25794504",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47010"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1269164997"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "145069311",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47022"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32229973",
+        "145069316"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42335",
+        "47022",
+        "47345",
+        "50380",
+        "52757",
+        "52758",
+        "52759"
+      ],
+      "expected_xodr_road_ids": [
+        "50380"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "145069311",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47022"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28268963",
+        "144659489",
+        "1176872556"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "24762523",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47324"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "145069307",
+        "1269164995"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "24762523",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47324"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32230348",
+        "32230349",
+        "145069323"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "145069342",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47354"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "145069342",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47354"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "33128857",
+        "108239938",
+        "888058431"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "56628"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "145069350",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47356"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "88903284"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "145069350",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47356"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "145069373"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "279408222",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47364"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "279408220"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "279408222",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47364"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "146973200",
+        "146973206",
+        "1016166670"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "146973201",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47382"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "146973220"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42357",
+        "47382",
+        "51543",
+        "71016",
+        "71017"
+      ],
+      "expected_xodr_road_ids": [
+        "42357"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "146973201",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47382"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "165520706"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "306726646",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47616"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1066379884"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "306726646",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47616"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "43413482",
+        "290392436"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "200941799",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47769"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "4272939"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "200941799",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47769"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "109483352",
+        "201238725"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "109483356",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47812"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "678309990",
+        "746700169"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "109483356",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47812"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "61319728",
+        "201771335"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1178695615",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47870"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "41494179"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1178695615",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47870"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "201789795"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "31620259",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47874"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "36291830"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "31620259",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47874"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "201933881",
+        "548502240"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "888669959",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47913"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "44591095",
+        "1177241307"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "888669959",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47913"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "4815093"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "202167797",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "47976"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "30673968"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "202167797",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "47976"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "20588639",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48061"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "20588635"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "20588639",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48061"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "413332601"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "221722604",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48133"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32509172"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44780",
+        "48133",
+        "48964",
+        "49655",
+        "60409",
+        "60410",
+        "60411"
+      ],
+      "expected_xodr_road_ids": [
+        "44780"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "221722604",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48133"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "22603943",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48193"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "147014273"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "22603943",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48193"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23252508",
+        "23618526"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "43156"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "201742310",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48352"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23618526",
+        "41201239",
+        "201742312"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "201742310",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48352"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "72475188",
+        "72475204"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "1195549703",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48372"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "72475188"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "1195549703",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48372"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "23252420",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48407"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "147014268",
+        "1411126531"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "23252420",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48407"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "27015260",
+        "27015261",
+        "55728582"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "242196387",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48636"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "34909818",
+        "41188248"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "242196387",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48636"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "85798984"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "25533496",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "48897"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "121221536"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "25533496",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "48897"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32939505",
+        "1268768361"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "25797084",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49035"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32939505",
+        "1268768360"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "25797084",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49035"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "25895943",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49056"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25895945",
+        "193384418",
+        "294213267"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "25895943",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49056"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "26327628",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49182"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26327627",
+        "26327636",
+        "26327652"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "26327628",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49182"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334828",
+        "26334829"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "45803"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "39649521",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49222"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334828",
+        "39649520"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44414",
+        "49219",
+        "49222",
+        "61762",
+        "61763"
+      ],
+      "expected_xodr_road_ids": [
+        "45803"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "39649521",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49222"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "153280886"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "26334889",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49259"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334896",
+        "49367058"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42901",
+        "44443",
+        "44451",
+        "47494",
+        "49259",
+        "73692",
+        "73693",
+        "73694",
+        "73695"
+      ],
+      "expected_xodr_road_ids": [
+        "44451"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "26334889",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49259"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "26485549",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49448"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26485548"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "26485549",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49448"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "64215831",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49563"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "64215831",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49563"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "41225177",
+        "93128023",
+        "140579887"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "26729235",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49581"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26729236",
+        "33637951"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44707",
+        "49581",
+        "63241"
+      ],
+      "expected_xodr_road_ids": [
+        "44707"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "26729235",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49581"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "27184837",
+        "966565464"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "27184639",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49649"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "61319727"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "27184639",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49649"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "92973904",
+        "279029851"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "746701839",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49772"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "48916236"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "746701839",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49772"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25187894",
+        "891830781",
+        "894401100"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "27998319",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49781"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "164051424",
+        "914222976"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44074",
+        "46364",
+        "49781",
+        "51641",
+        "59501",
+        "59502",
+        "59503"
+      ],
+      "expected_xodr_road_ids": [
+        "51641"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "27998319",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49781"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "233673423"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "28418763",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "49989"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "379723624"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "28418763",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "49989"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28691633",
+        "220012524"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "28691616",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50007"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28156299",
+        "52101099"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "28691616",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50007"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "30054437",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50113"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28124258"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "30054437",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50113"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "52513194"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "300750369",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50132"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "42517570",
+        "125172400"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "300750369",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50132"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "542806889",
+        "988099050"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "306726647",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50211"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "29119851",
+        "885891587",
+        "887476712"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "306726647",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50211"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32202328",
+        "198836595"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "274823616",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50356"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "274823617"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "274823616",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50356"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "145069311",
+        "145069316"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "47022"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "32229973",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50380"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32229975",
+        "32229976"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "32229973",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50380"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "914222948"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "108338063",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50387"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "145069389"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "108338063",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50387"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "35744084"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "41845243",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50572"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "816796147"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42595",
+        "50572",
+        "70556",
+        "70557"
+      ],
+      "expected_xodr_road_ids": [
+        "51668"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "41845243",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50572"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "37060800"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "37060801",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50622"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "128241145",
+        "374521473"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "37060801",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50622"
+    },
+    {
+      "adjacent_osm_way_ids": [],
+      "classification": "NOT_APPLICABLE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "37193860",
+      "reason": "no_osm_highway_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50656"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "64089736",
+        "146973212",
+        "807135899"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "37193860",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50656"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "272042146",
+        "386689011"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1050818563",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50778"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "733278893"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1050818563",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50778"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "39227557"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "39918460",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50921"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25708163",
+        "293162262",
+        "293162263"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "39918460",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50921"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26002083",
+        "400955168"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "41279224",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50928"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1040498057"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "41279224",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50928"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "41140024",
+        "817095984"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "435177660",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "50966"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "435177658"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "435177660",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "50966"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "42485339",
+        "72562710"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "42485338",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51026"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26219871",
+        "27082002"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "42485338",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51026"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25638462",
+        "25638614",
+        "131700653"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "45378204",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51109"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "39861704",
+        "1265804488"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "45378204",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51109"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1408873049"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "51745097",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51191"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "144655546"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "51745097",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51191"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28156617",
+        "388936252"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "51820936",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51192"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "16796020"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "51820936",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51192"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "987493088"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "56226006",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51336"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "52587775",
+        "103671248"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "56226006",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51336"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28330357"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "61319710",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51371"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "61319706"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "61319710",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51371"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "41494178",
+        "61319717"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "41494279",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51375"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1426184492"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "41494279",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51375"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1190319186",
+        "1286393563",
+        "1286768657"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "69685049",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51422"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1286768656",
+        "1422638424"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "69685049",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51422"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "582810642",
+        "858961720"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "700272076",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51427"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "582810644",
+        "1108106672"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "700272076",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51427"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "605203716",
+        "605203718",
+        "819953099"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1167760408",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51461"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "819953101",
+        "819953103"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "48859",
+        "51176",
+        "51461",
+        "51699",
+        "59665",
+        "59666",
+        "59667"
+      ],
+      "expected_xodr_road_ids": [
+        "51699"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1167760408",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51461"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28575524",
+        "266607775"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "72782134",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51487"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "4268910",
+        "72782157"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "72782134",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51487"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "767516522",
+        "1016166670"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "865774625",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51550"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "767516521",
+        "865774624"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "865774625",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51550"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "806941706",
+        "1021661443",
+        "1021661446"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "806941703",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51567"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "772913614",
+        "772913615",
+        "1056178381"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "46704",
+        "51567",
+        "69010"
+      ],
+      "expected_xodr_road_ids": [
+        "51592"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "806941703",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51567"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "77912233"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "107671230",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51576"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "105482067",
+        "863475928"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "107671230",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51576"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "772913615",
+        "806941703",
+        "1056178381"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "46992",
+        "51592",
+        "51594",
+        "69293",
+        "69294"
+      ],
+      "expected_xodr_road_ids": [
+        "51567"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "772913614",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51592"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1056178379",
+        "1056178380"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "772913614",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51592"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "304151947",
+        "815537102"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "914222976",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51641"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "27998319",
+        "164051424"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "47787",
+        "47805",
+        "51641",
+        "53066",
+        "53067"
+      ],
+      "expected_xodr_road_ids": [
+        "49781"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "914222976",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51641"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32875547",
+        "126446062"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "816796147",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51668"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "41845243"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "50572",
+        "51668",
+        "70110"
+      ],
+      "expected_xodr_road_ids": [
+        "50572"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "816796147",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51668"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "819953100",
+        "819953103"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "819953101",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51699"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "819953103",
+        "1167760408"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "44546",
+        "46254",
+        "48691",
+        "51699",
+        "58763",
+        "58764",
+        "58765"
+      ],
+      "expected_xodr_road_ids": [
+        "51461"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "819953101",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51699"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28970271",
+        "82632540"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "82632524",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51705"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "161784059"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "82632524",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51705"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "144659493",
+        "887476721"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "110778890",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51804"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32226429",
+        "108210906"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "110778890",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51804"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23184252",
+        "981003819"
+      ],
+      "classification": "INCOMPLETE",
+      "declared_reachable_xodr_road_ids": [],
+      "expected_xodr_road_ids": [
+        "52331",
+        "52335"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "888409637",
+      "reason": "no_connection_for_incoming_road",
+      "resolution": "UNRESOLVED_JUNCTION",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51816"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "48742425",
+        "981003822"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "42568",
+        "51816",
+        "51975",
+        "70198",
+        "70199"
+      ],
+      "expected_xodr_road_ids": [
+        "70204"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "888409637",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "JUNCTION_CONNECTOR",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51816"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "188722979",
+        "950185006"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "950185002",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51936"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "188722980",
+        "718481095"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "950185002",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51936"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28119593",
+        "1023430510"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "978223044",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "51962"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "24983010",
+        "131634116",
+        "882941546"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "978223044",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "51962"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "888409637",
+        "981003819"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "51816"
+      ],
+      "expected_xodr_road_ids": [
+        "51816",
+        "52335"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "23184252",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "52331"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "981003818",
+        "981003820"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "23184252",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "52331"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "981003818",
+        "1065820328"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "981003819",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "52335"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23184252",
+        "888409637"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "51816"
+      ],
+      "expected_xodr_road_ids": [
+        "51816",
+        "52331"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "981003819",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "52335"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "196346346",
+        "941028476"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "55600014",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "52998"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "196346347",
+        "200941800"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "55600014",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "52998"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "108239938",
+        "145069350",
+        "888058431"
+      ],
+      "classification": "AGREE",
+      "declared_reachable_xodr_road_ids": [
+        "47356"
+      ],
+      "expected_xodr_road_ids": [
+        "47356"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "33128857",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "56628"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "168434696",
+        "820121399",
+        "825402591"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "33128857",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "56628"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "126446063",
+        "746700180"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "792350792",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "59964"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25508272",
+        "151040740",
+        "834006804"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "792350792",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "59964"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "27202149",
+        "48743272",
+        "257907859"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "46535"
+      ],
+      "expected_xodr_road_ids": [
+        "60772"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "28132016",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "60768"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "202070444",
+        "257907860",
+        "930423068"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "28132016",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "60768"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "31021475",
+        "202070444",
+        "257907858",
+        "266507552"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "48743272",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "60772"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "27202149",
+        "28132016",
+        "257907859"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "47968"
+      ],
+      "expected_xodr_road_ids": [
+        "60768"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "48743272",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "60772"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "23291836",
+        "113566910"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "113566916",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "61902"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26334875",
+        "737320744"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "113566916",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "61902"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "4268966",
+        "26471932"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "26471938",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "62912"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "4268967",
+        "26471939"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "26471938",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "62912"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "836209349",
+        "836209358",
+        "892103979"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "836209356",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "63029"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "836209362",
+        "836209363",
+        "1377416006"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "836209356",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "63029"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28132718",
+        "41425835",
+        "726514452"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "4061708",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "64380"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "172368742",
+        "542650762",
+        "542650763"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "4061708",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "64380"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "35744086",
+        "136618613"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "978455267",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "66810"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "8033457",
+        "978455266"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "978455267",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "66810"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1286397370"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1286397369",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68143"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "4942408",
+        "28091399",
+        "542727960",
+        "1190319211",
+        "1285649383"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1286397369",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68143"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "61940355",
+        "914222981"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "816626560",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68234"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "892484334",
+        "914222984"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "816626560",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68234"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "718463529",
+        "749560273"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "718481105",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68406"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "32200983",
+        "718481107",
+        "753083362"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "718481105",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68406"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "749560275",
+        "749560276"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "749560267",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68419"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "749560263",
+        "1023430507",
+        "1023430508"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "46654"
+      ],
+      "expected_xodr_road_ids": [
+        "68421"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "749560267",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68419"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "749560263",
+        "749560267",
+        "1023430508"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "51521"
+      ],
+      "expected_xodr_road_ids": [
+        "68419"
+      ],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1023430507",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68421"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "749560274",
+        "749560276"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1023430507",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68421"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "815412603",
+        "900501294"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "447569997",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68511"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "776923595",
+        "1208433945"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "447569997",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68511"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "582810643",
+        "858961720",
+        "858961724"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "858961721",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68629"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "700272072",
+        "700272074",
+        "1108106672"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "858961721",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68629"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "718855167",
+        "986559710"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "116528693",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68773"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "116528670",
+        "916006854"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "116528693",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68773"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "882941548",
+        "978223037",
+        "978223045",
+        "1023430510",
+        "1023430511"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1023430512",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68826"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "978223035",
+        "978223043"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1023430512",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68826"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "201278218",
+        "816287472",
+        "816287477"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1020252887",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68867"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "172515813",
+        "816287498",
+        "816287500"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1020252887",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68867"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "837030924",
+        "837030931",
+        "978455273",
+        "1021661436",
+        "1186322206"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "914222953",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "68880"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "837030935",
+        "887476714",
+        "914222952"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "914222953",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "68880"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "837030949",
+        "837030956",
+        "914485592"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "837030953",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "69136"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "30399662",
+        "837030950",
+        "914485591"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "837030953",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "69136"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "125002615",
+        "806941705"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "806941707",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "69293"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1021661444",
+        "1021661447"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "806941707",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "69293"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1272842040",
+        "1272842044",
+        "1272842049"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1272842048",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "69303"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1272842033",
+        "1272842045",
+        "1272842046",
+        "1272842047"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1272842048",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "69303"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "323248156",
+        "323248164",
+        "1285343853"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "30404129",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "69389"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "25797090",
+        "266567301",
+        "266567304"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "30404129",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "69389"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "816754686",
+        "816754695",
+        "1066379873"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1066379872",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "69522"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "816754681",
+        "1066379878"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1066379872",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "69522"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "950184987",
+        "1066379874",
+        "1066379876"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1066379875",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "69524"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "950184999",
+        "1066379867",
+        "1066379868"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1066379875",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "69524"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "882941547",
+        "978223040",
+        "1426236344"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1426236343",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70017"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "28119593",
+        "978223045"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1426236343",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70017"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "24971737",
+        "323248155"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "814691987",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70049"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "323248156",
+        "1215634478"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "814691987",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70049"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "888409637",
+        "981003822"
+      ],
+      "classification": "DISAGREE",
+      "declared_reachable_xodr_road_ids": [
+        "46472"
+      ],
+      "expected_xodr_road_ids": [
+        "51816"
+      ],
+      "osm_direction": "reverse",
+      "osm_endpoint": "start",
+      "osm_way_id": "48742425",
+      "reason": "declared_link_does_not_reach_matched_osm_neighbour",
+      "resolution": "DIRECT_ROAD",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70204"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "981003817",
+        "981003821"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "reverse",
+      "osm_endpoint": "end",
+      "osm_way_id": "48742425",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70204"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "26341775",
+        "817666072"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1210272947",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70523"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1210272945",
+        "1210272946",
+        "1251945010"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1210272947",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70523"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "126446062",
+        "746700179"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "41845244",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70558"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "834006803",
+        "834006804"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "41845244",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70558"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1040258015",
+        "1085884584"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1040258010",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70599"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1040258014",
+        "1085884580"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1040258010",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70599"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "623442281"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "100361358",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70938"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "30778876",
+        "980648546"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "100361358",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70938"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "624350642",
+        "1288640773"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1288620319",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "70964"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1288640774",
+        "1288640775"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1288620319",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "70964"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1319081362",
+        "1319081363"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "1319081355",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "71460"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "1319081361",
+        "1319081364"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "1319081355",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "71460"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "52564197",
+        "204388143",
+        "815517007"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "749560257",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "72448"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "18909061",
+        "18909064",
+        "204388144"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "749560257",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "72448"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "16796020",
+        "29120597"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "4815046",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "72566"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "143195216",
+        "143195217"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "4815046",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "72566"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "77912241",
+        "105482067"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "start",
+      "osm_way_id": "32200416",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "start",
+      "xodr_road_id": "73703"
+    },
+    {
+      "adjacent_osm_way_ids": [
+        "88888406",
+        "107671228"
+      ],
+      "classification": "INCOMPLETE",
+      "expected_xodr_road_ids": [],
+      "osm_direction": "forward",
+      "osm_endpoint": "end",
+      "osm_way_id": "32200416",
+      "reason": "no_high_confidence_xodr_match_for_osm_neighbour",
+      "xodr_endpoint": "end",
+      "xodr_road_id": "73703"
+    }
+  ],
+  "claim_boundary": "Advisory topology cross-check only. HIGH/EXACT spatial correspondence is required; an INCOMPLETE or DISAGREE record neither repairs nor certifies any OpenDRIVE link. Junction resolution is limited to the declared incoming connection and one connector-to-road hop.",
+  "correspondence": {
+    "conflicting_road_count": 0,
+    "conflicts": [],
+    "eligible_road_count": 134,
+    "match_class_counts": {
+      "AMBIGUOUS": 3137,
+      "EXACT": 14,
+      "HIGH": 147,
+      "UNMATCHED": 13902
+    },
+    "source_way_count": 17200
+  },
+  "input": {
+    "osm_path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "projected_highway_way_count": 17200,
+    "source_highway_way_count": 17200,
+    "xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr"
+  },
+  "status": "FAIL",
+  "summary_metrics": {
+    "adjacency_edge_count": 15566,
+    "agree": 15,
+    "associated_way_missing_endpoint_data": 0,
+    "checkable_boundaries": 28,
+    "degree_distribution": {
+      "0": 5793,
+      "1": 2900,
+      "2": 2897,
+      "3": 2046,
+      "4": 2092,
+      "5": 999,
+      "6": 381,
+      "7": 86,
+      "8": 5,
+      "9": 1
+    },
+    "disagree": 13,
+    "endpoint_count": 34400,
+    "endpoint_node_count": 23150,
+    "high_confidence_associated_roads": 134,
+    "incomplete_unassociated_osm_neighbours": 217,
+    "incomplete_unresolved_declared_link": 9,
+    "no_osm_endpoint_adjacency": 14,
+    "oriented_associated_roads": 134,
+    "total_junctions": 3561,
+    "total_xodr_roads": 32267,
+    "unoriented_associated_roads": 0,
+    "way_count": 17200
+  }
+}
