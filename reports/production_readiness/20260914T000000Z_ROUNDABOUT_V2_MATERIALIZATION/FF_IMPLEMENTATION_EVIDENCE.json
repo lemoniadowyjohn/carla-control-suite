@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task": "PROMPT_FF_ROUNDABOUT_V2_MATERIALIZATION",
+  "base_sha": "47d9c7b26167c47ae625dd2212bcb24eed75957c",
+  "implementation_sha": "1fd354b46ba784235dcd8220d32e47cb76d6b474",
+  "branch": "feature/roundabout-v2-materialization-v1-20260914",
+  "worktree_sparse_checkout": false,
+  "input": {
+    "map_of_record_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "source_osm_path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+  },
+  "implementation": {
+    "transaction_scope": "whole-map clone with per-candidate rollback",
+    "road_id_allocation": "max existing numeric road id plus one; deterministic collision check before every materialization",
+    "anchor_handling": "preserve EE classification; aggregate all candidate junction anchors only for materialization; deduplicate equivalent physical approach poses; fail closed on conflicting duplicates",
+    "elevation_handling": "generated segment endpoint heights use evaluated source anchor elevations when available",
+    "pipeline_wiring": "NOT_WIRED",
+    "pipeline_wiring_reason": "no real-map candidate passed materialization, so an acceptance comparison cannot be performed without fabricating a modified map"
+  },
+  "real_map_probe": {
+    "report_path": "reports/production_readiness/20260914T000000Z_ROUNDABOUT_V2_MATERIALIZATION/FF_MATERIALIZATION_PROBE.json",
+    "report_sha256": "67f08d5fabcb084ac5034b0b085e377ef041ce76516a4f4b23d398f08d3ef644",
+    "candidate_count": 97,
+    "action_counts": {
+      "PRESERVED_VALID": 90,
+      "PRESERVE_ORIGINAL": 4,
+      "RECONSTRUCT_GEOMETRY": 3
+    },
+    "materialized_candidate_count": 0,
+    "fallbacks": [
+      {
+        "osm_way_id": "1177241300",
+        "reason": "lane-count transition requires explicit mapping",
+        "materialization_anchor_count": 3
+      },
+      {
+        "osm_way_id": "374521477",
+        "reason": "fewer_than_three_anchors",
+        "materialization_anchor_count": 2
+      },
+      {
+        "osm_way_id": "993259221",
+        "reason": "fewer_than_three_anchors",
+        "materialization_anchor_count": 2
+      }
+    ],
+    "structural_delta": {
+      "roads_before": 32267,
+      "roads_after": 32267,
+      "junctions_before": 3561,
+      "junctions_after": 3561,
+      "added_road_ids": [],
+      "removed_road_ids": [],
+      "changed_existing_road_ids": [],
+      "changed_existing_junction_ids": []
+    },
+    "input_tree_unchanged": true,
+    "materialized_xodr": "NOT_WRITTEN"
+  },
+  "acceptance_comparison": {
+    "status": "NOT_RUN",
+    "reason": "no_roundabout_candidate_materialized; running scripts/measure_candidate_acceptance.py would not compare a modified real-map candidate"
+  },
+  "tests": {
+    "focused": "22 passed",
+    "full_offline": "5927 passed, 82 skipped, 0 failed in 385.28s",
+    "full_stdout_path": "reports/production_readiness/20260914T000000Z_ROUNDABOUT_V2_MATERIALIZATION/FF_FULL_PYTEST.stdout.log",
+    "full_stdout_sha256": "e4e44e832bfec637be394c08a2293e84e0a9282e708803eb27f862bb26ba41a3",
+    "full_stderr_path": "reports/production_readiness/20260914T000000Z_ROUNDABOUT_V2_MATERIALIZATION/FF_FULL_PYTEST.stderr.log",
+    "full_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "map_of_record_mutated": "NO",
+  "live_carla": "NOT_RUN",
+  "next_required_work": "derive source-backed lane-transition and attachment migration before any real-map V2 candidate can be materialized"
+}
