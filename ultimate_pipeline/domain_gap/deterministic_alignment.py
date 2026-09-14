@@ -101,19 +101,46 @@ def compute_auto_bbox_and_centroid(
 def translate_xodr_geometry(
     in_path: Path, out_path: Path, dx: float, dy: float
 ) -> Dict:
-    """Translate planView geometry start points by (dx,dy)."""
+    """Translate planView geometry start points by (dx,dy).
+
+    Also refreshes the <header> west/east/south/north bounds to match the
+    translated geometry. Real consumers (xodr_compare_gate.py's north>=south
+    /east>=west sanity check, dem_crs_contract.py's CRS-consistency check)
+    read these attributes directly; leaving them at their pre-translation
+    values after a real alignment shift (which can be on the order of
+    hundreds of kilometers, moving near-origin local coordinates into a
+    real-world CRS neighborhood) would silently hand them a bounding box
+    that no longer describes the file's own geometry.
+    """
     tree = ET.parse(in_path)
     root = tree.getroot()
 
     n = 0
+    minx = miny = math.inf
+    maxx = maxy = -math.inf
     for geom in _iter_planview_geometries(root):
         x = geom.get("x")
         y = geom.get("y")
         if x is None or y is None:
             continue
-        geom.set("x", f"{float(x) + dx:.10f}")
-        geom.set("y", f"{float(y) + dy:.10f}")
+        new_x = float(x) + dx
+        new_y = float(y) + dy
+        geom.set("x", f"{new_x:.10f}")
+        geom.set("y", f"{new_y:.10f}")
+        minx = min(minx, new_x)
+        maxx = max(maxx, new_x)
+        miny = min(miny, new_y)
+        maxy = max(maxy, new_y)
         n += 1
+
+    if n > 0:
+        header = root.find("header")
+        if header is None:
+            header = ET.SubElement(root, "header")
+        header.set("west", f"{minx:.8f}")
+        header.set("east", f"{maxx:.8f}")
+        header.set("south", f"{miny:.8f}")
+        header.set("north", f"{maxy:.8f}")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tree.write(out_path, encoding="utf-8", xml_declaration=True)

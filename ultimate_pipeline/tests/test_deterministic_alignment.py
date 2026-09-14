@@ -5,6 +5,7 @@ import pytest
 from ultimate_pipeline.domain_gap.deterministic_alignment import (
     compute_auto_bbox_and_centroid,
     deterministic_promote_and_align,
+    translate_xodr_geometry,
     BBox,
 )
 
@@ -163,3 +164,55 @@ def test_bbox_overlaps_disjoint_returns_false():
     b = BBox(minx=100.0, miny=100.0, maxx=110.0, maxy=110.0)
     assert a.overlaps(b) is False
     assert b.overlaps(a) is False
+
+
+# ---------------------------------------------------------------------------
+# translate_xodr_geometry shifts every planView geometry point by (dx, dy) but
+# used to leave <header west/east/south/north> completely untouched. Real
+# consumers read those attributes directly -- xodr_compare_gate.py's
+# north>=south/east>=west sanity check and dem_crs_contract.py's CRS-
+# consistency check -- so after a real alignment shift (which can be on the
+# order of hundreds of kilometers, moving near-origin local coordinates into
+# a real-world CRS neighborhood) the header silently described a bounding box
+# that no longer matched the file's own geometry.
+# ---------------------------------------------------------------------------
+
+def test_translate_xodr_geometry_updates_stale_header_bbox(tmp_path: Path):
+    auto = tmp_path / "auto.xodr"
+    _write_minimal_xodr(auto, [0, 10, 5], [0, 10, 5])
+    # Bolt on a pre-existing header bbox that describes the un-translated
+    # local coordinates, the way a real pipeline-generated map does.
+    tree = ET.parse(auto)
+    header = ET.Element("header")
+    header.set("west", "0.0")
+    header.set("east", "10.0")
+    header.set("south", "0.0")
+    header.set("north", "10.0")
+    tree.getroot().insert(0, header)
+    tree.write(auto, encoding="utf-8", xml_declaration=True)
+
+    out = tmp_path / "translated.xodr"
+    dx, dy = 500000.0, 300000.0
+    translate_xodr_geometry(auto, out, dx, dy)
+
+    out_header = ET.parse(out).getroot().find("header")
+    assert float(out_header.get("west")) == pytest.approx(0.0 + dx)
+    assert float(out_header.get("east")) == pytest.approx(10.0 + dx)
+    assert float(out_header.get("south")) == pytest.approx(0.0 + dy)
+    assert float(out_header.get("north")) == pytest.approx(10.0 + dy)
+
+
+def test_translate_xodr_geometry_inserts_header_bbox_when_missing(tmp_path: Path):
+    auto = tmp_path / "auto_no_header.xodr"
+    _write_minimal_xodr(auto, [0, 10, 5], [0, 20, 5])  # no header element at all
+
+    out = tmp_path / "translated_no_header.xodr"
+    dx, dy = 1000.0, 2000.0
+    translate_xodr_geometry(auto, out, dx, dy)
+
+    out_header = ET.parse(out).getroot().find("header")
+    assert out_header is not None
+    assert float(out_header.get("west")) == pytest.approx(0.0 + dx)
+    assert float(out_header.get("east")) == pytest.approx(10.0 + dx)
+    assert float(out_header.get("south")) == pytest.approx(0.0 + dy)
+    assert float(out_header.get("north")) == pytest.approx(20.0 + dy)
