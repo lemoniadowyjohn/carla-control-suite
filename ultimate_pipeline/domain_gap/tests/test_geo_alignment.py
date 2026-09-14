@@ -11,7 +11,11 @@ from typing import Dict, Any
 
 import pytest
 
-from ultimate_pipeline.domain_gap.geo_alignment import GeoAligner, identity_transform
+from ultimate_pipeline.domain_gap.geo_alignment import (
+    GeoAligner,
+    identity_transform,
+    _extract_xy_geometry_stream_regex,
+)
 
 
 # Minimal valid XODR for testing
@@ -391,3 +395,51 @@ class TestNoInputOverwrite:
         # Input file unchanged
         assert in_xodr.read_text(encoding="utf-8") == original_content
         assert in_xodr.stat().st_mtime == original_mtime
+
+
+class TestExtractXyGeometryStreamRegex:
+    """Tests for the streaming regex fallback point extractor.
+
+    The reader carries the last 2048 chars of each 4MB chunk forward as
+    context so a <geometry> tag split across a chunk boundary still matches
+    on the next read. Without deduping against that carried-over region, any
+    tag that happened to be fully visible near the END of a chunk (not
+    actually split) got matched once while scanning that chunk and again
+    while scanning the next chunk (since the tail is re-prepended), silently
+    duplicating points fed into downstream bbox/RMSE/alignment math.
+    """
+
+    _CHUNK = 4 * 1024 * 1024
+
+    def test_tag_near_end_of_chunk_is_not_double_counted(self, tmp_path: Path) -> None:
+        tag = '<geometry x="123.456" y="789.012" hdg="0.0" length="10.0"/>\n'
+        target_end = self._CHUNK - 500  # well inside the last 2048 bytes of chunk 1
+        filler_len = target_end - len(tag)
+        content = ("A" * filler_len) + tag + ("B" * self._CHUNK)
+
+        path = tmp_path / "boundary.xodr"
+        path.write_text(content, encoding="utf-8")
+
+        pts = _extract_xy_geometry_stream_regex(str(path))
+        assert pts == [(123.456, 789.012)]
+
+    def test_tag_straddling_chunk_boundary_still_matches_exactly_once(self, tmp_path: Path) -> None:
+        tag = '<geometry x="55.5" y="66.6" hdg="0.0" length="1.0"/>\n'
+        straddle_start = self._CHUNK - 20  # tag body crosses the exact 4MB read boundary
+        content = ("A" * straddle_start) + tag + ("B" * self._CHUNK)
+
+        path = tmp_path / "straddle.xodr"
+        path.write_text(content, encoding="utf-8")
+
+        pts = _extract_xy_geometry_stream_regex(str(path))
+        assert pts == [(55.5, 66.6)]
+
+    def test_small_single_chunk_file_extracts_all_points_once(self, tmp_path: Path) -> None:
+        content = "".join(
+            f'<geometry x="{i}.0" y="{i * 2}.0" hdg="0.0" length="1.0"/>\n' for i in range(5)
+        )
+        path = tmp_path / "small.xodr"
+        path.write_text(content, encoding="utf-8")
+
+        pts = _extract_xy_geometry_stream_regex(str(path))
+        assert pts == [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0), (4.0, 8.0)]

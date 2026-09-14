@@ -111,8 +111,18 @@ def _extract_xy_geometry_stream_regex(xodr_path: str, max_points: Optional[int] 
             if not chunk:
                 break
             buf = tail + chunk
+            # A match fully contained within the carried-over tail was already
+            # emitted while scanning the previous chunk (the tail is re-prepended
+            # here purely so tags split across the boundary still match) -- only
+            # matches extending past the tail are new. Without this guard, every
+            # <geometry> tag inside the last 2048 chars of a chunk gets counted
+            # twice, once per chunk read, silently duplicating points fed into
+            # bbox/RMSE/alignment computations.
+            tail_len = len(tail)
 
             for m in pat_xy.finditer(buf):
+                if m.end() <= tail_len:
+                    continue
                 try:
                     pts.append((float(m.group(1)), float(m.group(2))))
                 except Exception:
@@ -121,6 +131,8 @@ def _extract_xy_geometry_stream_regex(xodr_path: str, max_points: Optional[int] 
                     return pts
 
             for m in pat_yx.finditer(buf):
+                if m.end() <= tail_len:
+                    continue
                 try:
                     pts.append((float(m.group(2)), float(m.group(1))))
                 except Exception:
