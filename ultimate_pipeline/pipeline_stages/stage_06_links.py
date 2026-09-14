@@ -12,6 +12,8 @@ import shutil
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
+
 
 PROTECTED_STAGE6_TAGS = (
     "planView",
@@ -56,6 +58,13 @@ def _geom_value(geom: ET.Element | None) -> Dict[str, Any] | None:
 def _geom_endpoint(geom: ET.Element | None) -> tuple[float, float, float] | None:
     if geom is None:
         return None
+    try:
+        pose = canonical_endpoint(geom)
+        return pose.x, pose.y, pose.heading
+    except (TypeError, ValueError, ZeroDivisionError):
+        # Retain the diagnostic-only legacy approximation for malformed or
+        # unsupported primitives.  Known primitives use the canonical kernel.
+        pass
     try:
         x = float(geom.get("x", "0") or 0.0)
         y = float(geom.get("y", "0") or 0.0)

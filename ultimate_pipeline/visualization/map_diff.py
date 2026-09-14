@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 
 from opendrive_geometry.evaluator import LineArcEvaluator, EvaluationPolicy, RangePolicy
 from opendrive_geometry.model import GeometrySegment
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
 
 XY = Tuple[float, float]
 
@@ -44,6 +45,12 @@ def _sample_geometry(geom: ET.Element, step: float = 5.0) -> List[XY]:
       - straight line (no child)
       - <arc curvature="...">
     """
+    try:
+        return [(pose.x, pose.y) for pose in sample_geometry(geom, step)]
+    except (TypeError, ValueError, ZeroDivisionError):
+        # Preserve the old renderer for malformed/unknown primitives only.
+        pass
+
     x0 = _safe_float(geom.get("x", "0"))
     y0 = _safe_float(geom.get("y", "0"))
     hdg = _safe_float(geom.get("hdg", "0"))

@@ -4,12 +4,14 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+import math
 from typing import Optional, Dict, List, Tuple
 
 import torch
 from torch_geometric.data import Data
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
 
 
 LANE_TYPES = ["driving", "shoulder", "sidewalk", "biking", "parking", "none"]
@@ -33,6 +35,26 @@ def node_feature_dim() -> int:
     # one-hot lane type + speed + width_mean + width_std + curvature_mean
     # + curvature_std + junction_flag
     return int(len(LANE_TYPES) + 6)
+
+
+def _road_curvatures(road: ET.Element) -> List[float]:
+    """Collect finite curvature samples for every supported primitive once."""
+    curvatures: List[float] = []
+    for geometry in road.findall("./planView/geometry"):
+        try:
+            length = _safe_float(geometry.get("length"), 0.0)
+            spacing = max(length / 3.0, 0.25)
+            curvatures.extend(
+                float(pose.curvature)
+                for pose in sample_geometry(geometry, spacing)
+                if pose.curvature is not None and math.isfinite(float(pose.curvature))
+            )
+        except (TypeError, ValueError, ZeroDivisionError):
+            # Preserve the old arc-only fallback for malformed/unknown input.
+            arc = geometry.find("arc")
+            if arc is not None:
+                curvatures.append(_safe_float(arc.get("curvature"), 0.0))
+    return curvatures or [0.0]
 
 
 class MapGraphBuilder:
@@ -94,6 +116,12 @@ class MapGraphBuilder:
             if lanes is None:
                 continue
 
+            curvs = _road_curvatures(road)
+            c_mean = sum(curvs) / len(curvs)
+            c_std = (
+                sum((c - c_mean) ** 2 for c in curvs) / len(curvs)
+            ) ** 0.5
+
             for lsec in lanes.findall("laneSection"):
                 sec_s = _safe_float(lsec.get("s", "0.0"))
 
@@ -115,20 +143,6 @@ class MapGraphBuilder:
                         w_mean = sum(widths) / len(widths)
                         w_std = (
                             sum((w - w_mean) ** 2 for w in widths) / len(widths)
-                        ) ** 0.5
-
-                        # curvature from arc geometries
-                        curvs = []
-                        for g in road.findall("./planView/geometry"):
-                            arc = g.find("arc")
-                            if arc is not None:
-                                curvs.append(_safe_float(arc.get("curvature"), 0.0))
-                        if not curvs:
-                            curvs = [0.0]
-
-                        c_mean = sum(curvs) / len(curvs)
-                        c_std = (
-                            sum((c - c_mean) ** 2 for c in curvs) / len(curvs)
                         ) ** 0.5
 
                         features: List[float] = []

@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from ultimate_pipeline.core.xodr_sanitizer import _safe_float
 from ultimate_pipeline.core.repair_diff import diff_log
 from ultimate_pipeline.geometry.geometry_math import sample_parampoly3_points
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
 
 
 Point = Tuple[float, float]
@@ -50,6 +51,12 @@ def _format_float(value: float) -> str:
 
 
 def _geometry_endpoint(geom: ET.Element) -> Point:
+    try:
+        pose = canonical_endpoint(geom)
+        return pose.x, pose.y
+    except (TypeError, ValueError, ZeroDivisionError):
+        # Retain the legacy fallback for malformed/unknown primitives only.
+        pass
     x0 = _safe_float(geom.get("x"), 0.0)
     y0 = _safe_float(geom.get("y"), 0.0)
     hdg = _safe_float(geom.get("hdg"), 0.0)
@@ -134,6 +141,11 @@ def _road_end_heading_deg(road: ET.Element) -> float:
     if not geoms:
         return 0.0
     geom = geoms[-1]
+    try:
+        return math.degrees(canonical_endpoint(geom).heading) % 360.0
+    except (TypeError, ValueError, ZeroDivisionError):
+        # Retain legacy behavior only when no recognized primitive exists.
+        pass
     hdg = _safe_float(geom.get("hdg"), 0.0)
     length = max(0.0, _safe_float(geom.get("length"), 0.0))
     arc = geom.find("arc")

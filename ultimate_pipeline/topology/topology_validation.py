@@ -12,6 +12,9 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
+
 
 # ---------------------------------------------------------------------------
 # Shared pose helpers (self-contained; no dependency on geometry evaluators)
@@ -50,10 +53,16 @@ def road_endpoint_pose(road: ET.Element, contact_point: str) -> Optional[Endpoin
     geoms = road.findall("./planView/geometry")
     if not geoms:
         return None
+    g = geoms[0] if contact_point == "start" else geoms[-1]
+    try:
+        pose = pose_at_s(g, 0.0) if contact_point == "start" else canonical_endpoint(g)
+        return EndpointPose(pose.x, pose.y, pose.heading)
+    except (TypeError, ValueError, ZeroDivisionError):
+        # Preserve the legacy line/arc evaluator only for malformed or
+        # unsupported primitives.  Known paramPoly3 is evaluated above.
+        pass
     if contact_point == "start":
-        g = geoms[0]
         return EndpointPose(_f(g.get("x")), _f(g.get("y")), _f(g.get("hdg")))
-    g = geoms[-1]
     x0, y0, hdg0, length = _f(g.get("x")), _f(g.get("y")), _f(g.get("hdg")), _f(g.get("length"))
     kind = None
     for child in g:

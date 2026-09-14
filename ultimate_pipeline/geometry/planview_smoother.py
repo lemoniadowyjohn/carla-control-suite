@@ -8,16 +8,17 @@ from ultimate_pipeline.core.xodr_sanitizer import _safe_float
 from ultimate_pipeline.quality.check_geometric_continuity import (
     recompute_geometry_starts_chained_inplace,
 )
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
 
 
 def _line_end_xy(g: ET.Element) -> tuple[float, float] | None:
-    """Return (x_end, y_end) for a LINE geometry element, or None for other types."""
-    for child in g:
-        if child.tag != "line":
-            return None
-        break
-    else:
-        # no child found → line element absent
+    """Return a supported geometry endpoint for terminal-anchor protection."""
+    try:
+        pose = canonical_endpoint(g)
+        return pose.x, pose.y
+    except (TypeError, ValueError, ZeroDivisionError):
+        pass
+    if g.find("line") is None:
         return None
     try:
         x0 = float(g.get("x", "0"))

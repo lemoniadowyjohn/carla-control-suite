@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageDraw
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
+
 
 class LaneOverlay:
     """
@@ -62,6 +64,12 @@ class LaneOverlay:
 
     @staticmethod
     def _endpoint(x, y, hdg, length, geo_elem):
+        try:
+            pose = canonical_endpoint(geo_elem)
+            return pose.x, pose.y, pose.heading
+        except (TypeError, ValueError, ZeroDivisionError):
+            # Preserve the old fallback for malformed/unknown primitives only.
+            pass
         arc = geo_elem.find("arc")
         if arc is not None:
             try:
@@ -81,7 +89,7 @@ class LaneOverlay:
             y2 = y - (math.cos(hdg2) - math.cos(hdg)) / k
             return x2, y2, hdg2
 
-        # spiral/poly3/line fallback
+        # Unsupported/default primitive -> historical line approximation.
         return (
             x + length * math.cos(hdg),
             y + length * math.sin(hdg),
