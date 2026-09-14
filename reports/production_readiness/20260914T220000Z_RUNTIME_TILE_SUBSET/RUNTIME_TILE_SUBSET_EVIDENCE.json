@@ -59,6 +59,14 @@
     "full_offline_duration_seconds": 388.138,
     "full_offline_junit_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\up-runtime-tile-evidence-20260914\\full_offline_junit.xml"
   },
+  "package": {
+    "wheel_build": "PASS",
+    "wheel_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\up-runtime-tile-evidence-20260914\\wheel\\ultimate_pipeline-0.1.0-py3-none-any.whl",
+    "wheel_sha256": "7b03d7a5c3d289fc1d271c079fd2098598edd77209a8cf0888fc6277365a01ec",
+    "source_excluded_wheel_import": "PASS: ultimate_pipeline.tiling.runtime_tile_builder",
+    "pip_check_current_environment": "PASS",
+    "clean_environment_cli": "NOT_RUN: project dependencies were intentionally not installed in the dependency-free wheel smoke environment"
+  },
   "live_carla": "NOT_RUN",
   "claim_boundary": "This is an offline structural artifact for later CARLA validation. It does not prove CARLA OpenDRIVE import, spawning, vehicle control, rendering performance, VRAM reduction, or map-of-record promotion."
 }
