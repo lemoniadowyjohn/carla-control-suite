@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from ultimate_pipeline.utils.file_hashing import safe_sha256_file
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as _kernel_sample
 
 
 DEFAULT_THRESHOLDS = {
@@ -30,6 +31,39 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return float(value)
     except Exception:
         return default
+
+
+def _peak_signed_curvature(geom: ET.Element) -> float:
+    """Signed curvature at the sample point of greatest magnitude within
+    this geometry, via the canonical kernel (handles line/arc/spiral/
+    poly3/paramPoly3 correctly).
+
+    The previous implementation only read curvature from an explicit
+    <arc> element, silently treating every other primitive -- including
+    paramPoly3, this pipeline's dominant real geometry type -- as
+    curvature=0.0 (paramPoly3 was not even in the checked tag list).
+    quarantine_bad_roads() actively REMOVES roads from the map based on
+    this score, so this blind spot meant curvature-based quarantine could
+    never fire for most real roads. Returns a SIGNED value (not abs) at
+    the point of peak magnitude, matching the sign semantics
+    curvature_jump_max relies on (a left-to-right curvature reversal must
+    show as a large jump, not cancel out under an abs-only value).
+    """
+    length = _safe_float(geom.get("length"), 0.0)
+    if length < 1e-3:
+        return 0.0
+    try:
+        spacing = max(length / 10.0, 1e-3)
+        poses = _kernel_sample(geom, spacing)
+    except (ValueError, ZeroDivisionError):
+        return 0.0
+    peak = 0.0
+    for pose in poses:
+        if pose.curvature is None or not math.isfinite(pose.curvature):
+            continue
+        if abs(pose.curvature) > abs(peak):
+            peak = pose.curvature
+    return peak
 
 
 def _angle_diff_rad(a: float, b: float) -> float:
@@ -100,15 +134,7 @@ def _collect_geometry_metrics(root: ET.Element) -> Dict[str, Dict[str, Any]]:
         curvature_abs_max = 0.0
         for geom in geometries_sorted:
             hdg = _safe_float(geom.get("hdg"), 0.0)
-            child = None
-            for tag in ("arc", "spiral", "line"):
-                child = geom.find(tag)
-                if child is not None:
-                    break
-            if child is not None and child.tag == "arc":
-                curvature = _safe_float(child.get("curvature"), 0.0)
-            else:
-                curvature = 0.0
+            curvature = _peak_signed_curvature(geom)
             curv_abs = abs(curvature)
             curvature_abs_max = (
                 curv_abs if not math.isfinite(curv_abs) else max(curvature_abs_max, curv_abs)

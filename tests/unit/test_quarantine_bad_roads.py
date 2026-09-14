@@ -113,6 +113,51 @@ def test_collect_geometry_metrics_curvature_abs_and_jump():
     assert abs(metrics["1"]["curvature_jump_max"] - 0.3) < 1e-9
 
 
+def test_collect_geometry_metrics_detects_real_parampoly3_curvature():
+    """Real-map regression: the previous implementation only read curvature
+    from an explicit <arc> element (paramPoly3 wasn't even in the checked
+    tag list), silently scoring curvature_abs_max=0.0 for paramPoly3 --
+    this pipeline's dominant real geometry type. quarantine_bad_roads()
+    actively removes roads from the map based on this score, so the blind
+    spot meant curvature-based quarantine could never fire for most real
+    roads. bU=10, cV=5 (pRange=normalized) is a real curve (same verified
+    fixture used in structure_scanner.py's own regression test)."""
+    road = ET.Element("road", id="1", length="10.0", junction="-1")
+    planview = ET.SubElement(road, "planView")
+    geom = ET.SubElement(planview, "geometry", s="0", x="0", y="0", hdg="0", length="10.0")
+    ET.SubElement(
+        geom, "paramPoly3",
+        aU="0", bU="10", cU="0", dU="0",
+        aV="0", bV="0", cV="5", dV="0",
+        pRange="normalized",
+    )
+    root = ET.Element("OpenDRIVE")
+    root.append(road)
+
+    metrics = _collect_geometry_metrics(root)
+
+    assert metrics["1"]["curvature_abs_max"] > 0.0
+
+
+def test_collect_geometry_metrics_curvature_jump_preserves_sign_on_reversal():
+    """A left-curving arc followed by an equal-magnitude right-curving arc
+    is a real, sharp curvature REVERSAL -- the jump must reflect the full
+    signed difference (0.3 - (-0.3) = 0.6), not cancel out to 0 under an
+    abs-only peak value."""
+    road = ET.Element("road", id="1", length="2.0", junction="-1")
+    planview = ET.SubElement(road, "planView")
+    g1 = ET.SubElement(planview, "geometry", s="0", x="0", y="0", hdg="0", length="1.0")
+    ET.SubElement(g1, "arc", curvature="0.3")
+    g2 = ET.SubElement(planview, "geometry", s="1", x="1", y="0", hdg="0", length="1.0")
+    ET.SubElement(g2, "arc", curvature="-0.3")
+    root = ET.Element("OpenDRIVE")
+    root.append(road)
+
+    metrics = _collect_geometry_metrics(root)
+
+    assert abs(metrics["1"]["curvature_jump_max"] - 0.6) < 1e-9
+
+
 def test_collect_geometry_metrics_road_without_planview_skipped():
     road = ET.Element("road", id="1", length="10.0")
     root = ET.Element("OpenDRIVE")
