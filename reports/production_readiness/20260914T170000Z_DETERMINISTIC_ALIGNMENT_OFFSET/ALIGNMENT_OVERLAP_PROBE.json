@@ -1,0 +1,63 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 37.046,
+  "source_map_sha256_before": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "source_map_sha256_after": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "source_map_unchanged": true,
+  "derived_probe_removed": true,
+  "probe": {
+    "manual_bbox": {
+      "maxx": 682410.5096099,
+      "maxy": 5405403.332598,
+      "minx": 678015.8009219,
+      "miny": 5402486.14794
+    },
+    "validity": {
+      "auto_bbox_aligned": {
+        "maxx": 686156.1395255738,
+        "maxy": 5411159.383375523,
+        "minx": 672889.0764905738,
+        "miny": 5397088.5081385225
+      },
+      "auto_bbox_local": {
+        "maxx": 13267.063267,
+        "maxy": 14070.875071,
+        "minx": 0.000232,
+        "miny": -0.000166
+      },
+      "auto_xodr_in": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "dx": 672889.0762585738,
+      "dy": 5397088.508304522,
+      "gps_center_projected": {
+        "x": 680084.6856952258,
+        "y": 5403884.708357111
+      },
+      "input_header_offset_hdg": 0.0,
+      "input_header_offset_xy": {
+        "mag_m": 5521814.225565474,
+        "x": 832671.676,
+        "y": 5458671.104
+      },
+      "input_header_offset_z": 0.0,
+      "manual_bbox": {
+        "maxx": 682410.5096099,
+        "maxy": 5405403.332598,
+        "minx": 678015.8009219,
+        "miny": 5402486.14794
+      },
+      "output_header_offset_xy": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "overlap": true,
+      "require_overlap": true,
+      "source_geometry_freeze_invalidated": true,
+      "status": "ok",
+      "translated_geometry_points": 197397,
+      "translation": {
+        "dx": 672889.0762585738,
+        "dy": 5397088.508304522
+      }
+    }
+  }
+}
