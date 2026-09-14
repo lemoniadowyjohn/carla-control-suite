@@ -7,6 +7,8 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageDraw
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
+
 
 class HeatmapGenerator:
     """
@@ -53,10 +55,13 @@ class HeatmapGenerator:
 
     @staticmethod
     def _endpoint(x, y, hdg, length, geo_elem):
-        """
-        Simple endpoint integrator for visualization.
-        Handles <arc>; treats spiral/poly3 as straight line.
-        """
+        """Return a geometry endpoint without flattening supported primitives."""
+        try:
+            pose = canonical_endpoint(geo_elem)
+            return pose.x, pose.y, pose.heading
+        except (TypeError, ValueError, ZeroDivisionError):
+            # Preserve the previous fallback only for malformed/unknown input.
+            pass
         arc = geo_elem.find("arc")
         if arc is not None:
             try:
@@ -76,7 +81,7 @@ class HeatmapGenerator:
             y2 = y - (math.cos(hdg2) - math.cos(hdg)) / k
             return x2, y2, hdg2
 
-        # spiral / poly3 / default → line
+        # Unsupported/default primitive -> historical line approximation.
         return (
             x + length * math.cos(hdg),
             y + length * math.sin(hdg),

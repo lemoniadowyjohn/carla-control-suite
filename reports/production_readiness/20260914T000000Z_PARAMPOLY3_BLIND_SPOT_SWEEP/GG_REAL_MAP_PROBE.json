@@ -1,0 +1,19 @@
+{
+  "canonical_sampling": {
+    "parampoly3_geometries_with_nonzero_curvature": 172755
+  },
+  "former_line_approximation": {
+    "affected_geometry_count": 172755,
+    "max_endpoint_error_m": 94.38815537847796,
+    "median_endpoint_error_m": 0.01102473310447581
+  },
+  "live_carla": "NOT_RUN",
+  "map_of_record_mutated": "NO",
+  "parampoly3_geometry_count": 172755,
+  "parampoly3_road_count": 29114,
+  "parampoly3_road_fraction": 0.9022840673133542,
+  "road_count": 32267,
+  "schema_version": 1,
+  "xodr_path": "F:\\carla-control-suite-worktrees\\parampoly3-blind-spot-sweep-v1-20260914\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+  "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+}

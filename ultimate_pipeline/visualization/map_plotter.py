@@ -15,6 +15,7 @@ from opendrive_geometry.primitives import evaluate_line, evaluate_arc
 
 from opendrive_geometry.evaluator import LineArcEvaluator, EvaluationPolicy, RangePolicy
 from opendrive_geometry.model import GeometrySegment
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
 
 _MAP_PLOTTER_EVALUATOR = LineArcEvaluator(
     EvaluationPolicy(
@@ -42,6 +43,12 @@ class MapPlotter:
     @staticmethod
     def _sample_geometry(geom, step=1.0):
         """Turn planView geometry into sampled (x, y) points."""
+        try:
+            poses = sample_geometry(geom, step)
+            return [pose.x for pose in poses], [pose.y for pose in poses]
+        except (TypeError, ValueError, ZeroDivisionError):
+            # Keep the historical renderer for malformed or unsupported input.
+            pass
         try:
             x0 = float(geom.get("x"))
             y0 = float(geom.get("y"))

@@ -5,13 +5,23 @@ matplotlib.use("Agg")  # headless backend: this system's default (tkagg) needs a
 import matplotlib.pyplot as plt
 from typing import Dict
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
+
 
 def _road_curvature(road: ET.Element):
     vals = []
     for g in road.findall("planView/geometry"):
-        arc = g.find("arc")
-        if arc is not None:
-            vals.append(abs(float(arc.get("curvature", "0"))))
+        try:
+            length = float(g.get("length", "0"))
+            vals.extend(
+                abs(float(pose.curvature))
+                for pose in sample_geometry(g, max(length / 3.0, 0.25))
+                if pose.curvature is not None
+            )
+        except (TypeError, ValueError, ZeroDivisionError):
+            arc = g.find("arc")
+            if arc is not None:
+                vals.append(abs(float(arc.get("curvature", "0"))))
     return vals
 
 

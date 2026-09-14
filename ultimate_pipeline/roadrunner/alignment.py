@@ -8,6 +8,7 @@ from typing import Sequence
 
 from .exceptions import RoadRunnerContractError
 from .models import SerializableContract
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
 
 
 @dataclass(frozen=True)
@@ -64,14 +65,14 @@ def _extract_xodr_planview_points(root: ET.Element, max_per_road: int = 20) -> l
             step = length / (samples - 1) if samples > 1 else 0.0
             for i in range(samples):
                 t = i * step
-                if geom.find("arc") is not None:
-                    curvature = _safe_float(geom.find("arc").get("curvature"))
-                    if abs(curvature) > 1e-12:
-                        theta = hdg + curvature * t
-                        xx = x0 + (math.sin(theta) - math.sin(hdg)) / curvature
-                        yy = y0 - (math.cos(theta) - math.cos(hdg)) / curvature
-                        points.append((xx, yy))
-                        continue
+                try:
+                    pose = pose_at_s(geom, t)
+                    points.append((pose.x, pose.y))
+                    continue
+                except (TypeError, ValueError, ZeroDivisionError):
+                    # Preserve the old fallback only for malformed or unknown
+                    # primitives; known paramPoly3 now uses its actual pose.
+                    pass
                 xx = x0 + t * math.cos(hdg)
                 yy = y0 + t * math.sin(hdg)
                 points.append((xx, yy))

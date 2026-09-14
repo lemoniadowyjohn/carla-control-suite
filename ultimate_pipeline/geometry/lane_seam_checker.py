@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple
 import math
 
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import sample as sample_geometry
+
 XY = Tuple[float, float]
 
 
@@ -23,40 +25,25 @@ class SeamReport:
 
 
 def _sample_geometry(geom: ET.Element, step: float = 2.0) -> List[XY]:
+    """Sample every supported OpenDRIVE primitive through the canonical kernel."""
+    try:
+        return [(pose.x, pose.y) for pose in sample_geometry(geom, step)]
+    except (TypeError, ValueError, ZeroDivisionError):
+        # Preserve the historical straight-line fallback for malformed or
+        # unsupported primitives; supported paramPoly3 is never routed here.
+        pass
+
     x0 = _safe_float(geom.get("x", "0"))
     y0 = _safe_float(geom.get("y", "0"))
     hdg = _safe_float(geom.get("hdg", "0"))
     length = _safe_float(geom.get("length", "0"))
 
-    arc = geom.find("arc")
     pts: List[XY] = []
-
-    if arc is None:
-        n = max(2, int(length / step))
-        for i in range(n + 1):
-            ds = length * (i / n)
-            x = x0 + ds * math.cos(hdg)
-            y = y0 + ds * math.sin(hdg)
-            pts.append((x, y))
-        return pts
-
-    curvature = _safe_float(arc.get("curvature", "0"))
-    if not math.isfinite(curvature) or abs(curvature) < 1e-9:
-        n = max(2, int(length / step))
-        for i in range(n + 1):
-            ds = length * (i / n)
-            x = x0 + ds * math.cos(hdg)
-            y = y0 + ds * math.sin(hdg)
-            pts.append((x, y))
-        return pts
-
-    R = 1.0 / curvature
-    n = max(12, int(length / step))
+    n = max(2, int(length / step))
     for i in range(n + 1):
         ds = length * (i / n)
-        theta = ds * curvature
-        x = x0 + R * (math.sin(hdg + theta) - math.sin(hdg))
-        y = y0 - R * (math.cos(hdg + theta) - math.cos(hdg))
+        x = x0 + ds * math.cos(hdg)
+        y = y0 + ds * math.sin(hdg)
         pts.append((x, y))
     return pts
 
