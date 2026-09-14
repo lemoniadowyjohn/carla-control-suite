@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task": "deterministic alignment header-offset contract",
+  "base_sha": "fcc8a56116b5c4ee8eccbd3a4c9eeb5f80a7ad92",
+  "implementation_sha": "0c60e98ccf6ecaf84e66637ea9b7c387cbb95977",
+  "branch": "feature/deterministic-alignment-offset-contract-v1-20260914",
+  "input_artifacts": {
+    "map_of_record_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "manual_reference_path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+    "map_of_record_mutated": "NO",
+    "manual_reference_mutated": "NO"
+  },
+  "contract": {
+    "source_xy_offset": "accepted as local-frame provenance and reset in output",
+    "source_header_rotation": "rejected when nonzero",
+    "malformed_offset": "rejected",
+    "output_georeference": "manual_proj",
+    "output_xy_offset": [0.0, 0.0],
+    "output_geometry_freeze_attestation": "removed after coordinate transform",
+    "vertical_offset": "preserved; no vertical transformation is performed"
+  },
+  "real_map_probe": {
+    "status": "PASS",
+    "path": "ALIGNMENT_PROBE.json",
+    "duration_seconds": 35.627,
+    "translated_geometry_points": 197397,
+    "input_offset_magnitude": 5521814.225565474,
+    "output_xy_offset": [0.0, 0.0],
+    "derived_probe_removed": true,
+    "require_overlap": false
+  },
+  "grid0828_overlap_probe": {
+    "status": "PASS",
+    "path": "ALIGNMENT_OVERLAP_PROBE.json",
+    "duration_seconds": 37.046,
+    "overlap": true,
+    "derived_probe_removed": true,
+    "require_overlap": true
+  },
+  "tests": {
+    "focused": "51 passed",
+    "full_offline": "5949 passed, 82 skipped, 0 failed",
+    "full_offline_duration_seconds": 563.02,
+    "mode": "non-sparse"
+  },
+  "live_carla": "NOT_RUN",
+  "claim_boundary": "This validates a derived offline alignment copy's horizontal frame contract. It does not promote a map, alter RQ evidence, certify CARLA loadability, or establish domain-gap quality."
+}
