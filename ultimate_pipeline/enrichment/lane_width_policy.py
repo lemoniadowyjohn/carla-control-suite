@@ -258,6 +258,42 @@ def _safe_float(raw: Any, default: float = 0.0) -> float:
     return value if math.isfinite(value) else default
 
 
+def _width_polynomial_is_valid(width: ET.Element, road_length: float) -> bool:
+    """Check an existing width polynomial over the portion of its road it owns.
+
+    Width policies may replace explicit converter placeholders and malformed
+    widths, but must not flatten a finite, positive source polynomial merely
+    because its start value differs from an inferred OSM default.
+    """
+    try:
+        a, b, c, d = (float(width.get(key, "nan")) for key in "abcd")
+        s_offset = float(width.get("sOffset", "0"))
+        span = max(0.0, float(road_length) - s_offset)
+    except (TypeError, ValueError, OverflowError):
+        return False
+    if not all(math.isfinite(value) for value in (a, b, c, d, s_offset, span)):
+        return False
+
+    sample_s = [0.0, span]
+    # Width extrema are the roots of b + 2cs + 3ds^2.  Checking them avoids
+    # accepting a polynomial that is nominally valid only at its endpoints.
+    if abs(d) > 1e-12:
+        discriminant = 4.0 * c * c - 12.0 * d * b
+        if discriminant >= 0.0:
+            root = math.sqrt(discriminant)
+            sample_s.extend(((-2.0 * c - root) / (6.0 * d), (-2.0 * c + root) / (6.0 * d)))
+    elif abs(c) > 1e-12:
+        sample_s.append(-b / (2.0 * c))
+
+    for s_value in sample_s:
+        if not 0.0 <= s_value <= span:
+            continue
+        value = a + b * s_value + c * s_value * s_value + d * s_value * s_value * s_value
+        if not math.isfinite(value) or not 0.1 <= value <= 8.0:
+            return False
+    return True
+
+
 def _ensure_width(lane: ET.Element) -> ET.Element:
     width = _first_width(lane)
     if width is not None:
@@ -310,6 +346,13 @@ def apply_lane_width_policy(
             if abs(old - SIX_METER_PLACEHOLDER_M) <= 1e-6:
                 six_meter_found += 1
             if abs(old - decision.width_m) <= 1e-6:
+                continue
+
+            # Preserve valid explicit lane-shape geometry.  The historical
+            # six-metre converter placeholder remains intentionally repairable.
+            if abs(old - SIX_METER_PLACEHOLDER_M) > 1e-6 and _width_polynomial_is_valid(
+                width, _safe_float(road.get("length"), 0.0)
+            ):
                 continue
 
             width.set("a", f"{decision.width_m:.3f}")
