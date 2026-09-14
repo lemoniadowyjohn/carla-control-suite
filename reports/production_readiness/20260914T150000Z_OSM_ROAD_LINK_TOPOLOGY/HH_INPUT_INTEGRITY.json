@@ -1,0 +1,10 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 93.307,
+  "map_sha256_before": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "map_sha256_after": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "osm_sha256_before": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "osm_sha256_after": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "map_unchanged": true,
+  "osm_unchanged": true
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task": "HH OSM road-link topology cross-check",
+  "base_sha": "ff3ab5c756122f2c0bd517b1727df76c9846d578",
+  "implementation_sha": "7bdbe750a009d2589ca192e7d4492fb48fcbdc96",
+  "branch": "feature/osm-road-link-topology-crosscheck-v1-20260914",
+  "source_tree_clean_before_evidence": true,
+  "algorithm": {
+    "osm_adjacency": "first/last OSM node references only",
+    "correspondence": "existing build_metadata_associations with canonical spatial grid matcher",
+    "eligible_match_classes": ["EXACT", "HIGH"],
+    "orientation": "existing _osm_direction association result",
+    "junction_resolution": "incoming junction connection plus one connector-to-road hop",
+    "mutation": "none"
+  },
+  "input_artifacts": {
+    "map_of_record_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "pinned_osm_path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "pinned_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "map_of_record_mutated": "NO",
+    "pinned_osm_mutated": "NO"
+  },
+  "real_map_probe": {
+    "status": "FAIL",
+    "duration_seconds": 93.307,
+    "source_highway_way_count": 17200,
+    "high_confidence_associated_roads": 134,
+    "total_xodr_roads": 32267,
+    "checkable_boundaries": 28,
+    "agree": 15,
+    "disagree": 13,
+    "incomplete_unassociated_osm_neighbours": 217,
+    "incomplete_unresolved_declared_link": 9,
+    "report_path": "HH_REAL_MAP_RESULTS.json",
+    "report_sha256": "472da39ddd1a938cd0e6baef1ad50c9230c7c4a3c138adf3c9d587e36dac5a0b"
+  },
+  "determinism": {
+    "status": "PASS",
+    "repeat_duration_seconds": 107.006,
+    "byte_identical": true,
+    "report_sha256": "472da39ddd1a938cd0e6baef1ad50c9230c7c4a3c138adf3c9d587e36dac5a0b",
+    "receipt_path": "HH_DETERMINISM.json"
+  },
+  "wiring_decision": {
+    "status": "NOT_WIRED",
+    "reason": "134/32267 HIGH/EXACT associations and 28 checkable boundaries are insufficient coverage; 13/28 disagreement is not an interpretable advisory signal without a governed correspondence improvement."
+  },
+  "tests": {
+    "focused": "17 passed",
+    "full_offline": "5951 passed, 82 skipped, 0 failed",
+    "full_offline_duration_seconds": 438.12,
+    "mode": "non-sparse"
+  },
+  "live_carla": "NOT_RUN",
+  "claim_boundary": "The report is an offline, advisory-only assessment of the currently high-confidence correspondence subset. It does not establish conversion correctness or a map acceptance result."
+}
