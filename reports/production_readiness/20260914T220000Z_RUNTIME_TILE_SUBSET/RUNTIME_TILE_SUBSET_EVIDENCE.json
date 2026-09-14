@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "task": "standalone CARLA runtime tile artifact",
+  "base_sha": "b3b1d834db4a9476220fc3c226e94a831fd14dac",
+  "implementation_sha": "4ed2f858",
+  "branch": "feature/runtime-tile-subset-v1-20260914",
+  "input": {
+    "map_of_record_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "map_of_record_size_bytes": 148949722,
+    "map_of_record_mutated": "NO",
+    "source_header_offset_xy_m": [832671.676, 5458671.104]
+  },
+  "command": {
+    "entrypoint": "python -m ultimate_pipeline.cli tile build-runtime",
+    "center_x": 7195.6094366520165,
+    "center_y": 6796.20005258847,
+    "tile_size_m": 1000.0,
+    "buffer_m": 100.0,
+    "max_closure_roads": 5000
+  },
+  "runtime_tile_probe": {
+    "status": "READY_FOR_LIVE_CARLA_VALIDATION",
+    "static_validation": "PASS",
+    "road_count": 1280,
+    "junction_count": 123,
+    "driving_lane_count": 1459,
+    "candidate_spawn_road_id": "45296",
+    "candidate_spawn_road_length_m": 520.04565961,
+    "dangling_road_links": 0,
+    "dangling_junction_references": 0,
+    "dangling_junction_connections": 0,
+    "boundary_road_links_removed": 74,
+    "boundary_lane_links_removed": 46,
+    "derived_xodr_sha256": "55d8f8032c8ac0136f1dbedc188f4383f880ea495b8e13dd56b7a43458ae7575",
+    "derived_xodr_size_bytes": 5968630,
+    "source_size_ratio": 0.04007,
+    "derived_header": {
+      "local_frame": true,
+      "georeference_present": false,
+      "geometry_freeze_attestation_present": false,
+      "offset_xyzhdg": [0.0, 0.0, 0.0, 0.0],
+      "west": -834.5444266520199,
+      "east": 1118.2824543479792,
+      "south": -1077.9872635884694,
+      "north": 817.4017111979209
+    },
+    "first_cli_duration_seconds": 30.1,
+    "second_cli_duration_seconds": 29.7,
+    "byte_deterministic": true,
+    "local_candidate_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\up-runtime-tile-evidence-20260914\\ingolstadt_runtime_tile.xodr",
+    "temporary_derived_artifact_retained": true,
+    "git_tracked": false
+  },
+  "tests": {
+    "runtime_tile_and_cli": "10 passed",
+    "tiling_regression_subset": "66 passed",
+    "full_offline": "5965 passed, 82 skipped, 0 failed, 0 errors (6047 collected)",
+    "full_offline_duration_seconds": 388.138,
+    "full_offline_junit_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\up-runtime-tile-evidence-20260914\\full_offline_junit.xml"
+  },
+  "live_carla": "NOT_RUN",
+  "claim_boundary": "This is an offline structural artifact for later CARLA validation. It does not prove CARLA OpenDRIVE import, spawning, vehicle control, rendering performance, VRAM reduction, or map-of-record promotion."
+}
