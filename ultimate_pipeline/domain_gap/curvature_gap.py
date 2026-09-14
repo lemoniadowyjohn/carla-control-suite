@@ -197,17 +197,26 @@ class CurvatureGap:
         # ------------------------------
         max_val = max(m_vals.max(), a_vals.max(), 1e-6)
 
-        hist_m, bin_edges = np.histogram(
+        # NOTE: density=False (raw counts) normalized to a probability MASS
+        # function (sums to 1), not density=True (a continuous density that
+        # integrates to 1 over the bin width, i.e. sums to 1/bin_width). The
+        # discrete KL-divergence sum formula below requires p_i/q_i to be
+        # probability masses -- feeding it density values silently inflates
+        # the result by a factor of 1/bin_width (verified: ~300x on a
+        # representative synthetic distribution with the default 60 bins).
+        hist_m_counts, bin_edges = np.histogram(
             m_vals,
             bins=bins,
             range=(0.0, max_val),
-            density=True,
+            density=False,
         )
-        hist_a, _ = np.histogram(
+        hist_a_counts, _ = np.histogram(
             a_vals,
             bins=bin_edges,
-            density=True,
+            density=False,
         )
+        hist_m = hist_m_counts / hist_m_counts.sum()
+        hist_a = hist_a_counts / hist_a_counts.sum()
 
         kl = _compute_kl_div(hist_m, hist_a)
 
