@@ -53,6 +53,16 @@ _TO_LOCAL = Transformer.from_crs("EPSG:4326", CRS.from_proj4(_BARE_TMERC), alway
 # genuine far-miss (16.67m), so it does not risk pulling in an unrelated road.
 DEFAULT_MAX_MATCH_DIST_M = 15.0
 DEFAULT_CROSSING_DEPTH_M = 3.0  # typical marked-crossing depth along the road
+_MATCH_TIE_TOLERANCE_M = 1e-9
+
+
+def _road_id_key(road: ET.Element) -> Tuple[int, Any]:
+    """Return a stable ordering key for equally close road candidates."""
+    road_id = road.get("id") or ""
+    try:
+        return (0, int(road_id))
+    except ValueError:
+        return (1, road_id)
 
 
 # ---------------------------------------------------------------------------
@@ -234,7 +244,7 @@ class RoadSpatialIndex:
         for dx in range(-reach, reach + 1):
             for dy in range(-reach, reach + 1):
                 found.update(self._cells.get((cx + dx, cy + dy), ()))
-        return list(found)
+        return sorted(found, key=_road_id_key)
 
 
 def match_crossing_to_road(
@@ -259,7 +269,16 @@ def match_crossing_to_road(
     best_dist = max_dist_m
     for road in index.candidates_near(x, y, max_dist_m):
         dist, s, pt = nearest_point_on_road(road, x, y)
-        if dist <= best_dist:
+        if dist > max_dist_m:
+            continue
+        if (
+            best is None
+            or dist < best_dist - _MATCH_TIE_TOLERANCE_M
+            or (
+                abs(dist - best_dist) <= _MATCH_TIE_TOLERANCE_M
+                and _road_id_key(road) < _road_id_key(best["road"])
+            )
+        ):
             best_dist = dist
             best = {"road": road, "s": s, "point": pt, "dist": dist}
     return best
@@ -320,9 +339,38 @@ def apply_crosswalks(
     # (882s for the real 32k-road candidate x 179 crossings).
     spatial_index = RoadSpatialIndex(root)
 
+    existing_ids = {
+        obj.get("id")
+        for obj in root.iter("object")
+        if obj.get("id") is not None
+    }
+    existing_way_ids = {
+        obj.get("name", "")[len("osm_way_"):]
+        for obj in root.iter("object")
+        if obj.get("type") == "crosswalk"
+        and obj.get("name", "").startswith("osm_way_")
+    }
+    requested_way_ids = {
+        str(crossing.get("way_id") or "").strip()
+        for crossing in crossings
+    }
+    collisions = sorted(
+        way_id
+        for way_id in requested_way_ids
+        if way_id
+        and way_id not in existing_way_ids
+        and f"crosswalk_{way_id}" in existing_ids
+    )
+    if collisions:
+        raise ValueError(
+            "crosswalk object ID collision for OSM ways: " + ", ".join(collisions)
+        )
+
     inserted = 0
-    counter = 0
-    for crossing in crossings:
+    for crossing in sorted(crossings, key=lambda item: str(item.get("way_id") or "")):
+        way_id = str(crossing.get("way_id") or "").strip()
+        if not way_id or way_id in existing_way_ids:
+            continue
         nodes_local = crossing.get("nodes_local")
         if not nodes_local or len(nodes_local) < 2:
             continue
@@ -349,11 +397,13 @@ def apply_crosswalks(
         if objects_elem is None:
             objects_elem = ET.SubElement(road, "objects")
 
-        counter += 1
+        object_id = f"crosswalk_{way_id}"
+        if object_id in existing_ids:
+            raise RuntimeError(f"preflight missed crosswalk object ID: {object_id}")
         obj = ET.SubElement(objects_elem, "object", {
-            "id": f"crosswalk_{counter}",
+            "id": object_id,
             "type": "crosswalk",
-            "name": f"osm_way_{crossing.get('way_id', '?')}",
+            "name": f"osm_way_{way_id}",
             "s": f"{s:.3f}",
             "t": "0.0",
             "zOffset": "0.0",
@@ -365,5 +415,7 @@ def apply_crosswalks(
             ET.SubElement(outline, "cornerLocal", u=f"{u:.3f}", v=f"{v:.3f}", z=f"{z:.3f}")
 
         inserted += 1
+        existing_ids.add(object_id)
+        existing_way_ids.add(way_id)
 
     return inserted

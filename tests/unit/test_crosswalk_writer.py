@@ -123,6 +123,17 @@ def test_match_crossing_to_road_returns_none_beyond_threshold():
     assert match is None
 
 
+def test_match_crossing_to_road_uses_stable_road_id_tie_breaking():
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("10", [(0.0, 0.0), (10.0, 0.0)]))
+    root.append(_road("2", [(0.0, 0.0), (10.0, 0.0)]))
+
+    match = match_crossing_to_road(root, (5.0, 1.0), max_dist_m=5.0)
+
+    assert match is not None
+    assert match["road"].get("id") == "2"
+
+
 # --------------------------------------------------------------------------
 # DEFAULT_MAX_MATCH_DIST_M widened 5.0m -> 15.0m: a fixed 5m cutoff silently
 # dropped 18 real OSM crossings whose true nearest road was 5.01m-14.53m away
@@ -294,6 +305,49 @@ def test_apply_crosswalks_skips_unmatched_crossings():
     assert n == 0
 
 
+def test_apply_crosswalks_is_idempotent_and_uses_osm_way_id_for_object_id():
+    root = ET.Element("OpenDRIVE")
+    road = _road("1", [(0.0, 0.0), (10.0, 0.0)])
+    root.append(road)
+    crossings = [{"way_id": "42", "nodes_local": [(5.0, -1.5), (5.0, 1.5)]}]
+
+    assert apply_crosswalks(root, crossings, max_match_dist_m=5.0) == 1
+    assert apply_crosswalks(root, crossings, max_match_dist_m=5.0) == 0
+
+    objects = road.findall(".//objects/object[@type='crosswalk']")
+    assert [obj.get("id") for obj in objects] == ["crosswalk_42"]
+    assert [obj.get("name") for obj in objects] == ["osm_way_42"]
+
+
+def test_apply_crosswalks_fails_closed_on_unrelated_existing_object_id_collision():
+    root = ET.Element("OpenDRIVE")
+    road = _road("1", [(0.0, 0.0), (10.0, 0.0)])
+    objects = ET.SubElement(road, "objects")
+    ET.SubElement(objects, "object", id="crosswalk_42", type="barrier")
+    root.append(road)
+    crossings = [{"way_id": "42", "nodes_local": [(5.0, -1.5), (5.0, 1.5)]}]
+
+    with pytest.raises(ValueError, match="crosswalk object ID collision"):
+        apply_crosswalks(root, crossings, max_match_dist_m=5.0)
+
+
+def test_crosswalk_collision_preflight_prevents_partial_insertions():
+    root = ET.Element("OpenDRIVE")
+    road = _road("1", [(0.0, 0.0), (10.0, 0.0)])
+    objects = ET.SubElement(road, "objects")
+    ET.SubElement(objects, "object", id="crosswalk_99", type="barrier")
+    root.append(road)
+    crossings = [
+        {"way_id": "1", "nodes_local": [(2.0, -1.5), (2.0, 1.5)]},
+        {"way_id": "99", "nodes_local": [(8.0, -1.5), (8.0, 1.5)]},
+    ]
+
+    with pytest.raises(ValueError, match="99"):
+        apply_crosswalks(root, crossings, max_match_dist_m=5.0)
+
+    assert road.findall(".//objects/object[@type='crosswalk']") == []
+
+
 def test_apply_crosswalks_real_pinned_data_end_to_end():
     repo_root = Path(__file__).resolve().parents[2]
     osm = Path(os.getenv(
@@ -320,8 +374,10 @@ def test_apply_crosswalks_real_pinned_data_end_to_end():
     for c in osm_crossings:
         c["nodes_local"] = project_crossing_to_local(c["nodes"], offset)
 
-    # 127/179 matched at the old 5.0m threshold; 145/179 at the current
-    # DEFAULT_MAX_MATCH_DIST_M (15.0m) -- the 18 real near-misses this fix
-    # recovers, with the 32 genuine far-misses (16.67m+) still excluded.
+    # 127 OSM-way provenance records are already present.  Of the 179 source
+    # crossings, 145 match at the governed 15m threshold, so only the 18
+    # missing records may be inserted on a safe rerun.  The remaining 34
+    # source crossings are unmatched rather than forced onto a road.
     n = apply_crosswalks(root, osm_crossings, max_match_dist_m=DEFAULT_MAX_MATCH_DIST_M)
-    assert n == 145
+    assert n == 18
+    assert apply_crosswalks(root, osm_crossings, max_match_dist_m=DEFAULT_MAX_MATCH_DIST_M) == 0
