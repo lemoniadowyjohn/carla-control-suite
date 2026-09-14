@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task": "forward_port_crosswalk_writer_determinism_and_idempotency",
+  "base_sha": "958404975703f959ba7994e527b1a9077ee27147",
+  "implementation_sha": "150cbd51",
+  "branch": "feature/crosswalk-writer-idempotency-v1-20260914",
+  "input_artifacts": {
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+  },
+  "changes": [
+    "Stable numeric-then-lexical road-ID tie-breaking for equal geometric matches.",
+    "OSM-way-derived crosswalk object IDs.",
+    "Idempotent provenance skip for existing osm_way_<id> crosswalks.",
+    "Transactional object-ID collision preflight before the first insertion."
+  ],
+  "red_green_proof": {
+    "red": "Against the base implementation with the new tests retained: 5 failed, 15 passed. Failures covered tie selection, duplicate reruns, collision detection, partial-write prevention, and the governed rerun count.",
+    "green": "tests/unit/test_crosswalk_writer.py: 20 passed after restoring the implementation."
+  },
+  "real_map_in_memory_rerun": {
+    "source_crossing_count": 179,
+    "existing_provenanced_crosswalk_count": 127,
+    "matched_crossing_count_at_15m": 145,
+    "first_rerun_inserted": 18,
+    "second_rerun_inserted": 0,
+    "map_written": false
+  },
+  "full_offline_pytest": {
+    "result": "5935 passed, 82 skipped, 0 failed",
+    "duration_seconds": 433.43,
+    "mode": "non-sparse"
+  },
+  "map_of_record_mutated": "NO",
+  "frozen_evidence_mutated": "NO",
+  "live_carla": "NOT_RUN"
+}
