@@ -13,6 +13,8 @@ stay light and deterministic.
 from __future__ import annotations
 
 import glob
+import hashlib
+import json
 import os
 import random
 import time
@@ -90,6 +92,51 @@ class TileWorldRunner:
 
         except Exception as e:
             return TileLoadResult(tile_path=tile_path, ok=False, reason=str(e))
+
+    def load_runtime_tile(
+        self,
+        tile_path: str,
+        *,
+        manifest_path: Optional[str] = None,
+        reset_world: bool = True,
+        sleep_sec: float = 1.0,
+    ) -> TileLoadResult:
+        """Load a hash-bound standalone runtime tile after offline validation.
+
+        This intentionally differs from :meth:`load`, which remains the
+        backwards-compatible loader for analytical tiles.  A runtime tile
+        must carry the manifest emitted by ``runtime_tile_builder`` and pass
+        structural validation immediately before the CARLA call.
+        """
+
+        from ultimate_pipeline.tiling.runtime_tile_builder import validate_runtime_tile
+
+        path = os.path.abspath(tile_path)
+        resolved_manifest = manifest_path or os.path.splitext(path)[0] + ".runtime_tile.json"
+        if not os.path.isfile(path):
+            return TileLoadResult(tile_path=tile_path, ok=False, reason="tile_not_found")
+        if not os.path.isfile(resolved_manifest):
+            return TileLoadResult(tile_path=tile_path, ok=False, reason="runtime_tile_manifest_not_found")
+        try:
+            with open(resolved_manifest, "r", encoding="utf-8") as handle:
+                manifest = json.load(handle)
+            expected_hash = manifest["runtime_tile"]["sha256"]
+            status = manifest["status"]
+            if status != "READY_FOR_LIVE_CARLA_VALIDATION":
+                return TileLoadResult(tile_path=tile_path, ok=False, reason="runtime_tile_manifest_not_ready")
+            digest = hashlib.sha256()
+            with open(path, "rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            if digest.hexdigest() != expected_hash:
+                return TileLoadResult(tile_path=tile_path, ok=False, reason="runtime_tile_hash_mismatch")
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
+            return TileLoadResult(tile_path=tile_path, ok=False, reason="runtime_tile_manifest_invalid")
+
+        validation = validate_runtime_tile(path)
+        if validation["status"] != "PASS":
+            return TileLoadResult(tile_path=tile_path, ok=False, reason="runtime_tile_static_validation_failed")
+        return self.load(path, reset_world=reset_world, sleep_sec=sleep_sec)
 
     def unload(self) -> None:
         """Best-effort reset (keeps same map, but clears transient state)."""
