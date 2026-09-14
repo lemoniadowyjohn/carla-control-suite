@@ -1,8 +1,10 @@
-"""Run the opt-in Roundabout V2 analysis without modifying an OpenDRIVE map.
+"""Run the opt-in Roundabout V2 analysis and offline candidate materialization.
 
 This tool deliberately has no pipeline or CARLA dependency.  It records whether
 the current detector found candidates, the preserve/reconstruct decisions, and
-whether V2's transactional API left the source XML tree untouched.
+whether V2's transactional API left the source XML tree untouched.  A caller
+may request a separately written candidate XODR; it is never a pipeline output
+and can never overwrite the input map.
 """
 
 from __future__ import annotations
@@ -72,7 +74,48 @@ def _model_record(model: object) -> dict[str, object]:
     }
 
 
-def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, object]:
+def _structural_delta(source: ET.Element, candidate: ET.Element) -> dict[str, object]:
+    """Describe exactly what materialization changed without normalizing XML."""
+    source_roads = {road.get("id", ""): road for road in source.findall("road")}
+    candidate_roads = {road.get("id", ""): road for road in candidate.findall("road")}
+    source_junctions = {
+        junction.get("id", ""): junction for junction in source.findall("junction")
+    }
+    candidate_junctions = {
+        junction.get("id", ""): junction for junction in candidate.findall("junction")
+    }
+    changed_existing_roads = sorted(
+        road_id
+        for road_id, road in source_roads.items()
+        if road_id not in candidate_roads
+        or ET.tostring(road, encoding="utf-8")
+        != ET.tostring(candidate_roads[road_id], encoding="utf-8")
+    )
+    changed_existing_junctions = sorted(
+        junction_id
+        for junction_id, junction in source_junctions.items()
+        if junction_id not in candidate_junctions
+        or ET.tostring(junction, encoding="utf-8")
+        != ET.tostring(candidate_junctions[junction_id], encoding="utf-8")
+    )
+    return {
+        "road_count_before": len(source_roads),
+        "road_count_after": len(candidate_roads),
+        "junction_count_before": len(source_junctions),
+        "junction_count_after": len(candidate_junctions),
+        "added_road_ids": sorted(set(candidate_roads) - set(source_roads)),
+        "removed_road_ids": sorted(set(source_roads) - set(candidate_roads)),
+        "changed_existing_road_ids": changed_existing_roads,
+        "changed_existing_junction_ids": changed_existing_junctions,
+    }
+
+
+def probe_xodr(
+    xodr_path: Path,
+    *,
+    osm_path: Path | None = None,
+    materialized_xodr_path: Path | None = None,
+) -> dict[str, object]:
     """Return a machine-readable, non-mutating V2 analysis of ``xodr_path``."""
     xodr_path = xodr_path.resolve()
     resolved_osm_path = osm_path.resolve() if osm_path is not None else None
@@ -114,17 +157,37 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
     after_tree_sha256 = _tree_digest(root)
     records = [_model_record(model) for model in models]
     actions = Counter(record["action"] for record in records)
-    reconstructed = sum(
-        1
-        for record in records
-        if str(record["action"]).startswith("RECONSTRUCT")
-    )
+    applied = [
+        record
+        for record in diagnostics
+        if record.get("materialization", {}).get("status") == "PASS"
+    ]
+    structural_delta = _structural_delta(root, clone)
+    materialized_output = None
+    if materialized_xodr_path is not None:
+        output_path = materialized_xodr_path.resolve()
+        if output_path == xodr_path:
+            raise ValueError("materialized candidate must not overwrite its source XODR")
+        if applied:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            ET.ElementTree(clone).write(output_path, encoding="utf-8", xml_declaration=True)
+            materialized_output = {
+                "status": "WRITTEN",
+                "xodr_path": str(output_path),
+                "xodr_sha256": _sha256_file(output_path),
+            }
+        else:
+            materialized_output = {
+                "status": "NOT_WRITTEN",
+                "reason": "no_roundabout_candidate_materialized",
+                "xodr_path": str(output_path),
+            }
     acceptance = {
         "status": "NOT_RUN",
         "reason": (
-            "no_reconstructed_roundabout_candidates"
-            if reconstructed == 0
-            else "v2_analysis_is_transactional_diagnostics_only_and_does_not_apply_candidates"
+            "no_roundabout_candidate_materialized"
+            if not applied
+            else "materialized_candidate_requires_external_acceptance_comparison"
         ),
     }
     return {
@@ -154,6 +217,9 @@ def probe_xodr(xodr_path: Path, *, osm_path: Path | None = None) -> dict[str, ob
             "source_tree_sha256_after": after_tree_sha256,
             "source_tree_unchanged": before_tree_sha256 == after_tree_sha256,
             "diagnostics": diagnostics,
+            "applied_candidate_count": len(applied),
+            "structural_delta": structural_delta,
+            "materialized_output": materialized_output,
         },
         "acceptance_delta": acceptance,
         "timings_seconds": timings,
@@ -166,9 +232,18 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--xodr", required=True, type=Path, help="OpenDRIVE map to analyze")
     parser.add_argument("--osm", type=Path, help="Optional source OSM for semantic coverage evidence")
+    parser.add_argument(
+        "--materialized-xodr",
+        type=Path,
+        help="Write the offline V2 candidate here; refusing to overwrite --xodr",
+    )
     parser.add_argument("--output", type=Path, help="Optional JSON evidence output path")
     args = parser.parse_args(argv)
-    report = probe_xodr(args.xodr, osm_path=args.osm)
+    report = probe_xodr(
+        args.xodr,
+        osm_path=args.osm,
+        materialized_xodr_path=args.materialized_xodr,
+    )
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

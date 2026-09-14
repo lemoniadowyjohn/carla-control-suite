@@ -84,8 +84,21 @@ def build_segment_xml(spec: RingSegmentSpec, junction_id: str, *, z_start: float
     return road
 
 def build_segment_roads(specs: list[RingSegmentSpec], junction_id: str, *, z_start: float = 0.0) -> list[ET.Element]:
-    """Build a closed ring and add deterministic road links between its segments."""
-    roads = [build_segment_xml(spec, junction_id, z_start=z_start) for spec in specs]
+    """Build a closed ring and add deterministic road links between its segments.
+
+    Source-backed anchor elevations take precedence over the low-level fallback
+    value.  Each segment therefore preserves both endpoint heights when they
+    are known, rather than flattening a reconstructed ring to one constant.
+    """
+    roads = [
+        build_segment_xml(
+            spec,
+            junction_id,
+            z_start=z_start if spec.start.z is None else spec.start.z,
+            z_end=z_start if spec.end.z is None else spec.end.z,
+        )
+        for spec in specs
+    ]
     for index, road in enumerate(roads):
         links = road.find("link")
         if links is None:

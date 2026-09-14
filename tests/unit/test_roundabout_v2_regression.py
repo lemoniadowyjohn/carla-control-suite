@@ -2,7 +2,7 @@ from __future__ import annotations
 import math
 import xml.etree.ElementTree as ET
 import pytest
-from ultimate_pipeline.topology.roundabout_v2 import (Anchor, build_junction_lane_links, build_segment_roads,
+from ultimate_pipeline.topology.roundabout_v2 import (Anchor, Candidate, RoundaboutModel, Sample, build_junction_lane_links, build_segment_roads,
     build_segment_specs, detect_candidates, evaluate, evaluate_elevation, extract_endpoint_anchors,
     fit_circle, hermite_coefficients, map_lanes, RoundaboutV2Reconstructor, sample_road,
     validate_lane_mapping, validate_elevation_records, validate_segmented_ring)
@@ -51,6 +51,86 @@ def test_circle_fit_uses_all_samples_and_non_circular_model_is_preserved():
 def test_reconstructor_is_transactional_and_does_not_enable_release_path():
     root=ET.Element("OpenDRIVE"); before=ET.tostring(root); clone,diagnostics=RoundaboutV2Reconstructor().reconstruct_transactional(root)
     assert ET.tostring(root)==before and ET.tostring(clone)==before and diagnostics==[]
+
+
+def _reconstructible_model(*, anchor_count: int = 3) -> RoundaboutModel:
+    anchors = [
+        Anchor("a", "approach-a", "end", (-1,), 10, 0, 10.0, math.pi / 2, "entry"),
+        Anchor("b", "approach-b", "end", (-1,), 0, 10, 11.0, math.pi, "entry"),
+        Anchor("c", "approach-c", "end", (-1,), -10, 0, 12.0, -math.pi / 2, "entry"),
+    ][:anchor_count]
+    candidate = Candidate(("j",), (), (), "EXACT_OSM", 1.0, "test candidate")
+    return RoundaboutModel(
+        candidate,
+        samples=[Sample("source", 0, 0, 0, 0)],
+        anchors=anchors,
+        geometry_kind="CIRCLE_FIT",
+        circle_fit={"center_x": 0.0, "center_y": 0.0, "radius": 10.0, "rmse": 0.0, "max_residual": 0.0},
+        action="RECONSTRUCT_GEOMETRY",
+    )
+
+
+def test_reconstructor_materializes_into_clone_with_collision_free_ids_and_anchor_elevation():
+    root = ET.Element("OpenDRIVE")
+    root.append(road("9", ET.Element("line")))
+    before = ET.tostring(root)
+    reconstructor = RoundaboutV2Reconstructor()
+    model = _reconstructible_model()
+    reconstructor.analyze = lambda *_args, **_kwargs: [model]
+    reconstructor._candidate_anchors = lambda *_args, **_kwargs: model.anchors
+
+    clone, diagnostics = reconstructor.reconstruct_transactional(root)
+
+    assert ET.tostring(root) == before
+    assert [item.get("id") for item in clone.findall("road")] == ["9", "10", "11", "12"]
+    assert diagnostics[0]["materialization"]["status"] == "PASS"
+    height_pairs = []
+    for generated in clone.findall("./road[@id='10']") + clone.findall("./road[@id='11']") + clone.findall("./road[@id='12']"):
+        elevation = generated.find("./elevationProfile/elevation")
+        length = float(generated.get("length"))
+        values = {key: float(elevation.get(key)) for key in ("s", "a", "b", "c", "d")}
+        height_pairs.append((evaluate_elevation(values, 0)[0], evaluate_elevation(values, length)[0]))
+    assert {round(start) for start, _ in height_pairs} == {10, 11, 12}
+    assert {round(end) for _, end in height_pairs} == {10, 11, 12}
+
+
+def test_reconstructor_preserves_failed_candidate_and_keeps_other_candidate_transactional():
+    root = ET.Element("OpenDRIVE")
+    root.append(road("50", ET.Element("line")))
+    reconstructor = RoundaboutV2Reconstructor()
+    good = _reconstructible_model()
+    bad = _reconstructible_model(anchor_count=2)
+    reconstructor.analyze = lambda *_args, **_kwargs: [good, bad]
+    reconstructor._candidate_anchors = lambda _root, candidate: (
+        good.anchors if candidate is good.candidate else bad.anchors
+    )
+
+    clone, diagnostics = reconstructor.reconstruct_transactional(root)
+
+    assert [item.get("id") for item in clone.findall("road")] == ["50", "51", "52", "53"]
+    assert diagnostics[0]["materialization"]["status"] == "PASS"
+    assert diagnostics[1]["materialization"] == {
+        "status": "PRESERVE_ORIGINAL", "reason": "fewer_than_three_anchors"
+    }
+
+
+def test_reconstructor_fails_closed_when_candidate_anchor_extraction_is_ambiguous():
+    root = ET.Element("OpenDRIVE")
+    root.append(road("70", ET.Element("line")))
+    before = ET.tostring(root)
+    reconstructor = RoundaboutV2Reconstructor()
+    model = _reconstructible_model()
+    reconstructor.analyze = lambda *_args, **_kwargs: [model]
+    reconstructor._candidate_anchors = lambda *_args, **_kwargs: (_ for _ in ()).throw(
+        ValueError("conflicting duplicate approach anchors")
+    )
+
+    clone, diagnostics = reconstructor.reconstruct_transactional(root)
+
+    assert ET.tostring(clone) == before
+    assert diagnostics[0]["materialization"] == {
+        "status": "PRESERVE_ORIGINAL", "reason": "conflicting duplicate approach anchors"
+    }
 
 def test_elevation_records_reject_duplicate_s_and_nan_coefficients():
     assert validate_elevation_records([{"s":0,"a":0,"b":0,"c":0,"d":0},{"s":1,"a":0,"b":0,"c":0,"d":0}])["status"]=="PASS"

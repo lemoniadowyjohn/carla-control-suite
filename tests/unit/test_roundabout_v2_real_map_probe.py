@@ -20,8 +20,10 @@ def test_probe_reports_empty_candidate_set_without_mutating_input(tmp_path: Path
     assert report["transaction"]["source_tree_unchanged"] is True
     assert report["acceptance_delta"] == {
         "status": "NOT_RUN",
-        "reason": "no_reconstructed_roundabout_candidates",
+        "reason": "no_roundabout_candidate_materialized",
     }
+    assert report["transaction"]["applied_candidate_count"] == 0
+    assert report["transaction"]["structural_delta"]["added_road_ids"] == []
     assert report["map_of_record_mutated"] == "NO"
     assert report["live_carla"] == "NOT_RUN"
 
