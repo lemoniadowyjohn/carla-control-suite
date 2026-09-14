@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task": "forward_port_confirmed_hygiene_gaps",
+  "base_sha": "958404975703f959ba7994e527b1a9077ee27147",
+  "implementation_sha": "2286f0f4",
+  "branch": "feature/confirmed-hygiene-gaps-v1-20260914",
+  "resolved_gaps": {
+    "lane_width_policy": "Valid finite width polynomials are preserved, while placeholders and invalid polynomials remain repairable.",
+    "component_graph": "Road and junction ID namespaces are typed, and road links respect elementType when attaching to a junction.",
+    "tile_bounds_cache": "Cache identity includes a SHA-256 digest of planView content as well as road ID."
+  },
+  "already_integrated": {
+    "signal_reference_scope": "The active integration branch already validates signal references against the owning road's active lane section; no duplicate port was made."
+  },
+  "red_green_proof": {
+    "red": "With implementation files stashed and the four new tests retained: 3 failed and 1 passed. The failures demonstrated polynomial flattening, namespace collision, and stale bounds-cache reuse.",
+    "green": "47 focused tests passed after restoring the implementation."
+  },
+  "full_offline_pytest": {
+    "result": "5935 passed, 82 skipped, 0 failed",
+    "duration_seconds": 387.79,
+    "mode": "non-sparse"
+  },
+  "map_of_record_mutated": "NO",
+  "frozen_evidence_mutated": "NO",
+  "live_carla": "NOT_RUN"
+}
