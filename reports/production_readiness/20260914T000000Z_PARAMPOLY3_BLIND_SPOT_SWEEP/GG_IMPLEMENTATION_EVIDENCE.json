@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task": "PROMPT_GG_PARAMPOLY3_BLIND_SPOT_SWEEP",
+  "base_sha": "47d9c7b26167c47ae625dd2212bcb24eed75957c",
+  "implementation_sha": "8c246fc5b0359ee138279b0563fbaf83dac725ed",
+  "branch": "feature/parampoly3-blind-spot-sweep-v1-20260914",
+  "sparse_checkout": false,
+  "classification": {
+    "safe_files": 10,
+    "buggy_files_fixed": 12,
+    "audit_path": "reports/production_readiness/20260914T000000Z_PARAMPOLY3_BLIND_SPOT_SWEEP/GG_PARAMPOLY3_BASELINE_AUDIT.md"
+  },
+  "red_green_proof": {
+    "red": "With the implementation and audit stashed but the new regression test retained, 3 tests failed and 1 malformed-primitive fallback test passed.",
+    "green": "tests/unit/test_parampoly3_blind_spot_sweep.py: 4 passed after restoring the implementation."
+  },
+  "focused_tests": {
+    "result": "100 passed, 1 skipped",
+    "scope": "geometry, topology, stage-06, RoadRunner, GNN, and visualization consumers"
+  },
+  "full_offline_pytest": {
+    "result": "5928 passed, 82 skipped, 0 failed",
+    "duration_seconds": 400.5,
+    "collected": 6010,
+    "mode": "non-sparse"
+  },
+  "real_map_probe": {
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "road_count": 32267,
+    "parampoly3_road_count": 29114,
+    "parampoly3_geometry_count": 172755,
+    "parampoly3_road_fraction": 0.9022840673133542,
+    "former_line_approximation": {
+      "affected_geometry_count": 172755,
+      "median_endpoint_error_m": 0.01102473310447581,
+      "max_endpoint_error_m": 94.38815537847796
+    },
+    "canonical_sampling": {
+      "parampoly3_geometries_with_nonzero_curvature": 172755
+    },
+    "probe_path": "reports/production_readiness/20260914T000000Z_PARAMPOLY3_BLIND_SPOT_SWEEP/GG_REAL_MAP_PROBE.json"
+  },
+  "gnn_full_map_probe": {
+    "duration_seconds": 18.382,
+    "nodes": 85887,
+    "edges": 46817,
+    "nodes_with_nonzero_curvature_feature": 73471
+  },
+  "map_of_record_mutated": "NO",
+  "frozen_evidence_mutated": "NO",
+  "live_carla": "NOT_RUN",
+  "research_claims": "No thesis or RQ result was rerun or changed. The GNN feature correction requires a separately governed RQ4 experiment before any scientific claim."
+}
