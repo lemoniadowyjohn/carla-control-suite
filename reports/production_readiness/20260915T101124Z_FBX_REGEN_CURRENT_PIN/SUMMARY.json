@@ -1,0 +1,81 @@
+{
+  "run_id": "20260915T101124Z_FBX_REGEN_CURRENT_PIN",
+  "purpose": "Regenerate OSM2World -> Blender -> FBX visual-clutter export against the CURRENT pinned map-of-record's actual OSM source, at full geographic coverage, and re-verify the fbx_roundtrip.py integrity checker at that scale. Supersedes nothing; the 2026-08-04 artifacts under reports/post_audit_hardening/20260804T125500Z/ remain untouched and are still a small clipped test-window run.",
+  "repo_commit": "8408d3df1b6673e5341b56e95adf3bed6b6073b7",
+  "repo_branch_base": "integration/session-batch1-20260912",
+  "map_of_record": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "note": "Road geometry NOT touched by this task; this run produces supplemental visual-clutter meshes only."
+  },
+  "osm_source": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "bytes": 11154738,
+    "pinned_in": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json (inputs.roads_osm)",
+    "confirmation": "This is the SAME file used by the pipeline's OSM2World wiring (ultimate_pipeline/main_pipeline.py _run_osm2world_visual_stage reads settings.OSM_FILE, which resolves to this file). It is also the SAME underlying file the stale 2026-08-04 artifact was clipped from (that artifact's window_osm.osm is a 773744-byte bounding-box clip of this same 11154738-byte file, both citing source sha256 b9e07465...). The scope difference vs. the stale run is FULL FILE vs. CLIPPED WINDOW, not a different source file.",
+    "important_caveat": "campaigns/ingolstadt_cooked_perception_v1/source/manifest.json documents that ingolstadt_authoritative.osm has building_way_count=1 (it is a roads-oriented Overpass export, essentially building-free). The pin's real building footprint data (5693 building ways / 19 relations) lives in a SEPARATE file, campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json, which is Overpass JSON format -- NOT an .osm/.osm.xml/.pbf file OSM2World can consume directly. No existing converter from that Overpass-JSON buildings file to OSM XML was found in this codebase (osm_polygon_loader.py reads it directly for OpenDRIVE lane/building-footprint purposes, not via OSM2World). This run therefore reproduces the pipeline's actual, currently-wired OSM2World input exactly as main_pipeline.py would invoke it -- but that wiring does NOT currently route the pin's 5682-5693 real buildings through OSM2World. The resulting mesh is genuine full-map-extent clutter (retaining walls, surface areas, a small number of building/indoor objects incidentally tagged in the roads file) rather than a full building-volume reconstruction. Building a JSON->OSM-XML bridge to close this gap was judged out of scope for this task (task said 'run the EXISTING export path', not build a new converter) and is flagged here as a follow-up, not silently done or silently ignored."
+  },
+  "stage_1_osm2world": {
+    "command": "python ultimate_pipeline/enrichment/osm2world_runner.py --osm <ingolstadt_authoritative.osm> --out <artifacts> --home <OSM2World-latest-bin> --timeout 1800",
+    "osm2world_home": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/carla_governed/OSM2World-latest-bin",
+    "osm2world_jar": "OSM2World.jar (0.5.0-SNAPSHOT)",
+    "java_version": "openjdk version \"17.0.17\" 2025-10-21 (Temurin)",
+    "requested_outputs": "obj,png,glb",
+    "status": "ok",
+    "reason": "Generated 2 outputs; failed: scene.glb (invalid)",
+    "duration_sec": 51.978,
+    "input_osm_hash": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "outputs": {
+      "scene.obj": {"path": "artifacts/scene.obj", "bytes": 49199, "sha256": "46c4a40f8eb653f3c4f0d9de79a4f5236357952ca580cafb33a3979815a8b7d2", "vertices": 945, "faces": 876, "object_groups": 72},
+      "preview.png": {"path": "artifacts/scene.png", "bytes": 1628, "sha256": "f5fd0705227fd68dfc903b7eff56166de1fc10ef34168ee907471c6753eff42a"},
+      "scene.glb": {"path": "artifacts/scene.glb", "bytes": 183804, "sha256": "16fa60799c7a14e9fe5582056a2bdde0f245249bbfc857dad2272d0fe8d12fc9", "valid": false, "reason": "GLB header valid but Blender import validation failed: 'Bad glTF: json error: utf-8' -- excluded from final outputs by the runner's own validation gate"}
+    },
+    "scale_finding": {
+      "title": "Real map-scale data exposes an OSM2World renderer bug the tiny test window never hit",
+      "detail": "Both the OBJ and GLB render passes hit 'ERROR: polygon must not not have duplicate points' (org.osm2world.util.exception.InvalidGeometryException) originating in org.osm2world.world.modules.building.indoor.IndoorModule$Elevator, triggered by degenerate (duplicate-point) polygons on OSM ways w462314990, w359550749, w359550745 (indoor/elevator-tagged features somewhere in the roads file's incidental building/indoor tagging). In the OBJ pass this was non-fatal (OSM2World's FaultTolerantIterationUtil skips the offending object and continues -- 3 objects silently dropped, rest of the scene rendered fine). In the GLB pass, the same error caused Blender's own gltf importer to reject the resulting GLB outright with a UTF-8 JSON parse error, so the runner's built-in GLB validation correctly caught and excluded it. Net effect: OBJ/FBX path is unaffected and usable; GLB output is not currently usable from this source file at full scale. This is a genuine, previously-unobserved finding -- the 2026-08-04 test window (773KB, 4670 nodes) apparently did not include these 3 problem ways."
+    }
+  },
+  "stage_2_blender_fbx": {
+    "command": "python ultimate_pipeline/enrichment/blender_runner.py --obj <scene.obj> --out <artifacts> --blender <blender.exe> --timeout 600 --name-prefix ingolstadt_cooked_perception_v1_b9e07465_full_pin",
+    "blender_exe": "E:/Program Files/Blender Foundation/Blender 4.3/blender.exe",
+    "blender_version": "4.3.0",
+    "status": "ok",
+    "duration_sec": 6.3,
+    "output_fbx": {
+      "path": "artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+      "bytes": 149180,
+      "sha256": "a5f8d929a7ebf0e965f930a1326fc5d2b840f03bae0ebc59b0f4e76c0dae0ccc",
+      "format": "binary",
+      "fbx_version": "FBX binary int=7400",
+      "input_obj_hash": "46c4a40f8eb653f3c4f0d9de79a4f5236357952ca580cafb33a3979815a8b7d2"
+    },
+    "geometry": {
+      "objects_total": 61,
+      "materials_total": 6,
+      "images_total": 0,
+      "total_vertices": 975,
+      "total_faces": 876
+    },
+    "note_on_object_count_delta": "OSM2World's raw OBJ had 72 'o'/'g' groupings; Blender's wm.obj_import materialized 61 MESH objects (some groupings were empty/zero-face and were not imported as separate mesh objects -- consistent with the 3 objects OSM2World's fault-tolerant iteration dropped during the polygon-duplicate-point errors, plus a small number of non-mesh group markers)."
+  },
+  "stage_3_fbx_roundtrip": {
+    "script": "ultimate_pipeline/enrichment/fbx_roundtrip.py (run_fbx_roundtrip, invoked via a small driver script reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/run_roundtrip.py)",
+    "method": "Re-imports the FBX in a second, clean, headless Blender process (separate from the conversion session) and diffs object/vertex/face/UV/material/bounds inventory against the conversion manifest.",
+    "result": "ROUNDTRIP_PASS",
+    "ok": true,
+    "objects_source": 61,
+    "objects_roundtrip": 61,
+    "missing_objects": [],
+    "extra_objects": [],
+    "field_differences": []
+  },
+  "overall_verdict": "PASS: full-coverage OSM2World->Blender->FBX export succeeded end-to-end against the current pin's actual OSM source, and fbx_roundtrip.py's independent re-import verification confirms zero geometry loss/drift through the FBX export/import round-trip. Two concrete findings: (1) a real OSM2World renderer bug (degenerate elevator polygon) that only surfaces at full map scale and currently blocks the GLB output (OBJ/FBX path unaffected); (2) the pipeline's existing OSM2World wiring is fed the roads-oriented OSM file (building_way_count=1), not the pin's actual 5693-building Overpass JSON, so this export is genuinely full-map-extent but is NOT a full building-volume reconstruction of the pin's buildings -- closing that gap needs a new Overpass-JSON-to-OSM-XML bridge that does not currently exist.",
+  "timing_summary": {
+    "osm2world_duration_sec": 51.978,
+    "blender_fbx_duration_sec": 6.3,
+    "roundtrip_duration_sec_approx": "included in stdout; see artifacts/fbx_roundtrip_stdout.log",
+    "total_wall_clock_approx_sec": 65,
+    "note": "Far faster than the 1800s/600s timeouts configured; no memory or timeout problems observed at this input scale (11.1MB OSM XML, 74874 nodes, 17250 ways)."
+  }
+}

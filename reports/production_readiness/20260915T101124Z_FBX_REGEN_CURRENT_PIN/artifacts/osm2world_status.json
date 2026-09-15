@@ -1,0 +1,137 @@
+{
+  "status": "ok",
+  "reason": "Generated 2 outputs; failed: scene.glb (invalid)",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "-o",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.obj",
+      "--config",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties"
+    ],
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "-o",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.png",
+      "--config",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties"
+    ],
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "-o",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.glb",
+      "--config",
+      "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {
+    "scene.obj": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.obj",
+    "preview.png": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.png"
+  },
+  "hashes": {
+    "input_osm": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "config": "3e64a43582b0a80e0b6cb75bfb05d4cfeb3c2b74fd9124cf22b5132d8eb84afc",
+    "scene.obj": "46c4a40f8eb653f3c4f0d9de79a4f5236357952ca580cafb33a3979815a8b7d2",
+    "preview.png": "f5fd0705227fd68dfc903b7eff56166de1fc10ef34168ee907471c6753eff42a",
+    "scene.glb": "16fa60799c7a14e9fe5582056a2bdde0f245249bbfc857dad2272d0fe8d12fc9"
+  },
+  "config_path": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties",
+  "config_hash": "3e64a43582b0a80e0b6cb75bfb05d4cfeb3c2b74fd9124cf22b5132d8eb84afc",
+  "input_osm_hash": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "cache_key": "6a83b6c24743c2f8",
+  "start_time": "2026-09-15T12:12:11.530828",
+  "end_time": "2026-09-15T12:13:03.508888",
+  "duration_sec": 51.978,
+  "exit_codes": {
+    "scene.obj": 0,
+    "preview.png": 0,
+    "scene.glb": 0
+  },
+  "exception": "",
+  "stdout_log": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+        "-o",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.obj",
+        "--config",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w462314990]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    },
+    {
+      "output": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.png",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+        "-o",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.png",
+        "--config",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w462314990]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    },
+    {
+      "output": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.glb",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+        "-o",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\scene.glb",
+        "--config",
+        "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w462314990]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    }
+  ],
+  "glb_valid": false,
+  "glb_validation_reason": "Blender validation failed: BLENDER_IMPORT_FAILED: Error: Bad glTF: json error: utf-8",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "abs_config_path": "F:\\carla-control-suite-worktrees\\fbx-regen-current-pin-v1-20260915\\reports\\production_readiness\\20260915T101124Z_FBX_REGEN_CURRENT_PIN\\artifacts\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 1
+}

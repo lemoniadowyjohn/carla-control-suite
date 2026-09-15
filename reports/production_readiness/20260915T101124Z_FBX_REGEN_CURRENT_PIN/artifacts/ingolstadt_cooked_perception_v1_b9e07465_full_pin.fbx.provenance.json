@@ -1,0 +1,9 @@
+{
+  "artifact": "ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+  "artifact_sha256": "a5f8d929a7ebf0e965f930a1326fc5d2b840f03bae0ebc59b0f4e76c0dae0ccc",
+  "generator": "Blender 4.3.0 (blender_runner.py)",
+  "input": "scene.obj",
+  "input_sha256": "46c4a40f8eb653f3c4f0d9de79a4f5236357952ca580cafb33a3979815a8b7d2",
+  "roundtrip_verdict": "ROUNDTRIP_PASS",
+  "run_id": "20260915T101124Z_FBX_REGEN_CURRENT_PIN"
+}
