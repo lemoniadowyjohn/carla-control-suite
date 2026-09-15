@@ -21,7 +21,10 @@ def test_spatial_match_returns_high_confidence_result():
         [_road("7")],
     )
     assert result.xodr_road_id == "7"
-    assert result.match_class == "HIGH"
+    # EXACT not HIGH: with the heading_error truthiness fix (Bug B), a
+    # perfectly-aligned match (heading_error == 0.0) now earns the +0.10
+    # heading bonus and crosses the 0.90 confidence threshold for EXACT.
+    assert result.match_class == "EXACT"
     assert result.confidence > 0.65
 
 
