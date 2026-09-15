@@ -19,9 +19,15 @@ def _f(element: Element, name: str) -> float:
     return value
 
 def _primitive(geometry: Element) -> Element:
-    child = next(iter(geometry), None)
-    if child is None or child.tag.rsplit("}", 1)[-1] not in {"line", "arc", "spiral", "poly3", "paramPoly3"}:
-        raise ValueError("unsupported or missing OpenDRIVE primitive")
+    children = list(geometry)
+    if len(children) == 0:
+        raise ValueError("geometry element must contain exactly one primitive (line, arc, spiral, poly3, paramPoly3)")
+    if len(children) > 1:
+        raise ValueError(f"geometry element must contain exactly one primitive, found {len(children)}")
+    child = children[0]
+    kind = child.tag.rsplit("}", 1)[-1]
+    if kind not in {"line", "arc", "spiral", "poly3", "paramPoly3"}:
+        raise ValueError(f"unsupported OpenDRIVE primitive: {kind}")
     return child
 
 def _local(primitive: Element, s: float, length: float) -> tuple[float, float, float, float | None]:
@@ -42,8 +48,10 @@ def _local(primitive: Element, s: float, length: float) -> tuple[float, float, f
         ddv=2*c+6*d*s
         return s,v,math.atan2(dv,1.0),ddv/(1+dv*dv)**1.5
     if kind == "paramPoly3":
-        p_range=primitive.get("pRange", "arcLength")
-        p=s/length if p_range == "normalized" else s
+        p_range = primitive.get("pRange", "arcLength")
+        if p_range not in ("normalized", "arcLength"):
+            raise ValueError(f"paramPoly3 pRange must be 'normalized' or 'arcLength', got '{p_range}'")
+        p = s / length if p_range == "normalized" else s
         u=[_f(primitive,f"{c}U") for c in "abcd"]
         v=[_f(primitive,f"{c}V") for c in "abcd"]
         x=sum(value*p**i for i,value in enumerate(u)); y=sum(value*p**i for i,value in enumerate(v))
