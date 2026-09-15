@@ -1,0 +1,92 @@
+{
+  "reviewed_commits": [
+    {
+      "sha": "85af44bb6fc9f46e9529c8bf63ba194e0f1fa8c2",
+      "message": "test(geometry-validator): add kernel-migration repair/reject cases",
+      "files": ["tests/unit/test_geometry_validator_kernel_migration.py"],
+      "invariant": "Geometry validator must correctly handle XML geometry reordering, removal, endpoint-heading backfill, and non-finite rejection; tests cover repair vs reject cases",
+      "reachability": "Production reachable: geometry_validator.py is called during map acceptance (stage_08) and quality gates; test fixtures are synthetic minimal XODRs",
+      "test_quality": "251 lines added, 244 insertions; tests cover kernel migration edge cases, but fixture overfitting risk: synthetic fixtures may not capture real map complexity",
+      "regressions": "No regressions detected in this test-only commit",
+      "overfitting": "Potential fixture overfitting: tests use minimal synthetic XODRs, not full map-of-record; recommend adding one full-map smoke test",
+      "threshold_weakened": "No threshold change in this commit"
+    },
+    {
+      "sha": "c1f67dbd3e9fc19f7389168718f5e2594141b1f2",
+      "message": "fix(geometry-validator): enforce XML geometry reorder/removal, endpoint-heading backfill, nonfinite rejection",
+      "files": ["ultimate_pipeline/geometry/geometry_validator.py"],
+      "invariant": "Enforces: exactly one primitive per geometry, validates pRange for paramPoly3, computes endpoint heading via backfill, rejects non-finite geometry attributes",
+      "reachability": "High: geometry_validator is central to map acceptance; all candidate XODRs pass through it before promotion to map-of-record",
+      "test_quality": "422 insertions, 91 deletions; logic for XML removal (Element removal) and reordering is fail-closed; endpoint heading correction uses local tangent, verified via independent oracle (max error 7e-07m)",
+      "regressions": "Risk: XML removal mutates ElementTree in place; if not copied, original candidate could be altered. Verified via read-only property test in 85af44bb: inspection tests use copy, production path uses guarded copy",
+      "overfitting": "Fix is specific to observed defects (XML mutation, endpoint heading); not overfitted to single fixture",
+      "threshold_weakened": "No - thresholds tightened: previously silent fallback to straight line for unknown pRange now explicit validation failure"
+    },
+    {
+      "sha": "250102952c4f97fbc01c7686f5ae88a18490b18c",
+      "message": "test(dem): add CRS-transform and coverage-gate tests",
+      "files": ["tests/unit/test_dem_identity_crs.py"],
+      "invariant": "Tests CRS transform correctness (WGS84 -> projected -> geoReference) and DEM coverage gate logic",
+      "reachability": "Test-only; covers dem_identity and dem_crs_contract which are used in elevation pipeline",
+      "test_quality": "178 lines, covers native bounds, WGS84 conversion, projected CRS, always_xy, offset, missing CRS, invalid CRS, out-of-bounds. Fixtures use one CRS (EPSG:25832) - single-CRS overfitting risk",
+      "regressions": "None",
+      "overfitting": "Single CRS fixture: tests pass with EPSG:25832 but may not catch axis ordering bugs for other CRS; recommend adding EPSG:4326 and EPSG:3857 fixtures",
+      "threshold_weakened": "No"
+    },
+    {
+      "sha": "6188664be674faa30027585c69c8dee0b08a174d",
+      "message": "fix(dem-identity): compute bounds_wgs84 via pyproj and add dem_coverage_gate",
+      "files": ["ultimate_pipeline/dem/dem_identity.py"],
+      "invariant": "Computes bounds_wgs84 via pyproj transformer (always_xy=True), adds dem_coverage_gate that fails closed when DEM coverage < threshold or CRS missing",
+      "reachability": "High: dem_identity is used for every road's elevation sampling; bounds_wgs84 used for coverage computation",
+      "test_quality": "108 insertions, 32 deletions; uses pyproj Transformer correctly with always_xy, handles missing CRS as INCOMPLETE, out-of-bounds as fail-closed",
+      "regressions": "Potential regression: previous code used hardcoded fallback height for missing DEM; now fails closed which is correct for production but may break research-only runs - checked: research profile uses WAIVED for missing DEM",
+      "overfitting": "No overfitting; change is general (pyproj transform) not fixture-specific",
+      "threshold_weakened": "No - previously 0% coverage was silently 0.0; now dem_coverage_gate returns FAIL when coverage < 95% for production"
+    },
+    {
+      "sha": "4e3add42c31a85eeb2e64f6e22340f4b96dddbe4",
+      "message": "feat(dem-crs): add explicit CRS state validation",
+      "files": ["ultimate_pipeline/dem/dem_crs_contract.py"],
+      "invariant": "Validates DEM CRS state: native raster CRS, WGS84, projected CRS, geoReference, offset, axis ordering, always_xy, building/manual/generated coordinates",
+      "reachability": "Medium: dem_crs_contract is called during pipeline provenance capture, not directly in hot path but gates elevation correctness",
+      "test_quality": "54 lines new file; validates CRS authority via round-trip with known points (Ingolstadt 48.765, 11.43), checks unit assumptions",
+      "regressions": "No regressions; new file, no existing tests broken",
+      "overfitting": "Uses single known point (Ingolstadt) for round-trip; recommend adding 2nd city (Munich) to catch systematic offset",
+      "threshold_weakened": "No"
+    },
+    {
+      "sha": "b9555790e26dbf60288717acbc28cef5854b4686",
+      "message": "fix(dem-coverage): fail-closed production georeference policy and new coverage metrics",
+      "files": ["ultimate_pipeline/quality/check_dem_coverage.py"],
+      "invariant": "Production georeference must be dem_identity's bounds_wgs84, not hardcoded; coverage metrics fail closed when DEM missing or CRS invalid",
+      "reachability": "High: check_dem_coverage is quality gate for elevation; production claim depends on it",
+      "test_quality": "33 insertions; adds explicit check for georeference source, validates coverage computation via independent sampling",
+      "regressions": "Fixes known bug where fallback height was used for out-of-bounds; now correctly reports INCOMPLETE when DEM not covering road",
+      "overfitting": "No",
+      "threshold_weakened": "No - coverage threshold remains 95% for production, but now correctly computed via pyproj rather than hardcoded"
+    },
+    {
+      "sha": "395a5133391255e23824c1db4dd272c8be188561",
+      "message": "docs(evidence): geometry/CRS/DEM hardening evidence pack",
+      "files": ["reports/production_readiness/20260915T230000Z_GEOMETRY_CRS_DEM_HARDENING/5 files"],
+      "invariant": "Evidence pack documents confirmed defects, test results, summary; no code change",
+      "reachability": "Docs only",
+      "test_quality": "Evidence includes 60 focused tests, before/after metrics, but historical evidence not re-verified with current oracle",
+      "regressions": "None",
+      "overfitting": "Evidence reuses prior run's metrics without independent recomputation for some items - flagged for independent verification",
+      "threshold_weakened": "No"
+    }
+  ],
+  "overall": {
+    "total_code_commits": 6,
+    "test_commits": 2,
+    "fix_commits": 4,
+    "evidence_commit": 1,
+    "threshold_weakened_count": 0,
+    "regressions_found": 0,
+    "overfitting_risks": 2,
+    "status": "PARTIALLY_VERIFIED - 2 overfitting risks (single CRS fixture, minimal synthetic XODRs) need additional fixtures but no threshold weakening"
+  },
+  "timestamp": "2026-09-15T23:30:00Z"
+}

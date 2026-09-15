@@ -15,6 +15,7 @@ class StageContext:
     has_elevation: bool = False
     has_planview: bool = False
     has_lanes: bool = False
+    horizontal_geometry_fingerprint: str | None = None
 
     def replace(self, **values: bool) -> None:
         """Set only declared contract fields, rejecting accidental state drift."""
@@ -27,6 +28,25 @@ class StageContext:
         """Return the exact legacy mapping shape during the migration period."""
         return {name: bool(value) for name, value in asdict(self).items()}
 
+
+
+    def fingerprint(self) -> str | None:
+        """Return current horizontal geometry fingerprint if set."""
+        return self.horizontal_geometry_fingerprint
+
+    def set_geometry_fingerprint(self, fp: str) -> None:
+        """Set fingerprint at freeze point."""
+        self.horizontal_geometry_fingerprint = fp
+
+    def verify_geometry_fingerprint(self, current_fp: str) -> None:
+        """Fail closed if fingerprint mismatches (post-freeze mutation detected)."""
+        if self.horizontal_geometry_fingerprint is None:
+            return
+        if current_fp != self.horizontal_geometry_fingerprint:
+            raise RuntimeError(
+                f"GEOM-FREEZE-001: horizontal geometry mutated after freeze: "
+                f"expected {self.horizontal_geometry_fingerprint}, got {current_fp}"
+            )
 
 def ensure_stage_context(owner: Any) -> StageContext:
     """Return an owner's context, bootstrapping legacy test doubles safely.

@@ -282,6 +282,8 @@ def _parse_geometries(road_el: ET.Element) -> Tuple[List[Geometry], List[str]]:
             param_c_v = _safe_float(param.get("cV"))
             param_d_v = _safe_float(param.get("dV"))
             param_p_range = (param.get("pRange") or "normalized").strip() or "normalized"
+            if param_p_range not in ("arcLength", "normalized"):
+                raise ValueError(f"unsupported pRange value: {param_p_range!r}")
         else:
             warnings.append("unknown planView geometry type; using linear fallback")
 

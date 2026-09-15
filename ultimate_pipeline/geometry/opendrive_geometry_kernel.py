@@ -43,6 +43,8 @@ def _local(primitive: Element, s: float, length: float) -> tuple[float, float, f
         return s,v,math.atan2(dv,1.0),ddv/(1+dv*dv)**1.5
     if kind == "paramPoly3":
         p_range=primitive.get("pRange", "arcLength")
+        if p_range not in (None, "arcLength", "normalized"):
+            raise ValueError(f"unsupported pRange value: {p_range!r}")
         p=s/length if p_range == "normalized" else s
         u=[_f(primitive,f"{c}U") for c in "abcd"]
         v=[_f(primitive,f"{c}V") for c in "abcd"]

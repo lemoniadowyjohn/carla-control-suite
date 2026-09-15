@@ -59,6 +59,8 @@ def _sample_parampoly3_impl(
     _validate_parampoly3_coefficients(pp)
 
     p_range = str(pp.get("pRange", "arcLength") or "arcLength")
+    if p_range not in ("arcLength", "normalized"):
+        raise ValueError(f"unsupported pRange value: {p_range!r}")
     p_max = float(length) if p_range == "arcLength" else 1.0
     a_u = _safe_float(pp.get("aU"), 0.0)
     b_u = _safe_float(pp.get("bU"), 0.0)

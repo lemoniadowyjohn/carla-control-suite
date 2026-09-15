@@ -1,0 +1,16 @@
+{
+  "branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+  "sha": "395a5133391255e23824c1db4dd272c8be188561",
+  "base": "6f76f37f368f8a593f485f35c5f9e619a1b99692",
+  "command": "python -m pytest tests/unit/test_geometry_validator_kernel_migration.py tests/unit/test_dem_identity_crs.py tests/unit/test_geometry_kernel.py tests/unit/test_c9_tail_gate_controls.py -v",
+  "collection": "60 tests collected (12 + 6 + 7 + 35)",
+  "result": "60 passed, 0 failed, 3 warnings (DeprecationWarning datetime.utcnow in check_elevation_profile.py:128)",
+  "details": {
+    "test_geometry_validator_kernel_migration": "12 passed - XML reorder/removal, endpoint-heading backfill, nonfinite rejection, read-only inspection",
+    "test_dem_identity_crs": "6 passed - geographic/projected CRS bounds, coverage gate, bbox area fraction, partial/no overlap, projected raster not interpreted as degrees",
+    "test_geometry_kernel": "7 passed - line oracle, arc quarter circle, poly3/paramPoly3, arclength param, clothoid curved deterministic, invalid primitive rejected",
+    "test_c9_tail_gate_controls": "35 passed - dem coverage, determinism, drivability, elevation, lane geometry, origin sanity, post-tiling integrity, xml uniqueness, xsd schema"
+  },
+  "timestamp": "2026-09-15T23:30:00Z",
+  "status": "VERIFIED"
+}
