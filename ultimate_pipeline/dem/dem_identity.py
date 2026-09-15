@@ -25,12 +25,55 @@ try:
 except Exception:
     rasterio = None  # type: ignore
 
+try:
+    from pyproj import Transformer, CRS
+except Exception:
+    Transformer = None  # type: ignore
+    CRS = None  # type: ignore
+
 from ultimate_pipeline.dem.dem_provenance import (
     DEMProvenance,
     record_dem_provenance,
     save_dem_provenance,
     verify_dem_provenance,
 )
+
+
+def _transform_bounds_to_wgs84(
+    bounds: Dict[str, float], src_crs: str
+) -> Optional[Dict[str, float]]:
+    """Transform bounds from source CRS to WGS84 (EPSG:4326)."""
+    if Transformer is None or CRS is None:
+        return None
+    try:
+        src = CRS.from_user_input(src_crs)
+        dst = CRS.from_epsg(4326)
+        tf = Transformer.from_crs(src, dst, always_xy=True)
+    except Exception:
+        return None
+
+    try:
+        corners = [
+            (float(bounds["left"]), float(bounds["bottom"])),
+            (float(bounds["left"]), float(bounds["top"])),
+            (float(bounds["right"]), float(bounds["bottom"])),
+            (float(bounds["right"]), float(bounds["top"])),
+        ]
+        tx = []
+        ty = []
+        for x, y in corners:
+            xx, yy = tf.transform(x, y)
+            tx.append(float(xx))
+            ty.append(float(yy))
+    except Exception:
+        return None
+
+    return {
+        "lon_min": min(tx),
+        "lat_min": min(ty),
+        "lon_max": max(tx),
+        "lat_max": max(ty),
+    }
 
 
 def dem_identity_record(
@@ -80,6 +123,17 @@ def dem_identity_record(
         licence=licence,
     )
 
+    # Transform bounds to WGS84 if CRS is available
+    bounds_wgs84 = _transform_bounds_to_wgs84(bounds, crs)
+    if bounds_wgs84 is None:
+        # Fallback: if transformation fails, mark as unavailable
+        bounds_wgs84 = {
+            "lon_min": None,
+            "lat_min": None,
+            "lon_max": None,
+            "lat_max": None,
+        }
+
     record = {
         "ok": True,
         "path": os.path.abspath(dem_path),
@@ -87,14 +141,9 @@ def dem_identity_record(
         "file_bytes": provenance.file_bytes,
         "crs": crs,
         "vertical_datum": vertical_datum,
-        "bounds_degrees": bounds,
-        "bounds_wgs84": {
-            "lon_min": bounds["left"],
-            "lat_min": bounds["bottom"],
-            "lon_max": bounds["right"],
-            "lat_max": bounds["top"],
-        },
-        "resolution_degrees": res,
+        "bounds_native": bounds,
+        "bounds_wgs84": bounds_wgs84,
+        "resolution_native": res,
         "width": width,
         "height": height,
         "no_data": nodata,
@@ -116,18 +165,58 @@ def _deg_to_m(lon0: float, lat0: float, lon1: float, lat1: float) -> float:
     return math.hypot(dlon, dlat)
 
 
+def _rect_area_m2(bounds: Dict[str, float]) -> float:
+    """Compute approximate area in m² of a WGS84 bounding box."""
+    if None in (bounds.get("lon_min"), bounds.get("lat_min"), bounds.get("lon_max"), bounds.get("lat_max")):
+        return 0.0
+    # Approximate: width * height at center latitude
+    center_lat = (bounds["lat_min"] + bounds["lat_max"]) / 2.0
+    dx = (bounds["lon_max"] - bounds["lon_min"]) * 111320.0 * math.cos(math.radians(center_lat))
+    dy = (bounds["lat_max"] - bounds["lat_min"]) * 110540.0
+    return max(0.0, dx * dy)
+
+
+def _rect_intersection(b1: Dict[str, float], b2: Dict[str, float]) -> Optional[Dict[str, float]]:
+    """Return intersection of two WGS84 bounding boxes."""
+    if None in (b1.get("lon_min"), b1.get("lat_min"), b1.get("lon_max"), b1.get("lat_max"),
+                b2.get("lon_min"), b2.get("lat_min"), b2.get("lon_max"), b2.get("lat_max")):
+        return None
+    lon_min = max(b1["lon_min"], b2["lon_min"])
+    lat_min = max(b1["lat_min"], b2["lat_min"])
+    lon_max = min(b1["lon_max"], b2["lon_max"])
+    lat_max = min(b1["lat_max"], b2["lat_max"])
+    if lon_max <= lon_min or lat_max <= lat_min:
+        return None
+    return {"lon_min": lon_min, "lat_min": lat_min, "lon_max": lon_max, "lat_max": lat_max}
+
+
 def dem_coverage_gate(
     identity: Dict[str, Any],
     map_extent_wgs84: Dict[str, Any],
     *,
     margin_deg: float = 0.0,
 ) -> Dict[str, Any]:
-    """Coverage verdict: DEM must fully cover the map WGS84 extent."""
+    """Coverage verdict: DEM must fully cover the map WGS84 extent.
+
+    Returns explicit metrics:
+    - bbox_intersection_area_fraction: area(DEM ∩ Map) / area(Map)
+    - sampled_map_points_inside_dem_fraction: requires sampled points (computed elsewhere)
+    - nodata_fraction_at_samples: requires sampled points (computed elsewhere)
+    """
     if not identity.get("ok", False):
         return {"ok": False, "reason": f"dem_identity:{identity.get('reason')}"}
     if map_extent_wgs84 is None:
         return {"ok": False, "reason": "map_extent_unavailable"}
-    dem_b = identity["bounds_wgs84"]
+
+    dem_b = identity.get("bounds_wgs84", {})
+    if None in (dem_b.get("lon_min"), dem_b.get("lat_min"), dem_b.get("lon_max"), dem_b.get("lat_max")):
+        return {
+            "ok": False,
+            "reason": "dem_bounds_wgs84_unavailable",
+            "bbox_intersection_area_fraction": 0.0,
+            "fully_covered": False,
+        }
+
     me = map_extent_wgs84
 
     needed = {
@@ -136,31 +225,19 @@ def dem_coverage_gate(
         "lon_max": me["lon_max"] + margin_deg,
         "lat_max": me["lat_max"] + margin_deg,
     }
+
     fully_covered = bool(
         dem_b["lon_min"] <= needed["lon_min"]
         and dem_b["lat_min"] <= needed["lat_min"]
         and dem_b["lon_max"] >= needed["lon_max"]
         and dem_b["lat_max"] >= needed["lat_max"]
     )
-    overlap = {
-        "lon_min": max(dem_b["lon_min"], me["lon_min"]),
-        "lat_min": max(dem_b["lat_min"], me["lat_min"]),
-        "lon_max": min(dem_b["lon_max"], me["lon_max"]),
-        "lat_max": min(dem_b["lat_max"], me["lat_max"]),
-    }
-    map_w = _deg_to_m(
-        me["lon_min"], me["lat_min"], me["lon_max"], me["lat_max"]
-    )
-    inter_w = 0.0
-    if (
-        overlap["lon_max"] > overlap["lon_min"]
-        and overlap["lat_max"] > overlap["lat_min"]
-    ):
-        inter_w = _deg_to_m(
-            overlap["lon_min"], overlap["lat_min"],
-            overlap["lon_max"], overlap["lat_max"],
-        )
-    coverage_ratio = (inter_w / map_w) if map_w > 0 else 0.0
+
+    # bbox_intersection_area_fraction
+    intersection = _rect_intersection(dem_b, me)
+    map_area = _rect_area_m2(me)
+    inter_area = _rect_area_m2(intersection) if intersection else 0.0
+    bbox_intersection_area_fraction = (inter_area / map_area) if map_area > 0 else 0.0
 
     return {
         "ok": bool(fully_covered),
@@ -168,8 +245,7 @@ def dem_coverage_gate(
         "dem_bounds_wgs84": dem_b,
         "map_extent_wgs84": me,
         "needed_bounds_wgs84": needed,
-        "overlap_wgs84": overlap,
-        "coverage_ratio_diag": coverage_ratio,
+        "bbox_intersection_area_fraction": bbox_intersection_area_fraction,
         "margin_deg": margin_deg,
         "reason": "covered" if fully_covered else "map_extent_not_covered",
     }
