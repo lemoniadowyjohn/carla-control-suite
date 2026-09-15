@@ -1,0 +1,56 @@
+{
+  "geometry_xml_reorder": {
+    "status": "CONFIRMED",
+    "description": "geometry_validator.py sorted parsed list but did not reorder XML elements in planView",
+    "fix": "Added element removal and re-append in sorted order in _apply_geometry_repairs",
+    "test": "test_geometry_reordering_updates_xml_element_order"
+  },
+  "geometry_xml_removal": {
+    "status": "CONFIRMED",
+    "description": "geometry_validator.py filtered zero-length geometries from internal list but did not remove from XML",
+    "fix": "Added plan_elem.remove(elem) for zero/negative-length geometries in _apply_geometry_repairs",
+    "test": "test_zero_length_geometry_removed_from_xml, test_negative_length_geometry_removed_from_xml"
+  },
+  "curved_endpoint_heading": {
+    "status": "CONFIRMED",
+    "description": "Missing hdg after curved primitive used previous geometry's start heading instead of endpoint heading",
+    "fix": "Changed backfill to use geometry_endpoint(prev).heading for arcs/spirals in _plan_geometry_repairs",
+    "test": "test_missing_hdg_after_arc_uses_endpoint_heading, test_missing_hdg_after_spiral_uses_endpoint_heading"
+  },
+  "nonfinite_geometry": {
+    "status": "CONFIRMED",
+    "description": "NaN/Inf/missing s/length/hdg were silently normalized or caused crashes",
+    "fix": "Added explicit checks in _plan_geometry_repairs returning REJECTED_REPAIR for nonfinite/missing values",
+    "test": "test_nan_s_coordinate_is_rejected, test_inf_length_is_rejected, test_missing_s_attribute_is_rejected, test_missing_length_attribute_is_rejected, test_nan_hdg_is_normalized_or_rejected"
+  },
+  "inspection_read_only": {
+    "status": "CONFIRMED",
+    "description": "No read-only inspection mode existed; validate() always mutated XML",
+    "fix": "Added inspect_geometry() method that leaves XML byte-equivalent",
+    "test": "test_inspection_is_read_only"
+  },
+  "dem_projected_crs": {
+    "status": "CONFIRMED",
+    "description": "dem_identity.py assigned bounds_wgs84 directly from raster bounds without CRS transformation",
+    "fix": "Added _transform_bounds_to_wgs84() using pyproj.Transformer.from_crs(ds.crs, 'EPSG:4326', always_xy=True)",
+    "test": "test_dem_identity_geographic_crs_bounds, test_dem_identity_projected_crs_bounds_transformed, test_dem_identity_projected_raster_not_interpreted_as_degrees"
+  },
+  "dem_coverage_metrics": {
+    "status": "CONFIRMED",
+    "description": "Coverage gate used only diagonal ratio (coverage_ratio_diag) as opaque metric",
+    "fix": "Added bbox_intersection_area_fraction, sampled_map_points_inside_dem_fraction, nodata_fraction_at_samples reported separately",
+    "test": "test_dem_identity_coverage_gate_bbox_area_fraction, test_dem_identity_coverage_gate_partial_overlap, test_dem_identity_coverage_gate_no_overlap"
+  },
+  "crs_validation_states": {
+    "status": "CONFIRMED",
+    "description": "claimed_crs_from_xodr only returned parsed/not parsed; no distinct validation states",
+    "fix": "Added validate_crs_states() returning SYNTAX_VALID, TRANSFORM_VALID, SOURCE_FRAME_CONFIRMED states",
+    "test": "Manual verification via validate_crs_states() function"
+  },
+  "production_georeference_policy": {
+    "status": "CONFIRMED",
+    "description": "check_dem_coverage.py fell back to raw XY sampling when geoReference missing; production should FAIL",
+    "fix": "Added production parameter (default=True): production mode fails with no_georeference; dev mode allows with provenance",
+    "test": "test_check_dem_coverage_missing_georeference_fails_closed (existing)"
+  }
+}
