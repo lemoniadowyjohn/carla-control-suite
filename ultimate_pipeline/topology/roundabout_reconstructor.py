@@ -205,7 +205,7 @@ class RoundaboutReconstructor:
 
     @staticmethod
     def reconstruct(root: ET.Element, out_dir: str | None = None) -> Dict[str, Dict]:
-        if not getattr(SETTINGS, "ENABLE_ROUNDABOUT_RECONSTRUCTION", True):
+        if not getattr(SETTINGS, "ENABLE_ROUNDABOUT_RECONSTRUCTION", False):
             print("⏭ RoundaboutReconstructor: disabled in settings.")
             return {}
 

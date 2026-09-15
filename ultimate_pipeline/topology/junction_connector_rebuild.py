@@ -25,21 +25,17 @@ from ultimate_pipeline.quality.check_geometric_continuity import (
 
 
 class ConnectorValidator:
-    def __init__(
-        self,
-        connector_road: ET.Element,
-        *,
-        attach_pose: Optional[Pose] = None,
-        opposite_pose: Optional[Pose] = None,
-        position_tolerance_m: float = 0.05,
-        heading_tolerance_rad: float = math.radians(5.0),
-    ):
-        self.road = connector_road
+    """Validates junction connectors with source classification.
 
-        self.attach_pose = attach_pose
-        self.opposite_pose = opposite_pose
-        self.position_tolerance_m = float(position_tolerance_m)
-        self.heading_tolerance_rad = float(heading_tolerance_rad)
+    Connectors are classified as:
+    - EXACT_TOPOLOGY: Both endpoints match canonical geometry within tolerance
+    - GEOMETRICALLY_INFERRED: Position matches but heading tolerance is looser
+    - AMBIGUOUS: Cannot be reliably classified; should not be repaired in production
+    """
+
+    CLASSIFICATION_EXACT = "EXACT_TOPOLOGY"
+    CLASSIFICATION_INFERRED = "GEOMETRICALLY_INFERRED"
+    CLASSIFICATION_AMBIGUOUS = "AMBIGUOUS"
 
     @staticmethod
     def _angle_error(a: float, b: float) -> float:
@@ -111,6 +107,37 @@ class ConnectorValidator:
                 if self._angle_error(actual.hdg, expected.hdg) > self.heading_tolerance_rad:
                     return False
         return True
+
+    def classify(self) -> str:
+        """Classify connector authority level.
+
+        Returns:
+            CLASSIFICATION_EXACT if both endpoints match within strict tolerances
+            CLASSIFICATION_INFERRED if position matches but heading is looser
+            CLASSIFICATION_AMBIGUOUS if neither condition is met
+        """
+        endpoints = self._kernel_road_endpoints(self.road)
+        if endpoints is None or self.attach_pose is None or self.opposite_pose is None:
+            return self.CLASSIFICATION_AMBIGUOUS
+        exact_match = True
+        for actual, expected in zip(endpoints, (self.attach_pose, self.opposite_pose)):
+            if math.hypot(actual.x - expected.x, actual.y - expected.y) > self.position_tolerance_m:
+                exact_match = False
+                break
+            if self._angle_error(actual.hdg, expected.hdg) > self.heading_tolerance_rad:
+                exact_match = False
+                break
+        if exact_match:
+            return self.CLASSIFICATION_EXACT
+        # Check if position matches within looser tolerance (inferred)
+        position_ok = True
+        for actual, expected in zip(endpoints, (self.attach_pose, self.opposite_pose)):
+            if math.hypot(actual.x - expected.x, actual.y - expected.y) > self.position_tolerance_m * 3:
+                position_ok = False
+                break
+        if position_ok:
+            return self.CLASSIFICATION_INFERRED
+        return self.CLASSIFICATION_AMBIGUOUS
 
 
 Point = Tuple[float, float]

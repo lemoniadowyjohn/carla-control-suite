@@ -41,6 +41,12 @@ SIGN_TABLE: Dict[str, Tuple[str, str]] = {
     "de:315": ("parkingRight", "parking"),
 }
 
+SIGN_PLACEMENT_PROVENANCE = {
+    'exact': 'source_truth:osm_sign_coordinate',
+    'spatial': 'spatial_match:projected',
+    'placeholder': 'heuristic:fixed_offset',
+}
+
 
 def apply_regulatory_signs(root: ET.Element, osm_roads_by_id: Dict[str, Any], *, correspondence_by_road_id: Dict[str, Any] | None = None) -> int:
     """

@@ -136,3 +136,25 @@ def test_file_repair_tool_rewrites_existing_placeholder_widths(tmp_path) -> None
     assert _driving_width(road) == pytest.approx(3.25)
     assert result["totals"]["six_meter_placeholders_found"] == 1
     assert json.loads(report.read_text(encoding="utf-8"))["totals"]["driving_widths_updated"] == 1
+
+
+def test_valid_polynomial_not_flattened() -> None:
+    """AREA-011: Valid source polynomials must not be flattened by apply_lane_width_policy."""
+    from ultimate_pipeline.enrichment.lane_width_policy import _width_polynomial_is_valid, apply_lane_width_policy
+    road = _road_with_driving_lane("1", width=3.5, highway="primary")
+    root = _root(road)
+    lane = root.find(".//lane[@type='driving']")
+    width_elem = lane.find("width")
+    assert _width_polynomial_is_valid(width_elem, 25.0)
+    report = apply_lane_width_policy(root)
+    # Valid polynomial should not be updated (driving_widths_updated should be 0)
+    assert report["totals"]["driving_widths_updated"] == 0
+
+
+def test_six_meter_placeholder_replaced_by_valid_width() -> None:
+    """AREA-011: The 6-meter placeholder must be replaced."""
+    from ultimate_pipeline.enrichment.lane_width_policy import SIX_METER_PLACEHOLDER_M, apply_lane_width_policy
+    road = _road_with_driving_lane("1", width=SIX_METER_PLACEHOLDER_M, highway="primary")
+    root = _root(road)
+    report = apply_lane_width_policy(root)
+    assert report["totals"]["six_meter_placeholders_found"] >= 1

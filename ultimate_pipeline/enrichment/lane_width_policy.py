@@ -348,19 +348,21 @@ def apply_lane_width_policy(
             if abs(old - decision.width_m) <= 1e-6:
                 continue
 
-            # Preserve valid explicit lane-shape geometry.  The historical
-            # six-metre converter placeholder remains intentionally repairable.
+            # Preserve valid explicit lane-shape geometry.
+            # Valid source polynomials (non-placeholder) are never flattened.
             if abs(old - SIX_METER_PLACEHOLDER_M) > 1e-6 and _width_polynomial_is_valid(
                 width, _safe_float(road.get("length"), 0.0)
             ):
                 continue
 
-            width.set("a", f"{decision.width_m:.3f}")
-            width.set("b", "0.0")
-            width.set("c", "0.0")
-            width.set("d", "0.0")
-            width.set("sOffset", width.get("sOffset") or "0.0")
-            updated += 1
+            # Only replace placeholder widths or widths that fail validation.
+            if abs(old - SIX_METER_PLACEHOLDER_M) <= 1e-6 or not _width_polynomial_is_valid(width, _safe_float(road.get("length"), 0.0)):
+                width.set("a", f"{decision.width_m:.3f}")
+                width.set("b", "0.0")
+                width.set("c", "0.0")
+                width.set("d", "0.0")
+                width.set("sOffset", width.get("sOffset") or "0.0")
+                updated += 1
 
             if len(examples) < max_examples:
                 examples.append(
