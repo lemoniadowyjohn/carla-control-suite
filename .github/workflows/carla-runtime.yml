@@ -30,16 +30,16 @@ jobs:
           python -m ultimate_pipeline.cli test e2e
 
       - name: Write runtime health packet
-        if: always()
+        if: failure() || success()
         run: |
           python -m ultimate_pipeline.tools.repo_health \
             --out-dir reports/repo_health/runtime \
-            --test-result PASS \
-            --runtime-status PASS \
+            --test-result "${{ job.status }}" \
+            --runtime-status "${{ job.status }}" \
             --runtime-reason "Self-hosted CARLA runtime workflow executed."
 
       - name: Upload runtime health packet
-        if: always()
+        if: failure() || success()
         uses: actions/upload-artifact@v4
         with:
           name: repo-health-runtime
