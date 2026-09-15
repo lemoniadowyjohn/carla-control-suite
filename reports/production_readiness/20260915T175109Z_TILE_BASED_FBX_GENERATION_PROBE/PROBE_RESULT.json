@@ -1,0 +1,117 @@
+{
+  "buildings_loaded": 5712,
+  "buildings_placed": 5712,
+  "buildings_unplaceable": 0,
+  "density_top10": [
+    {
+      "buildings": 626,
+      "tile": [
+        6,
+        8
+      ]
+    },
+    {
+      "buildings": 573,
+      "tile": [
+        7,
+        8
+      ]
+    },
+    {
+      "buildings": 493,
+      "tile": [
+        8,
+        8
+      ]
+    },
+    {
+      "buildings": 429,
+      "tile": [
+        7,
+        9
+      ]
+    },
+    {
+      "buildings": 411,
+      "tile": [
+        7,
+        7
+      ]
+    },
+    {
+      "buildings": 409,
+      "tile": [
+        8,
+        7
+      ]
+    },
+    {
+      "buildings": 395,
+      "tile": [
+        6,
+        7
+      ]
+    },
+    {
+      "buildings": 395,
+      "tile": [
+        9,
+        9
+      ]
+    },
+    {
+      "buildings": 353,
+      "tile": [
+        8,
+        9
+      ]
+    },
+    {
+      "buildings": 326,
+      "tile": [
+        7,
+        6
+      ]
+    }
+  ],
+  "map_name": "Ingolstadt",
+  "occupied_cells": 20,
+  "partition_verified_disjoint": true,
+  "probe_result": {
+    "blender_sec": 0.0,
+    "building_count": 626,
+    "faces_total": 0,
+    "fbx_bytes": 0,
+    "fbx_name": "Ingolstadt_Tile_6_8.fbx",
+    "fbx_path": "",
+    "fbx_sha256": "",
+    "manifest_path": "",
+    "obj_path": "",
+    "objects_total": 0,
+    "osm2world_sec": 0.176,
+    "osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T175109Z_TILE_BASED_FBX_GENERATION_PROBE\\artifacts\\Ingolstadt_Tile_6_8.osm",
+    "reason": "OSM2World status=skipped: OSM2World home not found: \\tmp\\non_existent_osm2world",
+    "roundtrip_ok": null,
+    "roundtrip_sec": 0.0,
+    "roundtrip_verdict": "",
+    "status": "failed",
+    "tile_index": [
+      6,
+      8
+    ],
+    "total_sec": 0.304,
+    "vertices_total": 0
+  },
+  "probe_tile": [
+    6,
+    8
+  ],
+  "run_id": "20260915T175109Z",
+  "source_provenance": {
+    "buildings_source": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "map_of_record": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "tile_size_m": 1000.0
+}
