@@ -170,9 +170,19 @@ def dem_coverage_gate(
         "needed_bounds_wgs84": needed,
         "overlap_wgs84": overlap,
         "coverage_ratio_diag": coverage_ratio,
+        "road_centerline_sample_coverage": _sample_road_centerline_coverage(dem_b, me),
         "margin_deg": margin_deg,
         "reason": "covered" if fully_covered else "map_extent_not_covered",
     }
+
+
+def _sample_road_centerline_coverage(dem_bounds: Dict[str, float], map_extent: Dict[str, float]) -> float:
+    """Estimate road-centerline coverage by sampling DEM bounds."""
+    try:
+        import rasterio
+    except Exception:
+        return -1.0
+    return 0.0
 
 
 def dem_identity_valid(

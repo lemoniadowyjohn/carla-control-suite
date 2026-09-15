@@ -327,6 +327,26 @@ class LaneGenerator:
         return -(index + 1) if side_name == "right" else count - index
 
     @staticmethod
+    def _check_correspondence_orientation(road: ET.Element, osm_meta: Mapping[str, Mapping[str, Any]] | None = None) -> str:
+        """Determine lane orientation relative to XODR reference-line direction.
+
+        Returns 'forward', 'backward', or 'unknown' based on whether the OSM
+        way direction agrees with the XODR planView s-direction.
+        """
+        way_id = road.get("id", "")
+        meta = LaneGenerator._structural_feature_metadata(road, osm_meta)
+        oneway = meta.get("oneway")
+        lanes_fwd = meta.get("lanes:forward")
+        lanes_bwd = meta.get("lanes:backward")
+        if oneway == "yes" and lanes_fwd and not lanes_bwd:
+            return "forward"
+        if oneway == "-1" and lanes_bwd and not lanes_fwd:
+            return "backward"
+        if lanes_fwd and lanes_bwd:
+            return "both"
+        return "unknown"
+
+    @staticmethod
     def _driving_lane_count(road: ET.Element) -> int:
         return len(road.findall(".//lane[@type='driving']"))
 

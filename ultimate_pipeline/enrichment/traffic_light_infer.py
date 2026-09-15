@@ -31,6 +31,13 @@ from ultimate_pipeline.signals.signal_enrichment import (
 # (the same code CARLA's OpenDRIVE importer keys off of to spawn a
 # functional, controllable traffic light actor rather than a static prop).
 TRAFFIC_LIGHT_SIGNAL_TYPE = "1000001"
+PROVENANCE_SCENARIO_AUGMENTATION = "scenario_augmentation:topology_heuristic"
+PROVENANCE_SOURCE_TRUTH = "source_truth:osm_signal"
+
+def _classify_junction_signal_source(conns: list[ET.Element]) -> str:
+    if len(conns) >= 3:
+        return PROVENANCE_SCENARIO_AUGMENTATION
+    return PROVENANCE_SOURCE_TRUTH
 
 
 # =====================================================================

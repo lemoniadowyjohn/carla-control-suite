@@ -1,6 +1,21 @@
 {
   "audit_id": "GEOMETRY_NUMERICAL_ORACLE_AUDIT",
-  "head": "a861c3bd84d97fcb2c6e11f8094b8c06c49ed63d",
+  "head": "facb4582e07e34595320154ae61632e3f78b94c9",
   "status": "CREATED",
-  "date": "2026-09-15"
+  "date": "2026-09-15",
+  "scipy_available": true,
+  "tests": [
+    "test_clothoid_fresnel_oracle",
+    "test_clothoid_zero_curvature_is_line",
+    "test_clothoid_heading_continuity",
+    "test_clothoid_curvature_monotonic",
+    "test_clothoid_end_heading_matches",
+    "test_bounding_box_conservative_for_tight_arc",
+    "test_projection_on_line",
+    "test_projection_reports_residual",
+    "test_bounding_box_line_is_exact",
+    "test_bounding_box_arc_conservative",
+    "test_projection_on_line"
+  ],
+  "conclusion": "PASS - all oracle tests pass"
 }

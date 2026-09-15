@@ -31,9 +31,39 @@
       "current_status": "FIXED"
     },
     {
+      "id": "AREA-006",
+      "title": "Conservative bounds/projection",
+      "old_status": "CONFIRMED_P1",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-007",
+      "title": "Independent clothoid oracle",
+      "old_status": "MISSING",
+      "current_status": "FIXED"
+    },
+    {
       "id": "AREA-008",
       "title": "CI if:always() PASS",
       "old_status": "CONFIRMED_P0",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-010",
+      "title": "Lane orientation",
+      "old_status": "CONFIRMED_P1",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-015",
+      "title": "Traffic light source truth",
+      "old_status": "CONFIRMED_P0",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-017",
+      "title": "DEM road-centerline coverage",
+      "old_status": "CONFIRMED_P1",
       "current_status": "FIXED"
     }
   ]

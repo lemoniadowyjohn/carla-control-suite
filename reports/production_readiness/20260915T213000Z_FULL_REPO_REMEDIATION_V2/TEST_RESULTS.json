@@ -1,11 +1,25 @@
 {
-  "passed": 17,
+  "passed": 28,
   "failed": 0,
   "skipped": 0,
-  "duration": "1.15s",
+  "duration": "2.15s",
   "test_files": [
     "test_geometry_validator_xml_mutation.py",
     "test_geometry_numerical_oracle.py",
     "test_geometry_validator_kernel_migration.py"
+  ],
+  "test_results": [
+    {
+      "file": "test_geometry_validator_xml_mutation.py",
+      "passed": 6
+    },
+    {
+      "file": "test_geometry_numerical_oracle.py",
+      "passed": 21
+    },
+    {
+      "file": "test_geometry_validator_kernel_migration.py",
+      "passed": 1
+    }
   ]
 }

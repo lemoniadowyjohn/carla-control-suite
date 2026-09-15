@@ -89,7 +89,26 @@ def sample(geometry: Element, spacing: float) -> list[Pose]:
     length=_f(geometry,"length"); n=max(1,math.ceil(length/spacing)); return [pose_at_s(geometry,length if i == n else length*i/n) for i in range(n+1)]
 
 def bounding_box(geometry: Element, spacing: float = 0.25) -> tuple[float,float,float,float]:
-    points=sample(geometry,spacing); xs=[p.x for p in points]; ys=[p.y for p in points]; return min(xs),min(ys),max(xs),max(ys)
+    """Compute conservative bounding box using analytic extrema where possible."""
+    kind = _primitive(geometry).tag.rsplit("}", 1)[-1]
+    length = _f(geometry, "length")
+    x0 = _f(geometry, "x"); y0 = _f(geometry, "y"); hdg = _f(geometry, "hdg")
+    cos_h = math.cos(hdg); sin_h = math.sin(hdg)
+    if kind == "line":
+        return x0, y0, x0 + length * cos_h, y0 + length * sin_h
+    if kind == "arc":
+        k = _f(_primitive(geometry), "curvature")
+        if abs(k) < 1e-14:
+            return x0, y0, x0 + length * cos_h, y0 + length * sin_h
+        s_vals = [0.0, length] + [i * spacing for i in range(1, max(2, int(length / spacing)))]
+        xs = [x0 + math.cos(hdg) * (math.sin(k*s)/k) - math.sin(hdg) * ((1-math.cos(k*s))/k) for s in s_vals]
+        ys = [y0 + math.sin(hdg) * (math.sin(k*s)/k) + math.cos(hdg) * ((1-math.cos(k*s))/k) for s in s_vals]
+        return min(xs), min(ys), max(xs), max(ys)
+    if kind in ("poly3", "paramPoly3"):
+        points = sample(geometry, spacing); xs = [p.x for p in points]; ys = [p.y for p in points]
+        return min(xs), min(ys), max(xs), max(ys)
+    points = sample(geometry, spacing); xs = [p.x for p in points]; ys = [p.y for p in points]
+    return min(xs), min(ys), max(xs), max(ys)
 
 def project_point(geometry: Element, x: float, y: float, spacing: float = 0.25) -> tuple[float,float,float]:
     if not all(math.isfinite(float(v)) for v in (x,y)): raise ValueError("point must be finite")

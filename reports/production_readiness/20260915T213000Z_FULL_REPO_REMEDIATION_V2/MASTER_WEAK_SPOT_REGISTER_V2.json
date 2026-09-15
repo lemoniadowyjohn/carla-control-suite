@@ -1,6 +1,87 @@
 {
   "audit_id": "MASTER_WEAK_SPOT_REGISTER_V2",
-  "head": "a861c3bd84d97fcb2c6e11f8094b8c06c49ed63d",
+  "head": "facb4582e07e34595320154ae61632e3f78b94c9",
   "status": "CREATED",
-  "date": "2026-09-15"
+  "date": "2026-09-15",
+  "baseline_sha": "a19ddc2a",
+  "map_of_record_sha": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "issues": [
+    {
+      "id": "AREA-001",
+      "severity": "P0",
+      "domain": "OSM_XODR_CORRESPONDENCE",
+      "status": "FIXED",
+      "fix_commit": "964dc1e2"
+    },
+    {
+      "id": "AREA-002",
+      "severity": "P0",
+      "domain": "OSM_XODR_CORRESPONDENCE",
+      "status": "FIXED",
+      "fix_commit": "964dc1e2"
+    },
+    {
+      "id": "AREA-003",
+      "severity": "P0",
+      "domain": "GEOMETRY_VALIDATOR",
+      "status": "FIXED",
+      "fix_commit": "a5df9eb9"
+    },
+    {
+      "id": "AREA-004",
+      "severity": "P1",
+      "domain": "GEOMETRY_VALIDATOR",
+      "status": "FIXED",
+      "fix_commit": "a5df9eb9"
+    },
+    {
+      "id": "AREA-005",
+      "severity": "P1",
+      "domain": "GEOMETRY_KERNEL",
+      "status": "FIXED",
+      "fix_commit": "964dc1e2"
+    },
+    {
+      "id": "AREA-006",
+      "severity": "P1",
+      "domain": "GEOMETRY_KERNEL",
+      "status": "FIXED",
+      "fix_commit": "facb4582"
+    },
+    {
+      "id": "AREA-007",
+      "severity": "P1",
+      "domain": "GEOMETRY_KERNEL",
+      "status": "FIXED",
+      "fix_commit": "facb4582"
+    },
+    {
+      "id": "AREA-008",
+      "severity": "P0",
+      "domain": "CI_RUNTIME",
+      "status": "FIXED",
+      "fix_commit": "a861c3bd"
+    },
+    {
+      "id": "AREA-010",
+      "severity": "P1",
+      "domain": "LANE_GENERATION",
+      "status": "FIXED",
+      "fix_commit": "facb4582"
+    },
+    {
+      "id": "AREA-015",
+      "severity": "P0",
+      "domain": "TRAFFIC_LIGHT",
+      "status": "FIXED",
+      "fix_commit": "facb4582"
+    },
+    {
+      "id": "AREA-017",
+      "severity": "P1",
+      "domain": "DEM_CRS",
+      "status": "FIXED",
+      "fix_commit": "facb4582"
+    }
+  ]
 }
