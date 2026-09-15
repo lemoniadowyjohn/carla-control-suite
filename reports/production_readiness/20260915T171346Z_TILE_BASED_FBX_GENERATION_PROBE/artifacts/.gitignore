@@ -1,0 +1,7 @@
+# Heavy, fully-reproducible probe meshes (regenerate via
+# tools/probe_tile_fbx_densest.py). The small JSON manifests + logs in this
+# directory ARE tracked as evidence; the binaries are not.
+*.fbx
+*.obj
+*.obj.mtl
+*.osm

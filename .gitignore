@@ -350,3 +350,9 @@ POST_AUDIT_HARDENING_PROMPT.md
 # Windows redirect accident junk (0-byte, reserved names)
 /nul
 /vehicle.
+
+# CARLA `make import` staging area (ultimate_pipeline/tiling/large_map_package.py
+# / tools/stage_large_map_import_package.py). Fully reproducible from the pinned
+# map-of-record XODR + tile FBX artifacts; never commit the large binaries this
+# stages (XODR can be 100+ MB, FBX tiles multi-MB each).
+/Import/
