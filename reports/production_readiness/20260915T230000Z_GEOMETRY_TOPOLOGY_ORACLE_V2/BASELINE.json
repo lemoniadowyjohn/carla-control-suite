@@ -1,0 +1,10 @@
+{
+  "BASE_SHA": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+  "KNOWN_PREVIOUS_CONSOLIDATED_SHA": "bb0af0af9dbfefa2b3f6e40bb557929957767d0f",
+  "MAP_OF_RECORD_EXPECTED_SHA256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "branch": "audit/geometry-topology-oracle-v2-20260915",
+  "worktree": "F:/carla-control-suite-worktrees/geometry-topology-oracle-v2",
+  "created": "2026-09-15T23:00:00Z",
+  "baseline_verified": "git rev-parse HEAD == 540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+  "isolation_verified": "git status --short --branch shows clean, no OC-3 files present"
+}

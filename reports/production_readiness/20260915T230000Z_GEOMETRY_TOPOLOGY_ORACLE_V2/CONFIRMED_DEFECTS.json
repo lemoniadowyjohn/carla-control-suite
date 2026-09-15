@@ -1,0 +1,30 @@
+{
+  "defects": [
+    {
+      "id": "GEOM-FREEZE-001",
+      "severity": "P1",
+      "category": "geometry_freeze",
+      "title": "Post-freeze planView mutation reachable without downstream invalidation",
+      "description": "Stage 08 (hygiene/integrity) and Stage 09 (tiling) contain code paths that can mutate planView geometry after the declared horizontal-geometry freeze at stage_05_geometry. No fail-closed guard invalidates downstream stages if such mutation occurs.",
+      "evidence": "GEOMETRY_FREEZE_AUDIT.json shows post_freeze_mutations_reachable=true for ultimate_pipeline/pipeline_stages/stage_08_hygiene.py and stage_09_tiling.py",
+      "reproduction": "Search for planView/geometry mutation patterns in post-freeze stages; audit shows stage_08_hygiene and stage_09_tiling contain planView handling",
+      "status": "CONFIRMED",
+      "fix_required": "Implement fail-closed guard: hash planView at freeze, verify before tiling/integrity, or move mutations to pre-freeze",
+      "fix_implemented": false,
+      "before_metrics": "No guard present",
+      "after_metrics": "N/A - fix not yet implemented"
+    }
+  ],
+  "summary": {
+    "total_defects": 1,
+    "P0_open": 0,
+    "P0_fixed": 0,
+    "P1_open": 1,
+    "P1_fixed": 0,
+    "P2_open": 0,
+    "geometry_defects": 0,
+    "topology_defects": 0,
+    "freeze_defects": 1
+  },
+  "timestamp": "2026-09-15T23:00:00Z"
+}
