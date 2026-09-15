@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -33,6 +34,10 @@ from ultimate_pipeline.quality.check_geometric_continuity import (
     Geometry,
     Pose,
     _pose_for_geometry,
+)
+from ultimate_pipeline.topology.junction_connector_classifier import (
+    AMBIGUOUS,
+    classify_connector_association,
 )
 
 
@@ -181,14 +186,26 @@ def snap_junction_connectors(
     root: ET.Element,
     max_gap_m: float = 2.0,
     rechain_guard_m: float = 50.0,
+    skip_ambiguous: Optional[bool] = None,
 ) -> Dict[str, int]:
     """
     Snap displaced connector-road start poses to the nearest incoming-road endpoint.
 
     ``rechain_guard_m`` is accepted for API/documentation parity with prior repair tools but
     intentionally unused here. Connector roads are rechained unconditionally after a snap.
+
+    OC-2 (AREA-014): every examined association is classified first
+    (EXACT_TOPOLOGY / GEOMETRICALLY_INFERRED_HIGH / AMBIGUOUS). Associations
+    classified AMBIGUOUS are NOT snapped by default (fail-closed: a nearest
+    endpoint pick within a near-tie, or a heading contradiction, could move
+    the road to the WRONG boundary). Set ``skip_ambiguous=False`` (or env
+    UP_JUNCTION_CONNECTOR_SNAP_ALLOW_AMBIGUOUS=1) to restore the historical
+    nearest-by-distance behavior.
     """
     del rechain_guard_m
+
+    if skip_ambiguous is None:
+        skip_ambiguous = os.environ.get("UP_JUNCTION_CONNECTOR_SNAP_ALLOW_AMBIGUOUS", "0") != "1"
 
     roads = _roads_by_id(root)
     connectors_snapped = 0
@@ -199,6 +216,10 @@ def snap_junction_connectors(
     skipped_missing_geometries = 0
     skipped_missing_pose = 0
     skipped_end_contact_point = 0
+    skipped_ambiguous = 0
+    classified_exact = 0
+    classified_inferred = 0
+    classified_ambiguous = 0
 
     for junction in root.findall("./junction"):
         for connection in junction.findall("./connection"):
@@ -236,6 +257,23 @@ def snap_junction_connectors(
                 skipped_missing_pose += 1
                 continue
 
+            association = classify_connector_association(
+                connector_start=conn_start,
+                incoming_start=incoming_start,
+                incoming_end=incoming_end,
+                declared_side=contact_point,
+            )
+            classification = association["classification"]
+            if classification == AMBIGUOUS:
+                classified_ambiguous += 1
+                if skip_ambiguous:
+                    skipped_ambiguous += 1
+                    continue
+            elif classification == "EXACT_TOPOLOGY":
+                classified_exact += 1
+            else:
+                classified_inferred += 1
+
             gap_to_start = _dist_xy(conn_start, incoming_start)
             gap_to_end = _dist_xy(conn_start, incoming_end)
             target_pose = incoming_start if gap_to_start <= gap_to_end else incoming_end
@@ -268,6 +306,11 @@ def snap_junction_connectors(
         "skipped_missing_geometries": skipped_missing_geometries,
         "skipped_missing_pose": skipped_missing_pose,
         "skipped_end_contact_point": skipped_end_contact_point,
+        "skip_ambiguous": skip_ambiguous,
+        "skipped_ambiguous": skipped_ambiguous,
+        "classified_exact_topology": classified_exact,
+        "classified_inferred_high": classified_inferred,
+        "classified_ambiguous": classified_ambiguous,
     }
 
 
@@ -313,6 +356,11 @@ def run_snap(input_path: Path, output_path: Path, max_gap_m: float) -> Dict[str,
         "skipped_missing_geometries": repair["skipped_missing_geometries"],
         "skipped_missing_pose": repair["skipped_missing_pose"],
         "skipped_end_contact_point": repair["skipped_end_contact_point"],
+        "skip_ambiguous": repair["skip_ambiguous"],
+        "skipped_ambiguous": repair["skipped_ambiguous"],
+        "classified_exact_topology": repair["classified_exact_topology"],
+        "classified_inferred_high": repair["classified_inferred_high"],
+        "classified_ambiguous": repair["classified_ambiguous"],
     }
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     return report

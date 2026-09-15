@@ -310,6 +310,22 @@ def test_reconstruct_disabled_by_settings_returns_empty(monkeypatch):
     assert result == {}
 
 
+def test_reconstruct_oc2_fail_closed_when_setting_absent(monkeypatch):
+    # OC-2 AREA-003 regression: the reconstruction must default to DISABLED.
+    # Removing the setting entirely (rather than pinning False) must not
+    # resurrect the old aggressive `True` default that silently rewrites
+    # OSM roundabout geometry from sampled arcs.
+    from ultimate_pipeline.config.settings import SETTINGS
+    monkeypatch.delattr(SETTINGS, "ENABLE_ROUNDABOUT_RECONSTRUCTION", raising=False)
+
+    roads = [_curvy_road(str(i)) for i in range(1, 4)]
+    junction = _junction_with_connections("5", [("1", "1"), ("2", "2"), ("3", "3")])
+    root = _xodr(roads, [junction])
+
+    result = RoundaboutReconstructor.reconstruct(root)
+    assert result == {}
+
+
 def test_reconstruct_no_roundabouts_detected_returns_meta_only(monkeypatch):
     from ultimate_pipeline.config.settings import SETTINGS
     monkeypatch.setattr(SETTINGS, "ENABLE_ROUNDABOUT_RECONSTRUCTION", True, raising=False)

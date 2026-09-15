@@ -17,6 +17,11 @@ from ultimate_pipeline.tools.crash_safe_length_repair import (
     TOL_M as LENGTH_INVARIANT_TOL_M,
     length_invariant_summary,
 )
+from ultimate_pipeline.contracts.stage_contracts import (
+    QualityStatus,
+    governed_waiver_allowed,
+)
+from ultimate_pipeline.quality.topology_certification import certify_topology
 
 
 def _run_id_from_out_dir(out_dir: Optional[str]) -> Optional[str]:
@@ -153,7 +158,9 @@ class _UnionFind:
             parent[ra] = rb
 
 
-def component_reachability_summary(root: Any) -> Optional[Dict[str, Any]]:
+def component_reachability_summary(
+    root: Any, *, literal: bool = False
+) -> Optional[Dict[str, Any]]:
     """Offline lane-topology reachability (the live-CARLA probe finding:
     spawn points on isolated road components never drive even with
     TrafficManager).
@@ -164,6 +171,17 @@ def component_reachability_summary(root: Any) -> Optional[Dict[str, Any]]:
     whose drivable network is fragmented has a low
     largest_component_fraction — autopilot routes can never cross such
     fragments, so capture spawn points on them produce dead runs.
+
+    `literal` selects the graph authority (OC-2 topology certification):
+    - literal=False (default, backward compatible): RECOVERED_DIAGNOSTIC
+      graph. Tolerates this generator's known quirks -- flips a mismatched
+      road-level contactPoint to the other target boundary, resolves a
+      junction laneLink against the other incoming boundary when the declared
+      side lacks the lane, and sign-matches a missing cross-road lane id.
+    - literal=True: LITERAL_SPEC graph. Every reference must resolve at its
+      declared side exactly; unanswered references increment
+      ``unmatched_cross_links`` instead of being salvaged. Production
+      certification (certify_topology) must use the literal graph.
     """
     try:
         uf = _UnionFind()
@@ -224,6 +242,11 @@ def component_reachability_summary(root: Any) -> Optional[Dict[str, Any]]:
                                     l.get("id") == target_lid
                                     for l in target_sections[tsi].findall("./lane")
                                 )
+                            elif literal:
+                                # A literal spec graph requires the explicit
+                                # target lane id; sign-matching is a recovery
+                                # heuristic, not declared topology.
+                                found = False
                             else:
                                 sign = "-" if lid.startswith("-") else ""
                                 found = any(
@@ -277,6 +300,10 @@ def component_reachability_summary(root: Any) -> Optional[Dict[str, Any]]:
                         continue
                     if lid in target_ids:
                         uf.union(_node(rid, src_tsi, lid), _node(target_road, target_tsi, lid))
+                    elif literal:
+                        # Literal spec: the boundary lane must exist at the
+                        # declared contactPoint side; no flip tolerance.
+                        unmatched_cross_links += 1
                     else:
                         # Tolerate a flipped contactPoint (generator quirk):
                         # try the other boundary of the target road.
@@ -315,14 +342,19 @@ def component_reachability_summary(root: Any) -> Optional[Dict[str, Any]]:
                         continue
                     in_tsi_used = in_tsi
                     conn_tsi_used = conn_tsi
-                    if frm not in in_lanes:
-                        alt = 0 if in_tsi > 0 else len(in_sections) - 1
-                        if frm in {l.get("id") for l in in_sections[alt].findall(".//lane")}:
-                            in_tsi_used = alt
-                    if to not in conn_lanes:
-                        alt = 0 if conn_tsi > 0 else len(conn_sections) - 1
-                        if to in {l.get("id") for l in conn_sections[alt].findall(".//lane")}:
-                            conn_tsi_used = alt
+                    if literal:
+                        # Literal spec: lanes must resolve at the declared
+                        # contactPoint side; no alternate-boundary probing.
+                        pass
+                    else:
+                        if frm not in in_lanes:
+                            alt = 0 if in_tsi > 0 else len(in_sections) - 1
+                            if frm in {l.get("id") for l in in_sections[alt].findall(".//lane")}:
+                                in_tsi_used = alt
+                        if to not in conn_lanes:
+                            alt = 0 if conn_tsi > 0 else len(conn_sections) - 1
+                            if to in {l.get("id") for l in conn_sections[alt].findall(".//lane")}:
+                                conn_tsi_used = alt
                     if frm in {l.get("id") for l in in_sections[in_tsi_used].findall(".//lane")} and to in {
                         l.get("id") for l in conn_sections[conn_tsi_used].findall(".//lane")
                     }:
@@ -355,6 +387,7 @@ def component_reachability_summary(root: Any) -> Optional[Dict[str, Any]]:
             "largest_component_fraction": round(largest / lane_count, 6),
             "isolated_lane_component_count": isolated_count,
             "unmatched_cross_links": unmatched_cross_links,
+            "graph_source": "LITERAL_SPEC" if literal else "RECOVERED_DIAGNOSTIC",
         }
     except Exception:
         return None
@@ -369,6 +402,7 @@ def build_map_acceptance(
     out_dir: str | None = None,
     require_enrichment: bool = False,
     require_component_reachability: bool = False,
+    component_reachability_waiver: str | None = None,
 ) -> Dict[str, Any]:
     hard_fail_reasons: List[Dict[str, str]] = []
     soft_warnings: List[Dict[str, str]] = []
@@ -765,6 +799,14 @@ def build_map_acceptance(
     # warning); hard-fails only when the caller opts in via
     # require_component_reachability=True, with the threshold
     # largest_component_fraction >= 0.95 (<=5% of lanes on islands).
+    #
+    # OC-2 (AREA-008): the HARD gate is driven by the LITERAL spec graph
+    # (certify_topology's SPEC_TOPOLOGY), never by the lenient recovered
+    # graph. The recovered graph remains the diagnostic that distinguishes "a
+    # generator quirk the recovery tolerates" from a genuinely fragmented map.
+    # A governed waiver string (component_reachability_waiver) converts a
+    # would-be hard fail into a WAIVED soft warning -- never a silent pass.
+    comp_root = None
     comp_rep = reports.get("component_reachability")
     if isinstance(comp_rep, dict) and isinstance(comp_rep.get("largest_component_fraction"), (int, float)):
         pass  # precomputed evidence supplied by the caller
@@ -775,6 +817,21 @@ def build_map_acceptance(
             comp_root = None
         if comp_root is not None:
             comp_rep = component_reachability_summary(comp_root)
+    literal_rep = reports.get("component_reachability_literal")
+    if not isinstance(literal_rep, dict) and comp_root is not None:
+        literal_rep = component_reachability_summary(comp_root, literal=True)
+
+    certification = certify_topology(literal_rep, comp_rep)
+    if (
+        certification["SPEC_TOPOLOGY"] != QualityStatus.INCOMPLETE.value
+        or certification["RECOVERY_DIAGNOSTIC"] != QualityStatus.INCOMPLETE.value
+    ):
+        metrics["component_reachability_spec_status"] = certification["SPEC_TOPOLOGY"]
+        metrics["component_reachability_recovery_status"] = certification["RECOVERY_DIAGNOSTIC"]
+        metrics["largest_component_fraction_spec"] = certification["literal_largest_component_fraction"]
+        metrics["unmatched_cross_links_spec"] = certification["literal_unmatched_cross_links"]
+        metrics["topology_production_evidence"] = certification["production_evidence"]
+
     if isinstance(comp_rep, dict) and isinstance(comp_rep.get("largest_component_fraction"), (int, float)):
         metrics["lane_component_count"] = comp_rep.get("component_count")
         metrics["lane_count_total"] = comp_rep.get("lane_count")
@@ -793,17 +850,41 @@ def build_map_acceptance(
                 }
             )
         if require_component_reachability:
-            fraction = float(comp_rep.get("largest_component_fraction"))
-            if fraction < 0.95:
-                hard_fail_reasons.append(
-                    {
-                        "gate": "component_reachability",
-                        "reason": (
-                            f"largest_component_fraction={fraction} < 0.95 "
-                            f"(component_count={comp_rep.get('component_count')})"
-                        ),
-                    }
-                )
+            gate_fraction = (
+                float(certification["literal_largest_component_fraction"])
+                if isinstance(certification["literal_largest_component_fraction"], (int, float))
+                else float(comp_rep.get("largest_component_fraction"))
+            )
+            if gate_fraction < 0.95:
+                waiver = component_reachability_waiver
+                waivable = isinstance(waiver, str) and bool(waiver.strip())
+                if waivable and governed_waiver_allowed(
+                    {"component_reachability": waiver}, "component_reachability"
+                ):
+                    metrics["component_reachability_waiver_applied"] = True
+                    metrics["component_reachability_spec_status"] = QualityStatus.WAIVED.value
+                    soft_warnings.append(
+                        {
+                            "gate": "component_reachability",
+                            "reason": (
+                                f"WAIVED by governed waiver: LITERAL_SPEC "
+                                f"largest_component_fraction={gate_fraction} < 0.95 "
+                                f"(component_count={comp_rep.get('component_count')}) "
+                                f"justification='{waiver}'"
+                            ),
+                        }
+                    )
+                else:
+                    hard_fail_reasons.append(
+                        {
+                            "gate": "component_reachability",
+                            "reason": (
+                                f"LITERAL_SPEC largest_component_fraction={gate_fraction} < 0.95 "
+                                f"(component_count={comp_rep.get('component_count')}; "
+                                f"graph_source={certification['production_evidence']})"
+                            ),
+                        }
+                    )
 
     valid_for_experiments = len(hard_fail_reasons) == 0
     payload = {

@@ -46,6 +46,11 @@ from ultimate_pipeline.quality.check_elevation_continuity import (
 from ultimate_pipeline.quality.check_lane_geometry_continuity import (
     check_lane_geometry_continuity,
 )
+from ultimate_pipeline.topology.component_classifier import (
+    PRESERVED_UNDER_QUARANTINE,
+    _map_bbox,
+    classify_component,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -172,6 +177,8 @@ def quarantine_island_roads(
     xodr_in: str,
     out_xodr: str,
     min_component_roads: Optional[int] = None,
+    classify_components: Optional[bool] = None,
+    allow_unknown_auto_delete: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """
     Compute road-connectivity components (same graph as 08H /
@@ -181,11 +188,31 @@ def quarantine_island_roads(
     The removal is always reported (component sizes + quarantined road ids),
     never silent. The main/large component(s) are left untouched.
 
+    Component classification (OC-2 hardening): when `classify_components` is
+    True (default production behavior; env UP_CLASSIFY_QUARANTINE_COMPONENTS,
+    default "1"), each small component is classified by
+    component_classifier.classify_component. Categories in
+    PRESERVED_UNDER_QUARANTINE (INTENTIONAL_ISLAND, UNKNOWN) are NOT
+    auto-deleted unless `allow_unknown_auto_delete` is explicitly True (env
+    UP_ALLOW_UNKNOWN_AUTO_DELETE, default "0") -- UNKNOWN components can never
+    be silently dropped in production. Preserved components are returned in
+    the report (never silently kept), and every removal remains reversible
+    because the input file is untouched.
+
+    When `classify_components` is False the historical blind size-based
+    quarantine runs verbatim (useful to reproduce legacy outputs exactly;
+    e.g. a regen that must match the pinned map-of-record bit-for-bit can
+    set UP_CLASSIFY_QUARANTINE_COMPONENTS=0).
+
     Deterministic tie-break: components are identified purely by road-id
     membership; there is no randomness.
     """
     if min_component_roads is None:
         min_component_roads = _env_int("UP_MIN_COMPONENT_ROADS", 20)
+    if classify_components is None:
+        classify_components = _env_int("UP_CLASSIFY_QUARANTINE_COMPONENTS", 1) != 0
+    if allow_unknown_auto_delete is None:
+        allow_unknown_auto_delete = _env_int("UP_ALLOW_UNKNOWN_AUTO_DELETE", 0) != 0
 
     tree = ET.parse(xodr_in)
     root = tree.getroot()
@@ -211,15 +238,50 @@ def quarantine_island_roads(
     road_components.sort(key=len, reverse=True)
     component_sizes_before = [len(c) for c in road_components]
 
+    if classify_components:
+        roads_by_id: Dict[str, ET.Element] = {
+            (r.get("id") or "").strip(): r
+            for r in roads
+            if (r.get("id") or "").strip()
+        }
+        map_bbox = _map_bbox(roads_by_id)
+
     quarantine_ids: List[str] = []
     quarantined_components: List[Dict[str, Any]] = []
+    preserved_components: List[Dict[str, Any]] = []
+    component_classifications: List[Dict[str, Any]] = []
     for comp_roads in road_components:
-        if len(comp_roads) < min_component_roads:
-            ids_sorted = sorted(comp_roads, key=lambda x: (len(x), x))
-            quarantine_ids.extend(ids_sorted)
-            quarantined_components.append(
-                {"size": len(comp_roads), "road_ids": ids_sorted}
+        if len(comp_roads) >= min_component_roads:
+            continue
+        ids_sorted = sorted(comp_roads, key=lambda x: (len(x), x))
+
+        if classify_components:
+            classification = classify_component(
+                comp_roads, roads_by_id, junctions, map_bbox=map_bbox
             )
+            preserved = (
+                classification["category"] in PRESERVED_UNDER_QUARANTINE
+                and not allow_unknown_auto_delete
+            )
+        else:
+            classification = None
+            preserved = False
+
+        entry: Dict[str, Any] = {
+            "size": len(comp_roads),
+            "road_ids": ids_sorted,
+        }
+        if classification is not None:
+            entry["category"] = classification["category"]
+            entry["reason"] = classification["reason"]
+            entry["preserved"] = preserved
+
+        if preserved:
+            preserved_components.append(entry)
+        else:
+            quarantine_ids.extend(ids_sorted)
+            quarantined_components.append(entry)
+        component_classifications.append(entry)
 
     quarantine_set = set(quarantine_ids)
     for road in list(root.findall("road")):
@@ -275,6 +337,10 @@ def quarantine_island_roads(
         "remaining_road_count": remaining_road_count,
         "dangling_connections_dropped": connections_dropped,
         "empty_junctions_dropped": junctions_dropped,
+        "classify_components": classify_components,
+        "allow_unknown_auto_delete": allow_unknown_auto_delete,
+        "component_classifications": component_classifications,
+        "preserved_components": preserved_components,
         "input_xodr": xodr_in,
         "output_xodr": out_xodr,
     }
