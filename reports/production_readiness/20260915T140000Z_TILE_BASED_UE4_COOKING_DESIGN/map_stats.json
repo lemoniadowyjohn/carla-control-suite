@@ -1,0 +1,58 @@
+{
+  "map_sha256_expected": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "road_count": 32267,
+  "junction_count": 3561,
+  "driving_lane_count": 34291,
+  "total_road_length_m": 1489145.6,
+  "total_road_length_km": 1489.15,
+  "planView_geometry_records": 197397,
+  "header_offset_xy": [
+    832671.676,
+    5458671.104
+  ],
+  "geoReference": "+proj=tmerc",
+  "extent_local_frame_m": {
+    "x_min": -9.3,
+    "x_max": 13267.1,
+    "width": 13276.3,
+    "y_min": -8.3,
+    "y_max": 14072.6,
+    "height": 14080.9
+  },
+  "bbox_area_km2": 186.94,
+  "road_length_density_km_per_km2": 8.0,
+  "road_count_density_per_km2": 172.6,
+  "buildings": {
+    "total_elements": 5712,
+    "by_type": {
+      "way": 5693,
+      "relation": 19
+    },
+    "building_ways": 5693,
+    "building_relations": 19,
+    "total_building_objects": 5712,
+    "density_per_km2": 30.6
+  },
+  "tile_grid": {
+    "500": {
+      "grid": "27x29",
+      "n_tiles": 783,
+      "roads_per_tile_avg": 41.0
+    },
+    "1000": {
+      "grid": "14x15",
+      "n_tiles": 210,
+      "roads_per_tile_avg": 154.0
+    },
+    "1500": {
+      "grid": "9x10",
+      "n_tiles": 90,
+      "roads_per_tile_avg": 359.0
+    },
+    "2000": {
+      "grid": "7x8",
+      "n_tiles": 56,
+      "roads_per_tile_avg": 576.0
+    }
+  }
+}
