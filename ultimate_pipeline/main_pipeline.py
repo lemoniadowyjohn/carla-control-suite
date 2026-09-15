@@ -229,6 +229,98 @@ def _hash_file(path: str) -> str:
         return "ERROR"
 
 
+def _resolve_osm2world_input_path(settings_obj: Any, cache_dir: str) -> Dict[str, Any]:
+    """Resolve the OSM XML path to feed ``OSM2WorldRunner``, merging in the
+    campaign's real building footprints when available.
+
+    Background (2026-09-15 finding): ``settings.OSM_FILE`` is a roads-focused
+    Overpass export that is typically near building-free (e.g. the pinned
+    Ingolstadt campaign's ``ingolstadt_authoritative.osm`` has
+    ``building_way_count: 1``). The campaign's actual building footprints
+    live separately, in ``settings.PINNED_BUILDINGS_SOURCE``
+    (Overpass-JSON format, e.g. ``ingolstadt_buildings_overpass.json``,
+    5693 building ways for that campaign) -- a format OSM2World cannot read
+    directly. This resolver converts that Overpass-JSON buildings source to
+    OSM XML (``overpass_to_osm_xml.convert_overpass_json_to_osm_xml``) and
+    merges it with the roads file (``overpass_to_osm_xml.merge_osm_xml_files``)
+    into a single combined ``.osm`` file OSM2World's single-``-i``-input CLI
+    can consume, so the visual-clutter mesh reflects the campaign's real
+    building volumes, not just roads-file incidental building tags.
+
+    This is generic across campaigns: it reads
+    ``settings.OSM_FILE``/``settings.PINNED_BUILDINGS_SOURCE`` (with an env
+    override, ``UP_PINNED_BUILDINGS_SOURCE``, already supported by
+    ``Settings``), never hardcodes a campaign name.
+
+    Falls back to the raw ``settings.OSM_FILE`` (old behaviour, unchanged)
+    whenever:
+      - no buildings source is configured, or the configured path is
+        missing/empty (e.g. unit tests using a bare temp roads file with no
+        buildings source at all);
+      - the buildings source is not Overpass-JSON shaped (e.g. it is
+        already an ``.osm``/``.osm.xml`` file -- nothing to convert);
+      - conversion or merge raises for any reason (malformed source, etc.)
+        -- this stage is optional/supplemental and must not turn a building
+        source problem into a hard pipeline failure; the fallback is logged
+        in the returned dict for the stage receipt.
+
+    Returns a dict: ``{"osm_path": str, "source": "merged"|"roads_only",
+    "buildings_source": str|None, "reason": str, "convert_stats": dict|None,
+    "merge_stats": dict|None}``.
+    """
+    roads_path = str(getattr(settings_obj, "OSM_FILE", "") or "")
+    result: Dict[str, Any] = {
+        "osm_path": roads_path,
+        "source": "roads_only",
+        "buildings_source": None,
+        "reason": "no pinned buildings source configured",
+        "convert_stats": None,
+        "merge_stats": None,
+    }
+
+    buildings_path = str(getattr(settings_obj, "PINNED_BUILDINGS_SOURCE", "") or "")
+    if not buildings_path or not os.path.isfile(buildings_path):
+        return result
+    if not roads_path or not os.path.isfile(roads_path):
+        result["reason"] = "roads OSM_FILE missing; nothing to merge buildings into"
+        return result
+
+    # Only Overpass-JSON needs converting; if someone already points
+    # PINNED_BUILDINGS_SOURCE at an .osm/.osm.xml file there is nothing to do
+    # here (OSM2World would need a merge, but that is a distinct case this
+    # resolver does not need to guess at -- leave osm_path as roads_only).
+    suffix = Path(buildings_path).suffix.lower()
+    if suffix != ".json":
+        result["reason"] = f"buildings source is not Overpass JSON (suffix={suffix!r}); skipping merge"
+        return result
+
+    try:
+        os.makedirs(cache_dir, exist_ok=True)
+        buildings_osm_path = os.path.join(cache_dir, "converted_buildings.osm")
+        convert_stats = convert_overpass_json_to_osm_xml(buildings_path, buildings_osm_path)
+
+        merged_osm_path = os.path.join(cache_dir, "merged_roads_and_buildings.osm")
+        merge_stats = merge_osm_xml_files(roads_path, buildings_osm_path, merged_osm_path)
+
+        result.update(
+            {
+                "osm_path": merged_osm_path,
+                "source": "merged",
+                "buildings_source": buildings_path,
+                "reason": (
+                    f"merged {convert_stats['ways_written']} building ways from "
+                    f"{os.path.basename(buildings_path)} into roads OSM"
+                ),
+                "convert_stats": convert_stats,
+                "merge_stats": merge_stats,
+            }
+        )
+        return result
+    except Exception as e:
+        result["reason"] = f"buildings conversion/merge failed ({type(e).__name__}: {e}); falling back to roads_only"
+        return result
+
+
 def _resolve_planview_auto_repair_max_m(settings_obj: Any) -> float:
     """
     Resolve seam auto-repair threshold with backward-compatible env precedence:
@@ -548,6 +640,10 @@ from ultimate_pipeline.enrichment.osm_polygon_loader import OSMPolygonLoader
 from ultimate_pipeline.enrichment.osm2world_runner import (
     OSM2WorldRunner,
     is_osm2world_enabled,
+)
+from ultimate_pipeline.enrichment.overpass_to_osm_xml import (
+    convert_overpass_json_to_osm_xml,
+    merge_osm_xml_files,
 )
 
 # diagnostics
@@ -2437,7 +2533,11 @@ if str(_repo_root) not in sys.path:
                 "Settings.ENABLE_OSM2WORLD are not enabled"
             )
         else:
-            osm_path = str(getattr(self.settings, "OSM_FILE", "") or "")
+            input_resolution = _resolve_osm2world_input_path(
+                self.settings, str(Path(self.out_dir) / "osm2world_input")
+            )
+            osm_path = input_resolution["osm_path"]
+            result["osm2world_input_resolution"] = input_resolution
             configured_home = str(
                 getattr(self.settings, "OSM2WORLD_HOME", "") or ""
             ).strip()

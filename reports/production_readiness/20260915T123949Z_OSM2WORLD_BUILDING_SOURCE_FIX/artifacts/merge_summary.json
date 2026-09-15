@@ -1,0 +1,42 @@
+{
+  "roads_source": {
+    "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "bytes": 11154738
+  },
+  "buildings_source": {
+    "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "bytes": 3869473
+  },
+  "convert_stats": {
+    "elements_read": 5712,
+    "ways_in": 5693,
+    "relations_in": 19,
+    "nodes_written": 27188,
+    "ways_written": 5711,
+    "relations_written": 0,
+    "skipped_degenerate": 0
+  },
+  "convert_elapsed_sec": 1.625,
+  "merge_stats": {
+    "primary_nodes": 74874,
+    "primary_ways": 17250,
+    "primary_relations": 9,
+    "secondary_nodes": 27188,
+    "secondary_ways": 5711,
+    "secondary_relations": 0,
+    "renumbered": 0
+  },
+  "merge_elapsed_sec": 5.326,
+  "converted_buildings_osm": {
+    "path": "reports\\production_readiness\\20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX\\artifacts\\converted_buildings.osm",
+    "sha256": "0ad78ed2f17214c30ca22295231d4d65cafc745fac9594e8415fce9ffa5085a1",
+    "bytes": 3699085
+  },
+  "merged_osm": {
+    "path": "reports\\production_readiness\\20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX\\artifacts\\merged_roads_and_buildings.osm",
+    "sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+    "bytes": 15116883
+  }
+}

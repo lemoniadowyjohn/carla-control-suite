@@ -1,0 +1,123 @@
+{
+  "run_id": "20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX",
+  "purpose": "Close the architectural gap found by the 20260915T101124Z_FBX_REGEN_CURRENT_PIN task: build an Overpass-JSON -> OSM-XML converter, wire it into _run_osm2world_visual_stage so OSM2World receives the pin real building geometry (not just the roads file), and regenerate the OSM2World -> Blender -> FBX visual-clutter export to confirm the fix produces dramatically richer geometry.",
+  "base_repo_commit": "c8108ecab2f2a75c941b83217650806f15f21bcb",
+  "base_repo_branch": "integration/session-batch1-20260912",
+  "feature_branch": "feature/osm2world-building-source-fix-v1-20260915",
+  "map_of_record": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "note": "Road geometry NOT touched by this task; only supplemental visual-clutter mesh generation changed."
+  },
+  "converter_module": "ultimate_pipeline/enrichment/overpass_to_osm_xml.py",
+  "pipeline_wiring": "ultimate_pipeline/main_pipeline.py (_resolve_osm2world_input_path, called from _run_osm2world_visual_stage)",
+  "inputs": {
+    "roads_osm": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "bytes": 11154738
+    },
+    "buildings_overpass_json": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json",
+      "sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "bytes": 3869473,
+      "matches_inputs_manifest": true
+    }
+  },
+  "conversion": {
+    "stats": {
+      "elements_read": 5712,
+      "ways_in": 5693,
+      "relations_in": 19,
+      "nodes_written": 27188,
+      "ways_written": 5711,
+      "relations_written": 0,
+      "skipped_degenerate": 0
+    },
+    "elapsed_sec": 1.625,
+    "output": {
+      "path": "reports\\production_readiness\\20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX\\artifacts\\converted_buildings.osm",
+      "sha256": "0ad78ed2f17214c30ca22295231d4d65cafc745fac9594e8415fce9ffa5085a1",
+      "bytes": 3699085
+    }
+  },
+  "merge": {
+    "stats": {
+      "primary_nodes": 74874,
+      "primary_ways": 17250,
+      "primary_relations": 9,
+      "secondary_nodes": 27188,
+      "secondary_ways": 5711,
+      "secondary_relations": 0,
+      "renumbered": 0
+    },
+    "elapsed_sec": 5.326,
+    "output": {
+      "path": "reports\\production_readiness\\20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX\\artifacts\\merged_roads_and_buildings.osm",
+      "sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+      "bytes": 15116883
+    }
+  },
+  "osm2world": {
+    "status": "ok",
+    "reason": "Generated 2 outputs; failed: scene.glb (invalid)",
+    "duration_sec": 65.899,
+    "outputs": {
+      "scene.obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a241ac91f503ca382\\reports\\production_readiness\\20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX\\artifacts\\osm2world\\ingolstadt_cooked_perception_v1_merged_full_pin.obj",
+      "preview.png": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a241ac91f503ca382\\reports\\production_readiness\\20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX\\artifacts\\osm2world\\ingolstadt_cooked_perception_v1_merged_full_pin.png"
+    },
+    "exit_codes": {
+      "scene.obj": 0,
+      "preview.png": 0,
+      "scene.glb": 0
+    },
+    "glb_valid": false,
+    "glb_validation_reason": "Blender validation failed: BLENDER_IMPORT_FAILED: Error: Bad glTF: json error: utf-8"
+  },
+  "blender_conversion": {
+    "status": "ok",
+    "output_fbx": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+    "output_fbx_sha256": "2bcef1e9f38430b131be148c1db77cd61e4434cd0e5abcb56387dd181b8c5349",
+    "output_fbx_bytes": 15495996,
+    "objects_total": 5772,
+    "vertices_total": 108827,
+    "faces_total": 162313,
+    "materials_total": 15
+  },
+  "fbx_roundtrip": {
+    "verdict": "ROUNDTRIP_PASS",
+    "ok": true,
+    "objects_source": 5772,
+    "objects_roundtrip": 5772,
+    "missing_objects": [],
+    "extra_objects": [],
+    "field_differences": []
+  },
+  "before_after_comparison": {
+    "before_run_id": "20260915T101124Z_FBX_REGEN_CURRENT_PIN",
+    "before": {
+      "obj_vertices": 945,
+      "obj_faces": 876,
+      "obj_groups": 72,
+      "fbx_objects": 61,
+      "fbx_vertices": 975,
+      "fbx_materials": 6,
+      "fbx_bytes": 149180
+    },
+    "after": {
+      "obj_vertices": 102852,
+      "obj_faces": 162313,
+      "obj_groups": 5838,
+      "fbx_objects": 5772,
+      "fbx_vertices": 108827,
+      "fbx_materials": 15,
+      "fbx_bytes": 15495996
+    }
+  },
+  "known_pre_existing_issue_unchanged_by_this_task": {
+    "description": "GLB output invalid due to OSM2World IndoorModule duplicate-point exception on 3 roads-file way ids (w462314990, w359550749, w359550745) -- same ids, same root cause as documented in the prior 20260915T101124Z_FBX_REGEN_CURRENT_PIN task. Not caused by, and not fixed by, this task (roads file unchanged). OBJ/FBX path unaffected."
+  },
+  "tests_added": [
+    "ultimate_pipeline/tests/unit/test_overpass_to_osm_xml.py (16 tests)",
+    "ultimate_pipeline/tests/unit/test_osm2world_pipeline_wiring.py (+7 tests, 13 total in file)"
+  ]
+}
