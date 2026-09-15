@@ -208,7 +208,7 @@ def match_osm_way_to_xodr(
         score = max(0.0, 1.0 - mean_distance / max_distance_m)
         score += 0.15 if name_match else 0.0
         score += 0.10 if class_match else 0.0
-        score += 0.10 * max(0.0, 1.0 - (heading_error or math.pi) / math.pi)
+        score += 0.10 * max(0.0, 1.0 - ((heading_error if heading_error is not None else 0.0) / math.pi))
         scored.append((score, mean_distance, road, {
             "mean_distance_m": mean_distance,
             "max_distance_m": distance_evidence["max_distance_m"],
@@ -221,7 +221,7 @@ def match_osm_way_to_xodr(
         return MatchResult(way_id, None, 0.0, "UNMATCHED", {}, "no_candidate_within_distance")
     scored.sort(key=lambda row: (-row[0], row[1], str(row[2].get("id", ""))))
     best = scored[0]
-    if len(scored) > 1 and best[1] - scored[1][1] < ambiguity_margin_m and abs(best[0] - scored[1][0]) < 0.10:
+    if len(scored) > 1 and scored[1][1] - best[1] < ambiguity_margin_m and abs(best[0] - scored[1][0]) < 0.10:
         return MatchResult(way_id, None, 0.0, "AMBIGUOUS", best[3], "competing_spatial_candidates")
     confidence = min(1.0, best[0] / 1.35)
     match_class = "EXACT" if confidence >= 0.90 and best[3]["mean_distance_m"] <= 0.25 else "HIGH" if confidence >= 0.65 else "AMBIGUOUS"
