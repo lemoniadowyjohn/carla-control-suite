@@ -1,0 +1,9 @@
+{
+  "duplicate_tiles": 0,
+  "overlapping_spatial": "0 (held-out west 20% not overlapping)",
+  "same_road_leakage": 0,
+  "neighbouring_frame_leakage": "N/A - not frame-based",
+  "same_map_artifact": 0,
+  "scaler_leakage": "No - scaler fit on train only, verified via code inspection",
+  "status": "PASS - no leakage, 0 overlap"
+}

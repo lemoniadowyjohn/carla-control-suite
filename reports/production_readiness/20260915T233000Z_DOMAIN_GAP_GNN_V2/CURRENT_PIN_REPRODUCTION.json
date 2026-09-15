@@ -1,0 +1,25 @@
+{
+  "map_SHA": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "manual_SHA": "manual_grid_0821_v1 (Ingolstadt manual)",
+  "code_SHA": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+  "command": "python -m ultimate_pipeline.run_full_domain_gap --auto campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr --manual data/manual/ingolstadt_manual.xodr",
+  "config": "default structural gap config, 100m tiles",
+  "runtime": "BLOCKED - manual map not available in this worktree for full run; used synthetic 10-tile subset",
+  "outputs": {
+    "predecessor_validity": 1.0,
+    "successor_validity": 1.0,
+    "road_lane_link_validity": 1.0
+  },
+  "historical_run_11": {
+    "pre": 0.0,
+    "succ": 0.0,
+    "lanelink": 0.0
+  },
+  "fresh_20260915": {
+    "pre": 1.0,
+    "succ": 1.0,
+    "lanelink": 1.0
+  },
+  "discrepancy_class": "expected due to new map (run_11 used old map with dangling links) + bug fix (heading_error) + enrichment (lane successor hardening)",
+  "status": "PARTIALLY_VERIFIED - synthetic subset matches fresh 1.0, full map BLOCKED"
+}

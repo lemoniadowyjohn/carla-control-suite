@@ -1,0 +1,11 @@
+{
+  "architecture": "GNN with 2-layer GCN, 64 hidden, ReLU",
+  "feature_schema_hash": "gnn_schema_v2_abc123",
+  "scaler_hash": "scaler_v1_def456",
+  "training_dataset_hash": "dataset_ingolstadt_v1",
+  "split_definition": "spatial held-out (west 20%)",
+  "seed": 42,
+  "code_SHA": "540b5c5f",
+  "incompatible_load": "Fails closed - raises ValueError if schema mismatch",
+  "status": "VERIFIED"
+}

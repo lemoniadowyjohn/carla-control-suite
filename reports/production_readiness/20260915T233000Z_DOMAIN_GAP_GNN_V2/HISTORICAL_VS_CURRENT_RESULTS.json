@@ -1,0 +1,18 @@
+{
+  "predecessor_validity": {
+    "run_11": 0.0,
+    "current": 1.0,
+    "class": "SUPERSEDED - run_11 map had dangling successors, current map fixed"
+  },
+  "successor_validity": {
+    "run_11": 0.0,
+    "current": 1.0,
+    "class": "SUPERSEDED"
+  },
+  "road_lane_link_validity": {
+    "run_11": 0.0,
+    "current": 1.0,
+    "class": "SUPERSEDED"
+  },
+  "status": "HISTORICAL_SUPERSEDED"
+}

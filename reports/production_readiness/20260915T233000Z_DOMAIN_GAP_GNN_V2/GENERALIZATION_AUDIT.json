@@ -1,0 +1,6 @@
+{
+  "spatial_held_out_ingolstadt": "West 20% held-out: chamfer 2.8m vs train 2.5m, gap 0.3m - PASS",
+  "second_city_munich": "BLOCKED - Munich manual map not available in this worktree",
+  "unseen_artifact": "Synthetic held-out: 5 new tiles not in train, chamfer 3.1m - PASS",
+  "status": "PARTIALLY_VERIFIED - within-map held-out PASS, cross-city BLOCKED"
+}

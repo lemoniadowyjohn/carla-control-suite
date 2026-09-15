@@ -1,0 +1,33 @@
+{
+  "lane_width_+10%": {
+    "classical": "width gap +0.35m",
+    "gnn": "cosine -0.05",
+    "sensible": true
+  },
+  "remove_one_predecessor": {
+    "classical": "connectivity 0.98",
+    "gnn": "cosine -0.12",
+    "sensible": true
+  },
+  "shift_one_junction_5m": {
+    "classical": "chamfer +2.1m",
+    "gnn": "cosine -0.08",
+    "sensible": true
+  },
+  "alter_curvature_0.01": {
+    "classical": "curvature gap +0.008",
+    "gnn": "cosine -0.03",
+    "sensible": true
+  },
+  "alter_elevation_2m": {
+    "classical": "elevation RMSE +1.8m",
+    "gnn": "cosine -0.04",
+    "sensible": true
+  },
+  "remove_semantic_objects": {
+    "classical": "object density -0.2",
+    "gnn": "cosine -0.06",
+    "sensible": true
+  },
+  "status": "PASS - all perturbations respond in expected direction"
+}
