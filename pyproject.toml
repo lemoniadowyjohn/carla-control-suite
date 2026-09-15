@@ -12,6 +12,28 @@ dependencies = [
     "pydantic>=2",
 ]
 
+[project.optional-dependencies]
+geo = [
+    "pyproj>=3",
+    "rasterio>=1.3",
+    "shapely>=2"
+]
+carla = [
+    "torch>=2.9.1",
+    "torchvision>=0.24.1"
+]
+research = [
+    "pytest>=7",
+    "hypothesis>=6"
+]
+dev = [
+    "pytest>=7",
+    "hypothesis>=6",
+    "pytest-xdist",
+    "build",
+    "twine"
+]
+
 [project.scripts]
 up = "ultimate_pipeline.cli:main"
 

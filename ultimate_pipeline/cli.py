@@ -85,16 +85,24 @@ def cli() -> None:
 @cli.command()
 @click.option("--init-agent-sync", is_flag=True, help="Create agent_sync.yaml if missing")
 @click.option("--verbose", "-v", is_flag=True, help="Show detailed output")
-def doctor(init_agent_sync: bool, verbose: bool) -> None:
-    """
-    Check system configuration and dependencies.
+def doctor(init_agent_sync: bool, verbose: bool, profile: str = 'core') -> None:
+    '''Check system configuration and dependencies.
 
     Validates:
     - Python version
     - Required dependencies
     - CARLA availability (optional)
     - agent_sync.yaml schema validity
-    """
+
+    Each profile specifies which dependencies are required, optional, or external.
+
+    Profiles:
+      core         - Core pipeline profile (structural_release)
+      offline-map  - Offline map processing profile
+      research     - Research/domain-gap profile (experimental_unsafe)
+      carla-runtime - CARLA runtime profile (visual_build)
+    '''
+
     click.echo("=" * 60)
     click.echo("Ultimate Pipeline Doctor")
     click.echo("=" * 60)
