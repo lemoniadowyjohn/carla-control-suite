@@ -1,0 +1,28 @@
+{
+  "run_id": "PRODUCTION_ENGINEERING_SHELL_20260915",
+  "date": "2026-09-15",
+  "status": "READY_FOR_REVIEW",
+  "source_sha": "93ac036b",
+  "final_sha": "cdb256d",
+  "branch": "integration/session-batch1-20260912",
+  "tasks": {
+    "release_profile_unification": "PASS",
+    "profile_tests": "PASS",
+    "quality_status_model": "PASS",
+    "warning_taxonomy": "PASS",
+    "integration_ci_trigger": "PASS",
+    "import_origin_guard": "PASS",
+    "package_dependency_contract": "PASS",
+    "clean_install_tests": "PASS",
+    "doctor_profiles": "PASS",
+    "xodr_schema_validator": "PASS | INCOMPLETE_SCHEMA_TARGET"
+  },
+  "prohibited_items": {
+    "map_algorithms_changed": "NO",
+    "fbx_generation_changed": "NO",
+    "carla_runtime_modified": "NO",
+    "unreal_modified": "NO",
+    "git_history_rewritten": "NO",
+    "rq3_regenerated": "NO"
+  }
+}

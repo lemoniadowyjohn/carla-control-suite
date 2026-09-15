@@ -1,0 +1,16 @@
+{
+  "ci_configuration": {
+    "workflow": "tests.yml",
+    "push_triggers": ["main", "integration/**", "stabilize/**", "stable/**", "fix/**"],
+    "pull_request": "active",
+    "jobs": ["offline-tests", "package-wheel-smoke", "governance-integrity", "thesis-rq-contract", "research-provenance", "repository-health"],
+    "integration_branch_trigger": "added integration/** to push branches list",
+    "evidence": "exact integration candidate SHA produces automatic remote CI commit status"
+  },
+  "test_results": {
+    "focused_tests": "20 passed across release_profile, quality_status, warning_taxonomy, and module_origin_guard tests",
+    "full_pytest": "pending (requires CARLA runtime)",
+    "wheel_smoke": "passed (editable install + import smoke + pip check)",
+    "pip_check": "warnings from external packages (langchain, scipy) only, no our-package failures"
+  }
+}

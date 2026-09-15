@@ -1,0 +1,48 @@
+Production Engineering Shell Focused Test Results
+================================================
+
+Date: 2026-09-15
+Run ID: PRODUCTION_ENGINEERING_SHELL_20260915
+
+FOCUSED TESTS (passed):
+-------------------------------------------
+[PASS] test_release_profile - canonical names, documented aliases, unknown name, empty name
+[PASS] test_quality_status - QualityStatus enum, legacy Boolean mapping, exception handling, skipped mandatory, missing external
+[PASS] test_warning_taxonomy - WarningDefinition, factory function, registry, lookup, registration
+[PASS] test_module_origin_guard - ultimate_pipeline, geometry, quality, tiling, topology origin verification
+
+Full details:
+- ReleaseProfile enum: 5 canonical members + 4 explicit aliases + unknown/empty error handling
+- QualityStatus model: 6 statuses with legacy Boolean mapping, skipped→INCOMPLETE, missing→BLOCKED_EXTERNAL/NOT_RUN
+- WarningDefinition dataclass with 5 pre-registered warnings (geometry, topology, lanes, DEM, CARLA static)
+- Module origin guard: verified 5 representative modules originate from repo root, not worktree paths
+
+FULL PYTEST:
+-------------------------------------------
+- Not executed with CARLA runtime (external dependency)
+- Base package import test: passed (ultimate_pipeline, core, quality, geometry, tiling, topology all importable)
+- pip check: warnings from external packages (langchain, scipy) only, no our-package failures
+
+WHEEL SMOKE:
+-------------------------------------------
+- Base package install: passed (pip install -e . succeeds)
+- Geo extra install: passed (pip install -e ".[geo]" succeeds)
+- Editable install: not broken
+- Representative imports: ultimate_pipeline, geometry, quality, tiling, topology all succeed
+
+PROHIBITED ITEMS VERIFICATION:
+-------------------------------------------
+- Map algorithms changed: NO
+- Lanes changed: NO
+- Roundabouts changed: NO
+- Junctions changed: NO
+- Signals changed: NO
+- Buildings changed: NO
+- FBX generation changed: NO
+- Unreal ran: NO
+- CARLA ran: NO
+- RQ3 regenerated: NO
+- Map-of-record modified: NO
+- Git history rewritten: NO
+
+RESULT: READY_FOR_REVIEW

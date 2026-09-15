@@ -1,0 +1,63 @@
+{
+  "release_profile_unification": {
+    "enum": "ReleaseProfile(StrEnum)",
+    "canonical_names": ["structural_release", "visual_build", "scenario_augmentation", "debug", "experimental_unsafe"],
+    "explicit_aliases": {
+        "development": "structural_release",
+        "carla_release": "structural_release",
+        "visual_release": "visual_build",
+        "perception_release": "visual_build"
+    },
+    "unknown_profile_behavior": "raises ValueError",
+    "empty_name_behavior": "raises ValueError"
+  },
+  "quality_status_model": {
+    "statuses": ["PASS", "FAIL", "INCOMPLETE", "NOT_RUN", "BLOCKED_EXTERNAL", "WAIVED"],
+    "legacy_boolean_mapping": "True -> PASS, False -> FAIL",
+    "skipped_mandatory -> INCOMPLETE (never PASS)",
+    "missing_external -> BLOCKED_EXTERNAL / NOT_RUN"
+  },
+  "warning_taxonomy": {
+    "registry_size": 5,
+    "pre_registered": ["GEOM-001", "TOPO-001", "LANE-001", "DEM-001", "CARLA-001"],
+    "waiver_allowed": true,
+    "severity_levels": ["error", "warning", "info"],
+    "release_impact": ["FAIL", "INCOMPLETE", "NONE"]
+  },
+  "ci_configuration": {
+    "push_triggers": ["main", "integration/**", "stabilize/**", "stable/**", "fix/**"],
+    "pull_request": "kept",
+    "feature_branches": "not automatically triggered (lightweight only if CI cost justified)",
+    "integration_evidence": "exact integration candidate SHA gets automatic remote CI evidence"
+  },
+  "import_origin_guard": {
+    "verified_modules": ["ultimate_pipeline", "geometry", "quality", "tiling", "topology"],
+    "contamination_check": "module_path.is_relative_to(repo_root)",
+    "fail_action": "AssertionError raised on path contamination"
+  },
+  "package_dependency_contract": {
+    "core_deps": ["click>=8", "numpy>=2", "pydantic>=2"],
+    "optional_extras": {
+        "geo": ["pyproj>=3", "rasterio>=1.3", "shapely>=2"],
+        "carla": ["torch>=2.9.1", "torchvision>=0.24.1"],
+        "research": ["pytest>=7", "hypothesis>=6"],
+        "dev": ["pytest>=7", "hypothesis>=6", "pytest-xdist", "build", "twine"]
+    },
+    "editable_install": "not broken"
+  },
+  "doctor_profiles": {
+    "available_profiles": ["core", "offline-map", "research", "carla-runtime"],
+    "dependency_classification": {
+        "core": {"pyproj": "required", "shapely": "optional", "rasterio": "optional", "torch": "external", "carla": "external"},
+        "offline-map": {"pyproj": "required", "shapely": "required if actual pipeline requires it", "rasterio": "required for DEM", "torch": "external", "carla": "not required"},
+        "research": {"pyproj": "optional", "shapely": "optional", "rasterio": "optional", "torch": "required", "carla": "required"},
+        "carla-runtime": {"pyproj": "optional", "shapely": "optional", "rasterio": "optional", "torch": "required", "carla": "required"}
+    }
+  },
+  "xodr_schema_validator": {
+    "pinned_target": "ASAM OpenDRIVE 1.3",
+    "schema_source": "CARLA 0.9.16 distribution",
+    "result_values": ["PASS", "FAIL", "INCOMPLETE", "INCOMPLETE_SCHEMA_TARGET"],
+    "no_automatic_latest": "true"
+  }
+}
