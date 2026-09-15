@@ -1,0 +1,20 @@
+{
+  "auto_georef_after": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "auto_georef_before": "+proj=tmerc",
+  "auto_georeference_injected": true,
+  "auto_georeference_warning": "Coordinates may be in local frame; verify alignment quality",
+  "auto_xodr_path_after": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+  "auto_xodr_path_before": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+  "auto_xodr_sha256_after": "3d6e3bf75f31514b65dd35a943b34286344c3bd0ffe316aff5dcd4846824e7d0",
+  "auto_xodr_sha256_before": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "manual_georef": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "manual_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+  "manual_xodr_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+  "offset": {
+    "hdg": 0.0,
+    "x": 832671.676,
+    "y": 5458671.104,
+    "z": 0.0
+  },
+  "reason": "auto_incomplete_large_offset_promoted_to_manual"
+}

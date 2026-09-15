@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "proj4_norm": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "proj4_params_complete": true,
+  "origin_x": 0.0,
+  "origin_y": 0.0,
+  "tile_size_m": 500.0,
+  "buffer_m": 50.0,
+  "frame_method": "native",
+  "transform": null,
+  "tiles_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles",
+  "tiles": []
+}

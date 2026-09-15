@@ -1,0 +1,87 @@
+{
+  "disabled": false,
+  "gap": 0.1644,
+  "gap_definition": "L1/2 over normalized road_type length distributions",
+  "lane_markings": {
+    "auto_count": 0,
+    "auto_density": 0.0,
+    "delta_density": 0.0,
+    "manual_count": 0,
+    "manual_density": 0.0
+  },
+  "meta": {
+    "auto_total_road_length": 1489145.57524544,
+    "manual_total_road_length": 53525.29292972144,
+    "normalized": true,
+    "settings": {
+      "reference": "unknown"
+    }
+  },
+  "normalized_gap": 0.1644,
+  "objects": {
+    "auto": {
+      "bench": 1122,
+      "building": 5682,
+      "crosswalk": 127,
+      "guard_rail": 21740,
+      "lamp_post": 24792,
+      "traffic_light": 21163,
+      "trash_bin": 2288
+    },
+    "delta": {
+      "barrier": -1547,
+      "bench": 1122,
+      "building": 4689,
+      "crosswalk": 127,
+      "gantry": -11,
+      "guard_rail": 21740,
+      "lamp_post": 24792,
+      "none": -22,
+      "obstacle": -469,
+      "pole": -3436,
+      "roadmark": -1998,
+      "traffic_light": 21163,
+      "trash_bin": 2288,
+      "tree": -4234,
+      "vegetation": -2043
+    },
+    "manual": {
+      "barrier": 1547,
+      "building": 993,
+      "gantry": 11,
+      "none": 22,
+      "obstacle": 469,
+      "pole": 3436,
+      "roadmark": 1998,
+      "tree": 4234,
+      "vegetation": 2043
+    }
+  },
+  "road_types": {
+    "auto_length": {
+      "town": 1489145.5752454493
+    },
+    "delta_length": {
+      "motorway": -7928.778760748474,
+      "rural": -869.1090732030341,
+      "town": 1444418.1701496795
+    },
+    "delta_normalized": {
+      "motorway": -0.14813144079676385,
+      "rural": -0.016237352952821235,
+      "town": 0.1643687937495919
+    },
+    "manual_length": {
+      "motorway": 7928.778760748474,
+      "rural": 869.1090732030341,
+      "town": 44727.4050957699
+    }
+  },
+  "traffic_lights": {
+    "auto_count": 21163,
+    "auto_density": 0.014211505142142955,
+    "delta_density": 0.014211505142142955,
+    "manual_count": 0,
+    "manual_density": 0.0
+  }
+}

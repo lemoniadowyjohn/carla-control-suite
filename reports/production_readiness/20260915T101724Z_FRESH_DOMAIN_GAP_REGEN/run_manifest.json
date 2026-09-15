@@ -1,0 +1,95 @@
+{
+  "created_utc": "2026-09-15T13:15:25Z",
+  "updated_utc": "2026-09-15T13:15:25Z",
+  "env": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": null,
+    "git_status_porcelain": null
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "0baaa08a065d1e38fd1774ae25b6f8dc7a144633fe9523b4ad69d19ac42d1f57",
+    "snapshot_md5": "6af3b2d3ba8cd66cd16c0c04c51e1e2d",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "manual_xodr": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "exists": true,
+      "size_bytes": 66530869,
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "md5": "567a422ab6faf06863b0169edc4e3eb6"
+    },
+    "auto_xodr_aligned": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_aligned_hardened.xodr",
+      "exists": true,
+      "size_bytes": 146260488,
+      "sha256": "ba55615414523296fbc85e1e39dbe9a1d34c43620f2cd05ab5eadcc6f65c6e8b",
+      "md5": "f2c2d0c43b6bbaf1b7e898d6f42899f0"
+    },
+    "auto_xodr_original": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+      "exists": true,
+      "size_bytes": 148949800,
+      "sha256": "3d6e3bf75f31514b65dd35a943b34286344c3bd0ffe316aff5dcd4846824e7d0",
+      "md5": "85239977010f02d5b09c56a95da9f5d4"
+    }
+  },
+  "outputs": {
+    "full_report": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\full_report.json",
+      "exists": true,
+      "size_bytes": 47314,
+      "sha256": "84589d6494e4f300748a75c70f548ecfeaa6e642551a3f35143872d75b606bdc",
+      "md5": "5c9fdca30e70515d0c654f1bffc3006f"
+    },
+    "domain_gap_summary": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\domain_gap_summary.json",
+      "exists": false
+    },
+    "tile_correspondence": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\tile_correspondence.csv",
+      "exists": true,
+      "size_bytes": 35,
+      "sha256": "cd373cd743f32c50cdb5e99fd5375aad448d7b8ed226ff2d841dafe33abb129b",
+      "md5": "46f755e6826b82e71821b3150a2a6ef8"
+    },
+    "tile_pairing_report": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\tile_pairing_report.json",
+      "exists": true,
+      "size_bytes": 886,
+      "sha256": "33b7b2942010726f692024dc8c8f72495db2e9d9956481170c0e50380eb6adc4",
+      "md5": "3e751df4e012a646ebf664c110c29c83"
+    },
+    "alignment": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\alignment.json",
+      "exists": true,
+      "size_bytes": 3013,
+      "sha256": "fce48e70cf74c819b597fa535825e35ec9934f8ef313fadc0898867de9f8274f",
+      "md5": "857944557afa42eb4bc411a00e28ec25"
+    },
+    "run_metadata": {
+      "path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\run_metadata.json",
+      "exists": true,
+      "size_bytes": 5868,
+      "sha256": "532cb0653b78faeb4112269a3896b51064ab5be1bdd2da38bda071b970f3d068",
+      "md5": "767390071da9ffe33d5069d2d2f47ab8"
+    }
+  },
+  "notes": {
+    "args": {
+      "manual_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "auto_xodr": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+      "manual_tiles": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles",
+      "auto_tiles": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\tiles",
+      "output_dir": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN"
+    }
+  }
+}

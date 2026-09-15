@@ -313,12 +313,32 @@ def _lanes_at_contact(road: ET.Element, contact: str) -> Dict[int, ET.Element]:
     return lanes
 
 
-def _validate_junction_connector(root: ET.Element, road: ET.Element, rid: str, findings: List[Finding], repair: bool) -> None:
+def _junction_index(root: ET.Element) -> Dict[str, ET.Element]:
+    """Return junctions keyed by id for a single hardening transaction.
+
+    The former connector validation called ``root.find('.//junction[...]')``
+    once per connector.  On a city-scale map that turns a linear validation
+    into an O(connectors x XML-tree) scan before any domain-gap metric runs.
+    """
+    return {
+        junction_id: junction
+        for junction in root.findall("junction")
+        if (junction_id := junction.get("id")) is not None
+    }
+
+
+def _validate_junction_connector(
+    junctions: Dict[str, ET.Element],
+    road: ET.Element,
+    rid: str,
+    findings: List[Finding],
+    repair: bool,
+) -> None:
     """Validate that junction connector road appears in its junction's connections."""
     j_id = road.get("junction")
     if j_id in (None, "-1"):
         return
-    j = root.find(f".//junction[@id='{j_id}']")
+    j = junctions.get(str(j_id))
     if j is None:
         findings.append(Finding("JUNCTION_MISSING", f"Junction {j_id} not found for connector road", rid))
         return
@@ -344,12 +364,13 @@ def _fix_connectivity(root: ET.Element, findings: List[Finding], repair: bool = 
     If repair=True: remove invalid links/elements, emit REMOVED findings.
     """
     roads = {r.get("id", ""): r for r in root.findall(".//road")}
+    junctions = _junction_index(root)
 
     # Junction connectors: validate they appear in junction connections
     for rid, road in roads.items():
         junction = road.get("junction", "-1")
         if junction is not None and junction != "-1":
-            _validate_junction_connector(root, road, rid, findings, repair)
+            _validate_junction_connector(junctions, road, rid, findings, repair)
             # Junction connectors should not have road-level links
             link = road.find("link")
             if link is not None:

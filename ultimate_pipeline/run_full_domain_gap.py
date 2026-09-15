@@ -4311,7 +4311,7 @@ def run_full_domain_gap(
                 manual_tiles,
                 Path(output_dir) / "manual_tiles_origin_inferred.json",
             )
-    if promotion_detected:
+    if promotion_detected and not skip_tile_alignment:
         aligned_tiles_out = _auto_generate_tiles_from_xodr(
             auto_xodr_for_tiling,
             aligned_tiles_root,
@@ -4329,10 +4329,22 @@ def run_full_domain_gap(
         tile_pairing_provenance["auto_meta_resolved"] = str(auto_meta_path)
         tile_pairing_provenance["auto_meta_resolution"] = auto_meta_resolution
         tile_pairing_provenance["auto_tiles_dir_raw"] = auto_tiles
-    elif promotion_detected:
+    elif promotion_detected and not skip_tile_alignment:
         raise RuntimeError(
             "Auto tiles in promoted/aligned CRS could not be generated. "
             f"Check tiler_diagnostics.json under {aligned_tiles_root}."
+        )
+    elif promotion_detected:
+        # UP_SKIP_TILE_ALIGNMENT=1: caller only needs whole-map metrics
+        # (e.g. a domain-gap regen against a city-scale candidate where the
+        # per-tile auto-tiling subprocess is prohibitively slow / times out).
+        # Leave auto_tiles unset -- per-tile stages downstream already treat
+        # a missing auto tiles dir as "skip per-tile gaps", not a hard error.
+        tile_pairing_provenance["alignment_reason"] = "whole_map_only_requested"
+        tile_pairing_provenance["auto_tiles_dir_raw"] = ""
+        log.info(
+            "UP_SKIP_TILE_ALIGNMENT=1: skipping promoted auto tiling; "
+            "whole-map metrics will run and per-tile metrics remain incomplete."
         )
 
     try:
@@ -4700,6 +4712,7 @@ def run_full_domain_gap(
             whole_inter_gap=whole_inter_gap,
             whole_sem_gap=whole_sem_gap,
             whole_class_gap=whole_class_gap,
+            whole_conn_gap=whole_conn_gap,
             tile_geom_gaps=tile_geom_gaps,
             tile_curv_gaps=tile_curv_gaps,
             tile_gap_vector=tile_gap_vector,
@@ -4848,7 +4861,7 @@ def run_full_domain_gap(
         kill_switch_provenance["hardener"] = hardener_info
         _safe_dump_json(os.path.join(output_dir, "run_metadata.json"), run_meta)
 
-        if not auto_tiles_prealigned:
+        if not auto_tiles_prealigned and not skip_tile_alignment:
             aligned_tiles_out = _auto_generate_tiles_from_xodr(
                 aligned_auto,
                 aligned_tiles_root,
@@ -7165,8 +7178,13 @@ def _cli_main() -> int:
                 raise SystemExit(str(exc))
         elif auto_run_env:
             run_root = Path(auto_run_env).expanduser()
-        elif auto_run_env:
-            run_root = Path(auto_run_env).expanduser()
+        elif args.auto_xodr:
+            # An explicit --auto_xodr is a complete auto-input contract on its
+            # own; don't make a standalone comparison depend on an unrelated
+            # ultimate_pipeline_out/ "latest run" directory merely to derive a
+            # default run root (that directory need not exist at all for a
+            # one-off manual-vs-auto comparison against an explicit map path).
+            run_root = Path(args.auto_xodr).expanduser().resolve(strict=False).parent
         else:
             try:
                 run_root = resolve_latest_run(out_root, skip_names=["manual_baselines"])

@@ -1,0 +1,38 @@
+{
+  "canonical_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\domain_gap",
+  "crs_alignment_applied": false,
+  "crs_comparability": {
+    "auto_proj4_matches_manual": false,
+    "crs_match": false,
+    "manual_file_unchanged": true,
+    "reason": "manual_and_auto_georeference_do_not_match",
+    "status": "crs_mismatch"
+  },
+  "crs_mismatch_detected": false,
+  "elevation_included": false,
+  "error": null,
+  "exit_code": 0,
+  "failure_reason": null,
+  "geometry_rmse": 85.31957130654521,
+  "geometry_rmse_valid": true,
+  "output_dir": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN",
+  "reason": null,
+  "resolved_paths": {
+    "auto_meta": "",
+    "auto_tiles": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\tiles",
+    "auto_xodr": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "manual_tiles": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles",
+    "manual_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+    "output_dir": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN",
+    "run_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate"
+  },
+  "rq2_scope": "structural_domain_gap",
+  "run_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate",
+  "scenario_boundary": "scenario_b_structural_only_generated_vs_manual_reference; no cooked/manual perception equivalence claim",
+  "source_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "status": "pass",
+  "success": true,
+  "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "timestamp_utc": "2026-09-15T13:15:52.738140+00:00",
+  "traceback": null
+}

@@ -1,0 +1,31 @@
+{
+  "auto_counts": {
+    "town": 32267
+  },
+  "disabled": false,
+  "gap": 0.0584,
+  "gap_definition": "L1/2 over normalized road_class count distributions",
+  "manual_counts": {
+    "motorway": 44,
+    "rural": 14,
+    "town": 935
+  },
+  "normalized_gap": 0.0584,
+  "per_class_diff": {
+    "motorway": {
+      "auto": 0,
+      "delta": -44,
+      "manual": 44
+    },
+    "rural": {
+      "auto": 0,
+      "delta": -14,
+      "manual": 14
+    },
+    "town": {
+      "auto": 32267,
+      "delta": 31332,
+      "manual": 935
+    }
+  }
+}

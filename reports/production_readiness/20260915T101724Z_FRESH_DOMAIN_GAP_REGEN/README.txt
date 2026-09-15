@@ -1,0 +1,13 @@
+script: run_full_domain_gap.py
+timestamp_utc: 2026-09-15T13:15:25Z
+git_commit: unknown
+auto_tiles_dir: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.claude\worktrees\agent-a840f75a693e18c46\campaigns\ingolstadt_cooked_perception_v1\candidate\tiles
+auto_xodr_aligned: reports\production_readiness\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\auto_aligned_hardened.xodr
+auto_xodr_original: reports\production_readiness\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\auto_georef_override.xodr
+manual_tiles_dir: reports\production_readiness\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\manual_tiles_seed\tiles
+manual_xodr: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.claude\worktrees\agent-a840f75a693e18c46\campaigns\ingolstadt_cooked_perception_v1\source\manual\Grid0828.xodr
+per_tile_status: skipped
+per_tile_status_reason: Per-tile gaps skipped (pairing confidence LOW).
+reproducibility_hash: 71559b9a14156c5861c519948adf389e8e2381eb0e35a42676627ea6da9fec5a
+tile_correspondence_csv: reports\production_readiness\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\tile_correspondence.csv
+tile_pairing_source: none

@@ -1,0 +1,121 @@
+{
+  "auto": {
+    "junction_degree": {
+      "total_connections_per_junction": {
+        "count": 3561,
+        "max": 23.0,
+        "mean": 6.343442853131143,
+        "median": 7.0,
+        "p95": 14.0
+      },
+      "unique_incoming_per_junction": {
+        "count": 3561,
+        "max": 5.0,
+        "mean": 2.626228587475428,
+        "median": 3.0,
+        "p95": 4.0
+      },
+      "unique_outgoing_per_junction": {
+        "count": 3561,
+        "max": 23.0,
+        "mean": 6.343442853131143,
+        "median": 7.0,
+        "p95": 14.0
+      }
+    },
+    "lane_count": {
+      "stats": {
+        "count": 32267,
+        "max": 7.0,
+        "mean": 1.6616047354882697,
+        "median": 1.0,
+        "p95": 3.0
+      }
+    },
+    "lane_link": {
+      "junction_lane_link_completeness_rate": 1.0,
+      "road_lane_link_valid_rate": 1.0
+    },
+    "road_link": {
+      "predecessor_declared_rate": 0.2897697337837419,
+      "predecessor_valid_rate": 1.0,
+      "roads_with_valid_pred_pct": 0.2897697337837419,
+      "roads_with_valid_succ_pct": 0.2898317166144978,
+      "successor_declared_rate": 0.2898317166144978,
+      "successor_valid_rate": 1.0,
+      "total_roads": 32267
+    }
+  },
+  "disabled": false,
+  "gap": {
+    "junction_degree": {
+      "mean_incoming_delta": -0.06284704277667297,
+      "mean_outgoing_delta": 0.25100587834122745,
+      "total_connections_l1_gap": 0.36328195979316164
+    },
+    "lane_count": {
+      "l1_gap": 0.28600201409870085,
+      "mean_delta": -41.633460722719185,
+      "median_delta": -10.0
+    },
+    "lane_link": {
+      "junction_lane_link_completeness_delta": 0.0,
+      "road_lane_link_valid_rate_delta": 0.0
+    },
+    "road_link": {
+      "predecessor_declared_rate": -0.6457791081095108,
+      "predecessor_valid_rate": 0.0,
+      "roads_with_valid_pred_pct": -0.6457791081095108,
+      "roads_with_valid_succ_pct": -0.6779427043321286,
+      "successor_declared_rate": -0.6779427043321286,
+      "successor_valid_rate": 0.0
+    }
+  },
+  "manual": {
+    "junction_degree": {
+      "total_connections_per_junction": {
+        "count": 119,
+        "max": 24.0,
+        "mean": 6.092436974789916,
+        "median": 5.0,
+        "p95": 16.099999999999994
+      },
+      "unique_incoming_per_junction": {
+        "count": 119,
+        "max": 5.0,
+        "mean": 2.689075630252101,
+        "median": 3.0,
+        "p95": 4.0
+      },
+      "unique_outgoing_per_junction": {
+        "count": 119,
+        "max": 24.0,
+        "mean": 6.092436974789916,
+        "median": 5.0,
+        "p95": 16.099999999999994
+      }
+    },
+    "lane_count": {
+      "stats": {
+        "count": 993,
+        "max": 1739.0,
+        "mean": 43.29506545820745,
+        "median": 11.0,
+        "p95": 189.0
+      }
+    },
+    "lane_link": {
+      "junction_lane_link_completeness_rate": 1.0,
+      "road_lane_link_valid_rate": 1.0
+    },
+    "road_link": {
+      "predecessor_declared_rate": 0.9355488418932527,
+      "predecessor_valid_rate": 1.0,
+      "roads_with_valid_pred_pct": 0.9355488418932527,
+      "roads_with_valid_succ_pct": 0.9677744209466264,
+      "successor_declared_rate": 0.9677744209466264,
+      "successor_valid_rate": 1.0,
+      "total_roads": 993
+    }
+  }
+}

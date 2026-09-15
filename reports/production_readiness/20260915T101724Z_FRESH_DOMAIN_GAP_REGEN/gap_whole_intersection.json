@@ -1,0 +1,28 @@
+{
+  "auto": {
+    "complex": 2706,
+    "dead_end": 0,
+    "four_way": 401,
+    "other": 248,
+    "roundabout": 0,
+    "three_way": 206
+  },
+  "delta": {
+    "complex": 2622,
+    "dead_end": 0,
+    "four_way": 374,
+    "other": 248,
+    "roundabout": 0,
+    "three_way": 198
+  },
+  "disabled": false,
+  "manual": {
+    "complex": 84,
+    "dead_end": 0,
+    "four_way": 27,
+    "other": 0,
+    "roundabout": 0,
+    "three_way": 8
+  },
+  "normalized_gap": 0.1237
+}

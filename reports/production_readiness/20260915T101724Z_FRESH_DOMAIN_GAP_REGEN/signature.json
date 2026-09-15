@@ -1,0 +1,19 @@
+{
+  "files": {
+    "aggregated_gap.json": "9dfc2a31e5b886036c067d1ae4b3de083e1486f03e3aa9069a4b2bdba067937c",
+    "alignment.json": "fce48e70cf74c819b597fa535825e35ec9934f8ef313fadc0898867de9f8274f",
+    "auto_aligned_hardened.xodr": "ba55615414523296fbc85e1e39dbe9a1d34c43620f2cd05ab5eadcc6f65c6e8b",
+    "full_report.json": "84589d6494e4f300748a75c70f548ecfeaa6e642551a3f35143872d75b606bdc",
+    "perception_gap.json": "69e8c000710be07ee34678cc1684c39d8fcc98e5d7e71d332f7d8405817878a0",
+    "reproducibility_hash.json": "be2af55d23700dec332010e96d171a26bb1159ae7f8ef1802a5813b6ad830b7e",
+    "run_metadata.json": "532cb0653b78faeb4112269a3896b51064ab5be1bdd2da38bda071b970f3d068",
+    "summary.csv": "97ecf09cee891de611fbb419c5920d0ae2e2f2310a07d12c5ffe28e88afa4bd7",
+    "summary_definitions.md": "a1b7fce70ca59ffc4fe17f11a6d20fa10f3355206582e65de1d6a5d583e94f36",
+    "tile_correspondence.csv": "cd373cd743f32c50cdb5e99fd5375aad448d7b8ed226ff2d841dafe33abb129b",
+    "tile_metrics.csv": "2825b44fa36c0946c57ffe4785a81580d998b0e8ade9d25db1d1bbe39a77b5c9",
+    "tile_metrics_status.json": "8270a9b2c13549e8e2f31923cac77d5905f12333bd4556bd04775d1de19a007a",
+    "tile_pairing_report.json": "33b7b2942010726f692024dc8c8f72495db2e9d9956481170c0e50380eb6adc4",
+    "worst_tiles.csv": "c1b55c86e1a2249b0bd0e0985ebca58b67705ff208254ff5cfc29773de5b7873"
+  },
+  "hash_algorithm": "sha256"
+}

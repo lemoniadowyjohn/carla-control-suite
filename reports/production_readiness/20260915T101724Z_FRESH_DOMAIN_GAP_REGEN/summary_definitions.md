@@ -1,0 +1,99 @@
+# summary.csv column definitions
+
+These columns are auto-derived from numeric fields in `gap_*.json`.
+
+## Canonical scalar definitions
+- intersection_gap: gap_whole_intersection.json['normalized_gap'] (L1/2 over intersection-type distributions, range [0,1])
+- semantic_gap: gap_whole_semantics.json['normalized_gap'] (L1/2 over normalized road_type length distributions, range [0,1])
+- road_classification_gap: gap_whole_road_classification.json['normalized_gap'] (L1/2 over normalized road_class count distributions, range [0,1])
+
+## Added scalar columns (intersection / semantic / road-class)
+- `gap_whole_intersection.auto.complex` <- `gap_whole_intersection.json` : `auto.complex`
+- `gap_whole_intersection.auto.dead_end` <- `gap_whole_intersection.json` : `auto.dead_end`
+- `gap_whole_intersection.auto.four_way` <- `gap_whole_intersection.json` : `auto.four_way`
+- `gap_whole_intersection.auto.other` <- `gap_whole_intersection.json` : `auto.other`
+- `gap_whole_intersection.auto.roundabout` <- `gap_whole_intersection.json` : `auto.roundabout`
+- `gap_whole_intersection.auto.three_way` <- `gap_whole_intersection.json` : `auto.three_way`
+- `gap_whole_intersection.delta.complex` <- `gap_whole_intersection.json` : `delta.complex`
+- `gap_whole_intersection.delta.dead_end` <- `gap_whole_intersection.json` : `delta.dead_end`
+- `gap_whole_intersection.delta.four_way` <- `gap_whole_intersection.json` : `delta.four_way`
+- `gap_whole_intersection.delta.other` <- `gap_whole_intersection.json` : `delta.other`
+- `gap_whole_intersection.delta.roundabout` <- `gap_whole_intersection.json` : `delta.roundabout`
+- `gap_whole_intersection.delta.three_way` <- `gap_whole_intersection.json` : `delta.three_way`
+- `gap_whole_intersection.manual.complex` <- `gap_whole_intersection.json` : `manual.complex`
+- `gap_whole_intersection.manual.dead_end` <- `gap_whole_intersection.json` : `manual.dead_end`
+- `gap_whole_intersection.manual.four_way` <- `gap_whole_intersection.json` : `manual.four_way`
+- `gap_whole_intersection.manual.other` <- `gap_whole_intersection.json` : `manual.other`
+- `gap_whole_intersection.manual.roundabout` <- `gap_whole_intersection.json` : `manual.roundabout`
+- `gap_whole_intersection.manual.three_way` <- `gap_whole_intersection.json` : `manual.three_way`
+- `gap_whole_intersection.normalized_gap` <- `gap_whole_intersection.json` : `normalized_gap`
+- `gap_whole_road_classification.auto_counts.town` <- `gap_whole_road_classification.json` : `auto_counts.town`
+- `gap_whole_road_classification.gap` <- `gap_whole_road_classification.json` : `gap`
+- `gap_whole_road_classification.manual_counts.motorway` <- `gap_whole_road_classification.json` : `manual_counts.motorway`
+- `gap_whole_road_classification.manual_counts.rural` <- `gap_whole_road_classification.json` : `manual_counts.rural`
+- `gap_whole_road_classification.manual_counts.town` <- `gap_whole_road_classification.json` : `manual_counts.town`
+- `gap_whole_road_classification.normalized_gap` <- `gap_whole_road_classification.json` : `normalized_gap`
+- `gap_whole_road_classification.per_class_diff.motorway.auto` <- `gap_whole_road_classification.json` : `per_class_diff.motorway.auto`
+- `gap_whole_road_classification.per_class_diff.motorway.delta` <- `gap_whole_road_classification.json` : `per_class_diff.motorway.delta`
+- `gap_whole_road_classification.per_class_diff.motorway.manual` <- `gap_whole_road_classification.json` : `per_class_diff.motorway.manual`
+- `gap_whole_road_classification.per_class_diff.rural.auto` <- `gap_whole_road_classification.json` : `per_class_diff.rural.auto`
+- `gap_whole_road_classification.per_class_diff.rural.delta` <- `gap_whole_road_classification.json` : `per_class_diff.rural.delta`
+- `gap_whole_road_classification.per_class_diff.rural.manual` <- `gap_whole_road_classification.json` : `per_class_diff.rural.manual`
+- `gap_whole_road_classification.per_class_diff.town.auto` <- `gap_whole_road_classification.json` : `per_class_diff.town.auto`
+- `gap_whole_road_classification.per_class_diff.town.delta` <- `gap_whole_road_classification.json` : `per_class_diff.town.delta`
+- `gap_whole_road_classification.per_class_diff.town.manual` <- `gap_whole_road_classification.json` : `per_class_diff.town.manual`
+- `gap_whole_semantics.gap` <- `gap_whole_semantics.json` : `gap`
+- `gap_whole_semantics.lane_markings.auto_count` <- `gap_whole_semantics.json` : `lane_markings.auto_count`
+- `gap_whole_semantics.lane_markings.auto_density` <- `gap_whole_semantics.json` : `lane_markings.auto_density`
+- `gap_whole_semantics.lane_markings.delta_density` <- `gap_whole_semantics.json` : `lane_markings.delta_density`
+- `gap_whole_semantics.lane_markings.manual_count` <- `gap_whole_semantics.json` : `lane_markings.manual_count`
+- `gap_whole_semantics.lane_markings.manual_density` <- `gap_whole_semantics.json` : `lane_markings.manual_density`
+- `gap_whole_semantics.meta.auto_total_road_length` <- `gap_whole_semantics.json` : `meta.auto_total_road_length`
+- `gap_whole_semantics.meta.manual_total_road_length` <- `gap_whole_semantics.json` : `meta.manual_total_road_length`
+- `gap_whole_semantics.normalized_gap` <- `gap_whole_semantics.json` : `normalized_gap`
+- `gap_whole_semantics.objects.auto.bench` <- `gap_whole_semantics.json` : `objects.auto.bench`
+- `gap_whole_semantics.objects.auto.building` <- `gap_whole_semantics.json` : `objects.auto.building`
+- `gap_whole_semantics.objects.auto.crosswalk` <- `gap_whole_semantics.json` : `objects.auto.crosswalk`
+- `gap_whole_semantics.objects.auto.guard_rail` <- `gap_whole_semantics.json` : `objects.auto.guard_rail`
+- `gap_whole_semantics.objects.auto.lamp_post` <- `gap_whole_semantics.json` : `objects.auto.lamp_post`
+- `gap_whole_semantics.objects.auto.traffic_light` <- `gap_whole_semantics.json` : `objects.auto.traffic_light`
+- `gap_whole_semantics.objects.auto.trash_bin` <- `gap_whole_semantics.json` : `objects.auto.trash_bin`
+- `gap_whole_semantics.objects.delta.barrier` <- `gap_whole_semantics.json` : `objects.delta.barrier`
+- `gap_whole_semantics.objects.delta.bench` <- `gap_whole_semantics.json` : `objects.delta.bench`
+- `gap_whole_semantics.objects.delta.building` <- `gap_whole_semantics.json` : `objects.delta.building`
+- `gap_whole_semantics.objects.delta.crosswalk` <- `gap_whole_semantics.json` : `objects.delta.crosswalk`
+- `gap_whole_semantics.objects.delta.gantry` <- `gap_whole_semantics.json` : `objects.delta.gantry`
+- `gap_whole_semantics.objects.delta.guard_rail` <- `gap_whole_semantics.json` : `objects.delta.guard_rail`
+- `gap_whole_semantics.objects.delta.lamp_post` <- `gap_whole_semantics.json` : `objects.delta.lamp_post`
+- `gap_whole_semantics.objects.delta.none` <- `gap_whole_semantics.json` : `objects.delta.none`
+- `gap_whole_semantics.objects.delta.obstacle` <- `gap_whole_semantics.json` : `objects.delta.obstacle`
+- `gap_whole_semantics.objects.delta.pole` <- `gap_whole_semantics.json` : `objects.delta.pole`
+- `gap_whole_semantics.objects.delta.roadmark` <- `gap_whole_semantics.json` : `objects.delta.roadmark`
+- `gap_whole_semantics.objects.delta.traffic_light` <- `gap_whole_semantics.json` : `objects.delta.traffic_light`
+- `gap_whole_semantics.objects.delta.trash_bin` <- `gap_whole_semantics.json` : `objects.delta.trash_bin`
+- `gap_whole_semantics.objects.delta.tree` <- `gap_whole_semantics.json` : `objects.delta.tree`
+- `gap_whole_semantics.objects.delta.vegetation` <- `gap_whole_semantics.json` : `objects.delta.vegetation`
+- `gap_whole_semantics.objects.manual.barrier` <- `gap_whole_semantics.json` : `objects.manual.barrier`
+- `gap_whole_semantics.objects.manual.building` <- `gap_whole_semantics.json` : `objects.manual.building`
+- `gap_whole_semantics.objects.manual.gantry` <- `gap_whole_semantics.json` : `objects.manual.gantry`
+- `gap_whole_semantics.objects.manual.none` <- `gap_whole_semantics.json` : `objects.manual.none`
+- `gap_whole_semantics.objects.manual.obstacle` <- `gap_whole_semantics.json` : `objects.manual.obstacle`
+- `gap_whole_semantics.objects.manual.pole` <- `gap_whole_semantics.json` : `objects.manual.pole`
+- `gap_whole_semantics.objects.manual.roadmark` <- `gap_whole_semantics.json` : `objects.manual.roadmark`
+- `gap_whole_semantics.objects.manual.tree` <- `gap_whole_semantics.json` : `objects.manual.tree`
+- `gap_whole_semantics.objects.manual.vegetation` <- `gap_whole_semantics.json` : `objects.manual.vegetation`
+- `gap_whole_semantics.road_types.auto_length.town` <- `gap_whole_semantics.json` : `road_types.auto_length.town`
+- `gap_whole_semantics.road_types.delta_length.motorway` <- `gap_whole_semantics.json` : `road_types.delta_length.motorway`
+- `gap_whole_semantics.road_types.delta_length.rural` <- `gap_whole_semantics.json` : `road_types.delta_length.rural`
+- `gap_whole_semantics.road_types.delta_length.town` <- `gap_whole_semantics.json` : `road_types.delta_length.town`
+- `gap_whole_semantics.road_types.delta_normalized.motorway` <- `gap_whole_semantics.json` : `road_types.delta_normalized.motorway`
+- `gap_whole_semantics.road_types.delta_normalized.rural` <- `gap_whole_semantics.json` : `road_types.delta_normalized.rural`
+- `gap_whole_semantics.road_types.delta_normalized.town` <- `gap_whole_semantics.json` : `road_types.delta_normalized.town`
+- `gap_whole_semantics.road_types.manual_length.motorway` <- `gap_whole_semantics.json` : `road_types.manual_length.motorway`
+- `gap_whole_semantics.road_types.manual_length.rural` <- `gap_whole_semantics.json` : `road_types.manual_length.rural`
+- `gap_whole_semantics.road_types.manual_length.town` <- `gap_whole_semantics.json` : `road_types.manual_length.town`
+- `gap_whole_semantics.traffic_lights.auto_count` <- `gap_whole_semantics.json` : `traffic_lights.auto_count`
+- `gap_whole_semantics.traffic_lights.auto_density` <- `gap_whole_semantics.json` : `traffic_lights.auto_density`
+- `gap_whole_semantics.traffic_lights.delta_density` <- `gap_whole_semantics.json` : `traffic_lights.delta_density`
+- `gap_whole_semantics.traffic_lights.manual_count` <- `gap_whole_semantics.json` : `traffic_lights.manual_count`
+- `gap_whole_semantics.traffic_lights.manual_density` <- `gap_whole_semantics.json` : `traffic_lights.manual_density`

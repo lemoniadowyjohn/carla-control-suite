@@ -1,0 +1,15 @@
+{
+  "bins": 60,
+  "delta_mean": 0.0009274673063185204,
+  "disabled": false,
+  "include_lines": true,
+  "kl_divergence": 0.0030586158645774116,
+  "kl_divergence_norm": 0.0007470343099109925,
+  "mean_auto": 0.03720657760800207,
+  "mean_manual": 0.03627911030168355,
+  "runtime_sec": 10.721,
+  "samples_auto": 888417,
+  "samples_manual": 38274,
+  "std_auto": 0.21395824253520443,
+  "std_manual": 0.05908031535215212
+}

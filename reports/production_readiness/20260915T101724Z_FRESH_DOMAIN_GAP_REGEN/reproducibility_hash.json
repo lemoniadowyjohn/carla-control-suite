@@ -1,0 +1,12 @@
+{
+  "hash_algorithm": "sha256(json(run_metadata + settings_snapshot_sha256 + input_fingerprints))",
+  "hash_algorithm_md5": "md5(json(run_metadata + settings_snapshot_md5 + input_fingerprints))",
+  "hash_inputs": [
+    "run_metadata",
+    "domain_gap_settings_snapshot.json",
+    "manual_xodr_bytes",
+    "auto_xodr_bytes"
+  ],
+  "reproducibility_hash": "71559b9a14156c5861c519948adf389e8e2381eb0e35a42676627ea6da9fec5a",
+  "reproducibility_hash_md5": "617c52a6aac8e1fbf5ba9a05342de0d0"
+}

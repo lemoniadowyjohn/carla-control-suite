@@ -1,0 +1,29 @@
+{
+  "auto": {
+    "geoReference_norm": "+proj=tmerc",
+    "params_complete": false,
+    "present": true,
+    "valid": true,
+    "xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "comparability": {
+    "auto_proj4_matches_manual": false,
+    "crs_match": false,
+    "manual_file_unchanged": true,
+    "reason": "manual_and_auto_georeference_do_not_match",
+    "status": "crs_mismatch"
+  },
+  "elevation_included": false,
+  "manual": {
+    "geoReference_norm": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "params_complete": true,
+    "present": true,
+    "valid": true,
+    "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+    "xodr_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+  },
+  "rq2_scope": "structural_domain_gap",
+  "scenario_boundary": "scenario_b_structural_only_generated_vs_manual_reference; no cooked/manual perception equivalence claim",
+  "schema_version": "1.0"
+}

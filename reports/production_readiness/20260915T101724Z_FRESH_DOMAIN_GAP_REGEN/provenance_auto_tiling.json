@@ -1,0 +1,16 @@
+{
+  "auto_meta_path": "",
+  "auto_tiles_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\tiles",
+  "auto_xodr_for_tiling": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_promoted_aligned.xodr",
+  "auto_xodr_promoted": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+  "auto_xodr_raw": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+  "promotion_detected": true,
+  "python_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+  "tile_grid_bounds": {
+    "max_x": null,
+    "max_y": null,
+    "min_x": null,
+    "min_y": null
+  },
+  "timestamp_utc": "2026-09-15T10:22:01Z"
+}
