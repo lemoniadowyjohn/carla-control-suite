@@ -1,0 +1,185 @@
+{
+  "claim_boundary": "Per-building correspondence establishes the shared coordinate frame. Road/building population-centroid distance is intentionally not used as a frame metric.",
+  "counts": {
+    "common_building_ids": 5680,
+    "individual_geometry_drift_count": 18,
+    "source_buildings": 5710,
+    "source_duplicate_ids": 0,
+    "source_only_ids": 30,
+    "xodr_buildings": 5682,
+    "xodr_duplicate_ids": 0,
+    "xodr_only_ids": 2
+  },
+  "duplicate_source_ids": [],
+  "duplicate_xodr_ids": [],
+  "frame_alignment": "PASS",
+  "individual_geometry_drift": [
+    {
+      "distance_m": 10.551556,
+      "dx_m": -1.204059,
+      "dy_m": 10.482632,
+      "object_id": "osm_bld_1499858623"
+    },
+    {
+      "distance_m": 5.885412,
+      "dx_m": 0.195174,
+      "dy_m": -5.882174,
+      "object_id": "osm_bld_35744635"
+    },
+    {
+      "distance_m": 4.843888,
+      "dx_m": 4.359208,
+      "dy_m": 2.112004,
+      "object_id": "osm_bld_36856990"
+    },
+    {
+      "distance_m": 4.337313,
+      "dx_m": 3.344455,
+      "dy_m": -2.761685,
+      "object_id": "osm_bld_103429528"
+    },
+    {
+      "distance_m": 3.999557,
+      "dx_m": -3.234442,
+      "dy_m": -2.352623,
+      "object_id": "osm_bld_637643136"
+    },
+    {
+      "distance_m": 3.912177,
+      "dx_m": 2.87076,
+      "dy_m": 2.657793,
+      "object_id": "osm_bld_rel_155062"
+    },
+    {
+      "distance_m": 3.811251,
+      "dx_m": -3.432964,
+      "dy_m": -1.655412,
+      "object_id": "osm_bld_637643135"
+    },
+    {
+      "distance_m": 3.300451,
+      "dx_m": -3.022212,
+      "dy_m": 1.326353,
+      "object_id": "osm_bld_160309402"
+    },
+    {
+      "distance_m": 2.848963,
+      "dx_m": -2.377555,
+      "dy_m": -1.569657,
+      "object_id": "osm_bld_103434076"
+    },
+    {
+      "distance_m": 2.683842,
+      "dx_m": 2.419781,
+      "dy_m": -1.160891,
+      "object_id": "osm_bld_103429523"
+    },
+    {
+      "distance_m": 2.413665,
+      "dx_m": 2.082007,
+      "dy_m": -1.221076,
+      "object_id": "osm_bld_32592158"
+    },
+    {
+      "distance_m": 2.343651,
+      "dx_m": -2.136334,
+      "dy_m": 0.96373,
+      "object_id": "osm_bld_rel_2205275"
+    },
+    {
+      "distance_m": 2.180609,
+      "dx_m": 1.965939,
+      "dy_m": 0.943471,
+      "object_id": "osm_bld_637643134"
+    },
+    {
+      "distance_m": 1.304655,
+      "dx_m": 0.134835,
+      "dy_m": -1.297669,
+      "object_id": "osm_bld_53015905"
+    },
+    {
+      "distance_m": 0.67749,
+      "dx_m": -0.447927,
+      "dy_m": 0.508286,
+      "object_id": "osm_bld_53898190"
+    },
+    {
+      "distance_m": 0.639029,
+      "dx_m": 0.241834,
+      "dy_m": 0.591502,
+      "object_id": "osm_bld_638758728"
+    },
+    {
+      "distance_m": 0.63668,
+      "dx_m": 0.607824,
+      "dy_m": -0.189503,
+      "object_id": "osm_bld_35782993"
+    },
+    {
+      "distance_m": 0.132862,
+      "dx_m": 0.122368,
+      "dy_m": 0.051752,
+      "object_id": "osm_bld_208877724"
+    }
+  ],
+  "inputs": {
+    "buildings_path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "buildings_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "header_offset_m": {
+      "x": 832671.676,
+      "y": 5458671.104
+    },
+    "xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "schema_version": 1,
+  "source_only_ids": [
+    "osm_bld_103806258",
+    "osm_bld_103806261",
+    "osm_bld_110778846",
+    "osm_bld_1211916874",
+    "osm_bld_1442399870",
+    "osm_bld_1534657727",
+    "osm_bld_1537679700",
+    "osm_bld_1537767537",
+    "osm_bld_1537767538",
+    "osm_bld_1537767539",
+    "osm_bld_1549175297",
+    "osm_bld_208010356",
+    "osm_bld_208010388",
+    "osm_bld_208010435",
+    "osm_bld_42990091",
+    "osm_bld_42990101",
+    "osm_bld_42990102",
+    "osm_bld_42990103",
+    "osm_bld_42990104",
+    "osm_bld_42990105",
+    "osm_bld_42990106",
+    "osm_bld_42990109",
+    "osm_bld_42990110",
+    "osm_bld_42990111",
+    "osm_bld_42990112",
+    "osm_bld_589179137",
+    "osm_bld_589179138",
+    "osm_bld_589179139",
+    "osm_bld_589179140",
+    "osm_bld_637643137"
+  ],
+  "status": "PASS",
+  "systematic_offset_m": {
+    "max_per_building_distance": 10.551555755,
+    "median_dx": -6.16e-07,
+    "median_dy": -1.056e-06,
+    "median_vector_magnitude": 1.223e-06,
+    "p95_per_building_distance": 0.000338287
+  },
+  "thresholds_m": {
+    "individual_outlier_m": 0.01,
+    "max_systematic_offset_m": 1.0
+  },
+  "xodr_only_ids": [
+    "osm_bld_638758725",
+    "osm_bld_638758730"
+  ]
+}
