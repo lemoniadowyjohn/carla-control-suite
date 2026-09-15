@@ -1,23 +1,29 @@
 # Stale Artifact Pointers
 
-This file provides pointers to superseded artifacts per the repo's mirror-sync policy.
+This file notes artifacts that are **superseded** for whole-map metrics. It does not
+modify anything inside `submission/`; it only records pointers outside it.
 
-## Superseded Whole-Map Metrics
+## Superseded: `submission/results/structural_gap_run11/`
 
-`submission/results/structural_gap_run11/` is **superseded for whole-map metrics** by
-`reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/` (merged 2026-09-15).
+For **whole-map** domain-gap metrics, `submission/results/structural_gap_run11/` is
+**superseded** by:
 
-- `run_11`'s own `fit_metric_provenance` field already hints its geometry-RMSE fit was carried
-  forward, not verifed.
-- Several of `run_11`'s 0.0-valid-rate connectivity readings don't reproduce on the current pin.
+- **`reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/`**
+  (committed via `418fd023`, merged into `integration/session-batch1-20260912` at `97c8ee81`)
 
-## Full Framing and Caveats
+Both directories are now committed in the repository:
 
-For how to read the fresh numbers alongside the still-authoritative RQ2 local-comparison row, see
-`docs/research/THESIS_TO_CURRENT_PROGRESS.md`.
+- Superseded whole-map run:
+  `submission/results/structural_gap_run11/` (unchanged, preserved)
+- Superseding whole-map run:
+  `reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/`
+  (contains `full_report.json`, `aggregated_gap.json`, per-tile `gap_whole_*.json`,
+  `summary.json`, `reproducibility_hash.json`, and the manual-tiles seeding manifest)
 
-## Policy Note
+Use `20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/` for any whole-map metric reading going
+forward. The `structural_gap_run11/` directory under `submission/results/` is retained
+because `submission/` is treated as frozen for mirror-sync purposes.
 
-`submission/results/` itself is out of scope for mirror-sync modifications. Pointers are placed
-outside `submission/` so that the sync pipeline can update references without touching the
-submission directory structure.
+## Related context
+
+- `docs/research/THESIS_TO_CURRENT_PROGRESS.md` — tracks which whole-map runs are current.
