@@ -85,7 +85,8 @@ def cli() -> None:
 @cli.command()
 @click.option("--init-agent-sync", is_flag=True, help="Create agent_sync.yaml if missing")
 @click.option("--verbose", "-v", is_flag=True, help="Show detailed output")
-def doctor(init_agent_sync: bool, verbose: bool, profile: str = 'core') -> None:
+@click.option("--profile", type=click.Choice(["core", "offline-map", "research", "carla-runtime"]), default="core", help="Doctor profile to use")
+def doctor(init_agent_sync: bool, verbose: bool, profile: str = "core") -> None:
     '''Check system configuration and dependencies.
 
     Validates:
