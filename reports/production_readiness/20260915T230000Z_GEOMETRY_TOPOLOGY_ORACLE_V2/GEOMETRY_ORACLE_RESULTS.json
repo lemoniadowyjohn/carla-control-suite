@@ -1,0 +1,56 @@
+{
+  "geometry_oracle": {
+    "line": {
+      "count": 50,
+      "max_xy_error": 0,
+      "p95_xy_error": 0.0,
+      "max_heading_error": 0,
+      "max_curvature_error": 0,
+      "p50_xy_error": 0.0,
+      "p99_xy_error": 0.0
+    },
+    "arc": {
+      "count": 50,
+      "max_xy_error": 0,
+      "p95_xy_error": 0.0,
+      "max_heading_error": 0,
+      "max_curvature_error": 0,
+      "p50_xy_error": 0.0,
+      "p99_xy_error": 0.0
+    },
+    "spiral": {
+      "count": 50,
+      "max_xy_error": 7.168417374352925e-07,
+      "p95_xy_error": 5.708573812170589e-07,
+      "max_heading_error": 3.3306690738754696e-16,
+      "max_curvature_error": 0,
+      "p50_xy_error": 3.0074357271161034e-08,
+      "p99_xy_error": 7.168417374352925e-07
+    },
+    "poly3": {
+      "count": 30,
+      "max_xy_error": 0,
+      "p95_xy_error": 0.0,
+      "max_heading_error": 0,
+      "max_curvature_error": 0,
+      "p50_xy_error": 0.0,
+      "p99_xy_error": 0.0
+    },
+    "paramPoly3": {
+      "count": 0,
+      "max_xy_error": 0,
+      "p95_xy_error": 0,
+      "max_heading_error": 0,
+      "max_curvature_error": 0,
+      "p50_xy_error": 0,
+      "p99_xy_error": 0
+    }
+  },
+  "largest_discrepancy": {
+    "primitive": "spiral",
+    "xy_error": 7.168417374352925e-07
+  },
+  "fallback_count": 0,
+  "total_tests": 180,
+  "timestamp": "2026-09-15T23:00:00Z"
+}

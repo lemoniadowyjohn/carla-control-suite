@@ -1,0 +1,592 @@
+{
+  "total_roads": 32267,
+  "total_junctions": 3561,
+  "dangling_predecessor": [],
+  "dangling_successor": [],
+  "wrong_contact_point": [],
+  "reversed_connector": [],
+  "invalid_lanelink": [],
+  "lanelink_sign_error": [],
+  "tangent_discontinuity": [
+    {
+      "junction": "911",
+      "incoming": "49526",
+      "connecting": "52077",
+      "gap": 7.00000038053313,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "949",
+      "incoming": "47958",
+      "connecting": "52345",
+      "gap": 6.999999862002475,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "1109",
+      "incoming": "49570",
+      "connecting": "53779",
+      "gap": 7.000000338585591,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "1109",
+      "incoming": "43196",
+      "connecting": "53786",
+      "gap": 7.00000040604718,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "1684",
+      "incoming": "47310",
+      "connecting": "58551",
+      "gap": 6.999999492734244,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "1954",
+      "incoming": "49488",
+      "connecting": "60775",
+      "gap": 6.999999721778537,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "1954",
+      "incoming": "51928",
+      "connecting": "60779",
+      "gap": 6.999999569713704,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "1954",
+      "incoming": "51928",
+      "connecting": "60780",
+      "gap": 6.999999569713704,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "194",
+      "incoming": "46226",
+      "connecting": "60885",
+      "gap": 7.000000415688593,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "194",
+      "incoming": "42449",
+      "connecting": "60894",
+      "gap": 6.999999954009144,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2219",
+      "incoming": "49486",
+      "connecting": "62975",
+      "gap": 7.000000264640779,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2221",
+      "incoming": "44881",
+      "connecting": "62988",
+      "gap": 6.999999928515726,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2226",
+      "incoming": "51476",
+      "connecting": "63018",
+      "gap": 7.00000035389457,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2226",
+      "incoming": "51476",
+      "connecting": "63019",
+      "gap": 7.00000035389457,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2399",
+      "incoming": "50551",
+      "connecting": "64325",
+      "gap": 10.499999854196998,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2406",
+      "incoming": "47483",
+      "connecting": "64391",
+      "gap": 7.000000617398881,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2595",
+      "incoming": "45231",
+      "connecting": "65809",
+      "gap": 6.99999965060752,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2965",
+      "incoming": "47071",
+      "connecting": "68138",
+      "gap": 7.000000289914009,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2965",
+      "incoming": "51324",
+      "connecting": "68142",
+      "gap": 7.000000181610062,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "2965",
+      "incoming": "51301",
+      "connecting": "68146",
+      "gap": 7.000000503389617,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3070",
+      "incoming": "47309",
+      "connecting": "68589",
+      "gap": 6.999999766326262,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3075",
+      "incoming": "46932",
+      "connecting": "68632",
+      "gap": 6.999974531081003,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3124",
+      "incoming": "51644",
+      "connecting": "68866",
+      "gap": 10.499999911078351,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3124",
+      "incoming": "51644",
+      "connecting": "68867",
+      "gap": 10.499999911078351,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3124",
+      "incoming": "51644",
+      "connecting": "68868",
+      "gap": 6.999999940433177,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3125",
+      "incoming": "47674",
+      "connecting": "68870",
+      "gap": 7.000064074556205,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3125",
+      "incoming": "46644",
+      "connecting": "68872",
+      "gap": 10.499999765408317,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3129",
+      "incoming": "51893",
+      "connecting": "68892",
+      "gap": 7.000000555421673,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3129",
+      "incoming": "52006",
+      "connecting": "68900",
+      "gap": 7.0000011722298545,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3139",
+      "incoming": "46817",
+      "connecting": "68949",
+      "gap": 6.999999981861562,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3149",
+      "incoming": "46689",
+      "connecting": "68978",
+      "gap": 7.000001538048687,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3149",
+      "incoming": "46819",
+      "connecting": "68981",
+      "gap": 7.000005092501897,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3162",
+      "incoming": "46895",
+      "connecting": "69039",
+      "gap": 6.999999797647134,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3187",
+      "incoming": "50163",
+      "connecting": "69131",
+      "gap": 7.000000399337948,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3187",
+      "incoming": "46885",
+      "connecting": "69139",
+      "gap": 7.000000198692765,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3190",
+      "incoming": "46858",
+      "connecting": "69151",
+      "gap": 6.999999620108793,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3211",
+      "incoming": "46892",
+      "connecting": "69200",
+      "gap": 6.9999998685101446,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3244",
+      "incoming": "46980",
+      "connecting": "69289",
+      "gap": 7.000000235924006,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3255",
+      "incoming": "47026",
+      "connecting": "69314",
+      "gap": 10.50000028106751,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "332",
+      "incoming": "46940",
+      "connecting": "69360",
+      "gap": 6.999999450151102,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3269",
+      "incoming": "50240",
+      "connecting": "69376",
+      "gap": 6.999999634224937,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3269",
+      "incoming": "49032",
+      "connecting": "69380",
+      "gap": 7.000000616978509,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3270",
+      "incoming": "49505",
+      "connecting": "69392",
+      "gap": 7.000000250463112,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3306",
+      "incoming": "47206",
+      "connecting": "69480",
+      "gap": 6.999999869579512,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3310",
+      "incoming": "50441",
+      "connecting": "69506",
+      "gap": 6.999999607997725,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3317",
+      "incoming": "50552",
+      "connecting": "69527",
+      "gap": 10.499999432947803,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3317",
+      "incoming": "51659",
+      "connecting": "69531",
+      "gap": 7.000002505165188,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3336",
+      "incoming": "49565",
+      "connecting": "69590",
+      "gap": 7.000000050262621,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3342",
+      "incoming": "50216",
+      "connecting": "69605",
+      "gap": 6.9999988198427925,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3346",
+      "incoming": "50439",
+      "connecting": "69609",
+      "gap": 6.999999526318879,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3348",
+      "incoming": "50457",
+      "connecting": "69613",
+      "gap": 7.00000019808368,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3354",
+      "incoming": "51098",
+      "connecting": "69627",
+      "gap": 7.000000341086956,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3373",
+      "incoming": "51060",
+      "connecting": "69682",
+      "gap": 7.000000293173336,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3411",
+      "incoming": "49768",
+      "connecting": "69807",
+      "gap": 10.499999778324742,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3415",
+      "incoming": "49477",
+      "connecting": "69815",
+      "gap": 10.50000036852849,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3421",
+      "incoming": "49506",
+      "connecting": "69833",
+      "gap": 6.999999662887164,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3433",
+      "incoming": "49075",
+      "connecting": "69869",
+      "gap": 7.000000529637457,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3452",
+      "incoming": "49476",
+      "connecting": "69919",
+      "gap": 10.500000457875394,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3459",
+      "incoming": "49487",
+      "connecting": "69936",
+      "gap": 6.999999479235042,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3461",
+      "incoming": "49489",
+      "connecting": "69948",
+      "gap": 7.000000318943952,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3462",
+      "incoming": "49491",
+      "connecting": "69950",
+      "gap": 10.499999822644204,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3463",
+      "incoming": "49490",
+      "connecting": "69952",
+      "gap": 7.000000514613517,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3469",
+      "incoming": "49556",
+      "connecting": "69979",
+      "gap": 6.999999494009752,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3470",
+      "incoming": "49561",
+      "connecting": "69981",
+      "gap": 14.000000311029657,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3480",
+      "incoming": "50053",
+      "connecting": "70006",
+      "gap": 6.99999896335169,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3500",
+      "incoming": "51741",
+      "connecting": "70056",
+      "gap": 6.999999703615533,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3506",
+      "incoming": "51199",
+      "connecting": "70082",
+      "gap": 10.500000221427877,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3186",
+      "incoming": "51895",
+      "connecting": "70089",
+      "gap": 6.999999543132094,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3515",
+      "incoming": "51108",
+      "connecting": "70113",
+      "gap": 6.999999595205861,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3523",
+      "incoming": "51013",
+      "connecting": "70131",
+      "gap": 6.999999634005351,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3557",
+      "incoming": "51636",
+      "connecting": "70215",
+      "gap": 7.000000010447457,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "3558",
+      "incoming": "51643",
+      "connecting": "70219",
+      "gap": 10.499999860109565,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "430",
+      "incoming": "47075",
+      "connecting": "70838",
+      "gap": 6.999988311439319,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "430",
+      "incoming": "47073",
+      "connecting": "70842",
+      "gap": 7.000000154726108,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "430",
+      "incoming": "47074",
+      "connecting": "70846",
+      "gap": 7.000000713926719,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "448",
+      "incoming": "46933",
+      "connecting": "70971",
+      "gap": 6.999999795303776,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "450",
+      "incoming": "51093",
+      "connecting": "70986",
+      "gap": 7.000000094897878,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "486",
+      "incoming": "49525",
+      "connecting": "71309",
+      "gap": 7.000000651377838,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "519",
+      "incoming": "45997",
+      "connecting": "71581",
+      "gap": 7.000000870485556,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "616",
+      "incoming": "49533",
+      "connecting": "72366",
+      "gap": 7.00000019520084,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "8",
+      "incoming": "51971",
+      "connecting": "73103",
+      "gap": 7.000000236385322,
+      "contactPoint": "start"
+    },
+    {
+      "junction": "854",
+      "incoming": "49511",
+      "connecting": "74275",
+      "gap": 7.0000002595703235,
+      "contactPoint": "start"
+    }
+  ],
+  "orphan_connecting_road": [],
+  "duplicate_connections": [],
+  "invalid_topology_relations": 0,
+  "junctions_checked": 3561,
+  "connecting_roads_checked": 22589,
+  "total_invalid": 0
+}
