@@ -336,3 +336,84 @@ class TestLoadPinnedSource:
         densest = max(assignment.tiles.items(), key=lambda kv: len(kv[1]))
         assert densest[0] == (6, 8)
         assert len(densest[1]) > 500
+
+
+# ---------------------------------------------------------------------------
+# Fail-closed roundtrip semantics
+# ---------------------------------------------------------------------------
+class TestFailClosedRoundtrip:
+    def test_roundtrip_not_requested_returns_ok_status(self, tmp_path: Path):
+        from unittest.mock import patch, MagicMock
+        from ultimate_pipeline.tiling.tile_fbx_generator import generate_tile_fbx
+
+        bldgs = [TileBuilding(source_id="w1", source_type="way", tags={}, rings=[[(11.43, 48.75), (11.431, 48.75), (11.431, 48.751), (11.43, 48.751), (11.43, 48.75)]])]
+
+        osm_file = tmp_path / "Ingolstadt_Tile_0_0.osm"
+        osm_file.write_text("<osm/>", encoding="utf-8")
+        obj_file = tmp_path / "Ingolstadt_Tile_0_0.obj"
+        obj_file.write_text("v 0 0 0", encoding="utf-8")
+        fbx_file = tmp_path / "Ingolstadt_Tile_0_0.fbx"
+        fbx_file.write_bytes(b"Kaydara FBX Binary\x00")
+
+        with patch("ultimate_pipeline.tiling.tile_fbx_generator.OSM2WorldRunner") as mock_o2w, \
+             patch("ultimate_pipeline.tiling.tile_fbx_generator.BlenderRunner") as mock_blender:
+
+            mock_o2w_inst = MagicMock()
+            mock_o2w_inst.run.return_value = MagicMock(status="ok", reason="")
+            mock_o2w.return_value = mock_o2w_inst
+
+            mock_blender_inst = MagicMock()
+            mock_blender_inst.run.return_value = MagicMock(status="ok", reason="", manifest={"objects": []})
+            mock_blender.return_value = mock_blender_inst
+
+            res = generate_tile_fbx(
+                buildings=bldgs,
+                tile_index=(0, 0),
+                map_name="Ingolstadt",
+                output_dir=str(tmp_path),
+                osm2world_home="/fake/o2w",
+                run_roundtrip=False,
+            )
+
+            assert res.status == "ok"
+            assert res.roundtrip_ok is None
+            assert res.roundtrip_verdict == "ROUNDTRIP_NOT_REQUESTED"
+
+    def test_roundtrip_requested_and_fails_returns_failed_status(self, tmp_path: Path):
+        from unittest.mock import patch, MagicMock
+        from ultimate_pipeline.tiling.tile_fbx_generator import generate_tile_fbx
+
+        bldgs = [TileBuilding(source_id="w1", source_type="way", tags={}, rings=[[(11.43, 48.75), (11.431, 48.75), (11.431, 48.751), (11.43, 48.751), (11.43, 48.75)]])]
+
+        osm_file = tmp_path / "Ingolstadt_Tile_0_0.osm"
+        osm_file.write_text("<osm/>", encoding="utf-8")
+        obj_file = tmp_path / "Ingolstadt_Tile_0_0.obj"
+        obj_file.write_text("v 0 0 0", encoding="utf-8")
+        fbx_file = tmp_path / "Ingolstadt_Tile_0_0.fbx"
+        fbx_file.write_bytes(b"Kaydara FBX Binary\x00")
+
+        with patch("ultimate_pipeline.tiling.tile_fbx_generator.OSM2WorldRunner") as mock_o2w, \
+             patch("ultimate_pipeline.tiling.tile_fbx_generator.BlenderRunner") as mock_blender, \
+             patch("ultimate_pipeline.tiling.tile_fbx_generator.run_fbx_roundtrip") as mock_rt:
+
+            mock_o2w.return_value.run.return_value = MagicMock(status="ok", reason="")
+            mock_blender.return_value.run.return_value = MagicMock(status="ok", reason="", manifest={"objects": []})
+
+            mock_rt.return_value = (False, {"comparison": {"verdict": "MESH_COUNT_MISMATCH"}})
+
+            fake_blender = tmp_path / "blender.exe"
+            fake_blender.write_bytes(b"fake blender")
+
+            res = generate_tile_fbx(
+                buildings=bldgs,
+                tile_index=(0, 0),
+                map_name="Ingolstadt",
+                output_dir=str(tmp_path),
+                osm2world_home="/fake/o2w",
+                blender_exe=str(fake_blender),
+                run_roundtrip=True,
+            )
+
+            assert res.status == "failed"
+            assert res.roundtrip_ok is False
+            assert "MESH_COUNT_MISMATCH" in res.reason

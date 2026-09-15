@@ -685,21 +685,33 @@ def generate_tile_fbx(
     result.faces_total = faces_total
 
     # 4. FBX roundtrip integrity (reuse existing machinery, do not reinvent)
-    if run_roundtrip and Path(blender_exe_path).exists():
-        rt_started = time.time()
-        ok, report = run_fbx_roundtrip(
-            fbx_path, out_dir, Path(blender_exe_path),
-            source_manifest=manifest, timeout_sec=blender_timeout_sec,
-        )
-        result.roundtrip_sec = round(time.time() - rt_started, 3)
-        result.roundtrip_ok = ok
-        result.roundtrip_verdict = report.get("comparison", {}).get(
-            "verdict", report.get("error", "UNKNOWN"))
+    if run_roundtrip:
+        if Path(blender_exe_path).exists():
+            rt_started = time.time()
+            ok, report = run_fbx_roundtrip(
+                fbx_path, out_dir, Path(blender_exe_path),
+                source_manifest=manifest, timeout_sec=blender_timeout_sec,
+            )
+            result.roundtrip_sec = round(time.time() - rt_started, 3)
+            result.roundtrip_ok = ok
+            result.roundtrip_verdict = report.get("comparison", {}).get(
+                "verdict", report.get("error", "UNKNOWN"))
+        else:
+            result.roundtrip_ok = False
+            result.roundtrip_verdict = "BLENDER_EXE_NOT_FOUND"
+
+        if result.roundtrip_ok is True:
+            result.status = "ok"
+        elif result.roundtrip_ok is False:
+            result.status = "failed"
+            result.reason = f"FBX roundtrip verification failed: {result.roundtrip_verdict}"
+        else:
+            result.status = "incomplete"
+            result.reason = f"FBX roundtrip verification incomplete: {result.roundtrip_verdict}"
     else:
         result.roundtrip_ok = None
-        result.roundtrip_verdict = "SKIPPED"
-
-    result.status = "ok"
+        result.roundtrip_verdict = "ROUNDTRIP_NOT_REQUESTED"
+        result.status = "ok"
     result.total_sec = round(time.time() - started, 3)
 
     # 5. hash-bound manifest sidecar
