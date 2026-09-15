@@ -108,6 +108,7 @@ def check_dem_coverage(
     max_roads: int = 50,
     samples_per_road: int = 3,
     utm_zone: Optional[int] = None,
+    production: bool = True,
 ) -> Dict[str, Any]:
     """
     Check DEM coverage for an OpenDRIVE map.
@@ -126,6 +127,9 @@ def check_dem_coverage(
         Number of sample points per road.
     utm_zone : int, optional
         Override UTM zone for coordinate transformation.
+    production : bool, optional
+        If True (default), production profile: missing authoritative georeference -> FAIL/INCOMPLETE.
+        If False, development mode: optional inferred georeference with provenance allowed.
 
     Returns
     -------
@@ -162,6 +166,8 @@ def check_dem_coverage(
         "xodr_proj": None,
         "sample_stats": {},
         "warnings": [],
+        "sampled_map_points_inside_dem_fraction": 0.0,
+        "nodata_fraction_at_samples": 0.0,
     }
 
     # Parse XODR and read geoReference for CRS conversion.
@@ -252,6 +258,7 @@ def check_dem_coverage(
                     wgs84_to_dem = None
 
             elevations: List[float] = []
+            points_inside_dem = 0
             for x, y, _rid in points:
                 sx = float(x)
                 sy = float(y)
@@ -271,6 +278,9 @@ def check_dem_coverage(
                 except Exception:
                     report["out_of_bounds_samples"] += 1
                     continue
+
+                # Point is inside DEM raster bounds
+                points_inside_dem += 1
 
                 if (
                     row < 0
@@ -299,6 +309,13 @@ def check_dem_coverage(
 
                 report["valid_samples"] += 1
                 elevations.append(z_val)
+
+            # Compute new explicit metrics
+            total = int(report["total_samples"])
+            if total > 0:
+                report["sampled_map_points_inside_dem_fraction"] = points_inside_dem / total
+                if points_inside_dem > 0:
+                    report["nodata_fraction_at_samples"] = report["nodata_samples"] / points_inside_dem
     except Exception as e:
         report["ok"] = False
         report["reason"] = "dem_open_or_sample_failed"
@@ -320,10 +337,22 @@ def check_dem_coverage(
         }
 
     if missing_georef:
-        # Required behavior: fallback sampling is allowed, but the gate must be reported
-        # as failed with an explicit reason when geoReference is missing/unparseable.
-        report["ok"] = False
-        report["reason"] = "no_georeference"
+        if production:
+            # Production profile: missing authoritative georeference -> FAIL/INCOMPLETE
+            report["ok"] = False
+            report["reason"] = "no_georeference"
+            report["warnings"].append(
+                "Production mode: missing authoritative <geoReference> in XODR header. "
+                "DEM sampling fails closed. Provide the OSM source or a resolvable geoReference."
+            )
+        else:
+            # Development: optional inferred georeference with provenance
+            report["ok"] = False
+            report["reason"] = "no_georeference"
+            report["warnings"].append(
+                "Development mode: missing <geoReference> in XODR header. "
+                "Fallback to raw XODR XY sampling allowed but reported as incomplete."
+            )
     else:
         report["ok"] = report["valid_ratio"] >= threshold
         if not report["ok"]:
