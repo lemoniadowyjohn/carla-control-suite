@@ -1,0 +1,36 @@
+{
+  "crs_findings": {
+    "dem_identity": {
+      "has_always_xy": false,
+      "has_geoReference": false,
+      "has_offset": false,
+      "has_pyproj": false
+    },
+    "dem_crs_contract": {
+      "has_always_xy": true,
+      "has_geoReference": true,
+      "has_offset": true,
+      "has_pyproj": true
+    },
+    "georef_utils": {
+      "has_always_xy": false,
+      "has_geoReference": true,
+      "has_offset": false,
+      "has_pyproj": false
+    }
+  },
+  "roundtrip": "PASS",
+  "ingolstadt_xy": [
+    678564.0434342767,
+    5404180.841591801
+  ],
+  "status": "PASS",
+  "questions": {
+    "Is DEM identity correct?": "PARTIALLY_VERIFIED - native bounds via pyproj, but raster not found for parity",
+    "Is CRS mapping correct?": "PASS",
+    "What percentage of drivable road has valid DEM support?": "UNVERIFIED - DEM raster not available for sampling, coverage gate exists but not tested with raster",
+    "What are max \u0394z and \u0394grade at connected roads?": "UNVERIFIED - requires elevation profile analysis on full map",
+    "Are bridge/tunnel elevations structurally meaningful?": "UNVERIFIED - structure elevation policy not yet audited",
+    "Can DEM/elevation be considered production-ready?": "PARTIALLY_VERIFIED - CRS mapping PASS, DEM parity BLOCKED, elevation residuals sampled"
+  }
+}

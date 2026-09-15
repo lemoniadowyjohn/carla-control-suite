@@ -1,0 +1,47 @@
+{
+  "dem_findings": {
+    "ultimate_pipeline\\dem\\dem_auto_downloader.py": {
+      "has_nodata": false,
+      "has_interpolation": false,
+      "has_extrapolation": false,
+      "has_bounds": true,
+      "has_coverage": false,
+      "has_fallback": false
+    },
+    "ultimate_pipeline\\dem\\dem_crs_contract.py": {
+      "has_nodata": false,
+      "has_interpolation": false,
+      "has_extrapolation": false,
+      "has_bounds": true,
+      "has_coverage": false,
+      "has_fallback": false
+    },
+    "ultimate_pipeline\\dem\\dem_diagnostics.py": {
+      "has_nodata": true,
+      "has_interpolation": false,
+      "has_extrapolation": false,
+      "has_bounds": true,
+      "has_coverage": false,
+      "has_fallback": false
+    },
+    "ultimate_pipeline\\dem\\dem_identity.py": {
+      "has_nodata": true,
+      "has_interpolation": false,
+      "has_extrapolation": false,
+      "has_bounds": true,
+      "has_coverage": true,
+      "has_fallback": false
+    },
+    "ultimate_pipeline\\dem\\dem_provenance.py": {
+      "has_nodata": false,
+      "has_interpolation": false,
+      "has_extrapolation": false,
+      "has_bounds": true,
+      "has_coverage": false,
+      "has_fallback": false
+    }
+  },
+  "has_coverage_gate": true,
+  "status": "BLOCKED - no raster found for independent sampling",
+  "coverage": "UNVERIFIED"
+}
