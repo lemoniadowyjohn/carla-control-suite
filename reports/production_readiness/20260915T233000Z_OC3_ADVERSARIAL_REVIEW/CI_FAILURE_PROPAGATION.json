@@ -1,0 +1,15 @@
+{
+  "search": {
+    "if_always": "Found 0 new instances after fix; previously 1 in carla-runtime.yml was fixed in 116042ec (removed if: always() hard-coded PASS)",
+    "continue_on_error": "0 found",
+    "or_true": "0 found (checked .github, *.sh, *.py)",
+    "check_False": "Found 3 in tools/* with check=False but with explicit error handling - not false-green; 1 in xodr_schema_validator fixed to check=True",
+    "ignored_return_code": "0 found after fix",
+    "broad_except": "Found 2 broad except Exception in quality gates, now narrowed to specific exceptions",
+    "empty_except": "0 found",
+    "powershell_lastExitCode": "0 found",
+    "pipeline_error_propagation": "All pipelines now use set -e or check returncode"
+  },
+  "prior_fix_verification": "116042ec removed if: always() from runtime health packet (was hard-coded PASS even if tests failed). Verified: workflow now has no if: always() on test jobs, only on upload-artifact with if: always() is correct for artifact upload, not for status. Failed test job now correctly appears as FAILED, not SUCCESS.",
+  "status": "VERIFIED"
+}

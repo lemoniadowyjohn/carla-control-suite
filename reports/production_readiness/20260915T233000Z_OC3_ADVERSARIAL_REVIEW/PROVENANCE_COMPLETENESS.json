@@ -1,0 +1,20 @@
+{
+  "artifacts_checked": ["ingolstadt_perception_map_of_record_20260905_202847.xodr", "reports/production_readiness/PRODUCTION_ENGINEERING_SHELL_20260915/SUMMARY.json", "campaigns/ingolstadt_cooked_perception_v1/candidate/*.xodr"],
+  "provenance_fields": {
+    "git_SHA": "Present in reports (a323a923) and map receipt",
+    "dirty_flag": "Present - git status --porcelain captured",
+    "map_SHA": "Present - 2ca342d8 in receipt and map file",
+    "input_hashes": "Partial - map SHA present, DEM raster hash missing (raster not in repo) - deficiency noted",
+    "config": "Present - StageContext and pipeline config in receipt",
+    "command": "Present - up CLI command in receipt",
+    "software_versions": "Present - Python 3.12.2, CARLA 0.9.16, pyproj, etc.",
+    "timestamp": "Present - ISO8601 UTC",
+    "exit_status": "Present - PASS/FAIL/INCOMPLETE in receipt",
+    "output_hashes": "Present - SHA256 of outputs in receipt",
+    "seed": "Present where relevant (GNN seed 42, geometry seed 42)"
+  },
+  "deficiencies": [
+    {"artifact": "DEM raster", "missing": "input hash for DEM raster (raster not versioned, downloaded at runtime)", "severity": "P1", "fix": "Add DEM download receipt with URL and hash, or vendor raster with hash"}
+  ],
+  "status": "PARTIALLY_VERIFIED - 1 deficiency (DEM raster provenance) remains, others verified"
+}
