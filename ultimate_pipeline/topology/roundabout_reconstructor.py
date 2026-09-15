@@ -205,7 +205,10 @@ class RoundaboutReconstructor:
 
     @staticmethod
     def reconstruct(root: ET.Element, out_dir: str | None = None) -> Dict[str, Dict]:
-        if not getattr(SETTINGS, "ENABLE_ROUNDABOUT_RECONSTRUCTION", True):
+        # OC-2 AREA-003: fail-closed by default. The OSM roundabout
+        # reconstruction rewrites road geometry from sampled arcs and is only
+        # safe when a pipeline run explicitly opts in.
+        if not getattr(SETTINGS, "ENABLE_ROUNDABOUT_RECONSTRUCTION", False):
             print("⏭ RoundaboutReconstructor: disabled in settings.")
             return {}
 
