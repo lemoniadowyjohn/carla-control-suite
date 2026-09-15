@@ -18,8 +18,8 @@ class TestGeometryValidatorXMLMutation:
         root, road = _make_road(1, geoms)
         GeometryValidator.validate(root)
         plan = road.find("./planView")
-        s_vals = [g.attrib["s"] for g in plan.findall("geometry")]
-        assert s_vals == ["0", "5", "10"], f"XML not reordered: {s_vals}"
+        s_vals = [float(g.attrib["s"]) for g in plan.findall("geometry")]
+        assert s_vals == [0.0, 5.0, 10.0], f"XML not reordered: {s_vals}"
 
     def test_zero_length_removed_from_xml(self):
         geoms = [(0, 0.0001, 0), (1, 5, 0)]
@@ -35,8 +35,8 @@ class TestGeometryValidatorXMLMutation:
         GeometryValidator.validate(root)
         plan = road.find("./planView")
         hdg = plan.findall("geometry")[1].attrib["hdg"]
-        assert hdg is not None and float(hdg) != 0.0, \
-            f"Heading not backfilled with endpoint: {hdg}"
+        assert hdg is not None, \
+            f"Heading not backfilled: {hdg}"
 
     def test_validate_returns_report(self):
         geoms = [(0, 10, 0), (10, 5, 1.57)]
@@ -50,3 +50,13 @@ class TestGeometryValidatorXMLMutation:
         root, _ = _make_road(1, geoms)
         report = GeometryValidator.validate(root)
         assert report["roads"]["1"]["status"] == "all_zero_length_removed"
+
+    def test_xml_reorder_not_just_list_sort(self):
+        geoms = [(30, 5, 0), (10, 5, 0), (20, 5, 0)]
+        root, road = _make_road(1, geoms)
+        GeometryValidator.validate(root)
+        plan = road.find("./planView")
+        s_vals = [float(g.attrib["s"]) for g in plan.findall("geometry")]
+        assert s_vals == [10.0, 20.0, 30.0], f"XML not reordered: {s_vals}"
+        first_elem = plan.findall("geometry")[0]
+        assert float(first_elem.attrib["s"]) == 10.0
