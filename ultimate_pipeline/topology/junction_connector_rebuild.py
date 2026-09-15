@@ -15,6 +15,18 @@ from ultimate_pipeline.geometry.opendrive_geometry_kernel import (
     endpoint as canonical_endpoint,
     pose_at_s as canonical_pose_at_s,
 )
+from ultimate_pipeline.topology.junction_connector_classifier import (
+    AMBIGUOUS,
+    EXACT_TOPOLOGY,
+    GEOMETRICALLY_INFERRED_HIGH,
+    classify_connector_association,
+    direct_line_boundary_ok,
+)
+
+# OC-2 AREA-014: max chord/heading deviation tolerated before a straight
+# direct-line replacement is refused. The fallback itself stays off by
+# default; this only constrains it when explicitly enabled.
+DEFAULT_CHORD_HEADING_DEV_RAD = math.radians(45.0)
 
 from ultimate_pipeline.quality.check_geometric_continuity import (
     Pose,
@@ -25,6 +37,12 @@ from ultimate_pipeline.quality.check_geometric_continuity import (
 
 
 class ConnectorValidator:
+    # OC-2 AREA-014 classification vocabulary, shared with
+    # topology/junction_connector_classifier.py.
+    CLASSIFICATION_EXACT = EXACT_TOPOLOGY
+    CLASSIFICATION_INFERRED = GEOMETRICALLY_INFERRED_HIGH
+    CLASSIFICATION_AMBIGUOUS = AMBIGUOUS
+
     def __init__(
         self,
         connector_road: ET.Element,
@@ -40,6 +58,28 @@ class ConnectorValidator:
         self.opposite_pose = opposite_pose
         self.position_tolerance_m = float(position_tolerance_m)
         self.heading_tolerance_rad = float(heading_tolerance_rad)
+
+    @staticmethod
+    def classify(
+        *,
+        connector_start,
+        incoming_start,
+        incoming_end,
+        declared_side: str = "start",
+        **kwargs,
+    ) -> str:
+        """Classify the association of a connector start with its incoming
+        road (see topology.junction_connector_classifier). Returns one of
+        CLASSIFICATION_EXACT / CLASSIFICATION_INFERRED /
+        CLASSIFICATION_AMBIGUOUS."""
+        result = classify_connector_association(
+            connector_start=connector_start,
+            incoming_start=incoming_start,
+            incoming_end=incoming_end,
+            declared_side=declared_side,
+            **kwargs,
+        )
+        return str(result["classification"])
 
     @staticmethod
     def _angle_error(a: float, b: float) -> float:
@@ -462,6 +502,21 @@ def _write_rebuild_geometry(
             return "arc"
 
     if not bool(allow_straight_chord_fallback):
+        return None
+
+    # OC-2 AREA-014: a straight chord that ignores either boundary heading is
+    # a corrupting simplification. Refuse it (blocked_connector_reconstruction)
+    # when the chord direction deviates from the start heading or from the end
+    # heading traversed backward beyond the tolerance.
+    if not direct_line_boundary_ok(
+        start_x=float(plan_start.x),
+        start_y=float(plan_start.y),
+        end_x=float(plan_end.x),
+        end_y=float(plan_end.y),
+        start_hdg=float(start_hdg),
+        end_hdg=float(plan_end.hdg),
+        max_chord_heading_deviation_rad=DEFAULT_CHORD_HEADING_DEV_RAD,
+    ):
         return None
 
     _replace_planview_with_direct_line(connector_road, plan_start, plan_end)
