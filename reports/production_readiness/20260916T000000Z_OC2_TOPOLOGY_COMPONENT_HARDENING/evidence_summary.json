@@ -1,0 +1,56 @@
+{
+  "audit_id": "TOPOLOGY_COMPONENT_AUDIT_20260915",
+  "branch": "fix/topology-component-hardening-v1-20260915",
+  "base_sha": "6f76f37f",
+  "head_sha_pinned_by_audit": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+  "final_sha": "22442c9afc6679fff537dd829800fd9597daafa0",
+  "result": "READY_FOR_REVIEW",
+  "commits": [
+    { "sha": "6132d89d", "tag": "oc2-d1", "topic": "component classifier for island quarantine (preserve UNKNOWN/INTENTIONAL)", "audit_token": "map_connectivity" },
+    { "sha": "ccf43dc2", "tag": "oc2-d5", "topic": "QualityStatus governed-waiver vocabulary (additive)", "audit_token": "quality_gates" },
+    { "sha": "3706a93c", "tag": "oc2-d2", "topic": "literal-spec reachability + topology certification (SPEC gate, governed waiver)", "audit_token": "literal_vs_recovered_topology" },
+    { "sha": "deb4b930", "tag": "oc2-d3", "topic": "junction connector association classification (fail-closed ambiguous skip, direct-line heading guard)", "audit_token": "junction_connectors" },
+    { "sha": "22442c9a", "tag": "oc2-d4", "topic": "roundabout reconstruction fail-closed default (no SETTINGS key == disabled)", "audit_token": "roundabout_reconstructor" }
+  ],
+  "out_of_scope": ["validator_purity"],
+  "gate_statuses": {
+    "component_quarantine": { "classify_components_default": true, "allow_unknown_auto_delete_default": false, "env_escape_hatches": ["UP_CLASSIFY_QUARANTINE_COMPONENTS=0", "UP_ALLOW_UNKNOWN_AUTO_DELETE=1"] },
+    "topology_certification": { "production_authority": "literal_spec_graph", "recovery": "diagnostic_only", "missing_evidence": "INCOMPLETE_fail_closed", "waiver_semantics": "governed_waiver_downgrades_hard_fail_to_WAIVED_soft_warning" },
+    "junction_connector_snap": { "ambiguous_default": "skipped_fail_closed", "env_escape_hatch": "UP_JUNCTION_CONNECTOR_SNAP_ALLOW_AMBIGUOUS=1" },
+    "junction_connector_rebuild": { "straight_chord_fallback_default": false, "chord_heading_tolerance_rad": 0.7853981633974483 },
+    "roundabout_reconstruction": { "no_setting_key_default": false, "regression_test": "test_reconstruct_oc2_fail_closed_when_setting_absent" }
+  },
+  "files_changed": {
+    "count": 13,
+    "insertions": 1990,
+    "deletions": 27,
+    "production": [
+      "ultimate_pipeline/topology/component_classifier.py",
+      "ultimate_pipeline/quality/map_hygiene.py",
+      "ultimate_pipeline/contracts/stage_contracts.py",
+      "ultimate_pipeline/quality/map_acceptance.py",
+      "ultimate_pipeline/quality/topology_certification.py",
+      "ultimate_pipeline/topology/junction_connector_classifier.py",
+      "ultimate_pipeline/tools/junction_connector_snap.py",
+      "ultimate_pipeline/topology/junction_connector_rebuild.py",
+      "ultimate_pipeline/topology/roundabout_reconstructor.py"
+    ],
+    "tests": [
+      "tests/unit/test_component_classifier.py",
+      "tests/unit/test_topology_certification.py",
+      "tests/unit/test_junction_connector_classifier.py",
+      "tests/topology/test_roundabout_reconstructor.py"
+    ]
+  },
+  "test_sweeps": [
+    { "targets": ["tests/unit"], "passed": 1877, "skipped": 3, "failed": 0, "capture": "test_sweep_tests_unit.txt" },
+    { "targets": ["tests/topology", "tests/quality", "tests/domain_gap", "tests/opendrive_geometry", "tests/roadrunner", "tests/carla_tools", "tests/phase_q", "tests/test_crosswalk_schema.py", "tests/test_r13_c0r_tag_freeze.py", "tests/test_r13_digest_v2.py", "tests/test_r13_evidence.py", "tests/test_r13_governed_payload_guard.py", "tests/test_r13_mutation_allowlist.py", "tests/test_stage_i_integrity.py"], "passed": 2774, "skipped": 78, "failed": 0, "capture": "test_sweep_rest.txt" }
+  ],
+  "merge_coordination": {
+    "concurrent_large_map_branch": "37c40d18",
+    "dedupe_needed": ["QualityStatus", "roundabout False default", "ConnectorValidator.CLASSIFICATION_* + classify"],
+    "does_not_exist_at_oc2_baseline": ["tests/unit/test_audit_remaining.py", "tests/unit/test_warning_taxonomy.py", "tests/unit/test_quality_status.py"],
+    "oc1_branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+    "frozen_twin_untouched": "submission/infrastructure/ultimate_pipeline/quality/map_acceptance.py"
+  }
+}
