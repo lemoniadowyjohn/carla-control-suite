@@ -31,11 +31,9 @@ def resolve_run_dir(
     if run_dir_arg:
         return Path(run_dir_arg)
     root = output_root or output_root_from_settings()
-    if root.exists():
-        candidates = [p for p in root.iterdir() if p.is_dir()]
-        if candidates:
-            candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-            return candidates[0]
+    # FIX: Do not fallback to newest by mtime (stale selection). Require explicit run_dir_arg or env var.
+    # If neither provided, return Path(".") but caller must verify existence and provenance explicitly
+    # Previously: candidates.sort by mtime and return newest - now removed to enforce explicit identity
     return Path(".")
 
 
@@ -53,7 +51,6 @@ def find_osm_artifact(run_dir: Path) -> Tuple[Optional[Path], str]:
             return p, "run_dir"
     osm_files = sorted(run_dir.rglob("*.osm")) + sorted(run_dir.rglob("*.osm.pbf"))
     if osm_files:
-        osm_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
         return osm_files[0], "run_dir_glob"
     return None, "not_found"
 
@@ -74,14 +71,13 @@ def _newest_final_xodr(run_dir: Path) -> Optional[Path]:
     export_thesis_tables.py::_latest_final_xodr), falling back to the
     mtime-newest 08_final*.xodr of any kind.
     """
-    semantic = sorted(
-        run_dir.glob("08_final*_semantic.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
-    )
+    # FIX: Do not select by mtime (stale). Use explicit receipt or lexicographic with hash verification
+    # For now, select first lexicographically and require caller to verify hash, not mtime
+    semantic = sorted(run_dir.glob("08_final*_semantic.xodr"))
     if semantic:
+        # Return first and require hash check by caller, not mtime newest
         return semantic[0]
-    any_final = sorted(
-        run_dir.glob("08_final*.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
-    )
+    any_final = sorted(run_dir.glob("08_final*.xodr"))
     return any_final[0] if any_final else None
 
 

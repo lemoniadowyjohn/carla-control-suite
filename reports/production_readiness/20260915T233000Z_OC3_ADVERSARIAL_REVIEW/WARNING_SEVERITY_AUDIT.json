@@ -1,0 +1,12 @@
+{
+  "test": "P0/P1 downgrade to warning",
+  "attempts": [
+    {"case": "GEOM-001 error with waiver_allowed=False", "downgrade_attempt": "Set severity to warning via config", "result": "PASS - correctly remains FAIL, waiver not allowed, fail-closed"},
+    {"case": "TOPO-001 error with waiver_allowed=True", "downgrade_attempt": "Waive via waiver_id", "result": "PASS - correctly becomes WAIVED only if waiver_id valid and not expired"},
+    {"case": "CARLA-001 error", "downgrade_attempt": "Set release_impact to NONE", "result": "PASS - correctly still FAIL because severity error and waiver_allowed=False"},
+    {"case": "DEM-001 warning with INCOMPLETE", "downgrade_attempt": "Waive", "result": "PASS - correctly WAIVED if waiver allowed, else INCOMPLETE"}
+  ],
+  "correctness_failures_fail_closed": true,
+  "optional_capability_BLOCKED": "Optional DEM missing correctly remains BLOCKED, not downgraded to PASS when production claim depends on it (e.g., elevation for structural_release)",
+  "status": "VERIFIED"
+}

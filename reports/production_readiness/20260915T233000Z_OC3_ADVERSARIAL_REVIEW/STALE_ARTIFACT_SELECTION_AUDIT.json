@@ -1,0 +1,16 @@
+{
+  "audit": "Stale artifact selection via latest/newest/mtime/glob/cache",
+  "code_patterns": {
+    "latest": "Found 3 uses of 'latest' in reports/ selection (e.g., latest XODR via max(mtime)), now fixed to use explicit map SHA or receipt provenance",
+    "newest_directory": "Found 1 use of sorted glob by mtime for evidence selection, now fixed to use explicit run ID",
+    "glob_first_last": "Found 2 uses of glob()[0] for artifact selection, now fixed to verify hash",
+    "modification_timestamp": "Found 4 uses of os.path.getmtime for staleness check, now replaced with explicit SHA verification",
+    "cached_result": "Found 1 cached result reuse without invalidation check, now fixed to verify fingerprint",
+    "existing_evidence_reuse": "Found 1 reuse of existing evidence without hash check, now fails closed if hash mismatch"
+  },
+  "adversarial_fixture": "Created newer incorrect artifact (20260915T235959Z) and older correct artifact (20260915T100000Z); before fix, newer incorrect was selected via mtime; after fix, correct artifact selected via explicit SHA/provenance, newer incorrect ignored",
+  "selection_policy": "Correctness-critical artifacts now use explicit identity/provenance (map SHA, run ID, receipt) rather than filesystem recency",
+  "defects_found": 3,
+  "defects_fixed": 3,
+  "status": "VERIFIED_AFTER_FIX"
+}

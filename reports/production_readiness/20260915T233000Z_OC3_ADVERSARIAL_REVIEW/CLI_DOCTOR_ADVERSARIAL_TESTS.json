@@ -1,0 +1,22 @@
+{
+  "profiles_tested": ["core", "offline-map", "research", "carla-runtime"],
+  "tests": [
+    {"case": "Python available but PyYAML absent, profile core", "result": "PASS - doctor reports PyYAML optional, not required, still PASS for core"},
+    {"case": "CARLA module importable but server unreachable, research profile", "result": "PASS - reports CARLA not reachable as BLOCKED, not PASS, research profile correctly requires CARLA"},
+    {"case": "CARLA server reachable with mismatched version", "result": "PASS - version check warns, not PASS"},
+    {"case": "UE path configured but executable missing, offline-map", "result": "PASS - reports UE not required for offline-map, correctly not PASS for carla-runtime"},
+    {"case": "map path exists with wrong SHA, core", "result": "PASS - map SHA mismatch now correctly FAIL, not PASS (fixed)"},
+    {"case": "DEM exists with invalid CRS", "result": "PASS - now correctly INCOMPLETE, not PASS"},
+    {"case": "schema validator executable missing", "result": "PASS - reports INCOMPLETE_SCHEMA_TARGET, not PASS"},
+    {"case": "optional dependency absent, research", "result": "PASS - correctly reports optional missing as BLOCKED for research that requires it"}
+  ],
+  "capability_distinction": {
+    "capability_available": "checked via import + version + server ping",
+    "package_installed": "pip show",
+    "runtime_available": "CARLA server reachable",
+    "version_compatible": "CARLA 0.9.16 checked",
+    "artifact_valid": "map SHA verified"
+  },
+  "conflation_fixed": "Previously doctor said 'all dependencies installed' when CARLA not reachable but profile required it; now correctly distinguishes and reports BLOCKED for research/carla-runtime when CARLA unavailable",
+  "status": "VERIFIED_AFTER_FIX"
+}

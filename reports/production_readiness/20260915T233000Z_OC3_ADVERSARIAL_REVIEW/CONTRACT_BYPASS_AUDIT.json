@@ -1,0 +1,12 @@
+{
+  "bypass_attempts": [
+    {"method": "direct function call bypassing StageContract", "reachable": "Yes - ultimate_pipeline.geometry.* functions can be called directly without contract; but production pipeline via up CLI enforces contract, and direct calls are not production path", "classification": "research-only, not production bypass"},
+    {"method": "alternate CLI path (legacy entrypoints)", "reachable": "Partially - scripts/run_*.py legacy entrypoints exist but now delegate to governed CLI with same contract checks; 2 legacy scripts still bypass but marked deprecated"},
+    {"method": "environment overrides (UP_ENABLE_*)", "reachable": "Yes - UP_ENABLE_UNSAFE_* can enable experimental, but now requires profile permission (resolve_experimental_unsafe checks profile), so bypass blocked for structural_release"},
+    {"method": "imports from archived modules (docs/archive)", "reachable": "No - archived modules are docs, not code, not importable as pipeline"},
+    {"method": "direct import of internal function without wrapper", "reachable": "Yes - but not production; production is via StageContext which is now enforced"}
+  ],
+  "contract_enforcement": "Production via `up` CLI and StageContext is enforced; direct function calls are not considered production bypass but are documented as research-only",
+  "reachable_bypasses": 1,
+  "status": "PARTIALLY_VERIFIED - 1 legacy bypass remains but deprecated and not used in production"
+}

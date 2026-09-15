@@ -1,0 +1,25 @@
+{
+  "reviewed_sha": "a323a923e7dd722d85b103a98affca4ab3f7cda2",
+  "commits": [
+    {
+      "sha": "ee7fea9b",
+      "message": "refactor(contracts): harden stage execution contracts - ReleaseProfile enum, QualityStatus model, Warning taxonomy",
+      "files": ["ultimate_pipeline/contracts/stage_contracts.py", "test_*.py", "ultimate_pipeline/quality/xodr_schema_validator.py"],
+      "audit": "Contracts correctly implement ReleaseProfile StrEnum with explicit aliases, QualityStatus 6 values, WarningDefinition dataclass; no threshold weakening; tests cover canonical, alias, unknown, empty; no regressions"
+    },
+    {
+      "sha": "4347d60e",
+      "message": "fix(cli): strengthen governed pipeline entrypoint - add doctor --profile with dependency classification",
+      "files": ["ultimate_pipeline/cli.py"],
+      "audit": "CLI adds --profile Choice with 4 profiles, each classifies pyproj/shapely/rasterio/torch/carla; previously missing profile option now fixed; no bypass of contracts via CLI; legacy entrypoints still present but require same profile resolution"
+    },
+    {
+      "sha": "a323a923",
+      "message": "docs: add production engineering shell evidence - release profiles, quality status, warning taxonomy, CI, doctor profiles, XODR validator",
+      "files": ["reports/production_readiness/PRODUCTION_ENGINEERING_SHELL_20260915/*"],
+      "audit": "Evidence pack contains 5 JSONs with P0/P1 verification, no code change, no threshold weakening"
+    }
+  ],
+  "overall": "All 3 commits are safe, no hidden weakening, no broad except, no stale artifact reuse in commits themselves",
+  "status": "VERIFIED"
+}

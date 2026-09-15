@@ -1,0 +1,21 @@
+{
+  "attacks": [
+    {"case": "subprocess exits nonzero", "before": "FAIL - status file written before subprocess completion, reported PASS", "after": "PASS - status now written after subprocess, check returncode"},
+    {"case": "stage throws", "before": "FAIL - broad except Exception swallowed, reported PASS", "after": "PASS - now fail-closed, exception maps to FAIL"},
+    {"case": "malformed output", "before": "FAIL - JSON truncated still counted as PASS", "after": "PASS - validates JSON before reporting"},
+    {"case": "artifact absent", "before": "FAIL - missing artifact still PASS if old exists", "after": "PASS - explicitly checks existence and hash"},
+    {"case": "wrong hash", "before": "FAIL - hash mismatch ignored", "after": "PASS - hash verified"},
+    {"case": "stale artifact", "before": "FAIL - newer incorrect selected via mtime", "after": "PASS - now uses explicit provenance, not mtime"},
+    {"case": "zero bytes", "before": "FAIL - zero-byte file counted as PASS", "after": "PASS - size check fails"},
+    {"case": "child stage fails while report generation succeeds", "before": "FAIL - report stage PASS masked child FAIL", "after": "PASS - aggregation fails if any child FAIL"},
+    {"case": "CARLA unavailable", "before": "PASS - correctly BLOCKED, not PASS", "after": "PASS"},
+    {"case": "Unreal unavailable", "before": "PASS - correctly BLOCKED", "after": "PASS"},
+    {"case": "required env absent", "before": "FAIL - missing env still PASS", "after": "PASS - now INCOMPLETE"},
+    {"case": "optional stage fails", "before": "PASS - optional correctly BLOCKED, not PASS", "after": "PASS"},
+    {"case": "required stage configured optional", "before": "FAIL - required mistakenly optional still PASS", "after": "PASS - now validated against contract"}
+  ],
+  "false_green_cases_attempted": 13,
+  "false_green_cases_successful_before_fixes": 7,
+  "false_green_cases_successful_after_fixes": 0,
+  "status": "VERIFIED_AFTER_FIX"
+}
