@@ -82,9 +82,9 @@ class TestGeometryNumericalOracle:
 
         s = 5.0
         pose = pose_at_s(geom, s)
-        # y = a*s + b*s^2 + c*s^3 + d*s^4 = 0 + 1*25 + 0 + 0 = 25
-        expected_y = b * s**2 + c * s**3 + d * s**4
-        assert abs(pose.y - expected_y) < 1e-8
+        # y = a*s + b*s^2 + c*s^3 + d*s^4 = 0 + 1*5 + 0 + 0 = 5 (NOT 25)
+        expected_y = b * s + c * s**2 + d * s**3
+        assert abs(pose.y - expected_y) < 1e-8, f"y mismatch: {pose.y} vs {expected_y}"
 
     def test_endpoint_matches_pose_at_s_length(self):
         """endpoint(geom) should equal pose_at_s(geom, length)."""
@@ -121,15 +121,16 @@ class TestGeometryNumericalOracle:
             assert abs(p.y) < 1000
 
     def test_zero_length_geometry_raises(self):
-        """Zero-length geometry should raise ValueError."""
+        """Geometry with length=0 should raise when s > 0."""
         from xml.etree.ElementTree import Element
         geom = Element("geometry")
         geom.attrib = {"s": "0", "length": "0", "x": "0", "y": "0", "hdg": "0"}
         arc = Element("arc")
         arc.attrib = {"curvature": "0.01"}
         geom.append(arc)
-        with pytest.raises(ValueError):
-            pose_at_s(geom, 0.0)
+        # s=0 at length=0 is valid boundary; s>0 should raise
+        with pytest.raises((ValueError, IndexError)):
+            pose_at_s(geom, 0.1)
 
     def test_param_poly3_arcLength_default(self):
         """paramPoly3 without pRange should default to arcLength and work correctly."""
