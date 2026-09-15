@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_commit": "439e53de",
+  "branch": "feature/g3-cross-section-coverage-v1-20260912",
+  "scope": "read-only validation of the pinned automatic map of record",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "command": "python -m ultimate_pipeline.tools.phase_g3_cross_section --map <pinned-map>",
+  "result": {
+    "elapsed_seconds": 40.305297,
+    "roads_audited": 32267,
+    "cross_section_samples": 322077,
+    "total_issues": 751,
+    "non_stub_unavailable_section_count": 751,
+    "non_stub_unavailable_sample_count": 751,
+    "coverage_status": "INCOMPLETE",
+    "g3_verdict": "PHASE_G_CROSS_SECTION_INCOMPLETE"
+  },
+  "checks": {
+    "all_vertices_finite": true,
+    "monotonic_lateral_offsets": true,
+    "no_lane_overlap_or_crossover": true,
+    "no_non_stub_unavailable_sections": false,
+    "no_self_intersecting_cross_section": true,
+    "positive_drivable_width": true,
+    "section_boundary_continuity": true,
+    "sections_available": true
+  },
+  "tests": {
+    "focused": "2 passed: tests/unit/test_phase_g3_cross_section_coverage.py",
+    "full_offline_suite": "NOT_RUN: governed artifacts are absent from the isolated sparse worktree"
+  },
+  "claim_boundary": "This change makes incomplete cross-section coverage explicit. It does not repair the 751 declared-length or planView coverage defects and does not change the map of record.",
+  "live_carla": "NOT_RUN"
+}

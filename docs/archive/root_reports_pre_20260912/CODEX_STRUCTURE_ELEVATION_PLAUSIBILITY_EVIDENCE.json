@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "geometry_kernel_dependency_sha": "1868ed36cfd3d9f391f0f041dd1b13d2bb915d2b",
+  "implementation_sha": "8eac726cf885bb37b228b66901c8d7bfb7e5d61a",
+  "branch": "feature/structure-elevation-v1-20260907",
+  "scope": "read_only_plausibility_validation",
+  "algorithm": {
+    "geometry_sampler": "ultimate_pipeline.geometry.opendrive_geometry_kernel.sample",
+    "elevation_evaluator": "active OpenDRIVE cubic elevation polynomial",
+    "bridge_like_classes": ["bridge", "elevated"],
+    "tunnel_like_classes": ["tunnel"],
+    "terrain_ambiguous_classes": ["underpass", "covered"],
+    "thresholds": {
+      "sample_spacing_m": 5.0,
+      "min_bridge_clearance_m": 0.5,
+      "min_tunnel_cover_m": 0.5,
+      "max_violation_ratio": 0.2,
+      "minimum_interior_samples": 2
+    },
+    "mutation_policy": "Never synthesizes deck heights, tunnel floors, or elevation corrections."
+  },
+  "pinned_map_measurement": {
+    "status": "INCOMPLETE",
+    "source_map": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "source_map_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "source_osm": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "blocker": "F1 CRS contract unresolved: no_frame_matches_osm_source. Structure classification and DEM sampling fail closed before any bridge/tunnel measurement can be made.",
+    "flagged_structure_count": null,
+    "map_mutated": false
+  },
+  "tests": {
+    "focused": "37 passed",
+    "compileall": "PASS",
+    "full_offline_suite": "NOT_RUN",
+    "full_offline_suite_reason": "This sparse implementation worktree intentionally lacks ignored large integration artifacts and unrelated modules; focused tests cover the changed classifier, elevation importer integration, Stage 5 integration, gate manager, and new plausibility contract."
+  },
+  "frozen_evidence_mutated": false,
+  "map_of_record_mutated": false,
+  "live_carla": "NOT_RUN"
+}

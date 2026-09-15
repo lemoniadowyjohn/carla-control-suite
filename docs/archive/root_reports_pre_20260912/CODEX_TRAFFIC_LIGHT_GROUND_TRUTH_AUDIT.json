@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/traffic-light-ground-truth-audit-v1-20260912",
+  "inputs": {
+    "osm_path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "source_counts": {
+    "nodes_highway_traffic_signals": 0,
+    "ways_highway_traffic_signals": 0,
+    "relations_highway_traffic_signals": 0,
+    "nodes_traffic_signals_direction": 0,
+    "ways_traffic_signals_direction": 0,
+    "ways_crossing_traffic_signals": 44
+  },
+  "current_xodr_counts": {
+    "traffic_light_objects": 21163,
+    "signals": 21163
+  },
+  "code_audit": {
+    "traffic_light_infer_osm_source_references": 0,
+    "current_behavior": "junction-topology inference only"
+  },
+  "verdict": "INCOMPLETE",
+  "reason": "The pinned OSM source has no road-traffic-signal ground-truth features. The 44 crossing=traffic_signals ways are crossing attributes and cannot safely be interpreted as junction signal locations.",
+  "required_before_implementation": [
+    "Acquire a governed source with explicit road traffic-signal locations, directions, and applicability.",
+    "Define a source-to-XODR signal placement contract and validate it separately from pedestrian-crossing semantics.",
+    "Do not use the 44 crossing-tagged ways as a surrogate for traffic-light placement."
+  ],
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}

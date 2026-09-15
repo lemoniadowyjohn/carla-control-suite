@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "base_branch": "feature/g6-coverage-wiring-v1-20260912",
+  "authored_by": "Claude (direct implementation, not Codex -- Codex out of quota)",
+  "branch": "feature/candidate-regression-gate-v1-20260912",
+  "task_1_module_built": {
+    "status": "PASS",
+    "path": "ultimate_pipeline/quality/candidate_regression_gate.py",
+    "signature": "compare_candidate_to_baseline(baseline_xodr_path, candidate_xodr_path, *, out_dir=None) -> dict",
+    "no_hardcoded_paths": true,
+    "reuses_existing_logic": "phase_g0_handoff.compute_identity_hashes for the 7 protected-domain hashes (PROTECTED_KEYS, verbatim copy of phase_g8_acceptance.py's own list), preflight_xodr_loadability.run_preflight + phase_g8's own _error_signature comparison pattern for loadability regressions -- neither reimplemented",
+    "phase_g8_acceptance_py_untouched": true
+  },
+  "task_2_wiring_decision": {
+    "decision": "NOT_WIRED",
+    "reasoning": "Investigated map_registry.py and every scripts/*.py for a promotion entry point. Grepped for PINNED_MAP_REGISTRY[ (the only way a promotion could be recorded programmatically) across ultimate_pipeline/ and scripts/ -- zero matches. There is no promotion script: PINNED_MAP_REGISTRY in ultimate_pipeline/carla_tools/map_registry.py is a hand-maintained Python dict literal, and every prior promotion this session (and, per project memory, every promotion across this whole multi-week engagement) was a manual edit-the-dict-and-commit action, not a script invocation. Wiring an automated check into a promotion 'workflow' that does not exist as code would mean inventing that workflow as a side effect of this task, which is out of scope and risky -- it could conflict with or duplicate whatever ad-hoc process a human actually follows. This is exactly the 'stop and report why instead of forcing it in' case PROMPT Z's own task description anticipated.",
+    "recommendation_instead": "compare_candidate_to_baseline should be run manually as part of the promotion checklist (comparing the new candidate against the map it supersedes) and its output attached to the promotion commit, the same way every promotion this session has already included a manual sha256/before-after comparison in its commit message and memory record -- this module makes that existing informal practice reusable and consistent, it does not need to become an automated gate to be useful."
+  },
+  "task_3_real_pair_comparison": {
+    "pair_1": {
+      "baseline": "ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "candidate": "ingolstadt_perception_map_of_record_20260905_202847.xodr (current map-of-record, sha256 2ca342d8...)",
+      "relationship": "candidate directly supersedes baseline per PINNED_MAP_REGISTRY's own supersedes_sha256 chain (a same-day reproducibility re-regen)",
+      "verdict": "REGRESSION_CLEAN",
+      "detail": "all 7 protected hashes match, road counts match (32267/32267), lane_topology_hash identical, loadability status ok/ok with zero error-class differences"
+    },
+    "pair_2": {
+      "baseline": "ingolstadt_perception_map_of_record_20260904_214501.xodr (round5_hygienefix predecessor, byte size 148950126)",
+      "candidate": "ingolstadt_perception_map_of_record_20260905_202847.xodr (current map-of-record, byte size 148949722)",
+      "relationship": "candidate is several promotion rounds downstream of baseline -- a real, substantively different pair, not a same-day re-regen",
+      "verdict": "REGRESSION_CLEAN",
+      "detail": "all 7 protected hashes STILL match across this larger gap -- confirms the Phase-G protected-domain freeze genuinely held across the intervening hygiene/elevation rounds, a reassuring, consistent finding rather than a limitation of the tool"
+    },
+    "detection_capability_proof": "Since neither real historical pair contains an actual protected-domain regression to demonstrate against, added a synthetic unit test (test_planview_drift_is_regression_detected) proving the tool correctly returns REGRESSION_DETECTED and flags exactly the one domain that changed (planview_hash) while leaving unrelated domains (road_length_hash, elevation_profile_hash) correctly matched -- precision verified, not just recall."
+  },
+  "tests": {
+    "new": "tests/unit/test_candidate_regression_gate.py: 4 tests (identical->clean, synthetic planview drift->detected with correct per-domain precision, all 7 PROTECTED_KEYS actually checked, default temp-dir behavior when out_dir omitted)",
+    "targeted": "4 passed: test_candidate_regression_gate.py",
+    "broader": "25 passed: full -k \"regression_gate or preflight or phase_g0\" sweep across tests/ and ultimate_pipeline/tests, 0 failures",
+    "full_offline_suite": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus, consistent with every other prompt this session"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}

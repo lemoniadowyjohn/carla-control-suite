@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "base_branch": "stabilize/research-release-20260905",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_commit": "89cb5ce9",
+  "branch": "feature/crosswalk-match-distance-f195-v1-20260912",
+  "artifacts": {
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "threshold_change": {
+    "before_m": 5.0,
+    "after_m": 15.0,
+    "crossings_total": 179,
+    "matches_before": 127,
+    "matches_after": 145,
+    "rescued": 18,
+    "nearest_rescued_distance_range_m": [5.005737, 14.532644],
+    "nearest_unmatched_distance_m": 16.673742,
+    "ambiguity_reverified": "PASS",
+    "ambiguity_boundary": "Seven equal-distance runner-ups are paired carriageways; the remaining eleven have a second-nearest gap of 0.191369m to 3.329477m. No crossing was matched beyond 15m."
+  },
+  "orphaned_crossings": {
+    "770850184": {
+      "nearest_xodr_road": "68499",
+      "nearest_xodr_distance_m": 250.898343,
+      "shared_osm_ways": ["611319808", "805074683"],
+      "source_classification": "private service/footway subnetwork absent from the XODR driving graph",
+      "status": "DEFERRED_SOURCE_SCOPE"
+    },
+    "1084686582": {
+      "nearest_xodr_road": "46681",
+      "nearest_xodr_distance_m": 340.223474,
+      "shared_osm_ways": ["843987104"],
+      "source_classification": "private service/footway subnetwork absent from the XODR driving graph",
+      "status": "DEFERRED_SOURCE_SCOPE"
+    }
+  },
+  "remaining_far_misses": {
+    "count": 34,
+    "private_service_or_living_street_adjacency": 32,
+    "pedestrian_or_cycleway_only": 2,
+    "status": "DEFERRED_SOURCE_SCOPE",
+    "claim_boundary": "Shared source nodes prove adjacency to unrepresented service/living-street or pedestrian infrastructure, not that an XODR driving-road attachment is semantically correct. No threshold increase or forced association was applied."
+  },
+  "validation": {
+    "tests": "16 passed: tests/unit/test_crosswalk_writer.py with UP_GOVERNED_OSM_PATH and UP_GOVERNED_XODR_PATH",
+    "map_of_record_acceptance_delta": "NOT_RUN: writer behavior was measured in memory only; no candidate map was regenerated or promoted.",
+    "live_carla": "NOT_RUN"
+  }
+}

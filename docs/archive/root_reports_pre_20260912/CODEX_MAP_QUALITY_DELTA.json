@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "candidate": "roundabout-reconstruction-v2",
+  "release_profile_changed": false,
+  "map_of_record_changed": false,
+  "live_carla": "NOT_RUN",
+  "delta": {
+    "detection": "explicit OSM semantics, topology evidence, then geometric fallback with confidence",
+    "geometry": "complete deterministic sampling, circle fit diagnostics, non-circular source preservation",
+    "attachments": "endpoint/contactPoint evidence instead of polar-angle selection",
+    "lanes": "source lane IDs and provenance retained; unequal mappings fail closed",
+    "lane_links": "validated explicit lane links; no universal -1/-1 fallback",
+    "elevation": "full cubic evaluator, derivative, Hermite endpoint fitting, strict record ordering",
+    "transactionality": "candidate is built on a deep clone and preserved on validation failure",
+    "segmented_ring": "endpoint-constrained paramPoly3 roads with closed predecessor/successor links"
+  },
+  "unverified": ["full-map Ingolstadt numerical comparison", "second-city regression", "CARLA runtime compatibility", "release-profile activation"]
+}

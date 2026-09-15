@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_sha": "1a59cb20f95f430db88274a6be27a353b04ba9ff",
+  "branch": "feature/roundabout-reconstruction-v2-20260907",
+  "dirty": false,
+  "algorithm": {"mode": "offline_candidate_analysis_and_transactional_segment_builder", "release_enabled": false, "carla": "NOT_RUN", "preserve_first": true, "non_circular_action": "PRESERVE_SOURCE"},
+  "regression_corpus": {"status": "PASS", "tests_passed": 12, "scope": "offline synthetic geometry/topology/lane/elevation adversarial corpus"},
+  "ingolstadt": {"status": "INCOMPLETE", "reason": "large pinned map is not materialized in sparse checkout"},
+  "second_city": {"status": "INCOMPLETE", "reason": "no governed secondary payload is materialized in sparse checkout"},
+  "determinism": {"status": "PASS", "basis": "sorted IDs, deterministic spacing, deterministic algebraic fit"},
+  "tests": {"focused": "12 passed", "legacy_roundabout_independent_review": "44 passed", "legacy_roundabout_local_sparse_rerun": "39 passed", "full_offline": "5830 collected; 1 collection error: missing package_smoke_check helper in sparse checkout"},
+  "warnings": [],
+  "known_limitations": ["source-backed full-map Ingolstadt and second-city execution unavailable in sparse checkout", "V2 is not integrated into release pipeline profiles", "junction-wide approach mapping requires caller-supplied source anchors", "generated ring lane width currently uses a documented 3.5 m fallback rather than source width", "generated ring elevation boundaries currently use zero-grade constraints when source grades are unavailable", "live CARLA validation is outside this offline task"],
+  "live_carla": "NOT_RUN"
+}

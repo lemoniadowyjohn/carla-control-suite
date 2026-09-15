@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "base_branch": "feature/g3-cross-section-coverage-v1-20260912",
+  "base_sha": "291e801e334ce6978ca0cb83602c4738f4d0147a",
+  "branch": "feature/g3-length-epsilon-v1-20260912",
+  "authored_by": "Claude (direct implementation, not Codex)",
+  "map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "mutated": false
+  },
+  "task_1_full_751_characterization": {
+    "method": "reproduced validate_section_samples()/_road_geometry_segments() directly against all 32267 roads on the pinned map, bypassing audit_full_map()'s 200-entry report truncation",
+    "result": "751/751 (100%) share the identical signature: declared road length exceeds true geometry-segment-sum by exactly 0.001000m, with exactly one unavailable sample per affected road/section, always at s == declared_length (never mid-road). Zero exceptions found.",
+    "conclusion": "uniform, systematic artifact -- not a population with real geometric defects mixed in"
+  },
+  "task_2_root_cause": {
+    "found": true,
+    "mechanism": "ultimate_pipeline/core/carla_opendrive_loader.py::repair_road_lengths (margin=1e-3)",
+    "reference_implementation": "ultimate_pipeline/tools/crash_safe_length_repair.py (MARGIN_M = 1e-3, same rule documented in REPAIR_SOURCE['governed_runtime_rule'])",
+    "explanation": "CARLA 0.9.16's mesh builder asserts s <= road->GetLength() during generate_opendrive_world; when raw geometry end exceeds the declared road length by floating-point residue, CARLA throws a deterministic LowLevelFatalError roughly 10 minutes into the load. repair_road_lengths fixes this by setting road.length = true_geometry_end + 0.001 whenever geometry would otherwise exceed the declared length -- a real, load-bearing, already-shipped crash fix for a genuine CARLA defect class, not a bug.",
+    "verified_on_raw_xml": "road 42331: last <geometry> segment ends at s=155.96945426 (from raw s+length attributes in the file); declared <road length>=155.97045426000003 -- exact 0.001 delta, confirmed on unparsed source text, not just through the parser",
+    "disposition": "do not modify or remove this margin at the source -- it prevents a real crash. G3's sampler must tolerate it instead."
+  },
+  "task_3_epsilon_fix": {
+    "implementation": "ultimate_pipeline/tools/phase_g3_cross_section.py: added _ROAD_END_TOLERANCE_M = 0.01 (10x the known 1e-3 margin) and _true_geometry_end() helper; validate_section_samples() now retries a failed sample with s clamped to the true geometry end when the overrun is (0, tolerance] before reporting 'unavailable'",
+    "bound_chosen_because": "10x headroom over the exact known crash-fix margin (1e-3), while remaining far below the smallest real coverage/geometric defect this project has found in this check class (>= 0.05m, per the pre-existing test_non_stub_planview_tail_gap_is_incomplete_not_a_cross_section_pass fixture)",
+    "pinned_map_result": {
+      "non_stub_unavailable_section_count_before": 751,
+      "non_stub_unavailable_section_count_after": 0,
+      "coverage_status_after": "COMPLETE",
+      "g3_verdict_after": "PHASE_G_CROSS_SECTION_PASS"
+    },
+    "regression_fixtures_added": [
+      "test_known_repair_road_lengths_margin_is_tolerated_as_complete (0.001m gap -> COMPLETE)",
+      "test_gap_exactly_at_tolerance_boundary_is_still_tolerated (0.01m gap, exact boundary -> COMPLETE)",
+      "test_gap_just_past_tolerance_boundary_still_fails_closed (0.011m gap -> INCOMPLETE, proves the fix does not silently widen further)"
+    ],
+    "pre_existing_fixture_reverified": "test_non_stub_planview_tail_gap_is_incomplete_not_a_cross_section_pass (0.05m gap) still correctly reports INCOMPLETE -- confirms this fix did not weaken the original honesty gate Codex added"
+  },
+  "tests": {
+    "targeted": "9 passed: tests/unit/test_phase_g3_cross_section_coverage.py (5) + tests/unit/test_phase_g6_junction_lanelinks.py (4, unaffected, run as an adjacent-module sanity check)",
+    "broader_suite": "2944 passed, 41 failed, 7 skipped (tests/unit + tests/quality + ultimate_pipeline/tests). All 41 failures independently reproduced identically with this change stashed out -- confirmed pre-existing, caused by this sparse task-worktree lacking committed report/thesis-evidence artifacts (reports/, submission/thesis_source/, etc.), not caused by this change.",
+    "full_offline_suite": "NOT_RUN: sparse task worktree lacks the governed ignored-artifact corpus, consistent with every other prompt this session"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN"
+}

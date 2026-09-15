@@ -1,0 +1,15 @@
+{
+  "strict_gate_errors": 0,
+  "strict_gate_warnings": 1,
+  "nonpositive_geometry_lengths": 0,
+  "nonfinite_geometry_fields": 0,
+  "duplicate_geometry_s": 0,
+  "unordered_geometry_s": 0,
+  "road_count": 32710,
+  "junction_count": 3646,
+  "sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+  "road_length_mismatches": 30,
+  "roads_without_planview": 0,
+  "roads_without_geometry": 0,
+  "idempotent": true
+}
