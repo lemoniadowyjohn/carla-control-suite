@@ -1,0 +1,25 @@
+{
+  "crs_alignment_applied": false,
+  "crs_mismatch_detected": false,
+  "disabled": false,
+  "hausdorff": 6968.602685650037,
+  "hausdorff_norm": 1.3173551965025108,
+  "rmse": 85.31957130654521,
+  "rmse_norm": 1.0,
+  "runtime_sec": 10203.29,
+  "samples": 38330,
+  "settings": {
+    "max_geoms": null,
+    "max_samples": 50000,
+    "rmse_ref_m": 1.0,
+    "sample_step_m": 2.0,
+    "skip_hausdorff": false
+  },
+  "skip_hausdorff": false,
+  "source_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "timings": {
+    "hausdorff_sec": 6960.04,
+    "union_sec": 33.37
+  }
+}

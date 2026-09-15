@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "auto_xodr_in": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+  "input_header_offset_xy": {
+    "x": 832671.676,
+    "y": 5458671.104,
+    "mag_m": 5521814.225565474
+  },
+  "input_header_offset_z": 0.0,
+  "input_header_offset_hdg": 0.0,
+  "gps_center_projected": {
+    "x": 680084.6856952258,
+    "y": 5403884.708357111
+  },
+  "translation": {
+    "dx": 672889.0762585738,
+    "dy": 5397088.508304522
+  },
+  "auto_bbox_local": {
+    "minx": 0.000232,
+    "miny": -0.000166,
+    "maxx": 13267.063267,
+    "maxy": 14070.875071
+  },
+  "auto_bbox_aligned": {
+    "minx": 672889.0764905738,
+    "miny": 5397088.5081385225,
+    "maxx": 686156.1395255738,
+    "maxy": 5411159.383375523
+  },
+  "translated_geometry_points": 197397,
+  "dx": 672889.0762585738,
+  "dy": 5397088.508304522,
+  "output_header_offset_xy": {
+    "x": 0.0,
+    "y": 0.0
+  },
+  "source_geometry_freeze_invalidated": true,
+  "require_overlap": true,
+  "manual_bbox": {
+    "minx": 678015.8009219,
+    "miny": 5402486.14794,
+    "maxx": 682410.5096099,
+    "maxy": 5405403.332598
+  },
+  "overlap": true
+}

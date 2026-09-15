@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "evidence_complete": false,
+  "mode": "structural_only_fallback",
+  "reason": "perception disabled or missing metrics",
+  "status": "skipped",
+  "stub": true
+}

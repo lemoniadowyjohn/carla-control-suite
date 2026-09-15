@@ -1,0 +1,10 @@
+{
+  "confidence": "LOW",
+  "median_iou_matches": null,
+  "min_iou_used": 0.5,
+  "num_matches_at_min_iou": 0,
+  "override": "set UP_FORCE_PER_TILE=1 to force per-tile evaluation",
+  "pilot_only": true,
+  "reason": "confidence_low",
+  "skipped": true
+}

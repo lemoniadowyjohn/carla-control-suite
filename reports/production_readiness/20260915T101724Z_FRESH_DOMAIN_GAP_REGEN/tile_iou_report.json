@@ -1,0 +1,12 @@
+{
+  "rows": [],
+  "summary": {
+    "iou_gate_threshold": 0.5,
+    "match_method": "centroid_spatial",
+    "max_tile_iou_observed": null,
+    "mean_tile_iou_observed": null,
+    "tiles_gated_count": 0,
+    "tiles_passed_gate_count": 0,
+    "total_tile_pairs": 0
+  }
+}

@@ -14,6 +14,57 @@ is the authoritative source if this table and the code ever disagree — verify 
 | RQ4 — Structural variability / latent representation | The thesis fixed GNN representation collapse using NT-Xent and obtained statistically supported latent separation, including a K=1000 permutation test with p<0.001. | AUTHORITATIVE extension: a 5-seed GNN ensemble trained on the union of both maps' road-network graphs reports cosine_distance mean 0.6434 (95% bootstrap CI [0.616, 0.676]), CI excludes zero across all 5 seeds. The 95% CI is a bootstrap over only **n=5 seeds** (fragile tails — read as indicative; the thesis's K=1000 permutation p<0.001 remains the *primary* statistical support), and the metric is an in-sample union-domain latent-separation **diagnostic**, not held-out accuracy or transfer (see `reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/C21_STATISTICAL_PROVENANCE.md`). Explicit domain-randomization wiring is confirmed, but governed natural-vs-explicit DR experiments remain a separate extension. | The new contribution is the post-thesis multi-seed union-domain robustness layer (`C18_GNN_LATENT_GAP` → `C21_GNN_AUTHORITATIVE`), not the entire RQ4 result. The numbers changed materially on 2026-09-01 after fixing a graph-construction bug (lane-link edges were resolving to their own lane section instead of the successor's, making ~99.8% of training edges self-loops). |
 | RQ5 — Generalization and transfer | No downstream model-transfer experiment was completed; the question remained deferred. | `DEFERRED_RUNTIME` for RQ5(a) generated-train/manual-test transfer because it depends on valid RQ3 datasets. `DEFERRED_EXTERNAL_DATA` for RQ5(b) because no real-world Ingolstadt dataset exists on this machine. | No scientific upgrade. Unlabeled distribution shift/CORAL/MMD protocol checks are not model-generalization accuracy, and no manual-target training result may be relabeled as generated-to-manual transfer. |
 
+## 2026-09-15 note: fresh whole-map domain-gap regen (does not change the RQ2 row above)
+
+Every domain-gap comparison artifact on disk before this date compared the current pinned
+auto map-of-record against nothing newer than `08_final_structural_gap.xodr`
+(`submission/results/structural_gap_run11/`, whose own `fit_metric_provenance` field says its
+geometry-RMSE fit was "carried forward from prior patch output, not reverified") or an even older
+2026-08-19 candidate (`C14_RQ1_STRUCTURAL_GAP` / `C26`). Neither reflected the current pin
+(`campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr`,
+sha256 `2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798`, confirmed live against
+`ultimate_pipeline/carla_tools/map_registry.py`'s `auto_map_of_record` entry and
+`docs/runtime/MAP_OF_RECORD.md`), nor any of the ~10 domain-gap-computation bug fixes landed this
+session (schema-order corruption in `GeoAligner.apply_to_xodr`, a point-duplication bug in the
+alignment fallback extractor, a stale-header-bbox bug, a KL-divergence density-vs-probability-mass
+bug in `CurvatureGap`, a header-offset rebase fix in `deterministic_alignment.py`, plus prior
+paramPoly3-blindness fixes).
+
+A fresh, real (non-synthetic) `ultimate_pipeline/run_full_domain_gap.py` **whole-map** run against
+the current pin vs. `campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr` is
+recorded at `reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/` (see
+`full_report.json`; ran end-to-end, `EXIT_CODE:0`, internal CSV/JSON parity check `ok=true` with 0
+divergences). Headline whole-map numbers: geometry RMSE 85.32 m, Hausdorff 6968.60 m, curvature KL
+divergence 0.00306, road-classification gap 0.0584, semantic/object gap 0.1644, intersection
+normalized gap 0.1237. Auto object counts are now non-zero across the board (buildings 5682,
+traffic lights 21163, lamp posts 24792, guard rails 21740, bench 1122, crosswalk 127) — the stale
+run_11 artifact's 0/0/0/0 auto object counts were a pre-enrichment-snapshot artifact, not current
+reality.
+
+**Connectivity, specifically** (this session's re-examination target): the stale run_11 artifact's
+`predecessor_valid_rate` / `successor_valid_rate` = 0.0 and `road_lane_link_valid_rate` = 0.0 (both
+vs. manual's 1.0) — a near-total-failure reading — do **not** reproduce on the current pin. The
+fresh run shows auto `predecessor_valid_rate` = 1.0, `successor_valid_rate` = 1.0,
+`road_lane_link_valid_rate` = 1.0, identical to manual, with gap deltas of 0.0 instead of -1.0.
+Confirmed: this was an artifact of the stale/mismatched auto candidate (and/or predates this
+session's junction/lane-link bug fixes), not current reality. The one connectivity sub-metric that
+does still show a real gap is *declared*-link rate (whether a `predecessor`/`successor` element is
+present at all, mostly absent on junction-connector roads): auto ~0.29 vs. manual ~0.94 — a
+different question from link *validity*, which is what run_11 had flagged as broken.
+
+This whole-map run is **not** a replacement for the RQ2 table row above, which reports a
+manual-map-footprint **local** comparison (a deliberately different, narrower-scope methodology
+adopted specifically because an uncropped whole-map comparison overstates the gap — see the RQ2 row
+and `C14`/`C26`). The whole-map road-length ratio in the fresh run is ~27.8x
+(1,489,146 m auto / 53,525 m manual, uncropped), consistent with that concern and not a regression
+signal on its own. Tile IoU / per-tile metrics were not computed in this run
+(`UP_SKIP_TILE_ALIGNMENT=1`, `per_tile_status=skipped`, reason: per-tile auto-tiling subprocess
+reliably exceeds its hardcoded timeout on this city-scale candidate — see the commit that added the
+skip path) and elevation gap remains `disabled` (`dem_qc_failed`, planar/no-DEM map, unchanged from
+every prior run). No change is being made to the RQ2 row's authoritative ~2.7-3.8x local
+completeness-gap number; if this whole-map result is ever thought to warrant revisiting that number,
+that is a human call, not an automatic swap.
+
 ## Infrastructure changes not tied to a specific RQ
 
 - **CI correctness**: fixed a global `builtins.print` monkeypatch that entrypoint modules applied at

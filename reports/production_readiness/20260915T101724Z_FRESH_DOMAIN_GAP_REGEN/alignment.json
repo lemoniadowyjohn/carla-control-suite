@@ -1,0 +1,60 @@
+{
+  "alignment_method": "mean_translation_plus_small_angle_search",
+  "alignment_method_note": "Rigid SE(2) fit with scale locked to 1.0. The initialization is mean-centroid translation after CRS reprojection, followed by a deterministic small-angle search that minimizes nearest-neighbor start-point RMS from transformed auto geometry to manual geometry.",
+  "crs_alignment_applied": false,
+  "crs_reprojection": {
+    "applied": false,
+    "bbox_iou_after_reprojection": null,
+    "centroid_delta_after_m": null,
+    "centroid_delta_before_m": null,
+    "dst_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "src_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+  },
+  "diagnostics": {
+    "angle_search_best_deg": 2.5,
+    "angle_search_coarse_step_deg": 0.25,
+    "angle_search_fine_step_deg": 0.05,
+    "angle_search_objective_rms": 2815.2609531408975,
+    "angle_search_reason": null,
+    "angle_search_used": true,
+    "angle_search_window_deg": 2.5,
+    "auto_bbox": {
+      "maxx": 13267.063267,
+      "maxy": 14070.875071,
+      "minx": 0.000232,
+      "miny": -0.000166
+    },
+    "crs_alignment_applied": false,
+    "fallback_used": false,
+    "fit_metric": "planView geometry start-point correspondence RMSE",
+    "fit_metric_note": "Diagnostic metric (planView start-point RMSE); not proven equivalent to ICP optimization objective. Monotonic increase does not imply ICP failure - see chap7 alignment interpretation.",
+    "init_method": "mean_centroid_translation",
+    "manual_bbox": {
+      "maxx": 682410.5096099,
+      "maxy": 5405403.332598,
+      "minx": 678015.8009219,
+      "miny": 5402486.14794
+    },
+    "metric_note": "Rigid SE(2) fit with scale locked to 1.0 after CRS reprojection. The reported angle-search objective is nearest-neighbor start-point RMS from transformed auto geometry to manual geometry.",
+    "n_points": 7666,
+    "rigid_only": true,
+    "rmse_after": 4581.418944750365,
+    "rmse_after_initial_rigid": 4581.878614077362,
+    "rmse_before": 5439269.888477321,
+    "rotation_deg_after_init": 0.0,
+    "scale_locked": 1.0,
+    "source_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+  },
+  "icp_iters": null,
+  "icp_iters_note": "parameter declared but not consumed; alignment uses mean-centroid translation plus deterministic small-angle search, not iterative ICP",
+  "source_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "transform": {
+    "cos": 0.9990482215818578,
+    "scale": 1.0,
+    "sin": 0.043619387365336,
+    "tx": 672726.2144728889,
+    "ty": 5396971.912933857
+  }
+}

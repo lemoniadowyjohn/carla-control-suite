@@ -1,0 +1,6 @@
+{
+  "carla": "not_invoked",
+  "enabled": false,
+  "reason": "domain_gap_script_does_not_use_carla",
+  "tile_qa_status": "SKIPPED_CARLA_NOT_INVOKED"
+}

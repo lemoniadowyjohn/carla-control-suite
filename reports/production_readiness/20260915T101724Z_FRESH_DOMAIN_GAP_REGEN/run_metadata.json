@@ -1,0 +1,121 @@
+{
+  "alignment_bundle_source": "estimated_in_run",
+  "auto_correspondence_error": null,
+  "auto_correspondence_generated": false,
+  "auto_georeference_injected": true,
+  "auto_georeference_override_path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+  "auto_georeference_override_reason": "auto_incomplete_large_offset_promoted_to_manual",
+  "auto_georeference_warning": "Coordinates may be in local frame; verify alignment quality",
+  "auto_meta_mode": "generated_in_run",
+  "auto_meta_resolved": "",
+  "auto_meta_source": "generated_in_run",
+  "auto_run_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\candidate",
+  "auto_xodr_resolved": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+  "crs_alignment_applied": false,
+  "crs_precheck": {
+    "crs_alignment_applied": false,
+    "crs_mismatch_detected": false,
+    "source_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+  },
+  "deterministic_mode": true,
+  "deterministic_seed": 42,
+  "domain_gap_enable": {
+    "aggregate": true,
+    "curvature": true,
+    "geometry": true,
+    "intersection": true,
+    "latent_gnn": false,
+    "per_tile_curvature": true,
+    "per_tile_geometry": true,
+    "perception": true,
+    "road_classification": true,
+    "semantics": true
+  },
+  "domain_gap_normalization": {
+    "curvature_kl": 0.5,
+    "geometry_rmse_m": 1.0,
+    "hausdorff_m": 5.0,
+    "intersection_delta": 1.0,
+    "semantic_delta": 1.0
+  },
+  "enable_gnn_domain_gap": false,
+  "hardener": {
+    "applied": true,
+    "auto_xodr_sha256_after_hardening": "ba55615414523296fbc85e1e39dbe9a1d34c43620f2cd05ab5eadcc6f65c6e8b",
+    "auto_xodr_sha256_before_hardening": "0cb76a6b85077f11dbf500c0fb36eb0c655144d634974e7e33b1d50cdad96f92",
+    "hardener_actions": 45178,
+    "hardener_invalid": 0,
+    "hardener_reason": null,
+    "report_path": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\xodr_hardener_report.json"
+  },
+  "input_fingerprints": {
+    "auto_xodr": {
+      "md5": "85239977010f02d5b09c56a95da9f5d4",
+      "mtime_utc": "2026-09-15T10:21:12Z",
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\auto_georef_override.xodr",
+      "sha256": "3d6e3bf75f31514b65dd35a943b34286344c3bd0ffe316aff5dcd4846824e7d0",
+      "size_bytes": 148949800
+    },
+    "manual_xodr": {
+      "md5": "567a422ab6faf06863b0169edc4e3eb6",
+      "mtime_utc": "2026-09-15T10:00:16Z",
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "size_bytes": 66530869
+    }
+  },
+  "manual_map_choice": null,
+  "manual_xodr_resolved": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+  "manual_xodr_source": "provided",
+  "platform": "win32",
+  "python": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "source_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "target_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "tile_alignment_required": false,
+  "tile_alignment_skip_requested": true,
+  "tile_correspondence_csv": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\tile_correspondence.csv",
+  "tile_iou_gate_summary": {
+    "iou_gate_threshold": 0.5,
+    "match_method": "centroid_spatial",
+    "max_tile_iou_observed": null,
+    "mean_tile_iou_observed": null,
+    "tiles_gated_count": 0,
+    "tiles_passed_gate_count": 0,
+    "total_tile_pairs": 0
+  },
+  "tile_iou_report_json": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\tile_iou_report.json",
+  "tile_metrics_skipped": true,
+  "tile_pairing_counts": {
+    "correspondence_rows_total": 0,
+    "correspondence_rows_used": 0,
+    "missing_iou": 0,
+    "skipped_low_iou": 0
+  },
+  "tile_pairing_min_iou": 0.5,
+  "tile_pairing_provenance": {
+    "alignment_reason": "whole_map_only_requested",
+    "auto_grid": null,
+    "auto_manifest_path": null,
+    "auto_meta_path_used": "",
+    "auto_meta_resolution": "adjacent",
+    "auto_meta_resolved": "",
+    "auto_tile_metadata_used": "",
+    "auto_tiles_dir_raw": "",
+    "canonical_proj4_norm": "",
+    "frame_method": null,
+    "frame_offset": null,
+    "frame_transform": null,
+    "grid_delta": null,
+    "manual_grid": null,
+    "manual_manifest_path": null,
+    "manual_tiles_dir_raw": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles",
+    "manual_tiles_dir_resolved": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles",
+    "manual_tiles_override_source": "cli",
+    "manual_tiles_regenerated": false,
+    "manual_tiles_source_before": "cli",
+    "mismatch_reason": "",
+    "regenerated_tiles_dir": ""
+  },
+  "timestamp_utc": "2026-09-15T10:22:01Z"
+}

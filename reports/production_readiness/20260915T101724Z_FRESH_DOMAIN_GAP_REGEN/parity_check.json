@@ -1,0 +1,40 @@
+{
+  "mismatches": [],
+  "n_checked": 5,
+  "n_divergences": 0,
+  "ok": true,
+  "results": {
+    "connectivity_predecessor_rate": {
+      "abs_diff": 0.0,
+      "csv": 0.9355488418932527,
+      "json": 0.9355488418932527,
+      "status": "ok"
+    },
+    "curvature_kl_divergence": {
+      "abs_diff": 0.0,
+      "csv": 0.0030586158645774116,
+      "json": 0.0030586158645774116,
+      "status": "ok"
+    },
+    "geometry_hausdorff": {
+      "abs_diff": 0.0,
+      "csv": 6968.602685650037,
+      "json": 6968.602685650037,
+      "status": "ok"
+    },
+    "geometry_hausdorff_norm": {
+      "abs_diff": 0.0,
+      "csv": 1.3173551965025108,
+      "json": 1.3173551965025108,
+      "status": "ok"
+    },
+    "geometry_rmse": {
+      "abs_diff": 0.0,
+      "csv": 85.31957130654521,
+      "json": 85.31957130654521,
+      "status": "ok"
+    }
+  },
+  "schema": "parity_check_v1",
+  "tolerance": 0.01
+}

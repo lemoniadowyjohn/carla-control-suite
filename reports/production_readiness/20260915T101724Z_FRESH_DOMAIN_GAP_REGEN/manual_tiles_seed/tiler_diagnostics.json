@@ -1,0 +1,34 @@
+{
+  "timestamp_utc": "2026-09-15T10:18:02Z",
+  "python_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+  "argv": [
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\ultimate_pipeline\\tools\\tile_manual_xodr_windows.py",
+    "--xodr",
+    "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+    "--out",
+    "reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/manual_tiles_seed"
+  ],
+  "manual_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed",
+  "tiles_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles",
+  "resolved_paths": {
+    "xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+    "out": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed",
+    "tiles_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles"
+  },
+  "tile_size_m": 500.0,
+  "buffer_m": 50.0,
+  "origin_x": null,
+  "origin_y": null,
+  "origin_override_used": {
+    "x": null,
+    "y": null,
+    "from_origin_from_meta": false
+  },
+  "roads_scanned": null,
+  "candidate_tiles": null,
+  "tiles_written": 36,
+  "first_error": null,
+  "exception": null,
+  "runtime_sec": 84.26
+}

@@ -1,0 +1,25 @@
+{
+  "artifacts": {
+    "coordinate_system_json": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\coordinate_system.json",
+    "crs_comparability_json": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\crs_comparability.json",
+    "domain_gap_status_json": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\domain_gap_status.json",
+    "full_report_json": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\full_report.json"
+  },
+  "crs_comparability": {
+    "crs_match": false,
+    "reason": "manual_and_auto_georeference_do_not_match",
+    "status": "crs_mismatch"
+  },
+  "domain_gap_status": {
+    "failure_reason": null,
+    "reason": null,
+    "status": "pass",
+    "success": true
+  },
+  "elevation_included": false,
+  "note": "Direct run_full_domain_gap thesis parity audit summary.",
+  "rq2_scope": "structural_domain_gap",
+  "run_dir": "reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN",
+  "scenario_boundary": "scenario_b_structural_only_generated_vs_manual_reference; no cooked/manual perception equivalence claim",
+  "schema_version": "1.0"
+}

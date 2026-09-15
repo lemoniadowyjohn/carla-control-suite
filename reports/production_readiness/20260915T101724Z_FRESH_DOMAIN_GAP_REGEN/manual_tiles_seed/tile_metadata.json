@@ -1,0 +1,621 @@
+{
+  "_settings_snapshot": {
+    "TILE_BUFFER_M": 20.0,
+    "ENABLE_HIGHWAY_AWARE_TILE_BUFFER": false,
+    "HIGHWAY_TILE_BUFFER_ALPHA": 0.15,
+    "PRESERVE_GLOBAL_LANE_TYPES_IN_TILES": true,
+    "ALLOW_SUCCESSOR_OUTSIDE_TILE": true
+  },
+  "tile_0_1.xodr": {
+    "file": "tile_0_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_0_1.xodr",
+    "i": 0,
+    "j": 1,
+    "num_roads": 44,
+    "num_driving_lanes_xml": 437,
+    "num_driving_lanes_semantic": 437,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678010.1825240443,
+      5402979.707324845,
+      678510.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_0_2.xodr": {
+    "file": "tile_0_2.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_0_2.xodr",
+    "i": 0,
+    "j": 2,
+    "num_roads": 37,
+    "num_driving_lanes_xml": 517,
+    "num_driving_lanes_semantic": 517,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678010.1825240443,
+      5403479.707324845,
+      678510.1825240443,
+      5403979.707324845
+    ]
+  },
+  "tile_0_3.xodr": {
+    "file": "tile_0_3.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_0_3.xodr",
+    "i": 0,
+    "j": 3,
+    "num_roads": 3,
+    "num_driving_lanes_xml": 75,
+    "num_driving_lanes_semantic": 75,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678010.1825240443,
+      5403979.707324845,
+      678510.1825240443,
+      5404479.707324845
+    ]
+  },
+  "tile_0_4.xodr": {
+    "file": "tile_0_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_0_4.xodr",
+    "i": 0,
+    "j": 4,
+    "num_roads": 2,
+    "num_driving_lanes_xml": 72,
+    "num_driving_lanes_semantic": 72,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678010.1825240443,
+      5404479.707324845,
+      678510.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_1_1.xodr": {
+    "file": "tile_1_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_1_1.xodr",
+    "i": 1,
+    "j": 1,
+    "num_roads": 102,
+    "num_driving_lanes_xml": 666,
+    "num_driving_lanes_semantic": 666,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678510.1825240443,
+      5402979.707324845,
+      679010.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_1_2.xodr": {
+    "file": "tile_1_2.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_1_2.xodr",
+    "i": 1,
+    "j": 2,
+    "num_roads": 32,
+    "num_driving_lanes_xml": 259,
+    "num_driving_lanes_semantic": 259,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678510.1825240443,
+      5403479.707324845,
+      679010.1825240443,
+      5403979.707324845
+    ]
+  },
+  "tile_1_3.xodr": {
+    "file": "tile_1_3.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_1_3.xodr",
+    "i": 1,
+    "j": 3,
+    "num_roads": 86,
+    "num_driving_lanes_xml": 885,
+    "num_driving_lanes_semantic": 885,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678510.1825240443,
+      5403979.707324845,
+      679010.1825240443,
+      5404479.707324845
+    ]
+  },
+  "tile_1_4.xodr": {
+    "file": "tile_1_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_1_4.xodr",
+    "i": 1,
+    "j": 4,
+    "num_roads": 89,
+    "num_driving_lanes_xml": 1204,
+    "num_driving_lanes_semantic": 1204,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678510.1825240443,
+      5404479.707324845,
+      679010.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_1_5.xodr": {
+    "file": "tile_1_5.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_1_5.xodr",
+    "i": 1,
+    "j": 5,
+    "num_roads": 7,
+    "num_driving_lanes_xml": 315,
+    "num_driving_lanes_semantic": 315,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      678510.1825240443,
+      5404979.707324845,
+      679010.1825240443,
+      5405479.707324845
+    ]
+  },
+  "tile_2_1.xodr": {
+    "file": "tile_2_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_2_1.xodr",
+    "i": 2,
+    "j": 1,
+    "num_roads": 74,
+    "num_driving_lanes_xml": 1350,
+    "num_driving_lanes_semantic": 1350,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679010.1825240443,
+      5402979.707324845,
+      679510.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_2_2.xodr": {
+    "file": "tile_2_2.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_2_2.xodr",
+    "i": 2,
+    "j": 2,
+    "num_roads": 100,
+    "num_driving_lanes_xml": 1384,
+    "num_driving_lanes_semantic": 1384,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679010.1825240443,
+      5403479.707324845,
+      679510.1825240443,
+      5403979.707324845
+    ]
+  },
+  "tile_2_3.xodr": {
+    "file": "tile_2_3.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_2_3.xodr",
+    "i": 2,
+    "j": 3,
+    "num_roads": 115,
+    "num_driving_lanes_xml": 1018,
+    "num_driving_lanes_semantic": 1018,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679010.1825240443,
+      5403979.707324845,
+      679510.1825240443,
+      5404479.707324845
+    ]
+  },
+  "tile_2_4.xodr": {
+    "file": "tile_2_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_2_4.xodr",
+    "i": 2,
+    "j": 4,
+    "num_roads": 148,
+    "num_driving_lanes_xml": 1442,
+    "num_driving_lanes_semantic": 1442,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679010.1825240443,
+      5404479.707324845,
+      679510.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_2_5.xodr": {
+    "file": "tile_2_5.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_2_5.xodr",
+    "i": 2,
+    "j": 5,
+    "num_roads": 81,
+    "num_driving_lanes_xml": 818,
+    "num_driving_lanes_semantic": 818,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679010.1825240443,
+      5404979.707324845,
+      679510.1825240443,
+      5405479.707324845
+    ]
+  },
+  "tile_3_0.xodr": {
+    "file": "tile_3_0.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_3_0.xodr",
+    "i": 3,
+    "j": 0,
+    "num_roads": 2,
+    "num_driving_lanes_xml": 231,
+    "num_driving_lanes_semantic": 231,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679510.1825240443,
+      5402479.707324845,
+      680010.1825240443,
+      5402979.707324845
+    ]
+  },
+  "tile_3_1.xodr": {
+    "file": "tile_3_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_3_1.xodr",
+    "i": 3,
+    "j": 1,
+    "num_roads": 25,
+    "num_driving_lanes_xml": 1204,
+    "num_driving_lanes_semantic": 1204,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679510.1825240443,
+      5402979.707324845,
+      680010.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_3_2.xodr": {
+    "file": "tile_3_2.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_3_2.xodr",
+    "i": 3,
+    "j": 2,
+    "num_roads": 2,
+    "num_driving_lanes_xml": 353,
+    "num_driving_lanes_semantic": 353,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679510.1825240443,
+      5403479.707324845,
+      680010.1825240443,
+      5403979.707324845
+    ]
+  },
+  "tile_3_4.xodr": {
+    "file": "tile_3_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_3_4.xodr",
+    "i": 3,
+    "j": 4,
+    "num_roads": 62,
+    "num_driving_lanes_xml": 708,
+    "num_driving_lanes_semantic": 708,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679510.1825240443,
+      5404479.707324845,
+      680010.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_3_5.xodr": {
+    "file": "tile_3_5.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_3_5.xodr",
+    "i": 3,
+    "j": 5,
+    "num_roads": 66,
+    "num_driving_lanes_xml": 841,
+    "num_driving_lanes_semantic": 841,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      679510.1825240443,
+      5404979.707324845,
+      680010.1825240443,
+      5405479.707324845
+    ]
+  },
+  "tile_4_0.xodr": {
+    "file": "tile_4_0.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_4_0.xodr",
+    "i": 4,
+    "j": 0,
+    "num_roads": 41,
+    "num_driving_lanes_xml": 601,
+    "num_driving_lanes_semantic": 601,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680010.1825240443,
+      5402479.707324845,
+      680510.1825240443,
+      5402979.707324845
+    ]
+  },
+  "tile_4_1.xodr": {
+    "file": "tile_4_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_4_1.xodr",
+    "i": 4,
+    "j": 1,
+    "num_roads": 21,
+    "num_driving_lanes_xml": 379,
+    "num_driving_lanes_semantic": 379,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680010.1825240443,
+      5402979.707324845,
+      680510.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_4_4.xodr": {
+    "file": "tile_4_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_4_4.xodr",
+    "i": 4,
+    "j": 4,
+    "num_roads": 58,
+    "num_driving_lanes_xml": 825,
+    "num_driving_lanes_semantic": 825,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680010.1825240443,
+      5404479.707324845,
+      680510.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_4_5.xodr": {
+    "file": "tile_4_5.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_4_5.xodr",
+    "i": 4,
+    "j": 5,
+    "num_roads": 68,
+    "num_driving_lanes_xml": 881,
+    "num_driving_lanes_semantic": 881,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680010.1825240443,
+      5404979.707324845,
+      680510.1825240443,
+      5405479.707324845
+    ]
+  },
+  "tile_5_0.xodr": {
+    "file": "tile_5_0.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_5_0.xodr",
+    "i": 5,
+    "j": 0,
+    "num_roads": 56,
+    "num_driving_lanes_xml": 713,
+    "num_driving_lanes_semantic": 713,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680510.1825240443,
+      5402479.707324845,
+      681010.1825240443,
+      5402979.707324845
+    ]
+  },
+  "tile_5_1.xodr": {
+    "file": "tile_5_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_5_1.xodr",
+    "i": 5,
+    "j": 1,
+    "num_roads": 36,
+    "num_driving_lanes_xml": 679,
+    "num_driving_lanes_semantic": 679,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680510.1825240443,
+      5402979.707324845,
+      681010.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_5_2.xodr": {
+    "file": "tile_5_2.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_5_2.xodr",
+    "i": 5,
+    "j": 2,
+    "num_roads": 3,
+    "num_driving_lanes_xml": 332,
+    "num_driving_lanes_semantic": 332,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680510.1825240443,
+      5403479.707324845,
+      681010.1825240443,
+      5403979.707324845
+    ]
+  },
+  "tile_5_3.xodr": {
+    "file": "tile_5_3.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_5_3.xodr",
+    "i": 5,
+    "j": 3,
+    "num_roads": 2,
+    "num_driving_lanes_xml": 270,
+    "num_driving_lanes_semantic": 270,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680510.1825240443,
+      5403979.707324845,
+      681010.1825240443,
+      5404479.707324845
+    ]
+  },
+  "tile_5_4.xodr": {
+    "file": "tile_5_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_5_4.xodr",
+    "i": 5,
+    "j": 4,
+    "num_roads": 51,
+    "num_driving_lanes_xml": 654,
+    "num_driving_lanes_semantic": 654,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680510.1825240443,
+      5404479.707324845,
+      681010.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_5_5.xodr": {
+    "file": "tile_5_5.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_5_5.xodr",
+    "i": 5,
+    "j": 5,
+    "num_roads": 87,
+    "num_driving_lanes_xml": 802,
+    "num_driving_lanes_semantic": 802,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      680510.1825240443,
+      5404979.707324845,
+      681010.1825240443,
+      5405479.707324845
+    ]
+  },
+  "tile_6_1.xodr": {
+    "file": "tile_6_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_6_1.xodr",
+    "i": 6,
+    "j": 1,
+    "num_roads": 41,
+    "num_driving_lanes_xml": 183,
+    "num_driving_lanes_semantic": 183,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      681010.1825240443,
+      5402979.707324845,
+      681510.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_6_4.xodr": {
+    "file": "tile_6_4.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_6_4.xodr",
+    "i": 6,
+    "j": 4,
+    "num_roads": 5,
+    "num_driving_lanes_xml": 0,
+    "num_driving_lanes_semantic": 0,
+    "is_drivable": false,
+    "drivable_in_full_map": false,
+    "bounds": [
+      681010.1825240443,
+      5404479.707324845,
+      681510.1825240443,
+      5404979.707324845
+    ]
+  },
+  "tile_6_5.xodr": {
+    "file": "tile_6_5.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_6_5.xodr",
+    "i": 6,
+    "j": 5,
+    "num_roads": 8,
+    "num_driving_lanes_xml": 20,
+    "num_driving_lanes_semantic": 20,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      681010.1825240443,
+      5404979.707324845,
+      681510.1825240443,
+      5405479.707324845
+    ]
+  },
+  "tile_7_0.xodr": {
+    "file": "tile_7_0.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_7_0.xodr",
+    "i": 7,
+    "j": 0,
+    "num_roads": 2,
+    "num_driving_lanes_xml": 163,
+    "num_driving_lanes_semantic": 163,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      681510.1825240443,
+      5402479.707324845,
+      682010.1825240443,
+      5402979.707324845
+    ]
+  },
+  "tile_7_1.xodr": {
+    "file": "tile_7_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_7_1.xodr",
+    "i": 7,
+    "j": 1,
+    "num_roads": 49,
+    "num_driving_lanes_xml": 470,
+    "num_driving_lanes_semantic": 470,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      681510.1825240443,
+      5402979.707324845,
+      682010.1825240443,
+      5403479.707324845
+    ]
+  },
+  "tile_8_0.xodr": {
+    "file": "tile_8_0.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_8_0.xodr",
+    "i": 8,
+    "j": 0,
+    "num_roads": 2,
+    "num_driving_lanes_xml": 234,
+    "num_driving_lanes_semantic": 234,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      682010.1825240443,
+      5402479.707324845,
+      682510.1825240443,
+      5402979.707324845
+    ]
+  },
+  "tile_8_1.xodr": {
+    "file": "tile_8_1.xodr",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.claude\\worktrees\\agent-a840f75a693e18c46\\reports\\production_readiness\\20260915T101724Z_FRESH_DOMAIN_GAP_REGEN\\manual_tiles_seed\\tiles\\tile_8_1.xodr",
+    "i": 8,
+    "j": 1,
+    "num_roads": 29,
+    "num_driving_lanes_xml": 706,
+    "num_driving_lanes_semantic": 706,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "bounds": [
+      682010.1825240443,
+      5402979.707324845,
+      682510.1825240443,
+      5403479.707324845
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "avg_iou": null,
+  "confidence": {
+    "label": "LOW",
+    "reason": "num_matches<5 or median_iou<0.3"
+  },
+  "confidence_rule": {
+    "HIGH_requires_median_iou_gte": 0.5,
+    "HIGH_requires_num_matches_gte": 10,
+    "MEDIUM_requires_median_iou_gte": 0.3,
+    "MEDIUM_requires_num_matches_gte": 5
+  },
+  "forced_per_tile": false,
+  "match_ratio": 0.0,
+  "median_iou": null,
+  "min_iou": 0.5,
+  "min_iou_threshold": 0.5,
+  "min_iou_used": 0.5,
+  "num_candidate_pairs": 0,
+  "num_matches": 0,
+  "num_matches_at_min_iou": 0,
+  "num_pairs": 0,
+  "one_to_one": {
+    "duplicate_auto": [],
+    "duplicate_manual": [],
+    "ok": true
+  },
+  "pairing_method": "unknown",
+  "pairing_provenance": {
+    "method": "unknown",
+    "min_iou_threshold": 0.5,
+    "min_iou_used": 0.5,
+    "num_candidate_pairs": 0
+  },
+  "pairs": [],
+  "status": "not_computed"
+}

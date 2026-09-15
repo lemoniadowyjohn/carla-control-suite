@@ -1,0 +1,9 @@
+{
+  "dem_qc_ok": null,
+  "dem_qc_path": null,
+  "disabled": true,
+  "disabled_reason": "DEM fallback used - excluded from composite per policy",
+  "primary_artifact_is_planar": true,
+  "reason": "dem_qc_failed",
+  "supplementary": true
+}
