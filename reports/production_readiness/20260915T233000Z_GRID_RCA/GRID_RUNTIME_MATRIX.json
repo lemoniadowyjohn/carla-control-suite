@@ -1,0 +1,14 @@
+{
+  "harness": "grid_runtime_harness.py (reusable diagnostic script)",
+  "maps_tested": ["Town10HD (control)", "Grid0821", "Grid0828"],
+  "configs": ["cold start", "warm reload", "no rendering", "rendering/no actors", "ego only", "RGB", "semantic", "depth", "LiDAR", "combined", "standard rig", "actor destruction", "skip-destroy", "world reload", "server shutdown"],
+  "repetitions": 3,
+  "results": {
+    "Town10HD": {"status": "BLOCKED", "reason": "CARLA 0.9.16 server not available on this host - harness implemented offline, runtime execution BLOCKED"},
+    "Grid0821": {"status": "BLOCKED", "reason": "Same - harness offline, runtime BLOCKED"},
+    "Grid0828": {"status": "BLOCKED", "reason": "Same"}
+  },
+  "recorded_fields": ["CARLA server version", "Python client version", "exact map", "package identity", "RPC port", "streaming port", "traffic-manager port", "server PID", "exit code", "exception", "last successful operation", "sensor actor IDs", "frame count", "callback count", "queue state", "destroy order", "UE log tail", "CARLA log tail", "RAM", "VRAM", "GPU", "draw calls", "triangles", "streaming pool"],
+  "differentiation": "Harness distinguishes server crash vs client exception vs RPC disconnect vs streaming disconnect vs sensor callback failure vs native assertion vs timeout vs teardown failure - not all as streaming error",
+  "status": "BLOCKED - harness implemented offline, runtime execution BLOCKED (CARLA not available)"
+}

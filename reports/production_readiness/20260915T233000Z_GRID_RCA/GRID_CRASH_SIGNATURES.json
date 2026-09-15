@@ -1,0 +1,13 @@
+{
+  "signatures": [
+    {"map": "Grid0821", "sensor": "semantic camera", "signature": "ASensor::EndPlay teardown, RPC disconnect after 120 frames, exit code -11", "hypothesis": "CARLA 0.9.16 ASensor::EndPlay native crash on sensor destroy, not streaming"},
+    {"map": "Grid0828", "sensor": "LiDAR + RGB", "signature": "Streaming disconnect, queue overflow, no server crash, client timeout", "hypothesis": "Streaming pool exhaustion, mitigated by UP_SKIP_STREAM_CHECK"}
+  ],
+  "ranked_hypotheses": [
+    {"hypothesis": "ASensor::EndPlay teardown", "evidence": "Observed in Grid0821 semantic, not in Town10HD, mitigated by UP_SKIP_DESTROY", "rank": 1},
+    {"hypothesis": "Streaming pool", "evidence": "Grid0828 combined sensors, queue state overflow", "rank": 2},
+    {"hypothesis": "UP_SKIP_DESTROY", "assessment": "Mitigates teardown crash, does not eliminate root cause, bypasses detection for destroy order"},
+    {"hypothesis": "UP_SKIP_STREAM_CHECK", "assessment": "Bypasses streaming disconnect detection, does not eliminate pool exhaustion"}
+  ],
+  "status": "BLOCKED - signatures from historical logs, harness will re-validate when CARLA available"
+}

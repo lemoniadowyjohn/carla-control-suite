@@ -1,0 +1,9 @@
+{
+  "lifecycle": [
+    {"stage": "spawn", "sensor": "RGB", "actor_id": 101, "frame": 0, "status": "BLOCKED - harness offline, no CARLA"},
+    {"stage": "streaming", "sensor": "RGB", "callback_count": 0, "queue_state": "N/A"},
+    {"stage": "destroy", "sensor": "RGB", "order": 1, "status": "BLOCKED"}
+  ],
+  "destroy_order": "Ego -> RGB -> semantic -> depth -> LiDAR (per spawn_hardening)",
+  "status": "BLOCKED - trace implemented offline, runtime BLOCKED"
+}
