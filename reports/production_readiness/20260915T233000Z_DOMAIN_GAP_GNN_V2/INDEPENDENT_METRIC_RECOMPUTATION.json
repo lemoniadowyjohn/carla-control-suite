@@ -1,0 +1,47 @@
+{
+  "identical_maps": {
+    "expected": "chamfer 0, pre Validity 1.0",
+    "result": "PASS - 0 and 1.0"
+  },
+  "translated_identical": {
+    "expected": "chamfer 0 after alignment, else >0",
+    "result": "PASS"
+  },
+  "empty_vs_nonempty": {
+    "expected": "NaN or large distance, not 0",
+    "result": "PASS - returns NaN, not 0"
+  },
+  "zero_heading": {
+    "expected": "heading error 0, not truthiness bug",
+    "result": "PASS - fixed, 0.0 correctly handled"
+  },
+  "zero_curvature": {
+    "expected": "curvature gap 0",
+    "result": "PASS"
+  },
+  "missing_lanes": {
+    "expected": "coverage <1",
+    "result": "PASS"
+  },
+  "one_added_lane": {
+    "expected": "coverage change",
+    "result": "PASS"
+  },
+  "removed_road_connection": {
+    "expected": "connectivity <1",
+    "result": "PASS"
+  },
+  "shifted_junction": {
+    "expected": "alignment residual >0",
+    "result": "PASS"
+  },
+  "lane_width_perturbation": {
+    "expected": "width gap >0",
+    "result": "PASS"
+  },
+  "elevation_perturbation": {
+    "expected": "elevation RMSE >0",
+    "result": "PASS"
+  },
+  "status": "PASS - all 11 perturbations respond sensibly, no truthiness bug"
+}

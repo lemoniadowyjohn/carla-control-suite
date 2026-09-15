@@ -1,0 +1,83 @@
+{
+  "baseline": {
+    "selected": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+    "reason": "Contains heading-error zero/truthiness fix and ambiguity-margin direction fix via 116042ec, without unrelated DEM/UE changes from a861c3bd",
+    "rejected": {
+      "a861c3bd": "Has fixes but pulls conservative bounds/geometry XML remediation - unrelated to domain-gap",
+      "6f76f37f": "Lacks fixes (before 116042ec)"
+    },
+    "fixes_verified": [
+      "heading_error truthiness (0.0 handled)",
+      "ambiguity_margin direction (correct)"
+    ]
+  },
+  "metrics": {
+    "structural": [
+      {
+        "name": "chamfer_distance",
+        "formula": "mean(min_dist(A->B) + min_dist(B->A))/2",
+        "units": "meters",
+        "direction": "lower is better",
+        "ideal": 0,
+        "missing": "NaN",
+        "zero": "0 if identical",
+        "empty": "NaN if empty set",
+        "alignment_prereq": "common CRS"
+      },
+      {
+        "name": "hausdorff",
+        "formula": "max(max_min_dist)",
+        "units": "meters",
+        "direction": "lower is better",
+        "ideal": 0
+      },
+      {
+        "name": "rmse",
+        "formula": "sqrt(mean((x-y)^2))",
+        "units": "meters",
+        "direction": "lower is better",
+        "ideal": 0
+      },
+      {
+        "name": "predecessor_validity",
+        "formula": "valid_predecessors / total",
+        "units": "ratio",
+        "direction": "higher is better",
+        "ideal": 1.0,
+        "zero": "1.0 if all valid",
+        "historical": "run_11 had 0.0, current-pin 1.0"
+      }
+    ],
+    "geometric": [
+      {
+        "name": "curvature_gap",
+        "formula": "mean(|k_auto - k_manual|)",
+        "units": "1/m",
+        "direction": "lower is better"
+      }
+    ],
+    "topology": [
+      {
+        "name": "connectivity",
+        "formula": "valid_lanelinks / total",
+        "units": "ratio",
+        "ideal": 1.0
+      }
+    ],
+    "tile": [
+      {
+        "name": "per_tile_chamfer",
+        "formula": "chamfer per 100m tile",
+        "units": "meters"
+      }
+    ],
+    "latent": [
+      {
+        "name": "gnn_cosine",
+        "formula": "cosine(emb_auto, emb_manual)",
+        "units": "cosine",
+        "direction": "higher is more similar"
+      }
+    ]
+  }
+}

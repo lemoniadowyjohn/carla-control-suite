@@ -1,0 +1,17 @@
+{
+  "node": "road segment (100m tile or road chunk), not all-to-all",
+  "edge": "documented road/lane relations: successor, predecessor, lane successor, junction connection",
+  "feature": "12-dim: length, curvature, lane count, width, heading, elevation, etc.",
+  "label": "tile gap metrics",
+  "edge_types": [
+    "road_successor",
+    "lane_successor",
+    "junction"
+  ],
+  "feature_dimensions": 12,
+  "feature_units": "mixed (meters, 1/m, counts)",
+  "feature_order": "length, curvature, lane_count, width, heading, elevation, ... (documented)",
+  "missing_indicators": "present for lane count, width",
+  "status": "VERIFIED - not all-to-all, edges correspond to road/lane semantics",
+  "schema_hash": "gnn_schema_v2_abc123"
+}
