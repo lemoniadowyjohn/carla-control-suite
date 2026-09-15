@@ -1,0 +1,22 @@
+{
+  "safe_commits_for_integration": [
+    "85af44bb6fc9f46e9529c8bf63ba194e0f1fa8c2 - test(geometry-validator): add kernel-migration repair/reject cases",
+    "c1f67dbd3e9fc19f7389168718f5e2594141b1f2 - fix(geometry-validator): enforce XML geometry reorder/removal, endpoint-heading backfill, nonfinite rejection",
+    "250102952c4f97fbc01c7686f5ae88a18490b18c - test(dem): add CRS-transform and coverage-gate tests",
+    "6188664be674faa30027585c69c8dee0b08a174d - fix(dem-identity): compute bounds_wgs84 via pyproj and add dem_coverage_gate",
+    "4e3add42c31a85eeb2e64f6e22340f4b96dddbe4 - feat(dem-crs): add explicit CRS state validation",
+    "b9555790e26dbf60288717acbc28cef5854b4686 - fix(dem-coverage): fail-closed production georeference policy and new coverage metrics",
+    "395a5133391255e23824c1db4dd272c8be188561 - docs(evidence): geometry/CRS/DEM hardening evidence pack (docs only)"
+  ],
+  "duplicate_commits_to_exclude": [
+    "fix/large-map-offline-hardening-v1-20260915 branch - contains duplicate OC-1-like changes mixed with tiling/fbx work; NOT canonical. Do not cherry-pick from it; use fix/geometry-crs-dem-correctness-v1-20260915 only"
+  ],
+  "additional_fixes_in_review_branch": [
+    "paramPoly3 pRange validation: opendrive_geometry_kernel.py, geometry_math.py, parampoly3_tangent_repair.py, check_geometric_continuity.py - now fail closed on unknown pRange (was silent arcLength fallback)",
+    "GEOM-FREEZE-001: StageContext horizontal_geometry_fingerprint + canonical fingerprint in geometry_validator.py, verified via test"
+  ],
+  "map_of_record_modified": false,
+  "tests_required_before_merge": "60 focused tests must pass at 395a5133 (verified: 60 passed) plus new pRange and freeze guard tests (2 new tests passed)",
+  "status": "READY_FOR_INTEGRATION",
+  "timestamp": "2026-09-15T23:30:00Z"
+}

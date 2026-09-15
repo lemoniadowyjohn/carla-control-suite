@@ -597,3 +597,25 @@ class GeometryValidator:
             "num_segments": len(parsed),
             "issues": issues,
         }
+def canonical_horizontal_geometry_fingerprint(root) -> str:
+    """Calculate canonical fingerprint of planView geometry at freeze."""
+    import hashlib
+    import xml.etree.ElementTree as ET
+    h = hashlib.sha256()
+    for road in sorted(root.findall("road"), key=lambda r: r.get("id", "")):
+        rid = road.get("id", "")
+        h.update(rid.encode())
+        plan = road.find("planView")
+        if plan is None:
+            continue
+        for geom in plan.findall("geometry"):
+            for k in ["s", "x", "y", "hdg", "length"]:
+                v = geom.get(k, "")
+                h.update(f"{k}={v}".encode())
+            # primitive
+            prim = next(iter(geom), None)
+            if prim is not None:
+                h.update(prim.tag.encode())
+                for kk, vv in sorted(prim.attrib.items()):
+                    h.update(f"{kk}={vv}".encode())
+    return h.hexdigest()

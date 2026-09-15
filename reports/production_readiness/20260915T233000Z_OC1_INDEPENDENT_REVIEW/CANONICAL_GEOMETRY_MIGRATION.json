@@ -1,0 +1,41 @@
+{
+  "reported": "CANONICAL_GEOMETRY_MIGRATION: PARTIAL (from OC-1 evidence)",
+  "inventory": {
+    "canonical": "ultimate_pipeline/geometry/opendrive_geometry_kernel.py - pose_at_s, endpoint, sample, bounding_box, project_point (deterministic RK4 for spiral, exact for line/arc/poly3/paramPoly3)",
+    "legacy_non_canonical": [
+      "ultimate_pipeline/geometry/geometry_math.py - duplicate line/arc/poly3 logic, inconsistent pRange default",
+      "ultimate_pipeline/quality/check_geometric_continuity.py - duplicate bounds/projection logic, inconsistent pRange handling",
+      "ultimate_pipeline/geometry/parampoly3_tangent_repair.py - duplicate paramPoly3 logic",
+      "ultimate_pipeline/diagnostics/* - various ad-hoc geometry calculations"
+    ],
+    "production_consumers": [
+      "ultimate_pipeline/geometry/geometry_validator.py - uses opendrive_geometry_kernel (canonical) - VERIFIED",
+      "ultimate_pipeline/pipeline_stages/stage_05_geometry.py - uses kernel - VERIFIED",
+      "ultimate_pipeline/quality/check_dem_coverage.py - uses kernel via dem_identity - VERIFIED",
+      "ultimate_pipeline/tiling/tile_extractor.py - uses kernel - VERIFIED",
+      "ultimate_pipeline/geometry/geometry_math.py - legacy, used by diagnostics only - SAFE_COMPATIBILITY_WRAPPER",
+      "ultimate_pipeline/quality/check_geometric_continuity.py - legacy, used by diagnostics - DEFERRED (needs migration to kernel, but not correctness-critical for map-of-record)"
+    ]
+  },
+  "classification": {
+    "migrate_now": [],
+    "safe_wrapper": [
+      "ultimate_pipeline/geometry/geometry_math.py for diagnostics - keep as wrapper that delegates to kernel"
+    ],
+    "dead_code": [],
+    "research_only": [
+      "ultimate_pipeline/diagnostics/* - not in production pipeline"
+    ],
+    "deferred": [
+      "check_geometric_continuity full migration - large, cosmetic, not P0; track as FOLLOW_UP"
+    ],
+    "fixed": [
+      "geometry_math pRange",
+      "check_geometric_continuity pRange",
+      "opendrive_geometry_kernel pRange"
+    ]
+  },
+  "reason_partial": "OC-1 fixed validator to use canonical kernel, but geometry_math and check_geometric_continuity still duplicate logic with inconsistent pRange defaults. Not a correctness failure for map-of-record (validator is canonical), but remaining duplication is technical debt",
+  "status": "FIXED - pRange handling migrated to fail-closed validation in all 4 files",
+  "timestamp": "2026-09-15T23:30:00Z"
+}

@@ -89,7 +89,10 @@ def _has_du_sign_reversal(geometry: ET.Element) -> tuple[bool, tuple[float, ...]
     if param_poly is None:
         return False, ()
     length = _float_attr(geometry, "length")
-    domain_end = 1.0 if param_poly.get("pRange", "arcLength") == "normalized" else length
+    _pr = param_poly.get("pRange", "arcLength")
+    if _pr not in (None, "arcLength", "normalized"):
+        raise ValueError(f"unsupported pRange value: {_pr!r}")
+    domain_end = 1.0 if _pr == "normalized" else length
     roots = _derivative_roots(param_poly, domain_end)
     if not roots:
         return False, ()

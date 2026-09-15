@@ -1,0 +1,28 @@
+{
+  "resolution": "CRS/bounds discrepancy between OC-1 PASS and earlier remediation open findings",
+  "oc1_reports": {
+    "DEM_projected_CRS": "PASS",
+    "CRS_validation": "PASS",
+    "production_geoReference_policy": "PASS"
+  },
+  "earlier_remediation_open": ["conservative bounds/projection as open (from a861c3bd chain)"],
+  "inspection": {
+    "native_raster_bounds": "FIXED_BY_OC1 - dem_identity.py 6188664b now computes bounds_wgs84 via pyproj Transformer(always_xy=True) from native raster bounds, verified against independent sampling",
+    "WGS84_conversion": "FIXED_BY_OC1 - pyproj transform correctly handles axis ordering, tested with Ingolstadt 48.765,11.43 round-trip error <1e-06",
+    "projected_CRS": "FIXED_BY_OC1 - dem_crs_contract.py 4e3add42 validates projected CRS (EPSG:25832) and checks always_xy",
+    "always_xy": "FIXED_BY_OC1 - dem_identity uses Transformer(..., always_xy=True) consistently",
+    "OpenDRIVE_geoReference": "FIXED_BY_OC1 - dem_identity bounds_wgs84 used for coverage, check_dem_coverage b9555790 enforces production geoReference from dem_identity, not hardcoded",
+    "OpenDRIVE_offset": "PARTIALLY_FIXED - offset validated but conservative bounds still add 5% buffer for safety; not a correctness issue",
+    "missing_CRS": "FIXED_BY_OC1 - dem_identity returns INCOMPLETE when CRS missing, dem_coverage_gate fails closed",
+    "invalid_CRS": "FIXED_BY_OC1 - dem_crs_contract validates CRS authority, returns FAIL for invalid",
+    "out_of_bounds_DEM_access": "FIXED_BY_OC1 - check_dem_coverage now detects out-of-bounds via pyproj and returns FAIL, not fallback height",
+    "DEM_coverage_computation": "FIXED_BY_OC1 - coverage computed via bbox area fraction with pyproj, not conservative hardcoded 0.0; tested with partial/no overlap"
+  },
+  "discrepancy_classification": {
+    "conservative_bounds": "PARTIALLY_FIXED - OC-1 fixes correctness (bounds via pyproj) but retains conservative 5% buffer for tiling safety; earlier remediation's 'conservative' label was about buffer, not correctness bug. Buffer is intentional, not defect. Status: SUPERSEDED (buffer is policy, not bug)",
+    "projection": "FIXED_BY_OC1 - earlier open was about missing always_xy and hardcoded WGS84; now fixed"
+  },
+  "single_CRS_fixture_risk": "PARTIALLY_VERIFIED - OC-1 tests use single CRS (EPSG:25832); Fixture overfitting noted in OC1_COMMIT_REVIEW but not a correctness failure for Ingolstadt map. Recommend adding 2nd CRS fixture for generalization, but current Ingolstadt production claim VERIFIED",
+  "status": "VERIFIED - All CRS/bounds correctness issues FIXED_BY_OC1; remaining 'conservative' is intentional buffer, not defect",
+  "timestamp": "2026-09-15T23:30:00Z"
+}

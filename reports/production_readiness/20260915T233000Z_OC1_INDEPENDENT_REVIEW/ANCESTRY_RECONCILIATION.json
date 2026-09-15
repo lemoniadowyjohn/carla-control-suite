@@ -1,0 +1,52 @@
+{
+  "generated": "2026-09-15T23:30:00Z",
+  "fetch": "git fetch --all --prune executed, no new heads",
+  "shas": {
+    "6f76f37f": {
+      "full": "6f76f37f368f8a593f485f35c5f9e619a1b99692",
+      "branch": "origin/integration/session-batch1-20260912",
+      "message": "chore: commit another densest-tile FBX generation probe iteration",
+      "date": "2026-09-15"
+    },
+    "395a5133": {
+      "full": "395a5133391255e23824c1db4dd272c8be188561",
+      "branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+      "message": "docs(evidence): geometry/CRS/DEM hardening evidence pack",
+      "date": "2026-09-15",
+      "is_descendant_of": "6f76f37f",
+      "commits_ahead": 7
+    },
+    "540b5c5f": {
+      "full": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+      "branch": "fix/large-map-offline-hardening-v1-20260915",
+      "message": "fix(tile-fbx): fail closed on requested roundtrip verification",
+      "date": "2026-09-15"
+    },
+    "46208a38": {
+      "full": "46208a38",
+      "branch": "audit/geometry-topology-oracle-v2-20260915",
+      "message": "feat(oracle): add independent geometry+topology oracle v2",
+      "date": "2026-09-15",
+      "is_descendant_of": "540b5c5f"
+    },
+    "a861c3bd": {
+      "full": "a861c3bd84d97fcb2c6e11f8094b8c06c49ed63d",
+      "branch": "fix/geometry-crs-dem-correctness-v1-20260915 historical / chore/production-engineering-shell-v2-20260915 descendant",
+      "message": "test(geometry): fix assertion format and add xml reorder test (part of 720aa536 chain)",
+      "date": "2026-09-15",
+      "is_descendant_of": "a323a923 (OC-3)",
+      "note": "Not a direct descendant of 6f76f37f OC-1 line; shares common ancestor bb0af0af9dbfefa2b3f6e40bb557929957767d0f"
+    }
+  },
+  "merge_bases": {
+    "6f76f37f_vs_395a5133": "6f76f37f368f8a593f485f35c5f9e619a1b99692 (395a5133 is 7 commits ahead of 6f76f37f)",
+    "540b5c5f_vs_46208a38": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a (46208a38 is direct descendant of 540b5c5f)",
+    "540b5c5f_vs_6f76f37f": "bb0af0af9dbfefa2b3f6e40bb557929957767d0f (sibling branches from bb0af0af, not parent-child)",
+    "540b5c5f_vs_395a5133": "bb0af0af9dbfefa2b3f6e40bb557929957767d0f",
+    "a861c3bd_vs_395a5133": "bb0af0af9dbfefa2b3f6e40bb557929957767d0f"
+  },
+  "graph_summary": "bb0af0af -> {540b5c5f -> 46208a38 (oracle), 6f76f37f -> 395a5133 (OC-1 7 commits), a323a923 -> a861c3bd chain (remediation)}; 720aa536 chain is descendant of OC-3 (a323a923), not OC-1",
+  "newer_timestamp_vs_logical_baseline": "Timestamp alone misleading: 540b5c5 (fix/large-map) and 6f76f37f (integration) both from 2026-09-15 but are sibling branches from bb0af0af; OC-1 logically based on 6f76f37f (integration), oracle on 540b5c5 (fix/large-map). Do not assume 540b5c5 newer because timestamp similar.",
+  "duplicate_OC1_content": "fix/large-map-offline-hardening-v1-20260915 contains duplicate OC-1-like geometry/CRS changes but is NOT canonical; canonical is fix/geometry-crs-dem-correctness-v1-20260915 (395a5133)",
+  "status": "VERIFIED"
+}

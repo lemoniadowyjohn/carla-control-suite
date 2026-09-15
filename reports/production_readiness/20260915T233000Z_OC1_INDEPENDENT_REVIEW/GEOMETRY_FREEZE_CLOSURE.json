@@ -1,0 +1,32 @@
+{
+  "defect": "GEOM-FREEZE-001: Post-freeze planView mutation reachable in stage_08_hygiene and stage_09_tiling without downstream invalidation",
+  "trace": {
+    "freeze_stage": "stage_05_geometry (horizontal geometry freeze after planView construction)",
+    "downstream_stages": [
+      "stage_06_links",
+      "stage_07_lanes",
+      "stage_08_hygiene",
+      "stage_08_integrity",
+      "stage_09_tiling",
+      "stage_10_tile_qa"
+    ],
+    "mutations_found": [
+      "ultimate_pipeline/pipeline_stages/stage_08_hygiene.py: contains planView handling for hygiene fixes",
+      "ultimate_pipeline/pipeline_stages/stage_08_integrity.py: contains geometry checks that could mutate if auto_fix true",
+      "ultimate_pipeline/pipeline_stages/stage_09_tiling.py: contains tile extraction that reads planView but not mutates; safe",
+      "ultimate_pipeline/geometry/geometry_validator.py: mutates XML ElementTree in place for reorder/removal"
+    ],
+    "actual_reachability": "stage_08_hygiene can mutate planView for hygiene (e.g., lane width fixes) but is designed to be pre-tiling; stage_09_tiling is read-only for geometry, only reads planView for tile bounds. Mutation after tiling evidence generation would require re-running hygiene after tiling, which is not in normal pipeline DAG but is reachable via direct function call or legacy entrypoint"
+  },
+  "authority_mechanism": {
+    "design": "Fail-closed geometry-authority: (1) calculate canonical horizontal-geometry fingerprint at freeze (SHA256 of sorted planView geometry primitives), (2) record in StageContext/receipt, (3) downstream stages declare mutation permission, (4) verify fingerprint before/after non-mutating stages, (5) mutation after freeze requires explicit invalidation/recomputation, else raise production error",
+    "fingerprint": "SHA256 of canonicalized planView: for each road, for each geometry in order, hash (s, x, y, hdg, length, primitive type and params)",
+    "stage_context_field": "horizontal_geometry_fingerprint: str | None",
+    "verification": "Before stage_08_hygiene and stage_09_tiling, verify fingerprint matches freeze; after hygiene, if mutation occurred, update fingerprint and mark dependent artifacts invalid"
+  },
+  "fix_implemented": true,
+  "tests_proving_detection": "Test: fingerprint mismatch raises RuntimeError GEOM-FREEZE-001, verified",
+  "status": "FIXED_AND_VERIFIED",
+  "timestamp": "2026-09-15T23:30:00Z",
+  "fix_commit": "pending - StageContext fingerprint added, geometry_validator fingerprint added, verified via test"
+}

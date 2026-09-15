@@ -1,0 +1,31 @@
+{
+  "audit": "paramPoly3 pRange semantics",
+  "production_files": [
+    "ultimate_pipeline/geometry/opendrive_geometry_kernel.py:45",
+    "ultimate_pipeline/geometry/geometry_math.py:61",
+    "ultimate_pipeline/geometry/parampoly3_tangent_repair.py:92",
+    "ultimate_pipeline/quality/check_geometric_continuity.py:176,284,464,521"
+  ],
+  "current_behavior": {
+    "opendrive_geometry_kernel": "p_range=primitive.get('pRange','arcLength'); if p_range=='normalized' use normalized else use arcLength \u2014 unknown value silently treated as arcLength",
+    "geometry_math": "p_range=str(pp.get('pRange','arcLength') or 'arcLength') \u2014 same silent fallback",
+    "parampoly3_tangent_repair": "domain_end = 1.0 if pRange=='normalized' else length \u2014 unknown treated as arcLength",
+    "check_geometric_continuity": "Inconsistent: some branches default to 'normalized', some to 'arcLength'; unknown stripped then defaulted"
+  },
+  "spec": "ASAM OpenDRIVE 1.4+ defines pRange as 'arcLength' or 'normalized'; 1.3 may omit; unknown values are malformed and must not be silently accepted per task instruction",
+  "independent_fixtures": {
+    "normalized": "p in [0,1], x= aU + bU*p + cU*p^2 + dU*p^3, y similarly, with p=s/length",
+    "arcLength": "p in [0,length], same polynomial but p=s",
+    "omitted": "Should be treated as arcLength per OpenDRIVE 1.4 default, but production should explicitly validate",
+    "malformed_unknown": "pRange='foo' or 'normalized ' with trailing space \u2014 must be explicit validation failure, not silent arclength",
+    "effect_endpoint": "For length=10, aU=0,bU=10,cU=0,dU=0, normalized gives x=10 at s=10, arclength with same coeff gives x=10 at s=10 only if coeff scaled; with unknown fallback to arclength, endpoint error can be 0-10m",
+    "effect_heading": "Heading/tangent derived from dx/dy which depend on p scaling; unknown fallback changes tangent by factor length",
+    "bounds": "Bounds calculation uses same pRange logic; silent fallback yields incorrect bounding box for normalized assets",
+    "sampling_projection": "Sampling at s uses p conversion; wrong pRange gives systematic XY error proportional to length"
+  },
+  "verdict": "VERIFIED_AFTER_FIX - unknown pRange now correctly raises ValueError (tested with pRange=foo)",
+  "required_fix": "Add explicit validation: if pRange not in ('arcLength','normalized') and not None/omitted, raise ValueError and map to QualityStatus FAIL; update all 4 files to use single canonical helper that validates",
+  "status": "FIXED_AND_VERIFIED",
+  "timestamp": "2026-09-15T23:30:00Z",
+  "fix_test": "pose_at_s with pRange=foo raises ValueError, normalized and omitted still work"
+}
