@@ -1,0 +1,140 @@
+{
+  "audit_id": "PIPELINE_DEPENDENCY_AUDIT_20260915",
+  "target_branch": "fix/large-map-offline-hardening-v1-20260915",
+  "head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+  
+  "current_pipeline_stages": [
+    {"stage": "stage_0_provenance.py", "function": "source sanitization and provenance", "mutation_scope": ["source metadata", "semantic metadata"]},
+    {"stage": "stage_1_freeze_semantic_parent.py", "function": "semantic parent freezing", "mutation_scope": ["semantic metadata"]},
+    {"stage": "stage_c1_generation.py", "function": "XODR generation via Osm2Odr", "mutation_scope": ["reference-line geometry", "road length", "road links", "junction connections", "elevation"]},
+    {"stage": "stage_c2_govern_promote.py", "function": "governance and promotion", "mutation_scope": ["semantic metadata"]},
+    {"stage": "stage_c2b_pedestrian_decomposition.py", "function": "pedestrian infrastructure", "mutation_scope": ["crosswalks", "sidewalks", "objects"]},
+    {"stage": "stage_c2c_fullmap_alignment.py", "function": "full-map alignment", "mutation_scope": ["reference-line geometry"]},
+    {"stage": "stage_c2d_projection_freeze.py", "function": "projection and freeze", "mutation_scope": ["reference-line geometry"]},
+    {"stage": "stage_c2e_crosswalk_corner_alignment.py", "function": "crosswalk alignment", "mutation_scope": ["crosswalks"]},
+    {"stage": "stage_h_crossing_authority.py", "function": "crossing authority", "mutation_scope": ["crosswalks", "signals"]},
+    {"stage": "stage_i_packaged_map.py", "function": "package assembly", "mutation_scope": ["tiles", "semantic metadata"]},
+    {"stage": "stage_i1_crosswalk_writer.py", "function": "crosswalk writing", "mutation_scope": ["crosswalks", "signals"]},
+    {"stage": "stage_j_pedestrian_authority.py", "function": "pedestrian authority", "mutation_scope": ["crosswalks", "sidewalks"]},
+    {"stage": "stage_n_final_integrity.py", "function": "final integrity checks", "mutation_scope": ["all"]},
+    {"stage": "stage_r13_production.py", "function": "production finalization", "mutation_scope": ["all"]},
+    {"stage": "stage_h0_osm_signal_extract.py", "function": "OSM signal extraction", "mutation_scope": ["signals"]},
+    {"stage": "stage_h1_osm_road_match.py", "function": "OSM-road matching", "mutation_scope": ["correspondence"]},
+    {"stage": "stage_h2_signal_writer.py", "function": "signal writing", "mutation_scope": ["signals"]},
+    {"stage": "stage_h3_signal_integrity.py", "function": "signal integrity", "mutation_scope": ["signals"]}
+  ],
+
+  "current_dependency_dag": {
+    "topological_order": [
+      "stage_0_provenance",
+      "stage_1_freeze_semantic_parent",
+      "stage_c1_generation",
+      "stage_c2_govern_promote",
+      "stage_c2b_pedestrian_decomposition",
+      "stage_c2c_fullmap_alignment",
+      "stage_c2d_projection_freeze",
+      "stage_c2e_crosswalk_corner_alignment",
+      "stage_h_crossing_authority",
+      "stage_h0_osm_signal_extract",
+      "stage_h1_osm_road_match",
+      "stage_h2_signal_writer",
+      "stage_h3_signal_integrity",
+      "stage_i_packaged_map",
+      "stage_i1_crosswalk_writer",
+      "stage_j_pedestrian_authority",
+      "stage_n_final_integrity",
+      "stage_r13_production"
+    ],
+    "issues": [
+      "Position-dependent semantics (signals, crosswalks, signs) written before structural geometry freeze",
+      "Lane cross-section modifications after junction/roundabout processing",
+      "Elevation modifications not isolated from geometry generation",
+      "Correspondence not computed before traffic control semantics",
+      "No explicit structural freeze gate between geometry and semantics"
+    ]
+  },
+
+  "suspected_inversion": {
+    "statement": "position-dependent semantics written before final structural geometry freeze",
+    "status": "CONFIRMED",
+    "evidence": [
+      "signals written in stage_h2_signal_writer.py after stage_c1_generation.py but before structural freeze",
+      "crosswalks written in stage_c2e_crosswalk_corner_alignment.py before lane cross-section freeze",
+      "No STAGE_CONTEXT capability gate between geometry and semantics stages"
+    ],
+    "desired_order": [
+      "source authority",
+      "topology",
+      "horizontal geometry",
+      "junction/roundabout geometry",
+      "vertical structure/elevation",
+      "lane cross-section",
+      "STRUCTURAL FREEZE",
+      "OSM-XODR correspondence",
+      "traffic/control semantics",
+      "pedestrian semantics",
+      "buildings",
+      "mesh/collision",
+      "certification"
+    ],
+    "current_gap": "No explicit STRUCTURAL FREEZE gate exists in the pipeline"
+  },
+
+  "mutation_classification": {
+    "reference-line geometry": {"stage": "stage_c1_generation", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "road length": {"stage": "stage_c1_generation", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "road links": {"stage": "stage_c1_generation", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "junction connections": {"stage": "stage_1_freeze_semantic_parent", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "lane sections": {"stage": "post-generation enrichment", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "lane widths": {"stage": "post-generation enrichment", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "laneOffset": {"stage": "post-generation enrichment", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "elevation": {"stage": "stage_c1_generation + post", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "signals": {"stage": "stage_h2_signal_writer", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "objects": {"stage": "stage_c2b", "freezed_at": "NOT_FROZEN", "risk": "MEDIUM"},
+    "crosswalks": {"stage": "stage_c2e + stage_h", "freezed_at": "NOT_FROZEN", "risk": "HIGH"},
+    "buildings": {"stage": "enrichment", "freezed_at": "NOT_FROZEN", "risk": "MEDIUM"},
+    "semantic metadata": {"stage": "stage_0 + stage_1", "freezed_at": "PARTIAL", "risk": "LOW"},
+    "tiles": {"stage": "stage_i_packaged_map", "freezed_at": "NOT_FROZEN", "risk": "MEDIUM"}
+  },
+
+  "recommended_migration_plan": {
+    "approach": "Incremental stage dependency encoding, then gradual migration",
+    "steps": [
+      {
+        "step": "P0-K: Encode dependencies in StageContext",
+        "action": "Add explicit capabilities (topology_ready, horizontal_geometry_frozen, etc.)",
+        "scope": ["ultimate_pipeline/contracts/stage_contracts.py", "ultimate_pipeline/pipeline_stages/"],
+        "tests": ["test_stage_rejects_invalid_prerequisites", "test_position_semantics_blocked_before_freeze"]
+      },
+      {
+        "step": "P0-L: Migrate gradually by stage group",
+        "target_order": [
+          "sanitize/source",
+          "topology",
+          "horizontal geometry",
+          "junctions/roundabouts",
+          "elevation/structures",
+          "lane cross-section",
+          "STRUCTURAL FREEZE (explicit gate)",
+          "correspondence",
+          "source semantics",
+          "pedestrian semantics",
+          "buildings",
+          "visual augmentation",
+          "tiling",
+          "acceptance"
+        ],
+        "constraint": "Any mutation after structural freeze must be prohibited unless tested dependency migration updates all downstream records"
+      }
+    ]
+  },
+
+  "minimum_safe_reorder": [
+    "Add StageContext capability gates (P0-K)",
+    "Move lane width/laneOffset validation before correspondence",
+    "Move signal/crosswalk writing after structural freeze",
+    "Add explicit STRUCTURAL_FREEZE stage",
+    "Move roundabout reconstruction after geometry freeze",
+    "Move building enrichment after lane cross-section freeze"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "audit_id": "ROUNDABOUT_CONNECTOR_AUDIT_20260915",
+  "target": "ultimate_pipeline/topology/roundabout_reconstructor.py, junction_connector_rebuild.py, zero_length_connector_repair.py",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "roundabout_current_behavior": {
+    "status": "PROTOTYPE",
+    "detection_method": "heuristic curved-road detection",
+    "center_estimation": "approximate center from geometry starts",
+    "reconstruction": "perfect-circle reconstruction, single right driving lane",
+    "elevation": "constant/simple elevation",
+    "lane_links": "generic lane links",
+    "old_roads": "preserving/deactivating not verified",
+    "exception_handling": "best-effort swallowed exceptions",
+    "production_status": "NOT_ENABLED_IN_PRODUCTION"
+  },
+
+  "roundabout_v2_requirements": {
+    "must_have": [
+      "explicit/source-supported detection",
+      "closed directed circulating graph",
+      "canonical geometry (not perfect circle)",
+      "entry and exit anchors",
+      "contact endpoint solving",
+      "multi-lane preservation",
+      "width preservation",
+      "laneLinks",
+      "elevation constraints",
+      "transaction/rollback",
+      "source deviation report"
+    ],
+    "forbidden_fallback": "No 'perfect circle, one 3.5m lane' fallback as source-faithful reconstruction",
+    "design_principle": "preserve-first",
+    "feature_flag": "Build behind disabled feature flag",
+    "tests_first": "Add tests around CURRENT behavior before building replacement"
+  },
+
+  "connector_repair_current": {
+    "fallbacks": {
+      "nearest_endpoint": {"production_use": false, "reason": "ambiguity not checked"},
+      "direct_line": {"production_use": "conditional", "condition": "both attachment position AND heading satisfy tolerance"},
+      "single_arc": {"production_use": false, "reason": "not validated against constraints"},
+      "contactPoint_trust": {"production_use": false, "reason": "not reliable for production"}
+    },
+    "required_constrained_selection": {
+      "primitives": ["line", "arc", "spiral", "paramPoly3"],
+      "selection_criteria": "endpoint position + tangent constraints",
+      "validation": ["start pose", "end pose", "lane-center pose", "length", "lane section", "laneLink"]
+    },
+    "static_warnings": "Investigate every remaining static CARLA warning rather than calling warning counts 'benign' globally"
+  },
+
+  "recommended_order": [
+    "P1-P: Add tests around CURRENT roundabout behavior",
+    "P1-P: Document current limitations",
+    "P1-P: Build V2 replacement behind disabled feature flag",
+    "P1-Q: Remove production reliance on nearest-endpoint guessing",
+    "P1-Q: Classify connectors as EXACT_TOPOLOGY/GEOMETRICALLY_INFERRED_HIGH/AMBIGUOUS",
+    "P1-Q: Constrained primitive selection based on endpoint constraints"
+  ]
+}

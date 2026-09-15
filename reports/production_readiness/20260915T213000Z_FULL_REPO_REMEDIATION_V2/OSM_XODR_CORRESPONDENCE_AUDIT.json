@@ -1,0 +1,74 @@
+{
+  "audit_id": "OSM_XODR_CORRESPONDENCE_AUDIT_20260915",
+  "target": "ultimate_pipeline/enrichment/osm_xodr_correspondence.py",
+  "head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "confirmed_bugs": [
+    {
+      "id": "CORR-001",
+      "severity": "P0",
+      "status": "CONFIRMED",
+      "symbol": "match_osm_way_to_xodr line 211",
+      "problem": "heading_error = 0.0 evaluates to (0.0 or math.pi) = math.pi. Perfect heading match receives ZERO heading bonus (0.10 * max(0, 1 - pi/pi) = 0) instead of maximum bonus (0.10 * max(0, 1 - 0/pi) = 0.10).",
+      "fix": "Change to `heading_error if heading_error is not None else 0.0`",
+      "test": "test_heading_error_zero_returns_max_bonus"
+    },
+    {
+      "id": "CORR-002",
+      "severity": "P0",
+      "status": "CONFIRMED",
+      "symbol": "match_osm_way_to_xodr line 224",
+      "problem": "Ambiguity check uses `best[1] - scored[1][1] < ambiguity_margin_m` but best[1] <= scored[1][1] always, so difference <= 0 < margin always true. Should be `scored[1][1] - best[1] < ambiguity_margin_m`.",
+      "fix": "Swap to `scored[1][1] - best[1]` and rename variables for clarity",
+      "test": "test_ambiguity_margin_triggers_when_within_threshold"
+    },
+    {
+      "id": "CORR-003",
+      "severity": "P1",
+      "status": "CONFIRMED",
+      "symbol": "association model",
+      "problem": "Architecture assumes 1 OSM way -> 1 XODR road. Does not support one-to-many (OSM way split into multiple XODR roads) or many-to-one. No source interval/orientation tracking.",
+      "fix": "Introduce typed association with osm_way_id, xodr_road_id, source fraction interval, target s interval, orientation, class, confidence, evidence",
+      "test": "test_one_osm_way_split_into_3_xodr_roads"
+    },
+    {
+      "id": "CORR-004",
+      "severity": "P1",
+      "status": "CONFIRMED",
+      "symbol": "scoring model",
+      "problem": "Score based mainly on distance, heading, name. Missing: symmetric geometric distance, centerline overlap, endpoint proximity, length/extent ratio, street name, highway class, oneway, lane count, junction neighborhood, network topology.",
+      "fix": "Add evidence terms incrementally with labeled fixtures and calibration",
+      "test": "test_scoring_components_exposed"
+    },
+    {
+      "id": "CORR-005",
+      "severity": "P1",
+      "status": "CONFIRMED",
+      "symbol": "spatial index",
+      "problem": "Road samples alone populate grid buckets. Long/curved segments can be missed. Need conservative segment AABBs or STRtree/R-tree.",
+      "fix": "Use segment AABBs or STRtree for candidate discovery",
+      "test": "test_long_curved_segment_not_missed"
+    }
+  ],
+
+  "architecture_assessment": {
+    "current_model": "1 OSM way -> 1 XODR road (insufficient)",
+    "required_model": "OSM way + source interval + orientation -> one or more XODR road + s_start/s_end intervals",
+    "association_fields_needed": ["osm_way_id", "xodr_road_id", "source_fraction_start", "source_fraction_end", "target_s_start", "target_s_end", "orientation", "match_class", "confidence", "evidence", "source_tags"],
+    "confidence_thresholds": "No source semantic should be written at LOW/AMBIGUOUS confidence"
+  },
+
+  "match_score_assessment": {
+    "current_terms": ["distance (mean)", "heading_error", "name_match", "class_match"],
+    "missing_terms": ["symmetric_overlap", "endpoint_proximity", "extent_ratio", "highway_class", "oneway", "lane_count", "topological_neighborhood"],
+    "calibration_status": "NOT_CALIBRATED",
+    "required": "Labeled positive/negative fixtures, boundary case threshold tests",
+    "position_specific": "UNMATCHED preferable to wrong sign/light/lane"
+  },
+
+  "spatial_index_assessment": {
+    "current": "Grid of road samples (cell_size_m=25.0)",
+    "issue": "Long/curved segments can be missed when only point samples populate buckets",
+    "recommended": "Conservative segment AABBs or STRtree/R-tree"
+  }
+}

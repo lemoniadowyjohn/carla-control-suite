@@ -1,0 +1,44 @@
+{
+  "audit_id": "DEM_CRS_AUDIT_20260915",
+  "target": "ultimate_pipeline/dem/dem_identity.py",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "crs_identity": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Coverage gate only uses diagonal ratio (bbox_intersection_area_fraction), not road-centerline sample coverage, endpoint coverage, or NODATA fraction",
+      "Ambient env var could silently enable lenient/legacy/invented flat elevation/global median/KD extrapolation",
+      "Production profiles must force strict behavior"
+    ],
+    "code_check": {
+      "bounds_transformation": "CORRECT: `_transform_bounds_to_wgs84` uses pyproj to transform projected bounds to EPSG:4326",
+      "no_direct_comparison": "No UTM metres compared against lon/lat degrees",
+      "bounds_wgs84_field": "Present and correctly computed"
+    },
+    "required_coverage_metrics": [
+      "bbox/area overlap",
+      "road-centerline sample coverage",
+      "endpoint coverage",
+      "NODATA fraction",
+      "DEM resolution",
+      "DEM CRS/datum"
+    ],
+    "source_record": ["hash", "CRS", "vertical datum if known", "resolution", "acquisition source"]
+  },
+
+  "elevation_fallback": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Ambient env var could enable lenient/legacy/invented flat elevation/global median/KD extrapolation",
+      "Production profiles must force strict behavior",
+      "No release contract explicitly allows fallback"
+    ],
+    "required": "Production profiles force strict fallback policy. Ambient env var must not weaken release behavior."
+  },
+
+  "dem_coverage_gate": {
+    "current_implementation": "diagonal ratio only",
+    "required": "intersection area + road/reference sample coverage + NODATA fraction + endpoint coverage",
+    "legacy_metric": "Retain old metric only as diagnostic if compatibility requires it"
+  }
+}

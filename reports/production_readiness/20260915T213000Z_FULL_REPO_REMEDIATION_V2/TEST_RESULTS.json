@@ -1,0 +1,11 @@
+{
+  "passed": 17,
+  "failed": 0,
+  "skipped": 0,
+  "duration": "1.15s",
+  "test_files": [
+    "test_geometry_validator_xml_mutation.py",
+    "test_geometry_numerical_oracle.py",
+    "test_geometry_validator_kernel_migration.py"
+  ]
+}

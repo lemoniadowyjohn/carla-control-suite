@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "id": "AREA-001",
+      "title": "heading_error truthiness",
+      "old_status": "CONFIRMED_P0",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-002",
+      "title": "Ambiguity margin inversion",
+      "old_status": "CONFIRMED_P0",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-003",
+      "title": "geometry_validator XML mutation",
+      "old_status": "CONFIRMED_P0",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-004",
+      "title": "heading backfill uses endpoint",
+      "old_status": "CONFIRMED_P1",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-005",
+      "title": "paramPoly3 pRange validation",
+      "old_status": "CONFIRMED_P1",
+      "current_status": "FIXED"
+    },
+    {
+      "id": "AREA-008",
+      "title": "CI if:always() PASS",
+      "old_status": "CONFIRMED_P0",
+      "current_status": "FIXED"
+    }
+  ]
+}

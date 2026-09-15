@@ -1,0 +1,66 @@
+{
+  "audit_id": "RELEASE_AUTHORITY_AUDIT_20260915",
+  "target": "campaigns/ingolstadt_cooked_perception_v1/manifest.json, ultimate_pipeline/carla_tools/map_registry.py, docs/runtime/MAP_OF_RECORD.md",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "authority_drift": {
+    "status": "CONFIRMED",
+    "manifest_state": {
+      "readiness_state": "REVIEW_RESTORED_PENDING_CLAUDE_C0",
+      "release_authority": false,
+      "acceptance_flags": {
+        "c0_accepted": false,
+        "c1_accepted": false,
+        "perception_candidate_accepted": false,
+        "final_perception_closure": false
+      },
+      "provisional_marker": "PROVISIONAL_PRE_C0"
+    },
+    "registry_state": {
+      "map_of_record": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+      "pinned": true
+    },
+    "classification": "authority_drift: manifest says provisional/unaccepted while registry says current map-of-record"
+  },
+
+  "ci_state": {
+    "remote_ci": "NOT_VERIFIED",
+    "last_green_run": "b059a9d0 under earlier single-job workflow",
+    "current_workflow": "six-job workflow exists but candidates must be pushed and re-run",
+    "integration_branch_remote": "NOT_FOUND",
+    "stabilization_branch": "stabilize/research-release-20260905 exists on remote"
+  },
+
+  "branch_governance": {
+    "proposed_flow": [
+      "integration",
+      "stabilization",
+      "reviewed release candidate",
+      "protected release/default"
+    ],
+    "required_checks_before_promotion": [
+      "all CI gates pass",
+      "remote CI evidence on exact SHA",
+      "quality gates PASS",
+      "no unresolved P0 issues"
+    ]
+  },
+
+  "artifact_authority": {
+    "status": "PARTIAL",
+    "required_alignment": [
+      "README must refer to same map content hash as registry",
+      "map_registry.py must refer to same map content hash",
+      "runtime MAP_OF_RECORD.md must refer to same map content hash",
+      "release manifest must refer to same map content hash"
+    ],
+    "test_required": "Assert all four refer to same hash when each claims CURRENT"
+  },
+
+  "campaign_manifest": {
+    "do_not_alter_history": true,
+    "required": "Create versioned current release/candidate manifest",
+    "design": "Historical-vs-current release manifests with explicit authority levels"
+  }
+}

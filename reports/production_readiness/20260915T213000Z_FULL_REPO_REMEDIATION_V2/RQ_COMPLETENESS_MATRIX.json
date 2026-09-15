@@ -1,0 +1,92 @@
+{
+  "audit_id": "RQ_COMPLETENESS_MATRIX_20260915",
+  "head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "RQ1_DETERMINISM": {
+    "status": "BOUNDED",
+    "claim": "AUTHORITATIVE for structural repeatability and raw byte non-repeatability; BOUNDED for timestamp-normalized byte equality",
+    "evidence_level": "BOUNDED",
+    "requirements": {
+      "same_process": "PARTIAL - committed timestamp-only XODR fixtures cover this",
+      "same_machine": "PARTIAL - large local artifacts are optional governed integration evidence",
+      "independent_clean_clone": "INCOMPLETE - large-artifact evidence not regenerated after clean clone",
+      "different_machine_env": "INCOMPLETE - not tested"
+    },
+    "evidence_fields_present": ["raw hash", "normalized hash", "structural signature", "portable committed fixtures"],
+    "evidence_fields_missing": ["topology signature (not formalized)", "tool versions (not captured systematically)", "settings hash (not formalized)", "OSM hash (present)", "environment fingerprint (not captured)"],
+    "blockers": ["Large-artifact evidence not regenerated after clean clone", "No four-level determinism harness", "No adversarial runs supporting timestamp-only hypothesis"],
+    "next_steps": ["Build reusable offline experiment harness with all four levels", "Regenerate large-artifact evidence after clean clone", "Add all evidence fields"],
+    "conclusion": "BOUNDED - structural determinism authoritative, timestamp isolation partial"
+  },
+
+  "RQ2_STRUCTURAL_DOMAIN_GAP": {
+    "status": "BOUNDED",
+    "claim": "Bounded local comparison; lane-width gap small, maps agree; curvature/road-length ratios show real completeness gap (~2.7-3.8x under convex-hull footprint)",
+    "evidence_level": "BOUNDED",
+    "methodology": {
+      "local_comparison": "AUTHORITATIVE",
+      "whole_map_comparison": "NOT_AUTHORITATIVE (overstates gap)",
+      "per_tile_computation": "SKIPPED (timeout exceeded)",
+      "elevation_comparison": "DISABLED (planar/no-DEM map)"
+    },
+    "metrics_validated": ["lane_width_gap", "curvature_gap", "road_length_ratio", "building_density_gap", "connectivity_gap"],
+    "metrics_problematic": ["frechet_distance (whole-map only, not local)", "semantic_object_gap (whole-map only)"],
+    "blockers": ["Per-tile computation skipped due to timeout", "Elevation gap disabled (no DEM)", "Whole-map Fréchet not local"],
+    "next_steps": ["Profile per-tile timeout and optimize without metric-semantic changes", "Add parity tests (old vs new within tolerance)", "Register sensitivity analysis"],
+    "conclusion": "BOUNDED - local comparison authoritative, whole-map overstated"
+  },
+
+  "RQ3_PERCEPTUAL_DOMAIN_GAP": {
+    "status": "DEFERRED_RUNTIME",
+    "claim": "No generated/manual paired Ingolstadt evidence exists",
+    "evidence_level": "NOT_RUN",
+    "blockers": [
+      "Live CARLA server never becomes RPC-responsive (environment-level, not code-level)",
+      "No generated/manual paired capture under identical sensor rig and route protocol",
+      "Town10HD validated only sensor-rig implementation, not RQ3 answer"
+    ],
+    "required_contract": {
+      "immutable": ["CARLA build", "Python client build", "map identity", "vehicle blueprint", "vehicle transform protocol", "route", "weather", "fixed_delta_seconds", "synchronous_mode", "Traffic Manager sync/seed", "sensor blueprints/sensor_tick", "intrinsics/extrinsics", "warm-up", "target frames", "frame numbers", "timestamps", "drop detection", "disk preflight"]
+    },
+    "conclusion": "NOT_READY - blocked on CARLA runtime; no claim possible"
+  },
+
+  "RQ4_STRUCTURAL_VARIABILITY_LATENT": {
+    "status": "AUTHORITATIVE (with caveats)",
+    "claim": "5-seed GNN ensemble reports cosine_distance mean 0.6434 (95% CI [0.616, 0.676]); CI excludes zero across all 5 seeds",
+    "evidence_level": "AUTHORITATIVE",
+    "caveats": [
+      "95% CI is bootstrap over only n=5 seeds (fragile tails)",
+      "Thesis's K=1000 permutation p<0.001 remains primary statistical support",
+      "Metric is in-sample union-domain latent-separation diagnostic, not held-out accuracy",
+      "n=5 seed extension is limited"
+    ],
+    "historical_bug": "~99.8% self-loop graph bug fixed; permanent regression tests needed",
+    "required_extensions": ["10-20 independent seeds", "natural-vs-explicit DR comparison", "second-city replication", "seed as experimental unit"],
+    "blockers": ["Limited seeds (n=5)", "No natural-vs-explicit DR comparison yet", "No second-city replication"],
+    "conclusion": "AUTHORITATIVE but bounded; n=5 fragile"
+  },
+
+  "RQ5_GENERALIZATION_TRANSFER": {
+    "status": "DEFERRED_RUNTIME / DEFERRED_EXTERNAL_DATA",
+    "rq5a": {
+      "status": "DEFERRED_RUNTIME",
+      "reason": "Depends on valid RQ3 datasets",
+      "design": {
+        "TRAIN": "generated only",
+        "VALIDATION": "generated only",
+        "TEST_A": "generated holdout",
+        "TEST_B": "manual holdout",
+        "leakage_guards": "manual target not in training, normalization not target-fitted, checkpoint not target-based"
+      },
+      "blockers": ["No RQ3 datasets", "No runtime"]
+    },
+    "rq5b": {
+      "status": "DEFERRED_EXTERNAL_DATA",
+      "reason": "No real-world Ingolstadt dataset exists on this machine",
+      "requirements": ["location", "license", "modality", "resolution", "calibration", "timestamps", "labels", "privacy", "hash"],
+      "note": "Unlabeled distribution shift/CORAL/MMD is NOT model-generalization accuracy"
+    },
+    "conclusion": "BLOCKED - no runtime for RQ5a, no external data for RQ5b"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "audit_id": "LANE_FIDELITY_AUDIT_20260915",
+  "target": "ultimate_pipeline/enrichment/lane_generator.py, lane_repair.py, lane_width_policy.py, laneoffset_normalizer.py",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "lane_generator": {
+    "status": "PARTIAL",
+    "source_hierarchy": {
+      "oneway": {"used": true, "orientation_accounted": false},
+      "lanes": {"used": true, "orientation_accounted": false},
+      "lanes:forward": {"used": true, "orientation_accounted": false},
+      "lanes:backward": {"used": true, "orientation_accounted": false},
+      "turn:lanes": {"used": true, "orientation_accounted": false},
+      "cycleway": {"used": true, "orientation_accounted": false},
+      "bus": {"used": false, "orientation_accounted": false},
+      "parking": {"used": false, "orientation_accounted": false},
+      "shoulder": {"used": false, "orientation_accounted": false},
+      "access": {"used": false, "orientation_accounted": false}
+    },
+    "confirmed_issues": [
+      "Directional OSM tags must account for correspondence orientation (OSM way direction vs XODR reference-line direction)",
+      "No direct mapping assumption: OSM forward != XODR negative lanes without correspondence orientation check",
+      "Provenance classification not yet implemented (SOURCE_EXACT, SPATIAL_MATCH, TOPOLOGY_INFERRED, etc.)"
+    ],
+    "required_provenance": ["SOURCE_EXACT", "SOURCE_SPATIAL_MATCH", "TOPOLOGY_INFERRED_HIGH", "ROAD_CLASS_INFERRED", "SYNTHETIC_FALLBACK", "UNKNOWN"],
+    "production_reporting": "Synthetic lane count must be exposed"
+  },
+
+  "lane_width": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Valid width records may be reduced to sOffset=0, a=default, b=c=d=0",
+      "Later width records can be removed",
+      "Valid taper/widening not preserved",
+      "Only checking a > 0 is insufficient; must validate w(ds) over full interval",
+      "Record boundaries, laneSection boundary, real derivative roots inside interval not checked"
+    ],
+    "required_validation": {
+      "polynomial": "w(ds) = a + b*ds + c*ds^2 + d*ds^3",
+      "evaluation_points": ["record start/end", "section limit", "derivative extrema"],
+      "separation": ["NUMERIC_VALIDITY", "PHYSICAL_DRIVABILITY", "SOURCE_FIDELITY"]
+    }
+  },
+
+  "lane_offset": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "laneOffset changes alter physical lane positions, invalidating signs, signals, crosswalks, objects, collision",
+      "Not treated as part of structural freeze",
+      "Polynomial validation over intervals incomplete",
+      "No lane-center calculation service (reference pose + laneOffset + cumulative active widths)"
+    ],
+    "required": {
+      "structural_freeze": true,
+      "polynomial_validation": "Validate over intervals",
+      "lane_center_service": "reference pose + laneOffset + cumulative active widths",
+      "usage": "Connector and laneLink QA"
+    }
+  },
+
+  "lane_links": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Validation must be road/section scoped; global lane-ID check is irrelevant",
+      "Generic -1 -> -1 fallback must not be considered sufficient",
+      "Lane-center continuity must use reference line + laneOffset(s) + active lane-width polynomials",
+      "Repair must use lane-center geometry and movement direction"
+    ],
+    "required_validation": ["road", "attachment boundary", "active laneSection", "lane ID", "lane type", "travel direction"]
+  },
+
+  "turn_restrictions": {
+    "status": "MISSING",
+    "description": "Full support for OSM restriction relations not found",
+    "required": ["no_left_turn", "no_right_turn", "no_u_turn", "no_straight_on", "only_left_turn", "only_right_turn", "only_straight_on"],
+    "design": "from way -> via node/way -> to way -> correspondence -> junction movement -> road/lane routing restriction"
+  },
+
+  "turn_lanes": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "turnMarking userData retained for compatibility but lane-level movement intent not established",
+      "Approach lane order, movement, laneLinks, marking, restriction consistency not verified"
+    ]
+  }
+}
