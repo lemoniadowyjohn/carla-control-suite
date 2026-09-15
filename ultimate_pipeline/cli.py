@@ -241,6 +241,107 @@ def pipeline_run(args: tuple[str, ...]) -> None:
 
 
 # =============================================================================
+# Runtime Tile Commands
+# =============================================================================
+
+@cli.group("tile")
+def tile() -> None:
+    """Build and load explicitly standalone runtime tile artifacts."""
+    pass
+
+
+@tile.command("build-runtime")
+@click.option("--input-xodr", required=True, type=click.Path(path_type=Path, exists=True, dir_okay=False))
+@click.option("--output-xodr", required=True, type=click.Path(path_type=Path, dir_okay=False))
+@click.option("--center-x", required=True, type=float)
+@click.option("--center-y", required=True, type=float)
+@click.option("--tile-size-m", required=True, type=float)
+@click.option("--buffer-m", default=100.0, show_default=True, type=float)
+@click.option("--max-closure-roads", default=5000, show_default=True, type=int)
+def tile_build_runtime(
+    input_xodr: Path,
+    output_xodr: Path,
+    center_x: float,
+    center_y: float,
+    tile_size_m: float,
+    buffer_m: float,
+    max_closure_roads: int,
+) -> None:
+    """Create a self-contained, locally rebased tile for later CARLA loading.
+
+    This command is offline-only.  Its ``READY_FOR_LIVE_CARLA_VALIDATION``
+    result is a structural prerequisite, not a statement that CARLA has
+    loaded the artifact.
+    """
+
+    from ultimate_pipeline.tiling.runtime_tile_builder import RuntimeTileRequest, build_runtime_tile
+
+    try:
+        result = build_runtime_tile(
+            RuntimeTileRequest(
+                input_xodr=input_xodr,
+                output_xodr=output_xodr,
+                center_x=center_x,
+                center_y=center_y,
+                tile_size_m=tile_size_m,
+                buffer_m=buffer_m,
+                max_closure_roads=max_closure_roads,
+            )
+        )
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    click.echo(
+        json.dumps(
+            {
+                "status": "READY_FOR_LIVE_CARLA_VALIDATION",
+                "tile_path": str(result.output_xodr),
+                "manifest_path": str(result.manifest_path),
+                "static_validation": result.static_validation,
+            },
+            sort_keys=True,
+        )
+    )
+
+
+@tile.command("load-runtime")
+@click.option("--tile-xodr", required=True, type=click.Path(path_type=Path, exists=True, dir_okay=False))
+@click.option("--manifest", type=click.Path(path_type=Path, exists=True, dir_okay=False))
+@click.option("--host", default="127.0.0.1", show_default=True)
+@click.option("--port", default=2000, show_default=True, type=int)
+@click.option("--timeout", default=60.0, show_default=True, type=float)
+@click.option("--no-reset-world", is_flag=True, help="Do not reload the world before loading the tile")
+def tile_load_runtime(
+    tile_xodr: Path,
+    manifest: Optional[Path],
+    host: str,
+    port: int,
+    timeout: float,
+    no_reset_world: bool,
+) -> None:
+    """Load a previously built runtime tile using an explicitly running CARLA server."""
+
+    from ultimate_pipeline.carla_tools.tile_world_runner import TileWorldRunner, _lazy_carla
+
+    try:
+        carla_mod = _lazy_carla()
+        client = carla_mod.Client(host, port)
+        client.set_timeout(timeout)
+        result = TileWorldRunner(client, timeout=timeout).load_runtime_tile(
+            str(tile_xodr),
+            manifest_path=str(manifest) if manifest is not None else None,
+            reset_world=not no_reset_world,
+        )
+    except Exception as exc:
+        raise click.ClickException(f"CARLA runtime load setup failed: {exc}") from exc
+
+    payload = {"tile_path": str(tile_xodr), "ok": result.ok, "reason": result.reason}
+    click.echo(json.dumps(payload, sort_keys=True))
+    if not result.ok:
+        raise click.ClickException(result.reason or "runtime tile load failed")
+
+
+# =============================================================================
 # Repository Health / Research Status
 # =============================================================================
 
