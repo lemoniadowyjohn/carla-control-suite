@@ -1,0 +1,70 @@
+{
+  "status": "ok",
+  "reason": "Generated 1 outputs: scene.obj",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.osm",
+      "-o",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+      "--config",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\osm2world.properties"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {
+    "scene.obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj"
+  },
+  "hashes": {
+    "input_osm": "4b64e9350023cfdc2b6f1382d5646b456ea2f52dbceaae1894b3f34235eceaa2",
+    "config": "1d638a545e3fec49497e98fc7e12575bea5baeefd02acfab67f9d90667ac3a66",
+    "scene.obj": "bd3f132504f34416deeaa9aa3b84d17ee29572f1afa7c14f1e56b3ff0e0a2ecd"
+  },
+  "config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\osm2world.properties",
+  "config_hash": "1d638a545e3fec49497e98fc7e12575bea5baeefd02acfab67f9d90667ac3a66",
+  "input_osm_hash": "4b64e9350023cfdc2b6f1382d5646b456ea2f52dbceaae1894b3f34235eceaa2",
+  "cache_key": "71b36cea60cdd4dd",
+  "start_time": "2026-09-15T20:08:01.415783",
+  "end_time": "2026-09-15T20:08:05.337536",
+  "duration_sec": 3.922,
+  "exit_codes": {
+    "scene.obj": 0
+  },
+  "exception": "",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.osm",
+        "-o",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+        "--config",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": ""
+    }
+  ],
+  "glb_valid": null,
+  "glb_validation_reason": "",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.osm",
+  "abs_config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 1
+}

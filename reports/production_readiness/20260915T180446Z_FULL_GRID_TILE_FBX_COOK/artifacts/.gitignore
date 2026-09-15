@@ -1,0 +1,7 @@
+# Heavy, fully-reproducible per-tile meshes (regenerate via
+# scripts/cook_full_grid_tiles.py). The small JSON manifests, properties, and
+# this directory ARE tracked as evidence; the binaries are not.
+*.fbx
+*.obj
+*.obj.mtl
+*.osm

@@ -1,0 +1,315 @@
+{
+  "blender_build_commit_time": "08:52",
+  "blender_version": "4.3.0",
+  "export_operator": "export_scene.fbx",
+  "export_options": {
+    "add_leaf_bones": false,
+    "apply_scale_options": "FBX_SCALE_NONE",
+    "apply_unit_scale": true,
+    "armature_nodetype": "NULL",
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "bake_anim": false,
+    "batch_mode": "OFF",
+    "embed_textures": false,
+    "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.fbx",
+    "global_scale": 1.0,
+    "mesh_smooth_type": "OFF",
+    "object_types": [
+      "ARMATURE",
+      "EMPTY",
+      "MESH"
+    ],
+    "path_mode": "AUTO",
+    "primary_bone_axis": "Y",
+    "secondary_bone_axis": "X",
+    "use_custom_props": false,
+    "use_mesh_edges": false,
+    "use_mesh_modifiers": true,
+    "use_selection": false,
+    "use_tspace": false
+  },
+  "fbx_format": "binary",
+  "fbx_header": "Kaydara FBX Binary",
+  "fbx_signature": "Kaydara FBX Binary",
+  "fbx_version": "FBX binary int=7400",
+  "fbx_version_int": 7400,
+  "images_total": 0,
+  "import_operator": "wm.obj_import",
+  "import_options": {
+    "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.obj"
+  },
+  "input_obj_hash": "d4c00364f5fdd0ef169e29c569f671d79ff9bd03b929ddf1d67bbfaaaa68d56c",
+  "materials_total": 2,
+  "objects": [
+    {
+      "bounds": [
+        [
+          -178.959,
+          0.0,
+          372.679993
+        ],
+        [
+          -178.959,
+          0.0,
+          395.755005
+        ],
+        [
+          -178.959,
+          2.5,
+          395.755005
+        ],
+        [
+          -178.959,
+          2.5,
+          372.679993
+        ],
+        [
+          -136.626999,
+          0.0,
+          372.679993
+        ],
+        [
+          -136.626999,
+          0.0,
+          395.755005
+        ],
+        [
+          -136.626999,
+          2.5,
+          395.755005
+        ],
+        [
+          -136.626999,
+          2.5,
+          372.679993
+        ]
+      ],
+      "faces": 22,
+      "materials": [
+        "MAT_0_0",
+        "MAT_1_0"
+      ],
+      "name": "Building Pionierhafen Technikgebude",
+      "type": "MESH",
+      "uv_layers": 0,
+      "vertices": 16
+    },
+    {
+      "bounds": [
+        [
+          -155.074997,
+          0.0,
+          367.359009
+        ],
+        [
+          -155.074997,
+          0.0,
+          377.510986
+        ],
+        [
+          -155.074997,
+          7.5,
+          377.510986
+        ],
+        [
+          -155.074997,
+          7.5,
+          367.359009
+        ],
+        [
+          -142.100998,
+          0.0,
+          367.359009
+        ],
+        [
+          -142.100998,
+          0.0,
+          377.510986
+        ],
+        [
+          -142.100998,
+          7.5,
+          377.510986
+        ],
+        [
+          -142.100998,
+          7.5,
+          367.359009
+        ]
+      ],
+      "faces": 10,
+      "materials": [
+        "MAT_0_0",
+        "MAT_1_0"
+      ],
+      "name": "Building Rampe",
+      "type": "MESH",
+      "uv_layers": 0,
+      "vertices": 8
+    },
+    {
+      "bounds": [
+        [
+          157.966003,
+          0.0,
+          -395.716003
+        ],
+        [
+          157.966003,
+          0.0,
+          -387.243988
+        ],
+        [
+          157.966003,
+          7.5,
+          -387.243988
+        ],
+        [
+          157.966003,
+          7.5,
+          -395.716003
+        ],
+        [
+          178.753998,
+          0.0,
+          -395.716003
+        ],
+        [
+          178.753998,
+          0.0,
+          -387.243988
+        ],
+        [
+          178.753998,
+          7.5,
+          -387.243988
+        ],
+        [
+          178.753998,
+          7.5,
+          -395.716003
+        ]
+      ],
+      "faces": 10,
+      "materials": [
+        "MAT_0_0",
+        "MAT_1_0"
+      ],
+      "name": "Building0",
+      "type": "MESH",
+      "uv_layers": 0,
+      "vertices": 8
+    },
+    {
+      "bounds": [
+        [
+          166.770996,
+          0.0,
+          -373.183014
+        ],
+        [
+          166.770996,
+          0.0,
+          -361.772003
+        ],
+        [
+          166.770996,
+          7.5,
+          -361.772003
+        ],
+        [
+          166.770996,
+          7.5,
+          -373.183014
+        ],
+        [
+          178.959,
+          0.0,
+          -373.183014
+        ],
+        [
+          178.959,
+          0.0,
+          -361.772003
+        ],
+        [
+          178.959,
+          7.5,
+          -361.772003
+        ],
+        [
+          178.959,
+          7.5,
+          -373.183014
+        ]
+      ],
+      "faces": 10,
+      "materials": [
+        "MAT_0_0",
+        "MAT_1_0"
+      ],
+      "name": "Building1",
+      "type": "MESH",
+      "uv_layers": 0,
+      "vertices": 8
+    },
+    {
+      "bounds": [
+        [
+          134.367004,
+          0.0,
+          -395.78299
+        ],
+        [
+          134.367004,
+          0.0,
+          -361.683014
+        ],
+        [
+          134.367004,
+          7.5,
+          -361.683014
+        ],
+        [
+          134.367004,
+          7.5,
+          -395.78299
+        ],
+        [
+          157.356995,
+          0.0,
+          -395.78299
+        ],
+        [
+          157.356995,
+          0.0,
+          -361.683014
+        ],
+        [
+          157.356995,
+          7.5,
+          -361.683014
+        ],
+        [
+          157.356995,
+          7.5,
+          -395.78299
+        ]
+      ],
+      "faces": 28,
+      "materials": [
+        "MAT_0_0",
+        "MAT_1_0"
+      ],
+      "name": "Building2",
+      "type": "MESH",
+      "uv_layers": 0,
+      "vertices": 20
+    }
+  ],
+  "objects_total": 5,
+  "output_fbx_hash": "bd2ad0cd0108163e22e84d44c92a030276e0726c6acff5699e410579add03381",
+  "scene_unit_scale": 1.0,
+  "scene_unit_system": "METRIC"
+}

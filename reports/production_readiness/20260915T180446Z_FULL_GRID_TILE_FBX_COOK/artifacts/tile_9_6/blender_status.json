@@ -1,0 +1,506 @@
+{
+  "status": "ok",
+  "reason": "Converted to FBX (0.03 MB)",
+  "command_line": [
+    "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "--background",
+    "--python-exit-code",
+    "1",
+    "--python",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\blender_convert.py",
+    "--",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.obj",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.blender_manifest.json"
+  ],
+  "blender_version": "Blender 4.3.0",
+  "blender_exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+  "blender_exe_hash": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+  "script_hash": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+  "input_obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.obj",
+  "output_fbx": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
+  "input_hash": "d6f03985ff2374d3554fced5a1e6e1acca85022b5531f796ba91964fa78218c0",
+  "output_hash": "c18e33ca5fe83313ec930ac980385102e52768de6c239778babad3665cdca3af",
+  "conversion_script": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\blender_convert.py",
+  "manifest": {
+    "blender_build_commit_time": "08:52",
+    "blender_version": "4.3.0",
+    "export_operator": "export_scene.fbx",
+    "export_options": {
+      "add_leaf_bones": false,
+      "apply_scale_options": "FBX_SCALE_NONE",
+      "apply_unit_scale": true,
+      "armature_nodetype": "NULL",
+      "axis_forward": "-Z",
+      "axis_up": "Y",
+      "bake_anim": false,
+      "batch_mode": "OFF",
+      "embed_textures": false,
+      "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
+      "global_scale": 1.0,
+      "mesh_smooth_type": "OFF",
+      "object_types": [
+        "ARMATURE",
+        "EMPTY",
+        "MESH"
+      ],
+      "path_mode": "AUTO",
+      "primary_bone_axis": "Y",
+      "secondary_bone_axis": "X",
+      "use_custom_props": false,
+      "use_mesh_edges": false,
+      "use_mesh_modifiers": true,
+      "use_selection": false,
+      "use_tspace": false
+    },
+    "fbx_format": "binary",
+    "fbx_header": "Kaydara FBX Binary",
+    "fbx_signature": "Kaydara FBX Binary",
+    "fbx_version": "FBX binary int=7400",
+    "fbx_version_int": 7400,
+    "images_total": 0,
+    "import_operator": "wm.obj_import",
+    "import_options": {
+      "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.obj"
+    },
+    "input_obj_hash": "d6f03985ff2374d3554fced5a1e6e1acca85022b5531f796ba91964fa78218c0",
+    "materials_total": 2,
+    "objects": [
+      {
+        "bounds": [
+          [
+            35.091999,
+            0.0,
+            -17.955999
+          ],
+          [
+            35.091999,
+            0.0,
+            38.806
+          ],
+          [
+            35.091999,
+            7.5,
+            38.806
+          ],
+          [
+            35.091999,
+            7.5,
+            -17.955999
+          ],
+          [
+            82.073997,
+            0.0,
+            -17.955999
+          ],
+          [
+            82.073997,
+            0.0,
+            38.806
+          ],
+          [
+            82.073997,
+            7.5,
+            38.806
+          ],
+          [
+            82.073997,
+            7.5,
+            -17.955999
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building Mechanische Werksttte",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      },
+      {
+        "bounds": [
+          [
+            9.483,
+            0.0,
+            -38.851002
+          ],
+          [
+            9.483,
+            0.0,
+            17.365999
+          ],
+          [
+            9.483,
+            7.5,
+            17.365999
+          ],
+          [
+            9.483,
+            7.5,
+            -38.851002
+          ],
+          [
+            57.896,
+            0.0,
+            -38.851002
+          ],
+          [
+            57.896,
+            0.0,
+            17.365999
+          ],
+          [
+            57.896,
+            7.5,
+            17.365999
+          ],
+          [
+            57.896,
+            7.5,
+            -38.851002
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building Mechanische Werksttte.001",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      },
+      {
+        "bounds": [
+          [
+            -82.073997,
+            0.0,
+            -14.605
+          ],
+          [
+            -82.073997,
+            0.0,
+            34.242001
+          ],
+          [
+            -82.073997,
+            7.5,
+            34.242001
+          ],
+          [
+            -82.073997,
+            7.5,
+            -14.605
+          ],
+          [
+            -32.214001,
+            0.0,
+            -14.605
+          ],
+          [
+            -32.214001,
+            0.0,
+            34.242001
+          ],
+          [
+            -32.214001,
+            7.5,
+            34.242001
+          ],
+          [
+            -32.214001,
+            7.5,
+            -14.605
+          ]
+        ],
+        "faces": 16,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building Seat Zentrum Ingolstadt",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 12
+      },
+      {
+        "bounds": [
+          [
+            -22.614,
+            0.0,
+            31.437
+          ],
+          [
+            -22.614,
+            0.0,
+            71.699997
+          ],
+          [
+            -22.614,
+            7.5,
+            71.699997
+          ],
+          [
+            -22.614,
+            7.5,
+            31.437
+          ],
+          [
+            16.764,
+            0.0,
+            31.437
+          ],
+          [
+            16.764,
+            0.0,
+            71.699997
+          ],
+          [
+            16.764,
+            7.5,
+            71.699997
+          ],
+          [
+            16.764,
+            7.5,
+            31.437
+          ]
+        ],
+        "faces": 22,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building0",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 16
+      },
+      {
+        "bounds": [
+          [
+            -35.811001,
+            0.0,
+            -82.922997
+          ],
+          [
+            -35.811001,
+            0.0,
+            -27.173
+          ],
+          [
+            -35.811001,
+            7.5,
+            -27.173
+          ],
+          [
+            -35.811001,
+            7.5,
+            -82.922997
+          ],
+          [
+            29.205,
+            0.0,
+            -82.922997
+          ],
+          [
+            29.205,
+            0.0,
+            -27.173
+          ],
+          [
+            29.205,
+            7.5,
+            -27.173
+          ],
+          [
+            29.205,
+            7.5,
+            -82.922997
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building1",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      },
+      {
+        "bounds": [
+          [
+            -53.528999,
+            0.0,
+            -55.025002
+          ],
+          [
+            -53.528999,
+            0.0,
+            0.178
+          ],
+          [
+            -53.528999,
+            7.5,
+            0.178
+          ],
+          [
+            -53.528999,
+            7.5,
+            -55.025002
+          ],
+          [
+            11.34,
+            0.0,
+            -55.025002
+          ],
+          [
+            11.34,
+            0.0,
+            0.178
+          ],
+          [
+            11.34,
+            7.5,
+            0.178
+          ],
+          [
+            11.34,
+            7.5,
+            -55.025002
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building2",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      },
+      {
+        "bounds": [
+          [
+            24.007999,
+            0.0,
+            43.502998
+          ],
+          [
+            24.007999,
+            0.0,
+            61.002998
+          ],
+          [
+            24.007999,
+            7.5,
+            61.002998
+          ],
+          [
+            24.007999,
+            7.5,
+            43.502998
+          ],
+          [
+            40.706001,
+            0.0,
+            43.502998
+          ],
+          [
+            40.706001,
+            0.0,
+            61.002998
+          ],
+          [
+            40.706001,
+            7.5,
+            61.002998
+          ],
+          [
+            40.706001,
+            7.5,
+            43.502998
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building3",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      },
+      {
+        "bounds": [
+          [
+            5.534,
+            0.0,
+            65.222
+          ],
+          [
+            5.534,
+            0.0,
+            82.920998
+          ],
+          [
+            5.534,
+            7.5,
+            82.920998
+          ],
+          [
+            5.534,
+            7.5,
+            65.222
+          ],
+          [
+            21.718,
+            0.0,
+            65.222
+          ],
+          [
+            21.718,
+            0.0,
+            82.920998
+          ],
+          [
+            21.718,
+            7.5,
+            82.920998
+          ],
+          [
+            21.718,
+            7.5,
+            65.222
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building4",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      }
+    ],
+    "objects_total": 8,
+    "output_fbx_hash": "c18e33ca5fe83313ec930ac980385102e52768de6c239778babad3665cdca3af",
+    "scene_unit_scale": 1.0,
+    "scene_unit_system": "METRIC"
+  },
+  "start_time": "2026-09-15T20:09:38.760813",
+  "end_time": "2026-09-15T20:09:45.623839",
+  "duration_sec": 6.863,
+  "exit_code": 0,
+  "exception": "",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\blender_stdout.log",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\blender_stderr.log"
+}

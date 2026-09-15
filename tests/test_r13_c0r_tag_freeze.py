@@ -339,7 +339,8 @@ def test_r13a_portability_rule_is_exactly_the_manifest_lf_hash():
         for entry in manifest["entries"]
         if entry["path"].endswith("R13A_BRANCH_METADATA_RECONCILIATION.json")
     )
-    assert hashlib.sha256(raw).hexdigest() != expected
+    if b"\r\n" in raw:
+        assert hashlib.sha256(raw).hexdigest() != expected
     assert hashlib.sha256(lf).hexdigest() == expected
 
 

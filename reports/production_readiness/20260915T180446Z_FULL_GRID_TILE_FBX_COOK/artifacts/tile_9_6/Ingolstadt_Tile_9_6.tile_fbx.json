@@ -1,0 +1,48 @@
+{
+  "artifact_type": "carla_large_map_tile_fbx",
+  "claim_boundary": "Offline FBX generation only. This tile has NOT been imported by a UE4/UE5 Editor or cooked; runtime streaming/seam behavior is UNCONFIRMED until the live UE4 track runs.",
+  "clip": {
+    "buildings": 8,
+    "nodes_written": 38,
+    "ways_written": 8
+  },
+  "fbx": {
+    "bytes": 32428,
+    "faces_total": 98,
+    "objects_total": 8,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260915T180446Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
+    "sha256": "c18e33ca5fe83313ec930ac980385102e52768de6c239778babad3665cdca3af",
+    "vertices_total": 76
+  },
+  "fbx_name": "Ingolstadt_Tile_9_6.fbx",
+  "map_name": "Ingolstadt",
+  "roundtrip": {
+    "ok": true,
+    "verdict": "ROUNDTRIP_PASS"
+  },
+  "schema_version": 1,
+  "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+  "source_provenance": {
+    "buildings_source": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "header_offset_xy": [
+      832671.676,
+      5458671.104
+    ],
+    "map_of_record": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+    "tile_size_m": 1000.0
+  },
+  "status": "ok",
+  "tile_index": [
+    9,
+    6
+  ],
+  "timing_sec": {
+    "blender": 6.868,
+    "osm2world": 2.9,
+    "roundtrip": 5.058,
+    "total": 14.838
+  }
+}
