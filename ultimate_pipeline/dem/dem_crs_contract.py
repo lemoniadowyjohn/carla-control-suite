@@ -98,6 +98,60 @@ def claimed_crs_from_xodr(xodr_path: str) -> Tuple[Optional[Any], Optional[str],
         return None, raw, f"crs_parse_failed:{exc}"
 
 
+def validate_crs_states(xodr_path: str) -> Dict[str, Any]:
+    """
+    Validate CRS with distinct states:
+    - SYNTAX_VALID: CRS string parses without error
+    - TRANSFORM_VALID: CRS can transform to WGS84
+    - SOURCE_FRAME_CONFIRMED: Source frame verified against OSM ground truth
+    """
+    result = {
+        "syntax_valid": False,
+        "transform_valid": False,
+        "source_frame_confirmed": False,
+        "crs": None,
+        "crs_raw": None,
+        "crs_state": "UNKNOWN",
+        "errors": [],
+    }
+
+    if CRS is None or Transformer is None:
+        result["errors"].append("pyproj_unavailable")
+        result["crs_state"] = "PYPROJ_UNAVAILABLE"
+        return result
+
+    claimed_crs, claimed_raw, claimed_reason = claimed_crs_from_xodr(xodr_path)
+    result["crs"] = claimed_crs
+    result["crs_raw"] = claimed_raw
+
+    if claimed_crs is None:
+        result["errors"].append(claimed_reason)
+        result["crs_state"] = "PARSE_FAILED"
+        return result
+
+    # SYNTAX_VALID: CRS parsed successfully
+    result["syntax_valid"] = True
+    result["crs_state"] = "SYNTAX_VALID"
+
+    # TRANSFORM_VALID: Can transform to WGS84
+    try:
+        wgs84 = CRS.from_epsg(4326)
+        tf = Transformer.from_crs(claimed_crs, wgs84, always_xy=True)
+        # Test transform with a sample point
+        tf.transform(0, 0)
+        result["transform_valid"] = True
+        result["crs_state"] = "TRANSFORM_VALID"
+    except Exception as exc:
+        result["errors"].append(f"transform_failed:{exc}")
+        return result
+
+    # SOURCE_FRAME_CONFIRMED requires OSM source bounds comparison
+    # This is done in verify_crs_contract; we just report the state here
+    result["crs_state"] = "TRANSFORM_VALID"  # Not confirmed without OSM bounds
+
+    return result
+
+
 def header_bounds_from_xodr(xodr_path: str) -> Optional[Dict[str, float]]:
     try:
         tree = ET.parse(xodr_path)
