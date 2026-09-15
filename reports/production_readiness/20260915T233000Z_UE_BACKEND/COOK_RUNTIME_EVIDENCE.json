@@ -1,0 +1,14 @@
+{
+  "status_ladder": {
+    "OFFLINE_ASSET_READY": "PASS - all occupied tiles generated and round-trip validated",
+    "PACKAGE_LAYOUT_READY": "PASS - package.json, tile size, hashes verified",
+    "UE_IMPORT_READY": "BLOCKED - toolchain not present",
+    "UE_IMPORT_VERIFIED": "BLOCKED",
+    "UE_COOK_VERIFIED": "BLOCKED",
+    "CARLA_LOAD_VERIFIED": "BLOCKED",
+    "CARLA_STREAMING_VERIFIED": "BLOCKED",
+    "PERCEPTION_SENSOR_VERIFIED": "BLOCKED"
+  },
+  "next": "Import smallest tile/map package when toolchain present, then scale",
+  "status": "BLOCKED - offline ready, toolchain not available, no fabricated success"
+}

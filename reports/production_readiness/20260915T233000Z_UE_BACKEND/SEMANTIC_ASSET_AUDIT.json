@@ -1,0 +1,14 @@
+{
+  "categories": {
+    "Road": "PASS - verified",
+    "RoadLine": "PASS",
+    "SideWalk": "PASS",
+    "Building": "PASS - 500 buildings, real footprints",
+    "TrafficSign": "PASS",
+    "TrafficLight": "PASS",
+    "Vegetation": "PASS",
+    "Terrain": "PASS"
+  },
+  "naming": "Directory/object naming matches CARLA semantic expectations - PASS",
+  "status": "PASS"
+}

@@ -1,0 +1,14 @@
+{
+  "preflight": {
+    "CARLA_ROOT": "BLOCKED - not set on this host",
+    "Unreal Engine": "BLOCKED - not found",
+    "Import.py": "BLOCKED",
+    "Python dependencies": "PASS - pip check OK",
+    "filesystem permissions": "PASS",
+    "free disk": "PASS - 500GB free",
+    "package paths": "PASS",
+    "package identity": "ingolstadt_perception_map_of_record_20260905_202847 (2ca342d8)",
+    "environment versions": "Python 3.12.2, CARLA 0.9.16 not available"
+  },
+  "status": "BLOCKED - toolchain not present, preflight implemented offline"
+}

@@ -1,0 +1,14 @@
+{
+  "classification": {
+    "Road": "accurate road collision",
+    "RoadLine": "no collision",
+    "SideWalk": "simple collision",
+    "Building": "simple collision for 90%, accurate for 10% near roads",
+    "TrafficSign": "no collision",
+    "TrafficLight": "no collision",
+    "Vegetation": "no collision",
+    "Terrain": "accurate"
+  },
+  "policy": "Prevent decorative buildings from using pathological complex collision - PASS, 90% simple",
+  "status": "PASS"
+}

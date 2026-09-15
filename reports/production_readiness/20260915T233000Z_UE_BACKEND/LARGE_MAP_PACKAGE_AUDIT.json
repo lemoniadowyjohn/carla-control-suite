@@ -1,0 +1,18 @@
+{
+  "package": "ingolstadt_perception_map_of_record_20260905_202847",
+  "checks": {
+    "one_whole_map_XODR": "PASS - campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr exists, SHA 2ca342d8",
+    "correct_map_name": "PASS",
+    "package_json": "PASS - package.json exists with correct map name",
+    "tile_size": "100m",
+    "every_Tile_x_y_fbx": "PASS - all occupied tiles have corresponding _Tile_x_y.fbx (offline asset ready)",
+    "no_duplicate_tiles": "PASS",
+    "no_undeclared_tiles": "PASS",
+    "no_missing_tiles": "PASS",
+    "file_hashes": "PASS - SHA256 verified",
+    "coordinates": "PASS - tile origins correct",
+    "tile_origins": "PASS",
+    "bounds": "PASS"
+  },
+  "status": "OFFLINE_ASSET_READY, PACKAGE_LAYOUT_READY - UE import not verified (toolchain BLOCKED)"
+}
