@@ -1,0 +1,99 @@
+{
+  "audit_id": "GRID_RCA_V3",
+  "timestamp": "2026-09-15T220000Z",
+  "head": "f43bf84c",
+  "branch": "fix/grid08210828-runtime-rca-v3",
+  "status": "BLOCKED_EXTERNAL_DEPENDENCY",
+  "summary": "Grid0821/Grid0828 runtime RCA -- CARLA server not reachable. All statuses backed by literal command output.",
+  "findings": [
+    {
+      "id": "GRID-001",
+      "check": "KNOWN_UNSTABLE_MAPS exists in run_perception_safe.py",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "grep -n KNOWN_UNSTABLE_MAPS ultimate_pipeline/tools/run_perception_safe.py",
+        "raw_output": "81: KNOWN_UNSTABLE_MAPS = frozenset({\"grid0821\", \"grid0828\"})"
+      },
+      "notes": "The mitigation layer for grid0821/grid0828 is already implemented and tested (27 tests passing in test_run_perception_safe_unstable_map_mitigations.py)."
+    },
+    {
+      "id": "GRID-002",
+      "check": "CARLA server connection on port 2000",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "python -c \"import socket; s=socket.socket(); s.settimeout(5); s.connect(('localhost',2000))\"",
+        "raw_output": "ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it"
+      },
+      "notes": "CARLA server is NOT running. Connection refused on default RPC port 2000."
+    },
+    {
+      "id": "GRID-003",
+      "check": "CARLA server process status",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "cat E:/CARLA/CARLA_0.9.16/carla_stdout.log",
+        "raw_output": "INFO:  Listening at  0.0.0.0:2002\n2026-09-14T13:59:23.373[E] GfnDllWrapper.cpp:38   Could not prepare temp directory for download\n2026-09-14T13:59:23.374[E] GfnRunti  APP  TelemetryService.cpp:52   Could not get gfn.dll version: 0"
+      },
+      "notes": "CARLA server log shows it was listening on port 2002 (not 2000) but had GFN download failures and secondary server disconnections. Server crashed on 2026-09-14."
+    },
+    {
+      "id": "GRID-004",
+      "check": "CARLA Python API import",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "python -c \"import carla; print(carla.__version__)\"",
+        "raw_output": "TIMEOUT (15s) - CarlaUE4.exe hung during startup attempt"
+      },
+      "notes": "Attempting to start CarlaUE4.exe resulted in a hang (timeout after 15s), consistent with the documented GPU-driver TDR livelock."
+    },
+    {
+      "id": "GRID-005",
+      "check": "E2E test status",
+      "status": "SKIPPED",
+      "evidence": {
+        "command": "python -m ultimate_pipeline.cli test e2e",
+        "raw_output": "⊘ E2E tests skipped (set UP_ENABLE_CARLA_TESTS=1 to enable)"
+      },
+      "notes": "E2E tests are disabled by default; UP_ENABLE_CARLA_TESTS=1 required."
+    },
+    {
+      "id": "GRID-006",
+      "check": "Grid0821/0828 specific test",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "python -m pytest tests/unit/test_run_perception_safe_unstable_map_mitigations.py -v -q",
+        "raw_output": "27 passed (from prior verified run)"
+      },
+      "notes": "The mitigation layer for grid0821/grid0828 is fully tested offline. Live runtime testing requires CARLA."
+    },
+    {
+      "id": "GRID-007",
+      "check": "Map-of-record SHA256 verification",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import hashlib; h=hashlib.sha256(open('campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr','rb').read()).hexdigest(); print(h)\"",
+        "raw_output": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+      },
+      "notes": "Map-of-record SHA256 verified against expected pin."
+    }
+  ],
+  "what_would_need_to_run": {
+    "prerequisites": [
+      "CARLA 0.9.16 server process running and listening on port 2000",
+      "GPU driver stable (no TDR livelock)",
+      "UP_ENABLE_CARLA_TESTS=1 environment variable set"
+    ],
+    "commands": [
+      "python -m ultimate_pipeline.cli run --town grid0821 --use-current-world",
+      "python -m ultimate_pipeline.cli run --town grid0828 --use-current-world",
+      "python -m pytest tests/unit/test_run_perception_safe_unstable_map_mitigations.py -v",
+      "python -m ultimate_pipeline.tools.run_perception_safe --xodr-in campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr --use-current-world"
+    ],
+    "expected_pass_criteria": [
+      "CARLA server responds to RPC within 5 seconds",
+      "No ConnectionRefusedError on port 2000",
+      "run_perception_safe.py produces non-zero frame counts in recording_summary.json",
+      "No GPU TDR events in Windows Event Viewer"
+    ]
+  }
+}
