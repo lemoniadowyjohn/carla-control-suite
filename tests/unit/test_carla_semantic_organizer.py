@@ -83,6 +83,102 @@ class TestSemanticClassification:
         assert folder == "Other"
         assert rule == "fallback:unclassified"
 
+    def test_ambiguous_multi_match_resolution_order(self):
+        # An object name containing both "wall" and "fence" keywords.
+        # Per KEYWORD_RULES order, Fences (index 2) is checked before Walls (index 3),
+        # so Fences must win when both are present and no higher-priority rule matches.
+        folder, rule = classify_object(name="Wall_Fence_Board")
+        assert folder == "Fences", f"Expected Fences to win over Walls per KEYWORD_RULES order, got {folder}"
+        assert "fence" in rule.lower()
+
+        folder2, rule2 = classify_object(name="Fence_Wall_Board")
+        assert folder2 == "Fences", "Order should not depend on substring order in name, only on KEYWORD_RULES priority"
+
+        # Name containing building + wall + fence should resolve to Buildings (first in KEYWORD_RULES)
+        folder3, rule3 = classify_object(name="Building_Wall_Fence")
+        assert folder3 == "Buildings", f"Expected Buildings (first rule) to win, got {folder3}"
+
+        # StreetLamp is explicitly in Poles pattern (pole|lamp|streetlamp) — confirm it hits Poles
+        folder4, rule4 = classify_object(name="StreetLamp_Post_B")
+        assert folder4 == "Poles"
+
+    def test_case_sensitivity_consistency(self):
+        # The same logical name in different cases should classify consistently
+        # because KEYWORD_RULES uses re.IGNORECASE.
+        for name in ["Building_Tile_6_8", "BUILDING_TILE_6_8", "building_tile_6_8"]:
+            folder, _ = classify_object(name=name)
+            assert folder == "Buildings", f"Case variant {name} should consistently be Buildings, got {folder}"
+
+        # FINDING: Alternating/Mixed case like "BuIlDiNg_TiLe" is NOT handled consistently
+        # due to _normalize_name_for_matching splitting on CamelCase boundaries.
+        # "BuIlDiNg_TiLe" normalizes to "Bu Il Di Ng Ti Le" (each capital after lower splits),
+        # so \b(building)\b never matches and it falls through to Other.
+        # This is a real inconsistency: case-insensitivity is broken for non-standard casing.
+        # Test captures CURRENT (buggy) behavior and flags it.
+        folder_buggy, rule_buggy = classify_object(name="BuIlDiNg_TiLe")
+        assert folder_buggy == "Other", "Current behavior: alternating case falls to Other (bug)"
+        assert rule_buggy == "fallback:unclassified"
+        # Also bUiLdInG and BUILDiNG variants
+        assert classify_object(name="bUiLdInG")[0] == "Other"
+        assert classify_object(name="BUILDiNG")[0] == "Other"
+
+    def test_empty_missing_input_fallback(self):
+        # No OSM tags, no recognizable name pattern, no material => Other, not exception
+        folder, rule = classify_object(name="", materials=[], osm_tags={})
+        assert folder == "Other"
+        assert rule == "fallback:unclassified"
+
+        folder2, rule2 = classify_object(name="Unknown_XYZ_123", materials=["CustomMat_123"], osm_tags={})
+        assert folder2 == "Other"
+        assert rule2 == "fallback:unclassified"
+
+        # Explicit empty strings / None-like
+        folder3, _ = classify_object(name="   ", materials=[""], osm_tags={"": ""})
+        assert folder3 == "Other"
+
+    def test_boundary_keyword_matches_word_boundary_aware(self):
+        # FINDING: Matching IS word-boundary-aware (uses \b), not naive substring.
+        # "Wallpaper_Texture" contains "wall" as substring but NOT as whole word \bwall\b,
+        # so it correctly does NOT match Walls. Same for "Cartroleum" vs "car".
+        folder, _ = classify_object(name="Wallpaper_Texture")
+        assert folder == "Other", "Wallpaper should NOT match Walls (word-boundary-aware)"
+
+        folder2, _ = classify_object(name="Cartroleum_Object")
+        assert folder2 == "Other", "Cartroleum should NOT match Roads/Car"
+
+        # Positive controls: actual whole-word matches should still work
+        assert classify_object(name="Wall_Segment_01")[0] == "Walls"
+        assert classify_object(name="Fence_Post")[0] == "Fences"
+        # CamelCase without separator still splits correctly via _normalize_name_for_matching
+        assert classify_object(name="BuildingWallFence")[0] == "Buildings"  # splits to "Building Wall Fence"
+
+    def test_multiple_osm_tags_disagree_deterministic(self):
+        # Two different OSM tag keys that map to different folders on same object.
+        # The code iterates osm_tags.items() in insertion order; first matching tag wins.
+        # This is deterministic for a given dict order.
+        from collections import OrderedDict
+
+        # building=yes (Buildings) listed first => Buildings wins over Vegetation
+        folder1, rule1 = classify_object(osm_tags=OrderedDict([("building", "yes"), ("natural", "tree")]))
+        assert folder1 == "Buildings", f"Expected Buildings to win when listed first, got {folder1}"
+        assert "building" in rule1
+
+        # Reversed order => Vegetation wins
+        folder2, rule2 = classify_object(osm_tags=OrderedDict([("natural", "tree"), ("building", "yes")]))
+        assert folder2 == "Vegetation", f"Expected Vegetation to win when listed first, got {folder2}"
+        assert "natural=tree" in rule2
+
+        # Same input always produces same output (deterministic)
+        for _ in range(5):
+            assert classify_object(osm_tags=OrderedDict([("building", "yes"), ("natural", "tree")]))[0] == "Buildings"
+            assert classify_object(osm_tags=OrderedDict([("natural", "tree"), ("building", "yes")]))[0] == "Vegetation"
+
+        # Pair vs key-only: barrier=fence (pair) should win over building (key) when barrier listed first
+        folder3, _ = classify_object(osm_tags=OrderedDict([("barrier", "fence"), ("building", "yes")]))
+        assert folder3 == "Fences"
+        folder4, _ = classify_object(osm_tags=OrderedDict([("building", "yes"), ("barrier", "fence")]))
+        assert folder4 == "Buildings"
+
 
 class TestOrganizerPlannerAndExecution:
     def test_dry_run_plan_generation(self, tmp_path: Path):
