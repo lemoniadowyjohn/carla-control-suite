@@ -155,6 +155,24 @@ class GeometryValidator:
 
             parsed.append({"elem": g, "s": s, "length": l, "hdg": hdg})
 
+        # Deterministic rejection of non-finite or missing required attributes
+        # (OC-1 kernel-migration reject semantics). A finite but tiny/negative
+        # length is a bounded REPAIR (removed below), but a missing or
+        # non-finite s/length prevents a monotonic chain from being placed at
+        # all, and a non-finite hdg has no meaningful normalization -- these
+        # are surfaced as REJECTED rather than silently "repaired" away, and
+        # the XML is left untouched for inspection.
+        rejections = []
+        for i, d in enumerate(parsed):
+            if d["s"] is None or not math.isfinite(d["s"]):
+                rejections.append(f"nonfinite_or_missing_s_at_index={i}")
+            if d["length"] is None or not math.isfinite(d["length"]):
+                rejections.append(f"nonfinite_or_missing_length_at_index={i}")
+            if d["hdg"] is not None and not math.isfinite(d["hdg"]):
+                rejections.append(f"nonfinite_hdg_at_index={i}")
+        if rejections:
+            return {"status": "REJECTED", "issues": rejections}
+
         # --------------------------------------------------------------
         # 1) Identify zero-length segments for XML removal
         # --------------------------------------------------------------

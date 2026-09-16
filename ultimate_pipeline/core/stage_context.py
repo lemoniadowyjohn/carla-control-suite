@@ -5,28 +5,39 @@ Stages are migrated incrementally so each change can be compared independently.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from typing import Any, Mapping
+from dataclasses import dataclass
+from typing import Any, ClassVar, Mapping
 
 
 @dataclass
 class StageContext:
+    # Legacy semantic flags (exact lockstep with the temporary legacy mapping).
+    _LEGACY_BOOL_FIELDS: ClassVar[tuple[str, ...]] = (
+        "has_geometry",
+        "has_elevation",
+        "has_planview",
+        "has_lanes",
+    )
     has_geometry: bool = False
     has_elevation: bool = False
     has_planview: bool = False
     has_lanes: bool = False
+    # Typed-only field: NOT part of the legacy bool mapping and never
+    # bool-coerced (it is None or a hex string fingerprint).
     horizontal_geometry_fingerprint: str | None = None
 
-    def replace(self, **values: bool) -> None:
+    def replace(self, **values) -> None:
         """Set only declared contract fields, rejecting accidental state drift."""
         for name, value in values.items():
             if name not in self.__dataclass_fields__:
                 raise KeyError(f"unknown stage-context field: {name}")
-            setattr(self, name, bool(value))
+            if name in self._LEGACY_BOOL_FIELDS:
+                value = bool(value)
+            setattr(self, name, value)
 
     def as_legacy_mapping(self) -> dict[str, bool]:
         """Return the exact legacy mapping shape during the migration period."""
-        return {name: bool(value) for name, value in asdict(self).items()}
+        return {name: bool(getattr(self, name)) for name in self._LEGACY_BOOL_FIELDS}
 
 
 
@@ -64,7 +75,7 @@ def ensure_stage_context(owner: Any) -> StageContext:
     context = StageContext(
         **{
             name: bool(legacy.get(name, False))
-            for name in StageContext.__dataclass_fields__
+            for name in StageContext._LEGACY_BOOL_FIELDS
         }
     )
     owner.stage_context = context

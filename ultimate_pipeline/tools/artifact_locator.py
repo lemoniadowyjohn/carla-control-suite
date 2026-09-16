@@ -71,13 +71,14 @@ def _newest_final_xodr(run_dir: Path) -> Optional[Path]:
     export_thesis_tables.py::_latest_final_xodr), falling back to the
     mtime-newest 08_final*.xodr of any kind.
     """
-    # FIX: Do not select by mtime (stale). Use explicit receipt or lexicographic with hash verification
-    # For now, select first lexicographically and require caller to verify hash, not mtime
-    semantic = sorted(run_dir.glob("08_final*_semantic.xodr"))
+    semantic = sorted(
+        run_dir.glob("08_final*_semantic.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     if semantic:
-        # Return first and require hash check by caller, not mtime newest
         return semantic[0]
-    any_final = sorted(run_dir.glob("08_final*.xodr"))
+    any_final = sorted(
+        run_dir.glob("08_final*.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     return any_final[0] if any_final else None
 
 
