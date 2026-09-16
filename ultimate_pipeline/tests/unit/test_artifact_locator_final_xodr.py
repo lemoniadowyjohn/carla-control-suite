@@ -116,3 +116,60 @@ def test_find_xodr_artifact_prefers_semantic_08_final_when_no_tile(tmp_path: Pat
     result, _source = find_xodr_artifact(tmp_path)
 
     assert result.read_text(encoding="utf-8") == "AUTHORITATIVE"
+
+
+# ---------------------------------------------------------------------------
+# Anti-staleness hardening (2026-09-16, reconciling audit/evidence-integrity-v2
+# with this file's existing coverage -- see tests/unit/test_oc3_adversarial_review.py
+# ::test_stale_artifact_not_selected_by_mtime for the full writeup of the
+# conflict). A structurally-verified post-repair candidate (one with a
+# same-run *_laneSectionFixed.xodr sibling on disk) must win over an
+# unverified candidate even when the unverified one has a newer mtime --
+# without regressing the mtime-newest behavior the tests above lock down for
+# the (much more common) single-legitimate-candidate and no-repair-evidence
+# cases.
+# ---------------------------------------------------------------------------
+
+
+def test_prefers_repair_verified_semantic_over_newer_unverified_one(tmp_path: Path):
+    from ultimate_pipeline.tools.artifact_locator import find_final_xodr
+
+    # Unverified: no laneSectionFixed sibling for this run -- gets a newer
+    # mtime via a later touch, simulating a copy/restore bumping mtime
+    # without the file actually being the current, repaired output.
+    unverified = tmp_path / "08_final_A_semantic.xodr"
+    _write(unverified, "unverified, no repair evidence")
+
+    # Verified: has a matching laneSectionFixed sibling proving this run
+    # completed the repair stage, but an older mtime.
+    verified = tmp_path / "08_final_B_semantic.xodr"
+    _write(verified, "verified, repair sibling present")
+    _write(tmp_path / "08_final_B_laneSectionFixed.xodr", "repair output")
+
+    time.sleep(0.02)
+    unverified.touch()  # bump mtime after the fact, no content change
+
+    result, _source = find_final_xodr(tmp_path)
+
+    assert result == verified
+
+
+def test_fallback_prefers_lanesectionfixed_over_plain_regardless_of_lex_order(tmp_path: Path):
+    """Guards the any_final fallback branch specifically: a naive plain
+    lexicographic sort (no mtime, no repair-preference) would pick the plain
+    file here ("." < "_" in ASCII) even though it is older AND unrepaired --
+    exactly the CARLA MapBuilder.cpp-assert bug this module's docstring
+    describes. No 08_final*_semantic.xodr exists, so this exercises the
+    any_final fallback, not the primary semantic branch.
+    """
+    from ultimate_pipeline.tools.artifact_locator import _newest_final_xodr
+
+    plain = tmp_path / "08_final_A.xodr"
+    _write(plain, "PRE-REPAIR (stale)")
+    time.sleep(0.02)
+    fixed = tmp_path / "08_final_A_laneSectionFixed.xodr"
+    _write(fixed, "AUTHORITATIVE (repaired)")
+
+    result = _newest_final_xodr(tmp_path)
+
+    assert result == fixed
