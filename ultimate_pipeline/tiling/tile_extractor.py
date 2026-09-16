@@ -14,6 +14,7 @@
 # ------------------------------------------------------------
 
 import hashlib
+import math
 import os
 import xml.etree.ElementTree as ET
 from ultimate_pipeline.core.georef_utils import normalize_georeference
@@ -252,13 +253,122 @@ def _compute_effective_buffer(
     return base_buffer + extra
 
 
+def _compute_junction_bounds(
+    roads: List[ET.Element],
+    road_bounds_by_id: Dict[int, Tuple[float, float, float, float]],
+) -> Dict[str, Tuple[float, float, float, float]]:
+    """TIL-003/I3 support: combined AABB of every member of each junction.
+
+    Depends only on `roads` (the whole-map road list) and their bounds, not
+    on any single tile, so callers that tile a map into many cells should
+    compute this exactly once and reuse it -- not recompute it per tile.
+    """
+    junction_roads: Dict[str, List[ET.Element]] = {}
+    for r in roads:
+        jid = r.get("junction")
+        # OSM2ODR convention: junction="-1" means "not part of any
+        # junction" — never group these into a pseudo-junction, otherwise
+        # the whole-map AABB of "-1" would cascade every non-junction road
+        # into every tile.
+        if jid and jid != "-1":
+            junction_roads.setdefault(jid, []).append(r)
+    junction_bounds: Dict[str, Tuple[float, float, float, float]] = {}
+    for jid, members in junction_roads.items():
+        xs: List[float] = []
+        ys: List[float] = []
+        for m in members:
+            mnx, mny, mxx, mxy = road_bounds_by_id.get(id(m)) or _road_bounds(m)
+            xs.extend((mnx, mxx))
+            ys.extend((mny, mxy))
+        junction_bounds[jid] = (min(xs), min(ys), max(xs), max(ys))
+    return junction_bounds
+
+
+def _covered_cell_range(
+    mnx: float, mny: float, mxx: float, mxy: float,
+    min_x: float, min_y: float, tile_size: float, buffer_m: float,
+) -> Tuple[int, int, int, int]:
+    """Grid cell index range (inclusive) that a buffered AABB overlaps,
+    using the same [origin + ix*tile_size, origin + (ix+1)*tile_size) cell
+    convention as _iter_tile_origins. Mirrors the closed-interval AABB
+    overlap test in _build_tile_root (touching an edge counts as a hit).
+    """
+    bx0 = mnx - buffer_m
+    bx1 = mxx + buffer_m
+    by0 = mny - buffer_m
+    by1 = mxy + buffer_m
+    ix0 = max(0, int(math.floor((bx0 - min_x) / tile_size)))
+    ix1 = max(ix0, int(math.floor((bx1 - min_x) / tile_size)))
+    iy0 = max(0, int(math.floor((by0 - min_y) / tile_size)))
+    iy1 = max(iy0, int(math.floor((by1 - min_y) / tile_size)))
+    return ix0, ix1, iy0, iy1
+
+
+def _build_road_spatial_index(
+    roads: List[ET.Element],
+    road_bounds_by_id: Dict[int, Tuple[float, float, float, float]],
+    junction_bounds: Dict[str, Tuple[float, float, float, float]],
+    effective_buffer: float,
+    min_x: float,
+    min_y: float,
+    tile_size: float,
+) -> Dict[Tuple[int, int], List[ET.Element]]:
+    """TIL-PERF-001: bucket roads by the tile cell(s) their (buffered) AABB
+    overlaps, so TileExtractor.tile() only tests a small local candidate
+    set per tile instead of re-scanning every road in the map for every
+    tile (an O(tiles x roads) scan that, at city scale -- ~32k roads x
+    ~800 tiles -- reliably exceeded the tiling subprocess's timeout).
+
+    A junction member is bucketed by its junction's combined bbox (a
+    superset of the member's own bbox, since junction_bounds is the union
+    over all members) so the junction-never-split fallback that
+    _build_tile_root still performs sees every member as a candidate in
+    every tile the junction could reach -- this exactly preserves TIL-003/
+    I3 junction-cut prevention, just without a full-map scan per tile.
+    """
+    index: Dict[Tuple[int, int], List[ET.Element]] = {}
+    for r in roads:
+        jid = r.get("junction")
+        if jid and jid != "-1" and jid in junction_bounds:
+            mnx, mny, mxx, mxy = junction_bounds[jid]
+        else:
+            mnx, mny, mxx, mxy = road_bounds_by_id.get(id(r)) or _road_bounds(r)
+        ix0, ix1, iy0, iy1 = _covered_cell_range(
+            mnx, mny, mxx, mxy, min_x, min_y, tile_size, effective_buffer
+        )
+        for ix in range(ix0, ix1 + 1):
+            for iy in range(iy0, iy1 + 1):
+                index.setdefault((ix, iy), []).append(r)
+    return index
+
+
 def _build_tile_root(
     src_root: ET.Element,
     roads: List[ET.Element],
     tile_name: str,
     core_bounds: Tuple[float, float, float, float],
     buffer_m: float,
+    *,
+    road_bounds_by_id: Optional[Dict[int, Tuple[float, float, float, float]]] = None,
+    junction_bounds: Optional[Dict[str, Tuple[float, float, float, float]]] = None,
 ) -> ET.Element:
+    """Build one tile's XODR tree.
+
+    `roads` is the candidate set to test against this tile -- callers that
+    already know which roads could possibly overlap this tile (e.g. via
+    _build_road_spatial_index) should pass just that subset for speed.
+    Callers that don't have a precomputed candidate set may still pass the
+    full map road list, at the cost of an O(roads) scan per call.
+
+    `road_bounds_by_id` / `junction_bounds`, when omitted, are computed
+    from `roads` (backward-compatible with callers that invoke this
+    directly without the TileExtractor.tile() fast path).
+    """
+    if road_bounds_by_id is None:
+        road_bounds_by_id = {id(r): _road_bounds(r) for r in roads}
+    if junction_bounds is None:
+        junction_bounds = _compute_junction_bounds(roads, road_bounds_by_id)
+
     core_min_x, core_min_y, core_max_x, core_max_y = core_bounds
     buf_min_x = core_min_x - buffer_m
     buf_max_x = core_max_x + buffer_m
@@ -274,27 +384,8 @@ def _build_tile_root(
     # reaches a buffered cell, the ENTIRE junction travels together
     # (complete-junction duplication with one owner; ownership is recorded
     # out of band). A junction never disappears across a tile boundary.
-    junction_roads: Dict[str, List[ET.Element]] = {}
     for r in roads:
-        jid = r.get("junction")
-        # OSM2ODR convention: junction="-1" means "not part of any
-        # junction" — never group these into a pseudo-junction, otherwise
-        # the whole-map AABB of "-1" would cascade every non-junction road
-        # into every tile.
-        if jid and jid != "-1":
-            junction_roads.setdefault(jid, []).append(r)
-    junction_bounds: Dict[str, Tuple[float, float, float, float]] = {}
-    for jid, members in junction_roads.items():
-        xs: List[float] = []
-        ys: List[float] = []
-        for m in members:
-            mnx, mny, mxx, mxy = _road_bounds(m)
-            xs.extend((mnx, mxx))
-            ys.extend((mny, mxy))
-        junction_bounds[jid] = (min(xs), min(ys), max(xs), max(ys))
-
-    for r in roads:
-        mnx, mny, mxx, mxy = _road_bounds(r)
+        mnx, mny, mxx, mxy = road_bounds_by_id.get(id(r)) or _road_bounds(r)
         hit = not (mxx < buf_min_x or mnx > buf_max_x
                    or mxy < buf_min_y or mny > buf_max_y)
         if not hit:
@@ -461,9 +552,22 @@ class TileExtractor:
 
         _mark_global_driving_lanes(root)
 
+        # PERF: compute each road's bounds exactly once here (not once per
+        # tile). _road_bounds() itself caches on (road_id, planView digest),
+        # but even a cache *hit* re-hashes the planView subtree to form the
+        # lookup key -- calling it from inside the O(tiles) loop below (as
+        # this used to) meant re-hashing every road's planView once per
+        # tile. At city scale (~32k roads x ~800 tiles for a 500m grid on a
+        # ~13km x 14km map) that is ~25M redundant hashes and was the
+        # measured cause of the tile_manual_xodr_windows subprocess
+        # reliably exceeding its 300s timeout (profiled: ~32s for a single
+        # full pass of the hash alone, i.e. ~7 hours if repeated per tile).
         xs, ys = [], []
+        road_bounds_by_id: Dict[int, Tuple[float, float, float, float]] = {}
         for idx, r in enumerate(roads, start=1):
-            mnx, mny, mxx, mxy = _road_bounds(r)
+            b = _road_bounds(r)
+            road_bounds_by_id[id(r)] = b
+            mnx, mny, mxx, mxy = b
             xs.extend([mnx, mxx])
             ys.extend([mny, mxy])
             if progress_every > 0 and idx % progress_every == 0:
@@ -484,6 +588,33 @@ class TileExtractor:
 
         os.makedirs(out_dir, exist_ok=True)
 
+        # PERF: _compute_effective_buffer() and _compute_junction_bounds()
+        # both depend only on the whole-map `roads` list, never on the
+        # current tile -- the old code recomputed both, from scratch, once
+        # per tile (identical result every time). Hoist them out of the
+        # loop.
+        effective_buffer = _compute_effective_buffer(
+            base_buffer,
+            roads,
+            enable_highway_buffer,
+            alpha,
+        )
+        junction_bounds = _compute_junction_bounds(roads, road_bounds_by_id)
+
+        # PERF: spatial index (grid bucket per tile cell) so each tile only
+        # tests the roads that could plausibly overlap it, instead of
+        # scanning all `roads` per tile. See _build_road_spatial_index for
+        # why this still preserves junction-never-split (TIL-003/I3).
+        spatial_index = _build_road_spatial_index(
+            roads,
+            road_bounds_by_id,
+            junction_bounds,
+            effective_buffer,
+            min_x,
+            min_y,
+            tile_size,
+        )
+
         tiles: List[str] = []
         tile_health: Dict[str, dict] = {}
 
@@ -491,19 +622,16 @@ class TileExtractor:
             tile_name = f"tile_{ix}_{iy}"
             core_bounds = (x, y, x + tile_size, y + tile_size)
 
-            effective_buffer = _compute_effective_buffer(
-                base_buffer,
-                roads,
-                enable_highway_buffer,
-                alpha,
-            )
+            candidate_roads = spatial_index.get((ix, iy), [])
 
             tile_root = _build_tile_root(
                 root,
-                roads,
+                candidate_roads,
                 tile_name,
                 core_bounds,
                 effective_buffer,
+                road_bounds_by_id=road_bounds_by_id,
+                junction_bounds=junction_bounds,
             )
 
             if not tile_root.findall("road"):
