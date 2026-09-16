@@ -34,6 +34,37 @@ from ultimate_pipeline.core.repair_diff import diff_log
 from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as geometry_endpoint
 
 
+def canonical_horizontal_geometry_fingerprint(root) -> str:
+    """Calculate canonical fingerprint of planView geometry at freeze.
+
+    Prevents the horizontal geometry shape from silently changing between
+    the geometry freeze point and a later stage (GEOM-FREEZE-001). The
+    fingerprint is a SHA-256 over roads sorted by id and their planView
+    geometry attributes (s, x, y, hdg, length) plus each primitive tag and
+    its sorted attributes. Flagged by OC-1 independent review; this function
+    is pure and read-only so it composes with the P0-reconciled validator.
+    """
+    import hashlib
+
+    h = hashlib.sha256()
+    for road in sorted(root.findall("road"), key=lambda r: r.get("id", "")):
+        rid = road.get("id", "")
+        h.update(rid.encode())
+        plan = road.find("planView")
+        if plan is None:
+            continue
+        for geom in plan.findall("geometry"):
+            for k in ["s", "x", "y", "hdg", "length"]:
+                v = geom.get(k, "")
+                h.update(f"{k}={v}".encode())
+            prim = next(iter(geom), None)
+            if prim is not None:
+                h.update(prim.tag.encode())
+                for kk, vv in sorted(prim.attrib.items()):
+                    h.update(f"{kk}={vv}".encode())
+    return h.hexdigest()
+
+
 # ---------------------------------------------------------------------
 # Utility helpers
 # ---------------------------------------------------------------------
