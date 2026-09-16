@@ -1,0 +1,167 @@
+[
+  {
+    "subsystem": "OpenDRIVE generation",
+    "branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+    "commit": "bc6381b2",
+    "merged": false,
+    "tests": "60 passed (geometry validator, DEM CRS, geometry kernel, C9 tail gates) + 4 new pRange/freeze",
+    "independent_evidence": "46208a38 oracle: max error 7.1e-07, 0 fallback",
+    "runtime_evidence": "NOT_APPLICABLE - offline",
+    "status": "VERIFIED",
+    "open_blockers": []
+  },
+  {
+    "subsystem": "geometry",
+    "branch": "audit/geometry-topology-oracle-v2-20260915",
+    "commit": "46208a38",
+    "merged": false,
+    "tests": "180 geometry primitive tests PASS",
+    "independent_evidence": "GEOMETRY_ORACLE_RESULTS.json, error distribution, freeze audit",
+    "runtime_evidence": "NOT_APPLICABLE",
+    "status": "VERIFIED",
+    "open_blockers": ["GEOM-FREEZE-001 now fixed, 1 P1 closed"]
+  },
+  {
+    "subsystem": "topology",
+    "branch": "audit/geometry-topology-oracle-v2-20260915",
+    "commit": "46208a38",
+    "merged": false,
+    "tests": "3561 junctions, 22589 connecting roads, 0 invalid",
+    "independent_evidence": "TOPOLOGY_ORACLE_RESULTS.json, JUNCTION_ROUTE_MATRIX.json",
+    "runtime_evidence": "NOT_APPLICABLE",
+    "status": "VERIFIED",
+    "open_blockers": []
+  },
+  {
+    "subsystem": "lanes",
+    "branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+    "commit": "bc6381b2",
+    "merged": false,
+    "tests": "lane geometry continuity, width, lanelink targets - all PASS in 60",
+    "independent_evidence": "TOPOLOGY_ORACLE laneLink 0 invalid",
+    "runtime_evidence": "NOT_APPLICABLE",
+    "status": "VERIFIED",
+    "open_blockers": []
+  },
+  {
+    "subsystem": "DEM/elevation",
+    "branch": "audit/dem-crs-elevation-v2",
+    "commit": "7f6d8efa",
+    "merged": false,
+    "tests": "CRS round-trip PASS, coverage gate exists",
+    "independent_evidence": "CRS_AUTHORITY_REPORT.json PASS, DEM_SAMPLE_PARITY BLOCKED (no raster)",
+    "runtime_evidence": "BLOCKED - raster not in worktree",
+    "status": "PARTIALLY_VERIFIED",
+    "open_blockers": ["DEM raster parity BLOCKED"]
+  },
+  {
+    "subsystem": "regulatory semantics",
+    "branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+    "commit": "bc6381b2",
+    "merged": false,
+    "tests": "Not directly tested in 60, but lane classification, roadmark, signal audits in separate branches",
+    "independent_evidence": "None in this integration",
+    "runtime_evidence": "NOT_APPLICABLE",
+    "status": "NOT_TESTED",
+    "open_blockers": []
+  },
+  {
+    "subsystem": "classical domain gap",
+    "branch": "audit/domain-gap-gnn-scientific-v2",
+    "commit": "d7f740ac",
+    "merged": false,
+    "tests": "11 perturbations PASS, historical 0.0 superseded by 1.0",
+    "independent_evidence": "INDEPENDENT_METRIC_RECOMPUTATION.json, ALIGNMENT_CORRECTNESS_AUDIT.json (KDTree fix)",
+    "runtime_evidence": "BLOCKED - full map manual not in worktree",
+    "status": "PARTIALLY_VERIFIED",
+    "open_blockers": ["Full map reproduction BLOCKED"]
+  },
+  {
+    "subsystem": "GNN domain gap",
+    "branch": "audit/domain-gap-gnn-scientific-v2",
+    "commit": "d7f740ac",
+    "merged": false,
+    "tests": "GNN leakage 0, collapse rank 9.2/12 PASS, permutation p=0.03 PASS",
+    "independent_evidence": "GNN_GRAPH_AUTHORITY.json, GNN_COLLAPSE_DIAGNOSTICS.json",
+    "runtime_evidence": "BLOCKED - Munich held-out BLOCKED",
+    "status": "PARTIALLY_VERIFIED",
+    "open_blockers": ["Cross-city generalization BLOCKED"]
+  },
+  {
+    "subsystem": "FBX visual generation",
+    "branch": "fix/large-map-offline-hardening-v1-20260915",
+    "commit": "540b5c5f",
+    "merged": false,
+    "tests": "Tile FBX generator tests exist, large-map package offline asset ready",
+    "independent_evidence": "None in this integration",
+    "runtime_evidence": "BLOCKED - UE toolchain not available",
+    "status": "PARTIALLY_VERIFIED",
+    "open_blockers": ["UE import/cook not verified"]
+  },
+  {
+    "subsystem": "UE import/cook",
+    "branch": "fix/large-map-offline-hardening-v1-20260915",
+    "commit": "540b5c5f",
+    "merged": false,
+    "tests": "UE preflight checks not run",
+    "independent_evidence": "None",
+    "runtime_evidence": "BLOCKED - Unreal not available",
+    "status": "BLOCKED",
+    "open_blockers": ["CARLA_ROOT, Unreal Engine not present"]
+  },
+  {
+    "subsystem": "CARLA runtime",
+    "branch": "rca/manual-grid-0821-0828-v2 (not yet created)",
+    "commit": "N/A",
+    "merged": false,
+    "tests": "Not run",
+    "independent_evidence": "None",
+    "runtime_evidence": "BLOCKED - CARLA 0.9.16 server not available on this host",
+    "status": "BLOCKED",
+    "open_blockers": ["Grid0821/0828 RCA requires CARLA server"]
+  },
+  {
+    "subsystem": "manual-map runtime",
+    "branch": "N/A",
+    "commit": "N/A",
+    "merged": false,
+    "tests": "Not run",
+    "independent_evidence": "None",
+    "runtime_evidence": "BLOCKED",
+    "status": "BLOCKED",
+    "open_blockers": ["Manual Grid0821/0828 blocked"]
+  },
+  {
+    "subsystem": "perception capture",
+    "branch": "feature/perception-cross-domain-readiness-v2 (not created)",
+    "commit": "N/A",
+    "merged": false,
+    "tests": "Sensor frame contract not verified",
+    "independent_evidence": "None",
+    "runtime_evidence": "BLOCKED",
+    "status": "BLOCKED",
+    "open_blockers": ["CARLA runtime blocked"]
+  },
+  {
+    "subsystem": "cross-domain model training",
+    "branch": "N/A",
+    "commit": "N/A",
+    "merged": false,
+    "tests": "Not run",
+    "independent_evidence": "None",
+    "runtime_evidence": "BLOCKED",
+    "status": "BLOCKED",
+    "open_blockers": ["Perception capture blocked"]
+  },
+  {
+    "subsystem": "reproducibility/CI",
+    "branch": "chore/production-engineering-shell-v2-20260915",
+    "commit": "a323a923",
+    "merged": false,
+    "tests": "20 passed (release profile, quality status, warning taxonomy, origin guard) + 60 + 4 + 2",
+    "independent_evidence": "CI now includes integration/**, false-green fixed, provenance 1 deficiency (DEM raster)",
+    "runtime_evidence": "NOT_APPLICABLE",
+    "status": "PARTIALLY_VERIFIED",
+    "open_blockers": ["DEM raster provenance P1"]
+  }
+]
