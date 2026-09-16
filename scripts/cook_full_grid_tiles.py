@@ -125,6 +125,10 @@ def _build_summary(
     empty_count = sum(1 for r in all_results if r.get("status") == "empty")
     roundtrip_pass = sum(1 for r in all_results if r.get("roundtrip_ok") is True)
     roundtrip_fail = sum(1 for r in all_results if r.get("roundtrip_ok") is False)
+    semantic_non_buildings_total = sum(
+        (r.get("semantic_classification") or {}).get("non_buildings_count", 0)
+        for r in all_results
+    )
 
     # Anomalies: any non-ok tile.
     anomalies = [
@@ -156,6 +160,7 @@ def _build_summary(
         "tiles_empty": empty_count,
         "roundtrip_pass": roundtrip_pass,
         "roundtrip_fail": roundtrip_fail,
+        "semantic_non_buildings_total": semantic_non_buildings_total,
         "anomalies": anomalies,
         "results": all_results,
         "source_provenance": source_provenance,

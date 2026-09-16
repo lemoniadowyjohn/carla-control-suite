@@ -85,6 +85,11 @@ from ultimate_pipeline.enrichment.osm2world_runner import OSM2WorldRunner
 from ultimate_pipeline.enrichment.blender_runner import BlenderRunner, DEFAULT_BLENDER_EXE
 from ultimate_pipeline.enrichment.fbx_roundtrip import run_fbx_roundtrip
 
+# Semantic-tag classification (previously orphaned -- see classify_tile_buildings
+# below for why it is wired in at *tag* granularity, not the module's per-object
+# file-placement API).
+from ultimate_pipeline.enrichment.carla_semantic_organizer import classify_object
+
 
 # ---------------------------------------------------------------------------
 # Coordinate transform: identical convention to
@@ -503,6 +508,54 @@ def write_tile_osm_xml(
     }
 
 
+def classify_tile_buildings(buildings: Sequence[TileBuilding]) -> Dict[str, Any]:
+    """Classify a tile's buildings via the CARLA semantic-tag rule engine.
+
+    Wires ``ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object``
+    into the real tile-cook pipeline (it was previously an orphaned module: unit
+    tested but never called from any pipeline stage). It is invoked here, at OSM
+    *tag* granularity, deliberately -- **not** via the organizer's
+    ``CarlaSemanticOrganizer.plan_from_inventory`` / ``execute_plan`` file-placement
+    API. That API's data model assumes one source file per classified object
+    (``inventory`` items carry a ``filename`` that is moved/copied individually
+    into ``Carla/Static/<Folder>/``); this tile-cook path instead renders every
+    building assigned to a tile into a single merged ``<MapName>_Tile_<x>_<y>.fbx``
+    (one physical file, many objects), so there is no per-object file to move and
+    calling the file-placement API here would silently fabricate placements for
+    files that were never produced. Classifying by tag instead is honest given
+    the actual artifact shape, still exercises the organizer's real rule engine,
+    and produces a genuinely useful check: this tile-cook path renders buildings
+    only (OSM2World config excludes roads/rail/aeroway/parking, AG03A), so under
+    a correct Overpass "buildings" extract every element is expected to classify
+    as ``"Buildings"``. Anything else is real evidence of a source-data defect
+    (e.g. a bridge or barrier element that leaked into the buildings query) and
+    is surfaced, not silently dropped.
+    """
+    counts: Dict[str, int] = {}
+    anomalies: List[Dict[str, Any]] = []
+    for b in buildings:
+        folder, rule = classify_object(osm_tags=dict(b.tags))
+        counts[folder] = counts.get(folder, 0) + 1
+        if folder != "Buildings":
+            anomalies.append(
+                {
+                    "source_id": b.source_id,
+                    "source_type": b.source_type,
+                    "folder": folder,
+                    "rule_matched": rule,
+                    "tags": dict(b.tags),
+                }
+            )
+    return {
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "buildings_classified": len(buildings),
+        "counts_by_folder": counts,
+        "non_buildings_count": len(anomalies),
+        # Capped so a pathological tile can't blow up the manifest sidecar.
+        "non_buildings_anomalies": anomalies[:50],
+    }
+
+
 def tile_fbx_name(map_name: str, tx: int, ty: int) -> str:
     """CARLA Large-Map tile FBX name: ``<MapName>_Tile_<x>_<y>.fbx``."""
     return f"{map_name}_Tile_{tx}_{ty}.fbx"
@@ -549,6 +602,7 @@ class TileFbxResult:
     roundtrip_sec: float = 0.0
     total_sec: float = 0.0
     manifest_path: str = ""
+    semantic_classification: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -572,6 +626,7 @@ class TileFbxResult:
             "roundtrip_sec": self.roundtrip_sec,
             "total_sec": self.total_sec,
             "manifest_path": self.manifest_path,
+            "semantic_classification": self.semantic_classification,
         }
 
 
@@ -624,6 +679,10 @@ def generate_tile_fbx(
         result.reason = "no buildings assigned to this tile"
         result.total_sec = round(time.time() - started, 3)
         return result
+
+    # 0. semantic-tag classification (evidence/QA only; see classify_tile_buildings
+    #    docstring for why this does not use the organizer's file-placement API).
+    result.semantic_classification = classify_tile_buildings(buildings)
 
     # 1. source-level clip -> tile OSM XML
     osm_path = out_dir / f"{stem}.osm"
@@ -725,6 +784,7 @@ def generate_tile_fbx(
             "ok": result.roundtrip_ok,
             "verdict": result.roundtrip_verdict,
         },
+        "semantic_classification": result.semantic_classification,
         "timing_sec": {
             "osm2world": result.osm2world_sec,
             "blender": result.blender_sec,
