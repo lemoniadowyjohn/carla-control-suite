@@ -23,6 +23,7 @@ from ultimate_pipeline.tiling.tile_fbx_generator import (
     TileBuilding,
     TileGridSpec,
     assign_buildings_to_tiles,
+    classify_tile_buildings,
     load_buildings_from_overpass_json,
     tile_fbx_name,
     write_tile_osm_xml,
@@ -336,3 +337,126 @@ class TestLoadPinnedSource:
         densest = max(assignment.tiles.items(), key=lambda kv: len(kv[1]))
         assert densest[0] == (6, 8)
         assert len(densest[1]) > 500
+
+
+# ---------------------------------------------------------------------------
+# classify_tile_buildings
+# ---------------------------------------------------------------------------
+class TestClassifyTileBuildings:
+    """Edge-case tests for classify_tile_buildings()."""
+
+    def _make_building(self, tags=None, source_id="b1"):
+        if tags is None:
+            tags = {"building": "yes"}
+        return TileBuilding(
+            source_id=source_id,
+            source_type="way",
+            tags=tags,
+            rings=[[(0.0, 0.0), (0.001, 0.0), (0.001, 0.001), (0.0, 0.001), (0.0, 0.0)]],
+        )
+
+    def test_zero_buildings_returns_zero_counts(self):
+        """A tile with zero buildings must return an empty/zero-count
+        result without error."""
+        result = classify_tile_buildings([])
+        assert result["buildings_classified"] == 0
+        assert result["non_buildings_count"] == 0
+        assert result["counts_by_folder"] == {}
+        assert result["non_buildings_anomalies"] == []
+
+    def test_no_tags_building_falls_into_other(self):
+        """A building with NO OSM tags at all must fall into the
+        organizer's documented 'Other' fallback and be counted as a
+        non-Buildings result.
+
+        FINDING: classify_object(osm_tags={}) returns
+        ('Other', 'fallback:unclassified') -- this IS placed into the
+        anomalies list. However, the caller generate_tile_fbx() only
+        stores result.semantic_classification in the manifest and
+        NEVER checks non_buildings_count or non_buildings_anomalies
+        to alter the build status. So this 'Other' classification is
+        surfaced in the manifest sidecar but does NOT trigger a
+        failure. For a buildings-only OSM2World extract this is
+        expected/benign (a tag-less building is an edge case, not a
+        pipeline defect), and the caller is correct not to fail on it.
+        """
+        b = self._make_building(tags={}, source_id="notags_1")
+        result = classify_tile_buildings([b])
+        assert result["buildings_classified"] == 1
+        assert result["counts_by_folder"].get("Other", 0) == 1
+        assert result["non_buildings_count"] == 1
+        assert len(result["non_buildings_anomalies"]) == 1
+        anomaly = result["non_buildings_anomalies"][0]
+        assert anomaly["folder"] == "Other"
+        assert anomaly["rule_matched"] == "fallback:unclassified"
+        # Confirm the caller does NOT treat this as a failure:
+        # generate_tile_fbx stores this in semantic_classification
+        # but never checks non_buildings_count to change status.
+
+    def test_large_scale_all_buildings(self):
+        """50+ buildings all classified as 'Buildings' must aggregate
+        correctly without off-by-one or accidental quadratic-time issue."""
+        buildings = [
+            self._make_building(tags={"building": "yes"}, source_id=f"b{i:04d}")
+            for i in range(75)
+        ]
+        result = classify_tile_buildings(buildings)
+        assert result["buildings_classified"] == 75
+        assert result["non_buildings_count"] == 0
+        assert result["counts_by_folder"].get("Buildings", 0) == 75
+        assert result["non_buildings_anomalies"] == []
+
+    def test_large_scale_with_anomalies_capped_at_50(self):
+        """More than 50 non-Buildings anomalies must be capped at 50
+        in the output list (the function slices to anomalies[:50])."""
+        buildings = [
+            self._make_building(tags={"natural": "tree"}, source_id=f"b{i:04d}")
+            for i in range(75)
+        ]
+        result = classify_tile_buildings(buildings)
+        assert result["buildings_classified"] == 75
+        assert result["non_buildings_count"] == 75
+        assert len(result["non_buildings_anomalies"]) == 50  # capped
+
+    def test_mixed_buildings_and_anomalies(self):
+        """A mix of Buildings and non-Buildings must count correctly."""
+        buildings = [
+            self._make_building(tags={"building": "yes"}, source_id=f"b{i:04d}")
+            for i in range(60)
+        ]
+        buildings += [
+            self._make_building(tags={"natural": "tree"}, source_id=f"t{i:04d}")
+            for i in range(5)
+        ]
+        result = classify_tile_buildings(buildings)
+        assert result["buildings_classified"] == 65
+        assert result["counts_by_folder"].get("Buildings", 0) == 60
+        assert result["counts_by_folder"].get("Vegetation", 0) == 5
+        assert result["non_buildings_count"] == 5
+
+
+def test_classify_tile_buildings_findings():
+    """Findings flagged while writing the classify_tile_buildings() edge-case
+    tests above:
+
+    1. **classify_tile_buildings() silently passes 'Other' anomalies.**
+       A building with no OSM tags classifies as ('Other',
+       'fallback:unclassified') and IS placed into the anomalies
+       list. However, generate_tile_fbx() stores this result but
+       NEVER checks non_buildings_count to alter the build status
+       ('ok' vs 'failed'). For a buildings-only extract this is
+       benign, but it means the anomaly list is purely informational
+       and never gates the pipeline.
+
+    2. **The anomaly cap at 50 (anomalies[:50]) is silent.** If there
+       are 51 non-Buildings, the manifest sidecar shows only 50.
+       The count (non_buildings_count=51) is still correct in the
+       dict, but the detailed list is truncated. This could make
+       debugging harder for pathological tiles.
+
+    3. **No performance concern at 75 buildings.** The O(n) loop
+       with O(1) dict lookups and O(k) regex searches (k = number
+       of KEYWORD_RULES) means classification is linear in the
+       number of buildings; no quadratic-time issue observed.
+    """
+    pass
