@@ -48,9 +48,36 @@ fresh run shows auto `predecessor_valid_rate` = 1.0, `successor_valid_rate` = 1.
 `road_lane_link_valid_rate` = 1.0, identical to manual, with gap deltas of 0.0 instead of -1.0.
 Confirmed: this was an artifact of the stale/mismatched auto candidate (and/or predates this
 session's junction/lane-link bug fixes), not current reality. The one connectivity sub-metric that
-does still show a real gap is *declared*-link rate (whether a `predecessor`/`successor` element is
-present at all, mostly absent on junction-connector roads): auto ~0.29 vs. manual ~0.94 — a
+still showed a gap at the time was *declared*-link rate (whether a `predecessor`/`successor` element
+is present at all, mostly absent on junction-connector roads): auto ~0.29 vs. manual ~0.94 — a
 different question from link *validity*, which is what run_11 had flagged as broken.
+
+**2026-09-16 update — root-caused and fixed, was a real bug, not a spec-compliant omission.** This
+gap was investigated end-to-end (see
+`reports/production_readiness/20260916T142400Z_DECLARED_LINK_RATE_INVESTIGATION/`). Root cause:
+`ultimate_pipeline/tools/xodr_carla_hardener.py`'s `_fix_connectivity()` unconditionally deleted the
+road-level `<link>` element from every junction-connector road (`road.junction != "-1"`) under a
+`JUNCTION_LINK_REMOVED` finding, on the premise "junction connectors should not have road-level
+links." That premise was empirically false: the manual/RoadRunner-authored reference map
+(`Grid0828.xodr`) declares `<link>` on 725/725 (100%) of its junction-connector roads, and this
+pipeline's own OSM-based generator already produces the same 100% coverage on the current pin
+*before* the hardener runs (verified directly against
+`campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr`).
+The hardener's blanket removal (22,589 roads on the current pin — exactly the junction-connector
+count) was the sole cause of the auto/manual declared-rate gap; all removed links were independently
+confirmed valid (`predecessor_valid_rate`/`successor_valid_rate` = 1.0 before removal). The two link
+mechanisms are not redundant: `<junction><connection>` disambiguates which connecting road to use
+for lane-level routing across multiple alternatives, while the connector road's own `<link>` is what
+lets a road-by-road traversal (CARLA's `Waypoint::GetNext`/`GetPrevious`, this pipeline's own
+lane-continuity phases) cross the connector without junction-aware special-casing — both this
+project's own generator and the RoadRunner-authored reference agree on this and populate both.
+Fixed by removing the unconditional-removal block and instead validating junction-connector links the
+same way ordinary-road links already were (kept if they resolve to an existing road, removed only if
+dangling); see `tests/unit/test_xodr_carla_hardener.py::test_fix_connectivity_junction_connector_valid_road_link_preserved`
+and `::test_fix_connectivity_junction_connector_dangling_road_link_removed`. Before/after on the
+current pin (`ConnectivityGap.compute`, real run, no mocks): `predecessor_declared_rate`
+0.2898 → 0.9898 (gap -0.6458 → +0.0543), `successor_declared_rate` 0.2898 → 0.9899 (gap
+-0.6779 → +0.0221). Branch: `fix/declared-link-rate-gap-v1-20260916`.
 
 This whole-map run is **not** a replacement for the RQ2 table row above, which reports a
 manual-map-footprint **local** comparison (a deliberately different, narrower-scope methodology

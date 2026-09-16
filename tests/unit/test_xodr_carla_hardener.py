@@ -272,16 +272,43 @@ def test_fix_connectivity_valid_road_link_untouched():
     assert findings == []
 
 
-def test_fix_connectivity_junction_connector_road_link_removed():
+def test_fix_connectivity_junction_connector_valid_road_link_preserved():
+    # Junction connector roads legitimately declare their own road-level
+    # <link><predecessor>/<successor> (elementType="road") pointing at the
+    # incoming/outgoing road, in addition to the junction's <connection>
+    # entries. This must be preserved, not stripped: see the ASAM OpenDRIVE
+    # investigation note in xodr_carla_hardener.py's _fix_connectivity().
+    root = ET.Element("OpenDRIVE")
+    junction = ET.SubElement(root, "junction", id="5")
+    ET.SubElement(root, "road", id="2", junction="-1")
+    ET.SubElement(root, "road", id="3", junction="-1")
+    road = ET.SubElement(root, "road", id="1", junction="5")
+    link = ET.SubElement(road, "link")
+    ET.SubElement(link, "predecessor", elementType="road", elementId="2", contactPoint="end")
+    ET.SubElement(link, "successor", elementType="road", elementId="3", contactPoint="start")
+    ET.SubElement(junction, "connection", id="0", incomingRoad="2", connectingRoad="1")
+    findings = []
+    _fix_connectivity(root, findings, repair=True)
+    assert road.find("link") is not None
+    assert road.find("link").find("predecessor") is not None
+    assert road.find("link").find("successor") is not None
+    assert not any(f.code == "JUNCTION_LINK_REMOVED" for f in findings)
+
+
+def test_fix_connectivity_junction_connector_dangling_road_link_removed():
+    # A connector road's <link> pointing at a road that does not exist is
+    # still invalid and must still be removed under repair=True — the same
+    # target-existence rule that applies to ordinary roads.
     root = ET.Element("OpenDRIVE")
     junction = ET.SubElement(root, "junction", id="5")
     road = ET.SubElement(root, "road", id="1", junction="5")
-    ET.SubElement(road, "link")  # connectors should not have a road-level <link>
+    link = ET.SubElement(road, "link")
+    ET.SubElement(link, "predecessor", elementType="road", elementId="99")
     ET.SubElement(junction, "connection", id="0", incomingRoad="-1", connectingRoad="1")
     findings = []
     _fix_connectivity(root, findings, repair=True)
-    assert road.find("link") is None
-    assert any(f.code == "JUNCTION_LINK_REMOVED" for f in findings)
+    assert road.find("link").find("predecessor") is None
+    assert any(f.code == "ROAD_LINK_REMOVED" for f in findings)
 
 
 def test_fix_connectivity_missing_junction_reported():

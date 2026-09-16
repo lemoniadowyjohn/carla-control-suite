@@ -366,24 +366,38 @@ def _fix_connectivity(root: ET.Element, findings: List[Finding], repair: bool = 
     roads = {r.get("id", ""): r for r in root.findall(".//road")}
     junctions = _junction_index(root)
 
-    # Junction connectors: validate they appear in junction connections
+    # Junction connectors: validate they appear in junction connections.
+    #
+    # NOTE: junction connector roads (road.junction != "-1") ARE expected to
+    # carry their own road-level <link><predecessor>/<successor> elements
+    # (elementType="road", pointing at the incoming/outgoing road with a
+    # contactPoint) in addition to the junction's own <connection> entries.
+    # The two are not redundant: <connection> lets a junction disambiguate
+    # between multiple alternative connecting roads for lane-level routing,
+    # while the connector road's own <link> is what lets any consumer that
+    # walks the network road-by-road (CARLA's Waypoint::GetNext/GetPrevious,
+    # this pipeline's own lane-continuity phases, etc.) traverse across the
+    # connector without junction-aware special-casing.
+    #
+    # Confirmed empirically 2026-09-16 (declared-link-rate investigation):
+    # the manual/RoadRunner-authored reference map (Grid0828.xodr) declares
+    # <link> on 725/725 (100%) of its junction-connector roads, and this
+    # pipeline's own OSM-based generator already produces the same 100%
+    # coverage before this hardener runs. Unconditionally stripping these
+    # links (the former JUNCTION_LINK_REMOVED behavior) was a real bug: it
+    # destroyed correct, spec-compliant, already-valid topology data and
+    # was the sole cause of the auto vs. manual "declared predecessor/
+    # successor rate" gap in domain-gap reports (~0.29 vs ~0.94). See
+    # reports/production_readiness/<TS>_DECLARED_LINK_RATE_INVESTIGATION/.
     for rid, road in roads.items():
         junction = road.get("junction", "-1")
         if junction is not None and junction != "-1":
             _validate_junction_connector(junctions, road, rid, findings, repair)
-            # Junction connectors should not have road-level links
-            link = road.find("link")
-            if link is not None:
-                if repair:
-                    road.remove(link)
-                    findings.append(Finding("JUNCTION_LINK_REMOVED", "Removed road.link on junction connector", rid))
-                else:
-                    findings.append(Finding("JUNCTION_LINK_INVALID", "Junction connector has road.link (should not)", rid))
 
-    # Road-level link validation (target road existence)
+    # Road-level link validation (target road existence) — applies to every
+    # road, including junction connectors, since connectors may legitimately
+    # declare a <link> that must still point at a road that actually exists.
     for rid, road in roads.items():
-        if road.get("junction", "-1") not in (None, "-1"):
-            continue  # already handled above
         link = road.find("link")
         if link is None:
             continue

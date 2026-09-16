@@ -1,0 +1,92 @@
+{
+  "investigation": "declared_predecessor_successor_link_rate_gap",
+  "date": "2026-09-16",
+  "trigger": "reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/full_report.json connectivity_gap: auto predecessor_declared_rate=0.2898, successor_declared_rate=0.2898 vs manual 0.9355/0.9678 (gap ~-0.646/-0.678), while *_valid_rate on both maps = 1.0",
+  "conclusion": "REAL_BUG_FIXED",
+  "root_cause": {
+    "file": "ultimate_pipeline/tools/xodr_carla_hardener.py",
+    "function": "_fix_connectivity",
+    "old_finding_code": "JUNCTION_LINK_REMOVED",
+    "description": "Unconditionally removed the road-level <link> element from every junction-connector road (road.junction != \"-1\"), regardless of whether the link was valid, under the undocumented premise 'Junction connectors should not have road-level links'. That premise is not supported by the manual reference map, this pipeline's own generator output, or the ASAM OpenDRIVE junction/connection model (the junction's <connection> element disambiguates routing among multiple connecting roads at the lane level; it does not substitute for the connecting road's own predecessor/successor road-level link, which is what lets road-by-road traversal consumers such as CARLA's Waypoint API cross the connector)."
+  },
+  "direct_map_inspection": {
+    "manual_reference_map": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "total_roads": 993,
+      "junction_connector_roads": 725,
+      "non_junction_roads": 268,
+      "junction_connector_roads_with_predecessor_link": 725,
+      "junction_connector_roads_with_successor_link": 725,
+      "junction_connector_declared_rate": 1.0,
+      "non_junction_roads_with_predecessor_link": 204,
+      "non_junction_roads_with_successor_link": 236,
+      "non_junction_declared_rate_predecessor": 0.7612,
+      "non_junction_declared_rate_successor": 0.8806,
+      "note": "Junction-connector roads are the roads MOST likely (100%) to declare road-level links in the manual reference, not least -- directly contradicting the hardener's premise."
+    },
+    "auto_pinned_map_pre_hardening": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "sha256_prefix": "2ca342d8ae4bee39",
+      "total_roads": 32267,
+      "junction_connector_roads": 22589,
+      "non_junction_roads": 9678,
+      "junction_connector_roads_with_predecessor_link": 22589,
+      "junction_connector_roads_with_successor_link": 22589,
+      "junction_connector_declared_rate": 1.0,
+      "non_junction_declared_rate_predecessor": 0.9661,
+      "non_junction_declared_rate_successor": 0.9663,
+      "note": "This pipeline's own OSM-based generator already writes correct, 100%-complete junction-connector links before the hardener runs."
+    },
+    "auto_pinned_map_post_hardening_report": {
+      "path": "reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/xodr_hardener_report.json",
+      "JUNCTION_LINK_REMOVED_count": 22589,
+      "note": "Count matches junction-connector road count on the pin exactly -- the hardener stripped every single one, unconditionally."
+    }
+  },
+  "connectivity_gap_before_after": {
+    "measured_with": "ultimate_pipeline.domain_gap.connectivity_gap.ConnectivityGap.compute (real run against manual Grid0828.xodr and the current pin, before and after the fix; no mocks)",
+    "before_fix": {
+      "source": "reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/full_report.json (connectivity_gap)",
+      "auto_predecessor_declared_rate": 0.2897697337837419,
+      "auto_successor_declared_rate": 0.2898317166144978,
+      "manual_predecessor_declared_rate": 0.9355488418932527,
+      "manual_successor_declared_rate": 0.9677744209466264,
+      "gap_predecessor_declared_rate": -0.6457791081095108,
+      "gap_successor_declared_rate": -0.6779427043321286,
+      "predecessor_valid_rate_both_maps": 1.0,
+      "successor_valid_rate_both_maps": 1.0
+    },
+    "after_fix": {
+      "source": "direct re-run of harden_xodr() + ConnectivityGap.compute() on the current pin with the fixed _fix_connectivity(), this investigation, 2026-09-16",
+      "hardener_findings_after_fix": {"LANEOFFSET_JUNCTION_ZEROED": 22589},
+      "note": "JUNCTION_LINK_REMOVED no longer appears at all.",
+      "auto_predecessor_declared_rate": 0.9898348157560356,
+      "auto_successor_declared_rate": 0.9898967985867915,
+      "manual_predecessor_declared_rate": 0.9355488418932527,
+      "manual_successor_declared_rate": 0.9677744209466264,
+      "gap_predecessor_declared_rate": 0.05428597386278289,
+      "gap_successor_declared_rate": 0.022122377640165114,
+      "predecessor_valid_rate_both_maps": 1.0,
+      "successor_valid_rate_both_maps": 1.0
+    }
+  },
+  "fix": {
+    "files_changed": [
+      "ultimate_pipeline/tools/xodr_carla_hardener.py",
+      "tests/unit/test_xodr_carla_hardener.py",
+      "docs/research/THESIS_TO_CURRENT_PROGRESS.md"
+    ],
+    "behavior_change": "Junction-connector road <link> elements are no longer unconditionally removed. Instead they are validated by the same target-existence rule already applied to ordinary roads: kept if the predecessor/successor references an existing road, removed (ROAD_LINK_REMOVED) only if the reference is dangling. _validate_junction_connector() (checking the connector appears in its junction's <connection> list) is unchanged.",
+    "tests_added": [
+      "test_fix_connectivity_junction_connector_valid_road_link_preserved",
+      "test_fix_connectivity_junction_connector_dangling_road_link_removed"
+    ],
+    "test_removed": "test_fix_connectivity_junction_connector_road_link_removed (asserted the old, now-reverted, incorrect behavior)"
+  },
+  "not_a_spec_compliant_omission_because": [
+    "Manual/RoadRunner-authored reference map: 725/725 (100%) of junction-connector roads declare road-level link.",
+    "This pipeline's own OSM-based generator: 22589/22589 (100%) of junction-connector roads on the current pin already declare road-level link before the hardener runs.",
+    "All declared links (both maps) are valid (predecessor_valid_rate / successor_valid_rate = 1.0) -- the hardener was not cleaning up dangling references, it was blanket-deleting correct data.",
+    "The junction's <connection> element and the connector road's own <link> serve different consumers (lane-level routing disambiguation vs. road-by-road traversal) and are not redundant."
+  ]
+}
