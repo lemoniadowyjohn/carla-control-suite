@@ -55,6 +55,30 @@ def find_osm_artifact(run_dir: Path) -> Tuple[Optional[Path], str]:
     return None, "not_found"
 
 
+def _repaired_sibling_exists(path: Path) -> bool:
+    """True if ``path`` (a ``08_final*_semantic.xodr`` file) has a same-run
+    ``*_laneSectionFixed*.xodr`` sibling on disk.
+
+    stage_08_integrity.py writes 08_final_<ts>_semantic.xodr TWICE for a
+    single run: once as a plain copy of the pre-repair file, and again
+    ("AUTHORITATIVE MAP SWITCH") after repair_and_assert_lane_section_successors()
+    produces 08_final_<ts>_laneSectionFixed.xodr. Both copies share the exact
+    same filename (the run's <ts> is fixed at run start and reused), so within
+    a single well-formed run there is only ever one 08_final*_semantic.xodr
+    path and its mtime alone already reflects "was it (re-)written after
+    repair". This sibling check is a second, independent, content-shape
+    signal for the *same* property -- it does not depend on mtime at all --
+    so a semantic file whose run never reached the repair step (no
+    laneSectionFixed sibling) never outranks one that did, even if its mtime
+    was bumped afterward by an unrelated copy/touch/restore operation.
+    """
+    name = path.name
+    if "_semantic" not in name:
+        return False
+    prefix = name.split("_semantic", 1)[0]
+    return any(path.parent.glob(f"{prefix}*_laneSectionFixed*.xodr"))
+
+
 def _newest_final_xodr(run_dir: Path) -> Optional[Path]:
     """Pick the authoritative final XODR among any 08_final*.xodr variants.
 
@@ -66,20 +90,38 @@ def _newest_final_xodr(run_dir: Path) -> Optional[Path]:
     lexicographic sorting (plain sorted(glob(...))) picks the plain
     pre-repair file first ("." < "_" in ASCII) -- the exact file the
     laneSection-successor repair exists to supersede, since loading it can
-    trip CARLA's MapBuilder.cpp asserts. Prefer the semantic variant
-    (mtime-newest, matching the already-established convention in
-    export_thesis_tables.py::_latest_final_xodr), falling back to the
-    mtime-newest 08_final*.xodr of any kind.
+    trip CARLA's MapBuilder.cpp asserts. This is not hypothetical: it is
+    directly reproduced and regression-tested in
+    ultimate_pipeline/tests/unit/test_artifact_locator_final_xodr.py, and the
+    same mtime-newest convention is independently used (and tested) in three
+    other places in this codebase: export_thesis_tables.py::_latest_final_xodr,
+    run_determinism_audit.py::_find_final_xodr, and
+    scripts/regen_map_of_record.py::_find_final_xodr.
+
+    Within each candidate pool (semantic, then the any-suffix fallback) we
+    first prefer files that are structurally verified to be post-repair (see
+    _repaired_sibling_exists / the "laneSectionFixed" name check below) --
+    this does not depend on trusting filesystem mtime at all, so a stale or
+    adversarially-touched file cannot win purely by having a newer mtime
+    without also having the repair artifacts to back it up. mtime-newest is
+    then used only as the tie-breaker among files that are equally
+    legitimate by that structural check (or when no candidate has repair
+    evidence at all, e.g. ENABLE_LANE_SECTION_REPAIR=0 runs) -- matching the
+    established, tested convention above.
     """
-    semantic = sorted(
-        run_dir.glob("08_final*_semantic.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
-    )
+    semantic = list(run_dir.glob("08_final*_semantic.xodr"))
     if semantic:
-        return semantic[0]
-    any_final = sorted(
-        run_dir.glob("08_final*.xodr"), key=lambda p: p.stat().st_mtime, reverse=True
-    )
-    return any_final[0] if any_final else None
+        repaired = [p for p in semantic if _repaired_sibling_exists(p)]
+        pool = repaired or semantic
+        pool.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+        return pool[0]
+    any_final = list(run_dir.glob("08_final*.xodr"))
+    if not any_final:
+        return None
+    repaired_any = [p for p in any_final if "laneSectionFixed" in p.name]
+    pool = repaired_any or any_final
+    pool.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return pool[0]
 
 
 def find_xodr_artifact(run_dir: Path) -> Tuple[Optional[Path], str]:
