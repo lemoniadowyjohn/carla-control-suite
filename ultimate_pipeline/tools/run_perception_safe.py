@@ -66,6 +66,10 @@ from ultimate_pipeline.carla_tools.runtime_enrichments import (
     parse_type_filter,
 )
 from ultimate_pipeline.carla_tools.thesis_sensor_rig import ThesisSensorRig
+from ultimate_pipeline.perception.capture_config import (
+    PairedCaptureConfig,
+    camera_count_for_config,
+)
 import socket
 
 
@@ -393,10 +397,25 @@ def _compute_record_route_timeout_s(
     *,
     frames: int,
     fps: float,
+    camera_count: int = 1,
     duration_s: Optional[float] = None,
     override_timeout_s: Optional[float] = None,
     env_timeout_s: Optional[float] = None,
 ) -> float:
+    """Compute the subprocess.run() timeout budget for one record_route call.
+
+    `camera_count` matters: the 2026-05-14 RQ3 paired-capture attempt hit a
+    flat 60s timeout on the Town10HD side because that side used a 6-camera
+    rig while the timeout formula only ever accounted for `frames`/`fps`
+    (see submission/results/perception_rq3_bounded/capture_attempt_log.txt,
+    "record_route_timeout (60s process budget exhausted)" with only 1 tick
+    of 6 cameras captured in that window). Each additional camera adds a
+    PNG/semseg encode+write per tick, and sensor spawn/teardown cost also
+    grows with sensor count, so both the per-tick multiplier and the fixed
+    overhead/floor scale linearly with `camera_count`. For a single camera
+    this reduces exactly to the previous formula (floor=60s,
+    duration_s*4+30), so existing single-camera callers are unaffected.
+    """
     if override_timeout_s is not None:
         return max(5.0, float(override_timeout_s))
     if env_timeout_s is not None:
@@ -404,7 +423,14 @@ def _compute_record_route_timeout_s(
     resolved_duration_s = float(duration_s) if duration_s is not None else (
         float(frames) / float(max(float(fps), 1.0))
     )
-    return max(60.0, float(resolved_duration_s) * 4.0 + 30.0)
+    resolved_camera_count = max(1, int(camera_count))
+    per_tick_multiplier_s = 4.0 * float(resolved_camera_count)
+    fixed_overhead_s = 30.0 * float(resolved_camera_count)
+    floor_s = 60.0 * float(resolved_camera_count)
+    return max(
+        floor_s,
+        float(resolved_duration_s) * per_tick_multiplier_s + fixed_overhead_s,
+    )
 
 
 def _read_capture_status_payload(recording_dir: Path) -> Dict[str, Any]:
@@ -4136,9 +4162,24 @@ def main() -> int:
     stream_reachable = False
     estimated_duration_s = float(args.frames) / float(max(float(args.fps), 1.0))
     env_record_route_timeout_s = _env_float("UP_RECORD_ROUTE_TIMEOUT_S", -1.0)
+    # camera_count matters for the timeout budget (see
+    # _compute_record_route_timeout_s docstring): a 6-camera "thesis" rig
+    # needs materially more wall-clock time per tick than a single-camera
+    # probe, so derive the actual camera count from the resolved calib file
+    # (falling back to the static per-rig table) rather than assuming 1.
+    estimated_camera_count = camera_count_for_config(
+        PairedCaptureConfig(
+            frames=int(args.frames),
+            fps=int(args.fps),
+            rig=str(args.rig),
+            front_only=bool(args.front_only_strict),
+        ),
+        calib_path=str(calib_path),
+    )
     record_route_timeout_s = _compute_record_route_timeout_s(
         frames=int(args.frames),
         fps=float(args.fps),
+        camera_count=int(estimated_camera_count),
         duration_s=float(estimated_duration_s),
         override_timeout_s=(
             float(args.record_route_timeout_s)
@@ -4193,6 +4234,7 @@ def main() -> int:
             "map_load_timeout_s": float(map_load_timeout_s),
             "map_probe_timeout_s": float(map_probe_timeout_s),
             "record_route_timeout_s": float(record_route_timeout_s),
+            "record_route_timeout_camera_count": int(estimated_camera_count),
             "rpc_probe_timeout_s": float(rpc_timeout_s),
             "stream_timeout_s": float(stream_timeout_s),
             "stream_wait_s": float(stream_wait_s),
