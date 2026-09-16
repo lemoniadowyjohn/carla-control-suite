@@ -85,8 +85,11 @@ class OSMPolygonLoader:
             nid = n.get("id")
             if nid is None:
                 continue
-            lat = float(n.get("lat", "0"))
-            lon = float(n.get("lon", "0"))
+            try:
+                lat = float(n.get("lat", "0"))
+                lon = float(n.get("lon", "0"))
+            except (TypeError, ValueError):
+                continue
             nodes[nid] = (lat, lon)
 
         if not nodes:
