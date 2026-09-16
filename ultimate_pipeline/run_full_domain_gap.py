@@ -1812,6 +1812,27 @@ def _manual_tiles_fix_command(reference_xodr: str, output_dir: str, auto_meta_pa
     return _format_cmd(cmd)
 
 
+# Timeout (seconds) for the tile_manual_xodr_windows.py subprocess spawned
+# below and in _auto_generate_tiles_from_xodr(). Was hardcoded to 300s,
+# which the auto-tiling call reliably exceeded on the current city-scale
+# pinned candidate (32267 roads): TileExtractor.tile()'s per-tile road-AABB
+# scan re-hashed every road's planView (for its bounds-cache key) once per
+# tile cell, ~800 tiles x ~32k roads, an unbounded-per-hit-cost O(tiles x
+# roads) scan. That inefficiency was fixed directly in
+# ultimate_pipeline/tiling/tile_extractor.py (bounds computed once per road,
+# reused via a grid spatial index instead of a per-tile full-map rescan).
+# Post-fix, measured wall clock for this exact subprocess (`python -m
+# ultimate_pipeline.tools.tile_manual_xodr_windows --xodr ... --out ...`)
+# against the pinned candidate
+# (ingolstadt_perception_map_of_record_20260905_202847.xodr, 32267 roads,
+# 555 output tiles) was 195.2s -- see the commit that introduced this
+# constant for the full profiling/verification writeup. 600s keeps ~3x
+# headroom over that measurement for slower/loaded machines
+# (CI, contended disk I/O) without reintroducing an effectively-unbounded
+# wait for a run that is now genuinely fast.
+_TILE_ALIGNMENT_SUBPROCESS_TIMEOUT_SEC = 600
+
+
 def _auto_generate_aligned_manual_tiles(
     reference_xodr: str,
     auto_meta_path: Optional[Path],
@@ -1862,7 +1883,7 @@ def _auto_generate_aligned_manual_tiles(
             text=True,
             encoding='utf-8',
             errors='replace',
-            timeout=300, # Added timeout to prevent indefinite hangs
+            timeout=_TILE_ALIGNMENT_SUBPROCESS_TIMEOUT_SEC,
         )
         try:
             log_path.write_text(result.stdout or '', encoding='utf-8')
@@ -1968,7 +1989,7 @@ def _auto_generate_tiles_from_xodr(
             text=True,
             encoding="utf-8",
             errors="replace",
-            timeout=300, # Added timeout to prevent indefinite hangs
+            timeout=_TILE_ALIGNMENT_SUBPROCESS_TIMEOUT_SEC,
         )
         try:
             log_path.write_text(result.stdout or "", encoding="utf-8")
