@@ -13,7 +13,9 @@ and offsets.
 Validator rules:
     • reorder segments by s
     • enforce monotonic sOffsets
-    • remove zero-length segments
+    • remove zero-length segments (except when every segment on a road is
+      zero-length, in which case one is repaired to the minimum valid
+      length instead of leaving the road's planView empty)
     • normalize headings into [0, 2π)
     • clamp absurd curvature
     • detect spiral inconsistencies (curvStart/curvEnd)
@@ -131,7 +133,11 @@ class GeometryValidator:
         """Validate <planView> geometry inside one road.
 
         All repairs are applied to the XML tree:
-        - zero-length geometries are REMOVED from planView
+        - zero-length geometries are REMOVED from planView, UNLESS removing
+          them would leave planView with zero <geometry> children -- in
+          that case the single most representative degenerate segment is
+          instead REPAIRED up to the minimum valid length so the road never
+          ends up with a structurally-empty planView (see below)
         - geometries are REORDERED to match increasing s
         - missing hdg backfill uses ENDPOINT heading of previous geometry
         """
@@ -146,7 +152,6 @@ class GeometryValidator:
         # Collect elements and parse attributes
         parsed = []
         issues = []
-        zero_length_elems = []
 
         for g in geoms:
             s = _safe_float(g.attrib.get("s"))
@@ -183,22 +188,74 @@ class GeometryValidator:
         # 1) Identify zero-length segments for XML removal
         # --------------------------------------------------------------
         cleaned = []
+        degenerate = []
         for d in parsed:
             if (d["length"] is None or not math.isfinite(d["length"])
                     or d["length"] <= GeometryValidator.MIN_SEG_LEN):
-                issues.append(f"removed_zero_length_segment_at_s={d['s']}")
-                diff_log.add("geometry_validator", rid,
-                             {"fix": "removed_zero_length_segment", "s": d["s"]})
-                zero_length_elems.append(d["elem"])
+                degenerate.append(d)
             else:
                 cleaned.append(d)
 
-        # REMOVE zero-length geometries from XML
-        for elem in zero_length_elems:
-            if elem in plan:
-                plan.remove(elem)
+        if not cleaned:
+            # Every geometry segment on this road is zero/near-zero length
+            # (e.g. a degenerate ~0.1m junction connector whose upstream
+            # chord computation collapsed to ~1e-8m). Removing all of them,
+            # as the multi-segment path below does for genuinely spurious
+            # extra segments, would leave <planView> with zero <geometry>
+            # children left over -- an OpenDRIVE-invalid, structurally
+            # incomplete road. That empty planView later crashes junction
+            # link integrity (xodr_junction_links.py::_road_endpoints()
+            # raises "road id=... has empty planView") because nothing
+            # downstream re-synthesizes a replacement geometry.
+            #
+            # Per the established zero-length-connector convention already
+            # used elsewhere in this codebase
+            # (ultimate_pipeline/tools/zero_length_connector_repair.py
+            # repairs the geometry length in place and explicitly asserts
+            # roads/junctions are preserved rather than deleting the road
+            # or its junction connections), REPAIR the road's single most
+            # representative segment up to the minimum valid length instead
+            # of deleting the road's only geometry. Any additional
+            # degenerate siblings are still discarded as spurious noise.
+            #
+            # The road-level length invariant (declared <road length=...>
+            # vs. summed <planView> geometry length) is reconciled
+            # separately by the dedicated final length-invariant repair
+            # gate (stage_08_integrity.py), so this step does not need to
+            # also rewrite the road's `length` attribute.
+            keep = degenerate.pop(0)
+            keep["length"] = GeometryValidator.MIN_SEG_LEN
+            keep["elem"].attrib["length"] = str(GeometryValidator.MIN_SEG_LEN)
+            issues.append(
+                f"repaired_degenerate_planview_to_min_length_at_s={keep['s']}"
+            )
+            diff_log.add(
+                "geometry_validator",
+                rid,
+                {
+                    "fix": "repaired_degenerate_planview_to_min_length",
+                    "s": keep["s"],
+                    "length": GeometryValidator.MIN_SEG_LEN,
+                },
+            )
+            cleaned.append(keep)
+
+        # REMOVE the (still-)degenerate geometries from the XML: either
+        # genuinely spurious extra zero-length segments alongside real
+        # geometry, or the leftover siblings after the single-segment
+        # repair above.
+        for d in degenerate:
+            issues.append(f"removed_zero_length_segment_at_s={d['s']}")
+            diff_log.add("geometry_validator", rid,
+                         {"fix": "removed_zero_length_segment", "s": d["s"]})
+            if d["elem"] in plan:
+                plan.remove(d["elem"])
 
         if not cleaned:
+            # Unreachable in practice: `geoms` was already confirmed
+            # non-empty above, so `parsed` (and therefore `cleaned` after
+            # the degenerate-repair branch) always has at least one entry.
+            # Kept as a defensive fallback only.
             return {"status": "all_zero_length_removed", "issues": issues}
 
         # --------------------------------------------------------------
