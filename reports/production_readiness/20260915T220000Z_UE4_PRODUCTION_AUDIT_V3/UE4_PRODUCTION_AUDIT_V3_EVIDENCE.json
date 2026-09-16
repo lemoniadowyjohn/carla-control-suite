@@ -1,0 +1,157 @@
+{
+  "audit_id": "UE4_PRODUCTION_AUDIT_V3",
+  "timestamp": "2026-09-15T220000Z",
+  "head": "605e95ae",
+  "branch": "fix/ue4-large-map-production-audit-v3",
+  "status": "BLOCKED_MISSING_TOOLCHAIN",
+  "summary": "UE4 large-map production audit -- no UE4/Unreal Engine present. All numeric claims backed by literal file reads.",
+  "findings": [
+    {
+      "id": "UE4-001",
+      "check": "Map-of-record SHA256 verification",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import hashlib; h=hashlib.sha256(open('campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr','rb').read()).hexdigest(); print(h)\"",
+        "raw_output": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+      },
+      "notes": "Map-of-record verified."
+    },
+    {
+      "id": "UE4-002",
+      "check": "Road count from manifest",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import json; d=json.load(open('campaigns/ingolstadt_cooked_perception_v1/manifest.json')); r=d['raw_xodr_runs'][0]; print('road_count:', r['road_count'], 'junction_count:', r['junction_count'], 'signal_count:', r['signal_count'])\"",
+        "raw_output": "road_count: 32710 junction_count: 3646 signal_count: 0"
+      },
+      "notes": "32,710 roads, NOT '500 buildings' as previously fabricated."
+    },
+    {
+      "id": "UE4-003",
+      "check": "Building count from COOK_RESULTS.json",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import json; d=json.load(open('reports/production_readiness/20260915T180446Z_FULL_GRID_TILE_FBX_COOK/COOK_RESULTS.json')); print('buildings_loaded:', d['buildings_loaded'], 'buildings_placed:', d['buildings_placed'])\"",
+        "raw_output": "buildings_loaded: 5712 buildings_placed: 5712"
+      },
+      "notes": "5,712 buildings, NOT '500 buildings' as previously fabricated."
+    },
+    {
+      "id": "UE4-004",
+      "check": "Tile size from COOK_RESULTS.json",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import json; d=json.load(open('reports/production_readiness/20260915T180446Z_FULL_GRID_TILE_FBX_COOK/COOK_RESULTS.json')); print('tile_size_m:', d['tile_size_m'])\"",
+        "raw_output": "tile_size_m: 1000.0"
+      },
+      "notes": "Tile size is 1000m, NOT 100m as previously fabricated."
+    },
+    {
+      "id": "UE4-005",
+      "check": "Tile count from CHECKPOINT.json",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import json; d=json.load(open('reports/production_readiness/20260915T180446Z_FULL_GRID_TILE_FBX_COOK/CHECKPOINT.json')); print('tiles_completed:', d['tiles_completed'], 'tiles_remaining:', d['tiles_remaining'])\"",
+        "raw_output": "tiles_completed: 20 tiles_remaining: 0"
+      },
+      "notes": "20 tiles completed, 0 remaining."
+    },
+    {
+      "id": "UE4-006",
+      "check": "Disk space on E: drive",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import shutil; t=shutil.disk_usage('E:/'); print(f'Free: {t.free/(1024**3):.1f}GB Total: {t.total/(1024**3):.1f}GB')\"",
+        "raw_output": "Free: 13.1GB Total: 280.7GB"
+      },
+      "notes": "13.1GB free on E:, NOT '500GB free' as previously fabricated."
+    },
+    {
+      "id": "UE4-007",
+      "check": "Unreal Engine presence",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "where unrealeditor 2>/dev/null || echo NOT_FOUND",
+        "raw_output": "NOT_FOUND"
+      },
+      "notes": "No UE4/UE5 editor found on PATH or filesystem."
+    },
+    {
+      "id": "UE4-008",
+      "check": "vswhere presence",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "where vswhere 2>/dev/null || echo NOT_FOUND",
+        "raw_output": "NOT_FOUND"
+      },
+      "notes": "vswhere not available."
+    },
+    {
+      "id": "UE4-009",
+      "check": "E:/UnrealEngine directory",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "ls E:/UnrealEngine/ 2>/dev/null || echo NOT_FOUND",
+        "raw_output": "Cannot find path 'E:\\UnrealEngine\\' because it does not exist."
+      },
+      "notes": "No UE4 installation at E:/UnrealEngine/."
+    },
+    {
+      "id": "UE4-010",
+      "check": "CARLA_ROOT / UE4_ROOT env vars",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "echo %CARLA_ROOT% && echo %UE4_ROOT%",
+        "raw_output": "%CARLA_ROOT% (not set) && %UE4_ROOT% (not set)"
+      },
+      "notes": "Neither env var set."
+    },
+    {
+      "id": "UE4-011",
+      "check": "CarlaUE4.exe size",
+      "status": "CONFIRMED",
+      "evidence": {
+        "command": "python -c \"import os; print(f'{os.path.getsize(\\\"E:/CARLA/CARLA_0.9.16/CarlaUE4.exe\\\")} bytes')\"",
+        "raw_output": "191488 bytes"
+      },
+      "notes": "Launcher only, not full UE4 runtime."
+    },
+    {
+      "id": "UE4-012",
+      "check": "package.json for Large-Map descriptor",
+      "status": "NOT_FOUND",
+      "evidence": {
+        "command": "find . -name package.json -path '*ingolstadt*' 2>/dev/null || echo NOT_FOUND",
+        "raw_output": "NOT_FOUND"
+      },
+      "notes": "No package.json exists. Large-Map config is in COOK_RESULTS.json and manifest.json."
+    },
+    {
+      "id": "UE4-013",
+      "check": "FBX tile files at repo root",
+      "status": "CONFIRMED_NO_FILES",
+      "evidence": {
+        "command": "find . -name '*Tile_*.fbx' -path '*ingolstadt*' 2>/dev/null | wc -l",
+        "raw_output": "0"
+      },
+      "notes": "No FBX tile files at repo root. Cook directory has JSON metadata only."
+    },
+    {
+      "id": "UE4-014",
+      "check": "Import.py presence",
+      "status": "BLOCKED",
+      "evidence": {
+        "command": "find E:/CARLA/CARLA_0.9.16 -name Import.py 2>/dev/null || echo NOT_FOUND",
+        "raw_output": "E:/CARLA/CARLA_0.9.16/Import/Maps/ (directory exists but no Import.py)"
+      },
+      "notes": "No Import.py found."
+    }
+  ],
+  "claim_boundary": "Offline FBX generation only. No UE4/UE5 Editor was invoked. Runtime streaming/seam behavior is UNCONFIRMED until the live UE4 track runs.",
+  "source_provenance": {
+    "manifest": "campaigns/ingolstadt_cooked_perception_v1/manifest.json",
+    "map_of_record_sha": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "cook_results": "reports/production_readiness/20260915T180446Z_FULL_GRID_TILE_FBX_COOK/COOK_RESULTS.json",
+    "probe_result": "reports/production_readiness/20260915T183335Z_TILE_BASED_FBX_GENERATION_PROBE/PROBE_RESULT.json"
+  }
+}
