@@ -58,8 +58,11 @@ def project_center_from_gps_bounds(
     if CRS is None or Transformer is None:
         raise RuntimeError("pyproj is required for deterministic alignment")
 
-    lat_c = 0.5 * (float(gps_bounds["lat_min"]) + float(gps_bounds["lat_max"]))
-    lon_c = 0.5 * (float(gps_bounds["lon_min"]) + float(gps_bounds["lon_max"]))
+    try:
+        lat_c = 0.5 * (float(gps_bounds["lat_min"]) + float(gps_bounds["lat_max"]))
+        lon_c = 0.5 * (float(gps_bounds["lon_min"]) + float(gps_bounds["lon_max"]))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"invalid gps_bounds value: {exc}") from exc
 
     crs = CRS.from_user_input(manual_proj)
     tf = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
@@ -85,8 +88,18 @@ def compute_auto_bbox_and_centroid(
         y = geom.get("y")
         if x is None or y is None:
             continue
-        xs.append(float(x))
-        ys.append(float(y))
+        # Evaluate both conversions before appending either -- appending x
+        # then having y's conversion raise would leave xs one element ahead
+        # of ys, silently desynchronizing the two populations (a value from
+        # a malformed geometry would then pair with the NEXT geometry's
+        # coordinate in the centroid/bbox computation below).
+        try:
+            fx = float(x)
+            fy = float(y)
+        except (TypeError, ValueError):
+            continue
+        xs.append(fx)
+        ys.append(fy)
 
     if not xs:
         raise ValueError(f"No planView geometry points found in {xodr_path}")
@@ -142,8 +155,13 @@ def translate_xodr_geometry(
         y = geom.get("y")
         if x is None or y is None:
             continue
-        new_x = float(x) + dx
-        new_y = float(y) + dy
+        try:
+            new_x = float(x) + dx
+            new_y = float(y) + dy
+        except (TypeError, ValueError) as exc:
+            raise RuntimeError(
+                f"non-numeric planView geometry x/y: {ET.tostring(geom, encoding='unicode')}"
+            ) from exc
         geom.set("x", f"{new_x:.10f}")
         geom.set("y", f"{new_y:.10f}")
         minx = min(minx, new_x)

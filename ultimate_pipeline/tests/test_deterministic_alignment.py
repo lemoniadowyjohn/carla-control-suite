@@ -247,3 +247,86 @@ def test_translate_xodr_geometry_inserts_header_bbox_when_missing(tmp_path: Path
     assert float(out_header.get("east")) == pytest.approx(10.0 + dx)
     assert float(out_header.get("south")) == pytest.approx(0.0 + dy)
     assert float(out_header.get("north")) == pytest.approx(20.0 + dy)
+
+
+# ---------------------------------------------------------------------------
+# Malformed numeric planView x/y attributes must not crash the whole parse,
+# and -- critically -- a geometry where x parses but y doesn't (or vice
+# versa) must not silently desynchronize the xs/ys populations. Appending x
+# then having y's conversion raise leaves xs one element ahead of ys, so the
+# next iteration's y value gets paired with THIS iteration's x in the
+# centroid/bbox math -- a real, verified bug this test locks closed.
+# ---------------------------------------------------------------------------
+
+def test_malformed_geometry_xy_is_skipped_without_desyncing_xs_ys(tmp_path: Path) -> None:
+    xodr = tmp_path / "malformed.xodr"
+    # Geometry 0: x valid, y malformed -> must be skipped entirely.
+    # Geometry 1: fully valid -> the only point that should survive.
+    _write_minimal_xodr(xodr, [1.0, 2.0], [10.0, 3.0])
+    tree = ET.parse(xodr)
+    geoms = tree.getroot().find("road/planView").findall("geometry")
+    geoms[0].set("y", "not-a-number")
+    tree.write(xodr, encoding="utf-8", xml_declaration=True)
+
+    bbox, centroid, n = compute_auto_bbox_and_centroid(xodr)
+
+    assert n == 1
+    assert centroid == pytest.approx((2.0, 3.0))
+    assert bbox == BBox(minx=2.0, miny=3.0, maxx=2.0, maxy=3.0)
+
+
+def test_malformed_geometry_x_is_skipped_without_desyncing_xs_ys(tmp_path: Path) -> None:
+    xodr = tmp_path / "malformed_x.xodr"
+    _write_minimal_xodr(xodr, [1.0, 2.0], [10.0, 3.0])
+    tree = ET.parse(xodr)
+    geoms = tree.getroot().find("road/planView").findall("geometry")
+    geoms[0].set("x", "not-a-number")
+    tree.write(xodr, encoding="utf-8", xml_declaration=True)
+
+    bbox, centroid, n = compute_auto_bbox_and_centroid(xodr)
+
+    assert n == 1
+    assert centroid == pytest.approx((2.0, 3.0))
+
+
+def test_all_malformed_geometry_raises_no_points_found(tmp_path: Path) -> None:
+    xodr = tmp_path / "all_malformed.xodr"
+    _write_minimal_xodr(xodr, [1.0], [1.0])
+    tree = ET.parse(xodr)
+    geoms = tree.getroot().find("road/planView").findall("geometry")
+    geoms[0].set("x", "garbage")
+    tree.write(xodr, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="No planView geometry points found"):
+        compute_auto_bbox_and_centroid(xodr)
+
+
+def test_valid_geometry_still_computes_correct_centroid(tmp_path: Path) -> None:
+    xodr = tmp_path / "valid.xodr"
+    _write_minimal_xodr(xodr, [0.0, 10.0], [0.0, 10.0])
+
+    bbox, centroid, n = compute_auto_bbox_and_centroid(xodr)
+
+    assert n == 2
+    assert centroid == pytest.approx((5.0, 5.0))
+
+
+def test_translate_xodr_geometry_raises_clear_error_on_malformed_xy(tmp_path: Path) -> None:
+    xodr = tmp_path / "malformed_translate.xodr"
+    _write_minimal_xodr(xodr, [1.0], [1.0])
+    tree = ET.parse(xodr)
+    geoms = tree.getroot().find("road/planView").findall("geometry")
+    geoms[0].set("y", "garbage")
+    tree.write(xodr, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(RuntimeError, match="non-numeric planView geometry"):
+        translate_xodr_geometry(xodr, tmp_path / "out.xodr", 1.0, 1.0)
+
+
+@pytest.mark.skipif(not _HAS_PYPROJ, reason="pyproj not installed in the repo venv")
+def test_project_center_from_gps_bounds_raises_clear_error_on_malformed_value() -> None:
+    from ultimate_pipeline.domain_gap.deterministic_alignment import project_center_from_gps_bounds
+
+    bad_bounds = {"lat_min": "not-a-number", "lat_max": 48.77, "lon_min": 11.42, "lon_max": 11.48}
+    with pytest.raises(ValueError, match="invalid gps_bounds value"):
+        project_center_from_gps_bounds(bad_bounds, _MANUAL_PROJ)
