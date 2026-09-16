@@ -158,15 +158,21 @@ class GeometryValidator:
         # Deterministic rejection of non-finite or missing required attributes
         # (OC-1 kernel-migration reject semantics). A finite but tiny/negative
         # length is a bounded REPAIR (removed below), but a missing or
-        # non-finite s/length prevents a monotonic chain from being placed at
-        # all, and a non-finite hdg has no meaningful normalization -- these
-        # are surfaced as REJECTED rather than silently "repaired" away, and
-        # the XML is left untouched for inspection.
+        # non-finite s prevents a monotonic chain from being placed at all,
+        # and a non-finite hdg has no meaningful normalization -- these are
+        # surfaced as REJECTED rather than silently "repaired" away, and the
+        # XML is left untouched for inspection. A NaN length is the one
+        # non-finite case that IS a bounded repair: it is degenerate in the
+        # exact same way a zero-length segment is (no usable extent), so it
+        # falls through to the zero-length removal below instead of being
+        # rejected (see test_nan_length_segment_is_removed). A missing or
+        # infinite length still has no bounded interpretation and is
+        # rejected.
         rejections = []
         for i, d in enumerate(parsed):
             if d["s"] is None or not math.isfinite(d["s"]):
                 rejections.append(f"nonfinite_or_missing_s_at_index={i}")
-            if d["length"] is None or not math.isfinite(d["length"]):
+            if d["length"] is None or math.isinf(d["length"]):
                 rejections.append(f"nonfinite_or_missing_length_at_index={i}")
             if d["hdg"] is not None and not math.isfinite(d["hdg"]):
                 rejections.append(f"nonfinite_hdg_at_index={i}")
