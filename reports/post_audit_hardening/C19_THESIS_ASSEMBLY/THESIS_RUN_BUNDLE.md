@@ -1,7 +1,8 @@
 # Thesis run bundle (C19 step 4)
 
 ## Pinned maps
-- **auto_map_of_record** (auto): `2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798` — campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr
+- **auto_map_of_record** (auto): `370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8` — campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr
+- **auto_map_of_record_reproregen2_superseded** (auto): `2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798` — campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr
 - **auto_map_of_record_reproregen1_superseded** (auto): `847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb` — campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_180515.xodr
 - **auto_map_of_record_round6_elevationfix_superseded** (auto): `cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46` — campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_131617.xodr
 - **auto_map_of_record_round5_hygienefix_superseded** (auto): `60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75` — campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260904_214501.xodr
@@ -12,8 +13,8 @@
 
 ## Protocol snapshot
 - note: `No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead.`
-- git_commit: `0d8f2859244911e7497ea5a419828fafea55dc53`
-- git_branch: `stabilize/research-release-20260905`
+- git_commit: `25722002c2ad425a04b0bf4ea18d8690d5a618d3`
+- git_branch: `docs/regen-stale-rq-tables-v1-20260917`
 - git_dirty: `True`
 - canonical_regen_entrypoint: `scripts/regen_map_of_record.py`
 - inputs_manifest: `campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json`
@@ -39,7 +40,7 @@
 - **RQ2/local_road_length_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area [footprint=hull] -- hull is tighter/preferred, bbox kept in local_registration.json for comparison (hull materially lowers this ratio vs. the legacy bbox footprint)
 - **RQ2/local_junction_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area [footprint=hull]
 - **RQ2/local_road_count_ratio_auto_over_manual** [BOUNDED]: LOCAL manual-footprint ratio; separates structural completeness from whole-map scope [footprint=hull]
-- **RQ2/local_auto_footprint_kept_fraction** [BOUNDED]: manual-footprint crop kept 3539 / 32297 auto roads; whole-map stats are scope context [footprint=hull]
+- **RQ2/local_auto_footprint_kept_fraction** [BOUNDED]: manual-footprint crop kept 3536 / 32267 auto roads; whole-map stats are scope context [footprint=hull]
 - **RQ2/whole_map_construction_layers_excluded_from_local_gap** [BOUNDED]: traffic lights are a construction layer, not road-network structure, and are excluded from the LOCAL structural gap because Grid0828 does not model traffic lights at all (0 in the manual map) -- there is nothing in-footprint to compare against, independent of croppability. Reported at whole-map level as a construction/modeling-choice artifact.
 - **RQ2/whole_map_road_type_coverage_gap_context** [BOUNDED]: whole-map context only; manual road types are a subset of auto's
 - **RQ2/local_building_density_gap** [BOUNDED]: LOCAL manual-footprint building density comparison (C26): buildings recovered via outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded [footprint=hull]

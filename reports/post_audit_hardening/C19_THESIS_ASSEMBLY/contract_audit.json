@@ -16,7 +16,7 @@
     "ok": true,
     "row_count": 22,
     "rq_tables_found": true,
-    "rq_tables_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
+    "rq_tables_path": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913/reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
     "violations": []
   },
   "generalization_status": {
@@ -25,7 +25,7 @@
     "machine_readable_status_present": true,
     "overall_status_enum_present": true
   },
-  "generated_at_utc": "2026-09-06T11:07:28.084059+00:00",
+  "generated_at_utc": "2026-09-17T11:32:13.271073+00:00",
   "perception_labels": {
     "pair_result_class_present": true,
     "pair_result_reason_present": true,
@@ -39,7 +39,7 @@
     ],
     "visual_qa_contract_present": true
   },
-  "repo_root": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "repo_root": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913",
   "run11": {
     "addendum_parsed": false,
     "conservative_interpretation": {},
