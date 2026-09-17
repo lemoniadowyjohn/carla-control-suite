@@ -439,10 +439,20 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         # (see map_acceptance.py: lane_count_changes never hard-fails; component_
         # reachability only hard-fails below 0.95 largest-fraction): lane_count_changes
         # unexplained=3007, and component_reachability 3 isolated lane components
-        # (largest_component_fraction=0.99793, well above the 0.95 gate floor) --
-        # both within or better than the precedent this repo already accepted (the
-        # 2026-09-04 deep-audit promotion accepted 27 isolated lane components as
-        # soft-only). origin_centroid_distance_m=9669.6 (reasonable, post-rebase).
+        # (largest_component_fraction=0.99793, well above the 0.95 gate floor).
+        # component_reachability is within precedent this repo already accepted
+        # (the 2026-09-04 deep-audit promotion accepted 27 isolated lane
+        # components as soft-only). lane_count_changes has NO prior baseline --
+        # 2026-09-17 investigation found the gate itself (8a02e0f1, 2026-09-09)
+        # postdates the previous pin (2026-09-05), so 3007 is this gate's
+        # FIRST-EVER measurement against this map lineage, not a repeat of an
+        # accepted number. Root-caused as non-blocking: OSM lane_count_source
+        # provenance tags cover only 0.4% of lanes, so the "explained" bucket
+        # is structurally almost-unreachable regardless of map quality -- spot-
+        # checked several flagged boundaries and they look like ordinary lane-
+        # merge/split topology, not corruption -- but this has never been
+        # exhaustively reviewed and remains a genuinely open advisory item.
+        # origin_centroid_distance_m=9669.6 (reasonable, post-rebase).
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260916_232831.xodr",
         "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",

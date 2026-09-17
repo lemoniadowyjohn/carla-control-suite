@@ -114,11 +114,14 @@ def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
     # 32267 roads / 3561 junctions, all 5 roads that previously crashed the
     # pipeline on the planView bug now have a valid non-empty <planView>, 0
     # roads anywhere with an empty/missing <planView>. Pipeline acceptance:
-    # valid_for_experiments=True, hard_fail_reasons=[]; 2 pre-existing soft-only
-    # warnings (lane_count_changes unexplained=3007, component_reachability 3
-    # isolated lane components largest_fraction=0.99793) within precedent
-    # already accepted for this map lineage (27 isolated lane components on
-    # 2026-09-04). Supersedes
+    # valid_for_experiments=True, hard_fail_reasons=[]; 2 soft-only warnings
+    # (lane_count_changes unexplained=3007, component_reachability 3 isolated
+    # lane components largest_fraction=0.99793). component_reachability is
+    # within precedent already accepted for this map lineage (27 isolated
+    # lane components on 2026-09-04); lane_count_changes has NO prior
+    # baseline -- this gate postdates the previous pin, so 3007 is its
+    # first-ever measurement here (see map_registry.py's PINNED_MAP_REGISTRY
+    # comment for the full 2026-09-17 root-cause note). Supersedes
     # 2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798, which
     # remains on disk for provenance but is no longer "the" auto map of record.
     result = verify_pinned_map("auto_map_of_record")

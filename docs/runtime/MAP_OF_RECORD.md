@@ -14,9 +14,17 @@ The current automatic map of record is:
   3561 junctions, all 5 previously-crashing roads (54601, 57919, 64775, 67658, 67798)
   now carry a valid non-empty `<planView>`, 0 roads anywhere with an empty/missing
   `<planView>`. Pipeline acceptance: `valid_for_experiments=true`,
-  `hard_fail_reasons=[]`; 2 pre-existing soft-only warnings (`lane_count_changes`
+  `hard_fail_reasons=[]`; 2 soft-only warnings (`lane_count_changes`
   unexplained=3007, `component_reachability` 3 isolated lane components,
-  largest_fraction=0.99793) within precedent already accepted for this map lineage.
+  largest_fraction=0.99793). `component_reachability` is within precedent already
+  accepted for this map lineage (27 isolated components, 2026-09-04);
+  `lane_count_changes` has no prior baseline -- its gate (`8a02e0f1`, 2026-09-09)
+  postdates the previous pin, so 3007 is its first-ever measurement here.
+  2026-09-17 root-cause: OSM `lane_count_source` provenance tags cover only 0.4%
+  of lanes, so the "explained" classification is structurally almost-unreachable
+  regardless of map quality; a spot-check of several flagged boundaries showed
+  ordinary lane-merge/split topology, not corruption, but this has never been
+  exhaustively reviewed and remains a genuinely open advisory item.
 - Manual reference: `campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr`
 - Manual SHA256: `5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c`
 - Pinned OSM SHA256: `b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f`
