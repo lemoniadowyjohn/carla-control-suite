@@ -3,15 +3,15 @@
   "c19_step_outputs": {
     "contract_audit.json": {
       "present": true,
-      "sha256": "5c3fb0abf462e9c3426fe6958c62f136df36dcd4769776d5c7944f898e6b6016"
+      "sha256": "b4005a6d7eefa4ed62db914853cce88860e6520d7cdd8b18b8b6c4b80d7775cd"
     },
     "provenance_validation.json": {
       "present": true,
-      "sha256": "7eff90424c271b7d5ca98d1c880ccded15542acccb102fe319f80f1f5f542154"
+      "sha256": "5ad22ab8353e2eff1435cf5a4187ca1874eda234b21585ce08a4c0e178b3a1a5"
     },
     "rq_tables.json": {
       "present": true,
-      "sha256": "be5f78e6802c309e9e7784b17d31dcb25187a1d7d51119cc0065b8e16bfa8f4c"
+      "sha256": "9cc70d0f410efa0de0f3bd93f3763e62b4b9d9ee3f79f9a6b59bb865241e4bec"
     }
   },
   "claim_boundaries": [
@@ -83,7 +83,7 @@
     },
     {
       "metric": "local_auto_footprint_kept_fraction",
-      "note": "manual-footprint crop kept 3539 / 32297 auto roads; whole-map stats are scope context [footprint=hull]",
+      "note": "manual-footprint crop kept 3536 / 32267 auto roads; whole-map stats are scope context [footprint=hull]",
       "rq": "RQ2",
       "status": "BOUNDED"
     },
@@ -157,17 +157,17 @@
     {
       "path": "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_REPORT.md",
       "present": true,
-      "sha256": "590f8522f5a4f6ab3f8d2ef330665c6dcdad0a993a21eb5a51fd526dc086bc28"
+      "sha256": "b3ddd6f8437aa86cb40cadf9ed7877d179b3d4ad884f76feea46f4dd0b7317f9"
     },
     {
       "path": "reports/post_audit_hardening/C18_GNN_LATENT_GAP/C18_GNN_LATENT_GAP_REPORT.md",
       "present": true,
-      "sha256": "87b9e7012a85fcbc755af7f7ed59e3e6536a90f135f0beeb7fa47c72529215df"
+      "sha256": "b36a56ce8f937eafd0d202e8234b481b2db50c59a62d24503afa24e23be805aa"
     },
     {
       "path": "reports/post_audit_hardening/C17_rq2_perception_capture.md",
       "present": true,
-      "sha256": "ec0b499f2d4a7cb8d10f2e82a224ff5a00441b3ef440a2c12b78392a280c142a"
+      "sha256": "73b6ff64ba5a65a6cc68bb2c79900df788c677fc32226aa7596332a340a2fd57"
     },
     {
       "path": "reports/post_audit_hardening/C13_manual_map_and_registry.md",
@@ -177,20 +177,20 @@
     {
       "path": "reports/post_audit_hardening/C20_CARLA_RUNTIME_UNBLOCK.md",
       "present": true,
-      "sha256": "5bd16e0706e2beeae9da418580761144eff767088fa965a2aac20044074a0ecf"
+      "sha256": "4f81b69580b473070abb623a4e427abfc9ad19d2d1abd2aca076248b5515ae83"
     },
     {
       "path": "reports/post_audit_hardening/C20_TIER1_PROBE_20260821/FINDINGS.md",
       "present": true,
-      "sha256": "0fc5d26c4352531ff3e88263b262bef53dd3a5b294d0bb2f6d14e3c74ebe0625"
+      "sha256": "f66e1085e52aa75d63d2cc0a0c953d057e653e49cfa8505119730e22a487ae70"
     }
   ],
   "maps_by_sha": {
     "auto_map_of_record": {
-      "bytes": 148949722,
-      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "bytes": 149799632,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
       "role": "auto",
-      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
     },
     "auto_map_of_record_c29_superseded": {
       "bytes": 144385542,
@@ -216,6 +216,12 @@
       "role": "auto",
       "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
     },
+    "auto_map_of_record_reproregen2_superseded": {
+      "bytes": 148949722,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "auto",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
     "auto_map_of_record_round5_hygienefix_superseded": {
       "bytes": 148950126,
       "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260904_214501.xodr",
@@ -237,8 +243,8 @@
   },
   "protocol_snapshot": {
     "canonical_regen_entrypoint": "scripts/regen_map_of_record.py",
-    "git_branch": "stabilize/research-release-20260905",
-    "git_commit": "0d8f2859244911e7497ea5a419828fafea55dc53",
+    "git_branch": "docs/regen-stale-rq-tables-v1-20260917",
+    "git_commit": "25722002c2ad425a04b0bf4ea18d8690d5a618d3",
     "git_dirty": true,
     "inputs_manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
     "note": "No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead."

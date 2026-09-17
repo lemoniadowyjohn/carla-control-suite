@@ -25,6 +25,12 @@
       "artifact": "auto_map_of_record",
       "ok": true,
       "role": "auto",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "artifact": "auto_map_of_record_reproregen2_superseded",
+      "ok": true,
+      "role": "auto",
       "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
     },
     {
