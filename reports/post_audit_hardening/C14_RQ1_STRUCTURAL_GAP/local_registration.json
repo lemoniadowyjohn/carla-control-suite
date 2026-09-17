@@ -4,19 +4,19 @@
   "hull": {
     "local_structural_summary": {
       "road_network_structural": {
-        "lane_width_gap": 0.0415,
-        "curvature_gap": 0.2192,
-        "curvature_wasserstein_gap": 0.0747,
-        "road_length_ratio_auto_over_manual": 2.692,
+        "lane_width_gap": 0.0597,
+        "curvature_gap": 0.2206,
+        "curvature_wasserstein_gap": 0.0752,
+        "road_length_ratio_auto_over_manual": 2.683,
         "junction_ratio_auto_over_manual": 3.782,
-        "road_count_ratio_auto_over_manual": 3.565
+        "road_count_ratio_auto_over_manual": 3.561
       },
       "building_density_comparison": {
         "note": "buildings recovered via <outline><cornerGlobal> absolute positions (same local frame as road planView geometry), independent of their road-relative s=0/t=0 attachment, and cropped to the same footprint polygon as roads. See local_registration.py:building_global_centroid / crop_buildings_to_polygon.",
-        "building_density_gap": 0.4139,
-        "cropped_auto_buildings": 3779,
+        "building_density_gap": 0.2308,
+        "cropped_auto_buildings": 3279,
         "manual_buildings": 993,
-        "cropped_auto_buildings_per_km": 26.2314,
+        "cropped_auto_buildings_per_km": 22.8333,
         "manual_buildings_per_km": 18.552
       },
       "construction_differences_excluded": {
@@ -25,29 +25,29 @@
         "manual_traffic_lights": 0
       },
       "footprint": {
-        "auto_roads_kept": 3539,
-        "auto_roads_total": 32297,
+        "auto_roads_kept": 3536,
+        "auto_roads_total": 32267,
         "kept_fraction": 0.1096
       }
     },
     "local_gap_raw": {
-      "lane_width_gap": 0.0415,
-      "curvature_gap": 0.2192,
+      "lane_width_gap": 0.0597,
+      "curvature_gap": 0.2206,
       "road_length_gap": 1.0,
       "traffic_light_density_gap": 1.0,
-      "building_density_gap": 0.4139,
+      "building_density_gap": 0.2308,
       "road_type_coverage_gap": 0.0
     },
     "crop": {
-      "full_auto_road_count": 32297,
-      "cropped_auto_road_count": 3539,
+      "full_auto_road_count": 32267,
+      "cropped_auto_road_count": 3536,
       "manual_road_count": 993,
-      "cropped_auto_total_length_m": 144063.9,
+      "cropped_auto_total_length_m": 143606.1,
       "manual_total_length_m": 53525.3,
       "cropped_auto_junctions": 450,
       "manual_junctions": 119,
-      "full_auto_building_count": 5686,
-      "cropped_auto_buildings": 3779,
+      "full_auto_building_count": 5682,
+      "cropped_auto_buildings": 3279,
       "manual_buildings": 993,
       "cropped_auto_traffic_lights": 2194,
       "footprint_local_bounds": [
@@ -84,26 +84,26 @@
         6368.796352289617
       ],
       "building_frame_shift_source": "settings_gps_bounds",
-      "full_auto_building_count": 5686,
-      "cropped_auto_building_count": 3779
+      "full_auto_building_count": 5682,
+      "cropped_auto_building_count": 0
     }
   },
   "bbox": {
     "local_structural_summary": {
       "road_network_structural": {
-        "lane_width_gap": 0.0415,
-        "curvature_gap": 0.2239,
-        "curvature_wasserstein_gap": 0.074,
-        "road_length_ratio_auto_over_manual": 4.5,
+        "lane_width_gap": 0.0614,
+        "curvature_gap": 0.2248,
+        "curvature_wasserstein_gap": 0.0743,
+        "road_length_ratio_auto_over_manual": 4.488,
         "junction_ratio_auto_over_manual": 6.05,
-        "road_count_ratio_auto_over_manual": 6.123
+        "road_count_ratio_auto_over_manual": 6.119
       },
       "building_density_comparison": {
         "note": "buildings recovered via <outline><cornerGlobal> absolute positions (same local frame as road planView geometry), independent of their road-relative s=0/t=0 attachment, and cropped to the same footprint polygon as roads. See local_registration.py:building_global_centroid / crop_buildings_to_polygon.",
-        "building_density_gap": 0.171,
-        "cropped_auto_buildings": 5232,
+        "building_density_gap": 0.2371,
+        "cropped_auto_buildings": 5513,
         "manual_buildings": 993,
-        "cropped_auto_buildings_per_km": 21.7238,
+        "cropped_auto_buildings_per_km": 22.951,
         "manual_buildings_per_km": 18.552
       },
       "construction_differences_excluded": {
@@ -112,29 +112,29 @@
         "manual_traffic_lights": 0
       },
       "footprint": {
-        "auto_roads_kept": 6079,
-        "auto_roads_total": 32297,
-        "kept_fraction": 0.1882
+        "auto_roads_kept": 6076,
+        "auto_roads_total": 32267,
+        "kept_fraction": 0.1883
       }
     },
     "local_gap_raw": {
-      "lane_width_gap": 0.0415,
-      "curvature_gap": 0.2239,
+      "lane_width_gap": 0.0614,
+      "curvature_gap": 0.2248,
       "road_length_gap": 1.0,
       "traffic_light_density_gap": 1.0,
-      "building_density_gap": 0.171,
+      "building_density_gap": 0.2371,
       "road_type_coverage_gap": 0.0
     },
     "crop": {
-      "full_auto_road_count": 32297,
-      "cropped_auto_road_count": 6079,
+      "full_auto_road_count": 32267,
+      "cropped_auto_road_count": 6076,
       "manual_road_count": 993,
-      "cropped_auto_total_length_m": 240841.7,
+      "cropped_auto_total_length_m": 240207.4,
       "manual_total_length_m": 53525.3,
       "cropped_auto_junctions": 720,
       "manual_junctions": 119,
-      "full_auto_building_count": 5686,
-      "cropped_auto_buildings": 5232,
+      "full_auto_building_count": 5682,
+      "cropped_auto_buildings": 5513,
       "manual_buildings": 993,
       "cropped_auto_traffic_lights": 3920,
       "footprint_local_bounds": [
@@ -171,8 +171,8 @@
         6368.796352289617
       ],
       "building_frame_shift_source": "settings_gps_bounds",
-      "full_auto_building_count": 5686,
-      "cropped_auto_building_count": 5232
+      "full_auto_building_count": 5682,
+      "cropped_auto_building_count": 0
     }
   },
   "whole_map_gap": {
@@ -184,8 +184,8 @@
     "road_type_coverage_gap": 0.0
   },
   "source_files": {
-    "auto_xodr": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260819_160350.xodr",
-    "auto_xodr_sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+    "auto_xodr": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "auto_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
     "manual_xodr": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
     "manual_xodr_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
   }
