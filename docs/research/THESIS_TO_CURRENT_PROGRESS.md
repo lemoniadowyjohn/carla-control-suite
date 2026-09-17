@@ -9,7 +9,7 @@ is the authoritative source if this table and the code ever disagree — verify 
 | RQ | Thesis baseline | Current state | What changed |
 |----|-----------------|----------------|---------------|
 | RQ1 — Determinism | Byte-level nondeterminism with stable structural/topological signatures under fixed inputs; thesis did not fully isolate the byte-level source. | AUTHORITATIVE for structural repeatability and raw byte non-repeatability; BOUNDED for timestamp-normalized byte equality. Three repeated Osm2Odr outputs differ at raw hash level and preserve the same road/junction/length signature; portable committed fixtures cover timestamp-only normalization in CI, while large local artifacts remain optional governed integration evidence. | Post-thesis root-causing (`C15_RQ4_DR`) and normalized-hash tests support timestamp metadata as the observed byte-level source. Do **not** claim exhaustive source isolation until the large-artifact evidence is regenerated and available after a clean clone. |
-| RQ2 — Structural domain gap | Whole-map comparison only; a delivered discrete-Fréchet number computed on an uncropped, misaligned network | BOUNDED, with a corrected **local** (manual-map-footprint) comparison as the primary result: lane-width gap is small and the maps agree; curvature/road-length ratios show a real completeness gap (~2.7-3.8x under a convex-hull footprint, revised down from an earlier 4.5-6x bbox-footprint estimate); building density is now a genuine in-footprint comparison instead of force-excluded. A recomputed local Fréchet distance is ~30-50x smaller than the thesis's original whole-network number. | `C14_RQ1_STRUCTURAL_GAP` + `C26` local-registration work; closes thesis future-work item #14 (Fréchet distance) with a corrected, scope-appropriate methodology. |
+| RQ2 — Structural domain gap | Whole-map comparison only; a delivered discrete-Fréchet number computed on an uncropped, misaligned network | BOUNDED, with a corrected **local** (manual-map-footprint) comparison as the primary result: lane-width gap is small and the maps agree; curvature/road-length ratios show a real completeness gap (~2.7-3.8x under a convex-hull footprint, revised down from an earlier 4.5-6x bbox-footprint estimate); building density is now a genuine in-footprint comparison instead of force-excluded. A recomputed local Fréchet distance is ~30-50x smaller than the thesis's original whole-network number. **Re-verified 2026-09-17 against the current map-of-record pin (see note below): the ratio holds, 2.68x road length / 3.78x junctions / 3.56x road count (hull).** | `C14_RQ1_STRUCTURAL_GAP` + `C26` local-registration work; closes thesis future-work item #14 (Fréchet distance) with a corrected, scope-appropriate methodology. |
 | RQ3 — Perceptual domain gap | Direct generated-vs-manual paired perceptual measurement was NOT completed. Generated-map capture failed at the CARLA runtime boundary; Town10HD validated only the sensor-rig implementation. | `DEFERRED_RUNTIME` — no generated/manual paired Ingolstadt evidence exists. | No scientific upgrade. The blocker is now precisely characterized: a live CARLA server never becomes RPC-responsive, confirmed independent of map choice and rendering backend (`-nullrhi` isolation) and independent of the GPU driver (a chronic TDR watchdog fault was found and fixed separately, but the RPC hang persists) — see `reports/post_audit_hardening/C20_TIER1_PROBE_20260821/` and related C20 reports. |
 | RQ4 — Structural variability / latent representation | The thesis fixed GNN representation collapse using NT-Xent and obtained statistically supported latent separation, including a K=1000 permutation test with p<0.001. | AUTHORITATIVE extension: a 5-seed GNN ensemble trained on the union of both maps' road-network graphs reports cosine_distance mean 0.6434 (95% bootstrap CI [0.616, 0.676]), CI excludes zero across all 5 seeds. The 95% CI is a bootstrap over only **n=5 seeds** (fragile tails — read as indicative; the thesis's K=1000 permutation p<0.001 remains the *primary* statistical support), and the metric is an in-sample union-domain latent-separation **diagnostic**, not held-out accuracy or transfer (see `reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/C21_STATISTICAL_PROVENANCE.md`). Explicit domain-randomization wiring is confirmed, but governed natural-vs-explicit DR experiments remain a separate extension. | The new contribution is the post-thesis multi-seed union-domain robustness layer (`C18_GNN_LATENT_GAP` → `C21_GNN_AUTHORITATIVE`), not the entire RQ4 result. The numbers changed materially on 2026-09-01 after fixing a graph-construction bug (lane-link edges were resolving to their own lane section instead of the successor's, making ~99.8% of training edges self-loops). |
 | RQ5 — Generalization and transfer | No downstream model-transfer experiment was completed; the question remained deferred. | `DEFERRED_RUNTIME` for RQ5(a) generated-train/manual-test transfer because it depends on valid RQ3 datasets. `DEFERRED_EXTERNAL_DATA` for RQ5(b) because no real-world Ingolstadt dataset exists on this machine. | No scientific upgrade. Unlabeled distribution shift/CORAL/MMD protocol checks are not model-generalization accuracy, and no manual-target training result may be relabeled as generated-to-manual transfer. |
@@ -88,9 +88,52 @@ signal on its own. Tile IoU / per-tile metrics were not computed in this run
 (`UP_SKIP_TILE_ALIGNMENT=1`, `per_tile_status=skipped`, reason: per-tile auto-tiling subprocess
 reliably exceeds its hardcoded timeout on this city-scale candidate — see the commit that added the
 skip path) and elevation gap remains `disabled` (`dem_qc_failed`, planar/no-DEM map, unchanged from
-every prior run). No change is being made to the RQ2 row's authoritative ~2.7-3.8x local
-completeness-gap number; if this whole-map result is ever thought to warrant revisiting that number,
-that is a human call, not an automatic swap.
+every prior run).
+
+## 2026-09-17 update — RQ2 local hull-footprint number re-verified against the current pin
+
+The ~2.7-3.8x local completeness-gap number was, until this date, still computed by
+`scripts/regen_local_registration.py` against a hardcoded, long-stale candidate path
+(`ingolstadt_perception_map_of_record_20260819_160350.xodr`) — a pin that predates 5 subsequent
+map-of-record promotions (09-02, 09-04 x2, 09-05 x2) and, more importantly, predates both the
+map-of-record regenerated 2026-09-17 (see `docs/runtime/MAP_OF_RECORD.md`, which fixes two real
+pipeline bugs: `946228f9` junction-connector `<link>` stripping, `a13efd91` degenerate-`<planView>`
+deletion) and every domain-gap-computation bug fixed earlier this session (`GeoAligner` schema-order
+corruption, alignment-extractor point-duplication, stale-header-bbox, `CurvatureGap` KL
+density-vs-probability-mass bug, `deterministic_alignment.py` header-offset rebase — see the
+2026-09-15 note above). This was exactly the "declined to re-verify" gap flagged previously; it has
+now been executed and is not an automatic swap but an actual re-run with the real result reported
+below, whichever direction it moved.
+
+`scripts/regen_local_registration.py` was updated to resolve its auto-side XODR through the C13 pin
+registry (`verify_pinned_map("auto_map_of_record")`) instead of a hardcoded filename, so this
+specific staleness cannot recur silently on future promotions. Re-run against the new pin
+(`ingolstadt_perception_map_of_record_20260916_232831.xodr`, sha256 `370abbbbb3...`) vs. the
+unchanged manual reference (`Grid0828.xodr`); output regenerated at
+`reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json`.
+
+**Result: the ~2.7-3.8x finding holds, effectively unchanged.** Hull footprint (primary/default):
+road-length ratio **2.683x** (was 2.69x), junction ratio **3.782x** (was 3.78x), road-count ratio
+**3.561x** (was 3.57x), curvature_gap 0.2206 (was 0.2192), lane_width_gap 0.0597 (was 0.0415, moved
+more than the others but still small in absolute terms). Bbox footprint (legacy, reported
+side-by-side): road-length ratio 4.488x (was 4.5x), junction ratio 6.05x (was 6.05x), road-count
+ratio 6.119x (was 6.12x). Building density (frame-corrected, in-footprint): hull gap 0.2308 (3,279
+kept / 5,682 total auto buildings vs. 993 manual), consistent with the C26-era finding that both
+maps show comparable, plausible building density once correctly cropped.
+
+**Important caveat — the alignment/curvature fixes above are NOT exercised by this number.**
+`ultimate_pipeline/domain_gap/local_registration.py` (the module this script calls) is a
+self-contained implementation with its own convex-hull footprint crop, its own curvature-gap
+calculation, and its own coordinate-frame handling — it does not import or call `GeoAligner` or
+`CurvatureGap`, the two modules whose bugs were fixed this session. Those fixes live in the
+*whole-map* pipeline (`ultimate_pipeline/run_full_domain_gap.py` and friends), not this one. So this
+re-verification confirms the RQ2 hull-footprint ratio is stable under the regenerated,
+bug-fixed **map** (the two `xodr_carla_hardener`/`GeometryValidator` fixes), but it does *not*
+confirm anything about the `GeoAligner`/`CurvatureGap` fixes, because the code path that had those
+bugs is not the code path that produces this number. If those specific fixes are ever expected to
+move the RQ2 local number, that would require porting/reusing them inside
+`local_registration.py`, which was not attempted here (out of scope for a re-verification pass —
+would be a methodology change, not a re-run).
 
 ## Infrastructure changes not tied to a specific RQ
 

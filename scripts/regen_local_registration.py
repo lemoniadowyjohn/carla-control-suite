@@ -24,8 +24,16 @@ from ultimate_pipeline.domain_gap.local_registration import (  # noqa: E402
     compute_local_registration,
     local_structural_summary,
 )
+from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map  # noqa: E402
 
-AUTO_XODR = "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260819_160350.xodr"
+# 2026-09-17: this used to hardcode a specific historical candidate filename
+# (ingolstadt_perception_map_of_record_20260819_160350.xodr), which silently went
+# stale across 5 subsequent map-of-record promotions (09-02, 09-04 x2, 09-05 x2,
+# 09-17) -- this script was never re-run against any of them until now. Resolving
+# through the C13 pin registry instead of a hardcoded path means this always
+# measures against whatever is *actually* pinned as auto_map_of_record, so this
+# staleness can't recur silently.
+AUTO_XODR = verify_pinned_map("auto_map_of_record")["path"]
 MANUAL_XODR = "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr"
 OUT_PATH = "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json"
 

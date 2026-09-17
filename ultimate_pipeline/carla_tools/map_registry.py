@@ -418,24 +418,35 @@ def _repo_root() -> Path:
 
 PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
     "auto_map_of_record": {
-        # Second reproducibility re-promotion (2026-09-05): no map-generation code
-        # changed since the prior pin (847d41bd) -- the only work in between was
-        # rl_fuzzer.py bug fixes (a standalone experimental tool, not part of the
-        # live regen pipeline) and a 103-module read-only audit of pipeline_stages/,
-        # enrichment/, quality/, topology/ that found zero functional bugs. This is
-        # a fresh canonical regen from the same pinned OSM input, re-run to keep the
-        # pin current. Byte-different from 847d41bd (Osm2Odr is not byte-
-        # deterministic) but structurally equivalent: all 15 gates ok=True,
-        # elevation_summary min=361.9 max=406.3, component_reachability isolated=27
-        # (same stable count as every regen this week), valid_for_experiments=True.
-        # Static CARLA-compatibility preflight (StrictXodrValidator +
-        # StrictCarlaOpendriveGate) also verified clean: 0 errors, 134 warnings (all
-        # road_length_mismatch on short junction-connector fragments, a known benign
-        # converter quirk, not a hard failure).
+        # 2026-09-17 promotion: regenerated the canonical map after TWO real bugs
+        # were fixed in the regen pipeline since the prior pin (2ca342d8, 2026-09-05):
+        # (1) 946228f9 -- xodr_carla_hardener.py::_fix_connectivity() was incorrectly
+        # stripping ALL road-level <link> elements from junction-connector roads;
+        # (2) a13efd91 -- GeometryValidator._validate_road() was deleting a road's
+        # entire <planView> (leaving 0 <geometry> children) when every geometry
+        # segment was near-zero-length, instead of repairing one segment in place.
+        # This regen is the first candidate produced with both fixes applied.
+        # Verified directly against final_rebased.xodr before promotion: well-formed
+        # XML, 32267 <road> / 3561 <junction> elements matching the pipeline's own
+        # structural_signature, ALL 5 roads that previously crashed the pipeline on
+        # bug (2) -- 54601, 57919, 64775, 67658, 67798 -- now carry a valid non-empty
+        # <planView> (1 repaired geometry segment each, length=0.1m floor), and a
+        # full-file scan found 0 roads anywhere with an empty/missing <planView>.
+        # Pipeline-internal acceptance (regen_map_of_record.py ->
+        # measure_candidate_acceptance.run_gates() -> build_map_acceptance(), the
+        # same and only promotion gate this repo runs): valid_for_experiments=True,
+        # hard_fail_reasons=[]. Two pre-existing, always-soft-by-design warnings
+        # (see map_acceptance.py: lane_count_changes never hard-fails; component_
+        # reachability only hard-fails below 0.95 largest-fraction): lane_count_changes
+        # unexplained=3007, and component_reachability 3 isolated lane components
+        # (largest_component_fraction=0.99793, well above the 0.95 gate floor) --
+        # both within or better than the precedent this repo already accepted (the
+        # 2026-09-04 deep-audit promotion accepted 27 isolated lane components as
+        # soft-only). origin_centroid_distance_m=9669.6 (reasonable, post-rebase).
         "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
-        "ingolstadt_perception_map_of_record_20260905_202847.xodr",
-        "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
-        "bytes": 148949722,
+        "ingolstadt_perception_map_of_record_20260916_232831.xodr",
+        "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "bytes": 149799632,
         "role": "auto",
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
@@ -447,7 +458,28 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         # 2026-09-04) -> 60a36325 (round-5 hygiene-stage fix, 2026-09-04) ->
         # cb85fc14 (round-6 bridge/tunnel elevation fix, 2026-09-05) ->
         # 847d41bd (reproducibility re-regen, 2026-09-05) ->
-        # 2ca342d8 (this pin, second reproducibility re-regen, 2026-09-05).
+        # 2ca342d8 (second reproducibility re-regen, 2026-09-05) ->
+        # 370abbbb (this pin, junction-connector-link + degenerate-planView fix
+        # regen, 2026-09-17).
+        "supersedes_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+        "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    },
+    # Retired pin, kept as its own registry entry (not aliased to "auto") purely so
+    # validate_thesis_claim_provenance.py's single-hop supersedes_sha256 lookup can
+    # still resolve claims that cite the second-reproregen sha (2ca342d8...) one
+    # promotion back. That resolver iterates every PINNED_MAP_REGISTRY entry looking
+    # for a supersedes_sha256 match, not just "auto_map_of_record", so this
+    # chain-link entry is sufficient without adding multi-hop walking to the
+    # resolver itself.
+    "auto_map_of_record_reproregen2_superseded": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
+        "ingolstadt_perception_map_of_record_20260905_202847.xodr",
+        "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+        "bytes": 148949722,
+        "role": "auto",
+        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "aliases": ["auto_map_of_record_reproregen2_superseded"],
         "supersedes_sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb",
         "supersedes_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/"
         "ingolstadt_perception_map_of_record_20260905_180515.xodr",

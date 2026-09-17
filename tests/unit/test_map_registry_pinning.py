@@ -106,20 +106,23 @@ def test_real_grid0821_alias_resolves_to_same_content_as_grid0828() -> None:
 
 
 def test_real_auto_map_of_record_matches_pinned_sha256() -> None:
-    # Second reproducibility re-promotion (2026-09-05): no map-generation code
-    # changed since the prior pin (847d41bd) -- only rl_fuzzer.py bug fixes
-    # (a standalone experimental tool, not part of the live regen pipeline) and
-    # a 103-module read-only audit (zero functional bugs found) happened in
-    # between. Fresh canonical regen from the same pinned OSM input. Byte-
-    # different (Osm2Odr is not byte-deterministic) but structurally equivalent:
-    # all 15 gates ok=True, component_reachability isolated=27 (same stable
-    # count as every regen this week), valid_for_experiments=True. Static CARLA
-    # preflight also verified clean (0 errors, 134 benign warnings on short
-    # junction-connector fragments). Supersedes
-    # 847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb, which
+    # 2026-09-17 promotion: regenerated after two real pipeline bugs were fixed
+    # since the prior pin (2ca342d8, 2026-09-05) -- 946228f9 (hardener no longer
+    # strips road-level <link> from junction connectors) and a13efd91
+    # (GeometryValidator repairs a degenerate <planView> in place instead of
+    # leaving it empty). Verified directly before promotion: well-formed XML,
+    # 32267 roads / 3561 junctions, all 5 roads that previously crashed the
+    # pipeline on the planView bug now have a valid non-empty <planView>, 0
+    # roads anywhere with an empty/missing <planView>. Pipeline acceptance:
+    # valid_for_experiments=True, hard_fail_reasons=[]; 2 pre-existing soft-only
+    # warnings (lane_count_changes unexplained=3007, component_reachability 3
+    # isolated lane components largest_fraction=0.99793) within precedent
+    # already accepted for this map lineage (27 isolated lane components on
+    # 2026-09-04). Supersedes
+    # 2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798, which
     # remains on disk for provenance but is no longer "the" auto map of record.
     result = verify_pinned_map("auto_map_of_record")
-    assert result["sha256"] == "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    assert result["sha256"] == "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
     assert result["role"] == "auto"
 
 
