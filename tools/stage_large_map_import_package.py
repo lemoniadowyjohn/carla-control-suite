@@ -38,12 +38,13 @@ from ultimate_pipeline.tiling.large_map_package import (  # noqa: E402
     stage_large_map_package,
     validate_staged_package,
 )
+from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map  # noqa: E402
 
-PINNED_XODR = (
-    REPO_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "candidate"
-    / "ingolstadt_perception_map_of_record_20260905_202847.xodr"
-)
-PINNED_XODR_SHA256 = "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+# Resolve pin through the C13 registry instead of hardcoding — prevents
+# stale path/sha256 when the map-of-record is re-promoted.
+_pinned = verify_pinned_map("auto_map_of_record")
+PINNED_XODR = Path(_pinned["path"])
+PINNED_XODR_SHA256 = _pinned["sha256"]
 MAP_NAME = "Ingolstadt"
 TILE_SIZE_M = 1000.0
 
