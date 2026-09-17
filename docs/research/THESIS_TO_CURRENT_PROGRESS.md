@@ -9,7 +9,7 @@ is the authoritative source if this table and the code ever disagree — verify 
 | RQ | Thesis baseline | Current state | What changed |
 |----|-----------------|----------------|---------------|
 | RQ1 — Determinism | Byte-level nondeterminism with stable structural/topological signatures under fixed inputs; thesis did not fully isolate the byte-level source. | AUTHORITATIVE for structural repeatability and raw byte non-repeatability; BOUNDED for timestamp-normalized byte equality. Three repeated Osm2Odr outputs differ at raw hash level and preserve the same road/junction/length signature; portable committed fixtures cover timestamp-only normalization in CI, while large local artifacts remain optional governed integration evidence. | Post-thesis root-causing (`C15_RQ4_DR`) and normalized-hash tests support timestamp metadata as the observed byte-level source. Do **not** claim exhaustive source isolation until the large-artifact evidence is regenerated and available after a clean clone. |
-| RQ2 — Structural domain gap | Whole-map comparison only; a delivered discrete-Fréchet number computed on an uncropped, misaligned network | BOUNDED, with a corrected **local** (manual-map-footprint) comparison as the primary result: lane-width gap is small and the maps agree; curvature/road-length ratios show a real completeness gap (~2.7-3.8x under a convex-hull footprint, revised down from an earlier 4.5-6x bbox-footprint estimate); building density is now a genuine in-footprint comparison instead of force-excluded. A recomputed local Fréchet distance is ~30-50x smaller than the thesis's original whole-network number. **Re-verified 2026-09-17 against the current map-of-record pin (see note below): the ratio holds, 2.68x road length / 3.78x junctions / 3.56x road count (hull).** | `C14_RQ1_STRUCTURAL_GAP` + `C26` local-registration work; closes thesis future-work item #14 (Fréchet distance) with a corrected, scope-appropriate methodology. |
+| RQ2 — Structural domain gap | Whole-map comparison only; a delivered discrete-Fréchet number computed on an uncropped, misaligned network | BOUNDED, with a corrected **local** (manual-map-footprint) comparison as the primary result: lane-width gap is small and the maps agree; curvature/road-length ratios show a real completeness gap (~2.7-3.8x under a convex-hull footprint, revised down from an earlier 4.5-6x bbox-footprint estimate); building density is now a genuine in-footprint comparison instead of force-excluded. A recomputed local Fréchet distance is ~30-50x smaller than the thesis's original whole-network number. **Re-verified 2026-09-17 against the current map-of-record pin (see note below): the ratio holds, 2.68x road length / 3.78x junctions / 3.56x road count (hull).** **The local Fréchet distance itself was separately re-verified 2026-09-17 against the same current pin: mean 58.18m / median 36.13m / p90 140.48m, 894 matched pairs (was mean 55.28m / median 35.26m / p90 128.01m, 895 pairs against a 6+-promotion-stale pin — see the second 2026-09-17 note below).** | `C14_RQ1_STRUCTURAL_GAP` + `C26` local-registration work; closes thesis future-work item #14 (Fréchet distance) with a corrected, scope-appropriate methodology. |
 | RQ3 — Perceptual domain gap | Direct generated-vs-manual paired perceptual measurement was NOT completed. Generated-map capture failed at the CARLA runtime boundary; Town10HD validated only the sensor-rig implementation. | `DEFERRED_RUNTIME` — no generated/manual paired Ingolstadt evidence exists. | No scientific upgrade. The blocker is now precisely characterized: a live CARLA server never becomes RPC-responsive, confirmed independent of map choice and rendering backend (`-nullrhi` isolation) and independent of the GPU driver (a chronic TDR watchdog fault was found and fixed separately, but the RPC hang persists) — see `reports/post_audit_hardening/C20_TIER1_PROBE_20260821/` and related C20 reports. |
 | RQ4 — Structural variability / latent representation | The thesis fixed GNN representation collapse using NT-Xent and obtained statistically supported latent separation, including a K=1000 permutation test with p<0.001. | AUTHORITATIVE extension: a 5-seed GNN ensemble trained on the union of both maps' road-network graphs reports cosine_distance mean 0.6434 (95% bootstrap CI [0.616, 0.676]), CI excludes zero across all 5 seeds. The 95% CI is a bootstrap over only **n=5 seeds** (fragile tails — read as indicative; the thesis's K=1000 permutation p<0.001 remains the *primary* statistical support), and the metric is an in-sample union-domain latent-separation **diagnostic**, not held-out accuracy or transfer (see `reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/C21_STATISTICAL_PROVENANCE.md`). Explicit domain-randomization wiring is confirmed, but governed natural-vs-explicit DR experiments remain a separate extension. | The new contribution is the post-thesis multi-seed union-domain robustness layer (`C18_GNN_LATENT_GAP` → `C21_GNN_AUTHORITATIVE`), not the entire RQ4 result. The numbers changed materially on 2026-09-01 after fixing a graph-construction bug (lane-link edges were resolving to their own lane section instead of the successor's, making ~99.8% of training edges self-loops). |
 | RQ5 — Generalization and transfer | No downstream model-transfer experiment was completed; the question remained deferred. | `DEFERRED_RUNTIME` for RQ5(a) generated-train/manual-test transfer because it depends on valid RQ3 datasets. `DEFERRED_EXTERNAL_DATA` for RQ5(b) because no real-world Ingolstadt dataset exists on this machine. | No scientific upgrade. Unlabeled distribution shift/CORAL/MMD protocol checks are not model-generalization accuracy, and no manual-target training result may be relabeled as generated-to-manual transfer. |
@@ -134,6 +134,39 @@ bugs is not the code path that produces this number. If those specific fixes are
 move the RQ2 local number, that would require porting/reusing them inside
 `local_registration.py`, which was not attempted here (out of scope for a re-verification pass —
 would be a methodology change, not a re-run).
+
+## 2026-09-17 update — RQ2 local Fréchet-distance number (thesis item #14) re-verified against the current pin
+
+`reports/post_audit_hardening/THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md`'s headline figures
+(mean 55.28m / median 35.26m / p90 128.01m, 895 matched pairs) were computed as a one-off
+invocation against the map-of-record pin current on 2026-08-27 (`744757f3...`) — no dedicated,
+re-runnable script for it survived in git history, unlike `scripts/regen_local_registration.py`
+(fixed earlier in this same 2026-09-17 pass, see the note directly above). By 2026-09-17 that pin
+was 6+ promotions stale.
+
+New script `scripts/regen_frechet_distance.py` resolves the auto-side XODR through the same C13
+pin registry (`verify_pinned_map("auto_map_of_record")`) and calls
+`ultimate_pipeline.domain_gap.frechet_gap.compute_frechet_gap` directly (no math
+reimplemented — that module already had its own 12-test TDD suite plus this script's own thin
+wrapper is now covered too, `tests/unit/test_frechet_gap.py`). Run against the current pin
+(`ingolstadt_perception_map_of_record_20260916_232831.xodr`, sha256 `370abbbbb3...`) vs. the
+unchanged manual reference (`Grid0828.xodr`); output at
+`reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/frechet_distance.json`.
+
+**Result: mean 58.18m, median 36.13m, p90 140.48m, 894 matched pairs (hull footprint)** — close
+to but not identical to the stale figures (mean +5%, median +2%, p90 +10%, one fewer matched
+pair), reported as actually computed rather than adjusted toward the old numbers. This is
+consistent with the same-day RQ2 hull-footprint re-verification directly above (ratios "held,
+effectively unchanged" under the regenerated map) and with the module's own cross-check logic:
+cropped-auto-road-count / manual-road-count = 3,536 / 993 ≈ 3.56x, matching the RQ1 hull finding
+of ~3.561x reported in the same-day `local_registration.json` re-run. The same **"NOT exercised
+by this number"** caveat as the hull-footprint re-verification applies: `frechet_gap.py`, like
+`local_registration.py`, does not import `GeoAligner` or `CurvatureGap`, so this confirms
+stability under the regenerated **map**, not anything about those two modules' bug fixes.
+
+`THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md` itself is marked superseded at its top (see
+`docs/research/STALE_ARTIFACT_POINTERS.md` for the full pointer); its methodology description
+remains accurate, only its headline numbers are stale.
 
 ## Infrastructure changes not tied to a specific RQ
 

@@ -1,3 +1,13 @@
+> **2026-09-17: headline numbers superseded.** The map-of-record pin used below
+> (`744757f3...`) is 6+ promotions stale as of 2026-09-17 (current pin `370abbbbb3...`). The
+> methodology description in this document is still accurate; the specific mean/median/p90
+> figures are not. Re-run against the current pin via the new, re-runnable
+> `scripts/regen_frechet_distance.py`; result at
+> `reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/frechet_distance.json`: mean **58.18m**
+> / median **36.13m** / p90 **140.48m**, **894** matched pairs (hull footprint) — see
+> `docs/research/STALE_ARTIFACT_POINTERS.md` and the 2026-09-17 update in
+> `docs/research/THESIS_TO_CURRENT_PROGRESS.md`'s RQ2 row for details.
+
 # Thesis future-work #14 addressed — Fréchet distance recomputed against the current, correct methodology
 
 ## What the thesis left open
