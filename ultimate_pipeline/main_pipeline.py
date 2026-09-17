@@ -1639,6 +1639,7 @@ if str(_repo_root) not in sys.path:
             _configure_windows_encoding()
             _preflight_import_sanity()
             self._mark_stage("start")
+            self._validate_stage_capability_contract()
             self._run_internal()
             try:
                 from ultimate_pipeline.quality.pipeline_health_summary import (
@@ -2827,6 +2828,57 @@ if str(_repo_root) not in sys.path:
         else:
             print(f"⚠️ Continuity stats NOT stable across runs → {out_json}")
             self.vreport.add("continuity_stability", "stable", False)
+
+    def _validate_stage_capability_contract(self) -> None:
+        """Fail-closed pre-flight check of the declared stage capability
+        contract (2026-09-17, P0-K/P0-L follow-on).
+
+        Validates ``CURRENT_PIPELINE_STAGE_SEQUENCE`` -- an honest, literal
+        mirror of this method's own ``_mark_stage(...)`` call order below
+        -- against ``ultimate_pipeline.contracts.stage_capabilities``'s
+        generic capability contract (a stage's declared ``requires`` must
+        already be satisfied by an earlier stage's ``provides``).
+
+        This is additive and does NOT perform the full P0-L structural-
+        freeze reorder: the declared sequence today only asserts what is
+        already true of the code (e.g. 'lanes' and 'final_integrity'
+        requiring frozen geometry, mirroring the existing ad hoc
+        ``_assert_geometry_frozen`` runtime check), so this call is a
+        no-op guard today -- not a behavior change. It exists so that any
+        FUTURE change to stage order or declared capabilities (in either
+        this method or stage_capabilities.py) that reintroduces a
+        misordering is caught here, fail-closed, instead of silently
+        shipping. See ultimate_pipeline/tests/unit/
+        test_stage_capability_contract.py for the proof that this
+        mechanism would have caught the original audit finding (Stage 4
+        enrichment writing position-dependent semantics before geometry
+        freeze / hygiene) had Stage 4 honestly declared that dependency.
+
+        Escape hatch: UP_SKIP_STAGE_CAPABILITY_CONTRACT=1 (should never be
+        needed while the declared sequence matches reality; kept only for
+        symmetry with this codebase's other fail-closed startup gates).
+        """
+        if os.getenv("UP_SKIP_STAGE_CAPABILITY_CONTRACT", "").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        ):
+            print(
+                "⚠️ [STAGE-CONTRACT] Skipped via UP_SKIP_STAGE_CAPABILITY_CONTRACT=1."
+            )
+            return
+
+        from ultimate_pipeline.contracts.stage_capabilities import (
+            CURRENT_PIPELINE_STAGE_SEQUENCE,
+            assert_stage_sequence_valid,
+        )
+
+        assert_stage_sequence_valid(CURRENT_PIPELINE_STAGE_SEQUENCE)
+        print(
+            "✅ [STAGE-CONTRACT] Declared stage capability sequence "
+            f"({len(CURRENT_PIPELINE_STAGE_SEQUENCE)} stages) validated clean."
+        )
 
     def _assert_geometry_frozen(self, root: ET.Element, where: str) -> None:
         header = root.find("header")
