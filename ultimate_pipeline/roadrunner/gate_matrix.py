@@ -69,6 +69,20 @@ DEFAULT_GATE_MATRIX: Mapping[str, GateMatrixProfile] = {
         required_gates=frozenset({"source_integrity", "artifact_hashes"}),
         optional_gates=frozenset({"semantic_diff", "mesh_xodr_alignment", "visual_mesh_quality"}),
     ),
+    "governed_map_release": GateMatrixProfile(
+        profile="governed_map_release",
+        required_gates=frozenset(
+            {
+                "artifact_hashes",
+                "artifact_transaction",
+                "capability_probe",
+                "map_identity",
+                "semantic_diff",
+                "source_integrity",
+            }
+        ),
+        optional_gates=frozenset({"mesh_xodr_alignment", "visual_mesh_quality"}),
+    ),
     "debug": GateMatrixProfile(
         profile="debug",
         required_gates=frozenset({"artifact_hashes"}),
