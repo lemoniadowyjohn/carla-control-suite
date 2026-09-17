@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from itertools import product
+from itertools import combinations
 
 import pytest
 
@@ -161,13 +161,11 @@ class TestCrossComparison:
     )
     @pytest.mark.parametrize(
         "pair",
-        list(product(NON_BUGGY_ADAPTERS, NON_BUGGY_ADAPTERS)),
+        list(combinations(NON_BUGGY_ADAPTERS, 2)),
     )
     def test_adjacent_adapters_agree(self, pair, fixture_index):
         fx, ss_list = PAIRWISE_FIXTURES[fixture_index]
         a, b = pair
-        if a is b:
-            pytest.skip("same adapter")
         for s in ss_list:
             _check_pairwise_agreement(a, b, fx, s)
 
