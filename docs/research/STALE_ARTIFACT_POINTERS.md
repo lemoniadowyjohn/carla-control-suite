@@ -47,6 +47,23 @@ in `docs/research/THESIS_TO_CURRENT_PROGRESS.md`'s RQ2 row for the full comparis
 The original report's methodology description (crop/reproject/match/resample/Frechet-DP steps)
 remains accurate; only its headline numbers are stale.
 
+## Superseded: `reports/post_audit_hardening/THESIS_VS_CURRENT_STATE_COMPARISON_20260827.md`
+
+That report's domain-gap figures (e.g. curvature gap "0.093") were computed against
+the map-of-record pin current on 2026-08-27 and have not been updated since. By
+2026-09-17 the pin had moved 6+ promotions past that (current pin `370abbbbb3...`),
+and the RQ2 row in `docs/research/THESIS_TO_CURRENT_PROGRESS.md` now reflects
+revised figures (~2.7-3.8x under convex-hull footprint, revised down from an earlier
+4.5-6x bbox-footprint estimate).
+
+That report is **superseded** by:
+
+- **`docs/research/THESIS_TO_CURRENT_PROGRESS.md`** — the current source of truth
+  for thesis-vs-current comparisons, updated 2026-09-17 against the current map-of-record pin.
+
+The original report's RQ-numbering analysis and structural observations remain
+historically useful context; only its headline metric figures are stale.
+
 ## Related context
 
 - `docs/research/THESIS_TO_CURRENT_PROGRESS.md` — tracks which whole-map runs are current.
