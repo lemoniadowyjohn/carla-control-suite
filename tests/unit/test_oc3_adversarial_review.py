@@ -70,15 +70,20 @@ def test_stale_artifact_not_selected_by_mtime():
         )
 
 def test_map_sha_mismatch_is_fail():
-    # Simulate map SHA check
+    """Verify the current pinned map resolves and a wrong SHA is detected."""
     import hashlib
-    p = Path("campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr")
+    import pytest
+    from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
+
+    pinned = verify_pinned_map("auto_map_of_record")
+    p = Path(pinned["path"])
     if not p.exists():
-        import pytest
-        pytest.skip("map not found")
-    expected = "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+        pytest.skip("pinned map file not found on disk")
+
+    expected = pinned["sha256"]
     actual = hashlib.sha256(p.read_bytes()).hexdigest()
-    assert actual == expected, "Map SHA should match expected"
-    # Test mismatch case: wrong SHA should be detected
+    assert actual == expected, "Map SHA should match registry pin"
+
+    # Test mismatch case: a deliberately wrong SHA must not match
     wrong = "0000000000000000000000000000000000000000000000000000000000000000"
     assert wrong != expected

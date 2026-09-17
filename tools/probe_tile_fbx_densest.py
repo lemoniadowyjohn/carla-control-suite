@@ -34,16 +34,15 @@ from ultimate_pipeline.tiling.tile_fbx_generator import (  # noqa: E402
     generate_tile_fbx,
     load_buildings_from_overpass_json,
 )
+from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map  # noqa: E402
 
 # Pinned artifacts (DESIGN.md §0; hashes verified there).
 PINNED_BUILDINGS = (
     REPO_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "source"
     / "ingolstadt_buildings_overpass.json"
 )
-PINNED_XODR = (
-    REPO_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "candidate"
-    / "ingolstadt_perception_map_of_record_20260905_202847.xodr"
-)
+_pinned = verify_pinned_map("auto_map_of_record")
+PINNED_XODR = Path(_pinned["path"])
 # XODR header offset (global tmerc metres) -> XODR-local frame (map_stats.json).
 HEADER_OFFSET_XY = (832671.676, 5458671.104)
 MAP_NAME = "Ingolstadt"

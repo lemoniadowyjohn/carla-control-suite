@@ -8,8 +8,9 @@ from collections import defaultdict
 
 # Use geometry kernel for pose calculation
 from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s, endpoint
+from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
 
-MAP_PATH = Path("campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr")
+MAP_PATH = Path(verify_pinned_map("auto_map_of_record")["path"])
 
 def load_map():
     tree = ET.parse(MAP_PATH)
