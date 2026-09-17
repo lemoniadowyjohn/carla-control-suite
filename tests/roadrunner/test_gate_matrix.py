@@ -128,6 +128,30 @@ class TestEvaluateGateMatrix:
         decision = evaluate_gate_matrix("scenario_augmentation", gates, profiles=DEFAULT_GATE_MATRIX)
         assert decision.release_allowed is True
 
+    def test_governed_map_release_requires_identity_capability_and_transaction(self) -> None:
+        gates = [
+            _gate("source_integrity", GateStatus.PASS),
+            _gate("semantic_diff", GateStatus.PASS),
+            _gate("artifact_hashes", GateStatus.PASS),
+            _gate("map_identity", GateStatus.PASS),
+            _gate("capability_probe", GateStatus.PASS),
+            _gate("artifact_transaction", GateStatus.PASS),
+        ]
+        decision = evaluate_gate_matrix("governed_map_release", gates, profiles=DEFAULT_GATE_MATRIX)
+        assert decision.release_allowed is True
+
+    def test_governed_map_release_blocks_missing_map_identity(self) -> None:
+        gates = [
+            _gate("source_integrity", GateStatus.PASS),
+            _gate("semantic_diff", GateStatus.PASS),
+            _gate("artifact_hashes", GateStatus.PASS),
+            _gate("capability_probe", GateStatus.PASS),
+            _gate("artifact_transaction", GateStatus.PASS),
+        ]
+        decision = evaluate_gate_matrix("governed_map_release", gates, profiles=DEFAULT_GATE_MATRIX)
+        assert decision.release_allowed is False
+        assert "map_identity" in decision.missing_required_gates
+
 
 class TestAssertReleaseAllowed:
     def test_passes_when_allowed(self) -> None:

@@ -13,6 +13,11 @@ from .gate_matrix import (
     evaluate_gate_matrix,
 )
 from .manifest import artifact_fingerprints, build_run_manifest
+from .capability_probe import (
+    CapabilityProbeReport,
+    CapabilityProbeResult,
+    run_capability_probe,
+)
 from .semantic_manifest import compare_xodr_files, compare_xodr_semantic
 from .models import (
     ArtifactRecord,
@@ -47,6 +52,8 @@ __all__ = [
     "ArtifactRole",
     "AuthorityClass",
     "CapabilityResult",
+    "CapabilityProbeReport",
+    "CapabilityProbeResult",
     "DEFAULT_GATE_MATRIX",
     "DEFAULT_GATE_MATRIX_MODEL",
     "ExportOptions",
@@ -93,5 +100,6 @@ __all__ = [
     "extract_mesh_bbox_points",
     "extract_xodr_points",
     "governed_xodr_source",
+    "run_capability_probe",
     "validate_sha256",
 ]
