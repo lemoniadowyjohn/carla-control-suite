@@ -46,10 +46,68 @@ class TestGeometryValidatorXMLMutation:
         assert report["roads"]["1"]["status"] == "ok"
 
     def test_zero_length_report_status(self):
+        """A road whose ONLY geometry is zero-length must not end up with an
+        empty <planView> -- the single segment is repaired to the minimum
+        valid length instead of being deleted outright (see
+        test_sole_zero_length_geometry_is_repaired_not_deleted for the XML
+        assertion). The report status reflects a successful repair, not a
+        deletion.
+        """
         geoms = [(0, 0.0001, 0)]
         root, _ = _make_road(1, geoms)
         report = GeometryValidator.validate(root)
-        assert report["roads"]["1"]["status"] == "all_zero_length_removed"
+        assert report["roads"]["1"]["status"] == "ok"
+        assert any(
+            issue.startswith("repaired_degenerate_planview_to_min_length_at_s=")
+            for issue in report["roads"]["1"]["issues"]
+        )
+
+    def test_sole_zero_length_geometry_is_repaired_not_deleted(self):
+        """Regression test for a real production crash: a ~0.1m junction
+        connector road (SUMO ':132_1', XODR id 54601, junction 117) whose
+        single planView <geometry> had length=0.00000008 (effectively zero)
+        was DELETED entirely by GeometryValidator, leaving <planView> with
+        zero <geometry> children. That empty planView later crashed
+        xodr_junction_links.py::_road_endpoints() with
+        "road id=54601 has empty planView" during the junction link
+        integrity gate. planView must never be left empty; the degenerate
+        geometry must be repaired (length bumped to the minimum valid
+        segment length) and kept in the XML instead.
+        """
+        root = ET.Element("OpenDRIVE")
+        road = ET.SubElement(
+            root, "road", name=":132_1", id="54601", junction="117", length="0.10000000"
+        )
+        plan = ET.SubElement(road, "planView")
+        geom = ET.SubElement(
+            plan, "geometry", s="0.00000000", x="842522.97377508",
+            y="5461822.76775999", hdg="3.02938984", length="0.00000008",
+        )
+        ET.SubElement(geom, "line")
+
+        report = GeometryValidator.validate(root)
+
+        geoms_after = plan.findall("geometry")
+        assert len(geoms_after) == 1, (
+            f"planView must never end up empty, got {len(geoms_after)} geometries"
+        )
+        assert float(geoms_after[0].get("length")) >= GeometryValidator.MIN_SEG_LEN
+        assert report["roads"]["54601"]["status"] == "ok"
+
+    def test_multiple_degenerate_geometries_repair_one_remove_rest(self):
+        """When a road has several zero-length geometries and no real ones,
+        exactly one survives (repaired to the minimum length) and the
+        others are removed -- planView still ends up with real content, not
+        duplicated near-zero-length stubs.
+        """
+        geoms = [(0, 0.0, 0), (0.0001, 0.0, 0), (0.0002, -1.0, 0)]
+        root, road = _make_road(1, geoms)
+        report = GeometryValidator.validate(root)
+        plan = road.find("./planView")
+        geoms_after = plan.findall("geometry")
+        assert len(geoms_after) == 1
+        assert float(geoms_after[0].get("length")) >= GeometryValidator.MIN_SEG_LEN
+        assert report["roads"]["1"]["status"] == "ok"
 
     def test_xml_reorder_not_just_list_sort(self):
         geoms = [(30, 5, 0), (10, 5, 0), (20, 5, 0)]
