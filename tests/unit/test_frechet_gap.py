@@ -26,6 +26,7 @@ from ultimate_pipeline.domain_gap.frechet_gap import (
     resample_polyline_at_spacing,
     compute_frechet_gap,
 )
+from scripts.regen_frechet_distance import build_output
 
 
 # ---------------------------------------------------------------------------
@@ -185,3 +186,35 @@ def test_compute_frechet_gap_reports_zero_matches_when_nothing_within_threshold(
         spacing_m=5.0, match_threshold_m=10.0, footprint="bbox",
     )
     assert result["matched_pair_count"] == 0
+
+
+# ---------------------------------------------------------------------------
+# scripts/regen_frechet_distance.build_output -- the thin resolve+wrap+persist layer that
+# THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md's numbers went stale for lack of (no script for
+# it survived in git history). Reuses the same synthetic fixture shape as the
+# compute_frechet_gap tests above; this only checks the wrapping (result + source_files
+# provenance), not the Frechet math itself (already covered above).
+# ---------------------------------------------------------------------------
+
+def test_build_output_wraps_result_with_source_file_provenance(tmp_path):
+    manual_root = _xodr(
+        _road("1", x0=0.0, y0=0.0, length=20.0),
+        _road("2", x0=0.0, y0=100.0, length=20.0),
+    )
+    auto_root = _xodr(_road("101", x0=0.0, y0=3.0, length=20.0))
+
+    manual_path = tmp_path / "manual.xodr"
+    auto_path = tmp_path / "auto.xodr"
+    ET.ElementTree(manual_root).write(str(manual_path), encoding="utf-8", xml_declaration=True)
+    ET.ElementTree(auto_root).write(str(auto_path), encoding="utf-8", xml_declaration=True)
+
+    out = build_output(str(auto_path), str(manual_path), footprint="bbox")
+
+    assert out["result"]["matched_pair_count"] == 1
+    assert out["result"]["mean_m"] == pytest.approx(3.0, abs=1e-3)
+    assert out["source_files"]["auto_xodr"] == str(auto_path)
+    assert out["source_files"]["manual_xodr"] == str(manual_path)
+    # sha256 provenance must be real (64 hex chars), not a placeholder.
+    assert len(out["source_files"]["auto_xodr_sha256"]) == 64
+    assert len(out["source_files"]["manual_xodr_sha256"]) == 64
+    int(out["source_files"]["auto_xodr_sha256"], 16)  # raises if not valid hex
