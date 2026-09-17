@@ -758,7 +758,19 @@ def generate_tile_fbx(
         result.roundtrip_ok = None
         result.roundtrip_verdict = "SKIPPED"
 
-    result.status = "ok"
+    # Fail closed on a real roundtrip integrity failure (comprehensive gap
+    # audit 20260915, AREA-020: "Roundtrip False does not produce FAIL").
+    # roundtrip_ok is tri-state: True (checked, matched) and None (skipped --
+    # no Blender binary available) both still mean "ok" for this tile's FBX
+    # generation; only an explicit False (checked, did NOT match) is a real
+    # failure and must gate the status, or every downstream consumer that
+    # keys off status == "ok" (e.g. scripts/cook_full_grid_tiles.py's exit
+    # code) silently treats a failed integrity check as a success.
+    if result.roundtrip_ok is False:
+        result.status = "failed"
+        result.reason = f"FBX roundtrip integrity check failed: {result.roundtrip_verdict}"
+    else:
+        result.status = "ok"
     result.total_sec = round(time.time() - started, 3)
 
     # 5. hash-bound manifest sidecar
