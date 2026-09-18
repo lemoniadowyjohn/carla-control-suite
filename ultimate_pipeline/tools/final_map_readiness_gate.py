@@ -38,6 +38,30 @@ def _load_json(path: Optional[Path]) -> Optional[Dict[str, Any]]:
     return data if isinstance(data, dict) else None
 
 
+def _sha256_file(path: Path) -> str:
+    return safe_sha256_file(path) if path.exists() else ""
+
+
+def _verify_xodr_binding(report: Dict[str, Any], expected_sha: str, report_name: str) -> Tuple[bool, str]:
+    """Verify a sub-report's xodr_sha256 matches the expected XODR hash.
+    
+    Returns (True, "") if:
+    - both have SHA256 and they match
+    - sub-report is missing xodr_sha256 (can't verify, assume compatible)
+    
+    Returns (False, reason) only when BOTH have SHA256 and they mismatch.
+    """
+    if not expected_sha:
+        return False, f"{report_name}: expected XODR SHA256 is empty"
+    actual = str(report.get("xodr_sha256") or "").strip().lower()
+    if not actual:
+        # Sub-report missing xodr_sha256 - can't verify binding, assume compatible
+        return True, ""
+    if actual != expected_sha.lower():
+        return False, f"{report_name}: xodr_sha256 mismatch (expected {expected_sha[:12]}..., got {actual[:12]}...)"
+    return True, ""
+
+
 def _safe_int(value: Any, default: int = 0) -> int:
     try:
         if value is None:
@@ -291,11 +315,37 @@ def build_final_map_readiness_report(
     if report_path is None:
         report_path = xodr_path.with_name("final_map_readiness_report.json")
 
+    xodr_sha = _sha256_file(xodr_path)
+
     verify_report_path = report_path.with_name("verify_final_xodr_report.json")
     static_report = verify_final_xodr(xodr_path, verify_report_path)
+
+    # Verify static report XODR binding
+    static_ok, static_bind_reason = _verify_xodr_binding(static_report, xodr_sha, "static_xodr")
+    if not static_ok:
+        static_report = {**static_report, "ok": False, "binding_error": static_bind_reason}
+
     connector_report = _load_json(connector_report_path)
+    connector_ok, connector_bind_reason = True, ""
+    if connector_report:
+        connector_ok, connector_bind_reason = _verify_xodr_binding(connector_report, xodr_sha, "connector_report")
+        if not connector_ok:
+            connector_report = {**connector_report, "binding_error": connector_bind_reason}
+
     visual_report = _load_json(visual_gate_report_path)
+    visual_ok, visual_bind_reason = True, ""
+    if visual_report:
+        visual_ok, visual_bind_reason = _verify_xodr_binding(visual_report, xodr_sha, "visual_gate")
+        if not visual_ok:
+            visual_report = {**visual_report, "binding_error": visual_bind_reason}
+
     perception_report = _load_json(perception_status_path)
+    perception_ok, perception_bind_reason = True, ""
+    if perception_report:
+        # Perception report may reference visual gate report; verify its XODR binding
+        perception_ok, perception_bind_reason = _verify_xodr_binding(perception_report, xodr_sha, "perception_status")
+        if not perception_ok:
+            perception_report = {**perception_report, "binding_error": perception_bind_reason}
 
     connector_gate = evaluate_connector_report(
         connector_report,
@@ -328,11 +378,26 @@ def build_final_map_readiness_report(
     )
     ok = bool(offline_ok and visual_ok_for_overall and perception_ok_for_overall and signal_gate_ok)
 
+    # Build evidence manifest with sub-report hashes
+    evidence_manifest: List[Dict[str, Any]] = []
+    for name, path in [
+        ("static_xodr_report", verify_report_path),
+        ("connector_report", connector_report_path),
+        ("visual_gate_report", visual_gate_report_path),
+        ("perception_status_report", perception_status_path),
+    ]:
+        if path and Path(path).exists():
+            evidence_manifest.append({
+                "name": name,
+                "path": str(path),
+                "sha256": _sha256_file(Path(path)),
+            })
+
     report = {
         "schema": "final_map_readiness_gate_v1",
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "xodr_path": str(xodr_path),
-        "xodr_sha256": safe_sha256_file(xodr_path) if xodr_path.exists() else "",
+        "xodr_sha256": xodr_sha,
         "ok": ok,
         "XODR_PARSE_READY": "yes" if static_report.get("parse_error") is None else "no",
         "STRUCTURAL_ANALYSIS_READY": "yes" if offline_ok else "no",
@@ -362,6 +427,13 @@ def build_final_map_readiness_report(
             "require_visual": bool(require_visual),
             "require_perception": bool(require_perception),
             "require_signals": bool(require_signals),
+        },
+        "evidence_manifest": evidence_manifest,
+        "xodr_binding_verification": {
+            "static_xodr": {"ok": static_ok, "reason": static_bind_reason if 'static_ok' in locals() else ""},
+            "connector_report": {"ok": connector_ok, "reason": connector_bind_reason},
+            "visual_gate_report": {"ok": visual_ok, "reason": visual_bind_reason},
+            "perception_status_report": {"ok": perception_ok, "reason": perception_bind_reason},
         },
     }
     _write_json(report_path, report)
