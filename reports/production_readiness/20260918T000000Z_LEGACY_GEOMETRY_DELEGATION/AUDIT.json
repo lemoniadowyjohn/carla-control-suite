@@ -1,0 +1,70 @@
+{
+  "run_id": "20260918T000000Z_LEGACY_GEOMETRY_DELEGATION",
+  "scope": "Legacy GeometryCalculator placeholder removal and canonical kernel delegation",
+  "timestamp": "2026-09-18T00:00:00Z",
+  "consumers": [
+    {
+      "symbol": "GeometryCalculator._integrate_spiral",
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "line": 152,
+      "status": "delegated_to_kernel",
+      "resolution": "Now calls opendrive_geometry_kernel.endpoint() for RK4 clothoid integration. Was: straight-line placeholder.",
+      "risk": "low",
+      "callers": [
+        "ultimate_pipeline/geometry/geometry_math.py:GeometryCalculator.get_endpoint (internal dispatch)"
+      ]
+    },
+    {
+      "symbol": "GeometryCalculator._integrate_parampoly3",
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "line": 159,
+      "status": "delegated_to_kernel",
+      "resolution": "Now calls opendrive_geometry_kernel.endpoint() for exact cubic evaluation. Was: straight-line placeholder.",
+      "risk": "low",
+      "callers": [
+        "ultimate_pipeline/geometry/geometry_math.py:GeometryCalculator.get_endpoint (internal dispatch)"
+      ]
+    },
+    {
+      "symbol": "GeometryCalculator.get_endpoint",
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "line": 128,
+      "status": "preserved",
+      "resolution": "Public API preserved. Line and arc use original closed-form. Spiral and paramPoly3 now delegate to kernel.",
+      "risk": "low",
+      "callers": [
+        "opendrive_geometry/cross_compare_implementations.py:137 (reference)",
+        "tests/opendrive_geometry/adapters.py:75 (reference)",
+        "submission/infrastructure/ultimate_pipeline/geometry/geometry_math.py (duplicate, not modified)"
+      ]
+    },
+    {
+      "symbol": "sample_parampoly3_points",
+      "file": "ultimate_pipeline/geometry/geometry_math.py",
+      "line": 94,
+      "status": "unchanged",
+      "resolution": "Already a standalone implementation. Not part of GeometryCalculator. Multiple consumers verified unchanged.",
+      "risk": "none",
+      "callers": [
+        "ultimate_pipeline/topology/topology_repair.py:76",
+        "ultimate_pipeline/domain_gap/elevation_gap.py:174",
+        "ultimate_pipeline/domain_gap/frechet_gap.py:170",
+        "ultimate_pipeline/domain_gap/geo_alignment.py:61",
+        "ultimate_pipeline/tiling/tile_equivalence.py:118",
+        "ultimate_pipeline/diagnostics/xodr_cropper_gps.py:209",
+        "ultimate_pipeline/tests/unit/test_geometry_hardening.py:12,26,33",
+        "submission/infrastructure/ultimate_pipeline/diagnostics/xodr_cropper_gps.py:209",
+        "submission/infrastructure/ultimate_pipeline/domain_gap/geo_alignment.py:61",
+        "submission/infrastructure/ultimate_pipeline/domain_gap/elevation_gap.py:174"
+      ]
+    }
+  ],
+  "summary": {
+    "total_consumers_found": 4,
+    "delegated": 2,
+    "preserved_unchanged": 2,
+    "removed": 0,
+    "backward_compatible": true,
+    "tests_added": 10
+  }
+}
