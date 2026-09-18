@@ -379,6 +379,44 @@ def _road_driving_lengths(root: ET.Element) -> list[tuple[str, float]]:
     return sorted(values, key=lambda value: (-value[1], _natural_id(value[0])))
 
 
+def _road_lane_ids(road: ET.Element) -> set[str]:
+    """All explicit left/right lane ids of a road (the only linkable ids).
+
+    OpenDRIVE laneLink ``from``/``to`` map driving-lane ids on the incoming
+    and connecting roads; the center lane (``id=0``, type none) is never a
+    legal link target. An empty return means the tile cannot resolve any
+    laneLink against this road.
+    """
+    lanes_elem = road.find("lanes")
+    if lanes_elem is None:
+        return set()
+    ids: set[str] = set()
+    for section in lanes_elem.findall("laneSection"):
+        for side in ("left", "right"):
+            side_elem = section.find(side)
+            if side_elem is None:
+                continue
+            for lane in side_elem.findall("lane"):
+                lid = lane.get("id")
+                if lid is not None:
+                    ids.add(lid)
+    return ids
+
+
+def _tile_signal_ids(root: ET.Element) -> set[str]:
+    return {signal.get("id") for signal in root.findall(".//signal") if signal.get("id")}
+
+
+def _duplicate_ids(root: ET.Element, tag: str) -> list[str]:
+    counts: dict[str, int] = {}
+    for element in root.iter(tag):
+        element_id = (element.get("id") or "").strip()
+        if not element_id:
+            continue
+        counts[element_id] = counts.get(element_id, 0) + 1
+    return sorted(element_id for element_id, count in counts.items() if count > 1)
+
+
 def validate_runtime_tile(tile_path: Path | str) -> dict[str, Any]:
     """Validate the static standalone contract without importing CARLA."""
 
@@ -411,6 +449,53 @@ def validate_runtime_tile(tile_path: Path | str) -> dict[str, Any]:
                         {"junction_id": junction_id, "connection_id": connection.get("id", ""), "attribute": attribute, "road_id": road_id}
                     )
 
+    signal_ids = _tile_signal_ids(root)
+    dangling_controller_refs: list[dict[str, str]] = []
+    for controller in root.findall("controller"):
+        controller_id = controller.get("id", "")
+        for control in controller.findall("control"):
+            signal_id = (control.get("signalId") or "").strip()
+            if signal_id and signal_id not in signal_ids:
+                dangling_controller_refs.append(
+                    {"controller_id": controller_id, "signal_id": signal_id}
+                )
+
+    lanes_by_road = {
+        (road.get("id") or "").strip(): _road_lane_ids(road)
+        for road in root.findall("road")
+        if (road.get("id") or "").strip()
+    }
+    invalid_connection_lane_links: list[dict[str, Any]] = []
+    for junction in root.findall("junction"):
+        junction_id = junction.get("id", "")
+        for connection in junction.findall("connection"):
+            incoming = (connection.get("incomingRoad") or "").strip()
+            connecting = (connection.get("connectingRoad") or "").strip()
+            record: dict[str, Any] | None = None
+            for lane_link in connection.findall("laneLink"):
+                from_id = (lane_link.get("from") or "").strip()
+                to_id = (lane_link.get("to") or "").strip()
+                from_ok = not from_id or (incoming in lanes_by_road and from_id in lanes_by_road[incoming])
+                to_ok = not to_id or (connecting in lanes_by_road and to_id in lanes_by_road[connecting])
+                if from_ok and to_ok:
+                    continue
+                record = {
+                    "junction_id": junction_id,
+                    "connection_id": connection.get("id", ""),
+                    "incomingRoad": incoming,
+                    "connectingRoad": connecting,
+                    "from": from_id or "",
+                    "to": to_id or "",
+                }
+                break
+            if record is not None:
+                invalid_connection_lane_links.append(record)
+
+    duplicate_road_ids = _duplicate_ids(root, "road")
+    duplicate_junction_ids = _duplicate_ids(root, "junction")
+    duplicate_signal_ids = _duplicate_ids(root, "signal")
+    duplicated_ids = duplicate_road_ids + [e for e in duplicate_signal_ids if e not in duplicate_road_ids]
+
     driving_lengths = _road_driving_lengths(root)
     failures: list[str] = []
     if root.tag != "OpenDRIVE":
@@ -429,6 +514,12 @@ def validate_runtime_tile(tile_path: Path | str) -> dict[str, Any]:
         failures.append("dangling_junction_references")
     if dangling_connections:
         failures.append("dangling_junction_connections")
+    if dangling_controller_refs:
+        failures.append("dangling_controller_refs")
+    if invalid_connection_lane_links:
+        failures.append("invalid_connection_lane_links")
+    if duplicate_road_ids or duplicate_junction_ids:
+        failures.append("duplicate_element_ids")
 
     return {
         "status": "PASS" if not failures else "FAIL",
@@ -444,6 +535,21 @@ def validate_runtime_tile(tile_path: Path | str) -> dict[str, Any]:
             dangling_connections,
             key=lambda item: (_natural_id(item["junction_id"]), item["connection_id"], item["attribute"]),
         ),
+        "dangling_controller_refs": sorted(
+            dangling_controller_refs,
+            key=lambda item: (item["controller_id"], item["signal_id"]),
+        ),
+        "invalid_connection_lane_links": sorted(
+            invalid_connection_lane_links,
+            key=lambda item: (
+                _natural_id(item["junction_id"]),
+                item["connection_id"],
+                item["incomingRoad"],
+            ),
+        ),
+        "duplicate_road_ids": duplicate_road_ids,
+        "duplicate_junction_ids": duplicate_junction_ids,
+        "duplicate_signal_ids": [e for e in duplicated_ids if e in duplicate_signal_ids],
     }
 
 
