@@ -118,10 +118,25 @@ def sample_parampoly3_points(
 # 2. Geometry math: robust line/arc integration
 # ------------------------------------------------------------
 
+def _kernel_endpoint(geometry_element: ET.Element):
+    """Delegate to the canonical OpenDRIVE geometry kernel.
+
+    Returns the endpoint Pose from the kernel, transforming from local
+    (x0=0, y0=0, hdg=0) frame into the world frame given (x, y, hdg).
+    """
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint
+    return endpoint(geometry_element)
+
+
 class GeometryCalculator:
     """
     Robust integration for OpenDRIVE geometries.
-    Handles Lines and Arcs; spirals/poly3 approximated as lines for endpoints.
+
+    Line and arc use closed-form integration.  Spiral, poly3 and paramPoly3
+    delegate to the canonical ``opendrive_geometry_kernel`` implementation
+    (RK4 clothoid integration for spirals, exact cubic evaluation for
+    poly3/paramPoly3).  Placeholder straight-line approximations have been
+    removed.
     """
 
     @staticmethod
@@ -139,26 +154,33 @@ class GeometryCalculator:
             elif child.tag == "line":
                 return GeometryCalculator._integrate_line(x, y, hdg, length)
             elif child.tag == "spiral":
-                # Implementation needed
-                return GeometryCalculator._integrate_spiral(x, y, hdg, length, child)
-            elif child.tag == "poly3" or child.tag == "paramPoly3":
-                # Implementation needed
-                return GeometryCalculator._integrate_parampoly3(x, y, hdg, length, child)
-        
-        # Default to line if no known type found? Or fail? The requirement says fail closed.
+                return GeometryCalculator._integrate_spiral(x, y, hdg, length, geometry_element)
+            elif child.tag in ("poly3", "paramPoly3"):
+                return GeometryCalculator._integrate_parampoly3(x, y, hdg, length, geometry_element)
+
         raise ValueError(f"Unsupported geometry type: {geometry_element}")
 
     @staticmethod
-    def _integrate_spiral(x, y, hdg, length, geom):
-        # Placeholder for midpoint integration
-        # Needs actual spiral implementation
-        return x + length * math.cos(hdg), y + length * math.sin(hdg), hdg
+    def _integrate_spiral(x, y, hdg, length, geometry_element):
+        """RK4 clothoid integration via the canonical kernel."""
+        pose = _kernel_endpoint(geometry_element)
+        cos_h = math.cos(hdg)
+        sin_h = math.sin(hdg)
+        x_new = x + cos_h * pose.x - sin_h * pose.y
+        y_new = y + sin_h * pose.x + cos_h * pose.y
+        hdg_new = hdg + pose.heading
+        return x_new, y_new, hdg_new
 
     @staticmethod
-    def _integrate_parampoly3(x, y, hdg, length, geom):
-        # Placeholder for parampoly3 endpoint evaluation
-        # Needs actual parampoly3 integration
-        return x + length * math.cos(hdg), y + length * math.sin(hdg), hdg
+    def _integrate_parampoly3(x, y, hdg, length, geometry_element):
+        """Exact cubic evaluation via the canonical kernel."""
+        pose = _kernel_endpoint(geometry_element)
+        cos_h = math.cos(hdg)
+        sin_h = math.sin(hdg)
+        x_new = x + cos_h * pose.x - sin_h * pose.y
+        y_new = y + sin_h * pose.x + cos_h * pose.y
+        hdg_new = hdg + pose.heading
+        return x_new, y_new, hdg_new
 
     @staticmethod
     def _integrate_line(x, y, hdg, length):
@@ -172,7 +194,6 @@ class GeometryCalculator:
             return GeometryCalculator._integrate_line(x, y, hdg, length)
 
         hdg_new = hdg + length * curvature
-        # Standard OpenDRIVE arc integration:
         x_new = x + (math.sin(hdg_new) - math.sin(hdg)) / curvature
         y_new = y + (math.cos(hdg) - math.cos(hdg_new)) / curvature
         return x_new, y_new, hdg_new

@@ -12,10 +12,14 @@ import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import pytest
+
 from ultimate_pipeline.map_fixes.xodr_junction_links import (
+    _geom_end,
     patch_junction_links,
     patch_xodr_junction_links,
 )
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as kernel_endpoint
 
 
 def _write_xodr(path: Path, road_xml: str) -> None:
@@ -227,3 +231,120 @@ def test_patch_xodr_junction_links_alias_delegates(tmp_path):
         in_xodr, tmp_path / "out.xodr", tmp_path / "report.json"
     )
     assert report["added_junction_links"] == 1
+
+
+# ---------------------------------------------------------------------------
+# _geom_end must match the canonical kernel for every plan-view primitive,
+# not just line/paramPoly3. Before the fix, arc/spiral/poly3 final segments
+# fell through to `return x, y, hdg` (the segment's *start* pose), which
+# silently broke junction-link distance matching for any road ending in a
+# curve that wasn't a paramPoly3.
+# ---------------------------------------------------------------------------
+
+def _geom(tag: str, length: float = 10.0, x: float = 0.0, y: float = 0.0,
+          hdg: float = 0.0, **attrs) -> ET.Element:
+    g = ET.Element("geometry", {
+        "s": "0", "x": str(x), "y": str(y), "hdg": str(hdg), "length": str(length),
+    })
+    ET.SubElement(g, tag, {k: str(v) for k, v in attrs.items()})
+    return g
+
+
+def test_geom_end_line_matches_kernel():
+    g = _geom("line", length=10.0, x=1.0, y=2.0, hdg=0.3)
+    kp = kernel_endpoint(g)
+    assert _geom_end(g) == (kp.x, kp.y, kp.heading)
+
+
+def test_geom_end_arc_matches_kernel():
+    g = _geom("arc", length=10.0, curvature="0.1")
+    kp = kernel_endpoint(g)
+    got = _geom_end(g)
+    assert got[0] == pytest.approx(kp.x)
+    assert got[1] == pytest.approx(kp.y)
+    assert got[2] == pytest.approx(kp.heading)
+
+
+def test_geom_end_spiral_matches_kernel():
+    g = _geom("spiral", length=10.0, curvStart="0.0", curvEnd="0.1")
+    kp = kernel_endpoint(g)
+    got = _geom_end(g)
+    assert got[0] == pytest.approx(kp.x, abs=1e-6)
+    assert got[1] == pytest.approx(kp.y, abs=1e-6)
+    assert got[2] == pytest.approx(kp.heading, abs=1e-6)
+
+
+def test_geom_end_poly3_matches_kernel():
+    g = _geom("poly3", length=2.0, a=0, b=1, c=0, d=0)
+    kp = kernel_endpoint(g)
+    got = _geom_end(g)
+    assert got[0] == pytest.approx(kp.x)
+    assert got[1] == pytest.approx(kp.y)
+    assert got[2] == pytest.approx(kp.heading)
+
+
+def test_geom_end_parampoly3_heading_matches_kernel():
+    # Previously the paramPoly3 branch computed the correct endpoint
+    # position but always returned the *start* heading unchanged.
+    g = _geom("paramPoly3", length=8.0, pRange="normalized",
+              aU="0", bU="1", cU="0", dU="0",
+              aV="0", bV="0", cV="0.5", dV="0")
+    kp = kernel_endpoint(g)
+    got = _geom_end(g)
+    assert got[0] == pytest.approx(kp.x)
+    assert got[1] == pytest.approx(kp.y)
+    assert got[2] == pytest.approx(kp.heading)
+
+
+
+def _road_with_last_geom(road_id: str, junction: str, first_x: float, first_length: float,
+                          last_geom_xml: str, **link_kwargs) -> str:
+    return (
+        f'<road name="r{road_id}" length="{first_length}" id="{road_id}" junction="{junction}">'
+        f'<planView><geometry s="0" x="{first_x}" y="0" hdg="0" length="{first_length}">'
+        f'{last_geom_xml}</geometry></planView>'
+        f"</road>"
+    )
+
+
+def test_junction_link_matches_for_road_ending_in_arc(tmp_path):
+    # Road "1" is a single-geometry arc of length 10, curvature 0.1, starting
+    # at the origin heading 0. Its TRUE end is (8.41470984..., 4.59697694...)
+    # heading 1.0 rad -- not (0, 0) as the pre-fix `_geom_end` fallback
+    # would have reported. Road "2" (a junction connector) starts exactly
+    # at that true endpoint, so a correct implementation finds d_end == 0
+    # and must NOT flag the match as suspicious.
+    #
+    # Pre-fix, `_geom_end` collapsed both road 1's start AND end to (0, 0)
+    # for any non-line/non-paramPoly3 primitive, so this physically
+    # perfectly-aligned junction connection was ~9.6m from BOTH reported
+    # endpoints -- beyond the 5m default tolerance -- and got silently
+    # flagged as a suspicious/misaligned match even though the map is fine.
+    kp = kernel_endpoint(_geom("arc", length=10.0, curvature="0.1"))
+    road1 = _road_with_last_geom("1", "-1", first_x=0, first_length=10.0,
+                                  last_geom_xml='<arc curvature="0.1"/>')
+    road2 = (
+        f'<road name="r2" length="5" id="2" junction="5">'
+        f'<planView><geometry s="0" x="{kp.x}" y="{kp.y}" hdg="{kp.heading}" length="5">'
+        f'<line/></geometry></planView>'
+        f"</road>"
+    )
+    junction_xml = (
+        '<junction id="5">'
+        '<connection id="0" incomingRoad="1" connectingRoad="2" contactPoint="start"/>'
+        "</junction>"
+    )
+    in_xodr = tmp_path / "in.xodr"
+    _write_xodr(in_xodr, road1 + road2 + junction_xml)
+
+    report = patch_junction_links(
+        in_xodr, tmp_path / "out.xodr", tmp_path / "report.json"
+    )
+
+    assert report["added_junction_links"] == 1
+    assert report["missing_road_to_junction_links_after"] == 0
+    assert report["suspicious_matches"] == [], (
+        "a physically exact arc-to-connector match must not be reported as "
+        "suspicious -- this catches _geom_end silently treating a curved "
+        "final geometry segment as a zero-length no-op"
+    )
