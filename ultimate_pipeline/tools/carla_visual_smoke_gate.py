@@ -162,6 +162,7 @@ def _capture_camera_view(
         "path": str(out_path),
         "error": "",
         "transform": _transform_payload(transform),
+        "sha256": "",
     }
     try:
         bp_lib = world.get_blueprint_library()
@@ -198,6 +199,7 @@ def _capture_camera_view(
         image.save_to_disk(str(out_path))
         if not out_path.exists() or out_path.stat().st_size <= 0:
             raise RuntimeError("screenshot_not_written")
+        result["sha256"] = safe_sha256_file(out_path)
         result["ok"] = True
     except Exception as exc:
         result["error"] = str(exc)
@@ -222,6 +224,21 @@ def evaluate_visual_smoke_report(
     require_files: bool = False,
     base_dir: Optional[Path] = None,
 ) -> Dict[str, Any]:
+    # Handle CARLA unavailable as blocked_external (not a failure, but a gating block)
+    status = str(report.get("status") or report.get("CARLA_VISUAL_READY", "")).lower()
+    if status == "blocked_external":
+        return {
+            "ok": False,
+            "status": "blocked_external",
+            "required_views": list(REQUIRED_VIEWS),
+            "missing_views": [],
+            "failed_views": [],
+            "missing_files": [],
+            "reason": "carla_unavailable",
+            "CARLA_VISUAL_READY": "blocked_external",
+            "PERCEPTION_EVIDENCE_ALLOWED": False,
+        }
+
     screenshots = report.get("screenshots", {})
     if not isinstance(screenshots, dict):
         screenshots = {}
@@ -229,7 +246,7 @@ def evaluate_visual_smoke_report(
     missing_views: List[str] = []
     failed_views: List[str] = []
     missing_files: List[str] = []
-    for view in required_views:
+    for view in REQUIRED_VIEWS:
         item = screenshots.get(view)
         if not isinstance(item, dict):
             missing_views.append(view)
@@ -259,7 +276,7 @@ def evaluate_visual_smoke_report(
         reason_parts.append("map_load_failed_or_missing")
     return {
         "ok": ok,
-        "required_views": list(required_views),
+        "required_views": list(REQUIRED_VIEWS),
         "missing_views": missing_views,
         "failed_views": failed_views,
         "missing_files": missing_files,
@@ -305,7 +322,8 @@ def run_visual_smoke_gate(
         return report
     if _env_bool("UP_DISABLE_CARLA", False):
         report["errors"].append("carla_disabled_by_env")
-        report["CARLA_VISUAL_READY"] = "skipped"
+        report["CARLA_VISUAL_READY"] = "blocked_external"
+        report["status"] = "blocked_external"
         _write_json(report_path, report)
         return report
 
@@ -331,6 +349,7 @@ def run_visual_smoke_gate(
 
         transforms = _camera_transforms(world, carla)
         shots_dir = out_dir / "screenshots"
+        xodr_sha = report["xodr_sha256"]
         for view_name in REQUIRED_VIEWS:
             view_result = _capture_camera_view(
                 world=world,
@@ -343,6 +362,8 @@ def run_visual_smoke_gate(
                 height=int(height),
                 fov=float(fov),
             )
+            # Bind screenshot to the XODR it was generated from
+            view_result["xodr_sha256"] = xodr_sha
             report["screenshots"][view_name] = view_result
     except Exception as exc:
         report["errors"].append(str(exc))
