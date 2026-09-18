@@ -138,26 +138,45 @@ def sample_xodr_road_points(
     xodr_path: Path,
     max_roads: int = 400,
     max_geometries: int = 200000,
-) -> List[Tuple[float, float]]:
-    """Sample planView control points: every geometry element start and end
-    position for up to max_roads roads.
+) -> Dict[str, Any]:
+    """Sample planView control points from XODR roads.
+
+    Returns a dict with:
+    - points: List[Tuple[float, float]]  (sampled control points)
+    - total_roads: int  (total roads in the XODR document)
+    - roads_sampled: int  (actual number of roads sampled, <= max_roads)
+    - total_geometry_elements: int  (total geometry elements across all roads)
+    - geometry_elements_sampled: int  (actual number sampled)
+    - sampling_method: str  ("first_n", "stratified", "full")
+    - coverage_fraction: float  (roads_sampled / total_roads)
+    - coverage_complete: bool  (True if full map was sampled)
+
+    Does NOT report the requested limit as the measured count.
     """
     from opendrive_geometry.primitives import (
         evaluate_arc, evaluate_line, evaluate_param_poly3,
         evaluate_poly3, evaluate_spiral,
     )
     root = ET.parse(str(xodr_path)).getroot()
+    roads = root.findall("road")
+    total_roads = len(roads)
+    total_geometry_elements = sum(len(road.findall("planView/geometry")) for road in roads)
     points: List[Tuple[float, float]] = []
-    geometry_count = 0
-    road_count = 0
-    for road in root.findall("road"):
-        if road_count >= max_roads:
+    roads_sampled = 0
+    geometry_elements_sampled = 0
+    sampling_method = "first_n"
+
+    selected_roads = roads if max_roads is None else roads[:max(0, max_roads)]
+    effective_max_geometries = max_geometries if max_geometries is not None else float("inf")
+
+    for road in selected_roads:
+        if geometry_elements_sampled >= effective_max_geometries:
             break
-        road_count += 1
+        roads_sampled += 1
         for geom in road.findall("planView/geometry"):
-            if geometry_count >= max_geometries:
-                return points
-            geometry_count += 1
+            if geometry_elements_sampled >= effective_max_geometries:
+                break
+            geometry_elements_sampled += 1
             x0 = float(geom.get("x", "0.0"))
             y0 = float(geom.get("y", "0.0"))
             hdg = float(geom.get("hdg", "0.0"))
@@ -199,9 +218,30 @@ def sample_xodr_road_points(
                 points.append((end.x, end.y))
             except Exception:
                 continue
-        if len(points) >= max_geometries:
+        if geometry_elements_sampled >= effective_max_geometries:
             break
-    return points
+
+    coverage_fraction = roads_sampled / total_roads if total_roads > 0 else 0.0
+    if max_roads is None:
+        coverage_complete = roads_sampled >= total_roads and geometry_elements_sampled >= total_geometry_elements
+        sampling_method = "full" if coverage_complete else "first_n"
+    else:
+        coverage_complete = roads_sampled >= total_roads and geometry_elements_sampled >= total_geometry_elements
+        if not coverage_complete and roads_sampled < total_roads:
+            sampling_method = "first_n"
+        elif coverage_complete:
+            sampling_method = "full"
+
+    return {
+        "points": points,
+        "total_roads": total_roads,
+        "roads_sampled": roads_sampled,
+        "total_geometry_elements": total_geometry_elements,
+        "geometry_elements_sampled": geometry_elements_sampled,
+        "sampling_method": sampling_method,
+        "coverage_fraction": coverage_fraction,
+        "coverage_complete": coverage_complete,
+    }
 
 
 def _aabb(points: List[Tuple[float, float]]) -> Dict[str, float]:
@@ -245,7 +285,8 @@ def coordinate_control_check(
     """
     origin = parse_obj_origin(obj_path)
     geo_ref = parse_geo_reference(xodr_path)
-    xodr_points = sample_xodr_road_points(xodr_path, max_roads=sample_limit)
+    xodr_result = sample_xodr_road_points(xodr_path, max_roads=sample_limit)
+    xodr_points = xodr_result["points"]
     xodr_aabb = _aabb(xodr_points)
 
     report: Dict[str, Any] = {
@@ -255,9 +296,14 @@ def coordinate_control_check(
         "contract_authority": "F1 P05 CRS reconciliation (PHASE_1A_DIAGNOSIS.md): "
                               "XODR geometry is Osm2Odr-native tmerc; the <geoReference> "
                               "header is metadata-only and is NOT used for projection",
-        "xodr_roads_sampled": sample_limit,
+        "xodr_roads_sampled": xodr_result["roads_sampled"],
         "xodr_road_points_sampled": len(xodr_points),
         "xodr_road_aabb": xodr_aabb,
+        "xodr_sampling_method": xodr_result["sampling_method"],
+        "xodr_coverage_fraction": xodr_result["coverage_fraction"],
+        "xodr_coverage_complete": xodr_result["coverage_complete"],
+        "coverage_declaration": "full_map_production" if xodr_result["coverage_complete"] else "incomplete_diagnostic",
+        "strict_promotion_possible": xodr_result["coverage_complete"],
         "mapping": {
             "xodr_x = origin_x + obj_x": True,
             "xodr_y = origin_y - obj_z": True,
