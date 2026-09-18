@@ -1,0 +1,89 @@
+{
+  "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
+  "schema_version": 1,
+  "last_updated_utc": "2026-09-18T00:00:00Z",
+  "issues": [
+    {
+      "id": "GAP-001",
+      "severity": "P0",
+      "subsystem": "tiling/large_map_package.py",
+      "description": "_copy_file() used os.link() (hardlink) with copy fallback only on OSError. On this NTFS volume hardlinking always succeeded, so staged artifacts were the same inode as their source with zero hash verification -- a source mutation after staging silently propagated to the staged copy.",
+      "proof": "Failing test: mutate source after staging, staged copy changed too (pre-fix).",
+      "affected_files": ["ultimate_pipeline/tiling/large_map_package.py", "tests/unit/test_large_map_package.py"],
+      "scientific_runtime_consequence": "Staged/packaged artifacts could not be trusted as independent, content-addressed copies -- undermines every downstream SHA-256 authority claim for staged large-map packages.",
+      "owner_subagent": "direct (coordinator)",
+      "status": "fixed",
+      "fixing_commit": "c75fd8c9 (merged into integration/production-large-map-20260918)",
+      "regression_test": "tests/unit/test_large_map_package.py (new cases added)",
+      "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/00_BASELINE.md",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-002",
+      "severity": "P0",
+      "subsystem": "tiling/tile_fbx_generator.py",
+      "description": "generate_tile_fbx()'s result.status was hardcoded to \"ok\" unconditionally regardless of the tri-state roundtrip_ok (True/False/None) result -- a real geometry-roundtrip mismatch would never fail scripts/cook_full_grid_tiles.py's exit code.",
+      "proof": "Original audit framing (single hardcoded assignment at point of origin, not a later write clobbering an earlier FAIL -- corrected by the fixing subagent).",
+      "affected_files": ["ultimate_pipeline/tiling/tile_fbx_generator.py", "tests/unit/test_tile_fbx_generator.py"],
+      "scientific_runtime_consequence": "A silently corrupted FBX roundtrip could pass the whole tile-cook pipeline undetected.",
+      "owner_subagent": "direct (coordinator)",
+      "status": "fixed",
+      "fixing_commit": "c75fd8c9 (merged into integration/production-large-map-20260918)",
+      "regression_test": "tests/unit/test_tile_fbx_generator.py (new cases added)",
+      "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/00_BASELINE.md",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-003",
+      "severity": "P0",
+      "subsystem": "main_pipeline.py / artifact authority",
+      "description": "MainPipeline.run() produces map_acceptance.json, map_content_fingerprint.json, preflight validation, and a determinism fingerprint BEFORE junction_link_integrity and map_hygiene run -- both of which can mutate structure (patch links; quarantine/delete roads; modify lanes; repair z-seams/lane-width discontinuities; add G6 lane links). Pipeline-level acceptance/fingerprints may therefore certify a pre-final XODR.",
+      "proof": "pending -- assigned subagent (a0fc461e58ef06e59) tasked with confirming exact line numbers before fixing.",
+      "affected_files": ["ultimate_pipeline/main_pipeline.py", "ultimate_pipeline/contracts/stage_capabilities.py"],
+      "scientific_runtime_consequence": "Every downstream consumer of map_acceptance.json/map_content_fingerprint.json (including research campaigns) may be trusting evidence about a map state that doesn't match what's actually on disk as \"final\".",
+      "owner_subagent": "a0fc461e58ef06e59 (P0 work package C)",
+      "status": "in_progress",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "unknown pending subagent completion"
+    },
+    {
+      "id": "GAP-004",
+      "severity": "P1",
+      "subsystem": "geometry/geometry_math.py",
+      "description": "Legacy GeometryCalculator's spiral/paramPoly3 logic reportedly contains placeholder straight-line behavior, diverging from the canonical opendrive_geometry_kernel.py.",
+      "proof": "pending -- assigned subagent (ab5d110e2573e658b) tasked with confirming this claim before acting on it.",
+      "affected_files": ["ultimate_pipeline/geometry/geometry_math.py", "ultimate_pipeline/geometry/opendrive_geometry_kernel.py"],
+      "scientific_runtime_consequence": "Any live caller of the legacy path could silently get wrong curved-geometry results.",
+      "owner_subagent": "ab5d110e2573e658b (P1 work package F)",
+      "status": "in_progress",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "unknown pending subagent completion"
+    },
+    {
+      "id": "GAP-005",
+      "severity": "P1",
+      "subsystem": "quality/check_lane_count_changes.py",
+      "description": "3007/45178 lane-count transitions are classified 'unexplained' because the 'explained' bucket requires OSM lane_count_source provenance that only 0.4% of driving lanes carry at all -- a measurement-design problem, not necessarily 3007 real defects. No classification currently distinguishes ordinary merge/split/junction transitions from genuinely suspicious ones.",
+      "proof": "2026-09-17 investigation (see memory project_step7_empty_planview_connector_bug_20260916): gate postdates the previous pin, first-ever measurement, 0.4% provenance coverage confirmed.",
+      "affected_files": ["ultimate_pipeline/quality/check_lane_count_changes.py"],
+      "scientific_runtime_consequence": "Cannot currently distinguish a real generator defect from expected, benign lane-count transitions at this scale -- blocks confident production certification of the lane-topology gate.",
+      "owner_subagent": "afed7bcc6adcb5bd9 (P1 work package G)",
+      "status": "in_progress",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "unknown pending subagent completion"
+    }
+  ],
+  "counts": {
+    "total": 5,
+    "fixed": 2,
+    "in_progress": 3,
+    "deferred": 0,
+    "blocked_external": 0
+  }
+}

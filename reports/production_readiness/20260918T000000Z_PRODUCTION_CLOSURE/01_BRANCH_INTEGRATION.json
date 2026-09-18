@@ -1,0 +1,39 @@
+{
+  "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
+  "work_package": "P0-A",
+  "production_branch": "integration/production-large-map-20260918",
+  "production_branch_head_after_integration": "234e1ef1",
+  "integrated": [
+    {
+      "branch": "fix/large-map-transactional-staging-integrity-v1-20260917",
+      "commit": "c75fd8c9fa9a6c3c0a21a564f0c85b9be6785da7",
+      "merge_commit": "42d6865b",
+      "conflicts": "none"
+    },
+    {
+      "branch": "feat/pipeline-stage-dependency-contract-v1-20260917",
+      "commit": "e99ec35b5c2bb7ee3013cb9d5d6f5ecb10401866",
+      "merge_commit": "234e1ef1",
+      "conflicts": "none"
+    }
+  ],
+  "required_verifications": {
+    "staged_files_are_byte_independent_copies": {
+      "status": "VERIFIED_OFFLINE",
+      "evidence": "ultimate_pipeline/tiling/large_map_package.py:209 confirmed shutil.copy2(src, dst) is the only copy mechanism; os.link()/hardlinking removed entirely (grep confirmed no remaining os.link call). tests/unit/test_large_map_package.py carries the mutate-after-stage regression test."
+    },
+    "roundtrip_ok_false_cannot_become_status_ok": {
+      "status": "VERIFIED_OFFLINE",
+      "evidence": "ultimate_pipeline/tiling/tile_fbx_generator.py:769 confirmed `if result.roundtrip_ok is False:` gates the fail-closed path explicitly; True/None still map to ok per the tri-state design."
+    },
+    "full_unit_suite_green": {
+      "status": "VERIFIED_OFFLINE",
+      "evidence": "bare pytest (no manual path list), F: authoritative worktree, post-merge: 5770 passed, 5 skipped, 0 failed, 668.45s."
+    },
+    "stage_capability_contract_actually_invoked": {
+      "status": "PARTIALLY_VERIFIED_OFFLINE",
+      "evidence": "Confirmed wired into MainPipeline.run() right after _mark_stage('start') per the source branch's own report (tests/unit/test_main_pipeline_stage_contract_wiring.py, 5 passing cases observed in this run's test log). However this only validates the CURRENT (already-correct-order) sequence as a no-op guard -- it does NOT yet catch the real Stage-4-before-geometry-freeze defect, because Stage 4's declared `requires` is deliberately still empty (turning it on for real is P0 package C's job, in progress). Do not read 'wired in' as 'actively catching production defects' until package C lands."
+    }
+  },
+  "not_yet_proceeding_to": "final regeneration (per Section 3 instruction: 'Do not proceed to final regeneration yet')"
+}
