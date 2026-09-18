@@ -1,0 +1,66 @@
+{
+  "run_id": "20260918T000000Z_QUALITY_GATE_MANAGER_REPORT_CONTRACT",
+  "task_id": "OC-36",
+  "title": "Close the QualityGateManager fail-open report default with a single normalization authority",
+  "components": [
+    "ultimate_pipeline/quality/quality_gate_manager.py::_finalize_gate",
+    "ultimate_pipeline/contracts/gate_runner.py::CumulativeGateRunner",
+    "ultimate_pipeline/contracts/stage_contracts.py::normalize_gate_result"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/quality-gate-manager-report-contract-v1",
+  "final_head": "7a8285f66b1a6aacdb23e087aaa5ac0ec4482ac2",
+  "defect_summary": {
+    "fail_open_default": "_finalize_gate read `rep.get('ok', True)`: any report dict that simply lacked an `ok` key (e.g. a status-only report or a report whose gate crashed before writing ok) was silently tallied as PASS.",
+    "split_authority": "CumulativeGateRunner used `report.get('ok', False)` (fail-closed) while _finalize_gate used `rep.get('ok', True)` (fail-open): the SAME malformed report produced different verdicts depending on which runner evaluated it.",
+    "report_producers_surveyed": "All 10 internal gates (dem_coverage, elevation_continuity, junction_integrity, lane_width/geometry_continuity, geometric_continuity, connector boundary, origin_sanity, elevation_seams) produce an `ok` field; structure_elevation_plausibility produces BOTH `ok` and `status`; check_external_libopendrive produces `ok` + `status` (pass/fail/skipped/error)."
+  },
+  "normalization_semantics": {
+    "authority": "normalize_gate_result(report) is now the single decision authority used by BOTH QualityGateManager._finalize_gate and CumulativeGateRunner.run.",
+    "rules": {
+      "not dict": "FAIL, never crash",
+      "ok present": "ok is authoritative; a co-present `status` (structure_elevation_plausibility shape) is preserved for provenance but never overrides ok",
+      "status only": "mapped case-insensitively onto the QualityStatus vocabulary; only PASS maps to pass. PENDING -> INCOMPLETE; GATE_TIMED_OUT -> FAIL; skipped/skip/not_run -> NOT_RUN; unrecognized status string -> FAIL",
+      "no verdict key": "empty or side-evidence-only reports map to FAIL (an unverified report is never an unambiguous pass)"
+    }
+  },
+  "tests": {
+    "files": [
+      "ultimate_pipeline/tests/unit/test_quality_gate_manager.py",
+      "ultimate_pipeline/tests/unit/test_gate_runner.py"
+    ],
+    "collected": 41,
+    "passed": 41,
+    "coverage": {
+      "A": "_finalize_gate fails on missing verdict keys (regression: previously passed via get('ok', True))",
+      "B": "_finalize_gate passes only on an explicit pass verdict",
+      "C": "non-dict reports fail closed and never crash",
+      "D": "status-only pass/pass and error are normalized correctly",
+      "E": "PENDING -> INCOMPLETE, GATE_TIMED_OUT -> FAIL, unrecognized status -> FAIL (fail-closed)",
+      "F": "runner AND manager agree on the same status-only 'skipped' report (the split-authority bug)",
+      "G": "ok+status precedence: ok wins in both runners (ok True/status INCOMPLETE -> pass; ok False/status PASS -> fail)",
+      "H": "empty dict fails closed in both runners",
+      "I": "truthy ok coercion (bool semantics) accepted only with an explicit verdict",
+      "J": "strict CumulativeGateRunner raises on a status-only evidence gap"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_quality_gate_manager.py ultimate_pipeline/tests/unit/test_gate_runner.py -q",
+    "python -m pytest ultimate_pipeline/tests -q",
+    "python -m pytest tests/unit -q"
+  ],
+  "regression_results": {
+    "focused": "41 passed",
+    "ultimate_pipeline_tests": "1467 passed, 1 skipped",
+    "top_level_unit": "1954 passed, 4 skipped"
+  },
+  "live_impact": {
+    "_finalize_gate_caller_audit": "All 11 in-file gate call sites feed reports that produce an explicit `ok` field; no production gate is newly failed by the stricter default.",
+    "runner_change": "CumulativeGateRunner previously defaulted missing ok to False; normalize_gate_result preserves that verdict for no-ok reports and adds status-vocabulary handling, so no behavior regression."
+  },
+  "residual_risks": [
+    "submission/infrastructure/ultimate_pipeline/quality/quality_gate_manager.py (line 56) still contains the OLD `rep.get('ok', True)` fail-open `_finalize_gate`; it is not in CRITICAL_MIRRORED_FILES and already had pre-existing drift from the canonical file, so it was left untouched. Any packaging that consumes the submission mirror instead of the canonical module inherits the fail-open defect until mirrored.",
+    "quality_gates.py still uses `.get('ok', True)` on the lane-link and external-libOpenDRIVE report paths (run_quality_gates); those use their own pass/fail routing rather than _finalize_gate. They were not changed in OC-36 (separate tape) but carry the same fail-open idiom and are recommended follow-up.",
+    "Status vocabulary is only mapped for the values enumerated in GATE_STATUS_SYNONYMS; a future producer introducing a novel status must extend that table or it fails closed by design."
+  ]
+}
