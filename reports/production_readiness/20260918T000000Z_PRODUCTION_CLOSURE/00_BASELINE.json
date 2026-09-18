@@ -1,0 +1,134 @@
+{
+  "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
+  "generated_at_utc": "2026-09-18T00:00:00Z",
+  "git": {
+    "integration_lineage": "integration/session-batch1-20260912",
+    "integration_head": "1a42cd89bbaaeca95e6f326225afa5a4c23e707d",
+    "main_branch_status": "old_disconnected_initial_lineage_not_used_as_baseline",
+    "production_branch": "integration/production-large-map-20260918",
+    "production_branch_existed_before_this_run": false
+  },
+  "pending_branches_to_integrate": [
+    {
+      "branch": "fix/large-map-transactional-staging-integrity-v1-20260917",
+      "commit": "c75fd8c9fa9a6c3c0a21a564f0c85b9be6785da7",
+      "already_merged_into_integration_head": false,
+      "diff_stat": "4 files changed, 224 insertions(+), 11 deletions(-)",
+      "diff_files": [
+        "tests/unit/test_large_map_package.py",
+        "tests/unit/test_tile_fbx_generator.py",
+        "ultimate_pipeline/tiling/large_map_package.py",
+        "ultimate_pipeline/tiling/tile_fbx_generator.py"
+      ]
+    },
+    {
+      "branch": "feat/pipeline-stage-dependency-contract-v1-20260917",
+      "commit": "e99ec35b5c2bb7ee3013cb9d5d6f5ecb10401866",
+      "already_merged_into_integration_head": false,
+      "diff_stat": "4 files changed, 638 insertions(+)",
+      "diff_files": [
+        "ultimate_pipeline/contracts/stage_capabilities.py",
+        "ultimate_pipeline/main_pipeline.py",
+        "ultimate_pipeline/tests/unit/test_main_pipeline_stage_contract_wiring.py",
+        "ultimate_pipeline/tests/unit/test_stage_capability_contract.py"
+      ]
+    }
+  ],
+  "reference_only_branches_not_to_wholesale_merge": [
+    "recovered-large-map-offline-hardening-f43bf84c",
+    "feature/ue4-large-map-production-v2",
+    "fix/grid08210828-runtime-rca-v3",
+    "fix/geometry-crs-dem-correctness-v1-20260915",
+    "old audit/* branches",
+    "disconnected RoadRunner/Codex lineages"
+  ],
+  "map_of_record": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "size_bytes": 149799632,
+    "promoted_utc": "2026-09-17",
+    "road_count": 32267,
+    "junction_count": 3561,
+    "acceptance": {
+      "valid_for_experiments": true,
+      "hard_fail_reasons": [],
+      "soft_warnings": [
+        "lane_count_changes unexplained=3007 (see project_step7_empty_planview_connector_bug_20260916 memory: first-ever measurement of this gate against this map lineage, no prior baseline, root-caused to sparse OSM lane_count_source provenance -- not a regression)",
+        "component_reachability: 3 isolated lane components, largest_fraction=0.99793 (within precedent, 27 accepted 2026-09-04)"
+      ]
+    },
+    "supersedes_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "manual_reference": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+    "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+  },
+  "pinned_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "tool_versions": {
+    "python_venv": "Python 3.12.2 (.venv\\Scripts\\python.exe)",
+    "git": "2.46.2.windows.1",
+    "git_lfs": "3.5.1",
+    "os": "Windows 11 Pro 10.0.26200 (MSYS/MINGW64 shell)"
+  },
+  "external_tool_availability": {
+    "blender": {
+      "available": true,
+      "path": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+      "note": "matches ultimate_pipeline/enrichment/blender_runner.py's _BLENDER_CANDIDATE_PATHS"
+    },
+    "osm2world": {
+      "available": "unverified_this_pass",
+      "note": "used via ultimate_pipeline/enrichment/osm2world_runner.py elsewhere in the pipeline this session; not independently re-located in this baseline pass"
+    },
+    "sumo_netconvert": {
+      "available": true,
+      "path": "C:\\Sumo\\sumo-win64extra-1.24.0\\sumo-1.24.0\\bin\\netconvert.exe",
+      "version": "1.24.0"
+    },
+    "carla_root": {
+      "available": true,
+      "path": "E:\\CARLA\\CARLA_0.9.16",
+      "type": "packaged Shipping binary runtime only -- NO Source, NO Editor, cannot cook",
+      "runtime_status": "BLOCKED -- RPC server never becomes responsive; see project_rq2_rq5_blocker_root_causes_20260830 memory, extensively re-investigated 2026-09-16/17"
+    },
+    "carla_0916_source_tree": {
+      "available": false,
+      "attempted_path": "G:\\CARLA\\carla_source_probe",
+      "status": "incomplete git clone, Git LFS download stalled (.git/lfs/incomplete present as of last check), not a usable source checkout"
+    },
+    "ue4_26": {
+      "available": false,
+      "attempted_path": "G:\\UE4",
+      "status": "empty directory, no engine source or build present"
+    },
+    "nvidia_driver_gpu": {
+      "gpu": "Quadro P3200 with Max-Q Design (mobile/Optimus-class workstation GPU)",
+      "driver_version": "573.22",
+      "vram_mib": 6144,
+      "note": "confirmed hybrid/Optimus laptop config (index 0 = Quadro P3200, index 1 = Intel UHD 630) via -graphicsadapter=N testing 2026-09-17"
+    },
+    "windows_debugger_cdb": {
+      "available": true,
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\cdb.exe",
+      "version": "installed 2026-09-17 for CARLA RPC hang investigation"
+    }
+  },
+  "known_upstream_blockers": {
+    "carla_rpc_never_responsive": {
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "reports/post_audit_hardening/C20_TIER1_PROBE_20260821/, plus 2026-09-16/17 debugger-attached (cdb.exe) stack-trace investigation",
+      "summary": "TWO DISTINCT hangs sharing one external symptom, both confirmed via real cdb.exe stack traces: (1) render mode -- RHIThread stuck inside nvwgf2umx.dll (NVIDIA D3D driver) near OpenAdapter10, a genuine GPU-adapter/device-creation stall; (2) -nullrhi mode -- a separate busy-spin loop with zero GPU involvement (idle in a GetCursorPos-adjacent poll). ALL THREE cheap/local candidate fixes tried and ruled out with real evidence: -RenderOffScreen (same timeout signature), Windows per-app GPU-preference registry override (no observable difference), -graphicsadapter=0 and -graphicsadapter=1 (neither connects; adapter=1 moves the hang out of the NVIDIA driver into an unrelated idle-wait state, confirming the flag changes behavior but doesn't fix RPC readiness). This is a real, well-evidenced dead end for cheap fixes on this specific machine -- remaining paths are a different NVIDIA driver branch or different (non-mobile-GPU) hardware/CI, not more local debugging.",
+      "blocks": ["VERIFIED_CARLA_LOAD", "VERIFIED_STREAMING", "VERIFIED_6GB_RUNTIME", "RQ3 real capture", "RQ5(a) real transfer training data"]
+    },
+    "ue4_not_installed": {
+      "status": "BLOCKED_EXTERNAL",
+      "summary": "No UE4.26 source/Editor exists on this machine (G:\\UE4 empty). CARLA's own source tree clone is also incomplete (stalled LFS download at G:\\CARLA\\carla_source_probe). Building CARLA's UE4 fork + running make import + make package requires ~170GB, VS2022 with C++ workloads, CMake>=3.28, Ninja, and an Epic-Games-linked GitHub account -- none of this interactive/account setup has been confirmed done. G: drive has 252GB free, so disk space is no longer the blocker, but nothing else in this chain has progressed beyond the stalled source clone.",
+      "blocks": ["VERIFIED_UE_IMPORT", "VERIFIED_COOK", "everything downstream of UE_IMPORT_VERIFIED in the promotion ladder"]
+    },
+    "real_world_ingolstadt_dataset": {
+      "status": "BLOCKED_EXTERNAL",
+      "summary": "No real-world Ingolstadt photo dataset exists on this machine. eval_real_unlabeled.py is built and tested, ready the moment data exists.",
+      "blocks": ["RQ5(b) labeled evaluation"]
+    }
+  }
+}
