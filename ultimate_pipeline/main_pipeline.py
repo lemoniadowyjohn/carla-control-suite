@@ -924,6 +924,9 @@ class MainPipeline:
         self.stage_context = StageContext()
         self._run_stage: str = "init"
         self._gate_runner: CumulativeGateRunner | None = None
+        # P0-C: runtime capability/evidence ledger for the final artifact
+        # authority (see ultimate_pipeline/contracts/artifact_authority.py).
+        self._authority_ledger = None
 
     def _write_run_status(
         self,
@@ -2174,6 +2177,7 @@ if str(_repo_root) not in sys.path:
         # 5+6) 📐 Geometry authority (DEM + planView + continuity) + freeze
         self._mark_stage("geometry")
         geo_final = self._step5_geometry_elevation_continuity(topo_fixed)
+        self._authority_mark_geometry_frozen(geo_final)
 
         # 6) PlanView & continuity
         # cont_out = self._step6_planview_continuity(elev_out, geo_out, cont_out)
@@ -2181,6 +2185,7 @@ if str(_repo_root) not in sys.path:
         # 7) 🛣️ Lane / cross-section / offsets / sidewalks
         self._mark_stage("lanes")
         lanes_out = self._step7_lanes_sidewalks(geo_final, lanes_out)
+        self._authority_mark_lanes_generated(lanes_out)
         if os.getenv("UP_ENABLE_LANE_WIDTH_CONTINUITY", "1").strip().lower() in (
             "1",
             "true",
@@ -2281,67 +2286,14 @@ if str(_repo_root) not in sys.path:
                     "❌ Elevation seam gate failed after final XODR generation."
                 )
 
-        # Map acceptance summary (gates perception if enabled)
-        try:
-            from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
-
-            acceptance_reports = {
-                "origin_sanity": origin_report,
-                "elevation_seams": seam_report,
-            }
-            for report_key, report_name in (
-                ("geometric_continuity", "geometric_continuity_gate.json"),
-                ("lane_section_successors", "lane_successor_autofix_report.json"),
-            ):
-                report_path = os.path.join(self.out_dir, report_name)
-                if os.path.exists(report_path):
-                    try:
-                        with open(report_path, "r", encoding="utf-8") as f:
-                            acceptance_reports[report_key] = json.load(f)
-                    except Exception as load_exc:
-                        print(
-                            f"[STEP 8] map_acceptance skipped {report_name}: {load_exc}"
-                        )
-
-            # CODEX C7: only require enrichment completeness (buildings +
-            # functional signals) when this run was actually configured to
-            # enrich the map (ENABLE_BUILDINGS and ENABLE_TRAFFIC_LIGHTS).
-            # Profiles like STRUCTURAL_RELEASE intentionally disable both to
-            # test bare geometry/topology and must not be broken by this gate.
-            require_enrichment = bool(
-                getattr(s, "ENABLE_BUILDINGS", False)
-                and getattr(s, "ENABLE_TRAFFIC_LIGHTS", False)
-            )
-            map_acceptance = build_map_acceptance(
-                acceptance_reports,
-                run_id=os.path.basename(os.path.normpath(self.out_dir)),
-                final_xodr_path=final_out,
-                out_dir=self.out_dir,
-                require_enrichment=require_enrichment,
-            )
-            self.map_acceptance = map_acceptance
-            acc_path = os.path.join(self.out_dir, "map_acceptance.json")
-            with open(acc_path, "w", encoding="utf-8") as f:
-                json.dump(map_acceptance, f, indent=2, default=str)
-            print(f"[STEP 8] map_acceptance.json -> {acc_path}")
-        except Exception as e:
-            print(f"[STEP 8] map_acceptance.json write skipped: {e}")
-
-        # Map content fingerprint (final XODR after quarantine)
-        try:
-            from ultimate_pipeline.utils.map_fingerprint import (
-                write_map_content_fingerprint,
-            )
-
-            fingerprint_path = write_map_content_fingerprint(self.out_dir, final_out)
-            if fingerprint_path:
-                print(f"[STEP 8] map_content_fingerprint.json -> {fingerprint_path}")
-        except Exception as e:
-            print(f"[STEP 8] map_content_fingerprint.json write skipped: {e}")
-
-        # 8D) Optional preflight validation
-        self._step8d_preflight_validation(final_out)
-        self._write_determinism_fingerprint(final_out)
+        # P0-C (2026-09-18): map acceptance, the map content fingerprint, the
+        # preflight validation and the determinism fingerprint used to be
+        # produced HERE -- before the junction-link integrity gate (which
+        # patches links and reassigns final_out) and before map hygiene (which
+        # can delete roads, repair lanes/lane widths/z-seams and reassigns
+        # final_out again). They therefore certified a PRE-FINAL XODR. They
+        # now all live in _publish_final_artifact_authority(), called below
+        # after BOTH mutating stages have finished.
 
         # 8E) Junction link integrity gate
         self._mark_stage("junction_link_integrity")
@@ -2354,6 +2306,11 @@ if str(_repo_root) not in sys.path:
             ),
         )
         final_out = str(gate_result.get("final_xodr", final_out))
+        self._authority_mark_structure_mutated(
+            "junction_link_integrity",
+            "junction/lane link patching may add links and select a different "
+            "final artifact",
+        )
         xodr_link_report = (
             gate_result.get("report", {}) if isinstance(gate_result, dict) else {}
         )
@@ -2388,6 +2345,12 @@ if str(_repo_root) not in sys.path:
         # re-verify the gates most affected by these repairs.
         self._mark_stage("map_hygiene")
         final_out = self._step8h_map_hygiene(final_out)
+        self._authority_mark_structure_mutated(
+            "map_hygiene",
+            "island quarantine can delete roads; degenerate-lane, lane-width "
+            "and z-seam repair plus G6 lane links mutate lanes",
+        )
+        self._authority_mark_hygiene_complete(final_out)
         self._run_geometric_continuity_gate(final_out, "after_map_hygiene")
         seam_report = self._stage_gate(
             "08H_hygiene",
@@ -2401,6 +2364,17 @@ if str(_repo_root) not in sys.path:
             print(f"[STEP 8H] elevation_seam_report.json (post-hygiene) -> {seam_path}")
         except Exception as e:
             print(f"[STEP 8H] elevation_seam_report.json write skipped: {e}")
+
+        # 8I) P0-C: STRUCTURAL FREEZE + final artifact authority.
+        # Every permitted road/lane/topology/hygiene mutation is complete at
+        # this point (junction_link_integrity and map_hygiene have both run and
+        # final_out has its final value), so this is the first point at which
+        # acceptance/fingerprint/preflight/determinism evidence can honestly
+        # describe the published artifact.
+        self._mark_stage("final_artifact_authority")
+        self._publish_final_artifact_authority(
+            final_out, origin_report=origin_report, seam_report=seam_report
+        )
 
         # 8H) Drivable-surface hole analysis
         self._mark_stage("drivable_surface_scan")
@@ -2468,6 +2442,19 @@ if str(_repo_root) not in sys.path:
                 "elevation_continuity",
                 lambda: self.qgate.gate_elevation_continuity(final_out),
             )
+        # Tiling reads the frozen artifact and must never write back to it.
+        #
+        # KNOWN GAP (reported, deliberately not fixed here): with
+        # UP_ENABLE_ROAD_LINK_TARGET_REPAIR=1 (default "0"),
+        # pipeline_stages/stage_09_tiling.py writes a repaired
+        # "*_road_link_repaired.xodr" and tiles from THAT instead of final_out
+        # -- a post-freeze road-link mutation feeding the tiles. It never
+        # reassigns final_out, so the authority receipt still describes the
+        # published artifact correctly and this assertion is not a false
+        # positive; but the tiles can then derive from structurally different
+        # content. Closing that requires the tiling stage to surface which
+        # artifact it actually tiled, which is separate scope.
+        self._assert_structure_frozen_unchanged(final_out, "after_tiling")
 
         # 10) 🧪 Tile QA suite (seams, CarlaFinalTest, spawn QA, stress test)
         self._mark_stage("tile_qa")
@@ -2494,6 +2481,9 @@ if str(_repo_root) not in sys.path:
         self._finalize_gates()
 
         # 📋 Final summary + 🤖 LLM review
+        # Last authority re-verification: no stage between the freeze and the
+        # summary may have changed the published artifact's structure.
+        self._assert_structure_frozen_unchanged(final_out, "before_final_summary")
         self._mark_stage("final_summary")
         self._final_summary_and_llm(final_out)
 
@@ -2879,6 +2869,360 @@ if str(_repo_root) not in sys.path:
             "✅ [STAGE-CONTRACT] Declared stage capability sequence "
             f"({len(CURRENT_PIPELINE_STAGE_SEQUENCE)} stages) validated clean."
         )
+
+    # -----------------------------------------------------
+    # 🏁 P0-C: final artifact authority
+    # -----------------------------------------------------
+
+    @property
+    def authority_ledger(self):
+        """This run's capability/evidence ledger (lazily created).
+
+        The runtime half of ``ultimate_pipeline.contracts.stage_capabilities``:
+        where that module validates a DECLARED stage order statically, the
+        ledger records what actually happened during this run and whether the
+        evidence about to be published still describes the artifact about to
+        be published.
+        """
+        ledger = getattr(self, "_authority_ledger", None)
+        if ledger is None:
+            from ultimate_pipeline.contracts.artifact_authority import (
+                ArtifactAuthorityLedger,
+            )
+
+            ledger = ArtifactAuthorityLedger()
+            self._authority_ledger = ledger
+        return ledger
+
+    def _authority_mark_geometry_frozen(self, artifact_path: str) -> None:
+        from ultimate_pipeline.contracts.stage_capabilities import GEOMETRY_FROZEN
+
+        self.authority_ledger.provide(
+            GEOMETRY_FROZEN, "geometry", evidence=str(artifact_path)
+        )
+
+    def _authority_mark_lanes_generated(self, artifact_path: str) -> None:
+        from ultimate_pipeline.contracts.stage_capabilities import LANES_GENERATED
+
+        self.authority_ledger.provide(
+            LANES_GENERATED, "lanes", evidence=str(artifact_path)
+        )
+
+    def _authority_mark_structure_mutated(self, stage: str, reason: str) -> None:
+        """Declare that *stage* performed a permitted structural mutation.
+
+        Revokes ``STRUCTURE_FROZEN``. In the correct stage order this is a
+        no-op (the freeze has not happened yet) -- which is exactly the point:
+        if a future reorder ever moves the freeze earlier again, the revocation
+        becomes live, every derived artifact recorded against the frozen
+        structure is marked stale, and the receipt refuses to build. That is
+        the defect this package closed: ``junction_link_integrity`` and
+        ``map_hygiene`` used to run AFTER the acceptance/fingerprint evidence
+        was written, with nothing detecting it.
+        """
+        from ultimate_pipeline.contracts.stage_capabilities import STRUCTURE_FROZEN
+
+        self.authority_ledger.invalidate(STRUCTURE_FROZEN, stage, reason=reason)
+
+    def _authority_mark_hygiene_complete(self, artifact_path: str) -> None:
+        from ultimate_pipeline.contracts.stage_capabilities import (
+            HYGIENE_COMPLETE,
+            LANES_FINAL,
+        )
+
+        ledger = self.authority_ledger
+        ledger.provide(LANES_FINAL, "map_hygiene", evidence=str(artifact_path))
+        ledger.provide(HYGIENE_COMPLETE, "map_hygiene", evidence=str(artifact_path))
+
+    def _semantic_authority_profile(self) -> Dict[str, Any]:
+        """The settings that governed semantic authority for this run.
+
+        Recorded in the final receipt so a promoted artifact carries the
+        profile it was produced under (e.g. a STRUCTURAL_RELEASE run legitimately
+        has zero buildings/signals; an enriched map-of-record run does not).
+        """
+        s = self.settings
+        try:
+            strict = bool(self._resolve_strict_quality_gates())
+        except Exception:
+            strict = None
+        try:
+            unsafe = bool(self._resolve_experimental_unsafe())
+        except Exception:
+            unsafe = None
+        return {
+            "release_profile": str(getattr(s, "RELEASE_PROFILE", "") or "") or None,
+            "strict_quality_gates": strict,
+            "experimental_unsafe": unsafe,
+            "enable_buildings": bool(getattr(s, "ENABLE_BUILDINGS", False)),
+            "enable_traffic_lights": bool(getattr(s, "ENABLE_TRAFFIC_LIGHTS", False)),
+            "enable_crosswalks": bool(getattr(s, "ENABLE_CROSSWALKS", False)),
+            "enable_map_hygiene": bool(getattr(s, "ENABLE_MAP_HYGIENE", True)),
+            "enable_junction_link_patch": bool(
+                getattr(s, "ENABLE_JUNCTION_LINK_PATCH", True)
+            ),
+            "deterministic_seed": getattr(s, "DETERMINISTIC_SEED", None),
+        }
+
+    def _source_manifest_identity(self) -> Dict[str, Any]:
+        """Identity of the pinned generation inputs this artifact came from."""
+        from ultimate_pipeline.contracts.artifact_authority import (
+            sha256_file as _sha256_file,
+        )
+
+        s = self.settings
+        identity: Dict[str, Any] = {
+            "inputs_manifest_path": None,
+            "inputs_manifest_sha256": None,
+            "inputs_manifest_entry_count": None,
+            "osm_source_path": None,
+            "osm_source_sha256": None,
+        }
+
+        manifest_path = str(getattr(s, "INPUTS_MANIFEST", "") or "").strip()
+        if manifest_path:
+            if not os.path.isabs(manifest_path):
+                repo_root = Path(__file__).resolve().parents[1]
+                manifest_path = os.path.normpath(
+                    os.path.join(str(repo_root), manifest_path)
+                )
+            identity["inputs_manifest_path"] = manifest_path
+            if os.path.isfile(manifest_path):
+                identity["inputs_manifest_sha256"] = _sha256_file(manifest_path)
+                try:
+                    with open(manifest_path, "r", encoding="utf-8") as f:
+                        inputs = (json.load(f) or {}).get("inputs")
+                    if isinstance(inputs, dict):
+                        identity["inputs_manifest_entry_count"] = len(inputs)
+                except Exception:
+                    pass
+
+        osm_path = str(getattr(s, "OSM_FILE", "") or "").strip()
+        if osm_path:
+            identity["osm_source_path"] = osm_path
+            if os.path.isfile(osm_path):
+                identity["osm_source_sha256"] = _sha256_file(osm_path)
+
+        return identity
+
+    def _publish_final_artifact_authority(
+        self,
+        final_out: str,
+        *,
+        origin_report: Optional[dict] = None,
+        seam_report: Optional[dict] = None,
+    ) -> dict:
+        """Freeze structure, then produce EVERY pipeline-level acceptance,
+        fingerprint, preflight and determinism artifact against the EXACT
+        final XODR (P0-C, 2026-09-18).
+
+        Before this method existed, all four of those lived inline in
+        ``_run_internal`` at lines 2315-2344, i.e. BEFORE:
+
+        * ``_mark_stage("junction_link_integrity")`` (then line 2347), which
+          patches junction/lane links and reassigns ``final_out`` to whatever
+          artifact the gate selected, and
+        * ``_mark_stage("map_hygiene")`` (then line 2389), which quarantines
+          and can DELETE whole roads, repairs degenerate lanes, repairs
+          lane-width discontinuities, re-chains z-seams and adds G6 lane
+          links -- and reassigns ``final_out`` again.
+
+        So ``map_acceptance.json``, ``map_content_fingerprint.json``, the
+        preflight report and ``determinism_fingerprint.json`` could all
+        describe a pre-final XODR: different content, often a different path.
+
+        Everything below now runs after both mutating stages, against
+        ``final_out`` as it will actually be published, and the run fails
+        closed if any of it turns out to describe different content.
+
+        Deliberate strengthening (recorded, not silent): the acceptance and
+        content-fingerprint writes used to be wrapped in
+        ``except Exception: print("... write skipped")``. A run that cannot
+        produce its own acceptance receipt must not continue to certification,
+        so those failures now abort the run.
+        """
+        from ultimate_pipeline.contracts.artifact_authority import write_receipt
+        from ultimate_pipeline.contracts.stage_capabilities import (
+            GEOMETRY_FROZEN,
+            HYGIENE_COMPLETE,
+            LANES_FINAL,
+            STRUCTURE_FROZEN,
+        )
+
+        s = self.settings
+        stage = "final_artifact_authority"
+        print(
+            "\n============== 🏁 Final artifact authority (structural freeze) =============="
+        )
+
+        ledger = self.authority_ledger
+        for capability in (GEOMETRY_FROZEN, LANES_FINAL, HYGIENE_COMPLETE):
+            ledger.require(capability, stage)
+
+        fingerprint = ledger.freeze_structure(final_out, stage=stage)
+        counts = fingerprint["counts"]
+        print(
+            f"[AUTHORITY] STRUCTURE_FROZEN @ {final_out} "
+            f"(structure={fingerprint['sha256'][:16]}..., "
+            f"roads={counts['road_count']}, junctions={counts['junction_count']}, "
+            f"lanes={counts['lane_count']})"
+        )
+
+        # ---- acceptance evidence, recomputed against the FINAL artifact ----
+        acceptance_reports: Dict[str, Any] = {}
+        if isinstance(seam_report, dict):
+            # The post-hygiene seam report (08H_hygiene/elevation_seams), not
+            # the pre-hygiene one that used to feed acceptance.
+            acceptance_reports["elevation_seams"] = seam_report
+
+        # origin_sanity was measured on the PRE-hygiene candidate; island
+        # quarantine can delete roads and move the centroid, so re-measure it
+        # here against the final artifact. The original 08_final/origin_sanity
+        # gate still runs where it always did and still counts towards the
+        # cumulative tally -- this is an additional, stricter measurement for
+        # the receipt, never a replacement for it.
+        final_origin_report = None
+        try:
+            final_origin_report = self.qgate.gate_origin_sanity(final_out)
+        except Exception as exc:
+            print(f"[AUTHORITY] post-hygiene origin_sanity recompute skipped: {exc}")
+        acceptance_reports["origin_sanity"] = (
+            final_origin_report
+            if isinstance(final_origin_report, dict)
+            else origin_report
+        )
+
+        for report_key, report_name in (
+            ("geometric_continuity", "geometric_continuity_gate.json"),
+            ("lane_section_successors", "lane_successor_autofix_report.json"),
+        ):
+            report_path = os.path.join(self.out_dir, report_name)
+            if os.path.exists(report_path):
+                try:
+                    with open(report_path, "r", encoding="utf-8") as f:
+                        acceptance_reports[report_key] = json.load(f)
+                except Exception as load_exc:
+                    print(
+                        f"[AUTHORITY] map_acceptance skipped {report_name}: {load_exc}"
+                    )
+
+        # CODEX C7 (policy unchanged, code relocated): only require enrichment
+        # completeness (buildings + functional signals) when this run was
+        # actually configured to enrich the map. Profiles like
+        # STRUCTURAL_RELEASE intentionally disable both.
+        require_enrichment = bool(
+            getattr(s, "ENABLE_BUILDINGS", False)
+            and getattr(s, "ENABLE_TRAFFIC_LIGHTS", False)
+        )
+
+        from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+
+        try:
+            map_acceptance = build_map_acceptance(
+                acceptance_reports,
+                run_id=os.path.basename(os.path.normpath(self.out_dir)),
+                final_xodr_path=final_out,
+                out_dir=self.out_dir,
+                require_enrichment=require_enrichment,
+            )
+            self.map_acceptance = map_acceptance
+            acc_path = os.path.join(self.out_dir, "map_acceptance.json")
+            with open(acc_path, "w", encoding="utf-8") as f:
+                json.dump(map_acceptance, f, indent=2, default=str)
+            print(f"[AUTHORITY] map_acceptance.json -> {acc_path}")
+        except Exception as exc:
+            raise RuntimeError(
+                "❌ Final map acceptance could not be produced against the "
+                f"published artifact {final_out}: {exc}"
+            ) from exc
+        ledger.record_evidence(
+            "map_acceptance", final_out, stage=stage, depends_on=(STRUCTURE_FROZEN,)
+        )
+
+        from ultimate_pipeline.utils.map_fingerprint import (
+            write_map_content_fingerprint,
+        )
+
+        try:
+            fingerprint_path = write_map_content_fingerprint(self.out_dir, final_out)
+        except Exception as exc:
+            raise RuntimeError(
+                "❌ map_content_fingerprint.json could not be produced against "
+                f"the published artifact {final_out}: {exc}"
+            ) from exc
+        if not fingerprint_path:
+            raise RuntimeError(
+                "❌ map_content_fingerprint.json was not written for the "
+                f"published artifact {final_out}"
+            )
+        print(f"[AUTHORITY] map_content_fingerprint.json -> {fingerprint_path}")
+        ledger.record_evidence(
+            "map_content_fingerprint",
+            final_out,
+            stage=stage,
+            depends_on=(STRUCTURE_FROZEN,),
+        )
+
+        # Optional preflight validation (UP_RUN_PREFLIGHT) -- unchanged gate,
+        # now measured against the published artifact.
+        self._step8d_preflight_validation(final_out)
+        if os.path.exists(os.path.join(self.out_dir, "carla_loadability_status.json")):
+            ledger.record_evidence(
+                "preflight", final_out, stage=stage, depends_on=(STRUCTURE_FROZEN,)
+            )
+
+        self._write_determinism_fingerprint(final_out)
+        ledger.record_evidence(
+            "determinism_fingerprint",
+            final_out,
+            stage=stage,
+            depends_on=(STRUCTURE_FROZEN,),
+        )
+
+        # Literal topology certification of the published artifact (OC-2:
+        # production certification must use the LITERAL_SPEC graph).
+        topology_certification: Optional[Dict[str, Any]] = None
+        try:
+            from ultimate_pipeline.quality.map_acceptance import (
+                component_reachability_summary,
+            )
+            from ultimate_pipeline.quality.topology_certification import (
+                certify_topology,
+            )
+
+            final_root = ET.parse(final_out).getroot()
+            topology_certification = certify_topology(
+                component_reachability_summary(final_root, literal=True),
+                component_reachability_summary(final_root),
+            )
+        except Exception as exc:
+            print(f"[AUTHORITY] topology certification skipped: {exc}")
+
+        receipt = ledger.build_receipt(
+            final_artifact_path=final_out,
+            map_acceptance=map_acceptance,
+            topology_certification=topology_certification,
+            semantic_authority_profile=self._semantic_authority_profile(),
+            source_manifest_identity=self._source_manifest_identity(),
+            stage=stage,
+        )
+        receipt_path = write_receipt(self.out_dir, receipt)
+        self.final_artifact_authority = receipt
+        print(f"[AUTHORITY] final_artifact_authority.json -> {receipt_path}")
+        return receipt
+
+    def _assert_structure_frozen_unchanged(self, final_out: str, where: str) -> None:
+        """Fail closed if the published artifact's structure moved since the
+        freeze.
+
+        This is the enforcement behind "nothing after ``STRUCTURE_FROZEN`` may
+        mutate road identity, planView, road links, junction connections,
+        laneSection identities, lane links, lane widths, lane offsets or road
+        elevations" -- a measurement against the frozen baseline, not a naming
+        convention.
+        """
+        self.authority_ledger.assert_structure_unchanged(final_out, where=where)
+        print(f"[AUTHORITY] STRUCTURE_FROZEN re-verified at {where}.")
 
     def _assert_geometry_frozen(self, root: ET.Element, where: str) -> None:
         header = root.find("header")
