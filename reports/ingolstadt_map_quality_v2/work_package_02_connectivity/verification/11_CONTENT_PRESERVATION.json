@@ -1,0 +1,30 @@
+{
+  "schema_version": "WP2C-v1",
+  "comparison": "coordinate_corrected vs connectivity_repaired",
+  "checks": {
+    "road_ids_preserved": true,
+    "road_count_preserved": true,
+    "junction_ids_preserved": true,
+    "lane_count_preserved": true,
+    "lane_section_count_preserved": true,
+    "lane_types_preserved": true,
+    "planview_geometry_preserved": true,
+    "elevation_preserved": true,
+    "signals_preserved": true,
+    "controllers_preserved": true,
+    "objects_preserved": true,
+    "lane_widths_preserved": true,
+    "total_road_length_preserved": true
+  },
+  "mutations": {
+    "road_level_links": "7144 successor links added",
+    "junction_connections": "0 — no junction-level connections modified",
+    "lane_links": "0 — no LaneLinks added or removed",
+    "geometry": "0 — no geometry mutations",
+    "lanes": "0 — no lane mutations",
+    "signals": "0 — no signal mutations",
+    "objects": "0 — no object mutations",
+    "elevation": "0 — no elevation mutations"
+  },
+  "preservation_verdict": "PASS — Only road-level successor link elements were added. No coordinate, lane, signal, object, or elevation mutations."
+}

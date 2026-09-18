@@ -1,0 +1,50 @@
+{
+  "schema_version": "WP2C-v1",
+  "description": "Road-level reciprocity matrix for baseline, coordinate-corrected, and connectivity-repaired candidates",
+  "methodology": "For each declared road link (elementType=road), check if a reverse-direction link of opposite type exists in the target road. Also check for same-direction reciprocals (one-way loops).",
+  "results": {
+    "baseline": {
+      "declared_predecessor_slots": 22816,
+      "declared_successor_slots": 22816,
+      "total_road_links": 65350,
+      "succ_to_pred_valid": 10908,
+      "pred_to_succ_valid": 10908,
+      "succ_to_succ_valid": 278,
+      "pred_to_pred_valid": 278,
+      "missing_reciprocal": 45632,
+      "directionally_wrong": 0,
+      "reciprocal_rate": 0.3322
+    },
+    "coordinate_corrected": {
+      "declared_predecessor_slots": 22816,
+      "declared_successor_slots": 22816,
+      "total_road_links": 65350,
+      "succ_to_pred_valid": 10908,
+      "pred_to_succ_valid": 10908,
+      "succ_to_succ_valid": 278,
+      "pred_to_pred_valid": 278,
+      "missing_reciprocal": 45632,
+      "directionally_wrong": 0,
+      "reciprocal_rate": 0.3322,
+      "note": "identical to baseline — coordinate changes do not affect link structure"
+    },
+    "connectivity_repaired": {
+      "declared_predecessor_slots": 22816,
+      "declared_successor_slots": 29960,
+      "total_road_links": 72494,
+      "succ_to_pred_valid": 10908,
+      "pred_to_succ_valid": 10908,
+      "succ_to_succ_valid": 278,
+      "pred_to_pred_valid": 278,
+      "missing_reciprocal": 28390,
+      "directionally_wrong": 10098,
+      "reciprocal_rate": 0.4188,
+      "note": "New successor links (7144) have no corresponding predecessor links in target roads. Of 7144 new successor links: 1012 create reciprocal pairs with existing predecessor links (valid), 6132 point to roads where the reverse link would be predecessor (missing), creating directionally invalid state."
+    }
+  },
+  "analysis": {
+    "directionally_wrong_definition": "A successor link A→B creates a directionally_wrong state if road B has a predecessor link to A but road A does not have a predecessor link to road B (or vice versa for predecessor links). This means the link is one-directional without matching reverse.",
+    "root_cause": "Successor-only repairs: For each new successor link A→B, the repair algorithm should have also added a predecessor link B→A. Without the reverse link, the topology is asymmetric. The algorithm attempted predecessor repairs (4596 proposed) but accepted 0, then compensated by adding successsor-only links (7144), creating directional mismatches.",
+    "open_drive_travel_semantics": "In OpenDRIVE, successor of road X maps to predecessor of road Y when X flows into Y. A bidirectional road connection requires X's successor=Y AND Y's predecessor=X. The repair algorithm violated this by adding only X's successor=Y without Y's predecessor=X."
+  }
+}

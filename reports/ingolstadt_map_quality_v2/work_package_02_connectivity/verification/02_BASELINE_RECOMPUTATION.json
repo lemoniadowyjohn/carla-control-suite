@@ -1,0 +1,39 @@
+{
+  "schema_version": "WP2C-v1",
+  "baseline_recomputation": {
+    "baseline": {
+      "declared_predecessor_slots": 22816,
+      "declared_successor_slots": 22816,
+      "references_to_missing_road_ids": 0,
+      "references_to_missing_junction_ids": 656,
+      "invalid_element_type": 0,
+      "invalid_contact_point": 0,
+      "missing_reciprocal_road_links": 45632,
+      "directionally_wrong_reciprocal_links": 0
+    },
+    "coordinate_corrected": {
+      "declared_predecessor_slots": 22816,
+      "declared_successor_slots": 22816,
+      "references_to_missing_road_ids": 0,
+      "references_to_missing_junction_ids": 656,
+      "invalid_element_type": 0,
+      "invalid_contact_point": 0,
+      "missing_reciprocal_road_links": 45632,
+      "directionally_wrong_reciprocal_links": 0
+    },
+    "connectivity_repaired": {
+      "declared_predecessor_slots": 22816,
+      "declared_successor_slots": 29960,
+      "references_to_missing_road_ids": 0,
+      "references_to_missing_junction_ids": 656,
+      "invalid_element_type": 0,
+      "invalid_contact_point": 0,
+      "missing_reciprocal_road_links": 28390,
+      "directionally_wrong_reciprocal_links": 10098
+    }
+  },
+  "metric_reconciliation": {
+    "wp0_dangling_vs_wp2a_dangling": "Different definitions: WP0 'dangling_roads_no_link'=8 counts roads with no link element; WP2A 'references_to_missing_road_ids'=0 counts links pointing to nonexistent roads",
+    "missing_reciprocals_reduction": "Baseline 45632 -> Repaired 28390 (37.8% reduction), but 10098 directionally wrong reciprocals introduced"
+  }
+}

@@ -335,3 +335,236 @@ def param_poly3_bounds(
         for p in candidates
     ]
     return Bounds2D(min(xs), max(xs), min(ys), max(ys))
+
+
+# --------------------------------------------------------------------------
+# Spiral (clothoid) — OpenDRIVE <spiral> with curvStart/curvEnd.
+#
+# Heading evolves linearly: hdg(s) = hdg0 + curvStart*s + k*s**2/2, with
+# k = (curvEnd - curvStart)/length.  Position requires integrating
+# (cos hdg(s), sin hdg(s)) over s — no closed form without Fresnel
+# integrals, so we use adaptive Simpson integration with an explicit
+# error bound (no biased fixed-step Euler approximation).
+# --------------------------------------------------------------------------
+
+#: default absolute arc-length tolerance for adaptive spiral integration
+SPIRAL_ARC_TOL = 1e-9
+#: maximum adaptive subdivision depth (fail-closed guard against non-convergence)
+SPIRAL_MAX_DEPTH = 24
+
+
+def _spiral_heading(hdg0: float, curv_start: float, curv_end: float,
+                    length: float, s: float) -> float:
+    k = (curv_end - curv_start) / length
+    return hdg0 + curv_start * s + 0.5 * k * s * s
+
+
+def _spiral_integrand_x(s: float, hdg0: float, curv_start: float,
+                        curv_end: float, length: float) -> float:
+    return math.cos(_spiral_heading(hdg0, curv_start, curv_end, length, s))
+
+
+def _spiral_integrand_y(s: float, hdg0: float, curv_start: float,
+                        curv_end: float, length: float) -> float:
+    return math.sin(_spiral_heading(hdg0, curv_start, curv_end, length, s))
+
+
+def _adaptive_simpson(f, a: float, b: float, tol: float, max_depth: int,
+                      hdg0: float, curv_start: float, curv_end: float,
+                      length: float, depth: int = 0) -> float:
+    """Adaptive Simpson integration with error control; raises on divergence."""
+    h = (b - a) * 0.5
+    m = a + h
+    fa = f(a, hdg0, curv_start, curv_end, length)
+    fm = f(m, hdg0, curv_start, curv_end, length)
+    fb = f(b, hdg0, curv_start, curv_end, length)
+    whole = h / 3.0 * (fa + 4.0 * fm + fb)
+    left = (m - a) / 6.0 * (fa + 4.0 * f((a + m) * 0.5, hdg0, curv_start, curv_end, length) + fm)
+    right = (b - m) / 6.0 * (fm + 4.0 * f((m + b) * 0.5, hdg0, curv_start, curv_end, length) + fb)
+    err = abs(left + right - whole)
+    if err <= 15.0 * tol or depth >= max_depth:
+        if depth >= max_depth and err > 15.0 * tol * 64.0:
+            raise ArithmeticError(
+                f"spiral adaptive integration failed to converge at s in [{a:.6g},{b:.6g}]")
+        return left + right + (left + right - whole) / 15.0
+    return (_adaptive_simpson(f, a, m, tol * 0.5, max_depth, hdg0, curv_start, curv_end, length, depth + 1)
+            + _adaptive_simpson(f, m, b, tol * 0.5, max_depth, hdg0, curv_start, curv_end, length, depth + 1))
+
+
+def _validate_spiral(length: float, curv_start: float, curv_end: float) -> None:
+    if not math.isfinite(length) or length <= 0.0:
+        raise ValueError(f"spiral length must be finite and positive, got {length!r}")
+    if not (math.isfinite(curv_start) and math.isfinite(curv_end)):
+        raise ValueError("spiral curvStart/curvEnd must be finite")
+
+
+def _spiral_integrate_x_y(s0: float, s1: float, hdg0: float, curv_start: float,
+                          curv_end: float, length: float, tol: float = SPIRAL_ARC_TOL) -> tuple[float, float]:
+    """Integrate (cos, sin) of heading from s0 to s1 (s0 < s1) with error control."""
+    if not (0.0 <= s0 <= s1 <= length):
+        raise InvalidEvaluationRangeError(s1, s0, length)
+    dx = _adaptive_simpson(_spiral_integrand_x, s0, s1, tol, SPIRAL_MAX_DEPTH,
+                           hdg0, curv_start, curv_end, length)
+    dy = _adaptive_simpson(_spiral_integrand_y, s0, s1, tol, SPIRAL_MAX_DEPTH,
+                           hdg0, curv_start, curv_end, length)
+    return dx, dy
+
+
+def evaluate_spiral(x0: float, y0: float, hdg0: float, length: float,
+                    curv_start: float, curv_end: float, s: float,
+                    *,
+                    allow_extrapolation: bool = False,
+                    tol: float = SPIRAL_ARC_TOL) -> Pose2D:
+    """Pose at arc length ``s`` along a clothoid (adaptive integration)."""
+    _validate_spiral(length, curv_start, curv_end)
+    s_eval = _validate_evaluation_s(s, length, allow_extrapolation)
+    dx, dy = _spiral_integrate_x_y(0.0, s_eval, hdg0, curv_start, curv_end, length, tol)
+    return Pose2D(
+        x=x0 + dx,
+        y=y0 + dy,
+        hdg=_spiral_heading(hdg0, curv_start, curv_end, length, s_eval),
+    )
+
+
+def spiral_curvature_at(s: float, length: float, curv_start: float,
+                        curv_end: float) -> float:
+    _validate_spiral(length, curv_start, curv_end)
+    if not math.isfinite(s):
+        raise InvalidEvaluationRangeError(s, 0.0, length)
+    k = (curv_end - curv_start) / length
+    return curv_start + k * s
+
+
+def spiral_endpoint(x0: float, y0: float, hdg0: float, length: float,
+                    curv_start: float, curv_end: float,
+                    tol: float = SPIRAL_ARC_TOL) -> Pose2D:
+    return evaluate_spiral(x0, y0, hdg0, length, curv_start, curv_end, length, tol=tol)
+
+
+def sample_spiral(x0: float, y0: float, hdg0: float, length: float,
+                  curv_start: float, curv_end: float, spacing_m: float,
+                  tol: float = SPIRAL_ARC_TOL) -> list[Pose2D]:
+    """Uniform arc-length sampling; each interval integrated adaptively."""
+    if not math.isfinite(spacing_m) or spacing_m <= 0:
+        raise ValueError(f"spacing_m must be positive, got {spacing_m}")
+    _validate_spiral(length, curv_start, curv_end)
+    interior = int(length / spacing_m)
+    sample_s = [i * spacing_m for i in range(interior + 1)]
+    if not math.isclose(sample_s[-1], length, rel_tol=0.0, abs_tol=EPS):
+        sample_s.append(length)
+    else:
+        sample_s[-1] = length
+    poses = []
+    acc_x, acc_y = 0.0, 0.0
+    prev = 0.0
+    for s in sample_s:
+        dx, dy = _spiral_integrate_x_y(prev, s, hdg0, curv_start, curv_end, length, tol)
+        acc_x += dx
+        acc_y += dy
+        poses.append(Pose2D(x=x0 + acc_x, y=y0 + acc_y,
+                            hdg=_spiral_heading(hdg0, curv_start, curv_end, length, s)))
+        prev = s
+    return poses
+
+
+def spiral_bounds(x0: float, y0: float, hdg0: float, length: float,
+                  curv_start: float, curv_end: float,
+                  tol: float = SPIRAL_ARC_TOL) -> Bounds2D:
+    """Bounds via adaptive sampling expanded by the integration error bound."""
+    _validate_spiral(length, curv_start, curv_end)
+    pts = sample_spiral(x0, y0, hdg0, length, curv_start, curv_end, max(length / 64.0, 1.0), tol)
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    margin = tol * 64.0  # every interval converges to < 15*tol; 64 intervals worst case
+    return Bounds2D(min(xs) - margin, max(xs) + margin, min(ys) - margin, max(ys) + margin)
+
+
+# --------------------------------------------------------------------------
+# Poly3 — OpenDRIVE <poly3> cubic y(x) in the local frame.
+# --------------------------------------------------------------------------
+
+def _validate_poly3(length: float, a: float, b: float, c: float, d: float) -> None:
+    if not math.isfinite(length) or length <= 0.0:
+        raise ValueError(f"poly3 length must be finite and positive, got {length!r}")
+    for name, value in (("a", a), ("b", b), ("c", c), ("d", d)):
+        if not math.isfinite(value):
+            raise NonFiniteCoefficientError(name, value)
+
+
+def evaluate_poly3(x0: float, y0: float, hdg0: float, length: float,
+                   a: float, b: float, c: float, d: float, s: float,
+                   *,
+                   allow_extrapolation: bool = False) -> Pose2D:
+    """Pose at arc length ``s`` along a cubic y(x) poly3."""
+    _validate_poly3(length, a, b, c, d)
+    s_eval = _validate_evaluation_s(s, length, allow_extrapolation)
+    y_l = a + b * s_eval + c * s_eval * s_eval + d * s_eval ** 3
+    dy_dx = b + 2.0 * c * s_eval + 3.0 * d * s_eval * s_eval
+    cos0 = math.cos(hdg0)
+    sin0 = math.sin(hdg0)
+    x = x0 + cos0 * s_eval - sin0 * y_l
+    y = y0 + sin0 * s_eval + cos0 * y_l
+    return Pose2D(x=x, y=y, hdg=hdg0 + math.atan2(dy_dx, 1.0))
+
+
+def poly3_curvature_at(s: float, length: float, b: float, c: float, d: float) -> float:
+    _validate_poly3(length, 0.0, b, c, d)
+    if not math.isfinite(s):
+        raise InvalidEvaluationRangeError(s, 0.0, length)
+    dydx = b + 2.0 * c * s + 3.0 * d * s * s
+    d2 = 2.0 * c + 6.0 * d * s
+    return d2 / (1.0 + dydx * dydx) ** 1.5
+
+
+def poly3_endpoint(x0: float, y0: float, hdg0: float, length: float,
+                   a: float, b: float, c: float, d: float) -> Pose2D:
+    return evaluate_poly3(x0, y0, hdg0, length, a, b, c, d, length)
+
+
+def sample_poly3(x0: float, y0: float, hdg0: float, length: float,
+                 a: float, b: float, c: float, d: float,
+                 spacing_m: float) -> list[Pose2D]:
+    if not math.isfinite(spacing_m) or spacing_m <= 0:
+        raise ValueError(f"spacing_m must be positive, got {spacing_m}")
+    _validate_poly3(length, a, b, c, d)
+    interior = int(length / spacing_m)
+    sample_s = [i * spacing_m for i in range(interior + 1)]
+    if not math.isclose(sample_s[-1], length, rel_tol=0.0, abs_tol=EPS):
+        sample_s.append(length)
+    else:
+        sample_s[-1] = length
+    return [evaluate_poly3(x0, y0, hdg0, length, a, b, c, d, s) for s in sample_s]
+
+
+def poly3_bounds(x0: float, y0: float, hdg0: float, length: float,
+                 a: float, b: float, c: float, d: float) -> Bounds2D:
+    """Exact extrema-based bounds (roots of dy/dx in the local frame)."""
+    _validate_poly3(length, a, b, c, d)
+    cos0 = math.cos(hdg0)
+    sin0 = math.sin(hdg0)
+
+    def _x_at(s: float) -> float:
+        return x0 + cos0 * s - sin0 * (a + b * s + c * s * s + d * s ** 3)
+
+    def _y_at(s: float) -> float:
+        return y0 + sin0 * s + cos0 * (a + b * s + c * s * s + d * s ** 3)
+
+    candidates = {0.0, length}
+    qa = 3.0 * d
+    qb = 2.0 * c
+    qc = b
+    if qa == 0.0:
+        roots = [] if qb == 0.0 else [-qc / qb]
+    else:
+        disc = qb * qb - 4.0 * qa * qc
+        if disc >= 0.0:
+            sq = math.sqrt(disc)
+            roots = [(-qb - sq) / (2.0 * qa), (-qb + sq) / (2.0 * qa)]
+        else:
+            roots = []
+    for r in roots:
+        if 0.0 < r < length:
+            candidates.add(r)
+    xs = [_x_at(s) for s in candidates]
+    ys = [_y_at(s) for s in candidates]
+    return Bounds2D(min(xs), max(xs), min(ys), max(ys))

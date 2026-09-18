@@ -1,0 +1,1805 @@
+{
+  "files_scanned": 1185,
+  "findings": [
+    {
+      "path": "ultimate_pipeline\\cli.py",
+      "line": 29,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\cli.py",
+      "line": 35,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\cli.py",
+      "line": 63,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\cli.py",
+      "line": 443,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\inventory_processor.py",
+      "line": 186,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 141,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 176,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 324,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 558,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 561,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 569,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 812,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 852,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 888,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 891,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 899,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 1020,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 1072,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 1264,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 1825,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 1953,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2279,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2333,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2340,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2496,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2500,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2510,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2515,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2648,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2659,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2776,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2781,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2923,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 2966,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3041,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3042,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3049,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3125,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3139,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3145,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3194,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3220,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3334,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\main_pipeline.py",
+      "line": 3465,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\perception_smoke.py",
+      "line": 154,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\perception_smoke.py",
+      "line": 158,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\perception_smoke.py",
+      "line": 163,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\perception_smoke.py",
+      "line": 167,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 157,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 176,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 308,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 324,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 403,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 417,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 419,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 421,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 427,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 431,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 461,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 472,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 490,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 495,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 496,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 589,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 630,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 754,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 757,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 1031,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 1032,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_determinism_audit.py",
+      "line": 1706,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 89,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 93,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 116,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 119,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 122,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 127,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 140,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 229,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 234,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 240,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 241,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 256,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 286,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 328,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 354,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 360,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 362,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 533,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 615,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 618,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 622,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 692,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 729,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 738,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 879,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 881,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 884,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 922,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 927,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 966,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 969,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 977,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1021,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1034,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1149,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1201,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1294,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1305,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1320,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1325,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1345,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1364,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1378,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1410,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1425,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1436,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1439,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1452,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1460,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1463,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1522,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1533,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1644,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1727,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1777,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1819,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1821,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1830,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1834,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1867,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1870,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1873,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1881,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1883,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1914,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1926,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1940,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1944,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1973,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1976,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1979,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 1990,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2076,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2211,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2292,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2296,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2299,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2431,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2465,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2468,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2477,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2486,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2518,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2521,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2524,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2542,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2727,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2844,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2901,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2905,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 2958,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3013,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3100,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3102,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3194,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3335,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3340,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3345,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3350,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3363,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3447,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3557,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3658,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3723,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3727,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3937,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3951,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3957,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 3969,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 4177,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 4343,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 4425,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 4432,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 4450,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 4876,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5283,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5361,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5380,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5397,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5534,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5611,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5881,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5916,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 5952,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 6600,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 6718,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 6918,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 6999,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 7084,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 7267,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 7370,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_full_domain_gap.py",
+      "line": 7460,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_generalization_experiments.py",
+      "line": 102,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_generalization_experiments.py",
+      "line": 121,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\run_generalization_experiments.py",
+      "line": 212,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\run_generalization_experiments.py",
+      "line": 253,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\system_integrity_checker.py",
+      "line": 36,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\analysis\\pipeline_output_summary.py",
+      "line": 35,
+      "pattern": "unconditional-return",
+      "text": "return {}"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\map_event_record.py",
+      "line": 67,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\map_event_record.py",
+      "line": 73,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\map_event_record.py",
+      "line": 79,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\map_event_record.py",
+      "line": 85,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\map_event_record.py",
+      "line": 96,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\semantic_diff.py",
+      "line": 50,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\semantic_diff.py",
+      "line": 52,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 43,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 52,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 109,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 116,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 134,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 136,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 138,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 143,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 146,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 153,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\artifacts\\store.py",
+      "line": 205,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\augmentation\\realism_augmentor.py",
+      "line": 114,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\augmentation\\realism_augmentor.py",
+      "line": 147,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\augmentation\\realism_augmentor.py",
+      "line": 255,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\augmentation\\realism_augmentor.py",
+      "line": 262,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_check.py",
+      "line": 83,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_check.py",
+      "line": 314,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_check.py",
+      "line": 372,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_test.py",
+      "line": 93,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_test.py",
+      "line": 267,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_test.py",
+      "line": 283,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_final_test.py",
+      "line": 341,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_readiness.py",
+      "line": 186,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_recovery.py",
+      "line": 57,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_recovery.py",
+      "line": 130,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_recovery.py",
+      "line": 181,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_recovery.py",
+      "line": 270,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_recovery.py",
+      "line": 275,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_server.py",
+      "line": 44,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_server.py",
+      "line": 144,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_server.py",
+      "line": 149,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_server.py",
+      "line": 218,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_sim_consolidated.py",
+      "line": 352,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\carla_sim_consolidated.py",
+      "line": 470,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\evaluate_generated_map.py",
+      "line": 121,
+      "pattern": "unconditional-return",
+      "text": "return []"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\evaluate_generated_map.py",
+      "line": 155,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\evaluate_generated_map.py",
+      "line": 161,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\evaluate_generated_map.py",
+      "line": 168,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\evaluate_generated_map.py",
+      "line": 285,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\fixed_traffic_manager.py",
+      "line": 62,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\fixed_traffic_manager.py",
+      "line": 198,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\fixed_traffic_manager.py",
+      "line": 209,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\fixed_traffic_manager.py",
+      "line": 222,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\fixed_traffic_manager.py",
+      "line": 229,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 139,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 148,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 174,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 181,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 185,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 310,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 346,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 353,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 354,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 401,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 486,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 491,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 497,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 510,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 519,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 525,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 533,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 605,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 613,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 644,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\local_perception_runner.py",
+      "line": 649,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\map_registry.py",
+      "line": 147,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\map_registry.py",
+      "line": 152,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\map_registry.py",
+      "line": 170,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\map_registry.py",
+      "line": 257,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\map_registry.py",
+      "line": 320,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\map_registry.py",
+      "line": 354,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\perception_runner_hpc.py",
+      "line": 49,
+      "pattern": "unconditional-return",
+      "text": "return None"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\qa_tile_spawn_probe.py",
+      "line": 195,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\qa_tile_spawn_probe.py",
+      "line": 197,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\reload_ready_for_sensors.py",
+      "line": 47,
+      "pattern": "unconditional-return",
+      "text": "return True"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\reload_ready_for_sensors.py",
+      "line": 77,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\reload_ready_for_sensors.py",
+      "line": 83,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\reload_ready_for_sensors.py",
+      "line": 90,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\reload_ready_for_sensors.py",
+      "line": 138,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\reload_ready_for_sensors.py",
+      "line": 142,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\road_defect_detector.py",
+      "line": 133,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\runtime_enrichments.py",
+      "line": 138,
+      "pattern": "unconditional-return",
+      "text": "return []"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\runtime_enrichments.py",
+      "line": 420,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\safe_spawn_ego.py",
+      "line": 21,
+      "pattern": "bare-pass",
+      "text": "pass"
+    },
+    {
+      "path": "ultimate_pipeline\\carla_tools\\safe_spawn_ego.py",
+      "line": 36,
+      "pattern": "bare-pass",
+      "text": "pass"
+    }
+  ]
+}

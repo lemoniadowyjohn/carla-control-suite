@@ -1,0 +1,4 @@
+candidate,component_count,largest_component_road_count,largest_component_length_m,largest_component_fraction_roads,largest_component_fraction_length,isolated_roads,isolated_service_networks,likely_erroneous_components
+baseline,63,32627,1559406.20,0.99311,0.99299,8,0,55
+coordinate_corrected,63,32627,1559406.20,0.99311,0.99299,8,0,55
+connectivity_repaired,63,32627,1559406.20,0.99311,0.99299,0,0,62

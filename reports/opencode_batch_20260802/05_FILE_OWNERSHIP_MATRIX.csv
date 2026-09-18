@@ -1,0 +1,64 @@
+# 05_FILE_OWNERSHIP_MATRIX.csv
+
+**Generated:** 2026-08-02
+**Coordinator:** Prompt 01 — Campaign Coordinator
+Scope: non-overlap file ownership for Prompts 02-14. Paths relative to repo root.
+
+owner,path,action,notes
+AUDIT-NORM-001,phase_a_normalize.py,extend,already committed; P02 adds tests only
+AUDIT-NORM-001,reports/post_audit_hardening/**,extend,evidence dir (20260801T221042Z)
+AUDIT-NORM-001,audit_output/**,read-only,authoritative audit inputs NEVER modified
+AUDIT-NORM-001,audit_output.zip,re-archive,clean archive round-trip only
+AUDIT-NORM-001,ultimate_pipeline/audit/**,own,normalization tests+tooling go here
+SYS-001,ultimate_pipeline/__init__.py,own,canonical package
+SYS-001,ultimate_pipeline/bootstrap_repo_root.py,own,reconcile root vs submission copy
+SYS-001,ultimate_pipeline/cli.py,own,canonical CLI selection
+SYS-001,ultimate_pipeline/entrypoints.py,own,canonical entry point
+SYS-001,ultimate_pipeline/main_pipeline.py,own,fix broken imports only (no behavior change)
+SYS-001,ultimate_pipeline/quality/*,own,broken-import fixes only
+SYS-001,ultimate_pipeline/tools/*,own,broken-import fixes only
+SYS-001,ultimate_pipeline/perception/*,own,broken-import fixes only
+SYS-001,ultimate_pipeline/tile_validation/*,own,broken-import fixes only
+SYS-001,ultimate_pipeline/database/*,own,port from donor if referenced
+SYS-001,ultimate_pipeline/db/*,own,port from donor if referenced
+SYS-001,ultimate_pipeline/diagnostics/*,own,port from donor if referenced
+SYS-001,ultimate_pipeline/augmentation/*,own,port from donor if referenced
+SYS-001,ultimate_pipeline/roadrunner/*,own,port from donor if referenced
+SYS-001,ultimate_pipeline/artifacts/map_event_record.py,own,restore required module
+SYS-001,submission/infrastructure/ultimate_pipeline/**,deprecate,mark donor - DEPRECATION_POLICY.md + README note; NO wholesale copy
+SYS-001,ultimate_pipeline/pipeline_stages/**,own,stage registration reconciliation
+SYS-001,pytest.ini / ultimate_pipeline/pytest.ini,own,test config reconciliation
+TEST-TRACE-001,reports/opencode_batch_20260802/05_*,own,reports only
+TEST-TRACE-001,ultimate_pipeline/tests/**,read-only for P04,reserved; P05+ may extend
+GEO-FRZ-001,ultimate_pipeline/opendrive_geometry/**,own,geometry evaluators (line/arc/spiral/poly3/parampoly3)
+GEO-FRZ-001,ultimate_pipeline/geometry/geometry_math.py,own,evaluators
+GEO-FRZ-001,ultimate_pipeline/geometry/planview_smoother.py,own,disable unsafe smoothing in release
+GEO-FRZ-001,ultimate_pipeline/geometry/geometry_freeze.py,NEW,fail-closed freeze gate
+GEO-FRZ-001,ultimate_pipeline/quality/check_geometric_continuity.py,own,read-only validator
+GEO-FRZ-001,ultimate_pipeline/tests/unit/test_geometry_*.py,NEW,tests
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/topology/**,own,road/junction/link repair
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/quality/check_lane_connectivity.py,own,read-only validator
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/quality/check_junction_integrity.py,own,read-only validator
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/topology/roundabout_reconstructor.py,own,keep disabled until fixtures pass
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/topology/roundabout_rebuilder.py,own,ring detection etc.
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/topology/junction_connector_rebuild.py,own,candidate-first atomic rebuild
+TOP-JCT-RAB-LLK-001,ultimate_pipeline/tests/unit/test_*.py,extend,tests
+ELV-LAN-001,ultimate_pipeline/dem/**,own,DEM provenance
+ELV-LAN-001,ultimate_pipeline/elevation/**,own,profiles + structure policy
+ELV-LAN-001,ultimate_pipeline/geometry/elevation_smoother.py,own,
+ELV-LAN-001,ultimate_pipeline/quality/check_elevation_*.py,own,validators
+ELV-LAN-001,ultimate_pipeline/lanes/**,own,lane invariants
+ELV-LAN-001,ultimate_pipeline/geometry/lanesection_boundary_fixer.py,own,
+SIG-ENR-001,ultimate_pipeline/enrichment/**,own,provenance-backed idempotent writers
+SIG-ENR-001,ultimate_pipeline/tools/generate_enrichments_json.py,own,
+SIG-ENR-001,ultimate_pipeline/contracts/coordinate_contract.py,own (extend)
+TIL-EQV-001,ultimate_pipeline/tiling/**,own,curve-aware partition + ownership
+TIL-EQV-001,ultimate_pipeline/tile_validation/**,own,equivalence checker
+TIL-EQV-001,ultimate_pipeline/tools/evaluate_tiling.py,own,
+O2W-BLD-001,ultimate_pipeline/tools/check_osm2world_stack.py,own,deterministic naming + fail-closed OBJ validation
+O2W-BLD-001,ultimate_pipeline/enrichment/blender_runner.py,own,FBX round-trip tooling (BLOCKED without blender)
+O2W-BLD-001,ultimate_pipeline/tools/smoke_osm2world.py,own,
+REVIEW-STATIC-001,reports/opencode_batch_20260802/**,reports only
+REVIEW-EVIDENCE-001,reports/opencode_batch_20260802/**,reports only
+REVIEW-DIFF-001,reports/opencode_batch_20260802/**,reports only
+INTEGRATION-001,reports/opencode_batch_20260802/14_*,own,verdict + handoff

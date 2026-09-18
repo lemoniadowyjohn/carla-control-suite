@@ -1,0 +1,146 @@
+{
+  "authoritative_osm": {
+    "exists": false
+  },
+  "dem": {
+    "exists": false
+  },
+  "domain_gap_correspondence": {
+    "exists": true,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1"
+  },
+  "historical_run11": {
+    "axis_order": "x,y (easting,northing)",
+    "coordinate_magnitude": {
+      "x_center": 680092.47847357,
+      "x_range": 5000.1058245199965,
+      "y_center": 5403849.79760335,
+      "y_range": 4001.193000339903
+    },
+    "geoReference": "",
+    "geometry_bounds": [
+      677592.42556131,
+      5401849.20110318,
+      682592.53138583,
+      5405850.39410352
+    ],
+    "header_bounds": {
+      "east": 5015.61,
+      "north": 3963.92,
+      "south": 0.0,
+      "west": 0.0
+    },
+    "origin": "derived from geometry bounds",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_full_replay\\submission\\results\\structural_gap_run11\\auto_aligned_rigid.xodr",
+    "sha256": "c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a",
+    "units": "meters"
+  },
+  "manual_grid0821": {
+    "axis_order": "x,y (easting,northing)",
+    "coordinate_magnitude": {
+      "x_center": 680213.1552659,
+      "x_range": 4394.708687999984,
+      "y_center": 5403944.740269,
+      "y_range": 2917.1846580002457
+    },
+    "geoReference": "",
+    "geometry_bounds": [
+      678015.8009219,
+      5402486.14794,
+      682410.5096099,
+      5405403.332598
+    ],
+    "header_bounds": {
+      "east": 682426.9853946,
+      "north": 5405403.332598,
+      "south": 5402483.764268,
+      "west": 678015.8009219
+    },
+    "origin": "derived from geometry bounds",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\work\\codex-full-pipeline-rerun-20260427\\cities\\ingolstadt\\manual_grid0821.xodr",
+    "sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+    "units": "meters"
+  },
+  "manual_grid0821_aligned": {
+    "axis_order": "x,y (easting,northing)",
+    "coordinate_magnitude": {
+      "x_center": 680213.00612536,
+      "x_range": 4394.708687999984,
+      "y_center": 5403925.6282046,
+      "y_range": 2917.1846580002457
+    },
+    "geoReference": "",
+    "geometry_bounds": [
+      678015.65178136,
+      5402467.0358756,
+      682410.36046936,
+      5405384.2205336
+    ],
+    "header_bounds": {
+      "east": 682426.83625398,
+      "north": 5405384.2205336,
+      "south": 5402464.65220384,
+      "west": 678015.65178136
+    },
+    "origin": "derived from geometry bounds",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\thesis_results\\structural_gap_v1\\grid0821_vs_grid0828\\manual_grid0821_aligned_to_grid0828.xodr",
+    "sha256": "67148d18a67b284dbcb3c04d488a6d9967b1de04e0036bcad223e75fea811326",
+    "units": "meters"
+  },
+  "manual_grid0828": {
+    "axis_order": "x,y (easting,northing)",
+    "coordinate_magnitude": {
+      "x_center": 680213.1552659,
+      "x_range": 4394.708687999984,
+      "y_center": 5403944.740269,
+      "y_range": 2917.1846580002457
+    },
+    "geoReference": "",
+    "geometry_bounds": [
+      678015.8009219,
+      5402486.14794,
+      682410.5096099,
+      5405403.332598
+    ],
+    "header_bounds": {
+      "east": 682426.9853946,
+      "north": 5405403.332598,
+      "south": 5402483.764268,
+      "west": 678015.8009219
+    },
+    "origin": "derived from geometry bounds",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main_submission_ready\\final_code_evidence_pack_2026-03-26\\evidence\\rq2_source_maps\\manual_ingolstadt_grid0828.xodr",
+    "sha256": "a42ddfeae03b562d7d96d3fc14d2c5f04939218df4376b2738a96f0a6431b992",
+    "units": "meters"
+  },
+  "pinned_baseline": {
+    "axis_order": "x,y (easting,northing)",
+    "coordinate_magnitude": {
+      "x_center": 839304.2765456049,
+      "x_range": 13262.75307465007,
+      "y_center": 5465707.611022325,
+      "y_range": 14072.087617790326
+    },
+    "geoReference": "",
+    "geometry_bounds": [
+      832672.90000828,
+      5458671.56721343,
+      845935.65308293,
+      5472743.65483122
+    ],
+    "header_bounds": {
+      "east": 845943.06,
+      "north": 5472743.54,
+      "south": 5458671.57,
+      "west": 832672.9
+    },
+    "origin": "derived from geometry bounds",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_full_replay\\reports\\full_replay_domain_gap_campaign_20260802T081541Z\\replay\\run_a\\raw_replay_epsg32632_header_pinned.xodr",
+    "sha256": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4",
+    "units": "meters"
+  },
+  "tile_grid": {
+    "exists": true,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_main_governed\\work\\codex-full-pipeline-rerun-20260427\\domain_gap_results\\manual_tiles"
+  }
+}

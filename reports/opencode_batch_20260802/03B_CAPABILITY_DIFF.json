@@ -1,0 +1,3689 @@
+{
+  "root_total": 603,
+  "donor_total": 688,
+  "shared": 555,
+  "root_only": 48,
+  "donor_only": 133,
+  "capabilities": [
+    {
+      "capability": "ARCHITECTURE_STATUS.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "DEPRECATION_POLICY.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "PROJECT_AUDIT\\final_artifact_certification.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "PROJECT_AUDIT\\final_artifact_certifier.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "PROJECT_AUDIT\\how_to_run_manual_vs_generated.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "PROJECT_AUDIT\\runtime_validation.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "PROJECT_TREE.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "README.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "README_PERCEPTION_FIXPACK.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "THESIS_DELIVERABLES.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "_deps_freeze.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "_dir_tree.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "_tree.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "_tree_.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "analysis\\correlator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "analysis\\cross_city.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "analysis\\domain_gap_statistics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "analysis\\lane_debugger.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "analysis\\pipeline_output_summary.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "analyze_integration.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "artifacts\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\errors.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\map_event_record.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\model.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\promotion.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\recovery.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\semantic_diff.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\store.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "artifacts\\transaction.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "audit\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "augmentation\\realism_augmentor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "bootstrap_repo_root.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_fatal_error_testing_runbook.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\README.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\actor_stream_manager.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\capture.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "carla_tools\\carla_final_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\carla_final_test.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\carla_probe_port.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\carla_readiness.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\carla_recovery.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\carla_server.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\carla_sim_consolidated.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\check_opendrive_determinism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\data_manager.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "carla_tools\\evaluate_generated_map.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\fixed_traffic_manager.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\local_perception_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\map_identity_guard.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\map_loader.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\map_registry.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\mesh_streamer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\perception_runner_hpc.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\perception_runner_local.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\qa_tile_spawn_probe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\reload_ready_for_sensors.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\road_defect_detector.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\runtime_enrichments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\safe_spawn_ego.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\screenshot_generator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\sensor_registry.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "carla_tools\\sensor_rig.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\session.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "carla_tools\\spawn_enrichments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\spawn_hardening.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\spawn_recovery.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\spawn_validator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\tests\\test_thesis_sensor_rig_contract.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\thesis_sensor_rig.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\tile_qa_suite.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\tile_streamer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\tile_world_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\vehicle_manager\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\vehicle_manager\\cache.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\vehicle_manager\\core.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\vehicle_manager\\spawner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\vehicle_manager\\validator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\vehicle_manager\\vehicle_manager.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "carla_tools\\weather_controller.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "cli.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\coordinates.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\experiment.yaml",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\paths.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\runtime.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\settings.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\thesis_calib_default.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "config\\thesis_contract.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "contracts\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "contracts\\agent_sync.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "contracts\\artifacts.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "contracts\\coordinate_contract.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "contracts\\experiment_config.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "contracts\\gate_runner.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "contracts\\release_profile.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "contracts\\stage_contracts.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "contracts\\writer_lock.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "core\\carla_log_locator.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\carla_opendrive_loader.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\carla_preflight.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\carla_utils.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\crash_classifier.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\crash_intake.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\determinism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\file_utils.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\georef_utils.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\odr_io.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\repair_diff.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\return_codes.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\run_manifest.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\s_invariants.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\tile_failure_monitor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\validation_report.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\xodr_hash_gate.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\xodr_lightener.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\xodr_sanitizer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "core\\xodr_statistics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "dashboard\\quality_gates_app.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "data\\curator.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "database\\db_dashboard.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "database\\db_export.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "database\\db_manager.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "database\\experiment_tracker.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "database\\run_archiver.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "database\\sql_queries.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "db\\__init__.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "db\\sensor_logger.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "debug\\carla_crash_fixtures.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "debug\\check_lanes_and_stats.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "debug\\check_s_invariants.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "debug\\compare_xodr.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "debug\\failure_bundle.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "debug\\single_road_extractor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "dem\\dem_auto_downloader.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "dem\\dem_diagnostics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "determinism\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "determinism\\stage_digest.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\README.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\analyze_imports.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\fix_imports.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\scan_imports.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\test_imports.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\compare_two_xodr.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\debug_crop.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\extract_manual_tiles.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\find_broken_roads.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\json_to_csv.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\map_import_tester.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\project_audit.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\run_continuity_scan.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\run_debug_pipeline.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\run_domain_gap_analysis.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\run_lane_debug.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\visual_check_map.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "dev_tools\\tools\\visual_check_tile.py",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\audit_xodr_visual_geometry.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "diagnostics\\autopilot_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\autopilot_test.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\carla_quick_load.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\check_carla_session.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\continuity_diff_anim.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\continuity_heatmap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\continuity_metrics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\continuity_summary.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\dataset_quick_audit.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\elevation_summary.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\lane_debugger.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\mesh_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\pipeline_diagnostics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\system_integrity_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\tile_forensics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\validate_manual_maps.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\xodr_cropper.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "diagnostics\\xodr_cropper_gps.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\ENRICHMENTS_AND_BUILDINGS.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\INSTALL.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\MAIN_DOCUMENTATION.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\thesis\\sections\\determinism_and_provenance.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\thesis\\sections\\failure_mode_aware_evaluation.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\thesis\\sections\\validity_gates.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "docs\\thesis\\tables\\failure_modes_table.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "domain_gap\\adaptation\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\adaptation\\adaptation_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\adaptation\\coral.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\adaptation\\mmd.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\connectivity_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\curvature_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\deterministic_alignment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\domain_gap_aggregator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\domain_gap_prep.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\domain_gap_stats.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\elevation_contract.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "domain_gap\\elevation_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\elevation_invariants.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "domain_gap\\experiment_logger.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\fast_eval.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\feature_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\gap_analyzer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\geo_alignment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\geometry_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\intersection_classifier.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\intersection_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\junction_complexity_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\manual_vs_auto_comparator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\map_stats_osm.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\map_stats_xodr.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\object_density_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\osm_loader.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\per_tile_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\perception_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\perception_gap_feature_proxy.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\perception_plots.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\qms.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\report_aggregator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\report_writer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\road_classification_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\run_alignment_and_matching.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\run_domain_gap_sweep.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\run_gap_ablation_experiment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\semantic_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\structural_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tests\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tests\\test_geo_alignment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tests\\test_run_metadata.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tile_gap_evaluator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tile_gap_heatmap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tile_grid_meta.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tile_matcher.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tile_perception_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\tile_reporter.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\topology_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap\\validator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_cli.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\collapse_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\graph_builder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\infer_tile_gaps.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\latent_gap_metrics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\latent_gap_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\latent_gap_utils.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\map_encoder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\map_tile_dataset.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\run_ksweep.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "domain_gap_gnn\\train_map_encoder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "elevation\\elevation_seam_fixer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\blender_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\building_extruder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\elevation_importer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\elevation_link_offset_solver.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\lane_generator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\object_injector.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\osm2world_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\osm_meta_index.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\osm_polygon_loader.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\realism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\regulatory_sign_writer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\sidewalk_builder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\speed_limit_writer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\street_furniture_rules.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\traffic_light_infer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "enrichment\\turn_lanes_writer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "entrypoints.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "env_info.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\evaluator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\experiment_schema.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\registry.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\rl_fuzzer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\RUN_EXPERIMENTS.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\core_algorithms.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\domain_adaptation.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\exp_carla_import_repeatability.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\exp_domain_gap_manual_vs_auto.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\exp_manual_vs_manual_structural.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\exp_natural_domain_randomization.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\exp_osm_to_xodr_determinism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\experiment_auto_vs_auto.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\manual_refs.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\perception_preflight.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\protocol.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\protocol.yaml",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\run_all_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\run_perception_capture_pair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\run_structural_domain_gap_batch.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\run_thesis_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\run_thesis_oneweek.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\thesis\\run_vision_domain_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\trainer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "experiments\\unified_runner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "fixes\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "fixes\\fix_missing_lane_successors.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\crosssection_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\elevation_smoother.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\geometry_math.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\geometry_validator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\lane_seam_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\lane_width_clamp.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\laneoffset_normalizer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\laneoffset_smoother.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\lanesection_boundary_fixer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\mesh_continuity_repairer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\planview_smoother.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "geometry\\quarantine_bad_roads.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\Dockerfile.yolo_smoke",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\README.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\build_yolo_dataset.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\carla_server_launcher.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\exp_curv_only.yaml",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\exp_full.yaml",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\exp_geom_only.yaml",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\exp_sem_only.yaml",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\yolo_auto.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\yolo_manual.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\configs\\yolo_mixed.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\dataset_builder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\docker_smoke_test.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\experiment_orchestrator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\hpc_experiments_dashboard.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\hpc_experiments_plan.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\hpc_load_opendrive_batch.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\hpc_preflight.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\hpc_training_launcher.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\instruction_bash_commands",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\jobs\\auto_to_manual_yolo.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\jobs\\ingolstadt_auto_yolo.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\jobs\\ingolstadt_manual_yolo.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\jobs\\ingolstadt_mixed_yolo.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\launch.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\perception_runner_hpc.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_ablation_array.sbatch",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_core_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_domain_gap_sweep.sbatch",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_hpc_setup.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_thesis_hpc_analysis.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_train.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\run_yolo_job.slurm",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\sbatch\\train_eval.sbatch",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\sbatch\\train_yolo.sbatch",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\slurm_template.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\slurm_train.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\slurm_train_segmentation.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\slurm_train_segmentation.sh.hpczip",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\slurm_train_segmentation_ddp.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\slurm_train_yolo.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\spawn_manager.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\train_yolo.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\train_yolo.slurm",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "hpc\\yolo_backend.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "inventory_processor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "lanes\\lane_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "lanes\\lanelink_builder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "lanes\\markings_builder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "list_ultimate_pipeline.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\llm_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\llm_client.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\llm_domain_gap_reviewer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\llm_quality_gate.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\llm_safety_assistant.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\llm_xodr_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\ollama_bootstrap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "llm\\xodr_llm_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "main_pipeline.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "map_fixes\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "map_fixes\\xodr_junction_links.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "ml\\lane_gnn_refiner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "notes\\thesis_spine.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "optional\\carla_api.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "osm\\osm_downloader.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "osm\\osm_to_xodr.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "osm\\osm_to_xodr_wrapper.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\DATASET_FORMAT.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\calibration.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "perception\\dataset_generator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\eval_real_unlabeled.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\eval_sim_labeled.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\min_train_segmentation.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\perception_api.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\perception_metrics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\perception_metrics_exporter.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\perception_metrics_simple.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\perception_runner_local_aug.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\record_route.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\record_route_fixed.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\rig_verifier.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\run_capture_end2end.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\run_training.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\segmentation_dataset_generator_queues.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception\\train_launcher.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "perception_smoke.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_00_preflight_carla.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_01_sanitize.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_02_topology_semantics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_03_topology_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_04_enrichment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_05_geometry.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_06_links.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_07_lanes.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_08_final_integrity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_08_integrity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_09_tiling.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_10_tile_qa.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_11_12_sim_domain.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_11_simulation.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_12_domain_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "pipeline_stages\\stage_14_finalization.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "preflight_reports\\preflight_report.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "pytest.ini",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "python_modules.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "python_structure.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\autofix_postprune_elevation.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\carla_pruner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_carla_import_s.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_carla_opendrive_compat.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_dem_coverage.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_dem_full_coverage.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_determinism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_drivability_smoke.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_elevation_continuity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_elevation_missing_and_cliffs.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_elevation_profile.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_elevation_seams.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_elevation_smoothness.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_external_libopendrive.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_geometric_continuity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_junction_integrity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_lane_connectivity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_lane_geometry_continuity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_lane_link_targets_exist.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_lane_section_successors.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_lane_width_continuity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_origin_sanity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_physics_feasibility.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_post_tiling_integrity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_randomness_entropy.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_semantic_overlap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_xml_integrity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\check_xodr_schema.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\collision_mesh.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\drivable_surface_scanner.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "quality\\entropy.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\full_map_metrics.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "quality\\lane_width_invariants.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\map_acceptance.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\pipeline_health_summary.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\quality_gate_manager.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\quality_gates.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\quarantine_bad_roads.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\road_classification_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\road_link_endpoint_errors.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\semantic_overlap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\xodr_junction_ref_cleanup.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "quality\\xodr_strict_validator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_all_python_files.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_analysis_advanced_signals.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_analysis_defs.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_analysis_files_overview.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_analysis_function_candidates.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_analysis_validation_patterns.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_deps_raw.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_domain_gap_file_inventory.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_domain_gap_io.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_domain_gap_loc.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_domain_gap_loops.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_domain_gap_outputs.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\_domain_gap_unused_candidates.csv",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\ultimate_pipeline_all_py.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\_generated\\ultimate_pipeline_tree.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "reports\\report_generator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "requirements-hpc.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "requirements-sim.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "requirements.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "roadrunner\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\alignment.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\capability_probe.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\exceptions.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\export_inventory.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\gate_matrix.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\installation.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\manifest.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\mesh_manifest.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\models.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\semantic_manifest.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "roadrunner\\source_contract.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "run_determinism_audit.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "run_full_domain_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "run_full_test.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "run_generalization_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "run_perception_grid0828_and_generated.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "run_pipeline.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "run_quality_gates.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "scenarios\\auto_scenario_generator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "scenarios\\sweeps.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "scripts\\run_ablation.sh",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "scripts\\run_pair.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "scripts\\set_manual_map.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "scripts\\start_carla_wait_and_load.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "semantics\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "semantics\\semantic_mapper.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\attach_sensors_safe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\calib_data.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\calibration_sanity_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\dominik_sensor_setup.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\dominik_sensor_setup_high_res.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\recorder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\rig_transforms.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\sensor_visualizer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\sweep_calib_setup.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\sweep_calib_setups.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sensors\\transform_conventions.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "settings.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sitecustomize.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "sys_explanation.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "system_integrity_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\conftest.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_contracts.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_deterministic_alignment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_perception_collect_tools.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_reload_ready_for_sensors.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_run_root_inference.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_sumo_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\test_wait_for_first_sample.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\unit\\test_audit_normalization.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\unit\\test_connectivity_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_connectivity_gap_always_present.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_coordinate_contract.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\unit\\test_curvature_gap_parampoly3.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_elevation_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_geo_alignment_rigid_scale_lock.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_junction_connector_rebuild.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\unit\\test_opendrive_geometry_line_arc.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\unit\\test_osm_meta_index.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_run_full_domain_gap_offline_carla_guard.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_run_full_domain_gap_reproducibility.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_sys001_import_smoke.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tests\\unit\\test_tile_crs_alignment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_tile_extractor_crs.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_tile_gap_evaluator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_tile_iou_report_wire.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_tile_matcher_spatial.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tests\\unit\\test_xodr_cropper_gps.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "thesis\\generate_curvature_distribution_figure.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "thesis\\generate_figures.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "thesis\\make_figure_pack.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "thesis\\methodology.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "thesis_writing_structure_and_important_info_MAIN.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\carla_load_and_spawn_worker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\carla_tile_tester.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\geometry_seam_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\lane_seam_checker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\qa_tile_spawn_probe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\qa_tile_stress_tester.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\seam_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\step10_tile_qa_supervisor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\step10_tile_qa_worker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\tile_stress_tester.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tile_validation\\tile_visibility.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiles\\tile_metadata.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\seam_artifacts.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\stream_tiles.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\tile_adjacency.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\tile_auto_forensics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\tile_extractor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\tile_matcher.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\tile_metadata.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tiling\\tile_validator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\CARLA_RUNBOOK.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\PROJECT_REPORT.md",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\PROJECT_TREE.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\_mcp_audit\\_mcp_audit_report.json",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\_mcp_audit\\_mcp_dependency_graph.dot",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\_mcp_audit\\_mcp_red_flags.txt",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\artifact_integrity_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\artifact_locator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\assert_carla_invariants.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\audit_thesis_topic_contract.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\build_ledger_salvage_index.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\calib_sanity_check.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\calibrate_sensors_in_carla.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\capture_perception_pair_safe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\capture_rgb_200frames.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_preflight.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_probe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_probe_map.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_probe_port.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_screenshot_once.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_smoke_suite.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\carla_visual_smoke_gate.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\check_osm2world_stack.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\check_osm_to_carla_determinism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\check_perception_status.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\check_seams.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\check_sensor_rig.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\check_tile_alignment.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\compare_runs_determinism.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\compute_missing_run11_metrics.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\compute_perception_gap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\coordinate_system_artifact.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\determinism_classify.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\diagnose_pipeline.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\diagnostic_carla_probe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\drivability_probe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\enter_carla.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\env_check_carla.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\evaluate_tiling.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\export_thesis_tables.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\extract_elevation_stats.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\final_map_readiness_gate.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\find_duplicate_files.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\generate_enrichments_json.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\generate_n_runs.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\hash_tree.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\junction_connector_rebuild.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\junction_connector_snap.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "tools\\list_entrypoints.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\load_final_into_carla.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\map_only_probe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\osm_stats.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\ost_run_protocol_adapter.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\pack_thesis_run.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\path_utils.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\perception_artifacts.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\post_run_carla_sanity.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\preflight_xodr_loadability.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\preload_map.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\print_run_paths.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\probe_carla.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\project_tools.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\reconcile_run11_authority.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\repair_drop_invalid_lane_link_targets.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\repair_lane_widths.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_arm.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_auto_xodr_record.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_calibration.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_full_perception_collect.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_gnn_pipeline.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_offline_gaps_from_pair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_perception_pair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_perception_retry.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_perception_safe.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_scenariorunner_once.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_scenarios_batch.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_thesis_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_thesis_final_experiments.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_tile_perception_sweep.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\run_tile_qa_controller.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\select_and_view_tile.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\smoke_check_all.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\smoke_check_spawn.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\smoke_load_xodr.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\smoke_osm2world.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\spawn_sanity_objects.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\spawn_thesis_rig.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\stage_gate_regression.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\start_carla_load_xodr.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\stream_subprocess.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\sweep_calib_setups.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\system_metrics_monitor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\tests\\test_calib_path.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\thesis_env_preset.ps1",
+      "root_files": 0,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\thesis_orchestrator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\thesis_protocol_postprocess.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\thesis_qa_bundle.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\tile_manual_xodr_windows.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\tile_qa_batch.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\tile_validate_one.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\tile_worker.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\validate_artifacts.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\validate_governance.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\validate_thesis_claim_provenance.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\validate_thesis_run.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\verify_final_xodr.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\visual_check_calib_setup.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\write_manifest.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\xodr_carla_hardener.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\xodr_compare_gate.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\xodr_coordinate_report.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "tools\\xodr_structural_summary.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\__init__.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "topology\\junction_connector_rebuild.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\junction_model.py",
+      "root_files": 1,
+      "donor_files": 0
+    },
+    {
+      "capability": "topology\\missing_junction_link_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\road_removal.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\roundabout_rebuilder.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\roundabout_reconstructor.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\semantic_verifier.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\structure_prune_legacy.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\structure_scanner.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\sumo_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\topology_linter.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "topology\\topology_repair.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "usercustomize.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\__init__.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\bootstrap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\carla_server.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\console_encoding.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\environment_snapshot.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\file_hashing.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\finalize_run_pack.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\hashing.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\logging.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\map_fingerprint.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\optional_imports.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\output_discovery.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\paths.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\run_provenance.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\timestamped_print.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\utf8_console.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "utils\\xodr_subset.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\animated_diff.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\augmentation_preview.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\city_drift_field.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\city_map_diff.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\cross_section_visualizer.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\curvature_drift_plot.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\elevation_heatmap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\heatmap_generator.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\heatmap_plotter.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\iou_histogram.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\lane_overlay.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\map_diff.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\map_plotter.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\osm_overlay.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\spawn_heatmap.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\thesis_figures.py",
+      "root_files": 1,
+      "donor_files": 1
+    },
+    {
+      "capability": "visualization\\tile_gap_heatmap.py",
+      "root_files": 1,
+      "donor_files": 1
+    }
+  ]
+}

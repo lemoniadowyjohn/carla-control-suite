@@ -1,0 +1,460 @@
+{
+  "total_junctions": 3646,
+  "total_connections": 22816,
+  "connections_with_lanelinks": 22816,
+  "total_lane_links": 32040,
+  "namespace": null,
+  "all_connections": [
+    {
+      "junction_id": "75",
+      "incoming_road": "39869",
+      "connecting_road": "49724",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "183",
+      "incoming_road": "44668",
+      "connecting_road": "49725",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "183",
+      "incoming_road": "44401",
+      "connecting_road": "49726",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "183",
+      "incoming_road": "44401",
+      "connecting_road": "49727",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "184",
+      "incoming_road": "39936",
+      "connecting_road": "49728",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "43788",
+      "connecting_road": "49729",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "43788",
+      "connecting_road": "49730",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "43788",
+      "connecting_road": "49731",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "44135",
+      "connecting_road": "49732",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "44135",
+      "connecting_road": "49733",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "44137",
+      "connecting_road": "49734",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3368",
+      "incoming_road": "44137",
+      "connecting_road": "49735",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "44319",
+      "connecting_road": "49736",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "44319",
+      "connecting_road": "49737",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "44319",
+      "connecting_road": "49738",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "39872",
+      "connecting_road": "49739",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "39872",
+      "connecting_road": "49740",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "39977",
+      "connecting_road": "49741",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "77",
+      "incoming_road": "39977",
+      "connecting_road": "49742",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "39870",
+      "connecting_road": "49743",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "39870",
+      "connecting_road": "49744",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "44447",
+      "connecting_road": "49745",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "44447",
+      "connecting_road": "49746",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "44321",
+      "connecting_road": "49747",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "44321",
+      "connecting_road": "49748",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "74",
+      "incoming_road": "44321",
+      "connecting_road": "49749",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3591",
+      "incoming_road": "45618",
+      "connecting_road": "49750",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "48102",
+      "connecting_road": "49751",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "48102",
+      "connecting_road": "49752",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "48102",
+      "connecting_road": "49753",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "43023",
+      "connecting_road": "49754",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "43023",
+      "connecting_road": "49755",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "40026",
+      "connecting_road": "49756",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "40026",
+      "connecting_road": "49757",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "319",
+      "incoming_road": "40026",
+      "connecting_road": "49758",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "44535",
+      "connecting_road": "49759",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "44535",
+      "connecting_road": "49760",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "44535",
+      "connecting_road": "49761",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "40027",
+      "connecting_road": "49762",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "40027",
+      "connecting_road": "49763",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "44471",
+      "connecting_road": "49764",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "259",
+      "incoming_road": "44471",
+      "connecting_road": "49765",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "260",
+      "incoming_road": "39992",
+      "connecting_road": "49766",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "260",
+      "incoming_road": "44536",
+      "connecting_road": "49767",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3601",
+      "incoming_road": "44475",
+      "connecting_road": "49768",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3601",
+      "incoming_road": "44475",
+      "connecting_road": "49769",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "3601",
+      "incoming_road": "44475",
+      "connecting_road": "49770",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "263",
+      "incoming_road": "44476",
+      "connecting_road": "49771",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "263",
+      "incoming_road": "42823",
+      "connecting_road": "49772",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    },
+    {
+      "junction_id": "268",
+      "incoming_road": "44481",
+      "connecting_road": "49773",
+      "contact_point": "start",
+      "has_lanelinks": true,
+      "incoming_road_exists": true,
+      "connecting_road_exists": true
+    }
+  ],
+  "connections_missing_road_ref": []
+}

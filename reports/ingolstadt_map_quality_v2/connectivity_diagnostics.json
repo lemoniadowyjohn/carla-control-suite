@@ -1,0 +1,527 @@
+{
+  "total_roads": 32710,
+  "dangling_predecessor": 9886,
+  "dangling_successor": 9886,
+  "invalid_elementType": 19718,
+  "invalid_contactPoint": 0,
+  "missing_reciprocal_link": 0,
+  "wrong_reciprocal_direction": 45632,
+  "invalid_junction_reference": 0,
+  "missing_junction_connection": 0,
+  "invalid_connecting_road": 0,
+  "invalid_LaneLink_target": 0,
+  "isolated_road": 8,
+  "component_count": 63,
+  "components": [
+    {
+      "road_count": 32627,
+      "road_length_m": 1559406.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 22802
+    },
+    {
+      "road_count": 4,
+      "road_length_m": 2493.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 2
+    },
+    {
+      "road_count": 4,
+      "road_length_m": 2015.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 2
+    },
+    {
+      "road_count": 16,
+      "road_length_m": 1303.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 10
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 236.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 223.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 210.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 206.5,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 202.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 190.5,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 186.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 186.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 183.7,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 157.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 149.1,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 144.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 136.0,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 135.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 135.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 132.1,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 119.1,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 118.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 109.1,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 101.4,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 98.7,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 98.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 92.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 91.5,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 89.7,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 89.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 79.7,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 76.9,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 75.4,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 66.4,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 63.7,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 61.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 51.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 49.9,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 49.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 49.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 49.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 48.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 48.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 40.9,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 40.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 37.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 35.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 30.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 29.1,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 28.5,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 28.1,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 27.9,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 25.6,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 19.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 18.0,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 16.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 12.3,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 9.0,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 5.7,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 4.8,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 0.4,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 0.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    },
+    {
+      "road_count": 1,
+      "road_length_m": 0.2,
+      "road_classes": [
+        "town"
+      ],
+      "junction_count": 0
+    }
+  ],
+  "pred_declared": 22816,
+  "succ_declared": 22816,
+  "pred_declared_rate": 0.6975,
+  "succ_declared_rate": 0.6975,
+  "pred_reciprocal_valid_rate": 0.0,
+  "succ_reciprocal_valid_rate": 0.0
+}

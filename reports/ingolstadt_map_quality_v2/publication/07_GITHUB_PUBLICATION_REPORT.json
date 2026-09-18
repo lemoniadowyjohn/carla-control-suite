@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "publication_verdict": "GITHUB_PUBLICATION_PARTIAL_LARGE_ARTIFACTS_REFERENCED",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "clone_url": "https://github.com/lemoniadowyjohn/carla-control-suite.git",
+  "branch": "improvement/ingolstadt-map-quality-v2-202608",
+  "base_branch": "integration/governed-map-quality-20260729",
+  "baseline_commit": "877e9aef41f733a3ecf980a4559ec6bd359037bf",
+  "final_local_commit": "35d98ee7ffc71380eed1450bd0b2b9e4ff00ce6f",
+  "remote_branch_sha": "35d98ee7ffc71380eed1450bd0b2b9e4ff00ce6f",
+  "commits": [
+    {"sha": "661a1f03", "message": "campaign: publish baseline authority and campaign metadata", "files_changed": 5},
+    {"sha": "fa008081", "message": "coordinates: publish verified reprojection implementation and evidence", "files_changed": 1},
+    {"sha": "488fbecd", "message": "connectivity: publish diagnostics and rejected repair attempt", "files_changed": 52},
+    {"sha": "35d98ee7", "message": "verification: publish WP2C rejection evidence and review entrypoint", "files_changed": 5}
+  ],
+  "pull_request": {
+    "number": 1,
+    "url": "https://github.com/lemoniadowyjohn/carla-control-suite/pull/1",
+    "draft": true,
+    "title": "Ingolstadt map quality v2: verified coordinate correction and rejected connectivity repair evidence"
+  },
+  "files_committed": {
+    "total_changed": 79,
+    "new_files": 71,
+    "modified_files": 2,
+    "by_category": {
+      "campaign_authority_wp0": 8,
+      "wp1_coordinate_evidence": 9,
+      "wp1_verification_tests": 1,
+      "wp2a_wp2b_wp2c_evidence": 55,
+      "publication_summaries": 7,
+      "configuration": 1
+    }
+  },
+  "git_lfs_files": [
+    {
+      "path": "reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr",
+      "sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+      "size_bytes": 89206190,
+      "published_via_lfs": true
+    }
+  ],
+  "manifest_only_artifacts": [
+    {"logical_path": "evidence/BASELINE_CANDIDATE_PINNED.xodr", "sha256": "c8419f8c79b2c64bf1025371f1651b7f41e13e47cdfe1107857e16b6c5429ae4", "size_bytes": 82318919},
+    {"logical_path": "evidence/HISTORICAL_RUN11_ARTIFACT.xodr", "sha256": "c765c4daf84e051934e420d4ae71609ef7a0f3cc34eb02b2165eeb8a1a1eea3a", "size_bytes": 13845703},
+    {"logical_path": "evidence/MANUAL_GRID0828.xodr", "sha256": "a42ddfeae03b562d7d96d3fc14d2c5f04939218df4376b2738a96f0a6431b992", "size_bytes": 65938173},
+    {"logical_path": "evidence/MANUAL_GRID0821.xodr", "sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8", "size_bytes": 65623470},
+    {"logical_path": "metric_locks/METRIC_DEFINITION_LOCK.json", "sha256": "10ff52f65fb2da1461852ad1f1c8e7990ed3be1f34c8d2526227db5b31465ef3", "size_bytes": 2228},
+    {"logical_path": "threshold_locks/THRESHOLD_CHANGE_REPORT.md", "sha256": "6766166c87adca18ae99c98d572479dcef84e0f4025cd76c8f2252c727e46734", "size_bytes": 824},
+    {"logical_path": "baseline_record/BASELINE_CANDIDATE.json", "sha256": "4b8a28ae2294890ff872a592cd990cde5ceebe2270712a6ef267272d8f798153", "size_bytes": 2581},
+    {"logical_path": "MASTER_PROMPT.md", "sha256": "7321fb0d6a7ae4f5609ad2721067ef5f7f996d117806b771161a8f37b05a8fa9", "size_bytes": 4619}
+  ],
+  "files_excluded": [
+    {"path": "work_package_02_connectivity/v2/", "reason": "V2 repair work not part of this publication"},
+    {"path": "rejected_attempt_v1/candidate_connectivity_repaired.xodr", "reason": "Rejected candidate, not promoted"},
+    {"path": "external/", "reason": "Third-party tools, unrelated"},
+    {"path": ".idea/", "reason": "IDE cache"},
+    {"path": "audit_output/", "reason": "Audit output, unrelated"},
+    {"path": "__pycache__/", "reason": "Python cache, gitignored"},
+    {"path": "*.pyc", "reason": "Compiled Python, gitignored"}
+  ],
+  "test_results": {
+    "coordinate_verification": {"passed": 13, "failed": 0, "skipped": 0, "warnings": 0, "exit_code": 0},
+    "geometric_continuity": {"passed": 24, "failed": 0, "skipped": 0, "warnings": 3, "exit_code": 0},
+    "topology_validation": {"passed": 11, "failed": 0, "skipped": 0, "warnings": 0, "exit_code": 0}
+  },
+  "secret_scan_result": {
+    "patterns_scanned": ["ghp_", "github_pat_", "sk-", "BEGIN PRIVATE KEY", "cloudflared token", "Bearer", "password=", "secret=", "api_key="],
+    "secrets_found": false,
+    "details": "No secrets found in staged or committed content"
+  },
+  "working_tree_state": {
+    "clean_for_publication": true,
+    "untracked_non_publication_files_present": true,
+    "untracked_examples": [".idea/", "external/", "audit_output/", "carla_governed/", "work/"]
+  },
+  "environment": {
+    "python": "3.12.2",
+    "git": "2.46.2.windows.1",
+    "git_lfs": "3.5.1 (GitHub; windows amd64; go 1.21.7; git e237bb3a)"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "WP2C-v1",
+  "generated_at_utc": "2026-08-03T01:00:00Z",
+  "files": [
+    "00_WP2C_EXECUTIVE_STATUS.md",
+    "01_METRIC_DEFINITIONS.json",
+    "02_BASELINE_RECOMPUTATION.json",
+    "03_REPAIR_VALIDATION.csv",
+    "04_REJECTED_REPAIRS.csv",
+    "05_PREDECESSOR_FAILURE_CLASSIFICATION.csv",
+    "06_RECIPROCITY_MATRIX_RESULTS.json",
+    "07_JUNCTION_CONNECTION_REPORT.json",
+    "08_LANELINK_REPORT.json",
+    "09_COMPONENT_ANALYSIS.csv",
+    "10_ROUTE_FIXTURE_RESULTS.json",
+    "11_CONTENT_PRESERVATION.json",
+    "12_MUTATION_DIFF.jsonl",
+    "13_HASH_REGISTRY.json",
+    "14_REMAINING_DEFECTS.csv",
+    "15_WP2C_VERDICT.md"
+  ],
+  "candidate_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+  "candidate_path": "candidate_connectivity_repaired.xodr",
+  "verdict": "CONNECTIVITY_REPAIR_REJECTED"
+}

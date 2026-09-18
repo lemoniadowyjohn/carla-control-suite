@@ -1,0 +1,6 @@
+component,failure_class,count,reason
+proposed_predecessor_repairs,algorithm_defect,4596,"All 4596 proposed predecessor repairs rejected by repair algorithm. The predecessor validation logic is defective — likely checking reverse geometric relationship (end-of-target to start-of-source) instead of expected (end-of-source to start-of-target) or applying stricter thresholds than successor validation."
+proposed_succ_repairs,distance_failure,2967,"2967 proposed successor repairs rejected because endpoint distance exceeded 15m threshold"
+proposed_succ_repairs,heading_failure,2824,"2824 proposed successor repairs rejected because heading difference exceeded 15° threshold"
+proposed_succ_repairs,combined_failure,1967,"1967 proposed successor repairs rejected for both distance AND heading failure"
+proposed_succ_repairs,accepted,1012,"1012 successor repairs accepted and applied (7144 in repair_report, 1012 independently validated)"
