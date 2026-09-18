@@ -25,35 +25,21 @@ def _dist(a: Point, b: Point) -> float:
 
 
 def _geom_end(geom: ET.Element) -> Tuple[float, float, float]:
-    x = float(geom.attrib["x"])
-    y = float(geom.attrib["y"])
-    hdg = float(geom.attrib["hdg"])
-    length = float(geom.attrib["length"])
+    """Endpoint (x, y, heading) of a <geometry> element.
 
-    if geom.find("line") is not None:
-        return x + length * math.cos(hdg), y + length * math.sin(hdg), hdg
+    Delegates to the canonical ``opendrive_geometry_kernel`` so every
+    plan-view primitive (line, arc, spiral, poly3, paramPoly3) is handled
+    correctly. Previously this function only recognized ``line`` and
+    ``paramPoly3`` children; any other primitive (arc, spiral, poly3) fell
+    through to ``return x, y, hdg`` -- the segment's *start* pose, silently
+    treated as a zero-length no-op -- and even the paramPoly3 branch always
+    returned the unrotated start heading instead of the true tangent at the
+    endpoint.
+    """
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint
 
-    pp = geom.find("paramPoly3")
-    if pp is None:
-        return x, y, hdg
-
-    a_u = float(pp.attrib.get("aU", "0"))
-    b_u = float(pp.attrib.get("bU", "0"))
-    c_u = float(pp.attrib.get("cU", "0"))
-    d_u = float(pp.attrib.get("dU", "0"))
-    a_v = float(pp.attrib.get("aV", "0"))
-    b_v = float(pp.attrib.get("bV", "0"))
-    c_v = float(pp.attrib.get("cV", "0"))
-    d_v = float(pp.attrib.get("dV", "0"))
-    p_range = pp.attrib.get("pRange", "normalized")
-
-    p = 1.0 if p_range == "normalized" else length
-    u = a_u + b_u * p + c_u * p * p + d_u * p * p * p
-    v = a_v + b_v * p + c_v * p * p + d_v * p * p * p
-
-    x_end = x + u * math.cos(hdg) - v * math.sin(hdg)
-    y_end = y + u * math.sin(hdg) + v * math.cos(hdg)
-    return x_end, y_end, hdg
+    pose = endpoint(geom)
+    return pose.x, pose.y, pose.heading
 
 
 def _road_endpoints(road: ET.Element) -> Tuple[Point, Point]:
