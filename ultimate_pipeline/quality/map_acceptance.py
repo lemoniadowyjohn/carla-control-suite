@@ -3,12 +3,18 @@
 
 """
 Map acceptance summary for gating perception runs.
+
+All outputs include SHA256 bindings for evidence artifacts and the acceptance
+decision itself, plus a provenance block with tool version, git SHA, and
+Python version. Schema versioning enables forward/backward compatibility.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import sys
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 
@@ -22,6 +28,24 @@ from ultimate_pipeline.contracts.stage_contracts import (
     governed_waiver_allowed,
 )
 from ultimate_pipeline.quality.topology_certification import certify_topology
+
+
+def _sha256_dict(obj: Any) -> str:
+    """Deterministic SHA256 of a JSON-serializable object."""
+    return hashlib.sha256(
+        json.dumps(obj, sort_keys=True, ensure_ascii=True).encode("utf-8")
+    ).hexdigest()
+
+
+def _get_git_sha() -> str:
+    """Get current git commit SHA if available."""
+    try:
+        import subprocess
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
+    except Exception:
+        return ""
 
 
 def _run_id_from_out_dir(out_dir: Optional[str]) -> Optional[str]:
@@ -1054,7 +1078,15 @@ def build_map_acceptance(
                     )
 
     valid_for_experiments = len(hard_fail_reasons) == 0
+
+    # Compute SHA256 for all linked artifacts
+    artifact_hashes: Dict[str, str] = {}
+    for name, path in linked_artifacts.items():
+        if path and os.path.exists(path):
+            artifact_hashes[name] = safe_sha256_file(path)
+
     payload = {
+        "schema": "map_acceptance_v1",
         "run_id": run_id,
         "final_xodr_path": final_xodr_path,
         "final_xodr_sha256": final_xodr_sha256,
@@ -1063,6 +1095,12 @@ def build_map_acceptance(
         "soft_warnings": soft_warnings,
         "metrics": metrics,
         "linked_artifacts": linked_artifacts,
+        "linked_artifact_sha256": artifact_hashes,
+        "provenance": {
+            "tool": "map_acceptance",
+            "git_sha": _get_git_sha(),
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        },
     }
     payload["valid"] = valid_for_experiments
     payload["failed_gates"] = [item["gate"] for item in hard_fail_reasons]
@@ -1070,5 +1108,10 @@ def build_map_acceptance(
     artifact_path = _write_acceptance(out_dir, run_id, payload)
     if artifact_path:
         payload["acceptance_artifact"] = artifact_path
+        payload["acceptance_artifact_sha256"] = safe_sha256_file(artifact_path)
+
+    # Compute payload SHA256 (excluding itself)
+    payload_sha = _sha256_dict({k: v for k, v in payload.items() if k not in ("acceptance_artifact_sha256", "payload_sha256")})
+    payload["payload_sha256"] = payload_sha
 
     return payload
