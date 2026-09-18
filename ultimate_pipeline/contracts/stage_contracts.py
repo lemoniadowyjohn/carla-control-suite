@@ -202,66 +202,217 @@ def governed_waiver_allowed(waivers: Optional[Dict[str, str]], child: str) -> bo
     return isinstance(justification, str) and bool(justification.strip())
 
 
-def promote_aggregate(
-    children: List[QualityStatus],
+def _coerce_status(value: object) -> QualityStatus:
+    """Coerce a single child input onto the status vocabulary, fail-closed.
+
+    - `QualityStatus` instances pass through unchanged.
+    - True -> PASS; False -> FAIL.
+    - Recognized status strings map to their literal status.
+    - Anything else (unknown object / unknown string) -> INCOMPLETE so that an
+      ungoverned value can never be mistaken for PASS.
+    """
+    if isinstance(value, QualityStatus):
+        return value
+    if value is True:
+        return QualityStatus.PASS
+    if value is False:
+        return QualityStatus.FAIL
+    if isinstance(value, str):
+        try:
+            return QualityStatus(value)
+        except ValueError:
+            return QualityStatus.INCOMPLETE
+    return QualityStatus.INCOMPLETE
+
+
+def promote_aggregate_detailed(
+    children: List[object],
     *,
     mandatory_children: Optional[List[str]] = None,
     waivers: Optional[Dict[str, str]] = None,
     waivable_fail: bool = True,
+    child_names: Optional[List[str]] = None,
+) -> Dict[str, object]:
+    """Aggregate child gate statuses per-child, with waiver-governed rules.
+
+    Conversion happens **per child** before any reduction:
+
+    - PASS stays PASS.
+    - FAIL stays FAIL unless BOTH the child is on the `mandatory_children`
+      allow-list AND an explicit governed waiver names that exact child, in
+      which case it becomes WAIVED (never PASS). This applies when
+      `waivable_fail` is True.
+    - INCOMPLETE / NOT_RUN / BLOCKED_EXTERNAL are never convertible to WAIVED
+      or PASS by a waiver: there is no evidence to waive.
+    - Unknown values coerce to INCOMPLETE (fail-closed).
+
+    After conversion the aggregate is the worst remaining status under
+    FAIL > INCOMPLETE > BLOCKED_EXTERNAL > WAIVED > NOT_RUN > PASS. A waiver
+    is single-use: it covers only the exact failing child it names, so
+    multiple failing children each need their own governed waiver.
+
+    `child_names` explicitly binds per-child labels to positions (strict,
+    raises on length mismatch or duplicate). When omitted, names fall back to
+    the positional `mandatory_children` alignment (legacy) with ``str(index)``
+    fill for overflow. A waiver can never waive a child it does not name, so a
+    positional/label mismatch isolates rather than silently waives.
+
+    Returns a structured report: `aggregate`, per-child conversion rows, the
+    positional/label audit and unused waiver keys.
+    """
+    mandatory_children = list(mandatory_children) if mandatory_children else []
+    waivers = dict(waivers) if waivers else {}
+
+    if not children:
+        return {
+            "aggregate": QualityStatus.INCOMPLETE,
+            "children": [],
+            "mandatory_children": mandatory_children,
+            "waivable_count": 0,
+            "waived_count": 0,
+            "positional_audit": {
+                "children_count": 0,
+                "mandatory_children_count": len(mandatory_children),
+                "explicit_child_names": child_names is not None,
+                "overflow_names": list(mandatory_children),
+                "collisions": [],
+                "ambiguous": bool(mandatory_children) or child_names is not None,
+            },
+            "unused_waiver_keys": sorted(waivers),
+        }
+
+    if child_names is not None:
+        if len(child_names) != len(children):
+            raise ValueError(
+                f"child_names length {len(child_names)} does not match "
+                f"children length {len(children)}."
+            )
+        seen: Dict[str, int] = {}
+        for idx, name in enumerate(child_names):
+            if not isinstance(name, str) or not name.strip():
+                raise ValueError(f"child_names[{idx}] is not a non-empty string.")
+            if name in seen:
+                raise ValueError(
+                    f"Duplicate child name {name!r} at positions "
+                    f"{seen[name]} and {idx}; waiver resolution would be "
+                    f"ambiguous."
+                )
+            seen[name] = idx
+
+    overflow_names = list(mandatory_children[len(children):]) if len(mandatory_children) > len(children) else []
+
+    converted: List[QualityStatus] = []
+    rows: List[Dict[str, object]] = []
+    names_by_index: List[str] = []
+    waived_count = 0
+
+    for idx, child in enumerate(children):
+        raw_status = _coerce_status(child)
+        if child_names is not None:
+            name = child_names[idx]
+        else:
+            name = mandatory_children[idx] if idx < len(mandatory_children) else str(idx)
+        names_by_index.append(name)
+
+        waiver: Optional[str] = None
+        if (
+            waivable_fail
+            and raw_status == QualityStatus.FAIL
+            and name in mandatory_children
+            and governed_waiver_allowed(waivers, name)
+        ):
+            status = QualityStatus.WAIVED
+            waiver = waivers.get(name)
+            waived_count += 1
+        else:
+            status = raw_status
+
+        converted.append(status)
+        rows.append(
+            {
+                "index": idx,
+                "name": name,
+                "input": child,
+                "status": status,
+                "waived": status == QualityStatus.WAIVED,
+                "waiver": waiver,
+                "coerced_from": raw_status if not (status == QualityStatus.WAIVED) else QualityStatus.FAIL,
+            }
+        )
+
+    aggregate = _worst_of(converted)
+
+    used_waiver_names = {
+        row["name"] for row in rows if row["waived"] and row["waiver"] is not None
+    }
+    unused_waiver_keys = sorted(
+        key for key in waivers if key not in {row["name"] for row in rows} or key not in used_waiver_names
+    )
+
+    collisions: List[str] = []
+    if child_names is None:
+        seen_positional: Dict[str, int] = {}
+        for idx, name in enumerate(names_by_index):
+            if name in seen_positional:
+                collisions.append(name)
+            seen_positional[name] = idx
+
+    return {
+        "aggregate": aggregate,
+        "children": rows,
+        "mandatory_children": mandatory_children,
+        "waivable_count": sum(
+            1 for row in rows if row["status"] == QualityStatus.FAIL and row["name"] in mandatory_children
+        ),
+        "waived_count": waived_count,
+        "positional_audit": {
+            "children_count": len(children),
+            "mandatory_children_count": len(mandatory_children),
+            "explicit_child_names": child_names is not None,
+            "overflow_names": overflow_names,
+            "collisions": sorted(set(collisions)),
+            "ambiguous": bool(overflow_names) or bool(collisions),
+        },
+        "unused_waiver_keys": unused_waiver_keys,
+    }
+
+
+def promote_aggregate(
+    children: List[object],
+    *,
+    mandatory_children: Optional[List[str]] = None,
+    waivers: Optional[Dict[str, str]] = None,
+    waivable_fail: bool = True,
+    child_names: Optional[List[str]] = None,
 ) -> QualityStatus:
     """Aggregate child gate statuses with fail-closed, waiver-governed rules.
 
+    Convenience wrapper around `promote_aggregate_detailed` that returns only
+    the aggregate status. Per-child conversion happens first, then severity
+    reduction:
+
     - Aggregate is PASS only if EVERY child is PASS.
-    - A child FAIL without a governed waiver keeps the aggregate FAIL.
+    - A child FAIL without a governed waiver for that exact child keeps the
+      aggregate FAIL (unwaivable FAIL, including FAILs off the allow-list).
     - A child FAIL WITH a governed waiver for that exact child becomes WAIVED
       (never PASS) when `waivable_fail` is True.
-    - A skipped/missing mandatory child with no evidence is INCOMPLETE and
-      can never be promoted to PASS, even with a waiver (there is evidence of
-      nothing, so there is nothing to waive).
-    - The aggregate is never PASS while any child is non-PASS; the worst
-      non-PASS child governs the result instead.
+    - INCOMPLETE / NOT_RUN / BLOCKED_EXTERNAL children are never convertible
+      by a waiver and always keep the aggregate from being WAIVED when they
+      are more severe (INCOMPLETE and BLOCKED_EXTERNAL are worse than WAIVED).
+    - The aggregate is the worst remaining status under
+      FAIL > INCOMPLETE > BLOCKED_EXTERNAL > WAIVED > NOT_RUN > PASS.
 
     `mandatory_children` restricts which named children may be waived;
-    children outside that list are unwaivable.
+    children outside that list are unwaivable. `child_names` explicitly binds
+    per-child labels to positions and is validated for length/duplicates.
     """
-    if not children:
-        return QualityStatus.INCOMPLETE
-
-    mandatory_children = mandatory_children or []
-    converted: List[QualityStatus] = []
-    names: List[str] = []
-
-    for idx, child in enumerate(children):
-        if isinstance(child, QualityStatus):
-            status = child
-        elif child is True:
-            status = QualityStatus.PASS
-        elif child is False:
-            status = QualityStatus.FAIL
-        else:
-            status = QualityStatus.INCOMPLETE
-        converted.append(status)
-        label = mandatory_children[idx] if idx < len(mandatory_children) else str(idx)
-        names.append(label)
-
-    if all(s == QualityStatus.PASS for s in converted):
-        return QualityStatus.PASS
-    if not any(s != QualityStatus.PASS for s in converted):
-        return QualityStatus.PASS
-
-    waivable = [
-        (s, n)
-        for s, n in zip(converted, names)
-        if s == QualityStatus.FAIL and n in mandatory_children
-    ]
-    if waivable_fail and waivable:
-        if all(governed_waiver_allowed(waivers, n) for s, n in waivable):
-            return QualityStatus.WAIVED
-        return QualityStatus.FAIL
-
-    if any(s == QualityStatus.FAIL for s in converted):
-        return QualityStatus.FAIL
-    return _worst_of(converted)
+    return promote_aggregate_detailed(
+        children,
+        mandatory_children=mandatory_children,
+        waivers=waivers,
+        waivable_fail=waivable_fail,
+        child_names=child_names,
+    )["aggregate"]
 
 
 # ---------------------------------------------------------------------------
