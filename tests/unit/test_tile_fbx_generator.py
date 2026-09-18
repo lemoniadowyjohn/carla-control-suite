@@ -19,11 +19,13 @@ from pathlib import Path
 
 import pytest
 
+import ultimate_pipeline.tiling.tile_fbx_generator as tile_fbx_generator_module
 from ultimate_pipeline.tiling.tile_fbx_generator import (
     TileBuilding,
     TileGridSpec,
     assign_buildings_to_tiles,
     classify_tile_buildings,
+    generate_tile_fbx,
     load_buildings_from_overpass_json,
     tile_fbx_name,
     write_tile_osm_xml,
@@ -460,3 +462,130 @@ def test_classify_tile_buildings_findings():
        number of buildings; no quadratic-time issue observed.
     """
     pass
+
+
+# ---------------------------------------------------------------------------
+# Roundtrip-failure status gating (comprehensive gap audit 20260915, AREA-020:
+# "Roundtrip False does not produce FAIL; status='ok' overwrites failure").
+#
+# generate_tile_fbx()'s OSM2World/Blender calls need real external binaries, so
+# every other test in this file avoids exercising that path (see module
+# docstring above). Here we fake just those two collaborators (OSM2WorldRunner,
+# BlenderRunner) so the render path "succeeds" trivially and only
+# run_fbx_roundtrip's tri-state result (True/False/None) is under test -- this
+# is the minimal mock needed to reach the status-assignment line and prove (or
+# disprove) the audit finding end-to-end through the real generate_tile_fbx().
+# ---------------------------------------------------------------------------
+class _FakeOSM2WorldResult:
+    def __init__(self, status="ok", reason=""):
+        self.status = status
+        self.reason = reason
+
+
+class _FakeOSM2WorldRunner:
+    """Stands in for OSM2WorldRunner: writes the expected .obj and reports ok."""
+
+    def __init__(self, *, osm_path, output_dir, osm2world_home, timeout_sec,
+                 config_path, name_prefix):
+        self.output_dir = Path(output_dir)
+        self.name_prefix = name_prefix
+
+    def run(self):
+        (self.output_dir / f"{self.name_prefix}.obj").write_text(
+            "o Cube\nv 0 0 0\n", encoding="utf-8"
+        )
+        return _FakeOSM2WorldResult(status="ok")
+
+
+class _FakeBlenderResult:
+    def __init__(self, status="ok", reason="", manifest=None):
+        self.status = status
+        self.reason = reason
+        self.manifest = manifest or {}
+
+
+class _FakeBlenderRunner:
+    """Stands in for BlenderRunner: writes the expected .fbx and reports ok."""
+
+    def __init__(self, *, obj_path, output_dir, blender_exe, timeout_sec, name_prefix):
+        self.output_dir = Path(output_dir)
+        self.name_prefix = name_prefix
+
+    def run(self):
+        (self.output_dir / f"{self.name_prefix}.fbx").write_bytes(b"FAKEFBX")
+        return _FakeBlenderResult(status="ok", manifest={"objects": [], "objects_total": 0})
+
+
+def _fake_tile_buildings():
+    return [_building(1, [_square_ring(0.001, 0.001, 0.0005, 0.0005)])]
+
+
+class TestRoundtripFailureGating:
+    """AREA-020: a False roundtrip result is a real geometry-integrity failure
+    (the reconverted FBX did not match the source inventory) and must show up
+    as a non-'ok' tile status -- otherwise every downstream consumer that
+    gates on ``status == "ok"`` (e.g. scripts/cook_full_grid_tiles.py's exit
+    code, which counts ``tiles_ok == tiles_attempted``) silently treats a
+    failed integrity check as a success.
+    """
+
+    def _run(self, tmp_path, monkeypatch, *, roundtrip_return):
+        monkeypatch.setattr(tile_fbx_generator_module, "OSM2WorldRunner", _FakeOSM2WorldRunner)
+        monkeypatch.setattr(tile_fbx_generator_module, "BlenderRunner", _FakeBlenderRunner)
+        monkeypatch.setattr(
+            tile_fbx_generator_module, "run_fbx_roundtrip",
+            lambda *a, **kw: roundtrip_return,
+        )
+        fake_blender_exe = tmp_path / "fake_blender.exe"
+        fake_blender_exe.write_text("", encoding="utf-8")
+
+        return generate_tile_fbx(
+            buildings=_fake_tile_buildings(),
+            tile_index=(0, 0),
+            map_name="TestMap",
+            output_dir=str(tmp_path / "out"),
+            osm2world_home=str(tmp_path / "o2w_home"),
+            blender_exe=str(fake_blender_exe),
+            run_roundtrip=True,
+        )
+
+    def test_roundtrip_false_does_not_produce_ok_status(self, tmp_path, monkeypatch):
+        result = self._run(
+            tmp_path, monkeypatch,
+            roundtrip_return=(False, {"comparison": {"verdict": "GEOMETRY_MISMATCH"}}),
+        )
+        assert result.roundtrip_ok is False
+        assert result.status != "ok", (
+            "a real roundtrip integrity failure (roundtrip_ok=False) must not "
+            f"be reported as status='ok' (got status={result.status!r}); this "
+            "is exactly what lets scripts/cook_full_grid_tiles.py's "
+            "tiles_ok == tiles_attempted exit-code check silently pass over a "
+            "failed FBX roundtrip"
+        )
+
+    def test_roundtrip_true_still_produces_ok_status(self, tmp_path, monkeypatch):
+        # Control case: must not regress the happy path while fixing the bug.
+        result = self._run(
+            tmp_path, monkeypatch,
+            roundtrip_return=(True, {"comparison": {"verdict": "MATCH"}}),
+        )
+        assert result.roundtrip_ok is True
+        assert result.status == "ok"
+
+    def test_roundtrip_skipped_none_still_produces_ok_status(self, tmp_path, monkeypatch):
+        # Control case: roundtrip_ok=None means the check was skipped (no
+        # Blender binary), not that it failed -- must stay "ok", not FAIL.
+        monkeypatch.setattr(tile_fbx_generator_module, "OSM2WorldRunner", _FakeOSM2WorldRunner)
+        monkeypatch.setattr(tile_fbx_generator_module, "BlenderRunner", _FakeBlenderRunner)
+
+        result = generate_tile_fbx(
+            buildings=_fake_tile_buildings(),
+            tile_index=(0, 0),
+            map_name="TestMap",
+            output_dir=str(tmp_path / "out"),
+            osm2world_home=str(tmp_path / "o2w_home"),
+            blender_exe=str(tmp_path / "no_such_blender.exe"),  # .exists() is False -> SKIPPED
+            run_roundtrip=True,
+        )
+        assert result.roundtrip_ok is None
+        assert result.status == "ok"

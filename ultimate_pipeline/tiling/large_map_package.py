@@ -46,8 +46,10 @@ Public API
     return the exact documented ``package.json`` dict (``maps`` + ``props``).
 
 ``stage_large_map_package(...)``
-    I/O: copies (hardlinks where possible) the whole-map XODR and the given
-    tile FBX files into ``Import/<PackageName>/``, writes ``package.json`` and
+    I/O: copies (real, independent copies -- never hardlinks, see
+    ``_copy_file`` -- a staged/promoted artifact must survive the source
+    being mutated in place) the whole-map XODR and the given tile FBX files
+    into ``Import/<PackageName>/``, writes ``package.json`` and
     ``<PackageName>.json`` (CARLA's importer looks for a descriptor named after
     the package directory; we emit the same content under both the canonical
     ``package.json`` name and the package-name-matched filename so either
@@ -189,18 +191,22 @@ class StagedPackageResult:
 
 
 def _copy_file(src: Path, dst: Path) -> None:
-    """Copy ``src`` to ``dst``, hardlinking when possible (same-volume, fast,
-    no double disk usage for large FBX/XODR files), falling back to a real
-    copy when hardlinking is unavailable (cross-volume, permissions, etc.).
+    """Copy ``src`` to ``dst`` as a real, independent copy.
+
+    Deliberately **never** hardlinks (``os.link``). A hardlink is not a copy:
+    ``dst`` would alias the same inode as ``src``, so if the source is later
+    mutated in place -- e.g. a re-run pipeline stage rewrites the file at the
+    same path instead of atomically replacing it -- the "staged"/"promoted"
+    artifact silently changes right along with it. That defeats the entire
+    point of staging an immutable artifact before handing it to
+    ``make import`` / a UE4 cook (comprehensive gap audit 20260915, packet
+    P0-C). ``shutil.copy2`` preserves mtime/mode like the old hardlink path
+    did for metadata purposes, but produces a byte-for-byte independent file.
     """
     dst.parent.mkdir(parents=True, exist_ok=True)
     if dst.exists():
         dst.unlink()
-    try:
-        import os
-        os.link(src, dst)
-    except OSError:
-        shutil.copy2(src, dst)
+    shutil.copy2(src, dst)
 
 
 def stage_large_map_package(

@@ -276,6 +276,72 @@ class TestStageLargeMapPackage:
 
 
 # ---------------------------------------------------------------------------
+# Transactional staging integrity (comprehensive gap audit 20260915, packet
+# P0-C): _copy_file() hardlinks when possible. A hardlink is not an
+# independent copy -- if the source is later mutated in place (e.g. a re-run
+# pipeline stage rewrites the same path), the "staged"/"promoted" artifact
+# silently changes too, defeating the entire point of staging an immutable
+# artifact before it is handed to `make import` / a UE4 cook.
+# ---------------------------------------------------------------------------
+class TestStagedArtifactIsIndependentOfSourceMutation:
+    def test_xodr_source_mutation_after_staging_does_not_propagate(
+        self, tmp_path: Path, fake_map_sources
+    ):
+        import_root = tmp_path / "Import"
+        result = stage_large_map_package(
+            map_name="Ingolstadt",
+            xodr_path=fake_map_sources["xodr"],
+            tile_fbx_paths=fake_map_sources["tiles"],
+            import_root=str(import_root),
+        )
+        assert result.status == "ok"
+        staged_xodr = Path(result.xodr_staged_path)
+        original_staged_bytes = staged_xodr.read_bytes()
+        assert original_staged_bytes == Path(fake_map_sources["xodr"]).read_bytes()
+
+        # Simulate a re-run pipeline stage rewriting the SOURCE file in place
+        # (same path, opened for write -- not a rename/replace). This is
+        # exactly the scenario the audit flagged: a hardlinked "staged" copy
+        # is the same inode as the source and would change right along with
+        # it.
+        src_xodr = Path(fake_map_sources["xodr"])
+        src_xodr.write_text("<OpenDRIVE>MUTATED-AFTER-STAGING</OpenDRIVE>", encoding="utf-8")
+
+        staged_bytes_after_mutation = staged_xodr.read_bytes()
+        assert staged_bytes_after_mutation == original_staged_bytes, (
+            "the staged/promoted xodr changed after the SOURCE file was "
+            "mutated post-staging -- stage_large_map_package() must produce "
+            "an independent copy (not a hardlink aliasing the source inode), "
+            "otherwise a staged/promoted artifact is not actually immutable"
+        )
+
+    def test_tile_fbx_source_mutation_after_staging_does_not_propagate(
+        self, tmp_path: Path, fake_map_sources
+    ):
+        import_root = tmp_path / "Import"
+        result = stage_large_map_package(
+            map_name="Ingolstadt",
+            xodr_path=fake_map_sources["xodr"],
+            tile_fbx_paths=fake_map_sources["tiles"],
+            import_root=str(import_root),
+        )
+        assert result.status == "ok"
+        pkg_dir = Path(result.package_dir)
+        staged_tile = pkg_dir / "Ingolstadt_Tile_0_0.fbx"
+        original_staged_bytes = staged_tile.read_bytes()
+
+        src_tile = Path(fake_map_sources["src_dir"]) / "Ingolstadt_Tile_0_0.fbx"
+        src_tile.write_bytes(b"MUTATED-TILE-BYTES-AFTER-STAGING")
+
+        staged_bytes_after_mutation = staged_tile.read_bytes()
+        assert staged_bytes_after_mutation == original_staged_bytes, (
+            "the staged/promoted tile FBX changed after its SOURCE file was "
+            "mutated post-staging -- stage_large_map_package() must produce "
+            "an independent copy, not a hardlink"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Offline pre-cook validation gate
 # ---------------------------------------------------------------------------
 class TestValidateStagedPackage:
