@@ -265,6 +265,119 @@ def promote_aggregate(
 
 
 # ---------------------------------------------------------------------------
+# Gate-report normalization (single decision authority)
+# ---------------------------------------------------------------------------
+
+GATE_STATUS_SYNONYMS: Dict[str, QualityStatus] = {
+    "pass": QualityStatus.PASS,
+    "passed": QualityStatus.PASS,
+    "ok": QualityStatus.PASS,
+    "success": QualityStatus.PASS,
+    "fail": QualityStatus.FAIL,
+    "failed": QualityStatus.FAIL,
+    "error": QualityStatus.FAIL,
+    "abort": QualityStatus.FAIL,
+    "gate_timed_out": QualityStatus.FAIL,
+    "incomplete": QualityStatus.INCOMPLETE,
+    "pending": QualityStatus.INCOMPLETE,
+    "no_evidence": QualityStatus.INCOMPLETE,
+    "not_run": QualityStatus.NOT_RUN,
+    "skipped": QualityStatus.NOT_RUN,
+    "skip": QualityStatus.NOT_RUN,
+    "blocked_external": QualityStatus.BLOCKED_EXTERNAL,
+    "blocked": QualityStatus.BLOCKED_EXTERNAL,
+    "unavailable": QualityStatus.BLOCKED_EXTERNAL,
+    "waived": QualityStatus.WAIVED,
+}
+
+
+def _map_gate_status_string(value: object) -> Optional[QualityStatus]:
+    """Map a producer's status string onto the QualityStatus vocabulary.
+
+    Foreign producer vocabularies (``PASS`` / ``FAIL`` / ``INCOMPLETE``,
+    ``pass`` / ``fail`` / ``skipped`` / ``error``, ``PENDING``,
+    ``GATE_TIMED_OUT``) are normalized case-insensitively. Unrecognized
+    values return None so callers can fail closed instead of guessing.
+    """
+    if isinstance(value, QualityStatus):
+        return value
+    if not isinstance(value, str):
+        return None
+    return GATE_STATUS_SYNONYMS.get(value.strip().lower())
+
+
+def normalize_gate_result(report: object) -> Dict[str, object]:
+    """Normalize an arbitrary gate report into one fail-closed verdict.
+
+    This is the single normalization authority for gate decisions and MUST
+    produce the same verdict wherever it is used (QualityGateManager
+    ``_finalize_gate`` and CumulativeGateRunner). Precedence:
+
+    1. Not a dict (None, a list, a bare status) -> FAIL (never crash).
+    2. Explicit ``ok`` key -> authoritative. The ``status`` value, when also
+       present (e.g. ``structure_elevation_plausibility`` carries BOTH), is
+       preserved for provenance but never overrides ``ok``.
+    3. ``status`` key only -> mapped onto the vocabulary; only PASS maps to a
+       pass verdict. ``PENDING`` -> INCOMPLETE, ``GATE_TIMED_OUT`` -> FAIL,
+       unknown status strings -> FAIL (fail-closed, never a silent pass).
+    4. No verdict key at all -> FAIL; an empty report is an unverified report
+       and can never represent an unambiguous pass.
+
+    Returns a dict with ``decision`` ("pass"|"fail"), ``ok``, normalized
+    ``status``, ``reason`` and the inspected verdict keys.
+    """
+    if not isinstance(report, dict):
+        return {
+            "ok": False,
+            "status": QualityStatus.FAIL,
+            "decision": "fail",
+            "reason": "not_dict",
+            "inspected_keys": [],
+        }
+
+    inspected = [k for k in ("ok", "status", "error") if k in report]
+
+    if "ok" in report:
+        ok = bool(report["ok"])
+        status = _map_gate_status_string(report.get("status")) if "status" in report else None
+        if status is None:
+            status = QualityStatus.PASS if ok else QualityStatus.FAIL
+        return {
+            "ok": ok,
+            "status": status,
+            "decision": "pass" if ok else "fail",
+            "reason": "ok_key",
+            "inspected_keys": inspected,
+        }
+
+    if "status" in report:
+        mapped = _map_gate_status_string(report.get("status"))
+        if mapped is None:
+            return {
+                "ok": False,
+                "status": QualityStatus.FAIL,
+                "decision": "fail",
+                "reason": "unrecognized_status",
+                "inspected_keys": inspected,
+            }
+        return {
+            "ok": mapped == QualityStatus.PASS,
+            "status": mapped,
+            "decision": "pass" if mapped == QualityStatus.PASS else "fail",
+            "reason": "status_key",
+            "inspected_keys": inspected,
+        }
+
+    return {
+        "ok": False,
+        "status": QualityStatus.FAIL,
+        "decision": "fail",
+        "reason": "no_verdict_key",
+        "inspected_keys": inspected,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Registered warnings (topology hardening vocabulary)
 # ---------------------------------------------------------------------------
 
