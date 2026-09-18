@@ -1,0 +1,52 @@
+{
+  "run_id": "20260918T000000Z_RUNTIME_TILE_REFERENTIAL_INTEGRITY",
+  "task_id": "OC-39",
+  "title": "Runtime-tile referential integrity in static validation",
+  "components": [
+    "ultimate_pipeline/tiling/runtime_tile_builder.py::validate_runtime_tile",
+    "ultimate_pipeline/tiling/runtime_tile_builder.py::build_runtime_tile",
+    "tests/unit/test_runtime_tile_referential_integrity.py (NEW)"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/runtime-tile-referential-integrity-v1",
+  "final_head": "f45a6c8eed89e3dc44521a46fe3c97218f7a6809",
+  "defect_summary": {
+    "unchecked_controller_refs": "validate_runtime_tile never inspected <controller> elements. A controller clone left behind a signal pruned from its road (or a controller copied from the source) declared a control/signalId that does not exist in the tile, yet validation returned PASS.",
+    "unchecked_lane_link_targets": "Junction connection <laneLink from> / <laneLink to> were never resolved against the declared left/right lane ids of the referenced incoming/connecting roads. A from/to referencing a lane id that does not exist is a CARLA load-time crash source and validation did not notice.",
+    "duplicate_ids_silent": "Duplicate road or junction ids (which make every road/junction reference ambiguous) were acceptable. Duplicate signal ids were likewise unreported."
+  },
+  "corrected_semantics": {
+    "dangling_controller_refs": "Each controller's control/signalId must exist among the tile's <signal> ids; a missing id adds the failure and a detail row {controller_id, signal_id}.",
+    "invalid_connection_lane_links": "For every junction connection, each <laneLink> from must be a lane id of the incomingRoad and each to must be a lane id of the connectingRoad (left/right lanes; center lane id=0, type none, is never a legal link target). A missing from/to attribute is tolerated; a mismatch adds one detail row {junction_id, connection_id, incomingRoad, connectingRoad, from, to}.",
+    "duplicate_element_ids": "Duplicate road or junction ids now fail. Duplicate signal ids are reported in the report (duplicate_signal_ids) but do not fail the tile, preserving compat while surfacing ambiguity for controller resolution.",
+    "build_runtime_tile": "Keeps delete-on-fail: a tile failing any of the new families is unlinked and a RuntimeError with the failing codes is raised."
+  },
+  "tests": {
+    "file": "tests/unit/test_runtime_tile_referential_integrity.py",
+    "collected": 8,
+    "passed": 8,
+    "coverage": {
+      "A": "dangling_controller_refs fails with {controller_id, signal_id} detail",
+      "B": "invalid_connection_lane_links fails when to references a missing lane id",
+      "C": "from referencing a missing lane id fails",
+      "D": "duplicate road and junction ids fail with duplicate_element_ids",
+      "D2": "duplicate signal ids are reported but do not fail",
+      "E": "build_runtime_tile rejects broken lane-link source, emits nothing",
+      "F": "build_runtime_tile passes a well-formed referential tile with controller + valid laneLinks",
+      "G": "clean tile reports empty new summary fields on PASS"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_runtime_tile_referential_integrity.py tests/unit/test_runtime_tile_builder.py tests/unit/test_full_grid_tile_cook.py tests/unit/test_offline_cooking_pipeline_integration.py -q",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "28 passed (new + tile builder + crosswalk/full-grid/offline-cooking)",
+    "tests_unit_and_pipeline": "3410 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "Lane-link validation is existence-based (a legal lane id that is nonetheless unreachable in CARLA's successor/pruning semantics is not caught); directional/sign consistency is left to topology-level audits.",
+    "Duplicate signal ids are informational only; a fully strict identity policy would fail them, which was deferred to avoid false failures on legacy maps.",
+    "Junction <connection>-level geometry (contactPoint semantics, lane reachability through connectors) is out of scope for static referential validation."
+  ]
+}
