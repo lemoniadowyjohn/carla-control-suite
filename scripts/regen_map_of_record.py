@@ -146,26 +146,26 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
     The SUMO frame-preservation path (--offset.disable-normalization) keeps
     global tmerc(0,0) coordinates (~832k/5458k for Ingolstadt) through the
     pipeline. Raw geometry that far from the origin breaks float32 precision
-    in CARLA and fails the origin_sanity gate. Translation-invariant: planView
-    geometry x/y AND building <object><outline><cornerGlobal> x/y are shifted
-    by the SAME (dx, dy) (C29: cornerGlobal was previously left un-rebased,
-    which -- combined with a separate building-projection-origin bug fixed in
+    in CARLA and fails the origin_sanity gate. Translation-invariant: every
+    absolute header-frame coordinate is shifted by the SAME (dx, dy) via the
+    centralized engine ``ultimate_pipeline.geometry.opendrive_rebase`` -- planView
+    geometry x/y, cornerGlobal x/y, positionInertial x/y and object/signal x/y
+    when present (C29: cornerGlobal was previously left un-rebased, which --
+    combined with a separate building-projection-origin bug fixed in
     osm_polygon_loader.py -- produced a verified 7,665m building/road centroid
     drift on the real pinned map). The original frame is preserved in the
     header <offset> element and in the returned report.
     """
     import xml.etree.ElementTree as _ET
 
+    from ultimate_pipeline.geometry.opendrive_rebase import (
+        planview_min_xy,
+        rebase_xodr_coordinates,
+    )
+
     tree = _ET.parse(xodr_in)
     root = tree.getroot()
-    xs: List[float] = []
-    ys: List[float] = []
-    for g in root.findall(".//planView/geometry"):
-        xs.append(float(g.get("x", "0")))
-        ys.append(float(g.get("y", "0")))
-    if not xs:
-        raise RuntimeError(f"rebase: no planView geometry in {xodr_in}")
-    min_x, min_y = min(xs), min(ys)
+    min_x, min_y = planview_min_xy(root)
     already_local = max(abs(min_x), abs(min_y)) < 10_000.0
     if already_local:
         return {
@@ -175,12 +175,7 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
         }
     dx = round(min_x, 3)
     dy = round(min_y, 3)
-    for g in root.findall(".//planView/geometry"):
-        g.set("x", f"{float(g.get('x', '0')) - dx:.6f}")
-        g.set("y", f"{float(g.get('y', '0')) - dy:.6f}")
-    for c in root.findall(".//object/outline/cornerGlobal"):
-        c.set("x", f"{float(c.get('x', '0')) - dx:.6f}")
-        c.set("y", f"{float(c.get('y', '0')) - dy:.6f}")
+    coverage = rebase_xodr_coordinates(root, dx=dx, dy=dy)
     header = root.find("header")
     if header is None:
         header = _ET.SubElement(root, "header")
@@ -201,6 +196,7 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
         "output_sha256": _sha256_file(xodr_out),
         "bbox_min_before": [round(min_x, 3), round(min_y, 3)],
         "bbox_min_after": [0.0, 0.0],
+        "translated_elements": coverage["translated_elements"],
     }
 
 
