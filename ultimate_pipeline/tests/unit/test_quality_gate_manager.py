@@ -179,3 +179,77 @@ def test_gate_junction_integrity_accepts_an_element_root_directly(tmp_path):
     qgate = QualityGateManager(ValidationReport())
     rep = qgate.gate_junction_integrity(root)
     assert rep["ok"] is True
+
+
+# ---------------------------------------------------------------------------
+# OC-36: _finalize_gate must not read `rep.get("ok", True)` directly. The
+# decision authority is `normalize_gate_result`; a report with no explicit
+# pass verdict is never an automatic pass.
+# ---------------------------------------------------------------------------
+
+
+def _new_gate():
+    return QualityGateManager(ValidationReport())
+
+
+def test_finalize_gate_fails_on_missing_verdict_keys():
+    # Regression: `rep.get("ok", True)` used to silently PASS any dict that
+    # simply lacked an `ok` key -- a report saying nothing about a verdict
+    # was accepted as evidence of a passing gate.
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"issues": [], "detail": "nothing evaluated"})
+    assert "g" in qgate.get_failures()
+
+
+def test_finalize_gate_fails_on_empty_dict():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {})
+    assert "g" in qgate.get_failures()
+
+
+def test_finalize_gate_status_skipped_is_fail_closed():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"status": "skipped", "reason": "disabled"})
+    assert "g" in qgate.get_failures()
+
+
+def test_finalize_gate_status_only_pass_is_a_pass():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"status": "pass"})
+    assert qgate.get_failures() == {}
+
+
+def test_finalize_gate_pending_status_is_fail_closed():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"status": "PENDING"})
+    assert "g" in qgate.get_failures()
+
+
+def test_finalize_gate_gate_timed_out_is_fail_closed():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"status": "GATE_TIMED_OUT"})
+    assert "g" in qgate.get_failures()
+
+
+def test_finalize_gate_ok_wins_over_status_column():
+    # structure_elevation_plausibility reports carry BOTH ok and status.
+    # `ok` is the authoritative decision field; `status` is preserved only.
+    qgate_ok = _new_gate()
+    qgate_ok._finalize_gate("g", {"ok": True, "status": "PASS"})
+    assert qgate_ok.get_failures() == {}
+
+    qgate_fail = _new_gate()
+    qgate_fail._finalize_gate("g", {"ok": False, "status": "INCOMPLETE"})
+    assert "g" in qgate_fail.get_failures()
+
+
+def test_finalize_gate_unrecognized_status_is_fail_closed():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"status": "SOME_FUTURE_STATUS"})
+    assert "g" in qgate.get_failures()
+
+
+def test_finalize_gate_non_falsey_ok_is_truthy_pass():
+    qgate = _new_gate()
+    qgate._finalize_gate("g", {"ok": "yes", "status": "pass"})
+    assert qgate.get_failures() == {}
