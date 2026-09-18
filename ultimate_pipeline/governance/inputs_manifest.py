@@ -78,6 +78,8 @@ def verify_inputs_manifest(
     manifest_path: PathLike,
     *,
     base_dir: PathLike,
+    require_pinned_keys: List[str] | None = None,
+    require_no_pending: bool = False,
 ) -> Dict[str, List[str]]:
     """Fail-closed verification of every pinned entry in an inputs manifest.
 
@@ -86,17 +88,31 @@ def verify_inputs_manifest(
         base_dir: directory that each entry's ``path`` is resolved relative
             to (e.g. the repo root, or a fixture tmp_path in tests). Absolute
             paths in the manifest are used as-is.
+        require_pinned_keys: optional strict mode. Every key listed here must
+            be present in the manifest AND digest-verified on disk. A required
+            key that is missing or only ``status="pending"`` raises
+            :class:`InputsManifestError` (a canonical generation may not
+            silently proceed on an input it needs but that has no pin).
+        require_no_pending: optional strict mode. When True, any entry with
+            ``status="pending"`` raises :class:`InputsManifestError`.
+            Boundaries: many generators rightfully mark currently-unpinned
+            inputs (e.g. a building source awaiting upstream landing) as
+            pending; canonical regen must prove those are not needed or fail
+            closed.
 
     Returns:
         ``{"ok": True, "checked": [keys verified as pinned+matching],
-           "pending": [keys marked status="pending"]}``
+           "pending": [keys marked status="pending"],
+           "required_keys": [keys requested via require_pinned_keys]}``
 
     Raises:
         InputsManifestMismatchError: if any pinned entry's file is missing,
             or its sha256/byte size no longer matches the manifest.
         InputsManifestError: if the manifest itself is malformed (e.g. a
-            pinned entry missing a required field).
+            pinned entry missing a required field), or a required key is
+            missing/pending (strict modes).
     """
+    required_keys: List[str] = list(require_pinned_keys or [])
     manifest = load_manifest(manifest_path)
     inputs = manifest.get("inputs")
     if not isinstance(inputs, dict):
@@ -160,4 +176,33 @@ def verify_inputs_manifest(
 
         checked.append(key)
 
-    return {"ok": True, "checked": checked, "pending": pending}
+    unchecked_required = [k for k in required_keys if k not in checked]
+    if unchecked_required:
+        reasons = []
+        for key in unchecked_required:
+            entry = inputs.get(key)
+            if entry is None:
+                reasons.append(f"{key!r}: missing from manifest")
+            elif str(entry.get("status") or "").strip().lower() == "pending":
+                reasons.append(f"{key!r}: pending (no digest pin)")
+            else:
+                reasons.append(f"{key!r}: present but not digest-verified")
+        raise InputsManifestError(
+            f"{manifest_path}: required inputs are not digest verified "
+            f"(cannot regenerate from unproven inputs): "
+            f"{'; '.join(reasons)}"
+        )
+
+    if require_no_pending and pending:
+        raise InputsManifestError(
+            f"{manifest_path}: entries are pending but require_no_pending=True "
+            f"(canonical generation may not proceed without a digest pin): "
+            f"{sorted(pending)}"
+        )
+
+    return {
+        "ok": True,
+        "checked": checked,
+        "pending": pending,
+        "required_keys": required_keys,
+    }
