@@ -99,13 +99,6 @@ def _clamp_s_endpoints(root: ET.Element, findings: List[Finding]) -> None:
                     findings.append(Finding("S_CLAMPED", f"Clamped s from {s_val} to {max_s}", rid))
 
 
-def _parampoly3_sample(px: float, py: float, pz: float, qx: float, qy: float, p_range: Tuple[float, float], p: float) -> Tuple[float, float]:
-    t = p_range[0] + p * (p_range[1] - p_range[0])
-    x = px + py * t + pz * t * t + qx * t * t * t
-    y = qy  # placeholder, actual paramPoly3 has a/b/c/d for y; below we use full set
-    return x, y
-
-
 def _curv_proxy(xs: List[float], ys: List[float]) -> float:
     # simple finite diff curvature proxy
     if len(xs) < 3:
