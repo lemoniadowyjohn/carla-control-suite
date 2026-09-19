@@ -113,6 +113,26 @@ def resolve_experimental_unsafe(
     return _resolve_profile_default(normalized, "experimental_unsafe", default)
 
 
+def requires_strict_lane_successors(profile_name: str) -> bool:
+    """Whether a profile must fail on unresolved driving-lane successors.
+
+    Final/cook release profiles must preserve the broken-lane evidence rather
+    than masking it by changing lanes to ``type=none``.  Development and
+    explicitly unsafe profiles retain their opt-in diagnostic fallback.
+    """
+    normalized = str(profile_name or "").strip().lower()
+    aliases = {
+        "structural_release": "structural_release",
+        "carla_release": "structural_release",
+        "visual_release": "visual_build",
+        "perception_release": "visual_build",
+    }
+    return aliases.get(normalized, normalized) in {
+        "structural_release",
+        "visual_build",
+    }
+
+
 def unsafe_lanelink_regen_enabled(settings_obj) -> bool:
     """LaneLink regeneration requires explicit opt-in AND profile permission.
 

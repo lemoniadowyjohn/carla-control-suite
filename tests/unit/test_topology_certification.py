@@ -24,6 +24,10 @@ from ultimate_pipeline.quality.map_acceptance import (
     component_reachability_summary,
 )
 from ultimate_pipeline.quality.topology_certification import certify_topology
+from ultimate_pipeline.contracts.release_profile import requires_strict_lane_successors
+from ultimate_pipeline.pipeline_stages.stage_08_integrity import (
+    _strict_lane_successors_required,
+)
 
 
 def _road(rid: str, sections: list[str]) -> str:
@@ -113,7 +117,7 @@ def test_certify_recovered_pass_literal_fail() -> None:
     """The canonical OC-2 case: the recovered graph looks healthy but the
     literal spec graph does not -- the map is NOT topology-spec-conformant."""
     literal = {"graph_source": "LITERAL_SPEC", "largest_component_fraction": 0.90, "unmatched_cross_links": 3}
-    recovered = {"largest_component_fraction": 0.96, "unmatched_cross_links": 0}
+    recovered = {"graph_source": "RECOVERED_DIAGNOSTIC", "largest_component_fraction": 0.96, "unmatched_cross_links": 0}
 
     cert = certify_topology(literal, recovered)
 
@@ -127,7 +131,7 @@ def test_certify_recovered_pass_literal_fail() -> None:
 
 def test_certify_both_pass() -> None:
     literal = {"graph_source": "LITERAL_SPEC", "largest_component_fraction": 0.97, "unmatched_cross_links": 0}
-    recovered = {"largest_component_fraction": 0.99, "unmatched_cross_links": 0}
+    recovered = {"graph_source": "RECOVERED_DIAGNOSTIC", "largest_component_fraction": 0.99, "unmatched_cross_links": 0}
     cert = certify_topology(literal, recovered)
     assert cert["SPEC_TOPOLOGY"] == "pass"
     assert cert["RECOVERY_DIAGNOSTIC"] == "pass"
@@ -138,6 +142,19 @@ def test_certify_missing_evidence_is_incomplete_never_pass() -> None:
     assert cert["SPEC_TOPOLOGY"] == "incomplete"
     assert cert["RECOVERY_DIAGNOSTIC"] == "incomplete"
     assert cert != "pass"
+
+
+def test_recovered_diagnostic_cannot_be_substituted_for_literal_production_evidence() -> None:
+    recovered = {
+        "graph_source": "RECOVERED_DIAGNOSTIC",
+        "largest_component_fraction": 1.0,
+        "unmatched_cross_links": 0,
+    }
+    cert = certify_topology(recovered, recovered)
+
+    assert cert["SPEC_TOPOLOGY"] == "incomplete"
+    assert cert["RECOVERY_DIAGNOSTIC"] == "pass"
+    assert cert["production_evidence"] == "LITERAL_SPEC"
 
 
 # ---------------------------------------------------------------------------
@@ -165,6 +182,28 @@ def test_acceptance_records_literal_spec_metrics(tmp_path) -> None:
     assert acceptance["metrics"]["topology_production_evidence"] == "LITERAL_SPEC"
     assert acceptance["metrics"]["largest_component_fraction"] == 0.25
     assert acceptance["metrics"]["largest_component_fraction_spec"] == 0.25
+    assert acceptance["metrics"]["lane_component_count_spec"] == 4
+    assert len(acceptance["metrics"]["isolated_components_spec"]) == 4
+    assert acceptance["metrics"]["problematic_components_spec"] == [
+        {
+            "component_id": "0:1:-1",
+            "lane_count": 1,
+            "roads": ["0"],
+            "lanes": [{"road_id": "0", "lane_section_index": 1, "lane_id": "-1"}],
+        },
+        {
+            "component_id": "1:0:1",
+            "lane_count": 1,
+            "roads": ["1"],
+            "lanes": [{"road_id": "1", "lane_section_index": 0, "lane_id": "1"}],
+        },
+        {
+            "component_id": "1:1:-1",
+            "lane_count": 1,
+            "roads": ["1"],
+            "lanes": [{"road_id": "1", "lane_section_index": 1, "lane_id": "-1"}],
+        },
+    ]
 
 
 def test_acceptance_gate_waiver_downgrades_to_waived(tmp_path) -> None:
@@ -186,3 +225,84 @@ def test_acceptance_gate_skip_when_no_evidence_is_incomplete(tmp_path) -> None:
     acceptance = build_map_acceptance({})
     assert acceptance["valid_for_experiments"] is True
     assert "component_reachability_spec_status" not in acceptance["metrics"]
+
+
+def test_acceptance_rejects_recovered_only_precomputed_evidence() -> None:
+    recovered = {
+        "graph_source": "RECOVERED_DIAGNOSTIC",
+        "largest_component_fraction": 1.0,
+        "component_count": 1,
+        "lane_count": 2,
+        "isolated_lane_component_count": 0,
+        "unmatched_cross_links": 0,
+    }
+    acceptance = build_map_acceptance(
+        {"component_reachability": recovered},
+        require_component_reachability=True,
+    )
+
+    assert acceptance["valid_for_experiments"] is False
+    assert acceptance["failed_gates"] == ["component_reachability"]
+    assert "recovered diagnostics cannot certify production" in acceptance["hard_fail_reasons"][0]["reason"]
+
+
+def test_literal_summary_records_exact_problem_components_and_cross_link_details() -> None:
+    road0 = (
+        '<road id="0"><link><successor elementType="road" elementId="1" '
+        'contactPoint="start"/></link>'
+        '<lanes><laneSection><right><lane id="-1" type="driving"/></right>'
+        "</laneSection></lanes></road>"
+    )
+    road1 = (
+        '<road id="1"><lanes><laneSection><right><lane id="-2" type="driving"/>'
+        "</right></laneSection></lanes></road>"
+    )
+    summary = component_reachability_summary(_xodr(road0 + road1), literal=True)
+
+    assert summary["largest_component_fraction"] == 0.5
+    assert summary["component_count"] == 2
+    assert summary["isolated_components"] == [
+        {
+            "component_id": "0:0:-1",
+            "lane_count": 1,
+            "roads": ["0"],
+            "lanes": [{"road_id": "0", "lane_section_index": 0, "lane_id": "-1"}],
+        },
+        {
+            "component_id": "1:0:-2",
+            "lane_count": 1,
+            "roads": ["1"],
+            "lanes": [{"road_id": "1", "lane_section_index": 0, "lane_id": "-2"}],
+        },
+    ]
+    assert summary["problematic_components"] == summary["isolated_components"][1:]
+    assert summary["unmatched_cross_links"] == 1
+    assert summary["unmatched_cross_link_details"] == [
+        {
+            "link_kind": "road_link",
+            "source_road_id": "0",
+            "source_lane_section_index": 0,
+            "source_lane_id": "-1",
+            "link_direction": "successor",
+            "target_road_id": "1",
+            "target_lane_id": "-1",
+            "contact_point": "start",
+            "reason": "target_lane_missing_at_declared_boundary",
+        }
+    ]
+
+
+def test_final_and_cook_profiles_require_strict_lane_successors() -> None:
+    assert requires_strict_lane_successors("STRUCTURAL_RELEASE") is True
+    assert requires_strict_lane_successors("CARLA_RELEASE") is True
+    assert requires_strict_lane_successors("VISUAL_RELEASE") is True
+    assert requires_strict_lane_successors("PERCEPTION_RELEASE") is True
+    assert requires_strict_lane_successors("DEVELOPMENT") is False
+
+
+def test_release_profile_strictness_cannot_be_disabled_by_false_env(monkeypatch) -> None:
+    class _Settings:
+        RELEASE_PROFILE = "VISUAL_RELEASE"
+
+    monkeypatch.setenv("UP_STRICT_LANE_SUCCESSORS", "0")
+    assert _strict_lane_successors_required(_Settings()) is True

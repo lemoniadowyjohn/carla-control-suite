@@ -13,6 +13,7 @@ from ultimate_pipeline.quality.lane_width_invariants import (
     default_report_path,
     enforce_lane_width_invariants,
 )
+from ultimate_pipeline.contracts.release_profile import requires_strict_lane_successors
 from ultimate_pipeline.tools.carla_visual_smoke_gate import evaluate_visual_smoke_report
 from ultimate_pipeline.utils.file_hashing import safe_sha256_file
 
@@ -37,6 +38,14 @@ def _safe_int(value: Any, default: int = 0) -> int:
         return int(value)
     except Exception:
         return int(default)
+
+
+def _strict_lane_successors_required(settings: Any) -> bool:
+    """Release profiles cannot opt out of strict successor enforcement by env."""
+    env_requested = str(os.getenv("UP_STRICT_LANE_SUCCESSORS", "0")).strip().lower()
+    return env_requested in ("1", "true", "yes", "on") or requires_strict_lane_successors(
+        str(getattr(settings, "RELEASE_PROFILE", ""))
+    )
 
 
 def _load_junction_connector_risk(out_dir: str) -> Dict[str, Any]:
@@ -744,9 +753,7 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             except RuntimeError as e2:
                 # Autofix didn't fully resolve. For thesis stability, we can optionally
                 # downgrade only the broken driving lanes to type=none so CARLA can still load.
-                strict = str(
-                    os.getenv("UP_STRICT_LANE_SUCCESSORS", "0")
-                ).strip().lower() in ("1", "true", "yes", "on")
+                strict = _strict_lane_successors_required(self.settings)
                 if strict:
                     print(
                         f"[lane_connectivity] Strict mode enabled → failing: {e2}"
@@ -790,6 +797,10 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         #   - settings: AUTOFIX_MISSING_LANE_SUCCESSORS = True
         #   - or env:  UP_AUTOFIX_MISSING_LANE_SUCCESSORS=1
         # ---------------------------------------------
+        elif _strict_lane_successors_required(self.settings):
+            # Release/cook profiles preserve failed topology as an explicit
+            # failure; changing driving lanes to none would mask it.
+            raise e
         elif bool(
             getattr(self.settings, "AUTOFIX_MISSING_LANE_SUCCESSORS", False)
         ) or str(
@@ -809,9 +820,7 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             final_out = fixed_out2
 
             # Re-check; if still broken, decide strict vs continue.
-            strict = str(
-                os.getenv("UP_STRICT_LANE_SUCCESSORS", "0")
-            ).strip().lower() in ("1", "true", "yes", "on")
+            strict = _strict_lane_successors_required(self.settings)
             try:
                 assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
                 print(

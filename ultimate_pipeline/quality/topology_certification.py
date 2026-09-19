@@ -36,6 +36,27 @@ SPEC_TOPOLOGY_EVIDENCE = "LITERAL_SPEC"
 RECOVERY_DIAGNOSTIC_EVIDENCE = "RECOVERED_DIAGNOSTIC"
 
 
+def _evidence_field(summary: Optional[Dict[str, Any]], name: str) -> Any:
+    """Read optional topology evidence without letting diagnostics authorize a pass."""
+    return summary.get(name) if isinstance(summary, dict) else None
+
+
+def _status_for_fraction(
+    summary: Optional[Dict[str, Any]],
+    *,
+    expected_graph_source: str,
+    fraction_threshold: float,
+) -> QualityStatus:
+    """Return a fail-closed status for one explicitly identified graph."""
+    if not isinstance(summary, dict) or summary.get("graph_source") != expected_graph_source:
+        return QualityStatus.INCOMPLETE
+    try:
+        fraction = float(summary["largest_component_fraction"])
+    except (KeyError, TypeError, ValueError):
+        return QualityStatus.INCOMPLETE
+    return from_legacy_bool(fraction >= fraction_threshold)
+
+
 def certify_topology(
     literal_summary: Optional[Dict[str, Any]],
     recovered_summary: Optional[Dict[str, Any]],
@@ -55,28 +76,18 @@ def certify_topology(
     values plus the supporting evidence numbers. Missing summaries map to
     INCOMPLETE (fail-closed), never PASS.
     """
-    if not isinstance(literal_summary, dict) or literal_summary.get("graph_source") not in (
-        "LITERAL_SPEC",
-        None,  # tolerate precomputed evidence without the marker
-    ):
-        literal_status = QualityStatus.INCOMPLETE
-    else:
-        literal_fraction = literal_summary.get("largest_component_fraction")
-        literal_status = (
-            from_legacy_bool(literal_fraction is not None and float(literal_fraction) >= fraction_threshold)
-            if literal_fraction is not None
-            else QualityStatus.INCOMPLETE
-        )
-
-    recovered_fraction = (
-        recovered_summary.get("largest_component_fraction")
-        if isinstance(recovered_summary, dict)
-        else None
+    # The source marker is mandatory for production evidence.  Accepting an
+    # unlabelled precomputed dict here would make it possible to pass a
+    # recovered graph through the literal production slot.
+    literal_status = _status_for_fraction(
+        literal_summary,
+        expected_graph_source=SPEC_TOPOLOGY_EVIDENCE,
+        fraction_threshold=fraction_threshold,
     )
-    recovered_status = (
-        from_legacy_bool(float(recovered_fraction) >= fraction_threshold)
-        if recovered_fraction is not None
-        else QualityStatus.INCOMPLETE
+    recovered_status = _status_for_fraction(
+        recovered_summary,
+        expected_graph_source=RECOVERY_DIAGNOSTIC_EVIDENCE,
+        fraction_threshold=fraction_threshold,
     )
 
     return {
@@ -84,23 +95,31 @@ def certify_topology(
         "RECOVERY_DIAGNOSTIC": recovered_status.value,
         "production_evidence": SPEC_TOPOLOGY_EVIDENCE,
         "fraction_threshold": fraction_threshold,
-        "literal_largest_component_fraction": (
-            literal_summary.get("largest_component_fraction")
-            if isinstance(literal_summary, dict)
-            else None
+        "literal_largest_component_fraction": _evidence_field(
+            literal_summary, "largest_component_fraction"
         ),
-        "recovered_largest_component_fraction": (
-            float(recovered_fraction) if recovered_fraction is not None else None
+        "literal_component_count": _evidence_field(literal_summary, "component_count"),
+        "literal_isolated_lane_component_count": _evidence_field(
+            literal_summary, "isolated_lane_component_count"
         ),
-        "literal_unmatched_cross_links": (
-            literal_summary.get("unmatched_cross_links")
-            if isinstance(literal_summary, dict)
-            else None
+        "literal_isolated_components": _evidence_field(
+            literal_summary, "isolated_components"
         ),
-        "recovered_unmatched_cross_links": (
-            recovered_summary.get("unmatched_cross_links")
-            if isinstance(recovered_summary, dict)
-            else None
+        "literal_problematic_components": _evidence_field(
+            literal_summary, "problematic_components"
+        ),
+        "literal_unmatched_cross_links": _evidence_field(
+            literal_summary, "unmatched_cross_links"
+        ),
+        "literal_unmatched_cross_link_details": _evidence_field(
+            literal_summary, "unmatched_cross_link_details"
+        ),
+        "recovered_largest_component_fraction": _evidence_field(
+            recovered_summary, "largest_component_fraction"
+        ),
+        "recovered_component_count": _evidence_field(recovered_summary, "component_count"),
+        "recovered_unmatched_cross_links": _evidence_field(
+            recovered_summary, "unmatched_cross_links"
         ),
         "note": (
             "Production certification uses the literal spec graph "

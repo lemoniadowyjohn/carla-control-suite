@@ -202,6 +202,36 @@ def component_reachability_summary(
             return lane.get("type") == "driving"
 
         unmatched_cross_links = 0
+        unmatched_cross_link_details: List[Dict[str, Any]] = []
+
+        def _record_unmatched(
+            *,
+            link_kind: str,
+            source_road_id: Optional[str] = None,
+            source_lane_section_index: Optional[int] = None,
+            source_lane_id: Optional[str] = None,
+            link_direction: Optional[str] = None,
+            target_road_id: Optional[str] = None,
+            target_lane_id: Optional[str] = None,
+            contact_point: Optional[str] = None,
+            reason: str,
+        ) -> None:
+            nonlocal unmatched_cross_links
+            unmatched_cross_links += 1
+            unmatched_cross_link_details.append(
+                {
+                    "link_kind": link_kind,
+                    "source_road_id": source_road_id,
+                    "source_lane_section_index": source_lane_section_index,
+                    "source_lane_id": source_lane_id,
+                    "link_direction": link_direction,
+                    "target_road_id": target_road_id,
+                    "target_lane_id": target_lane_id,
+                    "contact_point": contact_point,
+                    "reason": reason,
+                }
+            )
+
         lane_count = 0
         for rid, sections in roads.items():
             for si, section in enumerate(sections):
@@ -226,14 +256,34 @@ def component_reachability_summary(
                             contact = el.get("contactPoint")
                             target_sections = node_sections.get(target_road)
                             if not target_sections:
-                                unmatched_cross_links += 1
+                                _record_unmatched(
+                                    link_kind="lane_road_link",
+                                    source_road_id=rid,
+                                    source_lane_section_index=si,
+                                    source_lane_id=lid,
+                                    link_direction=tag,
+                                    target_road_id=target_road,
+                                    target_lane_id=target_lid,
+                                    contact_point=contact,
+                                    reason="target_road_missing",
+                                )
                                 continue
                             if contact == "start":
                                 tsi = 0
                             elif contact == "end":
                                 tsi = len(target_sections) - 1
                             else:
-                                unmatched_cross_links += 1
+                                _record_unmatched(
+                                    link_kind="lane_road_link",
+                                    source_road_id=rid,
+                                    source_lane_section_index=si,
+                                    source_lane_id=lid,
+                                    link_direction=tag,
+                                    target_road_id=target_road,
+                                    target_lane_id=target_lid,
+                                    contact_point=contact,
+                                    reason="invalid_contact_point",
+                                )
                                 continue
                             # Resolve the counterpart lane: explicit id, else
                             # same |lane| sign in the target section.
@@ -256,7 +306,17 @@ def component_reachability_summary(
                             if found:
                                 uf.union(node, _node(target_road, tsi, target_lid or str(abs(int(lid)))))
                             else:
-                                unmatched_cross_links += 1
+                                _record_unmatched(
+                                    link_kind="lane_road_link",
+                                    source_road_id=rid,
+                                    source_lane_section_index=si,
+                                    source_lane_id=lid,
+                                    link_direction=tag,
+                                    target_road_id=target_road,
+                                    target_lane_id=target_lid,
+                                    contact_point=contact,
+                                    reason="target_lane_missing_at_declared_boundary",
+                                )
                         elif target_lid is not None:
                             # Within-road transition to adjacent lane section.
                             if tag == "successor":
@@ -287,7 +347,14 @@ def component_reachability_summary(
                 contact = el.get("contactPoint")
                 target_sections = node_sections.get(target_road)
                 if not target_sections:
-                    unmatched_cross_links += 1
+                    _record_unmatched(
+                        link_kind="road_link",
+                        source_road_id=rid,
+                        link_direction=tag,
+                        target_road_id=target_road,
+                        contact_point=contact,
+                        reason="target_road_missing",
+                    )
                     continue
                 src_tsi = len(sections) - 1 if tag == "successor" else 0
                 target_tsi = 0 if contact == "start" else len(target_sections) - 1
@@ -303,7 +370,17 @@ def component_reachability_summary(
                     elif literal:
                         # Literal spec: the boundary lane must exist at the
                         # declared contactPoint side; no flip tolerance.
-                        unmatched_cross_links += 1
+                        _record_unmatched(
+                            link_kind="road_link",
+                            source_road_id=rid,
+                            source_lane_section_index=src_tsi,
+                            source_lane_id=lid,
+                            link_direction=tag,
+                            target_road_id=target_road,
+                            target_lane_id=lid,
+                            contact_point=contact,
+                            reason="target_lane_missing_at_declared_boundary",
+                        )
                     else:
                         # Tolerate a flipped contactPoint (generator quirk):
                         # try the other boundary of the target road.
@@ -311,7 +388,17 @@ def component_reachability_summary(
                         if lid in {l.get("id") for l in target_sections[alt_tsi].findall(".//lane")}:
                             uf.union(_node(rid, src_tsi, lid), _node(target_road, alt_tsi, lid))
                         else:
-                            unmatched_cross_links += 1
+                            _record_unmatched(
+                                link_kind="road_link",
+                                source_road_id=rid,
+                                source_lane_section_index=src_tsi,
+                                source_lane_id=lid,
+                                link_direction=tag,
+                                target_road_id=target_road,
+                                target_lane_id=lid,
+                                contact_point=contact,
+                                reason="target_lane_missing",
+                            )
 
         # Junction pass: roads connect through <junction><connection> elements.
         # Each connection's <laneLink from=.. to=..> maps a lane of the
@@ -329,7 +416,16 @@ def component_reachability_summary(
                 in_sections = node_sections.get(in_road)
                 conn_sections = node_sections.get(conn_road)
                 if not in_sections or not conn_sections:
-                    unmatched_cross_links += len(conn.findall("./laneLink"))
+                    for ll in conn.findall("./laneLink"):
+                        _record_unmatched(
+                            link_kind="junction_lane_link",
+                            source_road_id=in_road,
+                            source_lane_id=ll.get("from"),
+                            target_road_id=conn_road,
+                            target_lane_id=ll.get("to"),
+                            contact_point=contact,
+                            reason="incoming_or_connecting_road_missing",
+                        )
                     continue
                 in_tsi = 0 if contact == "start" else len(in_sections) - 1
                 conn_tsi = 0  # connecting road attaches to the junction at s=0
@@ -360,7 +456,16 @@ def component_reachability_summary(
                     }:
                         uf.union(_node(in_road, in_tsi_used, frm), _node(conn_road, conn_tsi_used, to))
                     else:
-                        unmatched_cross_links += 1
+                        _record_unmatched(
+                            link_kind="junction_lane_link",
+                            source_road_id=in_road,
+                            source_lane_section_index=in_tsi_used,
+                            source_lane_id=frm,
+                            target_road_id=conn_road,
+                            target_lane_id=to,
+                            contact_point=contact,
+                            reason="lane_missing_at_declared_boundary",
+                        )
 
         if lane_count == 0:
             return None
@@ -376,7 +481,45 @@ def component_reachability_summary(
                     comp = uf._find(node)
                     comp_sizes[comp] = comp_sizes.get(comp, 0) + 1
 
-        component_count = len(comp_sizes)
+        component_members: Dict[str, List[Dict[str, Any]]] = {}
+        for rid, sections in roads.items():
+            for si, section in enumerate(sections):
+                for lane in section.findall(".//lane"):
+                    lid = lane.get("id")
+                    if lid is None or lid == "0" or not _is_driving(lane):
+                        continue
+                    component_members.setdefault(uf._find(_node(rid, si, lid)), []).append(
+                        {
+                            "road_id": rid,
+                            "lane_section_index": si,
+                            "lane_id": lid,
+                        }
+                    )
+
+        def _component_record(members: List[Dict[str, Any]]) -> Dict[str, Any]:
+            ordered = sorted(
+                members,
+                key=lambda item: (
+                    str(item["road_id"]),
+                    int(item["lane_section_index"]),
+                    str(item["lane_id"]),
+                ),
+            )
+            first = ordered[0]
+            return {
+                "component_id": (
+                    f"{first['road_id']}:{first['lane_section_index']}:{first['lane_id']}"
+                ),
+                "lane_count": len(ordered),
+                "roads": sorted({str(item["road_id"]) for item in ordered}),
+                "lanes": ordered,
+            }
+
+        components = sorted(
+            (_component_record(members) for members in component_members.values()),
+            key=lambda item: (-int(item["lane_count"]), str(item["component_id"])),
+        )
+        component_count = len(components)
         largest = max(comp_sizes.values(), default=0)
         isolated_count = sum(1 for size in comp_sizes.values() if size <= 1)
         return {
@@ -387,6 +530,11 @@ def component_reachability_summary(
             "largest_component_fraction": round(largest / lane_count, 6),
             "isolated_lane_component_count": isolated_count,
             "unmatched_cross_links": unmatched_cross_links,
+            "unmatched_cross_link_details": unmatched_cross_link_details,
+            "isolated_components": [
+                component for component in components if component["lane_count"] == 1
+            ],
+            "problematic_components": components[1:],
             "graph_source": "LITERAL_SPEC" if literal else "RECOVERED_DIAGNOSTIC",
         }
     except Exception:
@@ -829,33 +977,52 @@ def build_map_acceptance(
         metrics["component_reachability_spec_status"] = certification["SPEC_TOPOLOGY"]
         metrics["component_reachability_recovery_status"] = certification["RECOVERY_DIAGNOSTIC"]
         metrics["largest_component_fraction_spec"] = certification["literal_largest_component_fraction"]
+        metrics["lane_component_count_spec"] = certification["literal_component_count"]
+        metrics["isolated_components_spec"] = certification["literal_isolated_components"]
+        metrics["problematic_components_spec"] = certification["literal_problematic_components"]
         metrics["unmatched_cross_links_spec"] = certification["literal_unmatched_cross_links"]
+        metrics["unmatched_cross_link_details_spec"] = certification[
+            "literal_unmatched_cross_link_details"
+        ]
         metrics["topology_production_evidence"] = certification["production_evidence"]
 
-    if isinstance(comp_rep, dict) and isinstance(comp_rep.get("largest_component_fraction"), (int, float)):
-        metrics["lane_component_count"] = comp_rep.get("component_count")
-        metrics["lane_count_total"] = comp_rep.get("lane_count")
-        metrics["largest_component_fraction"] = comp_rep.get("largest_component_fraction")
-        metrics["largest_component_lane_count"] = comp_rep.get("largest_component_lane_count")
-        metrics["isolated_lane_component_count"] = comp_rep.get("isolated_lane_component_count")
-        metrics["unmatched_cross_links"] = comp_rep.get("unmatched_cross_links")
-        if int(comp_rep.get("isolated_lane_component_count") or 0) > 0:
+    production_rep = literal_rep if isinstance(literal_rep, dict) else None
+    if (
+        require_component_reachability
+        and certification["SPEC_TOPOLOGY"] == QualityStatus.INCOMPLETE.value
+    ):
+        hard_fail_reasons.append(
+            {
+                "gate": "component_reachability",
+                "reason": "LITERAL_SPEC topology evidence is missing or unlabelled; recovered diagnostics cannot certify production",
+            }
+        )
+    if isinstance(production_rep, dict) and isinstance(production_rep.get("largest_component_fraction"), (int, float)):
+        metrics["lane_component_count"] = production_rep.get("component_count")
+        metrics["lane_count_total"] = production_rep.get("lane_count")
+        metrics["largest_component_fraction"] = production_rep.get("largest_component_fraction")
+        metrics["largest_component_lane_count"] = production_rep.get("largest_component_lane_count")
+        metrics["isolated_lane_component_count"] = production_rep.get("isolated_lane_component_count")
+        metrics["isolated_components"] = production_rep.get("isolated_components")
+        metrics["problematic_components"] = production_rep.get("problematic_components")
+        metrics["unmatched_cross_links"] = production_rep.get("unmatched_cross_links")
+        metrics["unmatched_cross_link_details"] = production_rep.get("unmatched_cross_link_details")
+        if int(production_rep.get("isolated_lane_component_count") or 0) > 0:
             soft_warnings.append(
                 {
                     "gate": "component_reachability",
                     "reason": (
-                        f"{comp_rep.get('isolated_lane_component_count')} isolated lane "
-                        f"components (largest={comp_rep.get('largest_component_fraction')})"
+                        f"{production_rep.get('isolated_lane_component_count')} isolated lane "
+                        f"components (largest={production_rep.get('largest_component_fraction')})"
                     ),
                 }
             )
-        if require_component_reachability:
-            gate_fraction = (
-                float(certification["literal_largest_component_fraction"])
-                if isinstance(certification["literal_largest_component_fraction"], (int, float))
-                else float(comp_rep.get("largest_component_fraction"))
-            )
-            if gate_fraction < 0.95:
+        if (
+            require_component_reachability
+            and certification["SPEC_TOPOLOGY"] != QualityStatus.INCOMPLETE.value
+        ):
+            gate_fraction = certification["literal_largest_component_fraction"]
+            if float(gate_fraction) < 0.95:
                 waiver = component_reachability_waiver
                 waivable = isinstance(waiver, str) and bool(waiver.strip())
                 if waivable and governed_waiver_allowed(
@@ -869,7 +1036,7 @@ def build_map_acceptance(
                             "reason": (
                                 f"WAIVED by governed waiver: LITERAL_SPEC "
                                 f"largest_component_fraction={gate_fraction} < 0.95 "
-                                f"(component_count={comp_rep.get('component_count')}) "
+                                f"(component_count={production_rep.get('component_count')}) "
                                 f"justification='{waiver}'"
                             ),
                         }
@@ -880,7 +1047,7 @@ def build_map_acceptance(
                             "gate": "component_reachability",
                             "reason": (
                                 f"LITERAL_SPEC largest_component_fraction={gate_fraction} < 0.95 "
-                                f"(component_count={comp_rep.get('component_count')}; "
+                                f"(component_count={production_rep.get('component_count')}; "
                                 f"graph_source={certification['production_evidence']})"
                             ),
                         }
