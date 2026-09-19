@@ -1,0 +1,95 @@
+{
+  "run_id": "20260919T000000Z_PRODUCTION_CLOSURE",
+  "schema_version": 1,
+  "last_updated_utc": "2026-09-19T00:00:00Z",
+  "issues": [
+    {
+      "id": "GAP-001",
+      "severity": "P0",
+      "subsystem": "tiling/large_map_package.py",
+      "description": "Staged artifacts were previously hardlinked instead of byte-independent copies.",
+      "status": "fixed",
+      "fixing_commit": "c75fd8c9fa9a6c3c0a21a564f0c85b9be6785da7",
+      "regression_test": "tests/unit/test_large_map_package.py",
+      "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/00_BASELINE.json",
+      "residual_risk": "Focused offline test verified in 129-test pack."
+    },
+    {
+      "id": "GAP-002",
+      "severity": "P0",
+      "subsystem": "tiling/tile_fbx_generator.py",
+      "description": "FBX roundtrip false could previously still report status ok.",
+      "status": "fixed",
+      "fixing_commit": "c75fd8c9fa9a6c3c0a21a564f0c85b9be6785da7",
+      "regression_test": "tests/unit/test_tile_fbx_generator.py",
+      "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/00_BASELINE.json",
+      "residual_risk": "Focused offline test verified in 129-test pack."
+    },
+    {
+      "id": "GAP-003",
+      "severity": "P0",
+      "subsystem": "main_pipeline.py / final artifact authority",
+      "description": "Acceptance/fingerprints could certify pre-final XODR before junction integrity and hygiene mutations.",
+      "status": "fixed_offline",
+      "fixing_commit": "22e3811cefca6dfa14340be0a2acab2c33d1ad01",
+      "regression_test": "ultimate_pipeline/tests/unit/test_final_artifact_authority.py; ultimate_pipeline/tests/unit/test_final_evidence_ordering.py",
+      "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/00_BASELINE.json",
+      "residual_risk": "No live MainPipeline end-to-end run or generated final-artifact receipt has been produced in this run."
+    },
+    {
+      "id": "GAP-004",
+      "severity": "P1",
+      "subsystem": "geometry authority",
+      "description": "Legacy geometry helpers diverged from canonical OpenDRIVE kernel.",
+      "status": "fixed_offline",
+      "fixing_commit": "fab0f8c783cd7bbe245ceaf8dfde080d4ca33a8b",
+      "regression_test": "geometry authority tests integrated in production history",
+      "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.json",
+      "residual_risk": "Architecture-level duplicate geometry packages remain deferred for a dedicated migration."
+    },
+    {
+      "id": "GAP-005",
+      "severity": "P1",
+      "subsystem": "quality/check_lane_count_changes.py",
+      "description": "Raw unexplained lane-count transition metric mixed missing provenance with ordinary topology transitions.",
+      "status": "fixed_offline_local_only",
+      "fixing_commit": "e2befc36276308e88f69f3b164a704f9bdb2d47f",
+      "regression_test": "ultimate_pipeline/tests/unit/test_classify_lane_count_transitions.py",
+      "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/lane_count_classification.json",
+      "residual_risk": "Integrated only in local production branch; origin production has not been advanced."
+    },
+    {
+      "id": "GAP-006",
+      "severity": "P0",
+      "subsystem": "final artifact receipt / mtime authority",
+      "description": "Production final-map discovery still needs explicit immutable receipt semantics; mtime fallback must be non-production only.",
+      "status": "in_progress",
+      "owner_subagent": "Peirce",
+      "fixing_commit": null,
+      "regression_test": "pending",
+      "evidence_artifact": null,
+      "residual_risk": "Blocks production-grade regeneration/promotion authority."
+    },
+    {
+      "id": "GAP-007",
+      "severity": "P1",
+      "subsystem": "pytest verification environment",
+      "description": "Default pytest plugin autoload caused focused production regression pack to hang after visible 100% progress; same tests pass with PYTEST_DISABLE_PLUGIN_AUTOLOAD=1.",
+      "status": "open",
+      "owner_subagent": "coordinator",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/00_BASELINE.json",
+      "residual_risk": "Full-suite evidence must specify plugin policy until root-caused."
+    }
+  ],
+  "counts": {
+    "total": 7,
+    "fixed": 2,
+    "fixed_offline": 2,
+    "fixed_offline_local_only": 1,
+    "in_progress": 1,
+    "open": 1,
+    "blocked_external": 0
+  }
+}

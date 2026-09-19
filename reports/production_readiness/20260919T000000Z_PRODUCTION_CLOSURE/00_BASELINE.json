@@ -1,0 +1,141 @@
+{
+  "run_id": "20260919T000000Z_PRODUCTION_CLOSURE",
+  "generated_at_utc": "2026-09-19T00:00:00Z",
+  "git": {
+    "coordination_worktree": ".codex/worktrees/prod-closure-20260919",
+    "integration_lineage": "integration/session-batch1-20260912",
+    "integration_head": "1a42cd89bbaaeca95e6f326225afa5a4c23e707d",
+    "production_branch": "integration/production-large-map-20260918",
+    "production_head_local": "f5333f3ae623194809350afa3bc212f53c3577d6",
+    "production_head_origin": "398193d4fc3cfb4164daf805438168813ae36aec",
+    "production_branch_status": "local_ahead_origin_by_2_commits_0_behind",
+    "main_branch_status": "old_disconnected_initial_lineage_not_used_as_baseline",
+    "current_user_checkout_status": "dirty branch fix/coordinate-control-full-map-coverage-v1; excluded from production evidence"
+  },
+  "integrated_ancestors": [
+    {
+      "commit": "c75fd8c9fa9a6c3c0a21a564f0c85b9be6785da7",
+      "work_package": "P0-A large-map transactional staging",
+      "status": "integrated",
+      "merge_commit": "42d6865b"
+    },
+    {
+      "commit": "e99ec35b5c2bb7ee3013cb9d5d6f5ecb10401866",
+      "work_package": "P0-A stage capability contract",
+      "status": "integrated",
+      "merge_commit": "234e1ef1"
+    },
+    {
+      "commit": "22e3811cefca6dfa14340be0a2acab2c33d1ad01",
+      "work_package": "P0-B final artifact authority",
+      "status": "integrated",
+      "merge_commit": "398193d4"
+    },
+    {
+      "commit": "fab0f8c783cd7bbe245ceaf8dfde080d4ca33a8b",
+      "work_package": "P1-F canonical geometry authority",
+      "status": "integrated",
+      "merge_commit": "9ccb5d98"
+    },
+    {
+      "commit": "e2befc36276308e88f69f3b164a704f9bdb2d47f",
+      "work_package": "P1-G lane-count classification",
+      "status": "integrated_local_only",
+      "merge_commit": "f5333f3a"
+    }
+  ],
+  "map_of_record": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "size_bytes": 149799632,
+    "verified_this_run": true,
+    "road_count": 32267,
+    "junction_count": 3561,
+    "supersedes_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "manual_reference": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+    "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "size_bytes": 66530869,
+    "verified_this_run": true,
+    "note": "Manual manifest records Grid0821 and Grid0828 content as byte-identical; fail-closed name/content handling remains required."
+  },
+  "pinned_inputs": {
+    "roads_osm": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "size_bytes": 11154738,
+      "verified_this_run": true
+    },
+    "dem": {
+      "path": "cities/ingolstadt/dem/dem_ing.tif",
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "status": "pinned_by_manifest_not_reverified_this_turn"
+    },
+    "buildings": {
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json",
+      "sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "status": "pinned_by_INPUTS_MANIFEST; source/manifest.json also records CRLF-era 92300f0a note"
+    }
+  },
+  "tool_versions": {
+    "python": "Python 3.12.2",
+    "git": "2.46.2.windows.1",
+    "git_lfs": "3.5.1",
+    "blender": "Blender 4.3.0 at E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "sumo_netconvert": "Eclipse SUMO netconvert Version 1.24.0",
+    "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe"
+  },
+  "external_tool_availability": {
+    "blender": {
+      "status": "available",
+      "path": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe"
+    },
+    "osm2world": {
+      "status": "unavailable_or_unverified",
+      "detail": "Repo-relative carla_governed\\OSM2World-latest-bin\\OSM2World.jar not found in clean coordinator worktree."
+    },
+    "sumo": {
+      "status": "available",
+      "path": "C:\\Sumo\\sumo-win64extra-1.24.0\\sumo-1.24.0\\bin\\netconvert.exe"
+    },
+    "carla_0_9_16_runtime": {
+      "status": "installed_but_runtime_blocked",
+      "path": "E:\\CARLA\\CARLA_0.9.16",
+      "evidence_level": "BLOCKED_EXTERNAL",
+      "detail": "Prior debugger-backed evidence records CARLA RPC server never becomes responsive on this machine."
+    },
+    "carla_source_tree": {
+      "status": "incomplete_unusable_checkout",
+      "path": "G:\\CARLA\\carla_source_probe"
+    },
+    "ue4_26": {
+      "status": "not_available",
+      "path": "G:\\UE4",
+      "detail": "Path exists but no usable engine checkout/build was found."
+    },
+    "gpu": {
+      "name": "Quadro P3200 with Max-Q Design",
+      "driver": "573.22",
+      "vram_mib": 6144
+    }
+  },
+  "verification_this_run": {
+    "focused_regression_pack": {
+      "command": "$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'; python -m pytest tests/unit/test_large_map_package.py tests/unit/test_tile_fbx_generator.py ultimate_pipeline/tests/unit/test_stage_capability_contract.py ultimate_pipeline/tests/unit/test_main_pipeline_stage_contract_wiring.py ultimate_pipeline/tests/unit/test_final_artifact_authority.py ultimate_pipeline/tests/unit/test_final_evidence_ordering.py ultimate_pipeline/tests/unit/test_classify_lane_count_transitions.py -q --tb=short",
+      "result": "129 passed, 6 warnings in 14.69s",
+      "evidence_level": "VERIFIED_OFFLINE"
+    },
+    "default_pytest_plugin_autoload": {
+      "result": "INCOMPLETE",
+      "detail": "Same tests reached visible 100% progress but Python children continued consuming CPU until stopped. With plugin autoload disabled, the pack returned normally."
+    }
+  },
+  "known_blockers": {
+    "ue_import": "BLOCKED_EXTERNAL: no usable CARLA source/UE4.26 import environment",
+    "cook": "BLOCKED_EXTERNAL: no usable CARLA source/UE4.26 import environment",
+    "carla_load_streaming_6gb": "BLOCKED_EXTERNAL: installed packaged CARLA runtime does not become RPC responsive",
+    "rq3_rq5a_runtime_data": "BLOCKED_EXTERNAL until CARLA runtime/import/cook ladder is available",
+    "rq5b_real_world": "DEFERRED_EXTERNAL_DATA"
+  }
+}
