@@ -2344,6 +2344,9 @@ if str(_repo_root) not in sys.path:
         # repair + genuine z-seam chaining on the final artifact, then
         # re-verify the gates most affected by these repairs.
         self._mark_stage("map_hygiene")
+        # This is the actual parent presented to the final producer stage.
+        # Record it explicitly; never reconstruct that lineage by mtime.
+        final_parent = final_out
         final_out = self._step8h_map_hygiene(final_out)
         self._authority_mark_structure_mutated(
             "map_hygiene",
@@ -2373,7 +2376,10 @@ if str(_repo_root) not in sys.path:
         # describe the published artifact.
         self._mark_stage("final_artifact_authority")
         self._publish_final_artifact_authority(
-            final_out, origin_report=origin_report, seam_report=seam_report
+            final_out,
+            immediate_parent_path=final_parent,
+            origin_report=origin_report,
+            seam_report=seam_report,
         )
 
         # 8H) Drivable-surface hole analysis
@@ -3009,6 +3015,7 @@ if str(_repo_root) not in sys.path:
         self,
         final_out: str,
         *,
+        immediate_parent_path: Optional[str] = None,
         origin_report: Optional[dict] = None,
         seam_report: Optional[dict] = None,
     ) -> dict:
@@ -3204,11 +3211,15 @@ if str(_repo_root) not in sys.path:
             topology_certification=topology_certification,
             semantic_authority_profile=self._semantic_authority_profile(),
             source_manifest_identity=self._source_manifest_identity(),
+            receipt_root=self.out_dir,
+            run_id=os.path.basename(os.path.normpath(self.out_dir)),
+            immediate_parent_path=immediate_parent_path or final_out,
+            acceptance_receipt_path=acc_path,
             stage=stage,
         )
         receipt_path = write_receipt(self.out_dir, receipt)
         self.final_artifact_authority = receipt
-        print(f"[AUTHORITY] final_artifact_authority.json -> {receipt_path}")
+        print(f"[AUTHORITY] final_artifact_receipt.json -> {receipt_path}")
         return receipt
 
     def _assert_structure_frozen_unchanged(self, final_out: str, where: str) -> None:

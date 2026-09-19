@@ -251,6 +251,22 @@ def _run_pipeline(seed: Path, out_dir: Path, profile: str, disable_carla: bool) 
 
 
 def _find_final_xodr(run_dir: Path) -> Path:
+    """Resolve the published final XODR without timestamp authority.
+
+    A production pipeline run must publish ``final_artifact_receipt.json``.
+    Historical recovery is deliberately a separately named opt-in below so a
+    touched old XODR, unrelated newer XODR, or lexically later stale filename
+    can never alter production map-of-record regeneration.
+    """
+    from ultimate_pipeline.contracts.artifact_authority import (
+        resolve_final_artifact_receipt,
+    )
+
+    return resolve_final_artifact_receipt(str(run_dir))
+
+
+def _find_final_xodr_historical_recovery(run_dir: Path) -> Path:
+    """Legacy mtime discovery for explicit non-production recovery only."""
     # C10 map-hygiene (stage_08_hygiene.py, added 2026-08-19) writes its
     # corrected output as 08h1_island_quarantined.xodr ->
     # 08h2_degenerate_lanes_repaired.xodr -> 08h3_zseams_repaired.xodr --
@@ -425,8 +441,21 @@ def cmd_regen(args: argparse.Namespace) -> int:
     print(f"[seed] {seed} sha256={_sha256_file(seed)}")
 
     _run_pipeline(seed, out_dir / "pipeline_out", args.profile, disable_carla=not args.with_carla)
-    final = _find_final_xodr(out_dir / "pipeline_out")
+    if args.historical_recovery:
+        print(
+            "[RECOVERY] WARNING: using legacy mtime artifact discovery; "
+            "this mode is non-production and cannot emit a map of record."
+        )
+        final = _find_final_xodr_historical_recovery(out_dir / "pipeline_out")
+    else:
+        final = _find_final_xodr(out_dir / "pipeline_out")
     print(f"[final] {final} sha256={_sha256_file(final)}")
+    if args.historical_recovery:
+        print(
+            "[RECOVERY] resolved legacy artifact for investigation only; "
+            "no candidate or map-of-record update will be emitted."
+        )
+        return 0
 
     # Re-base to a local frame when the SUMO path left global tmerc coords
     # (float32-safe for CARLA, passes origin_sanity). Frame preserved in the
@@ -461,6 +490,11 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--candidate-name", type=str, default=None, help="Emitted candidate filename (default: map_of_record timestamped).")
     ap.add_argument("--allow-dirty", action="store_true", help="Proceed even when the worktree is dirty.")
     ap.add_argument("--with-carla", action="store_true", help="Do not set UP_DISABLE_CARLA=1 (requires a running CARLA server).")
+    ap.add_argument(
+        "--historical-recovery",
+        action="store_true",
+        help="NON-PRODUCTION ONLY: permit legacy mtime final-XODR discovery for historical recovery; cannot emit a map-of-record candidate.",
+    )
     return ap.parse_args()
 
 
