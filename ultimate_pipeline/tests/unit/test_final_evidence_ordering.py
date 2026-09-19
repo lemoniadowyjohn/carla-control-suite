@@ -388,8 +388,11 @@ def staged(tmp_path):
     out_dir.mkdir()
     xodr = out_dir / "08h1_island_quarantined.xodr"
     xodr.write_text(BASE_XODR, encoding="utf-8")
+    manifest = out_dir / "inputs_manifest.json"
+    manifest.write_text('{"inputs": {}}', encoding="utf-8")
 
     pipe = _StubPipeline(str(out_dir))
+    pipe.settings.INPUTS_MANIFEST = str(manifest)
     pipe._authority_mark_geometry_frozen(str(xodr))
     pipe._authority_mark_lanes_generated(str(xodr))
     pipe._authority_mark_structure_mutated(
@@ -428,7 +431,7 @@ class TestPublishedEvidenceIsAuthoritative:
         assert FINAL_ARTIFACT_PUBLISHED in receipt["capabilities_held"]
 
         on_disk = json.loads(
-            (out_dir / "final_artifact_authority.json").read_text(encoding="utf-8")
+            (out_dir / "final_artifact_receipt.json").read_text(encoding="utf-8")
         )
         assert on_disk["final_artifact_sha256"] == receipt["final_artifact_sha256"]
 

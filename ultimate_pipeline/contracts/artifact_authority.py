@@ -54,6 +54,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from pathlib import Path
+import subprocess
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -74,6 +76,18 @@ class ArtifactAuthorityError(RuntimeError):
     * evidence recorded against content that has since changed (STALE), and
     * a capability that was revoked and never re-established.
     """
+
+
+class FinalArtifactReceiptError(ArtifactAuthorityError):
+    """Raised when a final-artifact receipt cannot safely select an XODR."""
+
+
+# This is intentionally a different, resolver-facing document from the
+# historical ``final_artifact_authority.json`` name.  Consumers must select a
+# final artifact by this content-addressed receipt, never by directory order,
+# filename order, or filesystem timestamps.
+FINAL_ARTIFACT_RECEIPT_FILENAME = "final_artifact_receipt.json"
+FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION = 1
 
 
 # ---------------------------------------------------------------------------
@@ -287,6 +301,133 @@ def sha256_file(path: str) -> Optional[str]:
         return h.hexdigest()
     except Exception:
         return None
+
+
+def _receipt_path(path: str, receipt_root: str) -> str:
+    """Return a receipt-local, portable path or fail rather than leak scope."""
+    root = Path(receipt_root).resolve()
+    candidate = Path(path).resolve()
+    try:
+        return candidate.relative_to(root).as_posix()
+    except ValueError as exc:
+        raise ArtifactAuthorityError(
+            f"Receipt artifact {candidate} is outside run directory {root}"
+        ) from exc
+
+
+def _git_commit() -> Optional[str]:
+    """Best-effort repository identity; never use it to select an artifact."""
+    try:
+        repo_root = Path(__file__).resolve().parents[2]
+        return subprocess.check_output(
+            ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip() or None
+    except Exception:
+        return None
+
+
+def _required_mapping(receipt: Dict[str, Any], key: str) -> Dict[str, Any]:
+    value = receipt.get(key)
+    if not isinstance(value, dict):
+        raise FinalArtifactReceiptError(f"Receipt field {key!r} must be an object")
+    return value
+
+
+def resolve_final_artifact_receipt(run_dir: str) -> Path:
+    """Resolve a production final XODR from its explicit receipt.
+
+    The resolver verifies the declared path, byte count, byte hash, structure
+    fingerprint, acceptance receipt binding, and required lifecycle state. It
+    deliberately does *not* inspect mtimes, glob candidate XODRs, or use a
+    filename tiebreaker.
+    """
+    root = Path(run_dir).resolve()
+    receipt_path = root / FINAL_ARTIFACT_RECEIPT_FILENAME
+    if not receipt_path.is_file():
+        raise FinalArtifactReceiptError(
+            f"Production final-artifact receipt is required: {receipt_path}"
+        )
+    try:
+        with receipt_path.open("r", encoding="utf-8") as fh:
+            receipt = json.load(fh)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise FinalArtifactReceiptError(
+            f"Cannot parse final-artifact receipt {receipt_path}: {exc}"
+        ) from exc
+    if not isinstance(receipt, dict):
+        raise FinalArtifactReceiptError("Final-artifact receipt root must be an object")
+    if receipt.get("schema_version") != FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION:
+        raise FinalArtifactReceiptError(
+            "Unsupported or missing final-artifact receipt schema_version"
+        )
+    if receipt.get("receipt_kind") != "final_artifact_receipt":
+        raise FinalArtifactReceiptError("Receipt kind is not final_artifact_receipt")
+    if receipt.get("run_id") != root.name:
+        raise FinalArtifactReceiptError(
+            f"Receipt run_id {receipt.get('run_id')!r} does not bind run directory {root.name!r}"
+        )
+
+    final_xodr = _required_mapping(receipt, "final_xodr")
+    declared_path = final_xodr.get("path")
+    if not isinstance(declared_path, str) or not declared_path:
+        raise FinalArtifactReceiptError("Receipt final_xodr.path must be a non-empty relative path")
+    relative_path = Path(declared_path)
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        raise FinalArtifactReceiptError("Receipt final_xodr.path escapes the run directory")
+    final_path = (root / relative_path).resolve()
+    if not final_path.is_file():
+        raise FinalArtifactReceiptError(f"Receipt final XODR is missing: {final_path}")
+    declared_sha = final_xodr.get("sha256")
+    actual_sha = sha256_file(str(final_path))
+    if not isinstance(declared_sha, str) or actual_sha != declared_sha:
+        raise FinalArtifactReceiptError("Receipt final XODR SHA-256 does not match bytes on disk")
+    if final_xodr.get("bytes") != final_path.stat().st_size:
+        raise FinalArtifactReceiptError("Receipt final XODR byte count does not match disk")
+
+    fingerprint = _required_mapping(receipt, "structure_fingerprint")
+    actual_fingerprint = compute_structure_fingerprint(str(final_path))
+    if fingerprint.get("sha256") != actual_fingerprint.get("sha256"):
+        raise FinalArtifactReceiptError(
+            "Receipt structure fingerprint does not match the final XODR"
+        )
+
+    parent = _required_mapping(receipt, "immediate_parent")
+    if not isinstance(parent.get("path"), str) or not isinstance(parent.get("sha256"), str):
+        raise FinalArtifactReceiptError("Receipt immediate_parent must bind path and SHA-256")
+
+    source_manifest = _required_mapping(receipt, "source_manifest")
+    if not isinstance(source_manifest.get("sha256"), str) or not source_manifest.get("sha256"):
+        raise FinalArtifactReceiptError("Receipt source_manifest.sha256 is required")
+    if not isinstance(receipt.get("git_commit"), (str, type(None))):
+        raise FinalArtifactReceiptError("Receipt git_commit must be a string or null")
+    if not isinstance(receipt.get("created_at_utc"), str):
+        raise FinalArtifactReceiptError("Receipt created_at_utc trace is required")
+    if not isinstance(receipt.get("producer_stage"), str):
+        raise FinalArtifactReceiptError("Receipt producer_stage is required")
+
+    acceptance = _required_mapping(receipt, "acceptance_receipt")
+    acceptance_path = acceptance.get("path")
+    if not isinstance(acceptance_path, str) or not acceptance_path:
+        raise FinalArtifactReceiptError("Receipt acceptance_receipt.path is required")
+    acceptance_relative = Path(acceptance_path)
+    if acceptance_relative.is_absolute() or ".." in acceptance_relative.parts:
+        raise FinalArtifactReceiptError("Receipt acceptance receipt path escapes the run directory")
+    acceptance_file = (root / acceptance_relative).resolve()
+    if not acceptance_file.is_file() or sha256_file(str(acceptance_file)) != acceptance.get("sha256"):
+        raise FinalArtifactReceiptError("Receipt acceptance receipt SHA-256 does not match disk")
+
+    capability_state = _required_mapping(receipt, "capability_state")
+    held = capability_state.get("held")
+    if not isinstance(held, list) or not {
+        FINAL_ARTIFACT_PUBLISHED,
+        STRUCTURE_FROZEN,
+    }.issubset(held):
+        raise FinalArtifactReceiptError(
+            "Receipt capability_state does not prove a frozen published artifact"
+        )
+    return final_path
 
 
 # ---------------------------------------------------------------------------
@@ -565,6 +706,11 @@ class ArtifactAuthorityLedger:
         topology_certification: Optional[Dict[str, Any]] = None,
         semantic_authority_profile: Optional[Dict[str, Any]] = None,
         source_manifest_identity: Optional[Dict[str, Any]] = None,
+        receipt_root: Optional[str] = None,
+        run_id: Optional[str] = None,
+        immediate_parent_path: Optional[str] = None,
+        acceptance_receipt_path: Optional[str] = None,
+        git_commit: Optional[str] = None,
         extra: Optional[Dict[str, Any]] = None,
         stage: str = "final_artifact_authority",
     ) -> Dict[str, Any]:
@@ -582,12 +728,70 @@ class ArtifactAuthorityLedger:
         fingerprint = compute_structure_fingerprint(final_artifact_path)
         acceptance = map_acceptance or {}
         certification = topology_certification or {}
+        root = os.path.abspath(receipt_root or os.path.dirname(final_artifact_path))
+        final_path = os.path.abspath(final_artifact_path)
+        parent_path = os.path.abspath(immediate_parent_path or final_artifact_path)
+        if not acceptance_receipt_path:
+            raise ArtifactAuthorityError(
+                "A final-artifact receipt requires the written map_acceptance receipt path"
+            )
+        acceptance_path = os.path.abspath(acceptance_receipt_path)
+        final_sha = sha256_file(final_path)
+        parent_sha = sha256_file(parent_path)
+        acceptance_sha = sha256_file(acceptance_path)
+        if not final_sha or not parent_sha or not acceptance_sha:
+            raise ArtifactAuthorityError(
+                "Cannot hash final artifact, immediate parent, or acceptance receipt"
+            )
+        source_identity = source_manifest_identity or {}
+        source_manifest_path = source_identity.get("inputs_manifest_path")
+        source_manifest_sha = source_identity.get("inputs_manifest_sha256")
+        if not isinstance(source_manifest_sha, str) or not source_manifest_sha:
+            raise ArtifactAuthorityError(
+                "A final-artifact receipt requires source_manifest_identity.inputs_manifest_sha256"
+            )
+
+        # Publish the capability before serialising its state.  The receipt
+        # itself is the durable evidence for this capability.
+        self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
 
         receipt: Dict[str, Any] = {
+            # Resolver-facing, content-addressed contract.  Timestamps are
+            # trace information only; no resolver may rank by them.
+            "schema_version": FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION,
+            "receipt_kind": "final_artifact_receipt",
+            "run_id": run_id or os.path.basename(os.path.normpath(root)),
+            "created_at_utc": _utc_now(),
+            "producer_stage": stage,
+            "final_xodr": {
+                "path": _receipt_path(final_path, root),
+                "sha256": final_sha,
+                "bytes": os.path.getsize(final_path),
+            },
+            "immediate_parent": {
+                "path": _receipt_path(parent_path, root),
+                "sha256": parent_sha,
+            },
+            "source_manifest": {
+                "path": source_manifest_path,
+                "sha256": source_manifest_sha,
+            },
+            "git_commit": git_commit if git_commit is not None else _git_commit(),
+            "acceptance_receipt": {
+                "path": _receipt_path(acceptance_path, root),
+                "sha256": acceptance_sha,
+            },
+            "capability_state": {
+                "held": sorted(self._held),
+                "invalidated": {
+                    name: dict(info) for name, info in sorted(self._revoked.items())
+                },
+            },
+            # Compatibility detail retained for existing evidence readers.
             "schema": "final_artifact_authority/v1",
             "generated_at_utc": _utc_now(),
             "final_artifact_path": final_artifact_path,
-            "final_artifact_sha256": sha256_file(final_artifact_path),
+            "final_artifact_sha256": final_sha,
             "road_count": fingerprint["counts"]["road_count"],
             "junction_count": fingerprint["counts"]["junction_count"],
             "lane_count": fingerprint["counts"]["lane_count"],
@@ -614,15 +818,18 @@ class ArtifactAuthorityLedger:
         if extra:
             receipt.update(extra)
 
-        self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=receipt["final_artifact_sha256"])
         receipt["capabilities_held"] = sorted(self._held)
         return receipt
 
 
 def write_receipt(out_dir: str, receipt: Dict[str, Any]) -> str:
-    """Persist a receipt as ``<out_dir>/final_artifact_authority.json``."""
+    """Persist the canonical ``final_artifact_receipt.json`` atomically."""
     os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "final_artifact_authority.json")
-    with open(path, "w", encoding="utf-8") as fh:
+    path = os.path.join(out_dir, FINAL_ARTIFACT_RECEIPT_FILENAME)
+    temporary_path = f"{path}.tmp"
+    with open(temporary_path, "w", encoding="utf-8") as fh:
         json.dump(receipt, fh, indent=2, sort_keys=True, default=str, ensure_ascii=True)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(temporary_path, path)
     return path

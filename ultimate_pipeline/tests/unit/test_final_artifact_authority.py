@@ -347,12 +347,22 @@ class TestLateMutationInvalidatesAcceptance:
 
     def test_clean_run_produces_a_complete_receipt(self, tmp_path):
         ledger, path = self._frozen_ledger_with_acceptance(tmp_path)
+        acceptance_path = tmp_path / "map_acceptance.json"
+        acceptance_path.write_text("{}", encoding="utf-8")
+        source_manifest = tmp_path / "inputs_manifest.json"
+        source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
+        source_manifest_identity = {
+            "inputs_manifest_path": str(source_manifest),
+            "inputs_manifest_sha256": sha256_file(str(source_manifest)),
+        }
         receipt = ledger.build_receipt(
             final_artifact_path=path,
             map_acceptance={"valid_for_experiments": True, "failed_gates": []},
             topology_certification={"SPEC_TOPOLOGY": "COMPLETE"},
             semantic_authority_profile={"release_profile": "structural_release"},
-            source_manifest_identity={"inputs_manifest_path": None},
+            source_manifest_identity=source_manifest_identity,
+            receipt_root=str(tmp_path),
+            acceptance_receipt_path=str(acceptance_path),
         )
 
         # Every field the P0-C receipt schema is required to carry.
@@ -367,7 +377,11 @@ class TestLateMutationInvalidatesAcceptance:
         assert receipt["semantic_authority_profile"] == {
             "release_profile": "structural_release"
         }
-        assert receipt["source_manifest_identity"] == {"inputs_manifest_path": None}
+        assert receipt["source_manifest_identity"] == source_manifest_identity
+        assert receipt["source_manifest"]["sha256"] == source_manifest_identity["inputs_manifest_sha256"]
+        assert receipt["schema_version"] == 1
+        assert receipt["final_xodr"]["path"] == "final.xodr"
+        assert receipt["acceptance_receipt"]["path"] == "map_acceptance.json"
         assert FINAL_ARTIFACT_PUBLISHED in receipt["capabilities_held"]
         assert STRUCTURE_FROZEN in receipt["capabilities_held"]
 
