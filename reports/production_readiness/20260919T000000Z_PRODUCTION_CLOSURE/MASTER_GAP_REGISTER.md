@@ -12,7 +12,9 @@ Machine-readable version: `MASTER_GAP_REGISTER.json`.
 | GAP-006 | P0 | final artifact receipt / mtime authority | fixed_offline | `ca3729c0` |
 | GAP-007 | P1 | pytest verifier hang with plugin autoload | open | pending |
 | GAP-008 | P0 | literal topology production authority | fixed_offline | `a2167660` |
+| GAP-009 | P0 | positional semantic authority | open | pending |
+| GAP-010 | P0 | post-freeze tiling authority | open | pending |
 
-Counts: 8 tracked, 7 fixed/fixed-offline/local-only, 0 in progress, 1 open.
+Counts: 10 tracked, 7 fixed/fixed-offline/local-only, 0 in progress, 3 open.
 
 Important evidence boundary: the current production branch has strong offline regression evidence through local `a2167660`, but no UE import, cook, CARLA load, streaming, or 6 GB runtime evidence. Those remain blocked by missing/blocked external runtime and build environment.

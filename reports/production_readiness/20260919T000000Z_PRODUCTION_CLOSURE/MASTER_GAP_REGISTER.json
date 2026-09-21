@@ -1,7 +1,7 @@
 {
   "run_id": "20260919T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-19T11:50:00Z",
+  "last_updated_utc": "2026-09-21T00:00:00Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -93,15 +93,43 @@
       "regression_test": "tests/unit/test_topology_certification.py",
       "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/01_BRANCH_INTEGRATION.json",
       "residual_risk": "The current final XODR has not yet been regenerated or recertified under the stricter literal-topology profile."
+    },
+    {
+      "id": "GAP-009",
+      "severity": "P0",
+      "subsystem": "semantic placement / stage ordering",
+      "description": "Stage 4 currently writes inferred traffic lights, regulatory signs, turn-lane metadata and OSM crosswalk positions before lane generation, junction-link integrity and map hygiene. Its declared contract provides semantic_positions_placed without requiring LANES_FINAL or STRUCTURE_FROZEN.",
+      "proof": "ultimate_pipeline/main_pipeline.py calls _step4_enrichment before geometry/lanes/final_integrity/map_hygiene; ultimate_pipeline/pipeline_stages/stage_04_enrichment.py invokes TrafficLightInferer, metadata writers and apply_crosswalks; ultimate_pipeline/contracts/stage_capabilities.py declares enrichment before LANES_FINAL.",
+      "scientific_runtime_consequence": "Published semantic objects can refer to removed or changed roads/lanes and topology-inferred controls can masquerade as source truth.",
+      "status": "open",
+      "owner_subagent": "coordinator; Singer was rate-limited before implementation",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.json",
+      "residual_risk": "No final positional-semantic materialization or profile enforcement exists yet."
+    },
+    {
+      "id": "GAP-010",
+      "severity": "P0",
+      "subsystem": "tiling / frozen-artifact authority",
+      "description": "Optional UP_ENABLE_ROAD_LINK_TARGET_REPAIR in stage 09 can write a repaired XODR and tile it after STRUCTURE_FROZEN, while final acceptance and receipt remain bound to a different artifact.",
+      "proof": "ultimate_pipeline/main_pipeline.py documents the path immediately before _assert_structure_frozen_unchanged(final_out, 'after_tiling').",
+      "scientific_runtime_consequence": "Visual/tiles can derive from structure different from the published final receipt, invalidating package and research provenance.",
+      "status": "open",
+      "owner_subagent": "coordinator",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.json",
+      "residual_risk": "Production release must prohibit this optional repair or move it before structural freeze and regenerate all receipts."
     }
   ],
   "counts": {
-    "total": 8,
+    "total": 10,
     "fixed": 2,
     "fixed_offline": 4,
     "fixed_offline_local_only": 1,
     "in_progress": 0,
-    "open": 1,
+    "open": 3,
     "blocked_external": 0
   }
 }
