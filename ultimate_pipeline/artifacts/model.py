@@ -1,6 +1,8 @@
 from __future__ import annotations
 import hashlib
 import json
+import os
+import tempfile
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -159,12 +161,31 @@ class Manifest:
 
     def save(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_name(f".{path.name}.tmp")
-        tmp.write_text(
-            json.dumps(self.to_dict(), indent=2, sort_keys=True),
-            encoding="utf-8",
-        )
-        tmp.replace(path)
+        # A fixed temporary name permits independent writers to overwrite one
+        # another before replace().  Store writes are locked, but this remains
+        # correct for direct callers and crash recovery as well.
+        fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+        tmp = Path(tmp_name)
+        try:
+            payload = json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(payload)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, path)
+            # Directory fsync is unavailable or unsupported on Windows. It is
+            # durability best-effort, never a workflow failure.
+            try:
+                dir_fd = os.open(str(path.parent), os.O_RDONLY)
+                try:
+                    os.fsync(dir_fd)
+                finally:
+                    os.close(dir_fd)
+            except OSError:
+                pass
+        finally:
+            if tmp.exists():
+                tmp.unlink(missing_ok=True)
 
     @classmethod
     def load(cls, path: Path) -> Manifest:

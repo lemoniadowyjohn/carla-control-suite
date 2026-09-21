@@ -30,6 +30,7 @@ REJECTED_DIR = "rejected"
 ACCEPTED_DIR = "accepted"
 REPORTS_DIR = "reports"
 MANIFESTS_DIR = "manifests"
+JOURNALS_DIR = "journals"
 
 
 class ArtifactStore:
@@ -108,6 +109,7 @@ class ArtifactStore:
             (self.root / ACCEPTED_DIR).mkdir(parents=True, exist_ok=True)
             (self.root / REPORTS_DIR).mkdir(parents=True, exist_ok=True)
             (self.root / MANIFESTS_DIR).mkdir(parents=True, exist_ok=True)
+            (self.root / JOURNALS_DIR).mkdir(parents=True, exist_ok=True)
             manifest = Manifest(run_id=run_id)
             manifest.save(self.root / MANIFEST_NAME)
             return run_id
@@ -212,6 +214,13 @@ class ArtifactStore:
             if dest.exists():
                 return None
             temp_dest = accepted_dir / f".{candidate_id}.tmp"
+            journal_path = self.root / JOURNALS_DIR / f"promote-{uuid.uuid4().hex}.json"
+            journal_path.write_text(json.dumps({
+                "transaction_id": journal_path.stem.removeprefix("promote-"),
+                "operation": "promote", "candidate_id": candidate_id,
+                "old_accepted": manifest.accepted.sha256,
+                "new_candidate": result.candidate.sha256, "phase": "PREPARED",
+            }, sort_keys=True), encoding="utf-8")
             if temp_dest.exists():
                 shutil.rmtree(str(temp_dest))
             shutil.copytree(str(src), str(temp_dest))
@@ -229,6 +238,9 @@ class ArtifactStore:
             )
             temp_dest.replace(dest)
             temp_dest = None
+            journal = json.loads(journal_path.read_text(encoding="utf-8"))
+            journal["phase"] = "ARTIFACT_PROMOTED"
+            journal_path.write_text(json.dumps(journal, sort_keys=True), encoding="utf-8")
             promoted_result = CandidateResult(
                 status=result.status,
                 parent=result.parent,
@@ -246,10 +258,15 @@ class ArtifactStore:
             manifest.candidates[candidate_id] = promoted_result
             manifest.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
             manifest.save(self.root / MANIFEST_NAME)
+            journal["phase"] = "MANIFEST_COMMITTED"
+            journal_path.write_text(json.dumps(journal, sort_keys=True), encoding="utf-8")
             (self.root / MANIFESTS_DIR / f"{manifest.run_id}.json").write_text(
                 __import__("json").dumps(manifest.to_dict(), indent=2, sort_keys=True),
                 encoding="utf-8",
             )
+            journal["phase"] = "COMPLETE"
+            journal_path.write_text(json.dumps(journal, sort_keys=True), encoding="utf-8")
+            journal_path.unlink(missing_ok=True)
             return promoted
         finally:
             if temp_dest is not None and temp_dest.exists():
@@ -313,3 +330,32 @@ class ArtifactStore:
             elif sha256_of(p) != manifest.accepted.sha256:
                 issues.append(f"Accepted artifact hash mismatch: {p}")
         return issues
+
+    def recover_transactions(self) -> list[str]:
+        """Conservatively inventory incomplete promotion transactions.
+
+        Recovery never promotes an artifact merely because a directory exists;
+        an incomplete journal remains evidence and is reported for operator
+        resolution unless the manifest already references the exact SHA.
+        """
+        if not self._acquire_lock():
+            raise ConcurrentWriteError(str(self.root))
+        try:
+            issues: list[str] = []
+            manifest = self.current_manifest
+            for journal in sorted((self.root / JOURNALS_DIR).glob("*.json")):
+                try:
+                    payload = json.loads(journal.read_text(encoding="utf-8"))
+                except Exception as exc:
+                    issues.append(f"Unreadable transaction journal: {journal}: {exc}")
+                    continue
+                if payload.get("phase") != "COMPLETE":
+                    issues.append(f"Incomplete transaction journal: {journal.name} phase={payload.get('phase')}")
+            if manifest:
+                referenced = {ref.path.parent.name for ref in [manifest.accepted, *manifest.accepted_history] if ref}
+                for child in sorted((self.root / ACCEPTED_DIR).glob("*")):
+                    if child.is_dir() and not child.name.startswith(".") and child.name not in referenced:
+                        issues.append(f"Orphan accepted directory: {child}")
+            return issues
+        finally:
+            self._release_lock()
