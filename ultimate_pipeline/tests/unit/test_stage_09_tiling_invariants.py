@@ -122,3 +122,12 @@ def test_tile_metadata_match_does_not_raise_and_reaches_skip_check(tmp_path, mon
     assert status_path.is_file()
     status = json_mod.loads(status_path.read_text(encoding="utf-8"))
     assert status["status"] == "SKIP"
+
+
+def test_post_freeze_road_link_repair_is_prohibited(tmp_path, monkeypatch):
+    """Tiling must never switch to an unreceipted repaired XODR."""
+    monkeypatch.setenv("UP_ENABLE_ROAD_LINK_TARGET_REPAIR", "1")
+    fake_self = _make_fake_self(tmp_path)
+
+    with pytest.raises(RuntimeError, match="prohibited during tiling"):
+        stage_mod._step9_tiling(fake_self, str(tmp_path / "final.xodr"))

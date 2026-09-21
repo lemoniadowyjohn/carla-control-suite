@@ -59,6 +59,23 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
         os.getenv("UP_ENABLE_ROAD_LINK_TARGET_REPAIR", "0")
     ).strip().lower() in ("1", "true", "yes", "on")
     if repair_links_enabled:
+        # A tile package is derived from the receipt-authoritative frozen
+        # XODR.  Repairing road links here would instead create a second,
+        # unreceipted structural artifact after STRUCTURE_FROZEN and tile
+        # that.  Keep the diagnostic above, but force users to run any
+        # structural repair before final-artifact authority is published.
+        historical_recovery = str(
+            os.getenv("UP_HISTORICAL_RECOVERY", "0")
+        ).strip().lower() in ("1", "true", "yes", "on")
+        if not historical_recovery:
+            raise RuntimeError(
+                "UP_ENABLE_ROAD_LINK_TARGET_REPAIR is prohibited during tiling: "
+                "it mutates structural road links after STRUCTURE_FROZEN. Run "
+                "the repair before final-artifact authority and regenerate the "
+                "acceptance receipt, fingerprints and tiles. Historical recovery "
+                "requires UP_HISTORICAL_RECOVERY=1 and is non-production."
+            )
+        print("[STEP 9] historical recovery mode: structural tile input is non-production")
         try:
             from ultimate_pipeline.quality.road_link_endpoint_errors import (
                 repair_road_link_targets,
