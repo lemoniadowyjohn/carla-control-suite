@@ -141,6 +141,15 @@ class ArtifactStore:
             src = self.root / CANDIDATES_DIR / candidate_id
             if not src.exists():
                 return None
+            # Gate evidence binds to these exact stored bytes.  Do not copy a
+            # candidate that changed after validation into accepted history.
+            candidate_path = src / result.candidate.path.name
+            if (not candidate_path.is_file() or
+                    sha256_of(candidate_path) != result.candidate.sha256):
+                raise ManifestCorruptionError(
+                    str(candidate_path),
+                    "stored candidate bytes differ from validated candidate SHA",
+                )
             dest = accepted_dir / candidate_id
             if dest.exists():
                 return None
@@ -170,6 +179,11 @@ class ArtifactStore:
                 gate_results=result.gate_results,
                 blockers=result.blockers,
             )
+            # The immutable input parent is accepted generation zero.  Keep
+            # every prior accepted generation so rollback restores a verified
+            # predecessor rather than merely clearing the pointer.
+            if manifest.accepted is not None:
+                manifest.accepted_history.append(manifest.accepted)
             manifest.accepted = promoted
             manifest.candidates[candidate_id] = promoted_result
             manifest.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
@@ -204,10 +218,23 @@ class ArtifactStore:
             if manifest is None or manifest.accepted is None:
                 return None
             previous_accepted = manifest.accepted
-            manifest.accepted = None
+            if not manifest.accepted_history:
+                return None
+            predecessor = manifest.accepted_history.pop()
+            if (not predecessor.path.is_file() or
+                    sha256_of(predecessor.path) != predecessor.sha256):
+                raise ManifestCorruptionError(
+                    str(predecessor.path), "rollback predecessor is missing or hash-mismatched"
+                )
+            if predecessor.parent_sha256 and predecessor.parent_sha256 != previous_accepted.parent_sha256:
+                # A predecessor must be an actual lineage ancestor, not an
+                # arbitrary previously accepted pointer.
+                if previous_accepted.parent_sha256 != predecessor.sha256:
+                    raise ManifestCorruptionError(str(self.root / MANIFEST_NAME), "broken accepted lineage")
+            manifest.accepted = predecessor
             manifest.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
             manifest.save(self.root / MANIFEST_NAME)
-            return previous_accepted
+            return predecessor
         finally:
             self._release_lock()
 
