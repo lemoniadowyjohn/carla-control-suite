@@ -1,6 +1,10 @@
 from __future__ import annotations
 import json
+import os
 import shutil
+import socket
+import time
+import uuid
 from pathlib import Path
 
 from ultimate_pipeline.artifacts.errors import (
@@ -34,6 +38,8 @@ class ArtifactStore:
         self.git_sha = git_sha
         self.configuration_sha256 = configuration_sha256
         self._lock_path = root / ".store.lock"
+        self._lock_token: str | None = None
+        self._lock_depth = 0
         self.root.mkdir(parents=True, exist_ok=True)
 
     @property
@@ -47,26 +53,66 @@ class ArtifactStore:
             raise ManifestCorruptionError(str(path), str(e))
 
     def _acquire_lock(self) -> bool:
+        if self._lock_token is not None:
+            self._lock_depth += 1
+            return True
+        token = uuid.uuid4().hex
+        record = json.dumps({"pid": os.getpid(), "host": socket.gethostname(), "created_at": time.time(), "owner": token}, sort_keys=True).encode("utf-8")
         try:
-            self._lock_path.touch(exist_ok=False)
+            fd = os.open(str(self._lock_path), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+            try:
+                os.write(fd, record)
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+            self._lock_token = token
+            self._lock_depth = 1
             return True
         except FileExistsError:
+            # Conservative recovery: only reclaim a lock owned by a dead PID
+            # on this same host.  Foreign/invalid records are never stolen.
+            try:
+                old = json.loads(self._lock_path.read_text(encoding="utf-8"))
+                if old.get("host") == socket.gethostname() and isinstance(old.get("pid"), int):
+                    try:
+                        os.kill(old["pid"], 0)
+                    except ProcessLookupError:
+                        self._lock_path.unlink(missing_ok=True)
+                        return self._acquire_lock()
+            except Exception:
+                pass
             return False
 
     def _release_lock(self) -> None:
-        self._lock_path.unlink(missing_ok=True)
+        if self._lock_token is None:
+            return
+        self._lock_depth -= 1
+        if self._lock_depth:
+            return
+        try:
+            record = json.loads(self._lock_path.read_text(encoding="utf-8"))
+            if record.get("owner") == self._lock_token:
+                self._lock_path.unlink(missing_ok=True)
+        finally:
+            self._lock_token = None
+            self._lock_depth = 0
 
     def create_run(self) -> RunId:
-        run_id = create_run_id()
-        (self.root / PARENT_DIR).mkdir(parents=True, exist_ok=True)
-        (self.root / CANDIDATES_DIR).mkdir(parents=True, exist_ok=True)
-        (self.root / REJECTED_DIR).mkdir(parents=True, exist_ok=True)
-        (self.root / ACCEPTED_DIR).mkdir(parents=True, exist_ok=True)
-        (self.root / REPORTS_DIR).mkdir(parents=True, exist_ok=True)
-        (self.root / MANIFESTS_DIR).mkdir(parents=True, exist_ok=True)
-        manifest = Manifest(run_id=run_id)
-        manifest.save(self.root / MANIFEST_NAME)
-        return run_id
+        if not self._acquire_lock():
+            raise ConcurrentWriteError(str(self.root))
+        try:
+            run_id = create_run_id()
+            (self.root / PARENT_DIR).mkdir(parents=True, exist_ok=True)
+            (self.root / CANDIDATES_DIR).mkdir(parents=True, exist_ok=True)
+            (self.root / REJECTED_DIR).mkdir(parents=True, exist_ok=True)
+            (self.root / ACCEPTED_DIR).mkdir(parents=True, exist_ok=True)
+            (self.root / REPORTS_DIR).mkdir(parents=True, exist_ok=True)
+            (self.root / MANIFESTS_DIR).mkdir(parents=True, exist_ok=True)
+            manifest = Manifest(run_id=run_id)
+            manifest.save(self.root / MANIFEST_NAME)
+            return run_id
+        finally:
+            self._release_lock()
 
     def set_parent(self, path: Path, artifact_type: str) -> ArtifactRef:
         if not self._acquire_lock():
@@ -104,16 +150,28 @@ class ArtifactStore:
         return manifest.accepted if manifest else None
 
     def store_candidate(self, candidate_id: str, path: Path, artifact_type: str, parent: ArtifactRef) -> ArtifactRef | None:
+        if not self._acquire_lock():
+            raise ConcurrentWriteError(str(self.root / CANDIDATES_DIR))
         cand_dir = self.root / CANDIDATES_DIR / candidate_id
-        if cand_dir.exists():
+        try:
+            cand_dir.mkdir(parents=True)
+        except FileExistsError:
+            self._release_lock()
             return None
-        cand_dir.mkdir(parents=True)
         dest = cand_dir / path.name
         try:
+            before = sha256_of(path)
             shutil.copy2(path, dest)
+            stored = sha256_of(dest)
+            after = sha256_of(path)
+            if before != after or stored != before:
+                shutil.rmtree(cand_dir, ignore_errors=True)
+                raise ManifestCorruptionError(str(path), "candidate source changed during copy")
         except Exception:
             shutil.rmtree(cand_dir, ignore_errors=True)
-            return None
+            raise
+        finally:
+            self._release_lock()
         return ArtifactRef(
             path=dest,
             sha256=sha256_of(dest),
@@ -199,16 +257,21 @@ class ArtifactStore:
             self._release_lock()
 
     def reject_candidate(self, candidate_id: str, result: CandidateResult) -> None:
-        rejected_dir = self.root / REJECTED_DIR / candidate_id
-        rejected_dir.mkdir(parents=True, exist_ok=True)
-        src = self.root / CANDIDATES_DIR / candidate_id
-        if src.exists():
-            shutil.copytree(str(src), str(rejected_dir), dirs_exist_ok=True)
-        manifest = self.current_manifest
-        if manifest:
-            manifest.rejected[candidate_id] = result
-            manifest.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
-            manifest.save(self.root / MANIFEST_NAME)
+        if not self._acquire_lock():
+            raise ConcurrentWriteError(str(self.root / REJECTED_DIR))
+        try:
+            rejected_dir = self.root / REJECTED_DIR / candidate_id
+            rejected_dir.mkdir(parents=True, exist_ok=True)
+            src = self.root / CANDIDATES_DIR / candidate_id
+            if src.exists():
+                shutil.copytree(str(src), str(rejected_dir), dirs_exist_ok=True)
+            manifest = self.current_manifest
+            if manifest:
+                manifest.rejected[candidate_id] = result
+                manifest.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
+                manifest.save(self.root / MANIFEST_NAME)
+        finally:
+            self._release_lock()
 
     def rollback(self) -> ArtifactRef | None:
         if not self._acquire_lock():
