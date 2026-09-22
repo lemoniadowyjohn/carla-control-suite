@@ -92,6 +92,14 @@ class BlenderResult:
             "stdout_log": self.stdout_log, "stderr_log": self.stderr_log,
         }
 
+    @property
+    def ok(self) -> bool:
+        return self.status == "ok"
+
+    @property
+    def blocked(self) -> bool:
+        return self.status == "blocked"
+
 
 # Conversion script emitted to disk; imports OBJ, exports FBX, writes J3 manifest.
 CONVERSION_SCRIPT_TEMPLATE = '''\
@@ -257,13 +265,19 @@ class BlenderRunner:
         if not self.blender_exe.exists():
             return False, f"Blender not found at: {self.blender_exe}"
         try:
-            result = subprocess.run([str(self.blender_exe), "--version"],
-                                    capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                [str(self.blender_exe), "--version"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            if result.returncode != 0:
+                return False, f"Blender --version exited with code {result.returncode}: {result.stderr or result.stdout}"
             output = result.stdout or result.stderr or ""
             for line in output.strip().split("\n"):
                 if "Blender" in line:
                     return True, line.strip()
-            return True, output.split("\n")[0].strip() if output else "unknown"
+            return False, f"Blender version output unrecognized: {output.strip()}"
         except subprocess.TimeoutExpired:
             return False, "Blender version check timed out"
         except Exception as e:
@@ -298,7 +312,7 @@ class BlenderRunner:
             result.blender_version = blender_ver
             result.blender_exe = str(self.blender_exe)
             if not blender_ok:
-                result.status = "skipped"
+                result.status = "blocked"
                 result.reason = f"Blender not available: {blender_ver}"
                 return self._finalize(result, start_ts)
 
