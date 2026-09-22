@@ -116,12 +116,12 @@
       "proof": "Found and documented by the P0-C subagent while implementing the STRUCTURE_FROZEN guards; confirmed via the after_tiling assertion guard now in place.",
       "affected_files": ["ultimate_pipeline/pipeline_stages/stage_09_tiling.py"],
       "scientific_runtime_consequence": "If this flag is ever enabled, visual tiles could silently derive from a different structural state than the certified final XODR -- relevant to P1 work packages H/K/L (visual tiling) if/when this flag is used.",
-      "owner_subagent": "a0fc461e58ef06e59 (found during P0 work package C, not fixed)",
-      "status": "deferred",
-      "fixing_commit": null,
-      "regression_test": null,
+      "owner_subagent": "a0fc461e58ef06e59 (found during P0 work package C); fixed by an unidentified agent/session between 2026-09-19 and 09-21 (commit c5b09591 'fix(production): prohibit post-freeze tile repair', already on the production tip as of 98d47e38/65eb0f14)",
+      "status": "fixed",
+      "fixing_commit": "c5b09591 (already on origin/integration/production-large-map-20260918)",
+      "regression_test": "ultimate_pipeline/tests/unit/test_stage_09_tiling_invariants.py (extended, confirmed passing in the 2026-09-22 full-suite verification of 98d47e38: 3 cases now, was 2)",
       "evidence_artifact": null,
-      "residual_risk": "LOW while UP_ENABLE_ROAD_LINK_TARGET_REPAIR defaults to off; MEDIUM if that default ever changes -- needs the tiling stage to surface which artifact it actually tiled before it's used with that flag enabled"
+      "residual_risk": "LOW -- fix confirmed present and passing on the verified production tip, but not independently code-reviewed by the coordinator (inherited from an unreviewed-but-verified commit batch, see GAP-011)"
     },
     {
       "id": "GAP-010",
@@ -230,12 +230,42 @@
     }
   ],
   "counts": {
-    "total": 16,
-    "fixed": 8,
+    "total": 17,
+    "fixed": 9,
     "in_progress": 1,
-    "deferred": 2,
+    "deferred": 1,
     "open": 6,
-    "blocked_external": 0
+    "blocked_external": 1
+  },
+  "update_2026_09_22_part_3": {
+    "note": "GAP-009 confirmed fixed (was deferred) -- commit c5b09591 already on production tip, regression test extended and passing. New tracked item GAP-017 (RQ3/RQ5 live-CARLA capture, blocked_external, re-verified with NEW narrower evidence -- not a stale repeat). Disk-space crisis logged. F: worktree retired (100% full, 742MB free) -- coordinator bookkeeping now happens from G:/carla-coordinator-20260922.",
+    "grid0828_0821_live_capture": {
+      "status": "BLOCKED_EXTERNAL",
+      "gap_id": "GAP-017",
+      "maps_confirmed_present": [
+        "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr (66.5MB, 2026-09-17)",
+        "cities/ingolstadt/manual_grid0821.xodr (65.6MB, 2026-09-01)"
+      ],
+      "new_evidence_vs_prior_finding": "Fresh live attempt (2026-09-22): CarlaUE4.exe -nullrhi reached 5.7GB RAM (real init, not near-idle) and port 2000 went LISTENING (netstat-confirmed) -- neither happened in the previously documented hang. A real carla.Client.get_server_version() call still hard-timed-out after 30s with the process alive. Bug is now confirmed to be in the RPC protocol handshake layer specifically, not socket-level connectivity -- narrower and more specific than the prior finding, not a stale re-report.",
+      "offline_side": "INCOMPLETE, not fully checked -- ultimate_pipeline/perception/rq3_capture_contract.py (real, added 2026-09-19) was not present in the tree checked at investigation time (exists only on the not-yet-reintegrated fix/xodr-validator-convergence-v1-20260921 lineage); needs re-checking once GAP-011 reintegration lands."
+    },
+    "g_drive_cook_readiness": {
+      "status": "BLOCKED_EXTERNAL + INCOMPLETE",
+      "ue4_engine": "confirmed absent, G:\\UE4\\ empty, no UE4Editor.exe/RunUAT.bat found anywhere on C:/E:/F:/G:",
+      "carla_ue4_project": "NEW positive finding: real CARLA UE4 source present at G:\\CARLA\\carla_source_probe\\ (3.1GB, genuine Unreal/CarlaUE4/CarlaUE4.uproject) -- better than the 2026-09-18 baseline knew, but does not unblock cooking without the engine itself",
+      "tileset_materialization": "no completed LargeMapPackage-style tileset found materialized on G: -- OC-46's TILESET_FREEZE_VERIFICATION/PACKAGE_SET_EQUALITY evidence exists only as reports on C:, not as an actual output package on G:",
+      "disk_space_for_cook": "226GB free on G:, plausibly sufficient, not the constraint"
+    },
+    "disk_space_crisis": {
+      "c_drive": "98% used, 9.7-14GB free depending on measurement time -- trending worse across this session",
+      "f_drive": "100% used, 742MB free -- effectively exhausted; F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913 (the previous coordinator worktree) retired, replaced by G:/carla-coordinator-20260922",
+      "g_drive": "226GB free, healthy -- all new worktrees should target G: only",
+      "action_taken": "none yet (deletion) -- an audit-only pass (no deletion) has been requested of Codex to identify safe reclaim candidates before anything is removed"
+    },
+    "protected_but_unverified_work_this_round": [
+      {"what": "Codex RQ4 leakage fix, isolated slice", "location": "fix/rq4-gnn-provenance-leakage-v1-20260922 @ 811008a3", "status": "WIP, incomplete per its own report -- needs dataset/split rebuild + retraining, see GAP-010"},
+      {"what": "Gemini xodr_validator stage insertion in main_pipeline.py", "location": "wip/gemini-xodr-validator-sequencing-20260922 @ a9ced373", "status": "WIP, unverified; companion stage_capabilities.py XODR_VALIDATED capability was lost to shared-checkout contention and is being redone"}
+    ]
   },
   "last_updated_utc": "2026-09-22T00:00:00Z",
   "update_note": "2026-09-22: pushed pending GAP-005 merge; added GAP-010 (RQ4 train/eval leakage FAIL, top priority) and GAP-011 (integration debt across 2026-09-18..09-22 parallel-agent work). Ran a full bare pytest on the committed WIP state (fix/xodr-validator-convergence-v1-20260921 @ f245540f: 5914 collected, 5908 passed, 4 failed, 2 skipped) -- 4 real, non-flaky failures found and root-caused; logged as GAP-012..GAP-015. Also confirmed via git reflog that the main checkout is a live, shared, contested workspace -- at least one other agent is actively rebasing OpenCode branches (OC-35, OC-42 confirmed) onto the verified tip directly there. See coordinator survey this session for full detail.",
