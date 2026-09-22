@@ -1,0 +1,42 @@
+{
+  "run_id": "20260918T000000Z_LITERAL_TOPOLOGY_EVIDENCE_PROVENANCE",
+  "task_id": "OC-43",
+  "title": "Topology evidence provenance with SHA256 bindings",
+  "components": [
+    "ultimate_pipeline/quality/topology_certification.py::certify_topology",
+    "ultimate_pipeline/quality/map_acceptance.py::build_map_acceptance"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/literal-topology-evidence-provenance-v1",
+  "final_head": "190258e885d9a525ad96b57249bf52dea4d2ddfe",
+  "defect_summary": {
+    "topology_certification_no_bindings": "certify_topology() returned SPEC_TOPOLOGY/RECOVERY_DIAGNOSTIC statuses but included no SHA256 of the input summaries (literal/recovered) or the certification result itself. A swapped or tampered summary could not be detected.",
+    "map_acceptance_no_artifact_hashes": "build_map_acceptance() included linked_artifacts paths but not their SHA256 hashes, so artifact substitution was undetectable. The acceptance payload itself had no self-hash or provenance.",
+    "no_provenance": "Neither tool included tool version, git SHA, or environment metadata, preventing forensic traceability.",
+    "no_schema_version": "Outputs lacked a versioned schema identifier, making forward/backward compatibility fragile."
+  },
+  "corrected_semantics": {
+    "topology_certification": "certify_topology() returns schema v1 with input_bindings (literal_summary_sha256, recovered_summary_sha256), certification_sha256 (self-hash), and provenance block (tool, git SHA, Python version). Schema v1 enables forward compatibility.",
+    "map_acceptance": "build_map_acceptance() returns schema v1 with linked_artifact_sha256 (SHA256 of every linked artifact), acceptance_artifact_sha256, payload_sha256 (self-hash), and provenance block (tool, git SHA, Python version). Schema v1 enables forward compatibility.",
+    "both_tools": "Both tools now include a provenance block (tool name, git SHA, Python version) and schema version for forensic traceability and forward compatibility."
+  },
+  "tests": {
+    "existing_tests": 53,
+    "passed": 53,
+    "coverage": "All existing tests for topology_certification (literal/recovered graphs, flipped contactPoint, waiver logic, missing evidence) and map_acceptance (all gates, enrichment, waiver, semantic completeness, component reachability) pass without modification."
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit -k \"topology_certification or map_acceptance\" -v",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "53 passed (topology_certification + map_acceptance suites)",
+    "tests_unit_and_pipeline": "3402 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "Input summaries to certify_topology must be deterministic JSON-serializable objects for SHA256 to be stable; non-deterministic field ordering would break bindings.",
+    "Git SHA capture depends on git being available; falls back to empty string if unavailable.",
+    "The linked_artifact_sha256 in map_acceptance only covers artifacts that exist at acceptance time; if an artifact is deleted between gate execution and acceptance, its hash is missing (recorded as absent).",
+    "Certification result SHA256 excludes the certification_sha256 field itself (circular reference), which is standard but must be documented for verifiers."
+  ]
+}
