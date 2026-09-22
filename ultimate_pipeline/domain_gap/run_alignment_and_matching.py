@@ -21,6 +21,27 @@ from typing import Optional
 
 from ultimate_pipeline.config.settings import SETTINGS
 from ultimate_pipeline.domain_gap.geo_alignment import GeoAligner
+from ultimate_pipeline.tools.artifact_locator import _repaired_sibling_exists
+
+
+def _run_dir_has_completed_output(run_dir: str) -> bool:
+    """Structural guard for _safe_latest_output_dir: does this candidate run
+    directory contain evidence of a *completed* pipeline run (a written
+    08_final*.xodr), rather than being an empty/partial/stale directory that
+    merely happens to carry a newer mtime?
+
+    This is a content-shape check, independent of filesystem mtime -- a
+    directory touched by an unrelated process, a clock-skewed restore, or a
+    leftover empty/aborted run folder cannot win selection purely by having
+    the newest mtime unless it also has real completed-run evidence backing
+    it up. Mirrors the structural-guard-before-mtime convention established
+    in ultimate_pipeline/tools/artifact_locator.py::_newest_final_xodr
+    (_repaired_sibling_exists).
+    """
+    try:
+        return any(Path(run_dir).glob("08_final*.xodr"))
+    except Exception:
+        return False
 
 
 def _safe_latest_output_dir() -> Optional[str]:
@@ -40,8 +61,15 @@ def _safe_latest_output_dir() -> Optional[str]:
             run_dirs = [d for d in run_dirs if os.path.isdir(d)]
             if not run_dirs:
                 return None
-            run_dirs.sort(key=lambda p: os.path.getmtime(p), reverse=True)
-            return run_dirs[0]
+            # Structural guard: prefer directories with real completed-run
+            # evidence (see _run_dir_has_completed_output) over raw mtime
+            # ordering. mtime is then only a tie-breaker among directories
+            # that are equally legitimate by that structural check (or when
+            # no candidate has completed-run evidence at all).
+            completed = [d for d in run_dirs if _run_dir_has_completed_output(d)]
+            pool = completed or run_dirs
+            pool.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+            return pool[0]
         except Exception:
             return None
     return None
@@ -65,8 +93,20 @@ def _find_latest_final_xodr(out_dir: str) -> Optional[str]:
         if not candidates:
             return None
 
-        candidates.sort(key=lambda f: f.stat().st_mtime, reverse=True)
-        return str(candidates[0])
+        # Structural guard (matches ultimate_pipeline/tools/artifact_locator.py's
+        # _newest_final_xodr convention): prefer candidates that are
+        # structurally verified post-repair -- a same-run
+        # *_laneSectionFixed*.xodr sibling exists on disk -- before trusting
+        # mtime at all. This does not depend on filesystem mtime, so a stale
+        # or adversarially-touched file cannot win purely by having a newer
+        # mtime without also having the repair artifacts to back it up.
+        # mtime is then used only as the tie-breaker among files that are
+        # equally legitimate by that structural check (or when no candidate
+        # has repair evidence, e.g. ENABLE_LANE_SECTION_REPAIR=0 runs).
+        repaired = [c for c in candidates if _repaired_sibling_exists(c)]
+        pool = repaired or candidates
+        pool.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+        return str(pool[0])
     except Exception:
         return None
 
