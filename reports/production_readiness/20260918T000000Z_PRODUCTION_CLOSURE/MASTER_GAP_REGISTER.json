@@ -131,12 +131,12 @@
       "proof": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json, status: \"FAIL\", eval_pair_content_in_training_set lists the exact matching sha256.",
       "affected_files": ["ultimate_pipeline/domain_gap_gnn/gnn_provenance.py", "cities/ingolstadt/manual_grid0821.xodr"],
       "scientific_runtime_consequence": "Any RQ4 GNN structural-latent result computed against a checkpoint trained with this leak cannot be trusted as an honest train/eval split -- this must be root-caused and fixed (or the affected checkpoint's provenance downgraded) before any RQ4 number is cited as VERIFIED_RESEARCH.",
-      "owner_subagent": "unknown -- produced by continued program execution between 2026-09-18 and 2026-09-19 outside this thread's direct supervision; discovered by me via post-hoc review of its own report on 2026-09-22, not yet triaged or fixed",
-      "status": "open",
+      "owner_subagent": "unknown (found) -- Codex (2026-09-23) attempted completion, correctly determined it is blocked, did not fake a fix",
+      "status": "blocked -- prerequisite (GAP-011) not yet landed",
       "fixing_commit": null,
       "regression_test": null,
-      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json",
-      "residual_risk": "HIGH until root-caused -- top-priority open item, ahead of any new work package"
+      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json; reports/production_readiness/20260923T000000Z_GAP010_RQ4_LEAKAGE_BLOCKER/BLOCKED_EXTERNAL.md (Codex, branch fix/rq4-leakage-complete-20260923 @ 95d63b8a, no source change retained -- temporary cherry-pick explicitly reverted)",
+      "residual_risk": "HIGH -- 2026-09-23 attempt confirmed the real blocker: ultimate_pipeline/domain_gap_gnn/gnn_provenance.py, cities/ingolstadt/manual_grid0821.xodr, the historical union_tiles training set, and LEAKAGE_AUDIT.json itself are ALL still absent from origin/integration/production-large-map-20260918 -- the entire RQ4 provenance subsystem (OC-51) has never actually been reintegrated onto production, it only exists on fix/xodr-validator-convergence-v1-20260921 @ f245540f. This is GAP-011's job, not GAP-010's -- GAP-010 cannot be honestly closed until GAP-011's OC-51 restoration lands. The prior 811008a3 isolated fix slice was also found to be non-self-contained (calls dataset/graph-builder APIs absent from production) so it cannot be landed as-is even once the prerequisite lands. Separately confirmed: this machine's Torch is CPU-only (2.9.1+cpu, no CUDA) -- any eventual retraining step will be slow or may itself need to be flagged BLOCKED_EXTERNAL depending on dataset size."
     },
     {
       "id": "GAP-011",
