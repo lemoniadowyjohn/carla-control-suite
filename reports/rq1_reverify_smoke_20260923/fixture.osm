@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="rq1-reverify-fixture">
+  <bounds minlat="48.749" minlon="11.422" maxlat="48.774" maxlon="11.478"/>
+  <node id="1" lat="48.7600" lon="11.4500" version="1"/>
+</osm>
