@@ -251,7 +251,7 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
         print("[STEP 8H] G6 lane-coverage repair disabled.")
 
     combined = {
-        "ok": all(bool(r.get("ok", True)) for r in reports.values()),
+        "ok": all(normalize_quality_result(r).get("ok", False) for r in reports.values()),
         "input_xodr": str(input_path),
         "output_xodr": str(current_path),
         "stages": reports,

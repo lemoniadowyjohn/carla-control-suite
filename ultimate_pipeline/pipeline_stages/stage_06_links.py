@@ -3,6 +3,7 @@
 # It delegates to original helpers by injecting main_pipeline globals at runtime.
 
 from __future__ import annotations
+from ultimate_pipeline.quality.result_normalizer import normalize_quality_result
 
 import copy
 import json
@@ -690,7 +691,7 @@ def _step6_planview_continuity(
             (not strict_quality)
             and auto_repair_enabled
             and isinstance(seam_report, dict)
-            and not seam_report.get("ok", True)
+            and not normalize_quality_result(seam_report).get("ok", False)
         ):
             repair_report = auto_repair_tiny_planview_seams_in_file(
                 cont_out,

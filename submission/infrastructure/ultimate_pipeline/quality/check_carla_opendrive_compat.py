@@ -23,9 +23,21 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import xml.etree.ElementTree as ET
+
+from ultimate_pipeline.quality.xodr_numeric import (
+    parse_required_float,
+)
+from ultimate_pipeline.quality.xodr_validation_policy import (
+    ALL_PRIMITIVES,
+    PARAMPOLY3_PRANGE_SUPPORTED,
+    PRIMITIVE_REQUIRED_ATTRS,
+    ROAD_LENGTH_ABS_TOL_M,
+    ROAD_LENGTH_REL_TOL,
+    road_length_check,
+)
 
 
 @dataclass
@@ -41,13 +53,15 @@ def _is_finite(x: float) -> bool:
 
 
 def _safe_float(v: Optional[str], default: float = 0.0) -> float:
-    try:
-        if v is None:
-            return default
-        x = float(v)
-        return x if _is_finite(x) else default
-    except Exception:
-        return default
+    """LEGACY fail-open parse (kept for backward-compatible import only).
+
+    Validation code below uses xodr_numeric.parse_required_float instead
+    (OC-59 §2): malformed/nonfinite input must be reported, never defaulted.
+    """
+    parsed = parse_required_float(v)
+    if parsed.ok:
+        return float(parsed.value)
+    return default
 
 
 def _parse_float_strict(v: Optional[str]) -> Optional[float]:
@@ -67,16 +81,19 @@ def _parse_float_strict(v: Optional[str]) -> Optional[float]:
         return None
 
 
-SUPPORTED_PRIMITIVES = {"line", "arc", "spiral", "poly3", "paramPoly3"}
+SUPPORTED_PRIMITIVES = set(ALL_PRIMITIVES)
+
+# Road-length tolerance lives in exactly one place (§8):
+# xodr_validation_policy.ROAD_LENGTH_ABS_TOL_M / ROAD_LENGTH_REL_TOL.
 
 
 class StrictCarlaOpendriveGate:
     """A strict, CARLA-focused OpenDRIVE validator."""
 
-    # These tolerances are intentionally loose; the goal is to catch obvious
-    # corruption, not fight the mapper.
-    ROAD_LENGTH_REL_TOL = 0.25
-    ROAD_LENGTH_ABS_TOL = 5.0
+    # Intentionally loose (catch obvious corruption, not fight the mapper);
+    # single-sourced from xodr_validation_policy -- do not redefine here.
+    ROAD_LENGTH_REL_TOL = ROAD_LENGTH_REL_TOL
+    ROAD_LENGTH_ABS_TOL = ROAD_LENGTH_ABS_TOL_M
 
     @staticmethod
     def validate(root: ET.Element) -> List[Dict[str, Any]]:
@@ -140,9 +157,18 @@ class StrictCarlaOpendriveGate:
         out: List[Issue] = []
         for rid, road in road_map.items():
             jid = road.get("junction")
-            length = _safe_float(road.get("length"), -1.0)
-            if length <= 0.0:
-                out.append(Issue("road_length_nonpositive", "error", "Road length must be > 0.", {"road": rid, "length": road.get("length")}))
+            length_res = parse_required_float(road.get("length"))
+            if not length_res.ok:
+                out.append(Issue(
+                    f"road_length_{length_res.status.lower()}", "error",
+                    f"Road length is {length_res.status} (raw={length_res.raw!r}); "
+                    "refusing to substitute a default.",
+                    {"road": rid, "length": road.get("length")}))
+                length = float("nan")
+            else:
+                length = float(length_res.value)
+                if length <= 0.0:
+                    out.append(Issue("road_length_nonpositive", "error", "Road length must be > 0.", {"road": rid, "length": road.get("length")}))
 
             plan = road.find("planView")
             if plan is None:
@@ -154,58 +180,72 @@ class StrictCarlaOpendriveGate:
                 out.append(Issue("missing_geometry", "error", "Road planView contains no <geometry>.", {"road": rid}))
                 continue
 
-            # Validate geometry sequence.
+            # Validate geometry sequence (strict numerics: malformed attrs
+            # are errors with their outcome, never defaulted zeros).
             s_prev = -1.0
             sum_len = 0.0
             for idx, g in enumerate(geoms):
-                s = _parse_float_strict(g.get("s"))
-                glen_raw = g.get("length")
-                glen = _parse_float_strict(glen_raw)
-                x_raw = g.get("x")
-                y_raw = g.get("y")
-                hdg_raw = g.get("hdg")
-                x = _parse_float_strict(x_raw)
-                y = _parse_float_strict(y_raw)
-                hdg = _parse_float_strict(hdg_raw)
+                s_res = parse_required_float(g.get("s"))
+                glen_res = parse_required_float(g.get("length"))
+                x_res = parse_required_float(g.get("x"))
+                y_res = parse_required_float(g.get("y"))
+                hdg_res = parse_required_float(g.get("hdg"))
 
-                # Determine primitive type
-                prim = "unknown"
-                if g.find("line") is not None:
-                    prim = "line"
-                elif g.find("arc") is not None:
-                    prim = "arc"
-                elif g.find("spiral") is not None:
-                    prim = "spiral"
-                elif g.find("poly3") is not None:
-                    prim = "poly3"
-                elif g.find("paramPoly3") is not None:
-                    prim = "paramPoly3"
+                # Exactly one known primitive child (§7); unknown is explicit.
+                prim_names = [c.tag for c in list(g)
+                              if isinstance(c.tag, str)]
+                known = [t for t in prim_names if t in ALL_PRIMITIVES]
+                unknown = [t for t in prim_names if t not in ALL_PRIMITIVES]
+                if unknown:
+                    prim = f"unknown:{unknown[0]}"
+                    out.append(Issue("geometry_unknown_primitive", "error",
+                                     f"Geometry has unknown primitive child '{unknown[0]}'.",
+                                     {"road": rid, "index": idx,
+                                      "primitive": prim}))
+                elif len(known) != 1:
+                    prim = "ambiguous" if known else "missing"
+                    out.append(Issue("geometry_primitive_count", "error",
+                                     "Geometry must have exactly one known "
+                                     "primitive child.",
+                                     {"road": rid, "index": idx,
+                                      "children": prim_names}))
+                else:
+                    prim = known[0]
+                    out.extend(StrictCarlaOpendriveGate._check_primitive_coeffs(
+                        rid, idx, g, prim))
 
                 # Previous geometry end and next geometry start
                 prev_end = None
                 next_start = None
                 if idx > 0:
                     prev_g = geoms[idx - 1]
-                    prev_s = _parse_float_strict(prev_g.get("s"))
-                    prev_len = _parse_float_strict(prev_g.get("length"))
-                    if prev_s is not None and prev_len is not None:
-                        prev_end = prev_s + prev_len
+                    prev_s = parse_required_float(prev_g.get("s"))
+                    prev_len = parse_required_float(prev_g.get("length"))
+                    if prev_s.ok and prev_len.ok:
+                        prev_end = float(prev_s.value) + float(prev_len.value)
                 if idx < len(geoms) - 1:
-                    nxt_g = geoms[idx + 1]
-                    next_start = _parse_float_strict(nxt_g.get("s"))
+                    nxt = parse_required_float(geoms[idx + 1].get("s"))
+                    if nxt.ok:
+                        next_start = float(nxt.value)
 
-                if s is None:
-                    out.append(Issue("geometry_missing_s", "error", "Geometry missing s attribute.", {"road": rid, "index": idx}))
+                if not s_res.ok:
+                    out.append(Issue(
+                        f"geometry_s_{s_res.status.lower()}", "error",
+                        f"Geometry s is {s_res.status} (raw={s_res.raw!r}).",
+                        {"road": rid, "index": idx}))
                 else:
+                    s = float(s_res.value)
                     if s < 0.0:
                         out.append(Issue("geometry_s_negative", "error", "Geometry s must be >= 0.", {"road": rid, "s": s, "index": idx}))
                     if s <= s_prev:
                         out.append(Issue("geometry_s_not_increasing", "error", "Geometry s must be strictly increasing.", {"road": rid, "prev": s_prev, "s": s, "index": idx}))
                     s_prev = s
 
-                if glen is None or glen <= 0.0:
+                glen_raw = g.get("length")
+                if not glen_res.ok or float(glen_res.value if glen_res.ok else 0.0) <= 0.0:
                     out.append(Issue(
-                        "geometry_length_invalid",
+                        "geometry_length_invalid" if glen_res.ok else
+                        f"geometry_length_{glen_res.status.lower()}",
                         "error",
                         "Geometry length must be finite and > 0.",
                         {
@@ -221,33 +261,31 @@ class StrictCarlaOpendriveGate:
                         },
                     ))
                 else:
-                    sum_len += glen
+                    sum_len += float(glen_res.value)
 
-                # Coordinates must be finite.
-                if x is None or y is None or hdg is None:
-                    bad_attrs = []
-                    if x is None and x_raw is not None:
-                        bad_attrs.append("x")
-                    if y is None and y_raw is not None:
-                        bad_attrs.append("y")
-                    if hdg is None and hdg_raw is not None:
-                        bad_attrs.append("hdg")
-                    out.append(Issue("geometry_nonfinite", "error", f"Geometry {', '.join(bad_attrs)} is not finite.", {"road": rid, "index": idx, "bad_attrs": bad_attrs}))
+                # Coordinates must be finite (strict: absent/malformed/
+                # nonfinite each reported, never defaulted).
+                for field, res, raw in (("x", x_res, g.get("x")),
+                                        ("y", y_res, g.get("y")),
+                                        ("hdg", hdg_res, g.get("hdg"))):
+                    if not res.ok:
+                        out.append(Issue(
+                            f"geometry_{field}_{res.status.lower()}", "error",
+                            f"Geometry {field} is {res.status} "
+                            f"(raw={res.raw!r}).",
+                            {"road": rid, "index": idx, field: raw}))
 
-                # CARLA supports line/arc/spiral/poly3/paramPoly3 in practice.
-                if prim not in SUPPORTED_PRIMITIVES:
-                    out.append(Issue("geometry_unsupported_primitive", "warn", f"Geometry has unsupported primitive type '{prim}'.", {"road": rid, "index": idx, "primitive": prim}))
-
-            # Road length sanity relative to geometry sum.
-            if length > 0.0 and sum_len > 0.0:
-                abs_err = abs(length - sum_len)
-                rel_err = abs_err / max(length, 1e-6)
-                if abs_err > StrictCarlaOpendriveGate.ROAD_LENGTH_ABS_TOL and rel_err > StrictCarlaOpendriveGate.ROAD_LENGTH_REL_TOL:
+            # Road length sanity relative to geometry sum (single policy §8).
+            if math.isfinite(length) and length > 0.0 and sum_len > 0.0:
+                verdict = road_length_check(length, sum_len)
+                if verdict["status"] == "MISMATCH":
                     out.append(Issue(
                         "road_length_mismatch",
                         "warn",
                         "Road length differs substantially from sum(planView.geometry.length). Large mismatches are linked to CARLA import instability.",
-                        {"road": rid, "road_length": length, "sum_geometry_length": sum_len, "abs_err": abs_err, "rel_err": rel_err},
+                        {"road": rid, "road_length": length, "sum_geometry_length": sum_len,
+                         "absolute_error_m": verdict["absolute_error_m"],
+                         "relative_error": verdict["relative_error"]},
                     ))
 
             # Elevation optional; if present validate finiteness.
@@ -262,6 +300,31 @@ class StrictCarlaOpendriveGate:
                     if _parse_float_strict(e.get(k)) is None:
                         out.append(Issue("elevation_nonfinite", "error", "Elevation coefficient must be finite.", {"road": rid, "attr": k, "value": e.get(k)}))
 
+        return out
+
+    @staticmethod
+    def _check_primitive_coeffs(rid: str, idx: int, g: ET.Element,
+                                prim: str) -> List[Issue]:
+        """Required finite coefficients per primitive (shared contract §6)."""
+        out: List[Issue] = []
+        el = g.find(prim)
+        if el is None:
+            return out
+        for attr in PRIMITIVE_REQUIRED_ATTRS.get(prim, ()):
+            res = parse_required_float(el.get(attr))
+            if not res.ok:
+                out.append(Issue(
+                    f"{prim}_{attr}_{res.status.lower()}", "error",
+                    f"Primitive {prim}@{attr} is {res.status} "
+                    f"(raw={res.raw!r}).",
+                    {"road": rid, "index": idx, "primitive": prim}))
+        if prim == "paramPoly3":
+            prange = el.get("pRange", "arcLength")
+            if prange not in PARAMPOLY3_PRANGE_SUPPORTED:
+                out.append(Issue(
+                    "paramPoly3_pRange_unsupported", "error",
+                    "paramPoly3 pRange must be arcLength or normalized.",
+                    {"road": rid, "index": idx, "pRange": el.get("pRange")}))
         return out
 
     @staticmethod
@@ -286,14 +349,25 @@ class StrictCarlaOpendriveGate:
                 if len(lane_ids) != len(set(lane_ids)):
                     out.append(Issue('duplicate_lane_id', 'warn', 'Duplicate lane id within a laneSection.', {'road': rid}))
 
-                # Driving lanes must have at least one positive width.
+                # Driving lanes must have at least one positive width
+                # (strict: malformed/nonfinite `a` is an error with its
+                # outcome, not a defaulted value that happens to trip the
+                # bound check for the wrong reason).
                 for ln in sec.findall(".//lane[@type='driving']"):
                     widths = ln.findall('width')
                     if not widths:
                         out.append(Issue('driving_lane_missing_width', 'error', 'Driving lane missing <width> record.', {'road': rid, 'lane': ln.get('id')}))
                         continue
                     for w in widths:
-                        a = _safe_float(w.get('a'), -1.0)
+                        a_res = parse_required_float(w.get('a'))
+                        if not a_res.ok:
+                            out.append(Issue(
+                                f"lane_width_a_{a_res.status.lower()}", 'error',
+                                f"Lane width a is {a_res.status} "
+                                f"(raw={a_res.raw!r}).",
+                                {'road': rid, 'lane': ln.get('id')}))
+                            continue
+                        a = float(a_res.value)
                         if a <= 0.0:
                             out.append(Issue('lane_width_nonpositive', 'error', 'Lane width a must be > 0.', {'road': rid, 'lane': ln.get('id'), 'a': w.get('a')}))
 

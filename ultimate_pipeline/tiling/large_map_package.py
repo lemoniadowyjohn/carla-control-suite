@@ -219,6 +219,7 @@ def stage_large_map_package(
     tile_size_m: float = 1000.0,
     use_carla_materials: bool = True,
     expected_xodr_sha256: Optional[str] = None,
+    map_registry_identity: Optional[Dict[str, str]] = None,
 ) -> StagedPackageResult:
     """Stage one CARLA Large-Map package under ``<import_root>/<PackageName>/``.
 
@@ -330,6 +331,10 @@ def stage_large_map_package(
         "tiles_staged": staged_tile_names,
         "tiles_skipped_missing": skipped,
         "package_json_paths": [str(package_json_path), str(named_json_path)],
+        # OC-58 §17: when the caller staged from a verified registry pin,
+        # record that identity verbatim (registry_key / registry_sha256 /
+        # map_sha256) so the package is traceable to exact map bytes.
+        "map_registry": dict(map_registry_identity) if map_registry_identity else None,
         "claim_boundary": (
             "Offline staging only. This package has NOT been consumed by "
             "`make import` or any UE4/UE5 process; import/cook success is "

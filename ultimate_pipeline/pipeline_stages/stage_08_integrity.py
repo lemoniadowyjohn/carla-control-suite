@@ -900,16 +900,35 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             print("✅ XODR id uniqueness check passed.")
 
         xsd_path = getattr(s, "XODR_XSD_PATH", None)
-        ok_schema, err = validate_xodr_schema(final_out, xsd_path)
-        if not ok_schema:
+        # OC-59 §14: structured XSD result -- NOT_CONFIGURED /
+        # INCOMPLETE_DEPENDENCY are recorded distinctly and NEVER read as
+        # PASS, but they are not schema violations either (no XSD ships by
+        # default), so they must not fail the stage as errors.
+        from ultimate_pipeline.quality.check_xodr_schema import (
+            validate_xodr_schema_structured as _validate_xsd_structured,
+        )
+
+        xsd_result = _validate_xsd_structured(final_out, xsd_path)
+        xsd_status = xsd_result.get("status")
+        if xsd_status == "PASS":
+            print("✅ XODR schema validation passed.")
+            self.vreport.add("xodr_schema", "status", "PASS")
+        elif xsd_status == "FAIL":
+            err = "; ".join(
+                str(e.get("message", e)) for e in xsd_result.get("errors", [])
+            )
             print(f"❌ XODR schema violation: {err}")
             self.vreport.add("xodr_schema", "error", err)
-        else:
-            print(
-                "✅ XODR schema validation passed."
-                if xsd_path
-                else "✅ XODR schema validation skipped (no XSD)."
+        else:  # NOT_CONFIGURED / INCOMPLETE_DEPENDENCY
+            msg = (
+                f"{xsd_status}: "
+                + "; ".join(
+                    str(e.get("message", e))
+                    for e in xsd_result.get("errors", [])
+                )
             )
+            print(f"⏭️ XODR schema validation {msg}")
+            self.vreport.add("xodr_schema", "status", msg)
     except Exception as e:
         print(f"⚠️ XODR final integrity check failed: {e}")
 

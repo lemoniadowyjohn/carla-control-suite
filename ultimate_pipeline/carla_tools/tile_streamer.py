@@ -133,18 +133,85 @@ class TileStreamer:
 
         return None
 
-    # ------------------------------------------------------------------
-    # Tile center (index-based, from adjacency graph)
-    # ------------------------------------------------------------------
+# ------------------------------------------------------------------
+# Tile center (prefer authoritative metadata, fall back to index)
+# ------------------------------------------------------------------
     def _tile_center(self, tile_name: str) -> carla.Location:
+        """
+        Compute the tile center location.
+
+        Preference order:
+        1. Explicit ``center`` from tile manifest/metadata JSON (if available).
+        2. Explicit ``bbox`` from tile manifest/metadata JSON (compute centroid).
+        3. Index-derived center ``(i + 0.5) * TILE_SIZE`` when grid origin and
+           tile size are available from settings.
+        4. Pure index-derived center ``(i + 0.5) * TILE_SIZE`` as last resort.
+
+        This is especially important for negative indices and nonzero origin.
+        """
+        # Try to read center/bbox from tile metadata
+        json_path = self._get_tile_json_path(tile_name)
+        if json_path and os.path.exists(json_path):
+            try:
+                with open(json_path, encoding="utf-8") as f:
+                    meta = json.load(f)
+                if "center" in meta and meta["center"] is not None:
+                    cx, cy = meta["center"]
+                    return carla.Location(x=float(cx), y=float(cy), z=0.0)
+                if "bbox" in meta and meta["bbox"] is not None:
+                    bbox = meta["bbox"]
+                    # bbox = [x_min, y_min, x_max, y_max]
+                    cx = (bbox[0] + bbox[2]) / 2.0
+                    cy = (bbox[1] + bbox[3]) / 2.0
+                    return carla.Location(x=float(cx), y=float(cy), z=0.0)
+            except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+                # Fall through to index-based computation
+                pass
+
+        # Fall back to index-based computation
         meta = self.graph.get(tile_name, {})
         idx = meta.get("index", [0, 0])
         i, j = idx
-        return carla.Location(
-            x=(i + 0.5) * getattr(SETTINGS, "TILE_SIZE", 100.0),
-            y=(j + 0.5) * getattr(SETTINGS, "TILE_SIZE", 100.0),
-            z=0.0,
-        )
+
+        grid_origin = getattr(SETTINGS, "TILE_GRID_ORIGIN", None)
+        tile_size = getattr(SETTINGS, "TILE_SIZE", 100.0)
+
+        if grid_origin is not None:
+            # Grid origin is explicitly configured: apply offset
+            ox, oy = grid_origin
+            x = (i + 0.5) * tile_size + ox
+            y = (j + 0.5) * tile_size + oy
+            return carla.Location(x=x, y=y, z=0.0)
+
+        # No grid origin: pure index derivation
+        x = (i + 0.5) * tile_size
+        y = (j + 0.5) * tile_size
+        return carla.Location(x=x, y=y, z=0.0)
+
+    def _get_tile_json_path(self, tile_name: str) -> Optional[str]:
+        """
+        Attempt to locate tile metadata JSON for the given tile name.
+
+        Returns path to tile_metadata.json if found, None otherwise.
+        """
+        # Look alongside the tile xodr file or in a known metadata directory
+        candidates = [
+            os.path.join(os.getcwd(), f"{tile_name.replace(chr(47), chr(95))}_metadata.json"),
+            os.path.join(os.getcwd(), "tiles", f"{tile_name}_metadata.json"),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                return path
+        # Check if tile_name already includes path separators
+        if "/" in tile_name or "\\\\" in tile_name:
+            base = tile_name.replace("/", "_").replace("\\\\", "_")
+            candidates = [
+                os.path.join(os.getcwd(), f"{base}_metadata.json"),
+            ]
+            for path in candidates:
+                if os.path.exists(path):
+                    return path
+        return None
 
     # ------------------------------------------------------------------
     # FOV-based visibility

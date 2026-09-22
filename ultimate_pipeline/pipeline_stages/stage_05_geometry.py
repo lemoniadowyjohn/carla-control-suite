@@ -3,6 +3,7 @@
 # It delegates to original helpers by injecting main_pipeline globals at runtime.
 
 from __future__ import annotations
+from ultimate_pipeline.quality.result_normalizer import normalize_quality_result
 
 import os
 import hashlib
@@ -596,7 +597,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
             # Record + gate
             self._stage_gate("05_elevation", "dem_full_coverage", lambda: full_cov)
 
-            if not bool(full_cov.get("ok", True)):
+            if not normalize_quality_result(full_cov).get("ok", False):
                 strict_cov = bool(getattr(s, "DEM_FULL_COVERAGE_STRICT", True))
                 if strict_cov or strict_dem:
                     raise RuntimeError(
@@ -810,7 +811,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
     _augment_dem_qc_report(dem_qc_report, sampler, str(dem_path) if dem_path else "")
 
     strict_failure = (strict_dem or strict_quality) and not bool(
-        dem_qc_report.get("ok", True)
+        normalize_quality_result(dem_qc_report).get("ok", False)
     )
     if (
             strict_failure
@@ -875,7 +876,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                     _augment_dem_qc_report(dem_qc_report, sampler, retried_dem_path)
                     dem_path = retried_dem_path
                     strict_failure = (strict_dem or strict_quality) and not bool(
-                        dem_qc_report.get("ok", True)
+                        normalize_quality_result(dem_qc_report).get("ok", False)
                     )
                 except Exception as retry_exc:
                     dem_qc_report["auto_reproject_succeeded"] = False
@@ -892,7 +893,7 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
 
     _write_dem_qc_report(dem_qc_report)
     self.vreport.add_dict("elevation_dem_qc", dem_qc_report)
-    if (strict_dem or strict_quality) and not bool(dem_qc_report.get("ok", True)):
+    if (strict_dem or strict_quality) and not normalize_quality_result(dem_qc_report).get("ok", False):
         hint = ""
         if dem_qc_report.get("bbox_intersects_dem_bounds") is False:
             hint = (

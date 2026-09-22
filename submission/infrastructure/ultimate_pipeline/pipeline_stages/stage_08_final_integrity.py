@@ -411,9 +411,13 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             final_out = fixed_out2
 
             # Re-check; if still broken, decide strict vs continue.
-            strict = str(
-                os.getenv("UP_STRICT_LANE_SUCCESSORS", "0")
-            ).strip().lower() in ("1", "true", "yes", "on")
+            _profile2 = getattr(self.settings, "RELEASE_PROFILE", "structural_release") or "structural_release"
+            strict = resolve_strict_lane_successors(
+                _profile2,
+                env_override=os.getenv("UP_STRICT_LANE_SUCCESSORS"),
+                default=False,
+                allow_waiver=False,
+            )
             try:
                 assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
                 print(

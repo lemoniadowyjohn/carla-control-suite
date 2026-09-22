@@ -110,6 +110,8 @@ class JunctionModel:
         }
 
 
+from ultimate_pipeline.topology.canonical_index import TopologyIndex
+
 class JunctionValidator:
     def __init__(self, junctions: list[JunctionModel], road_ids: set[str]):
         self.junctions = junctions
@@ -136,26 +138,35 @@ class JunctionValidator:
                 seen.add(key)
         return errors
 
-    def validate_lane_links(self, road_lane_counts: dict[str, int]) -> list[str]:
+    def validate_lane_links(self, topo_index: TopologyIndex) -> list[str]:
         errors: list[str] = []
         for j in self.junctions:
             for c in j.connections.values():
+                road_id = c.incoming_road
+                road_idx = topo_index.roads.get(road_id)
+                if not road_idx:
+                    errors.append(f"Junction {j.id} connection {c.connection_id}: road {road_id} not found in topology index")
+                    continue
+                
+                # Check all lanes present in all lane sections of the incoming road
+                valid_lane_ids = set()
+                for ls in road_idx.lane_sections:
+                    valid_lane_ids.update(ls.lanes.keys())
+                
                 for ll in c.lane_links:
-                    road_id = c.incoming_road
-                    lane_count = road_lane_counts.get(road_id, 0)
-                    if abs(ll.from_lane) > lane_count and lane_count > 0:
+                    if ll.from_lane not in valid_lane_ids:
                         errors.append(
                             f"Junction {j.id} connection {c.connection_id}: "
-                            f"from_lane {ll.from_lane} exceeds lane count {lane_count} on road {road_id}"
+                            f"from_lane {ll.from_lane} does not exist on incoming road {road_id}"
                         )
         return errors
 
-    def validate_all(self, road_lane_counts: dict[str, int] | None = None) -> list[str]:
+    def validate_all(self, topo_index: TopologyIndex | None = None) -> list[str]:
         errors = []
         errors.extend(self.validate_connectivity())
         errors.extend(self.validate_no_duplicate_connections())
-        if road_lane_counts:
-            errors.extend(self.validate_lane_links(road_lane_counts))
+        if topo_index:
+            errors.extend(self.validate_lane_links(topo_index))
         return errors
 
 

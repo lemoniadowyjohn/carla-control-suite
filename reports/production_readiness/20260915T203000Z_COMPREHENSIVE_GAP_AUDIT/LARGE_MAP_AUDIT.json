@@ -1,0 +1,86 @@
+{
+  "audit_id": "LARGE_MAP_AUDIT_20260915",
+  "target": "ultimate_pipeline/tiling/, scripts/cook_full_grid_tiles.py, tools/stage_large_map_import_package.py",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "offline_status": {
+    "status": "CONDITIONAL",
+    "confirmed_issues": [
+      "Roundtrip False does not produce FAIL",
+      "Roundtrip None while required does not produce INCOMPLETE",
+      "Later status='ok' overwrites failure",
+      "Full-grid PASS requires exact expected tiles, zero failed, zero incomplete, zero skipped roundtrips",
+      "Whole-map vs per-tile computation mismatch"
+    ],
+    "required_pass_conditions": [
+      "True roundtrip -> PASS",
+      "False roundtrip -> FAIL",
+      "None while required -> INCOMPLETE",
+      "Exact expected tile set (no missing, no extra, no duplicate)",
+      "Correct prefix, correct XODR hash, correct FBX hashes",
+      "No unplaceable buildings"
+    ],
+    "per_tile_status": "skipped (hardcoded timeout too low for city-scale)",
+    "elevation_gap": "disabled (planar/no-DEM map)"
+  },
+
+  "runtime_status": {
+    "status": "NOT_RUN",
+    "description": "No runtime checks performed",
+    "required_checks": [
+      "UE import",
+      "tile level creation",
+      "streaming",
+      "tile_stream_distance",
+      "hero/spectator behavior",
+      "seams",
+      "collision",
+      "road-to-mesh alignment",
+      "semantic segmentation",
+      "memory",
+      "draw calls",
+      "stream latency"
+    ],
+    "note": "Do not claim any runtime check passed before execution"
+  },
+
+  "tile_content": {
+    "status": "PARTIAL",
+    "centroid_assignment": "Buildings assigned to one owner tile based on centroid",
+    "concerns": {
+      "visibility": "Building spans tiles - visibility may be wrong",
+      "streaming": "Streaming may be incorrect for cross-tile buildings",
+      "collision": "Collision may be missing or duplicated",
+      "ownership": "Single owner may not cover all tiles",
+      "duplicate_avoidance": "Not verified",
+      "tile_unloading": "Not verified"
+    },
+    "assessment": "Whole-building assignment to one tile is safe if duplication is prevented and streaming handles partial visibility"
+  },
+
+  "packaging": {
+    "status": "CONDITIONAL",
+    "against_carla_0_9_16": {
+      "required": ["single whole-map XODR", "tile naming", "map name", "tile_size", "exact tile list", "package descriptor"],
+      "production_requirements": [
+        "expected exact tile-coordinate set",
+        "no missing, no extra, no duplicate",
+        "correct prefix",
+        "correct XODR hash",
+        "correct FBX hashes"
+      ]
+    },
+    "transactional_staging": {
+      "current": "hardlinks used by default",
+      "recommended": "temporary staging directory -> independent copies -> SHA verification -> descriptor validation -> atomic promotion",
+      "dev_opt_in": "Development hardlinks may remain explicit opt-in",
+      "survival": "Existing known-good final package must survive failed staging attempt"
+    }
+  },
+
+  "fbx_regeneration": {
+    "status": "PARTIAL",
+    "note": "Do not invalidate a real 20/20 roundtrip PASS merely because generic code is weak",
+    "required": "Fix generic semantics; maintain real results"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "audit_id": "FALLBACK_REGISTER_20260915",
+  "target": "production codebase scan",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "fallbacks_found": [
+    {
+      "id": "FB-001",
+      "trigger": "unsupported geometry primitive",
+      "fallback": "line",
+      "source_fidelity": "HIGH",
+      "release_effect": "geometry shape changed",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_unsupported_geometry_raises_not_line"
+    },
+    {
+      "id": "FB-002",
+      "trigger": "position metadata unavailable",
+      "fallback": "name-only match",
+      "source_fidelity": "LOW",
+      "release_effect": "correspondence may be wrong",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_position_metadata_required_for_correspondence"
+    },
+    {
+      "id": "FB-003",
+      "trigger": "unknown component",
+      "fallback": "auto-delete",
+      "source_fidelity": "HIGH",
+      "release_effect": "valid small components removed",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "EXPERIMENTAL_ONLY",
+      "test": "test_unknown_not_auto_deleted"
+    },
+    {
+      "id": "FB-004",
+      "trigger": "synthetic signal generation",
+      "fallback": "source truth",
+      "source_fidelity": "LOW",
+      "release_effect": "traffic light counts inflated",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "SCENARIO_AUGMENTATION_ONLY",
+      "test": "test_synthetic_not_counted_as_source"
+    },
+    {
+      "id": "FB-005",
+      "trigger": "missing mandatory validator",
+      "fallback": "PASS",
+      "source_fidelity": "HIGH",
+      "release_effect": "defective maps may pass",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_missing_evidence_not_pass"
+    },
+    {
+      "id": "FB-006",
+      "trigger": "failed FBX roundtrip",
+      "fallback": "PASS",
+      "source_fidelity": "HIGH",
+      "release_effect": "invalid tile packages marked valid",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_roundtrip_false_produces_fail"
+    },
+    {
+      "id": "FB-007",
+      "trigger": "exception in roundabout reconstruction",
+      "fallback": "best-effort swallowed",
+      "source_fidelity": "HIGH",
+      "release_effect": "roundabout geometry fabricated",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_roundabout_exceptions_not_swallowed"
+    },
+    {
+      "id": "FB-008",
+      "trigger": "geometry_endpoint fails",
+      "fallback": "use previous start heading",
+      "source_fidelity": "MEDIUM",
+      "release_effect": "back-filled headings wrong for curved geometry",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_backfill_uses_endpoint_heading"
+    },
+    {
+      "id": "FB-009",
+      "trigger": "DEM coverage insufficient",
+      "fallback": "lenient/legacy/invented flat elevation/global median/KD extrapolation",
+      "source_fidelity": "LOW",
+      "release_effect": "elevation data fabricated",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_strict_dem_fallback_no_env_override"
+    },
+    {
+      "id": "FB-010",
+      "trigger": "pRange unknown",
+      "fallback": "arcLength behavior",
+      "source_fidelity": "HIGH",
+      "release_effect": "paramPoly3 curves evaluated incorrectly",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_unknown_pRange_raises"
+    },
+    {
+      "id": "FB-011",
+      "trigger": "ambiguous connector",
+      "fallback": "nearest endpoint guess",
+      "source_fidelity": "LOW",
+      "release_effect": "junction connectivity wrong",
+      "status": "FORBIDDEN_IN_PRODUCTION",
+      "allowed_profile": "NONE",
+      "test": "test_ambiguous_connector_not_repaired"
+    },
+    {
+      "id": "FB-012",
+      "trigger": "sign source position unavailable",
+      "fallback": "s=0, t=-1.5 fixed placement",
+      "source_fidelity": "LOW",
+      "release_effect": "signs placed at arbitrary positions",
+      "status": "FORBIDDEN_AS_SOURCE_TRUTH",
+      "allowed_profile": "PLACEHOLDER_ONLY",
+      "test": "test_unlocated_sign_classified"
+    }
+  ],
+
+  "forbidden_patterns_summary": [
+    "unsupported geometry -> line",
+    "position metadata -> name-only match",
+    "unknown component -> auto-delete",
+    "synthetic signal -> source truth",
+    "missing mandatory validator -> PASS",
+    "failed FBX roundtrip -> PASS",
+    "exception swallowed in roundabout",
+    "geometry_endpoint fallback uses start heading",
+    "lenient DEM fallback via env var",
+    "unknown pRange -> arcLength"
+  ]
+}

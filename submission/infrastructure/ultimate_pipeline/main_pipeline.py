@@ -5,6 +5,7 @@
 # pylint: skip-file
 
 from __future__ import annotations
+from ultimate_pipeline.quality.result_normalizer import normalize_quality_result
 
 # -*- coding: utf-8 -*-
 
@@ -2031,7 +2032,7 @@ if str(_repo_root) not in sys.path:
         except Exception as e:
             print(f"[STEP 8] elevation_seam_report.json write skipped: {e}")
 
-        if isinstance(seam_report, dict) and not seam_report.get("ok", True):
+        if isinstance(seam_report, dict) and not normalize_quality_result(seam_report).get("ok", False):
             autofix_enabled = os.getenv(
                 "UP_AUTOFIX_POSTPRUNE_ELEVATION", ""
             ).strip().lower() in (
@@ -2072,7 +2073,7 @@ if str(_repo_root) not in sys.path:
                         json.dump(seam_report, f, indent=2, default=str)
                 except Exception as e:
                     print(f"[STEP 8] elevation autofix failed: {e}")
-            if not seam_report.get("ok", True):
+            if not normalize_quality_result(seam_report).get("ok", False):
                 raise RuntimeError(
                     "❌ Elevation seam gate failed after final XODR generation."
                 )
@@ -2396,7 +2397,7 @@ if str(_repo_root) not in sys.path:
             "true",
             "True",
         )
-        ok = rep.get("ok", True) if isinstance(rep, dict) else True
+        ok = normalize_quality_result(rep).get("ok", False) if isinstance(rep, dict) else False
         if strict and not ok:
             raise RuntimeError(f"[QA FAIL][{stage}] {name}: {rep}")
         return rep
@@ -2676,7 +2677,7 @@ if str(_repo_root) not in sys.path:
                     if len(sample_road_ids) >= 10:
                         break
 
-            report_ok = bool(report.get("ok", True)) if isinstance(report, dict) else False
+            report_ok = normalize_quality_result(report).get("ok", False) if isinstance(report, dict) else False
             decision_pass = bool(report_ok and not error_text)
             if error_text:
                 decision_reason = f"gate_error: {error_text}"
@@ -2736,7 +2737,7 @@ if str(_repo_root) not in sys.path:
 
         _write_artifact(report=report, error_text=None)
 
-        if not report.get("ok", True):
+        if not normalize_quality_result(report).get("ok", False):
             if fail_closed:
                 raise RuntimeError(
                     f"❌ Geometric continuity gate failed ({context}): "

@@ -1,0 +1,24 @@
+{
+  "module_audit": {
+    "ultimate_pipeline/quality/check_lane_connectivity.py": {
+      "road_links": "Inferred from XML presence of link/successor",
+      "laneSection_links": "Inferred from XML presence of link/successor in driving lanes",
+      "cross_road_lane_links": "Not explicitly analyzed",
+      "junction_connections": "Junction -1 implied as no-junction",
+      "laneLinks": "Not explicitly analyzed",
+      "contactPoint_semantics": "Not used",
+      "recovery_heuristics": "None, except dead-end skipping",
+      "dead_end_policy": "Optional, allows if no road successor and junction -1"
+    },
+    "ultimate_pipeline/topology/junction_model.py": {
+      "road_links": "Not explicitly analyzed",
+      "laneSection_links": "Not explicitly analyzed",
+      "cross_road_lane_links": "Not explicitly analyzed",
+      "junction_connections": "Explicitly defined by incomingRoad, connectingRoad, contactPoint",
+      "laneLinks": "Explicitly defined by from_lane, to_lane",
+      "contactPoint_semantics": "Defined as start/end, used as identifier",
+      "recovery_heuristics": "None",
+      "dead_end_policy": "Not used"
+    }
+  }
+}

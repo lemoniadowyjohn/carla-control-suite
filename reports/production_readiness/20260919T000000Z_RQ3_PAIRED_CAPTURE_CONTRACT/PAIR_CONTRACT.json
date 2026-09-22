@@ -1,0 +1,50 @@
+{
+  "run_id": "20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT",
+  "objective": "Make RQ3 paired perception evidence valid by construction: both capture arms are bound to an immutable geographic route, identical effective sensor rig/calibration/weather/timing/capture config, proven frame completeness and a fail-closed claim boundary.",
+  "baseline_git_sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8",
+  "branch": "fix/rq3-paired-capture-authority-v1-20260919",
+  "generated_at_utc": "2026-09-19T00:00:00Z",
+  "schema_version": "pair_contract_v1",
+  "governing_engine": {
+    "module": "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "route_authority": "ultimate_pipeline/perception/route_manifest.py",
+    "offline_testable": "no CARLA import at module level",
+    "mandatory_equalities": {
+      "route_manifest_sha256": "content digest of paired_route_manifest_v1 (all capture poses + waypoints + route metadata)",
+      "calibration_sha256": "bytes-level sha256 of calib_data.json",
+      "sensor_rig_sha256": "content digest of effective post-filter rig (front_only honored), bound to calibration hash",
+      "weather_sha256": "content digest of ACTUAL world weather parameters (preset name alone is never sufficient)",
+      "sim_timing_sha256": "synchronous_mode + fixed_delta_seconds + traffic_manager_sync + fps_target + warmup/capture ticks",
+      "capture_config_sha256": "frames + fps + rig + front_only + seg + lidar_format + vehicle + seed",
+      "pair_frame_index": "manual and auto arms must expose identical list(range(frames))"
+    },
+    "equality_decision": "every equality is decided by SHA-256 content digest, never by an integer spawn index, preset name or wall-clock value"
+  },
+  "frame_completeness_gate": {
+    "policy": "PASS requires every expected camera AND lidar to reach its expected frame count with no save errors, no destroyed ego, no sensor failures and no timeout",
+    "expected_definition": "expected_frames = len(route_manifest.capture_poses) in THESIS_PAIRED_STRICT mode, overridden by explicit expected_cameras from the pair runner",
+    "timeout_with_partial_frames": "INCOMPLETE (never PASS)",
+    "missing_required_sensor_or_zero_frames": "FAIL",
+    "implemented_by": "evaluate_frame_completeness + compute_strict_completion_status"
+  },
+  "route_mode": {
+    "THESIS_PAIRED_STRICT": "default for paired evidence; forbids hidden spawn recovery (no shuffle, no fallback spawn, no pose re-projection); ego teleports pose-by-pose (pair_frame_index == pose sequence_index); NPCs disabled",
+    "SMOKE_RECOVERY": "diagnostic/smoke only; may recover spawns"
+  },
+  "claim_boundary": {
+    "SENSOR_SMOKE": "capture works but is not paired evidence",
+    "UNPAIRED_CAPTURE": "single-arm or any failed mandatory equality or route unrepresentable",
+    "PAIRED_PROTOCOL_VALID": "all mandatory equalities + route fully representable on both arms",
+    "PAIRED_INGOLSTADT_CAPTURE": "PAIRED_PROTOCOL_VALID and manual arm is Grid0821/Grid0828 map-identity and auto arm is an Ingolstadt map-of-record XODR",
+    "town10hd_control": "a Town10HD/control arm can never yield PAIRED_INGOLSTADT_CAPTURE"
+  },
+  "connected_capture_pipeline": {
+    "authoritative_runner": "ultimate_pipeline/experiments/thesis/run_perception_capture_pair.py with --mode THESIS_PAIRED_STRICT --route-manifest <manifest>",
+    "runner_contract_wiring": "LocalPerceptionRunner gains route_manifest/route_mode/expected_cameras; strict mode writes completion_status into perception_status.json; pair runner writes paired_capture_manifest.json and validates it before exit",
+    "diagnostic_tool": "capture_perception_pair_safe.py is DIAGNOSTIC_ONLY; its false-success (any-frame == ok) is fixed and bound to evaluate_frame_completeness"
+  },
+  "deliverable_gate": {
+    "offline_pytest": 38,
+    "live_carla_assay": "BLOCKED_EXTERNAL - simulator unreachable (time-out of 3000ms while waiting for the simulator at 127.0.0.1:2000); pair-route correspondence probe (route_correspondence.json) and end-to-end manifest are therefore unverified live and must be marked INCOMPLETE, not pass"
+  }
+}

@@ -2263,13 +2263,16 @@ class Settings:
 
         for drive in ("D:\\", "H:\\"):
             p = Path(drive)
-            if p.exists():
-                candidate = p / "carla_database"
-                try:
-                    candidate.mkdir(parents=True, exist_ok=True)
-                    return candidate
-                except PermissionError:
-                    continue  # drive visible but access-denied (e.g. CI / restricted lab)
+            try:
+                if p.exists():
+                    candidate = p / "carla_database"
+                    try:
+                        candidate.mkdir(parents=True, exist_ok=True)
+                        return candidate
+                    except PermissionError:
+                        continue  # drive visible but access-denied (e.g. CI / restricted lab)
+            except OSError:
+                continue  # drive probe itself denied (e.g. restricted CI worker)
 
         candidates = [Path("/mnt/data"), Path.cwd(), Path.home()]
         for cand in candidates:

@@ -1,0 +1,28 @@
+{
+  "run_id": "20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT",
+  "module": "ultimate_pipeline/perception/rq3_capture_contract.py",
+  "functions": ["evaluate_frame_completeness", "compute_strict_completion_status"],
+  "inputs": {
+    "expected_cameras": "dict sensor_name -> expected frame count (required cameras)",
+    "expected_lidars": "dict sensor_name -> expected frame count (required lidars)",
+    "actual_counts": "observed saved frames per sensor",
+    "timed_out": "capture hit its budget before finishing",
+    "save_errors": "persist/IO failures during capture",
+    "ego_destroyed": "ego vehicle was destroyed mid-run",
+    "sensor_failures": "list of sensor attach/listen failures"
+  },
+  "decision_table": [
+    {"condition": "every expected sensor actual >= expected, no timeout, no save errors", "status": "PASS", "complete": true},
+    {"condition": "every expected sensor satisfied but save errors present", "status": "FAIL", "complete": false},
+    {"condition": "timeout with partial frames", "status": "INCOMPLETE", "complete": false, "note": "never PASS"},
+    {"condition": "missing required sensor or zero frames", "status": "FAIL", "complete": false},
+    {"condition": "PASS but ego destroyed or sensor failure", "status": "FAIL", "complete": false}
+  ],
+  "expected_definition_in_runner": [
+    "THESIS_PAIRED_STRICT: expected per attached sensor = len(route_manifest.capture_poses)",
+    "overridden by explicit expected_cameras passed by the governing pair runner (per effective-rig sensor = frames)",
+    "smoke mode: loose diagnostic ok means any output present - never usable as paired evidence"
+  ],
+  "regression_fixed": "capture_perception_pair_safe (and the old pair manifests) previously reported ok for ANY written frames; a 60s-budget partial capture was labeled successful. ok is now = (completeness status == PASS).",
+  "live_validation_status": "BLOCKED_EXTERNAL - per-sensor strict counts require a reachable simulator; offline tests cover the decision table via duck-typed fakes"
+}

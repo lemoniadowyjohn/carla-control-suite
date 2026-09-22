@@ -1,0 +1,105 @@
+{
+  "audit_id": "TOPOLOGY_COMPONENT_AUDIT_20260915",
+  "target": "ultimate_pipeline/quality/map_acceptance.py, map_hygiene.py, topology_repair.py, topology_validation.py",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "map_connectivity": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Typed node namespace may be fixed - needs verification",
+      "Size-only quarantine (component size < N -> delete) is insufficient",
+      "UNKNOWN classification cannot be auto-deleted in production",
+      "No explicit component classifier"
+    ],
+    "required_classifier": {
+      "categories": ["PRIVATE_OR_SERVICE", "PARKING_OR_YARD", "BOUNDARY_TRUNCATION", "INTENTIONAL_ISLAND", "SOURCE_DISCONNECTED", "ROAD_LINK_DEFECT", "LANELINK_DEFECT", "JUNCTION_DEFECT", "UNKNOWN"],
+      "production_rule": "UNKNOWN cannot be auto-deleted"
+    }
+  },
+
+  "literal_vs_recovered_topology": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Recovery connectivity diagnostics may turn literal malformed graph into certification PASS",
+      "No separate LITERAL_SPEC_GRAPH and RECOVERED_DIAGNOSTIC_GRAPH outputs",
+      "Recovered topology cannot turn literal malformed graph into certification PASS"
+    ],
+    "required": {
+      "separate_outputs": ["LITERAL_SPEC_GRAPH", "RECOVERED_DIAGNOSTIC_GRAPH"],
+      "production_certification": "Uses literal graph only",
+      "if_only_recovered_passes": "SPEC_TOPOLOGY=FAIL, RECOVERY_DIAGNOSTIC=PASS"
+    }
+  },
+
+  "junction_connectors": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Nearest-endpoint fallback without ambiguity check",
+      "Direct line fallback without heading tolerance",
+      "ContactPoint trust used as production heuristic",
+      "No constrained primitive selection based on endpoint position+tangent constraints"
+    ],
+    "classification_required": ["EXACT_TOPOLOGY", "GEOMETRICALLY_INFERRED_HIGH", "AMBIGUOUS"],
+    "line_acceptable_only_if": ["start position tolerance met", "end position tolerance met", "start heading tolerance met", "end heading tolerance met"]
+  },
+
+  "roundabout_reconstructor": {
+    "status": "PROTOTYPE",
+    "confirmed_issues": [
+      "Heuristic curved-road detection",
+      "Approximate center from geometry starts",
+      "Perfect-circle reconstruction with single right driving lane",
+      "Constant/simple elevation",
+      "Generic lane links",
+      "Preserving/deactivating old roads not verified",
+      "Best-effort swallowed exceptions"
+    ],
+    "required_production": [
+      "explicit OSM roundabout semantics",
+      "closed directed circulating graph",
+      "source centerline",
+      "entry/exit anchors",
+      "multi-lane structure",
+      "lane widths",
+      "laneLinks",
+      "elevation constraints",
+      "transaction/rollback",
+      "source deviation report"
+    ],
+    "design_principle": "preserve-first, not best-effort",
+    "production_status": "NOT_ENABLED_IN_PRODUCTION",
+    "replacement": "Build V2 behind disabled feature flag"
+  },
+
+  "quality_gates": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "bool-only statuses",
+      "missing evidence interpreted as pass",
+      "skipped mandatory validator interpreted as pass",
+      "exception swallowed",
+      "warning-only mandatory failure",
+      "threshold hiding explicit validator FAIL"
+    ],
+    "required_vocabulary": ["PASS", "FAIL", "INCOMPLETE", "NOT_RUN", "BLOCKED_EXTERNAL", "WAIVED"],
+    "rule": "Mandatory child FAIL must not be promoted to aggregate PASS without explicit governed waiver"
+  },
+
+  "validator_purity": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "GeometryValidator.validate() mutates XML in-place - MIXED",
+      "GeometryValidator.inspect_geometry() is PURE (read-only)",
+      "GeometryValidator._plan_geometry_repairs() is PURE (compute only)",
+      "GeometryValidator._apply_geometry_repairs() is MIXED (mutates XML)",
+      "_validate_legacy() is MIXED (claims repair but doesn't mutate XML)"
+    ],
+    "target_architecture": {
+      "GeometryInspector": "read only",
+      "GeometryRepairPlanner": "compute only",
+      "GeometryRepairTransaction": "apply candidate",
+      "GeometryValidator": "read only"
+    },
+    "required": "Repair must produce candidate, independently revalidated"
+  }
+}

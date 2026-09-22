@@ -1,0 +1,46 @@
+# Git LFS -- forward-looking blanket rules for FUTURE large binary files, added
+# 2026-09-16 per docs/archive/large_file_policy_recommendation_20260915.md. See
+# docs/archive/large_file_policy_recommendation_20260915.md (updated) for the
+# live-verification evidence. This does NOT retroactively convert the 37 .xodr/
+# .fbx/.glb files already committed as plain git blobs before this rule existed --
+# an LFS filter only governs how a path is stored on its NEXT add/checkout, it
+# never rewrites already-committed history. Those 37 files (20 already LFS via a
+# prior undocumented one-off migration, 17 plain blobs) are left untouched by
+# design; see that doc for how to migrate them later if ever wanted.
+*.xodr filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.glb filter=lfs diff=lfs merge=lfs -text
+# Pre-existing narrower LFS rules for the already-migrated files below. These are
+# now redundant with the blanket *.xodr rule above (same filter/diff/merge/-text),
+# kept as-is so this change stays additive rather than restructuring history-
+# sensitive lines that predate 2026-09-16.
+campaigns/ingolstadt_cooked_perception_v1/**/*.xodr filter=lfs diff=lfs merge=lfs -text
+campaigns/ingolstadt_cooked_perception_v1/**/*.osm filter=lfs diff=lfs merge=lfs -text
+reports/ingolstadt_map_quality_v2/**/*.xodr filter=lfs diff=lfs merge=lfs -text
+reports/ingolstadt_map_quality_v2/**/*.osm filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/**/candidate_*.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/20260803T150000Z/candidate_f4_piecewise_profiles.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/20260803T160000Z/candidate_f5_bounded_offsets.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/20260803T170000Z/candidate_f6_seam_repaired.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/**/_*_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/20260803T160000Z/_f5_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/20260803T170000Z/_f6_work_copy.xodr filter=lfs diff=lfs merge=lfs -text
+reports/post_audit_hardening/**/governed_payload.xodr filter=lfs diff=lfs merge=lfs -text
+# Governance-pinned inputs whose exact byte size/sha256 is checked by
+# ultimate_pipeline.governance.inputs_manifest.verify_inputs_manifest (fail-closed
+# on any drift). Not LFS-worthy (well under a few MB), but MUST checkout byte-identical
+# on every platform, or the pinned sha256/bytes recorded in INPUTS_MANIFEST.json can only
+# ever be correct on one platform's line-ending convention. -text disables git's
+# autocrlf/eol conversion entirely for these paths (verified 2026-09-04: the pinned value
+# had been captured from a CRLF-converted Windows checkout, which is 177473 bytes larger
+# than the actual LF git blob and fails on any non-Windows checkout despite zero real
+# content difference).
+campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json -text
+# Same class of bug, found 2026-09-04 via tools/validate_thesis_claim_provenance.py's
+# rq_table_claims check failing on GitHub Actions (Linux) while passing 100% locally
+# (Windows) and on a fresh Windows clone -- only a genuine Linux checkout (WSL Ubuntu,
+# reproduced directly since GitHub Actions runners aren't locally inspectable) exposed
+# the mismatch. rq_tables.json's recorded sha256 for gnn_latent_cosine_distance had been
+# captured from a CRLF-converted Windows checkout (788 bytes) instead of the actual LF
+# git blob (749 bytes) -- zero real content difference, confirmed byte-for-byte.
+reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json -text

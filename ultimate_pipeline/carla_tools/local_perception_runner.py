@@ -18,10 +18,17 @@ except Exception:  # pragma: no cover
     _CARLA_AVAILABLE = False
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.perception.rq3_capture_contract import (
+    COMPLETION_PASS,
+    MODE_SMOKE_RECOVERY,
+    MODE_THESIS_PAIRED_STRICT,
+    VALID_MODES,
+    compute_strict_completion_status,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ultimate_pipeline.carla_tools.tile_streamer import TileStreamer
-    from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
+    from ultimate_pipeline.carla_tools.tile_streamer import TileStreamer  # noqa: F401
+    from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup  # noqa: F401
 
 
 class LocalPerceptionRunner:
@@ -49,6 +56,9 @@ class LocalPerceptionRunner:
         warmup_ticks: int = 30,
         npc_cap: int = 20,
         spawn_point_index: int = 0,
+        route_manifest: Optional[Dict[str, Any]] = None,
+        route_mode: str = MODE_SMOKE_RECOVERY,
+        expected_cameras: Optional[Dict[str, int]] = None,
         **_ignored_kwargs,                # absorb legacy args safely
     ):
         if not _CARLA_AVAILABLE:
@@ -62,13 +72,32 @@ class LocalPerceptionRunner:
             try_safe_spawn,
             try_safe_spawn_from_transforms,
         )
+        from ultimate_pipeline.carla_tools.safe_spawn_ego import spawn_ego_strict_exact
         from ultimate_pipeline.carla_tools.tile_streamer import TileStreamer
         from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
 
         self._try_safe_spawn = try_safe_spawn
         self._try_safe_spawn_from_transforms = try_safe_spawn_from_transforms
+        self._spawn_ego_strict_exact = spawn_ego_strict_exact
         self._TileStreamer = TileStreamer
         self._DominikSensorSetup = DominikSensorSetup
+
+        if route_mode not in VALID_MODES:
+            raise ValueError(f"route_mode must be one of {VALID_MODES}, got {route_mode!r}")
+        self.route_mode = str(route_mode)
+        self._strict = self.route_mode == MODE_THESIS_PAIRED_STRICT
+        self.route_manifest = route_manifest
+        if self._strict and not self.route_manifest:
+            raise ValueError(
+                "THESIS_PAIRED_STRICT mode requires a paired_route_manifest_v1 "
+                "with capture_poses; hidden spawn recovery is not permitted for RQ3 evidence."
+            )
+        self._strict_poses = [
+            {k: float(p[k]) for k in ("x", "y", "z", "yaw", "pitch", "roll") if k in p}
+            | {"sequence_index": int(p.get("sequence_index", i))}
+            for i, p in enumerate((self.route_manifest or {}).get("capture_poses") or [])
+        ]
+        self.expected_cameras = dict(expected_cameras) if expected_cameras is not None else {}
 
         self.client = client
         self.world = client.get_world()
@@ -159,6 +188,9 @@ class LocalPerceptionRunner:
         self._saved_images = 0
         self._saved_lidars = 0
         self._save_errors: list[str] = []
+        self._sensor_frame_counts: Dict[str, int] = {}
+        self._sensor_failures: list[str] = []
+        self._attached_sensor_names: list[str] = []
 
         self._failure_reason: Optional[str] = None
         self._warnings: list[str] = []
@@ -233,6 +265,9 @@ class LocalPerceptionRunner:
                 ) from last_exc
 
     def _spawn_ego_recovering(self, spawn_points: list["carla.Transform"]) -> "carla.Vehicle":
+        if self._strict:
+            return self._spawn_ego_strict(spawn_points)
+
         bp = self.blueprints.find("vehicle.tesla.model3")
         bp.set_attribute("role_name", "ego")
 
@@ -292,6 +327,51 @@ class LocalPerceptionRunner:
             ego.set_autopilot(False)
         self.actor_list.append(ego)
         return ego
+
+    def _spawn_ego_strict(self, spawn_points: list["carla.Transform"]) -> "carla.Vehicle":
+        """THESIS_PAIRED_STRICT ego spawn: exact requested pose, no recovery.
+
+        No shuffle, no fallback to another spawn point, no road re-projection.
+        If the exact pose cannot be spawned the run fails -- shifting to a
+        different location would silently change the paired route.
+        """
+        if not self._strict_poses:
+            raise RuntimeError(
+                "THESIS_PAIRED_STRICT requires non-empty capture_poses in the route manifest"
+            )
+        ego, report = self._spawn_ego_strict_exact(
+            self.world,
+            pose=self._strict_poses[0],
+            blueprint_filter="vehicle.tesla.model3",
+            z_offset=0.0,
+            report_path=os.path.join(self.output_dir, "ego_spawn_report.json"),
+        )
+        if ego is None:
+            raise RuntimeError(
+                "THESIS_PAIRED_STRICT: exact-pose spawn failed "
+                "(hidden spawn recovery is not permitted for paired evidence)"
+            )
+        try:
+            ego.set_autopilot(False)
+        except Exception:
+            pass
+        self.actor_list.append(ego)
+        return ego
+
+    @staticmethod
+    def _pose_to_carla_transform(pose: Dict[str, Any]) -> "carla.Transform":
+        return carla.Transform(
+            carla.Location(
+                x=float(pose["x"]),
+                y=float(pose["y"]),
+                z=float(pose["z"]),
+            ),
+            carla.Rotation(
+                yaw=float(pose["yaw"]),
+                pitch=float(pose["pitch"]),
+                roll=float(pose["roll"]),
+            ),
+        )
 
     def _spawn_visual_markers(self, ego: "carla.Vehicle") -> int:
         candidate_ids = [
@@ -359,6 +439,8 @@ class LocalPerceptionRunner:
         allow_degraded = bool(getattr(SETTINGS, "LOCAL_PERCEPTION_ALLOW_DEGRADED", True))
         if bool(getattr(SETTINGS, "THESIS_STRICT", False)):
             allow_degraded = False
+        if self._strict:
+            allow_degraded = False
         min_sensors = int(getattr(SETTINGS, "LOCAL_PERCEPTION_MIN_SENSORS", 1))
         fallback_res = str(getattr(SETTINGS, "LOCAL_PERCEPTION_FALLBACK_RES", "640x360"))
         fallback_res_tuple = self._parse_res(fallback_res)
@@ -422,6 +504,7 @@ class LocalPerceptionRunner:
         if not sensors:
             raise RuntimeError("[Perception] No sensors attached to ego vehicle")
 
+        self._attached_sensor_names = list(sensors.keys())
         for name, sensor in sensors.items():
             lname = name.lower()
             if "camera" in lname:
@@ -438,6 +521,7 @@ class LocalPerceptionRunner:
         try:
             image.save_to_disk(fp)
             self._saved_images += 1
+            self._sensor_frame_counts[sensor_name] = self._sensor_frame_counts.get(sensor_name, 0) + 1
         except Exception as e:
             self._save_errors.append(f"image_save_failed:{sensor_name}:{getattr(image,'frame',None)}:{e}")
 
@@ -446,10 +530,16 @@ class LocalPerceptionRunner:
         try:
             pc.save_to_disk(fp)
             self._saved_lidars += 1
+            self._sensor_frame_counts[sensor_name] = self._sensor_frame_counts.get(sensor_name, 0) + 1
         except Exception as e:
             self._save_errors.append(f"lidar_save_failed:{sensor_name}:{getattr(pc,'frame',None)}:{e}")
 
     def _spawn_npcs(self, count: int) -> int:
+        if self._strict:
+            # NPCs with independent autopilot trajectories are non-reproducible
+            # across two different maps; strict paired evidence runs without them.
+            print("🚗 [strict] NPC spawning disabled for paired evidence.")
+            return 0
         vehicle_bps = self.blueprints.filter("vehicle.*")
         spawn_points = self.map.get_spawn_points()
 
@@ -557,7 +647,8 @@ class LocalPerceptionRunner:
             spawn_points = self.map.get_spawn_points()
             ego = self._spawn_ego_recovering(spawn_points)
 
-            self._spawn_visual_markers(ego)
+            if not self._strict:
+                self._spawn_visual_markers(ego)
             self._attach_sensors(ego)
 
             npc_count = int(min(getattr(SETTINGS, "MAX_NPCS_LOCAL", 10), self.npc_cap))
@@ -566,31 +657,67 @@ class LocalPerceptionRunner:
             meta = {
                 "carla_map_name": getattr(self.map, "name", None),
                 "map_name_hint": self._map_name_hint,
+                "route_mode": self.route_mode,
                 "duration_ticks": self.duration_ticks,
                 "warmup_ticks": self.warmup_ticks,
+                "strict_pose_count": len(self._strict_poses) if self._strict else None,
                 "spawn_point_index": int(self.spawn_point_index),
+                "sensor_names": sorted(self._sensor_frame_counts.keys()),
             }
             with open(os.path.join(self.output_dir, "run_meta.json"), "w", encoding="utf-8") as f:
                 json.dump(meta, f, indent=2)
 
-            print(f"▶ Running main perception loop ({self.duration_ticks} ticks)…")
-            for tick_i in range(1, self.duration_ticks + 1):
-                self._tick()
+            if self._strict:
+                print(
+                    f"▶ [strict] Driving route of {len(self._strict_poses)} poses "
+                    "(deterministic teleport, no autopilot, pair_frame_index == pose sequence_index)…"
+                )
+                pose_iter = sorted(
+                    self._strict_poses, key=lambda p: int(p.get("sequence_index", 0))
+                )
+                for tick_i, pose in enumerate(pose_iter, start=1):
+                    try:
+                        ego.apply_transform(self._pose_to_carla_transform(pose))
+                    except Exception as exc:
+                        raise RuntimeError(
+                            f"THESIS_PAIRED_STRICT apply_transform failed at seq "
+                            f"{pose.get('sequence_index')}: {exc}"
+                        ) from exc
+                    self._tick()
+                    defect = self._detect_defect(ego)
+                    if defect:
+                        kind, loc, rid, s_val = defect
+                        entry = {
+                            "event": kind,
+                            "x": float(loc.x),
+                            "y": float(loc.y),
+                            "z": float(loc.z),
+                            "road_id": rid,
+                            "s": s_val,
+                            "tick": tick_i,
+                            "sequence_index": int(pose.get("sequence_index", tick_i - 1)),
+                        }
+                        self.results.append(entry)
+                        print("⚠ Detected:", entry)
+            else:
+                print(f"▶ Running main perception loop ({self.duration_ticks} ticks)…")
+                for tick_i in range(1, self.duration_ticks + 1):
+                    self._tick()
 
-                defect = self._detect_defect(ego)
-                if defect:
-                    kind, loc, rid, s_val = defect
-                    entry = {
-                        "event": kind,
-                        "x": float(loc.x),
-                        "y": float(loc.y),
-                        "z": float(loc.z),
-                        "road_id": rid,
-                        "s": s_val,
-                        "tick": tick_i,
-                    }
-                    self.results.append(entry)
-                    print("⚠ Detected:", entry)
+                    defect = self._detect_defect(ego)
+                    if defect:
+                        kind, loc, rid, s_val = defect
+                        entry = {
+                            "event": kind,
+                            "x": float(loc.x),
+                            "y": float(loc.y),
+                            "z": float(loc.z),
+                            "road_id": rid,
+                            "s": s_val,
+                            "tick": tick_i,
+                        }
+                        self.results.append(entry)
+                        print("⚠ Detected:", entry)
 
         except Exception as e:
             self._failure_reason = f"{type(e).__name__}: {e}"
@@ -627,6 +754,7 @@ class LocalPerceptionRunner:
             outputs_present = bool(pngs or plys or self._saved_images > 0 or self._saved_lidars > 0)
             status = {
                 "ok": bool(outputs_present),
+                "strict_mode": bool(self._strict),
                 "failure_reason": self._failure_reason,
                 "warnings": self._warnings,
                 "output_dir": self.output_dir,
@@ -636,7 +764,26 @@ class LocalPerceptionRunner:
                 "ply_files": int(len(plys)),
                 "num_defects": int(len(self.results)),
                 "save_errors_tail": self._save_errors[-10:],
+                "sensor_frame_counts": dict(self._sensor_frame_counts),
             }
+
+            if self._strict:
+                pose_count = max(1, len(self._strict_poses))
+                expected: Dict[str, int] = {
+                    name: pose_count for name in self._attached_sensor_names
+                }
+                for name, count in (self.expected_cameras or {}).items():
+                    expected[str(name)] = int(count)
+                strict_completion = compute_strict_completion_status(
+                    expected_cameras=expected,
+                    actual_counts=self._sensor_frame_counts,
+                    save_errors=self._save_errors,
+                    ego_destroyed="ego_destroyed" in self._warnings,
+                    sensor_failures=self._sensor_failures,
+                    timed_out=bool(self._failure_reason),
+                )
+                status["completion_status"] = strict_completion
+                status["ok"] = strict_completion["status"] == COMPLETION_PASS
             try:
                 with open(os.path.join(self.output_dir, "perception_status.json"), "w", encoding="utf-8") as f:
                     json.dump(status, f, indent=2, ensure_ascii=True, default=str)

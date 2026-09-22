@@ -54,7 +54,7 @@ class QualityGateManager:
             pass
 
     def _finalize_gate(self, name: str, rep: Dict[str, Any]) -> None:
-        if not isinstance(rep, dict) or not rep.get("ok", True):
+        if not isinstance(rep, dict) or not rep.get("ok", False):
             self.fail(name, rep)
         else:
             self.passed(name)

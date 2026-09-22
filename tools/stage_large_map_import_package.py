@@ -42,9 +42,16 @@ from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map  # noqa
 
 # Resolve pin through the C13 registry instead of hardcoding — prevents
 # stale path/sha256 when the map-of-record is re-promoted.
+# OC-58 §17: consume the VERIFIED resolved identity (absolute path proven to
+# hash-match the pin), never the registry's raw relative path.
 _pinned = verify_pinned_map("auto_map_of_record")
-PINNED_XODR = Path(_pinned["path"])
-PINNED_XODR_SHA256 = _pinned["sha256"]
+PINNED_XODR = Path(_pinned["resolved_path"])
+PINNED_XODR_SHA256 = _pinned["sha256_actual"]
+PINNED_REGISTRY_IDENTITY = {
+    "registry_key": _pinned["registry_key"],
+    "registry_sha256": _pinned["registry_sha256"],
+    "map_sha256": _pinned["sha256_actual"],
+}
 MAP_NAME = "Ingolstadt"
 TILE_SIZE_M = 1000.0
 
@@ -103,6 +110,7 @@ def main() -> int:
         tile_size_m=args.tile_size_m,
         use_carla_materials=not args.no_carla_materials,
         expected_xodr_sha256=expected_sha,
+        map_registry_identity=PINNED_REGISTRY_IDENTITY,
     )
 
     print(f"[stage] status={result.status}")

@@ -28,6 +28,7 @@ sys.path.insert(0, str(REPO_ROOT))
 from ultimate_pipeline.carla_tools.map_registry import (  # noqa: E402
     MapRegistryDriftError,
     PINNED_MAP_REGISTRY,
+    resolve_historical_sha,
     verify_pinned_map,
 )
 from ultimate_pipeline.governance.inputs_manifest import (  # noqa: E402
@@ -153,22 +154,26 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
         # A registry promotion (e.g. C29) moves the LIVE pin to a new sha, but historical
         # claims computed against the previous pin remain true as long as that file is
         # still on disk with unchanged content -- they must not start failing just because
-        # the registry's live pointer moved on. Check each entry's documented
-        # supersedes_sha256/supersedes_path before falling through to the generic artifact
-        # search (which can't resolve RQ1's "auto_path vs manual_path" combined artifact
-        # string as a literal path).
-        superseded_match = None
-        for key, entry in PINNED_MAP_REGISTRY.items():
-            if entry.get("supersedes_sha256") == sha and entry.get("supersedes_path"):
-                superseded_match = (key, entry)
-                break
+        # the registry's live pointer moved on. Resolve through the full
+        # supersession CHAIN (map_registry.resolve_historical_sha), not a
+        # single-hop lookup: a claim citing ANY registered historical sha
+        # resolves to its historical entry plus the live successor and the
+        # supersession distance. The result stays bound to its historical
+        # SHA -- it is never reinterpreted as measured against the newest map.
+        resolution = resolve_historical_sha(sha, registry=PINNED_MAP_REGISTRY)
 
-        if superseded_match:
-            key, entry = superseded_match
-            superseded_path = REPO_ROOT / entry["supersedes_path"]
+        if resolution is not None and resolution["historical_sha"] == sha.strip().lower():
+            hist_path_raw = resolution["historical_path"]
+            superseded_path = (
+                Path(hist_path_raw)
+                if Path(hist_path_raw).is_absolute()
+                else REPO_ROOT / hist_path_raw
+            )
             if not superseded_path.is_file():
                 checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL",
-                                 "error": f"superseded pin for {key!r} not found: {superseded_path}"})
+                                 "error": f"superseded pin "
+                                          f"{resolution['historical_registry_key']!r} not found: "
+                                          f"{superseded_path}"})
                 ok = False
                 continue
             try:
@@ -179,7 +184,11 @@ def _verify_rq_table_claims(rq_tables_path: Path) -> Dict[str, Any]:
                 continue
             if actual == sha:
                 checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "PASS",
-                                 "via": f"superseded_pin:{key}"})
+                                 "via": f"superseded_pin:{resolution['current_successor_key']}/"
+                                        f"{resolution['historical_registry_key']}"
+                                        f"@distance={resolution['supersession_distance']}",
+                                 "historical_sha": resolution["historical_sha"],
+                                 "current_successor_sha": resolution["current_successor_sha"]})
             else:
                 checked.append({"rq": row["rq"], "metric": row["metric"], "provenance": "FAIL",
                                  "error": f"hash mismatch for superseded pin {superseded_path}: "

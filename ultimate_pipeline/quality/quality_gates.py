@@ -20,6 +20,11 @@ import json
 import os
 from typing import Any, Dict, Optional
 
+from ultimate_pipeline.quality.result_normalizer import (
+    normalize_quality_result,
+    status_is_incomplete,
+)
+
 MIN_XODR_SIZE_BYTES = 10_000  # Minimum bytes for a real road-network XODR; stubs are ~796 bytes
 
 
@@ -112,12 +117,14 @@ def run_quality_gates(
     try:
         from ultimate_pipeline.quality.check_lane_link_targets_exist import check_lane_link_targets_exist
         lane_link_result = check_lane_link_targets_exist(xodr_path)
-        if not lane_link_result.get("ok", True):
+        norm = normalize_quality_result(lane_link_result)
+        if norm["status"] != "PASS":
             qgate.fail("lane_link_targets", lane_link_result)
         else:
             qgate.passed("lane_link_targets")
     except Exception as e:
         lane_link_result = {"status": "error", "error": str(e)}
+        qgate.fail("lane_link_targets", lane_link_result)
 
     # --- Optional external libOpenDRIVE validation ---
     external_rep: Dict[str, Any] = {"status": "skipped"}

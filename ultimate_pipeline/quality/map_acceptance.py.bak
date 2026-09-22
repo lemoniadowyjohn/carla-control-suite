@@ -1,0 +1,949 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Map acceptance summary for gating perception runs.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import xml.etree.ElementTree as ET
+from typing import Any, Dict, List, Optional
+
+from ultimate_pipeline.utils.file_hashing import safe_sha256_file
+from ultimate_pipeline.tools.crash_safe_length_repair import (
+    TOL_M as LENGTH_INVARIANT_TOL_M,
+    length_invariant_summary,
+)
+from ultimate_pipeline.contracts.stage_contracts import (
+    QualityStatus,
+    governed_waiver_allowed,
+)
+from ultimate_pipeline.quality.topology_certification import certify_topology
+
+# Acceptance policy profiles.
+# LEGACY_ADVISORY: backward-compatible, lenient (original behavior).
+# STRUCTURAL_RELEASE: strict production release - requires all structural evidence.
+# RESEARCH_CAPTURE: geometry/measurement-focused, enrichment optional.
+LEGACY_ADVISORY = "LEGACY_ADVISORY"
+STRUCTURAL_RELEASE = "STRUCTURAL_RELEASE"
+RESEARCH_CAPTURE = "RESEARCH_CAPTURE"
+
+# Status vocabulary for acceptance results.
+# Deriving everything from one boolean is replaced with explicit status.
+STATUS_PASS = "PASS"
+STATUS_FAIL = "FAIL"
+STATUS_INCOMPLETE = "INCOMPLETE"
+STATUS_WAIVED = "WAIVED"
+
+# Required gate sets per profile.
+# These are the minimum reports that must be present and passing for a profile
+# to consider the map valid for its intended purpose.
+
+# LEGACY_ADVISORY: original gate set (lenient) - no requirements enforced.
+LEGACY_GATE_SET = frozenset()
+
+# STRUCTURAL_RELEASE: requires these structural gates to be present and passing.
+# A missing gate is NOT equivalent to a gate failure; preserve that distinction.
+STRUCTURAL_GATE_SET = frozenset({
+    "geometric_continuity",
+    "junction_integrity",
+    "lane_width_continuity",
+    "lane_geometry_continuity",
+    "elevation_missing_and_cliffs",
+    "post_tiling_integrity",
+    "carla_import_s",
+    "carla_opendrive_compat",
+})
+
+# RESEARCH_CAPTURE: requires geometry gates only; enrichment optional.
+RESEARCH_GATE_SET = frozenset({
+    "geometric_continuity",
+    "junction_integrity",
+    "lane_width_continuity",
+})
+
+
+def _run_id_from_out_dir(out_dir: Optional[str]) -> Optional[str]:
+    if not out_dir:
+        return None
+    base = os.path.basename(os.path.normpath(out_dir))
+    return base or None
+
+
+def _artifact_path_from_report(report: Dict[str, Any]) -> Optional[str]:
+    for key in ("artifact_path", "report_path", "path", "output"):
+        value = report.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _reason_from_report(report: Dict[str, Any]) -> str:
+    for key in ("reason", "error", "message"):
+        value = report.get(key)
+        if isinstance(value, str) and value:
+            return value
+    decision = report.get("decision")
+    if isinstance(decision, dict):
+        value = decision.get("reason")
+        if isinstance(value, str) and value:
+            return value
+    if "issues" in report:
+        return f"issues={len(report.get('issues') or [])}"
+    if "failures" in report:
+        return f"failures={len(report.get('failures') or [])}"
+    if "still_broken_count" in report:
+        return f"still_broken_count={report.get('still_broken_count')}"
+    if "broken_count" in report:
+        return f"broken_count={report.get('broken_count')}"
+    return "gate_failed"
+
+
+def _determine_report_ok(report: Dict[str, Any]) -> Optional[bool]:
+    if "ok" in report:
+        return bool(report.get("ok"))
+    decision = report.get("decision")
+    if isinstance(decision, dict) and "pass" in decision:
+        return bool(decision.get("pass"))
+    return None
+
+
+def _determine_lane_ok(report: Dict[str, Any]) -> Optional[bool]:
+    if "ok" in report:
+        return bool(report.get("ok"))
+    if "still_broken_count" in report:
+        return int(report.get("still_broken_count") or 0) == 0
+    if "broken_count" in report:
+        return int(report.get("broken_count") or 0) == 0
+    if "num_issues" in report:
+        return int(report.get("num_issues") or 0) == 0
+    if "failures" in report:
+        return len(report.get("failures") or []) == 0
+    return None
+
+
+def _lane_missing_count(report: Dict[str, Any]) -> Optional[int]:
+    if "still_broken_count" in report:
+        return int(report.get("still_broken_count") or 0)
+    if "broken_count" in report:
+        return int(report.get("broken_count") or 0)
+    if "num_issues" in report:
+        return int(report.get("num_issues") or 0)
+    if "failures" in report:
+        return len(report.get("failures") or [])
+    return None
+
+
+def _write_acceptance(out_dir: Optional[str], run_id: Optional[str], payload: Dict[str, Any]) -> Optional[str]:
+    if not out_dir or not run_id:
+        return None
+    try:
+        art_dir = os.path.join(out_dir, "artifacts", run_id)
+        os.makedirs(art_dir, exist_ok=True)
+        path = os.path.join(art_dir, "map_acceptance.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, sort_keys=True, ensure_ascii=True)
+        return path
+    except Exception:
+        return None
+
+
+def _enrichment_completeness_counts(final_xodr_path: str) -> Optional[Dict[str, int]]:
+    """CODEX C7: count buildings + functional signals directly from the XODR.
+
+    Reconciles the "signals" metric so a genuinely enriched map (traffic
+    lights represented as paired <object>+<signal>, see
+    ultimate_pipeline/enrichment/traffic_light_infer.py) is never reported
+    as signals=0 just because the legacy prop-only representation is also
+    present.
+    """
+    try:
+        root = ET.parse(final_xodr_path).getroot()
+    except Exception:
+        return None
+
+    buildings_count = len(root.findall(".//object[@type='building']"))
+    functional_signals_count = len(root.findall(".//signal"))
+    traffic_light_object_count = len(root.findall(".//object[@type='traffic_light']"))
+
+    return {
+        "buildings_count": buildings_count,
+        "functional_signals_count": functional_signals_count,
+        "traffic_light_object_count": traffic_light_object_count,
+    }
+
+
+class _UnionFind:
+    """Tiny union-find for lane-topology connected components."""
+
+    def __init__(self) -> None:
+        self._parent: Dict[str, str] = {}
+
+    def _find(self, x: str) -> str:
+        parent = self._parent
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(self, a: str, b: str) -> None:
+        parent = self._parent
+        if a not in parent:
+            parent[a] = a
+        if b not in parent:
+            parent[b] = b
+        ra, rb = self._find(a), self._find(b)
+        if ra != rb:
+            parent[ra] = rb
+
+
+def component_reachability_summary(
+    root: Any, *, literal: bool = False
+) -> Optional[Dict[str, Any]]:
+    """Offline lane-topology reachability (the live-CARLA probe finding:
+    spawn points on isolated road components never drive even with
+    TrafficManager).
+
+    Builds a lane graph from <laneSection>/<lane>/<link> successor+
+    predecessor edges (both within-road lane-section transitions and
+    cross-road junction links), then reports connected components. A map
+    whose drivable network is fragmented has a low
+    largest_component_fraction — autopilot routes can never cross such
+    fragments, so capture spawn points on them produce dead runs.
+
+    `literal` selects the graph authority (OC-2 topology certification):
+    - literal=False (default, backward compatible): RECOVERED_DIAGNOSTIC
+      graph. Tolerates this generator's known quirks -- flips a mismatched
+      road-level contactPoint to the other target boundary, resolves a
+      junction laneLink against the other incoming boundary when the declared
+      side lacks the lane, and sign-matches a missing cross-road lane id.
+    - literal=True: LITERAL_SPEC graph. Every reference must resolve at its
+      declared side exactly; unanswered references increment
+      ``unmatched_cross_links`` instead of being salvaged. Production
+      certification (certify_topology) must use the literal graph.
+    """
+    try:
+        uf = _UnionFind()
+        roads: Dict[str, List[Any]] = {}
+        node_sections: Dict[str, List[Any]] = {}
+        road_elems: Dict[str, Any] = {}
+        for road in root.findall(".//road"):
+            rid = road.get("id", "")
+            sections = road.findall("./lanes/laneSection")
+            roads[rid] = sections
+            node_sections[rid] = sections
+            road_elems[rid] = road
+
+        def _node(rid: str, section_idx: int, lane_id: str) -> str:
+            return f"{rid}:{section_idx}:{lane_id}"
+
+        def _is_driving(lane: Any) -> bool:
+            return lane.get("type") == "driving"
+
+        unmatched_cross_links = 0
+        lane_count = 0
+        for rid, sections in roads.items():
+            for si, section in enumerate(sections):
+                for lane in section.findall(".//lane"):
+                    lid = lane.get("id")
+                    if lid is None or lid == "0" or not _is_driving(lane):
+                        continue
+                    lane_count += 1
+                    node = _node(rid, si, lid)
+                    uf.union(node, node)
+                    link = lane.find("./link")
+                    if link is None:
+                        continue
+                    for tag in ("successor", "predecessor"):
+                        el = link.find(f"./{tag}")
+                        if el is None:
+                            continue
+                        target_lid = el.get("id")
+                        if el.get("elementType") == "road":
+                            # Cross-road junction link.
+                            target_road = el.get("elementId")
+                            contact = el.get("contactPoint")
+                            target_sections = node_sections.get(target_road)
+                            if not target_sections:
+                                unmatched_cross_links += 1
+                                continue
+                            if contact == "start":
+                                tsi = 0
+                            elif contact == "end":
+                                tsi = len(target_sections) - 1
+                            else:
+                                unmatched_cross_links += 1
+                                continue
+                            # Resolve the counterpart lane: explicit id, else
+                            # same |lane| sign in the target section.
+                            if target_lid is not None and target_lid != "0":
+                                found = any(
+                                    l.get("id") == target_lid
+                                    for l in target_sections[tsi].findall("./lane")
+                                )
+                            elif literal:
+                                # A literal spec graph requires the explicit
+                                # target lane id; sign-matching is a recovery
+                                # heuristic, not declared topology.
+                                found = False
+                            else:
+                                sign = "-" if lid.startswith("-") else ""
+                                found = any(
+                                    l.get("id") == f"{sign}{abs(int(lid))}"
+                                    for l in target_sections[tsi].findall("./lane")
+                                )
+                            if found:
+                                uf.union(node, _node(target_road, tsi, target_lid or str(abs(int(lid)))))
+                            else:
+                                unmatched_cross_links += 1
+                        elif target_lid is not None:
+                            # Within-road transition to adjacent lane section.
+                            if tag == "successor":
+                                tsi = si + 1
+                            else:
+                                tsi = si - 1
+                            if 0 <= tsi < len(sections):
+                                uf.union(node, _node(rid, tsi, target_lid))
+                            # Out-of-range = the road-end marker this generator
+                            # writes; boundary connectivity is provided by the
+                            # junction / road-level link passes below.
+
+        # Road-level links of type "road" (elementType=road): the boundary
+        # lanes of this road connect to the same-id boundary lanes of the
+        # target road. These are the authoritative outer-road <-> connecting
+        # road connectors in this pipeline's output.
+        for rid, sections in roads.items():
+            if not sections:
+                continue
+            link = road_elems[rid].find("./link")
+            if link is None or len(link) == 0:
+                continue
+            for tag in ("successor", "predecessor"):
+                el = link.find(f"./{tag}")
+                if el is None or el.get("elementType") != "road":
+                    continue
+                target_road = el.get("elementId")
+                contact = el.get("contactPoint")
+                target_sections = node_sections.get(target_road)
+                if not target_sections:
+                    unmatched_cross_links += 1
+                    continue
+                src_tsi = len(sections) - 1 if tag == "successor" else 0
+                target_tsi = 0 if contact == "start" else len(target_sections) - 1
+                src_lanes = sections[src_tsi].findall(".//lane")
+                target_lanes = target_sections[target_tsi].findall(".//lane")
+                target_ids = {l.get("id") for l in target_lanes}
+                for lane in src_lanes:
+                    lid = lane.get("id")
+                    if lid is None or lid == "0":
+                        continue
+                    if lid in target_ids:
+                        uf.union(_node(rid, src_tsi, lid), _node(target_road, target_tsi, lid))
+                    elif literal:
+                        # Literal spec: the boundary lane must exist at the
+                        # declared contactPoint side; no flip tolerance.
+                        unmatched_cross_links += 1
+                    else:
+                        # Tolerate a flipped contactPoint (generator quirk):
+                        # try the other boundary of the target road.
+                        alt_tsi = 0 if target_tsi > 0 else len(target_sections) - 1
+                        if lid in {l.get("id") for l in target_sections[alt_tsi].findall(".//lane")}:
+                            uf.union(_node(rid, src_tsi, lid), _node(target_road, alt_tsi, lid))
+                        else:
+                            unmatched_cross_links += 1
+
+        # Junction pass: roads connect through <junction><connection> elements.
+        # Each connection's <laneLink from=.. to=..> maps a lane of the
+        # incomingRoad (at its junction-side boundary section) to a lane of the
+        # connectingRoad. The connection's contactPoint is unreliable in this
+        # generator's output (always "start"), so the boundary section is
+        # resolved by trying the contactPoint side first, then the other end.
+        for junction in root.findall(".//junction"):
+            for conn in junction.findall("./connection"):
+                in_road = conn.get("incomingRoad")
+                conn_road = conn.get("connectingRoad")
+                contact = conn.get("contactPoint")
+                if not in_road or not conn_road:
+                    continue
+                in_sections = node_sections.get(in_road)
+                conn_sections = node_sections.get(conn_road)
+                if not in_sections or not conn_sections:
+                    unmatched_cross_links += len(conn.findall("./laneLink"))
+                    continue
+                in_tsi = 0 if contact == "start" else len(in_sections) - 1
+                conn_tsi = 0  # connecting road attaches to the junction at s=0
+                in_lanes = {l.get("id") for l in in_sections[in_tsi].findall(".//lane")}
+                conn_lanes = {l.get("id") for l in conn_sections[conn_tsi].findall(".//lane")}
+                for ll in conn.findall("./laneLink"):
+                    frm = ll.get("from")
+                    to = ll.get("to")
+                    if frm is None or to is None:
+                        continue
+                    in_tsi_used = in_tsi
+                    conn_tsi_used = conn_tsi
+                    if literal:
+                        # Literal spec: lanes must resolve at the declared
+                        # contactPoint side; no alternate-boundary probing.
+                        pass
+                    else:
+                        if frm not in in_lanes:
+                            alt = 0 if in_tsi > 0 else len(in_sections) - 1
+                            if frm in {l.get("id") for l in in_sections[alt].findall(".//lane")}:
+                                in_tsi_used = alt
+                        if to not in conn_lanes:
+                            alt = 0 if conn_tsi > 0 else len(conn_sections) - 1
+                            if to in {l.get("id") for l in conn_sections[alt].findall(".//lane")}:
+                                conn_tsi_used = alt
+                    if frm in {l.get("id") for l in in_sections[in_tsi_used].findall(".//lane")} and to in {
+                        l.get("id") for l in conn_sections[conn_tsi_used].findall(".//lane")
+                    }:
+                        uf.union(_node(in_road, in_tsi_used, frm), _node(conn_road, conn_tsi_used, to))
+                    else:
+                        unmatched_cross_links += 1
+
+        if lane_count == 0:
+            return None
+
+        comp_sizes: Dict[str, int] = {}
+        for rid, sections in roads.items():
+            for si in range(len(sections)):
+                for lane in sections[si].findall(".//lane"):
+                    lid = lane.get("id")
+                    if lid is None or lid == "0" or not _is_driving(lane):
+                        continue
+                    node = _node(rid, si, lid)
+                    comp = uf._find(node)
+                    comp_sizes[comp] = comp_sizes.get(comp, 0) + 1
+
+        component_count = len(comp_sizes)
+        largest = max(comp_sizes.values(), default=0)
+        isolated_count = sum(1 for size in comp_sizes.values() if size <= 1)
+        return {
+            "ok": None,  # set by the acceptance gate when opted in
+            "lane_count": lane_count,
+            "component_count": component_count,
+            "largest_component_lane_count": largest,
+            "largest_component_fraction": round(largest / lane_count, 6),
+            "isolated_lane_component_count": isolated_count,
+            "unmatched_cross_links": unmatched_cross_links,
+            "graph_source": "LITERAL_SPEC" if literal else "RECOVERED_DIAGNOSTIC",
+        }
+    except Exception:
+        return None
+
+
+def build_map_acceptance(
+    reports: Dict[str, Any],
+    *,
+    run_id: str | None = None,
+    final_xodr_path: str | None = None,
+    osm_source_path: str | None = None,
+    out_dir: str | None = None,
+    require_enrichment: bool = False,
+    require_component_reachability: bool = False,
+    component_reachability_waiver: str | None = None,
+) -> Dict[str, Any]:
+    hard_fail_reasons: List[Dict[str, str]] = []
+    soft_warnings: List[Dict[str, str]] = []
+    metrics: Dict[str, Any] = {}
+    linked_artifacts: Dict[str, str] = {}
+
+    if not run_id:
+        run_id = _run_id_from_out_dir(out_dir)
+
+    final_xodr_sha256 = None
+    if final_xodr_path and os.path.exists(final_xodr_path):
+        final_xodr_sha256 = safe_sha256_file(final_xodr_path)
+
+    seam = reports.get("elevation_seams")
+    if isinstance(seam, dict):
+        metrics["seam_stats"] = seam.get("seam_stats")
+        metrics["elevation_stats"] = seam.get("elevation_stats")
+        art = _artifact_path_from_report(seam)
+        if art:
+            linked_artifacts["elevation_seams"] = art
+        if seam.get("ok") is False:
+            hard_fail_reasons.append({"gate": "elevation_seams", "reason": _reason_from_report(seam)})
+
+    # Round-3 map-quality improvement pass (2026-09-04): this report was
+    # already computed by run_gates() (written to elevation_continuity.json)
+    # but the line storing it into reports[...] was simply never added, so
+    # it was invisible to this function entirely -- not even as a metric.
+    # Road-to-road Z-boundary mismatches are exactly the class of defect
+    # C10 hygiene's repair_true_zseams is supposed to close before a
+    # candidate reaches acceptance; without this wired in, a residual seam
+    # that repair couldn't fully close (e.g. hitting its bounded-pass limit)
+    # would go completely undetected.
+    elevation_continuity = reports.get("elevation_continuity")
+    if isinstance(elevation_continuity, dict):
+        ec_ok = elevation_continuity.get("ok")
+        metrics["elevation_continuity_ok"] = ec_ok
+        art = _artifact_path_from_report(elevation_continuity)
+        if art:
+            linked_artifacts["elevation_continuity"] = art
+        if ec_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "elevation_continuity", "reason": _reason_from_report(elevation_continuity)}
+            )
+
+    dem = reports.get("dem_coverage")
+    if isinstance(dem, dict):
+        ratio = dem.get("coverage_ratio")
+        if ratio is None:
+            ratio = dem.get("valid_ratio")
+        metrics["dem_coverage_ratio"] = ratio
+        art = _artifact_path_from_report(dem)
+        if art:
+            linked_artifacts["dem_coverage"] = art
+        if dem.get("ok") is False:
+            hard_fail_reasons.append({"gate": "dem_coverage", "reason": _reason_from_report(dem)})
+
+    geom = reports.get("geometric_continuity")
+    if isinstance(geom, dict):
+        geom_ok = _determine_report_ok(geom)
+        metrics["geometric_continuity_ok"] = geom_ok
+        art = _artifact_path_from_report(geom)
+        if art:
+            linked_artifacts["geometric_continuity"] = art
+        if geom_ok is False:
+            hard_fail_reasons.append({"gate": "geometric_continuity", "reason": _reason_from_report(geom)})
+
+    lane_section = reports.get("lane_section_successors")
+    if isinstance(lane_section, dict):
+        lane_ok = _determine_lane_ok(lane_section)
+        metrics["lane_ok"] = lane_ok
+        missing = _lane_missing_count(lane_section)
+        if missing is not None:
+            metrics["lane_successor_missing_count"] = missing
+        art = _artifact_path_from_report(lane_section)
+        if art:
+            linked_artifacts["lane_section_successors"] = art
+        if lane_ok is False:
+            hard_fail_reasons.append({"gate": "lane_section_successors", "reason": _reason_from_report(lane_section)})
+
+    lane_count_changes = reports.get("lane_count_changes")
+    if isinstance(lane_count_changes, dict):
+        summary = lane_count_changes.get("summary_metrics")
+        if isinstance(summary, dict):
+            for source_key, metric_key in (
+                ("road_link_boundaries", "lane_count_change_boundary_count"),
+                ("no_change", "lane_count_change_no_change_count"),
+                ("osm_explained_change", "lane_count_change_osm_explained_count"),
+                ("unexplained_change", "lane_count_change_unexplained_count"),
+                ("unresolved_road_links", "lane_count_change_unresolved_road_link_count"),
+            ):
+                value = summary.get(source_key)
+                if isinstance(value, int):
+                    metrics[metric_key] = value
+            unexplained = int(summary.get("unexplained_change") or 0)
+            unresolved = int(summary.get("unresolved_road_links") or 0)
+            if unexplained or unresolved:
+                soft_warnings.append(
+                    {
+                        "gate": "lane_count_changes",
+                        "reason": (
+                            f"unexplained_changes={unexplained}; "
+                            f"unresolved_road_links={unresolved}; "
+                            "advisory review required"
+                        ),
+                    }
+                )
+        art = _artifact_path_from_report(lane_count_changes)
+        if art:
+            linked_artifacts["lane_count_changes"] = art
+
+    lane_conn = reports.get("lane_connectivity")
+    if isinstance(lane_conn, dict):
+        lane_ok = _determine_lane_ok(lane_conn)
+        metrics["lane_ok"] = lane_ok if metrics.get("lane_ok") is None else metrics.get("lane_ok")
+        missing = _lane_missing_count(lane_conn)
+        if missing is not None and "lane_successor_missing_count" not in metrics:
+            metrics["lane_successor_missing_count"] = missing
+        art = _artifact_path_from_report(lane_conn)
+        if art:
+            linked_artifacts["lane_connectivity"] = art
+        if lane_ok is False:
+            hard_fail_reasons.append({"gate": "lane_connectivity", "reason": _reason_from_report(lane_conn)})
+
+    length_invariant = reports.get("length_invariant")
+    if isinstance(length_invariant, dict) and "violations" in length_invariant:
+        # A pre-computed evidence dict was supplied (e.g. from the
+        # certifier's _length_invariant_evidence). Trust it as-is -- do NOT
+        # recompute with a different tolerance.
+        li_violations = int(length_invariant.get("violations") or 0)
+        metrics["length_invariant_violations"] = li_violations
+        metrics["length_invariant_tol_m"] = LENGTH_INVARIANT_TOL_M
+        art = _artifact_path_from_report(length_invariant)
+        if art:
+            linked_artifacts["length_invariant"] = art
+        if li_violations > 0:
+            hard_fail_reasons.append(
+                {
+                    "gate": "length_invariant",
+                    "reason": f"violations={li_violations} (tol={LENGTH_INVARIANT_TOL_M:g}m)",
+                }
+            )
+    elif final_xodr_path and os.path.exists(final_xodr_path):
+        # No pre-computed evidence was supplied: measure directly from the
+        # final candidate using the EXACT same helper (and tolerance,
+        # 1e-9) as run_n_certify._length_invariant_evidence, so the
+        # acceptance gate and the certifier can never disagree due to a
+        # tolerance mismatch. A sub-1e-6 excess must be caught by both.
+        try:
+            li_root = ET.parse(final_xodr_path).getroot()
+            li_summary = length_invariant_summary(li_root)
+        except Exception:
+            li_summary = None
+        if li_summary is not None:
+            li_violations = int(li_summary.get("violations") or 0)
+            metrics["length_invariant_violations"] = li_violations
+            metrics["length_invariant_tol_m"] = LENGTH_INVARIANT_TOL_M
+            if li_violations > 0:
+                hard_fail_reasons.append(
+                    {
+                        "gate": "length_invariant",
+                        "reason": f"violations={li_violations} (tol={LENGTH_INVARIANT_TOL_M:g}m)",
+                    }
+                )
+
+    origin = reports.get("origin_sanity")
+    if isinstance(origin, dict):
+        dist = origin.get("centroid_distance_m")
+        metrics["origin_centroid_distance_m"] = dist
+        art = _artifact_path_from_report(origin)
+        if art:
+            linked_artifacts["origin_sanity"] = art
+        if origin.get("ok") is False:
+            if isinstance(dist, (int, float)) and dist > 500_000.0:
+                hard_fail_reasons.append({"gate": "origin_sanity", "reason": _reason_from_report(origin)})
+            else:
+                soft_warnings.append({"gate": "origin_sanity", "reason": _reason_from_report(origin)})
+
+    # Junction integrity (WS1.4 follow-up, 2026-09-02): dangling
+    # <junction><connection> references (incoming/connecting road or lane
+    # missing) build an unusable junction -- CARLA/SUMO can crash on load or
+    # silently drop the connector. Discovered live: map_hygiene.py's island
+    # quarantine left exactly this kind of dangling reference behind for
+    # every road it removed, and nothing in the acceptance pipeline caught
+    # it. Always a hard fail when present, matching geometric_continuity/
+    # lane_connectivity -- not opt-in, since a dangling junction reference is
+    # a genuine structural defect a "valid" map should never have.
+    junction_integrity = reports.get("junction_integrity")
+    if isinstance(junction_integrity, dict):
+        ji_ok = junction_integrity.get("ok")
+        metrics["junction_integrity_ok"] = ji_ok
+        metrics["junction_integrity_issue_count"] = junction_integrity.get("issue_count")
+        art = _artifact_path_from_report(junction_integrity)
+        if art:
+            linked_artifacts["junction_integrity"] = art
+        if ji_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "junction_integrity", "reason": _reason_from_report(junction_integrity)}
+            )
+
+    # Deep-audit follow-up (2026-09-04): 5 more checkers existed in the codebase,
+    # complete and correct, already used mid-pipeline or as an opt-in live-CARLA
+    # perception gate, but never reached final map-of-record acceptance -- the
+    # exact same shape as the junction_integrity gap above. A candidate could have
+    # a lane narrower than a car, a 45-degree slope, or a road with no elevation
+    # data at all and still measure valid_for_experiments=True. All 5 are genuine
+    # structural/physical defects, so all 5 hard-fail unconditionally, matching
+    # geometric_continuity/lane_connectivity/junction_integrity, not the opt-in
+    # class (enrichment/component_reachability).
+
+    lane_width_continuity = reports.get("lane_width_continuity")
+    if isinstance(lane_width_continuity, dict):
+        lwc_ok = lane_width_continuity.get("ok")
+        metrics["lane_width_continuity_ok"] = lwc_ok
+        metrics["lane_width_continuity_issue_count"] = lane_width_continuity.get("num_issues")
+        art = _artifact_path_from_report(lane_width_continuity)
+        if art:
+            linked_artifacts["lane_width_continuity"] = art
+        if lwc_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "lane_width_continuity", "reason": _reason_from_report(lane_width_continuity)}
+            )
+
+    lane_geometry_continuity = reports.get("lane_geometry_continuity")
+    if isinstance(lane_geometry_continuity, dict):
+        lgc_ok = lane_geometry_continuity.get("ok")
+        metrics["lane_geometry_continuity_ok"] = lgc_ok
+        metrics["lane_geometry_continuity_issue_count"] = lane_geometry_continuity.get("n_issues")
+        art = _artifact_path_from_report(lane_geometry_continuity)
+        if art:
+            linked_artifacts["lane_geometry_continuity"] = art
+        if lgc_ok is False:
+            hard_fail_reasons.append(
+                {
+                    "gate": "lane_geometry_continuity",
+                    "reason": _reason_from_report(lane_geometry_continuity),
+                }
+            )
+
+    elevation_missing_and_cliffs = reports.get("elevation_missing_and_cliffs")
+    if isinstance(elevation_missing_and_cliffs, dict):
+        emc_ok = elevation_missing_and_cliffs.get("ok")
+        metrics["elevation_missing_and_cliffs_ok"] = emc_ok
+        metrics["elevation_zero_ratio"] = elevation_missing_and_cliffs.get("zero_ratio")
+        metrics["elevation_max_link_dz_m"] = elevation_missing_and_cliffs.get("max_link_dz")
+        art = _artifact_path_from_report(elevation_missing_and_cliffs)
+        if art:
+            linked_artifacts["elevation_missing_and_cliffs"] = art
+        if emc_ok is False:
+            hard_fail_reasons.append(
+                {
+                    "gate": "elevation_missing_and_cliffs",
+                    "reason": _reason_from_report(elevation_missing_and_cliffs),
+                }
+            )
+
+    elevation_smoothness = reports.get("elevation_smoothness")
+    if isinstance(elevation_smoothness, dict):
+        es_ok = elevation_smoothness.get("ok")
+        metrics["elevation_smoothness_ok"] = es_ok
+        metrics["elevation_smoothness_issue_count"] = elevation_smoothness.get("issue_count")
+        art = _artifact_path_from_report(elevation_smoothness)
+        if art:
+            linked_artifacts["elevation_smoothness"] = art
+        if es_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "elevation_smoothness", "reason": _reason_from_report(elevation_smoothness)}
+            )
+
+    physics_feasibility = reports.get("physics_feasibility")
+    if isinstance(physics_feasibility, dict):
+        pf_ok = physics_feasibility.get("ok")
+        metrics["physics_feasibility_ok"] = pf_ok
+        metrics["physics_feasibility_issue_count"] = physics_feasibility.get("issue_count")
+        art = _artifact_path_from_report(physics_feasibility)
+        if art:
+            linked_artifacts["physics_feasibility"] = art
+        if pf_ok is False:
+            hard_fail_reasons.append(
+                {"gate": "physics_feasibility", "reason": _reason_from_report(physics_feasibility)}
+            )
+
+    # Deep-audit follow-up (2026-09-04): 3 more unwired checkers, each
+    # self-documented by its own author as heuristic/diagnostic/non-fatal --
+    # SemanticOverlapChecker: "not necessarily wrong, but something to
+    # review"; collision_mesh: "diagnostic only (non-fatal unless enforced
+    # elsewhere)", off by default. Always measured (visible in metrics) but
+    # only ever a soft warning, never a hard fail -- unlike the 5 structural
+    # gates above, forcing these to block promotion would impose a stricter
+    # policy than their own authors intended, and (for semantic_overlap
+    # specifically) would likely fail on any normally-enriched real map,
+    # since roads legitimately carry both sidewalks and nearby buildings.
+    for key, label in (
+        ("semantic_overlap", "semantic_overlap"),
+        ("randomness_entropy", "randomness_entropy"),
+        ("collision_mesh", "collision_mesh"),
+    ):
+        rep = reports.get(key)
+        if not isinstance(rep, dict):
+            continue
+        ok = rep.get("ok")
+        metrics[f"{label}_ok"] = ok
+        if "issue_count" in rep:
+            metrics[f"{label}_issue_count"] = rep.get("issue_count")
+        if "entropy" in rep:
+            metrics[f"{label}_entropy"] = rep.get("entropy")
+        art = _artifact_path_from_report(rep)
+        if art:
+            linked_artifacts[key] = art
+        if ok is False:
+            soft_warnings.append({"gate": key, "reason": _reason_from_report(rep)})
+
+    # Round-3 map-quality improvement pass (2026-09-04): 3 more checkers that
+    # exist, are complete, and are explicitly CARLA-import-crash-prevention
+    # in their own docstrings (duplicate IDs, orphan road-links, negative/
+    # non-monotonic planView s-coordinates, missing center lane, driving
+    # lanes with zero <width> records) but were never called by run_gates()
+    # either. All hard-fail unconditionally, matching geometric_continuity/
+    # junction_integrity's class -- these are the same "CARLA can crash or
+    # build an undrivable map" severity, not a heuristic.
+    for key in ("post_tiling_integrity", "carla_import_s", "carla_opendrive_compat"):
+        rep = reports.get(key)
+        if not isinstance(rep, dict):
+            continue
+        ok = rep.get("ok")
+        metrics[f"{key}_ok"] = ok
+        issues = rep.get("issues")
+        if issues is not None:
+            metrics[f"{key}_issue_count"] = len(issues)
+        art = _artifact_path_from_report(rep)
+        if art:
+            linked_artifacts[key] = art
+        if ok is False:
+            hard_fail_reasons.append({"gate": key, "reason": _reason_from_report(rep)})
+
+    # CODEX C7: enrichment completeness (buildings + functional signals).
+    # Always measured (visible in metrics) so the map is never silently
+    # reported as signals=0 when it actually carries <signal> elements or
+    # traffic_light <object> props. Only hard-fails when the caller opts in
+    # via require_enrichment=True (the "enriched map of record" build path);
+    # manual/geometry-only reference maps legitimately have 0 of either and
+    # must not be broken by this gate.
+    if final_xodr_path and os.path.exists(final_xodr_path):
+        enrich_counts = _enrichment_completeness_counts(final_xodr_path)
+        if enrich_counts is not None:
+            metrics["buildings_count"] = enrich_counts["buildings_count"]
+            metrics["functional_signals_count"] = enrich_counts["functional_signals_count"]
+            metrics["traffic_light_object_count"] = enrich_counts["traffic_light_object_count"]
+            if require_enrichment:
+                reasons = []
+                if enrich_counts["buildings_count"] <= 0:
+                    reasons.append("buildings_count=0")
+                if (
+                    enrich_counts["functional_signals_count"] <= 0
+                    and enrich_counts["traffic_light_object_count"] <= 0
+                ):
+                    reasons.append("functional_signals_count=0 and traffic_light_object_count=0")
+                if reasons:
+                    hard_fail_reasons.append(
+                        {
+                            "gate": "enrichment_completeness",
+                            "reason": "; ".join(reasons),
+                        }
+                    )
+
+    # T-012: source-to-output semantic counts are additive evidence only.
+    # Count mismatches are intentionally not promoted to a hard gate here:
+    # traffic lights and regulatory signs do not yet have a universally
+    # one-to-one placement contract. The production-candidate profile may
+    # later set type-specific policy after governed measurements exist.
+    if (
+        final_xodr_path
+        and os.path.exists(final_xodr_path)
+        and osm_source_path
+    ):
+        from ultimate_pipeline.quality.semantic_completeness import (
+            measure_semantic_completeness,
+        )
+
+        semantic_completeness = measure_semantic_completeness(
+            final_xodr_path, osm_source_path
+        )
+        metrics["semantic_completeness"] = semantic_completeness
+        if semantic_completeness.get("ok") is False:
+            soft_warnings.append(
+                {
+                    "gate": "semantic_completeness",
+                    "reason": _reason_from_report(semantic_completeness),
+                }
+            )
+
+    # Component reachability (live-probe finding): lanes unreachable from the
+    # main drivable component can never be autopilot-routed, so capture spawn
+    # points on them produce dead runs. Always measured (metric + soft
+    # warning); hard-fails only when the caller opts in via
+    # require_component_reachability=True, with the threshold
+    # largest_component_fraction >= 0.95 (<=5% of lanes on islands).
+    #
+    # OC-2 (AREA-008): the HARD gate is driven by the LITERAL spec graph
+    # (certify_topology's SPEC_TOPOLOGY), never by the lenient recovered
+    # graph. The recovered graph remains the diagnostic that distinguishes "a
+    # generator quirk the recovery tolerates" from a genuinely fragmented map.
+    # A governed waiver string (component_reachability_waiver) converts a
+    # would-be hard fail into a WAIVED soft warning -- never a silent pass.
+    comp_root = None
+    comp_rep = reports.get("component_reachability")
+    if isinstance(comp_rep, dict) and isinstance(comp_rep.get("largest_component_fraction"), (int, float)):
+        pass  # precomputed evidence supplied by the caller
+    elif final_xodr_path and os.path.exists(final_xodr_path):
+        try:
+            comp_root = ET.parse(final_xodr_path).getroot()
+        except Exception:
+            comp_root = None
+        if comp_root is not None:
+            comp_rep = component_reachability_summary(comp_root)
+    literal_rep = reports.get("component_reachability_literal")
+    if not isinstance(literal_rep, dict) and comp_root is not None:
+        literal_rep = component_reachability_summary(comp_root, literal=True)
+
+    certification = certify_topology(literal_rep, comp_rep)
+    if (
+        certification["SPEC_TOPOLOGY"] != QualityStatus.INCOMPLETE.value
+        or certification["RECOVERY_DIAGNOSTIC"] != QualityStatus.INCOMPLETE.value
+    ):
+        metrics["component_reachability_spec_status"] = certification["SPEC_TOPOLOGY"]
+        metrics["component_reachability_recovery_status"] = certification["RECOVERY_DIAGNOSTIC"]
+        metrics["largest_component_fraction_spec"] = certification["literal_largest_component_fraction"]
+        metrics["unmatched_cross_links_spec"] = certification["literal_unmatched_cross_links"]
+        metrics["topology_production_evidence"] = certification["production_evidence"]
+
+    if isinstance(comp_rep, dict) and isinstance(comp_rep.get("largest_component_fraction"), (int, float)):
+        metrics["lane_component_count"] = comp_rep.get("component_count")
+        metrics["lane_count_total"] = comp_rep.get("lane_count")
+        metrics["largest_component_fraction"] = comp_rep.get("largest_component_fraction")
+        metrics["largest_component_lane_count"] = comp_rep.get("largest_component_lane_count")
+        metrics["isolated_lane_component_count"] = comp_rep.get("isolated_lane_component_count")
+        metrics["unmatched_cross_links"] = comp_rep.get("unmatched_cross_links")
+        if int(comp_rep.get("isolated_lane_component_count") or 0) > 0:
+            soft_warnings.append(
+                {
+                    "gate": "component_reachability",
+                    "reason": (
+                        f"{comp_rep.get('isolated_lane_component_count')} isolated lane "
+                        f"components (largest={comp_rep.get('largest_component_fraction')})"
+                    ),
+                }
+            )
+        if require_component_reachability:
+            gate_fraction = (
+                float(certification["literal_largest_component_fraction"])
+                if isinstance(certification["literal_largest_component_fraction"], (int, float))
+                else float(comp_rep.get("largest_component_fraction"))
+            )
+            if gate_fraction < 0.95:
+                waiver = component_reachability_waiver
+                waivable = isinstance(waiver, str) and bool(waiver.strip())
+                if waivable and governed_waiver_allowed(
+                    {"component_reachability": waiver}, "component_reachability"
+                ):
+                    metrics["component_reachability_waiver_applied"] = True
+                    metrics["component_reachability_spec_status"] = QualityStatus.WAIVED.value
+                    soft_warnings.append(
+                        {
+                            "gate": "component_reachability",
+                            "reason": (
+                                f"WAIVED by governed waiver: LITERAL_SPEC "
+                                f"largest_component_fraction={gate_fraction} < 0.95 "
+                                f"(component_count={comp_rep.get('component_count')}) "
+                                f"justification='{waiver}'"
+                            ),
+                        }
+                    )
+                else:
+                    hard_fail_reasons.append(
+                        {
+                            "gate": "component_reachability",
+                            "reason": (
+                                f"LITERAL_SPEC largest_component_fraction={gate_fraction} < 0.95 "
+                                f"(component_count={comp_rep.get('component_count')}; "
+                                f"graph_source={certification['production_evidence']})"
+                            ),
+                        }
+                    )
+
+    valid_for_experiments = len(hard_fail_reasons) == 0
+    payload = {
+        "run_id": run_id,
+        "final_xodr_path": final_xodr_path,
+        "final_xodr_sha256": final_xodr_sha256,
+        "valid_for_experiments": valid_for_experiments,
+        "hard_fail_reasons": hard_fail_reasons,
+        "soft_warnings": soft_warnings,
+        "metrics": metrics,
+        "linked_artifacts": linked_artifacts,
+    }
+    payload["valid"] = valid_for_experiments
+    payload["failed_gates"] = [item["gate"] for item in hard_fail_reasons]
+
+    artifact_path = _write_acceptance(out_dir, run_id, payload)
+    if artifact_path:
+        payload["acceptance_artifact"] = artifact_path
+
+    return payload

@@ -15,6 +15,8 @@ import os
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, Optional, Tuple
 
+from ultimate_pipeline.quality.result_normalizer import normalize_quality_result
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -135,7 +137,7 @@ def _merge_gate_entry(
         }
         return
 
-    existing["ok"] = bool(existing.get("ok", True) and ok)
+    existing["ok"] = bool(normalize_quality_result(existing).get("ok", False) and ok)
     if existing.get("status") == "pass" and status != "pass":
         existing["status"] = status
     existing["issues"] = max(_safe_int(existing.get("issues", 0)), counts["issues"])
@@ -262,7 +264,8 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
         summary["evidence_complete"] = evidence_complete
         summary["required_gates"] = sorted(summary["gates"].keys())
         summary["passed_gates"] = sorted(
-            name for name, data in summary["gates"].items() if data.get("ok", True)
+            name for name, data in summary["gates"].items()
+            if normalize_quality_result(data).get("ok", False)
         )
         # No external "expected gates" registry exists in this codebase, so
         # there is no independent list of gate names to diff against what
@@ -277,7 +280,7 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
         else:
             overall_ok = not summary["malformed_gate_reports"]
             for gate_data in summary["gates"].values():
-                if not gate_data.get("ok", True):
+                if not normalize_quality_result(gate_data).get("ok", False):
                     overall_ok = False
                     break
             summary["overall_ok"] = overall_ok

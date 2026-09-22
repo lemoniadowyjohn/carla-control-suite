@@ -1,0 +1,84 @@
+{
+  "audit_id": "TRAFFIC_CONTROL_AUDIT_20260915",
+  "target": "ultimate_pipeline/enrichment/traffic_light_infer.py, regulatory_sign_writer.py, speed_limit_writer.py",
+  head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+
+  "traffic_lights": {
+    "status": "CONFIRMED_BUG",
+    "confirmed_issues": [
+      "Every >=3-connection junction assumed signaled - NOT source truth, it is SCENARIO_AUGMENTATION",
+      "_road_endpoint() may use start instead of true endpoint of final primitive",
+      "No actual signal location source",
+      "SOURCE_TRUTH and SCENARIO_AUGMENTATION not separated"
+    ],
+    "required_separation": {
+      "SOURCE_TRUTH": "Actual signal locations and correspondence",
+      "SCENARIO_AUGMENTATION": "Synthetic junction-based inference runs only in augmentation profile"
+    },
+    "fix_required": "Fix road-end evaluation using canonical geometry endpoint"
+  },
+
+  "regulatory_signs": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Source signs placed at fixed s=0, t=-1.5 - placeholder positioning, NOT production source truth",
+      "No OSM sign coordinate -> shared CRS -> canonical road projection -> s/t -> orientation pipeline",
+      "Unknown sign types not counted in completeness reports",
+      "LaneOffset changes invalidate sign positions"
+    ],
+    "correct_path": "OSM sign coordinate -> shared CRS -> canonical road projection -> s/t -> orientation -> lane validity -> OpenDRIVE signal/object semantics",
+    "unlocated": "Classify as UNLOCATED_SOURCE_SIGN when source position unavailable"
+  },
+
+  "signal_conformance": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "No pinned CARLA 0.9.16-compatible schema target",
+      "signal.orientation not verified",
+      "zOffset not verified",
+      "validity fromLane/toLane not verified",
+      "<signalReference> used as generic controller pointer (must NOT)",
+      "No controller model implemented",
+      "Dynamic phase timing in static XODR (should be runtime/scenario behavior)"
+    ],
+    "required": {
+      "schema_gate": "OPENDRIVE_SCHEMA and CARLA_STATIC_COMPAT are separate gates",
+      "controller_model": "controller -> control signalId -> junction controller id",
+      "signalReference": "Not for controller association",
+      "dynamic_phases": "Outside static map XML unless version explicitly requires"
+    }
+  },
+
+  "speed_authority": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "No explicit source precedence",
+      "Lower-authority converter value may silently block higher-authority source",
+      "maxspeed, maxspeed:forward, maxspeed:backward, maxspeed:conditional, zone semantics, units not all supported"
+    ],
+    "required_precedence": [
+      "exact directional OSM",
+      "exact matched maxspeed",
+      "zone/source rule",
+      "existing trustworthy XODR",
+      "road-class inference",
+      "fallback"
+    ],
+    "safeguard": "Keep current normalized-unit safeguard"
+  },
+
+  "road_markings": {
+    "status": "PARTIAL",
+    "confirmed_issues": [
+      "Source-truth German map generation may apply universal US-like marking scheme",
+      "No marking hierarchy"
+    ],
+    "required_hierarchy": [
+      "valid source XODR",
+      "OSM/source marking",
+      "Germany-specific governed inference",
+      "visual fallback"
+    ],
+    "check_items": ["solid/broken", "double line", "edge line", "lane-change restriction", "turn arrow", "stop line", "yield line"]
+  }
+}

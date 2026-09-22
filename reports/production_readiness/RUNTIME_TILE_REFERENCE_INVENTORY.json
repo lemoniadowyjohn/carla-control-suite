@@ -1,0 +1,98 @@
+[
+  {
+    "reference_type": "road_link",
+    "source_element": "road",
+    "target_type": "road",
+    "currently_handled": true,
+    "validation": "target_id in selected_roads set",
+    "repair_scrub_policy": "remove_link_if_target_not_selected"
+  },
+  {
+    "reference_type": "junction_reference",
+    "source_element": "road",
+    "target_type": "junction",
+    "currently_handled": true,
+    "validation": "road_junction in junction_ids set; road_junction != '-1'",
+    "repair_scrub_policy": "report as dangling_junction_references"
+  },
+  {
+    "reference_type": "junction_connection",
+    "source_element": "junction/connection",
+    "target_type": "road",
+    "currently_handled": true,
+    "validation": "incomingRoad/connectingRoad in road_ids set",
+    "repair_scrub_policy": "report as dangling_junction_connections"
+  },
+  {
+    "reference_type": "lane_link_predecessor",
+    "source_element": "lane/link/predecessor",
+    "target_type": "road",
+    "currently_handled": true,
+    "validation": "predecessor.target_id in unique_road_ids or id='-1'",
+    "repair_scrub_policy": "report as dangling_lane_predecessors"
+  },
+  {
+    "reference_type": "lane_link_successor",
+    "source_element": "lane/link/successor",
+    "target_type": "road",
+    "currently_handled": true,
+    "validation": "successor.target_id in unique_road_ids or id='-1'",
+    "repair_scrub_policy": "report as dangling_lane_successors"
+  },
+  {
+    "reference_type": "junction_lane_link_integrity",
+    "source_element": "junction/connection/from/to lane",
+    "target_type": "road/lane",
+    "currently_handled": true,
+    "validation": "from lane exists on incoming road; to lane exists on connecting road",
+    "repair_scrub_policy": "report as junction_lane_link_integrity failure"
+  },
+  {
+    "reference_type": "signal_controller",
+    "source_element": "controller/control/signalId",
+    "target_type": "road/signal",
+    "currently_handled": true,
+    "validation": "control.signalId in selected_signal_ids from roads",
+    "repair_scrub_policy": "report as controller_signal_NOT_RETAINED"
+  },
+  {
+    "reference_type": "signal_reference",
+    "source_element": "signalReference",
+    "target_type": "road/signal",
+    "currently_handled": true,
+    "validation": "signalReference.id in selected_signal_ids from roads",
+    "repair_scrub_policy": "report as signal_reference_NOT_RETAINED"
+  },
+  {
+    "reference_type": "duplicate_road_id",
+    "source_element": "road/@id",
+    "target_type": "N/A",
+    "currently_handled": true,
+    "validation": "no duplicate road IDs in the tile",
+    "repair_scrub_policy": "tile invalid if duplicates found"
+  },
+  {
+    "reference_type": "duplicate_junction_id",
+    "source_element": "junction/@id",
+    "target_type": "N/A",
+    "currently_handled": true,
+    "validation": "no duplicate junction IDs in the tile",
+    "repair_scrub_policy": "tile invalid if duplicates found"
+  },
+  {
+    "reference_type": "duplicate_signal_id",
+    "source_element": "road/signals/signal/@id",
+    "target_type": "N/A",
+    "currently_handled": true,
+    "validation": "no duplicate signal IDs in the tile",
+    "repair_scrub_policy": "tile invalid if duplicates found"
+  },
+  {
+    "reference_type": "duplicate_connection_id",
+    "source_element": "junction/connection/@id",
+    "target_type": "N/A",
+    "currently_handled": true,
+    "validation": "no duplicate connection IDs in the tile",
+    "repair_scrub_policy": "tile invalid if duplicates found"
+  }
+]

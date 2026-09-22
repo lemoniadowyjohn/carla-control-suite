@@ -1,0 +1,89 @@
+{
+  "audit_id": "GEOMETRY_AUTHORITY_AUDIT_20260915",
+  "target": "ultimate_pipeline/geometry/opendrive_geometry_kernel.py",
+  "head_sha": "540b5c5f12b10ff1f1add6fa51cc2c5cabea2c2a",
+  
+  "primitive_support": {
+    "line": {"supported": true, "asam_compliant": true, "issues": []},
+    "arc": {"supported": true, "asam_compliant": true, "issues": []},
+    "spiral": {"supported": true, "asam_compliant": true, "issues": ["RK4 integration with adaptive n; not analytic; deterministic but no independent oracle"]},
+    "poly3": {"supported": true, "asam_compliant": true, "issues": []},
+    "paramPoly3": {"supported": true, "asam_compliant": "CONDITIONAL", "issues": ["Unknown pRange silently defaults to arcLength behavior", "Only 'normalized' and 'arcLength' are valid per ASAM"]}
+  },
+
+  "confirmed_issues": [
+    {
+      "id": "GEO-001",
+      "severity": "P1",
+      "symbol": "paramPoly3_pRange",
+      "problem": "Unknown pRange values silently behave as arcLength. ASAM spec only defines 'normalized' and 'arcLength'. Must explicitly reject unknown values.",
+      "evidence": ["line 45: `p=s/length if p_range == 'normalized' else s`", "No explicit validation of pRange"],
+      "fix": "Raise ValueError for unknown pRange"
+    },
+    {
+      "id": "GEO-002",
+      "severity": "P1",
+      "symbol": "bounding_box",
+      "problem": "Uniform 0.25m sampling underestimates true geometry extent for tight curves. No analytic extrema or adaptive subdivision.",
+      "evidence": ["line 83-84: `sample(geometry, spacing)` with fixed spacing", "No extrema computation for arcs/spirals"],
+      "fix": "Analytic extrema for line/arc/poly3; adaptive subdivision for spiral with error bound"
+    },
+    {
+      "id": "GEO-003",
+      "severity": "P1",
+      "symbol": "project_point",
+      "problem": "Coarse uniform sampling for projection. No interval refinement. No residual reporting.",
+      "evidence": ["lines 86-95: `sample(geometry, spacing)` then interval minimization", "No residual output"],
+      "fix": "Coarse-to-fine: segment candidates -> local interval -> bounded minimization -> exact pose_at_s. Report residual."
+    },
+    {
+      "id": "GEO-004",
+      "severity": "P1",
+      "symbol": "multiple_primitives",
+      "problem": "No validation that exactly one primitive exists per <geometry> element. Zero or multiple primitives silently accepted.",
+      "evidence": ["`_primitive()` uses `next(iter(geometry))` which silently takes first child", "No check for 0 or multiple primitives"],
+      "fix": "Require exactly one primitive. FAIL for 0 or >1."
+    },
+    {
+      "id": "GEO-005",
+      "severity": "P0",
+      "symbol": "spiral_oracle",
+      "problem": "Spiral uses RK4 integration but has no independent mathematical oracle for verification. No Fresnel/reference comparison.",
+      "evidence": ["lines 56-67: RK4 integration", "No test against independent reference", "No Fresnel function for clothoid evaluation"],
+      "fix": "Add independent Fresnel/reference implementation for spiral testing. Validate position/heading/curvature at multiple s positions."
+    }
+  ],
+
+  "method_functions": {
+    "pose_at_s": {"status": "PASS", "verified": true, "notes": "Correctly applies local-to-global transformation"},
+    "endpoint": {"status": "PASS", "verified": true, "notes": "Uses pose_at_s(length) correctly"},
+    "heading": {"status": "PASS", "verified": true, "notes": "Correctly computed from pose_at_s"},
+    "curvature": {"status": "PASS", "verified": true, "notes": "Correct for all primitives"},
+    "sample": {"status": "PASS", "verified": true, "notes": "Deterministic sampling"},
+    "bounding_box": {"status": "FAIL", "verified": false, "notes": "Underestimates for tight curves"},
+    "project_point": {"status": "FAIL", "verified": false, "notes": "Coarse sampling, no residual"},
+    "arc_length": {"status": "PARTIAL", "verified": false, "notes": "Not directly exposed; must be computed from geometry length"}
+  },
+
+  "numerical_oracle_status": {
+    "status": "MISSING",
+    "description": "No independent oracle for spiral/clothoid verification",
+    "required": "Trusted Fresnel/reference implementation or independent high-accuracy numerical reference",
+    "test_required": ["position error at multiple s", "heading error at multiple s", "curvature error at multiple s"],
+    "forbidden": ["Do not certify geometry kernel solely because result is curved or deterministic"]
+  },
+
+  "bounds_status": {
+    "status": "FAIL",
+    "description": "AABBs can underestimate true geometry",
+    "production_impact": "Tiling must have conservative bounds",
+    "recommendation": "Analytic extrema where possible, or adaptive subdivision with documented error bound"
+  },
+
+  "projection_status": {
+    "status": "FAIL",
+    "description": "Point-to-road projection uses coarse sampling only",
+    "required_model": "Coarse candidate -> local interval -> bounded minimization -> exact pose_at_s",
+    "residual_required": true
+  }
+}
