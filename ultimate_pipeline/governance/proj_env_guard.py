@@ -46,6 +46,7 @@ class ProjEnvironmentReport:
     proj_db_layout_version: Optional[float]
     pyproj_version: Optional[str]
     warnings: List[str] = field(default_factory=list)
+    foreign_proj_vars: List[str] = field(default_factory=list)
 
 
 def _read_proj_db_layout_version(proj_db_path: Path) -> Optional[float]:
@@ -78,6 +79,8 @@ def check_proj_environment(
     *,
     min_layout_minor: int = 6,
     fail_closed: bool = False,
+    reject_foreign_proj: bool = False,
+    require_layout_known: bool = False,
 ) -> ProjEnvironmentReport:
     """Check the PROJ/pyproj environment for reproducibility risks.
 
@@ -88,16 +91,27 @@ def check_proj_environment(
         fail_closed: if True, raise ProjEnvironmentError when the report is
             not ok. If False (default), return the report with warnings
             populated and let the caller decide (loud-warn mode).
+        reject_foreign_proj: if True, a PROJ_LIB/PROJ_DATA env var that does
+            not match pyproj's own resolved data dir flips ``ok`` to False
+            (ambiguous projection authority is a hard reproduciblity risk).
+            Default False preserves historic behavior where those env vars
+            are warnings only. Canonical generation must pass True.
+        require_layout_known: if True, an undeterminable proj.db layout minor
+            version (None) flips ``ok`` to False instead of being treated as
+            "unknown but fine". Canonical generation must pass True.
 
     Returns:
-        A ProjEnvironmentReport. ``ok`` is False iff the resolved proj.db's
-        layout minor version is known and below ``min_layout_minor``.
-        Foreign PROJ_LIB/PROJ_DATA env vars are always reported as warnings
-        but do not by themselves flip ``ok`` to False (pyproj may correctly
-        ignore them and resolve its own bundled data dir; the risk is for
-        *other* PROJ-consuming components in the same process/environment).
+        A ProjEnvironmentReport. ``ok`` is False iff (a) pyproj is
+        unavailable, (b) the resolved proj.db's layout minor version is known
+        and below ``min_layout_minor``, (c) ``require_layout_known`` and the
+        layout minor cannot be read, or (d) ``reject_foreign_proj`` and a
+        foreign PROJ_LIB/PROJ_DATA env var is present. Foreign env vars are
+        always reported as warnings but only flip ``ok`` when requested
+        (pyproj may correctly ignore them and resolve its own bundled data
+        dir; the risk is for *other* PROJ-consuming components).
     """
     warnings: List[str] = []
+    foreign_proj_vars: List[str] = []
 
     try:
         import pyproj
@@ -131,6 +145,12 @@ def check_proj_environment(
             f"Could not determine proj.db DATABASE.LAYOUT.VERSION.MINOR at "
             f"{proj_db_path}; unable to verify PROJ database compatibility."
         )
+        if require_layout_known:
+            ok = False
+            warnings.append(
+                "require_layout_known=True: an undeterminable proj.db layout "
+                "version is treated as ambiguous projection authority."
+            )
     elif layout_minor < min_layout_minor:
         ok = False
         warnings.append(
@@ -153,6 +173,7 @@ def check_proj_environment(
         except Exception:
             same = False
         if not same:
+            foreign_proj_vars.append(env_key)
             warnings.append(
                 f"{env_key}={env_val!r} does not match pyproj's own resolved data "
                 f"dir ({data_dir!r}). This is the 'from another PROJ installation' "
@@ -161,6 +182,13 @@ def check_proj_environment(
                 f"unvetted proj.db than pyproj itself uses. Remediation: unset "
                 f"{env_key}, or point it at pyproj's own data dir."
             )
+            if reject_foreign_proj:
+                ok = False
+                warnings.append(
+                    "reject_foreign_proj=True: ambiguous projection authority "
+                    "from a foreign PROJ data env var is treated as a hard "
+                    "reproducibility failure for canonical generation."
+                )
 
     report = ProjEnvironmentReport(
         ok=ok,
@@ -169,6 +197,7 @@ def check_proj_environment(
         proj_db_layout_version=layout_minor,
         pyproj_version=pyproj_version,
         warnings=warnings,
+        foreign_proj_vars=foreign_proj_vars,
     )
 
     if fail_closed and not ok:

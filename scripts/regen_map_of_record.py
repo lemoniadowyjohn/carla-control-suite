@@ -46,6 +46,23 @@ MANIFEST_PATH = CAMPAIGN_DIR / "source" / "INPUTS_MANIFEST.json"
 CANDIDATE_DIR = CAMPAIGN_DIR / "candidate"
 DEFAULT_PROFILE = "PERCEPTION_RELEASE"
 
+# OC-37 (strict regen preconditions): the set of manifest keys a given release
+# profile must prove digest-pinned+building-matching before a canonical regen
+# is allowed. PERCEPTION_RELEASE is the enriched map profile: road topology,
+# building enrichment and DEM vertical authority are ALL mandatory. For
+# profiles that do not carry enrichment, roads_osm remains the floor.
+REQUIRED_INPUT_KEYS_BY_PROFILE: Dict[str, List[str]] = {
+    "PERCEPTION_RELEASE": ["roads_osm", "buildings", "dem"],
+    "STRUCTURAL_RELEASE": ["roads_osm"],
+    "CARLA_RELEASE": ["roads_osm"],
+    "VISUAL_RELEASE": ["roads_osm"],
+    "DEVELOPMENT": ["roads_osm"],
+}
+
+
+def _required_input_keys(profile: str) -> List[str]:
+    return list(REQUIRED_INPUT_KEYS_BY_PROFILE.get(profile, ["roads_osm"]))
+
 
 def _sha256_file(path: Path) -> str:
     import hashlib
@@ -73,25 +90,53 @@ def _git_dirty() -> List[str]:
 def _check_proj_env() -> None:
     from ultimate_pipeline.governance.proj_env_guard import check_proj_environment
 
-    report = check_proj_environment(min_layout_minor=6, fail_closed=False)
-    if not report.ok:
-        print("WARNING [PROJ-ENV]:")
-        for warning in report.warnings:
-            print(f"  - {warning}")
-        print("  Remediation: pip install --force-reinstall --no-cache-dir pyproj; unset stray PROJ_LIB.")
-        if os.getenv("UP_PROJ_ENV_FAIL_CLOSED", "").strip() in ("1", "true"):
-            raise RuntimeError("UP_PROJ_ENV_FAIL_CLOSED=1 and proj environment is not clean.")
-    else:
-        print(f"[proj] environment ok (proj.db layout {report.proj_db_layout_version})")
+    # OC-37: canonical generation is fail-closed. Older layouts, an
+    # undeterminable proj.db layout, or a foreign PROJ_LIB/PROJ_DATA env var
+    # (ambiguous projection authority) all abort regeneration instead of
+    # silently proceeding -- CRS transforms could otherwise quietly produce a
+    # different map than the pinned inputs imply.
+    report = check_proj_environment(
+        min_layout_minor=6,
+        fail_closed=True,
+        reject_foreign_proj=True,
+        require_layout_known=True,
+    )
+    print(f"[proj] environment ok (proj.db layout {report.proj_db_layout_version})")
 
 
-def _verify_manifest() -> Dict[str, Any]:
-    from ultimate_pipeline.governance.inputs_manifest import verify_inputs_manifest
+def _verify_manifest(profile: str = DEFAULT_PROFILE) -> Dict[str, Any]:
+    from ultimate_pipeline.governance.inputs_manifest import (
+        InputsManifestError,
+        verify_inputs_manifest,
+    )
+    import hashlib
 
     if not MANIFEST_PATH.is_file():
         raise FileNotFoundError(f"INPUTS_MANIFEST not found: {MANIFEST_PATH}")
-    result = verify_inputs_manifest(str(MANIFEST_PATH), base_dir=str(REPO_ROOT))
-    print(f"[manifest] verified: ok={result['ok']} checked={sorted(result['checked'])} pending={result['pending']}")
+    required_keys = _required_input_keys(profile)
+    try:
+        result = verify_inputs_manifest(
+            str(MANIFEST_PATH),
+            base_dir=str(REPO_ROOT),
+            require_pinned_keys=required_keys,
+            require_no_pending=True,
+        )
+    except InputsManifestError as exc:
+        raise RuntimeError(
+            f"Pinned-input verification FAILED for profile {profile!r} "
+            f"(required={required_keys}): {exc}"
+        ) from exc
+    result["manifest_path"] = str(MANIFEST_PATH)
+    result["manifest_sha256"] = hashlib.sha256(MANIFEST_PATH.read_bytes()).hexdigest()
+    result["manifest_schema_version"] = "C11"
+    result["profile"] = profile
+    all_keys = sorted(json.loads(MANIFEST_PATH.read_text(encoding="utf-8")).get("inputs", {}))
+    result["unused_keys"] = [k for k in all_keys if k not in required_keys and k not in result["pending"]]
+    print(
+        f"[manifest] verified: ok={result['ok']} required={sorted(required_keys)} "
+        f"checked={sorted(result['checked'])} pending={result['pending']} "
+        f"unused={result['unused_keys']}"
+    )
     if not result["ok"]:
         raise RuntimeError("Pinned-input verification FAILED; refusing to regenerate.")
     return result
@@ -331,16 +376,29 @@ def _settings_snapshot() -> Dict[str, Any]:
     return {key: getattr(s, key, None) for key in keys}
 
 
-def _emit_candidate(final_xodr: Path, out_dir: Path, name: str, acceptance: Dict[str, Any]) -> Path:
+def _emit_candidate(final_xodr: Path, out_dir: Path, name: str, acceptance: Dict[str, Any], manifest_verification: Dict[str, Any] | None = None) -> Path:
     target = CANDIDATE_DIR / name
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(final_xodr, target)
+    if manifest_verification:
+        _write_json(out_dir / "manifest_verification.json", manifest_verification)
     provenance = {
         "generated_at_utc": datetime.utcnow().isoformat() + "Z",
         "command": "python scripts/regen_map_of_record.py",
         "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True).strip(),
         "git_dirty": bool(_git_dirty()),
         "inputs_manifest": str(MANIFEST_PATH),
+        "manifest_verification": {
+            "manifest": str(MANIFEST_PATH),
+            "manifest_sha256": (manifest_verification or {}).get("manifest_sha256"),
+            "manifest_schema_version": (manifest_verification or {}).get("manifest_schema_version"),
+            "profile": (manifest_verification or {}).get("profile"),
+            "required": sorted((manifest_verification or {}).get("required_keys", [])),
+            "checked": sorted((manifest_verification or {}).get("checked", [])),
+            "pending": sorted((manifest_verification or {}).get("pending", [])),
+            "unused": sorted((manifest_verification or {}).get("unused_keys", [])),
+            "require_no_pending": True,
+        },
         "osm_sha256": _sha256_file(_resolve_osm_from_manifest()),
         "seed_xodr_sha256": _sha256_file(out_dir / "seed_from_osm.xodr") if (out_dir / "seed_from_osm.xodr").is_file() else None,
         "final_xodr_sha256": _sha256_file(final_xodr),
@@ -421,7 +479,7 @@ def cmd_regen(args: argparse.Namespace) -> int:
         return 2
     if dirty:
         print(f"[git] WARNING: continuing on dirty worktree ({len(dirty)} changes).")
-    _verify_manifest()
+    manifest_verification = _verify_manifest(args.profile)
     osm = _resolve_osm_from_manifest()
     print(f"[input] roads OSM: {osm} sha256={_sha256_file(osm)}")
     _check_sumo()
@@ -475,7 +533,7 @@ def cmd_regen(args: argparse.Namespace) -> int:
         return 1
 
     name = args.candidate_name or f"ingolstadt_perception_map_of_record_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xodr"
-    _emit_candidate(measured, out_dir, name, acceptance)
+    _emit_candidate(measured, out_dir, name, acceptance, manifest_verification=manifest_verification)
     return 0
 
 
