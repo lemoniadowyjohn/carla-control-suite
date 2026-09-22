@@ -1,0 +1,1167 @@
+
+************* Preparing the environment for Debugger Extensions Gallery repositories **************
+   ExtensionRepository : Implicit
+   UseExperimentalFeatureForNugetShare : true
+   AllowNugetExeUpdate : true
+   NonInteractiveNuget : true
+   AllowNugetMSCredentialProviderInstall : true
+   AllowParallelInitializationOfLocalRepositories : true
+
+   EnableRedirectToV8JsProvider : false
+
+   -- Configuring repositories
+      ----> Repository : LocalInstalled, Enabled: true
+      ----> Repository : UserExtensions, Enabled: true
+
+>>>>>>>>>>>>> Preparing the environment for Debugger Extensions Gallery repositories completed, duration 0.000 seconds
+
+************* Waiting for Debugger Extensions Gallery to Initialize **************
+
+>>>>>>>>>>>>> Waiting for Debugger Extensions Gallery to Initialize completed, duration 0.047 seconds
+   ----> Repository : UserExtensions, Enabled: true, Packages count: 0
+   ----> Repository : LocalInstalled, Enabled: true, Packages count: 30
+
+Microsoft (R) Windows Debugger Version 10.0.26100.7705 AMD64
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+*** wait with pending attach
+
+************* Path validation summary **************
+Response                         Time (ms)     Location
+Deferred                                       srv*
+Symbol search path is: srv*
+Executable search path is: 
+ModLoad: 00007ff7`37350000 00007ff7`3cd0c000   E:\CARLA\CARLA_0.9.16\CarlaUE4\Binaries\Win64\CarlaUE4-Win64-Shipping.exe
+ModLoad: 00007ffb`c4d00000 00007ffb`c4f67000   C:\Windows\SYSTEM32\ntdll.dll
+ModLoad: 00007ffb`c4720000 00007ffb`c47eb000   C:\Windows\System32\KERNEL32.DLL
+ModLoad: 00007ffb`c2120000 00007ffb`c2522000   C:\Windows\System32\KERNELBASE.dll
+ModLoad: 00007ffb`c48b0000 00007ffb`c4930000   C:\Windows\System32\WS2_32.dll
+ModLoad: 00007ffb`c2530000 00007ffb`c267c000   C:\Windows\System32\ucrtbase.dll
+ModLoad: 00007ffb`c3650000 00007ffb`c3768000   C:\Windows\System32\RPCRT4.dll
+ModLoad: 00007ffb`c2db0000 00007ffb`c2e6c000   C:\Windows\System32\ADVAPI32.dll
+ModLoad: 00007ffa`969f0000 00007ffa`96d05000   E:\CARLA\CARLA_0.9.16\CarlaUE4\Binaries\Win64\ChronoEngine_vehicle.dll
+ModLoad: 00007ffb`c35a0000 00007ffb`c3649000   C:\Windows\System32\msvcrt.dll
+ModLoad: 00000000`5bc00000 00000000`5bc09000   C:\Windows\SYSTEM32\X3DAudio1_7.dll
+ModLoad: 00007ffa`96d10000 00007ffa`973af000   E:\CARLA\CARLA_0.9.16\CarlaUE4\Binaries\Win64\ChronoEngine.dll
+ModLoad: 00007ffb`c3310000 00007ffb`c33b9000   C:\Windows\System32\sechost.dll
+ModLoad: 00007ffb`15c20000 00007ffb`15c35000   C:\Windows\SYSTEM32\XAPOFX1_5.dll
+ModLoad: 00007ffb`c43d0000 00007ffb`c43fb000   C:\Windows\System32\GDI32.dll
+ModLoad: 00007ffb`c49f0000 00007ffb`c4b8a000   C:\Windows\System32\ole32.dll
+ModLoad: 00007ffb`c2750000 00007ffb`c2777000   C:\Windows\System32\win32u.dll
+ModLoad: 00007ffb`c2840000 00007ffb`c2969000   C:\Windows\System32\gdi32full.dll
+ModLoad: 00007ffb`c33c0000 00007ffb`c358f000   C:\Windows\System32\USER32.dll
+ModLoad: 00007ffb`c2970000 00007ffb`c2a13000   C:\Windows\System32\msvcp_win.dll
+ModLoad: 00007ffb`c1f90000 00007ffb`c210e000   C:\Windows\System32\CRYPT32.dll
+ModLoad: 00007ffb`c2a20000 00007ffb`c2da5000   C:\Windows\System32\combase.dll
+ModLoad: 00007ffb`c4330000 00007ffb`c43a4000   C:\Windows\System32\WLDAP32.dll
+ModLoad: 00000000`00400000 00000000`0041e000   C:\Windows\SYSTEM32\XINPUT1_3.dll
+ModLoad: 00007ffb`c2e80000 00007ffb`c3307000   C:\Windows\System32\SETUPAPI.dll
+ModLoad: 00007ffb`c4800000 00007ffb`c4808000   C:\Windows\System32\Normaliz.dll
+ModLoad: 00007ffb`c3a90000 00007ffb`c4228000   C:\Windows\System32\SHELL32.dll
+ModLoad: 00007ffb`beb70000 00007ffb`becab000   C:\Windows\SYSTEM32\dxgi.dll
+ModLoad: 00007ffb`c39b0000 00007ffb`c3a89000   C:\Windows\System32\OLEAUT32.dll
+ModLoad: 00007ffb`031b0000 00007ffb`03362000   C:\Windows\SYSTEM32\d3d9.dll
+ModLoad: 00007ffb`be900000 00007ffb`beb60000   C:\Windows\SYSTEM32\d3d11.dll
+ModLoad: 00007ffb`c4870000 00007ffb`c48a1000   C:\Windows\System32\IMM32.dll
+ModLoad: 00007ffa`96780000 00007ffa`969ef000   C:\Windows\SYSTEM32\D3DCOMPILER_43.dll
+ModLoad: 00007ffb`c1f00000 00007ffb`c1f82000   C:\Windows\System32\WINTRUST.dll
+ModLoad: 00007ffb`8fed0000 00007ffb`8ff58000   C:\Windows\SYSTEM32\MSVCP140.dll
+ModLoad: 00007ffa`98cb0000 00007ffa`98ce6000   C:\Windows\SYSTEM32\VCOMP140.DLL
+ModLoad: 00007ffb`a2680000 00007ffb`a268b000   C:\Windows\SYSTEM32\VCRUNTIME140_1.dll
+ModLoad: 00007ffb`90150000 00007ffb`9016e000   C:\Windows\SYSTEM32\VCRUNTIME140.dll
+ModLoad: 00007ffa`97d00000 00007ffa`97d94000   C:\Windows\SYSTEM32\DSOUND.dll
+ModLoad: 00007ffb`a87a0000 00007ffb`a87d6000   C:\Windows\SYSTEM32\WINMM.dll
+ModLoad: 00007ffb`c0590000 00007ffb`c05c3000   C:\Windows\SYSTEM32\IPHLPAPI.DLL
+ModLoad: 00007ffb`be020000 00007ffb`be04f000   C:\Windows\SYSTEM32\dwmapi.dll
+ModLoad: 00007ffb`c1d60000 00007ffb`c1dbe000   C:\Windows\SYSTEM32\powrprof.dll
+ModLoad: 00007ffb`b0cb0000 00007ffb`b0cbb000   C:\Windows\SYSTEM32\VERSION.dll
+ModLoad: 00007ffb`6ad80000 00007ffb`6b1a0000   C:\Windows\SYSTEM32\UIAutomationCore.DLL
+ModLoad: 00007ffb`7fce0000 00007ffb`7fdec000   C:\Windows\SYSTEM32\OPENGL32.dll
+ModLoad: 00007ffb`b9b50000 00007ffb`b9c7a000   C:\Windows\SYSTEM32\WINHTTP.dll
+ModLoad: 00007ffb`c1130000 00007ffb`c119c000   C:\Windows\SYSTEM32\MSWSOCK.dll
+ModLoad: 00007ffb`c1df0000 00007ffb`c1e1a000   C:\Windows\SYSTEM32\bcrypt.dll
+ModLoad: 00007ffb`963e0000 00007ffb`96417000   C:\Windows\SYSTEM32\winmmbase.dll
+ModLoad: 00007ffb`c4490000 00007ffb`c458b000   C:\Windows\System32\shcore.dll
+ModLoad: 00007ffb`7fe20000 00007ffb`7fe4d000   C:\Windows\SYSTEM32\GLU32.dll
+ModLoad: 00007ffb`c1a60000 00007ffb`c1ab2000   C:\Windows\SYSTEM32\cfgmgr32.dll
+ModLoad: 00007ffb`be5f0000 00007ffb`be634000   C:\Windows\SYSTEM32\dxcore.dll
+ModLoad: 00007ffa`97c40000 00007ffa`97cf7000   C:\Windows\SYSTEM32\ResampleDmo.DLL
+ModLoad: 00007ffb`a9680000 00007ffb`a968e000   C:\Windows\SYSTEM32\msdmo.dll
+ModLoad: 00007ffb`c1d40000 00007ffb`c1d55000   C:\Windows\SYSTEM32\UMPDC.dll
+ModLoad: 00007ffb`c15c0000 00007ffb`c15d3000   C:\Windows\SYSTEM32\MSASN1.dll
+ModLoad: 00007ffb`c2780000 00007ffb`c282c000   C:\Windows\System32\bcryptPrimitives.dll
+ModLoad: 00007ffb`bf940000 00007ffb`c01ee000   C:\Windows\SYSTEM32\windows.storage.dll
+ModLoad: 00007ffb`c4b90000 00007ffb`c4bf6000   C:\Windows\System32\shlwapi.dll
+ModLoad: 00007ffb`c1e20000 00007ffb`c1e49000   C:\Windows\SYSTEM32\profapi.dll
+ModLoad: 00007ffa`98e50000 00007ffa`98e76000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\NVIDIA\NVaftermath\Win64\GFSDK_Aftermath_Lib.x64.dll
+ModLoad: 00007ffb`c0e50000 00007ffb`c0e99000   C:\Windows\SYSTEM32\SspiCli.dll
+ModLoad: 00007ffa`91530000 00007ffa`91713000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\DbgHelp\dbghelp.dll
+ModLoad: 00007ffb`bd5b0000 00007ffb`bd658000   C:\Windows\system32\uxtheme.dll
+ModLoad: 00007ffb`b99e0000 00007ffb`b9a78000   C:\Windows\SYSTEM32\mf.dll
+ModLoad: 00007ffb`b8a70000 00007ffb`b8c95000   C:\Windows\SYSTEM32\mfplat.dll
+ModLoad: 00007ffb`b8a30000 00007ffb`b8a6b000   C:\Windows\SYSTEM32\RTWorkQ.DLL
+ModLoad: 00007ffa`97aa0000 00007ffa`97b28000   C:\Windows\SYSTEM32\mfplay.dll
+ModLoad: 00007ffb`c0b90000 00007ffb`c0bab000   C:\Windows\SYSTEM32\kernel.appcore.dll
+ModLoad: 00007ffb`c39a0000 00007ffb`c39aa000   C:\Windows\System32\NSI.dll
+ModLoad: 00007ffb`bd370000 00007ffb`bd38d000   C:\Windows\SYSTEM32\dhcpcsvc6.DLL
+ModLoad: 00007ffb`bd340000 00007ffb`bd365000   C:\Windows\SYSTEM32\dhcpcsvc.DLL
+ModLoad: 00007ffb`99540000 00007ffb`99558000   C:\Windows\system32\napinsp.dll
+ModLoad: 00007ffb`c0630000 00007ffb`c0788000   C:\Windows\SYSTEM32\DNSAPI.dll
+ModLoad: 00007ffb`c0f30000 00007ffb`c0f3d000   C:\Windows\SYSTEM32\DSPARSE.dll
+ModLoad: 00007ffb`99370000 00007ffb`99383000   C:\Windows\System32\winrnr.dll
+ModLoad: 00007ffb`99390000 00007ffb`993b7000   C:\Windows\system32\nlansp_c.dll
+ModLoad: 00007ffb`b3cc0000 00007ffb`b3cd6000   C:\Windows\system32\wshbth.dll
+ModLoad: 00007ffb`c1a20000 00007ffb`c1a4f000   C:\Windows\SYSTEM32\DEVOBJ.dll
+ModLoad: 00007ffb`c4c00000 00007ffb`c4cae000   C:\Windows\System32\clbcatq.dll
+ModLoad: 00007ffa`98c50000 00007ffa`98c5c000   C:\Windows\System32\gameux.dll
+ModLoad: 00007ffa`98c30000 00007ffa`98c43000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PxFoundation_x64.dll
+ModLoad: 00007ffa`913a0000 00007ffa`9152c000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PhysX3Common_x64.dll
+ModLoad: 00007ffa`97a60000 00007ffa`97a92000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PxPvdSDK_x64.dll
+ModLoad: 00007ffa`91190000 00007ffa`9139b000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PhysX3_x64.dll
+ModLoad: 00007ffa`91080000 00007ffa`91188000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\APEXFramework_x64.dll
+ModLoad: 00007ffa`90d10000 00007ffa`91077000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\APEX_Legacy_x64.dll
+ModLoad: 00007ffa`90860000 00007ffa`90997000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\APEX_Clothing_x64.dll
+ModLoad: 00007ffa`97a20000 00007ffa`97a60000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PhysX3Cooking_x64.dll
+ModLoad: 00007ffb`c45c0000 00007ffb`c471b000   C:\Windows\System32\msctf.dll
+ModLoad: 00007ffb`8ff60000 00007ffb`900a2000   C:\Windows\SYSTEM32\textinputframework.dll
+ModLoad: 00007ffb`c1390000 00007ffb`c139c000   C:\Windows\SYSTEM32\CRYPTBASE.DLL
+ModLoad: 00007ffa`90cc0000 00007ffa`90d07000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\NvCloth_x64.dll
+ModLoad: 00007ffa`90b20000 00007ffa`90bf3000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\Windows\XAudio2_9\x64\xaudio2_9redist.dll
+ModLoad: 00007ffb`b9500000 00007ffb`b950b000   C:\Windows\SYSTEM32\AVRT.dll
+ModLoad: 00007ffa`90c20000 00007ffa`90cb4000   C:\Windows\SYSTEM32\xaudio2_9.dll
+ModLoad: 00007ffb`b3450000 00007ffb`b34f5000   C:\Windows\SYSTEM32\MMDevAPI.DLL
+ModLoad: 00007ffa`96760000 00007ffa`96772000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\Ogg\Win64\VS2015\libogg_64.dll
+ModLoad: 00007ffa`906b0000 00007ffa`90857000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\Vorbis\Win64\VS2015\libvorbis_64.dll
+ModLoad: 00007ffb`bf380000 00007ffb`bf38e000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\Vorbis\Win64\VS2015\libvorbisfile_64.dll
+ModLoad: 00007ffb`ab940000 00007ffb`abaf7000   C:\Windows\SYSTEM32\AUDIOSES.DLL
+ModLoad: 00007ffb`be380000 00007ffb`be394000   C:\Windows\SYSTEM32\resourcepolicyclient.dll
+ModLoad: 00007ffb`a5c10000 00007ffb`a5d6b000   C:\Windows\System32\Windows.UI.dll
+(7104.8ed4): Break instruction exception - code 80000003 (first chance)
+ntdll!DbgBreakPoint:
+00007ffb`c4e23ab0 cc              int     3
+0:088> cdb: Reading initial command '~* kb;q'
+
+   0  Id: 7104.a658 Suspend: 1 Teb: 0000004c`ff704000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`647f2ca0 00007ff7`382f5965 0000024a`63aec740 0000004c`80b7df40 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`000006f8 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`39c64459     : 00000000`00270400 0000024a`6a9a98c0 00000000`00000000 00000416`beb7e007 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`39c3d823     : 00000416`bd3b6100 0000024a`6a9a98c0 00000000`3ce0f600 00000000`00000000 : CarlaUE4_Win64_Shipping!FAudioCommandFence::Wait+0x2a9
+00007ff7`39e1130e     : 00000000`00000000 00000000`00000001 0000004c`80b7e250 00000000`00000000 : CarlaUE4_Win64_Shipping!FAudioDeviceManager::UpdateActiveAudioDevices+0x23
+00007ff7`37b10fc4     : 0000024a`6bdec040 00000000`00076700 0000004c`80b7e400 00000000`00000001 : CarlaUE4_Win64_Shipping!UGameEngine::Tick+0x1ade
+00007ff7`37b1c330     : 00007ff7`3c17c020 00000000`00000000 00000000`00000000 0000024a`61cd5000 : CarlaUE4_Win64_Shipping!FEngineLoop::Tick+0x3c94
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!EngineTick+0xc
+00007ff7`37b1c39a     : 0000024a`6334f234 0000024a`6334f200 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!GuardedMain+0x340
+00007ff7`37b27230     : 0000024a`6334f200 00000000`00000000 00000000`00000000 00000000`0000006c : CarlaUE4_Win64_Shipping!GuardedMainWrapper+0x1a
+00007ff7`3acdd55e     : 00000000`0000000a 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!WinMain+0x190
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!invoke_main+0x21
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!__scrt_common_main_seh+0x106
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   1  Id: 7104.710c Suspend: 1 Teb: 0000004c`ff70c000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855760c     : 00007ff7`3c6bf4d8 00000000`00000000 00000000`00000000 00000000`000002bc : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FCrashReportingThread::Run+0x3c
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   2  Id: 7104.ac54 Suspend: 1 Teb: 0000004c`ff70e000 Unfrozen "TaskGraphThreadNP 0"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`61ceb9a0 0000024a`6420f948 0000024a`fb540e40 00007ff7`383e4c6f : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ff 00000000`00000000 00000000`00000358 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f810 0000024a`00000000 00000000`00001001 00000416`9fe747ea : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ceb980 00000000`00000000 00000000`00000000 0000024a`61ceb980 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a534e0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   3  Id: 7104.5310 Suspend: 1 Teb: 0000004c`ff710000 Unfrozen "TaskGraphThreadNP 1"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`61ceba20 0000024a`64234638 0000024a`a27ab7e0 00007ff7`383e4c6f : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ff 00000000`00000000 00000000`0000035c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f810 0000024a`00000001 00000000`00001001 00000416`9fe747ee : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ceba00 00000000`00000000 00000000`00000000 0000024a`61ceba00 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a53300 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   4  Id: 7104.74c Suspend: 1 Teb: 0000004c`ff712000 Unfrozen "TaskGraphThreadNP 2"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`61cebaa0 0000024a`6420e3e8 0000024a`6a42ee60 00007ff7`383e4c6f : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ff 00000000`00000000 00000000`00000360 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f810 0000024a`00000002 00000000`00001001 00000416`9fe7496b : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ceba80 00000000`00000000 00000000`00000000 0000024a`61ceba80 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a53350 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   5  Id: 7104.2ef0 Suspend: 1 Teb: 0000004c`ff714000 Unfrozen "TaskGraphThreadNP 3"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`61cebc20 0000024a`642199c8 0000024a`63c72f40 00007ff7`383e4c6f : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ff 00000000`00000000 00000000`00000364 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f810 0000024a`00000003 00000000`00001001 00000416`9fe74c14 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61cebc00 00000000`00000000 00000000`00000000 0000024a`61cebc00 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a533a0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   6  Id: 7104.b14 Suspend: 1 Teb: 0000004c`ff716000 Unfrozen "TaskGraphThreadNP 4"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`0000000c 00000000`00000000 0000024a`61cebb20 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ca 0000004c`00000000 00000000`00000368 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f810 0000024a`00000004 00000000`00001001 00000416`9fe75880 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61cebb00 00000000`00000000 00000000`00000000 0000024a`61cebb00 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a53440 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   7  Id: 7104.afb0 Suspend: 1 Teb: 0000004c`ff718000 Unfrozen "TaskGraphThreadHP 5"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00270400 00007ff7`3a0de0ad : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`0000036c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f9f8 0000004c`00000000 0000024a`648c4c01 00000416`bd3b503e : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ceda00 00000000`00000000 00000000`00000000 0000024a`61ceda00 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a533f0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   8  Id: 7104.af60 Suspend: 1 Teb: 0000004c`ff71a000 Unfrozen "TaskGraphThreadHP 6"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000002 0000024a`61ced300 00000000`0000000b : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`3a0e0684 00000000`00000000 00000000`00000370 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f9f8 0000024a`00000001 0000024a`64782801 00000416`bd2f10dc : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced300 00000000`00000001 00000000`00000000 0000024a`61ced300 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a54570 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+   9  Id: 7104.a1a0 Suspend: 1 Teb: 0000004c`ff71c000 Unfrozen "TaskGraphThreadHP 7"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000002 0000024a`61ced880 00000000`0000000c : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`3a0e0684 00000000`00000000 00000000`00000374 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f9f8 0000024a`00000002 0000024a`647f3d01 00000416`bcfbe14e : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced880 00000000`00000001 00000000`00000000 0000024a`61ced880 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a545c0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  10  Id: 7104.7a94 Suspend: 1 Teb: 0000004c`ff71e000 Unfrozen "TaskGraphThreadHP 8"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`618791d8 0000024a`61879430 0000024a`61879428 00007ff7`38518436 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`647f34a0 00000000`00000000 00000000`00000378 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f9f8 0000024a`00000003 00000000`00001001 00000416`b8e120a0 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced200 00000000`00000001 00000000`00000000 0000024a`61ced200 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a544d0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  11  Id: 7104.afc8 Suspend: 1 Teb: 0000004c`ff720000 Unfrozen "TaskGraphThreadHP 9"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000005 00007ff7`37bcac99 0000024a`6480db70 00007ff7`38518436 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`647cdb70 00000000`00000000 00000000`0000037c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341f9f8 0000024a`00000004 00000000`00001001 00000416`5e5df836 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced080 00000000`00000000 00000000`00000000 0000024a`61ced080 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a54520 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  12  Id: 7104.92f8 Suspend: 1 Teb: 0000004c`ff722000 Unfrozen "TaskGraphThreadBP 10"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`0000000d : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 0000024a`00000000 00000000`00000380 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341fbe0 0000004c`00000000 00000416`60623501 00000416`bcebdfc7 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced800 00000000`00000000 ffffffff`ffffff00 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a54430 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  13  Id: 7104.7afc Suspend: 1 Teb: 0000004c`ff724000 Unfrozen "TaskGraphThreadBP 11"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000010 0000024a`61878bb0 00007ff7`3c63c6c0 0000024a`6a42fe60 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f725f 0000024a`00000000 00000000`00000384 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341fbe0 0000024a`00000001 00000000`00001001 00000416`9fe7d7da : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced780 00000000`00000001 ffffffff`ffffff00 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a54390 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  14  Id: 7104.42dc Suspend: 1 Teb: 0000004c`ff726000 Unfrozen "TaskGraphThreadBP 12"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`61879438 0000024a`61878bb0 00007ff7`3c63c6c0 0000024a`61879438 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ca 00000000`00000000 00000000`00000388 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341fbe0 0000024a`00000002 00000416`9fe74901 00000416`9ff36b99 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced700 00000000`00000000 ffffffff`ffffff00 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a54340 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  15  Id: 7104.134c Suspend: 1 Teb: 0000004c`ff728000 Unfrozen "TaskGraphThreadBP 13"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000012 0000024a`61878bb0 00007ff7`3c63c6c0 0000024a`87c2f060 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ca 0000004c`00000000 00000000`0000038c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341fbe0 0000024a`00000003 00000416`9fe74801 00000416`9febfc68 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced680 00000000`00000000 ffffffff`ffffff00 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a54480 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  16  Id: 7104.68c8 Suspend: 1 Teb: 0000004c`ff72a000 Unfrozen "TaskGraphThreadBP 14"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000013 0000024a`61878bb0 00007ff7`3c63c6c0 0000024a`87c2e740 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`386f75ff 0000024a`00000000 00000000`00000390 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c110f     : 0000024a`6341fbe0 0000024a`00000004 00000000`00001001 00000416`9fe75687 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c2028     : 0000024a`61ced600 00000000`00000000 ffffffff`ffffff00 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasks+0x49f
+00007ff7`383c501c     : ffffffff`ffffffff 00000000`00000000 ffffffff`ffffffff 00000000`00000011 : CarlaUE4_Win64_Shipping!FTaskThreadAnyThread::ProcessTasksUntilQuit+0x48
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FTaskThreadBase::Run+0xc
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a543e0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  17  Id: 7104.4a0 Suspend: 1 Teb: 0000004c`ff72c000 Unfrozen "StatsThread"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 0000024a`61d5b290 0000024a`00000000 00007ff7`37b7d8e5 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ff7`383c2f90 0000024a`00000000 00000000`00000334 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c1aff     : 0000024a`61d5b2a8 0000024a`00000000 00000000`00000000 00000416`beb7e2d8 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c1f9e     : 0000024a`61d5b270 00000000`00000000 ffffffff`ffffff01 00000000`00000000 : CarlaUE4_Win64_Shipping!FNamedTaskThread::ProcessTasksNamedThread+0x59f
+00007ff7`3852947d     : 0000024a`63a542f0 00000000`00000000 00000000`00000000 0000024a`63a542f0 : CarlaUE4_Win64_Shipping!FNamedTaskThread::ProcessTasksUntilQuit+0x6e
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FStatsThread::Run+0x4d
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a542f0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  18  Id: 7104.6ea4 Suspend: 1 Teb: 0000004c`ff72e000 Unfrozen "PoolThread 0"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`000003fc : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ff5cf7d0 00000000`00006e00 00000416`5e5e8dc4 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61887b30 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a55a10 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  19  Id: 7104.aeac Suspend: 1 Teb: 0000004c`ff730000 Unfrozen "PoolThread 1"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`000003d0 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ff5ef9e0 00000000`0000ae00 00000416`5e5e9b75 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61887bd0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a58710 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  20  Id: 7104.ae94 Suspend: 1 Teb: 0000004c`ff732000 Unfrozen "PoolThread 2"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000408 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffcbfc00 00000000`0000ae00 00000416`5e5f1f6e : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61886cd0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a55920 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  21  Id: 7104.a3d8 Suspend: 1 Teb: 0000004c`ff734000 Unfrozen "PoolThread 3"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`000003f8 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffcdfa10 00000000`0000a300 00000416`5e60b429 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61886d70 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a58f30 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  22  Id: 7104.adf4 Suspend: 1 Teb: 0000004c`ff736000 Unfrozen "PoolThread 4"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000410 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffcffbc0 00000000`0000ad00 00000416`5e60c1d5 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61886e10 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a57b30 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  23  Id: 7104.a920 Suspend: 1 Teb: 0000004c`ff738000 Unfrozen "PoolThread 5"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000418 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffd1fd70 00000000`0000a900 00000416`5e60cc3a : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61886eb0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a57b80 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  24  Id: 7104.5210 Suspend: 1 Teb: 0000004c`ff73a000 Unfrozen "PoolThread 6"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000420 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffd3f950 00000000`00005200 00000416`5e60d72e : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61886f50 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`63a59110 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  25  Id: 7104.9e94 Suspend: 1 Teb: 0000004c`ff73c000 Unfrozen "FMediaTicker"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00007ffb`c2206b1f 00000000`00000000 00000000`00000394 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`39ab48dc     : 00000000`00000000 00007ffb`c21da6fb 0000024a`64d13300 00000416`5e85b4fd : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 0000024a`64d133f0 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FMediaTicker::Run+0x3c
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d133f0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  26  Id: 7104.2260 Suspend: 1 Teb: 0000004c`ff73e000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c4d1a65e     : 0000024a`64354bc0 0000004c`ff703000 00000000`00000000 0000024a`64354bc0 : ntdll!NtWaitForWorkViaWorkerFactory+0x14
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!TppWorkerThread+0x37e
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  27  Id: 7104.6544 Suspend: 1 Teb: 0000004c`ff740000 Unfrozen "HttpManagerThread"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c4dd3924     : 00000000`00000000 00000000`00000000 00000000`00000000 00007ff7`39411809 : ntdll!NtDelayExecution+0x14
+00007ffb`c21abb01     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlDelayExecution+0x34
+00007ff7`394140f6     : 0000024a`64ce7f60 00000000`00000000 ffffffff`fffaf6f0 00000000`00000000 : KERNELBASE!SleepEx+0x91
+00007ff7`3855e07b     : 00000416`5e8d2120 00000416`beb7e1ce 00000416`beb7e1cf 00000416`beb7e1db : CarlaUE4_Win64_Shipping!FHttpThread::Run+0x156
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d14750 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  28  Id: 7104.903c Suspend: 1 Teb: 0000004c`ff742000 Unfrozen "OnlineAsyncTaskThreadNull DefaultInstance(1)"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00007ff7`3842dbf3 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00015f00 00000000`00000000 00000000`00000600 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`382df366     : 0000024a`649ec7c8 00000000`00000000 ffffffff`00000000 00000416`beb7e1eb : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`3855e07b     : 00000000`00000032 0000024a`64d14660 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FOnlineAsyncTaskManager::Run+0x46
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d14660 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  29  Id: 7104.2850 Suspend: 1 Teb: 0000004c`ff744000 Unfrozen "PoolThread 7"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00270400`001d2fa1 00000000`00001604 00000000`001d2fa1 0000024a`0c8cd4e0 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`0c8cd4e0 00270400`00000000 00000000`0000064c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 0000024a`64b2e2f0 00270400`001d2fa1 0000024a`64b2e200 00000416`7c742649 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`6190af00 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d15f60 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  30  Id: 7104.4e08 Suspend: 1 Teb: 0000004c`ff746000 Unfrozen "PoolThread 8"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00270400`001d2fa1 00000000`00001604 00000000`001d2fa1 0000024a`6a3f75e0 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`6a3f75e0 00270400`00000000 00000000`00000658 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 0000024a`64b2e2f0 00270400`001d2fa1 0000024a`64b2e200 00000416`7c74268e : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`6190b7c0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d15f10 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  31  Id: 7104.7c40 Suspend: 1 Teb: 0000004c`ff748000 Unfrozen "PoolThread 9"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00270400`001d2fa1 00000000`00001604 00000000`001d2fa1 0000024a`0cdbf240 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`0cdbf240 00270400`00000000 00000000`00000660 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 0000024a`64b2e2f0 00270400`001d2fa1 0000024a`64b2e200 00000416`7c742847 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`6433f1d0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d15ec0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  32  Id: 7104.9f98 Suspend: 1 Teb: 0000004c`ff74a000 Unfrozen "PoolThread 10"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00270400`001d2fa1 00000000`00001604 00000000`001d2fa1 0000024a`0cb11140 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`0cb11140 00270400`00000000 00000000`00000668 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 0000024a`64b2e2f0 00270400`001d2fa1 0000024a`64b2e200 00000416`7c742967 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`6433e3d0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`64d15e70 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  33  Id: 7104.84fc Suspend: 1 Teb: 0000004c`ff750000 Unfrozen "PoolThread 11"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000830 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffe0f7e0 00000000`00008400 00000416`5fe39cb7 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`643503b0 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a5992a0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  34  Id: 7104.afc0 Suspend: 1 Teb: 0000004c`ff752000 Unfrozen "PoolThread 12"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000820 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffe1fcb0 00000000`0000af00 00000416`5fe476a9 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`64362830 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a599250 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  35  Id: 7104.9c64 Suspend: 1 Teb: 0000004c`ff754000 Unfrozen "PoolThread 13"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`000007a8 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffe2fe30 00000000`00009c00 00000416`5fe5526c : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`64362210 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a599200 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  36  Id: 7104.9f28 Suspend: 1 Teb: 0000004c`ff756000 Unfrozen "PoolThread 14"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`000007cc : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffe3f950 00000000`00009f00 00000416`5fe85ed1 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`64fbf880 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a5991b0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  37  Id: 7104.580 Suspend: 1 Teb: 0000004c`ff758000 Unfrozen "PoolThread 15"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000838 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffe4fc20 00000000`00000500 00000416`5fea81ee : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`64fbf260 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a599160 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  38  Id: 7104.99b8 Suspend: 1 Teb: 0000004c`ff75a000 Unfrozen "PoolThread 16"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000840 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383f77d8     : 00000000`00001000 0000004c`ffe5f950 00000000`00009900 00000416`5fea9233 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FEvent::Wait+0xe
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`64351c50 : CarlaUE4_Win64_Shipping!FQueuedThread::Run+0x438
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a59a5b0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  39  Id: 7104.7168 Suspend: 1 Teb: 0000004c`ff75c000 Unfrozen "ScreenSaverInhibitor"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c4dd3924     : 00000000`00000000 00007ff7`383f5985 00000000`00000000 00000000`00000000 : ntdll!NtDelayExecution+0x14
+00007ffb`c21abb01     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlDelayExecution+0x34
+00007ff7`3855e61c     : 00000000`00000000 00000000`00000000 ffffffff`ff676980 00000054`00000000 : KERNELBASE!SleepEx+0x91
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FWindowsPlatformProcess::SleepNoStats+0x1f
+00007ff7`3a2ea431     : 00000000`00000000 00000416`beb7e2ff 00000416`beb7e308 00000000`00000007 : CarlaUE4_Win64_Shipping!FWindowsPlatformProcess::Sleep+0x19c
+00007ff7`3855e07b     : 0000024a`6a59a420 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FScreenSaverInhibitor::Run+0x31
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a59a420 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  40  Id: 7104.9398 Suspend: 1 Teb: 0000004c`ff760000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2144c0b     : 00000000`ffffffff 0000024a`72ec1200 00000000`00000000 00000000`00000000 : ntdll!NtReleaseSemaphore+0x14
+00007ffa`90c28050     : 0000024a`72d902b0 0000004c`872ff800 0000024a`72ec1150 00000000`000008a0 : KERNELBASE!ReleaseSemaphore+0xb
+00007ffa`90c543e7     : 0000024a`00000000 0000024a`72ec1150 00000000`00000303 00000000`0000001f : xaudio2_9!LEAPCORE::CGraphManager::GraphThreadProc+0x250
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticGraphThreadProc+0x27
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  41  Id: 7104.9198 Suspend: 1 Teb: 0000004c`ff762000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000001 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  42  Id: 7104.74b4 Suspend: 1 Teb: 0000004c`ff764000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000002 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  43  Id: 7104.940c Suspend: 1 Teb: 0000004c`ff766000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000003 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  44  Id: 7104.6438 Suspend: 1 Teb: 0000004c`ff768000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000004 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  45  Id: 7104.97ac Suspend: 1 Teb: 0000004c`ff76a000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  46  Id: 7104.14f4 Suspend: 1 Teb: 0000004c`ff76c000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000006 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  47  Id: 7104.92bc Suspend: 1 Teb: 0000004c`ff76e000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000007 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  48  Id: 7104.bf4 Suspend: 1 Teb: 0000004c`ff770000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000008 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  49  Id: 7104.761c Suspend: 1 Teb: 0000004c`ff772000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000009 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  50  Id: 7104.a930 Suspend: 1 Teb: 0000004c`ff774000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000000a : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  51  Id: 7104.afec Suspend: 1 Teb: 0000004c`ff776000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000000b : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  52  Id: 7104.87d8 Suspend: 1 Teb: 0000004c`ff778000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`0000000c : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  53  Id: 7104.4940 Suspend: 1 Teb: 0000004c`ff77a000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000000d : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  54  Id: 7104.849c Suspend: 1 Teb: 0000004c`ff77c000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000000e : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  55  Id: 7104.abe4 Suspend: 1 Teb: 0000004c`ff77e000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000000f : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  56  Id: 7104.a07c Suspend: 1 Teb: 0000004c`ff780000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000010 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  57  Id: 7104.8b54 Suspend: 1 Teb: 0000004c`ff782000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000011 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  58  Id: 7104.3a5c Suspend: 1 Teb: 0000004c`ff784000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000012 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  59  Id: 7104.96d0 Suspend: 1 Teb: 0000004c`ff786000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000013 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  60  Id: 7104.af44 Suspend: 1 Teb: 0000004c`ff788000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000014 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  61  Id: 7104.8494 Suspend: 1 Teb: 0000004c`ff78a000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x188
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  62  Id: 7104.6538 Suspend: 1 Teb: 0000004c`ff78c000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000016 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  63  Id: 7104.af10 Suspend: 1 Teb: 0000004c`ff78e000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`00000017 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  64  Id: 7104.69a8 Suspend: 1 Teb: 0000004c`ff790000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000018 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  65  Id: 7104.acd8 Suspend: 1 Teb: 0000004c`ff792000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`00000019 : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  66  Id: 7104.a7f4 Suspend: 1 Teb: 0000004c`ff794000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`0000001a : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  67  Id: 7104.a98 Suspend: 1 Teb: 0000004c`ff796000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000001b : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  68  Id: 7104.9084 Suspend: 1 Teb: 0000004c`ff798000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`ab9512f9     : 0000024a`6188c3e0 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlLeaveCriticalSection+0x2b
+00007ffa`90c44fd8     : 00000000`00000000 00000000`00000000 0000024a`72ec4cc8 00000000`00000004 : AUDIOSES!CAudioRenderClient::ReleaseBuffer+0x109
+00007ffa`90c3a9f3     : 0000024a`72dcd400 0000024a`72dcd400 00000000`00000004 00000000`00000000 : xaudio2_9!LEAPCORE::CEngineRendererConnection::ReleaseBuffer+0x38
+00007ffa`90c370e7     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 0000024a`72ec1150 : xaudio2_9!LEAPCORE::CSWOutput::Process+0x123
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x117
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  69  Id: 7104.ad50 Suspend: 1 Teb: 0000004c`ff79a000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000001d : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  70  Id: 7104.a9d8 Suspend: 1 Teb: 0000004c`ff79c000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72ec57f0 0000024a`72ec1150 00000000`00000001 00000000`0000001e : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`000001e0 0000024a`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  71  Id: 7104.799c Suspend: 1 Teb: 0000004c`ff79e000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`72dcd500 00007ffa`90c44fd8 00000000`00000000 00000000`0000001f : ntdll!NtWaitForSingleObject+0x14
+00007ffa`90c37153     : 0000024a`72ec1150 00000000`00000001 00000000`00000000 00000000`000008a4 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ffa`90c55b20     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!LEAPCORE::CGraphManager::WorkerThreadProc+0x183
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : xaudio2_9!CThreadBase::StaticWorkerThreadProc+0x10
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  72  Id: 7104.a640 Suspend: 1 Teb: 0000004c`ff7a2000 Unfrozen "AudioMixerRenderThread(1)"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 0000024a`00000000 0000024a`6bcb68e8 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`0000090c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`399abfd5     : 00000416`beb7e694 00000000`00000000 ffffffff`ffffff00 00000416`beb7e6a2 : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 0000024a`6a59b2d0 00000000`00000000 : CarlaUE4_Win64_Shipping!Audio::IAudioMixerPlatformInterface::RunInternal+0xa5
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a59b2d0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  73  Id: 7104.ae88 Suspend: 1 Teb: 0000004c`ff7a4000 Unfrozen "AudioThread"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c217bd72     : 00000000`00000000 0000024a`6433d3c0 00000000`00000000 00000000`00000000 : ntdll!NtNotifyChangeKey+0x14
+00007ffb`c2aa6a70     : 00000000`0000068c 0000024a`64e688c0 00007ffb`c2ce6060 00000000`00000000 : KERNELBASE!RegNotifyChangeKeyValue+0xc2
+00007ffb`c2abdfa8     : 00000000`00000000 0000004c`9f9feb48 0000024a`64e688c0 00000000`00000009 : combase!RegistrationChangeDetection::NotificationChecker::RegisterNotification+0x40
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : combase!RegistrationChangeDetection::RefreshNeeded+0x69
+00007ffb`c2a733b9     : 0000024a`64fcbe50 00000000`00000000 0000024a`64e6ca80 00000000`00000000 : combase!CComClassInfo::RefreshNeeded+0xc8
+00007ffb`c2bf11a8     : 00000000`00000004 00000000`00000000 00000000`00000000 0000024a`64fcbe50 : combase!CComCatalog::CheckForRefresh+0x129
+00007ffb`c2b80174     : 00000000`00000000 00000000`00040886 00007ffb`c2d560d0 00007ffb`c2af2d89 : combase!CComCatalog::GetClassInfoInternal+0x14dc
+00007ffb`c2be36ff     : 00000000`00000000 00000000`00000000 0000004c`9f9ff5c8 00000000`00000000 : combase!CComCatalog::GetClassInfoW+0x194
+00007ffb`c2be16ed     : 0000004c`9f9ff250 00000000`00000001 00000000`00000001 00000000`00000000 : combase!LookForConfiguredClsid+0x1c7
+00007ffb`c2bdc784     : 0000024a`6505ece0 00000000`00040886 00000001`00000000 0000024a`639713a0 : combase!ICoCreateInstanceExWorker+0x5d9
+00007ffb`c2bdbfef     : 00007ff7`3af9dc48 00007ff7`3af9dc48 00000000`00000000 00000000`00000000 : combase!CComActivator::DoCreateInstance+0x1dc
+00007ffb`c2b158b6     : 00007ff7`3af9dc48 00000000`00040886 00007ff7`3c6eb998 00000000`00000000 : combase!CoCreateInstanceExCopy+0x167
+00007ff7`3a53c742     : 0000024a`6a97f818 00000000`00000000 0000004c`9f9ff6b0 00007ffb`c213be9f : combase!CoCreateInstance+0xd6
+00007ff7`3a53d099     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`6a97f818 : CarlaUE4_Win64_Shipping!Audio::FMixerPlatformXAudio2::GetNumOutputDevices+0x112
+00007ff7`3a53b714     : 0000024a`6a97f818 0000024a`6bcb6880 0000024a`6a97f818 0000024a`6c598080 : CarlaUE4_Win64_Shipping!Audio::FMixerPlatformXAudio2::MoveAudioStreamToNewAudioDevice+0x49
+00007ff7`399ee09f     : 00000000`00000000 00000000`00000000 0000024a`6c598080 00000000`bf36e165 : CarlaUE4_Win64_Shipping!Audio::FMixerPlatformXAudio2::CheckAudioDeviceChange+0x44
+00007ff7`39c3d559     : 0000024a`6c598080 00000000`00000000 0000024a`00000000 0000024a`6c598001 : CarlaUE4_Win64_Shipping!Audio::FMixerDevice::UpdateHardware+0x3f
+00007ff7`382fbe30     : 00000000`00000000 00001177`f0002201 0000024a`61d5cd00 00000000`00000000 : CarlaUE4_Win64_Shipping!FAudioDevice::Update+0x1129
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!UE4Function_Private::TFunctionRefBase<UE4Function_Private::TFunctionStorage<1>,void __cdecl(void)>::operator()+0x19
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!TFunctionGraphTaskImpl<void __cdecl(void),0>::DoTaskImpl+0x19
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!TFunctionGraphTaskImpl<void __cdecl(void),0>::DoTask+0x19
+00007ff7`383c1cfa     : 0000024a`61d5ce08 0000024a`61d5cdd0 00000000`00000001 00000000`00000000 : CarlaUE4_Win64_Shipping!TGraphTask<TFunctionGraphTaskImpl<void __cdecl(void),0> >::ExecuteTask+0x140
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FBaseGraphTask::Execute+0xe
+00007ff7`383c1f9e     : 0000024a`61d5cdd0 00000000`00000000 ffffffff`ffffff01 00000000`00000000 : CarlaUE4_Win64_Shipping!FNamedTaskThread::ProcessTasksNamedThread+0x79a
+00007ff7`39c5fbc0     : 0000024a`6a42d1c0 00000000`00000000 00000000`00000000 0000024a`6a457b40 : CarlaUE4_Win64_Shipping!FNamedTaskThread::ProcessTasksUntilQuit+0x6e
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!AudioThreadMain+0x39
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FAudioThread::Run+0x50
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a59b280 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  74  Id: 7104.5a08 Suspend: 1 Teb: 0000004c`ff7a6000 Unfrozen "FAsyncPurge"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 0000024a`61878bb0 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 0000024a`61878bb0 00000000`00000000 00000000`000006b8 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`3870c112     : 0000024a`6bd87840 00000000`00000000 ffffffff`ffffff01 00000416`beb7e6dc : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`3855e07b     : 00000000`00000000 ffffffff`ffffffff 0000024a`6a59c0e0 00000000`00000000 : CarlaUE4_Win64_Shipping!FAsyncPurge::Run+0x42
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024a`6a59c0e0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  75  Id: 7104.34a4 Suspend: 1 Teb: 0000004c`ff7a8000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`3a75bfa2     : 0000024a`0c423620 00007ff7`3c2766b8 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`3a75ce07     : 00000000`00000000 00000000`00000001 0000004c`a10ffcf0 00000000`00000000 : CarlaUE4_Win64_Shipping!clmdep_asio::detail::win_iocp_io_service::do_one+0x2b2
+00007ff7`3a7583c8     : 00000000`00000000 0000024a`0d2fa1c0 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!clmdep_asio::io_service::run+0x97
+00007ffb`c255cd30     : 0000024a`64e691b0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<std::function<void __cdecl(void)> >,0>+0x18
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  76  Id: 7104.3910 Suspend: 1 Teb: 0000004c`ff7aa000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`3a75bfa2     : 0000024a`0c423620 00007ff7`3c2766b8 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`3a75ce07     : 00000000`00000000 00000000`00000001 0000004c`a1c7fdf0 00000000`00000000 : CarlaUE4_Win64_Shipping!clmdep_asio::detail::win_iocp_io_service::do_one+0x2b2
+00007ff7`3a7583c8     : 00000000`00000000 0000024a`0d3fbb00 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!clmdep_asio::io_service::run+0x97
+00007ffb`c255cd30     : 0000024a`64e69960 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<std::function<void __cdecl(void)> >,0>+0x18
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  77  Id: 7104.838c Suspend: 1 Teb: 0000004c`ff7ac000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`3a75bfa2     : 0000024a`0c423620 00007ff7`3c2766b8 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`3a75ce07     : 00000000`00000000 00000000`00000001 0000004c`a27ff900 00000000`00000000 : CarlaUE4_Win64_Shipping!clmdep_asio::detail::win_iocp_io_service::do_one+0x2b2
+00007ff7`3a7583c8     : 00000000`00000000 0000024a`0d2fa240 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!clmdep_asio::io_service::run+0x97
+00007ffb`c255cd30     : 0000024a`64e691e0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<std::function<void __cdecl(void)> >,0>+0x18
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  78  Id: 7104.2cbc Suspend: 1 Teb: 0000004c`ff7ae000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 0000004c`a337fcf0 00000000`00000000 0000024a`6778d300 0000024b`8b693e40 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`37cfb4df     : 00000000`00000000 00000000`0000000c 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`37cfdea4     : 00000000`00000000 00007ffb`ffffffff 0000024a`6778d300 0000004c`a337fe40 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::do_one+0x2af
+00007ff7`37c0f41b     : 0000024a`0dec8f50 00000000`00000000 00000000`00000000 00007ffb`c0b96530 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::run+0x114
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!boost::asio::io_context::run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::Run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::AsyncRun::__l2::<lambda_bd0f045033673a998c7ccb491d9c026e>::operator()+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!std::invoke+0x1f
+00007ffb`c255cd30     : 0000024a`64e69990 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<<lambda_bd0f045033673a998c7ccb491d9c026e> >,0>+0x2b
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  79  Id: 7104.4b30 Suspend: 1 Teb: 0000004c`ff7b0000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 0000004c`a3eff6e0 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`37cfb4df     : 00000000`00000000 00000000`00000006 00000000`00000000 0000024a`6778d300 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`37cfdea4     : 00000000`00000000 00000000`ffffffff 0000024a`6778d300 0000004c`a3eff830 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::do_one+0x2af
+00007ff7`37c0f41b     : 0000024a`0decb350 00000000`00000000 00000000`00000000 00007ffb`c253c45f : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::run+0x114
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!boost::asio::io_context::run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::Run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::AsyncRun::__l2::<lambda_bd0f045033673a998c7ccb491d9c026e>::operator()+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!std::invoke+0x1f
+00007ffb`c255cd30     : 0000024a`64e69240 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<<lambda_bd0f045033673a998c7ccb491d9c026e> >,0>+0x2b
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  80  Id: 7104.3e14 Suspend: 1 Teb: 0000004c`ff7b2000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 00000000`00000000 00000000`00000000 00000000`00000002 00007ff7`3c17c1c0 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`37cfb4df     : 00000000`00000000 00000000`00000008 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`37cfdea4     : 00000000`00000000 00000000`ffffffff 0000024a`6778d300 0000004c`a4a7f9c0 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::do_one+0x2af
+00007ff7`37c0f41b     : 0000024a`0decf100 00000000`00000000 00000000`00000000 00007ffb`c253c45f : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::run+0x114
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!boost::asio::io_context::run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::Run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::AsyncRun::__l2::<lambda_bd0f045033673a998c7ccb491d9c026e>::operator()+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!std::invoke+0x1f
+00007ffb`c255cd30     : 0000024a`64e699c0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<<lambda_bd0f045033673a998c7ccb491d9c026e> >,0>+0x2b
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  81  Id: 7104.4014 Suspend: 1 Teb: 0000004c`ff7b4000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 0000024a`0c8b76d0 0000024a`0c8b76c0 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`37cfb4df     : 00000000`00000000 00000000`00000001 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`37cfdea4     : 00000000`00000000 00000000`ffffffff 0000024a`6778f640 0000004c`a55ffcc0 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::do_one+0x2af
+00007ff7`37c0f41b     : 0000024a`0decf0e0 00000000`00000000 00000000`00000000 00007ffb`c253c45f : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::run+0x114
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!boost::asio::io_context::run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::Run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::AsyncRun::__l2::<lambda_bd0f045033673a998c7ccb491d9c026e>::operator()+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!std::invoke+0x1f
+00007ffb`c255cd30     : 0000024a`64e69b40 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<<lambda_bd0f045033673a998c7ccb491d9c026e> >,0>+0x2b
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  82  Id: 7104.4408 Suspend: 1 Teb: 0000004c`ff7b6000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`37cfb4df     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`37cfde77     : 00000000`00000000 00000000`ffffffff 0000024a`6778f640 0000004c`a617fc40 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::do_one+0x2af
+00007ff7`37c0f41b     : 0000024a`0dec9be0 00000000`00000000 00000000`00000000 00007ffb`c253c45f : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::run+0xe7
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!boost::asio::io_context::run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::Run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::AsyncRun::__l2::<lambda_bd0f045033673a998c7ccb491d9c026e>::operator()+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!std::invoke+0x1f
+00007ffb`c255cd30     : 0000024a`64e69c30 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<<lambda_bd0f045033673a998c7ccb491d9c026e> >,0>+0x2b
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  83  Id: 7104.7a28 Suspend: 1 Teb: 0000004c`ff7b8000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c2142d5c     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtRemoveIoCompletion+0x14
+00007ff7`37cfb4df     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : KERNELBASE!GetQueuedCompletionStatus+0x6c
+00007ff7`37cfde77     : 00000000`00000000 00000000`ffffffff 0000024a`6778f640 0000004c`a6cff960 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::do_one+0x2af
+00007ff7`37c0f41b     : 0000024a`0dec4490 00000000`00000000 00000000`00000000 00007ffb`c253c45f : CarlaUE4_Win64_Shipping!boost::asio::detail::win_iocp_io_context::run+0xe7
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!boost::asio::io_context::run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::Run+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!carla::ThreadPool::AsyncRun::__l2::<lambda_bd0f045033673a998c7ccb491d9c026e>::operator()+0x1f
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!std::invoke+0x1f
+00007ffb`c255cd30     : 0000024a`64e69c90 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!std::thread::_Invoke<std::tuple<<lambda_bd0f045033673a998c7ccb491d9c026e> >,0>+0x2b
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  84  Id: 7104.2618 Suspend: 1 Teb: 0000004c`ff7ba000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3a795923     : 0000024a`63aeb0c0 00000000`00000000 00000000`00000000 00000000`0000654c : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`37cffd75     : 00000000`00000000 00000000`00000000 ffffffff`fffffffe 00000000`00000000 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_thread::func<boost::asio::detail::win_iocp_io_context::timer_thread_function>::run+0x33
+00007ffb`c255cd30     : 0000024a`63aeb0c0 0000024a`64e69cc0 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_thread_function+0x25
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  85  Id: 7104.adf8 Suspend: 1 Teb: 0000004c`ff7bc000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3a795923     : 0000024a`0c548940 00000000`00000000 00000000`00000000 00000000`00006578 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`37cffd75     : 00000000`00000000 00000000`00000000 ffffffff`fffffffe 00000000`00000000 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_thread::func<boost::asio::detail::win_iocp_io_context::timer_thread_function>::run+0x33
+00007ffb`c255cd30     : 0000024a`0c548940 0000024a`64358c50 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!boost::asio::detail::win_thread_function+0x25
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x30
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  86  Id: 7104.9bdc Suspend: 1 Teb: 0000004c`ff7be000 Unfrozen "RenderThread 1"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c213be9f     : 00007ff7`3c80b810 00000000`00099d00 00000000`00000000 00000000`00000000 : ntdll!NtWaitForSingleObject+0x14
+00007ff7`3855f7ad     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000350 : KERNELBASE!WaitForSingleObjectEx+0xaf
+00007ff7`383c1aff     : 0000024a`64147758 0000024a`00000000 0000004c`816ffb00 00000416`beb7e93b : CarlaUE4_Win64_Shipping!FEventWin::Wait+0x1dd
+00007ff7`383c1f9e     : 0000024a`64147720 00000000`00000000 ffffffff`ffffff01 00000000`00000000 : CarlaUE4_Win64_Shipping!FNamedTaskThread::ProcessTasksNamedThread+0x59f
+00007ff7`396158d2     : 0000024a`63c74ec0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FNamedTaskThread::ProcessTasksUntilQuit+0x6e
+00007ff7`39616493     : 0000024a`63c7bb60 00000000`00000000 00000000`00000000 0000024a`63c7bb60 : CarlaUE4_Win64_Shipping!RenderingThreadMain+0x72
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 ffffffff`ffffffff : CarlaUE4_Win64_Shipping!FRenderingThread::Run+0x33
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024b`86046460 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+  87  Id: 7104.6e9c Suspend: 1 Teb: 0000004c`ff7c0000 Unfrozen "RTHeartBeat 1"
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c4dd3924     : 00007ff7`3c63c8c0 0000024a`61878bb0 00000000`0000278a 0000024a`0f84b850 : ntdll!NtDelayExecution+0x14
+00007ffb`c21abb01     : 00000000`00000000 00000000`00000000 0000004c`8508fe00 00000000`00000000 : ntdll!RtlDelayExecution+0x34
+00007ff7`3855e61c     : 00000000`00000000 0000004c`00000000 ffffffff`ffff15a0 00000000`00003524 : KERNELBASE!SleepEx+0x91
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!FWindowsPlatformProcess::SleepNoStats+0x1f
+00007ff7`396165e7     : 0000024a`647f1310 0000004c`8508fe70 00000416`beb7e893 00000000`00000000 : CarlaUE4_Win64_Shipping!FWindowsPlatformProcess::Sleep+0x19c
+00007ff7`3855e07b     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRenderingThreadTickHeartbeat::Run+0x87
+00007ff7`3855bce1     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::Run+0x3b
+00007ffb`c474cd87     : 0000024b`860464b0 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!FRunnableThreadWin::GuardedRun+0x71
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+
+# 88  Id: 7104.8ed4 Suspend: 1 Teb: 0000004c`ff7c2000 Unfrozen
+RetAddr               : Args to Child                                                           : Call Site
+00007ffb`c4e35bde     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!DbgBreakPoint
+00007ffb`c474cd87     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!DbgUiRemoteBreakin+0x4e
+00007ffb`c4dacaec     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+quit:
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\atlmfc.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\ObjectiveC.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\concurrency.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\cpp_rest.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\stl.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Data.Json.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Geolocation.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Sensors.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Media.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\windows.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\winrt.natvis'
