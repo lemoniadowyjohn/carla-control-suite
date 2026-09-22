@@ -1,0 +1,59 @@
+{
+  "timestamp_utc": "2026-09-22T20:40:20.401513+00:00",
+  "status": "failed",
+  "reason": "insufficient_successful_runs",
+  "verdict": "VERDICT_UNDETERMINED",
+  "runs_requested": 2,
+  "runs_successful": 0,
+  "runs_timed_out": 0,
+  "hashes_computed": 0,
+  "inconclusive_reason": "insufficient_successful_runs",
+  "audit_pipeline_profile": {
+    "name": "relaxed_offline_determinism_audit",
+    "mode": "relaxed_offline",
+    "thesis_strict_equivalent": false,
+    "description": "Determinism audit intentionally forces relaxed offline pipeline flags for reproducible hash comparison; this profile is not thesis-strict.",
+    "offline_only_requested": true,
+    "forced_env_overrides": {
+      "UP_THESIS_STRICT": "0",
+      "UP_STRICT_QUALITY_GATES": "0",
+      "UP_DEM_STRICT_MODE": "0",
+      "UP_DEM_FULL_COVERAGE_STRICT": "0",
+      "UP_FAIL_ON_FLAT_ELEVATION": "0",
+      "UP_DISABLE_CARLA": "1",
+      "UP_NO_CARLA_AUTOSTART": "1",
+      "ENABLE_OSM2WORLD": "0",
+      "UP_ENABLE_OSM2WORLD": "0"
+    },
+    "conditional_env_overrides": {
+      "UP_OFFLINE_ONLY": "1"
+    }
+  },
+  "run_timeout_s": 500,
+  "run_results": [
+    {
+      "run_index": 0,
+      "run_tag": "audit_run_000",
+      "return_code": 1,
+      "output_dir": "G:\\carla-rq1-reverify-20260923\\ultimate_pipeline_out\\audit_run_000",
+      "success": false,
+      "wall_clock_s": 52.798,
+      "timeout_hit": false
+    },
+    {
+      "run_index": 1,
+      "run_tag": "audit_run_001",
+      "return_code": 1,
+      "output_dir": "G:\\carla-rq1-reverify-20260923\\ultimate_pipeline_out\\audit_run_001",
+      "success": false,
+      "wall_clock_s": 51.135,
+      "timeout_hit": false
+    }
+  ],
+  "determinism_thesis_table_csv": "reports\\rq1_reverify_smoke_20260923\\out\\determinism_thesis_table.csv",
+  "required_successful_runs": 2,
+  "source_osm_provenance": {
+    "identities": [],
+    "hashes": []
+  }
+}
