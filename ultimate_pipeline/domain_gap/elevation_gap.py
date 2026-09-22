@@ -66,32 +66,13 @@ def _read_header_offset_xy(root: ET.Element) -> Tuple[float, float]:
 
 
 def _effective_header_offset_xy(root: ET.Element) -> Tuple[float, float]:
-    offset_x, offset_y = _read_header_offset_xy(root)
-    if abs(offset_x) <= 1e-9 and abs(offset_y) <= 1e-9:
-        return 0.0, 0.0
+    """Read header offset directly without magnitude heuristics.
 
-    # Aligned XODRs can keep the historical header offset while their
-    # planView geometry has already been rewritten into absolute projected
-    # coordinates. Re-applying the offset here would double-shift the map.
-    geom_count = 0
-    max_abs_geom = 0.0
-    for idx, geom in enumerate(root.findall("./road/planView/geometry")):
-        geom_count += 1
-        max_abs_geom = max(
-            max_abs_geom,
-            abs(_safe_float(geom.get("x"), 0.0)),
-            abs(_safe_float(geom.get("y"), 0.0)),
-        )
-        if idx >= 255:
-            break
-    if max_abs_geom >= 100000.0 and max(abs(offset_x), abs(offset_y)) >= 1000.0:
-        # Global-frame geometry with a large offset: offset already baked in.
-        return 0.0, 0.0
-    if geom_count == 0 and max(abs(offset_x), abs(offset_y)) > 1e-9:
-        # EG-001: No geometry elements found — cannot determine coordinate frame.
-        # Suppress offset as safe default to avoid phantom double-shift.
-        return 0.0, 0.0
-    return offset_x, offset_y
+    The offset values are taken as-is from the XODR header. Magnitude-based
+    heuristics for detecting "already-baked-in" offsets are unreliable and
+    cause falsepositives when legitimate large offsets are present.
+    """
+    return _read_header_offset_xy(root)
 
 
 def _parse_elevation_segments(road: ET.Element) -> List[Tuple[float, float, float, float, float]]:
@@ -162,17 +143,26 @@ def _sample_arc(
 
 
 def _sample_geometry_points(geom: ET.Element, offset_x: float, offset_y: float) -> List[Tuple[float, float]]:
+    """Sample points along any OpenDRIVE geometry primitive using canonical evaluator."""
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
+
     x0 = _safe_float(geom.get("x"), 0.0) + float(offset_x)
     y0 = _safe_float(geom.get("y"), 0.0) + float(offset_y)
     hdg = _safe_float(geom.get("hdg"), 0.0)
     length = max(0.0, _safe_float(geom.get("length"), 0.0))
     t_values = (0.0, 0.5, 1.0)
-    if geom.find("arc") is not None:
-        curvature = _safe_float(geom.find("arc").get("curvature"), 0.0)
-        return _sample_arc(x0, y0, hdg, length, curvature, t_values)
-    if geom.find("paramPoly3") is not None:
-        return sample_parampoly3_points(geom, x0, y0, hdg, length, t_values)
-    return _sample_line(x0, y0, hdg, length, t_values)
+
+    # Use canonical evaluator for all primitive types
+    points: List[Tuple[float, float]] = []
+    for t in t_values:
+        s = length * t
+        try:
+            pose = pose_at_s(geom, s)
+            points.append((pose.x, pose.y))
+        except Exception:
+            # Fallback to line sampling if canonical evaluator fails
+            points.append((x0 + s * math.cos(hdg), y0 + s * math.sin(hdg)))
+    return points
 
 
 def _road_sample_positions(length_m: float, samples_per_road: int) -> List[float]:

@@ -34,6 +34,29 @@ def _sample_arc(x0: float, y0: float, hdg: float, length: float, curvature: floa
     return pts
 
 
+def _sample_geometry_canonical(geom, step: float) -> List[Tuple[float, float]]:
+    """Sample points along any OpenDRIVE geometry primitive using canonical evaluator."""
+    import xml.etree.ElementTree as ET
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
+
+    length = float(geom.get("length", 0.0))
+    if length <= 0:
+        return []
+
+    pts: List[Tuple[float, float]] = []
+    n = max(1, int(length / step))
+    for i in range(n + 1):
+        s = min(length, i * step)
+        try:
+            pose = pose_at_s(geom, s)
+            pts.append((pose.x, pose.y))
+        except Exception:
+            # Fallback: use geometry start point
+            pts.append((float(geom.get("x", 0.0)), float(geom.get("y", 0.0))))
+            break
+    return pts
+
+
 def check_dem_full_coverage(
     xodr_path: str,
     dem_tif_path: str,
@@ -103,11 +126,18 @@ def check_dem_full_coverage(
                             prim = "arc"
                             curvature = float(child.attrib.get("curvature", "0.0"))
                             break
+                        # spiral, poly3, paramPoly3 are now handled by canonical evaluator
+                        if cname in ("spiral", "poly3", "paramPoly3"):
+                            prim = cname
+                            break
 
                     if prim == "line":
                         pts = _sample_line(x0, y0, hdg, length, step_m)
                     elif prim == "arc":
                         pts = _sample_arc(x0, y0, hdg, length, curvature, step_m)
+                    elif prim in ("spiral", "poly3", "paramPoly3"):
+                        # Use canonical evaluator for complex primitives
+                        pts = _sample_geometry_canonical(el, step_m)
                     else:
                         pts = []
 

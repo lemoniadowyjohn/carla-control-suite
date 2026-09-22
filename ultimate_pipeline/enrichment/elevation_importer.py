@@ -876,15 +876,13 @@ class ElevationImporter:
                 except Exception:
                     road_length = 0.0
                 if road_length > 0.01:  # avoid division by near-zero
-                    # Compute endpoint using the last geometry only (stable and matches OpenDRIVE semantics):
-                    # end ≈ (x_last, y_last) + length_last * heading_last
+                    # Use canonical geometry evaluator for accurate endpoint computation
+                    from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint
                     x_end, y_end = x0, y0
                     try:
-                        gl = geos[-1]
-                        geo_len = float(gl.get("length", "0"))
-                        hdg = float(gl.get("hdg", "0"))
-                        x_end = float(gl.get("x", x_end)) + geo_len * math.cos(hdg)
-                        y_end = float(gl.get("y", y_end)) + geo_len * math.sin(hdg)
+                        last_geom = geos[-1]
+                        pose = endpoint(last_geom)
+                        x_end, y_end = pose.x, pose.y
                     except Exception:
                         # keep fallback (x0,y0) -> slope stays 0
                         x_end, y_end = x0, y0
