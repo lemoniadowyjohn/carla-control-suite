@@ -180,7 +180,7 @@ def road_max_lane_half_width(road: ET.Element) -> float:
             for w in lane.findall("width"):
                 a = abs(_safe_float(w.get("a")))
                 right_max = max(right_max, a) if math.isfinite(a) else float("inf")
-        section_half = left_max + right_max
+        section_half = max(left_max, right_max)
         if not math.isfinite(section_half):
             return float("inf")
         max_half = max(max_half, section_half)
