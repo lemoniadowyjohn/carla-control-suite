@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-08-17T18:23:04Z",
+  "updated_utc": "2026-08-17T18:23:04Z",
+  "env": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "87d868cac2846d41c1c3e15b57ce336055be5180",
+    "git_status_porcelain": "M .gitignore\n M campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json\n M campaigns/ingolstadt_cooked_perception_v1/source/manifest.json\n M submission/infrastructure/ultimate_pipeline/experiments/rl_fuzzer.py\n M submission/infrastructure/ultimate_pipeline/perception/dataset_generator.py\n M submission/infrastructure/ultimate_pipeline/perception/perception_runner_local_aug.py\n M ultimate_pipeline/config/settings.py\n M ultimate_pipeline/enrichment/elevation_importer.py\n M ultimate_pipeline/experiments/rl_fuzzer.py\n M ultimate_pipeline/main_pipeline.py\n M ultimate_pipeline/perception/dataset_generator.py\n M ultimate_pipeline/perception/perception_runner_local_aug.py\n M ultimate_pipeline/perception/record_route.py\n M ultimate_pipeline/perception/record_route_fixed.py\n M ultimate_pipeline/quality/check_lane_geometry_continuity.py\n M ultimate_pipeline/quality/check_lane_width_continuity.py\n M ultimate_pipeline/quality/map_acceptance.py\n M ultimate_pipeline/sensors/recorder.py\n M ultimate_pipeline/tests/unit/test_c11_inputs_manifest_guard.py\n M ultimate_pipeline/tools/carla_probe_map.py\n M ultimate_pipeline/tools/cert_runtime/run_p4_equiv.py\n?? campaigns/ingolstadt_cooked_perception_v1/regen/\n?? reports/post_audit_hardening/20260811T100609Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T101508Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T102003Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T105402Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T135605Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T182907Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260814T000000Z_E1_CRASH_SAFE_ELEVATION/\n?? reports/post_audit_hardening/B3_REGISTRY_20260817/\n?? reports/post_audit_hardening/C0_CONTINUITY_STAGE_TRACE.json\n?? reports/post_audit_hardening/C11_REGEN_VERIFY_20260817/\n?? reports/post_audit_hardening/C11_reproducibility_and_governance.md\n?? reports/post_audit_hardening/C1_LIVE_CARLA_LOAD_20260817/\n?? reports/post_audit_hardening/C1_PIN_20260817/\n?? reports/post_audit_hardening/C1_REMEASURE_20260817/\n?? reports/post_audit_hardening/C6_geometric_continuity_checker_correctness.md\n?? reports/post_audit_hardening/C8_perception_dataset_correctness.md\n?? reports/post_audit_hardening/C9_gate_checker_correctness_sweep.md\n?? reports/post_audit_hardening/DEEP_QUALITY_SWEEP_20260817/\n?? reports/post_audit_hardening/LIVE_RUN_PROTOCOL_MAP.md\n?? reports/post_audit_hardening/MASTER_REMEDIATION_PLAN_20260816.md\n?? reports/post_audit_hardening/OPENDDRIVE_GEN_PROBE/\n?? reports/post_audit_hardening/OPENDDRIVE_GEN_WATCH.json\n?? reports/post_audit_hardening/OPENDDRIVE_SMOOTH_TEST.json\n?? reports/post_audit_hardening/PHASE6_AND_NONCODE_GATES_20260817.md\n?? reports/post_audit_hardening/PIPELINE_CRITICAL_AUDIT_20260816.md\n?? reports/post_audit_hardening/_proc_smoke_log/\n?? scripts/\n?? tests/unit/test_c12_explicit_dr_wiring.py\n?? tests/unit/test_component_reachability.py\n?? tests/unit/test_elevation_grade_clamp.py\n?? tests/unit/test_recorder_semseg_layout.py\n?? tests/unit/test_regen_map_of_record_sumo_guard.py\n?? tests/unit/test_rl_fuzzer.py\n?? tests/unit/test_stage8h_map_hygiene.py\n?? ultimate_pipeline/pipeline_stages/stage_08_hygiene.py\n?? ultimate_pipeline/tests/unit/test_inputs_manifest_default.py"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "3ef7de8ebb549a36db4dc557d30199d68d3b1e46898c3a95da9c459b57d5385b",
+    "snapshot_md5": "3fe6154544707879c0d17f3432d33dc8",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\osm\\ingolstadt.osm",
+      "exists": false
+    },
+    "DEM_TIF": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5076,
+      "sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+      "md5": "6c4a53158d91e8e196d5a2fe5a8006db"
+    },
+    "INPUT_XODR": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T202220Z\\seed_from_osm.xodr",
+      "exists": true,
+      "size_bytes": 83433072,
+      "sha256": "4c4d7d23c3863df1edc92a6b80bae445a4d6b2069ce89d64c432a5648c94e012",
+      "md5": "5fa867a28731ef25fd7ea4035ce11b79"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  }
+}

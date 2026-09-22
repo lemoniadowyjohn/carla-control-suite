@@ -1,0 +1,263 @@
+{
+  "issues": [
+    {
+      "code": "missing_offset",
+      "severity": "warn",
+      "message": "Missing <offset> in <header> (recommended).",
+      "context": {}
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "190",
+        "incomingRoad": "46794"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "190",
+        "connectingRoad": "60528"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "49806"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60585"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "49806"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60586"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "49806"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60587"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "42447"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60588"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "42447"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60589"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "42447"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60590"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "44914"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60591"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "191",
+        "incomingRoad": "44914"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "191",
+        "connectingRoad": "60592"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "1989",
+        "incomingRoad": "49083"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "1989",
+        "connectingRoad": "61067"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "1990",
+        "incomingRoad": "44284"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "1990",
+        "connectingRoad": "61068"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "2397",
+        "incomingRoad": "44913"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "2397",
+        "connectingRoad": "64320"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "2914",
+        "incomingRoad": "51081"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "2914",
+        "connectingRoad": "67911"
+      }
+    },
+    {
+      "code": "junction_missing_incoming",
+      "severity": "error",
+      "message": "Junction connection references missing incomingRoad.",
+      "context": {
+        "junction": "2915",
+        "incomingRoad": "45958"
+      }
+    },
+    {
+      "code": "junction_missing_connecting",
+      "severity": "error",
+      "message": "Junction connection references missing connectingRoad.",
+      "context": {
+        "junction": "2915",
+        "connectingRoad": "67912"
+      }
+    }
+  ],
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T142310Z\\pipeline_out\\08h3_zseams_repaired.xodr"
+}

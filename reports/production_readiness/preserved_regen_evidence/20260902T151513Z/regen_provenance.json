@@ -1,0 +1,67 @@
+{
+  "acceptance": {
+    "hard_fail_reasons": [],
+    "metrics": {
+      "buildings_count": 5682,
+      "dem_coverage_ratio": 1.0,
+      "elevation_stats": {
+        "z_max": 406.28965,
+        "z_min": 361.859323,
+        "z_range": 44.43032699999998
+      },
+      "functional_signals_count": 21163,
+      "geometric_continuity_ok": true,
+      "isolated_lane_component_count": 27,
+      "lane_component_count": 35,
+      "lane_count_total": 34291,
+      "lane_ok": true,
+      "lane_successor_missing_count": 0,
+      "largest_component_fraction": 0.996734,
+      "largest_component_lane_count": 34179,
+      "length_invariant_tol_m": 1e-09,
+      "length_invariant_violations": 0,
+      "origin_centroid_distance_m": 9669.597903721966,
+      "seam_stats": {
+        "bad_fraction": 0.0,
+        "count": 0,
+        "max_bad_fraction": 0.002,
+        "max_jump": 1.0,
+        "p95_jump": 0.16385499999995545,
+        "total_jump_samples": 283474
+      },
+      "traffic_light_object_count": 21163,
+      "unmatched_cross_links": 14
+    },
+    "soft_warnings": [
+      {
+        "gate": "component_reachability",
+        "reason": "27 isolated lane components (largest=0.996734)"
+      }
+    ],
+    "valid_for_experiments": true
+  },
+  "candidate_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260902_160706_hygienefix.xodr",
+  "command": "python scripts/regen_map_of_record.py",
+  "emitted_candidate_sha256": "7a207b575ddac0a074cf8e8eb1852087459535e5ab7fa8dcd3792e32dd29b03d",
+  "final_xodr_sha256": "7a207b575ddac0a074cf8e8eb1852087459535e5ab7fa8dcd3792e32dd29b03d",
+  "generated_at_utc": "2026-09-02T14:07:06.730001Z",
+  "git_dirty": true,
+  "git_sha": "1121e7c1eef808cdf561dced6efea21266110326",
+  "inputs_manifest": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\INPUTS_MANIFEST.json",
+  "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "seed_xodr_sha256": "99ee7353c6507f5642a164c2b3c493d92ad355f382dfa5dd4f3f1a03e8b5170a",
+  "settings_snapshot": {
+    "ENABLE_BUILDINGS": true,
+    "ENABLE_MAP_HYGIENE": true,
+    "ENABLE_TRAFFIC_LIGHTS": true,
+    "INPUTS_MANIFEST": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\INPUTS_MANIFEST.json",
+    "PINNED_BUILDINGS_SOURCE": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "PREANCHOR_INPUT_XODR": false,
+    "RELEASE_PROFILE": "DEVELOPMENT"
+  },
+  "structural_signature": {
+    "num_junctions": 3568,
+    "num_roads": 32267,
+    "total_road_length": 1489145.5752454493
+  }
+}

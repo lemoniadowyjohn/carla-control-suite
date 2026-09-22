@@ -1,0 +1,12 @@
+{
+  "total_holes": 0,
+  "total_seams": 0,
+  "total_drops": 0,
+  "total_dead_connections": 0,
+  "total_issues": 0,
+  "holes": [],
+  "seams": [],
+  "drops": [],
+  "dead_connections": [],
+  "ok": true
+}

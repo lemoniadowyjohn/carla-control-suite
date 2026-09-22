@@ -1,0 +1,5 @@
+{
+  "exception_type": "RuntimeError",
+  "message": "[F3] Structure classification failed in THESIS_STRICT mode: [F3] cannot classify: F1 CRS contract not verified (verdict='AMBIGUOUS')",
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T115232Z\\pipeline_out"
+}

@@ -1,0 +1,217 @@
+{
+  "examples": [
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42330",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42335",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "unclassified",
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 3.5,
+      "road_id": "42336",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "unclassified",
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 3.5,
+      "road_id": "42337",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42338",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42339",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42342",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42343",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42344",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42345",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42346",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42347",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "unclassified",
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 3.5,
+      "road_id": "42348",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "unclassified",
+      "lane_id": "-1",
+      "new_width_m": 2.75,
+      "old_width_m": 3.5,
+      "road_id": "42349",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42350",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "residential",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42351",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42352",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42355",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42356",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "unclassified",
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 3.5,
+      "road_id": "42357",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "unclassified",
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 3.5,
+      "road_id": "42359",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42361",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42362",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42363",
+      "source": "osm_highway"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-2",
+      "new_width_m": 3.25,
+      "old_width_m": 3.5,
+      "road_id": "42363",
+      "source": "osm_highway"
+    }
+  ],
+  "ok": true,
+  "totals": {
+    "driving_lanes_checked": 34316,
+    "driving_widths_updated": 8557,
+    "missing_widths_added": 0,
+    "six_meter_placeholders_found": 0,
+    "source_counts": {
+      "fallback": 23447,
+      "osm_highway": 8471,
+      "osm_width": 305,
+      "osm_width_per_lane": 74
+    }
+  }
+}

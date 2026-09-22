@@ -1,0 +1,6 @@
+{
+  "failures": [],
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T221616Z\\pipeline_out\\08_final_20260817_221643_270199_laneSectionFixed_lane_successor_fixed.xodr",
+  "reclassified_none_or_restricted_lanes": 0,
+  "repairs": 0
+}

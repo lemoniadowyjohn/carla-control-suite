@@ -1,0 +1,10 @@
+{
+  "issues": [],
+  "n_issues": 0,
+  "ok": true,
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T151513Z\\final_rebased_deepaudit.xodr"
+}

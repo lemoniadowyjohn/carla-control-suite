@@ -1,0 +1,5 @@
+{
+  "status": "SKIP",
+  "reason": "simulation_gate_disabled",
+  "ENABLE_SIMULATION_GATE": false
+}

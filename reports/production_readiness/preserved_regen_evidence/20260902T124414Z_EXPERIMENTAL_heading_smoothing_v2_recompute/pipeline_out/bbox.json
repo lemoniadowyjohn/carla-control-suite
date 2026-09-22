@@ -1,0 +1,32 @@
+{
+  "bbox": {
+    "lat_max": 48.77444431571603,
+    "lat_min": 48.74935649548228,
+    "lon_max": 11.47882091528412,
+    "lon_min": 11.422268084715878
+  },
+  "bbox_hash_sha256": "0de9f3c973c8d6341f102eb90b7553cb110ac3c08e8642f6cdff10a057edf71a",
+  "bbox_in_map_crs": {
+    "maxx": 845938.739267,
+    "maxy": 5472741.9790667845,
+    "minx": 832671.67623237,
+    "miny": 5458671.10383447
+  },
+  "bbox_in_wgs84": {
+    "maxx": 13.760006806512743,
+    "maxy": 49.31661541252792,
+    "minx": 13.56640288457961,
+    "miny": 49.18311447075576
+  },
+  "georeference_params_complete": false,
+  "header_offset": {},
+  "map_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+  "map_crs_raw": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "map_crs_source": "manual_tmerc_forced",
+  "settings_snapshot_path": "settings_snapshot.json",
+  "settings_snapshot_sha256": "a066b012e60cd8c06e4c0e9a296bc60dc410275cf53d458333d046503564d08f",
+  "xodr_geoReference": "+proj=tmerc",
+  "xodr_geoReference_norm": "+proj=tmerc",
+  "xodr_path": "08h3_zseams_repaired.xodr",
+  "xodr_sha256": "ac931e68fb9f555e0945135b6e4d326b75de986eb25074d5a0a8fb9460c580c2"
+}

@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "geometry",
+  "message": null,
+  "error": "\u274c Failed to load DEM sampler in strict mode: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T202220Z\\pipeline_out\\06_geometry_frozen_20260817_202249_286024.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.",
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T202220Z\\pipeline_out",
+  "timestamp": "2026-08-17T21:07:15.084029"
+}

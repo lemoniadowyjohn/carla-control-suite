@@ -1,0 +1,293 @@
+{
+  "gates": {
+    "carla_compat_report": {
+      "errors": 0,
+      "issues": 29,
+      "ok": true,
+      "sources": [
+        "artifact"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "dem_coverage": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:05_elevation"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "dem_full_coverage": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:05_elevation"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "drivable_surface": {
+      "errors": 1,
+      "issues": 1,
+      "ok": false,
+      "sources": [
+        "stage:08G"
+      ],
+      "status": "fail",
+      "warnings": 0
+    },
+    "elevation_continuity": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:05_elevation",
+        "stage:09_tiling"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "elevation_seams": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:08H_hygiene",
+        "stage:08_final"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "elevation_stddev": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:05_elevation"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "elevation_variance": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:05_elevation"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "full_map_metrics": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:08H"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "geometric_continuity": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:06_continuity",
+        "stage:09_tiling"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "geometric_continuity_tiles": {
+      "errors": 1,
+      "issues": 1,
+      "ok": false,
+      "sources": [
+        "stage:09_tiling"
+      ],
+      "status": "fail",
+      "warnings": 0
+    },
+    "junction_integrity": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:03_topology_repair"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "lane_geometry_continuity": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:07_lanes"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "lane_link_check": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "artifact"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "lane_width_continuity": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:07_lanes",
+        "stage:09_tiling"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "lane_width_invariants": {
+      "errors": 0,
+      "issues": 0,
+      "ok": true,
+      "sources": [
+        "stage:08_final_selected"
+      ],
+      "status": "pass",
+      "warnings": 0
+    },
+    "origin_sanity": {
+      "errors": 1,
+      "issues": 1,
+      "ok": false,
+      "sources": [
+        "stage:08_final"
+      ],
+      "status": "fail",
+      "warnings": 1
+    },
+    "planview_internal_seams": {
+      "errors": 1,
+      "issues": 1,
+      "ok": false,
+      "sources": [
+        "stage:06_continuity"
+      ],
+      "status": "fail",
+      "warnings": 0
+    },
+    "planview_internal_seams_tiles": {
+      "errors": 1,
+      "issues": 1,
+      "ok": false,
+      "sources": [
+        "stage:09_tiling"
+      ],
+      "status": "fail",
+      "warnings": 0
+    },
+    "post_tiling_integrity": {
+      "errors": 1,
+      "issues": 1,
+      "ok": false,
+      "sources": [
+        "stage:09_tiling"
+      ],
+      "status": "fail",
+      "warnings": 0
+    },
+    "strict_xodr_validation": {
+      "errors": 28,
+      "issues": 197425,
+      "ok": false,
+      "sources": [
+        "artifact"
+      ],
+      "status": "fail",
+      "warnings": 197397
+    }
+  },
+  "generated_at_utc": "2026-09-02T11:18:33.358975+00:00",
+  "malformed_gate_reports": [],
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T124414Z_EXPERIMENTAL_heading_smoothing_v2_recompute\\pipeline_out",
+  "overall_ok": false,
+  "per_stage_failures": {
+    "06_continuity": [
+      "planview_internal_seams"
+    ],
+    "08G": [
+      "drivable_surface"
+    ],
+    "08_final": [
+      "origin_sanity"
+    ],
+    "09_tiling": [
+      "geometric_continuity_tiles",
+      "planview_internal_seams_tiles",
+      "post_tiling_integrity"
+    ]
+  },
+  "run_metadata": {
+    "bbox": {
+      "lat_max": 48.77444431571603,
+      "lat_min": 48.74935649548228,
+      "lon_max": 11.47882091528412,
+      "lon_min": 11.422268084715878
+    },
+    "elevation_z_max": 404.649,
+    "elevation_z_min": 361.475,
+    "elevation_z_range": 43.17399999999998,
+    "junctions": 3568,
+    "map_name": null,
+    "roads": 32297,
+    "seam_stats": {
+      "bad_fraction": 0.0,
+      "count": 0,
+      "max_bad_fraction": 0.002,
+      "max_jump": 1.0,
+      "p95_jump": 0.16385499999995545,
+      "total_jump_samples": 283473
+    }
+  },
+  "tolerances": {
+    "elevation_continuity": {
+      "eps_z": 0.5
+    },
+    "elevation_seams": {
+      "max_steps": 50,
+      "total_steps": 0
+    },
+    "geometric_continuity": {
+      "eps_hdg": 0.01,
+      "eps_xy": 0.05
+    },
+    "geometric_continuity_tiles": {
+      "eps_hdg": 0.01,
+      "eps_xy": 0.05
+    },
+    "lane_geometry_continuity": {
+      "lane_offset_eps": 0.05,
+      "lane_width_eps": 0.1
+    },
+    "planview_internal_seams": {
+      "eps_hdg_only_deg": 5.0,
+      "eps_xy_m": 0.2
+    },
+    "planview_internal_seams_tiles": {
+      "eps_hdg_only_deg": 5.0,
+      "eps_xy_m": 0.2
+    },
+    "post_tiling_integrity": {
+      "eps_hdg": 0.01,
+      "eps_xy": 0.05
+    }
+  }
+}

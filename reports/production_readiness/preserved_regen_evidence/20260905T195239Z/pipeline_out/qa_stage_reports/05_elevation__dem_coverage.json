@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "reason": "",
+  "threshold": 0.6,
+  "total_samples": 150,
+  "valid_samples": 150,
+  "nodata_samples": 0,
+  "out_of_bounds_samples": 0,
+  "invalid_samples": 0,
+  "valid_ratio": 1.0,
+  "dem_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+  "dem_crs": "GEOGCS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST]]",
+  "dem_bounds": [
+    11.312083322222236,
+    48.67430556666666,
+    11.537361100000014,
+    48.836250011111105
+  ],
+  "crs_conversion_applied": true,
+  "xodr_proj": "+proj=tmerc",
+  "sample_stats": {
+    "min_z": 364.1903381347656,
+    "max_z": 379.3562316894531,
+    "mean_z": 371.7030950927734
+  },
+  "warnings": []
+}

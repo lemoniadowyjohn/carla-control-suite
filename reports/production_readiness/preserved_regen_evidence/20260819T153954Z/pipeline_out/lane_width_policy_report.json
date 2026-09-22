@@ -1,0 +1,38 @@
+{
+  "examples": [
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.2,
+      "road_id": "72849",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.2,
+      "road_id": "72850",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.2,
+      "road_id": "72851",
+      "source": "fallback"
+    }
+  ],
+  "ok": true,
+  "totals": {
+    "driving_lanes_checked": 34316,
+    "driving_widths_updated": 3,
+    "missing_widths_added": 0,
+    "six_meter_placeholders_found": 0,
+    "source_counts": {
+      "fallback": 32297
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "final_integrity",
+  "message": null,
+  "error": "\n\u274c CARLA-FATAL: lane connectivity invariant violated\n\nCARLA requires every driving lane to have a successor.\nThe following lanes are invalid:\n\nRoad 42330 lane -1: missing <successor>\nRoad 42331 lane -1: missing <successor>\nRoad 42332 lane -1: missing <successor>\nRoad 42332 lane -2: missing <successor>\nRoad 42333 lane -1: missing <successor>\nRoad 42334 lane -1: missing <successor>\nRoad 42336 lane -1: missing <successor>\nRoad 42337 lane -1: missing <successor>\nRoad 42338 lane -1: missing <successor>\nRoad 42339 lane -1: missing <successor>\nRoad 42340 lane -1: missing <successor>\nRoad 42341 lane -1: missing <successor>\nRoad 42342 lane -1: missing <successor>\nRoad 42343 lane -1: missing <successor>\nRoad 42344 lane -1: missing <successor>\nRoad 42345 lane -1: missing <successor>\nRoad 42346 lane -1: missing <successor>\nRoad 42347 lane -1: missing <successor>\nRoad 42348 lane -1: missing <successor>\nRoad 42349 lane -1: missing <successor>\n\nTotal broken lanes: 10565\n\nFix lane links BEFORE CARLA load.\n",
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T211027Z\\pipeline_out",
+  "timestamp": "2026-08-17T22:09:53.722163"
+}

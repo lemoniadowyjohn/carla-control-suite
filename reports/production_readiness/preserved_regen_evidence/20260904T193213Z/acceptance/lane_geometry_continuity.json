@@ -1,0 +1,21 @@
+{
+  "issues": [
+    {
+      "boundary_s": 0.05,
+      "delta": 0.5,
+      "lane_id": "-1",
+      "next": 3.0,
+      "prev": 3.5,
+      "road_id": "46620",
+      "threshold": 0.1,
+      "type": "lane_width"
+    }
+  ],
+  "n_issues": 1,
+  "ok": false,
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\final_rebased.xodr"
+}

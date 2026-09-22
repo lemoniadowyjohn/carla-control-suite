@@ -1,0 +1,22 @@
+{
+  "CARLA_VISUAL_READY": "no",
+  "PERCEPTION_READY": "no",
+  "carla_visual_smoke_gate": {
+    "ok": false,
+    "reason": "carla_visual_smoke_gate_missing",
+    "status": "missing"
+  },
+  "carla_visual_smoke_gate_report_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\final_visual_smoke\\carla_visual_smoke_gate.json",
+  "failed_check_count": 0,
+  "junction_connector_risk_ok": null,
+  "junction_connector_risk_report_available": false,
+  "junction_connector_risk_report_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\junction_connector_risk.json",
+  "overlap_pair_count": 0,
+  "perception_gate_reason": "blocked_until_carla_visual_smoke_gate_passes",
+  "recommended_readiness_gate_command": "python -m ultimate_pipeline.tools.final_map_readiness_gate --xodr C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\08_final_20260904_210625_735679_laneSectionFixed_lane_successor_fixed.xodr --visual-gate-report C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\final_visual_smoke\\carla_visual_smoke_gate.json",
+  "recommended_visual_gate_command": "python -m ultimate_pipeline.tools.carla_visual_smoke_gate --xodr C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\08_final_20260904_210625_735679_laneSectionFixed_lane_successor_fixed.xodr --out C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\final_visual_smoke --strict",
+  "schema": "final_selected_xodr_status_v1",
+  "selected_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T210614Z\\pipeline_out\\08_final_20260904_210625_735679_laneSectionFixed_lane_successor_fixed.xodr",
+  "sha256": "4523e6f00533ba3d352cd7be5f7faeb1a20afb1137e720e858f76f5297675bed",
+  "worst_junction_sample": []
+}

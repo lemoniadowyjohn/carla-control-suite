@@ -1,0 +1,24 @@
+{
+  "enabled": true,
+  "returncode": 0,
+  "geometry_remove": true,
+  "ignore_errors": true,
+  "log_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T151513Z\\pipeline_out\\sumo_netconvert.log",
+  "warnings": {
+    "no_lane_edges": 0,
+    "sharp_turns": 6,
+    "incompatible_connections": 0,
+    "shape_failures": 0,
+    "stop_line_misalignments": 6
+  },
+  "gate_before": {
+    "junction_integrity": 0,
+    "lane_link_targets": 0,
+    "xodr_strict_errors": 0
+  },
+  "gate_after": {
+    "junction_integrity": 0,
+    "lane_link_targets": 0,
+    "xodr_strict_errors": 0
+  }
+}

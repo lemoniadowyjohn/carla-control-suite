@@ -1,0 +1,160 @@
+{
+  "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08_final_20260904_193226_697049_laneSectionFixed_lane_successor_fixed_linkpatched.xodr",
+  "ok": true,
+  "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08h3_zseams_repaired.xodr",
+  "stages": {
+    "degenerate_lanes": {
+      "details": [],
+      "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08h1_island_quarantined.xodr",
+      "min_lane_width": 0.1,
+      "ok": true,
+      "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08h2_degenerate_lanes_repaired.xodr",
+      "quarantined_count": 0,
+      "repaired_count": 0
+    },
+    "island_quarantine": {
+      "action": "applied",
+      "component_count_before": 10,
+      "component_sizes_before": [
+        32267,
+        16,
+        4,
+        4,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "count": 30,
+      "dangling_connections_dropped": 14,
+      "empty_junctions_dropped": 7,
+      "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08_final_20260904_193226_697049_laneSectionFixed_lane_successor_fixed_linkpatched.xodr",
+      "min_component_roads": 20,
+      "ok": true,
+      "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08h1_island_quarantined.xodr",
+      "quarantined_components": [
+        {
+          "road_ids": [
+            "42447",
+            "44913",
+            "44914",
+            "46794",
+            "49806",
+            "49807",
+            "60528",
+            "60585",
+            "60586",
+            "60587",
+            "60588",
+            "60589",
+            "60590",
+            "60591",
+            "60592",
+            "64320"
+          ],
+          "size": 16
+        },
+        {
+          "road_ids": [
+            "44284",
+            "49083",
+            "61067",
+            "61068"
+          ],
+          "size": 4
+        },
+        {
+          "road_ids": [
+            "45958",
+            "51081",
+            "67911",
+            "67912"
+          ],
+          "size": 4
+        },
+        {
+          "road_ids": [
+            "42367"
+          ],
+          "size": 1
+        },
+        {
+          "road_ids": [
+            "43405"
+          ],
+          "size": 1
+        },
+        {
+          "road_ids": [
+            "46369"
+          ],
+          "size": 1
+        },
+        {
+          "road_ids": [
+            "46698"
+          ],
+          "size": 1
+        },
+        {
+          "road_ids": [
+            "48129"
+          ],
+          "size": 1
+        },
+        {
+          "road_ids": [
+            "51654"
+          ],
+          "size": 1
+        }
+      ],
+      "quarantined_road_ids": [
+        "42367",
+        "42447",
+        "43405",
+        "44284",
+        "44913",
+        "44914",
+        "45958",
+        "46369",
+        "46698",
+        "46794",
+        "48129",
+        "49083",
+        "49806",
+        "49807",
+        "51081",
+        "51654",
+        "60528",
+        "60585",
+        "60586",
+        "60587",
+        "60588",
+        "60589",
+        "60590",
+        "60591",
+        "60592",
+        "61067",
+        "61068",
+        "64320",
+        "67911",
+        "67912"
+      ],
+      "remaining_road_count": 32267,
+      "total_roads": 32297
+    },
+    "true_zseams": {
+      "eps_z": 0.5,
+      "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08h2_degenerate_lanes_repaired.xodr",
+      "issues_after": 0,
+      "issues_before": 0,
+      "ok": true,
+      "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08h3_zseams_repaired.xodr",
+      "roads_modified": 0,
+      "roads_modified_ids": []
+    }
+  }
+}

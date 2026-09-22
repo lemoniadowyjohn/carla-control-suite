@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 1542, in run
+    self._run_internal()
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2108, in _run_internal
+    final_out = self._step8_markings_and_integrity(lanes_out, final_out)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2739, in _step8_markings_and_integrity
+    return _impl(self, lanes_out, final_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 822, in _step8_markings_and_integrity
+    raise e
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 656, in _step8_markings_and_integrity
+    assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\quality\check_lane_connectivity.py", line 379, in assert_all_lanes_have_successors
+    raise RuntimeError(
+RuntimeError: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 42330 lane -1: missing <successor>
+Road 42331 lane -1: missing <successor>
+Road 42332 lane -1: missing <successor>
+Road 42332 lane -2: missing <successor>
+Road 42333 lane -1: missing <successor>
+Road 42334 lane -1: missing <successor>
+Road 42336 lane -1: missing <successor>
+Road 42337 lane -1: missing <successor>
+Road 42338 lane -1: missing <successor>
+Road 42339 lane -1: missing <successor>
+Road 42340 lane -1: missing <successor>
+Road 42341 lane -1: missing <successor>
+Road 42342 lane -1: missing <successor>
+Road 42343 lane -1: missing <successor>
+Road 42344 lane -1: missing <successor>
+Road 42345 lane -1: missing <successor>
+Road 42346 lane -1: missing <successor>
+Road 42347 lane -1: missing <successor>
+Road 42348 lane -1: missing <successor>
+Road 42349 lane -1: missing <successor>
+
+Total broken lanes: 10565
+
+Fix lane links BEFORE CARLA load.
+

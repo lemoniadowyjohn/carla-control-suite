@@ -1,0 +1,82 @@
+{
+  "created_utc": "2026-09-05T10:41:54Z",
+  "updated_utc": "2026-09-05T11:14:01Z",
+  "env": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "0f3d28d5bb3b33ad99e9b5ae4774a308868485a5",
+    "git_status_porcelain": null
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "67b742c08337a17282a32c965877fb31655ae26cc02af89cbe8eaedc95ca3834",
+    "snapshot_md5": "05f0b8d6200b676386e8b610d9b5423d",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "exists": true,
+      "size_bytes": 11154738,
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "md5": "395355b0274a664c683f39b7d1b8d81b"
+    },
+    "DEM_TIF": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5076,
+      "sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+      "md5": "6c4a53158d91e8e196d5a2fe5a8006db"
+    },
+    "INPUT_XODR": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T124135Z\\seed_from_osm.xodr",
+      "exists": true,
+      "size_bytes": 83433072,
+      "sha256": "821cad7cc7fd5f62f0877dfc77d037b25b5389e39276e2ec489287c34ff1ca3d",
+      "md5": "2530af0981e18e8256e76ef760487888"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  },
+  "outputs": {
+    "final_xodr": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T124135Z\\pipeline_out\\08h4_lane_width_discontinuities_repaired.xodr",
+      "exists": true,
+      "size_bytes": 150623114,
+      "sha256": "144a769a88fd43d716ea665d9eb8c80d03939ec2a871749ce480d61abd0732e8",
+      "md5": "cb61bbd2ba4ae5800d4cdc0fe39be2d7"
+    },
+    "validation_report": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T124135Z\\pipeline_out\\logs\\validation_report_full.json",
+      "exists": false
+    },
+    "tile_metadata": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T124135Z\\pipeline_out\\tile_metadata.json",
+      "exists": true,
+      "size_bytes": 451683,
+      "sha256": "327eb232e6367a270641a0d06a7c1450b99f29886026c2f708e23e17013bbb42",
+      "md5": "64bc22f7e7b8d208fb196388f201d0fe"
+    }
+  }
+}

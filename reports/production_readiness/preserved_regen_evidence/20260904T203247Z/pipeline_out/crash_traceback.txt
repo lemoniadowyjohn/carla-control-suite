@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 1542, in run
+    self._run_internal()
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2082, in _run_internal
+    lanes_out = self._step7_lanes_sidewalks(geo_final, lanes_out)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2750, in _step7_lanes_sidewalks
+    return _impl(self, cont_out, lanes_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_07_lanes.py", line 191, in _step7_lanes_sidewalks
+    sidewalks_added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: SidewalkBuilder.add_sidewalks() got an unexpected keyword argument 'osm_meta'

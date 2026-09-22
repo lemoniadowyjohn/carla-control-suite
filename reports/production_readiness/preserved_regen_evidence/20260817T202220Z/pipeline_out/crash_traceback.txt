@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\enrichment\elevation_importer.py", line 1374, in make_raster_sampler
+    resolve_sampling_crs(
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\dem\dem_crs_contract.py", line 474, in resolve_sampling_crs
+    raise RuntimeError(
+RuntimeError: F1 CRS contract unresolved: cannot establish the geographic frame of C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\campaigns\ingolstadt_cooked_perception_v1\regen\20260817T202220Z\pipeline_out\06_geometry_frozen_20260817_202249_286024.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 305, in _step5_dem_and_geometry
+    sampler = ElevationImporter.make_raster_sampler(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\enrichment\elevation_importer.py", line 1380, in make_raster_sampler
+    raise RuntimeError(
+RuntimeError: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\campaigns\ingolstadt_cooked_perception_v1\regen\20260817T202220Z\pipeline_out\06_geometry_frozen_20260817_202249_286024.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 1542, in run
+    self._run_internal()
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2075, in _run_internal
+    geo_final = self._step5_geometry_elevation_continuity(topo_fixed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2716, in _step5_geometry_elevation_continuity
+    return _impl(self, topo_fixed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 170, in _step5_geometry_elevation_continuity
+    elev_out = self._step5_dem_and_geometry(frozen_before_elev, elev_out)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2719, in _step5_dem_and_geometry
+    return _impl(self, topo_fixed, elev_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 312, in _step5_dem_and_geometry
+    raise RuntimeError(
+RuntimeError: ❌ Failed to load DEM sampler in strict mode: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\campaigns\ingolstadt_cooked_perception_v1\regen\20260817T202220Z\pipeline_out\06_geometry_frozen_20260817_202249_286024.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.

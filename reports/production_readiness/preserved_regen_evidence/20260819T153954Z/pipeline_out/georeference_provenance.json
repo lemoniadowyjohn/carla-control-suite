@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\seed_from_osm.xodr",
+  "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\01_sanitized_20260819_154035_070780.xodr",
+  "coordinates_json": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\config\\coordinates.json",
+  "original_input_had_valid_georeference": true,
+  "policy_used": "preserve",
+  "action": "kept",
+  "reason": "already_valid",
+  "original_georeference_raw": "+proj=tmerc",
+  "original_georeference_normalized": "+proj=tmerc",
+  "final_georeference_raw": "+proj=tmerc",
+  "final_georeference_normalized": "+proj=tmerc",
+  "source_gps_bounds": {
+    "lat0": 48.74935649548228,
+    "lon0": 11.422268084715878
+  }
+}

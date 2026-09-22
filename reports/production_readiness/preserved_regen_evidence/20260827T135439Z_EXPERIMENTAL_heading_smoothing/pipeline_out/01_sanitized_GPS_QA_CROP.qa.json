@@ -1,0 +1,54 @@
+{
+  "ok": true,
+  "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260827T135439Z_EXPERIMENTAL_heading_smoothing\\pipeline_out\\01_sanitized_20260827_135440_606790.xodr",
+  "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260827T135439Z_EXPERIMENTAL_heading_smoothing\\pipeline_out\\01_sanitized_GPS_QA_CROP.xodr",
+  "qa_report_json": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260827T135439Z_EXPERIMENTAL_heading_smoothing\\pipeline_out\\01_sanitized_GPS_QA_CROP.qa.json",
+  "crop_center_wgs84": {
+    "lat": 48.76190040559916,
+    "lon": 11.4505445
+  },
+  "crop_radius_m": 800.0,
+  "retry_attempted": false,
+  "retry_radius_m": null,
+  "retry_roads_kept": null,
+  "roads_kept_initial": 1147,
+  "roads_kept": 1147,
+  "map_crs_source": "manual_tmerc_forced",
+  "map_crs_proj4": "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs",
+  "header_offset_policy": "gps_anchor_override",
+  "header_offset_source": "xodr_header_offset",
+  "header_offset_original": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "hdg": 0.0
+  },
+  "effective_offset_used": {
+    "x": -159221.1339423441,
+    "y": -61822.83773394488,
+    "z": 0.0,
+    "hdg": 0.0
+  },
+  "header_offset_error_m": 170802.32070836614,
+  "crop_center_map_crs": {
+    "x": 680084.6856952258,
+    "y": 5403884.708357111
+  },
+  "crop_center_map_crs_source": "map_crs_inferred",
+  "map_bbox_in_map_crs": {
+    "minx": 673451.7660659358,
+    "miny": 5396848.729479485,
+    "maxx": 686717.6053245158,
+    "maxy": 5410920.687234735
+  },
+  "crop_bbox_in_map_crs": {
+    "minx": 679284.6856952258,
+    "miny": 5403084.708357111,
+    "maxx": 680884.6856952258,
+    "maxy": 5404684.708357111
+  },
+  "intersection_ratio": 1.0,
+  "intersection_ratio_basis": "intersection_area / crop_bbox_area",
+  "roads_total": 32920,
+  "crop_radius_m_effective": 800.0
+}

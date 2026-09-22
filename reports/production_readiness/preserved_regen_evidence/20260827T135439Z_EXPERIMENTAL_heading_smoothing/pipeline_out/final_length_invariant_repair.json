@@ -1,0 +1,23 @@
+{
+  "after": {
+    "examples": [],
+    "max_excess_m": 0.0,
+    "roads_checked": 32297,
+    "violation_details": [],
+    "violations": 0
+  },
+  "before": {
+    "examples": [],
+    "max_excess_m": 0.0,
+    "roads_checked": 32297,
+    "violation_details": [],
+    "violations": 0
+  },
+  "input_output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260827T135439Z_EXPERIMENTAL_heading_smoothing\\pipeline_out\\08_final_20260827_135440_606790_laneSectionFixed_lane_successor_fixed.xodr",
+  "ok": true,
+  "repair": {
+    "applied": false,
+    "mode": "not_needed",
+    "roads_length_adjusted": 0
+  }
+}

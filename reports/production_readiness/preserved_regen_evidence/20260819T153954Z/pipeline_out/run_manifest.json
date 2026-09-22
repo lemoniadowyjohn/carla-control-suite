@@ -1,0 +1,82 @@
+{
+  "created_utc": "2026-08-19T13:40:54Z",
+  "updated_utc": "2026-08-19T15:09:54Z",
+  "env": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "559888b4a9b3b9c72dba57ab1d220b057a0b8d9c",
+    "git_status_porcelain": "?? campaigns/ingolstadt_cooked_perception_v1/regen/\n?? reports/post_audit_hardening/20260811T100609Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T101508Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T102003Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T105402Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T135605Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260811T182907Z_PROC_SMOKE/\n?? reports/post_audit_hardening/20260814T000000Z_E1_CRASH_SAFE_ELEVATION/\n?? reports/post_audit_hardening/C0_CONTINUITY_STAGE_TRACE.json\n?? reports/post_audit_hardening/C11_reproducibility_and_governance.md\n?? reports/post_audit_hardening/C12_regen_pin_drivability.md\n?? reports/post_audit_hardening/C6_geometric_continuity_checker_correctness.md\n?? reports/post_audit_hardening/C8_perception_dataset_correctness.md\n?? reports/post_audit_hardening/C9_gate_checker_correctness_sweep.md\n?? reports/post_audit_hardening/LIVE_RUN_PROTOCOL_MAP.md\n?? reports/post_audit_hardening/MASTER_REMEDIATION_PLAN_20260816.md\n?? reports/post_audit_hardening/OPENDDRIVE_GEN_PROBE/\n?? reports/post_audit_hardening/OPENDDRIVE_GEN_WATCH.json\n?? reports/post_audit_hardening/OPENDDRIVE_SMOOTH_TEST.json\n?? reports/post_audit_hardening/PIPELINE_CRITICAL_AUDIT_20260816.md\n?? reports/post_audit_hardening/_proc_smoke_log/\n?? scripts/analyze_xodr_s_length.py\n?? scripts/client_waypoint_probe.py\n?? scripts/drive_route_probe.py\n?? scripts/find_carla_server.py\n?? scripts/measure_candidate_acceptance.py\n?? scripts/opendrive_gen_probe.py\n?? scripts/opendrive_gen_watch.py\n?? scripts/opendrive_smooth_test.py\n?? scripts/patch_lengths_fullprec.py\n?? scripts/patch_stub_roads.py\n?? scripts/proc_smoke.py\n?? scripts/reports/\n?? scripts/run_full_v10.py\n?? scripts/scan_s_sources.py\n?? scripts/strip_junctions.py\n?? scripts/xodr_bisect.py"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "d72166ed2ef04ea368877fd1517d04e8d95f9b54453386e3186da6789f428e50",
+    "snapshot_md5": "3bf3409cef7eef217117416390b4dbf7",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "exists": true,
+      "size_bytes": 11154738,
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "md5": "395355b0274a664c683f39b7d1b8d81b"
+    },
+    "DEM_TIF": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5076,
+      "sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+      "md5": "6c4a53158d91e8e196d5a2fe5a8006db"
+    },
+    "INPUT_XODR": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\seed_from_osm.xodr",
+      "exists": true,
+      "size_bytes": 83433072,
+      "sha256": "ecc6fdfd91e99ad7f44d3d24bdac5ddef3c4ed2d522c60ff9c8a19964338b9c7",
+      "md5": "ecbf7833c686f8dc866610d275087157"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  },
+  "outputs": {
+    "final_xodr": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\08h3_zseams_repaired.xodr",
+      "exists": true,
+      "size_bytes": 145501574,
+      "sha256": "316e5c1a5103d90a2a9d97db56ed332e89f2cb3dceeda8781c66a0f2714ab160",
+      "md5": "a69a5438e2ddc575fe7e7b9723579f6f"
+    },
+    "validation_report": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\logs\\validation_report_full.json",
+      "exists": false
+    },
+    "tile_metadata": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\tile_metadata.json",
+      "exists": true,
+      "size_bytes": 451681,
+      "sha256": "8688145a803c702ce0db7a6fa79cf8e3872683de4d858b619973432b60abf406",
+      "md5": "8150e6a6ea42350f29d46be114e730c4"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "ingolstadt_auto_30",
+  "start_tile": "tile_12_7.xodr",
+  "target_tile": "tile_13_7.xodr",
+  "seed": 551437149,
+  "traffic_density": "high",
+  "weather": "fog"
+}

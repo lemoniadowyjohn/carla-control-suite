@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "severity": "pass",
+  "defaults": {
+    "default_width_m": 3.5,
+    "lane_types": [
+      "driving",
+      "shoulder",
+      "sidewalk",
+      "border",
+      "parking",
+      "biking",
+      "restricted",
+      "none"
+    ]
+  },
+  "totals": {
+    "missing_width_lanes_found": 0,
+    "missing_width_lanes_fixed": 0,
+    "missing_width_lanes_unfixed": 0
+  },
+  "examples": [],
+  "stage": "08_final_selected",
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T195239Z\\pipeline_out\\08_final_20260905_195253_736636_laneSectionFixed_lane_successor_fixed.xodr"
+}

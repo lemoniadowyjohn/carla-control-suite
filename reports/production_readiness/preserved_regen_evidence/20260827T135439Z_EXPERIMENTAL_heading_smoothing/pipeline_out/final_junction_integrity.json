@@ -1,0 +1,174 @@
+{
+  "ok": false,
+  "issue_count": 28,
+  "issues": [
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "190",
+      "connection_id": "0",
+      "incomingRoad": "46794"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "190",
+      "connection_id": "0",
+      "connectingRoad": "60528"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "0",
+      "incomingRoad": "49806"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "0",
+      "connectingRoad": "60585"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "1",
+      "incomingRoad": "49806"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "1",
+      "connectingRoad": "60586"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "2",
+      "incomingRoad": "49806"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "2",
+      "connectingRoad": "60587"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "3",
+      "incomingRoad": "42447"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "3",
+      "connectingRoad": "60588"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "4",
+      "incomingRoad": "42447"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "4",
+      "connectingRoad": "60589"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "5",
+      "incomingRoad": "42447"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "5",
+      "connectingRoad": "60590"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "6",
+      "incomingRoad": "44914"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "6",
+      "connectingRoad": "60591"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "191",
+      "connection_id": "7",
+      "incomingRoad": "44914"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "191",
+      "connection_id": "7",
+      "connectingRoad": "60592"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "1989",
+      "connection_id": "0",
+      "incomingRoad": "49083"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "1989",
+      "connection_id": "0",
+      "connectingRoad": "61067"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "1990",
+      "connection_id": "0",
+      "incomingRoad": "44284"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "1990",
+      "connection_id": "0",
+      "connectingRoad": "61068"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "2397",
+      "connection_id": "0",
+      "incomingRoad": "44913"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "2397",
+      "connection_id": "0",
+      "connectingRoad": "64320"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "2914",
+      "connection_id": "0",
+      "incomingRoad": "51081"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "2914",
+      "connection_id": "0",
+      "connectingRoad": "67911"
+    },
+    {
+      "type": "missing_incoming_road",
+      "junction_id": "2915",
+      "connection_id": "0",
+      "incomingRoad": "45958"
+    },
+    {
+      "type": "missing_connecting_road",
+      "junction_id": "2915",
+      "connection_id": "0",
+      "connectingRoad": "67912"
+    }
+  ]
+}

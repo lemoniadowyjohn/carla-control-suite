@@ -1,0 +1,15 @@
+{
+  "bbox_min_after": [
+    0.0,
+    0.0
+  ],
+  "bbox_min_before": [
+    832671.676,
+    5458671.104
+  ],
+  "dx": 832671.676,
+  "dy": 5458671.104,
+  "input_sha256": "2d02c69e90f5c5f3a3826399e87c2d172399862f70aa551cbada77beafbf218e",
+  "output_sha256": "424d002c1c0bce18def51278ff33514d790764c19eea87bdaedeb8669bd35c64",
+  "shifted": true
+}

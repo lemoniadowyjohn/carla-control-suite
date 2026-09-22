@@ -1,0 +1,60 @@
+{
+  "failed_gates": [],
+  "final_xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T151513Z\\final_rebased_deepaudit.xodr",
+  "final_xodr_sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2",
+  "hard_fail_reasons": [],
+  "linked_artifacts": {},
+  "metrics": {
+    "buildings_count": 5682,
+    "dem_coverage_ratio": 1.0,
+    "elevation_max_link_dz_m": 1.9244927432286545,
+    "elevation_missing_and_cliffs_ok": true,
+    "elevation_smoothness_issue_count": 0,
+    "elevation_smoothness_ok": true,
+    "elevation_stats": {
+      "z_max": 406.289714,
+      "z_min": 361.859343,
+      "z_range": 44.43037099999998
+    },
+    "elevation_zero_ratio": 0.0,
+    "functional_signals_count": 21163,
+    "geometric_continuity_ok": true,
+    "isolated_lane_component_count": 27,
+    "junction_integrity_issue_count": 0,
+    "junction_integrity_ok": true,
+    "lane_component_count": 35,
+    "lane_count_total": 34291,
+    "lane_geometry_continuity_issue_count": 0,
+    "lane_geometry_continuity_ok": true,
+    "lane_ok": true,
+    "lane_successor_missing_count": 0,
+    "lane_width_continuity_issue_count": 0,
+    "lane_width_continuity_ok": true,
+    "largest_component_fraction": 0.996734,
+    "largest_component_lane_count": 34179,
+    "length_invariant_tol_m": 1e-09,
+    "length_invariant_violations": 0,
+    "origin_centroid_distance_m": 9669.597903721966,
+    "physics_feasibility_issue_count": 0,
+    "physics_feasibility_ok": true,
+    "seam_stats": {
+      "bad_fraction": 0.0,
+      "count": 0,
+      "max_bad_fraction": 0.002,
+      "max_jump": 1.0,
+      "p95_jump": 0.16385499999995545,
+      "total_jump_samples": 283474
+    },
+    "traffic_light_object_count": 21163,
+    "unmatched_cross_links": 0
+  },
+  "run_id": "final_rebased_deepaudit",
+  "soft_warnings": [
+    {
+      "gate": "component_reachability",
+      "reason": "27 isolated lane components (largest=0.996734)"
+    }
+  ],
+  "valid": true,
+  "valid_for_experiments": true
+}

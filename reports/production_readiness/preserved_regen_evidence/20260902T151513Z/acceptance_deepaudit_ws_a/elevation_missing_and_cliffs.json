@@ -1,0 +1,20 @@
+{
+  "examples": [],
+  "link_pairs_checked": 22589,
+  "max_a": 406.289714,
+  "max_link_dz": 1.9244927432286545,
+  "median_nonzero_a": 371.014481,
+  "min_a": 361.859343,
+  "ok": true,
+  "p99_link_dz": 0.4919750608177651,
+  "roads_nonzero_a": 32267,
+  "roads_total": 32267,
+  "roads_zero_a": 0,
+  "thresholds": {
+    "max_link_dz_m": 50.0,
+    "max_zero_ratio": 0.01,
+    "zero_a_eps": 1e-06
+  },
+  "xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T151513Z\\final_rebased_junctionfix.xodr",
+  "zero_ratio": 0.0
+}

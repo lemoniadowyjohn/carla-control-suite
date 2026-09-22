@@ -1,0 +1,18 @@
+{
+  "bbox": {
+    "max_x": 13267.063267,
+    "max_y": 14070.875071,
+    "min_x": 0.000232,
+    "min_y": -0.000166
+  },
+  "centroid": {
+    "x": 6633.5317495,
+    "y": 7035.4374525
+  },
+  "centroid_distance_m": 9669.597903721966,
+  "fail_distance_m": 500000.0,
+  "ok": true,
+  "warn_distance_m": 50000.0,
+  "warnings": [],
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T221616Z\\final_rebased.xodr"
+}

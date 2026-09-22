@@ -1,0 +1,22 @@
+{
+  "origin_sanity": {
+    "ok": false,
+    "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T193213Z\\pipeline_out\\08_final_20260904_193226_697049_laneSectionFixed_lane_successor_fixed.xodr",
+    "warn_distance_m": 50000.0,
+    "fail_distance_m": 500000.0,
+    "bbox": {
+      "min_x": 832671.67623237,
+      "min_y": 5458671.10383447,
+      "max_x": 845938.739267,
+      "max_y": 5472741.97907092
+    },
+    "centroid": {
+      "x": 839305.207749685,
+      "y": 5465706.541452695
+    },
+    "centroid_distance_m": 5529772.258333476,
+    "warnings": [
+      "centroid distance 5529772.3m exceeds fail threshold"
+    ]
+  }
+}

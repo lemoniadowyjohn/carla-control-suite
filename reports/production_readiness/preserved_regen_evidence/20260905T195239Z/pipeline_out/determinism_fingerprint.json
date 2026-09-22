@@ -1,0 +1,30 @@
+{
+  "final_xodr": "b7f266ee9cc1217598451316341252a44fa6c0d3f3152bacdc0e9b3b64299ab7",
+  "enrichments_json": null,
+  "settings_snapshot": "1fbfa3c2fe4cbd3190a1b1ef1212304001c893a85db64dda307e55309bba89c0",
+  "seed": 42,
+  "seeds": {
+    "deterministic_seed": 42,
+    "python_hash_seed": null
+  },
+  "env": {
+    "UP_AUTOFIX_LANE_SUCCESSORS": "1",
+    "UP_CARLA_EXE": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+    "UP_CARLA_FALLBACK_ENABLED": "1",
+    "UP_CARLA_FALLBACK_MAPS": "Town10HD_Opt,Town05,Town03,Town01",
+    "UP_CARLA_RPC_PORT": "2000",
+    "UP_CARLA_STREAMING_PORT": "2001",
+    "UP_DISABLE_CARLA": "1",
+    "UP_ENABLE_MAP_HYGIENE": "1",
+    "UP_INPUTS_MANIFEST": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\INPUTS_MANIFEST.json",
+    "UP_INPUT_XODR": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T195239Z\\seed_from_osm.xodr",
+    "UP_OSM_FILE": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "UP_OUTPUT_DIR": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T195239Z\\pipeline_out",
+    "UP_PREANCHOR_INPUT_XODR": "0",
+    "UP_RELEASE_PROFILE": "PERCEPTION_RELEASE",
+    "UP_STRICT_LANE_SUCCESSORS": "0"
+  },
+  "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "os_info": "Windows-11-10.0.26200-SP0",
+  "git_commit": "2a3019cc78eeee726977e244f4a4e3dae296bd77"
+}

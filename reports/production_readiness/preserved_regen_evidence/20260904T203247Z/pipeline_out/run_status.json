@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "lanes",
+  "message": null,
+  "error": "SidewalkBuilder.add_sidewalks() got an unexpected keyword argument 'osm_meta'",
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260904T203247Z\\pipeline_out",
+  "timestamp": "2026-09-04T21:01:31.690868"
+}

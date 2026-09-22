@@ -1,0 +1,25 @@
+{
+  "continuity": {
+    "max_dhdg_rad": null,
+    "max_dxy_m": null,
+    "max_internal_seam_m": null
+  },
+  "crs": {
+    "crs_match": false,
+    "manual_present": false
+  },
+  "dem": {
+    "bbox_intersects_dem_bounds_wgs84": true,
+    "dem_nodata_ratio": 0.0,
+    "header_offset_policy": "xodr_header_preserved"
+  },
+  "elevation": {
+    "continuity_issue_count": 0,
+    "suspicious_ratio": null
+  },
+  "note": "Best-effort audit summary; does not affect QA gating.",
+  "run_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T221616Z\\pipeline_out",
+  "topology": {
+    "road_link_endpoint_max_abs_error_m": null
+  }
+}

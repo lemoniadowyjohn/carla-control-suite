@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "stddev": 5.155099963535441,
+  "min_stddev": 0.0,
+  "min_stddev_configured": 0.0,
+  "strict_dem": true,
+  "enforce_strict_default": false,
+  "strict_default_min_stddev": 0.01,
+  "effective_threshold_source": "settings.DEM_MIN_ELEVATION_STD",
+  "fail_on_flat_elevation": true
+}

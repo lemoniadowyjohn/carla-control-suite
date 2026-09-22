@@ -1,0 +1,40 @@
+{
+  "timestamp_utc": "2026-08-17T21:21:25.493808+00:00",
+  "roads_total": 32297,
+  "junctions_total": 3568,
+  "added_junction_links": 0,
+  "missing_road_to_junction_links_before": 0,
+  "missing_road_to_junction_links_after": 0,
+  "remaining_unlinked_nonjunction_roads": 6,
+  "suspicious_matches": [],
+  "notes": [
+    "No missing road-to-junction links were added."
+  ],
+  "missing_link_roads_non_junction_before": 6,
+  "junction_link_additions": 0,
+  "remaining_unlinked_incoming_roads": 0,
+  "remaining_unlinked_roads_non_junction": 6,
+  "remaining_unlinked_incoming_road_ids": [],
+  "remaining_unlinked_road_ids_non_junction": [
+    "42367",
+    "43405",
+    "46369",
+    "46698",
+    "48129",
+    "51654"
+  ],
+  "output_xodr_path": "08_final_20260817_221643_270199_laneSectionFixed_lane_successor_fixed_linkpatched.xodr",
+  "input_xodr_sha256": "d752d44e517f4ed6de10c497d7a81060a269f1c13d536377335b871b184e8879",
+  "output_xodr_sha256": "d752d44e517f4ed6de10c497d7a81060a269f1c13d536377335b871b184e8879",
+  "modified": false,
+  "source_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260817T221616Z\\pipeline_out\\08_final_20260817_221643_270199_laneSectionFixed_lane_successor_fixed.xodr",
+  "patch_enabled": true,
+  "lane_link_target_gate_pre": {
+    "ok": true,
+    "num_issues": 0
+  },
+  "lane_link_target_gate_post": {
+    "ok": true,
+    "num_issues": 0
+  }
+}

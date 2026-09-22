@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "n_issues": 0,
+  "issues": [],
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T124414Z_EXPERIMENTAL_heading_smoothing_v2_recompute\\pipeline_out\\07_lanes_20260902_124415_248924.xodr"
+}

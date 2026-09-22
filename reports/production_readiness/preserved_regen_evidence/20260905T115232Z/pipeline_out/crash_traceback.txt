@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 57, in _resolve_structure_road_ids
+    classification = classify_xodr_roads(xodr_path, osm_path=osm_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\enrichment\structure_classifier.py", line 393, in classify_xodr_roads
+    structures_record = load_osm_structures(
+                        ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\enrichment\structure_classifier.py", line 127, in load_osm_structures
+    tf, _record = _wgs84_to_native_transformer(xodr_path, osm_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\enrichment\structure_classifier.py", line 98, in _wgs84_to_native_transformer
+    raise RuntimeError(
+RuntimeError: [F3] cannot classify: F1 CRS contract not verified (verdict='AMBIGUOUS')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 1542, in run
+    self._run_internal()
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2075, in _run_internal
+    geo_final = self._step5_geometry_elevation_continuity(topo_fixed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2736, in _step5_geometry_elevation_continuity
+    return _impl(self, topo_fixed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 221, in _step5_geometry_elevation_continuity
+    elev_out = self._step5_dem_and_geometry(frozen_before_elev, elev_out)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2739, in _step5_dem_and_geometry
+    return _impl(self, topo_fixed, elev_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 551, in _step5_dem_and_geometry
+    structure_road_id_set, structure_report = _resolve_structure_road_ids(
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 76, in _resolve_structure_road_ids
+    raise RuntimeError(
+RuntimeError: [F3] Structure classification failed in THESIS_STRICT mode: [F3] cannot classify: F1 CRS contract not verified (verdict='AMBIGUOUS')

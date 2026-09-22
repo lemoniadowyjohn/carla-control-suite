@@ -1,0 +1,17 @@
+{
+  "action": "skipped",
+  "reason": "manual_xodr_missing",
+  "manual_xodr": "",
+  "manual_georef_raw": "",
+  "manual_proj4_norm": "",
+  "manual_params_complete": false,
+  "manual_xodr_sha256": "",
+  "auto_georef_raw_before": "+proj=tmerc",
+  "auto_proj4_norm_before": "+proj=tmerc",
+  "auto_params_complete_before": false,
+  "auto_xodr_sha256_before": "b6c9b24558f274d8640d08efd279188a25e891befce6b0bc505cf24e9218795d",
+  "offset": {},
+  "auto_georef_raw_after": "+proj=tmerc",
+  "auto_proj4_norm_after": "+proj=tmerc",
+  "auto_xodr_sha256_after": "b6c9b24558f274d8640d08efd279188a25e891befce6b0bc505cf24e9218795d"
+}

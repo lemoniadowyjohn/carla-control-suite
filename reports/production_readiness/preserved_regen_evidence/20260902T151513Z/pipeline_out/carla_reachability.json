@@ -1,0 +1,7 @@
+{
+  "ok": false,
+  "skip_reason": "carla_disabled",
+  "UP_DISABLE_CARLA": "1",
+  "ENABLE_CARLA": true,
+  "timestamp": "2026-09-02T15:15:33.458881"
+}

@@ -1,0 +1,93 @@
+{
+  "acceptance": {
+    "hard_fail_reasons": [],
+    "metrics": {
+      "buildings_count": 5682,
+      "carla_import_s_issue_count": 0,
+      "carla_import_s_ok": true,
+      "carla_opendrive_compat_issue_count": 0,
+      "carla_opendrive_compat_ok": true,
+      "collision_mesh_issue_count": 0,
+      "collision_mesh_ok": true,
+      "dem_coverage_ratio": 1.0,
+      "elevation_continuity_ok": true,
+      "elevation_max_link_dz_m": 1.9244867432286128,
+      "elevation_missing_and_cliffs_ok": true,
+      "elevation_smoothness_issue_count": 0,
+      "elevation_smoothness_ok": true,
+      "elevation_stats": {
+        "z_max": 406.28965,
+        "z_min": 361.859323,
+        "z_range": 44.43032699999998
+      },
+      "elevation_zero_ratio": 0.0,
+      "functional_signals_count": 21163,
+      "geometric_continuity_ok": true,
+      "isolated_lane_component_count": 27,
+      "junction_integrity_issue_count": 0,
+      "junction_integrity_ok": true,
+      "lane_component_count": 35,
+      "lane_count_total": 34291,
+      "lane_geometry_continuity_issue_count": 0,
+      "lane_geometry_continuity_ok": true,
+      "lane_ok": true,
+      "lane_successor_missing_count": 0,
+      "lane_width_continuity_issue_count": 0,
+      "lane_width_continuity_ok": true,
+      "largest_component_fraction": 0.996734,
+      "largest_component_lane_count": 34179,
+      "length_invariant_tol_m": 1e-09,
+      "length_invariant_violations": 0,
+      "origin_centroid_distance_m": 9669.597903721966,
+      "physics_feasibility_issue_count": 0,
+      "physics_feasibility_ok": true,
+      "post_tiling_integrity_issue_count": 0,
+      "post_tiling_integrity_ok": true,
+      "randomness_entropy_entropy": 0.9653456638069221,
+      "randomness_entropy_ok": true,
+      "seam_stats": {
+        "bad_fraction": 0.0,
+        "count": 0,
+        "max_bad_fraction": 0.002,
+        "max_jump": 1.0,
+        "p95_jump": 0.16385499999995545,
+        "total_jump_samples": 283474
+      },
+      "semantic_overlap_issue_count": 0,
+      "semantic_overlap_ok": true,
+      "traffic_light_object_count": 21163,
+      "unmatched_cross_links": 0
+    },
+    "soft_warnings": [
+      {
+        "gate": "component_reachability",
+        "reason": "27 isolated lane components (largest=0.996734)"
+      }
+    ],
+    "valid_for_experiments": true
+  },
+  "candidate_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+  "command": "python scripts/regen_map_of_record.py",
+  "emitted_candidate_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "final_xodr_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+  "generated_at_utc": "2026-09-05T18:28:47.714297Z",
+  "git_dirty": false,
+  "git_sha": "2a3019cc78eeee726977e244f4a4e3dae296bd77",
+  "inputs_manifest": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\INPUTS_MANIFEST.json",
+  "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "seed_xodr_sha256": "3cd809380a81f47bfd05861af804c69aa875705c7bd5072d3bf5755ad61a1128",
+  "settings_snapshot": {
+    "ENABLE_BUILDINGS": true,
+    "ENABLE_MAP_HYGIENE": true,
+    "ENABLE_TRAFFIC_LIGHTS": true,
+    "INPUTS_MANIFEST": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\INPUTS_MANIFEST.json",
+    "PINNED_BUILDINGS_SOURCE": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "PREANCHOR_INPUT_XODR": false,
+    "RELEASE_PROFILE": "DEVELOPMENT"
+  },
+  "structural_signature": {
+    "num_junctions": 3561,
+    "num_roads": 32267,
+    "total_road_length": 1489145.5752454493
+  }
+}

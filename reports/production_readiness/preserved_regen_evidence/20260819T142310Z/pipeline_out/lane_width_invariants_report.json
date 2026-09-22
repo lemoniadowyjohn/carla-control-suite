@@ -1,0 +1,54 @@
+{
+  "ok": true,
+  "severity": "warn",
+  "defaults": {
+    "default_width_m": 3.5,
+    "lane_types": [
+      "driving",
+      "shoulder",
+      "sidewalk",
+      "border",
+      "parking",
+      "biking",
+      "restricted",
+      "none"
+    ]
+  },
+  "totals": {
+    "missing_width_lanes_found": 5,
+    "missing_width_lanes_fixed": 5,
+    "missing_width_lanes_unfixed": 0
+  },
+  "examples": [
+    {
+      "road_id": "46620",
+      "lane_section_s": "0",
+      "lane_id": "-1",
+      "lane_type": "restricted"
+    },
+    {
+      "road_id": "74522",
+      "lane_section_s": "0",
+      "lane_id": "-1",
+      "lane_type": "none"
+    },
+    {
+      "road_id": "74527",
+      "lane_section_s": "0",
+      "lane_id": "-1",
+      "lane_type": "none"
+    },
+    {
+      "road_id": "74532",
+      "lane_section_s": "0",
+      "lane_id": "-1",
+      "lane_type": "none"
+    },
+    {
+      "road_id": "74537",
+      "lane_section_s": "0",
+      "lane_id": "-1",
+      "lane_type": "none"
+    }
+  ]
+}

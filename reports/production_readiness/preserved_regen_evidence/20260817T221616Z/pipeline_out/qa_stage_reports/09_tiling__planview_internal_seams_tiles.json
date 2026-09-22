@@ -1,0 +1,8471 @@
+{
+  "ok": true,
+  "total_tiles": 529,
+  "failed_tiles": [],
+  "tile_reports": [
+    {
+      "tile": "tile_0_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 170,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 170,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 144,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 11,
+        "num_pairs_checked": 656,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 242,
+        "num_pairs_checked": 629,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 88,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 15,
+        "num_pairs_checked": 476,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 18,
+        "num_pairs_checked": 568,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 168,
+        "num_pairs_checked": 1413,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 106,
+        "num_pairs_checked": 694,
+        "num_seams": 0,
+        "roads_checked": 27,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 358,
+        "num_pairs_checked": 1130,
+        "num_seams": 0,
+        "roads_checked": 69,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 175,
+        "num_pairs_checked": 980,
+        "num_seams": 0,
+        "roads_checked": 44,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 208,
+        "num_pairs_checked": 1204,
+        "num_seams": 0,
+        "roads_checked": 60,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 233,
+        "num_pairs_checked": 874,
+        "num_seams": 0,
+        "roads_checked": 60,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 626,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 59,
+        "num_pairs_checked": 271,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 11,
+        "num_pairs_checked": 514,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 502,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 502,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 104,
+        "num_pairs_checked": 835,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 72,
+        "num_pairs_checked": 463,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 57,
+        "num_pairs_checked": 613,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 18,
+        "num_pairs_checked": 845,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 101,
+        "num_pairs_checked": 763,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 120,
+        "num_pairs_checked": 1703,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 140,
+        "num_pairs_checked": 341,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 13,
+        "num_pairs_checked": 352,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 327,
+        "num_pairs_checked": 1427,
+        "num_seams": 0,
+        "roads_checked": 72,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 195,
+        "num_pairs_checked": 979,
+        "num_seams": 0,
+        "roads_checked": 54,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 364,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 198,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 187,
+        "num_pairs_checked": 673,
+        "num_seams": 0,
+        "roads_checked": 37,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 221,
+        "num_pairs_checked": 1201,
+        "num_seams": 0,
+        "roads_checked": 59,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 218,
+        "num_pairs_checked": 839,
+        "num_seams": 0,
+        "roads_checked": 48,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 228,
+        "num_pairs_checked": 865,
+        "num_seams": 0,
+        "roads_checked": 51,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 295,
+        "num_pairs_checked": 973,
+        "num_seams": 0,
+        "roads_checked": 68,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 137,
+        "num_pairs_checked": 664,
+        "num_seams": 0,
+        "roads_checked": 42,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 77,
+        "num_pairs_checked": 475,
+        "num_seams": 0,
+        "roads_checked": 17,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 64,
+        "num_pairs_checked": 745,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 19,
+        "num_pairs_checked": 1250,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 862,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 360,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_26.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 360,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 289,
+        "num_pairs_checked": 1338,
+        "num_seams": 0,
+        "roads_checked": 72,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 221,
+        "num_pairs_checked": 1303,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 64,
+        "num_pairs_checked": 681,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 30,
+        "num_pairs_checked": 864,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 97,
+        "num_pairs_checked": 1348,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 83,
+        "num_pairs_checked": 1258,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_11_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 125,
+        "num_pairs_checked": 374,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 49,
+        "num_pairs_checked": 320,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 369,
+        "num_pairs_checked": 1398,
+        "num_seams": 0,
+        "roads_checked": 90,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 366,
+        "num_pairs_checked": 654,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 264,
+        "num_pairs_checked": 1112,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 120,
+        "num_pairs_checked": 649,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 33,
+        "num_pairs_checked": 349,
+        "num_seams": 0,
+        "roads_checked": 13,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 256,
+        "num_pairs_checked": 1236,
+        "num_seams": 0,
+        "roads_checked": 65,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 231,
+        "num_pairs_checked": 961,
+        "num_seams": 0,
+        "roads_checked": 58,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 158,
+        "num_pairs_checked": 917,
+        "num_seams": 0,
+        "roads_checked": 45,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 273,
+        "num_pairs_checked": 1284,
+        "num_seams": 0,
+        "roads_checked": 70,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 92,
+        "num_pairs_checked": 642,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 62,
+        "num_pairs_checked": 785,
+        "num_seams": 0,
+        "roads_checked": 18,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 37,
+        "num_pairs_checked": 315,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 338,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 47,
+        "num_pairs_checked": 433,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 266,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 352,
+        "num_pairs_checked": 1047,
+        "num_seams": 0,
+        "roads_checked": 59,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 327,
+        "num_pairs_checked": 1565,
+        "num_seams": 0,
+        "roads_checked": 75,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 26,
+        "num_pairs_checked": 229,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 514,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 175,
+        "num_pairs_checked": 1309,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 77,
+        "num_pairs_checked": 1346,
+        "num_seams": 0,
+        "roads_checked": 17,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_12_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 212,
+        "num_pairs_checked": 867,
+        "num_seams": 0,
+        "roads_checked": 45,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 255,
+        "num_pairs_checked": 706,
+        "num_seams": 0,
+        "roads_checked": 55,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 268,
+        "num_pairs_checked": 890,
+        "num_seams": 0,
+        "roads_checked": 57,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 270,
+        "num_pairs_checked": 807,
+        "num_seams": 0,
+        "roads_checked": 46,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 231,
+        "num_pairs_checked": 1116,
+        "num_seams": 0,
+        "roads_checked": 53,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 105,
+        "num_pairs_checked": 802,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 240,
+        "num_pairs_checked": 1187,
+        "num_seams": 0,
+        "roads_checked": 63,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 143,
+        "num_pairs_checked": 743,
+        "num_seams": 0,
+        "roads_checked": 46,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 195,
+        "num_pairs_checked": 1010,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 178,
+        "num_pairs_checked": 1034,
+        "num_seams": 0,
+        "roads_checked": 41,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 183,
+        "num_pairs_checked": 1320,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 520,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 126,
+        "num_pairs_checked": 1061,
+        "num_seams": 0,
+        "roads_checked": 42,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 31,
+        "num_pairs_checked": 655,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 48,
+        "num_pairs_checked": 559,
+        "num_seams": 0,
+        "roads_checked": 18,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 38,
+        "num_pairs_checked": 822,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 162,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 84,
+        "num_pairs_checked": 822,
+        "num_seams": 0,
+        "roads_checked": 17,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 100,
+        "num_pairs_checked": 621,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 25,
+        "num_pairs_checked": 114,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 64,
+        "num_pairs_checked": 432,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 43,
+        "num_pairs_checked": 606,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 7,
+        "num_pairs_checked": 1027,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_13_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 28,
+        "num_pairs_checked": 322,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 311,
+        "num_pairs_checked": 1252,
+        "num_seams": 0,
+        "roads_checked": 68,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 413,
+        "num_pairs_checked": 988,
+        "num_seams": 0,
+        "roads_checked": 76,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 329,
+        "num_pairs_checked": 801,
+        "num_seams": 0,
+        "roads_checked": 57,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 181,
+        "num_pairs_checked": 1230,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 233,
+        "num_pairs_checked": 1178,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 38,
+        "num_pairs_checked": 567,
+        "num_seams": 0,
+        "roads_checked": 15,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 108,
+        "num_pairs_checked": 621,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 274,
+        "num_pairs_checked": 1091,
+        "num_seams": 0,
+        "roads_checked": 60,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 327,
+        "num_pairs_checked": 1133,
+        "num_seams": 0,
+        "roads_checked": 75,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 267,
+        "num_pairs_checked": 1370,
+        "num_seams": 0,
+        "roads_checked": 67,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 46,
+        "num_pairs_checked": 1251,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 193,
+        "num_pairs_checked": 1195,
+        "num_seams": 0,
+        "roads_checked": 46,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 292,
+        "num_pairs_checked": 1230,
+        "num_seams": 0,
+        "roads_checked": 62,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 242,
+        "num_pairs_checked": 1251,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 205,
+        "num_pairs_checked": 1517,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 162,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 57,
+        "num_pairs_checked": 1720,
+        "num_seams": 0,
+        "roads_checked": 23,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 81,
+        "num_pairs_checked": 748,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 169,
+        "num_pairs_checked": 678,
+        "num_seams": 0,
+        "roads_checked": 40,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 323,
+        "num_pairs_checked": 692,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 41,
+        "num_pairs_checked": 262,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 1269,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_14_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 114,
+        "num_pairs_checked": 1175,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 64,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 231,
+        "num_pairs_checked": 900,
+        "num_seams": 0,
+        "roads_checked": 62,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 209,
+        "num_pairs_checked": 733,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 73,
+        "num_pairs_checked": 579,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 268,
+        "num_pairs_checked": 619,
+        "num_seams": 0,
+        "roads_checked": 44,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 233,
+        "num_pairs_checked": 911,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 159,
+        "num_pairs_checked": 791,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 204,
+        "num_pairs_checked": 1233,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 281,
+        "num_pairs_checked": 1090,
+        "num_seams": 0,
+        "roads_checked": 63,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 310,
+        "num_pairs_checked": 879,
+        "num_seams": 0,
+        "roads_checked": 72,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 227,
+        "num_pairs_checked": 920,
+        "num_seams": 0,
+        "roads_checked": 57,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 234,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 281,
+        "num_pairs_checked": 953,
+        "num_seams": 0,
+        "roads_checked": 62,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 295,
+        "num_pairs_checked": 1127,
+        "num_seams": 0,
+        "roads_checked": 66,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 56,
+        "num_pairs_checked": 452,
+        "num_seams": 0,
+        "roads_checked": 19,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 44,
+        "num_pairs_checked": 802,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 268,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 268,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 32,
+        "num_pairs_checked": 1098,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 140,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 20,
+        "num_pairs_checked": 674,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 125,
+        "num_pairs_checked": 544,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 87,
+        "num_pairs_checked": 312,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 103,
+        "num_pairs_checked": 1360,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_15_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 119,
+        "num_pairs_checked": 768,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 163,
+        "num_pairs_checked": 774,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 368,
+        "num_pairs_checked": 1018,
+        "num_seams": 0,
+        "roads_checked": 58,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 262,
+        "num_pairs_checked": 1308,
+        "num_seams": 0,
+        "roads_checked": 58,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 316,
+        "num_pairs_checked": 829,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 183,
+        "num_pairs_checked": 552,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 111,
+        "num_pairs_checked": 931,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 102,
+        "num_pairs_checked": 822,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 358,
+        "num_pairs_checked": 912,
+        "num_seams": 0,
+        "roads_checked": 73,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 252,
+        "num_pairs_checked": 689,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 133,
+        "num_pairs_checked": 459,
+        "num_seams": 0,
+        "roads_checked": 37,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 218,
+        "num_pairs_checked": 981,
+        "num_seams": 0,
+        "roads_checked": 42,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 253,
+        "num_pairs_checked": 1385,
+        "num_seams": 0,
+        "roads_checked": 60,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 92,
+        "num_pairs_checked": 446,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 268,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 268,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 268,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 438,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 22,
+        "num_pairs_checked": 498,
+        "num_seams": 0,
+        "roads_checked": 9,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 578,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 120,
+        "num_pairs_checked": 735,
+        "num_seams": 0,
+        "roads_checked": 29,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 233,
+        "num_pairs_checked": 851,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 313,
+        "num_pairs_checked": 2483,
+        "num_seams": 0,
+        "roads_checked": 84,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_16_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 171,
+        "num_pairs_checked": 1719,
+        "num_seams": 0,
+        "roads_checked": 54,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 142,
+        "num_pairs_checked": 1348,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 295,
+        "num_pairs_checked": 1095,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 276,
+        "num_pairs_checked": 1188,
+        "num_seams": 0,
+        "roads_checked": 66,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 102,
+        "num_pairs_checked": 387,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 115,
+        "num_pairs_checked": 1441,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 106,
+        "num_pairs_checked": 1147,
+        "num_seams": 0,
+        "roads_checked": 27,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 87,
+        "num_pairs_checked": 927,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 148,
+        "num_pairs_checked": 1190,
+        "num_seams": 0,
+        "roads_checked": 40,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 223,
+        "num_pairs_checked": 1514,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 205,
+        "num_pairs_checked": 2064,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 414,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 105,
+        "num_pairs_checked": 2584,
+        "num_seams": 0,
+        "roads_checked": 29,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 887,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 1043,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 1219,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 969,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 969,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_26.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 1,
+        "num_pairs_checked": 396,
+        "num_seams": 0,
+        "roads_checked": 1,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_27.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 1,
+        "num_pairs_checked": 396,
+        "num_seams": 0,
+        "roads_checked": 1,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_28.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 1,
+        "num_pairs_checked": 396,
+        "num_seams": 0,
+        "roads_checked": 1,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 41,
+        "num_pairs_checked": 935,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 100,
+        "num_pairs_checked": 957,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 153,
+        "num_pairs_checked": 1425,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 21,
+        "num_pairs_checked": 192,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 44,
+        "num_pairs_checked": 158,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 35,
+        "num_pairs_checked": 908,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_17_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 93,
+        "num_pairs_checked": 1641,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 116,
+        "num_pairs_checked": 2109,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 69,
+        "num_pairs_checked": 1431,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 33,
+        "num_pairs_checked": 1133,
+        "num_seams": 0,
+        "roads_checked": 15,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 80,
+        "num_pairs_checked": 899,
+        "num_seams": 0,
+        "roads_checked": 23,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 102,
+        "num_pairs_checked": 1445,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 31,
+        "num_pairs_checked": 682,
+        "num_seams": 0,
+        "roads_checked": 11,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 321,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 87,
+        "num_pairs_checked": 1081,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 210,
+        "num_pairs_checked": 1812,
+        "num_seams": 0,
+        "roads_checked": 65,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 35,
+        "num_pairs_checked": 1125,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 434,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 11,
+        "num_pairs_checked": 1079,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 250,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 786,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 404,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 404,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 11,
+        "num_pairs_checked": 496,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 131,
+        "num_pairs_checked": 637,
+        "num_seams": 0,
+        "roads_checked": 31,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 157,
+        "num_pairs_checked": 1414,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 30,
+        "num_pairs_checked": 1580,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 507,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1123,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_18_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 33,
+        "num_pairs_checked": 2073,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 540,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 117,
+        "num_pairs_checked": 1971,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 917,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 55,
+        "num_pairs_checked": 1495,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 81,
+        "num_pairs_checked": 1225,
+        "num_seams": 0,
+        "roads_checked": 25,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 254,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 254,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 63,
+        "num_pairs_checked": 524,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 281,
+        "num_pairs_checked": 1583,
+        "num_seams": 0,
+        "roads_checked": 76,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 66,
+        "num_pairs_checked": 603,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 17,
+        "num_pairs_checked": 974,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 763,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 39,
+        "num_pairs_checked": 537,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 11,
+        "num_pairs_checked": 72,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 17,
+        "num_pairs_checked": 682,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 39,
+        "num_pairs_checked": 946,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1616,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_26.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 1212,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_27.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 1212,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 954,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 188,
+        "num_pairs_checked": 1697,
+        "num_seams": 0,
+        "roads_checked": 42,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 301,
+        "num_pairs_checked": 1692,
+        "num_seams": 0,
+        "roads_checked": 69,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 43,
+        "num_pairs_checked": 1313,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 507,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 507,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_19_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 753,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 204,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 312,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 400,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 27,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 39,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 170,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 170,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 190,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 190,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 660,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 33,
+        "num_pairs_checked": 1721,
+        "num_seams": 0,
+        "roads_checked": 18,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 98,
+        "num_pairs_checked": 1693,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 73,
+        "num_pairs_checked": 1466,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 80,
+        "num_pairs_checked": 1525,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 47,
+        "num_pairs_checked": 476,
+        "num_seams": 0,
+        "roads_checked": 11,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 58,
+        "num_pairs_checked": 531,
+        "num_seams": 0,
+        "roads_checked": 15,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 132,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 304,
+        "num_pairs_checked": 1048,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 348,
+        "num_pairs_checked": 1741,
+        "num_seams": 0,
+        "roads_checked": 69,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 660,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 60,
+        "num_pairs_checked": 1879,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 116,
+        "num_pairs_checked": 868,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 54,
+        "num_pairs_checked": 307,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 143,
+        "num_seams": 0,
+        "roads_checked": 11,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 1212,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_26.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 1212,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_27.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 1212,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 660,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 85,
+        "num_pairs_checked": 1122,
+        "num_seams": 0,
+        "roads_checked": 18,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 110,
+        "num_pairs_checked": 1004,
+        "num_seams": 0,
+        "roads_checked": 31,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 250,
+        "num_pairs_checked": 2311,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 63,
+        "num_pairs_checked": 1193,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1109,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_20_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1109,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 120,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 64,
+        "num_pairs_checked": 1261,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 9,
+        "num_pairs_checked": 833,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 89,
+        "num_pairs_checked": 1553,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 81,
+        "num_pairs_checked": 1568,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 100,
+        "num_pairs_checked": 617,
+        "num_seams": 0,
+        "roads_checked": 25,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 89,
+        "num_pairs_checked": 646,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 16,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 299,
+        "num_pairs_checked": 948,
+        "num_seams": 0,
+        "roads_checked": 66,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 380,
+        "num_pairs_checked": 1958,
+        "num_seams": 0,
+        "roads_checked": 86,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 260,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 57,
+        "num_pairs_checked": 980,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 15,
+        "num_pairs_checked": 508,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 18,
+        "num_pairs_checked": 41,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 44,
+        "num_pairs_checked": 103,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 60,
+        "num_pairs_checked": 710,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 34,
+        "num_pairs_checked": 1757,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_26.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1615,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_27.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 1212,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 1124,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 198,
+        "num_pairs_checked": 2122,
+        "num_seams": 0,
+        "roads_checked": 54,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 124,
+        "num_pairs_checked": 1405,
+        "num_seams": 0,
+        "roads_checked": 47,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 330,
+        "num_pairs_checked": 1451,
+        "num_seams": 0,
+        "roads_checked": 67,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 109,
+        "num_pairs_checked": 785,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 507,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_21_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 507,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 20,
+        "num_pairs_checked": 1759,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 1087,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 75,
+        "num_pairs_checked": 1361,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 36,
+        "num_pairs_checked": 965,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 86,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 86,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 76,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 27,
+        "num_pairs_checked": 293,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 109,
+        "num_pairs_checked": 669,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 222,
+        "num_pairs_checked": 1471,
+        "num_seams": 0,
+        "roads_checked": 57,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 140,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 96,
+        "num_pairs_checked": 1228,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 828,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 46,
+        "num_pairs_checked": 841,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 92,
+        "num_pairs_checked": 1417,
+        "num_seams": 0,
+        "roads_checked": 35,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_26.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 587,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1004,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 28,
+        "num_pairs_checked": 1170,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 101,
+        "num_pairs_checked": 1054,
+        "num_seams": 0,
+        "roads_checked": 27,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 261,
+        "num_pairs_checked": 1447,
+        "num_seams": 0,
+        "roads_checked": 54,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 141,
+        "num_pairs_checked": 1099,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 17,
+        "num_pairs_checked": 595,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_22_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1021,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 1505,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 30,
+        "num_pairs_checked": 1193,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 10,
+        "num_pairs_checked": 675,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 583,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 40,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 500,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 39,
+        "num_pairs_checked": 1202,
+        "num_seams": 0,
+        "roads_checked": 17,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 828,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 486,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 370,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 864,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 15,
+        "num_pairs_checked": 1022,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 109,
+        "num_pairs_checked": 963,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 198,
+        "num_pairs_checked": 1059,
+        "num_seams": 0,
+        "roads_checked": 45,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 249,
+        "num_pairs_checked": 1229,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 609,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_23_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 1110,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 409,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 197,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 20,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 372,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 986,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 614,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 370,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_25.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 370,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1120,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 13,
+        "num_pairs_checked": 1181,
+        "num_seams": 0,
+        "roads_checked": 7,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 42,
+        "num_pairs_checked": 582,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 145,
+        "num_pairs_checked": 814,
+        "num_seams": 0,
+        "roads_checked": 37,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 316,
+        "num_pairs_checked": 1398,
+        "num_seams": 0,
+        "roads_checked": 74,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 106,
+        "num_pairs_checked": 792,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_24_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 15,
+        "num_pairs_checked": 677,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 409,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 163,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 372,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 372,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 7,
+        "num_pairs_checked": 1140,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 17,
+        "num_pairs_checked": 1350,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 124,
+        "num_pairs_checked": 1633,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 170,
+        "num_pairs_checked": 1140,
+        "num_seams": 0,
+        "roads_checked": 41,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 201,
+        "num_pairs_checked": 936,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 122,
+        "num_pairs_checked": 556,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_25_9.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 256,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 387,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 230,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 112,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_26_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 112,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 169,
+        "num_pairs_checked": 741,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 237,
+        "num_pairs_checked": 840,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 262,
+        "num_pairs_checked": 1178,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 320,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 41,
+        "num_pairs_checked": 750,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 28,
+        "num_pairs_checked": 327,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 28,
+        "num_pairs_checked": 565,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 290,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 170,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 202,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 190,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 44,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 96,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 22,
+        "num_pairs_checked": 24,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 14,
+        "num_pairs_checked": 232,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 38,
+        "num_pairs_checked": 368,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 74,
+        "num_pairs_checked": 363,
+        "num_seams": 0,
+        "roads_checked": 18,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 35,
+        "num_pairs_checked": 720,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 134,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 206,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 97,
+        "num_pairs_checked": 474,
+        "num_seams": 0,
+        "roads_checked": 25,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 334,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 126,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 255,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 193,
+        "num_pairs_checked": 1288,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 21,
+        "num_pairs_checked": 328,
+        "num_seams": 0,
+        "roads_checked": 11,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 153,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 238,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 164,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 105,
+        "num_pairs_checked": 474,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 90,
+        "num_pairs_checked": 1273,
+        "num_seams": 0,
+        "roads_checked": 27,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 54,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 54,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 26,
+        "num_pairs_checked": 1068,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 590,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 15,
+        "num_pairs_checked": 792,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 97,
+        "num_pairs_checked": 858,
+        "num_seams": 0,
+        "roads_checked": 22,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 226,
+        "num_pairs_checked": 532,
+        "num_seams": 0,
+        "roads_checked": 40,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 229,
+        "num_pairs_checked": 588,
+        "num_seams": 0,
+        "roads_checked": 47,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 1180,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 62,
+        "num_pairs_checked": 352,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 154,
+        "num_pairs_checked": 1006,
+        "num_seams": 0,
+        "roads_checked": 39,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 333,
+        "num_pairs_checked": 2213,
+        "num_seams": 0,
+        "roads_checked": 84,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 31,
+        "num_pairs_checked": 562,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 43,
+        "num_pairs_checked": 1255,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 222,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 192,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 4,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 852,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 308,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 587,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 655,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 48,
+        "num_pairs_checked": 598,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 285,
+        "num_pairs_checked": 1701,
+        "num_seams": 0,
+        "roads_checked": 62,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 231,
+        "num_pairs_checked": 664,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 98,
+        "num_pairs_checked": 172,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 1396,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 227,
+        "num_pairs_checked": 759,
+        "num_seams": 0,
+        "roads_checked": 51,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 142,
+        "num_pairs_checked": 778,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 182,
+        "num_pairs_checked": 1250,
+        "num_seams": 0,
+        "roads_checked": 37,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 33,
+        "num_pairs_checked": 636,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 1466,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 146,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 6,
+        "num_pairs_checked": 146,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 460,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 310,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 24,
+        "num_pairs_checked": 448,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 29,
+        "num_pairs_checked": 470,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 257,
+        "num_pairs_checked": 1682,
+        "num_seams": 0,
+        "roads_checked": 63,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 219,
+        "num_pairs_checked": 918,
+        "num_seams": 0,
+        "roads_checked": 51,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 211,
+        "num_pairs_checked": 870,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 82,
+        "num_pairs_checked": 568,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 120,
+        "num_pairs_checked": 1119,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 788,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 111,
+        "num_pairs_checked": 925,
+        "num_seams": 0,
+        "roads_checked": 29,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 26,
+        "num_pairs_checked": 156,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 71,
+        "num_pairs_checked": 1754,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 93,
+        "num_pairs_checked": 478,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 46,
+        "num_pairs_checked": 258,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 118,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 460,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_10.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_11.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 292,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 414,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 122,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 290,
+        "num_pairs_checked": 1341,
+        "num_seams": 0,
+        "roads_checked": 68,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 157,
+        "num_pairs_checked": 778,
+        "num_seams": 0,
+        "roads_checked": 44,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 120,
+        "num_pairs_checked": 584,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 19,
+        "num_pairs_checked": 414,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 77,
+        "num_pairs_checked": 1131,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 8,
+        "num_pairs_checked": 800,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 56,
+        "num_pairs_checked": 566,
+        "num_seams": 0,
+        "roads_checked": 19,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 82,
+        "num_pairs_checked": 1466,
+        "num_seams": 0,
+        "roads_checked": 25,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 60,
+        "num_pairs_checked": 381,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 132,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 98,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 372,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 274,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 460,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 348,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 28,
+        "num_pairs_checked": 632,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 31,
+        "num_pairs_checked": 250,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 117,
+        "num_pairs_checked": 949,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 183,
+        "num_pairs_checked": 1233,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 92,
+        "num_pairs_checked": 1304,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 104,
+        "num_pairs_checked": 757,
+        "num_seams": 0,
+        "roads_checked": 24,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 55,
+        "num_pairs_checked": 314,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 12,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 47,
+        "num_pairs_checked": 494,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 23,
+        "num_pairs_checked": 613,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 64,
+        "num_pairs_checked": 405,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 78,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 31,
+        "num_pairs_checked": 574,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 31,
+        "num_pairs_checked": 574,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 17,
+        "num_pairs_checked": 704,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 16,
+        "num_pairs_checked": 480,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 4,
+        "num_pairs_checked": 372,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 274,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 144,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 43,
+        "num_pairs_checked": 1194,
+        "num_seams": 0,
+        "roads_checked": 15,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_12.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 11,
+        "num_pairs_checked": 492,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_13.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 91,
+        "num_pairs_checked": 918,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_14.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 69,
+        "num_pairs_checked": 938,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_15.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 132,
+        "num_pairs_checked": 596,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_16.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 306,
+        "num_pairs_checked": 1051,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_17.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 105,
+        "num_pairs_checked": 1062,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_18.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 199,
+        "num_pairs_checked": 1237,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_19.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 99,
+        "num_pairs_checked": 594,
+        "num_seams": 0,
+        "roads_checked": 26,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 9,
+        "num_pairs_checked": 602,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_20.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 60,
+        "num_pairs_checked": 400,
+        "num_seams": 0,
+        "roads_checked": 21,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_21.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 14,
+        "num_pairs_checked": 313,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_22.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 50,
+        "num_pairs_checked": 435,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_23.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 2,
+        "num_pairs_checked": 502,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_24.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 3,
+        "num_pairs_checked": 502,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 13,
+        "num_pairs_checked": 562,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 9,
+        "num_pairs_checked": 244,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 5,
+        "num_pairs_checked": 533,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 25,
+        "num_pairs_checked": 651,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 141,
+        "num_pairs_checked": 1446,
+        "num_seams": 0,
+        "roads_checked": 41,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_8.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "num_roads": 89,
+        "num_pairs_checked": 1072,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "warnings": []
+      }
+    }
+  ]
+}

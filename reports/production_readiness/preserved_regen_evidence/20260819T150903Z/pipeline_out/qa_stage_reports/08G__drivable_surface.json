@@ -1,0 +1,83 @@
+{
+  "total_holes": 0,
+  "total_seams": 0,
+  "total_drops": 0,
+  "total_dead_connections": 14,
+  "total_issues": 14,
+  "holes": [],
+  "seams": [],
+  "drops": [],
+  "dead_connections": [
+    {
+      "junction_id": "190",
+      "connecting_road": "60528",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60585",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60586",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60587",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60588",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60589",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60590",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60591",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "191",
+      "connecting_road": "60592",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "1989",
+      "connecting_road": "61067",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "1990",
+      "connecting_road": "61068",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "2397",
+      "connecting_road": "64320",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "2914",
+      "connecting_road": "67911",
+      "reason": "connecting_road_missing"
+    },
+    {
+      "junction_id": "2915",
+      "connecting_road": "67912",
+      "reason": "connecting_road_missing"
+    }
+  ],
+  "ok": false
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "status": "ok",
+  "manual": {
+    "xodr_path": null,
+    "xodr_sha256": null,
+    "geoReference_norm": null,
+    "params_complete": null,
+    "present": false
+  },
+  "auto": {
+    "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T124414Z_EXPERIMENTAL_heading_smoothing_v2_recompute\\pipeline_out\\01_sanitized_20260902_124415_248924.xodr",
+    "geoReference_norm": "+proj=tmerc",
+    "params_complete": false
+  },
+  "offsets": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "hdg": 0.0,
+    "offset_large": false,
+    "offset_large_threshold_m": 100000.0
+  },
+  "policy": {
+    "requested": "preserve",
+    "effective": "preserve",
+    "would_force_to_manual": false
+  },
+  "comparability": {
+    "crs_match": false,
+    "auto_proj4_matches_manual": false,
+    "manual_file_unchanged": true
+  },
+  "georef_action": "kept",
+  "georef_reason": "already_valid"
+}

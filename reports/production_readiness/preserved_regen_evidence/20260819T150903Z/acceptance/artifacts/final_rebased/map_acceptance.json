@@ -1,0 +1,47 @@
+{
+  "failed_gates": [],
+  "final_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T150903Z\\final_rebased.xodr",
+  "final_xodr_sha256": "5da14436e488a0f83ed8aefbd2ee19f73dcec4da917f1985389f876f48c61173",
+  "hard_fail_reasons": [],
+  "linked_artifacts": {},
+  "metrics": {
+    "buildings_count": 5686,
+    "dem_coverage_ratio": 1.0,
+    "elevation_stats": {
+      "z_max": 406.289714,
+      "z_min": 361.859343,
+      "z_range": 44.43037099999998
+    },
+    "functional_signals_count": 21171,
+    "geometric_continuity_ok": true,
+    "isolated_lane_component_count": 33,
+    "lane_component_count": 44,
+    "lane_count_total": 34321,
+    "lane_ok": true,
+    "lane_successor_missing_count": 0,
+    "largest_component_fraction": 0.995863,
+    "largest_component_lane_count": 34179,
+    "length_invariant_tol_m": 1e-09,
+    "length_invariant_violations": 0,
+    "origin_centroid_distance_m": 9669.597903721966,
+    "seam_stats": {
+      "bad_fraction": 0.0,
+      "count": 0,
+      "max_bad_fraction": 0.002,
+      "max_jump": 1.0,
+      "p95_jump": 0.16355499999997392,
+      "total_jump_samples": 284762
+    },
+    "traffic_light_object_count": 21171,
+    "unmatched_cross_links": 0
+  },
+  "run_id": "final_rebased",
+  "soft_warnings": [
+    {
+      "gate": "component_reachability",
+      "reason": "33 isolated lane components (largest=0.995863)"
+    }
+  ],
+  "valid": true,
+  "valid_for_experiments": true
+}

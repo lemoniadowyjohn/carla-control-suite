@@ -1,0 +1,6 @@
+{
+  "status": "SKIP",
+  "reason": "carla_disabled",
+  "ENABLE_CARLA": true,
+  "UP_DISABLE_CARLA": "1"
+}

@@ -1,0 +1,28 @@
+{
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T124135Z\\pipeline_out\\06_geometry_frozen_20260905_124146_942677.xodr",
+  "dem_tif_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+  "step_m": 2.0,
+  "max_samples": 250000,
+  "total_samples": 250000,
+  "covered_samples": 250000,
+  "coverage_ratio": 1.0,
+  "threshold": 0.6,
+  "ok": true,
+  "uncovered_examples": [],
+  "sampling_mode": "sampler",
+  "projected_bbox_wgs84": {
+    "minx": 11.322197317255803,
+    "miny": 48.684206142610414,
+    "maxx": 11.527550526579953,
+    "maxy": 48.82599574285423
+  },
+  "dem_bounds_wgs84": {
+    "minx": 11.312083322222236,
+    "miny": 48.67430556666666,
+    "maxx": 11.537361100000014,
+    "maxy": 48.836250011111105
+  },
+  "bbox_intersects_dem_bounds_wgs84": true,
+  "map_crs_source": "claimed_geoReference_ambiguous",
+  "header_offset_policy": "xodr_header_preserved"
+}

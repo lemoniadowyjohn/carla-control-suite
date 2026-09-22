@@ -1,0 +1,10 @@
+{
+  "issues": [],
+  "n_issues": 0,
+  "ok": true,
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T195239Z\\final_rebased.xodr"
+}

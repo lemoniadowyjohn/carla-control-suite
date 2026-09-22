@@ -1,0 +1,34 @@
+{
+  "final_xodr": "5adac2d89f0e8d3c1249b5a98dddcf450b0276062f0a372926c9f850b58ff95a",
+  "enrichments_json": null,
+  "settings_snapshot": "665fd3bc26b6b58d9909ab40a13295b412faaa1bfddce567485ab47110c755b2",
+  "seed": 42,
+  "seeds": {
+    "deterministic_seed": 42,
+    "python_hash_seed": null
+  },
+  "env": {
+    "UP_AUTOFIX_LANE_SUCCESSORS": "1",
+    "UP_CARLA_EXE": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+    "UP_CARLA_FALLBACK_ENABLED": "1",
+    "UP_CARLA_FALLBACK_MAPS": "Town10HD_Opt,Town05,Town03,Town01",
+    "UP_CARLA_RPC_PORT": "2000",
+    "UP_CARLA_STREAMING_PORT": "2001",
+    "UP_DISABLE_CARLA": "1",
+    "UP_ENABLE_MAP_HYGIENE": "1",
+    "UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE": "1",
+    "UP_ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING": "1",
+    "UP_ENABLE_UNSAFE_PLANVIEW_MUTATIONS": "1",
+    "UP_INPUTS_MANIFEST": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\INPUTS_MANIFEST.json",
+    "UP_INPUT_XODR": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T124414Z_EXPERIMENTAL_heading_smoothing_v2_recompute\\seed_from_osm.xodr",
+    "UP_OSM_FILE": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "UP_OUTPUT_DIR": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260902T124414Z_EXPERIMENTAL_heading_smoothing_v2_recompute\\pipeline_out",
+    "UP_PREANCHOR_INPUT_XODR": "0",
+    "UP_RELEASE_PROFILE": "EXPERIMENTAL_UNSAFE",
+    "UP_STRICT_LANE_SUCCESSORS": "0",
+    "UP_THESIS_STRICT": "0"
+  },
+  "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "os_info": "Windows-11-10.0.26200-SP0",
+  "git_commit": "b9b842854fa3c522ba932f70d912ed2a31d374c1"
+}

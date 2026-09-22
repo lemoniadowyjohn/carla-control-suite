@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "applied": false,
+  "reason": "disabled",
+  "explicit_env_override": false,
+  "strict_mode": false
+}

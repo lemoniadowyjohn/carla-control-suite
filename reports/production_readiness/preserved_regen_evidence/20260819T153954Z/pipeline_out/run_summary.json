@@ -1,0 +1,24 @@
+{
+  "pipeline_version": "thesis_final",
+  "run_timestamp_utc": "2026-08-19T15:10:38.650002+00:00",
+  "run_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out",
+  "inputs": {
+    "osm_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "bbox_json": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\bbox.json"
+  },
+  "outputs": {
+    "final_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\08h3_zseams_repaired.xodr",
+    "semantic_xodr": null
+  },
+  "validation": {
+    "preflight_status": null,
+    "preflight_report": null,
+    "tile_qa_status": "SKIP",
+    "tile_qa_status_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\step10_tile_qa_status.json"
+  },
+  "settings": {
+    "snapshot_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\settings_snapshot.json",
+    "snapshot_sha256": "d72166ed2ef04ea368877fd1517d04e8d95f9b54453386e3186da6789f428e50",
+    "snapshot_md5": "3bf3409cef7eef217117416390b4dbf7"
+  }
+}

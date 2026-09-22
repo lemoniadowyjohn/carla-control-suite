@@ -1,0 +1,11 @@
+{
+  "issues": [
+    {
+      "code": "missing_offset",
+      "severity": "warn",
+      "message": "Missing <offset> in <header> (recommended).",
+      "context": {}
+    }
+  ],
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260905T173020Z\\pipeline_out\\08h4_lane_width_discontinuities_repaired.xodr"
+}
