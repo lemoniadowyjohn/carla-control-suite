@@ -230,12 +230,12 @@
     }
   ],
   "counts": {
-    "total": 17,
+    "total": 18,
     "fixed": 10,
     "in_progress": 1,
     "deferred": 1,
     "open": 4,
-    "blocked_external": 1
+    "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
     "xodr_validated_capability": "New xodr_validator pipeline stage (delegating to StrictXodrValidator) inserted between topology_repair and enrichment in main_pipeline.py, with a matching XODR_VALIDATED capability hard-required by the enrichment stage in stage_capabilities.py -- originally requested as ad-hoc structural hardening, not a tracked gap. Landed clean in commit f51db269, merged 1c8caa2c into origin/integration/production-large-map-20260918. Mirror-drift test confirmed passing."
@@ -315,12 +315,27 @@
       "proof": "Direct live attempt 2026-09-22: process launched, RAM/port state captured via tasklist/netstat, client call timed out with the process still alive (confirmed via tasklist before cleanup), CARLA process cleanly killed afterward, no orphaned instances left running.",
       "affected_files": ["E:\\CARLA\\CARLA_0.9.16 (packaged binary)", "ultimate_pipeline/perception/rq3_capture_contract.py (offline side, real but not yet reintegrated -- see GAP-011)"],
       "scientific_runtime_consequence": "RQ3's paired-capture protocol is code-ready (frame/rig mismatch already fixed) but cannot be exercised against live CARLA until this handshake bug is resolved -- blocks any real (non-synthetic) perception training data collection from either map.",
-      "owner_subagent": "unassigned -- a Codex prompt requesting a focused debugging pass (server logs, client/server RPC version match, AV/firewall payload interference, cdb.exe attach during a hung attempt) has been drafted but not yet confirmed dispatched",
+      "owner_subagent": "Codex (2026-09-22/23, multiple real attempts)",
+      "status": "blocked_external",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "G:\\CARLA\\build_logs\\gap017_nosound_20260922T231819Z.json; earlier cdb.exe stack capture evidence in reports/production_readiness/20260923T000000Z_GAP017_RPC_HANDSHAKE/RESULTS.md",
+      "residual_risk": "MEDIUM-HIGH, two real fix attempts exhausted -- (1) cdb.exe stack capture during a live hang found the game thread blocked in FEventWin::Wait -> FAudioCommandFence::Wait -> FAudioDeviceManager::UpdateActiveAudioDevices -> UGameEngine::Tick (not the prior nvwgf2umx.dll/OpenAdapter10 render-driver path -- confirmed a genuinely different stall than previously documented); (2) launching with -nosound added to rule out the audio subsystem as the actual blocker returned the same result -- port 2000 still listens on the shipping child PID, get_server_version() still hard-times-out (12s this attempt), audio suppression is NOT the fix. Both attempts used real, verified evidence, not assumption. Remaining untried: full disable of Windows audio devices at the OS level (not just the -nosound launch flag, which may not prevent the enumeration call itself), or building CARLA from source with audio subsystem code paths removed (only possible once/if the UE4 engine access blocker below is resolved). Do not re-attempt further debugging passes without a genuinely new angle -- two real, careful attempts have narrowed but not resolved this."
+    },
+    {
+      "id": "GAP-018",
+      "severity": "P1",
+      "subsystem": "UE4 cook readiness -- engine source access",
+      "description": "Formalizes and corrects the earlier 'UE4.26 absent, straightforward install' framing. Attempting the documented CARLA build path (git clone --depth 1 -b carla https://github.com/CarlaUnreal/UnrealEngine.git) fails with 'remote: Repository not found' even though the user's GitHub account is linked to their Epic Games account. This is NOT evidence the repo doesn't exist, and is NOT something Codex (or any automated agent) can resolve -- it is a long-standing, widely-reported, chronic issue across the CARLA community (github.com/carla-simulator/carla issues #6401, #6632, #6681, #7654, #7775, #7826, #9806 -- the most recent dated 2026-07, still unresolved as of this pass). The documented root cause: Epic's GitHub org-invitation flow sometimes silently adds a newly-linked account to a decoy/mirror organization ('EpicGames-Mirror-A') instead of the real Epic Games org that actually has read access to CarlaUnreal/UnrealEngine -- an account can show as 'linked' while still lacking the specific org membership the private repo checks. Multiple affected users report having to explicitly request access to the CarlaUnreal/UnrealEngine 'carla' branch through Epic's own developer forums (forums.unrealengine.com) even after completing the standard account link.",
+      "proof": "Codex: `git ls-remote --heads https://github.com/CarlaUnreal/UnrealEngine.git carla` -> 'Repository not found (128)', 2026-09-23. Cross-referenced against CARLA's own current official documentation (carla.readthedocs.io/en/0.9.16/build_windows/, build_carla/) which still cites this exact clone command as correct/current -- confirming this is an access problem, not a stale/wrong URL.",
+      "affected_files": ["G:\\UE4 (still empty)", "no local artifact affected -- this is entirely an external account/access issue"],
+      "scientific_runtime_consequence": "Blocks the entire UE4 cook ladder (GAP-018's own original scope) regardless of code readiness -- no amount of pipeline/package work unblocks this without the engine source itself.",
+      "owner_subagent": "requires the user directly -- verify actual GitHub org membership (Settings -> Organizations; check for the real Epic org vs. 'EpicGames-Mirror-A' or similar mirror/decoy org) and, if in the wrong org, request access to the specific CarlaUnreal/UnrealEngine 'carla' branch via the Unreal Engine developer forums (forums.unrealengine.com) -- this has resolved the issue for other affected users per community reports. Codex correctly declined to proceed with any clone/Setup.bat/build step against an inaccessible repo.",
       "status": "blocked_external",
       "fixing_commit": null,
       "regression_test": null,
       "evidence_artifact": null,
-      "residual_risk": "MEDIUM -- narrower evidence than before raises the odds this is actually fixable (version mismatch, corrupted map registration stalling the handshake, AV/firewall), not a hard environment wall -- worth one focused attempt before re-parking indefinitely"
+      "residual_risk": "HIGH -- entirely gated on the user's own GitHub/Epic org membership being corrected; no code-side or agent-side workaround exists. Do not re-dispatch this to Codex/OpenCode/Gemini again until the user confirms org access is fixed."
     }
   ]
 }
