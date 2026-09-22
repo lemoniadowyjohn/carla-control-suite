@@ -48,6 +48,7 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     SEMANTIC_POSITIONS_PLACED,
     StageCapabilitySpec,
     StageDependencyViolation,
+    XODR_VALIDATED,
     assert_stage_sequence_valid,
     validate_stage_sequence,
     with_stage_requirements,
@@ -227,6 +228,9 @@ class TestRealPipelineOrderingFinding:
         assert GEOMETRY_FROZEN in by_name["lanes"].requires
         assert GEOMETRY_FROZEN in by_name["final_integrity"].requires
         assert LANES_GENERATED in by_name["final_integrity"].requires
-        # "enrichment" (stage 4) is the one NOT yet declaring this
-        # dependency, which is exactly the audit's finding.
-        assert by_name["enrichment"].requires == frozenset()
+        # "enrichment" (stage 4) is the one NOT yet declaring a requirement
+        # on frozen/hygiene-complete geometry, which is exactly the audit's
+        # finding. It DOES now require XODR_VALIDATED (added when the
+        # xodr_validator stage was wired in ahead of it) -- that is a
+        # different, narrower dependency than the audit finding covers.
+        assert by_name["enrichment"].requires == frozenset({XODR_VALIDATED})

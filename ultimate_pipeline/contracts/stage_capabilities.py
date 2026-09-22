@@ -52,6 +52,15 @@ from typing import FrozenSet, List, Sequence
 # Capability vocabulary
 # ---------------------------------------------------------------------------
 
+#: Set once the post-topology-repair OpenDRIVE document has passed strict
+#: structural/schema validation (``ultimate_pipeline.quality
+#: .xodr_strict_validator.StrictXodrValidator``, wired in as the
+#: ``xodr_validator`` stage between ``topology_repair`` and ``enrichment``).
+#: Required by ``enrichment`` so position-dependent semantics (signals,
+#: crosswalks, regulatory signs) are never written against a document that
+#: failed strict validation.
+XODR_VALIDATED = "xodr_validated"
+
 #: Set once horizontal (s/t-relevant) road geometry is fixed and will not be
 #: further mutated except by an explicit, declared repair stage. Mirrors the
 #: existing ad hoc ``header.get("geometryFrozen") == "true"`` runtime check
@@ -243,12 +252,23 @@ CURRENT_PIPELINE_STAGE_SEQUENCE: List[StageCapabilitySpec] = [
     StageCapabilitySpec("sanitize", mutates_structure=True),
     StageCapabilitySpec("topology_semantics", mutates_structure=True),
     StageCapabilitySpec("topology_repair", mutates_structure=True),
+    # Strict XODR structural/schema validation, inserted between
+    # topology_repair and enrichment (main_pipeline.py: _step3b_xodr_validator,
+    # delegates to quality/xodr_strict_validator.py::StrictXodrValidator).
+    # Read-only: raises RuntimeError on failure, does not mutate structure.
+    StageCapabilitySpec(
+        "xodr_validator",
+        provides=frozenset({XODR_VALIDATED}),
+    ),
     # Honest as of today: Stage 4 does not declare a requirement on frozen
     # geometry (it doesn't check for one), even though it writes
     # position-dependent semantics. It DOES provide
-    # SEMANTIC_POSITIONS_PLACED, since that's true of what it does.
+    # SEMANTIC_POSITIONS_PLACED, since that's true of what it does. It DOES
+    # require XODR_VALIDATED, so the pipeline fails closed if strict XODR
+    # validation hasn't run before enrichment writes semantics.
     StageCapabilitySpec(
         "enrichment",
+        requires=frozenset({XODR_VALIDATED}),
         provides=frozenset({SEMANTIC_POSITIONS_PLACED}),
         mutates_structure=True,
     ),
