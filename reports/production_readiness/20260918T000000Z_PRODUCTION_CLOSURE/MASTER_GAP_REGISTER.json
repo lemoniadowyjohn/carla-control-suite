@@ -161,12 +161,12 @@
       "proof": "ultimate_pipeline/tests/unit/test_mtime_audit.py::TestMtimeAuthorityRegression::test_no_unprotected_mtime_authority[run_alignment_and_matching.py] FAILED against a full bare-pytest run on the WIP checkpoint (fix/xodr-validator-convergence-v1-20260921 @ f245540f: 5914 collected, 5908 passed, 4 failed, 2 skipped), citing both lines by number.",
       "affected_files": ["ultimate_pipeline/domain_gap/run_alignment_and_matching.py"],
       "scientific_runtime_consequence": "If two candidate output/xodr files exist with the wrong relative mtimes (e.g. after a rebase, a restore, or a clock skew), alignment/matching could silently operate on the wrong artifact with no content-identity check.",
-      "owner_subagent": "unassigned",
-      "status": "open",
-      "fixing_commit": null,
-      "regression_test": "ultimate_pipeline/tests/unit/test_mtime_audit.py (already exists, currently failing -- this is the regression test itself, not something to write)",
+      "owner_subagent": "direct-dispatched subagent (2026-09-22)",
+      "status": "fixed",
+      "fixing_commit": "f541c745 (merged 1c8caa2c into origin/integration/production-large-map-20260918)",
+      "regression_test": "ultimate_pipeline/tests/unit/test_mtime_audit.py (18/18 passing post-fix; the file itself only existed on the WIP lineage before this fix, ported onto production as part of this same commit)",
       "evidence_artifact": "reports/production_readiness/20260918T000000Z_MTIME_AUTHORITY_AUDIT/RESULTS.md",
-      "residual_risk": "LOW-MEDIUM, well-scoped single-file fix -- add a content/provenance guard before the two mtime sorts"
+      "residual_risk": "none identified -- fix follows the repo's own established convention (_repaired_sibling_exists / _run_dir_has_completed_output structural guards, mtime only as a tiebreaker), independently avoided a known regex-blind-spot fake-pass pattern found elsewhere in the same test file (run_determinism_audit.py's .sort()-vs-sorted() case), full bare pytest clean (5923 passed, 5 skipped, 0 failed) after merge with GAP-016 and the xodr_validator capability change"
     },
     {
       "id": "GAP-013",
@@ -231,11 +231,14 @@
   ],
   "counts": {
     "total": 17,
-    "fixed": 9,
+    "fixed": 10,
     "in_progress": 1,
     "deferred": 1,
-    "open": 6,
+    "open": 4,
     "blocked_external": 1
+  },
+  "completed_non_gap_work_2026_09_22": {
+    "xodr_validated_capability": "New xodr_validator pipeline stage (delegating to StrictXodrValidator) inserted between topology_repair and enrichment in main_pipeline.py, with a matching XODR_VALIDATED capability hard-required by the enrichment stage in stage_capabilities.py -- originally requested as ad-hoc structural hardening, not a tracked gap. Landed clean in commit f51db269, merged 1c8caa2c into origin/integration/production-large-map-20260918. Mirror-drift test confirmed passing."
   },
   "update_2026_09_22_part_3": {
     "note": "GAP-009 confirmed fixed (was deferred) -- commit c5b09591 already on production tip, regression test extended and passing. New tracked item GAP-017 (RQ3/RQ5 live-CARLA capture, blocked_external, re-verified with NEW narrower evidence -- not a stale repeat). Disk-space crisis logged. F: worktree retired (100% full, 742MB free) -- coordinator bookkeeping now happens from G:/carla-coordinator-20260922.",
@@ -297,12 +300,27 @@
       "proof": "Full bare pytest against origin/integration/production-large-map-20260918 @ 98d47e38: 5886 passed, 4 failed (all in this one file), 5 skipped. Direct read of resolve_final_artifact_receipt's docstring and the 4 test bodies confirms they test superseded mtime/glob behavior, not a code defect.",
       "affected_files": ["tests/unit/test_regen_find_final_xodr_hygiene.py"],
       "scientific_runtime_consequence": "None to production code -- the new receipt-based resolver is correct and should NOT be weakened to satisfy these tests. Risk is purely to CI signal: 4 permanently-red tests mask real future failures in this file.",
-      "owner_subagent": "unassigned",
-      "status": "open",
+      "owner_subagent": "direct-dispatched subagent (2026-09-22)",
+      "status": "fixed",
+      "fixing_commit": "6e9fb064 (merged 1c8caa2c into origin/integration/production-large-map-20260918); a second, independent fix for the same gap also exists at 219c4515 on fix/gap-016-receipt-authority-20260922, not merged (redundant, not needed)",
+      "regression_test": "tests/unit/test_regen_find_final_xodr_hygiene.py rewritten in place -- 4 new tests exercise the real contract (no-receipt-raises, valid-receipt-resolves-to-declared-file-ignoring-decoys, tampered-xodr-rejected, malformed-json-rejected); historical WS1.4 comment block preserved",
+      "evidence_artifact": null,
+      "residual_risk": "none identified -- resolve_final_artifact_receipt untouched, full bare pytest clean (5923 passed, 5 skipped, 0 failed) after merge with GAP-012 and the xodr_validator capability change"
+    },
+    {
+      "id": "GAP-017",
+      "severity": "P1",
+      "subsystem": "live CARLA -- Grid0828/manual_grid0821 data-collection readiness",
+      "description": "Formal tracking for the live-CARLA-capture blocker (previously only in free-text notes). Grid0828.xodr and manual_grid0821.xodr are both present and real, but cannot currently be loaded into a live CARLA client for perception-training data collection. Re-verified fresh on 2026-09-22, not a stale repeat: CarlaUE4.exe -nullrhi reaches 5.7GB RAM (real initialization) and port 2000 goes LISTENING (netstat-confirmed, owned by the CARLA PID) -- neither happened in the session's prior documented hang. A real carla.Client.get_server_version() call still hard-times-out after 30s with the process alive. The bug is now confirmed to be in the RPC protocol handshake layer specifically, not socket-level connectivity -- a materially narrower, more specific finding than the prior 'server never comes up' characterization.",
+      "proof": "Direct live attempt 2026-09-22: process launched, RAM/port state captured via tasklist/netstat, client call timed out with the process still alive (confirmed via tasklist before cleanup), CARLA process cleanly killed afterward, no orphaned instances left running.",
+      "affected_files": ["E:\\CARLA\\CARLA_0.9.16 (packaged binary)", "ultimate_pipeline/perception/rq3_capture_contract.py (offline side, real but not yet reintegrated -- see GAP-011)"],
+      "scientific_runtime_consequence": "RQ3's paired-capture protocol is code-ready (frame/rig mismatch already fixed) but cannot be exercised against live CARLA until this handshake bug is resolved -- blocks any real (non-synthetic) perception training data collection from either map.",
+      "owner_subagent": "unassigned -- a Codex prompt requesting a focused debugging pass (server logs, client/server RPC version match, AV/firewall payload interference, cdb.exe attach during a hung attempt) has been drafted but not yet confirmed dispatched",
+      "status": "blocked_external",
       "fixing_commit": null,
       "regression_test": null,
       "evidence_artifact": null,
-      "residual_risk": "LOW -- well-scoped, mechanical once the intent is understood: retire or rewrite these 4 tests against the new receipt-based contract (e.g. no-receipt-raises, valid-receipt-picks-declared-file, tampered/stale-receipt-rejected), do not touch resolve_final_artifact_receipt itself"
+      "residual_risk": "MEDIUM -- narrower evidence than before raises the odds this is actually fixable (version mismatch, corrupted map registration stalling the handshake, AV/firewall), not a hard environment wall -- worth one focused attempt before re-parking indefinitely"
     }
   ]
 }
