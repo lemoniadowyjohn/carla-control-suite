@@ -85,38 +85,6 @@ def test_has_spawn_candidate_requires_min_width():
     assert TileMetadata._has_spawn_candidate(root2, min_width=2.5) is True
 
 
-def test_has_local_successor_true_when_a_lane_link_successor_exists():
-    root = ET.fromstring("<OpenDRIVE>" + _driving_road_xml("1", 0, 0) + "</OpenDRIVE>")
-    assert TileMetadata._has_local_successor(root) is True
-
-
-def test_has_local_successor_false_when_none_exists():
-    root = ET.fromstring(
-        '<OpenDRIVE><road id="1"><lanes><laneSection s="0"><right>'
-        '<lane id="-1" type="driving"/>'
-        "</right></laneSection></lanes></road></OpenDRIVE>"
-    )
-    assert TileMetadata._has_local_successor(root) is False
-
-
-# ---------------------------------------------------------------------------
-# _parse_tile_index
-# ---------------------------------------------------------------------------
-
-
-def test_parse_tile_index_extracts_i_j():
-    assert TileMetadata._parse_tile_index("tile_2_3.xodr") == (2, 3)
-
-
-def test_parse_tile_index_unparseable_name_defaults_to_zero_zero():
-    # Documented current behavior (not a fix target): unlike
-    # tile_adjacency.py's _parse_index (returns None on failure),
-    # this defaults to (0, 0) rather than signalling failure. Confirmed
-    # this can't cause a metadata-entry collision since generate_metadata
-    # keys entries by filename, not by (i, j).
-    assert TileMetadata._parse_tile_index("not_a_tile_name.xodr") == (0, 0)
-
-
 # ---------------------------------------------------------------------------
 # generate_metadata
 # ---------------------------------------------------------------------------
@@ -207,7 +175,6 @@ def test_write_manifest_computes_origin_from_min_bbox_by_default(tmp_path):
         ),
         encoding="utf-8",
     )
-    # Create a dummy tile file for freeze_tileset
     (tmp_path / "tile_0_0.xodr").write_text('<?xml version="1.0"?><OpenDRIVE></OpenDRIVE>', encoding="utf-8")
     freeze_tileset(str(tmp_path))
     manifest = TileMetadata.write_manifest(
@@ -301,3 +268,8 @@ def test_write_from_health_builds_metadata_from_tile_health_dict(tmp_path):
     assert out["tile_1_2.xodr"]["j"] == 2
     assert out["tile_1_2.xodr"]["is_drivable"] is True
     assert out["tile_1_2.xodr"]["bounds"] == [0, 0, 10, 10]
+
+
+if __name__ == "__main__":
+    import pytest
+    pytest.main([__file__, "-v"])

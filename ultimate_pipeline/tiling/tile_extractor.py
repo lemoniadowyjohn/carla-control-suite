@@ -16,9 +16,12 @@
 import hashlib
 import math
 import os
+import json
 import xml.etree.ElementTree as ET
+from datetime import datetime
+from pathlib import Path
 from ultimate_pipeline.core.georef_utils import normalize_georeference
-from typing import List, Tuple, Dict, Optional, Iterable
+from typing import List, Tuple, Dict, Optional, Iterable, Any
 
 # ------------------------------------------------------------
 # Settings (guarded import)
@@ -135,6 +138,11 @@ def _mark_global_driving_lanes(src_root: ET.Element) -> int:
             lane.set("was_driving", "true")
             n += 1
     return n
+
+
+def _assert_not_frozen(out_dir: str) -> None:
+    """Internal: assert tileset is not already frozen before writing tiles."""
+    _assert_tileset_not_frozen(out_dir)
 
 
 def _is_lane_driving_in_tile(lane: ET.Element, preserve_global: bool) -> bool:
@@ -500,6 +508,102 @@ def _finalize_tile(
 
 
 # ------------------------------------------------------------
+# TILESET_FROZEN marker
+# ------------------------------------------------------------
+TILESET_FROZEN_MARKER = ".tileset_frozen"
+
+
+def _assert_tileset_not_frozen(tiles_dir: str) -> None:
+    """Raise if tileset is already frozen (prevents mutation after freeze)."""
+    marker = Path(tiles_dir) / TILESET_FROZEN_MARKER
+    if marker.exists():
+        raise RuntimeError(
+            f"Tileset at {tiles_dir} is FROZEN. Cannot mutate tiles after freeze. "
+            f"Remove {marker} only if intentionally rebuilding the tileset."
+        )
+
+
+def _assert_tileset_frozen(tiles_dir: str) -> None:
+    """Raise if tileset is NOT frozen (enforces read-only access after freeze)."""
+    tiles_path = Path(tiles_dir)
+    if not tiles_path.exists():
+        raise FileNotFoundError(f"Tiles directory not found: {tiles_dir}")
+    marker = tiles_path / TILESET_FROZEN_MARKER
+    if not marker.exists():
+        raise RuntimeError(
+            f"Tileset at {tiles_dir} is NOT frozen. "
+            f"Generate metadata/manifest only after all repairs complete and freeze is applied."
+        )
+
+
+def freeze_tileset(tiles_dir: str, *, metadata_path: Optional[str] = None, manifest_path: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Freeze a tileset after all repairs are complete.
+
+    This writes a .tileset_frozen marker and records the metadata/manifest paths
+    that were generated from the frozen tiles. After calling this, the tiles
+    are considered immutable -- any attempt to write/modify tiles in this
+    directory will raise an error.
+    """
+    tiles_dir = Path(tiles_dir)
+    if not tiles_dir.exists():
+        raise FileNotFoundError(f"Tiles directory not found: {tiles_dir}")
+
+    # Verify all tiles exist and are readable
+    tile_files = sorted(tiles_dir.glob("*.xodr"))
+    if not tile_files:
+        raise ValueError(f"No tiles found in {tiles_dir}")
+
+    # Compute tileset digest (SHA256 of all tile files, sorted)
+    tile_hashes = []
+    for tf in tile_files:
+        h = hashlib.sha256()
+        with open(tf, "rb") as f:
+            for chunk in iter(lambda: f.read(65536), b""):
+                h.update(chunk)
+        tile_hashes.append({"file": tf.name, "sha256": h.hexdigest(), "bytes": tf.stat().st_size})
+
+    # Sort by filename for deterministic ordering
+    tile_hashes.sort(key=lambda x: x["file"])
+
+    # Compute tileset digest
+    digest_lines = "\n".join(f"{th['sha256']}  {th['file']}" for th in tile_hashes)
+    tileset_digest = hashlib.sha256((digest_lines + "\n").encode("utf-8")).hexdigest()
+
+    # Write freeze marker with metadata
+    freeze_data = {
+        "schema_version": 1,
+        "frozen_at_utc": datetime.utcnow().isoformat() + "Z",
+        "tileset_digest_sha256": tileset_digest,
+        "tile_count": len(tile_files),
+        "tiles": tile_hashes,
+        "metadata_path": str(metadata_path) if metadata_path else None,
+        "manifest_path": str(manifest_path) if manifest_path else None,
+    }
+
+    marker = tiles_dir / TILESET_FROZEN_MARKER
+    marker.write_text(json.dumps(freeze_data, indent=2, sort_keys=True), encoding="utf-8")
+
+    return freeze_data
+
+
+def is_tileset_frozen(tiles_dir: str) -> bool:
+    """Check if tileset is frozen."""
+    return Path(tiles_dir, TILESET_FROZEN_MARKER).exists()
+
+
+def get_freeze_info(tiles_dir: str) -> Optional[Dict[str, Any]]:
+    """Get freeze information if tileset is frozen."""
+    marker = Path(tiles_dir, TILESET_FROZEN_MARKER)
+    if not marker.exists():
+        return None
+    try:
+        return json.loads(marker.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+# ------------------------------------------------------------
 # Public API
 # ------------------------------------------------------------
 class TileExtractor:
@@ -517,6 +621,8 @@ class TileExtractor:
         origin_x: Optional[float] = None,
         origin_y: Optional[float] = None,
     ) -> Tuple[List[str], Dict[str, dict]]:
+
+        _assert_tileset_not_frozen(out_dir)
 
         preserve_global = preserve_global_lane_types_in_tiles \
             if preserve_global_lane_types_in_tiles is not None \

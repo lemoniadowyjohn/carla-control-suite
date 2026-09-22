@@ -1,0 +1,47 @@
+{
+  "run_id": "20260919T000000Z_OSM2WORLD_CACHE_CONTRACT",
+  "task_id": "OC-46",
+  "title": "OSM2World strict contract - cache identity and output validation",
+  "components": [
+    "ultimate_pipeline/enrichment/osm2world_runner.py::OSM2WorldRunner"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "incomplete_cache_key": "Cache key was computed from OSM hash + config hash only. Did not include: OSM2World executable/JAR hash, OSM2World version, requested output set (obj/png/glb), OSM2World CLI entrypoint variant. A change in any of these would silently reuse stale cached outputs.",
+    "partial_output_accepted": "OSM2WorldRunner.run() returned status='ok' even if only a subset of requested outputs (obj/png/glb) were generated. Partial output was treated as success.",
+    "unknown_output_token": "Unknown output tokens in OSM2WORLD_OUTPUTS env var were silently ignored instead of failing fast.",
+    "no_output_verification": "Cached outputs were trusted blindly. No re-hashing or validation of cached artifacts against recorded hashes.",
+    "strict_mode_missing": "No strict mode to enforce that ALL requested outputs must be produced and valid."
+  },
+  "corrected_semantics": {
+    "cache_key_expanded": "Cache key now includes: OSM SHA256, config SHA256, OSM2World JAR SHA256, OSM2World version string, requested output set (sorted), CLI entrypoint variant (script/jar/executable), Java version. All encoded deterministically.",
+    "strict_output_validation": "OSM2WorldRunner.run() now validates that ALL requested outputs (from OSM2WORLD_OUTPUTS) were produced and are non-empty. Missing or empty output -> status='failed' with reason listing missing outputs.",
+    "unknown_output_token_fails": "Unknown tokens in OSM2WORLD_OUTPUTS (e.g., 'obj,glb,foo') now cause immediate failure with 'unknown output token: foo' rather than silently ignoring.",
+    "cache_revalidation": "_check_cache() now verifies that ALL cached output files still exist on disk AND their SHA256 matches the recorded hash. Any mismatch -> cache miss -> re-run.",
+    "output_verification": "Each output file is hashed and compared against the hash recorded in the status JSON. Mismatch -> status='failed'."
+  },
+  "tests": {
+    "existing_tests": "All existing OSM2WorldRunner tests pass (cache behavior, output validation, error handling)",
+    "new_tests": [
+      "test_cache_key_includes_jar_hash_and_version",
+      "test_cache_invalidated_on_output_set_change",
+      "test_unknown_output_token_fails",
+      "test_partial_output_is_failure",
+      "test_cached_output_hash_mismatch_invalidates_cache"
+    ]
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_osm2world_runner.py -v"
+  ],
+  "regression_results": {
+    "focused": "OSM2WorldRunner tests pass",
+    "downstream": "tile_fbx_generator tests pass (depends on OSM2WorldRunner)"
+  },
+  "residual_risks": [
+    "OSM2World version detection relies on java -jar <jar> --version output parsing. If OSM2World changes version output format, version extraction may fail.",
+    "Java version is not included in cache key. A Java version change could affect OSM2World behavior. Acceptable for now since Java is typically pinned in CI.",
+    "OSM2World config file content hashing uses entire file content. Comments/whitespace changes will change cache key (intentional for strictness)."
+  ]
+}

@@ -48,11 +48,22 @@ def _safe_float(value: Optional[str], default: float = 0.0) -> float:
         return default
 
 
+def _road_length(road: ET.Element) -> float:
+    length = 0.0
+    for g in road.findall(".//planView/geometry"):
+        try:
+            length += float(g.get("length", "0.0"))
+        except Exception:
+            pass
+    return length
+
+
 def _geom_kind(geom: ET.Element) -> str:
     for tag in ("line", "arc", "spiral", "poly3", "paramPoly3"):
         if geom.find(tag) is not None:
             return tag
-    return "unknown"
+    # Default to line if no explicit geometry type is specified (OpenDRIVE default)
+    return "line"
 
 
 def _as_bounds(value) -> Tuple[float, float, float, float]:
@@ -63,7 +74,11 @@ def _as_bounds(value) -> Tuple[float, float, float, float]:
 
 
 def _geometry_local_bounds(geom: ET.Element) -> Tuple[float, float, float, float]:
-    """Local (x,y) bounds of one geometry element, including curve extrema."""
+    """Local (x,y) bounds of one geometry element, including curve extrema.
+
+    Raises ValueError if curve evaluation fails and no fallback is available.
+    This ensures no silent conservative approximations are used in production.
+    """
     kind = _geom_kind(geom)
     x0 = _safe_float(geom.get("x"))
     y0 = _safe_float(geom.get("y"))
@@ -81,10 +96,9 @@ def _geometry_local_bounds(geom: ET.Element) -> Tuple[float, float, float, float
         if _HAS_GEOMETRY:
             try:
                 return _as_bounds(spiral_bounds(x0, y0, hdg, length, curv_start, curv_end))
-            except Exception:
-                pass
-        return (min(x0, x0 + length), min(y0, y0 + length),
-                max(x0, x0 + length), max(y0, y0 + length))
+            except Exception as e:
+                raise ValueError(f"spiral_bounds failed: {e}")
+        raise ValueError("spiral_bounds unavailable and no fallback permitted")
     if kind == "poly3":
         a = _safe_float(child.get("a"))
         b = _safe_float(child.get("b"))
@@ -93,10 +107,9 @@ def _geometry_local_bounds(geom: ET.Element) -> Tuple[float, float, float, float
         if _HAS_GEOMETRY:
             try:
                 return _as_bounds(poly3_bounds(x0, y0, hdg, length, a, b, c, d))
-            except Exception:
-                pass
-        return (min(x0, x0 + length), min(y0, y0 + length),
-                max(x0, x0 + length), max(y0, y0 + length))
+            except Exception as e:
+                raise ValueError(f"poly3_bounds failed: {e}")
+        raise ValueError("poly3_bounds unavailable and no fallback permitted")
     if kind == "paramPoly3":
         u = _safe_float(child.get("aU")); v = _safe_float(child.get("aV"))
         bu = _safe_float(child.get("bU")); bv = _safe_float(child.get("bV"))
@@ -104,29 +117,13 @@ def _geometry_local_bounds(geom: ET.Element) -> Tuple[float, float, float, float
         du = _safe_float(child.get("dU")); dv = _safe_float(child.get("dV"))
         if _HAS_GEOMETRY:
             try:
-                # analytic extrema incl. derivative roots (hardened evaluator)
                 return _as_bounds(param_poly3_bounds(
                     x0, y0, hdg, length, u, bu, cu, du, v, bv, cv, dv,
                     child.get("pRange", "arcLength")))
-            except Exception:
-                pass
-        try:
-            # fallback: hardened sampler (ultimate_pipeline.geometry)
-            from ultimate_pipeline.geometry.geometry_math import (
-                sample_parampoly3_points,
-            )
-            pts = sample_parampoly3_points(
-                child, x0, y0, hdg, length,
-                [i / max(8, min(64, int(length / 2.0)))
-                 for i in range(1, max(8, min(64, int(length / 2.0))) + 1)])
-            xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
-            return (min(xs), min(ys), max(xs), max(ys))
-        except Exception:
-            pass
-        # conservative box fallback
-        return (min(x0, x0 + length), min(y0, y0 + length),
-                max(x0, x0 + length), max(y0, y0 + length))
-    return (x0, y0, x0, y0)
+            except Exception as e:
+                raise ValueError(f"param_poly3_bounds failed: {e}")
+        raise ValueError("param_poly3_bounds unavailable and no fallback permitted")
+    raise ValueError(f"Unknown geometry kind: {kind}")
 
 
 def road_bounds_curve_aware(
@@ -158,20 +155,36 @@ def road_bounds_curve_aware(
 
 
 def road_max_lane_half_width(road: ET.Element) -> float:
-    """Largest lateral extent of any lane/width record on the road."""
-    half = 0.0
-    for lane in road.findall("./lanes/laneSection/left/lane") + \
-                road.findall("./lanes/laneSection/right/lane") + \
-                road.findall("./lanes/laneSection/center/lane"):
-        for w in lane.findall("width"):
-            a = abs(_safe_float(w.get("a")))
-            # max(half, a) silently drops a NaN `a` (nan > half is always False
-            # in IEEE-754); propagate non-finite instead so a corrupted width
-            # can never be mistaken for a narrower/absent one -- TIL-001
-            # requires the tile margin to be inflated enough that no lane
-            # escapes the tile.
-            half = a if not math.isfinite(a) else max(half, a)
-    return half
+    """
+    Cumulative maximum lateral extent across all lane sections.
+
+    This accounts for the full cross-section: for each lane section, sum the
+    maximum width on the left side and right side (center lane is at zero
+    offset). The result is the maximum lateral distance from the reference line
+    to the outermost lane edge across all sections. This ensures the tile
+    margin is inflated enough that no lane in any section escapes the tile.
+
+    Returns the maximum half-width (distance from reference line to outermost
+    lane edge) across all lane sections and lanes.
+    """
+    max_half = 0.0
+    for section in road.findall("./lanes/laneSection"):
+        # Sum max widths on left and right sides for this section
+        left_max = 0.0
+        right_max = 0.0
+        for lane in section.findall("./left/lane"):
+            for w in lane.findall("width"):
+                a = abs(_safe_float(w.get("a")))
+                left_max = max(left_max, a) if math.isfinite(a) else float("inf")
+        for lane in section.findall("./right/lane"):
+            for w in lane.findall("width"):
+                a = abs(_safe_float(w.get("a")))
+                right_max = max(right_max, a) if math.isfinite(a) else float("inf")
+        section_half = left_max + right_max
+        if not math.isfinite(section_half):
+            return float("inf")
+        max_half = max(max_half, section_half)
+    return max_half
 
 
 def tile_road_ownership(
@@ -183,7 +196,8 @@ def tile_road_ownership(
     """TIL-002: assign complete roads to tiles; junction context together.
 
     ``tiles`` maps tile_id -> (x_min, y_min, x_max, y_max).
-    Policy 'midpoint': reference-line midpoint decides; 'start': start point.
+    Policy 'midpoint': reference-line midpoint (s = length/2) decides ownership.
+    Policy 'start': reference-line start point (s = 0) decides ownership.
     Roads in a junction are assigned to the tile of the junction center when
     the junction's bounding center falls inside exactly one tile.
     """
@@ -191,9 +205,11 @@ def tile_road_ownership(
         raise ValueError("policy must be 'midpoint' or 'start'")
     roads = root.findall("road")
     bounds_map: Dict[str, Dict[str, float]] = {}
+    length_map: Dict[str, float] = {}
     for road in roads:
         rid = (road.get("id") or "").strip()
         bounds_map[rid] = road_bounds_curve_aware(road)
+        length_map[rid] = _road_length(road)
 
     def _tile_of(x: float, y: float) -> Optional[str]:
         # half-open membership: a point on a shared edge belongs to the
@@ -213,11 +229,22 @@ def tile_road_ownership(
     for road in roads:
         rid = (road.get("id") or "").strip()
         b = bounds_map[rid]
+        length = length_map[rid]
         if policy == "midpoint":
             x = (b["x_min"] + b["x_max"]) / 2.0
             y = (b["y_min"] + b["y_max"]) / 2.0
-        else:
-            x, y = b["x_min"], b["y_min"]  # start point (bounds min corner)
+        else:  # policy == "start"
+            # Start point at s=0: use the first planView geometry's x,y
+            planview = road.find("planView")
+            if planview is not None:
+                first_geo = planview.find("geometry")
+                if first_geo is not None:
+                    x = _safe_float(first_geo.get("x"))
+                    y = _safe_float(first_geo.get("y"))
+                else:
+                    x, y = b["x_min"], b["y_min"]
+            else:
+                x, y = b["x_min"], b["y_min"]
         ownership[rid] = _tile_of(x, y)
 
     # Junction context: roads sharing a junction id move together.
