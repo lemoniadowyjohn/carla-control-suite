@@ -330,6 +330,7 @@ def _find_final_xodr_historical_recovery(run_dir: Path) -> Path:
             f"No 08_final*.xodr / DROP_BAD_LINKS*.xodr / 08h*.xodr found under {run_dir}"
         )
     patterns.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    print(f"[authority] LEGACY FALLBACK (mtime): {patterns[0]} -- NOT production_eligible")
     return patterns[0]
 
 

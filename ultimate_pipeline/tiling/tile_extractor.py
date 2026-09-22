@@ -516,6 +516,11 @@ class TileExtractor:
         tile_buffer_m: Optional[float] = None,
         origin_x: Optional[float] = None,
         origin_y: Optional[float] = None,
+        # Production authority: expected SHA-256 of the final frozen XODR.
+        # If provided, tiling will fail closed if the input XODR does not
+        # match the exact frozen artifact (single-authority derivation).
+        expected_xodr_sha256: Optional[str] = None,
+        authority_receipt_path: Optional[str] = None,
     ) -> Tuple[List[str], Dict[str, dict]]:
 
         preserve_global = preserve_global_lane_types_in_tiles \
@@ -538,6 +543,50 @@ class TileExtractor:
             DEFAULT_ENABLE_HIGHWAY_AWARE_BUFFER,
         )
         alpha = float(_get_setting("HIGHWAY_TILE_BUFFER_ALPHA", DEFAULT_HIGHWAY_BUFFER_ALPHA))
+
+        # Production authority validation: verify input XODR matches final artifact SHA
+        if expected_xodr_sha256:
+            import hashlib
+            actual_sha = hashlib.sha256()
+            with open(input_xodr, "rb") as fh:
+                for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+                    actual_sha.update(chunk)
+            actual_sha_hex = actual_sha.hexdigest()
+            if actual_sha_hex != expected_xodr_sha256:
+                raise RuntimeError(
+                    f"[TILING AUTHORITY] Input XODR sha256 mismatch: "
+                    f"expected {expected_xodr_sha256}, got {actual_sha_hex}. "
+                    f"Tiling must consume the EXACT frozen final artifact "
+                    f"(single-authority derivation, P0-C/P0-D)."
+                )
+            print(f"[TILING AUTHORITY] Input XODR sha256 verified: {actual_sha_hex[:16]}...")
+
+        # Optional: also accept authority receipt path and extract expected SHA from it
+        elif authority_receipt_path:
+            import json
+            try:
+                with open(authority_receipt_path, "r", encoding="utf-8") as f:
+                    receipt = json.load(f)
+                expected_sha = receipt.get("final_artifact_sha256")
+                expected_path = receipt.get("final_artifact_path")
+                if expected_sha:
+                    import hashlib
+                    actual_sha = hashlib.sha256()
+                    with open(input_xodr, "rb") as fh:
+                        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+                            actual_sha.update(chunk)
+                    actual_sha_hex = actual_sha.hexdigest()
+                    if actual_sha_hex != expected_sha:
+                        raise RuntimeError(
+                            f"[TILING AUTHORITY] Input XODR sha256 mismatch from receipt: "
+                            f"expected {expected_sha}, got {actual_sha_hex}."
+                        )
+                    # Also verify path matches if receipt has it
+                    if expected_path and os.path.normpath(input_xodr) != os.path.normpath(expected_path):
+                        print(f"[TILING AUTHORITY] WARNING: input path {input_xodr} differs from receipt path {expected_path}")
+                    print(f"[TILING AUTHORITY] Input XODR sha256 verified via receipt: {actual_sha_hex[:16]}...")
+            except Exception as e:
+                raise RuntimeError(f"[TILING AUTHORITY] Failed to validate against receipt: {e}")
 
         tree = ET.parse(input_xodr)
         root = tree.getroot()

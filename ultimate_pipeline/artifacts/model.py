@@ -117,23 +117,29 @@ class Manifest:
     rejected: dict[str, CandidateResult] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    schema_version: int = 1
+    accepted_history: list[ArtifactRef] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
+            "schema_version": self.schema_version,
             "run_id": self.run_id,
             "accepted": self.accepted.to_dict() if self.accepted else None,
-            "candidates": {k: v.to_dict() for k, v in self.candidates.items()},
-            "rejected": {k: v.to_dict() for k, v in self.rejected.items()},
+            "candidates": {k: v.to_dict() for k, v in sorted(self.candidates.items())},
+            "rejected": {k: v.to_dict() for k, v in sorted(self.rejected.items())},
+            "accepted_history": [a.to_dict() for a in self.accepted_history],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
 
     @classmethod
     def from_dict(cls, d: dict) -> Manifest:
-        m = cls(run_id=d["run_id"])
+        schema_version = d.get("schema_version", 1)
+        m = cls(run_id=d["run_id"], schema_version=schema_version)
         m.accepted = ArtifactRef.from_dict(d["accepted"]) if d.get("accepted") else None
-        m.candidates = {k: CandidateResult(**{**v, "parent": ArtifactRef.from_dict(v["parent"]), "candidate": ArtifactRef.from_dict(v["candidate"]) if v.get("candidate") else None, "gate_results": tuple(GateResult(**g) for g in v["gate_results"]), "blockers": tuple(v["blockers"])}) for k, v in d.get("candidates", {}).items()}
-        m.rejected = {k: CandidateResult(**{**v, "parent": ArtifactRef.from_dict(v["parent"]), "candidate": ArtifactRef.from_dict(v["candidate"]) if v.get("candidate") else None, "gate_results": tuple(GateResult(**g) for g in v["gate_results"]), "blockers": tuple(v["blockers"])}) for k, v in d.get("rejected", {}).items()}
+        m.accepted_history = [ArtifactRef.from_dict(a) for a in d.get("accepted_history", [])]
+        m.candidates = {k: CandidateResult(**{**v, "parent": ArtifactRef.from_dict(v["parent"]), "candidate": ArtifactRef.from_dict(v["candidate"]) if v.get("candidate") else None, "mutation_declaration": MutationDeclaration.from_dict(v["mutation_declaration"]), "gate_results": tuple(GateResult(**g) for g in v["gate_results"]), "blockers": tuple(v["blockers"])}) for k, v in sorted(d.get("candidates", {}).items())}
+        m.rejected = {k: CandidateResult(**{**v, "parent": ArtifactRef.from_dict(v["parent"]), "candidate": ArtifactRef.from_dict(v["candidate"]) if v.get("candidate") else None, "mutation_declaration": MutationDeclaration.from_dict(v["mutation_declaration"]), "gate_results": tuple(GateResult(**g) for g in v["gate_results"]), "blockers": tuple(v["blockers"])}) for k, v in sorted(d.get("rejected", {}).items())}
         m.created_at = d.get("created_at", m.created_at)
         m.updated_at = d.get("updated_at", m.updated_at)
         return m

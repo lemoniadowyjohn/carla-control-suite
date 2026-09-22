@@ -90,6 +90,16 @@ HYGIENE_COMPLETE = "hygiene_complete"
 #: coordinates.
 SEMANTIC_POSITIONS_PLACED = "semantic_positions_placed"
 
+#: Early enrichment phase: extracts OSM metadata, resolves sources, builds
+#: associations. Does NOT mutate XODR with position-dependent content.
+#: Provides semantic source readiness for later materialization.
+SEMANTIC_SOURCE_READY = "semantic_source_ready"
+
+#: Set once all position-dependent semantic materialization is complete
+#: (traffic lights, crosswalks, speed limits, signs, buildings).
+#: Requires STRUCTURE_FROZEN, LANES_FINAL, HYGIENE_COMPLETE.
+SEMANTICS_FINAL = "semantics_final"
+
 #: THE final-artifact authority gate. Set only after EVERY permitted
 #: road/lane/topology/hygiene mutation is complete. Nothing after this point
 #: may mutate road identity, planView, road links, junction connections,
@@ -247,30 +257,36 @@ def assert_stage_sequence_valid(
 # ultimate_pipeline/main_pipeline.py's ``_run_internal()`` method, in call
 # order, so this sequence stays directly auditable against the real code
 # (grep for ``_mark_stage(`` in main_pipeline.py to re-verify).
+#
+# P0-L reorder (2026-09-18): split "enrichment" into
+# "semantic_source_preparation" (early, non-structural) and
+# "positional_semantics" (late, after STRUCTURE_FROZEN/LANES_FINAL/HYGIENE_COMPLETE).
 CURRENT_PIPELINE_STAGE_SEQUENCE: List[StageCapabilitySpec] = [
     StageCapabilitySpec("start"),
     StageCapabilitySpec("sanitize", mutates_structure=True),
     StageCapabilitySpec("topology_semantics", mutates_structure=True),
     StageCapabilitySpec("topology_repair", mutates_structure=True),
     # Strict XODR structural/schema validation, inserted between
-    # topology_repair and enrichment (main_pipeline.py: _step3b_xodr_validator,
-    # delegates to quality/xodr_strict_validator.py::StrictXodrValidator).
+    # topology_repair and semantic_source_preparation (main_pipeline.py:
+    # _step3b_xodr_validator, delegates to
+    # quality/xodr_strict_validator.py::StrictXodrValidator).
     # Read-only: raises RuntimeError on failure, does not mutate structure.
     StageCapabilitySpec(
         "xodr_validator",
         provides=frozenset({XODR_VALIDATED}),
     ),
-    # Honest as of today: Stage 4 does not declare a requirement on frozen
-    # geometry (it doesn't check for one), even though it writes
-    # position-dependent semantics. It DOES provide
-    # SEMANTIC_POSITIONS_PLACED, since that's true of what it does. It DOES
-    # require XODR_VALIDATED, so the pipeline fails closed if strict XODR
-    # validation hasn't run before enrichment writes semantics.
+    # SOURCE_METADATA_PREPARATION: extracts OSM metadata, resolves sources,
+    # builds associations. Does NOT mutate XODR with position-dependent
+    # content -- position-dependent semantics (traffic lights, crosswalks,
+    # speed limits, signs, buildings) are deferred to "positional_semantics"
+    # below, after STRUCTURE_FROZEN/LANES_FINAL/HYGIENE_COMPLETE. Requires
+    # XODR_VALIDATED so the pipeline fails closed if strict XODR validation
+    # hasn't run first.
     StageCapabilitySpec(
-        "enrichment",
+        "semantic_source_preparation",
         requires=frozenset({XODR_VALIDATED}),
-        provides=frozenset({SEMANTIC_POSITIONS_PLACED}),
-        mutates_structure=True,
+        provides=frozenset({SEMANTIC_SOURCE_READY}),
+        mutates_structure=False,
     ),
     StageCapabilitySpec(
         "geometry", provides=frozenset({GEOMETRY_FROZEN}), mutates_structure=True
@@ -305,12 +321,21 @@ CURRENT_PIPELINE_STAGE_SEQUENCE: List[StageCapabilitySpec] = [
         invalidates=frozenset({STRUCTURE_FROZEN}),
         mutates_structure=True,
     ),
+    # POSITIONAL_SEMANTIC_MATERIALIZATION: applies traffic lights, crosswalks,
+    # speed limits, signs, buildings to the FROZEN structure. Requires all
+    # structural capabilities to be held.
+    StageCapabilitySpec(
+        "positional_semantics",
+        requires=frozenset({GEOMETRY_FROZEN, LANES_FINAL, HYGIENE_COMPLETE}),
+        provides=frozenset({SEMANTIC_POSITIONS_PLACED, SEMANTICS_FINAL}),
+        mutates_structure=True,
+    ),
     # P0-C: the structural freeze + all pipeline-level acceptance/fingerprint
     # /preflight/determinism evidence, recomputed against the EXACT
-    # post-hygiene, post-junction-integrity artifact.
+    # post-hygiene, post-junction-integrity, post-positional-semantics artifact.
     StageCapabilitySpec(
         "final_artifact_authority",
-        requires=frozenset({GEOMETRY_FROZEN, LANES_FINAL, HYGIENE_COMPLETE}),
+        requires=frozenset({GEOMETRY_FROZEN, LANES_FINAL, HYGIENE_COMPLETE, SEMANTICS_FINAL}),
         provides=frozenset({STRUCTURE_FROZEN, FINAL_ARTIFACT_PUBLISHED}),
     ),
     StageCapabilitySpec(

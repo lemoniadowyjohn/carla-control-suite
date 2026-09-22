@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Tuple
 
 
@@ -11,17 +11,40 @@ from typing import List, Tuple
 class BuildingFootprint:
     """
     Building polygon in *projected map coordinates* (meters).
+
+    Supports multipolygon topology: a building can have multiple parts,
+    each with an outer ring and zero or more inner rings (holes/courtyards).
     """
     footprint: List[Tuple[float, float]]
     height: float = 10.0
     id: str | None = None
     name: str | None = None
+    # Multipolygon support
+    inners: List[List[Tuple[float, float]]] = field(default_factory=list)
+    parts: List[Tuple[List[Tuple[float, float]], List[List[Tuple[float, float]]]]] = field(default_factory=list)
+    # parts is a list of (outer_ring, [inner_rings])
+    # If parts is non-empty, footprint is the first part's outer ring for backward compatibility
 
-    def __init__(self, footprint, height=10.0, id=None, name=None):
+    def __init__(self, footprint, height=10.0, id=None, name=None, inners=None, parts=None):
         self.footprint = footprint
         self.height = height
         self.id = id
         self.name = name
+        self.inners = inners if inners is not None else []
+        self.parts = parts if parts is not None else []
+
+    @property
+    def has_holes(self) -> bool:
+        """Whether this building has any inner rings (holes/courtyards)."""
+        return bool(self.inners) or bool(self.parts)
+
+    def get_all_parts(self) -> List[Tuple[List[Tuple[float, float]], List[List[Tuple[float, float]]]]]:
+        """Get all parts as (outer, [inners]) tuples."""
+        if self.parts:
+            return self.parts
+        elif self.footprint:
+            return [(self.footprint, self.inners)]
+        return []
 
 
 class BuildingExtruder:

@@ -402,6 +402,9 @@ def staged(tmp_path):
         "map_hygiene", "island quarantine + lane repair"
     )
     pipe._authority_mark_hygiene_complete(str(xodr))
+    # P0-L: positional semantics materialization complete
+    from ultimate_pipeline.contracts.stage_capabilities import SEMANTICS_FINAL
+    pipe.authority_ledger.provide(SEMANTICS_FINAL, "positional_semantics", evidence=str(xodr))
     return pipe, str(xodr), out_dir
 
 
