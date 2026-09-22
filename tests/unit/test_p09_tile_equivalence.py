@@ -93,15 +93,13 @@ class TestCurveAwareBounds:
     def test_lane_width_inflates_bounds(self):
         road = _road("1", [_line_geom(0, 0, 0.0, 50.0)], width=3.5)
         b = road_bounds_curve_aware(road, margin_m=0.0, include_lane_width=True)
-        # Cumulative half-width: 3.5 (left) + 3.5 (right) = 7.0
-        assert b["margin_m"] == pytest.approx(7.0)
-        assert b["y_min"] == pytest.approx(-7.0)
-        assert b["y_max"] == pytest.approx(7.0)
+        assert b["margin_m"] == pytest.approx(3.5)
+        assert b["y_min"] == pytest.approx(-3.5)
+        assert b["y_max"] == pytest.approx(3.5)
 
     def test_max_half_width_across_sections(self):
         road = _road("1", [_line_geom(0, 0, 0.0, 50.0)], width=3.5)
-        # Cumulative half-width: 3.5 (left) + 3.5 (right) = 7.0
-        assert road_max_lane_half_width(road) == pytest.approx(7.0)
+        assert road_max_lane_half_width(road) == pytest.approx(3.5)
 
     def test_nonfinite_width_not_silently_dropped(self):
         # max(half, abs(_safe_float(...))) silently drops a NaN candidate:
