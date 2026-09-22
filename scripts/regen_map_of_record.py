@@ -251,18 +251,30 @@ def _run_pipeline(seed: Path, out_dir: Path, profile: str, disable_carla: bool) 
 
 
 def _find_final_xodr(run_dir: Path) -> Path:
-    # C10 map-hygiene (stage_08_hygiene.py, added 2026-08-19) writes its
-    # corrected output as 08h1_island_quarantined.xodr ->
-    # 08h2_degenerate_lanes_repaired.xodr -> 08h3_zseams_repaired.xodr --
-    # none of which match "08_final*" (different prefix: "08h", not
-    # "08_final"). Without this pattern, this function always fell back to
-    # the pre-hygiene 08_final*_linkpatched.xodr, silently discarding every
-    # hygiene repair (island quarantine, degenerate-lane floor-repair,
-    # z-seam repair) from every governed regen since hygiene was wired in --
-    # confirmed by direct reproduction: a real regen's 08h1_island_quarantined.xodr
-    # correctly had 30 fewer roads than the pre-hygiene file, but the
-    # candidate this function picked (and thus the emitted map-of-record)
-    # still had all 30, because it never looked at "08h*" files at all.
+    # First, try to read the final artifact authority receipt (P0-C).
+    # This is the authoritative source for the final XODR path and SHA.
+    authority_path = run_dir / "final_artifact_authority.json"
+    if authority_path.is_file():
+        try:
+            import json
+            with open(authority_path, "r", encoding="utf-8") as f:
+                authority = json.load(f)
+            final_path = Path(authority.get("final_artifact_path", ""))
+            expected_sha = authority.get("final_artifact_sha256")
+            if final_path and final_path.is_file():
+                actual_sha = _sha256_file(final_path)
+                if expected_sha and actual_sha == expected_sha:
+                    print(f"[authority] Using final artifact from receipt: {final_path} sha256={actual_sha[:16]}...")
+                    return final_path
+                else:
+                    print(f"[authority] SHA mismatch or missing in receipt, falling back to legacy discovery")
+            else:
+                print(f"[authority] Final artifact path missing or invalid in receipt, falling back to legacy discovery")
+        except Exception as e:
+            print(f"[authority] Failed to read receipt: {e}, falling back to legacy discovery")
+
+    # Legacy fallback (mtime-based) -- only for recovery, not production.
+    # Marked as NOT production_eligible.
     patterns = (
         list(run_dir.glob("**/08_final*.xodr"))
         + list(run_dir.glob("**/*DROP_BAD_LINKS*.xodr"))
@@ -273,6 +285,7 @@ def _find_final_xodr(run_dir: Path) -> Path:
             f"No 08_final*.xodr / DROP_BAD_LINKS*.xodr / 08h*.xodr found under {run_dir}"
         )
     patterns.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    print(f"[authority] LEGACY FALLBACK (mtime): {patterns[0]} -- NOT production_eligible")
     return patterns[0]
 
 
