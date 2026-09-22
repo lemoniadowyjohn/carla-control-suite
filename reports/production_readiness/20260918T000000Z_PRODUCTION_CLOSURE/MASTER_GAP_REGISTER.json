@@ -176,12 +176,12 @@
       "proof": "Full-suite WIP run FAILED with the ImportError; direct grep confirms the function exists in the file the error names. Needs investigation, not yet root-caused to a fix.",
       "affected_files": ["ultimate_pipeline/domain_gap/tile_grid_meta.py", "submission/infrastructure/ultimate_pipeline/domain_gap/tile_grid_meta.py", "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py"],
       "scientific_runtime_consequence": "Unknown until root-caused -- if it's a genuine import-order/duplicate-package collision in production code paths (not just tests), two different copies of tile-grid logic could be live depending on import order.",
-      "owner_subagent": "unassigned",
-      "status": "open",
+      "owner_subagent": "Codex (2026-09-23, in progress)",
+      "status": "not reproducible on clean production worktree -- interim finding, full-suite confirmation pending",
       "fixing_commit": null,
       "regression_test": null,
       "evidence_artifact": null,
-      "residual_risk": "MEDIUM until root-caused -- same suspected class of bug as GAP-014"
+      "residual_risk": "LOW pending final confirmation -- Codex verified on a fresh worktree off the current production tip (a3f1e0e8) that ultimate_pipeline/domain_gap/tile_grid_meta.py imports from the canonical path and correctly exports _infer_tile_size_from_bbox. Likely explanation: this failure was an artifact of the messy WIP-lineage branch (fix/xodr-validator-convergence-v1-20260921 @ f245540f) where it was originally found, which mixed OC-26 and other content in a way that may have caused a real but non-production import collision -- not a defect in the clean, reviewed production line itself. Codex correctly declined to write a fix for a non-reproduced defect (per this program's own discipline) and is running a full bare pytest on the clean worktree to confirm before any register closure. Do not mark 'fixed' until that full-suite result is in -- this entry should be updated to 'closed, non-reproducible' or reopened with new evidence once it completes, not left in this interim state."
     },
     {
       "id": "GAP-014",
@@ -191,12 +191,12 @@
       "proof": "Full-suite WIP run FAILED at ~61% progress; isolated re-run of the exact same test PASSED cleanly. Root cause not yet found -- needs bisection to identify which earlier test leaves state behind.",
       "affected_files": ["ultimate_pipeline/topology/junction_model.py (symptom only, not necessarily the bug's location)", "tests/topology/test_junction_model.py"],
       "scientific_runtime_consequence": "If a test leaks a monkeypatch into shared module state, production code exercised later in the same process could silently run the patched version -- needs the actual polluting test identified before ruling out a real risk.",
-      "owner_subagent": "unassigned",
-      "status": "open",
+      "owner_subagent": "Codex (2026-09-23, in progress)",
+      "status": "not reproducible on clean production worktree -- interim finding, full-suite confirmation pending",
       "fixing_commit": null,
       "regression_test": null,
       "evidence_artifact": null,
-      "residual_risk": "MEDIUM until root-caused -- investigation-heavy (requires bisecting full-suite test order), not a simple single-file fix"
+      "residual_risk": "LOW pending final confirmation -- Codex verified on a fresh worktree off the current production tip (a3f1e0e8) that JunctionValidator.validate_lane_links resolves to the canonical source and contains no .roads access. Same likely explanation as GAP-013: an artifact of the messy WIP-lineage branch this was originally found on, not a defect in the clean production line. Full bare pytest running on the clean worktree to confirm zero unexplained failures before any closure. Do not mark 'fixed' until that result is in."
     },
     {
       "id": "GAP-015",
