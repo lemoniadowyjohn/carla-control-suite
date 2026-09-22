@@ -77,6 +77,21 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 - **RQ5(b) (real-world evaluation)**: No real-world dataset exists. Permanently BLOCKED_EXTERNAL until
   new data is acquired -- out of scope for any prompt below.
 
+## Cook readiness (2026-09-23, Codex re-confirmation -- GAP-018)
+
+Re-confirms and sharpens the 2026-09-22 finding: G: has ~190GiB free (healthy), a real CARLA UE4
+source project exists (`G:\CARLA\carla_source_probe\Unreal\CarlaUE4\CarlaUE4.uproject`), and a
+packaged CARLA 0.9.16 server exists on E:. **Still missing**: the UE4.26 engine/toolchain itself
+(`G:\UE4\Engine\Binaries\Win64\UE4Editor.exe` and `RunUAT.bat` both absent -- no amount of delegation
+produces these, this requires an actual engine install, a human/environment action, not a code fix),
+and no materialized final package on G: (no `final_artifact_receipt.json`, no `visual_grid_manifest.json`,
+no complete visual tile/FBX set) -- so there is currently nothing eligible to import even if the engine
+were present. The 5-step minimum cook ladder (produce+verify receipt/manifests -> strict offline
+package validation -> install UE4.26 -> import synthetic->one-tile->2x2/3x3 -> cook+validate) cannot
+start until both the package-materialization work (downstream of GAP-011) and a UE4.26 install happen.
+**This entire path is BLOCKED_EXTERNAL for the engine-install step specifically -- flag to the user,
+not something to keep re-querying Codex about until that changes.**
+
 ## Action plan (in dependency order)
 
 1. **GAP-011 restoration** (OpenCode, currently dispatched) -- unblocks GAP-010 and RQ3/RQ4/RQ5(a)'s
@@ -98,6 +113,11 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 9. **RQ3 live capture run** (only after #1 and #7 land, if #7 succeeds) -- not yet actionable.
 10. **RQ5(a)** (only after #9 lands and a segmentation checkpoint is trained, which is itself
     unscheduled) -- not yet actionable this pass.
+11. **Cook ladder (GAP-018)** -- re-confirmed 2026-09-23 BLOCKED_EXTERNAL on UE4.26 engine absence
+    (requires a human/environment action: install the engine) AND on package materialization
+    (downstream of #1). Do not schedule further Codex/OpenCode/Gemini prompts against this until the
+    user has installed UE4.26 or the environment otherwise changes -- re-querying it produces the same
+    answer and wastes a round-trip.
 
 ## Honesty checkpoint
 
@@ -106,4 +126,9 @@ re-verified/closed** (2026-09-23). RQ1 still carries an honest, unresolved scope
 stages unexercised by any determinism check, open since 2026-08-28 -- not this pass's job to close).
 RQ4's code-readiness will be reachable, but not the actual retrained result (compute-dependent). RQ3
 depends entirely on whether GAP-017 turns out to be fixable -- a real, open question, not a formality.
-RQ5(a) and RQ5(b) are not reachable this pass under any delegation scheme currently available.
+RQ5(a) and RQ5(b) are not reachable this pass under any delegation scheme currently available. **New
+2026-09-23**: the UE4 cook ladder (relevant to any eventual streaming/VRAM/runtime claims) is also
+confirmed blocked specifically on engine installation -- a genuine environment gap, not something any
+amount of Codex/OpenCode/Gemini prompting closes. GAP-010 remains BLOCKED_EXTERNAL too, re-confirmed
+by Codex (branch fix/rq4-leakage-complete-20260923 @ 95d63b8a, no false fix claimed) -- waiting on #1
+(GAP-011) exactly as this plan already stated.
