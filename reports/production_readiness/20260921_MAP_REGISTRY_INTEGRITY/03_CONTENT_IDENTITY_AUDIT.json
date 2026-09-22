@@ -1,0 +1,5 @@
+{
+  "content_groups": [],
+  "manual_equivalence": "Grid0821/Grid0828 byte-identical, declared via equivalent_names on manual_grid0828 (not inferred)",
+  "policy": "same-content/same-role requires explicit equivalent_names; cross-role same-content authority fails without an explicit test-only override"
+}

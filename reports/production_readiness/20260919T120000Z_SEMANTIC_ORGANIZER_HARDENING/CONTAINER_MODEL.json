@@ -1,0 +1,12 @@
+{
+  "asset_kinds": {
+    "CONTAINER_FBX": "Physical FBX file containing potential mesh objects.",
+    "MESH_OBJECT": "Logical asset entity, not necessarily a standalone file.",
+    "UASSET": "Unreal Engine native asset."
+  },
+  "rules": {
+    "no_fabrication": "Do not fabricate physical files for logical mesh objects if the container does not contain them.",
+    "semantic_split": "If one container maps to multiple folders, report SEMANTIC_SPLIT_REQUIRED instead of splitting the file.",
+    "uasset_handling": "Production filesystem moves of .uasset are blocked (BLOCKED_UE_ASSET_API) to prevent breaking UE internal references."
+  }
+}

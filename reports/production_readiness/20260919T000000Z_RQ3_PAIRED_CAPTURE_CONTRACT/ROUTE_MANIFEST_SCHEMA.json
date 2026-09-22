@@ -1,0 +1,43 @@
+{
+  "run_id": "20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT",
+  "schema": "paired_route_manifest_v1",
+  "module": "ultimate_pipeline/perception/route_manifest.py",
+  "motivation": "spawn_index = N does not prove the same geographic route across two CARLA maps (spawn ordering and transforms differ, hidden recovery shifts pose, autopilot diverges). Equality is decided by content digest, never by integer index.",
+  "required_fields": {
+    "schema_version": "paired_route_manifest_v1",
+    "route_id": "non-empty string",
+    "coordinate_frame": "non-empty string identifying the coordinate reference (e.g. CRS identity)",
+    "capture_poses": "non-empty list; each pose = {x, y, z, yaw, pitch, roll, sequence_index}",
+    "sha256": "self-digest over the canonical payload without sha256"
+  },
+  "optional_fields": {
+    "waypoints": "list of {x, y, z, yaw, sequence_index}",
+    "source": "string",
+    "crs": "string",
+    "geo_reference": "object"
+  },
+  "digest_rule": "route_digest(manifest) = sha256(canonical_dumps(manifest minus sha256)) with deep sort_keys; pose order is normalized by sequence_index so byte-equal digests mean semantically-equal routes",
+  "validation_checks": [
+    "schema_version == paired_route_manifest_v1",
+    "route_id and coordinate_frame present",
+    "every capture pose has all 7 fields and finite floats",
+    "sequence_index unique and sorted",
+    "self sha256 matches recomputed digest (tamper detection)"
+  ],
+  "correspondence_probe": {
+    "RouteMapAdapter": "duck-typed resolve_drivable_waypoint(pose) returning {x, y, z, yaw, road_id, lane_id, projection_distance_m, is_driving}",
+    "default_thresholds": {
+      "max_projection_distance_m": 2.0,
+      "max_orientation_mismatch_deg": 15.0,
+      "require_driving_lane": true
+    },
+    "usable_poses_only": "any pose needing adjustment or landing off a driving lane makes the route unrepresentable on that map",
+    "closure": "PAIR_ROUTE_VALID / PAIR_ROUTE_INVALID"
+  },
+  "paired_rule": "validate_paired_route requires identical route sha256 on both arms AND full representability on both maps; a route that cannot be represented comparably on both arms is PAIR_ROUTE_INVALID, never silently adjusted",
+  "bug_fixes_included": [
+    "validate_route_manifest no longer calls _check_finite on poses missing required fields",
+    "project_pose normalizes attribute-style probes before orientation/distance math so duck-typed adapters (including live CARLA _CarlaRouteProbeAdapter) work"
+  ],
+  "live_validation_status": "BLOCKED_EXTERNAL - CARLA simulator unreachable; route_correspondence.json generation and end-to-end run must be treated as INCOMPLETE until a live assay can bind both arms to the manifest"
+}
