@@ -230,11 +230,11 @@
     }
   ],
   "counts": {
-    "total": 15,
+    "total": 16,
     "fixed": 8,
     "in_progress": 1,
     "deferred": 2,
-    "open": 5,
+    "open": 6,
     "blocked_external": 0
   },
   "last_updated_utc": "2026-09-22T00:00:00Z",
@@ -247,5 +247,32 @@
     "failed": 4,
     "skipped": 2,
     "duration_s": 879.33
-  }
+  },
+  "production_tip_full_suite_result": {
+    "branch": "integration/production-large-map-20260918",
+    "commit": "98d47e38",
+    "collected": 5895,
+    "passed": 5886,
+    "failed": 4,
+    "skipped": 5,
+    "duration_s": 850.41,
+    "note": "All 4 failures share one root cause, logged as GAP-016."
+  },
+  "issues_batch_3": [
+    {
+      "id": "GAP-016",
+      "severity": "P2",
+      "subsystem": "tests/unit/test_regen_find_final_xodr_hygiene.py -- obsolete test contract",
+      "description": "All 4 tests in this file fail against the current production tip (98d47e38), which includes commit ca3729c0 ('require receipt-authoritative final artifact', one of 5 commits found already sitting on this branch and pushed 2026-09-22). scripts/regen_map_of_record.py::_find_final_xodr now delegates to ultimate_pipeline/contracts/artifact_authority.py::resolve_final_artifact_receipt, whose own docstring states it 'deliberately does *not* inspect mtimes, glob candidate XODRs, or use a filename tiebreaker' -- i.e. it intentionally replaces the exact mtime/glob heuristic these 4 tests exercise (test_picks_hygiene_output_over_pre_hygiene_final_when_newer, test_falls_back_to_pre_hygiene_final_when_no_hygiene_output_present, test_hygiene_quarantine_only_still_picked_if_that_is_the_newest_stage, test_no_candidates_raises_filenotfounderror -- all construct synthetic tmp_path fixtures via filename+mtime ordering with no final_artifact_receipt.json, which the new resolver correctly rejects). This is NOT a regression in ca3729c0 -- it is exactly the kind of mtime-authority anti-pattern GAP-012 flags elsewhere, deliberately eliminated here. The 4 tests are obsolete, not the source code.",
+      "proof": "Full bare pytest against origin/integration/production-large-map-20260918 @ 98d47e38: 5886 passed, 4 failed (all in this one file), 5 skipped. Direct read of resolve_final_artifact_receipt's docstring and the 4 test bodies confirms they test superseded mtime/glob behavior, not a code defect.",
+      "affected_files": ["tests/unit/test_regen_find_final_xodr_hygiene.py"],
+      "scientific_runtime_consequence": "None to production code -- the new receipt-based resolver is correct and should NOT be weakened to satisfy these tests. Risk is purely to CI signal: 4 permanently-red tests mask real future failures in this file.",
+      "owner_subagent": "unassigned",
+      "status": "open",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "LOW -- well-scoped, mechanical once the intent is understood: retire or rewrite these 4 tests against the new receipt-based contract (e.g. no-receipt-raises, valid-receipt-picks-declared-file, tampered/stale-receipt-rejected), do not touch resolve_final_artifact_receipt itself"
+    }
+  ]
 }
