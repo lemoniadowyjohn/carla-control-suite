@@ -301,30 +301,16 @@ def _selected_controllers(root: ET.Element, selected_roads: Iterable[ET.Element]
     return controllers
 
 
-def _translate_global_outline_points(root: ET.Element, dx: float, dy: float) -> int:
-    """Translate the only absolute XODR object coordinates used by this repo."""
-
-    translated = 0
-    for point in root.findall(".//cornerGlobal") + root.findall(".//positionInertial"):
-        try:
-            point.set("x", repr(float(point.get("x")) - dx))
-            point.set("y", repr(float(point.get("y")) - dy))
-            translated += 1
-        except (TypeError, ValueError):
-            raise RuntimeError(f"runtime tile has non-numeric global point: {ET.tostring(point, encoding='unicode')}")
-    return translated
-
-
 def _rebase_geometry(root: ET.Element, dx: float, dy: float) -> int:
-    translated = 0
-    for geometry in root.findall(".//planView/geometry"):
-        try:
-            geometry.set("x", repr(float(geometry.get("x")) - dx))
-            geometry.set("y", repr(float(geometry.get("y")) - dy))
-            translated += 1
-        except (TypeError, ValueError):
-            raise RuntimeError(f"runtime tile has non-numeric geometry: {ET.tostring(geometry, encoding='unicode')}")
-    translated += _translate_global_outline_points(root, dx, dy)
+    """Centralized OC-38 rebase: same absolute-coordinate coverage as the
+    canonical map-of-record rebase (see ultimate_pipeline.geometry.opendrive_rebase).
+    planView geometry x/y, cornerGlobal x/y and positionInertial x/y are
+    translated (strict); object/signal x/y are translated when present so that
+    s/t road-relative metadata stays untouched.
+    """
+    from ultimate_pipeline.geometry.opendrive_rebase import rebase_xodr_coordinates
+
+    translated = sum(rebase_xodr_coordinates(root, dx=dx, dy=dy)["translated_elements"].values())
     return translated
 
 

@@ -1,0 +1,56 @@
+{
+  "run_id": "20260918T000000Z_XODR_REBASE_CENTRALIZATION",
+  "task_id": "OC-38",
+  "title": "Centralized XODR local-frame rebase with unified absolute-coordinate coverage",
+  "components": [
+    "ultimate_pipeline/geometry/opendrive_rebase.py (NEW)",
+    "scripts/regen_map_of_record.py::_rebase_to_local",
+    "ultimate_pipeline/tiling/runtime_tile_builder.py::_rebase_geometry"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/xodr-rebase-coordinate-coverage-v1",
+  "final_head": "1d508e276bf1fe6c5f60ddc1ee6183432cb35aa5",
+  "defect_summary": {
+    "divergent_implementations": "Two independent rebase implementations existed with DISJOINT absolute-coordinate coverage. regen_map_of_record._rebase_to_local shifted only planView/geometry x/y and object/outline/cornerGlobal x/y. runtime_tile_builder._rebase_geometry shifted geometry x/y, cornerGlobal x/y and positionInertial x/y. A map containing <object>/<signal> with absolute x/y kept those values in the global tmerc frame while roads were localized.",
+    "uncovered_absolute_elements": "Object and signal elements in the OpenDRIVE header-frame carry absolute x/y; neither old implementation translated them, so any such element ended up ~832km/5458km away from its road while everything else was local -- the same frame-disagreement class that produced the earlier verified 7,665m building/road centroid drift.",
+    "lenient_origin": "regen parsed geometry with float(g.get('x','0')) implicitly defaulting missing attributes to 0 and had no non-finite guard, so x='nan' corrupted dx/dy and silently wrote a destroyed map."
+  },
+  "corrected_semantics": {
+    "single_engine": "ultimate_pipeline/geometry/opendrive_rebase.py is now the only rebase core. Both call sites share exact (dx, dy) identity: regen (origin = planView bbox min, offset preserved as (dx,dy)) and runtime tile builder (origin = request.center_x/center_y, offset zeroed).",
+    "unified_coverage": "STRICT (missing/non-numeric/non-finite aborts with UnboundedCoordinateError): planView/geometry x/y, cornerGlobal x/y, positionInertial x/y. OPTIONAL (translated only when the attribute exists, so s/t road-relative metadata stays untouched): object x/y, signal x/y. cornerLocal/positionRoad/positionLane/polynomial params are never translated.",
+    "fail_closed_degenerate_input": "non-finite or missing geometry x/y raises before any output is written instead of corrupting the shift vector.",
+    "provenance": "_rebase_to_local report now includes translated_elements (per-kind element counts) alongside dx/dy/bbox/hashes.",
+    "regression_impact": "Real pinned candidates carry object/signal WITHOUT x/y (s/t-positioned metadata), so canonical outputs are unchanged; the engine's optional selectors are no-ops on the real map population (empirically verified)."
+  },
+  "tests": {
+    "file": "tests/unit/test_opendrive_rebase.py",
+    "collected": 11,
+    "passed": 11,
+    "coverage": {
+      "A": "planview_min_xy derives the local origin from geometry mins",
+      "B": "geometry + cornerGlobal translated by the SAME (dx,dy) with exact 6dp values; coverage keys set",
+      "C": "positionInertial translated; object/signal x/y translated when present; s/t-only object/signal untouched byte-for-byte",
+      "D": "non-finite geometry raises UnboundedCoordinateError",
+      "E": "missing planView geometry raises",
+      "F": "non-numeric geometry raises",
+      "G": "regen._rebase_to_local adopts full coverage union; report translated_elements; header offset preserved as (dx,dy)",
+      "H": "regen already-local noop preserved (no file written)",
+      "I": "regen aborts on degenerate geometry before writing output",
+      "J": "runtime tile builder translates the same absolute-coordinate set; header offset zeroed; sidecar manifest binds",
+      "K": "real pinned candidate empirical: population is exactly planview_geometry + corner_global, objects/signals carry no x/y, candidate is already local"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_opendrive_rebase.py tests/unit/test_regen_rebase_buildings.py tests/unit/test_regen_map_of_record_sumo_guard.py tests/unit/test_runtime_tile_builder.py ultimate_pipeline/tests/test_deterministic_alignment.py -q",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "42 passed (engine + existing regen/buildings/sumo/tile suites all green)",
+    "tests_unit_and_pipeline": "3413 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "The engine assumes a uniform header frame; a map with a nonzero header <offset> z or hdg transform is rejected only by the runtime tile builder (_read_source_header_offset). regen's canonical path does not yet refuse nonzero offset z/hdg -- downstream XODR read gates enforce that separately.",
+    "object/signal optional x/y translation is best-effort: an element carrying x but not y gets only x shifted, which would leave an inconsistent frame; real maps never produce that shape (verified on the pinned candidate).",
+    "Runtime tile geometry text serialization changed from repr(float) to fixed 6dp. Numeric values are unchanged; only textual form of the geometry attributes differs (affects tile output hashes vs. historical runtime tiles)."
+  ]
+}
