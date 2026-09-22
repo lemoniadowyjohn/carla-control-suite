@@ -1,0 +1,68 @@
+{
+  "run_id": "20260919T000000Z_FBX_CONTRACT",
+  "task_id": "OC-46",
+  "title": "Blender conversion integrity - strict success contract for OBJ->FBX",
+  "components": [
+    "ultimate_pipeline/enrichment/blender_runner.py::BlenderRunner.run",
+    "ultimate_pipeline/enrichment/blender_runner.py::BlenderResult"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "marker_only_gate": "BlenderRunner.run() returned status='ok' if only 'CONVERSION_OK' marker appeared in stdout. Exit code, FBX validity, manifest parse, hash cross-checks, and object count were all ignored.",
+    "no_artifact_binding": "output_hash recorded but never cross-checked against manifest's output_fbx_hash; input_hash never compared to manifest's input_obj_hash. Provenance sidecar (.fbx.provenance.json) never written.",
+    "stale_fbx_risk": "Phase J J6 roundtrip ran if fbx_path.exists() && blender exists, even if the current Blender conversion failed - roundtrip could validate a stale FBX from a prior run.",
+    "blender_availability": "_check_blender ignored --version exit code and accepted any line containing 'Blender' as success. Missing binary returned 'skipped' instead of fail-closed 'blocked'.",
+    "missing_verification": "No host-side FBX container validation (Kaydara magic), no object-count gate (zero-object exports passed), no input/output hash readability checks."
+  },
+  "corrected_semantics": {
+    "success_gate": "status='ok' IFF all of: marker_present AND exit_code==0 AND fbx_present+size>0 AND fbx_container.container_ok (Kaydara magic) AND manifest_parse_ok AND manifest_present AND input_hash_match AND output_hash_match AND objects_nonempty AND input_hash_readable. Any failure -> status='failed' with failed_checks list + stderr tail.",
+    "blocked_status": "Blender binary missing/unverifiable -> status='blocked', reason='Blender not available: ...' (fail-closed external dependency). OBJ input missing/invalid remains 'skipped' (genuine precondition).",
+    "provenance_sidecar": "<prefix>.fbx.provenance.json written on fbx_present with schema v1: input_sha256, artifact_sha256, blender_version, blender_exe_hash, script_hash, exit_code, status, verification bools, generated_at_utc.",
+    "phase_j_integration": "J3_blender_fbx verdict added (PASS/FAIL/SKIPPED). J6 roundtrip gated: runs only if current conversion status in ('ok','skipped') and FBX exists; if conversion failed/blocked -> J6={ok: None, reason='Blender conversion did not succeed; refusing to round-trip possibly stale artifact'}.",
+    "cli_exit_code": "sys.exit(1) for 'failed'/'blocked'; 0 only for 'ok'/'skipped'."
+  },
+  "tests": {
+    "file": "tests/unit/test_blender_conversion_integrity.py",
+    "collected": 19,
+    "passed": 19,
+    "coverage": {
+      "A": "success path - all verification checks pass, provenance written",
+      "B": "missing CONVERSION_OK marker -> failed with failed_checks",
+      "C": "nonzero exit code -> failed even with marker",
+      "C2": "missing FBX file -> failed",
+      "E": "invalid FBX magic (non-FBX header) -> failed",
+      "F": "manifest missing -> failed",
+      "G": "input hash mismatch (manifest vs host) -> failed",
+      "H": "output hash mismatch -> failed",
+      "I": "objects_total=0 -> failed (objects_nonempty gate)",
+      "J": "empty objects list -> objects_total=0 -> failed",
+      "K": "provenance sidecar written on success with schema v1",
+      "L": "input_hash_readable=False -> failed (empty hash)",
+      "M": "Blender binary missing -> status=blocked",
+      "N": "Blender version check exits non-zero -> blocked",
+      "O": "Valid OBJ but no Blender -> blocked (not skipped)",
+      "P": "run_blender_stage convenience wrapper returns BlenderResult",
+      "Q": "BlenderResult.ok/blocked properties",
+      "R": "CLI --help returns 0"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_blender_conversion_integrity.py -v",
+    "python -m pytest tests/unit/test_tile_fbx_generator.py tests/unit/test_offline_cooking_pipeline_integration.py tests/unit/test_full_grid_tile_cook.py -q",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "19/19 passed (new test_blender_conversion_integrity.py)",
+    "downstream": "28 passed (tile_fbx_generator + offline_cooking + full_grid_tile_cook)",
+    "tests_unit_and_pipeline": "3421 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "Phase J main() still returns exit code 0 even when J3_FAIL/J6_FAIL present (verdict string is the honest signal; non-zero exit would break existing callers).",
+    "Provenance sidecar written only on fbx_present; a failed conversion with no FBX leaves no sidecar (intentional - no artifact to bind).",
+    "FBX container validation covers Kaydara binary/ASCII magic only; deeper FBX structural validation (e.g., fbx-sdk roundtrip) is delegated to J6 roundtrip.",
+    "submission/infrastructure/ultimate_pipeline/enrichment/blender_runner.py is a diverged copy (older, no J3 manifest, no provenance) - not updated by this task.",
+    "BLENDER_EXE/BLENDER_TIMEOUT_SEC env vars are the only configuration; no settings.py entry exists (aligns with current practice)."
+  ]
+}
