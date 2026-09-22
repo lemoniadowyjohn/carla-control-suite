@@ -35,8 +35,19 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 
 ## RQ-by-RQ status and closure path
 
-- **RQ1 (determinism)**: Last verified valid pre-2026-09-18. Never re-smoke-tested against ~15 merges
-  since. Action: offline re-verification (Claude subagent, dispatched today).
+- **RQ1 (determinism)**: **RE-VERIFIED, 2026-09-23** (commit `b0d134c7`, report
+  `reports/production_readiness/20260923_RQ1_REVERIFICATION/RESULTS.md`). VERIFIED with the existing
+  claim boundary unchanged: ran the real, unmodified, current-code harness twice as genuine fresh
+  subprocesses from a fixed input XODR; stage 01 raw-byte-identical, stages 02-08_final become
+  byte-identical once normalized per the established contract. One genuine refinement found (not a
+  bug): `geometryFreezeHash` needs the same normalization treatment as the other timestamp-derived
+  fields, since it's computed over still-timestamped content one level removed -- confirmed this makes
+  04-08_final fully byte-identical too. **Honest scope gap, still open**: the newer stages most
+  directly touched by the last 15 merges (xodr_validator, enrichment, tiling, the final-artifact-
+  authority/receipt system) were never reached, because a single-tile fixture fails a genuine
+  correctness gate (stage 08 lane connectivity) before those stages run -- this is the same
+  "post-enrichment unverified" gap flagged open since 2026-08-28, not newly discovered and not closed
+  by this pass. A follow-up with a complete (non-tile) seed map would be needed to extend coverage.
 - **RQ2 (domain gap / hull footprint)**: **CLOSED, 2026-09-23** (commit `9d4d182b`, report
   `reports/production_readiness/20260923_RQ2_REVERIFICATION/RESULTS.md`). Correction to this plan's
   earlier framing: RQ2 had already been re-verified once before, on 2026-09-17 (commit `c3915130`) --
@@ -74,7 +85,8 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
    parallel with #1.
 3. **GAP-008 + fresh cross-package audit** (Gemini, currently dispatched) -- independent, proceeds in
    parallel.
-4. **RQ1 re-verification** (Claude subagent, dispatching now) -- independent, cheap, offline.
+4. **RQ1 re-verification** -- DONE, 2026-09-23 (commit `b0d134c7`). Verified, with an honest scope
+   gap flagged (post-enrichment stages not exercised) -- see RQ-by-RQ section above.
 5. **RQ2 re-verification** -- DONE, 2026-09-23 (commit `9d4d182b`). Confirmed unchanged and robust;
    see the RQ-by-RQ section above.
 6. **GAP-010 completion** (Codex, queued -- do not start until #1 lands) -- retry once GAP-011's
@@ -89,8 +101,9 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 
 ## Honesty checkpoint
 
-If asked "will all RQs be fully answered after this plan executes": no. **RQ2 is now closed** (2026-09-23,
-confirmed unchanged and robust). RQ1 is pending the same treatment. RQ4's code-readiness will be
-reachable, but not the actual retrained result (compute-dependent). RQ3 depends entirely on whether
-GAP-017 turns out to be fixable -- a real, open question, not a formality. RQ5(a) and RQ5(b) are not
-reachable this pass under any delegation scheme currently available.
+If asked "will all RQs be fully answered after this plan executes": no. **RQ1 and RQ2 are now both
+re-verified/closed** (2026-09-23). RQ1 still carries an honest, unresolved scope gap (post-enrichment
+stages unexercised by any determinism check, open since 2026-08-28 -- not this pass's job to close).
+RQ4's code-readiness will be reachable, but not the actual retrained result (compute-dependent). RQ3
+depends entirely on whether GAP-017 turns out to be fixable -- a real, open question, not a formality.
+RQ5(a) and RQ5(b) are not reachable this pass under any delegation scheme currently available.
