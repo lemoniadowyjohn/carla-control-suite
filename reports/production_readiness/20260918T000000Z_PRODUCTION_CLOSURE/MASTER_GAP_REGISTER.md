@@ -13,11 +13,28 @@ Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync 
 | GAP-007 | P2 | xodr_carla_hardener.py dead broken code | **fixed** | afed7bcc6adcb5bd9 (found during F) |
 | GAP-008 | P1 | two independent geometry-authority packages | deferred | afed7bcc6adcb5bd9 (found during F) |
 | GAP-009 | P1 | stage_09_tiling.py post-freeze mutation path | deferred | a0fc461e58ef06e59 (found during C) |
+| GAP-010 | P0 | RQ4 GNN train/eval content leakage (FAIL) | **open** | unknown (discovered 2026-09-22) |
+| GAP-011 | P1 | integration debt, 09-18..09-22 parallel-agent work | in_progress | direct (coordinator) |
 
-Totals: 9 tracked, 7 fixed, 0 in progress, 2 deferred, 0 blocked_external.
+Totals: 11 tracked, 8 fixed, 1 in progress, 2 deferred, 1 open, 0 blocked_external.
 
-Note: GAP-005's fixing commit (`e2befc36`) is pushed but not yet merged into
-`integration/production-large-map-20260918` as of this update — merge pending.
+**Update 2026-09-22**: GAP-005 (`e2befc36`) merged (`f5333f3a`) and pushed to
+`origin/integration/production-large-map-20260918`. Two new findings surfaced by a
+2026-09-22 survey of work that accumulated 2026-09-18..09-21 outside this thread's
+direct supervision (OpenCode, Codex, and continued autonomous execution of this
+same master program by other sessions/agents):
+
+- **GAP-010 (P0, open, top priority)**: `reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json`
+  reports `status: "FAIL"` — the RQ4 eval reference file `manual_grid0821.xodr`
+  hash-matches content already in the training set. Must be root-caused and fixed
+  before any RQ4 GNN number is trusted.
+- **GAP-011 (P1, in progress)**: real, tested, but unintegrated work is sitting across
+  (a) a WIP checkpoint branch `fix/xodr-validator-convergence-v1-20260921` containing
+  5 legitimate report-backed packages (Semantic Organizer Hardening, RQ3 Paired-Capture
+  Contract, RQ4 GNN Provenance, Map Registry Integrity, XODR Validator Convergence)
+  mixed with an unreviewed OC-26 change and some scratch files, (b) 10 unpushed
+  OpenCode branches (OC-35..OC-43 + VAP), and (c) 2 unpushed Codex branches overlapping
+  already-shipped P0-C scope. None of it is lost, none of it is merged.
 
 See `MASTER_GAP_REGISTER.json` for full detail per issue (proof, affected files, consequence,
 fixing commit, regression test, evidence artifact, residual risk). Updated after every subagent

@@ -124,6 +124,36 @@
       "residual_risk": "LOW while UP_ENABLE_ROAD_LINK_TARGET_REPAIR defaults to off; MEDIUM if that default ever changes -- needs the tiling stage to surface which artifact it actually tiled before it's used with that flag enabled"
     },
     {
+      "id": "GAP-010",
+      "severity": "P0",
+      "subsystem": "domain_gap_gnn / RQ4 GNN provenance",
+      "description": "audit_leakage() (new, added by the 2026-09-19 RQ4 GNN provenance hardening pass, report dir reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/) reports status=FAIL for source_map_identity_overlap: the eval-pair reference file cities/ingolstadt/manual_grid0821.xodr (sha256 69ee3498...42e8) hash-matches content already present in the training set. This is a genuine train/eval content-identity leak, not a false-positive in the checker (the checker's own coverage note says the historical C21 split audit is separately INCOMPLETE due to missing tile bytes in this checkout -- that is a different, secondary limitation, not the reason for this FAIL).",
+      "proof": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json, status: \"FAIL\", eval_pair_content_in_training_set lists the exact matching sha256.",
+      "affected_files": ["ultimate_pipeline/domain_gap_gnn/gnn_provenance.py", "cities/ingolstadt/manual_grid0821.xodr"],
+      "scientific_runtime_consequence": "Any RQ4 GNN structural-latent result computed against a checkpoint trained with this leak cannot be trusted as an honest train/eval split -- this must be root-caused and fixed (or the affected checkpoint's provenance downgraded) before any RQ4 number is cited as VERIFIED_RESEARCH.",
+      "owner_subagent": "unknown -- produced by continued program execution between 2026-09-18 and 2026-09-19 outside this thread's direct supervision; discovered by me via post-hoc review of its own report on 2026-09-22, not yet triaged or fixed",
+      "status": "open",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json",
+      "residual_risk": "HIGH until root-caused -- top-priority open item, ahead of any new work package"
+    },
+    {
+      "id": "GAP-011",
+      "severity": "P1",
+      "subsystem": "integration debt -- unreconciled parallel-agent work",
+      "description": "Between 2026-09-18 and 2026-09-22, substantial further work accumulated outside the verified integration lineage: (a) 5 report-backed packages committed directly, uncommitted-then-WIP-checkpointed, into the primary checkout on branch fix/xodr-validator-convergence-v1-20260921 (Semantic Organizer Hardening, RQ3 Paired-Capture Contract, RQ4 GNN Provenance [see GAP-010], Map Registry Integrity, XODR Validator Convergence), mixed in the same tree with an unreviewed OC-26 coordinate-control change, several root-level scratch scripts (fix_*.py), a .bak file, and two embedded Codex git repos accidentally added as gitlinks; (b) 10 real, tested, but unpushed/unmerged OpenCode branches (OC-35 through OC-43, plus a VAP visual-asset-preflight branch), all based on the pre-P1-F/P1-G baseline; (c) 2 unpushed Codex branches (fix/p0-c-receipt-authority-20260919, fix/artifact-transaction-integrity-v1-20260921) overlapping already-shipped P0-C scope, needing reconciliation not blind merge.",
+      "proof": "git worktree list + git merge-base --is-ancestor checks across all branches; full detail in the 2026-09-22 coordinator survey (this session).",
+      "affected_files": ["fix/xodr-validator-convergence-v1-20260921 (WIP checkpoint commit 7e6214ac)", "10 OpenCode branches under C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\", "2 Codex branches under .codex/worktrees/"],
+      "scientific_runtime_consequence": "None of this is lost (all pushed/committed as of this update), but none of it is verified-integrated either -- it must be triaged, rebased onto the verified checkpoint (origin/integration/production-large-map-20260918 @ f5333f3a), re-tested, and merged individually before any of its claims can be relied on.",
+      "owner_subagent": "direct (coordinator) -- WIP checkpoint commit only, no triage yet",
+      "status": "in_progress",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "fix/xodr-validator-convergence-v1-20260921 @ 7e6214ac (pushed)",
+      "residual_risk": "MEDIUM -- real, well-evidenced work is sitting unintegrated; risk grows the longer it stays unreconciled (more divergence from the verified tip)"
+    },
+    {
       "id": "GAP-005",
       "severity": "P1",
       "subsystem": "quality/check_lane_count_changes.py",
@@ -133,17 +163,20 @@
       "scientific_runtime_consequence": "Working hypothesis (ordinary transitions dominate) CONFIRMED more strongly than expected -- 100%, not just dominant. The lane-topology gate can now be certified with confidence: the 3007 count is not evidence of a generator defect. Original raw unexplained_changes metric preserved verbatim for historical reproducibility.",
       "owner_subagent": "ab5d110e2573e658b (P1 work package G -- note: task/agentId mapping corrected here, was mislabeled afed7bcc6adcb5bd9/F in the original entry)",
       "status": "fixed",
-      "fixing_commit": "e2befc36 (pushed to feat/lane-count-classification-v1-20260918, not yet merged into integration/production-large-map-20260918 as of this update)",
+      "fixing_commit": "e2befc36, merged f5333f3a and pushed to origin/integration/production-large-map-20260918 on 2026-09-22 (was pending merge as of the 2026-09-18 entry; confirmed pushed this update)",
       "regression_test": "ultimate_pipeline/tests/unit/test_classify_lane_count_transitions.py (12 tests, one synthetic XODR fixture per category)",
       "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/lane_count_classification.{json,md}",
       "residual_risk": "LOW -- one important caveat surfaced: naive junction-road adjacency is NOT discriminating in this map (~70% of all 32,267 roads are junction connecting roads), so the classifier deliberately requires stronger declared-connection-with-laneLink-verification or independent-connector-registration evidence rather than plain adjacency. Not wired into scripts/measure_candidate_acceptance.py or PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- deliberately out of scope (would touch the already-pinned acceptance-gate contract), flagged as a natural follow-up."
     }
   ],
   "counts": {
-    "total": 9,
-    "fixed": 7,
-    "in_progress": 0,
+    "total": 11,
+    "fixed": 8,
+    "in_progress": 1,
     "deferred": 2,
+    "open": 1,
     "blocked_external": 0
-  }
+  },
+  "last_updated_utc": "2026-09-22T00:00:00Z",
+  "update_note": "2026-09-22: pushed pending GAP-005 merge; added GAP-010 (RQ4 train/eval leakage FAIL, top priority) and GAP-011 (integration debt across 2026-09-18..09-22 parallel-agent work: 5 report-backed packages on a WIP branch, 10 OpenCode branches, 2 Codex branches, all real but unintegrated). See coordinator survey this session for full detail."
 }
