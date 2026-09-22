@@ -43,8 +43,11 @@ def _get_road_sample_points(
     """
     Extract sample points (x, y, road_id) from road geometries.
 
-    Samples points at start, middle, and end of each road's planView geometry.
+    Uses canonical geometry evaluator for accurate sampling along any primitive type
+    (line, arc, spiral, poly3, paramPoly3).
     """
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
+
     points: List[Tuple[float, float, str]] = []
     roads = root.findall("road")
 
@@ -64,27 +67,48 @@ def _get_road_sample_points(
         if not geometries:
             continue
 
-        # Get first geometry start point
-        g0 = geometries[0]
-        x0 = _safe_float(g0.get("x"))
-        y0 = _safe_float(g0.get("y"))
-        hdg0 = _safe_float(g0.get("hdg"))
-
-        # Sample at start
-        points.append((x0, y0, rid))
-
-        # Sample at approximate middle (simplified: use first geometry direction)
-        if road_len > 0 and samples_per_road >= 2:
-            mid_s = road_len / 2.0
-            xm = x0 + math.cos(hdg0) * mid_s
-            ym = y0 + math.sin(hdg0) * mid_s
-            points.append((xm, ym, rid))
-
-        # Sample at approximate end
-        if road_len > 0 and samples_per_road >= 3:
-            xe = x0 + math.cos(hdg0) * road_len
-            ye = y0 + math.sin(hdg0) * road_len
-            points.append((xe, ye, rid))
+        # Use canonical evaluator for accurate sampling along the full road
+        if samples_per_road <= 1:
+            # Sample at start only
+            try:
+                pose = pose_at_s(geometries[0], 0.0)
+                points.append((pose.x, pose.y, rid))
+            except Exception:
+                # Fallback to first geometry attributes
+                g0 = geometries[0]
+                points.append((_safe_float(g0.get("x")), _safe_float(g0.get("y")), rid))
+        else:
+            # Sample at evenly spaced s-values along the road
+            for i in range(samples_per_road):
+                s_sample = road_len * (i / (samples_per_road - 1))
+                # Find which geometry contains this s-value
+                cumulative_s = 0.0
+                sampled = False
+                for geom in geometries:
+                    geom_len = _safe_float(geom.get("length"))
+                    if s_sample <= cumulative_s + geom_len + 1e-9:
+                        # Sample within this geometry
+                        local_s = s_sample - cumulative_s
+                        try:
+                            pose = pose_at_s(geom, local_s)
+                            points.append((pose.x, pose.y, rid))
+                            sampled = True
+                            break
+                        except Exception:
+                            # Fallback: use geometry start point
+                            points.append((_safe_float(geom.get("x")), _safe_float(geom.get("y")), rid))
+                            sampled = True
+                            break
+                    cumulative_s += geom_len
+                if not sampled and geometries:
+                    # Fallback: use last geometry endpoint
+                    last_geom = geometries[-1]
+                    try:
+                        from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint
+                        pose = endpoint(last_geom)
+                        points.append((pose.x, pose.y, rid))
+                    except Exception:
+                        points.append((_safe_float(last_geom.get("x")), _safe_float(last_geom.get("y")), rid))
 
     return points
 
@@ -188,7 +212,9 @@ def check_dem_coverage(
         import numpy as np
         import rasterio
     except ImportError:
-        report["warnings"].append("rasterio not installed - DEM coverage check skipped")
+        report["ok"] = False
+        report["reason"] = "rasterio_unavailable"
+        report["warnings"].append("rasterio not installed - DEM coverage check fails closed")
         return report
 
     try:
@@ -405,6 +431,9 @@ def check_dem_coverage_with_sampler(
     report["total_samples"] = len(points)
 
     if not points:
+        report["ok"] = False
+        report["reason"] = "no_sample_points"
+        report["valid_ratio"] = 0.0
         report["warnings"].append("no sample points extracted from XODR")
         return report
 
