@@ -37,12 +37,19 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 
 - **RQ1 (determinism)**: Last verified valid pre-2026-09-18. Never re-smoke-tested against ~15 merges
   since. Action: offline re-verification (Claude subagent, dispatched today).
-- **RQ2 (domain gap / hull footprint)**: Authoritative number (~2.7-3.8x) computed 2026-08-21/26,
-  BEFORE the GeoAligner schema-order fix, alignment-extractor point-duplication fix, stale-header-bbox
-  fix, and CurvatureGap KL density-vs-mass fix (all 2026-09-14/16) -- all in the exact code path this
-  number depends on. `THESIS_TO_CURRENT_PROGRESS.md` explicitly declined to re-verify, calling it "a
-  human call, not an automatic swap." That call has never been made. Action: offline re-computation
-  against the current map-of-record with current code (Claude subagent, dispatched today).
+- **RQ2 (domain gap / hull footprint)**: **CLOSED, 2026-09-23** (commit `9d4d182b`, report
+  `reports/production_readiness/20260923_RQ2_REVERIFICATION/RESULTS.md`). Correction to this plan's
+  earlier framing: RQ2 had already been re-verified once before, on 2026-09-17 (commit `c3915130`) --
+  this pass independently confirmed that, then re-ran the same real entrypoint
+  (`scripts/regen_local_registration.py` / `regen_frechet_distance.py`) against the still-current pin
+  (`370abbbb...`, unchanged since 09-16/17) and got byte-identical output to 09-17: hull ratios
+  2.683x/3.782x/3.561x, curvature gap 0.2206, local Fréchet mean/median/p90 58.18/36.13/140.48m.
+  Root cause of the non-movement independently confirmed by code inspection, not assumed: neither
+  `local_registration.py` nor `frechet_gap.py` imports `GeoAligner` or `CurvatureGap` at all -- the
+  2026-09-14/16 fixes to those modules had no code path into this metric. The figure is also now shown
+  robust across 5 real map-of-record promotions (09-02 through 09-17, moved <0.5%), not an artifact of
+  one snapshot. No doc edit needed -- `THESIS_TO_CURRENT_PROGRESS.md`'s RQ2 row already states the
+  correct current figures.
 - **RQ3 (paired perception capture)**: Code-ready (rq3_capture_contract.py fixes the frame/rig
   mismatch bug), but (a) that code isn't on production yet (GAP-011), and (b) even once it is, live
   CARLA is required and GAP-017's RPC handshake bug blocks it. Action: GAP-011 must land (OpenCode, in
@@ -68,8 +75,8 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 3. **GAP-008 + fresh cross-package audit** (Gemini, currently dispatched) -- independent, proceeds in
    parallel.
 4. **RQ1 re-verification** (Claude subagent, dispatching now) -- independent, cheap, offline.
-5. **RQ2 re-verification** (Claude subagent, dispatching now) -- independent, offline, the single
-   biggest RQ-answering action available right now that doesn't depend on anything else landing first.
+5. **RQ2 re-verification** -- DONE, 2026-09-23 (commit `9d4d182b`). Confirmed unchanged and robust;
+   see the RQ-by-RQ section above.
 6. **GAP-010 completion** (Codex, queued -- do not start until #1 lands) -- retry once GAP-011's
    OC-51 restoration is confirmed on production.
 7. **GAP-017 (CARLA RPC handshake) focused investigation** (Codex, queued after #2's current tasks) --
@@ -82,7 +89,8 @@ Disk space (C:) -- RESOLVED 2026-09-23 (98%->85% used). F: still critical (741MB
 
 ## Honesty checkpoint
 
-If asked "will all RQs be fully answered after this plan executes": no. RQ1 and RQ2 will be. RQ4's
-code-readiness will be, but not the actual retrained result (compute-dependent). RQ3 depends entirely
-on whether GAP-017 turns out to be fixable -- a real, open question, not a formality. RQ5(a) and
-RQ5(b) are not reachable this pass under any delegation scheme currently available.
+If asked "will all RQs be fully answered after this plan executes": no. **RQ2 is now closed** (2026-09-23,
+confirmed unchanged and robust). RQ1 is pending the same treatment. RQ4's code-readiness will be
+reachable, but not the actual retrained result (compute-dependent). RQ3 depends entirely on whether
+GAP-017 turns out to be fixable -- a real, open question, not a formality. RQ5(a) and RQ5(b) are not
+reachable this pass under any delegation scheme currently available.
