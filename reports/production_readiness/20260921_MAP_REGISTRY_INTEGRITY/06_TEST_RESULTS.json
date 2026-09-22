@@ -1,0 +1,15 @@
+{
+  "duration_s": 1070.39,
+  "failed": 6,
+  "failures": [
+    "ultimate_pipeline/tests/unit/test_mtime_audit.py::TestMtimeAuthorityRegression::test_no_unprotected_mtime_authority[run_alignment_and_matching.py] (PRE-EXISTING, verified via stash in OC-51)",
+    "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py::TestTileGridMetaBoundsFromXodr::test_nan_coordinate_excluded_from_bbox (PRE-EXISTING, verified via stash in OC-51)",
+    "tests/unit/test_mesh_streamer_update.py (4 tests; PRE-EXISTING other-agent churn: mesh_streamer.py carries 95+/52- uncommitted non-OC-58 changes, zero import/code link to OC-58 files)"
+  ],
+  "note": "Filled by the pytest step after bundle generation.",
+  "passed": 5871,
+  "registry_focused": "test_map_registry_integrity.py (38 new) + test_map_registry_pinning.py + test_map_registry_verify_pinned_map.py + test_validate_thesis_claim_provenance.py: 68 passed, 0 failed",
+  "skipped": 2,
+  "status": "COMPLETE_WITH_PREEXISTING_FAILURES",
+  "suite": "full pytest (pytest.ini testpaths)"
+}

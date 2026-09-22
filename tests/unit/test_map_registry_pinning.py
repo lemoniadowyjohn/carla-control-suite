@@ -18,35 +18,45 @@ from ultimate_pipeline.carla_tools.map_registry import (
 )
 
 
-def _fake_registry(tmp_path: Path, sha256: str) -> dict:
+def _fake_registry(tmp_path: Path, sha256: str, nbytes: int = 100) -> dict:
+    # OC-58 hardened contract: schema-valid entry (exact bytes where the
+    # file exists, vocabulary role, frame text).
     return {
         "fake_entry": {
             "path": str(tmp_path / "fake.xodr"),
             "sha256": sha256,
-            "bytes": None,
+            "bytes": nbytes,
             "role": "manual",
+            "frame": "test frame",
             "aliases": ["fake_entry", "FakeAlias"],
         }
     }
 
 
 def test_verify_pinned_map_positive_control_matching_content(tmp_path: Path) -> None:
+    content = b"clean fixture content"
     p = tmp_path / "fake.xodr"
-    p.write_bytes(b"clean fixture content")
+    p.write_bytes(content)
     import hashlib
 
-    sha = hashlib.sha256(b"clean fixture content").hexdigest()
-    result = verify_pinned_map("fake_entry", registry=_fake_registry(tmp_path, sha))
+    sha = hashlib.sha256(content).hexdigest()
+    result = verify_pinned_map(
+        "fake_entry", registry=_fake_registry(tmp_path, sha, len(content))
+    )
     assert result["sha256"] == sha
     assert result["role"] == "manual"
 
 
 def test_verify_pinned_map_negative_control_content_drift_raises(tmp_path: Path) -> None:
+    content = b"drifted content, not what the registry expects"
     p = tmp_path / "fake.xodr"
-    p.write_bytes(b"drifted content, not what the registry expects")
+    p.write_bytes(content)
     wrong_sha = "0" * 64
     with pytest.raises(MapRegistryDriftError, match="drift"):
-        verify_pinned_map("fake_entry", registry=_fake_registry(tmp_path, wrong_sha))
+        verify_pinned_map(
+            "fake_entry",
+            registry=_fake_registry(tmp_path, wrong_sha, len(content)),
+        )
 
 
 def test_verify_pinned_map_raises_on_missing_file(tmp_path: Path) -> None:
@@ -61,12 +71,13 @@ def test_verify_pinned_map_raises_on_unknown_name(tmp_path: Path) -> None:
 
 
 def test_verify_pinned_map_alias_resolves_to_same_entry(tmp_path: Path) -> None:
+    content = b"aliased content"
     p = tmp_path / "fake.xodr"
-    p.write_bytes(b"aliased content")
+    p.write_bytes(content)
     import hashlib
 
-    sha = hashlib.sha256(b"aliased content").hexdigest()
-    registry = _fake_registry(tmp_path, sha)
+    sha = hashlib.sha256(content).hexdigest()
+    registry = _fake_registry(tmp_path, sha, len(content))
     direct = verify_pinned_map("fake_entry", registry=registry)
     via_alias = verify_pinned_map("FakeAlias", registry=registry)
     assert direct["sha256"] == via_alias["sha256"] == sha
