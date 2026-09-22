@@ -884,8 +884,9 @@ def test_validate_xodr_schema_positive_control_no_xsd_skips_and_passes(
     tmp_path: Path,
 ) -> None:
     """With xsd_path=None (the actual call pattern used throughout the
-    pipeline -- see stage_08_integrity.py / crash_safe_length_repair.py),
-    schema validation is intentionally skipped and must report ok."""
+    pipeline), schema validation is NOT CONFIGURED -- and OC-59 §14 forbids
+    reporting that as a pass. The legacy wrapper returns False with an
+    explicit reason; the structured API reports NOT_CONFIGURED."""
     xodr = _write(
         tmp_path,
         "schema_any.xodr",
@@ -894,8 +895,8 @@ def test_validate_xodr_schema_positive_control_no_xsd_skips_and_passes(
 
     ok, err = validate_xodr_schema(xodr, None)
 
-    assert ok is True
-    assert err is None
+    assert ok is False
+    assert err is not None and "NOT_CONFIGURED" in err
 
 
 def test_validate_xodr_schema_negative_control_real_xsd_rejects_invalid_xml(

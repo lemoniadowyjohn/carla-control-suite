@@ -1,0 +1,14 @@
+{
+  "adversarial_coverage": [
+    "x=nan",
+    "y=inf",
+    "hdg=-inf",
+    "length=banana",
+    "s=''",
+    "lane id malformed",
+    "width a=nan",
+    "elevation b=inf"
+  ],
+  "defect": "xodr_strict_validator._f/_i and compat _safe_float substituted a finite default BEFORE validity checks, so hdg='nan' became 0.0 and `if not _is_finite(hdg)` was unreachable (likewise x/y/length/s/widths/elevation). check_carla_import_s._f has the same pattern (repair domain; untouched). CONFIRMED in audited baseline.",
+  "fix": "xodr_numeric.parse_required_float/int/optional return MISSING/MALFORMED/NONFINITE/VALID; validators emit outcome-specific error codes (e.g. geom_hdg_nonfinite) and skip boundary math for unparseable segments instead of validating invented zeros. Legacy _f/_i kept as labeled backward-compat shims."
+}

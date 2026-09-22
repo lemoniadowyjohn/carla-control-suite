@@ -1,0 +1,224 @@
+{
+  "fixture_battery": {
+    "arc_bad_curvature": {
+      "compat_all_codes": [
+        "arc_curvature_nonfinite"
+      ],
+      "compat_error_codes": [
+        "arc_curvature_nonfinite"
+      ],
+      "strict_error_codes": [
+        "arc_curvature_nonfinite"
+      ],
+      "strict_ok": false
+    },
+    "banana_length": {
+      "compat_all_codes": [
+        "geometry_length_malformed"
+      ],
+      "compat_error_codes": [
+        "geometry_length_malformed"
+      ],
+      "strict_error_codes": [
+        "geom_length_malformed"
+      ],
+      "strict_ok": false
+    },
+    "double_primitive": {
+      "compat_all_codes": [
+        "geometry_primitive_count"
+      ],
+      "compat_error_codes": [
+        "geometry_primitive_count"
+      ],
+      "strict_error_codes": [
+        "geom_type_ambiguous"
+      ],
+      "strict_ok": false
+    },
+    "empty_s": {
+      "compat_all_codes": [
+        "geometry_s_malformed"
+      ],
+      "compat_error_codes": [
+        "geometry_s_malformed"
+      ],
+      "strict_error_codes": [
+        "geom_s_malformed"
+      ],
+      "strict_ok": false
+    },
+    "nan_hdg": {
+      "compat_all_codes": [
+        "geometry_hdg_nonfinite"
+      ],
+      "compat_error_codes": [
+        "geometry_hdg_nonfinite"
+      ],
+      "strict_error_codes": [
+        "geom_hdg_nonfinite"
+      ],
+      "strict_ok": false
+    },
+    "no_primitive": {
+      "compat_all_codes": [
+        "geometry_primitive_count"
+      ],
+      "compat_error_codes": [
+        "geometry_primitive_count"
+      ],
+      "strict_error_codes": [
+        "geom_type_missing"
+      ],
+      "strict_ok": false
+    },
+    "s_gap": {
+      "compat_all_codes": [],
+      "compat_error_codes": [],
+      "strict_error_codes": [
+        "geom_s_gap"
+      ],
+      "strict_ok": false
+    },
+    "s_overlap": {
+      "compat_all_codes": [],
+      "compat_error_codes": [],
+      "strict_error_codes": [
+        "geom_s_overlap"
+      ],
+      "strict_ok": false
+    },
+    "spiral_missing_coeff": {
+      "compat_all_codes": [
+        "spiral_curvStart_missing"
+      ],
+      "compat_error_codes": [
+        "spiral_curvStart_missing"
+      ],
+      "strict_error_codes": [
+        "spiral_curvStart_missing"
+      ],
+      "strict_ok": false
+    },
+    "spiral_valid": {
+      "compat_all_codes": [],
+      "compat_error_codes": [],
+      "strict_error_codes": [],
+      "strict_ok": true
+    },
+    "valid_minimal": {
+      "compat_all_codes": [],
+      "compat_error_codes": [],
+      "strict_error_codes": [],
+      "strict_ok": true
+    },
+    "width_nan": {
+      "compat_all_codes": [
+        "lane_width_a_nonfinite"
+      ],
+      "compat_error_codes": [
+        "lane_width_a_nonfinite"
+      ],
+      "strict_error_codes": [
+        "width_a_nonfinite"
+      ],
+      "strict_ok": false
+    },
+    "width_negative_interior": {
+      "compat_all_codes": [],
+      "compat_error_codes": [],
+      "strict_error_codes": [
+        "lane_width_implausibly_large",
+        "lane_width_negative"
+      ],
+      "strict_ok": false
+    }
+  },
+  "note": "Behavior was not changed merely to force agreement: each residual divergence above carries its reason and the chosen authoritative semantics.",
+  "pinned_map_reading": "auto map-of-record: PASS (VERIFIED_OFFLINE_STATIC), zero errors/warnings on executed checks -- converged validators do not block the production map. manual Grid0828 reference: FAIL on real zero-width lanes (44\u00d7 lane_width_zero agreed by both validators) plus 17\u00d7 strict-only polynomial-negative intervals; pre-existing data characteristic, not a task regression, and no map bytes were touched.",
+  "pinned_maps": {
+    "auto": {
+      "attestation": "VERIFIED_OFFLINE_STATIC",
+      "envelope_status": "PASS",
+      "error_codes": [],
+      "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "n_errors": 0,
+      "registry_key": "auto_map_of_record",
+      "sub_statuses": {
+        "CARLA_STATIC_COMPAT": "PASS",
+        "XML_BASIC_INTEGRITY": "PASS",
+        "XODR_STRUCTURAL": "PASS",
+        "XSD_SCHEMA": "NOT_RUN"
+      }
+    },
+    "manual": {
+      "attestation": "NOT_VERIFIED_OFFLINE_STATIC",
+      "envelope_status": "FAIL",
+      "error_codes": [
+        "lane_width_negative",
+        "lane_width_nonpositive",
+        "lane_width_zero"
+      ],
+      "map_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "n_errors": 105,
+      "registry_key": "manual_grid0828",
+      "sub_statuses": {
+        "CARLA_STATIC_COMPAT": "FAIL",
+        "XML_BASIC_INTEGRITY": "PASS",
+        "XODR_STRUCTURAL": "FAIL",
+        "XSD_SCHEMA": "NOT_RUN"
+      }
+    }
+  },
+  "policy_disagreements": [
+    {
+      "check": "spiral support",
+      "chosen_authoritative_semantics": "spiral VALID when curvStart/curvEnd finite (compat profile default)",
+      "reason": "historical tooling comment vs canonical kernel support",
+      "validator_A": "StrictXodrValidator(LEGACY_CONSERVATIVE)",
+      "validator_B": "StrictXodrValidator(default CARLA_0_9_16_COMPAT) + StrictCarlaOpendriveGate"
+    },
+    {
+      "check": "road-length threshold",
+      "chosen_authoritative_semantics": "single shared policy (abs>5m AND rel>0.25, warn) with reported absolute_error_m/relative_error/threshold/status",
+      "reason": "two unexplained thresholds",
+      "validator_A": "strict validator (old: rel>0.10)",
+      "validator_B": "compat gate (abs>5m AND rel>0.25)"
+    },
+    {
+      "check": "duplicate lane id severity",
+      "chosen_authoritative_semantics": "error offline; warn at runtime preflight (documented split, not mechanical agreement)",
+      "reason": "runtime preflight caution: loader raises on any error, so the compat gate keeps warn to avoid new runtime blocks; offline static validation errors",
+      "validator_A": "StrictXodrValidator (error)",
+      "validator_B": "StrictCarlaOpendriveGate (warn)"
+    },
+    {
+      "check": "missing contactPoint",
+      "chosen_authoritative_semantics": "error offline (ambiguous reference); compat gate unchanged pending runtime evidence",
+      "reason": "compat gate never checked presence",
+      "validator_A": "StrictXodrValidator (error)",
+      "validator_B": "StrictCarlaOpendriveGate (unchecked)"
+    },
+    {
+      "check": "s-continuity granularity",
+      "chosen_authoritative_semantics": "strict classification authoritative offline",
+      "reason": "compat gate checks ordering, not boundaries",
+      "validator_A": "StrictXodrValidator (gap/overlap/duplicate_s/negative_s)",
+      "validator_B": "StrictCarlaOpendriveGate (monotonic only)"
+    },
+    {
+      "check": "lane width semantics",
+      "chosen_authoritative_semantics": "polynomial evaluation authoritative offline; compat gate keeps the cheap a>0 preflight",
+      "reason": "a-only check misses interior negativity",
+      "validator_A": "StrictXodrValidator (polynomial evaluated over interval: negative/zero/nonfinite/huge)",
+      "validator_B": "StrictCarlaOpendriveGate (width@a > 0)"
+    },
+    {
+      "check": "XSD unavailable",
+      "chosen_authoritative_semantics": "NOT_CONFIGURED / INCOMPLETE_DEPENDENCY with identity; legacy wrapper returns False with explicit reason",
+      "reason": "false green: not-checked reported as valid",
+      "validator_A": "old validate_xodr_schema (True,'skipped')",
+      "validator_B": "converged structured result"
+    }
+  ]
+}
