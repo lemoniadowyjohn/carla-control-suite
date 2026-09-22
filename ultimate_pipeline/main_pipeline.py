@@ -2170,6 +2170,10 @@ if str(_repo_root) not in sys.path:
         self._mark_stage("topology_repair")
         topo_fixed = self._step3_topology_repair(working_topology, topo_fixed)
 
+        # 3b) 🛡️ XODR Validator
+        self._mark_stage("xodr_validator")
+        topo_fixed = self._step3b_xodr_validator(topo_fixed)
+
         # 4) 🏗️ Enrichment
         self._mark_stage("enrichment")
         topo_fixed = self._step4_enrichment(topo_fixed)
@@ -3411,6 +3415,16 @@ if str(_repo_root) not in sys.path:
     ) -> str:
         from ultimate_pipeline.pipeline_stages.stage_03_topology_repair import _step3_topology_repair as _impl
         return _impl(self, working_topology_input, topo_fixed)
+
+    def _step3b_xodr_validator(self, xodr_path: str) -> str:
+        from ultimate_pipeline.quality.xodr_strict_validator import StrictXodrValidator
+        print(f"\n============== 🛡️ XODR Validator Convergence ({xodr_path}) ==============")
+        validator = StrictXodrValidator()
+        report = validator.validate_path(xodr_path)
+        if not report.get("ok", False):
+            raise RuntimeError(f"❌ XODR Validator convergence failed: {report}")
+        print("✅ XODR Validator convergence: PASS")
+        return xodr_path
     def _step4_enrichment(self, topo_fixed: str) -> str:
         from ultimate_pipeline.pipeline_stages.stage_04_enrichment import _step4_enrichment as _impl
         return _impl(self, topo_fixed)
