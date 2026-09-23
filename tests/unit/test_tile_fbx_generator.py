@@ -21,6 +21,7 @@ import pytest
 
 import ultimate_pipeline.tiling.tile_fbx_generator as tile_fbx_generator_module
 from ultimate_pipeline.tiling.tile_fbx_generator import (
+    BuildingPolygon,
     TileBuilding,
     TileGridSpec,
     assign_buildings_to_tiles,
@@ -56,7 +57,7 @@ def _building(source_id, rings, *, tags=None, source_type="way") -> TileBuilding
         source_id=str(source_id),
         source_type=source_type,
         tags=tags or {"building": "yes"},
-        rings=rings,
+        parts=[BuildingPolygon(outer=r) for r in rings],
     )
 
 
@@ -229,7 +230,8 @@ class TestBoundaryAssignment:
         # A building with no finite geometry cannot be placed, but must be
         # accounted for in `unplaceable` -- placed + unplaceable == total.
         empty = TileBuilding(source_id="empty", source_type="way",
-                             tags={"building": "yes"}, rings=[[]])
+                             tags={"building": "yes"},
+                             parts=[BuildingPolygon(outer=[])])
         good = _building("good", [_square_ring(0.001, 0.001, 0.0005, 0.0005)])
         assignment = assign_buildings_to_tiles([empty, good], _GRID)
         assert assignment.total_placed() == 1
@@ -354,7 +356,9 @@ class TestClassifyTileBuildings:
             source_id=source_id,
             source_type="way",
             tags=tags,
-            rings=[[(0.0, 0.0), (0.001, 0.0), (0.001, 0.001), (0.0, 0.001), (0.0, 0.0)]],
+            parts=[BuildingPolygon(
+                outer=[(0.0, 0.0), (0.001, 0.0), (0.001, 0.001), (0.0, 0.001), (0.0, 0.0)]
+            )],
         )
 
     def test_zero_buildings_returns_zero_counts(self):

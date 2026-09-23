@@ -164,13 +164,13 @@ def _make_tile_buildings() -> List[tfg.TileBuilding]:
     return [
         tfg.TileBuilding(source_id="bA", source_type="way",
                           tags={"building": "yes", "height": "12"},
-                          rings=[_ring(11.4300, 48.7500)]),
+                          parts=[tfg.BuildingPolygon(outer=_ring(11.4300, 48.7500))]),
         tfg.TileBuilding(source_id="bB", source_type="way",
                           tags={"building": "residential"},
-                          rings=[_ring(11.4305, 48.7505)]),
+                          parts=[tfg.BuildingPolygon(outer=_ring(11.4305, 48.7505))]),
         tfg.TileBuilding(source_id="wC", source_type="way",
                           tags={"barrier": "wall"},
-                          rings=[_ring(11.4310, 48.7510)]),
+                          parts=[tfg.BuildingPolygon(outer=_ring(11.4310, 48.7510))]),
     ]
 
 

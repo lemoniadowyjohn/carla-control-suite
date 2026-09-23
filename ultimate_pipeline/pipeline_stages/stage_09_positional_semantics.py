@@ -120,6 +120,15 @@ def _step9_positional_semantics(self, final_out: str) -> str:
 
     if getattr(s, "ENABLE_BUILDINGS", True) and buildings_path:
         print("🏙️ Inserting buildings on frozen structure…")
+        # NOTE: `enforce_buildings_fail_closed` is defined in stage_04_enrichment.py,
+        # not main_pipeline.py, so it is NOT reachable via
+        # `_inject_main_pipeline_globals()` (that only mirrors
+        # ultimate_pipeline.main_pipeline's own module globals). It must be
+        # imported explicitly here.
+        from ultimate_pipeline.pipeline_stages.stage_04_enrichment import (
+            enforce_buildings_fail_closed,
+        )
+        num_buildings = 0
         try:
             num_buildings = _load_buildings_with_fallback(
                 root=root,
@@ -130,15 +139,19 @@ def _step9_positional_semantics(self, final_out: str) -> str:
                 out_dir=self.out_dir,
             )
             save_xodr(tree, final_out)
-
-            enforce_buildings_fail_closed(
-                inserted_count=num_buildings,
-                buildings_source=buildings_path,
-            )
             print(f"   → Inserted {num_buildings} buildings.")
         except Exception as e:
             print(f"⚠️ Building insertion failed: {e}")
             self.vreport.add("positional_semantics", "building_error", str(e))
+        # CODEX C7 (W1) fail-closed guard: deliberately OUTSIDE the try/except
+        # above. Buildings are the dominant semantic class for the perception
+        # domain-gap study; a load failure or a near-empty result must not be
+        # silently swallowed as a warning -- this must propagate and fail the
+        # run unless UP_ALLOW_EMPTY_BUILDINGS=1 is explicitly set.
+        enforce_buildings_fail_closed(
+            inserted_count=num_buildings,
+            buildings_source=buildings_path,
+        )
     else:
         print("⏭️ Building insertion disabled or no source.")
 
