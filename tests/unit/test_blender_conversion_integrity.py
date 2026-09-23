@@ -558,11 +558,18 @@ def test_r_result_ok_property(tmp_path):
 
 
 def test_s_cli_help(tmp_path):
+    import os
     import subprocess
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[2]
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
     result = subprocess.run([
         sys.executable, "-m", "ultimate_pipeline.enrichment.blender_runner", "--help"
-    ], capture_output=True, text=True, cwd=tmp_path)
-    assert result.returncode == 0
+    ], capture_output=True, text=True, cwd=tmp_path, env=env)
+    assert result.returncode == 0, (
+        f"stdout={result.stdout!r} stderr={result.stderr!r}"
+    )
     assert "usage:" in result.stdout.lower()
 
 
