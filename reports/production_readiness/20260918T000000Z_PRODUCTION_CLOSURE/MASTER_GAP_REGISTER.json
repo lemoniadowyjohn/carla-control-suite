@@ -272,15 +272,45 @@
       "regression_test": null,
       "evidence_artifact": "External audit's _final_verify/proj_audit.py and CRS_metadata.json (not yet committed to this repo as of this update -- exists only in the external session's working state)",
       "residual_risk": "HIGH until independently reproduced and fixed. Suggested minimal fix (from the external audit, not yet implemented or verified): set settings.proj_string to the full EPSG:32632 proj4 string (not the tmerc default) and settings.center_map = False explicitly (or True with a documented offset convention), matching whatever convention the rest of the pipeline's CRS contract already expects -- cross-check against ultimate_pipeline/governance/proj_env_guard.py and the manifest-level EPSG:32632 candidate path before choosing the exact fix, since those may encode the intended convention already. Do NOT fix this by guessing -- reproduce the wrong-coordinate output on current production first (this coordinator has only confirmed the code-level mechanism, not run the actual conversion), then verify the fix against a known-correct real-world coordinate."
+    },
+    {
+      "id": "GAP-022",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline/tools/final_map_readiness_gate.py -- evidence binding",
+      "description": "Of the 3 sub-report evaluators in final_map_readiness_gate.py, only evaluate_connector_report() binds evidence to the actual XODR via SHA256 (output_sha256 field checked against safe_sha256_file(xodr_path), and even that is silently skipped when the field is absent -- no mismatch is raised, it just isn't checked). evaluate_visual_gate_report() and evaluate_perception_status() both trust their report dicts' 'ok'/status fields at face value with zero path or hash binding to the artifact under evaluation -- a report from a completely different map could be accepted as evidence for this one as long as filenames/paths line up externally.",
+      "proof": "Direct read of ultimate_pipeline/tools/final_map_readiness_gate.py on origin/integration/production-large-map-20260918 @ dc5443fc: evaluate_connector_report() lines 184-190 (sha check, gated behind `if len(output_sha) == 64`); evaluate_visual_gate_report() lines 214-227 and evaluate_perception_status() lines 234-268 (no sha/hash/path-binding code anywhere in either function).",
+      "affected_files": ["ultimate_pipeline/tools/final_map_readiness_gate.py"],
+      "scientific_runtime_consequence": "A stale or wrong-map visual-smoke or perception-status report could be silently accepted as evidence for the current final XODR's readiness gate, undermining the fail-closed intent of the gate for 2 of its 3 sub-checks.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), master-prompt-triage task, item 8 -- found, not fixed (out of scope for a triage-only task)",
+      "status": "open",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20260923T184022Z_MASTER_PROMPT_TRIAGE/RESULTS.md (docs/master-prompt-triage-20260923, pushed not merged)",
+      "residual_risk": "MEDIUM. A more complete fix already exists (commit e6052360 'OC-41 final-readiness evidence binding' + follow-up 23913504, checks all 4 sub-report types + adds an evidence_manifest with path+hash per report) but is NOT merged into production -- it lives on local branch _oc41_work tracking origin/fix/final-readiness-evidence-binding-v3, itself reported 'ahead 58, behind 2' of that remote (more unpushed work exists). A separate concurrent task this session (GAP-011 OC-35/41/42/VAP reconciliation) is independently rebasing/reconciling this exact branch family (fix/final-readiness-evidence-binding-v2/v3) right now -- check whether its output (fix/final-readiness-evidence-binding-v4-reconciled-20260923, already pushed as of this update) actually resolves this gap before dispatching separate fix work; do not duplicate."
+    },
+    {
+      "id": "GAP-023",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline/config/settings.py -- mtime authority",
+      "description": "_resolve_input_xodr_with_fallback() (settings.py, used when UP_DATA_ROOT is set but UP_INPUT_XODR is not, called from settings.py line ~1809 to resolve self.INPUT_XODR for the next pipeline run) scans all 08_final*.xodr files under the output root and selects the newest by raw os.stat().st_mtime with zero content/hash/provenance verification -- the same class of bug GAP-012 already fixed once in ultimate_pipeline/domain_gap/run_alignment_and_matching.py.",
+      "proof": "Direct read of ultimate_pipeline/config/settings.py lines 181-213 on origin/integration/production-large-map-20260918 @ dc5443fc: `if mtime > best_mtime: best_mtime = mtime; best_path = str(xodr)` inside a bare iterdir()/glob() loop, no structural or hash guard.",
+      "affected_files": ["ultimate_pipeline/config/settings.py"],
+      "scientific_runtime_consequence": "If two candidate 08_final*.xodr files exist under the output root with the wrong relative mtimes (e.g. after a rebase, restore, or clock skew), this fallback could silently select the wrong file as the next run's input -- gated behind a non-default env-var combination (UP_DATA_ROOT set + UP_INPUT_XODR unset), so lower real-world exposure than GAP-012's original finding, but the same defect class.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), master-prompt-triage task, item 2 -- found, not fixed (out of scope for a triage-only task)",
+      "status": "open",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20260923T184022Z_MASTER_PROMPT_TRIAGE/RESULTS.md (docs/master-prompt-triage-20260923, pushed not merged) -- also lists several lower-severity mtime-authority instances across thesis/research tooling (run_full_domain_gap.py, run_gap_ablation_experiment.py, etc.) flagged for a future opportunistic sweep, not individually tracked here",
+      "residual_risk": "LOW-MEDIUM -- same fix pattern as GAP-012 (structural/hash guard, mtime only as tiebreaker) should apply directly; well-scoped, low-risk, single-file fix."
     }
   ],
   "counts": {
-    "total": 21,
+    "total": 23,
     "fixed": 13,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 1,
+    "open": 3,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
