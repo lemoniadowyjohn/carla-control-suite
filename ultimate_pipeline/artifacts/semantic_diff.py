@@ -37,20 +37,57 @@ class SemanticDiffEngine:
         )
 
     def detect_undeclared_mutation(
-        self, candidate_ref: ArtifactRef, declaration: MutationDeclaration
+        self,
+        parent_ref: ArtifactRef,
+        candidate_ref: ArtifactRef,
+        declaration: MutationDeclaration,
     ) -> bool:
+        """Flag a forbidden XML domain only if it actually CHANGED between
+        parent and candidate -- DIFF(parent, candidate), not
+        CONTENTS(candidate). A forbidden domain that already existed,
+        unchanged, in the parent is not a mutation: nothing changed there.
+        """
         if not declaration.forbidden_xml_domains:
             return False
         try:
-            tree = ET.parse(candidate_ref.path)
-            root = tree.getroot()
-            for domain in declaration.forbidden_xml_domains:
-                for elem in root.iter():
-                    if domain in elem.tag or domain in (elem.attrib.get("name", ""), elem.attrib.get("id", "")):
-                        return True
+            parent_root = ET.parse(parent_ref.path).getroot()
+            candidate_root = ET.parse(candidate_ref.path).getroot()
         except ET.ParseError:
             return True
+        for domain in declaration.forbidden_xml_domains:
+            parent_signatures = sorted(
+                self._canonical_signature(elem)
+                for elem in parent_root.iter()
+                if self._matches_domain(elem, domain)
+            )
+            candidate_signatures = sorted(
+                self._canonical_signature(elem)
+                for elem in candidate_root.iter()
+                if self._matches_domain(elem, domain)
+            )
+            if parent_signatures != candidate_signatures:
+                return True
         return False
+
+    def _matches_domain(self, elem: ET.Element, domain: str) -> bool:
+        return domain in elem.tag or domain in (
+            elem.attrib.get("name", ""),
+            elem.attrib.get("id", ""),
+        )
+
+    def _canonical_signature(self, elem: ET.Element) -> tuple:
+        """A structure-aware, order-independent signature of an element's
+        full subtree (tag, normalized attributes, normalized text, and
+        child signatures), used to detect whether a matched domain
+        element's actual content changed -- not just whether an element
+        matching the domain merely exists.
+        """
+        return (
+            elem.tag,
+            self._normalize_attrib(elem.attrib),
+            self._normalize_text(elem.text),
+            tuple(self._canonical_signature(child) for child in elem),
+        )
 
     def _xml_content_equivalent(self, a: Path, b: Path) -> bool:
         try:
