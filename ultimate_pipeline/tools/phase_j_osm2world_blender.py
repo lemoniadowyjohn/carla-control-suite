@@ -324,9 +324,20 @@ def main() -> int:
         blender_result = bres.to_dict()
     evidence["tools"]["blender_fbx"] = blender_result
 
+    # J3 verdict
+    j3_status = blender_result.get("status", "skipped")
+    if j3_status == "ok":
+        evidence["checks"]["J3_blender_fbx"] = {"ok": True, "verdict": "J3_PASS"}
+    elif j3_status in ("failed", "blocked"):
+        evidence["checks"]["J3_blender_fbx"] = {"ok": False, "verdict": "J3_FAIL", "reason": blender_result.get("reason", "")}
+    else:
+        evidence["checks"]["J3_blender_fbx"] = {"ok": None, "verdict": "J3_SKIPPED", "reason": blender_result.get("reason", "")}
+
     # ---- 9. J6 FBX round-trip in a second clean Blender ----
+    # Gate: only run if current conversion succeeded (ok) or was explicitly skipped (--skip-blender).
+    # If conversion failed/blocked, refuse to round-trip a possibly stale FBX from a prior run.
     fbx_path = ARTIFACTS / f"{prefix}.fbx"
-    if fbx_path.exists() and DEFAULT_BLENDER_EXE.exists():
+    if j3_status in ("ok", "skipped") and fbx_path.exists() and DEFAULT_BLENDER_EXE.exists():
         source_manifest = blender_result.get("manifest", {})
         ok, report = run_fbx_roundtrip(
             fbx_path, ARTIFACTS, DEFAULT_BLENDER_EXE,
@@ -336,9 +347,12 @@ def main() -> int:
             **report,
         }
     else:
+        reason = "no FBX produced or Blender unavailable"
+        if j3_status in ("failed", "blocked"):
+            reason = "Blender conversion did not succeed; refusing to round-trip possibly stale FBX"
         evidence["checks"]["J6_fbx_roundtrip"] = {
             "ok": None,
-            "reason": "no FBX produced or Blender unavailable",
+            "reason": reason,
         }
 
     # ---- verdict ----
@@ -359,6 +373,9 @@ def main() -> int:
     j8 = evidence["checks"].get("J8_detached_slabs", {})
     if j8:
         verdicts.append(f"J8_{j8.get('verdict', 'N/A')}")
+    j3 = evidence["checks"].get("J3_blender_fbx", {})
+    if j3:
+        verdicts.append(j3.get("verdict", "J3_N/A"))
     j6 = evidence["checks"].get("J6_fbx_roundtrip", {})
     if j6.get("ok") is not None:
         verdicts.append("J6_PASS" if j6["ok"] else "J6_FAIL")
