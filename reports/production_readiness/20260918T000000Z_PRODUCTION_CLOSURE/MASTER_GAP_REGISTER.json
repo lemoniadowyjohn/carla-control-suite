@@ -105,8 +105,8 @@
       "status": "deferred",
       "fixing_commit": null,
       "regression_test": "tests/opendrive_geometry/test_kernel_cross_oracle.py (new, 17 cases, agreement-only -- does not enforce single authority)",
-      "evidence_artifact": "tests/opendrive_geometry/test_kernel_cross_oracle.py",
-      "residual_risk": "MEDIUM -- recommend a dedicated follow-up task to pick a single long-term authority and migrate the other package's ~8-38 callers"
+      "evidence_artifact": "tests/opendrive_geometry/test_kernel_cross_oracle.py; reports/production_readiness/20260923T190000Z_GAP008_RECONCILIATION_PLAN/PLAN.md (docs/gap008-geometry-consolidation-plan-20260923, pushed not merged)",
+      "residual_risk": "MEDIUM -- unchanged, still deferred. A dedicated reconciliation plan now exists (written by Gemini, 2026-09-23): recommends opendrive_geometry_kernel.py as the single canonical authority (30 vs 8 callers, more recently touched), with a 5-phase migration porting opendrive_geometry/'s adaptive-Simpson spiral integration/RangePolicy/typed errors into the kernel first, then incrementally migrating the 8 root callers, expanding the cross-oracle test from 17 to 60+ cases as a drift guard throughout. Estimated 7-10 dev-days. This is a WRITTEN PLAN ONLY -- not reviewed, not approved, not implemented. Requires explicit sign-off before any phase begins."
     },
     {
       "id": "GAP-009",
