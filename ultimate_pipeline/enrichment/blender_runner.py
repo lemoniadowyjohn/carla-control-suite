@@ -29,8 +29,9 @@ import os
 import subprocess
 import sys
 import time
+import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -70,6 +71,8 @@ class BlenderResult:
     output_hash: str = ""
     conversion_script: str = ""
     manifest: Dict[str, Any] = field(default_factory=dict)
+    manifest_path: str = ""
+    provenance_path: str = ""
     start_time: str = ""
     end_time: str = ""
     duration_sec: float = 0.0
@@ -77,6 +80,11 @@ class BlenderResult:
     exception: str = ""
     stdout_log: str = ""
     stderr_log: str = ""
+    run_id: str = ""
+    verification: Dict[str, Any] = field(default_factory=dict)
+    objects_total: Optional[int] = None
+    fbx_format: str = ""
+    fbx_signature: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -86,11 +94,23 @@ class BlenderResult:
             "script_hash": self.script_hash, "input_obj": self.input_obj,
             "output_fbx": self.output_fbx, "input_hash": self.input_hash,
             "output_hash": self.output_hash, "conversion_script": self.conversion_script,
-            "manifest": self.manifest, "start_time": self.start_time,
+            "manifest": self.manifest, "manifest_path": self.manifest_path,
+            "provenance_path": self.provenance_path, "start_time": self.start_time,
             "end_time": self.end_time, "duration_sec": self.duration_sec,
             "exit_code": self.exit_code, "exception": self.exception,
             "stdout_log": self.stdout_log, "stderr_log": self.stderr_log,
+            "run_id": self.run_id, "verification": self.verification,
+            "objects_total": self.objects_total, "fbx_format": self.fbx_format,
+            "fbx_signature": self.fbx_signature,
         }
+
+    @property
+    def ok(self) -> bool:
+        return self.status == "ok"
+
+    @property
+    def blocked(self) -> bool:
+        return self.status == "blocked"
 
 
 # Conversion script emitted to disk; imports OBJ, exports FBX, writes J3 manifest.
@@ -257,13 +277,21 @@ class BlenderRunner:
         if not self.blender_exe.exists():
             return False, f"Blender not found at: {self.blender_exe}"
         try:
-            result = subprocess.run([str(self.blender_exe), "--version"],
-                                    capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                [str(self.blender_exe), "--version"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                encoding="utf-8",
+                errors="replace",
+            )
             output = result.stdout or result.stderr or ""
+            if result.returncode != 0:
+                return False, f"Blender --version exited {result.returncode}: {output.strip()}"
             for line in output.strip().split("\n"):
-                if "Blender" in line:
+                if "Blender" in line and any(c.isdigit() for c in line):
                     return True, line.strip()
-            return True, output.split("\n")[0].strip() if output else "unknown"
+            return False, f"Blender --version output unrecognized: {output.strip()}"
         except subprocess.TimeoutExpired:
             return False, "Blender version check timed out"
         except Exception as e:
@@ -277,6 +305,35 @@ class BlenderRunner:
         if self.obj_path.suffix.lower() != ".obj":
             return False, f"Unsupported format: {self.obj_path.suffix}"
         return True, ""
+
+    def _verify_fbx_container(self, path: Path) -> Dict[str, Any]:
+        """Host-side FBX container validation: magic, size, non-empty."""
+        if not path.exists():
+            return {"container_ok": False, "format": "missing", "detail": "FBX file does not exist"}
+        try:
+            size = path.stat().st_size
+            if size == 0:
+                return {"container_ok": False, "format": "empty", "detail": "FBX file is zero bytes"}
+            with open(path, "rb") as f:
+                header = f.read(320)
+            if header.startswith(b"Kaydara FBX Binary"):
+                return {
+                    "container_ok": True,
+                    "format": "binary",
+                    "signature": header.split(b"\x00")[0].decode("ascii", "replace").strip(),
+                    "detail": "Valid FBX binary header",
+                }
+            if header.startswith(b"Kaydara FBX ASCII"):
+                first_line = header.decode("ascii", "replace").splitlines()[0] if header else ""
+                return {
+                    "container_ok": True,
+                    "format": "ascii",
+                    "signature": first_line.strip(),
+                    "detail": "Valid FBX ASCII header",
+                }
+            return {"container_ok": False, "format": "unrecognized", "detail": f"Invalid FBX magic: {header[:48]!r}"}
+        except Exception as e:
+            return {"container_ok": False, "format": "error", "detail": f"FBX container check failed: {e}"}
 
     def _write_conversion_script(self) -> Path:
         script_path = self.output_dir / "blender_convert.py"
@@ -298,7 +355,7 @@ class BlenderRunner:
             result.blender_version = blender_ver
             result.blender_exe = str(self.blender_exe)
             if not blender_ok:
-                result.status = "skipped"
+                result.status = "blocked"
                 result.reason = f"Blender not available: {blender_ver}"
                 return self._finalize(result, start_ts)
 
@@ -322,6 +379,10 @@ class BlenderRunner:
             result.stdout_log = str(stdout_log)
             result.stderr_log = str(stderr_log)
 
+            import uuid
+            result.run_id = uuid.uuid4().hex[:12]
+            result.manifest_path = str(manifest_path)
+
             try:
                 proc = subprocess.run(cmd, capture_output=True, text=True,
                                       timeout=self.timeout_sec, encoding="utf-8",
@@ -329,31 +390,110 @@ class BlenderRunner:
                 result.exit_code = proc.returncode
                 stdout_log.write_text(proc.stdout or "", encoding="utf-8", errors="replace")
                 stderr_log.write_text(proc.stderr or "", encoding="utf-8", errors="replace")
-                if "CONVERSION_OK" in (proc.stdout or ""):
-                    if fbx_path.exists() and fbx_path.stat().st_size > 0:
-                        result.output_hash = self._hash_file(fbx_path)
-                        if manifest_path.exists():
-                            try:
-                                result.manifest = json.loads(
-                                    manifest_path.read_text(encoding="utf-8"))
-                            except Exception as e:
-                                result.manifest = {"error": str(e)}
-                        result.status = "ok"
-                        result.reason = (f"Converted to FBX "
-                                         f"({fbx_path.stat().st_size/(1024*1024):.2f} MB)")
-                    else:
-                        result.status = "failed"
-                        result.reason = "Blender reported success but FBX is missing/empty"
+
+                stdout = proc.stdout or ""
+                stderr = proc.stderr or ""
+
+                marker_present = "CONVERSION_OK" in stdout
+                fbx_present = fbx_path.exists() and fbx_path.stat().st_size > 0
+
+                manifest_errors = []
+                manifest = {}
+                if manifest_path.exists():
+                    try:
+                        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    except Exception as e:
+                        manifest_errors.append(f"manifest_parse: {e}")
                 else:
+                    manifest_errors.append("manifest_missing")
+
+                container_check = self._verify_fbx_container(fbx_path) if fbx_present else \
+                    {"container_ok": False, "format": "missing", "detail": "FBX file missing/empty"}
+
+                input_hash_ok = bool(result.input_hash) and bool(manifest.get("input_obj_hash")) and \
+                    manifest["input_obj_hash"] == result.input_hash
+                output_hash_ok = bool(result.output_hash) and bool(manifest.get("output_fbx_hash")) and \
+                    manifest["output_fbx_hash"] == result.output_hash
+
+                objects_total = manifest.get("objects_total")
+                if objects_total is None and isinstance(manifest.get("objects"), list):
+                    objects_total = len(manifest["objects"])
+                objects_nonempty = objects_total is not None and objects_total > 0
+
+                result.objects_total = objects_total
+                result.fbx_format = container_check.get("format", "")
+                result.fbx_signature = container_check.get("signature", "")
+
+                verification = {
+                    "marker_present": marker_present,
+                    "exit_code_ok": proc.returncode == 0,
+                    "fbx_present": fbx_present,
+                    "fbx_container": container_check,
+                    "manifest_parse_ok": not manifest_errors,
+                    "manifest_present": manifest_path.exists(),
+                    "input_hash_match": input_hash_ok,
+                    "output_hash_match": output_hash_ok,
+                    "objects_total": objects_total,
+                    "objects_nonempty": objects_nonempty,
+                    "input_hash_readable": bool(result.input_hash),
+                }
+                result.verification = verification
+
+                checks_ok = all([
+                    marker_present,
+                    proc.returncode == 0,
+                    fbx_present,
+                    container_check.get("container_ok", False),
+                    not manifest_errors,
+                    input_hash_ok,
+                    output_hash_ok,
+                    objects_nonempty,
+                    bool(result.input_hash),
+                ])
+
+                if checks_ok:
+                    result.status = "ok"
+                    result.reason = f"Converted to FBX ({fbx_path.stat().st_size/(1024*1024):.2f} MB, objects={objects_total})"
+                else:
+                    failed = [k for k, v in verification.items() if v is False or (isinstance(v, dict) and not v.get("container_ok"))]
+                    reason_parts = [f"failed_checks={failed}"]
+                    if proc.returncode != 0:
+                        reason_parts.append(f"exit_code={proc.returncode}")
+                    if stderr:
+                        for line in stderr.split("\n"):
+                            if "ERROR" in line or "error" in line.lower():
+                                reason_parts.append(f"stderr={line.strip()}")
+                                break
                     result.status = "failed"
-                    stderr_text = proc.stderr or ""
-                    stdout_text = proc.stdout or ""
-                    for line in (stderr_text + stdout_text).split("\n"):
-                        if "ERROR" in line or "error" in line.lower():
-                            result.reason = line.strip()
-                            break
-                    if not result.reason:
-                        result.reason = f"Blender exit code {proc.returncode}"
+                    result.reason = "; ".join(reason_parts)
+
+                result.manifest = manifest
+
+                if fbx_present:
+                    provenance = {
+                        "schema_version": 1,
+                        "artifact_type": "blender_fbx",
+                        "run_id": result.run_id,
+                        "input_obj": str(self.obj_path),
+                        "input_sha256": result.input_hash,
+                        "artifact_fbx": str(fbx_path),
+                        "artifact_sha256": result.output_hash,
+                        "blender_version": result.blender_version,
+                        "blender_exe": result.blender_exe,
+                        "blender_exe_sha256": result.blender_exe_hash,
+                        "conversion_script_sha256": result.script_hash,
+                        "exit_code": result.exit_code,
+                        "status": result.status,
+                        "verification": verification,
+                        "generated_at_utc": datetime.now(timezone.utc).isoformat() + "Z",
+                    }
+                    provenance_path = self.output_dir / f"{self.name_prefix}.fbx.provenance.json"
+                    try:
+                        provenance_path.write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+                        result.provenance_path = str(provenance_path)
+                    except Exception as e:
+                        print(f"  Warning: could not write provenance: {e}")
+
             except subprocess.TimeoutExpired:
                 result.status = "failed"
                 result.reason = f"Blender timed out after {self.timeout_sec}s"
