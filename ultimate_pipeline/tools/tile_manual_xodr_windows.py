@@ -18,7 +18,7 @@ import traceback
 from pathlib import Path
 from typing import Tuple
 
-from ultimate_pipeline.tiling.tile_extractor import TileExtractor
+from ultimate_pipeline.tiling.tile_extractor import TileExtractor, freeze_tileset
 from ultimate_pipeline.tiling.tile_metadata import TileMetadata
 from ultimate_pipeline.core.georef_utils import parse_georeference
 
@@ -253,6 +253,14 @@ def main() -> int:
             diag["first_error"] = f"Failed to write tile metadata: {exc}"
             _log(f"ERROR: Failed to write tile metadata: {exc}")
             return_code = 5
+            return return_code
+
+        try:
+            freeze_tileset(str(tiles_dir), metadata_path=str(metadata_path))
+        except Exception as exc:
+            diag["first_error"] = f"Failed to freeze tileset: {exc}"
+            _log(f"ERROR: Failed to freeze tileset: {exc}")
+            return_code = 8
             return return_code
 
         georef_norm, georef_params_complete = _read_georef_info(xodr_path)
