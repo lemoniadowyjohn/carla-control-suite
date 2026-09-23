@@ -120,6 +120,9 @@ def certify_topology(
         fraction_threshold=fraction_threshold,
     )
 
+    literal_sha = _sha256_dict(literal_summary)
+    recovered_sha = _sha256_dict(recovered_summary)
+
     result = {
         "schema": "topology_certification_v1",
         "SPEC_TOPOLOGY": literal_status.value,
