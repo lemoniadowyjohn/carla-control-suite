@@ -131,12 +131,12 @@
       "proof": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json, status: \"FAIL\", eval_pair_content_in_training_set lists the exact matching sha256.",
       "affected_files": ["ultimate_pipeline/domain_gap_gnn/gnn_provenance.py", "cities/ingolstadt/manual_grid0821.xodr"],
       "scientific_runtime_consequence": "Any RQ4 GNN structural-latent result computed against a checkpoint trained with this leak cannot be trusted as an honest train/eval split -- this must be root-caused and fixed (or the affected checkpoint's provenance downgraded) before any RQ4 number is cited as VERIFIED_RESEARCH.",
-      "owner_subagent": "unknown (found) -- Codex (2026-09-23) attempted completion, correctly determined it was blocked at the time",
-      "status": "unblocked as of 2026-09-23 (GAP-011 landed, c68a1059) -- ready to retry, not yet retried",
-      "fixing_commit": null,
-      "regression_test": null,
-      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json; reports/production_readiness/20260923T000000Z_GAP010_RQ4_LEAKAGE_BLOCKER/BLOCKED_EXTERNAL.md (Codex's prior blocked attempt, branch fix/rq4-leakage-complete-20260923 @ 95d63b8a, no source change retained)",
-      "residual_risk": "MEDIUM -- the prerequisite this was blocked on (GAP-011's OC-51 restoration) landed in c68a1059: ultimate_pipeline/domain_gap_gnn/gnn_provenance.py now exists on production, confirmed via the restoration's own passing test_rq4_gnn_provenance.py. However Codex's prior report also flagged the isolated fix slice at 811008a3 as non-self-contained (calls dataset/graph-builder APIs that may still be absent) -- this needs re-checking, not assumed still true or false. Retry GAP-010 completion now that the prerequisite is real; do not assume it's trivial just because the blocker is gone."
+      "owner_subagent": "unknown (found) -- Codex (2026-09-23) attempted completion, correctly determined it was blocked at the time; direct-dispatched Claude subagent (2026-09-23) implemented the real fix after the blocker cleared",
+      "status": "fixed -- retrain itself remains BLOCKED_EXTERNAL (see residual_risk)",
+      "fixing_commit": "4c2f0feb, merged into origin/integration/production-large-map-20260918 (now folded into 51badaf8)",
+      "regression_test": "new exclude_source_hashes= mechanism verified end-to-end on real (not synthetic) data: inject real leak -> FAIL confirmed, apply fix -> PASS confirmed, tile count drops by exactly one; live CLI smoke test of run_ksweep.main(); full bare pytest 6113 passed, 4 skipped, 0 failed on the merged state",
+      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json; reports/production_readiness/20260923T140000Z_GAP010_RQ4_LEAKAGE_FIX/{RESULTS.md,VERIFICATION.json}",
+      "residual_risk": "MEDIUM -- the leakage mechanism itself is fixed and verified (exclude_source_hashes threaded through gnn_provenance.py, map_tile_dataset.py, train_map_encoder.py, run_ksweep.py), but the actual retrain of any RQ4 checkpoint against the now-leak-free split has NOT been run: BLOCKED_EXTERNAL, assessed at ~7.2 hours CPU-only (Torch 2.9.1+cpu, no CUDA on this machine). Important caveat: no currently-trusted checkpoint is invalidated by this, since none had verified cryptographic provenance either before or after this fix -- so this does not newly downgrade any existing RQ4 claim, it just means no RQ4 number can yet be cited as VERIFIED_RESEARCH against a leak-free split."
     },
     {
       "id": "GAP-011",
@@ -151,7 +151,7 @@
       "fixing_commit": "5 commits on fix/gap011-oc51-58-59-restoration-20260923, merged c68a1059 into origin/integration/production-large-map-20260918",
       "regression_test": "each of the 5 restored packages' own test files (test_rq4_gnn_provenance.py, test_map_registry_integrity.py, test_xodr_validator_convergence.py, test_rq3_paired_capture_contract.py + test_route_manifest.py, plus the semantic-organizer companion test) all confirmed passing individually and as part of a clean combined full bare pytest (6112 passed, 5 skipped, 0 failed)",
       "evidence_artifact": "fix/gap011-oc51-58-59-restoration-20260923 (pushed, 5 separate commits, one per package, for auditability)",
-      "residual_risk": "LOW for part (a), the 5 WIP-lineage packages -- all restored cleanly onto current production (OC-51/gnn_provenance.py, OC-58/map_registry build_alias_authority, OC-59/xodr_numeric+validation_policy+validation_result, RQ3 Paired-Capture Contract, Semantic Organizer Hardening), each package's own tests pass, full combined suite clean. This directly unblocks GAP-010 (RQ4 leakage fix, which needs gnn_provenance.py to exist on production) and RQ3's code-readiness. Parts (b) and (c) are UNCHANGED and still open: (b) the 10 OpenCode branches (OC-35 through OC-43 + VAP) -- several have since been individually rebased and merged as their own separate gap-register-adjacent work (OC-36, OC-38 confirmed merged; OC-39/40/43 still pending as of this update), so part (b) should be tracked per-branch going forward rather than as one bundle; (c) the 2 Codex branches (fix/p0-c-receipt-authority-20260919, fix/artifact-transaction-integrity-v1-20260921) still need reconciliation, not blind merge -- Codex's own prior report confirmed both contain substantive non-redundant deltas (230 and 413 lines respectively) and are not superseded by already-shipped work."
+      "residual_risk": "LOW for part (a), the 5 WIP-lineage packages -- all restored cleanly onto current production (OC-51/gnn_provenance.py, OC-58/map_registry build_alias_authority, OC-59/xodr_numeric+validation_policy+validation_result, RQ3 Paired-Capture Contract, Semantic Organizer Hardening), each package's own tests pass, full combined suite clean. This directly unblocked GAP-010 (now also fixed, see GAP-010) and RQ3's code-readiness. Part (b), tracked per-branch: OC-39 (fix/runtime-tile-referential-integrity-v2-20260923) MERGED 51badaf8, full suite clean. OC-40 (fix/blender-conversion-integrity-v2-20260923) -- one real bug found and fixed directly (tests/unit/test_blender_conversion_integrity.py::test_s_cli_help was passing cwd=tmp_path to a subprocess invoking `python -m ultimate_pipeline.X` with no PYTHONPATH, breaking module resolution since this repo isn't pip-installed; fixed by adding an explicit PYTHONPATH env var to the subprocess call, not by removing the cwd isolation), fresh full-suite re-verification in progress, not yet merged. OC-43 (fix/literal-topology-evidence-provenance-v2-20260923) -- pushed earlier, full bare pytest launched but not yet completed/reviewed, not yet merged. Part (c), the 2 Codex branches: fix/p0-c-receipt-authority-20260919 rebased cleanly onto current production tip and found to be FULLY REDUNDANT -- after rebase HEAD is byte-identical to origin tip (51badaf8), meaning its ~230-line delta is already present in already-shipped work; no merge needed, closed as superseded. fix/artifact-transaction-integrity-v1-20260921 (~413 lines, previously flagged as mixing concerns) has been split by a direct-dispatched Claude subagent into 4 focused, atomic commits on fix/artifact-transaction-integrity-v2-20260923 (journal promotion/durable manifests, serialize candidate store mutations, bind promotion/rollback to lineage, restore candidate declarations from manifest) -- full-suite verification by the subagent was in progress as of this update, not yet independently re-verified or merged by the coordinator."
     },
     {
       "id": "GAP-012",
@@ -263,9 +263,9 @@
     "total": 20,
     "fixed": 12,
     "closed_non_reproducible": 2,
-    "in_progress": 0,
+    "in_progress": 1,
     "deferred": 2,
-    "open": 2,
+    "open": 1,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
