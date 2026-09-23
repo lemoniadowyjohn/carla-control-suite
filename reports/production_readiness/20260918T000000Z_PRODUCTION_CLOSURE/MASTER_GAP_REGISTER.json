@@ -206,12 +206,12 @@
       "proof": "Full-suite WIP run FAILED with the literal assertion mismatch, quoting the actual (non-matching) source line found.",
       "affected_files": ["tests/unit/test_rq4_gnn_provenance.py", "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py (or the actual training/ksweep entrypoint script, not yet located)"],
       "scientific_runtime_consequence": "If training and k-sweep genuinely build configs independently (not via the shared canonical builder), RQ4 checkpoint provenance claims about config identity between the two are unverified -- secondary to GAP-010's leakage FAIL.",
-      "owner_subagent": "unassigned",
-      "status": "open",
+      "owner_subagent": "unassigned; confirmed non-reproducible by coordinator, 2026-09-23",
+      "status": "closed -- confirmed non-reproducible on clean production, same pattern as GAP-013/GAP-014",
       "fixing_commit": null,
-      "regression_test": "tests/unit/test_rq4_gnn_provenance.py (already exists, currently failing)",
-      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/TEST_RESULTS.json",
-      "residual_risk": "LOW-MEDIUM, well-scoped once the actual training/ksweep entrypoint is located"
+      "regression_test": "tests/unit/test_rq4_gnn_provenance.py::test_train_and_ksweep_share_canonical_config_builders passes in isolation on origin/integration/production-large-map-20260918 (1 passed, 28.10s); the same file's full test suite was also included, with zero failures, in this session's most recent complete full bare pytest runs on this exact tip (6147 passed, 5 skipped, 0 failed)",
+      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/TEST_RESULTS.json (original failure, on the messy WIP-merged state); this session's clean full-suite runs supersede it",
+      "residual_risk": "NONE identified -- confirmed via direct isolated re-run plus corroborating full-suite evidence, not assumed from the isolated result alone. Root cause attributed to the same WIP-lineage contamination (fix/xodr-validator-convergence-v1-20260921 and adjacent OC-26 content) already established as the cause for GAP-013/GAP-014; the clean, reviewed production line was never actually affected."
     },
     {
       "id": "GAP-005",
@@ -277,10 +277,10 @@
   "counts": {
     "total": 21,
     "fixed": 13,
-    "closed_non_reproducible": 2,
+    "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 2,
+    "open": 1,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
