@@ -95,7 +95,7 @@ class ArtifactTransaction:
                 blockers=(f"Semantic diff failed: {e}",),
             )
 
-        if self.semantic_diff.detect_undeclared_mutation(candidate_ref, mutation):
+        if self.semantic_diff.detect_undeclared_mutation(parent, candidate_ref, mutation):
             gates.append(GateResult("undeclared_mutation", False, "Undeclared mutation detected"))
             self.store.reject_candidate(candidate_id, CandidateResult(
                 status="BLOCKED",
