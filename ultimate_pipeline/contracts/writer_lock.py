@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 import os
 import platform
+import tempfile
 import uuid
 import time
 from fnmatch import fnmatch
@@ -15,6 +16,13 @@ LOCK_FILE = "writer.lock"
 CANONICAL_LOCK_PATH = Path(LOCK_DIR) / LOCK_FILE
 SCHEMA_VERSION = "agent-writer-lock/v1"
 DEFAULT_LEASE_MINUTES = 240
+
+# Cap on retries inside WriterLock.acquire()'s atomic create-exclusive loop.
+# Each retry only happens when we lost a race to reclaim an expired/malformed
+# lock slot; under real contention this converges in 1-2 iterations per
+# contender since os.O_EXCL is the sole arbiter of who wins. The cap exists
+# only to fail loudly instead of spinning forever in a pathological state.
+_ACQUIRE_MAX_ATTEMPTS = 64
 
 
 @dataclass
@@ -62,15 +70,9 @@ class WriterLock:
         lock_dir.mkdir(parents=True, exist_ok=True)
         lock_path = lock_dir / LOCK_FILE
         legacy_lock_path = root / ".agent_lock.json"
-        if lock_path.exists():
-            existing = cls.load(lock_path)
-            if existing.is_live():
-                raise RuntimeError(
-                    f"Writer lock held by {existing.owner} "
-                    f"(PID {existing.pid}, expires {existing.expires_at})"
-                )
-            if existing.is_malformed():
-                lock_path.unlink(missing_ok=True)
+        # The legacy-lock check is read-only and must happen before we ever
+        # write to lock_path below, so a legacy conflict never leaves behind
+        # a newly-created (and now orphaned) primary lock file.
         if legacy_lock_path.exists():
             legacy = cls.load(legacy_lock_path)
             if legacy.is_live():
@@ -80,6 +82,7 @@ class WriterLock:
                 )
             if legacy.is_malformed():
                 raise RuntimeError("Legacy writer lock is malformed")
+
         now_utc = _now_iso()
         expires = _future_iso(lease_minutes)
         resolved_lock_id = lock_id or (task_id or uuid.uuid4().hex)
@@ -108,14 +111,88 @@ class WriterLock:
             heartbeat_at=now_utc,
         )
         lock.status = "read_only" if read_only else "active"
-        lock.save(lock_path)
-        return lock
+        payload = json.dumps(lock.to_dict(), indent=2).encode("utf-8")
+        open_flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_BINARY", 0)
+
+        # Atomic create-exclusive acquire: os.open(..., O_CREAT|O_EXCL) is a
+        # single OS syscall that fails atomically if the path already
+        # exists, so it is the sole arbiter of "who wins" -- unlike the
+        # previous exists()-check-then-write() sequence, no two processes
+        # can both observe "nobody holds this" and then both write.
+        #
+        # Reclaiming an expired/malformed lock is handled by unlinking it
+        # and retrying the O_EXCL create; the unlink is not itself the
+        # arbiter of exclusivity (it is safe/idempotent for two racing
+        # reclaimers to both attempt it), only the next O_EXCL create is.
+        for _attempt in range(_ACQUIRE_MAX_ATTEMPTS):
+            try:
+                fd = os.open(str(lock_path), open_flags)
+            except FileExistsError:
+                try:
+                    existing = cls.load(lock_path)
+                except FileNotFoundError:
+                    # Raced with a concurrent release/cleanup between the
+                    # failed O_EXCL create and this read; just retry.
+                    continue
+                if existing.is_live():
+                    raise RuntimeError(
+                        f"Writer lock held by {existing.owner} "
+                        f"(PID {existing.pid}, expires {existing.expires_at})"
+                    )
+                try:
+                    lock_path.unlink()
+                except FileNotFoundError:
+                    pass
+                continue
+            else:
+                try:
+                    with os.fdopen(fd, "wb") as f:
+                        f.write(payload)
+                        f.flush()
+                        os.fsync(f.fileno())
+                except BaseException:
+                    lock_path.unlink(missing_ok=True)
+                    raise
+                return lock
+
+        raise RuntimeError(
+            f"Could not acquire writer lock at {lock_path} after "
+            f"{_ACQUIRE_MAX_ATTEMPTS} attempts (persistent contention)"
+        )
 
     def save(self, path: Path | None = None) -> None:
         if path is None:
             path = self._default_path()
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(self.to_dict(), indent=2))
+        # Atomically replace the file's contents (mkstemp + fsync +
+        # os.replace), mirroring Manifest.save() in
+        # ultimate_pipeline/artifacts/model.py. This is the right primitive
+        # for "atomically replace this file's contents" -- unlike acquire(),
+        # this method is only ever called by a caller that already believes
+        # it owns the lock, so it is not itself the "acquire iff nobody else
+        # has it" operation; that exclusivity is enforced by acquire()'s
+        # O_CREAT|O_EXCL loop and by heartbeat()/release() re-validating
+        # identity against the currently-persisted lock before calling this.
+        payload = json.dumps(self.to_dict(), indent=2)
+        fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+        tmp = Path(tmp_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(payload)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, path)
+            try:
+                dir_fd = os.open(str(path.parent), os.O_RDONLY)
+                try:
+                    os.fsync(dir_fd)
+                finally:
+                    os.close(dir_fd)
+            except OSError:
+                pass
+        finally:
+            if tmp.exists():
+                tmp.unlink(missing_ok=True)
 
     @classmethod
     def load(cls, path: Path | None = None) -> WriterLock:
@@ -166,14 +243,41 @@ class WriterLock:
             raise RuntimeError(
                 f"Writer lock release rejected for lock_id {lock_id}; expected {expected_lock_id}"
             )
-        self.status = "released"
         path = self._default_path()
         if path.exists():
+            self._assert_still_current(path, action="release")
+            self.status = "released"
             self.save(path)
+        else:
+            self.status = "released"
 
     def heartbeat(self) -> None:
+        path = self._default_path()
+        if path.exists():
+            self._assert_still_current(path, action="heartbeat")
         self.heartbeat_at = _now_iso()
-        self.save()
+        self.save(path)
+
+    def _assert_still_current(self, path: Path, action: str) -> None:
+        """Re-read the currently-persisted lock at `path` and confirm it is
+        still the same lock this handle acquired (by lock_id, falling back
+        to task_id like the rest of this class does). A stale handle whose
+        lease already expired and was legitimately reclaimed by a different
+        owner must not be able to silently clobber that owner's active lock
+        via heartbeat()/release() -- this re-validates against what is
+        actually on disk right now, not just this object's own remembered
+        state, which is what the prior implementation got wrong.
+        """
+        current = self.load(path)
+        my_lock_id = self.lock_id or self.task_id
+        current_lock_id = current.lock_id or current.task_id
+        if current_lock_id != my_lock_id:
+            raise RuntimeError(
+                f"Writer lock {action} rejected: on-disk lock (lock_id="
+                f"{current_lock_id!r}, owner={current.owner!r}) no longer matches "
+                f"this handle's lock_id {my_lock_id!r}; refusing to clobber a lock "
+                "that was reclaimed by another owner"
+            )
 
     def is_live(self) -> bool:
         if self.status != "active":
