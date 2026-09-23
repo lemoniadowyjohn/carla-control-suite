@@ -311,12 +311,12 @@
       "proof": "Reproduced with 8 real multiprocessing.Process workers (Windows spawn context, separate interpreters, no GIL masking) released simultaneously via a shared Event, across 25 iterations: 25/25 iterations had more than one simultaneous 'winner' (most had all 8 succeed, ok=8/blocked=0). Second race reproduced via a sequential stale_owner_probe.py: agent-1 acquires with lease_minutes=0 (instant expiry) -> agent-2 correctly reclaims -> agent-1's original stale WriterLock object calls .heartbeat() -> on-disk owner silently reverts from agent-2 to agent-1, and agent-1.release(owner='agent-1') then marks agent-2's still-active lock 'released'.",
       "affected_files": ["ultimate_pipeline/contracts/writer_lock.py"],
       "scientific_runtime_consequence": "This is a shared write-ownership primitive already relied on by merged multi-agent-coordination work (GAP-011 part c's artifact-transaction-integrity system). A real race here means two concurrent agents/processes could both believe they have exclusive write access to the same governed resource at once, or one agent's stale state could silently clobber another's legitimate, still-active lock -- undermining the single-writer discipline this entire production-readiness program depends on.",
-      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23) -- confirmed real via genuine multi-process reproduction, deliberately NOT fixed per explicit instruction (shared P0/P1 primitive, needs an explicit fix-approach sign-off before touching, not a unilateral subagent fix)",
-      "status": "open -- confirmed real, unfixed, needs an explicit fix-approach decision before dispatching a fix",
-      "fixing_commit": null,
-      "regression_test": "Reproduction scripts (race_driver.py/race_worker.py, stale_owner_probe.py) were scratchpad-only, not committed to the repo -- a real regression test should be written as part of the eventual fix, not before, per the same subagent's own note.",
-      "evidence_artifact": "Reported directly in this session's subagent handback (2026-09-23); not yet materialized as a committed report -- corrupt/unknown-schema handling was also checked in the same pass and confirmed ALREADY SAFE (5 cases: invalid JSON, JSON list, extra unrecognized key, unknown schema string with valid required fields, empty file -- all fail closed, no action needed there).",
-      "residual_risk": "HIGH until fixed. Suggested direction (not yet approved): switch WriterLock.acquire() to a genuinely atomic create-exclusive primitive (e.g. os.open with O_CREAT|O_EXCL, or an equivalent atomic rename-into-place pattern) -- note that sibling code in the SAME subsystem, Manifest.save() in ultimate_pipeline/artifacts/model.py, already uses the correct pattern (mkstemp + fsync + os.replace), so the concept is already known to this codebase and a consistent fix should mirror it. The stale-owner clobber additionally needs .heartbeat()/.release() to re-read and re-validate the currently-persisted lock_id before writing, not just compare against their own remembered state. This needs explicit sign-off before a fix is dispatched, given the blast radius."
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23) -- confirmed real via genuine multi-process reproduction; user signed off on the fix direction; a second direct-dispatched Claude subagent (2026-09-23) implemented it",
+      "status": "fixed",
+      "fixing_commit": "b396191f (merged into origin/integration/production-large-map-20260918)",
+      "regression_test": "tests/unit/test_writer_lock_concurrency.py (new, 8 tests, committed as real permanent regression tests, not scratchpad) + tests/unit/_writer_lock_mp_worker.py (module-level multiprocessing worker, required as an importable module rather than a closure since Windows' spawn start method re-imports the target by module path). 20/20 race iterations now produce exactly one winner (was 20/20 all-succeed pre-fix); both stale-owner scenarios now assert RuntimeError and confirm the reclaiming agent's lock survives.",
+      "evidence_artifact": "tests/unit/test_writer_lock_concurrency.py",
+      "residual_risk": "LOW. Coordinator independently verified the actual merged code: acquire() uses `os.O_CREAT | os.O_EXCL | os.O_WRONLY` as the sole atomicity primitive (a loop retries on FileExistsError after unlinking an expired/malformed lock, capped at 64 attempts as a non-infinite-loop guard); heartbeat()/release() both call a new _assert_still_current() helper that re-reads the on-disk lock and compares lock_id/task_id against the caller's remembered identity before writing, raising RuntimeError on mismatch; save() upgraded to mkstemp+fsync+os.replace, mirroring Manifest.save()'s existing pattern in ultimate_pipeline/artifacts/model.py, per the approved fix direction. Corrupt/unknown-schema fail-closed handling re-verified unchanged (5 regression tests re-run, the fix only touched the write path, not load()/from_dict() which enforces that property). Repo-wide grep confirmed WriterLock has no actual importers outside writer_lock.py itself and its own tests -- GAP-011 part (c)'s reliance on it is process-level/conceptual (governing which agent may write), not a literal Python import dependency, so no other caller needed updating. Full bare pytest on the branch alone: 6239 passed, 6 skipped, 0 failed. Coordinator will re-verify on the fully merged state before push."
     },
     {
       "id": "GAP-025",
@@ -336,11 +336,11 @@
   ],
   "counts": {
     "total": 25,
-    "fixed": 17,
+    "fixed": 18,
     "closed_non_reproducible": 3,
     "in_progress": 0,
     "deferred": 1,
-    "open": 2,
+    "open": 1,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
