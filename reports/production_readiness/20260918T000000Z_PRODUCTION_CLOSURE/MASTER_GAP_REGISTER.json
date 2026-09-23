@@ -204,14 +204,14 @@
       "subsystem": "domain_gap_gnn -- RQ4 provenance",
       "description": "tests/unit/test_rq4_gnn_provenance.py::test_train_and_ksweep_share_canonical_config_builders fails: asserts the literal string 'prov.build_training_config(' appears in the relevant training/k-sweep source, i.e. that both the training script and the k-sweep script delegate to the same canonical config builder rather than duplicating config-construction logic. Currently false on the WIP-merged state. The RQ4 GNN Provenance report (2026-09-19) claimed its own GNN-focused test subset was 79/79 green in isolation -- this specific cross-file consistency test may only fail once merged with unrelated WIP changes (e.g. OC-26), or may be a genuine pre-existing gap the 09-19 report's isolated run didn't cover. Not yet distinguished.",
       "proof": "Full-suite WIP run FAILED with the literal assertion mismatch, quoting the actual (non-matching) source line found.",
-      "affected_files": ["tests/unit/test_rq4_gnn_provenance.py", "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py (or the actual training/ksweep entrypoint script, not yet located)"],
+      "affected_files": ["tests/unit/test_rq4_gnn_provenance.py", "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py", "ultimate_pipeline/domain_gap_gnn/train_map_encoder.py:277", "ultimate_pipeline/domain_gap_gnn/run_ksweep.py:320"],
       "scientific_runtime_consequence": "If training and k-sweep genuinely build configs independently (not via the shared canonical builder), RQ4 checkpoint provenance claims about config identity between the two are unverified -- secondary to GAP-010's leakage FAIL.",
-      "owner_subagent": "unassigned",
-      "status": "open",
+      "owner_subagent": "direct (coordinator) -- verified 2026-09-23 on clean production",
+      "status": "closed -- confirmed non-reproducible on clean production",
       "fixing_commit": null,
-      "regression_test": "tests/unit/test_rq4_gnn_provenance.py (already exists, currently failing)",
-      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/TEST_RESULTS.json",
-      "residual_risk": "LOW-MEDIUM, well-scoped once the actual training/ksweep entrypoint is located"
+      "regression_test": "no fix needed -- test_train_and_ksweep_share_canonical_config_builders itself is the regression coverage, and it passes",
+      "evidence_artifact": "Full bare pytest on a fresh worktree off origin/integration/production-large-map-20260918 @ f876c019: 6147 passed, 5 skipped, 0 failed, 1021.04s. tests/unit/test_rq4_gnn_provenance.py::test_train_and_ksweep_share_canonical_config_builders confirmed PASSED individually within that run (isolated 1 passed in 24.18s, full-suite line 5376 PASSED [87%] in 1021.04s run), and zero other unexplained failures anywhere in the full suite. Canonical delegation confirmed: train_map_encoder.py:277 and run_ksweep.py:320 both contain 'prov.build_training_config(' (see grep evidence).",
+      "residual_risk": "NONE -- confirmed via a real, complete, from-scratch full-suite run (not a partial or estimated result). Root cause remains attributed to the messy WIP-lineage branch (fix/xodr-validator-convergence-v1-20260921 @ f245540f) this was originally found on (4 failed in that WIP run), which mixed OC-26 and other unreviewed content in a way that likely caused a real but non-production literal-mismatch -- the clean, reviewed production line was never actually affected. Both entrypoints correctly delegate to prov.build_training_config on the clean tip."
     },
     {
       "id": "GAP-005",
@@ -262,10 +262,10 @@
   "counts": {
     "total": 20,
     "fixed": 13,
-    "closed_non_reproducible": 2,
+    "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 1,
+    "open": 0,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
@@ -301,8 +301,8 @@
       {"what": "Gemini xodr_validator stage insertion in main_pipeline.py", "location": "wip/gemini-xodr-validator-sequencing-20260922 @ a9ced373", "status": "WIP, unverified; companion stage_capabilities.py XODR_VALIDATED capability was lost to shared-checkout contention and is being redone"}
     ]
   },
-  "last_updated_utc": "2026-09-22T00:00:00Z",
-  "update_note": "2026-09-22: pushed pending GAP-005 merge; added GAP-010 (RQ4 train/eval leakage FAIL, top priority) and GAP-011 (integration debt across 2026-09-18..09-22 parallel-agent work). Ran a full bare pytest on the committed WIP state (fix/xodr-validator-convergence-v1-20260921 @ f245540f: 5914 collected, 5908 passed, 4 failed, 2 skipped) -- 4 real, non-flaky failures found and root-caused; logged as GAP-012..GAP-015. Also confirmed via git reflog that the main checkout is a live, shared, contested workspace -- at least one other agent is actively rebasing OpenCode branches (OC-35, OC-42 confirmed) onto the verified tip directly there. See coordinator survey this session for full detail.",
+  "last_updated_utc": "2026-09-23T00:00:00Z",
+  "update_note": "2026-09-23: GAP-015 closed -- confirmed non-reproducible on clean production (fresh worktree @ f876c019: isolated 1 passed in 24.18s + full bare pytest 6147 passed, 5 skipped, 0 failed in 1021.04s, same stale WIP-lineage pattern as GAP-013/014). 2026-09-22: pushed pending GAP-005 merge; added GAP-010 (RQ4 train/eval leakage FAIL, top priority) and GAP-011 (integration debt across 2026-09-18..09-22 parallel-agent work). Ran a full bare pytest on the committed WIP state (fix/xodr-validator-convergence-v1-20260921 @ f245540f: 5914 collected, 5908 passed, 4 failed, 2 skipped) -- 4 real, non-flaky failures found and root-caused; logged as GAP-012..GAP-015. Also confirmed via git reflog that the main checkout is a live, shared, contested workspace -- at least one other agent is actively rebasing OpenCode branches (OC-35, OC-42 confirmed) onto the verified tip directly there. See coordinator survey this session for full detail.",
   "wip_full_suite_result": {
     "branch": "fix/xodr-validator-convergence-v1-20260921",
     "commit": "f245540f",
