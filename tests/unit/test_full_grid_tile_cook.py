@@ -34,6 +34,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from ultimate_pipeline.tiling.tile_fbx_generator import (
+    BuildingPolygon,
     TileBuilding,
     TileGridSpec,
     assign_buildings_to_tiles,
@@ -55,7 +56,7 @@ def _make_building(bid: str, lon0: float, lat0: float) -> TileBuilding:
         source_id=bid,
         source_type="way",
         tags={"building": "yes"},
-        rings=[_make_ring(lon0, lat0)],
+        parts=[BuildingPolygon(outer=_make_ring(lon0, lat0))],
     )
 
 
