@@ -66,6 +66,19 @@ def parse_args():
                          "(default requests them warn-only).")
     ap.add_argument("--temperature", type=float, default=0.5,
                     help="NT-Xent temperature.")
+    ap.add_argument(
+        "--exclude_source_xodr",
+        type=str,
+        nargs="*",
+        default=[],
+        help="GAP-010 source-identity exclusion contract: paths to known "
+             "eval/reference XODR files (e.g. the manual/auto whole-map "
+             "eval pair, or cities/ingolstadt/manual_grid0821.xodr) whose "
+             "content must NEVER become training data. Any file in "
+             "--tiles_dir whose SHA-256 matches one of these paths' "
+             "content is excluded from both the dataset and its manifest, "
+             "regardless of filename.",
+    )
     return ap.parse_args()
 
 
@@ -172,11 +185,24 @@ def main():
     set_seed(int(args.seed), torch_seed=torch_seed,
              deterministic=deterministic_algorithms)
 
+    # GAP-010 source-identity exclusion contract: hash every declared
+    # protected reference path up front so a leaked duplicate inside
+    # tiles_dir is excluded from BOTH the dataset actually trained on and
+    # the manifest that identifies the resulting checkpoint.
+    exclude_hashes = prov.exclusion_hashes_for(list(args.exclude_source_xodr))
+    if args.exclude_source_xodr:
+        print(
+            f"[gnn] source-SHA exclusion requested for "
+            f"{len(args.exclude_source_xodr)} path(s); "
+            f"{len(exclude_hashes)} resolved to real files on disk"
+        )
+
     # Dataset (deterministic, pre-validated; strict mode is fail-closed).
     ds = MapTileDataset(
         args.tiles_dir,
         strict=bool(args.strict_dataset),
         width_mode=str(args.width_mode),
+        exclude_source_hashes=exclude_hashes,
     )
     if len(ds) <= 0:
         raise RuntimeError(f"No graphs available in tiles_dir: {args.tiles_dir}")
@@ -226,6 +252,7 @@ def main():
             args.tiles_dir,
             width_mode=str(args.width_mode),
             strict=bool(args.strict_dataset),
+            exclude_source_hashes=exclude_hashes,
         )
     )
     selection_hash = prov.tile_selection_hash(list(tile_hashes), tile_hashes)

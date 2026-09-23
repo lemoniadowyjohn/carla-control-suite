@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Sequence
 from torch.utils.data import Dataset
 from torch_geometric.data import Data
 
+from .gnn_provenance import sha256_file
 from .graph_builder import MapGraphBuilder
 
 
@@ -45,6 +46,7 @@ class MapTileDataset(Dataset):
         strict: bool = False,
         width_mode: str = "legacy",
         exclude_names: Optional[Sequence[str]] = None,
+        exclude_source_hashes: Optional[Sequence[str]] = None,
     ):
         """
         Args:
@@ -62,6 +64,15 @@ class MapTileDataset(Dataset):
                 Tile filenames deliberately excluded from training by policy
                 (e.g. held-out test tiles). Recorded as EXCLUDED_BY_POLICY,
                 never silently dropped.
+            exclude_source_hashes:
+                GAP-010 source-identity exclusion contract: SHA-256 hashes
+                (e.g. from gnn_provenance.exclusion_hashes_for()) of known
+                eval/reference maps that must NEVER become training data --
+                any tile whose content hash matches one of these is
+                classified EXCLUDED_BY_POLICY regardless of its filename.
+                This closes the gap that let a duplicate of a held-out
+                evaluation map (cities/ingolstadt/manual_grid0821.xodr)
+                silently enter the training set by filename alone.
         """
         if strict and width_mode == "legacy":
             raise ValueError(
@@ -71,6 +82,7 @@ class MapTileDataset(Dataset):
         self.strict = strict
         self.width_mode = width_mode
         self._excluded = set(str(n) for n in (exclude_names or []))
+        self._excluded_hashes = set(str(h) for h in (exclude_source_hashes or []))
 
         all_files = sorted(
             f for f in os.listdir(tiles_dir) if f.endswith(".xodr")
@@ -92,6 +104,15 @@ class MapTileDataset(Dataset):
                 )
                 continue
             path = os.path.join(tiles_dir, fname)
+            if self._excluded_hashes and sha256_file(path) in self._excluded_hashes:
+                self._records.append(
+                    {
+                        "tile": fname,
+                        "status": STATUS_EXCLUDED_BY_POLICY,
+                        "reason": "source_sha_excluded",
+                    }
+                )
+                continue
             try:
                 g = MapGraphBuilder.build_from_xodr(
                     path, strict=bool(strict), width_mode=str(width_mode)

@@ -473,13 +473,50 @@ def graph_content_digest(graph: Any) -> str:
     return h.hexdigest()
 
 
+def exclusion_hashes_for(paths: Sequence[str | Path]) -> List[str]:
+    """SHA-256 of each existing path in ``paths`` (GAP-010 source-identity
+    exclusion contract). A path that does not exist on disk is skipped --
+    never fabricated -- so a caller relying on a specific protected path
+    being excluded must verify that path actually resolved if the
+    guarantee matters for a given run (e.g. log ``len(result)``).
+
+    This is the single helper both train_map_encoder.main() and
+    run_ksweep._expected_manifest_for_subset/main() must use to turn known
+    eval-pair / reference-map paths (e.g. the whole-map manual/auto pair,
+    or a historical reference like manual_grid0821.xodr) into the hash set
+    passed as ``exclude_source_hashes`` below -- otherwise the two
+    entrypoints could silently diverge on what counts as "protected".
+    """
+    out: List[str] = []
+    for p in paths:
+        pp = Path(str(p))
+        if pp.is_file():
+            out.append(sha256_file(pp))
+    return sorted(set(out))
+
+
 def build_training_dataset_manifest(
     tiles_dir: str | Path,
     *,
     width_mode: str = "legacy",
     strict: bool = False,
+    exclude_source_hashes: Optional[Sequence[str]] = None,
 ) -> tuple[list[dict[str, Any]], str, dict[str, str]]:
     """Build content-derived manifest entries for every USED tile.
+
+    ``exclude_source_hashes`` (GAP-010 fix): any tile in ``tiles_dir``
+    whose SHA-256 matches one of these hashes is excluded entirely -- never
+    hashed into ``tile_hashes``, never counted as a manifest entry, never
+    fed to the graph builder. This is the source-identity exclusion
+    contract that was previously missing: without it, ANY file placed in
+    ``tiles_dir`` -- including an accidental duplicate of a held-out
+    evaluation/reference map -- silently became training data, which is
+    exactly how the GAP-010 train/eval content-identity leak
+    (source_map_identity_overlap against cities/ingolstadt/manual_grid0821.xodr)
+    happened. Both train_map_encoder.main() and
+    run_ksweep._expected_manifest_for_subset MUST pass the same
+    known-protected hashes here (build them with :func:`exclusion_hashes_for`)
+    so this class of leak cannot recur from either entrypoint.
 
     Returns (entries, manifest_hash, tile_hashes). Raises in strict mode
     on invalid tiles (same fail-closed rule as the training dataset).
@@ -487,12 +524,17 @@ def build_training_dataset_manifest(
     from .graph_builder import MapGraphBuilder
 
     tiles_dir = Path(tiles_dir)
+    excluded = {str(h) for h in (exclude_source_hashes or ())}
     names = sorted(p.name for p in tiles_dir.glob("*.xodr") if p.is_file())
     entries: list[dict[str, Any]] = []
     tile_hashes: dict[str, str] = {}
     for name in names:
         fpath = tiles_dir / name
-        tile_hashes[name] = sha256_file(fpath)
+        file_hash = sha256_file(fpath)
+        if file_hash in excluded:
+            # Source-identity exclusion: never counted as training data.
+            continue
+        tile_hashes[name] = file_hash
         try:
             g = MapGraphBuilder.build_from_xodr(
                 str(fpath), strict=bool(strict), width_mode=str(width_mode)

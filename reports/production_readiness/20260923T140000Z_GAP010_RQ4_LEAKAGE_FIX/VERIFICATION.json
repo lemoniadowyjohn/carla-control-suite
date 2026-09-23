@@ -1,0 +1,42 @@
+{
+  "generated_at_utc": "2026-09-23T13:08:55.423684+00:00",
+  "git_sha": "5d4ea9129966faaa91a05e9ae17409db1c081286-dirty",
+  "module_importable": true,
+  "audit_leakage_callable": true,
+  "build_training_dataset_manifest_callable": true,
+  "exclusion_hashes_for_callable": true,
+  "eval_file": "manual_grid0821.xodr",
+  "eval_file_sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+  "eval_file_sha256_matches_gap010_citation": true,
+  "real_union_tiles_set": {
+    "path": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles",
+    "tile_count": 562,
+    "matches_20260919_report_tile_count_562": true,
+    "audit_leakage_status_as_is": "PASS",
+    "note": "This is the only real, currently-available candidate production training tile set on this machine. It does NOT currently contain a duplicate of the eval file -- the exact historical directory/state that produced the documented 2026-09-19 FAIL is confirmed absent from this checkout (consistent with the prior Codex finding), so there is no live leaking dataset here to physically purge. The fix below is verified against a deliberately reconstructed worst-case using these same real bytes."
+  },
+  "reproduction_and_fix_verification": {
+    "scenario": "8 real union_tiles + a literal byte-for-byte copy of the real eval file injected as a 9th 'tile' -- the exact content-identity-leak mechanism GAP-010 describes.",
+    "before_fix": {
+      "manifest_entries": 9,
+      "leak_hash_present_in_tile_hashes": true,
+      "audit_leakage_status": "FAIL",
+      "eval_pair_content_in_training_set": [
+        "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8"
+      ]
+    },
+    "after_fix": {
+      "manifest_entries": 8,
+      "leak_hash_present_in_tile_hashes": false,
+      "audit_leakage_status": "PASS",
+      "eval_pair_content_in_training_set": [],
+      "map_tile_dataset_excludes_leak_as": "EXCLUDED_BY_POLICY"
+    },
+    "verdict": "FAIL_REPRODUCED_THEN_FIXED"
+  },
+  "cli_entrypoints_wired": {
+    "train_map_encoder.py": "--exclude_source_xodr added; feeds MapTileDataset(exclude_source_hashes=...) and build_training_dataset_manifest(exclude_source_hashes=...)",
+    "run_ksweep.py": "manual_xodr/auto_xodr (the run's own eval pair) are ALWAYS excluded automatically; --exclude_source_xodr adds further protected paths; _list_tiles() filters the tile pool before nested_subsets() selection; the same exclusion set is forwarded to the train_map_encoder.py subprocess via --exclude_source_xodr and to _expected_manifest_for_subset() for checkpoint-identity parity.",
+    "live_smoke_test": "run_ksweep.main() executed end-to-end (real subprocess training, K=3/4, real MapEncoder, real checkpoints) against a tiles_dir containing 5 real tiles + 1 injected literal copy of the eval file; ksweep_report.json confirmed the eval file's real SHA-256 in source_sha_exclusion_contract.excluded_hashes and the leak tile was dropped before any K subset was formed."
+  }
+}
