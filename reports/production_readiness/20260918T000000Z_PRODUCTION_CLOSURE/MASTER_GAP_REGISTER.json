@@ -131,12 +131,12 @@
       "proof": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json, status: \"FAIL\", eval_pair_content_in_training_set lists the exact matching sha256.",
       "affected_files": ["ultimate_pipeline/domain_gap_gnn/gnn_provenance.py", "cities/ingolstadt/manual_grid0821.xodr"],
       "scientific_runtime_consequence": "Any RQ4 GNN structural-latent result computed against a checkpoint trained with this leak cannot be trusted as an honest train/eval split -- this must be root-caused and fixed (or the affected checkpoint's provenance downgraded) before any RQ4 number is cited as VERIFIED_RESEARCH.",
-      "owner_subagent": "unknown (found) -- Codex (2026-09-23) attempted completion, correctly determined it is blocked, did not fake a fix",
-      "status": "blocked -- prerequisite (GAP-011) not yet landed",
+      "owner_subagent": "unknown (found) -- Codex (2026-09-23) attempted completion, correctly determined it was blocked at the time",
+      "status": "unblocked as of 2026-09-23 (GAP-011 landed, c68a1059) -- ready to retry, not yet retried",
       "fixing_commit": null,
       "regression_test": null,
-      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json; reports/production_readiness/20260923T000000Z_GAP010_RQ4_LEAKAGE_BLOCKER/BLOCKED_EXTERNAL.md (Codex, branch fix/rq4-leakage-complete-20260923 @ 95d63b8a, no source change retained -- temporary cherry-pick explicitly reverted)",
-      "residual_risk": "HIGH -- 2026-09-23 attempt confirmed the real blocker: ultimate_pipeline/domain_gap_gnn/gnn_provenance.py, cities/ingolstadt/manual_grid0821.xodr, the historical union_tiles training set, and LEAKAGE_AUDIT.json itself are ALL still absent from origin/integration/production-large-map-20260918 -- the entire RQ4 provenance subsystem (OC-51) has never actually been reintegrated onto production, it only exists on fix/xodr-validator-convergence-v1-20260921 @ f245540f. This is GAP-011's job, not GAP-010's -- GAP-010 cannot be honestly closed until GAP-011's OC-51 restoration lands. The prior 811008a3 isolated fix slice was also found to be non-self-contained (calls dataset/graph-builder APIs absent from production) so it cannot be landed as-is even once the prerequisite lands. Separately confirmed: this machine's Torch is CPU-only (2.9.1+cpu, no CUDA) -- any eventual retraining step will be slow or may itself need to be flagged BLOCKED_EXTERNAL depending on dataset size."
+      "evidence_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json; reports/production_readiness/20260923T000000Z_GAP010_RQ4_LEAKAGE_BLOCKER/BLOCKED_EXTERNAL.md (Codex's prior blocked attempt, branch fix/rq4-leakage-complete-20260923 @ 95d63b8a, no source change retained)",
+      "residual_risk": "MEDIUM -- the prerequisite this was blocked on (GAP-011's OC-51 restoration) landed in c68a1059: ultimate_pipeline/domain_gap_gnn/gnn_provenance.py now exists on production, confirmed via the restoration's own passing test_rq4_gnn_provenance.py. However Codex's prior report also flagged the isolated fix slice at 811008a3 as non-self-contained (calls dataset/graph-builder APIs that may still be absent) -- this needs re-checking, not assumed still true or false. Retry GAP-010 completion now that the prerequisite is real; do not assume it's trivial just because the blocker is gone."
     },
     {
       "id": "GAP-011",
@@ -146,12 +146,12 @@
       "proof": "git worktree list + git merge-base --is-ancestor checks across all branches; full detail in the 2026-09-22 coordinator survey (this session).",
       "affected_files": ["fix/xodr-validator-convergence-v1-20260921 (WIP checkpoint commit 7e6214ac)", "10 OpenCode branches under C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\", "2 Codex branches under .codex/worktrees/"],
       "scientific_runtime_consequence": "None of this is lost (all pushed/committed as of this update), but none of it is verified-integrated either -- it must be triaged, rebased onto the verified checkpoint (origin/integration/production-large-map-20260918 @ f5333f3a), re-tested, and merged individually before any of its claims can be relied on.",
-      "owner_subagent": "direct (coordinator) -- WIP checkpoint commit only, no triage yet",
-      "status": "in_progress",
-      "fixing_commit": null,
-      "regression_test": null,
-      "evidence_artifact": "fix/xodr-validator-convergence-v1-20260921 @ 7e6214ac (pushed)",
-      "residual_risk": "MEDIUM -- real, well-evidenced work is sitting unintegrated; risk grows the longer it stays unreconciled (more divergence from the verified tip). UPDATE: confirmed live, via git reflog in the shared main checkout, that at least one concurrent agent (apparently OpenCode) is actively rebasing OC-35/OC-42 onto the verified tip f5333f3a right now -- exactly the reconciliation this gap calls for. The main checkout is confirmed a SHARED, actively-contested workspace; avoid direct edits there, use isolated worktrees."
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), after two unsuccessful OpenCode attempts",
+      "status": "fixed (part a only -- see residual_risk for parts b/c)",
+      "fixing_commit": "5 commits on fix/gap011-oc51-58-59-restoration-20260923, merged c68a1059 into origin/integration/production-large-map-20260918",
+      "regression_test": "each of the 5 restored packages' own test files (test_rq4_gnn_provenance.py, test_map_registry_integrity.py, test_xodr_validator_convergence.py, test_rq3_paired_capture_contract.py + test_route_manifest.py, plus the semantic-organizer companion test) all confirmed passing individually and as part of a clean combined full bare pytest (6112 passed, 5 skipped, 0 failed)",
+      "evidence_artifact": "fix/gap011-oc51-58-59-restoration-20260923 (pushed, 5 separate commits, one per package, for auditability)",
+      "residual_risk": "LOW for part (a), the 5 WIP-lineage packages -- all restored cleanly onto current production (OC-51/gnn_provenance.py, OC-58/map_registry build_alias_authority, OC-59/xodr_numeric+validation_policy+validation_result, RQ3 Paired-Capture Contract, Semantic Organizer Hardening), each package's own tests pass, full combined suite clean. This directly unblocks GAP-010 (RQ4 leakage fix, which needs gnn_provenance.py to exist on production) and RQ3's code-readiness. Parts (b) and (c) are UNCHANGED and still open: (b) the 10 OpenCode branches (OC-35 through OC-43 + VAP) -- several have since been individually rebased and merged as their own separate gap-register-adjacent work (OC-36, OC-38 confirmed merged; OC-39/40/43 still pending as of this update), so part (b) should be tracked per-branch going forward rather than as one bundle; (c) the 2 Codex branches (fix/p0-c-receipt-authority-20260919, fix/artifact-transaction-integrity-v1-20260921) still need reconciliation, not blind merge -- Codex's own prior report confirmed both contain substantive non-redundant deltas (230 and 413 lines respectively) and are not superseded by already-shipped work."
     },
     {
       "id": "GAP-012",
@@ -227,14 +227,44 @@
       "regression_test": "ultimate_pipeline/tests/unit/test_classify_lane_count_transitions.py (12 tests, one synthetic XODR fixture per category)",
       "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/lane_count_classification.{json,md}",
       "residual_risk": "LOW -- one important caveat surfaced: naive junction-road adjacency is NOT discriminating in this map (~70% of all 32,267 roads are junction connecting roads), so the classifier deliberately requires stronger declared-connection-with-laneLink-verification or independent-connector-registration evidence rather than plain adjacency. Not wired into scripts/measure_candidate_acceptance.py or PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- deliberately out of scope (would touch the already-pinned acceptance-gate contract), flagged as a natural follow-up."
+    },
+    {
+      "id": "GAP-019",
+      "severity": "P2",
+      "subsystem": "domain_gap/DEM+elevation canonical sampling -- 8-issue cluster (Package I)",
+      "description": "Independent verification (2026-09-23) of a WIP checkpoint (a070aab9, explicitly self-flagged as NOT VERIFIED, NOT TESTED) targeting 8 documented DEM/elevation sampling bugs. The verifying subagent found the WIP was actually broken (an IndentationError prevented dem_provenance.py from importing at all, plus two other crashing/silently-wrong regressions the WIP itself introduced) and fixed all of it properly rather than trusting the checkpoint.",
+      "proof": "reports/production_readiness/20260923_PACKAGE_I_DEM_CANONICAL_SAMPLING/RESULTS.md -- full per-issue status with real curved-geometry test evidence for each of the 8 original issues.",
+      "affected_files": ["ultimate_pipeline/quality/check_dem_coverage.py", "ultimate_pipeline/quality/check_dem_full_coverage.py", "ultimate_pipeline/enrichment/elevation_importer.py", "ultimate_pipeline/domain_gap/elevation_gap.py", "ultimate_pipeline/dem/dem_provenance.py", "ultimate_pipeline/dem/dem_identity.py"],
+      "scientific_runtime_consequence": "7 of 8 issues are now genuinely fixed and independently verified, closing several real false-green/silent-wrong-answer risks in DEM elevation sampling for curved roads -- most notably a header-offset-drop bug (issue 6) that broke road matching for any XODR pair with a non-trivial header offset, matching a known hazard class already flagged in this repo's own memory (frame-alignment bugs). Issue 8 (vertical-datum ground truth) remains open by necessity, not oversight -- honestly surfaced via a new vertical_datum_source field rather than silently assumed verified.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23)",
+      "status": "fixed (7/8), 1 open by design",
+      "fixing_commit": "fix/dem-elevation-canonical-sampling-v2-20260923, merged c68a1059 into origin/integration/production-large-map-20260918",
+      "regression_test": "ultimate_pipeline/tests/unit/test_dem_canonical_sampling.py (16 new tests, each using a curved-geometry XODR fixture compared against an independently-computed closed-form expected position); full combined suite with GAP-011 clean (6112 passed, 5 skipped, 0 failed)",
+      "evidence_artifact": "reports/production_readiness/20260923_PACKAGE_I_DEM_CANONICAL_SAMPLING/RESULTS.md",
+      "residual_risk": "LOW for the 7 fixed issues. Issue 8 (no independently-derived vertical datum truth) remains a genuinely hard, likely permanent limitation for the common case (plain CRS, no compound vertical sub-CRS) -- correctly tracked as open rather than papered over."
+    },
+    {
+      "id": "GAP-020",
+      "severity": "P2",
+      "subsystem": "pipeline_stages/stage_09_positional_semantics.py + tiling -- scope-mixed WIP (Package H)",
+      "description": "A verification pass on the building-multipolygon-fidelity WIP branch (originally c9c64ccd) found a real, valuable fix (enforce_buildings_fail_closed was inside a try/except that silently swallowed building-load failures as warnings instead of propagating -- fixed by moving the enforcement call outside the try/except) PLUS a large (418-line), functionally-unrelated rewrite of ultimate_pipeline/artifacts/store.py implementing atomic candidate-promotion and path-containment safety -- content that does not exist anywhere on production and appears to be scope contamination from a different concern (artifact-transaction integrity, not building/multipolygon fidelity) bundled into the same WIP checkpoint. This matches a pattern seen repeatedly this session (WIP checkpoints commingling unrelated concerns, e.g. GAP-011's source WIP mixing OC-26/scratch-scripts/embedded-gitlinks).",
+      "proof": "Full bare pytest on this branch: 4 failed, 5956 passed, 5 skipped. 3 failures in tests/unit/test_artifact_transactions.py (a new _validate_path_containment check rejects a pytest tmp_path on C: because the worktree/store root resolves under G: -- a real behavior introduced by the new store.py code, reproducible, not an environment fluke since the check itself is new). 1 failure in tests/unit/test_full_grid_tile_cook.py::test_densest_tile_is_first_in_cook_order (a hardcoded '>=626 buildings' threshold against real pinned Overpass data now returns 625 -- plausibly a correct side effect of a genuine multipolygon inner-ring/hole-handling fix in osm_polygon_loader.py that changes how buildings are counted, but not yet confirmed which).",
+      "affected_files": ["ultimate_pipeline/artifacts/store.py", "ultimate_pipeline/pipeline_stages/stage_09_positional_semantics.py", "ultimate_pipeline/enrichment/osm_polygon_loader.py", "tests/unit/test_artifact_transactions.py", "tests/unit/test_full_grid_tile_cook.py"],
+      "scientific_runtime_consequence": "NOT merged into production pending this being resolved -- the fail-closed building-enforcement fix is real and valuable but is bundled with unreviewed, test-breaking, out-of-scope content. Deferred rather than force-merged, per this program's own discipline (an honest deferred result beats a rushed risky one).",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), did not complete before a rate-limit interruption; coordinator investigated the failures directly and made the deferral call",
+      "status": "deferred -- needs scope separation before merge",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "fix/building-multipolygon-fidelity-v2-20260923 (pushed, NOT merged)",
+      "residual_risk": "MEDIUM -- two real, unadjudicated questions: (1) whether the store.py atomic-promotion content should be split out into its own properly-scoped branch and reviewed on its own merits (it may be legitimate, valuable work -- just not this branch's job), and (2) whether the 625-vs-626 building count is a correct consequence of the multipolygon fix or a real off-by-one regression -- needs someone to trace whether the specific tile's real Overpass data contains a multipolygon relation whose inner/outer handling changed. A dedicated follow-up task should split this branch's real building-fix content from the store.py content, then resolve the building-count question before merging either half."
     }
   ],
   "counts": {
-    "total": 18,
-    "fixed": 10,
-    "in_progress": 1,
-    "deferred": 1,
-    "open": 4,
+    "total": 20,
+    "fixed": 12,
+    "in_progress": 2,
+    "deferred": 2,
+    "open": 2,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
