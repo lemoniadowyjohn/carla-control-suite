@@ -66,6 +66,7 @@ from ultimate_pipeline.carla_tools.runtime_enrichments import (
     parse_type_filter,
 )
 from ultimate_pipeline.carla_tools.thesis_sensor_rig import ThesisSensorRig
+from ultimate_pipeline.utils.file_hashing import safe_sha256_file
 from ultimate_pipeline.perception.capture_config import (
     PairedCaptureConfig,
     camera_count_for_config,
@@ -724,6 +725,7 @@ def _refresh_thesis_contract_artifacts(
             status.get("expected_map_name") or inputs.get("expected_map_name") or ""
         ),
         "xodr_in": str(inputs.get("xodr_in", "") or ""),
+        "xodr_in_sha256": str(inputs.get("xodr_in_sha256", "") or ""),
     }
 
     produced_artifacts = perception_status.get("produced_artifacts")
@@ -4100,6 +4102,16 @@ def main() -> int:
         if args.xodr_in
         else ""
     )
+    # Evidence binding (GAP-022): hash the ORIGINAL --xodr-in argument here, before
+    # any later normalization (e.g. the georeference rewrite further down replaces
+    # args.xodr_in with a generated _normalized_input.xodr copy). This is the sha256
+    # of the exact artifact the caller asked us to capture against, and it is what
+    # final_map_readiness_gate.evaluate_perception_status() cross-checks against the
+    # XODR it is evaluating -- so it must match that source file byte-for-byte, not
+    # an internal CARLA-loading intermediate.
+    xodr_in_sha256 = (
+        (safe_sha256_file(Path(args.xodr_in)) or "") if args.xodr_in else ""
+    )
     visual_qa_gate_required = bool(
         bool(getattr(args, "require_visual_qa_gate", False))
         or _env_bool("UP_REQUIRE_VISUAL_QA_GATE_FOR_PERCEPTION", False)
@@ -4205,6 +4217,7 @@ def main() -> int:
         "manual_town": str(args.manual_town),
         "town": str(args.town or ""),
         "xodr_in": str(xodr_in_metadata),
+        "xodr_in_sha256": str(xodr_in_sha256),
         "expected_map_name": str(args.expected_map_name or ""),
         "map_probe_requested": bool(map_probe_requested),
         "visual_qa_gate_required": bool(visual_qa_gate_required),
@@ -4265,6 +4278,11 @@ def main() -> int:
         "failure_detail": "",
         "warnings": [],
         "output_dir": str(out_dir),
+        # GAP-022 evidence binding: sha256 of the XODR this capture was run
+        # against (empty when the run used a named --town instead of --xodr-in).
+        # final_map_readiness_gate.evaluate_perception_status() cross-checks this
+        # against the XODR it is evaluating and fails closed on a mismatch.
+        "xodr_sha256": str(xodr_in_sha256),
         "png_files": 0,
         "semseg_files": 0,
         "ply_files": 0,
@@ -4383,6 +4401,7 @@ def main() -> int:
             "manual_town": args.manual_town,
             "town": args.town or "",
             "xodr_in": str(xodr_in_metadata),
+            "xodr_in_sha256": str(xodr_in_sha256),
             "rig_mode": args.rig,
             "expected_map_name": str(args.expected_map_name or ""),
             "map_probe_requested": bool(map_probe_requested),

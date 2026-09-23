@@ -259,6 +259,7 @@ def evaluate_perception_status(
     report: Optional[Dict[str, Any]],
     *,
     visual_ok: bool,
+    xodr_path: Optional[Path] = None,
     min_frames: int = 1,
 ) -> Dict[str, Any]:
     if not visual_ok:
@@ -267,6 +268,7 @@ def evaluate_perception_status(
             "status": "blocked",
             "reason": "blocked_until_carla_visual_smoke_gate_passes",
             "frames_recorded": 0,
+            "sha_issue": "",
         }
     if not report:
         return {
@@ -274,22 +276,45 @@ def evaluate_perception_status(
             "status": "missing",
             "reason": "perception_status_missing",
             "frames_recorded": 0,
+            "sha_issue": "",
         }
 
     frames = _safe_int(
         report.get("frames_recorded", report.get("rgb_frames", report.get("frames", 0)))
     )
-    ok = _safe_bool(report.get("ok", report.get("success", False))) and frames >= int(min_frames)
-    reason = ""
-    if not _safe_bool(report.get("ok", report.get("success", False))):
-        reason = str(report.get("failure_reason") or "perception_status_not_ok")
+    report_ok = _safe_bool(report.get("ok", report.get("success", False)))
+
+    # Evidence binding: the perception capture that produced this report must have
+    # been run against the SAME XODR artifact this readiness check is evaluating --
+    # not just "a" successful capture against some other map. Mirrors
+    # evaluate_connector_report's real SHA256 binding (its output_sha256 check):
+    # the comparison only runs when a well-formed 64-char hash is present on the
+    # report AND the target XODR is available to hash. A report with no
+    # xodr_sha256 at all is tolerated (can't verify => assume compatible, same
+    # backward-compatible tolerance the connector/visual sub-reports get for their
+    # own optional hash fields), but a hash that IS present and does NOT match the
+    # actual target XODR is always a fail-closed rejection.
+    sha_issue = ""
+    report_sha = str(report.get("xodr_sha256") or "").strip().lower()
+    if xodr_path is not None and len(report_sha) == 64 and Path(xodr_path).exists():
+        actual_sha = safe_sha256_file(Path(xodr_path))
+        if not actual_sha or report_sha != actual_sha.lower():
+            sha_issue = "xodr_sha256_mismatch"
+
+    ok = report_ok and frames >= int(min_frames) and not sha_issue
+    reason_parts: List[str] = []
+    if not report_ok:
+        reason_parts.append(str(report.get("failure_reason") or "perception_status_not_ok"))
     elif frames < int(min_frames):
-        reason = f"frames_recorded_lt_{int(min_frames)}"
+        reason_parts.append(f"frames_recorded_lt_{int(min_frames)}")
+    if sha_issue:
+        reason_parts.append(sha_issue)
     return {
         "ok": ok,
         "status": "pass" if ok else "fail",
-        "reason": reason,
+        "reason": ";".join(reason_parts),
         "frames_recorded": frames,
+        "sha_issue": sha_issue,
     }
 
 
@@ -357,6 +382,7 @@ def build_final_map_readiness_report(
     perception_gate = evaluate_perception_status(
         perception_report,
         visual_ok=bool(visual_gate.get("ok", False)),
+        xodr_path=xodr_path,
         min_frames=int(min_perception_frames),
     )
     signal_counts = _signal_object_counts(xodr_path)
