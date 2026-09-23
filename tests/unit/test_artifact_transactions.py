@@ -13,6 +13,7 @@ from ultimate_pipeline.artifacts import (
 )
 from ultimate_pipeline.artifacts.errors import CandidateValidationError
 from ultimate_pipeline.artifacts.model import sha256_of
+from ultimate_pipeline.artifacts.model import Manifest
 
 
 def _write_xodr(path: Path, *, road_id: str = "1") -> None:
@@ -103,3 +104,17 @@ def test_candidate_id_must_be_path_safe(tmp_path: Path) -> None:
 
     with pytest.raises(CandidateValidationError, match="path-safe"):
         tx.propose_candidate("../escape", candidate, "xodr", tx.declare_mutation("bad-id"))
+
+
+def test_candidate_manifest_roundtrip_reconstructs_mutation_declaration(tmp_path: Path) -> None:
+    parent = tmp_path / "parent.xodr"
+    candidate = tmp_path / "candidate.xodr"
+    _write_xodr(parent)
+    _write_xodr(candidate)
+    store, tx = _transaction(tmp_path / "store")
+    store.set_parent(parent, "xodr")
+    assert tx.propose_candidate("candidate-roundtrip", candidate, "xodr", tx.declare_mutation("identity")).status == "PASS"
+    path = store.root / "manifest.json"
+    reloaded = Manifest.load(path)
+    reloaded.save(path)
+    assert Manifest.load(path).candidates["candidate-roundtrip"].mutation_declaration.operation == "identity"

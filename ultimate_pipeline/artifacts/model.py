@@ -1,6 +1,8 @@
 from __future__ import annotations
 import hashlib
 import json
+import os
+import tempfile
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -108,11 +110,24 @@ class CandidateResult:
             "blockers": list(self.blockers),
         }
 
+    @classmethod
+    def from_dict(cls, d: dict) -> "CandidateResult":
+        return cls(
+            status=d["status"],
+            parent=ArtifactRef.from_dict(d["parent"]),
+            candidate=ArtifactRef.from_dict(d["candidate"]) if d.get("candidate") else None,
+            mutation_declaration=MutationDeclaration.from_dict(d["mutation_declaration"]),
+            gate_results=tuple(GateResult(**g) for g in d.get("gate_results", ())),
+            blockers=tuple(d.get("blockers", ())),
+        )
+
 
 @dataclass
 class Manifest:
     run_id: RunId
+    schema_version: int = 2
     accepted: ArtifactRef | None = None
+    accepted_history: list[ArtifactRef] = field(default_factory=list)
     candidates: dict[str, CandidateResult] = field(default_factory=dict)
     rejected: dict[str, CandidateResult] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -120,32 +135,57 @@ class Manifest:
 
     def to_dict(self) -> dict:
         return {
+            "schema_version": self.schema_version,
             "run_id": self.run_id,
             "accepted": self.accepted.to_dict() if self.accepted else None,
-            "candidates": {k: v.to_dict() for k, v in self.candidates.items()},
-            "rejected": {k: v.to_dict() for k, v in self.rejected.items()},
+            "accepted_history": [v.to_dict() for v in self.accepted_history],
+            "candidates": {k: self.candidates[k].to_dict() for k in sorted(self.candidates)},
+            "rejected": {k: self.rejected[k].to_dict() for k in sorted(self.rejected)},
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
 
     @classmethod
     def from_dict(cls, d: dict) -> Manifest:
-        m = cls(run_id=d["run_id"])
+        version = d.get("schema_version", 1)
+        if version not in (1, 2):
+            raise ValueError(f"unsupported artifact manifest schema_version={version!r}")
+        m = cls(run_id=d["run_id"], schema_version=2)
         m.accepted = ArtifactRef.from_dict(d["accepted"]) if d.get("accepted") else None
-        m.candidates = {k: CandidateResult(**{**v, "parent": ArtifactRef.from_dict(v["parent"]), "candidate": ArtifactRef.from_dict(v["candidate"]) if v.get("candidate") else None, "gate_results": tuple(GateResult(**g) for g in v["gate_results"]), "blockers": tuple(v["blockers"])}) for k, v in d.get("candidates", {}).items()}
-        m.rejected = {k: CandidateResult(**{**v, "parent": ArtifactRef.from_dict(v["parent"]), "candidate": ArtifactRef.from_dict(v["candidate"]) if v.get("candidate") else None, "gate_results": tuple(GateResult(**g) for g in v["gate_results"]), "blockers": tuple(v["blockers"])}) for k, v in d.get("rejected", {}).items()}
+        m.accepted_history = [ArtifactRef.from_dict(v) for v in d.get("accepted_history", ())]
+        m.candidates = {k: CandidateResult.from_dict(v) for k, v in d.get("candidates", {}).items()}
+        m.rejected = {k: CandidateResult.from_dict(v) for k, v in d.get("rejected", {}).items()}
         m.created_at = d.get("created_at", m.created_at)
         m.updated_at = d.get("updated_at", m.updated_at)
         return m
 
     def save(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_name(f".{path.name}.tmp")
-        tmp.write_text(
-            json.dumps(self.to_dict(), indent=2, sort_keys=True),
-            encoding="utf-8",
-        )
-        tmp.replace(path)
+        # A fixed temporary name permits independent writers to overwrite one
+        # another before replace().  Store writes are locked, but this remains
+        # correct for direct callers and crash recovery as well.
+        fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+        tmp = Path(tmp_name)
+        try:
+            payload = json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(payload)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, path)
+            # Directory fsync is unavailable or unsupported on Windows. It is
+            # durability best-effort, never a workflow failure.
+            try:
+                dir_fd = os.open(str(path.parent), os.O_RDONLY)
+                try:
+                    os.fsync(dir_fd)
+                finally:
+                    os.close(dir_fd)
+            except OSError:
+                pass
+        finally:
+            if tmp.exists():
+                tmp.unlink(missing_ok=True)
 
     @classmethod
     def load(cls, path: Path) -> Manifest:
