@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
+import os
 import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -109,6 +111,26 @@ def _count_junctions_and_connectors(root: ET.Element) -> Tuple[int, int]:
     return len(junctions), len(connector_roads)
 
 
+def _sha256_file(path: Path) -> str:
+    """Compute SHA256 of a file."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _get_git_sha() -> str:
+    """Get current git commit SHA if available."""
+    try:
+        import subprocess
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
+    except Exception:
+        return ""
+
+
 def _default_report_path(xodr_path: Path) -> Path:
     return xodr_path.with_name("verify_final_xodr_report.json")
 
@@ -122,6 +144,8 @@ def verify_final_xodr(
     else:
         report_path = Path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
+
+    xodr_sha = _sha256_file(xodr_path)
 
     parse_error = None
     root = None
@@ -155,6 +179,7 @@ def verify_final_xodr(
         "schema": "verify_final_xodr_v1",
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "xodr_path": str(xodr_path),
+        "xodr_sha256": _sha256_file(xodr_path),
         "ok": ok,
         "parse_error": parse_error,
         "road_count": road_count,
@@ -163,11 +188,17 @@ def verify_final_xodr(
         "lane_width_missing": missing_width_count,
         "lane_width_warnings": lane_width,
         "dry_run_invariant_report": invariant_report,
+        "provenance": {
+            "tool": "verify_final_xodr",
+            "git_sha": _get_git_sha(),
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        },
     }
     report_path.write_text(
         json.dumps(report, indent=2, ensure_ascii=True, sort_keys=True),
         encoding="utf-8",
     )
+    report["report_sha256"] = hashlib.sha256(report_path.read_bytes()).hexdigest()
     report["report_path"] = str(report_path)
     return report
 

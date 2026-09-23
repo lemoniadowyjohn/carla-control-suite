@@ -9,7 +9,9 @@ are reported before engaging CARLA. Report includes all errors/warnings with cou
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,6 +31,26 @@ try:
     from ultimate_pipeline.quality.xodr_strict_validator import StrictXodrValidator
 except ImportError:  # pragma: no cover
     StrictXodrValidator = None  # type: ignore[assignment]
+
+
+def _sha256_file(path: Path) -> str:
+    """Compute SHA256 of a file."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _get_git_sha() -> str:
+    """Get current git commit SHA if available."""
+    try:
+        import subprocess
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
+    except Exception:
+        return ""
 
 
 def _parse_args() -> argparse.Namespace:
@@ -109,6 +131,8 @@ def run_preflight(xodr_path: Path, out_dir: Path) -> Dict[str, Any]:
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     report_path = out_dir / "preflight_report.json"
+
+    xodr_sha = _sha256_file(xodr_path)
 
     root, parse_error = _parse_xodr(xodr_path)
 
@@ -201,7 +225,9 @@ def run_preflight(xodr_path: Path, out_dir: Path) -> Dict[str, Any]:
     }
 
     preflight_report = {
+        "schema": "preflight_xodr_loadability_v1",
         "xodr_path": str(xodr_path),
+        "xodr_sha256": _sha256_file(xodr_path),
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "parse_error": parse_error,
         "modules": {
@@ -212,10 +238,18 @@ def run_preflight(xodr_path: Path, out_dir: Path) -> Dict[str, Any]:
         "errors": errors,
         "warnings": warnings,
         "summary": summary,
+        "provenance": {
+            "tool": "preflight_xodr_loadability",
+            "git_sha": _get_git_sha(),
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        },
     }
 
     with report_path.open("w", encoding="utf-8") as fh:
         json.dump(preflight_report, fh, indent=2, sort_keys=True)
+
+    preflight_report["report_sha256"] = _sha256_file(report_path)
+    preflight_report["report_path"] = str(report_path)
 
     print(f"[preflight_xodr_loadability] Report saved to {report_path} (status={summary['status']})")
 
