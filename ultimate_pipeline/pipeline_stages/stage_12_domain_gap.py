@@ -69,6 +69,13 @@ def _step12_domain_gap(self, final_out: str) -> None:
                 else Path(auto_tiles) / "tile_metadata.json"
             )
             if not auto_tiles_meta_path.is_file():
+                from ultimate_pipeline.tiling.tile_extractor import (
+                    freeze_tileset,
+                    is_tileset_frozen,
+                )
+
+                if not is_tileset_frozen(str(auto_tiles)):
+                    freeze_tileset(str(auto_tiles))
                 TileMetadata.generate_metadata(
                     str(auto_tiles), str(auto_tiles_meta_path)
                 )

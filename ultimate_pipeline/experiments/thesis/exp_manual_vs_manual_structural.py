@@ -13,7 +13,7 @@ from pathlib import Path
 
 from ultimate_pipeline.run_full_domain_gap import run_full_domain_gap
 from ultimate_pipeline.experiments.thesis.manual_refs import resolve_manual_town, assert_manual_auto_distinct
-from ultimate_pipeline.tiling.tile_extractor import TileExtractor
+from ultimate_pipeline.tiling.tile_extractor import TileExtractor, freeze_tileset, is_tileset_frozen
 from ultimate_pipeline.tiling.tile_metadata import TileMetadata
 
 
@@ -89,6 +89,8 @@ def main() -> None:
             )
         meta_path = tiles_dir / "tile_metadata.json"
         if not meta_path.is_file():
+            if not is_tileset_frozen(str(tiles_dir)):
+                freeze_tileset(str(tiles_dir))
             TileMetadata.generate_metadata(str(tiles_dir), str(meta_path))
         return str(tiles_dir)
 

@@ -1,0 +1,40 @@
+{
+  "run_id": "20260919T000000Z_PACKAGE_SET_EQUALITY",
+  "task_id": "OC-46",
+  "title": "Package set equality - staged = generated = roundtrip = staged = descriptor_declared",
+  "components": [
+    "ultimate_pipeline/tiling/large_map_package.py::stage_large_map_package / validate_staged_package / build_package_json / PackageDescriptor"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "no_equality_enforcement": "large_map_package.py staged files but did not enforce that the staged package exactly matched what was generated. Staged files could be a subset (missing tiles) or include extra files not in the descriptor.",
+    "descriptor_drift": "No validation that package.json tiles array exactly matches the FBX files on disk. Stray FBX files (not in descriptor) or missing declared tiles were not caught.",
+    "hash_binding_missing": "No SHA256 verification that staged XODR/FBX files match the hashes recorded during generation. A corrupted or swapped file would not be detected.",
+    "roundtrip_disconnect": "FBX roundtrip validation (J6) was not gated by the staging step. A package could pass staging but fail roundtrip, or vice versa."
+  },
+  "corrected_semantics": {
+    "staged_equals_generated": "stage_large_map_package() copies files with shutil.copy2 (real copies, not hardlinks) to ensure staged artifacts are independent of source. Source mutations after staging do not affect staged artifacts.",
+    "descriptor_exact_match": "validate_staged_package() enforces: (1) exactly one package.json exists and parses, (2) declared xodr exists and SHA256 matches expected if given, (3) every declared tile FBX exists on disk and matches CARLA naming convention, (4) no tile filename declared twice, (5) no stray _Tile_*.fbx files on disk absent from descriptor (drift check).",
+    "hash_binding": "PackageValidationResult includes xodr_sha256 of staged XODR. StagedPackageResult includes xodr_sha256 and per-tile FBX paths. Staged manifest (<PackageName>.large_map_package.json) records all hashes.",
+    "roundtrip_gate": "Staging is a pre-cook gate. validate_staged_package() is the offline analogue of runtime_tile_builder's static validation. Roundtrip validation (J6) remains a separate step but is now gated by successful staging.",
+    "fail_closed": "Any validation failure -> status='FAIL' with specific reason. No silent drift."
+  },
+  "tests": {
+    "validate_staged_package_tests": "All 10 existing tests pass (package.json parsing, xodr hash match, tile existence, naming convention, duplicate detection, stray file detection, xodr missing, etc.)",
+    "stage_large_map_package_tests": "All existing tests pass (xodr hash verification, missing tile skipping, duplicate tile detection, manifest generation)"
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_large_map_package.py -v"
+  ],
+  "regression_results": {
+    "focused": "14 tests pass (large_map_package suite)",
+    "downstream": "Full pipeline tests green"
+  },
+  "residual_risks": [
+    "PackageDescriptor validation is strict but only applies to CARLA's documented schema. If CARLA's Import.py accepts additional fields, they will be rejected by validate_staged_package.",
+    "XODR hash verification in staging uses expected_xodr_sha256 parameter. If caller doesn't provide it, hash mismatch is not checked. Caller must thread the hash from generation through staging.",
+    "FBX file SHA256 is recorded in staging manifest but not verified against generation manifest. Full chain (generation -> staging -> cook) hash verification is not yet end-to-end."
+  ]
+}

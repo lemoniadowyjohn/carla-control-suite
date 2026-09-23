@@ -1,0 +1,109 @@
+{
+  "schema_version": 2,
+  "title": "Tile Manifest Schema - CARLA Large Map Production",
+  "version": "2.0.0",
+  "description": "Final authoritative tile manifest schema. Generated ONLY after TILESET_FROZEN. All fields are REQUIRED unless marked optional.",
+  "top_level_fields": {
+    "schema_version": {
+      "type": "integer",
+      "const": 2,
+      "description": "Schema version for forward/backward compatibility"
+    },
+    "parent_xodr_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the parent whole-map XODR this tileset was derived from"
+    },
+    "parent_structure_fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the parent XODR's structural summary (road count, junction count, lane count)"
+    },
+    "authority_receipt_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the authority receipt (from certify_topology + final_map_readiness_gate)"
+    },
+    "tile_grid_spec": {
+      "type": "object",
+      "required": ["tile_size_m", "header_offset_xy", "origin_xy", "proj4_norm"],
+      "properties": {
+        "tile_size_m": { "type": "number", "minimum": 1 },
+        "header_offset_xy": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+        "origin_xy": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+        "proj4_norm": { "type": "string" }
+      },
+      "description": "Authoritative grid specification used for this tileset"
+    },
+    "tile_grid_spec_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the canonical tile_grid_spec JSON (for tamper detection)"
+    },
+    "generator_git_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$",
+      "description": "Git commit SHA of the pipeline that generated this tileset"
+    },
+    "tile_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total number of tiles in this manifest"
+    },
+    "tileset_digest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 digest of all tile files concatenated in sorted filename order"
+    },
+    "frozen_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when TILESET_FROZEN was applied"
+    },
+    "tiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "bytes", "sha256", "road_count", "junction_count", "lane_count", "bbox", "index", "validation_status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^tile_\\d+_\\d+\\.xodr$" },
+          "path": { "type": "string" },
+          "bytes": { "type": "integer", "minimum": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "road_count": { "type": "integer", "minimum": 0 },
+          "junction_count": { "type": "integer", "minimum": 0 },
+          "lane_count": { "type": "integer", "minimum": 0 },
+          "bbox": {
+            "type": "object",
+            "required": ["min_x", "min_y", "max_x", "max_y"],
+            "properties": {
+              "min_x": { "type": "number" },
+              "min_y": { "type": "number" },
+              "max_x": { "type": "number" },
+              "max_y": { "type": "number" }
+            }
+          },
+          "index": {
+            "type": "object",
+            "required": ["i", "j"],
+            "properties": { "i": { "type": "integer" }, "j": { "type": "integer" } }
+          },
+          "validation_status": {
+            "type": "string",
+            "enum": ["PASSED", "FAILED", "PARTIAL"],
+            "description": "Result of static XODR validation on this tile"
+          }
+        }
+      }
+    }
+  },
+  "constraints": {
+    "no_duplicate_tile_ids": "All tile.id values must be unique",
+    "contiguous_grid": "Tile indices must form a contiguous rectangular grid (no holes)",
+    "tileset_digest_matches": "tileset_digest_sha256 MUST equal SHA256 of sorted tile SHA256s",
+    "grid_spec_matches": "tile_grid_spec_sha256 MUST equal SHA256 of tile_grid_spec object",
+    "parent_xodr_matches": "parent_xodr_sha256 MUST match the SHA256 of the actual parent XODR used",
+    "tileset_frozen_marker": "A .tileset_frozen marker file MUST exist in the tiles directory with matching tileset_digest_sha256"
+  }
+}
