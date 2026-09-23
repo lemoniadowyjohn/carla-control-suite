@@ -162,17 +162,29 @@ def _sample_arc(
 
 
 def _sample_geometry_points(geom: ET.Element, offset_x: float, offset_y: float) -> List[Tuple[float, float]]:
+    """Sample points along any OpenDRIVE geometry primitive using canonical evaluator."""
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
+
     x0 = _safe_float(geom.get("x"), 0.0) + float(offset_x)
     y0 = _safe_float(geom.get("y"), 0.0) + float(offset_y)
     hdg = _safe_float(geom.get("hdg"), 0.0)
     length = max(0.0, _safe_float(geom.get("length"), 0.0))
     t_values = (0.0, 0.5, 1.0)
-    if geom.find("arc") is not None:
-        curvature = _safe_float(geom.find("arc").get("curvature"), 0.0)
-        return _sample_arc(x0, y0, hdg, length, curvature, t_values)
-    if geom.find("paramPoly3") is not None:
-        return sample_parampoly3_points(geom, x0, y0, hdg, length, t_values)
-    return _sample_line(x0, y0, hdg, length, t_values)
+
+    # Use canonical evaluator for all primitive types. pose_at_s() evaluates
+    # the geometry in its own (offset-less) frame using geom's own x/y/hdg
+    # attributes, so the header offset must be added back on afterward --
+    # it is NOT baked into the geometry element itself.
+    points: List[Tuple[float, float]] = []
+    for t in t_values:
+        s = length * t
+        try:
+            pose = pose_at_s(geom, s)
+            points.append((pose.x + float(offset_x), pose.y + float(offset_y)))
+        except Exception:
+            # Fallback to line sampling if canonical evaluator fails
+            points.append((x0 + s * math.cos(hdg), y0 + s * math.sin(hdg)))
+    return points
 
 
 def _road_sample_positions(length_m: float, samples_per_road: int) -> List[float]:
