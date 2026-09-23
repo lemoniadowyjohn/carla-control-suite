@@ -878,14 +878,14 @@ class ElevationImporter:
                 if road_length > 0.01:  # avoid division by near-zero
                     # Use canonical geometry evaluator for accurate endpoint computation
                     from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint
-                    x_end, y_end = x0, y0
+                    x_end, y_end, hdg_end = x0, y0, hdg0
                     try:
                         last_geom = geos[-1]
                         pose = endpoint(last_geom)
-                        x_end, y_end = pose.x, pose.y
+                        x_end, y_end, hdg_end = pose.x, pose.y, pose.heading
                     except Exception:
-                        # keep fallback (x0,y0) -> slope stays 0
-                        x_end, y_end = x0, y0
+                        # keep fallback (x0,y0,hdg0) -> slope stays 0
+                        x_end, y_end, hdg_end = x0, y0, hdg0
                     # Robust endpoint sampling: try a neighborhood near the road end.
                     def _try_sample(px, py):
                         z, ok = _unwrap_sampler_result(sampler(px, py))
@@ -909,7 +909,7 @@ class ElevationImporter:
                     except Exception:
                         eps = 2.0
 
-                    z_end, valid_end = _try_neighborhood(x_end, y_end, hdg, eps)
+                    z_end, valid_end = _try_neighborhood(x_end, y_end, hdg_end, eps)
 
                     if valid_end and z_end is not None:
                         b_coeff = (z_end - z0) / road_length

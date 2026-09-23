@@ -117,11 +117,20 @@ def dem_identity_record(
         crs=crs,
         vertical_datum=vertical_datum,
         bounds=bounds,
-        resolution_m=None,
+        resolution_m=res["x"],
         no_data=nodata,
         provider=provider,
         licence=licence,
+        verify_against_raster=True,
     )
+
+    if provenance._provenance_mismatches:
+        return {
+            "ok": False,
+            "reason": "provenance_mismatch",
+            "path": dem_path,
+            "provenance_mismatches": provenance._provenance_mismatches,
+        }
 
     # Transform bounds to WGS84 if CRS is available
     bounds_wgs84 = _transform_bounds_to_wgs84(bounds, crs)
@@ -140,7 +149,8 @@ def dem_identity_record(
         "sha256": provenance.sha256,
         "file_bytes": provenance.file_bytes,
         "crs": crs,
-        "vertical_datum": vertical_datum,
+        "vertical_datum": provenance.vertical_datum,
+        "vertical_datum_source": provenance._vertical_datum_source,
         "bounds_native": bounds,
         "bounds_wgs84": bounds_wgs84,
         "resolution_native": res,

@@ -178,7 +178,15 @@ def check_dem_full_coverage(
                     if total >= max_samples:
                         break
 
-            el.clear()
+            # Do NOT clear planView primitive children (<line>/<arc>/<spiral>/
+            # <poly3>/<paramPoly3>) here: their own "end" event fires BEFORE
+            # their parent <geometry>'s "end" event, so clearing them here
+            # would wipe their attributes (e.g. arc's curvature, or every
+            # coefficient a canonical-kernel primitive needs) before the
+            # <geometry> handler above gets a chance to read them. They are
+            # freed anyway once the parent <geometry> element is cleared.
+            if name not in ("line", "arc", "spiral", "poly3", "paramPoly3"):
+                el.clear()
 
     report = {
         "xodr_path": xodr_path,

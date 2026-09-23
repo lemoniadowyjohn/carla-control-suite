@@ -66,13 +66,32 @@ def _read_header_offset_xy(root: ET.Element) -> Tuple[float, float]:
 
 
 def _effective_header_offset_xy(root: ET.Element) -> Tuple[float, float]:
-    """Read header offset directly without magnitude heuristics.
+    offset_x, offset_y = _read_header_offset_xy(root)
+    if abs(offset_x) <= 1e-9 and abs(offset_y) <= 1e-9:
+        return 0.0, 0.0
 
-    The offset values are taken as-is from the XODR header. Magnitude-based
-    heuristics for detecting "already-baked-in" offsets are unreliable and
-    cause falsepositives when legitimate large offsets are present.
-    """
-    return _read_header_offset_xy(root)
+    # Aligned XODRs can keep the historical header offset while their
+    # planView geometry has already been rewritten into absolute projected
+    # coordinates. Re-applying the offset here would double-shift the map.
+    geom_count = 0
+    max_abs_geom = 0.0
+    for idx, geom in enumerate(root.findall("./road/planView/geometry")):
+        geom_count += 1
+        max_abs_geom = max(
+            max_abs_geom,
+            abs(_safe_float(geom.get("x"), 0.0)),
+            abs(_safe_float(geom.get("y"), 0.0)),
+        )
+        if idx >= 255:
+            break
+    if max_abs_geom >= 100000.0 and max(abs(offset_x), abs(offset_y)) >= 1000.0:
+        # Global-frame geometry with a large offset: offset already baked in.
+        return 0.0, 0.0
+    if geom_count == 0 and max(abs(offset_x), abs(offset_y)) > 1e-9:
+        # EG-001: No geometry elements found — cannot determine coordinate frame.
+        # Suppress offset as safe default to avoid phantom double-shift.
+        return 0.0, 0.0
+    return offset_x, offset_y
 
 
 def _parse_elevation_segments(road: ET.Element) -> List[Tuple[float, float, float, float, float]]:
@@ -152,13 +171,16 @@ def _sample_geometry_points(geom: ET.Element, offset_x: float, offset_y: float) 
     length = max(0.0, _safe_float(geom.get("length"), 0.0))
     t_values = (0.0, 0.5, 1.0)
 
-    # Use canonical evaluator for all primitive types
+    # Use canonical evaluator for all primitive types. pose_at_s() evaluates
+    # the geometry in its own (offset-less) frame using geom's own x/y/hdg
+    # attributes, so the header offset must be added back on afterward --
+    # it is NOT baked into the geometry element itself.
     points: List[Tuple[float, float]] = []
     for t in t_values:
         s = length * t
         try:
             pose = pose_at_s(geom, s)
-            points.append((pose.x, pose.y))
+            points.append((pose.x + float(offset_x), pose.y + float(offset_y)))
         except Exception:
             # Fallback to line sampling if canonical evaluator fails
             points.append((x0 + s * math.cos(hdg), y0 + s * math.sin(hdg)))
