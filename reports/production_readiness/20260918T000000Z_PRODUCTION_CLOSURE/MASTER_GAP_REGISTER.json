@@ -281,12 +281,12 @@
       "proof": "Direct read of ultimate_pipeline/tools/final_map_readiness_gate.py on origin/integration/production-large-map-20260918 @ dc5443fc: evaluate_connector_report() lines 184-190 (sha check, gated behind `if len(output_sha) == 64`); evaluate_visual_gate_report() lines 214-227 and evaluate_perception_status() lines 234-268 (no sha/hash/path-binding code anywhere in either function).",
       "affected_files": ["ultimate_pipeline/tools/final_map_readiness_gate.py"],
       "scientific_runtime_consequence": "A stale or wrong-map visual-smoke or perception-status report could be silently accepted as evidence for the current final XODR's readiness gate, undermining the fail-closed intent of the gate for 2 of its 3 sub-checks.",
-      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), master-prompt-triage task, item 8 -- found; GAP-011 OC-41 reconciliation (separate concurrent task, same day) partially fixed it as a byproduct",
-      "status": "partial -- visual-gate half fixed and merged, perception half still open",
-      "fixing_commit": "e6052360/23913504 via fix/final-readiness-evidence-binding-v4-reconciled-20260923, merged into origin/integration/production-large-map-20260918",
-      "regression_test": "tests/unit/test_carla_visual_smoke_gate_evaluation.py (extended)",
-      "evidence_artifact": "reports/production_readiness/20260923T184022Z_MASTER_PROMPT_TRIAGE/RESULTS.md (original finding); reports/production_readiness/20260918T000000Z_FINAL_READINESS_EVIDENCE_BINDING/RESULTS.json (the fix)",
-      "residual_risk": "MEDIUM, narrowed from the original finding. Coordinator independently verified post-merge: evaluate_visual_gate_report() now delegates to evaluate_visual_smoke_report() in carla_visual_smoke_gate.py, which computes and checks xodr_sha256 (lines ~307/352/366 on the merged tip) -- the visual-gate half of this gap is genuinely fixed. evaluate_perception_status() in final_map_readiness_gate.py, however, is UNCHANGED by this merge (re-read directly, confirmed zero hash/path-binding code) -- the perception half of this gap is still fully open. Do not close this gap entirely; re-scope affected_files/description to perception_status only on the next update, or split into a GAP-022b if a dedicated fix is dispatched."
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), master-prompt-triage task, item 8 -- found; GAP-011 OC-41 reconciliation fixed the visual half as a byproduct; a second direct-dispatched Claude subagent (2026-09-23) fixed the perception half",
+      "status": "fixed -- all 3 sub-report evaluators now bind evidence to the target XODR by SHA256",
+      "fixing_commit": "e6052360/23913504 (visual half, via fix/final-readiness-evidence-binding-v4-reconciled-20260923) + 5f7d58bb (perception half, fix/gap022-perception-evidence-binding-20260923), both merged into origin/integration/production-large-map-20260918",
+      "regression_test": "tests/unit/test_carla_visual_smoke_gate_evaluation.py (extended, visual half); tests/unit/test_final_map_readiness_gate.py (new, perception half: xodr_sha256 mismatch fails closed, matching hash passes, wired end-to-end through build_final_map_readiness_report(require_perception=True))",
+      "evidence_artifact": "reports/production_readiness/20260923T184022Z_MASTER_PROMPT_TRIAGE/RESULTS.md (original finding); reports/production_readiness/20260918T000000Z_FINAL_READINESS_EVIDENCE_BINDING/RESULTS.json (visual fix)",
+      "residual_risk": "LOW. Perception fix correctly hashes the ORIGINAL xodr_in (pre-normalization) in run_perception_safe.py, since that script replaces args.xodr_in with a georeference-rewritten copy before feeding CARLA -- hashing the post-normalization copy would have permanently mismatched. The real writer (run_perception_safe.py, confirmed via main_pipeline.py/stage_08_integrity.py as the canonical producer) was updated to populate xodr_sha256; two other perception-status producers (run_perception_pair.py, local_perception_runner.py) write structurally different report shapes for different subsystems and were correctly left untouched. Coordinator independently traced the orchestration code (build_final_map_readiness_report()) and found one harmless observation worth noting for a future cleanup, NOT a real gap: a shared _verify_xodr_binding() helper computes a binding_error for connector/visual/perception sub-reports at the orchestration level, but its result for connector and visual is effectively dead code for the actual pass/fail decision -- both of those already have their own independent, real internal SHA256 checks (evaluate_connector_report's output_sha256 check; evaluate_visual_smoke_report's own xodr_sha256 check) that are what actually gates the result. This is redundant computation, not a missing check -- both halves are genuinely enforced via their own internal logic. Full bare pytest on the fully merged state (all of GAP-011 parts a/b/c + GAP-021/022/023/024-adjacent work): pending final coordinator confirmation."
     },
     {
       "id": "GAP-023",
@@ -336,11 +336,11 @@
   ],
   "counts": {
     "total": 25,
-    "fixed": 16,
+    "fixed": 17,
     "closed_non_reproducible": 3,
     "in_progress": 0,
     "deferred": 1,
-    "open": 3,
+    "open": 2,
     "blocked_external": 2
   },
   "completed_non_gap_work_2026_09_22": {
