@@ -176,12 +176,12 @@
       "proof": "Full-suite WIP run FAILED with the ImportError; direct grep confirms the function exists in the file the error names. Needs investigation, not yet root-caused to a fix.",
       "affected_files": ["ultimate_pipeline/domain_gap/tile_grid_meta.py", "submission/infrastructure/ultimate_pipeline/domain_gap/tile_grid_meta.py", "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py"],
       "scientific_runtime_consequence": "Unknown until root-caused -- if it's a genuine import-order/duplicate-package collision in production code paths (not just tests), two different copies of tile-grid logic could be live depending on import order.",
-      "owner_subagent": "Codex (2026-09-23, in progress)",
-      "status": "not reproducible on clean production worktree -- interim finding, full-suite confirmation pending",
+      "owner_subagent": "Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 2026-09-23)",
+      "status": "closed -- confirmed non-reproducible on clean production",
       "fixing_commit": null,
-      "regression_test": null,
-      "evidence_artifact": null,
-      "residual_risk": "LOW pending final confirmation -- Codex verified on a fresh worktree off the current production tip (a3f1e0e8) that ultimate_pipeline/domain_gap/tile_grid_meta.py imports from the canonical path and correctly exports _infer_tile_size_from_bbox. Likely explanation: this failure was an artifact of the messy WIP-lineage branch (fix/xodr-validator-convergence-v1-20260921 @ f245540f) where it was originally found, which mixed OC-26 and other content in a way that may have caused a real but non-production import collision -- not a defect in the clean, reviewed production line itself. Codex correctly declined to write a fix for a non-reproduced defect (per this program's own discipline) and is running a full bare pytest on the clean worktree to confirm before any register closure. Do not mark 'fixed' until that full-suite result is in -- this entry should be updated to 'closed, non-reproducible' or reopened with new evidence once it completes, not left in this interim state."
+      "regression_test": "no fix needed -- test_nan_coordinate_excluded_from_bbox itself is the regression coverage, and it passes",
+      "evidence_artifact": "Full bare pytest on a fresh worktree off origin/integration/production-large-map-20260918 @ 5d4ea912: 6112 passed, 5 skipped, 0 failed, 878.25s. test_safe_float_nan_sweep_batch2.py::TestTileGridMetaBoundsFromXodr::test_nan_coordinate_excluded_from_bbox confirmed PASSED individually within that run, and zero other unexplained failures anywhere in the full suite.",
+      "residual_risk": "NONE -- confirmed via a real, complete, from-scratch full-suite run (not a partial or estimated result). Root cause remains attributed to the messy WIP-lineage branch (fix/xodr-validator-convergence-v1-20260921 @ f245540f) this was originally found on, which mixed OC-26 and other content in a way that likely caused a real but non-production import collision -- the clean, reviewed production line was never actually affected."
     },
     {
       "id": "GAP-014",
@@ -191,12 +191,12 @@
       "proof": "Full-suite WIP run FAILED at ~61% progress; isolated re-run of the exact same test PASSED cleanly. Root cause not yet found -- needs bisection to identify which earlier test leaves state behind.",
       "affected_files": ["ultimate_pipeline/topology/junction_model.py (symptom only, not necessarily the bug's location)", "tests/topology/test_junction_model.py"],
       "scientific_runtime_consequence": "If a test leaks a monkeypatch into shared module state, production code exercised later in the same process could silently run the patched version -- needs the actual polluting test identified before ruling out a real risk.",
-      "owner_subagent": "Codex (2026-09-23, in progress)",
-      "status": "not reproducible on clean production worktree -- interim finding, full-suite confirmation pending",
+      "owner_subagent": "Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 2026-09-23)",
+      "status": "closed -- confirmed non-reproducible on clean production",
       "fixing_commit": null,
-      "regression_test": null,
-      "evidence_artifact": null,
-      "residual_risk": "LOW pending final confirmation -- Codex verified on a fresh worktree off the current production tip (a3f1e0e8) that JunctionValidator.validate_lane_links resolves to the canonical source and contains no .roads access. Same likely explanation as GAP-013: an artifact of the messy WIP-lineage branch this was originally found on, not a defect in the clean production line. Full bare pytest running on the clean worktree to confirm zero unexplained failures before any closure. Do not mark 'fixed' until that result is in."
+      "regression_test": "no fix needed -- test_junction_validator_lane_links_out_of_range itself is the regression coverage, and it passes",
+      "evidence_artifact": "Full bare pytest on a fresh worktree off origin/integration/production-large-map-20260918 @ 5d4ea912: 6112 passed, 5 skipped, 0 failed, 878.25s. tests/topology/test_junction_model.py::test_junction_validator_lane_links_out_of_range confirmed PASSED within that full-suite run (not just in isolation), and zero other unexplained failures anywhere in the suite.",
+      "residual_risk": "NONE -- confirmed via a real, complete, from-scratch full-suite run (not a partial or estimated result). The originally-hypothesized cross-test state pollution either never existed on the clean production line or was specific to the messy WIP-lineage branch (fix/xodr-validator-convergence-v1-20260921 @ f245540f) this was originally found on."
     },
     {
       "id": "GAP-015",
@@ -262,7 +262,8 @@
   "counts": {
     "total": 20,
     "fixed": 12,
-    "in_progress": 2,
+    "closed_non_reproducible": 2,
+    "in_progress": 0,
     "deferred": 2,
     "open": 2,
     "blocked_external": 2
