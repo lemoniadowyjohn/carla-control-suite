@@ -338,10 +338,10 @@
     "total": 25,
     "fixed": 18,
     "closed_non_reproducible": 3,
-    "in_progress": 0,
+    "in_progress": 1,
     "deferred": 1,
     "open": 1,
-    "blocked_external": 2
+    "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {
     "xodr_validated_capability": "New xodr_validator pipeline stage (delegating to StrictXodrValidator) inserted between topology_repair and enrichment in main_pipeline.py, with a matching XODR_VALIDATED capability hard-required by the enrichment stage in stage_capabilities.py -- originally requested as ad-hoc structural hardening, not a tracked gap. Landed clean in commit f51db269, merged 1c8caa2c into origin/integration/production-large-map-20260918. Mirror-drift test confirmed passing."
@@ -434,14 +434,14 @@
       "subsystem": "UE4 cook readiness -- engine source access",
       "description": "Formalizes and corrects the earlier 'UE4.26 absent, straightforward install' framing. Attempting the documented CARLA build path (git clone --depth 1 -b carla https://github.com/CarlaUnreal/UnrealEngine.git) fails with 'remote: Repository not found' even though the user's GitHub account is linked to their Epic Games account. This is NOT evidence the repo doesn't exist, and is NOT something Codex (or any automated agent) can resolve -- it is a long-standing, widely-reported, chronic issue across the CARLA community (github.com/carla-simulator/carla issues #6401, #6632, #6681, #7654, #7775, #7826, #9806 -- the most recent dated 2026-07, still unresolved as of this pass). The documented root cause: Epic's GitHub org-invitation flow sometimes silently adds a newly-linked account to a decoy/mirror organization ('EpicGames-Mirror-A') instead of the real Epic Games org that actually has read access to CarlaUnreal/UnrealEngine -- an account can show as 'linked' while still lacking the specific org membership the private repo checks. Multiple affected users report having to explicitly request access to the CarlaUnreal/UnrealEngine 'carla' branch through Epic's own developer forums (forums.unrealengine.com) even after completing the standard account link.",
       "proof": "Codex: `git ls-remote --heads https://github.com/CarlaUnreal/UnrealEngine.git carla` -> 'Repository not found (128)', 2026-09-23. Cross-referenced against CARLA's own current official documentation (carla.readthedocs.io/en/0.9.16/build_windows/, build_carla/) which still cites this exact clone command as correct/current -- confirming this is an access problem, not a stale/wrong URL.",
-      "affected_files": ["G:\\UE4 (still empty)", "no local artifact affected -- this is entirely an external account/access issue"],
-      "scientific_runtime_consequence": "Blocks the entire UE4 cook ladder (GAP-018's own original scope) regardless of code readiness -- no amount of pipeline/package work unblocks this without the engine source itself.",
-      "owner_subagent": "requires the user directly -- verify actual GitHub org membership (Settings -> Organizations; check for the real Epic org vs. 'EpicGames-Mirror-A' or similar mirror/decoy org) and, if in the wrong org, request access to the specific CarlaUnreal/UnrealEngine 'carla' branch via the Unreal Engine developer forums (forums.unrealengine.com) -- this has resolved the issue for other affected users per community reports. Codex correctly declined to proceed with any clone/Setup.bat/build step against an inaccessible repo.",
-      "status": "blocked_external",
+      "affected_files": ["G:\\UnrealEngine_4.26_CARLA (real clone + in-progress build, confirmed 2026-09-24)"],
+      "scientific_runtime_consequence": "Blocks the entire UE4 cook ladder (GAP-018's own original scope) regardless of code readiness -- no amount of pipeline/package work unblocks this without a working engine build; the access blocker is resolved but the build itself is not yet complete.",
+      "owner_subagent": "user resolved the GitHub/Epic org-access issue directly; the build was then started and is running unsupervised",
+      "status": "in_progress (external, unsupervised) -- access blocker resolved, real UE4 compile ongoing, not yet complete",
       "fixing_commit": null,
       "regression_test": null,
-      "evidence_artifact": null,
-      "residual_risk": "HIGH -- entirely gated on the user's own GitHub/Epic org membership being corrected; no code-side or agent-side workaround exists. Do not re-dispatch this to Codex/OpenCode/Gemini again until the user confirms org access is fixed."
+      "evidence_artifact": "G:\\UnrealEngine_4.26_CARLA (real clone, UE4.sln + UE4Games.uprojectdirs present, confirming GenerateProjectFiles ran)",
+      "residual_risk": "MEDIUM. This entry was stale (previously said 'G:\\UE4 still empty' / blocked_external) -- corrected here after direct verification on 2026-09-24: the clone succeeded once the user fixed GitHub/Epic org membership, and a genuine compile is confirmed actively running (UnrealBuildTool.exe + 11 live cl.exe processes observed directly via tasklist, several using 400MB-1.8GB RAM each -- not a stale/hung process). UE4Editor.exe does NOT yet exist under Engine/Binaries/Win64 (checked directly) -- the build has not finished. This is a multi-hour native C++ compile with no reliable ETA from outside; do not assume it will finish soon or that it will succeed cleanly (UE4.26 builds can fail late for toolchain/SDK-version reasons). Re-check periodically for UE4Editor.exe rather than re-attempting the clone/Setup.bat steps, which already succeeded. Once the editor exists, GAP-018's original scope (cook readiness) still needs the actual CARLA project cook attempted -- that is a distinct, not-yet-reached step even after this build finishes."
     }
   ]
 }
