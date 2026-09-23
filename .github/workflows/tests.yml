@@ -2,7 +2,7 @@ name: offline research gates
 
 on:
   push:
-    branches: [main, "stabilize/**", "stable/**", "fix/**"]
+    branches: [main, "stabilize/**", "stable/**", "fix/**", "integration/**"]
   pull_request:
   workflow_dispatch: {}
 
