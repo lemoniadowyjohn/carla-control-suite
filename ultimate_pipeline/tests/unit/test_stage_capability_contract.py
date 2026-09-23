@@ -44,8 +44,11 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     CURRENT_PIPELINE_STAGE_SEQUENCE,
     GEOMETRY_FROZEN,
     HYGIENE_COMPLETE,
+    LANES_FINAL,
     LANES_GENERATED,
     SEMANTIC_POSITIONS_PLACED,
+    SEMANTIC_SOURCE_READY,
+    SEMANTICS_FINAL,
     StageCapabilitySpec,
     StageDependencyViolation,
     XODR_VALIDATED,
@@ -141,80 +144,64 @@ class TestRealPipelineOrderingFinding:
             f"clean; unexpected violations: {report.violations}"
         )
 
-    def test_real_stage_order_fails_once_enrichment_declares_its_true_dependency(
-        self,
-    ):
-        """This is the reproduction of the audit's actual finding.
+    def test_p0l_reorder_validates_clean(self):
+        """P0-L reorder: the new stage order (semantic_source_preparation early,
+        positional_semantics after map_hygiene) validates clean.
 
-        Stage 4 ("enrichment") genuinely writes position-dependent
-        semantics (traffic lights with lane references, OSM-matched
-        regulatory signs, geometrically-projected crosswalks --
-        pipeline_stages/stage_04_enrichment.py lines 180, 285-304,
-        364-389) before the horizontal geometry freeze
-        (pipeline_stages/stage_05_geometry.py:261) and before map hygiene
-        (pipeline_stages/stage_08_hygiene.py, which can delete whole
-        roads via island quarantine) have run.
-
-        If "enrichment" honestly declared that dependency (what it SHOULD
-        declare per the audit finding), validating the REAL current stage
-        order (unchanged) now fails -- proving this mechanism would have
-        caught the real misordering, using the actual pipeline order
-        found in main_pipeline.py, not a synthetic stand-in.
+        This replaces the old test that proved the mechanism would have caught
+        the misordering. Now that the reorder is implemented, the real stage
+        order with the new split stages validates clean.
         """
-        audit_target_sequence = with_stage_requirements(
-            CURRENT_PIPELINE_STAGE_SEQUENCE,
-            stage_name="enrichment",
-            requires=frozenset({GEOMETRY_FROZEN, HYGIENE_COMPLETE}),
+        report = validate_stage_sequence(CURRENT_PIPELINE_STAGE_SEQUENCE)
+        assert report.ok, (
+            f"P0-L reorder should validate clean; violations: {report.violations}"
         )
 
-        report = validate_stage_sequence(audit_target_sequence)
+        # Verify the new stages exist in the correct order
+        stage_names = [s.name for s in CURRENT_PIPELINE_STAGE_SEQUENCE]
+        assert "semantic_source_preparation" in stage_names
+        assert "positional_semantics" in stage_names
+        assert "enrichment" not in stage_names  # old stage removed
 
+        # Verify positional_semantics requires the right capabilities
+        pos_sem_stage = next(s for s in CURRENT_PIPELINE_STAGE_SEQUENCE if s.name == "positional_semantics")
+        assert GEOMETRY_FROZEN in pos_sem_stage.requires
+        assert LANES_FINAL in pos_sem_stage.requires
+        assert HYGIENE_COMPLETE in pos_sem_stage.requires
+        assert SEMANTIC_POSITIONS_PLACED in pos_sem_stage.provides
+        assert SEMANTICS_FINAL in pos_sem_stage.provides
+
+        # Verify semantic_source_preparation provides SEMANTIC_SOURCE_READY
+        src_prep_stage = next(s for s in CURRENT_PIPELINE_STAGE_SEQUENCE if s.name == "semantic_source_preparation")
+        assert SEMANTIC_SOURCE_READY in src_prep_stage.provides
+        assert not src_prep_stage.mutates_structure
+
+    def test_old_enrichment_with_true_dependency_would_fail(self):
+        """Legacy test: if the old 'enrichment' stage (with its true dependency
+        on frozen + hygiene-complete geometry) were still in the sequence,
+        it would fail -- proving the validator catches the original misordering."""
+        # Build a sequence with the old enrichment stage inserted at its old position
+        old_sequence = []
+        for stage in CURRENT_PIPELINE_STAGE_SEQUENCE:
+            if stage.name == "geometry":
+                # Insert old enrichment before geometry (its old position)
+                old_sequence.append(StageCapabilitySpec(
+                    "enrichment",
+                    requires=frozenset({GEOMETRY_FROZEN, HYGIENE_COMPLETE}),
+                    provides=frozenset({SEMANTIC_POSITIONS_PLACED}),
+                    mutates_structure=True,
+                ))
+            old_sequence.append(stage)
+
+        report = validate_stage_sequence(old_sequence)
         assert not report.ok, (
-            "expected the real stage order to violate the contract once "
-            "'enrichment' honestly declares its dependency on frozen + "
-            "hygiene-complete geometry -- if this now passes, either the "
-            "real stage order changed (re-verify against main_pipeline.py "
-            "_mark_stage(...) call order) or the audit finding no longer "
-            "reproduces and this test should be updated to say so"
+            "Old enrichment with true dependency should fail in old position"
         )
         assert any("enrichment" in v for v in report.violations)
-        assert any(
-            GEOMETRY_FROZEN in v or HYGIENE_COMPLETE in v for v in report.violations
-        )
+        assert any(GEOMETRY_FROZEN in v or HYGIENE_COMPLETE in v for v in report.violations)
 
         with pytest.raises(StageDependencyViolation):
-            assert_stage_sequence_valid(audit_target_sequence)
-
-    def test_corrected_ordering_with_same_aspirational_requirement_passes(self):
-        """Positive-case counterpart: if semantic placement is moved to run
-        after both geometry-freeze and hygiene-complete (the shape of fix
-        the full P0-L reorder would produce), the same aspirational
-        requirement on 'enrichment' validates clean. This is not an
-        implementation of the reorder -- it only proves the validator
-        recognizes a corrected order as valid, so it can be trusted as the
-        acceptance check for that future work."""
-        reordered = [
-            stage
-            for stage in CURRENT_PIPELINE_STAGE_SEQUENCE
-            if stage.name != "enrichment"
-        ]
-        # Re-insert "enrichment" (with its true requirement) immediately
-        # after "map_hygiene", which provides HYGIENE_COMPLETE and runs
-        # after "geometry" (which provides GEOMETRY_FROZEN).
-        hygiene_index = next(
-            i for i, stage in enumerate(reordered) if stage.name == "map_hygiene"
-        )
-        moved_enrichment = StageCapabilitySpec(
-            "enrichment",
-            requires=frozenset({GEOMETRY_FROZEN, HYGIENE_COMPLETE}),
-            provides=frozenset({SEMANTIC_POSITIONS_PLACED}),
-        )
-        reordered.insert(hygiene_index + 1, moved_enrichment)
-
-        report = validate_stage_sequence(reordered)
-        assert report.ok, (
-            f"corrected ordering should validate clean; violations: {report.violations}"
-        )
+            assert_stage_sequence_valid(old_sequence)
 
     def test_lanes_and_final_integrity_already_require_geometry_frozen(self):
         """Sanity check that this module's declarations for 'lanes' and
@@ -223,14 +210,21 @@ class TestRealPipelineOrderingFinding:
         stage_07_lanes.py:73 and stage_08_integrity.py:513) -- i.e. this
         module formalizes a prerequisite that was already partially
         enforced for those two stages, just never extended to
-        'enrichment'."""
+        'enrichment' (now split into semantic_source_preparation + positional_semantics)."""
         by_name = {s.name: s for s in CURRENT_PIPELINE_STAGE_SEQUENCE}
         assert GEOMETRY_FROZEN in by_name["lanes"].requires
         assert GEOMETRY_FROZEN in by_name["final_integrity"].requires
         assert LANES_GENERATED in by_name["final_integrity"].requires
-        # "enrichment" (stage 4) is the one NOT yet declaring a requirement
-        # on frozen/hygiene-complete geometry, which is exactly the audit's
-        # finding. It DOES now require XODR_VALIDATED (added when the
-        # xodr_validator stage was wired in ahead of it) -- that is a
-        # different, narrower dependency than the audit finding covers.
-        assert by_name["enrichment"].requires == frozenset({XODR_VALIDATED})
+        # "semantic_source_preparation" (early, non-structural) does NOT
+        # require frozen geometry -- it only prepares sources. It DOES
+        # require XODR_VALIDATED (added when the xodr_validator stage was
+        # wired in ahead of it) -- a different, narrower dependency than the
+        # audit finding covers.
+        assert by_name["semantic_source_preparation"].requires == frozenset({XODR_VALIDATED})
+        # "positional_semantics" (late, post-freeze) DOES require
+        # GEOMETRY_FROZEN + LANES_FINAL + HYGIENE_COMPLETE.
+        assert GEOMETRY_FROZEN in by_name["positional_semantics"].requires
+        assert LANES_FINAL in by_name["positional_semantics"].requires
+        assert HYGIENE_COMPLETE in by_name["positional_semantics"].requires
+        # Old "enrichment" stage no longer exists.
+        assert "enrichment" not in by_name

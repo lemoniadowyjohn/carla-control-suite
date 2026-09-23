@@ -200,46 +200,133 @@ class TileGridSpec:
 
 
 # ---------------------------------------------------------------------------
-# Building model
+# Building model with multipolygon support
 # ---------------------------------------------------------------------------
 @dataclass(frozen=True)
-class TileBuilding:
-    """One building footprint ready for tile assignment.
+class BuildingPolygon:
+    """A single building part: one outer ring with zero or more inner rings (holes).
 
-    ``rings`` is a list of closed rings; each ring is a list of ``(lon, lat)``
-    WGS84 vertices (Overpass "out geom" order). ``tags`` are the OSM tags carried
-    onto the emitted way(s). ``source_id`` is the original Overpass element id
-    (int) for traceability -- it is *not* re-used as an OSM id in output.
+    All rings are in WGS84 (lon, lat) and are closed (first == last vertex).
+    """
+
+    outer: Sequence[Tuple[float, float]]  # outer ring (CCW expected)
+    inners: Tuple[Sequence[Tuple[float, float]], ...] = field(default_factory=tuple)  # inner rings (holes, CW expected)
+
+    def __post_init__(self) -> None:
+        # Ensure inners is a tuple for immutability/hashability
+        object.__setattr__(self, 'inners', tuple(self.inners))
+
+    def area_lonlat(self) -> float:
+        """Signed area of outer minus sum of inners (approximate, in degree^2)."""
+        outer_area = _abs_shoelace_area(self.outer)
+        inner_area = sum(_abs_shoelace_area(inner) for inner in self.inners)
+        return outer_area - inner_area
+
+    def outer_vertices_lonlat(self) -> List[Tuple[float, float]]:
+        """All vertices of outer ring."""
+        return list(self.outer)
+
+    def inner_vertices_lonlat(self) -> List[Tuple[float, float]]:
+        """All vertices of all inner rings."""
+        pts: List[Tuple[float, float]] = []
+        for inner in self.inners:
+            pts.extend(inner)
+        return pts
+
+    def all_vertices_lonlat(self) -> List[Tuple[float, float]]:
+        """All vertices across outer and inner rings."""
+        pts: List[Tuple[float, float]] = []
+        pts.extend(self.outer)
+        for inner in self.inners:
+            pts.extend(inner)
+        return pts
+
+    def centroid_lonlat(self) -> Optional[Tuple[float, float]]:
+        """Area-weighted centroid of outer minus inners (in lon/lat space).
+
+        Note: This is an approximation in geographic coordinates. For accurate
+        planar centroids, use centroid_local() with a grid.
+        """
+        outer_area = _abs_shoelace_area(self.outer)
+        outer_centroid = _polygon_centroid(self.outer)
+        if outer_centroid is None:
+            return None
+
+        cx, cy = outer_centroid
+        net_area = outer_area
+        weighted_cx = cx * outer_area
+        weighted_cy = cy * outer_area
+
+        for inner in self.inners:
+            inner_area = _abs_shoelace_area(inner)
+            inner_centroid = _polygon_centroid(inner)
+            if inner_area > 0 and inner_centroid is not None:
+                ix, iy = inner_centroid
+                weighted_cx -= ix * inner_area
+                weighted_cy -= iy * inner_area
+                net_area -= inner_area
+
+        if net_area <= 1e-12:
+            return None
+        return (weighted_cx / net_area, weighted_cy / net_area)
+
+
+@dataclass(frozen=True)
+class TileBuilding:
+    """One building (potentially multipart with holes) ready for tile assignment.
+
+    ``parts`` is a list of BuildingPolygon, each with an outer ring and optional
+    inner rings (courtyards). This preserves full OSM multipolygon topology.
+
+    ``tags`` are the OSM tags carried onto the emitted way(s)/relation.
+    ``source_id`` is the original Overpass element id for traceability.
+    ``source_type`` is "way" (simple building) or "relation" (multipolygon).
+    ``relation_diagnostics`` holds assembly diagnostics for relation buildings.
     """
 
     source_id: str
     source_type: str  # "way" | "relation"
     tags: Dict[str, str]
-    rings: Sequence[Sequence[Tuple[float, float]]]
+    parts: Sequence[BuildingPolygon]
+    relation_diagnostics: Optional[Dict[str, Any]] = None
+
+    def __post_init__(self) -> None:
+        if not self.parts:
+            raise ValueError("TileBuilding must have at least one part")
 
     def outer_vertices_lonlat(self) -> List[Tuple[float, float]]:
-        """All vertices across all rings, as (lon, lat)."""
+        """All vertices across all parts (outer + inner rings), as (lon, lat)."""
         pts: List[Tuple[float, float]] = []
-        for ring in self.rings:
-            pts.extend((float(lon), float(lat)) for lon, lat in ring)
+        for part in self.parts:
+            pts.extend(part.outer)
+            for inner in part.inners:
+                pts.extend(inner)
         return pts
 
-    def centroid_local(self, grid: TileGridSpec) -> Optional[Tuple[float, float]]:
-        """Area-weighted footprint centroid, projected to XODR-local metres.
+    def total_area_lonlat(self) -> float:
+        """Sum of (outer - inners) area across all parts (in degree^2)."""
+        return sum(part.area_lonlat() for part in self.parts)
 
-        Uses the polygon (shoelace) centroid of the largest ring, computed in the
-        projected metric frame so it is a true planar centroid. Falls back to the
-        vertex mean when the ring is degenerate (zero area / collinear), so every
-        building with >=1 finite vertex is assignable (never dropped). Returns
-        ``None`` only when the building has no finite vertices at all.
+    def centroid_local(self, grid: TileGridSpec) -> Optional[Tuple[float, float]]:
+        """Area-weighted centroid of the complete multipolygon, projected to XODR-local metres.
+
+        Computes the true planar centroid by:
+        1. Projecting all rings to local metric frame
+        2. Computing area-weighted centroid of (outer - inners) for each part
+        3. Weighting across all parts by their net area
+
+        Falls back to vertex mean when all rings are degenerate.
+        Returns ``None`` only when the building has no finite vertices at all.
         """
         ox, oy = grid.header_offset_xy
-        best_ring_xy: Optional[List[Tuple[float, float]]] = None
-        best_area = -1.0
+        part_centroids: List[Tuple[float, float]] = []
+        part_areas: List[float] = []
         all_xy: List[Tuple[float, float]] = []
-        for ring in self.rings:
-            ring_xy: List[Tuple[float, float]] = []
-            for lon, lat in ring:
+
+        for part in self.parts:
+            # Project outer ring
+            outer_xy: List[Tuple[float, float]] = []
+            for lon, lat in part.outer:
                 try:
                     gx, gy = _FWD_TRANSFORMER.transform(float(lon), float(lat))
                 except (TypeError, ValueError):
@@ -247,16 +334,61 @@ class TileBuilding:
                 if not (math.isfinite(gx) and math.isfinite(gy)):
                     continue
                 pt = (gx - ox, gy - oy)
-                ring_xy.append(pt)
+                outer_xy.append(pt)
                 all_xy.append(pt)
-            area = _abs_shoelace_area(ring_xy)
-            if area > best_area:
-                best_area = area
-                best_ring_xy = ring_xy
-        if best_ring_xy and best_area > 0.0:
-            c = _polygon_centroid(best_ring_xy)
-            if c is not None:
-                return c
+
+            # Project inner rings
+            inners_xy: List[List[Tuple[float, float]]] = []
+            for inner in part.inners:
+                inner_xy: List[Tuple[float, float]] = []
+                for lon, lat in inner:
+                    try:
+                        gx, gy = _FWD_TRANSFORMER.transform(float(lon), float(lat))
+                    except (TypeError, ValueError):
+                        continue
+                    if not (math.isfinite(gx) and math.isfinite(gy)):
+                        continue
+                    pt = (gx - ox, gy - oy)
+                    inner_xy.append(pt)
+                    all_xy.append(pt)
+                if len(inner_xy) >= 3:
+                    inners_xy.append(inner_xy)
+
+            if len(outer_xy) < 3:
+                continue
+
+            outer_area = _abs_shoelace_area(outer_xy)
+            outer_centroid = _polygon_centroid(outer_xy)
+            if outer_centroid is None:
+                continue
+
+            cx, cy = outer_centroid
+            net_area = outer_area
+            weighted_cx = cx * outer_area
+            weighted_cy = cy * outer_area
+
+            for inner_xy in inners_xy:
+                inner_area = _abs_shoelace_area(inner_xy)
+                inner_centroid = _polygon_centroid(inner_xy)
+                if inner_area > 0 and inner_centroid is not None:
+                    ix, iy = inner_centroid
+                    weighted_cx -= ix * inner_area
+                    weighted_cy -= iy * inner_area
+                    net_area -= inner_area
+
+            if net_area <= 1e-12:
+                continue
+
+            part_centroids.append((weighted_cx / net_area, weighted_cy / net_area))
+            part_areas.append(net_area)
+
+        if part_centroids:
+            total_area = sum(part_areas)
+            if total_area > 1e-12:
+                mx = sum(c[0] * a for c, a in zip(part_centroids, part_areas)) / total_area
+                my = sum(c[1] * a for c, a in zip(part_centroids, part_areas)) / total_area
+                return (mx, my)
+
         if all_xy:
             mx = sum(p[0] for p in all_xy) / len(all_xy)
             my = sum(p[1] for p in all_xy) / len(all_xy)
@@ -304,13 +436,12 @@ def _polygon_centroid(coords: Sequence[Tuple[float, float]]) -> Optional[Tuple[f
 def load_buildings_from_overpass_json(overpass_json_path: str) -> List[TileBuilding]:
     """Read an Overpass "out geom" JSON building export into TileBuilding objects.
 
-    Mirrors the format assumptions of
-    ``ultimate_pipeline.enrichment.overpass_to_osm_xml`` and
-    ``osm_polygon_loader``: ``way`` elements carry an embedded ``geometry`` array
-    of ``{lat, lon}``; ``relation`` (multipolygon building) elements carry
-    ``members`` each with their own embedded ``geometry``. Only the outer rings
-    are kept (inner/courtyard rings are a documented accepted over-fill; OSM2World
-    renders a building volume from the outer ring alone).
+    Parses both simple way-based buildings and multipolygon relations with full
+    topology preservation: outer rings, inner rings (courtyards), and multipart
+    buildings. Relation assembly diagnostics are recorded for invalid topology.
+
+    Returns TileBuilding objects with BuildingPolygon parts that preserve
+    outer/inner ring distinction.
     """
     src = Path(overpass_json_path)
     if not src.exists():
@@ -331,35 +462,153 @@ def load_buildings_from_overpass_json(overpass_json_path: str) -> List[TileBuild
             ring = _geom_to_lonlat(elem.get("geometry"))
             if len(ring) < 3:
                 continue
+            # Ensure ring is closed
+            if ring[0] != ring[-1]:
+                ring = ring + [ring[0]]
+            part = BuildingPolygon(outer=ring, inners=())
             buildings.append(
                 TileBuilding(
                     source_id=str(elem.get("id")),
                     source_type="way",
                     tags=dict(elem.get("tags") or {}),
-                    rings=[ring],
+                    parts=[part],
                 )
             )
         elif etype == "relation":
-            rings: List[List[Tuple[float, float]]] = []
-            for member in elem.get("members") or []:
+            tags = dict(elem.get("tags") or {})
+            # Only process multipolygon buildings
+            if tags.get("type") != "multipolygon" or "building" not in tags:
+                continue
+
+            rel_id = str(elem.get("id"))
+            members = elem.get("members") or []
+
+            # Separate outer and inner members with embedded geometry
+            outer_members: List[Dict[str, Any]] = []
+            inner_members: List[Dict[str, Any]] = []
+            unclosed_members: List[str] = []
+            ambiguous_members: List[str] = []
+
+            for member in members:
                 if member.get("type") != "way":
                     continue
-                if member.get("role") not in ("outer", "", None):
+                role = member.get("role", "")
+                geometry = member.get("geometry")
+                if not geometry or len(geometry) < 3:
                     continue
-                ring = _geom_to_lonlat(member.get("geometry"))
-                if len(ring) >= 3:
-                    rings.append(ring)
-            if not rings:
+                ring = _geom_to_lonlat(geometry)
+                if len(ring) < 3:
+                    continue
+                # Ensure ring is closed
+                if ring[0] != ring[-1]:
+                    ring = ring + [ring[0]]
+                    unclosed_members.append(f"{member.get('ref')}:{role}")
+
+                if role == "outer":
+                    outer_members.append({"ref": member.get("ref"), "ring": ring})
+                elif role == "inner":
+                    inner_members.append({"ref": member.get("ref"), "ring": ring})
+                else:
+                    # No role or empty role - treat as outer (OSM convention)
+                    outer_members.append({"ref": member.get("ref"), "ring": ring})
+
+            # Build parts: each outer ring gets its associated inner rings
+            parts: List[BuildingPolygon] = []
+
+            if not outer_members:
+                # No outer members - cannot form a valid building
+                diagnostics = {
+                    "relation_id": rel_id,
+                    "outer_members": 0,
+                    "inner_members": len(inner_members),
+                    "outer_rings_built": 0,
+                    "inner_rings_built": 0,
+                    "unclosed_members": unclosed_members,
+                    "ambiguous_members": ambiguous_members,
+                    "status": "no_outer_members",
+                }
                 continue
+
+            # For each outer member, create a BuildingPolygon
+            # Associate inner rings by point-in-polygon test
+            for om in outer_members:
+                outer_ring = om["ring"]
+                # Find inner rings that are inside this outer ring
+                associated_inners: List[Sequence[Tuple[float, float]]] = []
+                for im in inner_members:
+                    inner_ring = im["ring"]
+                    # Test if inner ring centroid is inside outer ring
+                    if _point_in_polygon(_ring_centroid_lonlat(inner_ring), outer_ring):
+                        associated_inners.append(inner_ring)
+                    else:
+                        ambiguous_members.append(f"inner {im.get('ref')} not in outer {om.get('ref')}")
+
+                part = BuildingPolygon(outer=outer_ring, inners=tuple(associated_inners))
+                parts.append(part)
+
+            if not parts:
+                diagnostics = {
+                    "relation_id": rel_id,
+                    "outer_members": len(outer_members),
+                    "inner_members": len(inner_members),
+                    "outer_rings_built": 0,
+                    "inner_rings_built": 0,
+                    "unclosed_members": unclosed_members,
+                    "ambiguous_members": ambiguous_members,
+                    "status": "no_valid_parts",
+                }
+                continue
+
+            diagnostics = {
+                "relation_id": rel_id,
+                "outer_members": len(outer_members),
+                "inner_members": len(inner_members),
+                "outer_rings_built": len(parts),
+                "inner_rings_built": sum(len(p.inners) for p in parts),
+                "unclosed_members": unclosed_members,
+                "ambiguous_members": ambiguous_members,
+                "status": "ok" if not ambiguous_members else "ambiguous_inners",
+            }
+
             buildings.append(
                 TileBuilding(
-                    source_id=str(elem.get("id")),
+                    source_id=rel_id,
                     source_type="relation",
-                    tags=dict(elem.get("tags") or {}),
-                    rings=rings,
+                    tags=tags,
+                    parts=parts,
+                    relation_diagnostics=diagnostics,
                 )
             )
+
     return buildings
+
+
+def _ring_centroid_lonlat(ring: Sequence[Tuple[float, float]]) -> Tuple[float, float]:
+    """Compute centroid of a ring (approximate, using vertex mean)."""
+    if not ring:
+        return (0.0, 0.0)
+    mx = sum(p[0] for p in ring) / len(ring)
+    my = sum(p[1] for p in ring) / len(ring)
+    return (mx, my)
+
+
+def _point_in_polygon(point: Tuple[float, float], polygon: Sequence[Tuple[float, float]]) -> bool:
+    """Ray-casting point-in-polygon test for lon/lat coordinates.
+
+    Returns True if point is inside polygon (not on boundary).
+    """
+    x, y = point
+    inside = False
+    n = len(polygon)
+    if n < 3:
+        return False
+    for i in range(n):
+        x1, y1 = polygon[i]
+        x2, y2 = polygon[(i + 1) % n]
+        # Check if edge crosses horizontal ray to the right of point
+        if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
+            inside = not inside
+    return inside
 
 
 def _geom_to_lonlat(geometry: Any) -> List[Tuple[float, float]]:
@@ -372,6 +621,75 @@ def _geom_to_lonlat(geometry: Any) -> List[Tuple[float, float]]:
         except (KeyError, TypeError, ValueError):
             continue
     return ring
+
+
+def compute_building_statistics(buildings: List[TileBuilding]) -> Dict[str, Any]:
+    """Compute area statistics for a building collection.
+
+    Reports:
+        building_count: total TileBuilding objects
+        simple_way_count: buildings from simple OSM ways (1 part, 0 inners)
+        relation_count: buildings from OSM relations
+        relations_with_holes: relation buildings with at least one inner ring
+        inner_ring_count: total inner rings across all buildings
+        multipart_relation_count: relation buildings with >1 outer parts
+        invalid_relation_count: relation buildings with diagnostics status != "ok"
+        total_outer_area: sum of outer ring areas (projected, m^2)
+        total_hole_area: sum of inner ring areas (projected, m^2)
+        courtyard_area_preserved: total_hole_area (same metric, renamed for clarity)
+    """
+    stats = {
+        "building_count": 0,
+        "simple_way_count": 0,
+        "relation_count": 0,
+        "relations_with_holes": 0,
+        "inner_ring_count": 0,
+        "multipart_relation_count": 0,
+        "invalid_relation_count": 0,
+        "total_outer_area_m2": 0.0,
+        "total_hole_area_m2": 0.0,
+        "courtyard_area_preserved_m2": 0.0,
+    }
+
+    for b in buildings:
+        stats["building_count"] += 1
+
+        if b.source_type == "way":
+            stats["simple_way_count"] += 1
+        elif b.source_type == "relation":
+            stats["relation_count"] += 1
+            if len(b.parts) > 1:
+                stats["multipart_relation_count"] += 1
+            if b.relation_diagnostics and b.relation_diagnostics.get("status") != "ok":
+                stats["invalid_relation_count"] += 1
+
+        for part in b.parts:
+            # Project to approximate local metric for area calculation
+            outer_xy = [_latlon_to_xy_approx(lon, lat) for lon, lat in part.outer]
+            if len(outer_xy) >= 3:
+                outer_area = _abs_shoelace_area(outer_xy)
+                stats["total_outer_area_m2"] += outer_area
+
+            for inner in part.inners:
+                inner_xy = [_latlon_to_xy_approx(lon, lat) for lon, lat in inner]
+                if len(inner_xy) >= 3:
+                    inner_area = _abs_shoelace_area(inner_xy)
+                    stats["total_hole_area_m2"] += inner_area
+                    stats["courtyard_area_preserved_m2"] += inner_area
+                    stats["inner_ring_count"] += 1
+
+            if part.inners:
+                stats["relations_with_holes"] += 1
+
+    return stats
+
+
+def _latlon_to_xy_approx(lon: float, lat: float) -> Tuple[float, float]:
+    """Quick approximate projection using the module's transformer."""
+    try:
+        return _FWD_TRANSFORMER.transform(lon, lat)
+    except Exception:
+        return (0.0, 0.0)
 
 
 # ---------------------------------------------------------------------------
@@ -443,6 +761,12 @@ def write_tile_osm_xml(
     coordinate (OSM 1e-7 precision) exactly as ``overpass_to_osm_xml`` does, so
     shared corners collapse to one node (avoids OSM2World duplicate-point
     degeneracies). Ids are negative synthetic, matching the merge-safe convention.
+
+    Buildings are emitted as:
+    - Simple way: single part with no inner rings -> standalone tagged way
+    - Multipolygon relation: multiple parts or parts with inner rings ->
+      OSM relation with type=multipolygon, building tags on relation,
+      member ways with role=outer/inner
     """
     coord_to_id: Dict[Tuple[float, float], int] = {}
     nodes: List[Tuple[int, float, float]] = []  # (id, lat, lon)
@@ -462,6 +786,8 @@ def write_tile_osm_xml(
 
     way_records: List[Tuple[int, List[int], Dict[str, str]]] = []
     next_way_id = _WAY_ID_BASE
+    relation_records: List[Tuple[int, List[Tuple[str, int]], Dict[str, str]]] = []  # (rel_id, [(role, way_id)], tags)
+    next_relation_id = _WAY_ID_BASE - 1000000  # distinct from way IDs
 
     def _new_way_id() -> int:
         nonlocal next_way_id
@@ -469,24 +795,80 @@ def write_tile_osm_xml(
         next_way_id -= 1
         return wid
 
+    def _new_relation_id() -> int:
+        nonlocal next_relation_id
+        rid = next_relation_id
+        next_relation_id -= 1
+        return rid
+
     ways_written = 0
+    relations_written = 0
+
     for b in buildings:
-        for ring in b.rings:
-            node_ids = [_node(lon, lat) for (lon, lat) in ring]
-            if len(node_ids) < 3:
-                continue
-            if node_ids[0] != node_ids[-1]:
-                node_ids.append(node_ids[0])
-            way_records.append((_new_way_id(), node_ids, dict(b.tags)))
-            ways_written += 1
+        # Determine if this building needs a multipolygon relation
+        needs_relation = False
+        if len(b.parts) > 1:
+            needs_relation = True  # multipart
+        else:
+            part = b.parts[0]
+            if part.inners:
+                needs_relation = True  # has holes
+
+        if not needs_relation:
+            # Simple building: emit as standalone way(s)
+            for part in b.parts:
+                node_ids = [_node(lon, lat) for (lon, lat) in part.outer]
+                if len(node_ids) < 3:
+                    continue
+                if node_ids[0] != node_ids[-1]:
+                    node_ids.append(node_ids[0])
+                way_records.append((_new_way_id(), node_ids, dict(b.tags)))
+                ways_written += 1
+        else:
+            # Complex building: emit multipolygon relation
+            rel_id = _new_relation_id()
+            member_pairs: List[Tuple[str, int]] = []  # (role, way_id)
+
+            # Emit outer ways
+            for part in b.parts:
+                # Outer ring
+                node_ids = [_node(lon, lat) for (lon, lat) in part.outer]
+                if len(node_ids) < 3:
+                    continue
+                if node_ids[0] != node_ids[-1]:
+                    node_ids.append(node_ids[0])
+                way_id = _new_way_id()
+                way_records.append((way_id, node_ids, {}))  # no tags on member ways
+                member_pairs.append(("outer", way_id))
+                ways_written += 1
+
+                # Inner rings (holes)
+                for inner in part.inners:
+                    node_ids = [_node(lon, lat) for (lon, lat) in inner]
+                    if len(node_ids) < 3:
+                        continue
+                    if node_ids[0] != node_ids[-1]:
+                        node_ids.append(node_ids[0])
+                    way_id = _new_way_id()
+                    way_records.append((way_id, node_ids, {}))  # no tags on member ways
+                    member_pairs.append(("inner", way_id))
+                    ways_written += 1
+
+            # Relation carries the building tags
+            relation_records.append((rel_id, member_pairs, dict(b.tags)))
+            relations_written += 1
 
     root = ET.Element("osm", {"version": "0.6", "generator": "tile_fbx_generator.py"})
+
+    # Write nodes
     for nid, lat, lon in nodes:
         ET.SubElement(
             root,
             "node",
             {"id": str(nid), "lat": f"{lat:.7f}", "lon": f"{lon:.7f}", "visible": "true"},
         )
+
+    # Write ways (member ways have no tags; tags are on relation for multipolygons)
     for wid, node_ids, tags in way_records:
         way_el = ET.SubElement(root, "way", {"id": str(wid), "visible": "true"})
         for nid in node_ids:
@@ -495,6 +877,18 @@ def write_tile_osm_xml(
             if v is None:
                 continue
             ET.SubElement(way_el, "tag", {"k": str(k), "v": str(v)})
+
+    # Write relations
+    for rel_id, member_pairs, tags in relation_records:
+        rel_el = ET.SubElement(root, "relation", {"id": str(rel_id), "visible": "true"})
+        for role, way_id in member_pairs:
+            ET.SubElement(rel_el, "member", {"type": "way", "ref": str(way_id), "role": role})
+        # Required tags for multipolygon
+        ET.SubElement(rel_el, "tag", {"k": "type", "v": "multipolygon"})
+        for k, v in tags.items():
+            if v is None:
+                continue
+            ET.SubElement(rel_el, "tag", {"k": str(k), "v": str(v)})
 
     out_path = Path(output_osm_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -505,6 +899,7 @@ def write_tile_osm_xml(
         "buildings": len(buildings),
         "nodes_written": len(nodes),
         "ways_written": ways_written,
+        "relations_written": relations_written,
     }
 
 
