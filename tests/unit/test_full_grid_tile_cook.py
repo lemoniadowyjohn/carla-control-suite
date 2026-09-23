@@ -551,8 +551,21 @@ class TestFullGridPartitionStructural:
         assert first_cell == (6, 8), (
             f"Expected densest tile (6,8) first, got {first_cell}"
         )
-        assert first_count >= 626, (
-            f"Densest tile should have >=626 buildings, got {first_count}"
+        # Threshold lowered from 626 to 625 (GAP-020): load_buildings_from_overpass_json's
+        # relation loader used to treat ANY relation with outer/blank-role way members as
+        # a building, without checking the relation itself was actually tagged
+        # type=multipolygon + building=*. The pinned source contains OSM relation
+        # 6180405 ("Neues Schloss" castle, Ingolstadt) which IS tagged building=yes but
+        # is a type=site relation (an OSM grouping construct, not multipolygon ring
+        # geometry) whose 11 way members are disparate related features, not a closed
+        # ring assembly. The old code blindly stitched all 11 members' "outer" rings
+        # into one bogus TileBuilding for this relation; the new code correctly requires
+        # tags.get("type") == "multipolygon" and "building" in tags before treating a
+        # relation as a building multipolygon, excluding this one relation. Verified
+        # directly against the pinned Overpass JSON: exactly 1 of 19 relations fails
+        # that check, matching the 626->625 (-1) count change exactly.
+        assert first_count >= 625, (
+            f"Densest tile should have >=625 buildings, got {first_count}"
         )
 
     def test_no_building_attempted_in_two_tiles(self):
