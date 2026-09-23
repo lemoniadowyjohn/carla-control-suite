@@ -27,7 +27,7 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 from . import gnn_provenance as prov
 from .graph_builder import MapGraphBuilder, graph_schema_hash, node_feature_dim
@@ -105,6 +105,18 @@ def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
         help="What to do when an existing checkpoint's manifest does not "
              "match the expected identity: retrain, or fail closed.",
     )
+    parser.add_argument(
+        "--exclude_source_xodr",
+        type=Path,
+        nargs="*",
+        default=[],
+        help="GAP-010 source-identity exclusion contract: additional "
+             "known eval/reference XODR paths (beyond --manual_xodr and "
+             "--auto_xodr, which are ALWAYS excluded automatically) whose "
+             "content must never enter the K-sweep tile pool -- e.g. "
+             "cities/ingolstadt/manual_grid0821.xodr if distinct from the "
+             "--manual_xodr used for this run.",
+    )
     return parser.parse_args(list(argv))
 
 
@@ -113,10 +125,30 @@ def _require_file(path: Path, name: str) -> None:
         raise FileNotFoundError(f"{name} not found: {path}")
 
 
-def _list_tiles(tiles_dir: Path, *, min_tiles: int = max(K_VALUES)) -> List[Path]:
+def _list_tiles(
+    tiles_dir: Path,
+    *,
+    min_tiles: int = max(K_VALUES),
+    exclude_hashes: Optional[set] = None,
+) -> List[Path]:
     if not tiles_dir.is_dir():
         raise FileNotFoundError(f"tiles_dir not found: {tiles_dir}")
     tiles = sorted(p for p in tiles_dir.glob("*.xodr") if p.is_file())
+    if exclude_hashes:
+        excluded_names: List[str] = []
+        kept: List[Path] = []
+        for p in tiles:
+            if prov.sha256_file(p) in exclude_hashes:
+                excluded_names.append(p.name)
+            else:
+                kept.append(p)
+        if excluded_names:
+            print(
+                f"[ksweep] source-SHA exclusion (GAP-010): dropped "
+                f"{len(excluded_names)} tile(s) whose content matches a "
+                f"protected eval/reference file: {excluded_names}"
+            )
+        tiles = kept
     if not tiles:
         raise RuntimeError(f"No .xodr tiles found in: {tiles_dir}")
     if len(tiles) < int(min_tiles):
@@ -162,6 +194,7 @@ def _run_training(
     strict_dataset: bool = False,
     noise_std: float = 0.01,
     temperature: float = 0.5,
+    exclude_source_xodr: Optional[Sequence[Path]] = None,
 ) -> Dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
     cmd = [
@@ -191,6 +224,12 @@ def _run_training(
         cmd += ["--selection_seed", str(int(selection_seed))]
     if strict_dataset:
         cmd += ["--strict_dataset"]
+    if exclude_source_xodr:
+        # GAP-010: forward the same protected-reference paths so the
+        # trainer subprocess independently re-enforces the exclusion
+        # contract on the actual dataset it builds (defense in depth --
+        # the tile pool passed to it was already filtered by the caller).
+        cmd += ["--exclude_source_xodr"] + [str(p) for p in exclude_source_xodr]
     proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
     if proc.stdout:
         print(proc.stdout, end="")
@@ -252,16 +291,20 @@ def _expected_manifest_for_subset(
     width_mode: str,
     strict_dataset: bool,
     hidden_dim: int = 128,
+    exclude_source_hashes: Optional[Sequence[str]] = None,
 ) -> Dict[str, Any]:
     """Expected checkpoint identity for one (K, training_seed) run.
 
     The dataset manifest is built with the SAME helper the trainer uses
     (prov.build_training_dataset_manifest over the staged subset dir), so
-    a matching checkpoint verifies byte-identically.
+    a matching checkpoint verifies byte-identically. ``exclude_source_hashes``
+    (GAP-010) MUST be the same set passed to the trainer subprocess via
+    --exclude_source_xodr, or the two sides' manifests can never match.
     """
     versions = prov.get_torch_versions()
     _, dataset_manifest_sha, _ = prov.build_training_dataset_manifest(
         subset_dir, width_mode=width_mode, strict=strict_dataset,
+        exclude_source_hashes=exclude_source_hashes,
     )
     selection_sha = prov.tile_selection_hash(subset_names, all_tile_hashes)
     node_dim = _detect_node_dim(subset_dir, width_mode)
@@ -362,6 +405,7 @@ def _write_outputs(
     selection_seed: int,
     training_seeds: List[int],
     eval_pair_hashes: Dict[str, str],
+    exclude_source_hashes: Optional[Sequence[str]] = None,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     report_path = out_dir / "ksweep_report.json"
@@ -389,6 +433,12 @@ def _write_outputs(
         "status": "COMPLETE",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "eval_pair_sha256": eval_pair_hashes,
+        "source_sha_exclusion_contract": {
+            "note": "GAP-010: hashes excluded from the training tile pool "
+                    "and from every dataset manifest built for this run "
+                    "(always includes manual_xodr/auto_xodr).",
+            "excluded_hashes": sorted(exclude_source_hashes or []),
+        },
     }
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
@@ -494,7 +544,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     k_values = sorted(int(k) for k in args.k_values)
     if k_values != sorted(set(k_values)) or any(k <= 0 for k in k_values):
         raise ValueError(f"k_values must be distinct positive ints, got {k_values}")
-    all_tiles = _list_tiles(tiles_dir, min_tiles=max(k_values))
     training_seeds = [int(s) for s in args.training_seeds]
     selection_seed = int(args.selection_seed)
 
@@ -502,6 +551,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         "manual_xodr": prov.sha256_file(manual_xodr),
         "auto_xodr": prov.sha256_file(auto_xodr),
     }
+
+    # GAP-010 source-identity exclusion contract: the run's own eval pair
+    # (manual_xodr/auto_xodr) is ALWAYS protected -- its content must never
+    # silently exist inside the K-sweep training pool. --exclude_source_xodr
+    # adds any further known reference maps (e.g. a distinct historical
+    # manual_grid0821.xodr) to the same protected set.
+    extra_protected = [Path(p).expanduser() for p in args.exclude_source_xodr]
+    exclude_source_paths = [manual_xodr, auto_xodr] + extra_protected
+    exclude_hashes = set(prov.exclusion_hashes_for(exclude_source_paths))
+    print(
+        f"[ksweep] source-SHA exclusion active: {len(exclude_hashes)} "
+        f"protected hash(es) from {len(exclude_source_paths)} path(s)"
+    )
+
+    all_tiles = _list_tiles(
+        tiles_dir, min_tiles=max(k_values), exclude_hashes=exclude_hashes,
+    )
 
     # ONE deterministic permutation per selection seed; nested prefixes.
     tile_names = [p.name for p in all_tiles]
@@ -543,6 +609,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     temperature=float(args.temperature),
                     width_mode=str(args.width_mode),
                     strict_dataset=bool(args.strict_dataset),
+                    exclude_source_hashes=sorted(exclude_hashes),
                 )
 
                 train_out_dir = run_root / f"k_{int(k)}" / f"seed_{int(tseed)}"
@@ -577,6 +644,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         strict_dataset=bool(args.strict_dataset),
                         noise_std=float(args.noise_std),
                         temperature=float(args.temperature),
+                        exclude_source_xodr=exclude_source_paths,
                     )
                     checkpoint = Path(training["checkpoint"])
                     final_loss = float(training["final_loss"])
@@ -661,6 +729,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         selection_seed=selection_seed,
         training_seeds=training_seeds,
         eval_pair_hashes=eval_pair_hashes,
+        exclude_source_hashes=sorted(exclude_hashes),
     )
     return 0
 
