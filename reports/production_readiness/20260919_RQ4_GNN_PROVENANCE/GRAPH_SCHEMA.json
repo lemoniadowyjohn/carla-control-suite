@@ -1,0 +1,183 @@
+{
+  "edge_semantics": [
+    "lane_successor_intra_road_next_laneSection",
+    "lane_predecessor_intra_road_prev_laneSection",
+    "road_boundary_successor_via_road_link_contact_point",
+    "road_boundary_predecessor_via_road_link_contact_point"
+  ],
+  "junction_edge_policy": "no_edge_when_junction_mediated: tile-scoped XODR files carry no <junction> definitions, so junction-mediated lane links are skipped (no edge added) rather than guessed",
+  "lane_type_vocabulary": [
+    "driving",
+    "shoulder",
+    "sidewalk",
+    "biking",
+    "parking",
+    "none"
+  ],
+  "modes": {
+    "legacy": {
+      "descriptor": {
+        "curvature_policy": {
+          "algorithm": "canonical_kernel_v1",
+          "fallback_empty": "single_zero_sample",
+          "nonfinite": "rejected_before_pooling",
+          "scope": "per_road_samples_shared_across_all_lane_nodes_of_road",
+          "spacing_rule": "max(length/3.0, 0.25)"
+        },
+        "edge_semantics": [
+          "lane_successor_intra_road_next_laneSection",
+          "lane_predecessor_intra_road_prev_laneSection",
+          "road_boundary_successor_via_road_link_contact_point",
+          "road_boundary_predecessor_via_road_link_contact_point"
+        ],
+        "geometry_kernel": {
+          "entrypoint": "ultimate_pipeline.geometry.opendrive_geometry_kernel.pose_at_s",
+          "module": "ultimate_pipeline.geometry.opendrive_geometry_kernel",
+          "primitives": [
+            "line",
+            "arc",
+            "spiral",
+            "poly3",
+            "paramPoly3"
+          ]
+        },
+        "junction_edge_policy": "no_edge_when_junction_mediated: tile-scoped XODR files carry no <junction> definitions, so junction-mediated lane links are skipped (no edge added) rather than guessed",
+        "lane_type_vocabulary": [
+          "driving",
+          "shoulder",
+          "sidewalk",
+          "biking",
+          "parking",
+          "none"
+        ],
+        "node_feature_dim": 12,
+        "node_feature_names": [
+          "lane_driving",
+          "lane_shoulder",
+          "lane_sidewalk",
+          "lane_biking",
+          "lane_parking",
+          "lane_none",
+          "speed_norm",
+          "width_mean_norm",
+          "width_std_norm",
+          "curv_mean_norm",
+          "curv_std_norm",
+          "junction_flag"
+        ],
+        "node_feature_order": [
+          "lane_driving",
+          "lane_shoulder",
+          "lane_sidewalk",
+          "lane_biking",
+          "lane_parking",
+          "lane_none",
+          "speed_norm",
+          "width_mean_norm",
+          "width_std_norm",
+          "curv_mean_norm",
+          "curv_std_norm",
+          "junction_flag"
+        ],
+        "normalization_constants": {
+          "GNN_MAX_CURVATURE": 0.2,
+          "GNN_MAX_LANE_WIDTH_M": 5.0,
+          "GNN_MAX_SPEED_KMH": 130.0
+        },
+        "schema_version": "rq4_gnn_graph_schema_v1",
+        "width_feature_algorithm": "width_a_only_v0"
+      },
+      "graph_schema_sha256": "955688c11851821ddcdaa398f2fe5eb09ff88965ee27bf8e2ca9f33cfcedd25a"
+    },
+    "polynomial": {
+      "descriptor": {
+        "curvature_policy": {
+          "algorithm": "canonical_kernel_v1",
+          "fallback_empty": "single_zero_sample",
+          "nonfinite": "rejected_before_pooling",
+          "scope": "per_road_samples_shared_across_all_lane_nodes_of_road",
+          "spacing_rule": "max(length/3.0, 0.25)"
+        },
+        "edge_semantics": [
+          "lane_successor_intra_road_next_laneSection",
+          "lane_predecessor_intra_road_prev_laneSection",
+          "road_boundary_successor_via_road_link_contact_point",
+          "road_boundary_predecessor_via_road_link_contact_point"
+        ],
+        "geometry_kernel": {
+          "entrypoint": "ultimate_pipeline.geometry.opendrive_geometry_kernel.pose_at_s",
+          "module": "ultimate_pipeline.geometry.opendrive_geometry_kernel",
+          "primitives": [
+            "line",
+            "arc",
+            "spiral",
+            "poly3",
+            "paramPoly3"
+          ]
+        },
+        "junction_edge_policy": "no_edge_when_junction_mediated: tile-scoped XODR files carry no <junction> definitions, so junction-mediated lane links are skipped (no edge added) rather than guessed",
+        "lane_type_vocabulary": [
+          "driving",
+          "shoulder",
+          "sidewalk",
+          "biking",
+          "parking",
+          "none"
+        ],
+        "node_feature_dim": 12,
+        "node_feature_names": [
+          "lane_driving",
+          "lane_shoulder",
+          "lane_sidewalk",
+          "lane_biking",
+          "lane_parking",
+          "lane_none",
+          "speed_norm",
+          "width_mean_norm",
+          "width_std_norm",
+          "curv_mean_norm",
+          "curv_std_norm",
+          "junction_flag"
+        ],
+        "node_feature_order": [
+          "lane_driving",
+          "lane_shoulder",
+          "lane_sidewalk",
+          "lane_biking",
+          "lane_parking",
+          "lane_none",
+          "speed_norm",
+          "width_mean_norm",
+          "width_std_norm",
+          "curv_mean_norm",
+          "curv_std_norm",
+          "junction_flag"
+        ],
+        "normalization_constants": {
+          "GNN_MAX_CURVATURE": 0.2,
+          "GNN_MAX_LANE_WIDTH_M": 5.0,
+          "GNN_MAX_SPEED_KMH": 130.0
+        },
+        "schema_version": "rq4_gnn_graph_schema_v1",
+        "width_feature_algorithm": "width_poly_v1"
+      },
+      "graph_schema_sha256": "ae05265d0d9704d917e630eb68f7f4a8d25b612d6fe61370a2b2e9529c9da1c3"
+    }
+  },
+  "node_feature_names": [
+    "lane_driving",
+    "lane_shoulder",
+    "lane_sidewalk",
+    "lane_biking",
+    "lane_parking",
+    "lane_none",
+    "speed_norm",
+    "width_mean_norm",
+    "width_std_norm",
+    "curv_mean_norm",
+    "curv_std_norm",
+    "junction_flag"
+  ],
+  "note": "legacy (width_a_only_v0) reproduces PRE_FIX embeddings; polynomial (width_poly_v1) is the POST_FIX authoritative definition. The two hashes differ by construction.",
+  "schema_version": "rq4_gnn_graph_schema_v1"
+}

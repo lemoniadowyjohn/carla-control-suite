@@ -1,0 +1,36 @@
+{
+  "git_sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8-dirty",
+  "pre_fix_reproduction": {
+    "c21_seed42_epoch50": {
+      "checkpoint_sha256": "0dfc751f4529857615ac93ea05d8d98653859c401aa26499a179ec5d5b193175",
+      "classification": "LEGACY_UNBOUND_CHECKPOINT",
+      "format": [
+        "model_state",
+        "cfg",
+        "seed",
+        "noise_std"
+      ],
+      "note": "Loads under the new loader (backward compat) but carries no manifest: not authoritative evidence until retrained under the checkpoint contract."
+    },
+    "c21_seed42_reported_metrics_preserved_verbatim": {
+      "cosine_similarity": 0.3820010721683502,
+      "final_loss": 2.341311,
+      "l2": 1.1117545366287231,
+      "note": "Numbers preserved, NOT recomputed; metrics unchanged by this task (no metric was altered to look stronger)."
+    }
+  },
+  "pre_vs_post_fix": {
+    "POST_FIX_polynomial_graph_digest": "fe05c200702c1116a3001da6fe79987a77f0958e546a5634dc3cdabe9e352629",
+    "PRE_FIX_legacy_graph_digest": "6f614542423b3bb8ca51d3bfb18cdfd357f810e9eb8e3110cd369696838b184b",
+    "artifact": "cities/ingolstadt/manual_grid0821.xodr",
+    "artifact_sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+    "topology_nodes_edges_unchanged": true,
+    "why_numbers_move": "Topology identical; width mean/std now evaluate a+b\u00b7ds+c\u00b7ds\u00b2+d\u00b7ds\u00b3 over each record's domain instead of averaging bare `a` coefficients."
+  },
+  "v2_audit_descriptive_ids": {
+    "dataset_ingolstadt_v1": "LEGACY_DESCRIPTIVE_PROVENANCE",
+    "gnn_schema_v2_abc123": "LEGACY_DESCRIPTIVE_PROVENANCE",
+    "note": "The 20260915 V2 GNN_SCHEMA_CHECKPOINT_AUDIT.json marked these VERIFIED; they are non-content labels and are hereby reclassified. Real hashes: see GRAPH_SCHEMA.json.",
+    "scaler_v1_def456": "LEGACY_DESCRIPTIVE_PROVENANCE"
+  }
+}

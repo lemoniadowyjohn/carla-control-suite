@@ -72,7 +72,16 @@ def test_strict_mode_raises_on_invalid_tile(tmp_path: Path):
     (tmp_path / "tile_broken.xodr").write_text("not valid xml <<<", encoding="utf-8")
 
     with pytest.raises(RuntimeError, match="Failed to build graph"):
-        MapTileDataset(str(tmp_path), strict=True)
+        MapTileDataset(str(tmp_path), strict=True, width_mode="polynomial")
+
+
+def test_strict_mode_requires_explicit_polynomial_width(tmp_path: Path):
+    """OC-51: RESEARCH_STRICT with legacy a-only width features is refused
+    fail-closed so the authoritative feature definition stays unambiguous."""
+    (tmp_path / "tile_valid.xodr").write_text(VALID_XODR, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="polynomial"):
+        MapTileDataset(str(tmp_path), strict=True, width_mode="legacy")
 
 
 def test_non_xodr_files_ignored(tmp_path: Path):

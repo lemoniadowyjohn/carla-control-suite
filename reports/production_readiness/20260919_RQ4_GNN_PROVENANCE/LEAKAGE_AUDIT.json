@@ -1,0 +1,23 @@
+{
+  "coverage": "INCOMPLETE for the historical C21 union-tile train/test split (tile bytes absent from this checkout). The audit_leakage() helper is wired into run_ksweep-time reporting; re-run with the tile set present for a complete verdict.",
+  "duplicate_tile_hashes": [],
+  "neighbouring_frame_leakage": "N/A - not frame-based",
+  "normalization_construction": "No fitted scaler exists in the current code path: node features are normalized by fixed SETTINGS constants (GNN_MAX_SPEED_KMH/GNN_MAX_LANE_WIDTH_M/GNN_MAX_CURVATURE). There is therefore no scaler-fit leakage by construction; the V2 audit's 'scaler_v1_def456' refers to nothing in this code path.",
+  "normalization_fitted_on": "train_only",
+  "normalization_leakage": false,
+  "reference_duplicate_hashes": [],
+  "same_content_in_train_and_test_by_hash": [],
+  "same_road_ids_in_train_and_test": [],
+  "same_spatial_tile_in_train_and_test_by_filename": [],
+  "source_map_identity_overlap": {
+    "eval_pair_content_in_training_set": [
+      "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8"
+    ],
+    "eval_pair_sha256": {
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\manual_grid0821.xodr": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8"
+    }
+  },
+  "status": "FAIL",
+  "test_metrics_feeding_training_or_selection": false,
+  "test_metrics_used_for_selection": false
+}
