@@ -33,6 +33,55 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 from ultimate_pipeline.osm.osm_downloader import validate_osm_xml_input
+from ultimate_pipeline.dem.dem_crs_contract import OSM2ODR_NATIVE_PROJ4
+from ultimate_pipeline.enrichment.osm_polygon_loader import PROJ_STRING as _OSM_POLYGON_LOADER_PROJ_STRING
+
+#: GAP-021: carla.Osm2OdrSettings.proj_string must be set EXPLICITLY, not left
+#: at whatever carla.Osm2OdrSettings() happens to default to.
+#:
+#: Value chosen to be the LITERAL string
+#: ultimate_pipeline.enrichment.osm_polygon_loader.PROJ_STRING uses (not just
+#: an equivalent one), because ultimate_pipeline/pipeline_stages/
+#: stage_04_enrichment.py and main_pipeline.py already run a
+#: "georef_proj_consistency" check that does a *textual* equality between a
+#: produced XODR's <geoReference> and OSMPolygonLoader.PROJ_STRING -- using
+#: the same literal here makes that already-existing consistency gate pass
+#: for real instead of drifting between two textually-different-but-
+#: numerically-equivalent tmerc spellings.
+#:
+#: Numerically this is the codebase's own already-established,
+#: already-verified geometry CRS for Osm2Odr output: identical to
+#: ultimate_pipeline.dem.dem_crs_contract.OSM2ODR_NATIVE_PROJ4 (F1 CRS
+#: contract) and ultimate_pipeline.enrichment.coordinate_control's
+#: VERIFIED_XODR_GEOMETRY_CRS_PROJ4 -- all three are
+#: "+proj=tmerc ... lat_0=0/lon_0=0/k=1/x_0=0/y_0=0" by PROJ's own
+#: defaulting for the params this bare string omits. The entire
+#: enrichment/DEM/tiling stack (osm_polygon_loader.py, coordinate_control.py,
+#: tile_fbx_generator.py, dem_crs_contract.py) is built and verified against
+#: THIS frame, not true EPSG:32632: real EPSG:32632 params
+#: (+lon_0=9 +k=0.9996 +x_0=500000) were checked against a fresh conversion
+#: of a small real-coordinate fixture on 2026-09-23 and confirmed to shift
+#: the actual output geometry by >150 km relative to this native frame --
+#: i.e. it is NOT a safe drop-in replacement, it silently changes
+#: coordinates the rest of this pipeline (and the frozen auto_map_of_record
+#: candidate, whose crs_authority is a *local rebase* of this native frame,
+#: not a true UTM32N reprojection -- see carla_tools/map_registry.py
+#: PINNED_MAP_REGISTRY["auto_map_of_record"]) has never been generated in or
+#: tested against.
+#:
+#: Before this fix, proj_string was never assigned here at all, so each
+#: conversion silently inherited whatever carla.Osm2OdrSettings() itself
+#: defaults to for the installed CARLA build (currently the bare, no-datum
+#: literal "+proj=tmerc" on CARLA 0.9.16 -- numerically the same frame as
+#: OSM2ODR_NATIVE_PROJ4, but undocumented, version-fragile, and missing an
+#: explicit datum/units declaration). Pinning it here removes that implicit
+#: dependency on an unspecified library default and makes the frame
+#: self-documenting in every produced XODR's <geoReference>.
+DEFAULT_OSM2ODR_PROJ_STRING = _OSM_POLYGON_LOADER_PROJ_STRING
+
+#: Kept for callers that want the fully-expanded (all params explicit) form
+#: of the same frame; numerically identical to DEFAULT_OSM2ODR_PROJ_STRING.
+DEFAULT_OSM2ODR_PROJ_STRING_EXPANDED = OSM2ODR_NATIVE_PROJ4
 
 
 @dataclass
@@ -49,6 +98,17 @@ class OSMToXODRConfig:
     generate_traffic_lights: bool = False
     all_junctions_with_traffic_lights: bool = False
     center_map: bool = False
+    # GAP-021: explicit, not CARLA-library-default. See
+    # DEFAULT_OSM2ODR_PROJ_STRING above for why this specific frame (and not
+    # true EPSG:32632) is the correct value.
+    proj_string: str = DEFAULT_OSM2ODR_PROJ_STRING
+    # Companion to center_map=False: CARLA's own default is True, and the
+    # combination of a True use_offsets with center_map=False triggers
+    # Osm2Odr's "Could not write OpenDRIVE geoReference. Only unshifted
+    # Coordinate systems are supported (center_map and use_offsets need to be
+    # set to False)" warning (reproduced 2026-09-23). Explicit False keeps
+    # the coordinate system unshifted end-to-end, matching center_map=False.
+    use_offsets: bool = False
     osm_way_types: tuple[str, ...] = (
         "motorway", "motorway_link",
         "trunk", "trunk_link",
@@ -167,10 +227,22 @@ def _try_carla_pythonapi(osm_path: Path, cfg: OSMToXODRConfig) -> Optional[str]:
                 except Exception:
                     pass
 
+            # GAP-021: proj_string must be set explicitly -- see
+            # DEFAULT_OSM2ODR_PROJ_STRING's docstring for why this frame (and
+            # not true EPSG:32632) is the one the rest of the pipeline
+            # already expects. Not part of the bool-cast loop below because
+            # it is a string, not a bool.
+            if hasattr(settings, "proj_string"):
+                try:
+                    settings.proj_string = str(cfg.proj_string)
+                except Exception:
+                    pass
+
             for attr, val in (
                 ("generate_traffic_lights", cfg.generate_traffic_lights),
                 ("all_junctions_with_traffic_lights", cfg.all_junctions_with_traffic_lights),
                 ("center_map", cfg.center_map),
+                ("use_offsets", cfg.use_offsets),
             ):
                 if hasattr(settings, attr):
                     try:
