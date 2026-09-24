@@ -4378,214 +4378,213 @@ if str(_repo_root) not in sys.path:
         return rep
 
 
-# ---------------------------------------------------------------------
-# P0-L: Semantic Source Preparation (early, non-structural)
-# ---------------------------------------------------------------------
-def _step4_semantic_source_preparation(self, topo_fixed: str) -> str:
-    """Stage 4a: SOURCE_METADATA_PREPARATION.
+    # ---------------------------------------------------------------------
+    # P0-L: Semantic Source Preparation (early, non-structural)
+    # ---------------------------------------------------------------------
+    def _step4_semantic_source_preparation(self, topo_fixed: str) -> str:
+        """Stage 4a: SOURCE_METADATA_PREPARATION.
 
-    Extracts OSM metadata, resolves building sources, builds spatial
-    associations. Does NOT apply position-dependent semantics (traffic lights,
-    crosswalks, speed limits, signs, buildings) -- those are deferred to
-    _step9_positional_semantics after STRUCTURE_FROZEN/LANES_FINAL/HYGIENE_COMPLETE.
+        Extracts OSM metadata, resolves building sources, builds spatial
+        associations. Does NOT apply position-dependent semantics (traffic lights,
+        crosswalks, speed limits, signs, buildings) -- those are deferred to
+        _step9_positional_semantics after STRUCTURE_FROZEN/LANES_FINAL/HYGIENE_COMPLETE.
 
-    Returns the same topo_fixed path (mutations are only semantic source prep).
-    """
-    from ultimate_pipeline.pipeline_stages.stage_04_enrichment import (
-        _inject_main_pipeline_globals,
-        _env_flag,
-        _offline_only_enabled,
-        _pinned_buildings_fallback,
-        resolve_buildings_geojson_for_stage4,
-        _load_buildings_with_fallback,
-        enforce_buildings_fail_closed,
-        _mark_geometry_only_stage_contract,
-    )
-    import os
-
-    _inject_main_pipeline_globals()
-    s = self.settings
-    print(
-        "\n============== 🏗️ STEP 4a: Semantic Source Preparation (non-structural) =============="
-    )
-
-    tree, root = load_xodr(topo_fixed)
-    gps = s.load_gps_bounds()
-
-    # Roundabout reconstruction (structural topology change - OK early)
-    if getattr(s, "ENABLE_ROUNDABOUT_RECONSTRUCTION", False):
-        print("🔄 Reconstructing roundabouts…")
-        rb_meta = RoundaboutReconstructor.reconstruct(root, out_dir=self.out_dir)
-        self.vreport.add_dict("roundabout_reconstruction", rb_meta)
-        save_xodr(tree, topo_fixed)
-    else:
-        print("⏭️ Roundabout reconstruction disabled.")
-
-    # Tag roundabouts (visual only)
-    try:
-        print("🧪 Tagging roundabouts for visualization…")
-        rb_tags = RoundaboutRebuilder.tag_roundabouts(root)
-        self.vreport.add_dict("roundabout_tags", rb_tags)
-        save_xodr(tree, topo_fixed)
-        print("   → Roundabouts tagged for preview.")
-    except Exception as e:
-        print(f"⚠️ Roundabout tagging skipped: {e}")
-        self.vreport.add("roundabouts", "tagging_failed", str(e))
-
-    # Buildings: ensure buildings.geojson exists (source resolution only)
-    buildings_path = resolve_buildings_geojson_for_stage4(
-        settings=s,
-        gps_bounds=gps,
-        buildings_path=s.OSM_BUILDINGS_GEOJSON,
-    )
-
-    # Building extrusion DEFERRED to positional_semantics (needs final geometry)
-    if getattr(s, "ENABLE_BUILDINGS", True):
-        print("🏙️ Building source resolved; insertion deferred to post-freeze stage.")
-    else:
-        print("⏭️ Building extrusion disabled.")
-
-    # Realism DEFERRED to positional_semantics
-    if getattr(s, "ENABLE_REALISM", True):
-        print("✨ Realism objects deferred to post-freeze stage.")
-    else:
-        print("⏭️ Realism module disabled.")
-
-    # Position-sensitive OSM metadata: EXTRACT and PROJECT only (don't apply)
-    # The associations are cached for later materialization in positional_semantics
-    try:
-        from ultimate_pipeline.enrichment.osm_meta_index import (
-            extract_positioned_osm_metadata_ways,
-            project_positioned_osm_metadata_ways,
+        Returns the same topo_fixed path (mutations are only semantic source prep).
+        """
+        from ultimate_pipeline.pipeline_stages.stage_04_enrichment import (
+            _inject_main_pipeline_globals,
+            _env_flag,
+            _offline_only_enabled,
+            _pinned_buildings_fallback,
+            resolve_buildings_geojson_for_stage4,
+            enforce_buildings_fail_closed,
+            _mark_geometry_only_stage_contract,
         )
-        from ultimate_pipeline.enrichment.osm_xodr_correspondence import build_metadata_associations
+        import os
 
-        source_ways = extract_positioned_osm_metadata_ways(s.OSM_FILE)
-        positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
-        if positioned_ways:
-            associations, correspondence_report = build_metadata_associations(
-                positioned_ways, root
-            )
-            print(
-                "📋 Spatial OSM metadata (source prep): "
-                f"{len(positioned_ways)} source ways, "
-                f"{correspondence_report['eligible_road_count']} HIGH/EXACT road matches"
-            )
-            # Cache associations for later materialization
-            self._cached_osm_metadata_associations = associations
-            self._cached_osm_metadata_report = correspondence_report
-            self.vreport.add_dict("osm_spatial_metadata_source_prep", {
-                "source_ways": len(positioned_ways),
-                "correspondence": correspondence_report,
-                "cached_for_materialization": True,
-            })
-        else:
-            print("⏭️ Spatial OSM metadata skipped (no usable source way geometry)")
-            self.vreport.add_dict(
-                "osm_spatial_metadata_source_prep",
-                {"source_ways": 0, "eligible_road_count": 0, "cached_for_materialization": False},
-            )
-    except Exception as e:
-        print(f"⚠️ OSM meta source prep failed: {e}")
-        self.vreport.add("osm_meta_source_prep", "error", str(e))
-
-    # Access restrictions: EXTRACT only (apply in positional_semantics)
-    try:
-        from ultimate_pipeline.enrichment.access_restriction_metadata import (
-            extract_access_restriction_metadata,
-        )
-        access_metadata = extract_access_restriction_metadata(s.OSM_FILE)
-        self._cached_access_metadata = access_metadata
-        self.vreport.add_dict("osm_access_restriction_metadata_source_prep", access_metadata)
+        _inject_main_pipeline_globals()
+        s = self.settings
         print(
-            "   → Access metadata extracted: "
-            f"{access_metadata.get('roads_with_access_metadata', 0)} road(s), "
-            f"{access_metadata.get('metadata_records_written', 0)} record(s) (cached)"
+            "\n============== 🏗️ STEP 4a: Semantic Source Preparation (non-structural) =============="
         )
-    except Exception as e:
-        print(f"⚠️ OSM access metadata extraction failed: {e}")
-        self.vreport.add("osm_access_restriction_source_prep", "error", str(e))
 
-    # Crosswalks: EXTRACT only (apply in positional_semantics)
-    try:
-        from ultimate_pipeline.enrichment.crosswalk_writer import extract_osm_crossings
-        osm_crossings = extract_osm_crossings(s.OSM_FILE)
-        self._cached_osm_crossings = osm_crossings
-        if osm_crossings:
-            print(f"🚸 Crosswalks: {len(osm_crossings)} OSM crossings extracted (cached for post-freeze)")
-            self.vreport.add_dict("crosswalk_source_prep", {
-                "osm_crossings_found": len(osm_crossings),
-                "cached_for_materialization": True,
-            })
+        tree, root = load_xodr(topo_fixed)
+        gps = s.load_gps_bounds()
+
+        # Roundabout reconstruction (structural topology change - OK early)
+        if getattr(s, "ENABLE_ROUNDABOUT_RECONSTRUCTION", False):
+            print("🔄 Reconstructing roundabouts…")
+            rb_meta = RoundaboutReconstructor.reconstruct(root, out_dir=self.out_dir)
+            self.vreport.add_dict("roundabout_reconstruction", rb_meta)
+            save_xodr(tree, topo_fixed)
         else:
-            print("⏭️ Crosswalk extraction skipped (no OSM crossings)")
-            self.vreport.add_dict("crosswalk_source_prep", {"osm_crossings_found": 0, "cached_for_materialization": False})
-    except Exception as e:
-        print(f"⚠️ Crosswalk extraction failed: {e}")
-        self.vreport.add("crosswalk_source_prep", "error", str(e))
+            print("⏭️ Roundabout reconstruction disabled.")
 
-    # XODR statistics after source preparation
-    stats = XODRStatistics.compute(topo_fixed)
-    if isinstance(stats, dict):
-        stats["semantic_completeness"] = {
-            "geometry": True,
-            "lanes": False,
-            "positional_semantics": False,
-            "reason": "Source prep only; positional semantics materialized in STEP 9",
-        }
-    self.vreport.add_dict("xodr_statistics", stats)
-    print("[INFO] XODR statistics:")
-    print(json.dumps(stats, indent=2))
-    try:
-        header = root.find("header")
-        geo_node = header.find("geoReference") if header is not None else None
-        geo_text = (geo_node.text or "").strip() if geo_node is not None else ""
-        proj_text = str(getattr(OSMPolygonLoader, "PROJ_STRING", "")).strip()
-        georef_proj_match = (
-            bool(geo_text) and bool(proj_text) and (geo_text == proj_text)
+        # Tag roundabouts (visual only)
+        try:
+            print("🧪 Tagging roundabouts for visualization…")
+            rb_tags = RoundaboutRebuilder.tag_roundabouts(root)
+            self.vreport.add_dict("roundabout_tags", rb_tags)
+            save_xodr(tree, topo_fixed)
+            print("   → Roundabouts tagged for preview.")
+        except Exception as e:
+            print(f"⚠️ Roundabout tagging skipped: {e}")
+            self.vreport.add("roundabouts", "tagging_failed", str(e))
+
+        # Buildings: ensure buildings.geojson exists (source resolution only)
+        buildings_path = resolve_buildings_geojson_for_stage4(
+            settings=s,
+            gps_bounds=gps,
+            buildings_path=s.OSM_BUILDINGS_GEOJSON,
         )
-        self.vreport.add_dict(
-            "georef_proj_consistency",
-            {
-                "xodr_geoReference": geo_text,
-                "osm_polygon_loader_proj_string": proj_text,
-                "match": georef_proj_match,
-            },
-        )
-        if (geo_text and proj_text) and (not georef_proj_match):
-            self.vreport.add(
-                "warning",
-                "georef_proj_consistency",
-                "XODR geoReference does not match OSMPolygonLoader.PROJ_STRING",
+
+        # Building extrusion DEFERRED to positional_semantics (needs final geometry)
+        if getattr(s, "ENABLE_BUILDINGS", True):
+            print("🏙️ Building source resolved; insertion deferred to post-freeze stage.")
+        else:
+            print("⏭️ Building extrusion disabled.")
+
+        # Realism DEFERRED to positional_semantics
+        if getattr(s, "ENABLE_REALISM", True):
+            print("✨ Realism objects deferred to post-freeze stage.")
+        else:
+            print("⏭️ Realism module disabled.")
+
+        # Position-sensitive OSM metadata: EXTRACT and PROJECT only (don't apply)
+        # The associations are cached for later materialization in positional_semantics
+        try:
+            from ultimate_pipeline.enrichment.osm_meta_index import (
+                extract_positioned_osm_metadata_ways,
+                project_positioned_osm_metadata_ways,
             )
-    except Exception as e:
-        self.vreport.add("warning", "georef_proj_consistency", f"check_failed:{e}")
+            from ultimate_pipeline.enrichment.osm_xodr_correspondence import build_metadata_associations
 
-    # Record semantic source readiness
-    from ultimate_pipeline.contracts.stage_capabilities import SEMANTIC_SOURCE_READY
-    self.authority_ledger.provide(SEMANTIC_SOURCE_READY, "semantic_source_preparation", evidence=topo_fixed)
+            source_ways = extract_positioned_osm_metadata_ways(s.OSM_FILE)
+            positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
+            if positioned_ways:
+                associations, correspondence_report = build_metadata_associations(
+                    positioned_ways, root
+                )
+                print(
+                    "📋 Spatial OSM metadata (source prep): "
+                    f"{len(positioned_ways)} source ways, "
+                    f"{correspondence_report['eligible_road_count']} HIGH/EXACT road matches"
+                )
+                # Cache associations for later materialization
+                self._cached_osm_metadata_associations = associations
+                self._cached_osm_metadata_report = correspondence_report
+                self.vreport.add_dict("osm_spatial_metadata_source_prep", {
+                    "source_ways": len(positioned_ways),
+                    "correspondence": correspondence_report,
+                    "cached_for_materialization": True,
+                })
+            else:
+                print("⏭️ Spatial OSM metadata skipped (no usable source way geometry)")
+                self.vreport.add_dict(
+                    "osm_spatial_metadata_source_prep",
+                    {"source_ways": 0, "eligible_road_count": 0, "cached_for_materialization": False},
+                )
+        except Exception as e:
+            print(f"⚠️ OSM meta source prep failed: {e}")
+            self.vreport.add("osm_meta_source_prep", "error", str(e))
 
-    print(
-        "✅ STEP 4a complete — semantic sources prepared (positional semantics deferred)"
-    )
-    return topo_fixed
+        # Access restrictions: EXTRACT only (apply in positional_semantics)
+        try:
+            from ultimate_pipeline.enrichment.access_restriction_metadata import (
+                extract_access_restriction_metadata,
+            )
+            access_metadata = extract_access_restriction_metadata(s.OSM_FILE)
+            self._cached_access_metadata = access_metadata
+            self.vreport.add_dict("osm_access_restriction_metadata_source_prep", access_metadata)
+            print(
+                "   → Access metadata extracted: "
+                f"{access_metadata.get('roads_with_access_metadata', 0)} road(s), "
+                f"{access_metadata.get('metadata_records_written', 0)} record(s) (cached)"
+            )
+        except Exception as e:
+            print(f"⚠️ OSM access metadata extraction failed: {e}")
+            self.vreport.add("osm_access_restriction_source_prep", "error", str(e))
+
+        # Crosswalks: EXTRACT only (apply in positional_semantics)
+        try:
+            from ultimate_pipeline.enrichment.crosswalk_writer import extract_osm_crossings
+            osm_crossings = extract_osm_crossings(s.OSM_FILE)
+            self._cached_osm_crossings = osm_crossings
+            if osm_crossings:
+                print(f"🚸 Crosswalks: {len(osm_crossings)} OSM crossings extracted (cached for post-freeze)")
+                self.vreport.add_dict("crosswalk_source_prep", {
+                    "osm_crossings_found": len(osm_crossings),
+                    "cached_for_materialization": True,
+                })
+            else:
+                print("⏭️ Crosswalk extraction skipped (no OSM crossings)")
+                self.vreport.add_dict("crosswalk_source_prep", {"osm_crossings_found": 0, "cached_for_materialization": False})
+        except Exception as e:
+            print(f"⚠️ Crosswalk extraction failed: {e}")
+            self.vreport.add("crosswalk_source_prep", "error", str(e))
+
+        # XODR statistics after source preparation
+        stats = XODRStatistics.compute(topo_fixed)
+        if isinstance(stats, dict):
+            stats["semantic_completeness"] = {
+                "geometry": True,
+                "lanes": False,
+                "positional_semantics": False,
+                "reason": "Source prep only; positional semantics materialized in STEP 9",
+            }
+        self.vreport.add_dict("xodr_statistics", stats)
+        print("[INFO] XODR statistics:")
+        print(json.dumps(stats, indent=2))
+        try:
+            header = root.find("header")
+            geo_node = header.find("geoReference") if header is not None else None
+            geo_text = (geo_node.text or "").strip() if geo_node is not None else ""
+            proj_text = str(getattr(OSMPolygonLoader, "PROJ_STRING", "")).strip()
+            georef_proj_match = (
+                bool(geo_text) and bool(proj_text) and (geo_text == proj_text)
+            )
+            self.vreport.add_dict(
+                "georef_proj_consistency",
+                {
+                    "xodr_geoReference": geo_text,
+                    "osm_polygon_loader_proj_string": proj_text,
+                    "match": georef_proj_match,
+                },
+            )
+            if (geo_text and proj_text) and (not georef_proj_match):
+                self.vreport.add(
+                    "warning",
+                    "georef_proj_consistency",
+                    "XODR geoReference does not match OSMPolygonLoader.PROJ_STRING",
+                )
+        except Exception as e:
+            self.vreport.add("warning", "georef_proj_consistency", f"check_failed:{e}")
+
+        # Record semantic source readiness
+        from ultimate_pipeline.contracts.stage_capabilities import SEMANTIC_SOURCE_READY
+        self.authority_ledger.provide(SEMANTIC_SOURCE_READY, "semantic_source_preparation", evidence=topo_fixed)
+
+        print(
+            "✅ STEP 4a complete — semantic sources prepared (positional semantics deferred)"
+        )
+        return topo_fixed
 
 
-# ---------------------------------------------------------------------
-# P0-L: Positional Semantic Materialization (late, post-freeze)
-# ---------------------------------------------------------------------
-def _step9_positional_semantics(self, final_out: str) -> str:
-    """Stage 9: POSITIONAL_SEMANTIC_MATERIALIZATION.
+    # ---------------------------------------------------------------------
+    # P0-L: Positional Semantic Materialization (late, post-freeze)
+    # ---------------------------------------------------------------------
+    def _step9_positional_semantics(self, final_out: str) -> str:
+        """Stage 9: POSITIONAL_SEMANTIC_MATERIALIZATION.
 
-    Applies traffic lights, crosswalks, speed limits, signs, buildings to the
-    FROZEN structure. Requires STRUCTURE_FROZEN, LANES_FINAL, HYGIENE_COMPLETE.
+        Applies traffic lights, crosswalks, speed limits, signs, buildings to the
+        FROZEN structure. Requires STRUCTURE_FROZEN, LANES_FINAL, HYGIENE_COMPLETE.
 
-    Returns the same final_out path (mutations are in-place on the frozen artifact).
-    """
-    from ultimate_pipeline.pipeline_stages.stage_09_positional_semantics import (
-        _step9_positional_semantics as _impl,
-    )
-    return _impl(self, final_out)
+        Returns the same final_out path (mutations are in-place on the frozen artifact).
+        """
+        from ultimate_pipeline.pipeline_stages.stage_09_positional_semantics import (
+            _step9_positional_semantics as _impl,
+        )
+        return _impl(self, final_out)
 
 
 def main(argv: Optional[List[str]] = None) -> int:
