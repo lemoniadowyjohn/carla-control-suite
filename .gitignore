@@ -383,3 +383,7 @@ POST_AUDIT_HARDENING_PROMPT.md
 /win_copy2.ps1
 /_final_verify/
 /META-INF/
+
+# Local agent workspaces (opencode/codex) — never commit.
+/.codex/
+/.opencode/
