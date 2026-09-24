@@ -1,0 +1,34 @@
+{
+  "audit_leakage_result": {
+    "duplicate_tile_hashes": [],
+    "neighbouring_frame_leakage": "N/A - not frame-based",
+    "normalization_fitted_on": "train_only",
+    "normalization_leakage": false,
+    "same_content_in_train_and_test_by_hash": [],
+    "same_road_ids_in_train_and_test": [],
+    "same_spatial_tile_in_train_and_test_by_filename": [],
+    "source_map_identity_overlap": {
+      "eval_pair_content_in_training_set": [],
+      "eval_pair_sha256": {
+        "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+        "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+      }
+    },
+    "status": "PASS",
+    "test_metrics_feeding_training_or_selection": false,
+    "test_metrics_used_for_selection": false
+  },
+  "auto_xodr": "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr",
+  "auto_xodr_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+  "exclude_source_hashes": [
+    "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+    "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+  ],
+  "manifest_entry_count": 562,
+  "manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+  "manual_xodr": "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr",
+  "manual_xodr_sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+  "phase": "PRE_TRAINING_PRECHECK",
+  "tiles_dir": "G:\\gap010-rq4-retrain-20260924\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\union_tiles",
+  "train_tile_count_post_exclusion": 562
+}

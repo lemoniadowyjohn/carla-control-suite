@@ -1,0 +1,123 @@
+{
+  "ci_excludes_zero_similarity": true,
+  "cosine_distance": {
+    "ci95_bootstrap": [
+      0.8446466565132141,
+      0.9759842038154602
+    ],
+    "mean": 0.9206715822219849,
+    "std": 0.08780273258329252,
+    "values": [
+      0.9054968357086182,
+      0.7745578289031982,
+      0.9666854739189148,
+      0.9625548124313354,
+      0.9940629601478577
+    ]
+  },
+  "cosine_similarity": {
+    "ci95_bootstrap": [
+      0.02401578277349472,
+      0.15535332560539244
+    ],
+    "mean": 0.0793283998966217,
+    "std": 0.08780273202708723,
+    "values": [
+      0.09450313448905945,
+      0.22544215619564056,
+      0.033314503729343414,
+      0.037445180118083954,
+      0.00593702495098114
+    ]
+  },
+  "methodology": "Same design as C21_STATISTICAL_PROVENANCE.md: 562 union_tiles, 50 epochs, batch 16, lr 1e-4, CPU, seeds [42,43,44,45,46]. Mean + 95% bootstrap CI over n=5 seeds (deterministic bootstrap, seed=0, n_boot=2000, percentile 2.5/97.5, via gnn_provenance.summarize_runs()). DIFFERENCE from the original C21_GNN_AUTHORITATIVE run: GAP-010 source-SHA exclusion (exclude_source_xodr=[manual_grid0821.xodr, candidate_connectivity_repaired.xodr]) was active for every seed's training set, closing the train/eval content-identity leak channel that audit_leakage() found in the pre-fix pipeline.",
+  "per_seed_detail": {
+    "42": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_42\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "acdb7f57bd6a10b62bac4991c45da3cc",
+      "cosine_distance": 0.9054968357086182,
+      "cosine_similarity": 0.09450313448905945,
+      "epochs_completed": 50,
+      "final_loss": 2.031173,
+      "source_sha_exclusion_contract": {
+        "excluded_paths": [
+          "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr",
+          "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr"
+        ],
+        "note": "GAP-010: manual_xodr/auto_xodr (this run's own eval pair) are ALWAYS excluded automatically (always includes manual_xodr/auto_xodr)."
+      },
+      "tile_count": 562
+    },
+    "43": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "25ee5406c514a4f40e8ccc74561deb30",
+      "cosine_distance": 0.7745578289031982,
+      "cosine_similarity": 0.22544215619564056,
+      "epochs_completed": 50,
+      "final_loss": 2.027055,
+      "source_sha_exclusion_contract": {
+        "excluded_paths": [
+          "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr",
+          "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr"
+        ],
+        "note": "GAP-010: manual_xodr/auto_xodr (this run's own eval pair) are ALWAYS excluded automatically (always includes manual_xodr/auto_xodr)."
+      },
+      "tile_count": 562
+    },
+    "44": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_44\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "d3d4073f9e3416468e0bc0a4b14dda6d",
+      "cosine_distance": 0.9666854739189148,
+      "cosine_similarity": 0.033314503729343414,
+      "epochs_completed": 50,
+      "final_loss": 2.022564,
+      "source_sha_exclusion_contract": {
+        "excluded_paths": [
+          "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr",
+          "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr"
+        ],
+        "note": "GAP-010: manual_xodr/auto_xodr (this run's own eval pair) are ALWAYS excluded automatically (always includes manual_xodr/auto_xodr)."
+      },
+      "tile_count": 562
+    },
+    "45": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "213af83e592095d6ff7b60590b2e46cf",
+      "cosine_distance": 0.9625548124313354,
+      "cosine_similarity": 0.037445180118083954,
+      "epochs_completed": 50,
+      "final_loss": 2.006853,
+      "source_sha_exclusion_contract": {
+        "excluded_paths": [
+          "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr",
+          "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr"
+        ],
+        "note": "GAP-010: manual_xodr/auto_xodr (this run's own eval pair) are ALWAYS excluded automatically (always includes manual_xodr/auto_xodr)."
+      },
+      "tile_count": 562
+    },
+    "46": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_46\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "3cb146e6a0d091f143e67e41f29957a3",
+      "cosine_distance": 0.9940629601478577,
+      "cosine_similarity": 0.00593702495098114,
+      "epochs_completed": 50,
+      "final_loss": 2.02856,
+      "source_sha_exclusion_contract": {
+        "excluded_paths": [
+          "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr",
+          "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr"
+        ],
+        "note": "GAP-010: manual_xodr/auto_xodr (this run's own eval pair) are ALWAYS excluded automatically (always includes manual_xodr/auto_xodr)."
+      },
+      "tile_count": 562
+    }
+  },
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ]
+}
