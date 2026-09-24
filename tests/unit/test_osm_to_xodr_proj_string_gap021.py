@@ -175,3 +175,145 @@ def test_conversion_header_georeference_resolves_to_real_world_location(tmp_path
     # pipeline stage, since it runs inline inside a much larger stage
     # method).
     assert claimed_raw == OSM_POLYGON_LOADER_PROJ_STRING
+
+
+# ---------------------------------------------------------------------------
+# 20260924 coordinate/OSM consistency audit: extend GAP-021's regression
+# coverage past the XODR-header level. The two tests above prove the road
+# geometry's <geoReference> round-trips correctly; they do NOT prove that
+# (a) OSMPolygonLoader's building footprints land in the SAME frame as the
+# road network produced by this same conversion (the historical C29 "7,665m
+# building/road offset" defect and the J5 "165,943m origin-shift" defect are
+# both instances of exactly this class of bug), or (b) the DEM-sampling CRS
+# resolution path (ultimate_pipeline.dem.dem_crs_contract.resolve_sampling_crs,
+# the same function ultimate_pipeline.enrichment.elevation_importer's
+# _resolve_f1_sampling_crs delegates to) genuinely resolves a fresh,
+# non-pinned conversion's frame and round-trips back to the real-world
+# location -- the existing F1 control-point check in dem_crs_contract.py is
+# hardcoded to the one pinned auto_map_of_record candidate, not exercised
+# against an arbitrary freshly-generated XODR+OSM pair.
+# ---------------------------------------------------------------------------
+
+# Same road as _FIXTURE_OSM plus one small real building footprint close to
+# node id=1 (real-world separation computed independently below via
+# _haversine_flat_m, not hardcoded, so this isn't circular).
+_FIXTURE_OSM_WITH_BUILDING = """<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="gap021-regression-test">
+  <bounds minlat="48.7460" minlon="11.4320" maxlat="48.7480" maxlon="11.4360"/>
+  <node id="1" lat="48.7465" lon="11.4325"/>
+  <node id="2" lat="48.7470" lon="11.4335"/>
+  <node id="3" lat="48.7475" lon="11.4345"/>
+  <node id="4" lat="48.7478" lon="11.4355"/>
+  <way id="100">
+    <nd ref="1"/>
+    <nd ref="2"/>
+    <nd ref="3"/>
+    <nd ref="4"/>
+    <tag k="highway" v="residential"/>
+    <tag k="name" v="Gap021ReproStrasse"/>
+  </way>
+  <node id="10" lat="48.7470" lon="11.4337"/>
+  <node id="11" lat="48.7471" lon="11.4337"/>
+  <node id="12" lat="48.7471" lon="11.4338"/>
+  <node id="13" lat="48.7470" lon="11.4338"/>
+  <way id="200">
+    <nd ref="10"/>
+    <nd ref="11"/>
+    <nd ref="12"/>
+    <nd ref="13"/>
+    <nd ref="10"/>
+    <tag k="building"/>
+  </way>
+</osm>
+"""
+
+_BUILDING_TOLERANCE_M = 5.0
+
+
+def test_full_chain_building_frame_matches_road_frame_and_dem_crs_contract_resolves(
+    tmp_path: Path,
+) -> None:
+    """Real end-to-end: OSM -> XODR (osm_to_xodr_wrapper) -> road frame, AND
+    OSM -> building footprint (osm_polygon_loader) -> building frame, agree
+    with no relative offset; AND the DEM-sampling CRS contract
+    (dem_crs_contract.resolve_sampling_crs, what elevation_importer.py
+    actually calls) resolves the fresh conversion and round-trips to the
+    real-world fixture location.
+    """
+    pyproj = pytest.importorskip("pyproj")
+    from pyproj import CRS, Transformer
+
+    from ultimate_pipeline.enrichment.osm_polygon_loader import OSMPolygonLoader
+    from ultimate_pipeline.dem.dem_crs_contract import resolve_sampling_crs
+
+    osm_path = tmp_path / "gap021_building_fixture.osm"
+    osm_path.write_text(_FIXTURE_OSM_WITH_BUILDING, encoding="utf-8")
+    xodr_path = tmp_path / "gap021_building_fixture.xodr"
+
+    convert_osm_to_xodr(osm_path, xodr_path, cfg=OSMToXODRConfig())
+    assert xodr_path.exists()
+
+    # --- (A) road frame: use the header's (west, south) corner as the
+    # known real-world anchor -- proven in
+    # test_conversion_header_georeference_resolves_to_real_world_location to
+    # correspond exactly to node id=1 (the SW-most fixture node) when
+    # center_map=use_offsets=False. We anchor on the header rather than an
+    # arbitrary `<road>` element because Osm2Odr may split one OSM way into
+    # multiple XODR roads in document order that does not match geometric
+    # (westmost-first) order -- the header bounds are order-independent.
+    root = ET.parse(xodr_path).getroot()
+    header = root.find("header")
+    assert header is not None
+    road_x = float(header.get("west"))
+    road_y = float(header.get("south"))
+
+    # --- (B) building frame: OSMPolygonLoader projects the SAME OSM file's
+    # building way through its own module-level TRANSFORMER. -------------
+    buildings = OSMPolygonLoader.load_buildings_from_osm(str(osm_path), min_area=1.0)
+    assert len(buildings) == 1, "fixture defines exactly one building footprint"
+    footprint = buildings[0].footprint
+    bld_x = sum(p[0] for p in footprint) / len(footprint)
+    bld_y = sum(p[1] for p in footprint) / len(footprint)
+
+    # --- (C) the two frames must agree: projected separation (road point to
+    # building centroid, both already in meters, same tmerc frame) must
+    # match the independently-computed real-world separation. A frame
+    # mismatch (origin-shift, wrong central meridian, wrong k) would show up
+    # here as a large residual -- this is precisely the class of bug C29
+    # (7,665 m building/road offset) and J5 (165,943 m origin-shift) were.
+    projected_separation_m = math.hypot(bld_x - road_x, bld_y - road_y)
+    real_world_separation_m = _haversine_flat_m(
+        _REAL_LON, _REAL_LAT,  # node id=1 (the header's west/south anchor)
+        11.43375, 48.74705,  # building centroid (avg of the 4 fixture corners)
+    )
+    assert (
+        abs(projected_separation_m - real_world_separation_m) < _BUILDING_TOLERANCE_M
+    ), (
+        "GAP-021 audit regression: building footprint (osm_polygon_loader.py) "
+        "and road geometry (osm_to_xodr_wrapper.py) do not agree on the same "
+        f"coordinate frame. projected separation={projected_separation_m:.2f} m, "
+        f"real-world separation={real_world_separation_m:.2f} m."
+    )
+
+    # --- (D) the DEM-sampling CRS contract (what elevation_importer.py
+    # actually calls before sampling a DEM) must resolve this fresh
+    # conversion's frame -- not UNRESOLVED -- and the resolved CRS must
+    # round-trip the road point back to the real-world fixture location.
+    contract_crs, contract_source, record = resolve_sampling_crs(
+        str(xodr_path), osm_path=str(osm_path), strict=True
+    )
+    assert contract_crs is not None
+    assert record["verdict"] in (
+        "CLAIMED_CRS_VERIFIED",
+        "OSM2ODR_NATIVE_VERIFIED",
+        "AMBIGUOUS",
+    ), f"F1 CRS contract failed to resolve a fresh conversion: {record}"
+
+    tf_inv = Transformer.from_crs(contract_crs, "EPSG:4326", always_xy=True)
+    inv_lon, inv_lat = tf_inv.transform(road_x, road_y)
+    dem_err_m = _haversine_flat_m(inv_lon, inv_lat, _REAL_LON, _REAL_LAT)
+    assert dem_err_m < _TOLERANCE_M, (
+        "GAP-021 audit regression: DEM-sampling CRS contract's resolved frame "
+        f"does not round-trip to the real-world fixture location (error="
+        f"{dem_err_m:.2f} m). sampling_crs_source={contract_source!r}"
+    )

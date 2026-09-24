@@ -37,6 +37,14 @@ PROTECTED_PACKAGES: List[str] = [
     "ultimate_pipeline/domain_gap/run_domain_gap_sweep.py",
     "ultimate_pipeline/experiments/thesis/run_thesis_experiments.py",
     "ultimate_pipeline/experiments/thesis/run_all_experiments.py",
+    # 20260924 coordinate/OSM consistency audit: these two OSM-file-selection
+    # tools had the exact same unguarded mtime-as-authority pattern already
+    # fixed for XODR candidates elsewhere (GAP-012/GAP-023), but were never
+    # added to this protected list -- so this regression suite never caught
+    # them. Now fixed (structural depth-based guard before the mtime
+    # tiebreak) and added here so the pattern class can't silently regress.
+    "ultimate_pipeline/tools/osm_stats.py",
+    "ultimate_pipeline/tools/check_osm_to_carla_determinism.py",
 ]
 
 # Regex: sort(... key=lambda ... st_mtime / getmtime ...) followed by [0]
