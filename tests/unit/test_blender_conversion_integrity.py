@@ -68,6 +68,15 @@ class FakeBlenderRunner(BlenderRunner):
         self._inject_manifest = inject_manifest
         self._inject_manifest_missing = inject_manifest_missing
 
+    def _check_blender(self):
+        # GAP-027: FakeBlenderRunner mirrors production run() but must not
+        # depend on a Blender binary existing on the host. Overriding
+        # _check_blender on THIS subclass only (not BlenderRunner globally)
+        # keeps the 12 fake-injection tests deterministic on GitHub Ubuntu
+        # (no Blender installed) while test_n/test_o/test_p/test_t still
+        # exercise the real BlenderRunner._check_blender probe unchanged.
+        return True, "Blender 4.3.0 (fake-injected)"
+
     def run(self) -> BlenderResult:
         result = BlenderResult(status="failed")
         result.start_time = datetime.now().isoformat()
@@ -523,6 +532,37 @@ def test_p_valid_obj_but_no_blender_still_blocked_not_skipped(tmp_path):
 
     # OBJ validation passes, but blender check fails -> blocked
     assert result.status == "blocked"
+
+
+def test_u_real_runner_default_discovery_missing_blender_blocked(tmp_path, monkeypatch):
+    """GAP-027 characterization: the REAL BlenderRunner (not the fake) must
+    still report status="blocked" when default discovery yields no Blender,
+    independent of whether this machine has Blender installed. This pins the
+    real _check_blender probe against a definitely-nonexistent candidate set,
+    complementing test_n/test_o/test_p (which pin the explicit blender_exe=
+    argument path) and remaining green on both Windows (Blender present) and
+    GitHub Ubuntu (Blender absent).
+    """
+    import ultimate_pipeline.enrichment.blender_runner as blender_runner_mod
+
+    missing = Path("/definitely/does/not/exist/blender")
+    monkeypatch.setattr(blender_runner_mod, "_BLENDER_CANDIDATE_PATHS", [missing])
+    monkeypatch.setattr(blender_runner_mod, "_discover_blender_exe", lambda: missing)
+    monkeypatch.setattr(blender_runner_mod, "DEFAULT_BLENDER_EXE", missing)
+
+    obj = _make_obj(tmp_path)
+    runner = BlenderRunner(
+        obj_path=str(obj),
+        output_dir=str(tmp_path / "out"),
+        name_prefix="scene",
+    )
+    assert runner.blender_exe == missing
+
+    result = runner.run()
+
+    assert result.status == "blocked"
+    assert "Blender not available" in result.reason
+    assert result.status != "skipped"
 
 
 # ---------------------------------------------------------------------------
