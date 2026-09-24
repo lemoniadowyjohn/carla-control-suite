@@ -71,15 +71,22 @@ def main() -> int:
     parser.add_argument("--blender-exe", default=None)
     parser.add_argument("--out-dir", default=None,
                         help="tile artifact dir (default: reports/.../artifacts)")
+    parser.add_argument("--report-dir", default=None,
+                        help="top-level dir for PROBE_RESULT.json (default: "
+                             "reports/production_readiness/<run_id>_TILE_BASED_FBX_GENERATION_PROBE "
+                             "under the repo root); pass this to keep test/CI "
+                             "runs from writing into the live repo tree")
     parser.add_argument("--tile", default=None,
                         help="force a specific tile 'tx,ty' (default: densest)")
     parser.add_argument("--no-roundtrip", action="store_true")
     args = parser.parse_args()
 
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    report_dir = (REPO_ROOT / "reports" / "production_readiness"
+    report_dir = (Path(args.report_dir) if args.report_dir else
+                  REPO_ROOT / "reports" / "production_readiness"
                   / f"{run_id}_TILE_BASED_FBX_GENERATION_PROBE")
     artifacts_dir = Path(args.out_dir) if args.out_dir else report_dir / "artifacts"
+    report_dir.mkdir(parents=True, exist_ok=True)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"[probe] run_id={run_id}")
