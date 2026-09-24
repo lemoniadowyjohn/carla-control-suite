@@ -473,11 +473,26 @@
       "regression_test": null,
       "evidence_artifact": "Reported directly in the subagent's handback (2026-09-24); no junction_lanelink_sanity.json has ever existed anywhere in the repo before this run (confirmed) -- this is the first time this real check has ever been run against real production data.",
       "residual_risk": "HIGH pending a decision, but deliberately not acted on unilaterally. Two real, distinct open questions, NOT yet resolved: (1) whether the 74% near-threshold cluster (median 0.125m, just under the 0.25m tolerance) indicates the checker's own tolerance/methodology needs review (e.g. a systematic half-lane-width measurement bias) before concluding the map itself is broken -- investigate the checker before the map; (2) whether/how to wire this into a hard gate at all -- doing so naively would immediately flip the currently-promoted, valid_for_experiments=true map-of-record to failing, which is a real map-governance decision requiring human sign-off, not a well-scoped code fix. Do not dispatch a fix for either half without that decision."
+    },
+    {
+      "id": "GAP-027",
+      "severity": "P0",
+      "subsystem": "ultimate_pipeline/main_pipeline.py -- MainPipeline class structure (real regression, already fixed same-session)",
+      "description": "_step4_semantic_source_preparation and _step9_positional_semantics were accidentally left at module-level (column 0) indentation -- dedented out of `class MainPipeline:` -- by GAP-020's own merge (0473b280) earlier this session, while their call sites use bound-method syntax (self._step4_semantic_source_preparation(...), self._step9_positional_semantics(...)). This was an unconditional crash: ANY real, complete pipeline run reaching STEP 4 raised AttributeError immediately, regardless of input. Masked entirely from detection because the tiny single-tile determinism-check fixture always failed its own stage-08 correctness gate before ever reaching STEP 4 -- so no existing test or check exercised this path.",
+      "proof": "Discovered while a subagent extended RQ1 determinism coverage using a complete seed map (Grid0828.xodr) instead of the single-tile fixture -- two independent fresh runs crashed at the identical point with the identical traceback before the fix. Coordinator independently confirmed via `git log -S` that the bug was introduced by 0473b280 (GAP-020, merged earlier this session, not a long-standing defect), and via ast.parse() that current production (pre-fix) genuinely lacked both methods on the MainPipeline class, while the fixed version has both (77 total methods).",
+      "affected_files": ["ultimate_pipeline/main_pipeline.py"],
+      "scientific_runtime_consequence": "Every real, complete (non-tile, non-unit-test) pipeline run since GAP-020 landed earlier this session would have crashed unconditionally at STEP 4 -- this would have blocked any attempt at a real map regeneration, the RQ1 coverage-extension work itself, or any other complete end-to-end run, until found. Limited blast radius: introduced and fixed within the same session (hours), not a long-standing production defect that silently affected prior results.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-24), RQ1 extended-coverage task -- found and fixed as a byproduct of its actual assignment",
+      "status": "fixed",
+      "fixing_commit": "4ddb7ced (indentation fix) + b86d1170 (dead-import cleanup), merged into origin/integration/production-large-map-20260918",
+      "regression_test": "ast.parse()-based verification that both methods are real MainPipeline methods (77 total), independently re-confirmed by the coordinator; full bare pytest on the merged state: 6259 passed, 6 skipped, 0 failed",
+      "evidence_artifact": "Commit messages 4ddb7ced/b86d1170 document the exact reproduction and root cause",
+      "residual_risk": "LOW for this specific fix -- pure indentation change, no logic modified, confirmed via ast.parse() and a clean full-suite run. Worth noting as a process lesson: this class of bug (a real, unconditional crash in production code) can exist for hours undetected specifically because the fast single-tile determinism fixture never reaches the affected code path -- the RQ1 coverage-extension task (see RQ1's own status) that found this is itself still incomplete (its real goal, producing a full post-stage-08 determinism hash comparison, timed out after 2400s / 0 successful complete runs) -- so this fix does not itself close RQ1's coverage gap, it just removes one blocker that was discovered along the way."
     }
   ],
   "counts": {
-    "total": 26,
-    "fixed": 19,
+    "total": 27,
+    "fixed": 20,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
