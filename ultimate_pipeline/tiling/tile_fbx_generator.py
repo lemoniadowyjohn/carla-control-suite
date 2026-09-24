@@ -1168,7 +1168,20 @@ def generate_tile_fbx(
         result.status = "ok"
     result.total_sec = round(time.time() - started, 3)
 
-    # 5. hash-bound manifest sidecar
+    # 5. hash-bound manifest sidecar — O1 provenance chain: canonical source
+    # path/sha, output path/sha, generating command, tool version, provenance
+    # field linking output to source.
+    try:
+        import subprocess as _subprocess
+
+        _tool_ver = _subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(Path(__file__).resolve().parents[2]), text=True
+        ).strip()
+    except Exception:
+        _tool_ver = "unknown"
+    import sys as _sys
+
+    _gen_cmd = " ".join(_sys.argv) if hasattr(_sys, "argv") else ""
     manifest_path = out_dir / f"{stem}.tile_fbx.json"
     manifest_doc = {
         "schema_version": 1,
@@ -1199,6 +1212,21 @@ def generate_tile_fbx(
             "total": result.total_sec,
         },
         "source_provenance": source_provenance or {},
+        "provenance_field": "source_provenance.map_of_record_sha256",
+        "canonical_source": {
+            "xodr_path": (source_provenance or {}).get("map_of_record"),
+            "xodr_sha256": (source_provenance or {}).get("map_of_record_sha256"),
+            "buildings_source": (source_provenance or {}).get("buildings_source"),
+            "buildings_sha256": (source_provenance or {}).get("buildings_source_sha256"),
+        },
+        "output": {
+            "fbx_path": str(fbx_path),
+            "fbx_sha256": result.fbx_sha256,
+            "fbx_bytes": result.fbx_bytes,
+            "manifest_path": str(manifest_path),
+        },
+        "generating_command": _gen_cmd,
+        "tool_version": _tool_ver,
         "claim_boundary": (
             "Offline FBX generation only. This tile has NOT been imported by a "
             "UE4/UE5 Editor or cooked; runtime streaming/seam behavior is "

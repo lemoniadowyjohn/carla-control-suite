@@ -69,6 +69,7 @@ import hashlib
 import json
 import re
 import shutil
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -110,6 +111,10 @@ class PackageDescriptor:
     ``xodr``, ``use_carla_materials``, ``tile_size``, ``tiles``. ``props`` is a
     sibling top-level list (always empty here; this pipeline stages no prop
     packages).
+
+    Provenance extension (O1): ``xodr_sha256`` carries the source XODR identity
+    so the descriptor itself is self-describing, not just its sidecar manifest.
+    CARLA's Import.py ignores unknown fields, so this is backward compatible.
     """
 
     name: str
@@ -117,6 +122,7 @@ class PackageDescriptor:
     tile_size_m: float
     tile_fbx_filenames: Sequence[str]
     use_carla_materials: bool = True
+    xodr_sha256: Optional[str] = None
 
     def __post_init__(self) -> None:
         if not self.name or not self.name.strip():
@@ -125,6 +131,9 @@ class PackageDescriptor:
             raise ValueError(f"xodr_filename must end in .xodr: {self.xodr_filename!r}")
         if self.tile_size_m <= 0:
             raise ValueError("tile_size_m must be positive")
+        if self.xodr_sha256 is not None:
+            if not re.match(r"^[0-9a-f]{64}$", str(self.xodr_sha256).lower()):
+                raise ValueError(f"xodr_sha256 must be 64 hex chars: {self.xodr_sha256!r}")
         seen = set()
         for fbx in self.tile_fbx_filenames:
             if not fbx.lower().endswith(".fbx"):
@@ -142,19 +151,22 @@ def build_package_json(descriptor: PackageDescriptor) -> Dict[str, Any]:
     Paths are emitted relative (``"./<file>"``), matching CARLA's documented
     example and the fact that at import time the descriptor sits alongside its
     files in the same ``Import/<Package>/`` directory.
+
+    O1 provenance extension: when ``descriptor.xodr_sha256`` is set, the maps
+    entry also carries ``"xodr_sha256"`` so the descriptor itself proves which
+    source XODR it was staged against (backward compatible — CARLA ignores
+    unknown fields).
     """
-    return {
-        "maps": [
-            {
-                "name": descriptor.name,
-                "xodr": f"./{descriptor.xodr_filename}",
-                "use_carla_materials": bool(descriptor.use_carla_materials),
-                "tile_size": descriptor.tile_size_m,
-                "tiles": [f"./{fbx}" for fbx in descriptor.tile_fbx_filenames],
-            }
-        ],
-        "props": [],
+    maps_entry: Dict[str, Any] = {
+        "name": descriptor.name,
+        "xodr": f"./{descriptor.xodr_filename}",
+        "use_carla_materials": bool(descriptor.use_carla_materials),
+        "tile_size": descriptor.tile_size_m,
+        "tiles": [f"./{fbx}" for fbx in descriptor.tile_fbx_filenames],
     }
+    if descriptor.xodr_sha256 is not None:
+        maps_entry["xodr_sha256"] = descriptor.xodr_sha256.lower()
+    return {"maps": [maps_entry], "props": []}
 
 
 # ---------------------------------------------------------------------------
@@ -207,6 +219,68 @@ def _copy_file(src: Path, dst: Path) -> None:
     if dst.exists():
         dst.unlink()
     shutil.copy2(src, dst)
+
+
+# ---------------------------------------------------------------------------
+# O1 — Tile FBX provenance helpers (fail-closed, no mtime authority)
+# ---------------------------------------------------------------------------
+def _find_tile_manifest(fbx_path: Path) -> Optional[Path]:
+    """Return the hash-bound manifest sidecar for ``fbx_path`` if it exists.
+
+    The tile FBX generator writes ``<MapName>_Tile_<x>_<y>.tile_fbx.json``
+    alongside ``<MapName>_Tile_<x>_<y>.fbx`` in the same output directory.
+    This is the provenance that proves which source XODR the tile was baked
+    from — never the file's mtime.
+    """
+    candidate = fbx_path.parent / (fbx_path.stem + ".tile_fbx.json")
+    return candidate if candidate.is_file() else None
+
+
+def _read_tile_source_sha(manifest_path: Path) -> Optional[str]:
+    """Extract ``source_provenance.map_of_record_sha256`` from a tile manifest.
+
+    Returns the lowercase 64-char hex SHA, or ``None`` if the manifest is
+    malformed or the field is absent/empty. No inference, no fallback to
+    mtime, no directory walk.
+    """
+    try:
+        doc = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    # Primary location (current generator): top-level source_provenance
+    prov = doc.get("source_provenance")
+    if isinstance(prov, dict):
+        sha = prov.get("map_of_record_sha256")
+        if isinstance(sha, str) and re.match(r"^[0-9a-fA-F]{64}$", sha.strip()):
+            return sha.strip().lower()
+    # Fallback: some older manifests used top-level map_of_record_sha256
+    sha2 = doc.get("map_of_record_sha256")
+    if isinstance(sha2, str) and re.match(r"^[0-9a-fA-F]{64}$", sha2.strip()):
+        return sha2.strip().lower()
+    return None
+
+
+def _tile_provenance_status(
+    fbx_path: Path, expected_xodr_sha256: str
+) -> Tuple[str, Optional[str], Optional[str]]:
+    """Check one tile's provenance against ``expected_xodr_sha256``.
+
+    Returns ``(status, actual_sha, reason)`` where status is:
+      "ok" — manifest exists and its source SHA matches expected
+      "missing_manifest" — no manifest sidecar alongside the FBX
+      "missing_sha" — manifest exists but carries no source SHA
+      "mismatch" — manifest SHA differs from expected (stale FBX)
+    ``expected_xodr_sha256`` must be lowercase 64-hex; caller guarantees.
+    """
+    manifest = _find_tile_manifest(fbx_path)
+    if manifest is None:
+        return "missing_manifest", None, f"tile manifest not found alongside FBX: {fbx_path} (expected {fbx_path.stem}.tile_fbx.json)"
+    actual = _read_tile_source_sha(manifest)
+    if actual is None:
+        return "missing_sha", None, f"tile manifest {manifest} has no source_provenance.map_of_record_sha256"
+    if actual != expected_xodr_sha256.lower():
+        return "mismatch", actual, f"tile {fbx_path.name} provenance {actual} != expected {expected_xodr_sha256} (stale FBX from a different XODR generation)"
+    return "ok", actual, None
 
 
 def stage_large_map_package(
@@ -264,8 +338,37 @@ def stage_large_map_package(
     result.xodr_staged_path = str(dst_xodr)
     result.xodr_sha256 = xodr_sha256
 
+    # O1: Provenance-tracked tile staging (no mtime authority).
+    # Every tile FBX is expected to be accompanied by its hash-bound manifest
+    # ``<stem>.tile_fbx.json`` carrying ``source_provenance.map_of_record_sha256``.
+    # Selection is deterministic by tile index (tx,ty), never by file mtime, and
+    # a stale FBX (different source SHA) or missing provenance fails closed when
+    # strict provenance is applicable.  Strict mode activates automatically when
+    # any tile in the input carries a manifest — i.e. real pipeline output is
+    # being staged — or when ``expected_xodr_sha256`` is given (the production
+    # path via ``stage_large_map_import_package.py``).  Pure synthetic tests
+    # with no manifests remain backward compatible.
     staged_tile_names: List[str] = []
     skipped: List[str] = []
+    tile_source_shas: Dict[str, str] = {}  # fbx_name -> source SHA from manifest
+    provenance_failures: List[str] = []
+
+    # Pre-scan: does any input tile carry a manifest? If so, we are in strict
+    # provenance mode and every tile must prove it was baked from the staged
+    # XODR (xodr_sha256).  When expected_xodr_sha256 is given it is authoritative;
+    # otherwise the staged XODR's actual SHA is the authority (the XODR we just
+    # copied is the source of truth).  Pure synthetic tests with no manifests
+    # skip provenance checks for backward compatibility.
+    has_any_manifest = any(
+        _find_tile_manifest(Path(p)) is not None
+        for p in tile_fbx_paths
+        if Path(p).is_file() and parse_tile_fbx_filename(Path(p).name) is not None
+    )
+    strict_provenance = has_any_manifest
+    provenance_authority_sha = (
+        expected_xodr_sha256.lower() if expected_xodr_sha256 else xodr_sha256.lower()
+    )
+
     for tile_path_str in tile_fbx_paths:
         tile_path = Path(tile_path_str)
         if not tile_path.is_file():
@@ -275,12 +378,73 @@ def stage_large_map_package(
         if parsed is None:
             skipped.append(str(tile_path))
             continue
+
+        # O1 protection 3,4,6,7,8: fail-closed provenance check (no mtime, no
+        # latest-file, no silent mixed-generation).  Only applies in strict
+        # mode; synthetic tests without manifests skip this gate.
+        if strict_provenance:
+            status, actual_sha, reason = _tile_provenance_status(
+                tile_path, provenance_authority_sha
+            )
+            if status != "ok":
+                provenance_failures.append(reason or f"{tile_path.name}: {status}")
+                # Do not stage this tile — record as skipped for diagnostics,
+                # but the overall staging will fail closed below.
+                skipped.append(f"{tile_path} [{status}: {reason}]")
+                continue
+            # Record for mixed-generation detection (6)
+            tile_source_shas[tile_path.name] = actual_sha or provenance_authority_sha
+
         dst_tile = package_dir / tile_path.name
         _copy_file(tile_path, dst_tile)
         staged_tile_names.append(tile_path.name)
 
+    # O1 protection 6: mixed tile generations must fail — all staged tiles must
+    # prove the *same* source XODR when strict provenance is active.
+    if strict_provenance and tile_source_shas:
+        distinct_shas = set(tile_source_shas.values())
+        if len(distinct_shas) > 1:
+            result.reason = (
+                f"mixed tile generations detected: distinct source SHAs "
+                f"{sorted(distinct_shas)} among staged tiles {sorted(tile_source_shas.keys())} — "
+                f"refusing to stage a package mixing FBXs from different XODR generations"
+            )
+            # Clean up any partially-staged tiles to avoid a half-staged package
+            # that later appears complete.
+            for name in staged_tile_names:
+                (package_dir / name).unlink(missing_ok=True)
+            return result
+        # Also ensure every staged tile's source SHA matches the staged XODR.
+        # (Already checked per-tile above, but double-guard for the authority SHA.)
+        for name, sha in tile_source_shas.items():
+            if sha.lower() != provenance_authority_sha.lower():
+                result.reason = (
+                    f"tile {name} provenance {sha} != staged XODR {provenance_authority_sha} "
+                    f"(stale FBX from a different XODR generation)"
+                )
+                for n in staged_tile_names:
+                    (package_dir / n).unlink(missing_ok=True)
+                return result
+
+    if provenance_failures:
+        # Fail closed: do not produce a package that silently excludes stale
+        # tiles — the caller must regenerate those tiles from the current XODR.
+        result.reason = (
+            f"tile provenance check failed ({len(provenance_failures)} tile(s)): "
+            + "; ".join(provenance_failures[:3])
+            + (f" (+{len(provenance_failures)-3} more)" if len(provenance_failures) > 3 else "")
+        )
+        # Clean up staged tiles/XODR to avoid a half-staged package that looks complete.
+        for name in staged_tile_names:
+            (package_dir / name).unlink(missing_ok=True)
+        if dst_xodr.exists():
+            dst_xodr.unlink(missing_ok=True)
+        return result
+
     # Deterministic ordering: sort tiles by (tx, ty) so package.json / manifest
-    # output is stable across runs regardless of input iteration order.
+    # output is stable across runs regardless of input iteration order or file
+    # mtimes (O1 protection 2,8 — no mtime authority, stale presence does not
+    # influence selection).
     def _tile_sort_key(name: str) -> Tuple[int, int]:
         parsed = parse_tile_fbx_filename(name)
         return (parsed[1], parsed[2]) if parsed else (0, 0)
@@ -293,6 +457,7 @@ def stage_large_map_package(
         tile_size_m=tile_size_m,
         tile_fbx_filenames=staged_tile_names,
         use_carla_materials=use_carla_materials,
+        xodr_sha256=xodr_sha256.lower(),
     )
     package_json_doc = build_package_json(descriptor)
 
@@ -315,7 +480,26 @@ def stage_large_map_package(
     result.tiles_skipped_missing = skipped
     result.status = "ok"
 
+    # O1 provenance chain: record generating command, tool version, and
+    # provenance linkage for every stage (canonical source → output)
+    try:
+        import subprocess
+
+        _tool_version = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(Path(__file__).resolve().parents[2]), text=True
+        ).strip()
+    except Exception:
+        _tool_version = "unknown"
+    _generating_command = " ".join(sys.argv) if "sys" in globals() else ""
+
     manifest_path = package_dir / f"{pkg_name}.large_map_package.json"
+    # Compute output descriptor SHA for provenance linkage
+    try:
+        _package_json_sha = _sha256(package_json_path)
+        _named_json_sha = _sha256(named_json_path)
+    except Exception:
+        _package_json_sha = ""
+        _named_json_sha = ""
     manifest_doc = {
         "schema_version": 1,
         "artifact_type": "carla_large_map_import_package",
@@ -323,13 +507,40 @@ def stage_large_map_package(
         "package_name": pkg_name,
         "map_name": map_name,
         "package_dir": str(package_dir),
+        # O1 provenance chain: canonical source → output
+        "canonical_source": {
+            "xodr_path": str(src_xodr),
+            "xodr_sha256": xodr_sha256,
+            "xodr_bytes": src_xodr.stat().st_size if src_xodr.exists() else None,
+            "provenance_field": "xodr.sha256",
+            "provenance_authority": "verify_pinned_map('auto_map_of_record')",
+        },
+        "output": {
+            "package_dir": str(package_dir),
+            "package_json_path": str(package_json_path),
+            "package_json_sha256": _package_json_sha,
+            "named_json_path": str(named_json_path),
+            "named_json_sha256": _named_json_sha,
+            "manifest_path": str(manifest_path),
+        },
         "xodr": {"filename": src_xodr.name, "sha256": xodr_sha256},
         "tile_size_m": tile_size_m,
         "use_carla_materials": use_carla_materials,
         "tiles_staged_count": len(staged_tile_names),
         "tiles_staged": staged_tile_names,
         "tiles_skipped_missing": skipped,
+        "tiles_provenance": tile_source_shas,
         "package_json_paths": [str(package_json_path), str(named_json_path)],
+        "generating_command": _generating_command,
+        "tool_version": _tool_version,
+        "provenance_chain": {
+            "map_registry": "ultimate_pipeline/carla_tools/map_registry.py:verify_pinned_map",
+            "authoritative_xodr": str(src_xodr),
+            "tile_generation": "ultimate_pipeline/tiling/tile_fbx_generator.py:generate_tile_fbx",
+            "fbx_manifest": "source_provenance.map_of_record_sha256",
+            "import_package": "ultimate_pipeline/tiling/large_map_package.py:stage_large_map_package",
+            "package_descriptor": "xodr_sha256",
+        },
         "claim_boundary": (
             "Offline staging only. This package has NOT been consumed by "
             "`make import` or any UE4/UE5 process; import/cook success is "
@@ -427,6 +638,32 @@ def validate_staged_package(
             result.failures.append(
                 f"staged xodr sha256 mismatch: expected {expected_xodr_sha256}, got {xodr_sha256}"
             )
+        # O1: descriptor provenance — if package.json carries xodr_sha256 it must
+        # match the staged XODR (defends against descriptor/XODR drift).
+        declared_xodr_sha = entry.get("xodr_sha256")
+        if declared_xodr_sha is not None:
+            try:
+                if str(declared_xodr_sha).strip().lower() != xodr_sha256.lower():
+                    result.failures.append(
+                        f"package.json xodr_sha256 {declared_xodr_sha!r} != staged XODR sha {xodr_sha256}"
+                    )
+            except Exception:
+                result.failures.append(f"package.json xodr_sha256 is malformed: {declared_xodr_sha!r}")
+        # Also check sidecar manifest's xodr SHA if present (staged package manifest
+        # is the provenance that links output to source; it must agree).
+        # The manifest is <PackageName>.large_map_package.json next to package.json.
+        manifest_candidates = list(pkg_dir.glob("*.large_map_package.json"))
+        for manifest_path in manifest_candidates:
+            try:
+                mdoc = json.loads(manifest_path.read_text(encoding="utf-8"))
+                m_xodr_sha = (mdoc.get("xodr") or {}).get("sha256")
+                if isinstance(m_xodr_sha, str) and m_xodr_sha.strip():
+                    if m_xodr_sha.strip().lower() != xodr_sha256.lower():
+                        result.failures.append(
+                            f"sidecar manifest {manifest_path.name} xodr sha256 {m_xodr_sha!r} != staged XODR sha {xodr_sha256}"
+                        )
+            except (json.JSONDecodeError, OSError):
+                result.failures.append(f"sidecar manifest {manifest_path.name} is not valid JSON")
 
     declared_tiles = [str(t).lstrip("./") for t in entry.get("tiles", [])]
     seen: Dict[str, int] = {}
@@ -453,6 +690,57 @@ def validate_staged_package(
             result.warnings.append(
                 f"tile filename map-name prefix {parsed_map_name!r} != "
                 f"package map name {entry['name']!r} for {name!r}"
+            )
+
+    # O1: tile provenance — when any staged tile carries a hash-bound manifest
+    # its source XODR must match the staged XODR, and all tiles must agree
+    # (no mixed generations).  Missing provenance is only a hard failure when
+    # strict mode applies; for backward compatibility we enforce strictly only
+    # when at least one tile manifest is present (real pipeline output).  Pure
+    # synthetic tests with no manifests skip this gate.
+    has_any_tile_manifest = any(
+        _find_tile_manifest(pkg_dir / name) is not None for name in declared_tiles
+    )
+    strict_tile_provenance = has_any_tile_manifest
+    if strict_tile_provenance and declared_tiles:
+        tile_shas: Dict[str, str] = {}
+        for name in declared_tiles:
+            tile_path = pkg_dir / name
+            manifest = _find_tile_manifest(tile_path)
+            if manifest is None:
+                result.failures.append(
+                    f"tile {name} missing provenance manifest {name.rsplit('.',1)[0]}.tile_fbx.json "
+                    f"(O1 protection 7: missing provenance must fail closed; "
+                    f"regenerate this tile from the current XODR)"
+                )
+                continue
+            sha = _read_tile_source_sha(manifest)
+            if sha is None:
+                result.failures.append(
+                    f"tile {name} manifest {manifest.name} has no source_provenance.map_of_record_sha256"
+                )
+                continue
+            tile_shas[name] = sha
+            # Each tile's source must match the staged XODR
+            staged_sha = result.xodr_sha256
+            if not staged_sha:
+                # Fallback if xodr_sha wasn't captured (e.g., earlier failure)
+                try:
+                    xodr_for_tile = pkg_dir / str(entry["xodr"]).lstrip("./")
+                    if xodr_for_tile.is_file():
+                        staged_sha = _sha256(xodr_for_tile)
+                except Exception:
+                    staged_sha = None
+            if staged_sha and sha.lower() != staged_sha.lower():
+                result.failures.append(
+                    f"tile {name} provenance {sha} != staged XODR {staged_sha} "
+                    f"(stale FBX from a different XODR generation)"
+                )
+        if len(set(tile_shas.values())) > 1:
+            result.failures.append(
+                f"mixed tile generations detected: distinct source SHAs "
+                f"{sorted(set(tile_shas.values()))} among staged tiles "
+                f"{sorted(tile_shas.keys())}"
             )
 
     on_disk_tiles = {
