@@ -1,0 +1,157 @@
+{
+  "gates": [
+    {
+      "command": "python -m ultimate_pipeline.quality.check_xml_integrity",
+      "evidence_path": "reports/production_readiness/20260921_XODR_VALIDATOR_CONVERGENCE/04_VALIDATOR_DISAGREEMENTS.json",
+      "evidence_sha256": "6fbe37d10189c77656dddcf1868983df9873bbae2f4a96b07fe5d42d5262ab5c",
+      "gate": "xml_validity",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.check_geometric_continuity",
+      "evidence_path": "reports/production_readiness/20260921_XODR_VALIDATOR_CONVERGENCE/04_VALIDATOR_DISAGREEMENTS.json",
+      "evidence_sha256": "6fbe37d10189c77656dddcf1868983df9873bbae2f4a96b07fe5d42d5262ab5c",
+      "gate": "planview_completeness",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.check_carla_opendrive_compat",
+      "evidence_path": "reports/production_readiness/20260921_XODR_VALIDATOR_CONVERGENCE/04_VALIDATOR_DISAGREEMENTS.json",
+      "evidence_sha256": "6fbe37d10189c77656dddcf1868983df9873bbae2f4a96b07fe5d42d5262ab5c",
+      "gate": "geometry_validation",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.check_lane_link_targets_exist",
+      "evidence_path": null,
+      "evidence_sha256": null,
+      "gate": "lane_topology",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "command": "python -m ultimate_pipeline.tools.audit_osm_road_link_topology",
+      "evidence_path": null,
+      "evidence_sha256": null,
+      "gate": "road_links",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.check_junction_connection_coverage",
+      "evidence_path": null,
+      "evidence_sha256": null,
+      "gate": "junction_links",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.check_lane_count_changes",
+      "evidence_path": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/lane_count_classification.json",
+      "evidence_sha256": "ea5025f540069cfc7bc9f59024f736fa7ad67dcd9f4e81de100fc76363bda10b",
+      "gate": "lane_count_classification",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.map_acceptance",
+      "evidence_path": "reports/production_readiness/20260919T000000Z_PRODUCTION_CLOSURE/00_BASELINE.json",
+      "evidence_sha256": "f60a66841a9594bf1cd9d2e400201104ad6f2b3cb713b548fce7d061d95c4a5b",
+      "gate": "component_reachability",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "ultimate_pipeline.quality.xodr_strict_validator.thesis_strict_checks",
+      "evidence_path": "reports/production_readiness/20260921_XODR_VALIDATOR_CONVERGENCE/04_VALIDATOR_DISAGREEMENTS.json",
+      "evidence_sha256": "6fbe37d10189c77656dddcf1868983df9873bbae2f4a96b07fe5d42d5262ab5c",
+      "gate": "crs_checks",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "python scripts/measure_candidate_acceptance.py <xodr>",
+      "evidence_path": null,
+      "evidence_sha256": null,
+      "gate": "map_acceptance",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "command": "python -m ultimate_pipeline.utils.map_fingerprint",
+      "evidence_path": null,
+      "evidence_sha256": null,
+      "gate": "artifact_fingerprint",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "command": "python -m ultimate_pipeline.tools.preflight_import_package --package-dir <package>",
+      "evidence_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/COOK_RESULTS.json",
+      "evidence_sha256": "b2cd6558370f8628c818380832278e73e8c60ae27fc1ef3708b1d89249ad3a78",
+      "gate": "tile_readiness",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": true,
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS"
+    },
+    {
+      "command": "python -c 'LaneLinkBuilder.sanitize_junction_lane_links(...)'",
+      "evidence_path": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.json",
+      "evidence_sha256": "c0d28f5ad29f3af7671a2240bc096c5384b59baada62d77be3697e8fc876abe0",
+      "gate": "gap026",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "STALE_OR_UNBOUND"
+    },
+    {
+      "command": "python -m ultimate_pipeline.quality.map_acceptance",
+      "evidence_path": null,
+      "evidence_sha256": null,
+      "gate": "waivers",
+      "gate_version_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+      "source_map_bound_to_current_pin": false,
+      "source_map_sha256": null,
+      "status": "NOT_RUN"
+    }
+  ],
+  "generated_at_utc": "2026-09-24T12:00:27.857705+00:00",
+  "map_registry": {
+    "bytes": 149799632,
+    "key": "auto_map_of_record",
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "registry_sha256": "4f5ba9587cfee5f76958ba26ac1b1d6c32b6b953f2b4f583e2bd9e9bfa58a534",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "verification_status": "VERIFIED"
+  },
+  "overall_static_evidence_status": "STALE_OR_UNBOUND",
+  "policy": "A historical report is current evidence only when its embedded source-map SHA equals the registry-resolved current map SHA; otherwise status is STALE_OR_UNBOUND.",
+  "repository_commit": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf",
+  "schema": "current_map_static_release_matrix/v1"
+}
