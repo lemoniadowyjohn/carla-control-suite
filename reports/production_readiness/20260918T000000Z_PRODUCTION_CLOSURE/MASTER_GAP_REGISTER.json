@@ -332,15 +332,30 @@
       "regression_test": "tests/unit/test_semantic_diff.py (new, 6 tests) + tests/unit/test_artifact_transactions.py (2 new end-to-end wiring tests). Full bare pytest on the fixing branch alone: 6155 passed, 5 skipped, 0 failed.",
       "evidence_artifact": "tests/unit/test_semantic_diff.py",
       "residual_risk": "NONE identified for this fix -- structure-aware, order-independent canonical-signature comparison (tag + normalized attrs + normalized text + recursive child signatures), unparseable parent or candidate still fails closed (True). Separately confirmed (not a bug, but documented so it isn't assumed otherwise later): compute_semantic_sha256() is a plain raw-byte hash, NOT structure-aware -- two XML files with identical structure but different attribute order/whitespace hash differently. Not renamed (used across store.py/transaction.py, renaming is out of scope), but a characterization test now guards against this being silently assumed structure-aware in the future."
+    },
+    {
+      "id": "GAP-026",
+      "severity": "P1",
+      "subsystem": "ultimate_pipeline/lanes/lanelink_builder.py + pipeline_stages/stage_08_integrity.py -- dead quality signal on the promoted map-of-record",
+      "description": "LaneLinkBuilder.sanitize_junction_lane_links() is a real, geometrically-validated endpoint-pose-continuity checker (confirmed correct via its own adversarial unit test), genuinely wired into the real production pipeline (stage_08_integrity.py:560, writes junction_lanelink_sanity.json on every real run) -- but its status/failed fields are computed and written to disk and then NEVER READ by any gate (grep-confirmed: no caller checks them against hard_fail_reasons/valid_for_experiments). Running it for the first time ever against the actual currently-PROMOTED map-of-record (campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr, sha256 370abbbb..., currently valid_for_experiments=true) found 2,992 of 23,529 laneLinks (12.7%) fail pose-continuity at the checker's own tolerance (0.25m / 12deg) -- 74% cluster just under threshold (median 0.125m, possibly a systematic half-width bias worth its own investigation), but there is also a genuine severe tail: 832 links with >3m discontinuity, up to 14m. A vehicle transiting those junctions would visibly jump laterally.",
+      "proof": "Direct execution of LaneLinkBuilder.sanitize_junction_lane_links(ET.parse(<map-of-record path>).getroot()) against the real, currently-promoted map-of-record (2026-09-24). Sample failure cited: junction 1 / connection 3, incomingRoad 42486 lane -2 -> connectingRoad 52027 lane -1, dist~3.5m. grep -rn 'junction_lanelink_sanity' confirms the field is written but never consumed by any gate/hard_fail_reasons check.",
+      "affected_files": ["ultimate_pipeline/lanes/lanelink_builder.py", "ultimate_pipeline/pipeline_stages/stage_08_integrity.py"],
+      "scientific_runtime_consequence": "The currently-promoted map-of-record -- the SAME pinned map RQ2's structural-gap metric, RQ4's GNN training tiles, and this session's other real-data audits (lane-link certification, coordinate-system end-to-end test) all use -- has a real, computed, ignored signal indicating meaningful lane-link geometric discontinuities at ~12.7% of its junctions, some severe (up to 14m). This does not necessarily invalidate RQ2/RQ4's existing results (those metrics don't depend on lane-link pose continuity), but it is a genuine, previously-undetected map-quality question about the map's fitness for any future live-CARLA use (RQ3/RQ5a, once GAP-017 unblocks) -- a vehicle following these lane links in a live simulation would visibly jump at the severe-tail junctions.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-24), lane-link/FBX readiness audit -- found, deliberately NOT fixed (see residual_risk)",
+      "status": "open -- real finding, needs a human policy decision before any fix is dispatched",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "Reported directly in the subagent's handback (2026-09-24); no junction_lanelink_sanity.json has ever existed anywhere in the repo before this run (confirmed) -- this is the first time this real check has ever been run against real production data.",
+      "residual_risk": "HIGH pending a decision, but deliberately not acted on unilaterally. Two real, distinct open questions, NOT yet resolved: (1) whether the 74% near-threshold cluster (median 0.125m, just under the 0.25m tolerance) indicates the checker's own tolerance/methodology needs review (e.g. a systematic half-lane-width measurement bias) before concluding the map itself is broken -- investigate the checker before the map; (2) whether/how to wire this into a hard gate at all -- doing so naively would immediately flip the currently-promoted, valid_for_experiments=true map-of-record to failing, which is a real map-governance decision requiring human sign-off, not a well-scoped code fix. Do not dispatch a fix for either half without that decision."
     }
   ],
   "counts": {
-    "total": 25,
+    "total": 26,
     "fixed": 18,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 1,
+    "open": 2,
     "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {
