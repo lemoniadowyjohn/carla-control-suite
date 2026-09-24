@@ -4397,7 +4397,6 @@ if str(_repo_root) not in sys.path:
             _offline_only_enabled,
             _pinned_buildings_fallback,
             resolve_buildings_geojson_for_stage4,
-            _load_buildings_with_fallback,
             enforce_buildings_fail_closed,
             _mark_geometry_only_stage_contract,
         )
