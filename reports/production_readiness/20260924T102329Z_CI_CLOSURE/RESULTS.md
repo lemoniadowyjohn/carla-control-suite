@@ -175,7 +175,8 @@ tests\unit\test_writer_lock_atomic_publication.py ....                   [100%]
 ## 6. Full-suite result (exact command + summary line; GAP-007 plugin policy)
 
 Attempt 1 — bare, exactly as CI runs it (`python -m pytest -q`), default pytest
-plugin autoload **enabled** (no `PYTEST_DISABLE_PLUGIN_AUTOLOAD`):
+plugin autoload **enabled** (no `PYTEST_DISABLE_PLUGIN_AUTOLOAD`), on the
+**pre-merge** tree at `52bf6c27`:
 
 ```
 python -m pytest -q
@@ -187,7 +188,14 @@ Result line (exact):
 ========= 6264 passed, 6 skipped, 178 warnings in 1529.18s (0:25:29) ==========
 ```
 
-Exit code 0. The run **completed** — it did not hang after visible 100%, so the
+**Post-merge re-run** after merging upstream `ddf85b5a` (merge `526de371` +
+docs commit), same command, collected 6270:
+
+```
+========= 6264 passed, 6 skipped, 149 warnings in 1718.86s (0:28:38) ==========
+```
+
+Exit code 0 both times. The run **completed** — it did not hang after visible 100%, so the
 GAP-007 plugin-autoload fallback (`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`) was **not
 needed** and was not used; there is no second attempt to report. Policy note per
 GAP-007: the bare default-autoload invocation is the CI-equivalent command and
