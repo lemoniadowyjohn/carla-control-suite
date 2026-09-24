@@ -2,71 +2,53 @@
 
 Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync at each update.
 
-| ID | Severity | Subsystem | Status | Owner |
+Last updated: `2026-09-24T00:00:00Z`
+
+| ID | Severity | Subsystem | Status | Fixing commit / owner |
 |---|---|---|---|---|
-| GAP-001 | P0 | large_map_package.py copy semantics | **fixed** | direct (coordinator) |
-| GAP-002 | P0 | tile_fbx_generator.py roundtrip status | **fixed** | direct (coordinator) |
-| GAP-003 | P0 | main_pipeline.py artifact-authority ordering | **fixed** | a0fc461e58ef06e59 |
-| GAP-004 | P1 | geometry_math.py legacy divergence | **fixed** | afed7bcc6adcb5bd9 |
-| GAP-005 | P1 | check_lane_count_changes.py classification | **fixed** | ab5d110e2573e658b |
-| GAP-006 | P0 | xodr_junction_links.py _geom_end LIVE bug | **fixed** | afed7bcc6adcb5bd9 (found during F) |
-| GAP-007 | P2 | xodr_carla_hardener.py dead broken code | **fixed** | afed7bcc6adcb5bd9 (found during F) |
-| GAP-008 | P1 | two independent geometry-authority packages | deferred | afed7bcc6adcb5bd9 (found during F) |
-| GAP-009 | P1 | stage_09_tiling.py post-freeze mutation path | deferred | a0fc461e58ef06e59 (found during C) |
-| GAP-010 | P0 | RQ4 GNN train/eval content leakage (FAIL) | **open** | unknown (discovered 2026-09-22) |
-| GAP-011 | P1 | integration debt, 09-18..09-22 parallel-agent work | in_progress | direct (coordinator) |
-| GAP-012 | P2 | run_alignment_and_matching.py unguarded mtime authority | open | unassigned |
-| GAP-013 | P2 | tile_grid_meta.py import failure (duplicate-module suspected) | open | unassigned |
-| GAP-014 | P2 | junction_model.py test-pollution (full-suite only) | open | unassigned |
-| GAP-015 | P3 | RQ4 train/ksweep config-builder sharing assertion | open | unassigned |
+| GAP-001 | P0 | tiling/large_map_package.py | **fixed** | c75fd8c9 (merged into integration/production-large-map-20260918) |
+| GAP-002 | P0 | tiling/tile_fbx_generator.py | **fixed** | c75fd8c9 (merged into integration/production-large-map-20260918) |
+| GAP-003 | P0 | main_pipeline.py / artifact authority | **fixed** | 22e3811c (merged into integration/production-large-map-20260918) |
+| GAP-004 | P1 | geometry/geometry_math.py | **fixed** | 433143f7 (merged into integration/production-large-map-20260918) |
+| GAP-005 | P1 | quality/check_lane_count_changes.py | **fixed** | e2befc36, merged f5333f3a and pushed to origin/integration/production-large-map-2026091... |
+| GAP-006 | P0 | map_fixes/xodr_junction_links.py | **fixed** | 7d82a581 (merged into integration/production-large-map-20260918) |
+| GAP-007 | P2 | tools/xodr_carla_hardener.py | **fixed** | fab0f8c7 (deleted rather than fixed, since unused; merged into integration/production-l... |
+| GAP-008 | P1 | geometry authority -- architectural | deferred | afed7bcc6adcb5bd9 (found during P1 work package F) |
+| GAP-009 | P1 | pipeline_stages/stage_09_tiling.py | **fixed** | c5b09591 (already on origin/integration/production-large-map-20260918) |
+| GAP-010 | P0 | domain_gap_gnn / RQ4 GNN provenance | **fixed (retrain BLOCKED_EXTERNAL)** | 4c2f0feb, merged into origin/integration/production-large-map-20260918 (now folded into... |
+| GAP-011 | P1 | integration debt -- unreconciled parallel-agent work | **fixed (a/b/c closed)** | 5 commits on fix/gap011-oc51-58-59-restoration-20260923, merged c68a1059 into origin/in... |
+| GAP-012 | P2 | domain_gap/run_alignment_and_matching.py | **fixed** | f541c745 (merged 1c8caa2c into origin/integration/production-large-map-20260918) |
+| GAP-013 | P2 | domain_gap/tile_grid_meta.py -- duplicate-module suspected | **closed (non-reproducible)** | Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 20... |
+| GAP-014 | P2 | topology/junction_model.py -- test-pollution suspected | **closed (non-reproducible)** | Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 20... |
+| GAP-015 | P3 | domain_gap_gnn -- RQ4 provenance | **closed (non-reproducible)** | unassigned; confirmed non-reproducible by coordinator, 2026-09-23 |
+| GAP-016 | P2 | tests/unit/test_regen_find_final_xodr_hygiene.py -- obsolete test c... | **fixed** | 6e9fb064 (merged 1c8caa2c into origin/integration/production-large-map-20260918); a sec... |
+| GAP-017 | P1 | live CARLA -- Grid0828/manual_grid0821 data-collection readiness | blocked_external | Codex (2026-09-22/23, multiple real attempts); Claude (2026-09-24, audio-mixer-disable ... |
+| GAP-018 | P1 | UE4 cook readiness -- engine source access | in_progress (UE4 build) | user resolved the GitHub/Epic org-access issue directly; the build was then started and... |
+| GAP-019 | P2 | domain_gap/DEM+elevation canonical sampling -- 8-issue cluster (Pac... | **fixed (7/8, 1 by design)** | fix/dem-elevation-canonical-sampling-v2-20260923, merged c68a1059 into origin/integrati... |
+| GAP-020 | P2 | pipeline_stages/stage_09_positional_semantics.py + tiling -- scope-... | **fixed (split; store.py via GAP-011c)** | fix/building-multipolygon-fidelity-v3-split-20260923 (2 commits: 0473b280 scope-separat... |
+| GAP-021 | P0 | osm/osm_to_xodr_wrapper.py -- CRS/projection authority | **fixed (corrected root cause)** | 870c56a2 (merged into origin/integration/production-large-map-20260918) |
+| GAP-022 | P2 | ultimate_pipeline/tools/final_map_readiness_gate.py -- evidence bin... | **fixed (SHA256-bound)** | e6052360/23913504 (visual half, via fix/final-readiness-evidence-binding-v4-reconciled-... |
+| GAP-023 | P2 | ultimate_pipeline/config/settings.py -- mtime authority | **fixed** | b09fd6e3 (merged into origin/integration/production-large-map-20260918 via fdf91aff) |
+| GAP-024 | P0 | ultimate_pipeline/contracts/writer_lock.py -- multi-agent write-own... | **fixed** | b396191f (merged into origin/integration/production-large-map-20260918) |
+| GAP-025 | P1 | ultimate_pipeline/artifacts/semantic_diff.py -- mutation-detection ... | **fixed** | 252432aa (merged into origin/integration/production-large-map-20260918) |
+| GAP-026 | P1 | ultimate_pipeline/lanes/lanelink_builder.py + pipeline_stages/stage... | open (needs policy) | direct-dispatched Claude subagent (2026-09-24), lane-link/FBX readiness audit -- found,... |
 
-Totals: 15 tracked, 8 fixed, 1 in progress, 2 deferred, 5 open, 0 blocked_external.
+Totals: 26 tracked, 19 fixed, 3 closed (non-reproducible), 1 deferred, 1 open, 1 blocked_external, 1 in_progress. GAP-010 retrain remains `BLOCKED_EXTERNAL` (residual on a fixed issue).
 
-**Update 2026-09-22 (part 2)**: a full bare `pytest` run on the WIP checkpoint
-(`fix/xodr-validator-convergence-v1-20260921` @ `f245540f`) came back
-5914 collected / 5908 passed / 4 failed / 2 skipped. All 4 failures are real
-and root-caused, not flaky: GAP-012 (unguarded mtime authority, well-scoped),
-GAP-013 and GAP-014 (both look like the same duplicate-module/import-collision
-class this repo already has a dedicated regression test for — GAP-014 notably
-passes in total isolation and only fails as part of the full suite, strong
-evidence of cross-test state pollution rather than a logic bug), and GAP-015
-(a config-builder-sharing assertion for RQ4, secondary to GAP-010).
+## Active open / blocked items (2026-09-24)
 
-Also confirmed via `git reflog` in the shared main checkout that another agent
-(apparently OpenCode) is live-rebasing OC-35/OC-42 onto the verified tip right
-now — exactly the GAP-011 reconciliation this register calls for. The main
-checkout is a genuinely shared, actively-contested workspace; further
-bookkeeping for this register happens from an isolated worktree going forward.
-
-**Update 2026-09-22**: GAP-005 (`e2befc36`) merged (`f5333f3a`) and pushed to
-`origin/integration/production-large-map-20260918`. Two new findings surfaced by a
-2026-09-22 survey of work that accumulated 2026-09-18..09-21 outside this thread's
-direct supervision (OpenCode, Codex, and continued autonomous execution of this
-same master program by other sessions/agents):
-
-- **GAP-010 (P0, open, top priority)**: `reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json`
-  reports `status: "FAIL"` — the RQ4 eval reference file `manual_grid0821.xodr`
-  hash-matches content already in the training set. Must be root-caused and fixed
-  before any RQ4 GNN number is trusted.
-- **GAP-011 (P1, in progress)**: real, tested, but unintegrated work is sitting across
-  (a) a WIP checkpoint branch `fix/xodr-validator-convergence-v1-20260921` containing
-  5 legitimate report-backed packages (Semantic Organizer Hardening, RQ3 Paired-Capture
-  Contract, RQ4 GNN Provenance, Map Registry Integrity, XODR Validator Convergence)
-  mixed with an unreviewed OC-26 change and some scratch files, (b) 10 unpushed
-  OpenCode branches (OC-35..OC-43 + VAP), and (c) 2 unpushed Codex branches overlapping
-  already-shipped P0-C scope. None of it is lost, none of it is merged.
+- **GAP-026 (P1, open)**: lane-link pose-continuity is a dead signal in `lanelink_builder.py`; needs a human policy decision before any fix is dispatched.
+- **GAP-017 (P1, blocked_external)**: live CARLA RPC handshake still fails after audio-mixer-disable probe — blocks RQ3/RQ5a capture.
+- **GAP-018 (P1, in_progress)**: Epic/GitHub access resolved; UE4.26 compile running (`G:\UnrealEngine_4.26_CARLA`), `UE4Editor.exe` not yet present; cook not yet attempted.
+- **GAP-010 residual**: leakage exclusion mechanism fixed and tested; leak-free RQ4 retrain not yet run — RQ4 numbers stay non-citable until it completes.
+- **GAP-008 (P1, deferred)**: two geometry-authority packages; consolidation plan only (no RQ blocked directly).
 
 See `MASTER_GAP_REGISTER.json` for full detail per issue (proof, affected files, consequence,
 fixing commit, regression test, evidence artifact, residual risk). Updated after every subagent
 handback per this program's integration discipline (Section 33).
 
-## Two genuinely new, previously-untracked findings this round
+## Historical notes (2026-09-18 discovery round)
 
-- **GAP-006** (P0, live bug): `xodr_junction_links.py::_geom_end` silently returned a road segment's
-  *start* pose for arc/spiral/poly3 endpoints instead of the true endpoint — wired into the live
-  junction-connector matching path. Found opportunistically during the geometry-consolidation audit,
-  not part of the original scope. Fixed and tested.
-- **GAP-008** (P1, architectural, deferred deliberately): two independent, actively-maintained
-  "canonical" OpenDRIVE geometry packages exist with no shared imports (~30 vs ~8 active callers).
-  A new cross-oracle test proves they agree numerically (17/17 cases, 1e-6..1e-9) but nothing prevents
-  future drift since they don't share code. Recommend a dedicated follow-up to pick one authority.
+- **GAP-006** (P0, fixed): `xodr_junction_links.py::_geom_end` returned start pose for arc/spiral/poly3 endpoints.
+- **GAP-008** (P1, deferred): dual geometry-authority packages; cross-oracle agrees numerically but no shared imports prevent drift.
+- **GAP-010/GAP-011**: see JSON and `reports/production_readiness/20260923_MASTER_CLOSURE_PLAN/PLAN.md` for the dependency chain.

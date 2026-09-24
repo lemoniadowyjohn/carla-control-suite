@@ -356,3 +356,30 @@ POST_AUDIT_HARDENING_PROMPT.md
 # map-of-record XODR + tile FBX artifacts; never commit the large binaries this
 # stages (XODR can be 100+ MB, FBX tiles multi-MB each).
 /Import/
+
+# Transient TILE_BASED_FBX_GENERATION_PROBE reruns (keep the original
+# 20260915T171346Z design/PROBE_RESULT evidence tracked; ignore later dumps).
+/reports/production_readiness/2026092*_TILE_BASED_FBX_GENERATION_PROBE/
+/reports/production_readiness/20260924*_TILE_BASED_FBX_GENERATION_PROBE/
+
+# Local recovery / disk-staging scratch (not part of the pipeline).
+/build_disk_map.ps1
+/check_dest.ps1
+/check_hashes.sh
+/final_recover.ps1
+/fix_final.ps1
+/make_candidates.sh
+/recovery_master.sh
+/recovery_stage2.sh
+/resume_final.ps1
+/size_paths.sh
+/stability_recheck.ps1
+/stage_missing.sh
+/stage_rest.sh
+/stage_small_c.sh
+/stage_to_c.sh
+/verify_dest.ps1
+/win_copy.ps1
+/win_copy2.ps1
+/_final_verify/
+/META-INF/

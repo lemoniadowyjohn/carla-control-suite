@@ -2,8 +2,12 @@
 
 Navigation authority for this repository's documentation. Reflects the **actual current structure**
 as of baseline `2e020d9b` (branch `review/claude-independent-audit-20260906`) -- not an aspirational
-layout. See `DOCS_INFORMATION_ARCHITECTURE.md` (repo root) for the reconciled target structure and
-what a future mechanical migration would move where.
+layout. Active production work and gap tracking now live on
+`integration/production-large-map-20260918` (gap register:
+`reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.md`;
+closure plan: `reports/production_readiness/20260923_MASTER_CLOSURE_PLAN/PLAN.md`). See
+`DOCS_INFORMATION_ARCHITECTURE.md` (repo root) for the reconciled target structure and what a
+future mechanical migration would move where.
 
 ## Start here
 

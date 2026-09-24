@@ -1,7 +1,7 @@
 {
   "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-18T00:00:00Z",
+  "last_updated_utc": "2026-09-24T00:00:00Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -9,7 +9,10 @@
       "subsystem": "tiling/large_map_package.py",
       "description": "_copy_file() used os.link() (hardlink) with copy fallback only on OSError. On this NTFS volume hardlinking always succeeded, so staged artifacts were the same inode as their source with zero hash verification -- a source mutation after staging silently propagated to the staged copy.",
       "proof": "Failing test: mutate source after staging, staged copy changed too (pre-fix).",
-      "affected_files": ["ultimate_pipeline/tiling/large_map_package.py", "tests/unit/test_large_map_package.py"],
+      "affected_files": [
+        "ultimate_pipeline/tiling/large_map_package.py",
+        "tests/unit/test_large_map_package.py"
+      ],
       "scientific_runtime_consequence": "Staged/packaged artifacts could not be trusted as independent, content-addressed copies -- undermines every downstream SHA-256 authority claim for staged large-map packages.",
       "owner_subagent": "direct (coordinator)",
       "status": "fixed",
@@ -24,7 +27,10 @@
       "subsystem": "tiling/tile_fbx_generator.py",
       "description": "generate_tile_fbx()'s result.status was hardcoded to \"ok\" unconditionally regardless of the tri-state roundtrip_ok (True/False/None) result -- a real geometry-roundtrip mismatch would never fail scripts/cook_full_grid_tiles.py's exit code.",
       "proof": "Original audit framing (single hardcoded assignment at point of origin, not a later write clobbering an earlier FAIL -- corrected by the fixing subagent).",
-      "affected_files": ["ultimate_pipeline/tiling/tile_fbx_generator.py", "tests/unit/test_tile_fbx_generator.py"],
+      "affected_files": [
+        "ultimate_pipeline/tiling/tile_fbx_generator.py",
+        "tests/unit/test_tile_fbx_generator.py"
+      ],
       "scientific_runtime_consequence": "A silently corrupted FBX roundtrip could pass the whole tile-cook pipeline undetected.",
       "owner_subagent": "direct (coordinator)",
       "status": "fixed",
@@ -39,7 +45,11 @@
       "subsystem": "main_pipeline.py / artifact authority",
       "description": "MainPipeline.run() produced map_acceptance.json, map_content_fingerprint.json, preflight validation, and a determinism fingerprint BEFORE junction_link_integrity and map_hygiene run -- both of which can mutate structure (patch links; quarantine/delete roads; modify lanes; repair z-seams/lane-width discontinuities; add G6 lane links) and could even change final_out's path. Pipeline-level acceptance/fingerprints could therefore certify a pre-final XODR.",
       "proof": "CONFIRMED with exact line numbers (main_pipeline.py @234e1ef1: acceptance 2315-2326, fingerprint 2336, preflight 2343, determinism 2344 -- all BEFORE junction_link_integrity@2347 and map_hygiene@2389). Mechanically reproduced (not assumed): ordering assertions run against the unfixed file failed with explicit offset evidence; same assertions pass against the fixed file.",
-      "affected_files": ["ultimate_pipeline/main_pipeline.py", "ultimate_pipeline/contracts/stage_capabilities.py", "ultimate_pipeline/contracts/artifact_authority.py (new)"],
+      "affected_files": [
+        "ultimate_pipeline/main_pipeline.py",
+        "ultimate_pipeline/contracts/stage_capabilities.py",
+        "ultimate_pipeline/contracts/artifact_authority.py (new)"
+      ],
       "scientific_runtime_consequence": "Every downstream consumer of map_acceptance.json/map_content_fingerprint.json (including research campaigns) could have been trusting evidence about a map state that didn't match what's actually on disk as \"final\". Now fixed: all evidence producers run after both mutating stages, against the actually-published final_out, with a fail-closed ledger detecting stale evidence (wrong path/bytes/invalidated capability).",
       "owner_subagent": "a0fc461e58ef06e59 (P0 work package C)",
       "status": "fixed",
@@ -54,7 +64,9 @@
       "subsystem": "geometry/geometry_math.py",
       "description": "Legacy GeometryCalculator's spiral/paramPoly3 logic contained placeholder straight-line behavior (_integrate_spiral/_integrate_parampoly3 both ignored all curvature/coefficients, returning x+length*cos(hdg) etc. regardless of actual shape), diverging from the canonical opendrive_geometry_kernel.py.",
       "proof": "CONFIRMED REAL by direct code read before fix. Both functions' bodies quoted verbatim in subagent report -- literal straight-line stubs with comments 'Needs actual spiral/parampoly3 implementation'.",
-      "affected_files": ["ultimate_pipeline/geometry/geometry_math.py"],
+      "affected_files": [
+        "ultimate_pipeline/geometry/geometry_math.py"
+      ],
       "scientific_runtime_consequence": "Any live caller of the legacy path got wrong curved-geometry endpoints.",
       "owner_subagent": "afed7bcc6adcb5bd9 (P1 work package F -- note: task/agentId mapping corrected here, was mislabeled ab5d110e2573e658b/G in the original entry)",
       "status": "fixed",
@@ -64,12 +76,32 @@
       "residual_risk": "none for this specific fix; see GAP-008 for a related unresolved architectural question this task surfaced"
     },
     {
+      "id": "GAP-005",
+      "severity": "P1",
+      "subsystem": "quality/check_lane_count_changes.py",
+      "description": "3007/45178 lane-count transitions are classified 'unexplained' because the 'explained' bucket requires OSM lane_count_source provenance that only 0.4% of driving lanes carry at all -- a measurement-design problem, not necessarily 3007 real defects. No classification currently distinguishes ordinary merge/split/junction transitions from genuinely suspicious ones.",
+      "proof": "2026-09-17 investigation (see memory project_step7_empty_planview_connector_bug_20260916): gate postdates the previous pin, first-ever measurement, 0.4% provenance coverage confirmed. RESOLVED: real classifier built and run against the pinned map -- ALL 3,007/3,007 findings resolve to real evidence (175 source_proven_lane_change; 2,832 junction_transition, split 1,406 declared_connection-tier [laneLink/@to id count independently verified against connecting road's actual driving-lane count, 1,406/1,406 consistent] + 1,426 connector_adjacent-tier). 0 suspicious_unexplained_discontinuity, 0 unresolved_link. Two independent systematic-defect checks run across all 3,007 cases found zero mismatches.",
+      "affected_files": [
+        "ultimate_pipeline/quality/check_lane_count_changes.py",
+        "ultimate_pipeline/quality/classify_lane_count_transitions.py (new)"
+      ],
+      "scientific_runtime_consequence": "Working hypothesis (ordinary transitions dominate) CONFIRMED more strongly than expected -- 100%, not just dominant. The lane-topology gate can now be certified with confidence: the 3007 count is not evidence of a generator defect. Original raw unexplained_changes metric preserved verbatim for historical reproducibility.",
+      "owner_subagent": "ab5d110e2573e658b (P1 work package G -- note: task/agentId mapping corrected here, was mislabeled afed7bcc6adcb5bd9/F in the original entry)",
+      "status": "fixed",
+      "fixing_commit": "e2befc36, merged f5333f3a and pushed to origin/integration/production-large-map-20260918 on 2026-09-22 (was pending merge as of the 2026-09-18 entry; confirmed pushed this update)",
+      "regression_test": "ultimate_pipeline/tests/unit/test_classify_lane_count_transitions.py (12 tests, one synthetic XODR fixture per category)",
+      "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/lane_count_classification.{json,md}",
+      "residual_risk": "LOW -- one important caveat surfaced: naive junction-road adjacency is NOT discriminating in this map (~70% of all 32,267 roads are junction connecting roads), so the classifier deliberately requires stronger declared-connection-with-laneLink-verification or independent-connector-registration evidence rather than plain adjacency. Not wired into scripts/measure_candidate_acceptance.py or PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- deliberately out of scope (would touch the already-pinned acceptance-gate contract), flagged as a natural follow-up."
+    },
+    {
       "id": "GAP-006",
       "severity": "P0",
       "subsystem": "map_fixes/xodr_junction_links.py",
       "description": "_geom_end() -- LIVE, wired into main_pipeline.py via patch_junction_links/patch_xodr_junction_links -- only recognized <line> and <paramPoly3> planView children. Any road ending in an <arc>, <spiral>, or <poly3> segment fell through to return the segment's START pose (x, y, hdg unchanged), silently treated as a zero-length no-op. Even the paramPoly3 branch always returned the unrotated start heading, never the true endpoint tangent.",
       "proof": "Found and confirmed by the P1-F subagent while auditing geometry duplication (not previously known/tracked). Reproduced empirically: arc curvature=0.1, length=10 -- legacy returned (0,0,0), true kernel endpoint is (8.41, 4.60, heading=1.0). TDD integration test added proving a correctly-connected curved-segment road was falsely flagged in suspicious_matches pre-fix.",
-      "affected_files": ["ultimate_pipeline/map_fixes/xodr_junction_links.py"],
+      "affected_files": [
+        "ultimate_pipeline/map_fixes/xodr_junction_links.py"
+      ],
       "scientific_runtime_consequence": "Junction-connector distance matching (_road_endpoints -> patch_junction_links) could silently corrupt d_start/d_end for any road ending in a non-line/non-paramPoly3 segment -- risk of picking the wrong predecessor/successor slot, or falsely flagging correct connections as suspicious, in the LIVE production pipeline (not a dormant/dead path like several other findings this session).",
       "owner_subagent": "afed7bcc6adcb5bd9 (found during P1 work package F)",
       "status": "fixed",
@@ -84,7 +116,9 @@
       "subsystem": "tools/xodr_carla_hardener.py",
       "description": "_parampoly3_sample was a second, independently-broken paramPoly3 placeholder (y=qy, ignoring b/c/d coefficients per its own comment). Confirmed dead code via repo-wide grep -- never called anywhere.",
       "proof": "grep-confirmed zero call sites.",
-      "affected_files": ["ultimate_pipeline/tools/xodr_carla_hardener.py"],
+      "affected_files": [
+        "ultimate_pipeline/tools/xodr_carla_hardener.py"
+      ],
       "scientific_runtime_consequence": "None currently (dead code), but was a landmine for any future caller.",
       "owner_subagent": "afed7bcc6adcb5bd9 (found during P1 work package F)",
       "status": "fixed",
@@ -99,7 +133,13 @@
       "subsystem": "geometry authority -- architectural",
       "description": "Two genuinely independent, actively-maintained 'canonical' OpenDRIVE geometry packages exist in this repo with no shared imports: ultimate_pipeline/geometry/opendrive_geometry_kernel.py (~30 active callers, RK4 spiral integration, last touched 2026-09-15) and opendrive_geometry/ at repo root (primitives.py/evaluator.py/model.py/freeze.py, ~8 active callers, STRICT/CLAMP/EXTRAPOLATE range policies, adaptive-Simpson spiral integration, own 24+-test suite, last touched 2026-08-02). Deliberately NOT resolved this pass -- reconciling ~38 combined active callers across two mature packages is a much bigger, higher-risk decision than one sound pass should force through.",
       "proof": "Full repo sweep during P1-F; both packages read in full, confirmed no cross-imports, confirmed both actively used by production callers.",
-      "affected_files": ["ultimate_pipeline/geometry/opendrive_geometry_kernel.py", "opendrive_geometry/primitives.py", "opendrive_geometry/evaluator.py", "opendrive_geometry/model.py", "opendrive_geometry/freeze.py"],
+      "affected_files": [
+        "ultimate_pipeline/geometry/opendrive_geometry_kernel.py",
+        "opendrive_geometry/primitives.py",
+        "opendrive_geometry/evaluator.py",
+        "opendrive_geometry/model.py",
+        "opendrive_geometry/freeze.py"
+      ],
       "scientific_runtime_consequence": "Two independent numerical authorities for the same math is a latent divergence risk -- currently mitigated (not eliminated) by a new cross-oracle test proving 17/17 spot-checked cases agree to 1e-6..1e-9, but nothing prevents future drift since they don't share code.",
       "owner_subagent": "afed7bcc6adcb5bd9 (found during P1 work package F)",
       "status": "deferred",
@@ -114,7 +154,9 @@
       "subsystem": "pipeline_stages/stage_09_tiling.py",
       "description": "With UP_ENABLE_ROAD_LINK_TARGET_REPAIR=1 (default \"0\"), stage_09_tiling.py writes *_road_link_repaired.xodr and tiles from THAT file instead of final_out -- a post-STRUCTURE_FROZEN road-link mutation feeding the tiles that final_out never reflects. Does not corrupt the acceptance receipt itself (final_out path is never reassigned), but tiles can derive from structurally different content than what's certified.",
       "proof": "Found and documented by the P0-C subagent while implementing the STRUCTURE_FROZEN guards; confirmed via the after_tiling assertion guard now in place.",
-      "affected_files": ["ultimate_pipeline/pipeline_stages/stage_09_tiling.py"],
+      "affected_files": [
+        "ultimate_pipeline/pipeline_stages/stage_09_tiling.py"
+      ],
       "scientific_runtime_consequence": "If this flag is ever enabled, visual tiles could silently derive from a different structural state than the certified final XODR -- relevant to P1 work packages H/K/L (visual tiling) if/when this flag is used.",
       "owner_subagent": "a0fc461e58ef06e59 (found during P0 work package C); fixed by an unidentified agent/session between 2026-09-19 and 09-21 (commit c5b09591 'fix(production): prohibit post-freeze tile repair', already on the production tip as of 98d47e38/65eb0f14)",
       "status": "fixed",
@@ -129,7 +171,10 @@
       "subsystem": "domain_gap_gnn / RQ4 GNN provenance",
       "description": "audit_leakage() (new, added by the 2026-09-19 RQ4 GNN provenance hardening pass, report dir reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/) reports status=FAIL for source_map_identity_overlap: the eval-pair reference file cities/ingolstadt/manual_grid0821.xodr (sha256 69ee3498...42e8) hash-matches content already present in the training set. This is a genuine train/eval content-identity leak, not a false-positive in the checker (the checker's own coverage note says the historical C21 split audit is separately INCOMPLETE due to missing tile bytes in this checkout -- that is a different, secondary limitation, not the reason for this FAIL).",
       "proof": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json, status: \"FAIL\", eval_pair_content_in_training_set lists the exact matching sha256.",
-      "affected_files": ["ultimate_pipeline/domain_gap_gnn/gnn_provenance.py", "cities/ingolstadt/manual_grid0821.xodr"],
+      "affected_files": [
+        "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py",
+        "cities/ingolstadt/manual_grid0821.xodr"
+      ],
       "scientific_runtime_consequence": "Any RQ4 GNN structural-latent result computed against a checkpoint trained with this leak cannot be trusted as an honest train/eval split -- this must be root-caused and fixed (or the affected checkpoint's provenance downgraded) before any RQ4 number is cited as VERIFIED_RESEARCH.",
       "owner_subagent": "unknown (found) -- Codex (2026-09-23) attempted completion, correctly determined it was blocked at the time; direct-dispatched Claude subagent (2026-09-23) implemented the real fix after the blocker cleared",
       "status": "fixed -- retrain itself remains BLOCKED_EXTERNAL (see residual_risk)",
@@ -144,7 +189,11 @@
       "subsystem": "integration debt -- unreconciled parallel-agent work",
       "description": "Between 2026-09-18 and 2026-09-22, substantial further work accumulated outside the verified integration lineage: (a) 5 report-backed packages committed directly, uncommitted-then-WIP-checkpointed, into the primary checkout on branch fix/xodr-validator-convergence-v1-20260921 (Semantic Organizer Hardening, RQ3 Paired-Capture Contract, RQ4 GNN Provenance [see GAP-010], Map Registry Integrity, XODR Validator Convergence), mixed in the same tree with an unreviewed OC-26 coordinate-control change, several root-level scratch scripts (fix_*.py), a .bak file, and two embedded Codex git repos accidentally added as gitlinks; (b) 10 real, tested, but unpushed/unmerged OpenCode branches (OC-35 through OC-43, plus a VAP visual-asset-preflight branch), all based on the pre-P1-F/P1-G baseline; (c) 2 unpushed Codex branches (fix/p0-c-receipt-authority-20260919, fix/artifact-transaction-integrity-v1-20260921) overlapping already-shipped P0-C scope, needing reconciliation not blind merge.",
       "proof": "git worktree list + git merge-base --is-ancestor checks across all branches; full detail in the 2026-09-22 coordinator survey (this session).",
-      "affected_files": ["fix/xodr-validator-convergence-v1-20260921 (WIP checkpoint commit 7e6214ac)", "10 OpenCode branches under C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\", "2 Codex branches under .codex/worktrees/"],
+      "affected_files": [
+        "fix/xodr-validator-convergence-v1-20260921 (WIP checkpoint commit 7e6214ac)",
+        "10 OpenCode branches under C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\",
+        "2 Codex branches under .codex/worktrees/"
+      ],
       "scientific_runtime_consequence": "None of this is lost (all pushed/committed as of this update), but none of it is verified-integrated either -- it must be triaged, rebased onto the verified checkpoint (origin/integration/production-large-map-20260918 @ f5333f3a), re-tested, and merged individually before any of its claims can be relied on.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), after two unsuccessful OpenCode attempts",
       "status": "fixed -- all of parts a/b/c now closed",
@@ -159,7 +208,9 @@
       "subsystem": "domain_gap/run_alignment_and_matching.py",
       "description": "test_mtime_audit.py's regression guard (from the 2026-09-18 MTIME_AUTHORITY_AUDIT) fails against this file: _safe_latest_output_dir (line 43) and _find_latest_final_xodr (line 68) both sort candidates by mtime (os.path.getmtime / Path.stat().st_mtime) with no structural guard (no SHA256/provenance check, no _repaired_sibling_exists-style guard) before treating the newest-by-mtime file as authoritative -- exactly the false-green pattern this repo's own audit convention flags.",
       "proof": "ultimate_pipeline/tests/unit/test_mtime_audit.py::TestMtimeAuthorityRegression::test_no_unprotected_mtime_authority[run_alignment_and_matching.py] FAILED against a full bare-pytest run on the WIP checkpoint (fix/xodr-validator-convergence-v1-20260921 @ f245540f: 5914 collected, 5908 passed, 4 failed, 2 skipped), citing both lines by number.",
-      "affected_files": ["ultimate_pipeline/domain_gap/run_alignment_and_matching.py"],
+      "affected_files": [
+        "ultimate_pipeline/domain_gap/run_alignment_and_matching.py"
+      ],
       "scientific_runtime_consequence": "If two candidate output/xodr files exist with the wrong relative mtimes (e.g. after a rebase, a restore, or a clock skew), alignment/matching could silently operate on the wrong artifact with no content-identity check.",
       "owner_subagent": "direct-dispatched subagent (2026-09-22)",
       "status": "fixed",
@@ -174,7 +225,11 @@
       "subsystem": "domain_gap/tile_grid_meta.py -- duplicate-module suspected",
       "description": "test_safe_float_nan_sweep_batch2.py::TestTileGridMetaBoundsFromXodr::test_nan_coordinate_excluded_from_bbox fails with ImportError: cannot import name '_infer_tile_size_from_bbox' from ultimate_pipeline.domain_gap.tile_grid_meta -- but the function demonstrably exists at line 64 of that exact file on disk. A duplicate copy exists at submission/infrastructure/ultimate_pipeline/domain_gap/tile_grid_meta.py (both copies were already modified/dirty at this session's very start, predating this investigation). Strongly suspected sys.path collision or stale __pycache__, the same class of bug tests/phase_q/test_duplicate_module_drift.py exists to catch -- not yet confirmed which.",
       "proof": "Full-suite WIP run FAILED with the ImportError; direct grep confirms the function exists in the file the error names. Needs investigation, not yet root-caused to a fix.",
-      "affected_files": ["ultimate_pipeline/domain_gap/tile_grid_meta.py", "submission/infrastructure/ultimate_pipeline/domain_gap/tile_grid_meta.py", "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py"],
+      "affected_files": [
+        "ultimate_pipeline/domain_gap/tile_grid_meta.py",
+        "submission/infrastructure/ultimate_pipeline/domain_gap/tile_grid_meta.py",
+        "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py"
+      ],
       "scientific_runtime_consequence": "Unknown until root-caused -- if it's a genuine import-order/duplicate-package collision in production code paths (not just tests), two different copies of tile-grid logic could be live depending on import order.",
       "owner_subagent": "Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 2026-09-23)",
       "status": "closed -- confirmed non-reproducible on clean production",
@@ -189,7 +244,10 @@
       "subsystem": "topology/junction_model.py -- test-pollution suspected",
       "description": "tests/topology/test_junction_model.py::test_junction_validator_lane_links_out_of_range fails with AttributeError: 'dict' object has no attribute 'roads' inside validate_lane_links, at a line (ll.from_lane comparison) that cannot produce that error from the source as currently read -- LaneLink is a plain frozen dataclass with no .roads reference anywhere. The test PASSES in isolation (confirmed: `pytest tests/topology/test_junction_model.py::test_junction_validator_lane_links_out_of_range` alone -- 1 passed). Only fails as part of the full suite -- strong evidence of cross-test state pollution (a monkeypatch or module-level mutation from an earlier test, not cleaned up) rather than a logic bug in junction_model.py itself. A stale build/lib/ultimate_pipeline/topology/junction_model.py copy also exists (dated 2026-07-30) but was checked and does not appear to explain it.",
       "proof": "Full-suite WIP run FAILED at ~61% progress; isolated re-run of the exact same test PASSED cleanly. Root cause not yet found -- needs bisection to identify which earlier test leaves state behind.",
-      "affected_files": ["ultimate_pipeline/topology/junction_model.py (symptom only, not necessarily the bug's location)", "tests/topology/test_junction_model.py"],
+      "affected_files": [
+        "ultimate_pipeline/topology/junction_model.py (symptom only, not necessarily the bug's location)",
+        "tests/topology/test_junction_model.py"
+      ],
       "scientific_runtime_consequence": "If a test leaks a monkeypatch into shared module state, production code exercised later in the same process could silently run the patched version -- needs the actual polluting test identified before ruling out a real risk.",
       "owner_subagent": "Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 2026-09-23)",
       "status": "closed -- confirmed non-reproducible on clean production",
@@ -204,7 +262,10 @@
       "subsystem": "domain_gap_gnn -- RQ4 provenance",
       "description": "tests/unit/test_rq4_gnn_provenance.py::test_train_and_ksweep_share_canonical_config_builders fails: asserts the literal string 'prov.build_training_config(' appears in the relevant training/k-sweep source, i.e. that both the training script and the k-sweep script delegate to the same canonical config builder rather than duplicating config-construction logic. Currently false on the WIP-merged state. The RQ4 GNN Provenance report (2026-09-19) claimed its own GNN-focused test subset was 79/79 green in isolation -- this specific cross-file consistency test may only fail once merged with unrelated WIP changes (e.g. OC-26), or may be a genuine pre-existing gap the 09-19 report's isolated run didn't cover. Not yet distinguished.",
       "proof": "Full-suite WIP run FAILED with the literal assertion mismatch, quoting the actual (non-matching) source line found.",
-      "affected_files": ["tests/unit/test_rq4_gnn_provenance.py", "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py (or the actual training/ksweep entrypoint script, not yet located)"],
+      "affected_files": [
+        "tests/unit/test_rq4_gnn_provenance.py",
+        "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py (or the actual training/ksweep entrypoint script, not yet located)"
+      ],
       "scientific_runtime_consequence": "If training and k-sweep genuinely build configs independently (not via the shared canonical builder), RQ4 checkpoint provenance claims about config identity between the two are unverified -- secondary to GAP-010's leakage FAIL.",
       "owner_subagent": "unassigned; confirmed non-reproducible by coordinator, 2026-09-23",
       "status": "closed -- confirmed non-reproducible on clean production, same pattern as GAP-013/GAP-014",
@@ -214,19 +275,56 @@
       "residual_risk": "NONE identified -- confirmed via direct isolated re-run plus corroborating full-suite evidence, not assumed from the isolated result alone. Root cause attributed to the same WIP-lineage contamination (fix/xodr-validator-convergence-v1-20260921 and adjacent OC-26 content) already established as the cause for GAP-013/GAP-014; the clean, reviewed production line was never actually affected."
     },
     {
-      "id": "GAP-005",
-      "severity": "P1",
-      "subsystem": "quality/check_lane_count_changes.py",
-      "description": "3007/45178 lane-count transitions are classified 'unexplained' because the 'explained' bucket requires OSM lane_count_source provenance that only 0.4% of driving lanes carry at all -- a measurement-design problem, not necessarily 3007 real defects. No classification currently distinguishes ordinary merge/split/junction transitions from genuinely suspicious ones.",
-      "proof": "2026-09-17 investigation (see memory project_step7_empty_planview_connector_bug_20260916): gate postdates the previous pin, first-ever measurement, 0.4% provenance coverage confirmed. RESOLVED: real classifier built and run against the pinned map -- ALL 3,007/3,007 findings resolve to real evidence (175 source_proven_lane_change; 2,832 junction_transition, split 1,406 declared_connection-tier [laneLink/@to id count independently verified against connecting road's actual driving-lane count, 1,406/1,406 consistent] + 1,426 connector_adjacent-tier). 0 suspicious_unexplained_discontinuity, 0 unresolved_link. Two independent systematic-defect checks run across all 3,007 cases found zero mismatches.",
-      "affected_files": ["ultimate_pipeline/quality/check_lane_count_changes.py", "ultimate_pipeline/quality/classify_lane_count_transitions.py (new)"],
-      "scientific_runtime_consequence": "Working hypothesis (ordinary transitions dominate) CONFIRMED more strongly than expected -- 100%, not just dominant. The lane-topology gate can now be certified with confidence: the 3007 count is not evidence of a generator defect. Original raw unexplained_changes metric preserved verbatim for historical reproducibility.",
-      "owner_subagent": "ab5d110e2573e658b (P1 work package G -- note: task/agentId mapping corrected here, was mislabeled afed7bcc6adcb5bd9/F in the original entry)",
+      "id": "GAP-016",
+      "severity": "P2",
+      "subsystem": "tests/unit/test_regen_find_final_xodr_hygiene.py -- obsolete test contract",
+      "description": "All 4 tests in this file fail against the current production tip (98d47e38), which includes commit ca3729c0 ('require receipt-authoritative final artifact', one of 5 commits found already sitting on this branch and pushed 2026-09-22). scripts/regen_map_of_record.py::_find_final_xodr now delegates to ultimate_pipeline/contracts/artifact_authority.py::resolve_final_artifact_receipt, whose own docstring states it 'deliberately does *not* inspect mtimes, glob candidate XODRs, or use a filename tiebreaker' -- i.e. it intentionally replaces the exact mtime/glob heuristic these 4 tests exercise (test_picks_hygiene_output_over_pre_hygiene_final_when_newer, test_falls_back_to_pre_hygiene_final_when_no_hygiene_output_present, test_hygiene_quarantine_only_still_picked_if_that_is_the_newest_stage, test_no_candidates_raises_filenotfounderror -- all construct synthetic tmp_path fixtures via filename+mtime ordering with no final_artifact_receipt.json, which the new resolver correctly rejects). This is NOT a regression in ca3729c0 -- it is exactly the kind of mtime-authority anti-pattern GAP-012 flags elsewhere, deliberately eliminated here. The 4 tests are obsolete, not the source code.",
+      "proof": "Full bare pytest against origin/integration/production-large-map-20260918 @ 98d47e38: 5886 passed, 4 failed (all in this one file), 5 skipped. Direct read of resolve_final_artifact_receipt's docstring and the 4 test bodies confirms they test superseded mtime/glob behavior, not a code defect.",
+      "affected_files": [
+        "tests/unit/test_regen_find_final_xodr_hygiene.py"
+      ],
+      "scientific_runtime_consequence": "None to production code -- the new receipt-based resolver is correct and should NOT be weakened to satisfy these tests. Risk is purely to CI signal: 4 permanently-red tests mask real future failures in this file.",
+      "owner_subagent": "direct-dispatched subagent (2026-09-22)",
       "status": "fixed",
-      "fixing_commit": "e2befc36, merged f5333f3a and pushed to origin/integration/production-large-map-20260918 on 2026-09-22 (was pending merge as of the 2026-09-18 entry; confirmed pushed this update)",
-      "regression_test": "ultimate_pipeline/tests/unit/test_classify_lane_count_transitions.py (12 tests, one synthetic XODR fixture per category)",
-      "evidence_artifact": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/lane_count_classification.{json,md}",
-      "residual_risk": "LOW -- one important caveat surfaced: naive junction-road adjacency is NOT discriminating in this map (~70% of all 32,267 roads are junction connecting roads), so the classifier deliberately requires stronger declared-connection-with-laneLink-verification or independent-connector-registration evidence rather than plain adjacency. Not wired into scripts/measure_candidate_acceptance.py or PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- deliberately out of scope (would touch the already-pinned acceptance-gate contract), flagged as a natural follow-up."
+      "fixing_commit": "6e9fb064 (merged 1c8caa2c into origin/integration/production-large-map-20260918); a second, independent fix for the same gap also exists at 219c4515 on fix/gap-016-receipt-authority-20260922, not merged (redundant, not needed)",
+      "regression_test": "tests/unit/test_regen_find_final_xodr_hygiene.py rewritten in place -- 4 new tests exercise the real contract (no-receipt-raises, valid-receipt-resolves-to-declared-file-ignoring-decoys, tampered-xodr-rejected, malformed-json-rejected); historical WS1.4 comment block preserved",
+      "evidence_artifact": null,
+      "residual_risk": "none identified -- resolve_final_artifact_receipt untouched, full bare pytest clean (5923 passed, 5 skipped, 0 failed) after merge with GAP-012 and the xodr_validator capability change"
+    },
+    {
+      "id": "GAP-017",
+      "severity": "P1",
+      "subsystem": "live CARLA -- Grid0828/manual_grid0821 data-collection readiness",
+      "description": "Formal tracking for the live-CARLA-capture blocker (previously only in free-text notes). Grid0828.xodr and manual_grid0821.xodr are both present and real, but cannot currently be loaded into a live CARLA client for perception-training data collection. Re-verified fresh on 2026-09-22, not a stale repeat: CarlaUE4.exe -nullrhi reaches 5.7GB RAM (real initialization) and port 2000 goes LISTENING (netstat-confirmed, owned by the CARLA PID) -- neither happened in the session's prior documented hang. A real carla.Client.get_server_version() call still hard-times-out after 30s with the process alive. The bug is now confirmed to be in the RPC protocol handshake layer specifically, not socket-level connectivity -- a materially narrower, more specific finding than the prior 'server never comes up' characterization.",
+      "proof": "Direct live attempt 2026-09-22: process launched, RAM/port state captured via tasklist/netstat, client call timed out with the process still alive (confirmed via tasklist before cleanup), CARLA process cleanly killed afterward, no orphaned instances left running.",
+      "affected_files": [
+        "E:\\CARLA\\CARLA_0.9.16 (packaged binary)",
+        "ultimate_pipeline/perception/rq3_capture_contract.py (offline side, real but not yet reintegrated -- see GAP-011)"
+      ],
+      "scientific_runtime_consequence": "RQ3's paired-capture protocol is code-ready (frame/rig mismatch already fixed) but cannot be exercised against live CARLA until this handshake bug is resolved -- blocks any real (non-synthetic) perception training data collection from either map.",
+      "owner_subagent": "Codex (2026-09-22/23, multiple real attempts); Claude (2026-09-24, audio-mixer-disable probe)",
+      "status": "blocked_external",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "G:\\CARLA\\build_logs\\gap017_nosound_20260922T231819Z.json; reports/production_readiness/20260923T000000Z_GAP017_RPC_HANDSHAKE/RESULTS.md; reports/production_readiness/20260924T000000Z_GAP017_AUDIOMIXER_PROBE/RESULTS.md (new, 2026-09-24)",
+      "residual_risk": "MEDIUM-HIGH, three real fix attempts now exhausted -- (1) cdb.exe stack capture during a live hang found the game thread blocked in FEventWin::Wait -> FAudioCommandFence::Wait -> FAudioDeviceManager::UpdateActiveAudioDevices -> UGameEngine::Tick; (2) -nosound (mutes output only) returned the same result -- port 2000 still listens, get_server_version() still hard-times-out; (3) 2026-09-24: launched with UE4 -ini: command-line overrides (-ini:Engine:[Audio]:UseAudioMixer=False, EnableAudioMixer=False, AudioDeviceModuleName=) targeting the Audio Mixer subsystem init path itself (confirmed via packaged WindowsEngine.ini that UseAudioMixer=true/AudioDeviceModuleName=XAudio2 was the live config), plus -nosound/-nullrhi as before. Result: STILL DOES NOT FIX THE HANDSHAKE -- get_server_version() hard-timed-out at both 30s and 60s with the process alive and port 2000 listening throughout. BUT two independent non-invasive cdb.exe snapshots (attach+dump+detach via qd, process never killed mid-probe) taken minutes apart show the game thread genuinely no longer stuck in the audio fence at all: no FAudioDeviceManager/FAudioCommandFence frame appears anywhere in a full 54-thread dump, no audio-mixer-named thread exists, the game thread stack differs materially between the two snapshots (normal per-frame FTaskGraphImplementation::WaitUntilTasksComplete in the first, FTickTaskLevel::QueueNewlySpawned bookkeeping in the second), and CPU sampling showed ~90 percent of one core actively consumed (not idle-blocked). This is a real, verified distinction from a true deadlock, not assumption. Conclusion: the audio-fence deadlock is eliminated by disabling the Audio Mixer subsystem, which rules out audio device enumeration as this configuration's blocker -- but the RPC handshake still fails regardless, so the remaining fault is most likely in CARLA's own RPC/networking layer (the carla-server plugin's rpclib/asio acceptor), not UE4 engine-level audio. No thread hosting an RPC acceptor was identified by name in either snapshot, which is itself a new, narrower open question. Remaining untried: tracing/attaching specifically to CARLA's RPC dispatch path (not yet located), full disable of Windows audio devices at the OS level, or building CARLA from source with audio subsystem code paths removed (only possible once/if the UE4 engine access blocker is resolved). Do not re-attempt further debugging passes without a genuinely new angle -- three real, careful attempts have now narrowed this to the RPC layer specifically."
+    },
+    {
+      "id": "GAP-018",
+      "severity": "P1",
+      "subsystem": "UE4 cook readiness -- engine source access",
+      "description": "Formalizes and corrects the earlier 'UE4.26 absent, straightforward install' framing. Attempting the documented CARLA build path (git clone --depth 1 -b carla https://github.com/CarlaUnreal/UnrealEngine.git) fails with 'remote: Repository not found' even though the user's GitHub account is linked to their Epic Games account. This is NOT evidence the repo doesn't exist, and is NOT something Codex (or any automated agent) can resolve -- it is a long-standing, widely-reported, chronic issue across the CARLA community (github.com/carla-simulator/carla issues #6401, #6632, #6681, #7654, #7775, #7826, #9806 -- the most recent dated 2026-07, still unresolved as of this pass). The documented root cause: Epic's GitHub org-invitation flow sometimes silently adds a newly-linked account to a decoy/mirror organization ('EpicGames-Mirror-A') instead of the real Epic Games org that actually has read access to CarlaUnreal/UnrealEngine -- an account can show as 'linked' while still lacking the specific org membership the private repo checks. Multiple affected users report having to explicitly request access to the CarlaUnreal/UnrealEngine 'carla' branch through Epic's own developer forums (forums.unrealengine.com) even after completing the standard account link.",
+      "proof": "Codex: `git ls-remote --heads https://github.com/CarlaUnreal/UnrealEngine.git carla` -> 'Repository not found (128)', 2026-09-23. Cross-referenced against CARLA's own current official documentation (carla.readthedocs.io/en/0.9.16/build_windows/, build_carla/) which still cites this exact clone command as correct/current -- confirming this is an access problem, not a stale/wrong URL.",
+      "affected_files": [
+        "G:\\UnrealEngine_4.26_CARLA (real clone + in-progress build, confirmed 2026-09-24)"
+      ],
+      "scientific_runtime_consequence": "Blocks the entire UE4 cook ladder (GAP-018's own original scope) regardless of code readiness -- no amount of pipeline/package work unblocks this without a working engine build; the access blocker is resolved but the build itself is not yet complete.",
+      "owner_subagent": "user resolved the GitHub/Epic org-access issue directly; the build was then started and is running unsupervised",
+      "status": "in_progress (external, unsupervised) -- access blocker resolved, real UE4 compile ongoing, not yet complete",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "G:\\UnrealEngine_4.26_CARLA (real clone, UE4.sln + UE4Games.uprojectdirs present, confirming GenerateProjectFiles ran)",
+      "residual_risk": "MEDIUM. This entry was stale (previously said 'G:\\UE4 still empty' / blocked_external) -- corrected here after direct verification on 2026-09-24: the clone succeeded once the user fixed GitHub/Epic org membership, and a genuine compile is confirmed actively running (UnrealBuildTool.exe + 11 live cl.exe processes observed directly via tasklist, several using 400MB-1.8GB RAM each -- not a stale/hung process). UE4Editor.exe does NOT yet exist under Engine/Binaries/Win64 (checked directly) -- the build has not finished. This is a multi-hour native C++ compile with no reliable ETA from outside; do not assume it will finish soon or that it will succeed cleanly (UE4.26 builds can fail late for toolchain/SDK-version reasons). Re-check periodically for UE4Editor.exe rather than re-attempting the clone/Setup.bat steps, which already succeeded. Once the editor exists, GAP-018's original scope (cook readiness) still needs the actual CARLA project cook attempted -- that is a distinct, not-yet-reached step even after this build finishes."
     },
     {
       "id": "GAP-019",
@@ -234,7 +332,14 @@
       "subsystem": "domain_gap/DEM+elevation canonical sampling -- 8-issue cluster (Package I)",
       "description": "Independent verification (2026-09-23) of a WIP checkpoint (a070aab9, explicitly self-flagged as NOT VERIFIED, NOT TESTED) targeting 8 documented DEM/elevation sampling bugs. The verifying subagent found the WIP was actually broken (an IndentationError prevented dem_provenance.py from importing at all, plus two other crashing/silently-wrong regressions the WIP itself introduced) and fixed all of it properly rather than trusting the checkpoint.",
       "proof": "reports/production_readiness/20260923_PACKAGE_I_DEM_CANONICAL_SAMPLING/RESULTS.md -- full per-issue status with real curved-geometry test evidence for each of the 8 original issues.",
-      "affected_files": ["ultimate_pipeline/quality/check_dem_coverage.py", "ultimate_pipeline/quality/check_dem_full_coverage.py", "ultimate_pipeline/enrichment/elevation_importer.py", "ultimate_pipeline/domain_gap/elevation_gap.py", "ultimate_pipeline/dem/dem_provenance.py", "ultimate_pipeline/dem/dem_identity.py"],
+      "affected_files": [
+        "ultimate_pipeline/quality/check_dem_coverage.py",
+        "ultimate_pipeline/quality/check_dem_full_coverage.py",
+        "ultimate_pipeline/enrichment/elevation_importer.py",
+        "ultimate_pipeline/domain_gap/elevation_gap.py",
+        "ultimate_pipeline/dem/dem_provenance.py",
+        "ultimate_pipeline/dem/dem_identity.py"
+      ],
       "scientific_runtime_consequence": "7 of 8 issues are now genuinely fixed and independently verified, closing several real false-green/silent-wrong-answer risks in DEM elevation sampling for curved roads -- most notably a header-offset-drop bug (issue 6) that broke road matching for any XODR pair with a non-trivial header offset, matching a known hazard class already flagged in this repo's own memory (frame-alignment bugs). Issue 8 (vertical-datum ground truth) remains open by necessity, not oversight -- honestly surfaced via a new vertical_datum_source field rather than silently assumed verified.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23)",
       "status": "fixed (7/8), 1 open by design",
@@ -249,7 +354,13 @@
       "subsystem": "pipeline_stages/stage_09_positional_semantics.py + tiling -- scope-mixed WIP (Package H)",
       "description": "A verification pass on the building-multipolygon-fidelity WIP branch (originally c9c64ccd) found a real, valuable fix (enforce_buildings_fail_closed was inside a try/except that silently swallowed building-load failures as warnings instead of propagating -- fixed by moving the enforcement call outside the try/except) PLUS a large (418-line), functionally-unrelated rewrite of ultimate_pipeline/artifacts/store.py implementing atomic candidate-promotion and path-containment safety -- content that does not exist anywhere on production and appears to be scope contamination from a different concern (artifact-transaction integrity, not building/multipolygon fidelity) bundled into the same WIP checkpoint. This matches a pattern seen repeatedly this session (WIP checkpoints commingling unrelated concerns, e.g. GAP-011's source WIP mixing OC-26/scratch-scripts/embedded-gitlinks).",
       "proof": "Full bare pytest on this branch: 4 failed, 5956 passed, 5 skipped. 3 failures in tests/unit/test_artifact_transactions.py (a new _validate_path_containment check rejects a pytest tmp_path on C: because the worktree/store root resolves under G: -- a real behavior introduced by the new store.py code, reproducible, not an environment fluke since the check itself is new). 1 failure in tests/unit/test_full_grid_tile_cook.py::test_densest_tile_is_first_in_cook_order (a hardcoded '>=626 buildings' threshold against real pinned Overpass data now returns 625 -- plausibly a correct side effect of a genuine multipolygon inner-ring/hole-handling fix in osm_polygon_loader.py that changes how buildings are counted, but not yet confirmed which).",
-      "affected_files": ["ultimate_pipeline/artifacts/store.py", "ultimate_pipeline/pipeline_stages/stage_09_positional_semantics.py", "ultimate_pipeline/enrichment/osm_polygon_loader.py", "tests/unit/test_artifact_transactions.py", "tests/unit/test_full_grid_tile_cook.py"],
+      "affected_files": [
+        "ultimate_pipeline/artifacts/store.py",
+        "ultimate_pipeline/pipeline_stages/stage_09_positional_semantics.py",
+        "ultimate_pipeline/enrichment/osm_polygon_loader.py",
+        "tests/unit/test_artifact_transactions.py",
+        "tests/unit/test_full_grid_tile_cook.py"
+      ],
       "scientific_runtime_consequence": "NOT merged into production pending this being resolved -- the fail-closed building-enforcement fix is real and valuable but is bundled with unreviewed, test-breaking, out-of-scope content. Deferred rather than force-merged, per this program's own discipline (an honest deferred result beats a rushed risky one).",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), did not complete before a rate-limit interruption; coordinator investigated the failures directly and made the deferral call",
       "status": "fixed -- building-fidelity split merged into production; store.py half correctly excluded (owned by GAP-011 part c instead)",
@@ -264,7 +375,10 @@
       "subsystem": "osm/osm_to_xodr_wrapper.py -- CRS/projection authority",
       "description": "osm_to_xodr_wrapper.py's Osm2OdrSettings construction never sets proj_string (grep-confirmed: no assignment to settings.proj_string anywhere in the file on current production), so carla.Osm2Odr.convert() silently uses its C++-side default +proj=tmerc +lat_0=0 +lon_0=0 regardless of the OSM data's actual real-world location. center_map also defaults to False (settings dataclass, line 51). An external audit (a separate Gemini-driven full-pipeline verification session, 2026-09-23) reproduced the consequence directly: a produced XODR's header claims EPSG:32632 (UTM 32N, Ingolstadt) but inverse-projecting its header coordinates (840138, 5464923) with the actual-default tmerc params lands at approximately lat 49.24/lon 13.67 -- Czech territory, not Ingolstadt (lat ~48.75/lon ~11.42). The true UTM32N coordinates were separately confirmed as approximately (678800, 5402445) via a corrected-proj_string reference conversion. This is a genuine, current, code-level defect (not stale evidence) -- confirmed by direct grep of origin/integration/production-large-map-20260918's actual file content, not assumed from the external report alone.",
       "proof": "git show origin/integration/production-large-map-20260918:ultimate_pipeline/osm/osm_to_xodr_wrapper.py | grep -n 'proj_string' returns zero assignment sites (only the dataclass field read at line ~173 for logging); center_map: bool = False at line 51. External audit's CRS_metadata.json + _final_verify/proj_audit.py inverse-projection reproduction (2026-09-23) supplies the consequence-level evidence (wrong real-world coordinates), not yet independently re-run by this coordinator.",
-      "affected_files": ["ultimate_pipeline/osm/osm_to_xodr_wrapper.py", "E:\\CARLA\\PythonAPI\\util\\osm_to_xodr.py (a second, CARLA-packaged conversion entrypoint also flagged by the same external audit, not yet inspected by this coordinator)"],
+      "affected_files": [
+        "ultimate_pipeline/osm/osm_to_xodr_wrapper.py",
+        "E:\\CARLA\\PythonAPI\\util\\osm_to_xodr.py (a second, CARLA-packaged conversion entrypoint also flagged by the same external audit, not yet inspected by this coordinator)"
+      ],
       "scientific_runtime_consequence": "Any XODR produced via this conversion path has header georeference metadata that does not match its actual real-world location -- this is upstream of and independent from the already-fixed GeoAligner schema-order/stale-header-bbox bugs (2026-09-14/16), and independent from the manifest-level EPSG:32632-with-large-UTM-offset candidate path, which appears to be a different, separately-governed code path. If any current map-of-record or campaign candidate was produced via this specific wrapper without an explicit proj_string override, its CRS metadata cannot be trusted as accurate -- this needs to be checked against which actual production maps used this path versus a corrected path before assuming impact scope.",
       "owner_subagent": "external audit session (Gemini, F-Drive-Audit branch, 2026-09-23) -- found; direct-dispatched Claude subagent (2026-09-23) fixed, with a critical correction to the external audit's suggested fix direction",
       "status": "fixed -- with a corrected root cause/fix direction, see residual_risk",
@@ -279,7 +393,9 @@
       "subsystem": "ultimate_pipeline/tools/final_map_readiness_gate.py -- evidence binding",
       "description": "Of the 3 sub-report evaluators in final_map_readiness_gate.py, only evaluate_connector_report() binds evidence to the actual XODR via SHA256 (output_sha256 field checked against safe_sha256_file(xodr_path), and even that is silently skipped when the field is absent -- no mismatch is raised, it just isn't checked). evaluate_visual_gate_report() and evaluate_perception_status() both trust their report dicts' 'ok'/status fields at face value with zero path or hash binding to the artifact under evaluation -- a report from a completely different map could be accepted as evidence for this one as long as filenames/paths line up externally.",
       "proof": "Direct read of ultimate_pipeline/tools/final_map_readiness_gate.py on origin/integration/production-large-map-20260918 @ dc5443fc: evaluate_connector_report() lines 184-190 (sha check, gated behind `if len(output_sha) == 64`); evaluate_visual_gate_report() lines 214-227 and evaluate_perception_status() lines 234-268 (no sha/hash/path-binding code anywhere in either function).",
-      "affected_files": ["ultimate_pipeline/tools/final_map_readiness_gate.py"],
+      "affected_files": [
+        "ultimate_pipeline/tools/final_map_readiness_gate.py"
+      ],
       "scientific_runtime_consequence": "A stale or wrong-map visual-smoke or perception-status report could be silently accepted as evidence for the current final XODR's readiness gate, undermining the fail-closed intent of the gate for 2 of its 3 sub-checks.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), master-prompt-triage task, item 8 -- found; GAP-011 OC-41 reconciliation fixed the visual half as a byproduct; a second direct-dispatched Claude subagent (2026-09-23) fixed the perception half",
       "status": "fixed -- all 3 sub-report evaluators now bind evidence to the target XODR by SHA256",
@@ -294,11 +410,13 @@
       "subsystem": "ultimate_pipeline/config/settings.py -- mtime authority",
       "description": "_resolve_input_xodr_with_fallback() (settings.py, used when UP_DATA_ROOT is set but UP_INPUT_XODR is not, called from settings.py line ~1809 to resolve self.INPUT_XODR for the next pipeline run) scans all 08_final*.xodr files under the output root and selects the newest by raw os.stat().st_mtime with zero content/hash/provenance verification -- the same class of bug GAP-012 already fixed once in ultimate_pipeline/domain_gap/run_alignment_and_matching.py.",
       "proof": "Direct read of ultimate_pipeline/config/settings.py lines 181-213 on origin/integration/production-large-map-20260918 @ dc5443fc: `if mtime > best_mtime: best_mtime = mtime; best_path = str(xodr)` inside a bare iterdir()/glob() loop, no structural or hash guard.",
-      "affected_files": ["ultimate_pipeline/config/settings.py"],
+      "affected_files": [
+        "ultimate_pipeline/config/settings.py"
+      ],
       "scientific_runtime_consequence": "If two candidate 08_final*.xodr files exist under the output root with the wrong relative mtimes (e.g. after a rebase, restore, or clock skew), this fallback could silently select the wrong file as the next run's input -- gated behind a non-default env-var combination (UP_DATA_ROOT set + UP_INPUT_XODR unset), so lower real-world exposure than GAP-012's original finding, but the same defect class.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23), master-prompt-triage task, item 2 -- found, not fixed (out of scope for a triage-only task)",
-      "status": "open",
-      "fixing_commit": null,
+      "status": "fixed",
+      "fixing_commit": "b09fd6e3 (merged into origin/integration/production-large-map-20260918 via fdf91aff)",
       "regression_test": null,
       "evidence_artifact": "reports/production_readiness/20260923T184022Z_MASTER_PROMPT_TRIAGE/RESULTS.md (docs/master-prompt-triage-20260923, pushed not merged) -- also lists several lower-severity mtime-authority instances across thesis/research tooling (run_full_domain_gap.py, run_gap_ablation_experiment.py, etc.) flagged for a future opportunistic sweep, not individually tracked here",
       "residual_risk": "LOW-MEDIUM -- same fix pattern as GAP-012 (structural/hash guard, mtime only as tiebreaker) should apply directly; well-scoped, low-risk, single-file fix."
@@ -309,7 +427,9 @@
       "subsystem": "ultimate_pipeline/contracts/writer_lock.py -- multi-agent write-ownership race",
       "description": "WriterLock.acquire() performs a genuine TOCTOU (time-of-check-to-time-of-use) race: exists()/is_live() check, then a decision, then an unconditional plain-text write (no O_CREAT|O_EXCL, no atomic rename) -- allowing multiple concurrent agents to all believe they hold exclusive write ownership simultaneously. A second, related bug: a stale (expired-lease) owner's own in-memory WriterLock object can later call .heartbeat() or .release() and unconditionally overwrite a DIFFERENT agent's legitimately-reclaimed lock, because neither method re-validates lock_id/ownership against what is actually currently on disk before writing -- .release()'s owned_by() check only compares against the stale caller's own remembered owner field, never re-reading the live file.",
       "proof": "Reproduced with 8 real multiprocessing.Process workers (Windows spawn context, separate interpreters, no GIL masking) released simultaneously via a shared Event, across 25 iterations: 25/25 iterations had more than one simultaneous 'winner' (most had all 8 succeed, ok=8/blocked=0). Second race reproduced via a sequential stale_owner_probe.py: agent-1 acquires with lease_minutes=0 (instant expiry) -> agent-2 correctly reclaims -> agent-1's original stale WriterLock object calls .heartbeat() -> on-disk owner silently reverts from agent-2 to agent-1, and agent-1.release(owner='agent-1') then marks agent-2's still-active lock 'released'.",
-      "affected_files": ["ultimate_pipeline/contracts/writer_lock.py"],
+      "affected_files": [
+        "ultimate_pipeline/contracts/writer_lock.py"
+      ],
       "scientific_runtime_consequence": "This is a shared write-ownership primitive already relied on by merged multi-agent-coordination work (GAP-011 part c's artifact-transaction-integrity system). A real race here means two concurrent agents/processes could both believe they have exclusive write access to the same governed resource at once, or one agent's stale state could silently clobber another's legitimate, still-active lock -- undermining the single-writer discipline this entire production-readiness program depends on.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23) -- confirmed real via genuine multi-process reproduction; user signed off on the fix direction; a second direct-dispatched Claude subagent (2026-09-23) implemented it",
       "status": "fixed",
@@ -324,7 +444,10 @@
       "subsystem": "ultimate_pipeline/artifacts/semantic_diff.py -- mutation-detection contract",
       "description": "detect_undeclared_mutation() only ever examined the CANDIDATE artifact's contents (flagging any element where a forbidden domain string appeared anywhere in candidate.tag/attrib) rather than actually diffing parent vs candidate -- so a forbidden domain that existed UNCHANGED, inherited verbatim from the parent, was falsely flagged as an undeclared mutation even though nothing actually changed there. The function signature itself never received the parent artifact at all; the call site (transaction.py:98) had parent in scope the whole time but never passed it through.",
       "proof": "Confirmed via real parent/candidate XODR pairs: case (a) unchanged forbidden domain (byte-identical <junction id=\"5\">, only an unrelated attribute changed elsewhere) -- pre-fix returned True (false positive), confirmed via git stash to re-run the exact pre-fix code. Case (b) genuinely changed forbidden domain (new <junction id=\"9\"> added) -- correctly returned True both before and after the fix.",
-      "affected_files": ["ultimate_pipeline/artifacts/semantic_diff.py", "ultimate_pipeline/artifacts/transaction.py"],
+      "affected_files": [
+        "ultimate_pipeline/artifacts/semantic_diff.py",
+        "ultimate_pipeline/artifacts/transaction.py"
+      ],
       "scientific_runtime_consequence": "A candidate artifact carrying forward unchanged, legitimate content from its parent could be wrongly rejected as containing an undeclared mutation, causing spurious promotion failures unrelated to any actual change.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-23)",
       "status": "fixed",
@@ -339,7 +462,10 @@
       "subsystem": "ultimate_pipeline/lanes/lanelink_builder.py + pipeline_stages/stage_08_integrity.py -- dead quality signal on the promoted map-of-record",
       "description": "LaneLinkBuilder.sanitize_junction_lane_links() is a real, geometrically-validated endpoint-pose-continuity checker (confirmed correct via its own adversarial unit test), genuinely wired into the real production pipeline (stage_08_integrity.py:560, writes junction_lanelink_sanity.json on every real run) -- but its status/failed fields are computed and written to disk and then NEVER READ by any gate (grep-confirmed: no caller checks them against hard_fail_reasons/valid_for_experiments). Running it for the first time ever against the actual currently-PROMOTED map-of-record (campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr, sha256 370abbbb..., currently valid_for_experiments=true) found 2,992 of 23,529 laneLinks (12.7%) fail pose-continuity at the checker's own tolerance (0.25m / 12deg) -- 74% cluster just under threshold (median 0.125m, possibly a systematic half-width bias worth its own investigation), but there is also a genuine severe tail: 832 links with >3m discontinuity, up to 14m. A vehicle transiting those junctions would visibly jump laterally.",
       "proof": "Direct execution of LaneLinkBuilder.sanitize_junction_lane_links(ET.parse(<map-of-record path>).getroot()) against the real, currently-promoted map-of-record (2026-09-24). Sample failure cited: junction 1 / connection 3, incomingRoad 42486 lane -2 -> connectingRoad 52027 lane -1, dist~3.5m. grep -rn 'junction_lanelink_sanity' confirms the field is written but never consumed by any gate/hard_fail_reasons check.",
-      "affected_files": ["ultimate_pipeline/lanes/lanelink_builder.py", "ultimate_pipeline/pipeline_stages/stage_08_integrity.py"],
+      "affected_files": [
+        "ultimate_pipeline/lanes/lanelink_builder.py",
+        "ultimate_pipeline/pipeline_stages/stage_08_integrity.py"
+      ],
       "scientific_runtime_consequence": "The currently-promoted map-of-record -- the SAME pinned map RQ2's structural-gap metric, RQ4's GNN training tiles, and this session's other real-data audits (lane-link certification, coordinate-system end-to-end test) all use -- has a real, computed, ignored signal indicating meaningful lane-link geometric discontinuities at ~12.7% of its junctions, some severe (up to 14m). This does not necessarily invalidate RQ2/RQ4's existing results (those metrics don't depend on lane-link pose continuity), but it is a genuine, previously-undetected map-quality question about the map's fitness for any future live-CARLA use (RQ3/RQ5a, once GAP-017 unblocks) -- a vehicle following these lane links in a live simulation would visibly jump at the severe-tail junctions.",
       "owner_subagent": "direct-dispatched Claude subagent (2026-09-24), lane-link/FBX readiness audit -- found, deliberately NOT fixed (see residual_risk)",
       "status": "open -- real finding, needs a human policy decision before any fix is dispatched",
@@ -351,11 +477,11 @@
   ],
   "counts": {
     "total": 26,
-    "fixed": 18,
+    "fixed": 19,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 2,
+    "open": 1,
     "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {
@@ -387,12 +513,19 @@
       "action_taken": "none yet (deletion) -- an audit-only pass (no deletion) has been requested of Codex to identify safe reclaim candidates before anything is removed"
     },
     "protected_but_unverified_work_this_round": [
-      {"what": "Codex RQ4 leakage fix, isolated slice", "location": "fix/rq4-gnn-provenance-leakage-v1-20260922 @ 811008a3", "status": "WIP, incomplete per its own report -- needs dataset/split rebuild + retraining, see GAP-010"},
-      {"what": "Gemini xodr_validator stage insertion in main_pipeline.py", "location": "wip/gemini-xodr-validator-sequencing-20260922 @ a9ced373", "status": "WIP, unverified; companion stage_capabilities.py XODR_VALIDATED capability was lost to shared-checkout contention and is being redone"}
+      {
+        "what": "Codex RQ4 leakage fix, isolated slice",
+        "location": "fix/rq4-gnn-provenance-leakage-v1-20260922 @ 811008a3",
+        "status": "WIP, incomplete per its own report -- needs dataset/split rebuild + retraining, see GAP-010"
+      },
+      {
+        "what": "Gemini xodr_validator stage insertion in main_pipeline.py",
+        "location": "wip/gemini-xodr-validator-sequencing-20260922 @ a9ced373",
+        "status": "WIP, unverified; companion stage_capabilities.py XODR_VALIDATED capability was lost to shared-checkout contention and is being redone"
+      }
     ]
   },
-  "last_updated_utc": "2026-09-22T00:00:00Z",
-  "update_note": "2026-09-22: pushed pending GAP-005 merge; added GAP-010 (RQ4 train/eval leakage FAIL, top priority) and GAP-011 (integration debt across 2026-09-18..09-22 parallel-agent work). Ran a full bare pytest on the committed WIP state (fix/xodr-validator-convergence-v1-20260921 @ f245540f: 5914 collected, 5908 passed, 4 failed, 2 skipped) -- 4 real, non-flaky failures found and root-caused; logged as GAP-012..GAP-015. Also confirmed via git reflog that the main checkout is a live, shared, contested workspace -- at least one other agent is actively rebasing OpenCode branches (OC-35, OC-42 confirmed) onto the verified tip directly there. See coordinator survey this session for full detail.",
+  "update_note": "2026-09-24: docs sync -- merged issues_batch_3 (GAP-016/017/018) into issues; GAP-023 marked fixed (settings mtime-authority guard b09fd6e3 merged fdf91aff); counts recomputed from the full 26-issue set. GAP-026 remains open pending a human policy decision. GAP-010 mechanism fixed; retrain remains BLOCKED_EXTERNAL. GAP-017 remains blocked_external (CARLA RPC handshake). GAP-018 in_progress (UE4 compile running, not finished).",
   "wip_full_suite_result": {
     "branch": "fix/xodr-validator-convergence-v1-20260921",
     "commit": "f245540f",
@@ -411,52 +544,5 @@
     "skipped": 5,
     "duration_s": 850.41,
     "note": "All 4 failures share one root cause, logged as GAP-016."
-  },
-  "issues_batch_3": [
-    {
-      "id": "GAP-016",
-      "severity": "P2",
-      "subsystem": "tests/unit/test_regen_find_final_xodr_hygiene.py -- obsolete test contract",
-      "description": "All 4 tests in this file fail against the current production tip (98d47e38), which includes commit ca3729c0 ('require receipt-authoritative final artifact', one of 5 commits found already sitting on this branch and pushed 2026-09-22). scripts/regen_map_of_record.py::_find_final_xodr now delegates to ultimate_pipeline/contracts/artifact_authority.py::resolve_final_artifact_receipt, whose own docstring states it 'deliberately does *not* inspect mtimes, glob candidate XODRs, or use a filename tiebreaker' -- i.e. it intentionally replaces the exact mtime/glob heuristic these 4 tests exercise (test_picks_hygiene_output_over_pre_hygiene_final_when_newer, test_falls_back_to_pre_hygiene_final_when_no_hygiene_output_present, test_hygiene_quarantine_only_still_picked_if_that_is_the_newest_stage, test_no_candidates_raises_filenotfounderror -- all construct synthetic tmp_path fixtures via filename+mtime ordering with no final_artifact_receipt.json, which the new resolver correctly rejects). This is NOT a regression in ca3729c0 -- it is exactly the kind of mtime-authority anti-pattern GAP-012 flags elsewhere, deliberately eliminated here. The 4 tests are obsolete, not the source code.",
-      "proof": "Full bare pytest against origin/integration/production-large-map-20260918 @ 98d47e38: 5886 passed, 4 failed (all in this one file), 5 skipped. Direct read of resolve_final_artifact_receipt's docstring and the 4 test bodies confirms they test superseded mtime/glob behavior, not a code defect.",
-      "affected_files": ["tests/unit/test_regen_find_final_xodr_hygiene.py"],
-      "scientific_runtime_consequence": "None to production code -- the new receipt-based resolver is correct and should NOT be weakened to satisfy these tests. Risk is purely to CI signal: 4 permanently-red tests mask real future failures in this file.",
-      "owner_subagent": "direct-dispatched subagent (2026-09-22)",
-      "status": "fixed",
-      "fixing_commit": "6e9fb064 (merged 1c8caa2c into origin/integration/production-large-map-20260918); a second, independent fix for the same gap also exists at 219c4515 on fix/gap-016-receipt-authority-20260922, not merged (redundant, not needed)",
-      "regression_test": "tests/unit/test_regen_find_final_xodr_hygiene.py rewritten in place -- 4 new tests exercise the real contract (no-receipt-raises, valid-receipt-resolves-to-declared-file-ignoring-decoys, tampered-xodr-rejected, malformed-json-rejected); historical WS1.4 comment block preserved",
-      "evidence_artifact": null,
-      "residual_risk": "none identified -- resolve_final_artifact_receipt untouched, full bare pytest clean (5923 passed, 5 skipped, 0 failed) after merge with GAP-012 and the xodr_validator capability change"
-    },
-    {
-      "id": "GAP-017",
-      "severity": "P1",
-      "subsystem": "live CARLA -- Grid0828/manual_grid0821 data-collection readiness",
-      "description": "Formal tracking for the live-CARLA-capture blocker (previously only in free-text notes). Grid0828.xodr and manual_grid0821.xodr are both present and real, but cannot currently be loaded into a live CARLA client for perception-training data collection. Re-verified fresh on 2026-09-22, not a stale repeat: CarlaUE4.exe -nullrhi reaches 5.7GB RAM (real initialization) and port 2000 goes LISTENING (netstat-confirmed, owned by the CARLA PID) -- neither happened in the session's prior documented hang. A real carla.Client.get_server_version() call still hard-times-out after 30s with the process alive. The bug is now confirmed to be in the RPC protocol handshake layer specifically, not socket-level connectivity -- a materially narrower, more specific finding than the prior 'server never comes up' characterization.",
-      "proof": "Direct live attempt 2026-09-22: process launched, RAM/port state captured via tasklist/netstat, client call timed out with the process still alive (confirmed via tasklist before cleanup), CARLA process cleanly killed afterward, no orphaned instances left running.",
-      "affected_files": ["E:\\CARLA\\CARLA_0.9.16 (packaged binary)", "ultimate_pipeline/perception/rq3_capture_contract.py (offline side, real but not yet reintegrated -- see GAP-011)"],
-      "scientific_runtime_consequence": "RQ3's paired-capture protocol is code-ready (frame/rig mismatch already fixed) but cannot be exercised against live CARLA until this handshake bug is resolved -- blocks any real (non-synthetic) perception training data collection from either map.",
-      "owner_subagent": "Codex (2026-09-22/23, multiple real attempts); Claude (2026-09-24, audio-mixer-disable probe)",
-      "status": "blocked_external",
-      "fixing_commit": null,
-      "regression_test": null,
-      "evidence_artifact": "G:\\CARLA\\build_logs\\gap017_nosound_20260922T231819Z.json; reports/production_readiness/20260923T000000Z_GAP017_RPC_HANDSHAKE/RESULTS.md; reports/production_readiness/20260924T000000Z_GAP017_AUDIOMIXER_PROBE/RESULTS.md (new, 2026-09-24)",
-      "residual_risk": "MEDIUM-HIGH, three real fix attempts now exhausted -- (1) cdb.exe stack capture during a live hang found the game thread blocked in FEventWin::Wait -> FAudioCommandFence::Wait -> FAudioDeviceManager::UpdateActiveAudioDevices -> UGameEngine::Tick; (2) -nosound (mutes output only) returned the same result -- port 2000 still listens, get_server_version() still hard-times-out; (3) 2026-09-24: launched with UE4 -ini: command-line overrides (-ini:Engine:[Audio]:UseAudioMixer=False, EnableAudioMixer=False, AudioDeviceModuleName=) targeting the Audio Mixer subsystem init path itself (confirmed via packaged WindowsEngine.ini that UseAudioMixer=true/AudioDeviceModuleName=XAudio2 was the live config), plus -nosound/-nullrhi as before. Result: STILL DOES NOT FIX THE HANDSHAKE -- get_server_version() hard-timed-out at both 30s and 60s with the process alive and port 2000 listening throughout. BUT two independent non-invasive cdb.exe snapshots (attach+dump+detach via qd, process never killed mid-probe) taken minutes apart show the game thread genuinely no longer stuck in the audio fence at all: no FAudioDeviceManager/FAudioCommandFence frame appears anywhere in a full 54-thread dump, no audio-mixer-named thread exists, the game thread stack differs materially between the two snapshots (normal per-frame FTaskGraphImplementation::WaitUntilTasksComplete in the first, FTickTaskLevel::QueueNewlySpawned bookkeeping in the second), and CPU sampling showed ~90 percent of one core actively consumed (not idle-blocked). This is a real, verified distinction from a true deadlock, not assumption. Conclusion: the audio-fence deadlock is eliminated by disabling the Audio Mixer subsystem, which rules out audio device enumeration as this configuration's blocker -- but the RPC handshake still fails regardless, so the remaining fault is most likely in CARLA's own RPC/networking layer (the carla-server plugin's rpclib/asio acceptor), not UE4 engine-level audio. No thread hosting an RPC acceptor was identified by name in either snapshot, which is itself a new, narrower open question. Remaining untried: tracing/attaching specifically to CARLA's RPC dispatch path (not yet located), full disable of Windows audio devices at the OS level, or building CARLA from source with audio subsystem code paths removed (only possible once/if the UE4 engine access blocker is resolved). Do not re-attempt further debugging passes without a genuinely new angle -- three real, careful attempts have now narrowed this to the RPC layer specifically."
-    },
-    {
-      "id": "GAP-018",
-      "severity": "P1",
-      "subsystem": "UE4 cook readiness -- engine source access",
-      "description": "Formalizes and corrects the earlier 'UE4.26 absent, straightforward install' framing. Attempting the documented CARLA build path (git clone --depth 1 -b carla https://github.com/CarlaUnreal/UnrealEngine.git) fails with 'remote: Repository not found' even though the user's GitHub account is linked to their Epic Games account. This is NOT evidence the repo doesn't exist, and is NOT something Codex (or any automated agent) can resolve -- it is a long-standing, widely-reported, chronic issue across the CARLA community (github.com/carla-simulator/carla issues #6401, #6632, #6681, #7654, #7775, #7826, #9806 -- the most recent dated 2026-07, still unresolved as of this pass). The documented root cause: Epic's GitHub org-invitation flow sometimes silently adds a newly-linked account to a decoy/mirror organization ('EpicGames-Mirror-A') instead of the real Epic Games org that actually has read access to CarlaUnreal/UnrealEngine -- an account can show as 'linked' while still lacking the specific org membership the private repo checks. Multiple affected users report having to explicitly request access to the CarlaUnreal/UnrealEngine 'carla' branch through Epic's own developer forums (forums.unrealengine.com) even after completing the standard account link.",
-      "proof": "Codex: `git ls-remote --heads https://github.com/CarlaUnreal/UnrealEngine.git carla` -> 'Repository not found (128)', 2026-09-23. Cross-referenced against CARLA's own current official documentation (carla.readthedocs.io/en/0.9.16/build_windows/, build_carla/) which still cites this exact clone command as correct/current -- confirming this is an access problem, not a stale/wrong URL.",
-      "affected_files": ["G:\\UnrealEngine_4.26_CARLA (real clone + in-progress build, confirmed 2026-09-24)"],
-      "scientific_runtime_consequence": "Blocks the entire UE4 cook ladder (GAP-018's own original scope) regardless of code readiness -- no amount of pipeline/package work unblocks this without a working engine build; the access blocker is resolved but the build itself is not yet complete.",
-      "owner_subagent": "user resolved the GitHub/Epic org-access issue directly; the build was then started and is running unsupervised",
-      "status": "in_progress (external, unsupervised) -- access blocker resolved, real UE4 compile ongoing, not yet complete",
-      "fixing_commit": null,
-      "regression_test": null,
-      "evidence_artifact": "G:\\UnrealEngine_4.26_CARLA (real clone, UE4.sln + UE4Games.uprojectdirs present, confirming GenerateProjectFiles ran)",
-      "residual_risk": "MEDIUM. This entry was stale (previously said 'G:\\UE4 still empty' / blocked_external) -- corrected here after direct verification on 2026-09-24: the clone succeeded once the user fixed GitHub/Epic org membership, and a genuine compile is confirmed actively running (UnrealBuildTool.exe + 11 live cl.exe processes observed directly via tasklist, several using 400MB-1.8GB RAM each -- not a stale/hung process). UE4Editor.exe does NOT yet exist under Engine/Binaries/Win64 (checked directly) -- the build has not finished. This is a multi-hour native C++ compile with no reliable ETA from outside; do not assume it will finish soon or that it will succeed cleanly (UE4.26 builds can fail late for toolchain/SDK-version reasons). Re-check periodically for UE4Editor.exe rather than re-attempting the clone/Setup.bat steps, which already succeeded. Once the editor exists, GAP-018's original scope (cook readiness) still needs the actual CARLA project cook attempted -- that is a distinct, not-yet-reached step even after this build finishes."
-    }
-  ]
+  }
 }
