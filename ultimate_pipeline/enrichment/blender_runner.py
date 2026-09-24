@@ -396,6 +396,8 @@ class BlenderRunner:
 
                 marker_present = "CONVERSION_OK" in stdout
                 fbx_present = fbx_path.exists() and fbx_path.stat().st_size > 0
+                if fbx_present:
+                    result.output_hash = self._hash_file(fbx_path)
 
                 manifest_errors = []
                 manifest = {}
