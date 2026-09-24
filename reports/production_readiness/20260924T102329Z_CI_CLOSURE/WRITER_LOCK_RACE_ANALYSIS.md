@@ -1,7 +1,7 @@
-# WriterLock fresh-lock atomic-publication partial-read race (GAP-028) — analysis
+# WriterLock fresh-lock atomic-publication partial-read race (GAP-029) — analysis
 
 First-of-kind analysis of the reader-side race opened by the GAP-024 O_EXCL
-fix in `ultimate_pipeline/contracts/writer_lock.py`. GAP-028 is a **distinct
+fix in `ultimate_pipeline/contracts/writer_lock.py`. GAP-029 is a **distinct
 residual gap introduced by GAP-024**, not a re-opening of GAP-024.
 
 ## 1. Race narrative (exact file:line refs)
@@ -160,24 +160,24 @@ behavior is pinned by `test_malformed_lock_rejected`
 (`test_writer_lock.py:72`): a parseable partial dict still loads and reports
 `is_malformed()`, because the dataclass has defaults.
 
-## 7. GAP-024 vs GAP-028 — explicit distinction
+## 7. GAP-024 vs GAP-029 — explicit distinction
 
-| | GAP-024 | GAP-028 |
+| | GAP-024 | GAP-029 |
 |---|---|---|
 | What it was | TOCTOU: `exists()`-check-then-write allowed **multiple simultaneous winners**; plus stale-handle heartbeat/release clobber | Reader-side: loser's immediate `load()` could observe the winner's **not-yet-written** file → `JSONDecodeError` escapes `acquire()` as an indeterminate `"error"` |
 | Side affected | **Write** side (exclusivity) | **Read** side (loser classification) |
 | Introduced by | (original defect) | **The GAP-024 O_EXCL fix itself** — visible-before-written window for readers |
 | Status | Still fixed — O_EXCL unchanged, exactly-one-winner still green at 8×50 | Fixed here — bounded re-read + distinct fail-closed |
-| Register entry | GAP-024, **untouched** by this task | GAP-028, added by this task |
+| Register entry | GAP-024, **untouched** by this task | GAP-029, added by this task |
 
-The two must not be conflated: reverting GAP-028's handling would not
+The two must not be conflated: reverting GAP-029's handling would not
 reintroduce multi-winner, and GAP-024's entry/claims remain true.
 
 ## 8. Residual risks (honest)
 
 1. **Legacy `.agent_lock.json` path still raises raw `JSONDecodeError`** —
    `acquire()`'s legacy check (lines 90-98) calls `cls.load(legacy_lock_path)`
-   with no ValueError handling. Pre-existing, out of scope for GAP-028, and
+   with no ValueError handling. Pre-existing, out of scope for GAP-029, and
    fails loud (an exception), not silent. Not tracked as a new gap here
    because no CI test exercises a corrupt legacy file.
 2. **Windows unlink sharing hazard (pre-existing)** — reclaiming a

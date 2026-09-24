@@ -2,7 +2,7 @@
 
 Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync at each update.
 
-Last updated: `2026-09-24T09:54:54Z`
+Last updated: `2026-09-24T11:05:15Z`
 
 | ID | Severity | Subsystem | Status | Fixing commit / owner |
 |---|---|---|---|---|
@@ -15,7 +15,7 @@ Last updated: `2026-09-24T09:54:54Z`
 | GAP-007 | P2 | tools/xodr_carla_hardener.py | **fixed** | fab0f8c7 (deleted rather than fixed, since unused; merged into integration/production-l... |
 | GAP-008 | P1 | geometry authority -- architectural | deferred | afed7bcc6adcb5bd9 (found during P1 work package F) |
 | GAP-009 | P1 | pipeline_stages/stage_09_tiling.py | **fixed** | c5b09591 (already on origin/integration/production-large-map-20260918) |
-| GAP-010 | P0 | domain_gap_gnn / RQ4 GNN provenance | **fixed (retrain BLOCKED_EXTERNAL)** | 4c2f0feb, merged into origin/integration/production-large-map-20260918 (now folded into... |
+| GAP-010 | P0 | domain_gap_gnn / RQ4 GNN provenance | **fixed (fully closed, leak-free retrain complete)** | 4c2f0feb + fce9d794 (leak-free retrain), merged into origin/integration/production-large-map-20260918 |
 | GAP-011 | P1 | integration debt -- unreconciled parallel-agent work | **fixed (a/b/c closed)** | 5 commits on fix/gap011-oc51-58-59-restoration-20260923, merged c68a1059 into origin/in... |
 | GAP-012 | P2 | domain_gap/run_alignment_and_matching.py | **fixed** | f541c745 (merged 1c8caa2c into origin/integration/production-large-map-20260918) |
 | GAP-013 | P2 | domain_gap/tile_grid_meta.py -- duplicate-module suspected | **closed (non-reproducible)** | Codex (initial finding, 2026-09-23), Claude subagent (final full-suite confirmation, 20... |
@@ -32,17 +32,17 @@ Last updated: `2026-09-24T09:54:54Z`
 | GAP-024 | P0 | ultimate_pipeline/contracts/writer_lock.py -- multi-agent write-own... | **fixed** | b396191f (merged into origin/integration/production-large-map-20260918) |
 | GAP-025 | P1 | ultimate_pipeline/artifacts/semantic_diff.py -- mutation-detection ... | **fixed** | 252432aa (merged into origin/integration/production-large-map-20260918) |
 | GAP-026 | P1 | ultimate_pipeline/lanes/lanelink_builder.py + pipeline_stages/stage... | open (needs policy) | direct-dispatched Claude subagent (2026-09-24), lane-link/FBX readiness audit -- found,... |
-| GAP-027 | P2 | tests/unit/test_blender_conversion_integrity.py -- FakeBlenderRunner machine-Blender dependence | **fixed** | 8cb1cd95 (branch fix/ci-closure-blender-writerlock-20260924; merge SHA recorded post-CI) |
-| GAP-028 | P1 | ultimate_pipeline/contracts/writer_lock.py -- fresh-lock partial-publication reader race | **fixed** | 1bc93eef (branch fix/ci-closure-blender-writerlock-20260924; merge SHA recorded post-CI) |
+| GAP-027 | P0 | ultimate_pipeline/main_pipeline.py -- MainPipeline class dedent crash (GAP-020 merge regression) | **fixed** | 4ddb7ced+b86d1170 (merged into origin/integration/production-large-map-20260918) |
+| GAP-028 | P2 | tests/unit/test_blender_conversion_integrity.py -- FakeBlenderRunner machine-Blender dependence | **fixed** | 8cb1cd95 (branch fix/ci-closure-blender-writerlock-20260924; renumbered from GAP-027 post-upstream-collision) |
+| GAP-029 | P1 | ultimate_pipeline/contracts/writer_lock.py -- fresh-lock partial-publication reader race | **fixed** | 1bc93eef (branch fix/ci-closure-blender-writerlock-20260924; renumbered from GAP-028 post-upstream-collision) |
 
-Totals: 28 tracked, 21 fixed, 3 closed (non-reproducible), 1 deferred, 1 open, 1 blocked_external, 1 in_progress. GAP-010 retrain remains `BLOCKED_EXTERNAL` (residual on a fixed issue).
+Totals: 29 tracked, 22 fixed, 3 closed (non-reproducible), 1 deferred, 1 open, 1 blocked_external, 1 in_progress.
 
 ## Active open / blocked items (2026-09-24)
 
 - **GAP-026 (P1, open)**: lane-link pose-continuity is a dead signal in `lanelink_builder.py`; needs a human policy decision before any fix is dispatched.
 - **GAP-017 (P1, blocked_external)**: live CARLA RPC handshake still fails after audio-mixer-disable probe — blocks RQ3/RQ5a capture.
 - **GAP-018 (P1, in_progress)**: Epic/GitHub access resolved; UE4.26 compile running (`G:\UnrealEngine_4.26_CARLA`), `UE4Editor.exe` not yet present; cook not yet attempted.
-- **GAP-010 residual**: leakage exclusion mechanism fixed and tested; leak-free RQ4 retrain not yet run — RQ4 numbers stay non-citable until it completes.
 - **GAP-008 (P1, deferred)**: two geometry-authority packages; consolidation plan only (no RQ blocked directly).
 
 See `MASTER_GAP_REGISTER.json` for full detail per issue (proof, affected files, consequence,

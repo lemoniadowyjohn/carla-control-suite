@@ -1,12 +1,14 @@
 {
-  "generated_at_utc": "2026-09-24T10:29:11.000000+00:00",
-  "git_sha": "edd2330716912c641b6e7d756f90affc6ca9a4d7-dirty",
+  "generated_at_utc": "2026-09-24T11:10:00.000000+00:00",
+  "git_sha": "526de37147eaca708b96b1098f81586eb8b35284",
   "baseline_sha": "66a28b82814f466246f1755f04c1ac95645a1707",
   "branch": "fix/ci-closure-blender-writerlock-20260924",
   "fix_commits": [
     "8cb1cd95d48bcd2d24e3b4303eae84c09365c716",
     "1bc93eef5ed2092b816d50cdae5c1cb276779a05",
-    "edd2330716912c641b6e7d756f90affc6ca9a4d7"
+    "edd2330716912c641b6e7d756f90affc6ca9a4d7",
+    "52bf6c277538ce93257b2bcc700e887f6d6cbfe1",
+    "526de37147eaca708b96b1098f81586eb8b35284"
   ],
   "family_a": {
     "files_changed": [
@@ -46,19 +48,38 @@
     "passed": 6264,
     "failed": 0,
     "skipped": 6,
-    "summary_line": "6264 passed, 6 skipped, 178 warnings in 1529.18s (0:25:29)"
+    "summary_line": "6264 passed, 6 skipped, 178 warnings in 1529.18s (0:25:29)",
+    "note": "pre-merge tree at 52bf6c27; post-merge full suite re-run recorded separately after merge 526de371"
   },
   "gap_register": {
     "path": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.json (+ .md)",
     "gaps_added": [
-      "GAP-027",
-      "GAP-028"
+      "GAP-028",
+      "GAP-029"
     ],
+    "renumber": {
+      "GAP-027": "upstream MainPipeline dedent entry (kept as GAP-027)",
+      "GAP-028": "ours: Blender FakeBlenderRunner (drafted as GAP-027 pre-merge)",
+      "GAP-029": "ours: WriterLock partial-publication (drafted as GAP-028 pre-merge)"
+    },
+    "counts_after_merge": {
+      "total": 29,
+      "fixed": 22
+    },
     "gap_024_untouched": true
   },
   "github_actions": {
-    "status": "PENDING",
-    "run_url": null
+    "status": "success",
+    "run_url": "https://github.com/lemoniadowyjohn/carla-control-suite/actions/runs/35987817151",
+    "run_number": 137,
+    "run_id": 35987817151,
+    "head_sha": "52bf6c277538ce93257b2bcc700e887f6d6cbfe1",
+    "conclusion": "success",
+    "jobs_all_success": true,
+    "job_count": 6,
+    "job_logs_accessible": false,
+    "job_logs_note": "anonymous log download returns 403 (admin-only); exact CI pytest counts not quoted",
+    "post_merge_run": null
   },
-  "verdict": "LOCAL_GREEN_CI_PENDING"
+  "verdict": "LOCAL_GREEN_CI_GREEN"
 }
