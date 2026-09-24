@@ -34,7 +34,7 @@ from _writer_lock_mp_worker import acquire_worker  # noqa: E402
 from ultimate_pipeline.contracts.writer_lock import WriterLock
 
 N_WORKERS = 8
-ITERATIONS = 20
+ITERATIONS = 50
 
 
 def test_concurrent_acquire_exactly_one_winner_real_processes(tmp_path: Path) -> None:
@@ -141,37 +141,49 @@ def _write_lock_file(path: Path, content: str) -> None:
 
 def test_acquire_fails_closed_on_invalid_json(tmp_path: Path) -> None:
     lock_path = tmp_path / ".agent_locks" / "writer.lock"
-    _write_lock_file(lock_path, "{not valid json")
-    with pytest.raises(Exception):
+    content = "{not valid json"
+    _write_lock_file(lock_path, content)
+    with pytest.raises(Exception) as excinfo:
         WriterLock.acquire(root=tmp_path, branch="b", head_sha="s", owner="agent")
+    assert isinstance(excinfo.value, RuntimeError)
+    assert "Writer lock held by" not in str(excinfo.value)
+    assert lock_path.exists()
+    assert lock_path.read_text(encoding="utf-8") == content
 
 
 def test_acquire_fails_closed_on_json_list(tmp_path: Path) -> None:
     lock_path = tmp_path / ".agent_locks" / "writer.lock"
-    _write_lock_file(lock_path, json.dumps(["not", "a", "dict"]))
-    with pytest.raises(Exception):
+    content = json.dumps(["not", "a", "dict"])
+    _write_lock_file(lock_path, content)
+    with pytest.raises(Exception) as excinfo:
         WriterLock.acquire(root=tmp_path, branch="b", head_sha="s", owner="agent")
+    assert isinstance(excinfo.value, RuntimeError)
+    assert "Writer lock held by" not in str(excinfo.value)
+    assert lock_path.exists()
+    assert lock_path.read_text(encoding="utf-8") == content
 
 
 def test_acquire_fails_closed_on_unrecognized_extra_key(tmp_path: Path) -> None:
     lock_path = tmp_path / ".agent_locks" / "writer.lock"
-    _write_lock_file(
-        lock_path,
-        json.dumps(
-            {
-                "schema": "agent-writer-lock/v1",
-                "status": "active",
-                "owner": "agent-x",
-                "branch": "b",
-                "head_sha": "s",
-                "created_at": "2026-01-01T00:00:00+00:00",
-                "expires_at": "2099-01-01T00:00:00+00:00",
-                "totally_unrecognized_field": "boom",
-            }
-        ),
+    content = json.dumps(
+        {
+            "schema": "agent-writer-lock/v1",
+            "status": "active",
+            "owner": "agent-x",
+            "branch": "b",
+            "head_sha": "s",
+            "created_at": "2026-01-01T00:00:00+00:00",
+            "expires_at": "2099-01-01T00:00:00+00:00",
+            "totally_unrecognized_field": "boom",
+        }
     )
-    with pytest.raises(Exception):
+    _write_lock_file(lock_path, content)
+    with pytest.raises(Exception) as excinfo:
         WriterLock.acquire(root=tmp_path, branch="b", head_sha="s", owner="agent")
+    assert isinstance(excinfo.value, RuntimeError)
+    assert "Writer lock held by" not in str(excinfo.value)
+    assert lock_path.exists()
+    assert lock_path.read_text(encoding="utf-8") == content
 
 
 def test_acquire_fails_closed_on_unknown_schema_with_valid_required_fields(
@@ -204,5 +216,9 @@ def test_acquire_fails_closed_on_unknown_schema_with_valid_required_fields(
 def test_acquire_fails_closed_on_empty_file(tmp_path: Path) -> None:
     lock_path = tmp_path / ".agent_locks" / "writer.lock"
     _write_lock_file(lock_path, "")
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as excinfo:
         WriterLock.acquire(root=tmp_path, branch="b", head_sha="s", owner="agent")
+    assert isinstance(excinfo.value, RuntimeError)
+    assert "Writer lock held by" not in str(excinfo.value)
+    assert lock_path.exists()
+    assert lock_path.stat().st_size == 0

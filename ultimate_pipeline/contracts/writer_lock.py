@@ -24,6 +24,20 @@ DEFAULT_LEASE_MINUTES = 240
 # only to fail loudly instead of spinning forever in a pathological state.
 _ACQUIRE_MAX_ATTEMPTS = 64
 
+# GAP-028: bounded fresh-publication re-read budget. The winner's
+# os.open(..., O_CREAT|O_EXCL) makes the lock pathname visible at size 0
+# BEFORE the subsequent fdopen/write/flush/fsync populate it, so a losing
+# contender's immediate load() can observe an empty or torn (partially
+# written) file during that fresh-publication window. We re-read for up to
+# _FRESH_PUBLISH_MAX_REREADS attempts spaced _FRESH_PUBLISH_REREAD_DELAY_S
+# apart (100 x 0.005s = a ~500ms total wait ceiling) to ride out the
+# winner's publication. If the content is still unreadable after the full
+# budget, acquire() fails closed with a distinct RuntimeError -- it never
+# unlinks the file and never misreports the condition as "Writer lock
+# held by" (unreadable is not the same claim as live-held).
+_FRESH_PUBLISH_MAX_REREADS = 100
+_FRESH_PUBLISH_REREAD_DELAY_S = 0.005
+
 
 @dataclass
 class WriterLock:
@@ -116,24 +130,80 @@ class WriterLock:
 
         # Atomic create-exclusive acquire: os.open(..., O_CREAT|O_EXCL) is a
         # single OS syscall that fails atomically if the path already
-        # exists, so it is the sole arbiter of "who wins" -- unlike the
+        # exists, so it remains the SOLE exclusivity authority -- unlike the
         # previous exists()-check-then-write() sequence, no two processes
         # can both observe "nobody holds this" and then both write.
         #
-        # Reclaiming an expired/malformed lock is handled by unlinking it
-        # and retrying the O_EXCL create; the unlink is not itself the
-        # arbiter of exclusivity (it is safe/idempotent for two racing
-        # reclaimers to both attempt it), only the next O_EXCL create is.
+        # For *readers* (the losers of that O_EXCL race) the pathname
+        # becomes visible at size 0 the instant the winner's os.open
+        # returns, before fdopen/write/flush/fsync below have populated it,
+        # so a loser's immediate load() can observe an empty or torn file
+        # (JSONDecodeError / TypeError). Losers treat that unreadable fresh
+        # content as a bounded-retry-then-fail-closed condition (the
+        # fresh-publication re-read sub-loop below): they never unlink it
+        # and never report it as "Writer lock held by". Content that stays
+        # unreadable for the whole re-read budget is NOT reclaimable -- it
+        # fails closed with a distinct RuntimeError so a human can inspect
+        # the malformed lock rather than have it silently deleted.
+        #
+        # Reclaiming an expired/malformed-but-parseable lock is handled by
+        # unlinking it and retrying the O_EXCL create; the unlink is not
+        # itself the arbiter of exclusivity (it is safe/idempotent for two
+        # racing reclaimers to both attempt it), only the next O_EXCL
+        # create is. The unlink below is only ever reached after a
+        # successful load() (fully parsed content) that is not live.
         for _attempt in range(_ACQUIRE_MAX_ATTEMPTS):
             try:
                 fd = os.open(str(lock_path), open_flags)
             except FileExistsError:
+                existing = None
+                unreadable = False
                 try:
                     existing = cls.load(lock_path)
                 except FileNotFoundError:
                     # Raced with a concurrent release/cleanup between the
                     # failed O_EXCL create and this read; just retry.
                     continue
+                except (ValueError, TypeError):
+                    # Unreadable content: either a fresh winner still
+                    # publishing (empty/torn JSON at the just-created path)
+                    # or a persistently malformed lock. Enter the bounded
+                    # fresh-publication re-read window before deciding.
+                    unreadable = True
+
+                if unreadable:
+                    recovered = False
+                    vanished = False
+                    for _reread in range(_FRESH_PUBLISH_MAX_REREADS):
+                        time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
+                        try:
+                            existing = cls.load(lock_path)
+                            recovered = True
+                            break
+                        except FileNotFoundError:
+                            # File vanished mid-publication (release/cleanup
+                            # won the race); retry the O_EXCL create.
+                            vanished = True
+                            break
+                        except (ValueError, TypeError):
+                            continue
+                    if vanished:
+                        continue
+                    if not recovered:
+                        # Still unreadable after the full re-read budget:
+                        # fail closed with a DISTINCT error (mp worker maps
+                        # RuntimeError -> "blocked"). Deliberately does NOT
+                        # contain "Writer lock held by" (we could not parse
+                        # it, so we cannot claim any owner holds it), and
+                        # deliberately does NOT unlink the file (no silent
+                        # delete of a malformed persistent lock).
+                        raise RuntimeError(
+                            f"writer.lock at {lock_path} exists but is not "
+                            f"readable JSON; refusing to acquire or delete it"
+                        )
+                    # recovered: fall through to the normal path below with
+                    # the successfully-parsed object.
+
                 if existing.is_live():
                     raise RuntimeError(
                         f"Writer lock held by {existing.owner} "
