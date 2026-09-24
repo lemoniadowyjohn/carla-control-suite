@@ -1,0 +1,1384 @@
+{
+  "adjacent_pairs": [
+    {
+      "actual_exported_boundary_delta_m": 814.360992,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        6,
+        6
+      ],
+      "right_tile": [
+        7,
+        6
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 7.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        6,
+        6
+      ],
+      "right_tile": [
+        6,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 857.527038,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        6,
+        7
+      ],
+      "right_tile": [
+        7,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 63.0,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        6,
+        7
+      ],
+      "right_tile": [
+        6,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 988.450012,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        6,
+        8
+      ],
+      "right_tile": [
+        7,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 17.0,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        6,
+        8
+      ],
+      "right_tile": [
+        6,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 961.1990049999999,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        6,
+        9
+      ],
+      "right_tile": [
+        7,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 930.1400140000001,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        7,
+        6
+      ],
+      "right_tile": [
+        8,
+        6
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 15.0,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        7,
+        6
+      ],
+      "right_tile": [
+        7,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 1042.074035,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        7,
+        7
+      ],
+      "right_tile": [
+        8,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 32.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        7,
+        7
+      ],
+      "right_tile": [
+        7,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 1085.434021,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        7,
+        8
+      ],
+      "right_tile": [
+        8,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 47.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        7,
+        8
+      ],
+      "right_tile": [
+        7,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 960.88501,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        7,
+        9
+      ],
+      "right_tile": [
+        8,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 480.92501000000004,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        8,
+        6
+      ],
+      "right_tile": [
+        9,
+        6
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 7.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        8,
+        6
+      ],
+      "right_tile": [
+        8,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 929.6400140000001,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        8,
+        7
+      ],
+      "right_tile": [
+        9,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 12.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        8,
+        7
+      ],
+      "right_tile": [
+        8,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 945.513031,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        8,
+        8
+      ],
+      "right_tile": [
+        9,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 12.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        8,
+        8
+      ],
+      "right_tile": [
+        8,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 957.657013,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        8,
+        9
+      ],
+      "right_tile": [
+        9,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 253.66599200000002,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 10000.0,
+      "left_tile": [
+        9,
+        6
+      ],
+      "right_tile": [
+        10,
+        6
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 7.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        9,
+        6
+      ],
+      "right_tile": [
+        9,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 680.85202,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 10000.0,
+      "left_tile": [
+        9,
+        7
+      ],
+      "right_tile": [
+        10,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 7.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        9,
+        7
+      ],
+      "right_tile": [
+        9,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 596.0300139999999,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 10000.0,
+      "left_tile": [
+        9,
+        8
+      ],
+      "right_tile": [
+        10,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 12.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        9,
+        8
+      ],
+      "right_tile": [
+        9,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 699.3249969999999,
+      "axis": "x",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 10000.0,
+      "left_tile": [
+        9,
+        9
+      ],
+      "right_tile": [
+        10,
+        9
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 12.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 7000.0,
+      "left_tile": [
+        10,
+        6
+      ],
+      "right_tile": [
+        10,
+        7
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 15.0,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 8000.0,
+      "left_tile": [
+        10,
+        7
+      ],
+      "right_tile": [
+        10,
+        8
+      ],
+      "status": "INCOMPLETE"
+    },
+    {
+      "actual_exported_boundary_delta_m": 7.5,
+      "axis": "y",
+      "boundary_observed": true,
+      "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
+      "expected_shared_border_m": 9000.0,
+      "left_tile": [
+        10,
+        8
+      ],
+      "right_tile": [
+        10,
+        9
+      ],
+      "status": "INCOMPLETE"
+    }
+  ],
+  "authoritative_frame_offset_xy_m": [
+    832671.676,
+    5458671.104
+  ],
+  "cook_results_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\COOK_RESULTS.json",
+  "cook_results_sha256": "b2cd6558370f8628c818380832278e73e8c60ae27fc1ef3708b1d89249ad3a78",
+  "failures": [],
+  "frame_identity_count": 1,
+  "frame_identity_hash": "6fd2946e61d52a7ee5ea34a85aa2c7701bff612463f4f57915cc3e5c24742fe9",
+  "generated_at_utc": "2026-09-24T12:09:44.414702+00:00",
+  "limitations": [
+    "No Unreal import or runtime streaming was run.",
+    "No tile-local origin reset is accepted; exported object bounds are read from Blender roundtrip manifests.",
+    "A shared cell boundary may have no geometry on either side, so boundary delta is not a seam defect by itself."
+  ],
+  "max_seam_delta_m": 1085.434021,
+  "mean_seam_delta_m": 434.2315554193549,
+  "schema": "tile_frame_consistency/v1",
+  "seam_delta_definition": "distance between exported aggregate object-boundary extrema at a shared cell boundary; descriptive only because the visual layer is a centroid-partitioned building set, not a continuous surface",
+  "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "status": "PASS",
+  "tile_size_m": 1000.0,
+  "tiles": [
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        6000.0,
+        8000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          431.458008,
+          17.0,
+          508.166992
+        ],
+        "min": [
+          -431.458008,
+          0.0,
+          -508.213013
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 7000.0,
+        "x_min": 6000.0,
+        "y_max": 9000.0,
+        "y_min": 8000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        6,
+        8
+      ],
+      "tile_name": "Ingolstadt_Tile_6_8.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        7000.0,
+        8000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          556.992004,
+          47.5,
+          531.687012
+        ],
+        "min": [
+          -556.992004,
+          0.0,
+          -531.737
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 8000.0,
+        "x_min": 7000.0,
+        "y_max": 9000.0,
+        "y_min": 8000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        7,
+        8
+      ],
+      "tile_name": "Ingolstadt_Tile_7_8.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        8000.0,
+        8000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          528.442017,
+          12.5,
+          549.718994
+        ],
+        "min": [
+          -528.442017,
+          0.0,
+          -549.77301
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 9000.0,
+        "x_min": 8000.0,
+        "y_max": 9000.0,
+        "y_min": 8000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        8,
+        8
+      ],
+      "tile_name": "Ingolstadt_Tile_8_8.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        7000.0,
+        9000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          510.276001,
+          40.0,
+          251.983002
+        ],
+        "min": [
+          -510.276001,
+          0.0,
+          -251.994003
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 8000.0,
+        "x_min": 7000.0,
+        "y_max": 10000.0,
+        "y_min": 9000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        7,
+        9
+      ],
+      "tile_name": "Ingolstadt_Tile_7_9.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        7000.0,
+        7000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          531.55603,
+          32.5,
+          561.299988
+        ],
+        "min": [
+          -531.55603,
+          0.0,
+          -561.356995
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 8000.0,
+        "x_min": 7000.0,
+        "y_max": 8000.0,
+        "y_min": 7000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        7,
+        7
+      ],
+      "tile_name": "Ingolstadt_Tile_7_7.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        8000.0,
+        7000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          510.518005,
+          12.5,
+          524.112
+        ],
+        "min": [
+          -510.518005,
+          0.0,
+          -524.161011
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 9000.0,
+        "x_min": 8000.0,
+        "y_max": 8000.0,
+        "y_min": 7000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        8,
+        7
+      ],
+      "tile_name": "Ingolstadt_Tile_8_7.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        6000.0,
+        7000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          325.971008,
+          63.0,
+          540.718994
+        ],
+        "min": [
+          -325.971008,
+          0.0,
+          -540.771973
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 7000.0,
+        "x_min": 6000.0,
+        "y_max": 8000.0,
+        "y_min": 7000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        6,
+        7
+      ],
+      "tile_name": "Ingolstadt_Tile_6_7.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        9000.0,
+        9000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          507.048004,
+          12.5,
+          353.278015
+        ],
+        "min": [
+          -507.048004,
+          0.0,
+          -353.299988
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 10000.0,
+        "x_min": 9000.0,
+        "y_max": 10000.0,
+        "y_min": 9000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        9,
+        9
+      ],
+      "tile_name": "Ingolstadt_Tile_9_9.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        8000.0,
+        9000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          450.609009,
+          22.5,
+          344.227997
+        ],
+        "min": [
+          -450.609009,
+          0.0,
+          -344.248993
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 9000.0,
+        "x_min": 8000.0,
+        "y_max": 10000.0,
+        "y_min": 9000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        8,
+        9
+      ],
+      "tile_name": "Ingolstadt_Tile_8_9.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        7000.0,
+        6000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          531.289001,
+          15.0,
+          372.640991
+        ],
+        "min": [
+          -531.289001,
+          0.0,
+          -372.665985
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 8000.0,
+        "x_min": 7000.0,
+        "y_max": 7000.0,
+        "y_min": 6000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        7,
+        6
+      ],
+      "tile_name": "Ingolstadt_Tile_7_6.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        10000.0,
+        9000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          192.276993,
+          7.5,
+          372.261993
+        ],
+        "min": [
+          -192.276993,
+          0.0,
+          -372.286987
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 11000.0,
+        "x_min": 10000.0,
+        "y_max": 10000.0,
+        "y_min": 9000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        10,
+        9
+      ],
+      "tile_name": "Ingolstadt_Tile_10_9.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        6000.0,
+        6000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          283.071991,
+          7.5,
+          296.859009
+        ],
+        "min": [
+          -283.071991,
+          0.0,
+          -296.875
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 7000.0,
+        "x_min": 6000.0,
+        "y_max": 7000.0,
+        "y_min": 6000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        6,
+        6
+      ],
+      "tile_name": "Ingolstadt_Tile_6_6.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        8000.0,
+        6000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          398.851013,
+          7.5,
+          206.526993
+        ],
+        "min": [
+          -398.851013,
+          0.0,
+          -206.535004
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 9000.0,
+        "x_min": 8000.0,
+        "y_max": 7000.0,
+        "y_min": 6000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        8,
+        6
+      ],
+      "tile_name": "Ingolstadt_Tile_8_6.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        9000.0,
+        8000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          417.071014,
+          12.5,
+          330.903992
+        ],
+        "min": [
+          -417.071014,
+          0.0,
+          -330.924011
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 10000.0,
+        "x_min": 9000.0,
+        "y_max": 9000.0,
+        "y_min": 8000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        9,
+        8
+      ],
+      "tile_name": "Ingolstadt_Tile_9_8.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        6000.0,
+        9000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          450.923004,
+          12.5,
+          153.729996
+        ],
+        "min": [
+          -450.923004,
+          0.0,
+          -153.733994
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 7000.0,
+        "x_min": 6000.0,
+        "y_max": 10000.0,
+        "y_min": 9000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        6,
+        9
+      ],
+      "tile_name": "Ingolstadt_Tile_6_9.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        10000.0,
+        7000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          261.730011,
+          15.0,
+          431.936005
+        ],
+        "min": [
+          -261.730011,
+          0.0,
+          -431.970001
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 11000.0,
+        "x_min": 10000.0,
+        "y_max": 8000.0,
+        "y_min": 7000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        10,
+        7
+      ],
+      "tile_name": "Ingolstadt_Tile_10_7.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        9000.0,
+        7000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          419.122009,
+          7.5,
+          449.817993
+        ],
+        "min": [
+          -419.122009,
+          0.0,
+          -449.855011
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 10000.0,
+        "x_min": 9000.0,
+        "y_max": 8000.0,
+        "y_min": 7000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        9,
+        7
+      ],
+      "tile_name": "Ingolstadt_Tile_9_7.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        9000.0,
+        6000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          82.073997,
+          7.5,
+          82.920998
+        ],
+        "min": [
+          -82.073997,
+          0.0,
+          -82.922997
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 10000.0,
+        "x_min": 9000.0,
+        "y_max": 7000.0,
+        "y_min": 6000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        9,
+        6
+      ],
+      "tile_name": "Ingolstadt_Tile_9_6.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        10000.0,
+        6000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          171.591995,
+          12.5,
+          75.847
+        ],
+        "min": [
+          -171.591995,
+          0.0,
+          -75.848
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 11000.0,
+        "x_min": 10000.0,
+        "y_max": 7000.0,
+        "y_min": 6000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        10,
+        6
+      ],
+      "tile_name": "Ingolstadt_Tile_10_6.fbx"
+    },
+    {
+      "actual_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_frame_offset_xy_m": [
+        832671.676,
+        5458671.104
+      ],
+      "expected_world_origin_m": [
+        10000.0,
+        8000.0
+      ],
+      "exported_object_bounds": {
+        "max": [
+          178.959,
+          7.5,
+          395.755005
+        ],
+        "min": [
+          -178.959,
+          0.0,
+          -395.78299
+        ]
+      },
+      "failures": [],
+      "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.fbx",
+      "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.tile_fbx.json",
+      "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\fbx_roundtrip_manifest.json",
+      "source_bbox_m": {
+        "x_max": 11000.0,
+        "x_min": 10000.0,
+        "y_max": 9000.0,
+        "y_min": 8000.0
+      },
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "tile_index": [
+        10,
+        8
+      ],
+      "tile_name": "Ingolstadt_Tile_10_8.fbx"
+    }
+  ]
+}
