@@ -573,5 +573,56 @@ def test_s_cli_help(tmp_path):
     assert "usage:" in result.stdout.lower()
 
 
+# ---------------------------------------------------------------------------
+# T. Real BlenderRunner.run() (not FakeBlenderRunner) with subprocess mocked.
+#
+# Regression for a real bug found 2026-09-24 (lane-link/FBX readiness audit):
+# BlenderRunner.run() declares BlenderResult.output_hash but never assigned it
+# (unlike input_hash, which is set from self._hash_file(self.obj_path)). Since
+# output_hash defaults to "", `output_hash_ok = bool(result.output_hash) and ...`
+# was always False, so `checks_ok = all([...])` was always False and every real
+# (non-mocked) conversion reported status="failed" even when Blender genuinely
+# succeeded. FakeBlenderRunner (used by every other test in this file) overrides
+# run() entirely and always sets output_hash itself, so it never exercised this
+# path -- confirmed live against the real Blender 4.3 binary on this machine
+# (real OSM2World-produced scene.obj -> FBX -> ROUNDTRIP_PASS) before and after
+# the fix. This test exercises the *real* BlenderRunner.run() with only
+# subprocess.run mocked, so it fails RED without the `result.output_hash =
+# self._hash_file(fbx_path)` line and passes GREEN with it.
+# ---------------------------------------------------------------------------
+
+
+def test_t_real_runner_sets_output_hash_and_reports_ok(tmp_path, monkeypatch):
+    import ultimate_pipeline.enrichment.blender_runner as blender_runner_mod
+
+    obj = _make_obj(tmp_path)
+    out_dir = tmp_path / "out"
+    out_dir.mkdir()
+
+    fbx_bytes = b"Kaydara FBX Binary  \x00\x1a\x00" + b"\x00" * 32
+    fbx_path = out_dir / "scene.fbx"
+    manifest_path = out_dir / "scene.blender_manifest.json"
+
+    def fake_subprocess_run(cmd, **kwargs):
+        # Simulate the Blender subprocess: write the FBX + manifest the real
+        # in-Blender conversion script would produce, and signal success.
+        fbx_path.write_bytes(fbx_bytes)
+        output_hash = hashlib.sha256(fbx_bytes).hexdigest()
+        _write_manifest(manifest_path, _sha256(obj.read_bytes()), output_hash, objects_total=1)
+        return MagicMock(returncode=0, stdout="CONVERSION_OK\n", stderr="")
+
+    monkeypatch.setattr(blender_runner_mod.subprocess, "run", fake_subprocess_run)
+
+    runner = BlenderRunner(obj_path=str(obj), output_dir=str(out_dir), name_prefix="scene")
+    monkeypatch.setattr(runner, "_check_blender", lambda: (True, "Blender 4.3.0 (fake)"))
+
+    result = runner.run()
+
+    assert result.status == "ok", result.reason
+    assert result.output_hash != ""
+    assert result.output_hash == hashlib.sha256(fbx_bytes).hexdigest()
+    assert result.verification["output_hash_match"] is True
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
