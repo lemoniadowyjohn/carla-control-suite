@@ -1,0 +1,64 @@
+{
+  "generated_at_utc": "2026-09-24T10:29:11.000000+00:00",
+  "git_sha": "edd2330716912c641b6e7d756f90affc6ca9a4d7-dirty",
+  "baseline_sha": "66a28b82814f466246f1755f04c1ac95645a1707",
+  "branch": "fix/ci-closure-blender-writerlock-20260924",
+  "fix_commits": [
+    "8cb1cd95d48bcd2d24e3b4303eae84c09365c716",
+    "1bc93eef5ed2092b816d50cdae5c1cb276779a05",
+    "edd2330716912c641b6e7d756f90affc6ca9a4d7"
+  ],
+  "family_a": {
+    "files_changed": [
+      "tests/unit/test_blender_conversion_integrity.py"
+    ],
+    "override_location": "FakeBlenderRunner._check_blender (class-local override on the test subclass only; returns (True, 'Blender 4.3.0 (fake-injected)'))",
+    "characterization_test": "test_u_real_runner_default_discovery_missing_blender_blocked",
+    "production_blender_runner_modified": false,
+    "skip_xfail_added": false
+  },
+  "family_b": {
+    "files_changed": [
+      "ultimate_pipeline/contracts/writer_lock.py",
+      "tests/unit/test_writer_lock_atomic_publication.py",
+      "tests/unit/_writer_lock_mp_worker.py",
+      "tests/unit/test_writer_lock_concurrency.py"
+    ],
+    "fresh_publish_reread_budget_ms": 500,
+    "o_excl_remains_authority": true,
+    "load_still_strict": true,
+    "unlink_only_after_successful_parse": true,
+    "distinct_fail_closed_message": "writer.lock at {lock_path} exists but is not readable JSON; refusing to acquire or delete it"
+  },
+  "focused_tests": {
+    "command": "python -m pytest tests/unit/test_blender_conversion_integrity.py tests/unit/test_writer_lock.py tests/unit/test_writer_lock_concurrency.py tests/unit/test_writer_lock_atomic_publication.py tests/unit/test_agent_sync_contract.py -q --tb=short",
+    "result": "53 passed in 192.68s (0:03:12)"
+  },
+  "old_bug_reproduction": {
+    "method": "git stash push -- ultimate_pipeline/contracts/writer_lock.py (production fix reverted; tests kept), run widened test, git stash pop, re-run",
+    "unfixed_result": "1 failed in 4.28s -- iteration 0: all 8 contenders error=JSONDecodeError('Expecting value: line 1 column 1 (char 0)')",
+    "fixed_result": "4 passed in 26.00s (whole new module)",
+    "final_tree_contains_fix": true
+  },
+  "full_suite": {
+    "command": "python -m pytest -q",
+    "plugin_autoload_policy": "bare default plugin autoload (CI-equivalent command); attempt 1 completed without the GAP-007 post-100% hang, so PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 was not needed and not used; no second attempt",
+    "passed": 6264,
+    "failed": 0,
+    "skipped": 6,
+    "summary_line": "6264 passed, 6 skipped, 178 warnings in 1529.18s (0:25:29)"
+  },
+  "gap_register": {
+    "path": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.json (+ .md)",
+    "gaps_added": [
+      "GAP-027",
+      "GAP-028"
+    ],
+    "gap_024_untouched": true
+  },
+  "github_actions": {
+    "status": "PENDING",
+    "run_url": null
+  },
+  "verdict": "LOCAL_GREEN_CI_PENDING"
+}
