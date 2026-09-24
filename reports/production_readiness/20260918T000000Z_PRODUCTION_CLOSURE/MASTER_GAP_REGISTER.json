@@ -1,7 +1,7 @@
 {
   "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-24T00:00:00Z",
+  "last_updated_utc": "2026-09-24T09:54:54Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -473,11 +473,48 @@
       "regression_test": null,
       "evidence_artifact": "Reported directly in the subagent's handback (2026-09-24); no junction_lanelink_sanity.json has ever existed anywhere in the repo before this run (confirmed) -- this is the first time this real check has ever been run against real production data.",
       "residual_risk": "HIGH pending a decision, but deliberately not acted on unilaterally. Two real, distinct open questions, NOT yet resolved: (1) whether the 74% near-threshold cluster (median 0.125m, just under the 0.25m tolerance) indicates the checker's own tolerance/methodology needs review (e.g. a systematic half-lane-width measurement bias) before concluding the map itself is broken -- investigate the checker before the map; (2) whether/how to wire this into a hard gate at all -- doing so naively would immediately flip the currently-promoted, valid_for_experiments=true map-of-record to failing, which is a real map-governance decision requiring human sign-off, not a well-scoped code fix. Do not dispatch a fix for either half without that decision."
+    },
+    {
+      "id": "GAP-027",
+      "severity": "P2",
+      "subsystem": "tests/unit/test_blender_conversion_integrity.py -- FakeBlenderRunner machine-Blender dependence",
+      "description": "FakeBlenderRunner.run() mirrors production and calls self._check_blender() (test line 83) but did not override it, so it inherited BlenderRunner._check_blender (ultimate_pipeline/enrichment/blender_runner.py:276-298), which probes the host for a real Blender binary. On GitHub Ubuntu no Blender exists, so _check_blender returned (False, ...) and run() took the blocked branch (test lines 86-89) before ever reaching the injected conditions -- all 12 fake-injection tests (test_a through test_m) reported status=blocked and failed CI, while passing locally on Windows where Blender exists at E:\\Program Files\\... . Fix: a deterministic _check_blender override inside FakeBlenderRunner ONLY (class-local, not a global monkeypatch of BlenderRunner, because test_n/test_o/test_p/test_t depend on the real probe), plus a new real-runner characterization test test_u_real_runner_default_discovery_missing_blender_blocked proving the REAL BlenderRunner still returns blocked when default discovery yields no Blender, independent of host Blender presence. Zero production BlenderRunner changes, zero CI Blender installs, zero skip/xfail markers.",
+      "proof": "Prior read-only triage confirmed FakeBlenderRunner.run() line 83 -> inherited BlenderRunner._check_blender:276-298; on Blender-less hosts this returns (False, ...) -> blocked branch (test lines 86-89) -> the 12 named fake tests fail. Locally on this Windows machine (Blender at E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe) all 20 tests in the file passed pre-fix (baseline run: 20 passed in 20.20s), confirming the CI-only, machine-Blender-dependent nature of the failure. Post-fix: same 20 tests + new test_u pass without consulting the host Blender.",
+      "affected_files": [
+        "tests/unit/test_blender_conversion_integrity.py"
+      ],
+      "scientific_runtime_consequence": "None to production runtime -- this is a test-portability defect, not a pipeline defect. Consequence is to CI signal: 12 permanently-red-on-ubuntu fake-injection tests mask any real future regression in the Blender conversion verification logic they exist to guard (marker/exit-code/FBX-magic/manifest/hash/object-count/provenance checks), so a genuine verification-logic regression would be indistinguishable from the ambient machine-Blender failure.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-24), L3 CI-closure task -- single implementer",
+      "status": "fixed",
+      "fixing_commit": "8cb1cd95 (branch fix/ci-closure-blender-writerlock-20260924; merge SHA recorded post-CI)",
+      "regression_test": "the 12 fake-injection tests (test_a/test_b/test_c/test_c_missing_fbx/test_e/test_f/test_h/test_i/test_j/test_k/test_l/test_m) now deterministic on any host + new test_u_real_runner_default_discovery_missing_blender_blocked characterization + existing test_n/test_o/test_p/test_t untouched and still exercising the real BlenderRunner probe",
+      "evidence_artifact": "reports/production_readiness/20260924T102329Z_CI_CLOSURE/{RESULTS.md,VERIFICATION.json}",
+      "residual_risk": "LOW -- the override is confined to the FakeBlenderRunner subclass, so the real BlenderRunner._check_blender discovery/probe path remains covered by test_n/test_o/test_p (explicit blender_exe argument), test_t (instance-level monkeypatch pattern), and the new test_u (default-discovery characterization with a patched candidate set). No production code changed; no CI Blender install needed; no skip/xfail added. Residual: a future fake-runner test that needs real _check_blender behavior must use BlenderRunner directly (as test_n/o/p/u already do), not FakeBlenderRunner."
+    },
+    {
+      "id": "GAP-028",
+      "severity": "P1",
+      "subsystem": "ultimate_pipeline/contracts/writer_lock.py -- fresh-lock partial-publication reader race (distinct from GAP-024)",
+      "description": "WriterLock.acquire()'s O_EXCL create (line 129: os.open(lock_path, O_CREAT|O_EXCL|O_WRONLY|O_BINARY)) makes the lock pathname visible at size 0 BEFORE the subsequent fdopen/write/flush/fsync (lines 149-152) complete writing the payload. A losing process gets FileExistsError (line 130), immediately calls cls.load() (line 132), and load()'s json.loads(path.read_text()) (line 203) raises JSONDecodeError on the empty/torn file. Only FileNotFoundError was caught (lines 133-136); JSONDecodeError (a ValueError) propagated out of acquire() -> the multiprocessing worker (_writer_lock_mp_worker.py:41-42) reported 'error' -> tests/unit/test_writer_lock_concurrency.py:78 'assert not errors' failed on Linux CI with JSONDecodeError('Expecting value: line 1 column 1 (char 0)'). IMPORTANT: this is a NEW residual gap INTRODUCED by the GAP-024 O_EXCL fix (the visible-before-written window for readers that the old exists()-check-then-write sequence did not create, because the old code wrote content at a path that was only raced after being fully written, or claimed exclusivity by winning the check). It must NOT be conflated with GAP-024: GAP-024 remains fixed (O_EXCL is still the sole exclusivity authority; exactly-one-winner still holds); GAP-028 is the reader-side torn-read window that same fix opened. Fix: in acquire()'s FileExistsError branch, classify load() outcomes three ways -- FileNotFoundError keeps the existing continue/retry; (ValueError, TypeError) (empty file, torn JSON, JSON list, extra-key TypeError from from_dict) enters a bounded fresh-publication re-read sub-loop (100 x 0.005s = ~500ms ceiling, _FRESH_PUBLISH_MAX_REREADS/_FRESH_PUBLISH_REREAD_DELAY_S documented next to _ACQUIRE_MAX_ATTEMPTS) that recovers if the winner finishes publishing, continues the outer O_EXCL loop if the file vanishes, and otherwise raises a DISTINCT RuntimeError 'writer.lock at {path} exists but is not readable JSON; refusing to acquire or delete it' (RuntimeError -> mp worker 'blocked', deliberately NOT containing 'Writer lock held by', and the file is NEVER unlinked in this state); a successful load falls through to the unchanged live->held / not-live->unlink+retry path. load(), from_dict(), save(), release(), heartbeat(), _assert_still_current(), is_live/is_malformed/_parse_iso, the acquire() signature, SCHEMA_VERSION, O_EXCL flags, and _ACQUIRE_MAX_ATTEMPTS are all untouched.",
+      "proof": "Mechanically reproduced by the new GAP-028 widened-timing test with the production fix temporarily stashed (git stash push -- ultimate_pipeline/contracts/writer_lock.py): test_widened_fresh_publication_contender_never_sees_partial_json FAILED on iteration 0 with all 8 contender processes reporting error=JSONDecodeError('Expecting value: line 1 column 1 (char 0)') -- the exact signature observed on Linux CI. With the fix restored, the same test passes (4/4 in the new module). The widened window is deterministic: a top-level delayed_publish_worker claims the path via raw O_CREAT|O_EXCL (pathname visible, size 0), holds it empty 0.25s (above the real ~microsecond window, far below the 500ms re-read budget), then writes a pre-built valid live lock JSON; 8 real acquire_worker processes are released into that window.",
+      "affected_files": [
+        "ultimate_pipeline/contracts/writer_lock.py",
+        "tests/unit/test_writer_lock_atomic_publication.py",
+        "tests/unit/_writer_lock_mp_worker.py",
+        "tests/unit/test_writer_lock_concurrency.py"
+      ],
+      "scientific_runtime_consequence": "Without the fix, a legitimate lock contender can crash out of acquire() with an uncaught JSONDecodeError whenever it reads the winner's lock file during the microsecond-to-millisecond fresh-publication window -- surfacing as an indeterminate worker 'error' rather than a clean 'blocked'. This does NOT break single-writer exclusivity (the loser never wins; it errors), but it converts a deterministic contention outcome into flaky CI and could mislead an operator into thinking the lock system is broken when exclusivity is actually intact. The fail-closed branch added here also protects against a genuinely malformed persistent lock being silently deleted by a would-be reclaimer.",
+      "owner_subagent": "direct-dispatched Claude subagent (2026-09-24), L3 CI-closure task -- single implementer",
+      "status": "fixed",
+      "fixing_commit": "1bc93eef (branch fix/ci-closure-blender-writerlock-20260924; merge SHA recorded post-CI)",
+      "regression_test": "new tests/unit/test_writer_lock_atomic_publication.py (GAP-028: widened-timing cross-process partial-read race, persistent-empty fail-closed-without-delete, malformed-old-lock fail-closed-without-delete, stale-expired-lock still reclaimable) + bumped 8x50 exactly-one-winner test in test_writer_lock_concurrency.py + strengthened no-delete / not-'Writer lock held by' assertions on the four persistent-corruption fail-closed tests + new delayed_publish_worker in tests/unit/_writer_lock_mp_worker.py. RED->GREEN proven: widened test fails with the exact CI JSONDecodeError signature against stashed (unfixed) writer_lock.py, passes with the fix.",
+      "evidence_artifact": "reports/production_readiness/20260924T102329Z_CI_CLOSURE/{RESULTS.md,VERIFICATION.json,WRITER_LOCK_RACE_ANALYSIS.md}; RED run transcript (stashed production file): JSONDecodeError('Expecting value: line 1 column 1 (char 0)') x8 contenders on iteration 0",
+      "residual_risk": "LOW -- O_EXCL remains the sole exclusivity authority; load()/save()/heartbeat()/release() untouched; exactly-one-winner and stale-clobber regressions still green. Residual notes: (1) the legacy .agent_lock.json path check (acquire() lines 76-84) still calls load() directly and would propagate a raw JSONDecodeError on a corrupt legacy file -- out of scope for GAP-028, pre-existing, fails loud not silent; (2) pre-existing Windows unlink sharing hazard when reclaiming a parseable lock another process holds open is unchanged (not introduced or worsened by this fix); (3) the ~500ms re-read budget assumes a healthy winner completes publication within it -- if a winner stalls longer, the contender fails closed with the distinct RuntimeError (safe-but-conservative: no silent delete, no false held-by claim, operator can inspect), not a hang."
     }
   ],
   "counts": {
-    "total": 26,
-    "fixed": 19,
+    "total": 28,
+    "fixed": 21,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
