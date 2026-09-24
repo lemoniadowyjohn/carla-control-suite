@@ -179,36 +179,67 @@ def _boot_log(message: str) -> None:
 
 
 def _resolve_input_xodr_with_fallback(base_output_dir: str) -> str:
-    """Search for newest 08_final*.xodr in base_output_dir subdirectories.
+    """Search for the authoritative 08_final*.xodr in base_output_dir
+    subdirectories.
 
     Used when UP_DATA_ROOT is set but UP_INPUT_XODR is not, to automatically
     find the most recent pipeline output XODR file.
 
+    GAP-023 (same defect class as GAP-012, already fixed in
+    ultimate_pipeline/domain_gap/run_alignment_and_matching.py): this used
+    to pick the newest candidate by raw filesystem mtime alone, with no
+    structural/content guard -- a stale file touched by an unrelated
+    process, a clock skew, a rebase, or a restored backup could silently
+    win and become the NEXT pipeline run's input. Fix follows the
+    established convention from
+    ultimate_pipeline/tools/artifact_locator.py::_newest_final_xodr /
+    run_alignment_and_matching.py::_find_latest_final_xodr: prefer
+    candidates that are structurally verified post-repair (a same-run
+    *_laneSectionFixed*.xodr sibling exists on disk, see
+    _repaired_sibling_exists) before ever consulting mtime; mtime is only
+    the tie-breaker among candidates that are equally legitimate by that
+    structural check (or the full fallback when no candidate carries
+    repair evidence, e.g. ENABLE_LANE_SECTION_REPAIR=0 runs).
+
     Returns:
-        Path to newest 08_final*.xodr or empty string if none found.
+        Path to the authoritative 08_final*.xodr or empty string if none
+        found.
     """
     try:
         base = Path(base_output_dir)
         if not base.is_dir():
             return ""
 
-        best_path = ""
-        best_mtime = 0.0
+        # Import kept local to avoid adding this module to
+        # config/settings.py's always-imported dependency surface for
+        # callers that never touch UP_DATA_ROOT.
+        from ultimate_pipeline.tools.artifact_locator import (
+            _repaired_sibling_exists,
+        )
 
         # Search subdirectories for 08_final*.xodr files
+        candidates = []
         for run_dir in base.iterdir():
             if not run_dir.is_dir():
                 continue
             for xodr in run_dir.glob("08_final*.xodr"):
                 try:
-                    mtime = xodr.stat().st_mtime
-                    if mtime > best_mtime:
-                        best_mtime = mtime
-                        best_path = str(xodr)
+                    xodr.stat()
                 except Exception:
                     continue
+                candidates.append(xodr)
 
-        return best_path
+        if not candidates:
+            return ""
+
+        # Structural guard before mtime (see docstring above): a candidate
+        # that is structurally verified post-repair cannot be outranked by
+        # a merely-newer-by-mtime candidate that never reached the repair
+        # step. mtime is then used only as the tie-breaker.
+        repaired = [c for c in candidates if _repaired_sibling_exists(c)]
+        pool = repaired or candidates
+        pool.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+        return str(pool[0])
     except Exception:
         return ""
 
