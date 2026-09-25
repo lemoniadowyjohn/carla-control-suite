@@ -12,3 +12,7 @@
 - Large `run_*.xodr` artifacts are intentionally not required for portable CI.
 - GitHub currently defaults to historical `main`; active engineering authority is `integration/production-large-map-20260918` until the governance migration is explicitly completed.
 - A clean remote branch does not prove local worktrees are clean. Follow `docs/engineering/WORKTREE_HYGIENE.md` before integration, retirement, or deletion of any worktree.
+
+- The self-hosted `.github/workflows/carla-runtime.yml` health-packet step currently passes GitHub `job.status` values (`success`/`failure`) into `repo_health.py`, whose CLI accepts only repository statuses such as `PASS`/`FAIL`/`NOT_RUN`; this must be normalized before the workflow can produce a successful runtime health packet.
+- The active `tests.yml` and `carla-runtime.yml` workflows are not present on historical default branch `main`. Until the default branch is migrated, workflow discovery/manual dispatch can therefore expose stale or missing automation rather than the canonical integration workflow.
+- Wheel metadata currently declares only a minimal dependency set while core packaged modules import additional libraries such as `pyproj`. The current clean-wheel smoke imports only a representative subset, so it does not yet prove that a wheel-only install can execute the full production package.
