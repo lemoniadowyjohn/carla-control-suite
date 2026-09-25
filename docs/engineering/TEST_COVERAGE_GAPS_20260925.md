@@ -150,3 +150,29 @@ Before calling test coverage release-grade:
 - GAP signal-to-gate wiring is tested;
 - timeout is never reported as PASS;
 - runtime/cook/scientific layers remain separately reported.
+
+## Additional CI contract gaps
+
+### Self-hosted runtime workflow status normalization
+
+`.github/workflows/carla-runtime.yml` passes `${{ job.status }}` directly to `repo_health.py --test-result/--runtime-status`. GitHub emits lowercase workflow states such as `success` and `failure`, while the CLI choices are `PASS`, `FAIL`, `INCOMPLETE`, `NOT_RUN`, and `BLOCKED_EXTERNAL`.
+
+Required regression coverage:
+- successful runtime step maps to `PASS`;
+- failed runtime step maps to `FAIL`;
+- health-packet generation executes in both paths;
+- successful runtime verification does not become a failed job solely because of status-vocabulary mismatch.
+
+### Default-branch workflow visibility
+
+The canonical `tests.yml` and `carla-runtime.yml` files are absent from historical default `main`. Add a governance test/check that prevents changing or retaining a default branch which lacks the current required workflow set.
+
+### Wheel dependency contract
+
+The wheel metadata declares only `click`, `numpy`, and `pydantic`, while core packaged modules such as `ultimate_pipeline.tiling.tile_fbx_generator` directly import `pyproj`.
+
+Required decision:
+- either declare the complete core runtime dependency contract (and optional extras where appropriate), or
+- explicitly define the wheel as a minimal package and stop treating the current representative import smoke as full-package usability certification.
+
+Add wheel-smoke imports/execution for the actual supported package surface, not only modules with lightweight import graphs.
