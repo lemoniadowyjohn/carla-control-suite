@@ -10,16 +10,16 @@ This is a research repository for reproducible OSM to OpenDRIVE generation and c
 domain-gap experiments. It is not a claim that every thesis question is complete.
 
 - CARLA target: `0.9.16`.
-- Authoritative lineage: `fix/post-audit-phase-e-junctions-roundabouts-20260803`.
-- Stabilization branch: `stabilize/research-release-20260905`.
+- Canonical engineering branch: `integration/production-large-map-20260918`.
+- GitHub default branch: currently `main`, which is historical/obsolete for active engineering work; default-branch migration remains a separate governance task.
 - Canonical command: `up` (or `python -m ultimate_pipeline.cli`).
-- Map of record: `campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr`.
-- Manual reference: `campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr` — the manually modeled CARLA map that is the RQ2 structural-gap baseline (verify via `verify_pinned_map('manual_grid0828')`).
-- CI: the offline gates are defined in `.github/workflows/tests.yml` (six jobs: offline tests, wheel smoke, governance, RQ contract, provenance, repository health). The last green GitHub run was on `b059a9d0` under the earlier single-job workflow; the current six-job workflow and any newer HEAD must be pushed and re-run before "CI green" applies to them.
-- Health: offline gates are executable; live CARLA verification is `NOT_RUN` unless a self-hosted runtime workflow is executed.
+- Map of record: resolve `auto_map_of_record` through `verify_pinned_map(...)`; the current verified pin is `campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr` (SHA256 `370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8`).
+- Manual reference: `campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr` — the manually modeled CARLA map used as the RQ2 structural-gap baseline (verify via `verify_pinned_map('manual_grid0828')`).
+- CI: the offline gates are defined in `.github/workflows/tests.yml` (offline tests, wheel smoke, governance, RQ contract, provenance, repository health). The 2026-09-24 closure evidence records six-job GitHub Actions success on `52bf6c27`; the production tip later recorded a post-merge full suite of **6264 passed, 6 skipped, 0 failed**. A documentation-only commit after a green run does not by itself create a new runtime/CI claim.
+- Health: repository-health PASS is an offline result unless the separate self-hosted `.github/workflows/carla-runtime.yml` workflow has actually executed successfully.
 - Thesis relationship: `submission/` is frozen evidence; current work is measured against the immutable RQ contract.
 
-RQ1 is authoritative for structural determinism and bounded for timestamp-normalized bytes. RQ2 is bounded. RQ4 is **not currently citable as authoritative** pending a leak-free retrain (GAP-010; see `docs/research/THESIS_TO_CURRENT_PROGRESS.md`). RQ3 and RQ5 remain deferred and are not inferred from Town10HD or unlabeled shift metrics.
+RQ1 remains authoritative for structural repeatability and bounded for byte-level/normalized determinism outside the proven scope. RQ2 is bounded. RQ4's leak-free five-seed extension is now supported by passing pre-training and post-hoc leakage audits (GAP-010 closed). RQ3 remains deferred until paired manual/automatic CARLA capture is executed, and RQ5 remains downstream of that runtime evidence.
 
 ## Canonical entrypoints
 
@@ -78,7 +78,7 @@ This repo's evidence-export tooling (`tools/export_thesis_tables.py`, cross-chec
 | RQ1 | Determinism (byte-level vs. structural) | AUTHORITATIVE |
 | RQ2 | Structural domain gap (auto vs. manual map) | BOUNDED |
 | RQ3 | Perceptual domain gap (paired CARLA capture) | DEFERRED — blocked on a live CARLA server |
-| RQ4 | Structural variability / latent representation (GNN) | NOT_CURRENTLY_CITABLE — GAP-010 train/eval leak fixed; leak-free retrain not yet run (`BLOCKED_EXTERNAL`) |
+| RQ4 | Structural variability / latent representation (GNN) | AUTHORITATIVE current extension — leak-free 5-seed retrain complete; pre-training and post-hoc leakage audits PASS |
 | RQ5 | Generalization and transfer (sim + real-world) | DEFERRED — blocked on RQ3's capture pipeline, plus (5b) no real-world dataset |
 
 Regenerate this table directly against current evidence:

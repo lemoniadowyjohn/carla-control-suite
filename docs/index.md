@@ -81,3 +81,9 @@ future mechanical migration would move where.
 
 - `../submission/` -- the archived thesis-submission deliverable. Not imported by production code,
   excluded from test collection. See `REPOSITORY_GOVERNANCE.md` for the immutability policy.
+
+
+## Engineering hygiene
+
+- [`engineering/WORKTREE_HYGIENE.md`](engineering/WORKTREE_HYGIENE.md) -- required local worktree audit, preservation, integration, and retirement procedure for L3/L4 work.
+- [`engineering/TEST_COVERAGE_GAPS_20260925.md`](engineering/TEST_COVERAGE_GAPS_20260925.md) -- current risk-based test-coverage gaps and closure plan; test count is not treated as a coverage percentage.
