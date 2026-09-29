@@ -307,7 +307,7 @@ def preflight_package(
     validation = validate_staged_package(str(pkg_dir), expected_xodr_sha256=expected_sha if expected_sha else None)
     checks.append({"check": "validate_staged_package", "status": "PASS" if validation.status == "PASS" else "BLOCKED", "failures": validation.failures, "warnings": validation.warnings})
     audit = audit_large_map_package_contract(str(pkg_dir), expected_tile_size_m=expected_tile_size_m)
-    checks.append({"check": "audit_contract", "status": audit.status, "failures": audit.failures, "warnings": audit.warnings})
+    checks.append({"check": "audit_contract", "status": "PASS" if audit.status == "PASS" else "BLOCKED", "failures": audit.failures, "warnings": audit.warnings})
 
     # 7,8,9,10 via descriptor check
     desc_status, desc_info = _check_package_descriptor(pkg_dir)
