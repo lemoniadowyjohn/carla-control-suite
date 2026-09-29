@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="tile_fbx_generator.py">
+  <node id="-1" lat="48.7491182" lon="11.4702664" visible="true" />
+  <node id="-2" lat="48.7488400" lon="11.4704093" visible="true" />
+  <node id="-3" lat="48.7488741" lon="11.4705621" visible="true" />
+  <node id="-4" lat="48.7486945" lon="11.4706544" visible="true" />
+  <node id="-5" lat="48.7489038" lon="11.4715919" visible="true" />
+  <node id="-6" lat="48.7493617" lon="11.4713567" visible="true" />
+  <node id="-7" lat="48.7496815" lon="11.4737566" visible="true" />
+  <node id="-8" lat="48.7497249" lon="11.4739815" visible="true" />
+  <node id="-9" lat="48.7498174" lon="11.4739404" visible="true" />
+  <node id="-10" lat="48.7499701" lon="11.4747321" visible="true" />
+  <node id="-11" lat="48.7494969" lon="11.4749420" visible="true" />
+  <node id="-12" lat="48.7493676" lon="11.4742515" visible="true" />
+  <node id="-13" lat="48.7494075" lon="11.4741332" visible="true" />
+  <node id="-14" lat="48.7493636" lon="11.4738760" visible="true" />
+  <node id="-15" lat="48.7495125" lon="11.4728104" visible="true" />
+  <node id="-16" lat="48.7491394" lon="11.4729719" visible="true" />
+  <node id="-17" lat="48.7492931" lon="11.4737493" visible="true" />
+  <node id="-18" lat="48.7500572" lon="11.4734018" visible="true" />
+  <node id="-19" lat="48.7499968" lon="11.4730960" visible="true" />
+  <node id="-20" lat="48.7496037" lon="11.4732708" visible="true" />
+  <node id="-21" lat="48.7498980" lon="11.4726460" visible="true" />
+  <node id="-22" lat="48.7499871" lon="11.4730960" visible="true" />
+  <node id="-23" lat="48.7494167" lon="11.4714024" visible="true" />
+  <node id="-24" lat="48.7492821" lon="11.4714752" visible="true" />
+  <node id="-25" lat="48.7493111" lon="11.4715981" visible="true" />
+  <node id="-26" lat="48.7494456" lon="11.4715253" visible="true" />
+  <node id="-27" lat="48.7494618" lon="11.4717400" visible="true" />
+  <node id="-28" lat="48.7491182" lon="11.4719249" visible="true" />
+  <node id="-29" lat="48.7493049" lon="11.4727771" visible="true" />
+  <node id="-30" lat="48.7496596" lon="11.4725867" visible="true" />
+  <node id="-31" lat="48.7497029" lon="11.4725635" visible="true" />
+  <node id="-32" lat="48.7495381" lon="11.4718579" visible="true" />
+  <node id="-33" lat="48.7494948" lon="11.4718812" visible="true" />
+  <way id="-1000000000" visible="true">
+    <nd ref="-1" />
+    <nd ref="-2" />
+    <nd ref="-3" />
+    <nd ref="-4" />
+    <nd ref="-5" />
+    <nd ref="-6" />
+    <nd ref="-1" />
+    <tag k="addr:city" v="Ingolstadt" />
+    <tag k="addr:country" v="DE" />
+    <tag k="addr:housenumber" v="13" />
+    <tag k="addr:postcode" v="85053" />
+    <tag k="addr:street" v="Eriagstraße" />
+    <tag k="building" v="yes" />
+    <tag k="name" v="tedox" />
+    <tag k="opening_hours" v="Mo-Fr 09:00-20:00; Sa 09:00-19:00" />
+    <tag k="phone" v="+49 841 9611502" />
+    <tag k="shop" v="furniture" />
+    <tag k="website" v="https://www.tedox.de/standorte/ingolstadt" />
+  </way>
+  <way id="-1000000001" visible="true">
+    <nd ref="-7" />
+    <nd ref="-8" />
+    <nd ref="-9" />
+    <nd ref="-10" />
+    <nd ref="-11" />
+    <nd ref="-12" />
+    <nd ref="-13" />
+    <nd ref="-14" />
+    <nd ref="-7" />
+    <tag k="addr:city" v="Ingolstadt" />
+    <tag k="addr:housenumber" v="27" />
+    <tag k="addr:postcode" v="85053" />
+    <tag k="addr:street" v="Eriagstraße" />
+    <tag k="brand" v="Mömax" />
+    <tag k="brand:wikidata" v="Q56388481" />
+    <tag k="brand:wikipedia" v="hu:Mömax" />
+    <tag k="building" v="yes" />
+    <tag k="email" v="ingolstadt@moemax.de" />
+    <tag k="fax" v="+49 30 2554891213" />
+    <tag k="name" v="Mömax" />
+    <tag k="opening_hours" v="Mo-Sa 10:00-19:00" />
+    <tag k="phone" v="+49 30 255498910" />
+    <tag k="shop" v="furniture" />
+    <tag k="website" v="https://www.moemax.de/filiale/moemax-ingolstadt/IG" />
+  </way>
+  <way id="-1000000002" visible="true">
+    <nd ref="-15" />
+    <nd ref="-16" />
+    <nd ref="-17" />
+    <nd ref="-18" />
+    <nd ref="-19" />
+    <nd ref="-20" />
+    <nd ref="-15" />
+    <tag k="addr:city" v="Ingolstadt" />
+    <tag k="addr:country" v="DE" />
+    <tag k="addr:housenumber" v="23" />
+    <tag k="addr:postcode" v="85053" />
+    <tag k="addr:street" v="Eriagstraße" />
+    <tag k="building" v="retail" />
+    <tag k="note" v="ehemaliger Mediamarkt" />
+  </way>
+  <way id="-1000000003" visible="true">
+    <nd ref="-21" />
+    <nd ref="-15" />
+    <nd ref="-20" />
+    <nd ref="-22" />
+    <nd ref="-21" />
+    <tag k="amenity" v="parking" />
+    <tag k="building" v="yes" />
+    <tag k="fee" v="no" />
+    <tag k="parking" v="multi-storey" />
+    <tag k="wheelchair" v="limited" />
+  </way>
+  <way id="-1000000004" visible="true">
+    <nd ref="-23" />
+    <nd ref="-24" />
+    <nd ref="-25" />
+    <nd ref="-26" />
+    <nd ref="-23" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000005" visible="true">
+    <nd ref="-27" />
+    <nd ref="-28" />
+    <nd ref="-29" />
+    <nd ref="-30" />
+    <nd ref="-31" />
+    <nd ref="-32" />
+    <nd ref="-33" />
+    <nd ref="-27" />
+    <tag k="building" v="yes" />
+  </way>
+</osm>

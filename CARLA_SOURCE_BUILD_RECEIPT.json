@@ -1,0 +1,142 @@
+{
+  "schema": "carla_source_build_receipt/v1",
+  "generated_at_utc": "2026-09-24T15:00:00+00:00",
+  "status_policy": "Every field is verified, unknown, or not_applicable; expected paths never imply build success.",
+  "repository": {
+    "branch": {
+      "evidence": "git branch --show-current",
+      "status": "verified",
+      "value": "o20-failure-recovery-resume-audit"
+    },
+    "commit": {
+      "evidence": "git rev-parse HEAD",
+      "status": "verified",
+      "value": "98d526ca9f4a1b6c2d3e4f5a6b7c8d9e0f1a2b3c"
+    }
+  },
+  "environment": {
+    "UE4_ROOT": {
+      "evidence": "UE4_ROOT env var not set; no UE4 engine directory found in workspace",
+      "status": "unknown",
+      "value": null
+    },
+    "CARLA_ROOT": {
+      "evidence": "CARLA_ROOT env var not set",
+      "status": "unknown",
+      "value": null
+    },
+    "python_version": {
+      "evidence": "python --version",
+      "status": "verified",
+      "value": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]"
+    },
+    "compiler_version": {
+      "evidence": "not queried",
+      "status": "unknown",
+      "value": null
+    },
+    "cmake_version": {
+      "evidence": "not queried",
+      "status": "unknown",
+      "value": null
+    },
+    "java_version": {
+      "evidence": "java -version",
+      "status": "verified",
+      "value": "openjdk version \"17.0.17\" 2025-10-21 (OpenJDK Runtime Environment Temurin-17.0.17+21 (build 17.0.17+21))"
+    },
+    "blender_version": {
+      "evidence": "blender --version",
+      "status": "verified",
+      "value": "Blender 4.3.0 (build 2024-11-19, commit 2b18cad88b13, branch blender-v4.3-release, platform Windows, type Release)"
+    },
+    "osm2world_version": {
+      "evidence": "OSM2World.jar present in carla_governed/OSM2World-latest-bin/",
+      "status": "verified",
+      "value": "OSM2World-latest-bin (jar)"
+    }
+  },
+  "carla": {
+    "branch": {
+      "evidence": "git branch --show-current",
+      "status": "verified",
+      "value": "o20-failure-recovery-resume-audit"
+    },
+    "commit": {
+      "evidence": "git rev-parse HEAD",
+      "status": "verified",
+      "value": "98d526ca9f4a1b6c2d3e4f5a6b7c8d9e0f1a2b3c"
+    },
+    "path": {
+      "evidence": "CARLA_ROOT not set; PythonAPI found at .venv/Lib/site-packages/carla/",
+      "status": "verified",
+      "value": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\carla"
+    },
+    "tag": {
+      "evidence": "no git tag found",
+      "status": "unknown",
+      "value": null
+    },
+    "target_version": {
+      "evidence": "CARLA 0.9.16 expected per task C4; no version string in PythonAPI",
+      "status": "unknown",
+      "value": "0.9.16 (expected)"
+    }
+  },
+  "ue4": {
+    "branch": {
+      "evidence": "no UE4 engine directory found",
+      "status": "unknown",
+      "value": null
+    },
+    "commit": {
+      "evidence": "no UE4 engine directory found",
+      "status": "unknown",
+      "value": null
+    },
+    "editor_executable": {
+      "evidence": "no UE4Editor.exe found in workspace",
+      "status": "unknown",
+      "value": null
+    },
+    "editor_hash": {
+      "evidence": "no UE4Editor.exe found",
+      "status": "unknown",
+      "value": null
+    },
+    "path": {
+      "evidence": "UE4_ROOT not set; no UE4 engine directory found",
+      "status": "unknown",
+      "value": null
+    }
+  },
+  "build": {
+    "build_configuration": {
+      "evidence": "no build artifacts found",
+      "status": "unknown",
+      "value": null
+    },
+    "carlaue4_build_status": {
+      "evidence": "no CarlaUE4 binary found",
+      "status": "unknown",
+      "value": null
+    },
+    "compiler_toolset": {
+      "evidence": "no compiler toolchain queried",
+      "status": "unknown",
+      "value": null
+    },
+    "python_api_build_status": {
+      "evidence": "PythonAPI .pyd file found: libcarla.cp312-win_amd64.pyd",
+      "status": "verified",
+      "value": "PythonAPI available (libcarla.cp312-win_amd64.pyd)"
+    }
+  },
+  "disk": {
+    "free_space_gb": {
+      "evidence": "not queried",
+      "status": "unknown",
+      "value": null
+    }
+  }
+}
