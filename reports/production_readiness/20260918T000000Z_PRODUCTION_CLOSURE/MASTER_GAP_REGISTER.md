@@ -2,7 +2,7 @@
 
 Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync at each update.
 
-Last updated: `2026-09-24T11:05:15Z`
+Last updated: `2026-09-29T12:00:00Z`
 
 | ID | Severity | Subsystem | Status | Fixing commit / owner |
 |---|---|---|---|---|
@@ -35,12 +35,22 @@ Last updated: `2026-09-24T11:05:15Z`
 | GAP-027 | P0 | ultimate_pipeline/main_pipeline.py -- MainPipeline class dedent crash (GAP-020 merge regression) | **fixed** | 4ddb7ced+b86d1170 (merged into origin/integration/production-large-map-20260918) |
 | GAP-028 | P2 | tests/unit/test_blender_conversion_integrity.py -- FakeBlenderRunner machine-Blender dependence | **fixed** | 8cb1cd95 (branch fix/ci-closure-blender-writerlock-20260924; renumbered from GAP-027 post-upstream-collision) |
 | GAP-029 | P1 | ultimate_pipeline/contracts/writer_lock.py -- fresh-lock partial-publication reader race | **fixed** | 1bc93eef (branch fix/ci-closure-blender-writerlock-20260924; renumbered from GAP-028 post-upstream-collision) |
+| GAP-030 | P0 | ultimate_pipeline/carla_tools/map_registry.py + scripts/cook_full_grid_tiles.py -- registry receipt missing structured frame fields (O1 regression) | **fixed** | integration/o1-o20-rebased-20260929 (verify_pinned_map() now surfaces rebase_dx/rebase_dy/frame_kind/etc from norm) |
+| GAP-031 | P1 | tools/tile_frame_consistency.py (O3) + full-grid tile cook evidence -- latent ~170-270m north-south tile-seam misplacement | open (needs policy) | independent verification subagent, docs/verify-o3-tile-frame-fullgrid-cook-20260929 (2026-09-29) |
+| GAP-032 | P1 | tools/rq3_pairing_preflight.py (O16) -- fail-open manual/automatic parity gap | open (needs design decision) | independent verification subagent, docs/verify-o15-o18-rq-claims-20260929 (2026-09-29) |
+| GAP-033 | P1 | tools/rq3_dataset_manifest_verifier.py (O17) -- fail-open default pairing skip | open (needs design decision) | independent verification subagent, docs/verify-o15-o18-rq-claims-20260929 (2026-09-29) |
+| GAP-034 | P1 | tools/rq5_contract_audit.py (O18) -- does not implement the RQ5(b) claim-boundary rule | open (needs new/extended tool) | independent verification subagent, docs/verify-o15-o18-rq-claims-20260929 (2026-09-29) |
+| GAP-035 | P1 | ultimate_pipeline/contracts/writer_lock.py -- load() leaked raw JSONDecodeError/TypeError instead of failing closed | **fixed** | integration/o1-o20-rebased-20260929 (load() now wraps json.loads/from_dict in try/except -> RuntimeError; acquire() except clauses updated to match) |
 
-Totals: 29 tracked, 22 fixed, 3 closed (non-reproducible), 1 deferred, 1 open, 1 blocked_external, 1 in_progress.
+Totals: 35 tracked, 24 fixed, 3 closed (non-reproducible), 1 deferred, 5 open, 1 blocked_external, 1 in_progress.
 
-## Active open / blocked items (2026-09-24)
+## Active open / blocked items (2026-09-29)
 
 - **GAP-026 (P1, open)**: lane-link pose-continuity is a dead signal in `lanelink_builder.py`; needs a human policy decision before any fix is dispatched.
+- **GAP-031 (P1, open)**: ~170-270m north-south tile-seam misplacement in the buildings-visual tile-cook path; needs a real placement-correction design, not attempted per this program's discipline.
+- **GAP-032 (P1, open)**: RQ3 pairing preflight only checks required-shared fields against a separate declared-contract file, never against the manual/automatic capture manifests themselves.
+- **GAP-033 (P1, open)**: RQ3 dataset manifest verifier silently skips its pairing check (and reports PASS) when no `--paired` manifest is supplied.
+- **GAP-034 (P1, open)**: no automated enforcement anywhere of the RQ5(b) claim-boundary rule (unlabeled-shift metrics must not be relabeled as generated-to-manual transfer accuracy).
 - **GAP-017 (P1, blocked_external)**: live CARLA RPC handshake still fails after audio-mixer-disable probe — blocks RQ3/RQ5a capture.
 - **GAP-018 (P1, in_progress)**: Epic/GitHub access resolved; UE4.26 compile running (`G:\UnrealEngine_4.26_CARLA`), `UE4Editor.exe` not yet present; cook not yet attempted.
 - **GAP-008 (P1, deferred)**: two geometry-authority packages; consolidation plan only (no RQ blocked directly).

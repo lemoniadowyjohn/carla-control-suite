@@ -172,7 +172,16 @@ def probe_worker(root: str, start_evt, stop_evt, result_queue, max_seconds: floa
             )
             outcomes["ok"] += 1
         except RuntimeError as exc:
-            if "unparseable" in str(exc):
+            # Match writer_lock.py's actual fail-closed message text for the
+            # widened empty-publish window ("... exists but is not readable
+            # JSON; refusing to acquire or delete it" -- see
+            # WriterLock.acquire()). The literal word "unparseable" is never
+            # emitted anywhere in writer_lock.py; checking for it here was a
+            # message-text mismatch that silently misbucketed every real
+            # empty-publish-window observation as "held_by" instead of
+            # "unparseable" (0 "unparseable" outcomes was this bug, not a
+            # true absence of the window).
+            if "not readable JSON" in str(exc):
                 outcomes["unparseable"] += 1
             else:
                 outcomes["held_by"] += 1

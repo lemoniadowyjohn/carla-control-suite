@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -48,12 +49,23 @@ HEADER_OFFSET_XY = (832671.676, 5458671.104)
 MAP_NAME = "Ingolstadt"
 TILE_SIZE_M = 1000.0
 
-# OSM2World jar is an untracked/gitignored binary; default to the canonical
-# install in the primary checkout so a git-worktree run still finds it.
-DEFAULT_OSM2WORLD_HOME = str(
-    Path(r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main")
-    / "carla_governed" / "OSM2World-latest-bin"
-)
+# OSM2World jar is an untracked/gitignored binary (A1: portable resolution,
+# no developer-machine absolute path). Precedence: OSM2WORLD_HOME env var >
+# <repo>/carla_governed/OSM2World-latest-bin > <repo>/OSM2World-latest-bin,
+# mirroring scripts/cook_full_grid_tiles.py's
+# _resolve_default_osm2world_home(). Returns the first candidate even if
+# missing; existence is validated at execution time via --osm2world-home.
+def _resolve_default_osm2world_home() -> str:
+    env_home = os.environ.get("OSM2WORLD_HOME", "").strip()
+    if env_home:
+        return env_home
+    governed = REPO_ROOT / "carla_governed" / "OSM2World-latest-bin"
+    if governed.is_dir():
+        return str(governed)
+    return str(REPO_ROOT / "OSM2World-latest-bin")
+
+
+DEFAULT_OSM2WORLD_HOME = _resolve_default_osm2world_home()
 
 
 def _sha256(path: Path) -> str:

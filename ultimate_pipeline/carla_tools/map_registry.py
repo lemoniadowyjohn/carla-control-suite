@@ -1015,7 +1015,7 @@ def verify_pinned_map(
             f"(expected sha256={expected_sha256}, actual={actual_sha256})"
         )
 
-    return {
+    receipt = {
         # Backward-compatible pin identity (declared values, now proven).
         "path": norm["path"],
         "sha256": actual_sha256,
@@ -1033,7 +1033,17 @@ def verify_pinned_map(
         "bytes_actual": actual_bytes,
         "verification_status": "VERIFIED",
         "registry_sha256": registry_fingerprint(reg),
+        # Structured frame fields (OC-58 §15), surfaced when the registry
+        # entry declares them. "frame_status" tells callers whether the
+        # machine-usable fields below are trustworthy (STRUCTURED) or this
+        # entry only has the legacy human-readable "frame" text
+        # (LEGACY_TEXT_ONLY) -- never invented/defaulted values.
+        "frame_status": norm["frame_status"],
     }
+    for _field in FRAME_STRUCTURED_FIELDS:
+        if _field in norm:
+            receipt[_field] = norm[_field]
+    return receipt
 
 
 # =============================================================================

@@ -164,11 +164,16 @@ class WriterLock:
                     # Raced with a concurrent release/cleanup between the
                     # failed O_EXCL create and this read; just retry.
                     continue
-                except (ValueError, TypeError):
+                except (ValueError, TypeError, RuntimeError):
                     # Unreadable content: either a fresh winner still
                     # publishing (empty/torn JSON at the just-created path)
                     # or a persistently malformed lock. Enter the bounded
                     # fresh-publication re-read window before deciding.
+                    # load() itself now raises RuntimeError (not a raw
+                    # JSONDecodeError/TypeError) for unparseable content, so
+                    # RuntimeError must be caught here too -- otherwise a
+                    # real winner still mid-publish would crash this loser
+                    # out immediately instead of riding out the window.
                     unreadable = True
 
                 if unreadable:
@@ -185,7 +190,7 @@ class WriterLock:
                             # won the race); retry the O_EXCL create.
                             vanished = True
                             break
-                        except (ValueError, TypeError):
+                        except (ValueError, TypeError, RuntimeError):
                             continue
                     if vanished:
                         continue
@@ -270,8 +275,33 @@ class WriterLock:
             path = cls._default_path()
         if not path.exists():
             raise FileNotFoundError(f"Lock file not found: {path}")
-        data = json.loads(path.read_text())
-        return cls.from_dict(data)
+        # Fail closed with a clear RuntimeError for content that cannot be
+        # parsed/mapped, rather than leaking json.JSONDecodeError /
+        # UnicodeDecodeError / TypeError (raw stdlib exception types a
+        # caller of this class's public API does not expect) -- matching
+        # this module's existing fail-closed philosophy elsewhere (e.g.
+        # acquire()'s "not readable JSON; refusing to acquire or delete it").
+        # A corrupt or zero-byte lock file (e.g. a process killed mid-write,
+        # or on-disk corruption) is exactly the case this class must
+        # diagnose clearly instead of crashing with an unrelated exception
+        # type.
+        try:
+            data = json.loads(path.read_text())
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise RuntimeError(
+                f"Writer lock at {path} is not valid JSON: {exc}"
+            ) from exc
+        if not isinstance(data, dict):
+            raise RuntimeError(
+                f"Writer lock at {path} does not contain a JSON object "
+                f"(got {type(data).__name__})"
+            )
+        try:
+            return cls.from_dict(data)
+        except TypeError as exc:
+            raise RuntimeError(
+                f"Writer lock at {path} has an invalid/incompatible schema: {exc}"
+            ) from exc
 
     @classmethod
     def from_dict(cls, data: dict) -> WriterLock:

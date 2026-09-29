@@ -204,6 +204,23 @@ class TestPortablePathResolution:
         monkeypatch.delenv("CARLA_EXE", raising=False)
         monkeypatch.delenv("UP_CARLA_EXE", raising=False)
         monkeypatch.setenv("CARLA_ROOT", str(tmp_path))
+        # "no exe on disk" must be genuinely simulated, not left to a real
+        # filesystem scan: on a workstation that actually has CARLA
+        # installed at one of COMMON_CARLA_PATHS (e.g. E:\CARLA\...), an
+        # unmocked os.path.exists()/subprocess.run() here would find it and
+        # launch the real CarlaUE4.exe simulator as a side effect of an
+        # "offline"/unit test -- a confirmed livelock hazard. Mock both,
+        # matching test_find_carla_server_env_precedence's pattern, so this
+        # test is hermetic on every machine regardless of what's installed.
+        monkeypatch.setattr(os.path, "exists", lambda p: False)
+
+        def _no_subprocess(*args, **kwargs):
+            raise AssertionError(
+                "find_carla_server() must not invoke subprocess.run() when "
+                "no candidate path exists on disk"
+            )
+
+        monkeypatch.setattr("subprocess.run", _no_subprocess)
         root = finder.get_carla_root()
         # no exe on disk -> falls back to CARLA_ROOT env value itself
         assert root == str(tmp_path)
