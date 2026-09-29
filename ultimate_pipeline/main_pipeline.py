@@ -3888,21 +3888,34 @@ if str(_repo_root) not in sys.path:
             pass
 
         try:
-            from ultimate_pipeline.utils.finalize_run_pack import (
-                write_signature_json,
-                write_success_txt,
-            )
+            from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
 
-            key_paths = [
-                final_out,
+            # V5/NEW-202 (D16): the final map itself is mandatory. The supporting
+            # reports are only produced when their stage ran, so they are
+            # conditional: hashed into the manifest when present, but their
+            # absence does not by itself block SUCCESS.txt.
+            mandatory_artifacts = [final_out]
+            conditional_artifacts = [
                 os.path.join(self.out_dir, "tile_metadata.json"),
                 vreport_path,
                 os.path.join(self.out_dir, "domain_gap", "full_report.json"),
                 os.path.join(self.out_dir, "domain_gap", "summary.csv"),
                 os.path.join(self.out_dir, "perception_status.json"),
             ]
-            write_signature_json(self.out_dir, key_paths)
-            write_success_txt(self.out_dir, summary="main_pipeline")
+            receipt = finalize_run_pack(
+                self.out_dir,
+                mandatory_artifacts + conditional_artifacts,
+                mandatory=mandatory_artifacts,
+                summary="main_pipeline",
+            )
+            if receipt["status"] != "PASS":
+                raise RuntimeError(
+                    "mandatory run-pack finalization failed: "
+                    + "; ".join(
+                        f"{f['key'] or f['requested']} ({f['category']})"
+                        for f in receipt["failures"]
+                    )
+                )
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to write mandatory finalization artifacts (signature/success marker): {exc}"

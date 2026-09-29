@@ -1,0 +1,62 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": "requirements.txt (base layer), requirements-ci.txt, requirements-desktop.txt, ultimate_pipeline/tools/repo_health.py",
+  "defect_confirmed": "requirements.txt co-installed opencv-python==4.12.0.88 and opencv-python-headless==4.13.0.92, which provide the same cv2 namespace. The live dev venv reproduces this exactly.",
+  "evidence_paths": [
+    "J10_NEW_205.json",
+    "DEPENDENCY_AUDIT.json"
+  ],
+  "files_changed": [
+    "requirements.txt",
+    "requirements-ci.txt",
+    "requirements-desktop.txt",
+    "ultimate_pipeline/tools/repo_health.py",
+    "ultimate_pipeline/tests/unit/test_dependency_profiles.py"
+  ],
+  "finding_id": "NEW-205",
+  "gui_audit": {
+    "conclusion": "The repository contains no OpenCV GUI call sites, so the headless provider is sufficient for every path the repository runs.",
+    "occurrences_found": 0,
+    "searched": [
+      "cv2.imshow",
+      "cv2.namedWindow",
+      "cv2.waitKey",
+      "cv2.destroyAllWindows",
+      "cv2.resizeWindow",
+      "cv2.moveWindow",
+      "cv2.setWindowProperty"
+    ]
+  },
+  "implementation": [
+    "base layer declares NO OpenCV provider, making the conflict structurally impossible",
+    "requirements-ci.txt pins opencv-python-headless==4.13.0.92",
+    "requirements-desktop.txt pins opencv-python==4.13.0.92",
+    "both providers version-aligned so a profile swap does not change the cv2 API level",
+    "repo_health.dependency_conflicts() is a required offline-release section and fails CI when both are present",
+    "torch/torchvision explicitly NOT treated as a conflict (legitimate co-installation)"
+  ],
+  "live_detection_proof": {
+    "environment": "primary dev venv",
+    "opencv_python": "4.12.0.88",
+    "opencv_python_headless": "4.13.0.92",
+    "result": "FAIL (correctly detected)"
+  },
+  "new_production_modules": 0,
+  "other_conflicts_found": "none beyond OpenCV; scanned for duplicate namespace providers (pytorch/tensorflow/jax/faiss) and found none co-installed. Reported rather than acted on, per scope.",
+  "priority": "P1",
+  "remaining_blockers": [
+    "The primary developer venv still has BOTH OpenCV providers installed. The new gate now reports it as FAIL, which is the intended behaviour; the operator must run 'pip uninstall -y opencv-python' (or reinstall requirements-ci.txt) to make it PASS. Not changed automatically because the venv is outside the repository."
+  ],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "status": "PASS",
+  "task_id": "J10",
+  "test_results": {
+    "failed": 0,
+    "passed": 21,
+    "skipped": 0
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_dependency_profiles.py -q"
+  ],
+  "title": "Dependency profile and OpenCV conflict"
+}

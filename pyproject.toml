@@ -6,10 +6,88 @@ build-backend = "setuptools.build_meta"
 name = "ultimate-pipeline"
 version = "0.1.0"
 requires-python = ">=3.10"
+
+# CORE (V5 / NEW-204, J09)
+#
+# The `core` layer is the *only* thing a plain `pip install ultimate-pipeline`
+# promises. It is deliberately small: the entry point (`up` ->
+# ultimate_pipeline.cli:main) and the base data types must import in a clean
+# environment with no compiled wheels and no CARLA present.
+#
+# Everything the operational repository actually needs is declared as an
+# OPTIONAL extra, so a consumer must state which feature families it uses
+# instead of silently inheriting a frozen 200-line dev environment. Import
+# analysis (see reports/.../DEPENDENCY_AUDIT.json) drove the split below.
 dependencies = [
     "click>=8",
     "numpy>=2",
     "pydantic>=2",
+]
+
+[project.optional-dependencies]
+# Geometry / OpenDRIVE topology. Imported by ultimate_pipeline.geometry,
+# .topology and the OSM->XODR conversion path.
+geometry = [
+    "numpy>=2",
+    "shapely>=2",
+    "pyproj>=3",
+]
+
+# Geospatial / raster + vector I/O. geojson, rasterio, lxml, geopandas.
+geo = [
+    "shapely>=2",
+    "pyproj>=3",
+    "rasterio>=1.5",
+    "lxml>=6",
+]
+
+# Graph neural network domain-gap model. torch/torchvision are installed from
+# the CPU index in CI (see .github/workflows/tests.yml) to avoid a CUDA build.
+gnn = [
+    "torch>=2.9",
+    "torch-geometric>=2.7",
+]
+
+# Perception / RQ3 capture + dataset augmentation. Headless OpenCV is the CI
+# provider; the desktop profile (requirements-desktop.txt) swaps in the full
+# build, but they are mutually exclusive (see repo_health.dependency_conflicts).
+perception = [
+    "numpy>=2",
+    "pillow>=12",
+    "opencv-python-headless>=4.13",
+    "scipy>=1.16",
+]
+
+# Live CARLA runtime + 3D visual verification. The `carla` distribution is
+# required by ~40 modules that import it at module scope, so any CARLA-touching
+# work must request this extra explicitly.
+runtime = [
+    "carla==0.9.16",
+]
+
+# Plotting / visual review output.
+visualization = [
+    "matplotlib>=3.10",
+    "pillow>=12",
+]
+
+# Broad surface used by the CLI's heavier subcommands (experiments, sensors,
+# quality reporting) without pulling in the full dev environment.
+full = [
+    "ultimate-pipeline[geometry,geo,gnn,perception,runtime,visualization]",
+]
+
+# Tooling required to run the repository's own test suite in CI.
+test = [
+    "pytest>=9",
+    "numpy>=2",
+]
+
+dev = [
+    "ultimate-pipeline[full,test]",
+    "black>=25",
+    "mypy>=1.19",
+    "ruff>=0.15",
 ]
 
 [project.scripts]

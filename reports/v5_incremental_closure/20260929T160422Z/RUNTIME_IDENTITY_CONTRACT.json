@@ -1,0 +1,56 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "manifest_schema": "CARLA_CANDIDATE_RELEASE_MANIFEST/v1",
+  "pre_runtime_gate": {
+    "checks": [
+      "manifest exists",
+      "schema valid",
+      "repo SHA matches checked-out SHA",
+      "XODR exists and hashes to the manifest value",
+      "CARLA build identity matches accepted build"
+    ],
+    "on_any_mismatch": "FAIL (hard), never a warning; the workflow stops before contacting a server",
+    "owner": "ultimate_pipeline.tools.repo_health.validate_candidate_manifest"
+  },
+  "receipt_states": [
+    "PASS",
+    "FAIL",
+    "BLOCKED_EXTERNAL",
+    "IDENTITY_MISMATCH",
+    "NOT_RUN"
+  ],
+  "required_identity_fields": [
+    "repo_sha",
+    "candidate_id",
+    "xodr_path",
+    "xodr_sha256",
+    "map_registry_id",
+    "carla_client_version",
+    "carla_server_version",
+    "ue_build",
+    "import_package_sha256",
+    "cooked_package_sha256",
+    "cook_manifest_sha256",
+    "runtime_map"
+  ],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "runtime_checks_executed": false,
+  "runtime_checks_note": "These require a live CARLA 0.9.16 server, which is unavailable here. They are delegated to the existing repository acceptance path (ultimate_pipeline.cli test e2e) invoked by the hardened workflow, not duplicated here.",
+  "runtime_checks_required": [
+    "world loads",
+    "resolved map identity is the expected map",
+    "ego spawn succeeds",
+    "vehicle rests on a valid drivable surface",
+    "waypoint graph exists",
+    "waypoint graph corresponds to the expected road network",
+    "representative navigation works",
+    "no detached-road runtime failure",
+    "runtime CARLA version is correct"
+  ],
+  "schema": "V5_RUNTIME_IDENTITY_CONTRACT/v1",
+  "state_invariants": [
+    "PASS requires the identity gate to have passed AND the job to have succeeded",
+    "BLOCKED_EXTERNAL and NOT_RUN can never read as PASS",
+    "IDENTITY_MISMATCH is reported when the manifest is absent, corrupt, schema-invalid or bound to a different artifact"
+  ]
+}

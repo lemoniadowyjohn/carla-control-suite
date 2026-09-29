@@ -1,0 +1,74 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "clean_env_ci_checks": [
+    "pip check",
+    "console script --help",
+    "extras installability (--dry-run)",
+    "dependency conflict gate",
+    "representative imports"
+  ],
+  "core_dependencies": [
+    "click>=8",
+    "numpy>=2",
+    "pydantic>=2"
+  ],
+  "core_rationale": "The core layer must import in a clean environment with no compiled wheels and no CARLA. Compiled/perception/runtime stacks are declared as extras.",
+  "extras": {
+    "dev": [
+      "ultimate-pipeline[full,test]",
+      "black>=25",
+      "mypy>=1.19",
+      "ruff>=0.15"
+    ],
+    "full": [
+      "ultimate-pipeline[geometry,geo,gnn,perception,runtime,visualization]"
+    ],
+    "geo": [
+      "shapely>=2",
+      "pyproj>=3",
+      "rasterio>=1.5",
+      "lxml>=6"
+    ],
+    "geometry": [
+      "numpy>=2",
+      "shapely>=2",
+      "pyproj>=3"
+    ],
+    "gnn": [
+      "torch>=2.9",
+      "torch-geometric>=2.7"
+    ],
+    "perception": [
+      "numpy>=2",
+      "pillow>=12",
+      "opencv-python-headless>=4.13",
+      "scipy>=1.16"
+    ],
+    "runtime": [
+      "carla==0.9.16"
+    ],
+    "test": [
+      "pytest>=9",
+      "numpy>=2"
+    ],
+    "visualization": [
+      "matplotlib>=3.10",
+      "pillow>=12"
+    ]
+  },
+  "opencv_conflict": {
+    "gate": "ultimate_pipeline.tools.repo_health.dependency_conflicts() is a required offline-release section",
+    "gui_requirement_found": false,
+    "now": "structurally impossible: the base layer pins no provider and each environment profile pins exactly one",
+    "previous": "opencv-python==4.12.0.88 AND opencv-python-headless==4.13.0.92 co-installed (same cv2 namespace)",
+    "status": "RESOLVED_BY_DESIGN"
+  },
+  "profiles": {
+    "requirements-ci.txt": "base + opencv-python-headless==4.13.0.92",
+    "requirements-desktop.txt": "base + opencv-python==4.13.0.92",
+    "requirements.txt": "shared base layer; declares NO OpenCV provider"
+  },
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "schema": "V5_DEPENDENCY_AUDIT/v1",
+  "wheel_metadata_verified": true
+}

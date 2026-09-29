@@ -1,21 +1,42 @@
 name: offline research gates
 
+# V5 / NEW-206 (D18) + NEW-208 (D19) hardening:
+#   * every action is pinned to an immutable commit SHA (mutable tags removed)
+#   * explicit least-privilege permissions per job
+#   * per-job timeouts so a hung runner cannot block the required gate
+#   * candidate-aware concurrency so a stale push cannot race a newer one
+#   * the release gate now resolves a NAMED gate (D19) instead of relying on the
+#     ambiguous overall_status, so a green check is semantically meaningful.
+
 on:
   push:
     branches: [main, "stabilize/**", "stable/**", "fix/**", "integration/**"]
   pull_request:
   workflow_dispatch: {}
 
+# A superseded run for the same ref is cancelled so only the newest candidate
+# can report on a given SHA. `cancel-in-progress: true` is safe here because
+# these are short read-only offline gates.
+concurrency:
+  group: offline-gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   offline-tests:
     name: offline tests
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
@@ -24,8 +45,11 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
 
-      - name: Install remaining dependencies
-        run: pip install -r requirements.txt
+      # J10: the CI profile pins the HEADLESS OpenCV provider. The base profile
+      # deliberately declares no OpenCV provider at all, so the two mutually
+      # exclusive cv2 distributions can never be co-installed here.
+      - name: Install remaining dependencies (headless profile)
+        run: pip install -r requirements-ci.txt
 
       - name: Install package editable for tests
         run: pip install -e .
@@ -36,12 +60,15 @@ jobs:
   package-wheel-smoke:
     name: package / wheel smoke
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
@@ -55,6 +82,11 @@ jobs:
           python -m venv /tmp/up-wheel-smoke
           /tmp/up-wheel-smoke/bin/python -m pip install --upgrade pip
           /tmp/up-wheel-smoke/bin/python -m pip install dist-ci/*.whl
+
+      # J09: a clean-wheel install must be checked for dependency integrity, not
+      # only importability. `pip check` proves the declared metadata resolves.
+      - name: Dependency metadata integrity in the clean environment
+        run: /tmp/up-wheel-smoke/bin/python -I -m pip check
 
       - name: Representative imports
         working-directory: /tmp
@@ -76,20 +108,37 @@ jobs:
           print("IMPORT_SMOKE_OK")
           PY
 
-      - name: Console script and dependency integrity
+      - name: Console script
+        run: /tmp/up-wheel-smoke/bin/up --help
+
+      # J09: the declared extras must be installable. Installing a metadata-only
+      # extra does not require CARLA to run -- it only proves the extra graph
+      # resolves. The heavyweight 'full' extra is deliberately NOT installed here.
+      - name: Optional extras are installable
         run: |
-          /tmp/up-wheel-smoke/bin/up --help
-          /tmp/up-wheel-smoke/bin/python -I -m pip check
+          /tmp/up-wheel-smoke/bin/python -m pip install --dry-run \
+            "ultimate-pipeline[geometry,visualization,test] @ file://$PWD/dist-ci/$(basename dist-ci/*.whl)"
+
+      # J10: fail CI if mutually exclusive namespace providers were co-installed.
+      - name: Dependency conflict gate
+        run: |
+          python -c "import sys; sys.path.insert(0,'.'); \
+          from ultimate_pipeline.tools.repo_health import dependency_conflicts; \
+          import json; r=dependency_conflicts(); print(json.dumps(r, indent=2)); \
+          sys.exit(0 if r['status']=='PASS' else 1)"
 
   governance-integrity:
     name: governance integrity
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
@@ -97,7 +146,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements.txt
+          pip install -r requirements-ci.txt
           pip install -e .
 
       - name: Run governance tests
@@ -106,12 +155,15 @@ jobs:
   thesis-rq-contract:
     name: thesis RQ contract
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
@@ -119,7 +171,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements.txt
+          pip install -r requirements-ci.txt
           pip install -e .
 
       - name: Regenerate and audit C19 RQ tables
@@ -131,12 +183,15 @@ jobs:
   research-provenance:
     name: research provenance
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
@@ -144,7 +199,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements.txt
+          pip install -r requirements-ci.txt
           pip install -e .
 
       - name: Validate thesis provenance
@@ -153,40 +208,50 @@ jobs:
       - name: Run provenance tests
         run: python -m pytest tests/unit/test_validate_thesis_claim_provenance.py tests/unit/test_evidence_sha256_anchors.py -q
 
-  repository-health:
-    name: repository health
+  # D19: the required release check. It resolves the NAMED offline release gate,
+  # which exits 0 only when every required offline section is PASS. A runtime
+  # status of NOT_RUN no longer forces this to fail (GitHub-hosted CI cannot run
+  # CARLA) and no longer lets an INCOMPLETE packet report green.
+  offline-release-gate:
+    name: offline release gate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs:
       - offline-tests
       - package-wheel-smoke
       - governance-integrity
       - thesis-rq-contract
       - research-provenance
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
       - name: Install health dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements-ci.txt
           pip install -e .
 
-      - name: Write repository health packet
+      - name: Write repository health packet and resolve the offline release gate
         run: |
           python -m ultimate_pipeline.tools.repo_health \
             --out-dir reports/repo_health/ci \
             --test-result PASS \
             --runtime-status NOT_RUN \
-            --runtime-reason "GitHub-hosted offline CI does not run a live CARLA 0.9.16 server."
+            --runtime-reason "GitHub-hosted offline CI does not run a live CARLA 0.9.16 server." \
+            --gate offline-release-gate
 
+      # Uploads the packet but must never mask a gate failure.
       - name: Upload health packet
-        uses: actions/upload-artifact@v4
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: repo-health
           path: reports/repo_health/ci

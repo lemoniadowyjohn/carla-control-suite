@@ -1,0 +1,65 @@
+{
+  "action_taken": "Emitted as a bounded follow-up finding (NEW-210). The V5 closures themselves were left fail-closed rather than being redesigned around the waiver system, because no executing consumer of the waiver system exists to bypass today.",
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "finding": "The contract's waiver model has a single boolean per profile (allows_waived) and a required-fields list that is about PROCESS (identifier, owner, evidence, rationale, expiration). It has no notion of gate CLASS, so it cannot distinguish a waivable quality deviation from a non-waivable identity/integrity defect.",
+  "mitigating_facts": [
+    "V5 introduced explicit fail-closed identity gates that do not consult the contract at all: finalize_run_pack (D16), strict provenance (D17) and the candidate identity pre-runtime gate (E24) all fail closed independently of any waiver record.",
+    "runtime_certified sets allows_waived: false, so runtime certification cannot be waived."
+  ],
+  "profiles": {
+    "production_candidate": {
+      "allows_incomplete": false,
+      "allows_waived": true,
+      "fails_closed_on": [
+        "FAIL",
+        "INCOMPLETE",
+        "NOT_RUN"
+      ]
+    },
+    "research_release": {
+      "allows_incomplete": true,
+      "allows_waived": true,
+      "fails_closed_on": [
+        "FAIL"
+      ]
+    },
+    "runtime_certified": {
+      "allows_incomplete": false,
+      "allows_waived": false,
+      "fails_closed_on": [
+        "FAIL",
+        "INCOMPLETE",
+        "NOT_RUN",
+        "BLOCKED_EXTERNAL"
+      ]
+    }
+  },
+  "recommended_non_waivable_categories": [
+    "wrong artifact identity",
+    "hash mismatch",
+    "corrupt artifact",
+    "missing required artifact",
+    "wrong repository SHA",
+    "wrong cooked package",
+    "wrong runtime map",
+    "manifest tampering",
+    "schema corruption",
+    "invalid cryptographic digest"
+  ],
+  "residual_exposure": "Gates that would be evaluated purely through the contract (none of which currently has an executing consumer) remain unclassified.",
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "risk": "Because production_candidate sets allows_waived: true and the contract has no classifier, a waiver could in principle be attached to an identity or integrity gate such as map_registry_identity or deterministic_provenance, converting a genuine integrity defect into a passing release.",
+  "schema": "V5_WAIVER_AUDIT/v1",
+  "waiver_schema": {
+    "required_fields": [
+      "identifier",
+      "gate_id",
+      "exact_issue",
+      "owner",
+      "evidence",
+      "rationale",
+      "expiration_or_review_trigger"
+    ],
+    "rule": "No anonymous warning suppression. A gate with unresolved FAIL/INCOMPLETE status and no matching waiver record blocks the profile it's required for."
+  }
+}
