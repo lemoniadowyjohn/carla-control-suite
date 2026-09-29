@@ -28,11 +28,20 @@ def verify(manifest: dict[str, Any], paired: dict[str, Any] | None = None) -> di
         failures.append("manifest declares missing frames")
     contract_fields = ["route_id", "weather_identity", "seed", "carla_version", "sensor_transform_identity", "class_map_version"]
     mismatches = []
+    pairing_performed = False
     if paired is not None:
+        pairing_performed = True
         for field in contract_fields:
             if manifest.get(field) != paired.get(field):
                 mismatches.append(field)
-    return {"schema": "rq3_dataset_manifest_verification/v1", "status": "PASS" if not failures and not mismatches else "FAIL", "failures": failures, "paired_contract_mismatches": mismatches, "quality_comparison": "NOT_RUN", "capture_data_mutated": False}
+    if not failures and not mismatches:
+        if pairing_performed:
+            status = "PASS"
+        else:
+            status = "INCOMPLETE"
+    else:
+        status = "FAIL"
+    return {"schema": "rq3_dataset_manifest_verification/v1", "status": status, "failures": failures, "paired_contract_mismatches": mismatches, "quality_comparison": "NOT_RUN", "capture_data_mutated": False, "pairing_performed": pairing_performed}
 
 
 def main() -> int:
