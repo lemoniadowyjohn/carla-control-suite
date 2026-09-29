@@ -39,3 +39,18 @@ with file references and commands run.
 
 For a complex task, ask agents to divide work by ownership boundary, not by
 arbitrary file count. Wait for all read-only findings before starting a write.
+
+## Project-Specific Rules
+
+- Use `main` as the authoritative working branch; feature branches only via PR
+- No direct production push unless explicitly authorized
+- Resolve map-of-record via registry; never select by mtime/glob guessing
+- Frozen thesis material is immutable — no blind map promotion
+- GAP-026 cannot be "fixed" by raising tolerance
+- No final XODR cosmetic mutation
+- Generator fixes occur at source stage only
+- Current scientific status must be evidence-backed
+- External runtime success requires actual RPC response; port listening alone is not CARLA success
+- Historical artifacts must not be overwritten
+- Single-writer/worktree policy is enforced
+- Exact test/evidence reporting required; no claiming PASS from unexecuted commands

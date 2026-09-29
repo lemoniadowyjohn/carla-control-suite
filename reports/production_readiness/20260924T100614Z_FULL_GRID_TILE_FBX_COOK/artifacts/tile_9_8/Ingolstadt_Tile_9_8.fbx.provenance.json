@@ -1,0 +1,34 @@
+{
+  "artifact_fbx": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.fbx",
+  "artifact_sha256": "d40f7f916a5465fd6b349489a92fe0403fdd6504b7a8ebd0bb537168f6a1c033",
+  "artifact_type": "blender_fbx",
+  "blender_exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+  "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+  "blender_version": "Blender 4.3.0",
+  "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+  "exit_code": 0,
+  "generated_at_utc": "2026-09-24T10:11:47.038748+00:00Z",
+  "input_obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.obj",
+  "input_sha256": "802082e1f1e6beb29e6b2ab26da7d624023bfd5c68639b16d9c9354afaf408b8",
+  "run_id": "ec96c79ebd71",
+  "schema_version": 1,
+  "status": "ok",
+  "verification": {
+    "exit_code_ok": true,
+    "fbx_container": {
+      "container_ok": true,
+      "detail": "Valid FBX binary header",
+      "format": "binary",
+      "signature": "Kaydara FBX Binary"
+    },
+    "fbx_present": true,
+    "input_hash_match": true,
+    "input_hash_readable": true,
+    "manifest_parse_ok": true,
+    "manifest_present": true,
+    "marker_present": true,
+    "objects_nonempty": true,
+    "objects_total": 193,
+    "output_hash_match": true
+  }
+}

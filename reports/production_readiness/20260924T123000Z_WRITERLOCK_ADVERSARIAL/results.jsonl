@@ -1,0 +1,8 @@
+{"scenario": "contention_2_procs", "worker_count": 2, "rounds": 50, "total_ok": 50, "total_blocked": 50, "total_error": 0, "rounds_with_zero_winners": 0, "rounds_with_multi_winners": 0, "round_errors": []}
+{"scenario": "contention_8_procs", "worker_count": 8, "rounds": 50, "total_ok": 50, "total_blocked": 350, "total_error": 0, "rounds_with_zero_winners": 0, "rounds_with_multi_winners": 0, "round_errors": []}
+{"scenario": "contention_16_procs", "worker_count": 16, "rounds": 50, "total_ok": 49, "total_blocked": 735, "total_error": 0, "rounds_with_zero_winners": 0, "rounds_with_multi_winners": 0, "round_errors": ["round=27 AssertionError: AssertionError('worker failed to signal ready\\nassert False\\n +  where False = wait(timeout=60)\\n +    where wait = <Event at 0x2f05ffe17f0 unset>.wait')"]}
+{"scenario": "malformed_zero_byte_fail_closed", "cases": ["malformed_json", "zero_byte", "truncated_json", "binary_garbage", "json_list"]}
+{"scenario": "active_valid_lock", "owner_after": "owner-a"}
+{"scenario": "stale_valid_lock", "reclaimed": true}
+{"scenario": "unknown_schema_live", "fail_closed": true}
+{"scenario": "concurrent_release_acquire", "rounds": 20, "inconsistent": 0}
