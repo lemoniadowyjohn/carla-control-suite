@@ -104,6 +104,8 @@ def _row(
     confidence_interval: Any = None,
     claim_boundary: str = "",
     remaining_blocker: str = "",
+    data_source: str = "",
+    labels_available: bool | None = None,
 ) -> Dict[str, Any]:
     if status not in VALID_STATUSES:
         raise ValueError(f"invalid research row status: {status}")
@@ -141,6 +143,13 @@ def _row(
         "confidence_interval": confidence_interval,
         "claim_boundary": claim_boundary,
         "remaining_blocker": remaining_blocker,
+        # GAP-034: data provenance the RQ5(b) claim-boundary audit enforces
+        # on (audit_thesis_topic_contract.py). Every RQ5 row must declare
+        # where its data comes from and whether ground-truth labels exist;
+        # rows without a source claim are treated as RQ5(a)-style and checked
+        # against the base metric->RQ allow-list only.
+        "data_source": data_source,
+        "labels_available": labels_available,
     }
 
 
@@ -447,20 +456,23 @@ def _rq5_transfer_rows(root: Path) -> List[Dict[str, Any]]:
              comparability="not comparable: no frozen generated-trained checkpoint evaluated on manual Grid0828 holdout",
              method="requires valid RQ3 datasets before transfer evaluation",
              claim_boundary="Do not label manual-target training or unlabeled shift as generated-to-manual generalization.",
-             note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)"),
+             note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
+             data_source="sim_labeled", labels_available=True),
         _row("RQ5", "domain_adaptation_coral_mmd", None, DEFERRED_RUNTIME,
              thesis_baseline="No downstream transfer experiment was completed.",
              comparability="protocol/check only until labeled generated/manual datasets exist",
              method="requires valid RQ3 datasets; CORAL/MMD alone is not accuracy",
              claim_boundary="Unlabeled distribution shift alone is not model-generalization accuracy.",
-             note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)"),
+             note="RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
+             data_source="sim_labeled", labels_available=True),
         _row("RQ5", "real_unlabeled_shift_metrics", None, DEFERRED_EXTERNAL_DATA,
              thesis_baseline="No real-world Ingolstadt transfer evaluation was completed.",
              comparability="not comparable: no appropriate real-world dataset available",
              method="requires operator-supplied real-world data and a frozen generated-trained model",
              claim_boundary="Do not report real-world generalization accuracy from unlabeled shift metrics.",
              note="RQ5(b): no real-world Ingolstadt dataset available on this machine "
-                  "(independent of the CARLA blocker)"),
+                  "(independent of the CARLA blocker)",
+             data_source="real_world", labels_available=False),
     ]
 
 
