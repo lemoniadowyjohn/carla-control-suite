@@ -1,7 +1,7 @@
 {
   "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-29T12:00:00Z",
+  "last_updated_utc": "2026-09-29T22:00:00Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -581,7 +581,7 @@
       "scientific_runtime_consequence": "A manual/automatic RQ3 capture pairing where neither side's own manifest ever recorded CARLA version, sensor rig, seed, weather, or any of the other 13 required-shared fields could pass this preflight check cleanly, provided a separate 'shared' declaration file exists -- undermining the check's stated purpose of catching a real manual-vs-automatic capture mismatch before an expensive RQ3 data-collection run.",
       "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
       "status": "fixed",
-      "fixing_commit": "pending (this branch)",
+      "fixing_commit": "078b2f40 (branch integration/o1-o20-rebased-20260929), merged into origin/integration/production-large-map-20260918 via 4d8c64b8",
       "regression_test": "tests/unit/test_o16_rq3_pairing_preflight.py::test_required_shared_missing_from_both_manual_and_automatic_fails (populates 14 REQUIRED_SHARED fields on manual/automatic via _world() helper, removes 'seed' from both, asserts FAIL with 'manual missing seed' and 'automatic missing seed' failures)",
       "evidence_artifact": "tests/unit/test_o16_rq3_pairing_preflight.py (5 tests passing); this branch's RED->GREEN run",
       "residual_risk": "LOW -- RQ3 live capture remains blocked_external (GAP-017); fix ensures required fields are validated against actual capture manifests, not just declared contract."
@@ -599,7 +599,7 @@
       "scientific_runtime_consequence": "A single RQ3 dataset manifest verified without ever supplying its paired counterpart reports the same PASS status as a genuinely cross-checked pair -- a downstream consumer reading only the status field cannot distinguish 'pairing was checked and matched' from 'pairing was never attempted'.",
       "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
       "status": "fixed",
-      "fixing_commit": "pending (this branch)",
+      "fixing_commit": "078b2f40 (branch integration/o1-o20-rebased-20260929), merged into origin/integration/production-large-map-20260918 via 4d8c64b8",
       "regression_test": "tests/unit/test_o17_rq3_dataset_manifest_verifier.py::test_valid_manifest_without_paired_is_incomplete (asserts status INCOMPLETE, pairing_performed=false); test_valid_manifest_with_paired_passes (asserts status PASS, pairing_performed=true); test_paired_contract_mismatch_fails (asserts status FAIL, pairing_performed=true)",
       "evidence_artifact": "tests/unit/test_o17_rq3_dataset_manifest_verifier.py (5 tests passing); this branch's RED->GREEN run",
       "residual_risk": "LOW -- RQ3 live capture remains blocked_external (GAP-017); fix ensures pairing status is explicitly tracked and distinguishable from a real checked pass."
@@ -642,15 +642,52 @@
       "regression_test": "tests/unit/test_writer_lock.py: test_load_corrupt_json_raises_runtime_error_not_json_decode_error, test_load_zero_byte_raises_runtime_error_not_json_decode_error, test_load_json_non_object_raises_runtime_error, test_acquire_catches_runtime_error_from_load_during_fresh_publication_window (4 new tests, all passing)",
       "evidence_artifact": "this branch's own RED->GREEN test run (see proof); also resolves GAP-029's own residual_risk note (1) ('the legacy .agent_lock.json path check still calls load() directly and would propagate a raw JSONDecodeError on a corrupt legacy file -- out of scope for GAP-029, pre-existing') as a side effect, since load() is now fail-closed everywhere it is called, including that legacy path",
       "residual_risk": "LOW -- purely additive exception handling (try/except wrapping existing calls), no change to the JSON schema, to from_dict()'s accepted shape for well-formed input, or to any already-passing test's expected behavior. The GAP-029 fresh-publication re-read window's timing/budget is unchanged."
+    },
+    {
+      "id": "GAP-036",
+      "severity": "P2",
+      "subsystem": "PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- declarative quality contract with no executing consumer",
+      "description": "Raised as NEW-209 by the external hardening/v5-incremental-20260929 (V5 incremental hardening) workstream during its own closure self-audit, and independently re-verified (not just copied) by the merging coordinator agent before being logged here. PRODUCTION_MAP_QUALITY_CONTRACT.yaml at the repo root declares named quality gates and profiles (production_candidate, research_release, runtime_certified) but nothing in the Python codebase loads, parses, or enforces it at runtime -- it is documentation-shaped YAML, not an executable contract. This is consistent with the prior independent finding in project_roadrunner_gate_matrix_disconnected_20260917 (memory) that most of the gate_matrix subsystem is disconnected from real checks.",
+      "proof": "`git grep -l \"PRODUCTION_MAP_QUALITY_CONTRACT\" -- '*.py'` returns ZERO matches against both origin/integration/production-large-map-20260918 (production tip, fa3214fc) and origin/hardening/v5-incremental-20260929 (2df5d6c6) -- confirmed independently by the merging coordinator agent, not taken on the V5 branch's word. The only references anywhere in the repo are in documentation/report files (GAP026_POLICY_PROPOSAL.md, GAP026_ROOT_CAUSE.md, docs/architecture/TARGET_PIPELINE_STAGE_GRAPH.md, docs/index.md, archived pre-20260912 reports, and this gap register itself).",
+      "affected_files": [
+        "PRODUCTION_MAP_QUALITY_CONTRACT.yaml"
+      ],
+      "scientific_runtime_consequence": "A reader (human or automated) who sees this contract file can reasonably but incorrectly assume its named gates and profiles are being checked automatically before a map is promoted. No such enforcement exists. This creates a gap between documented policy and actual runtime behavior -- the same class of risk previously identified for the broader gate_matrix subsystem.",
+      "owner_subagent": "raised as NEW-209 by an external OpenCode agent on hardening/v5-incremental-20260929 (evidence: reports/v5_incremental_closure/20260929T160422Z/PRODUCTION_QUALITY_CONTRACT_MATRIX.json, FINAL_SUMMARY.md); logged as GAP-036 and independently re-verified by the merging coordinator agent, 2026-09-29",
+      "status": "open -- real finding, needs a human policy decision (build a real executing consumer, or formally deprecate/relabel the file as non-normative documentation)",
+      "fixing_commit": "none -- not attempted, out of scope for this merge per this program's discipline of not unilaterally redesigning quality-gating subsystems without a policy decision",
+      "regression_test": "none yet -- no fix has been dispatched",
+      "evidence_artifact": "reports/v5_incremental_closure/20260929T160422Z/PRODUCTION_QUALITY_CONTRACT_MATRIX.json and FINAL_SUMMARY.md (V5's own NEW-209 finding); this coordinator's own independent grep verification (see proof) is not separately filed but was run live against both refs before this entry was written",
+      "residual_risk": "MEDIUM -- declarative-only gates can create false confidence that map-quality promotion checks are automated when they are not; no evidence this has yet caused an incorrect promotion, but the structural gap is real and confirmed independently, not merely asserted by the reporting branch"
+    },
+    {
+      "id": "GAP-037",
+      "severity": "P2",
+      "subsystem": "waiver model (ultimate_pipeline/quality/map_acceptance.py, ultimate_pipeline/contracts/stage_contracts.py) vs. V5's new fail-closed gates",
+      "description": "Raised as NEW-210 by the external hardening/v5-incremental-20260929 workstream during its own closure self-audit (reports/v5_incremental_closure/20260929T160422Z/WAIVER_SEMANTICS_AUDIT.json), and independently re-verified by the merging coordinator agent. The existing waiver model has a single boolean per profile (allows_waived) plus a required-fields list about PROCESS (identifier, owner, evidence, rationale, expiration); it has no notion of gate CLASS, so it cannot structurally distinguish a waivable quality deviation from a non-waivable identity/integrity defect. The production_candidate profile sets allows_waived: true with no classifier, so a waiver could in principle be attached to an identity/integrity gate such as map_registry_identity, converting a genuine integrity defect into a passing release -- per the V5 branch's own audit.",
+      "proof": "Independently confirmed (not just copied from the branch's report): the waiver system exists (referenced in tests/unit/test_o12_current_map_static_release_matrix.py, tests/unit/test_stage_contracts_aggregate.py, tests/unit/test_topology_certification.py, tools/current_map_static_release_matrix.py, ultimate_pipeline/contracts/stage_contracts.py, ultimate_pipeline/quality/map_acceptance.py) but `git grep -li waiver` against V5's four new/modified gate modules -- ultimate_pipeline/tools/repo_health.py, ultimate_pipeline/utils/run_provenance.py, ultimate_pipeline/utils/finalize_run_pack.py, ultimate_pipeline/tools/pack_lint.py -- returns ZERO matches in any of them. The new V5 fail-closed gates (D16/D17/E24) are therefore structurally unable to consult a waiver at all, which independently confirms the V5 branch's own mitigating-fact claim, but the underlying waiver-model classification gap for gates that DO go through the contract (none of which currently has an executing consumer, per GAP-036) remains unaddressed.",
+      "affected_files": [
+        "ultimate_pipeline/quality/map_acceptance.py",
+        "ultimate_pipeline/contracts/stage_contracts.py",
+        "tools/current_map_static_release_matrix.py",
+        "PRODUCTION_MAP_QUALITY_CONTRACT.yaml"
+      ],
+      "scientific_runtime_consequence": "If and when an executing consumer of PRODUCTION_MAP_QUALITY_CONTRACT.yaml is ever built (see GAP-036), the waiver model as it exists today would let a production_candidate-profile release waive an identity/integrity gate (wrong artifact identity, hash mismatch, wrong repository SHA, manifest tampering) using the same mechanism intended for genuine quality-only deviations. V5's own new gates are unaffected today only because they never consult the waiver system at all.",
+      "owner_subagent": "raised as NEW-210 by an external OpenCode agent on hardening/v5-incremental-20260929 (evidence: reports/v5_incremental_closure/20260929T160422Z/WAIVER_SEMANTICS_AUDIT.json); logged as GAP-037 and independently re-verified by the merging coordinator agent, 2026-09-29",
+      "status": "open -- real finding, needs a human policy decision on whether to add a gate-class taxonomy to the waiver model (the V5 branch's own audit recommends a recommended_non_waivable_categories list: wrong artifact identity, hash mismatch, corrupt artifact, missing required artifact, wrong repository SHA, wrong cooked package, wrong runtime map, manifest tampering, schema corruption, invalid cryptographic digest)",
+      "fixing_commit": "none -- not attempted, out of scope for this merge; the V5 branch deliberately left its own new gates fail-closed and unwaiverable rather than redesigning the shared waiver system around this finding",
+      "regression_test": "none yet -- no fix has been dispatched",
+      "evidence_artifact": "reports/v5_incremental_closure/20260929T160422Z/WAIVER_SEMANTICS_AUDIT.json (V5's own NEW-210 finding, including the profiles table and recommended_non_waivable_categories list); this coordinator's own independent grep verification (see proof) confirming the V5 gates are structurally immune today",
+      "residual_risk": "MEDIUM -- no live exploit path exists today (GAP-036: no executing consumer of the contract this waiver model governs), so this is a latent design gap rather than an active defect; it becomes a real risk the moment GAP-036 is closed unless addressed at the same time"
     }
   ],
   "counts": {
-    "total": 35,
+    "total": 37,
     "fixed": 28,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 1,
+    "open": 3,
     "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total 35.",
     "blocked_external": 1
   },
@@ -714,5 +751,32 @@
     "skipped": 5,
     "duration_s": 850.41,
     "note": "All 4 failures share one root cause, logged as GAP-016."
+  },
+  "update_2026_09_29_v5_merge": {
+    "note": "hardening/v5-incremental-20260929 (V5 incremental hardening: D16 fail-closed run-pack finalization, D17 strict provenance, D18 CI hardening, D19 named repo-health gates, J09/J10 dependency-extras split, E24 candidate-identity pre-runtime gate) merged into origin/integration/production-large-map-20260918 via --no-ff merge commit bc90751f (parents fa3214fc and 2df5d6c6), plus a small follow-up fix commit 959a206c (2 real residual defects found during merge review: stale module-path comments in requirements-ci.txt/requirements-desktop.txt, and pack_lint.py's 'pack_missing' defect code missing from its own DEFECT_CODES tuple -- both confirmed via direct code reading, fixed, and re-verified via an isolated pytest run of test_pack_lint.py: 19 passed). Production advanced from fa3214fc to bd1eb569 (GAP-032/033/034 fixes) while the independent full pytest run was in progress; re-fetched and merged cleanly (commit 546a3078) rather than force-pushing, confirmed zero conflicts since the incoming commits touch no file this V5 merge or its follow-up touched. This is a separate NEW-### numbered workstream (not this repo's own GAP-### register); it is recorded here only because its own closure self-audit surfaced two real GAP-###-worthy findings (GAP-036 from NEW-209, GAP-037 from NEW-210) and because it is production code now living on this branch.",
+    "full_suite_result_20260929_v5_merge": {
+      "command": "python -m pytest -q (bare, no manual path list -- pytest.ini testpaths spans 12 directories)",
+      "worktree": "G:/merge-v5-hardening-20260929",
+      "commit_tested": "bc90751f + 959a206c (production drift to 546a3078 was merged in AFTER this run completed, not included in this specific pytest execution -- see note)",
+      "passed": 6634,
+      "skipped": 10,
+      "failed": 0,
+      "duration_s": 1876.49,
+      "note": "0 failed, 0 errors (grep-confirmed zero 'FAILED'/'ERROR' lines in the full run log). Higher than V5's own self-reported 6497 passed/9 skipped because production had already absorbed the O1-O20 campaign and GAP-030/031/035 by the time this run started (fa3214fc), on top of V5's own +233 net-new tests. This run PREDATES the 546a3078 re-merge of GAP-032/033/034 (production moved to bd1eb569 while this 31-minute run was in progress), so it does not itself cover the modified test_o16_rq3_pairing_preflight.py/test_o17_rq3_dataset_manifest_verifier.py cases or the new test_rq5b_claim_boundary.py file. A second full 31-minute re-run after the drift merge was NOT performed; instead, after merging 546a3078, a targeted re-run of exactly those 3 files was executed on the actual post-merge worktree: `pytest tests/unit/test_o16_rq3_pairing_preflight.py tests/unit/test_o17_rq3_dataset_manifest_verifier.py tests/unit/test_rq5b_claim_boundary.py -q` -> 20 passed, 0 failed, 0.90s; plus `python -m compileall -q ultimate_pipeline tools tests` on the full post-merge tree -> clean, exit 0. This is narrower than a full 31-minute re-run but is real, executed verification of the exact new/changed surface from the drift merge, not narrative justification alone. The incoming commits also touch no file this V5 merge or its follow-up touched (disjoint file sets, confirmed by diff --stat), and GAP-034's own fixing branch separately ran a full bare pytest (6408 passed, 6 skipped, 1 failed -- the 1 failure is test_no_hardcoded_username_in_production_defaults, documented as environmental/pre-existing, reproducing identically on a pristine checkout, unrelated to GAP-034's change)."
+    },
+    "independently_verified_by_merging_coordinator": [
+      "diffed against CURRENT production tip (fa3214fc), not the branch's stale cfa39372 fork point",
+      "read finalize_run_pack.py, run_provenance.py, and both caller sites (main_pipeline.py, run_full_domain_gap.py) in full",
+      "confirmed writer_lock.py is untouched by this branch (predicted conflict risk did not materialize); git merge --no-ff --no-commit produced zero conflicts across all 41 changed files",
+      "independently confirmed NEW-209's core claim (zero .py references to PRODUCTION_MAP_QUALITY_CONTRACT.yaml) before logging it as GAP-036",
+      "independently confirmed NEW-210's core claim (zero waiver references in V5's 4 new/modified gate modules) before logging it as GAP-037",
+      "read the CI workflow diffs (tests.yml, carla-runtime.yml) and pyproject.toml optional-dependency layout in full",
+      "ran the FULL bare `pytest -q` suite from a clean worktree (G:/merge-v5-hardening-20260929) after the merge commit -- see full_suite_result_20260929_v5_merge below for the coordinator's own numbers",
+      "re-fetched before pushing and found production had advanced (fa3214fc -> bd1eb569) during the 31-minute pytest run; merged cleanly (546a3078) rather than force-pushing, then ran a targeted re-verification of exactly the new/changed surface from that drift (test_o16/test_o17/test_rq5b_claim_boundary.py: 20 passed; compileall on the full post-merge tree: clean) rather than silently assuming the pre-drift full run still applied",
+      "found 2 real residual defects via direct code reading during merge review (stale dependency_conflicts.py module-path comments; pack_lint.py's pack_missing code missing from its own DEFECT_CODES tuple) and fixed both directly, verified via an isolated pytest run"
+    ],
+    "not_independently_re_derived": "the internal per-task stage-b/stage-c test breakdowns in V5's own TEST_RESULTS.json, and the two external blockers (BLOCKED_EXTERNAL_GITHUB_PERMISSION for D18/NEW-206, BLOCKED_EXTERNAL_CARLA_RUNTIME for E24/NEW-207) -- both correctly left unresolved, not attempted, per this program's discipline that external blockers are not something a merging agent should try to force",
+    "v5_evidence_directory": "reports/v5_incremental_closure/20260929T160422Z/ (18 receipts, SHA-256 manifested, carried forward unmodified from the source branch)",
+    "v4_caveat_preserved": "V4 closures NEW-196..NEW-199 are absent from the canonical branch entirely (their modules/tests do not exist); V5 neither regressed nor advanced them. This merge does not claim the system is production ready as a whole -- the reporting agent's own verdict was V5_CLOSED_RUNTIME_BLOCKED."
   }
 }
