@@ -6,15 +6,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 737.3626244168845,
       "left_tile": [
         6,
         6
       ],
+      "right_correction_m": 508.9326493355911,
       "right_tile": [
         7,
         6
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 228.42997508129338,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 7.5,
@@ -22,15 +26,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 671.5502130505629,
       "left_tile": [
         6,
         6
       ],
+      "right_correction_m": 515.278062151745,
       "right_tile": [
         6,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 156.27215089881793,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 857.527038,
@@ -38,15 +46,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 640.8414494440658,
       "left_tile": [
         6,
         7
       ],
+      "right_correction_m": 471.78564469882986,
       "right_tile": [
         7,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 169.05580474523595,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 63.0,
@@ -54,15 +66,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 515.278062151745,
       "left_tile": [
         6,
         7
       ],
+      "right_correction_m": 502.40578925795853,
       "right_tile": [
         6,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 12.87227289378643,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 988.450012,
@@ -70,15 +86,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 604.0857401260873,
       "left_tile": [
         6,
         8
       ],
+      "right_correction_m": 475.1682474768022,
       "right_tile": [
         7,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 128.91749264928512,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 17.0,
@@ -86,15 +106,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 502.40578925795853,
       "left_tile": [
         6,
         8
       ],
+      "right_correction_m": 153.76773723913357,
       "right_tile": [
         6,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 348.63805201882496,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 961.1990049999999,
@@ -102,15 +126,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 563.6231310754083,
       "left_tile": [
         6,
         9
       ],
+      "right_correction_m": 505.7078424549545,
       "right_tile": [
         7,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 57.915288620453794,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 930.1400140000001,
@@ -118,15 +146,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 508.9326493355911,
       "left_tile": [
         7,
         6
       ],
+      "right_correction_m": 392.89283313101623,
       "right_tile": [
         8,
         6
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 116.03981620457489,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 15.0,
@@ -134,15 +166,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 700.5009995833971,
       "left_tile": [
         7,
         6
       ],
+      "right_correction_m": 515.5841775988229,
       "right_tile": [
         7,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 184.9168219845742,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 1042.074035,
@@ -150,15 +186,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 471.78564469882986,
       "left_tile": [
         7,
         7
       ],
+      "right_correction_m": 468.587555679027,
       "right_tile": [
         8,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "PASS",
+      "world_seam_delta_m": 3.1980890198028646,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 32.5,
@@ -166,15 +206,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 515.5841775988229,
       "left_tile": [
         7,
         7
       ],
+      "right_correction_m": 509.52487015817314,
       "right_tile": [
         7,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "PASS",
+      "world_seam_delta_m": 6.059307440649718,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 1085.434021,
@@ -182,15 +226,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 475.1682474768022,
       "left_tile": [
         7,
         8
       ],
+      "right_correction_m": 466.21333197306376,
       "right_tile": [
         8,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "PASS",
+      "world_seam_delta_m": 8.954915503738448,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 47.5,
@@ -198,15 +246,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 509.52487015817314,
       "left_tile": [
         7,
         8
       ],
+      "right_correction_m": 213.04411812545732,
       "right_tile": [
         7,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 296.4807520327158,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 960.88501,
@@ -214,15 +266,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 505.7078424549545,
       "left_tile": [
         7,
         9
       ],
+      "right_correction_m": 451.0325439061271,
       "right_tile": [
         8,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 54.67529854882741,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 480.92501000000004,
@@ -230,15 +286,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 392.89283313101623,
       "left_tile": [
         8,
         6
       ],
+      "right_correction_m": 422.68624835275114,
       "right_tile": [
         9,
         6
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 29.793415221734904,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 7.5,
@@ -246,15 +306,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 798.4775312948041,
       "left_tile": [
         8,
         6
       ],
+      "right_correction_m": 500.5668643838726,
       "right_tile": [
         8,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 297.91066691093147,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 929.6400140000001,
@@ -262,15 +326,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 468.587555679027,
       "left_tile": [
         8,
         7
       ],
+      "right_correction_m": 520.9353885226883,
       "right_tile": [
         9,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 52.34783284366131,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 12.5,
@@ -278,15 +346,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 500.5668643838726,
       "left_tile": [
         8,
         7
       ],
+      "right_correction_m": 503.1072893468663,
       "right_tile": [
         8,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "PASS",
+      "world_seam_delta_m": 2.5404249629937112,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 945.513031,
@@ -294,15 +366,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 466.21333197306376,
       "left_tile": [
         8,
         8
       ],
+      "right_correction_m": 496.7776972480933,
       "right_tile": [
         9,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 30.56436527502956,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 12.5,
@@ -310,15 +386,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 503.1072893468663,
       "left_tile": [
         8,
         8
       ],
+      "right_correction_m": 329.7940019350499,
       "right_tile": [
         8,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 173.31328741181642,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 957.657013,
@@ -326,15 +406,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 451.0325439061271,
       "left_tile": [
         8,
         9
       ],
+      "right_correction_m": 534.826270788617,
       "right_tile": [
         9,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 83.79372688248986,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 253.66599200000002,
@@ -342,15 +426,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 10000.0,
+      "left_correction_m": 422.68624835275114,
       "left_tile": [
         9,
         6
       ],
+      "right_correction_m": 239.47167090693256,
       "right_tile": [
         10,
         6
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 183.21457744581858,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 7.5,
@@ -358,15 +446,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 891.8751017558388,
       "left_tile": [
         9,
         6
       ],
+      "right_correction_m": 487.30449354834855,
       "right_tile": [
         9,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 404.5706082074903,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 680.85202,
@@ -374,15 +466,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 10000.0,
+      "left_correction_m": 520.9353885226883,
       "left_tile": [
         9,
         7
       ],
+      "right_correction_m": 509.9112371397787,
       "right_tile": [
         10,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 11.024151382909622,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 7.5,
@@ -390,15 +486,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 487.30449354834855,
       "left_tile": [
         9,
         7
       ],
+      "right_correction_m": 730.8013234897517,
       "right_tile": [
         9,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 243.49682994140312,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 596.0300139999999,
@@ -406,15 +506,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 10000.0,
+      "left_correction_m": 496.7776972480933,
       "left_tile": [
         9,
         8
       ],
+      "right_correction_m": 132.02080007846234,
       "right_tile": [
         10,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 364.756897169631,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 12.5,
@@ -422,15 +526,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 730.8013234897517,
       "left_tile": [
         9,
         8
       ],
+      "right_correction_m": 343.7677453891374,
       "right_tile": [
         9,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 387.03357810061425,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 699.3249969999999,
@@ -438,15 +546,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 10000.0,
+      "left_correction_m": 534.826270788617,
       "left_tile": [
         9,
         9
       ],
+      "right_correction_m": 189.44170737924287,
       "right_tile": [
         10,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 345.3845634093741,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 12.5,
@@ -454,15 +566,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 7000.0,
+      "left_correction_m": 929.1168076223694,
       "left_tile": [
         10,
         6
       ],
+      "right_correction_m": 443.27962421951815,
       "right_tile": [
         10,
         7
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 485.8371834028512,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 15.0,
@@ -470,15 +586,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 8000.0,
+      "left_correction_m": 443.27962421951815,
       "left_tile": [
         10,
         7
       ],
+      "right_correction_m": 502.2418014826253,
       "right_tile": [
         10,
         8
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 58.96217726310715,
+      "world_seam_tolerance_m": 10.0
     },
     {
       "actual_exported_boundary_delta_m": 7.5,
@@ -486,15 +606,19 @@
       "boundary_observed": true,
       "expected_boundary_relation": "opaque building partition; no required geometric continuity at empty cell boundary",
       "expected_shared_border_m": 9000.0,
+      "left_correction_m": 502.2418014826253,
       "left_tile": [
         10,
         8
       ],
+      "right_correction_m": 407.0019832835533,
       "right_tile": [
         10,
         9
       ],
-      "status": "INCOMPLETE"
+      "status": "FAIL",
+      "world_seam_delta_m": 95.23981819907203,
+      "world_seam_tolerance_m": 10.0
     }
   ],
   "authoritative_frame_offset_xy_m": [
@@ -503,21 +627,51 @@
   ],
   "cook_results_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\COOK_RESULTS.json",
   "cook_results_sha256": "b2cd6558370f8628c818380832278e73e8c60ae27fc1ef3708b1d89249ad3a78",
-  "failures": [],
+  "failures": [
+    "seam 6,6<->7,6 (x): world-frame placement-consistency delta 228.43m exceeds tolerance 10.00m",
+    "seam 6,6<->6,7 (y): world-frame placement-consistency delta 156.27m exceeds tolerance 10.00m",
+    "seam 6,7<->7,7 (x): world-frame placement-consistency delta 169.06m exceeds tolerance 10.00m",
+    "seam 6,7<->6,8 (y): world-frame placement-consistency delta 12.87m exceeds tolerance 10.00m",
+    "seam 6,8<->7,8 (x): world-frame placement-consistency delta 128.92m exceeds tolerance 10.00m",
+    "seam 6,8<->6,9 (y): world-frame placement-consistency delta 348.64m exceeds tolerance 10.00m",
+    "seam 6,9<->7,9 (x): world-frame placement-consistency delta 57.92m exceeds tolerance 10.00m",
+    "seam 7,6<->8,6 (x): world-frame placement-consistency delta 116.04m exceeds tolerance 10.00m",
+    "seam 7,6<->7,7 (y): world-frame placement-consistency delta 184.92m exceeds tolerance 10.00m",
+    "seam 7,8<->7,9 (y): world-frame placement-consistency delta 296.48m exceeds tolerance 10.00m",
+    "seam 7,9<->8,9 (x): world-frame placement-consistency delta 54.68m exceeds tolerance 10.00m",
+    "seam 8,6<->9,6 (x): world-frame placement-consistency delta 29.79m exceeds tolerance 10.00m",
+    "seam 8,6<->8,7 (y): world-frame placement-consistency delta 297.91m exceeds tolerance 10.00m",
+    "seam 8,7<->9,7 (x): world-frame placement-consistency delta 52.35m exceeds tolerance 10.00m",
+    "seam 8,8<->9,8 (x): world-frame placement-consistency delta 30.56m exceeds tolerance 10.00m",
+    "seam 8,8<->8,9 (y): world-frame placement-consistency delta 173.31m exceeds tolerance 10.00m",
+    "seam 8,9<->9,9 (x): world-frame placement-consistency delta 83.79m exceeds tolerance 10.00m",
+    "seam 9,6<->10,6 (x): world-frame placement-consistency delta 183.21m exceeds tolerance 10.00m",
+    "seam 9,6<->9,7 (y): world-frame placement-consistency delta 404.57m exceeds tolerance 10.00m",
+    "seam 9,7<->10,7 (x): world-frame placement-consistency delta 11.02m exceeds tolerance 10.00m",
+    "seam 9,7<->9,8 (y): world-frame placement-consistency delta 243.50m exceeds tolerance 10.00m",
+    "seam 9,8<->10,8 (x): world-frame placement-consistency delta 364.76m exceeds tolerance 10.00m",
+    "seam 9,8<->9,9 (y): world-frame placement-consistency delta 387.03m exceeds tolerance 10.00m",
+    "seam 9,9<->10,9 (x): world-frame placement-consistency delta 345.38m exceeds tolerance 10.00m",
+    "seam 10,6<->10,7 (y): world-frame placement-consistency delta 485.84m exceeds tolerance 10.00m",
+    "seam 10,7<->10,8 (y): world-frame placement-consistency delta 58.96m exceeds tolerance 10.00m",
+    "seam 10,8<->10,9 (y): world-frame placement-consistency delta 95.24m exceeds tolerance 10.00m"
+  ],
   "frame_identity_count": 1,
   "frame_identity_hash": "6fd2946e61d52a7ee5ea34a85aa2c7701bff612463f4f57915cc3e5c24742fe9",
-  "generated_at_utc": "2026-09-24T12:09:44.414702+00:00",
+  "generated_at_utc": "2026-09-29T15:12:59.142464+00:00",
   "limitations": [
     "No Unreal import or runtime streaming was run.",
-    "No tile-local origin reset is accepted; exported object bounds are read from Blender roundtrip manifests.",
-    "A shared cell boundary may have no geometry on either side, so boundary delta is not a seam defect by itself."
+    "world_placement_offset_m is derived from the tile's own OSM input node bbox, not OSM2World's actual rendered-geometry bbox; these coincide almost exactly for a buildings-only, terrain-off tile clip but are not proven identical.",
+    "A shared cell boundary may have no geometry on either side, so a small/absent boundary delta does not by itself prove seam continuity (opaque, non-overlapping building partition)."
   ],
   "max_seam_delta_m": 1085.434021,
+  "max_world_seam_delta_m": 485.8371834028512,
   "mean_seam_delta_m": 434.2315554193549,
-  "schema": "tile_frame_consistency/v1",
-  "seam_delta_definition": "distance between exported aggregate object-boundary extrema at a shared cell boundary; descriptive only because the visual layer is a centroid-partitioned building set, not a continuous surface",
+  "mean_world_seam_delta_m": 162.0067787636616,
+  "schema": "tile_frame_consistency/v2",
+  "seam_delta_definition": "distance between exported RAW local object-boundary extrema at a shared cell boundary; descriptive only (mixes two independently-auto-centered local frames, see world_seam_delta_m for the real check) because the visual layer is a centroid-partitioned building set, not a continuous surface",
   "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
-  "status": "PASS",
+  "status": "FAIL",
   "tile_size_m": 1000.0,
   "tiles": [
     {
@@ -548,6 +702,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 7000.0,
@@ -561,7 +716,11 @@
         6,
         8
       ],
-      "tile_name": "Ingolstadt_Tile_6_8.fbx"
+      "tile_name": "Ingolstadt_Tile_6_8.fbx",
+      "world_placement_offset_m": [
+        6604.085740126087,
+        8502.405789257959
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -591,6 +750,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 8000.0,
@@ -604,7 +764,11 @@
         7,
         8
       ],
-      "tile_name": "Ingolstadt_Tile_7_8.fbx"
+      "tile_name": "Ingolstadt_Tile_7_8.fbx",
+      "world_placement_offset_m": [
+        7475.168247476802,
+        8509.524870158173
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -634,6 +798,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 9000.0,
@@ -647,7 +812,11 @@
         8,
         8
       ],
-      "tile_name": "Ingolstadt_Tile_8_8.fbx"
+      "tile_name": "Ingolstadt_Tile_8_8.fbx",
+      "world_placement_offset_m": [
+        8466.213331973064,
+        8503.107289346866
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -677,6 +846,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 8000.0,
@@ -690,7 +860,11 @@
         7,
         9
       ],
-      "tile_name": "Ingolstadt_Tile_7_9.fbx"
+      "tile_name": "Ingolstadt_Tile_7_9.fbx",
+      "world_placement_offset_m": [
+        7505.7078424549545,
+        9213.044118125457
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -720,6 +894,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 8000.0,
@@ -733,7 +908,11 @@
         7,
         7
       ],
-      "tile_name": "Ingolstadt_Tile_7_7.fbx"
+      "tile_name": "Ingolstadt_Tile_7_7.fbx",
+      "world_placement_offset_m": [
+        7471.78564469883,
+        7515.584177598823
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -763,6 +942,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 9000.0,
@@ -776,7 +956,11 @@
         8,
         7
       ],
-      "tile_name": "Ingolstadt_Tile_8_7.fbx"
+      "tile_name": "Ingolstadt_Tile_8_7.fbx",
+      "world_placement_offset_m": [
+        8468.587555679027,
+        7500.566864383873
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -806,6 +990,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 7000.0,
@@ -819,7 +1004,11 @@
         6,
         7
       ],
-      "tile_name": "Ingolstadt_Tile_6_7.fbx"
+      "tile_name": "Ingolstadt_Tile_6_7.fbx",
+      "world_placement_offset_m": [
+        6640.841449444066,
+        7515.278062151745
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -849,6 +1038,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 10000.0,
@@ -862,7 +1052,11 @@
         9,
         9
       ],
-      "tile_name": "Ingolstadt_Tile_9_9.fbx"
+      "tile_name": "Ingolstadt_Tile_9_9.fbx",
+      "world_placement_offset_m": [
+        9534.826270788617,
+        9343.767745389137
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -892,6 +1086,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 9000.0,
@@ -905,7 +1100,11 @@
         8,
         9
       ],
-      "tile_name": "Ingolstadt_Tile_8_9.fbx"
+      "tile_name": "Ingolstadt_Tile_8_9.fbx",
+      "world_placement_offset_m": [
+        8451.032543906127,
+        9329.79400193505
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -935,6 +1134,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 8000.0,
@@ -948,7 +1148,11 @@
         7,
         6
       ],
-      "tile_name": "Ingolstadt_Tile_7_6.fbx"
+      "tile_name": "Ingolstadt_Tile_7_6.fbx",
+      "world_placement_offset_m": [
+        7508.932649335591,
+        6700.500999583397
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -978,6 +1182,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 11000.0,
@@ -991,7 +1196,11 @@
         10,
         9
       ],
-      "tile_name": "Ingolstadt_Tile_10_9.fbx"
+      "tile_name": "Ingolstadt_Tile_10_9.fbx",
+      "world_placement_offset_m": [
+        10189.441707379243,
+        9407.001983283553
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1021,6 +1230,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 7000.0,
@@ -1034,7 +1244,11 @@
         6,
         6
       ],
-      "tile_name": "Ingolstadt_Tile_6_6.fbx"
+      "tile_name": "Ingolstadt_Tile_6_6.fbx",
+      "world_placement_offset_m": [
+        6737.3626244168845,
+        6671.550213050563
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1064,6 +1278,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 9000.0,
@@ -1077,7 +1292,11 @@
         8,
         6
       ],
-      "tile_name": "Ingolstadt_Tile_8_6.fbx"
+      "tile_name": "Ingolstadt_Tile_8_6.fbx",
+      "world_placement_offset_m": [
+        8392.892833131016,
+        6798.477531294804
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1107,6 +1326,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 10000.0,
@@ -1120,7 +1340,11 @@
         9,
         8
       ],
-      "tile_name": "Ingolstadt_Tile_9_8.fbx"
+      "tile_name": "Ingolstadt_Tile_9_8.fbx",
+      "world_placement_offset_m": [
+        9496.777697248093,
+        8730.801323489752
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1150,6 +1374,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 7000.0,
@@ -1163,7 +1388,11 @@
         6,
         9
       ],
-      "tile_name": "Ingolstadt_Tile_6_9.fbx"
+      "tile_name": "Ingolstadt_Tile_6_9.fbx",
+      "world_placement_offset_m": [
+        6563.623131075408,
+        9153.767737239134
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1193,6 +1422,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 11000.0,
@@ -1206,7 +1436,11 @@
         10,
         7
       ],
-      "tile_name": "Ingolstadt_Tile_10_7.fbx"
+      "tile_name": "Ingolstadt_Tile_10_7.fbx",
+      "world_placement_offset_m": [
+        10509.911237139779,
+        7443.279624219518
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1236,6 +1470,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 10000.0,
@@ -1249,7 +1484,11 @@
         9,
         7
       ],
-      "tile_name": "Ingolstadt_Tile_9_7.fbx"
+      "tile_name": "Ingolstadt_Tile_9_7.fbx",
+      "world_placement_offset_m": [
+        9520.935388522688,
+        7487.304493548349
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1279,6 +1518,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 10000.0,
@@ -1292,7 +1532,11 @@
         9,
         6
       ],
-      "tile_name": "Ingolstadt_Tile_9_6.fbx"
+      "tile_name": "Ingolstadt_Tile_9_6.fbx",
+      "world_placement_offset_m": [
+        9422.686248352751,
+        6891.875101755839
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1322,6 +1566,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 11000.0,
@@ -1335,7 +1580,11 @@
         10,
         6
       ],
-      "tile_name": "Ingolstadt_Tile_10_6.fbx"
+      "tile_name": "Ingolstadt_Tile_10_6.fbx",
+      "world_placement_offset_m": [
+        10239.471670906933,
+        6929.116807622369
+      ]
     },
     {
       "actual_frame_offset_xy_m": [
@@ -1365,6 +1614,7 @@
       "failures": [],
       "fbx_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.fbx",
       "manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.tile_fbx.json",
+      "osm_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.osm",
       "roundtrip_manifest_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\fbx_roundtrip_manifest.json",
       "source_bbox_m": {
         "x_max": 11000.0,
@@ -1378,7 +1628,13 @@
         10,
         8
       ],
-      "tile_name": "Ingolstadt_Tile_10_8.fbx"
+      "tile_name": "Ingolstadt_Tile_10_8.fbx",
+      "world_placement_offset_m": [
+        10132.020800078462,
+        8502.241801482625
+      ]
     }
-  ]
+  ],
+  "world_seam_delta_definition": "distance between two tiles' exported object bounds after each is projected into the shared world frame via its own independently-verified world_placement_offset_m (GAP-031); this IS the real seam check and gates status/PASS-FAIL",
+  "world_seam_tolerance_m": 10.0
 }
