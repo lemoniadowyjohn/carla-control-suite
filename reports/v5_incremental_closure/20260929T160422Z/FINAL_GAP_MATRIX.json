@@ -1,0 +1,79 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "open_gaps": [
+    {
+      "exact_action": "gh auth login, then the gh api PUT recorded in D18_NEW_206.json -> remaining_blockers[0].exact_action_required",
+      "finding": "NEW-206 (partial)",
+      "id": "GAP-V5-01",
+      "severity": "P0",
+      "status": "BLOCKED_EXTERNAL",
+      "title": "Branch protection / rulesets not configured",
+      "why_blocked": "No gh CLI and no GITHUB_TOKEN/GH_TOKEN in this environment. Server-side state cannot be read or written."
+    },
+    {
+      "exact_action": "gh workflow run carla-runtime.yml -f candidate_manifest=<path> -f expected_carla_version=0.9.16 on a self-hosted CARLA runner",
+      "finding": "NEW-207 (partial)",
+      "id": "GAP-V5-02",
+      "severity": "P0",
+      "status": "BLOCKED_EXTERNAL",
+      "title": "Live CARLA runtime certification not executed",
+      "why_blocked": "No CARLA 0.9.16 server or [carla] runner reachable from this environment."
+    },
+    {
+      "exact_action": "Integrate the V4 module pack (ultimate_pipeline/tiling/carla_0916_import_process_contract.py, resumable_tile_cook.py, fbx_dependency_authority.py, visual_mesh_authority.py, ultimate_pipeline/utils/atomic_artifact_io.py and tests/test_v4_import_contracts.py) and re-run the full suite.",
+      "finding": "V4 NEW-196..NEW-199",
+      "id": "GAP-V5-03",
+      "severity": "P0",
+      "status": "INCOMPLETE",
+      "title": "V4 cook/import/material/TilesInfo closures are not present in the canonical branch at all",
+      "why_blocked": "These files do not exist in the repository. V5 did not regress them; they were never integrated."
+    },
+    {
+      "detail": "A repository-wide search finds no .py/.ps1/.sh/.yml reference to the contract file. All declared profiles and required_gates are declarative only, so a gate listed in the contract is neither implemented, invoked, evidenced nor fail-closed.",
+      "exact_action": "Build a contract evaluator that reads the profiles, resolves each required gate to an implementation, records a receipt per gate and propagates status to the offline/runtime release gates. Reuse the gate ids already in the contract rather than inventing new ones.",
+      "finding": "NEW-209 (new, raised by V5 audit)",
+      "id": "GAP-V5-04",
+      "severity": "P1",
+      "status": "INCOMPLETE",
+      "title": "PRODUCTION_MAP_QUALITY_CONTRACT.yaml has no executing consumer"
+    },
+    {
+      "detail": "production_candidate sets allows_waived: true with no gate-class concept, so in principle a waiver could be attached to an identity/integrity gate. The V5 closures (D16/D17/E24) are structurally immune because they never consult a waiver record, and runtime_certified sets allows_waived: false.",
+      "exact_action": "Add a gate-class taxonomy to the contract (quality_deviation vs identity/integrity/security/reproducibility) and make the non-waivable class structurally unwaivable.",
+      "finding": "NEW-210 (new, raised by V5 audit)",
+      "id": "GAP-V5-05",
+      "severity": "P1",
+      "status": "INCOMPLETE",
+      "title": "Waiver model cannot distinguish waivable quality deviations from integrity defects"
+    },
+    {
+      "detail": "The new dependency_conflicts gate correctly reports FAIL for this environment. The venv is outside the repository, so it was not modified automatically. No OpenCV GUI call sites exist, so removing the GUI build is safe for this repository's code.",
+      "exact_action": "pip uninstall -y opencv-python   (or reinstall from requirements-ci.txt)",
+      "finding": "NEW-205 (operational follow-up)",
+      "id": "GAP-V5-06",
+      "severity": "P2",
+      "status": "INCOMPLETE",
+      "title": "Primary developer venv still has both OpenCV providers installed"
+    }
+  ],
+  "resolved_gaps": [
+    {
+      "id": "NEW-202",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW-203",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW-204",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW-205",
+      "status": "PASS"
+    }
+  ],
+  "resulting_sha": "42fd2dec874ad3e2379dc092f64c1f65f7fac494",
+  "schema": "V5_FINAL_GAP_MATRIX/v1"
+}
