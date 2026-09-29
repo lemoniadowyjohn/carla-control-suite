@@ -42,7 +42,7 @@ arbitrary file count. Wait for all read-only findings before starting a write.
 
 ## Project-Specific Rules
 
-- Use `main` as the authoritative working branch; feature branches only via PR
+- Use `integration/production-large-map-20260918` as the authoritative working branch, NOT `main` (`main` is a disconnected 1-commit stub, confirmed not an ancestor of any real work -- see `docs/archive/BRANCH_ARCHIVAL_PLAN.md`, written in this same checkpoint, which correctly identifies this); feature branches only via PR
 - No direct production push unless explicitly authorized
 - Resolve map-of-record via registry; never select by mtime/glob guessing
 - Frozen thesis material is immutable — no blind map promotion
