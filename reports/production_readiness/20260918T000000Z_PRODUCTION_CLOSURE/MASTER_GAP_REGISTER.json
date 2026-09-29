@@ -580,11 +580,11 @@
       ],
       "scientific_runtime_consequence": "A manual/automatic RQ3 capture pairing where neither side's own manifest ever recorded CARLA version, sensor rig, seed, weather, or any of the other 13 required-shared fields could pass this preflight check cleanly, provided a separate 'shared' declaration file exists -- undermining the check's stated purpose of catching a real manual-vs-automatic capture mismatch before an expensive RQ3 data-collection run.",
       "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
-      "status": "open (needs design decision on whether REQUIRED_SHARED should also be presence-checked against manual/automatic directly, not attempted here per this program's discipline)",
-      "fixing_commit": "none -- tracked, not fixed",
-      "regression_test": "none yet -- would need new tests that populate the 14 REQUIRED_SHARED fields on manual/automatic (not just 'shared') to actually exercise the parity path",
-      "evidence_artifact": "docs/verify-o15-o18-rq-claims-20260929 (reports/production_readiness/20260929T000000Z_O15_O18_VERIFICATION/RESULTS.md), section 'O16'",
-      "residual_risk": "MEDIUM -- RQ3 live capture remains blocked_external (GAP-017) so this gap has not yet had an opportunity to pass a real bad pairing; it must be closed before GAP-017 unblocks and any real RQ3 capture is preflighted with this tool."
+      "status": "fixed",
+      "fixing_commit": "pending (this branch)",
+      "regression_test": "tests/unit/test_o16_rq3_pairing_preflight.py::test_required_shared_missing_from_both_manual_and_automatic_fails (populates 14 REQUIRED_SHARED fields on manual/automatic via _world() helper, removes 'seed' from both, asserts FAIL with 'manual missing seed' and 'automatic missing seed' failures)",
+      "evidence_artifact": "tests/unit/test_o16_rq3_pairing_preflight.py (5 tests passing); this branch's RED->GREEN run",
+      "residual_risk": "LOW -- RQ3 live capture remains blocked_external (GAP-017); fix ensures required fields are validated against actual capture manifests, not just declared contract."
     },
     {
       "id": "GAP-033",
@@ -598,11 +598,11 @@
       ],
       "scientific_runtime_consequence": "A single RQ3 dataset manifest verified without ever supplying its paired counterpart reports the same PASS status as a genuinely cross-checked pair -- a downstream consumer reading only the status field cannot distinguish 'pairing was checked and matched' from 'pairing was never attempted'.",
       "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
-      "status": "open (needs a pairing_performed flag or equivalent status distinction, not attempted here per this program's discipline)",
-      "fixing_commit": "none -- tracked, not fixed",
-      "regression_test": "none yet -- would need a test asserting verify(manifest) with no paired argument returns a status distinguishable from a real checked pairing pass",
-      "evidence_artifact": "docs/verify-o15-o18-rq-claims-20260929 (reports/production_readiness/20260929T000000Z_O15_O18_VERIFICATION/RESULTS.md), section 'O17'",
-      "residual_risk": "MEDIUM -- same RQ3-blocked-external caveat as GAP-032; should be closed before this tool is trusted as a real pre-RQ3 gate."
+      "status": "fixed",
+      "fixing_commit": "pending (this branch)",
+      "regression_test": "tests/unit/test_o17_rq3_dataset_manifest_verifier.py::test_valid_manifest_without_paired_is_incomplete (asserts status INCOMPLETE, pairing_performed=false); test_valid_manifest_with_paired_passes (asserts status PASS, pairing_performed=true); test_paired_contract_mismatch_fails (asserts status FAIL, pairing_performed=true)",
+      "evidence_artifact": "tests/unit/test_o17_rq3_dataset_manifest_verifier.py (5 tests passing); this branch's RED->GREEN run",
+      "residual_risk": "LOW -- RQ3 live capture remains blocked_external (GAP-017); fix ensures pairing status is explicitly tracked and distinguishable from a real checked pass."
     },
     {
       "id": "GAP-034",
@@ -611,17 +611,19 @@
       "description": "O18's stated goal (per its commit title, 'RQ5 experiment contract static audit') was believed to check the established RQ5(b) claim-boundary rule (docs/research/THESIS_TO_CURRENT_PROGRESS.md's RQ5 row: unlabeled distribution-shift/CORAL/MMD protocol checks are not model-generalization accuracy, and no manual-target training result may be relabeled as generated-to-manual transfer). It does not. tools/rq5_contract_audit.py instead greps 3 unrelated files (settings.py, exp_osm_to_xodr_determinism.py -- the RQ1 determinism script, an odd choice for an 'RQ5' audit -- and README.md) for loose keyword presence against a checklist of generic ML-experiment-design decisions (architecture, splits, learning rate, epochs, optimizer). Nothing in its REQUIRED list, keyword logic, or output schema mentions 'unlabeled', 'labeled', 'accuracy', 'mIoU', 'CORAL', 'MMD', or 'real-world' -- the RQ5(b) claim-boundary vocabulary. Cross-checked the one place that does encode an RQ5 metric allow-list (ultimate_pipeline/config/thesis_rq_contract.py's RQ_ALLOWED_METRICS[RQ5]): it lists both accuracy/mIoU-style metrics and unlabeled-shift metrics as equally allowed RQ5 tags, without restricting RQ5(b) specifically to the unlabeled subset either. This specific claim-boundary rule currently has no automated enforcement anywhere found in the branch.",
       "proof": "Read directly from tools/rq5_contract_audit.py's REQUIRED list, keyword-match logic, and the 3 files it actually greps; cross-checked ultimate_pipeline/config/thesis_rq_contract.py's RQ_ALLOWED_METRICS[RQ5] (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29 verification, section 'O18').",
       "affected_files": [
-        "tools/rq5_contract_audit.py",
         "ultimate_pipeline/config/thesis_rq_contract.py",
-        "docs/research/THESIS_TO_CURRENT_PROGRESS.md"
+        "ultimate_pipeline/tools/audit_thesis_topic_contract.py",
+        "tools/export_thesis_tables.py",
+        "tests/unit/test_rq5b_claim_boundary.py",
+        "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json"
       ],
       "scientific_runtime_consequence": "The specific claim-boundary rule this program has established for RQ5(b) (no relabeling manual-target training accuracy as generated-to-manual transfer) has no automated enforcement anywhere in the codebase -- a future RQ5(b) writeup could violate this rule without any tool catching it. Separately (leaning fail-closed rather than fail-open, noted for completeness not as a gap): O18's audit() by construction never emits status DEFINED, only AMBIGUOUS or MISSING, so its own overall status can never be PASS.",
       "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
-      "status": "open (needs either a new tool or extending rq5_contract_audit.py with real RQ5(b) claim-boundary vocabulary; not attempted here per this program's discipline)",
-      "fixing_commit": "none -- tracked, not fixed",
-      "regression_test": "none yet",
-      "evidence_artifact": "docs/verify-o15-o18-rq-claims-20260929 (reports/production_readiness/20260929T000000Z_O15_O18_VERIFICATION/RESULTS.md), section 'O18'",
-      "residual_risk": "MEDIUM -- RQ5 has zero evidence currently (per this session's own memory index), so this gap has not yet had an opportunity to let a real violating claim through; should be closed before any RQ5(b) writeup is drafted."
+      "status": "fixed",
+      "fixing_commit": "462ddeb3 (branch fix/gap034-rq5b-claim-boundary-20260929, based on integration/o1-o20-rebased-20260929 @ 70fefb51)",
+      "regression_test": "tests/unit/test_rq5b_claim_boundary.py (10 tests: RED pre-fix synthetic RQ5(b) real-world/unlabeled accuracy row passed _current_rq_tables_audit with ok=True; GREEN post-fix the same row fails closed with an RQ5(b) claim-boundary violation while real_unlabeled_shift_metrics / domain_adaptation_coral_mmd on identical provenance still pass, labeled metrics still pass on sim_labeled and on real_world with labels_available=True, and build_tables() tags every RQ5 row with data_source/labels_available)",
+      "evidence_artifact": "commit 462ddeb3 + full bare pytest on the fix branch worktree: 6408 passed, 6 skipped, 1 failed (tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_no_hardcoded_username_in_production_defaults -- ENVIRONMENTAL, fails identically on the pristine checkout because the worktree path contains the Windows username 'admin'; unrelated to this change); targeted re-run after regenerating rq_tables.json: 58 passed (audit/export/contract/c19/provenance/pack families); tools/run_c19_assembly.py all 4 steps passed against the regenerated artifact (22 rows, current_rq_tables_audit ok=True, violations=[]) -- RQ5 rows now carry data_source/labels_available (real_unlabeled_shift_metrics: real_world/unlabeled; both RQ5(a) rows: sim_labeled/labeled)",
+      "residual_risk": "LOW -- enforcement is additive (new contract function + one extra audit check + two new optional row fields); no existing test's expected behavior changed (full suite: only the pre-existing environmental A1 path failure). Deliberately NOT touched: tools/rq5_contract_audit.py (O18 static keyword grep) is left as-is -- the boundary is now enforced at the reporting/audit choke point instead; O18's never-DEFINED status quirk is unchanged and out of scope."
     },
     {
       "id": "GAP-035",
@@ -644,11 +646,12 @@
   ],
   "counts": {
     "total": 35,
-    "fixed": 24,
+    "fixed": 28,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 5,
+    "open": 1,
+    "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total 35.",
     "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {
@@ -692,7 +695,7 @@
       }
     ]
   },
-  "update_note": "2026-09-24: docs sync -- merged issues_batch_3 (GAP-016/017/018) into issues; GAP-023 marked fixed (settings mtime-authority guard b09fd6e3 merged fdf91aff); counts recomputed from the full 26-issue set. GAP-026 remains open pending a human policy decision. GAP-010 mechanism fixed; retrain remains BLOCKED_EXTERNAL. GAP-017 remains blocked_external (CARLA RPC handshake). GAP-018 in_progress (UE4 compile running, not finished).",
+  "update_note": "2026-09-29: GAP-032 and GAP-033 fixed -- RQ3 pairing preflight (O16) now validates REQUIRED_SHARED fields against manual/automatic captures directly (not just shared declared contract), and RQ3 dataset manifest verifier (O17) returns INCOMPLETE with pairing_performed=false when --paired is omitted instead of falsely returning PASS. Both fixes include RED->GREEN regression tests. 2026-09-24: docs sync -- merged issues_batch_3 (GAP-016/017/018) into issues; GAP-023 marked fixed (settings mtime-authority guard b09fd6e3 merged fdf91aff); counts recomputed from the full 26-issue set. GAP-026 remains open pending a human policy decision. GAP-010 mechanism fixed; retrain remains BLOCKED_EXTERNAL. GAP-017 remains blocked_external (CARLA RPC handshake). GAP-018 in_progress (UE4 compile running, not finished).",
   "wip_full_suite_result": {
     "branch": "fix/xodr-validator-convergence-v1-20260921",
     "commit": "f245540f",

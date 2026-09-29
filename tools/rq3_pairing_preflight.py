@@ -19,6 +19,10 @@ def preflight(manual: dict[str, Any], automatic: dict[str, Any], shared: dict[st
     for field in REQUIRED_SHARED:
         if field not in shared:
             failures.append(f"shared missing {field}")
+        if field not in manual:
+            failures.append(f"manual missing {field}")
+        if field not in automatic:
+            failures.append(f"automatic missing {field}")
     mismatches = []
     if manual.get("available_in_runtime") is not True or automatic.get("available_in_runtime") is not True:
         mismatches.append("both worlds must be available in runtime")
