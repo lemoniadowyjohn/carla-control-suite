@@ -53,6 +53,7 @@ __all__ = [
 ]
 
 DEFECT_CODES = (
+    "pack_missing",
     "stale_top_level_version",
     "stale_companion_reference",
     "task_count_mismatch",

@@ -240,7 +240,8 @@ def test_missing_pack_directory_fails(tmp_path):
 def test_all_defect_codes_are_declared():
     assert "documented_count_mismatch" in DEFECT_CODES
     assert "stale_top_level_version" in DEFECT_CODES
-    assert len(DEFECT_CODES) == 7
+    assert "pack_missing" in DEFECT_CODES
+    assert len(DEFECT_CODES) == 8
 
 
 def test_cli_exit_codes(tmp_path, capsys):

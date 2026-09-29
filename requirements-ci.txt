@@ -10,7 +10,7 @@
 # MUTUALLY EXCLUSIVE with `opencv-python` (see requirements-desktop.txt): both
 # distributions install the SAME `cv2` namespace, so installing both in one
 # environment produces a shadowed-module conflict that pip does not report.
-# `ultimate_pipeline/tools/dependency_conflicts.py` fails CI if both are present.
+# `ultimate_pipeline.tools.repo_health.dependency_conflicts()` fails CI if both are present.
 #
 # Install:
 #   pip install -r requirements-ci.txt

@@ -13,7 +13,7 @@
 # the headless profile, uninstall it first:
 #   pip uninstall -y opencv-python-headless
 #   pip install -r requirements-desktop.txt
-# `ultimate_pipeline/tools/dependency_conflicts.py` will fail if both are present.
+# `ultimate_pipeline.tools.repo_health.dependency_conflicts()` will fail if both are present.
 
 -r requirements.txt
 
