@@ -2,7 +2,7 @@
 
 Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync at each update.
 
-Last updated: `2026-09-29T12:00:00Z`
+Last updated: `2026-09-29T18:00:00Z`
 
 | ID | Severity | Subsystem | Status | Fixing commit / owner |
 |---|---|---|---|---|
@@ -23,7 +23,7 @@ Last updated: `2026-09-29T12:00:00Z`
 | GAP-015 | P3 | domain_gap_gnn -- RQ4 provenance | **closed (non-reproducible)** | unassigned; confirmed non-reproducible by coordinator, 2026-09-23 |
 | GAP-016 | P2 | tests/unit/test_regen_find_final_xodr_hygiene.py -- obsolete test c... | **fixed** | 6e9fb064 (merged 1c8caa2c into origin/integration/production-large-map-20260918); a sec... |
 | GAP-017 | P1 | live CARLA -- Grid0828/manual_grid0821 data-collection readiness | blocked_external | Codex (2026-09-22/23, multiple real attempts); Claude (2026-09-24, audio-mixer-disable ... |
-| GAP-018 | P1 | UE4 cook readiness -- engine source access | in_progress (UE4 build) | user resolved the GitHub/Epic org-access issue directly; the build was then started and... |
+| GAP-018 | P1 | UE4 cook readiness -- engine source access | in_progress (editor build complete; CARLA project compile 65/73 modules, blocked on Eigen+OSM2ODR) | user resolved the GitHub/Epic org-access issue; direct-dispatched Claude subagent (2026-09-29) attempted the CARLA project compile for the first time, found+fixed 2 real CARLA build-script bugs |
 | GAP-019 | P2 | domain_gap/DEM+elevation canonical sampling -- 8-issue cluster (Pac... | **fixed (7/8, 1 by design)** | fix/dem-elevation-canonical-sampling-v2-20260923, merged c68a1059 into origin/integrati... |
 | GAP-020 | P2 | pipeline_stages/stage_09_positional_semantics.py + tiling -- scope-... | **fixed (split; store.py via GAP-011c)** | fix/building-multipolygon-fidelity-v3-split-20260923 (2 commits: 0473b280 scope-separat... |
 | GAP-021 | P0 | osm/osm_to_xodr_wrapper.py -- CRS/projection authority | **fixed (corrected root cause)** | 870c56a2 (merged into origin/integration/production-large-map-20260918) |
@@ -36,7 +36,7 @@ Last updated: `2026-09-29T12:00:00Z`
 | GAP-028 | P2 | tests/unit/test_blender_conversion_integrity.py -- FakeBlenderRunner machine-Blender dependence | **fixed** | 8cb1cd95 (branch fix/ci-closure-blender-writerlock-20260924; renumbered from GAP-027 post-upstream-collision) |
 | GAP-029 | P1 | ultimate_pipeline/contracts/writer_lock.py -- fresh-lock partial-publication reader race | **fixed** | 1bc93eef (branch fix/ci-closure-blender-writerlock-20260924; renumbered from GAP-028 post-upstream-collision) |
 | GAP-030 | P0 | ultimate_pipeline/carla_tools/map_registry.py + scripts/cook_full_grid_tiles.py -- registry receipt missing structured frame fields (O1 regression) | **fixed** | 655671fd (branch integration/o1-o20-rebased-20260929; verify_pinned_map() now surfaces rebase_dx/rebase_dy/frame_kind/etc from norm) |
-| GAP-031 | P1 | tools/tile_frame_consistency.py (O3) + full-grid tile cook evidence -- latent ~170-270m north-south tile-seam misplacement | open (needs policy) | independent verification subagent, docs/verify-o3-tile-frame-fullgrid-cook-20260929 (2026-09-29) |
+| GAP-031 | P1 | tools/tile_frame_consistency.py (O3) + full-grid tile cook evidence -- latent ~170-270m north-south tile-seam misplacement | **checker fixed + merged** (5f826559); underlying generation-time defect still open (needs policy) | direct-dispatched Claude subagent (2026-09-29), 975a7de1 merged into origin/integration/production-large-map-20260918 via 5f826559 |
 | GAP-032 | P1 | tools/rq3_pairing_preflight.py (O16) -- fail-open manual/automatic parity gap | open (needs design decision) | independent verification subagent, docs/verify-o15-o18-rq-claims-20260929 (2026-09-29) |
 | GAP-033 | P1 | tools/rq3_dataset_manifest_verifier.py (O17) -- fail-open default pairing skip | open (needs design decision) | independent verification subagent, docs/verify-o15-o18-rq-claims-20260929 (2026-09-29) |
 | GAP-034 | P1 | tools/rq5_contract_audit.py (O18) -- does not implement the RQ5(b) claim-boundary rule | open (needs new/extended tool) | independent verification subagent, docs/verify-o15-o18-rq-claims-20260929 (2026-09-29) |
@@ -47,7 +47,7 @@ Totals: 35 tracked, 24 fixed, 3 closed (non-reproducible), 1 deferred, 5 open, 1
 ## Active open / blocked items (2026-09-29)
 
 - **GAP-026 (P1, open)**: lane-link pose-continuity is a dead signal in `lanelink_builder.py`; needs a human policy decision before any fix is dispatched.
-- **GAP-031 (P1, open)**: ~170-270m north-south tile-seam misplacement in the buildings-visual tile-cook path; needs a real placement-correction design, not attempted per this program's discipline.
+- **GAP-031 (P1, checker fixed + merged 2026-09-29, underlying defect still open)**: tile_frame_consistency.py's dead-code status field is fixed and now genuinely gates FAIL (27/31 pairs, confirmed on the real full-grid cook); the ~170-270m north-south tile-seam misplacement itself is still unfixed in tile_fbx_generator.py -- needs a real placement-correction design, not attempted per this program's discipline. Merge independently pytest-verified on production tip: 6402 passed, 6 skipped, 0 failed.
 - **GAP-032 (P1, open)**: RQ3 pairing preflight only checks required-shared fields against a separate declared-contract file, never against the manual/automatic capture manifests themselves.
 - **GAP-033 (P1, open)**: RQ3 dataset manifest verifier silently skips its pairing check (and reports PASS) when no `--paired` manifest is supplied.
 - **GAP-034 (P1, open)**: no automated enforcement anywhere of the RQ5(b) claim-boundary rule (unlabeled-shift metrics must not be relabeled as generated-to-manual transfer accuracy).
