@@ -199,6 +199,29 @@ class TestOfflineCookingPipelineChain:
         # --- Step 1: real tile FBX generation (piece 1), external binaries
         # stubbed, everything else genuine.
         artifacts_dir = tmp_path / "artifacts" / f"tile_{tile_index[0]}_{tile_index[1]}"
+        # O1 (f7934c13) added a current-pin provenance-chain requirement to
+        # large_map_package.py's staging validation: every tile manifest
+        # must carry source_provenance.map_of_record_sha256, and it must
+        # match the sha256 of the actual XODR file staged alongside it (see
+        # scripts/cook_full_grid_tiles.py's real per_tile_source_prov,
+        # mirrored here so this integration test's fixture matches what the
+        # real production caller actually passes -- omitting it here was a
+        # test-fixture gap predating O1's stricter check, not a defect in
+        # the real pipeline). The XODR is written here (moved earlier from
+        # its original Step 2 position) so its real on-disk sha256 is known
+        # before generate_tile_fbx() is called.
+        xodr_path = tmp_path / "IntegTestMap.xodr"
+        xodr_path.write_text("<OpenDRIVE></OpenDRIVE>", encoding="utf-8")
+        fake_source_provenance = {
+            "buildings_source": "campaigns/fake/source/buildings.json",
+            "buildings_source_sha256": "0" * 64,
+            "map_of_record": "IntegTestMap.xodr",
+            "map_of_record_sha256": _sha256(xodr_path),
+            "header_offset_xy": [832671.676, 5458671.104],
+            "tile_size_m": 1000.0,
+            "provenance_authority": "verify_pinned_map('auto_map_of_record')",
+            "registry_sha256": "2" * 64,
+        }
         result = tfg.generate_tile_fbx(
             buildings=tile_buildings,
             tile_index=tile_index,
@@ -207,6 +230,7 @@ class TestOfflineCookingPipelineChain:
             osm2world_home="/fake/osm2world/home",
             blender_exe=None,
             run_roundtrip=False,
+            source_provenance=fake_source_provenance,
         )
 
         assert result.status == "ok", f"expected ok, got {result.status}: {result.reason}"
@@ -242,10 +266,8 @@ class TestOfflineCookingPipelineChain:
 
         # --- Step 2: real package staging + validation (piece 3), consuming
         # the *actual* FBX file generate_tile_fbx wrote -- no path is
-        # fabricated or mocked here.
-        xodr_path = tmp_path / "IntegTestMap.xodr"
-        xodr_path.write_text("<OpenDRIVE></OpenDRIVE>", encoding="utf-8")
-
+        # fabricated or mocked here. xodr_path was written earlier (Step 1)
+        # so its sha256 could be embedded in fake_source_provenance.
         import_root = tmp_path / "Import"
         stage_result = stage_large_map_package(
             map_name="IntegTestMap",

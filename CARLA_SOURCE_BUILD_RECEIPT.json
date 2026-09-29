@@ -1,0 +1,115 @@
+{
+  "build": {
+    "build_configuration": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "carlaue4_build_status": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "compiler_toolset": {
+      "evidence": "no compiler toolchain queried",
+      "status": "unknown",
+      "value": null
+    },
+    "python_api_build_status": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    }
+  },
+  "carla": {
+    "branch": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "commit": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "path": {
+      "evidence": "CARLA_ROOT not set",
+      "status": "unknown",
+      "value": null
+    },
+    "tag": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "target_version": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    }
+  },
+  "environment": {
+    "UE4_ROOT": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "cmake_version": {
+      "evidence": "not queried",
+      "status": "unknown",
+      "value": null
+    },
+    "compiler_version": {
+      "evidence": "not queried",
+      "status": "unknown",
+      "value": null
+    },
+    "python_version": {
+      "evidence": null,
+      "status": "verified",
+      "value": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]"
+    }
+  },
+  "generated_at_utc": "2026-09-29T08:47:48.979219+00:00",
+  "repository": {
+    "branch": {
+      "evidence": "git branch --show-current",
+      "status": "verified",
+      "value": "integration/o1-o20-rebased-20260929"
+    },
+    "commit": {
+      "evidence": "git rev-parse HEAD",
+      "status": "verified",
+      "value": "3a3cf6a57cc13fa6648ec659555cd2b53e9a0e0b"
+    }
+  },
+  "schema": "carla_source_build_receipt/v1",
+  "status_policy": "Every field is verified, unknown, or not_applicable; expected paths never imply build success.",
+  "ue4": {
+    "branch": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "commit": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "editor_executable": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "editor_hash": {
+      "evidence": null,
+      "status": "unknown",
+      "value": null
+    },
+    "path": {
+      "evidence": "UE4_ROOT not set",
+      "status": "unknown",
+      "value": null
+    }
+  }
+}

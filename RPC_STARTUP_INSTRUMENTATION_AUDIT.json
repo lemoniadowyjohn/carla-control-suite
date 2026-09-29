@@ -1,0 +1,24 @@
+{
+  "schema": "rpc_startup_instrumentation_audit/v1",
+  "status": "INCOMPLETE",
+  "source_root_searched": "repository and external/",
+  "source_present": false,
+  "instrumentation_applied": false,
+  "build_attempted": false,
+  "reason": "No CARLA source RPC server implementation is present in this repository. The only external matches are esmini UDP servers, not CARLA RPC. The existing RPC_HANDSHAKE_TRACE.json records NOT_RUN and explicitly states that no source-built CarlaUE4 server was launched.",
+  "required_source_locations": [
+    "CARLA RPC server construction",
+    "socket bind/listen",
+    "worker startup",
+    "handler registration",
+    "get_server_version handler",
+    "response dispatch"
+  ],
+  "located_source_evidence": [
+    "external/esmini/EnvironmentSimulator/Modules/ScenarioEngine/SourceFiles/Server.cpp",
+    "external/esmini/EnvironmentSimulator/Modules/PlayerBase/PlayerServer.cpp"
+  ],
+  "classification": "esmini UDP servers; not CARLA RPC",
+  "no_invented_fix": true,
+  "next_required_evidence": "Provide the CARLA source checkout or verified CARLA source archive and identify the RPC plugin/server build target. Then instrument A-H logging points without changing retries, timeouts, ports, threading, or networking."
+}

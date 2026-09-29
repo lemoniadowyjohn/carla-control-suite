@@ -1,0 +1,108 @@
+{
+  "ambiguous_decisions": [
+    "model_architecture",
+    "initialization_policy",
+    "training_split",
+    "validation_split",
+    "test_split",
+    "data_budget",
+    "image_resolution",
+    "learning_rate",
+    "epochs",
+    "seed_policy",
+    "class_mapping",
+    "metrics",
+    "checkpoint_selection",
+    "transfer_comparison_matrix"
+  ],
+  "claim_boundary": "Static audit only; no architecture, split, budget, or metric choice was invented.",
+  "missing_decisions": [
+    "augmentations",
+    "optimizer"
+  ],
+  "rows": [
+    {
+      "decision": "model_architecture",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "initialization_policy",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "training_split",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "validation_split",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "test_split",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "data_budget",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "image_resolution",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "augmentations",
+      "evidence": "no explicit contract evidence found",
+      "status": "MISSING"
+    },
+    {
+      "decision": "optimizer",
+      "evidence": "no explicit contract evidence found",
+      "status": "MISSING"
+    },
+    {
+      "decision": "learning_rate",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "epochs",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "seed_policy",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "class_mapping",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "metrics",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "checkpoint_selection",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    },
+    {
+      "decision": "transfer_comparison_matrix",
+      "evidence": "keyword present but explicit frozen value not proven",
+      "status": "AMBIGUOUS"
+    }
+  ],
+  "schema": "rq5_experiment_contract_static_check/v1",
+  "scientific_choices_filled": false,
+  "status": "FAIL"
+}

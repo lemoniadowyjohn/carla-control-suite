@@ -1,7 +1,7 @@
 {
   "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-24T11:05:15Z",
+  "last_updated_utc": "2026-09-29T12:00:00Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -527,15 +527,128 @@
       "regression_test": "new tests/unit/test_writer_lock_atomic_publication.py (GAP-029: widened-timing cross-process partial-read race, persistent-empty fail-closed-without-delete, malformed-old-lock fail-closed-without-delete, stale-expired-lock still reclaimable) + bumped 8x50 exactly-one-winner test in test_writer_lock_concurrency.py + strengthened no-delete / not-'Writer lock held by' assertions on the four persistent-corruption fail-closed tests + new delayed_publish_worker in tests/unit/_writer_lock_mp_worker.py. RED->GREEN proven: widened test fails with the exact CI JSONDecodeError signature against stashed (unfixed) writer_lock.py, passes with the fix.",
       "evidence_artifact": "reports/production_readiness/20260924T102329Z_CI_CLOSURE/{RESULTS.md,VERIFICATION.json,WRITER_LOCK_RACE_ANALYSIS.md}; RED run transcript (stashed production file): JSONDecodeError('Expecting value: line 1 column 1 (char 0)') x8 contenders on iteration 0",
       "residual_risk": "LOW -- O_EXCL remains the sole exclusivity authority; load()/save()/heartbeat()/release() untouched; exactly-one-winner and stale-clobber regressions still green. Residual notes: (1) the legacy .agent_lock.json path check (acquire() lines 76-84) still calls load() directly and would propagate a raw JSONDecodeError on a corrupt legacy file -- out of scope for GAP-029, pre-existing, fails loud not silent; (2) pre-existing Windows unlink sharing hazard when reclaiming a parseable lock another process holds open is unchanged (not introduced or worsened by this fix); (3) the ~500ms re-read budget assumes a healthy winner completes publication within it -- if a winner stalls longer, the contender fails closed with the distinct RuntimeError (safe-but-conservative: no silent delete, no false held-by claim, operator can inspect), not a hang."
+    },
+    {
+      "id": "GAP-030",
+      "severity": "P0",
+      "subsystem": "ultimate_pipeline/carla_tools/map_registry.py + scripts/cook_full_grid_tiles.py -- registry receipt missing structured frame fields (O1 regression)",
+      "description": "O1 (commit f7934c13, 'enforce current-pin cook provenance chain') replaced cook_full_grid_tiles.py's hardcoded HEADER_OFFSET_XY literal with a call to _header_offset_from_registry(verify_pinned_map('auto_map_of_record')), which requires pin['rebase_dx']/pin['rebase_dy']. But verify_pinned_map() (map_registry.py, never touched by O1) built its returned receipt dict from only a subset of the validated registry entry (norm): path/sha256/bytes/role/frame/registry_key/etc, never rebase_dx/rebase_dy/frame_kind/frame_id/crs_authority/frame_status, even though validate_registry_entry() already computes and stores all of those on norm for frame_kind='rebased_local' entries (map_registry.py lines 542-563). This raised ValueError at cook_full_grid_tiles.py's module import time, which aborted collection of any test importing it (tests/unit/test_full_grid_tile_cook.py) and, because pytest interrupts the whole run on a collection error, a bare pytest invocation with zero flags collected 0 tests and exited non-zero across the ENTIRE 12-directory testpaths -- not just the one affected file. Independently confirmed by 2 of the 6 2026-09-29 verification subagents (docs/verify-o3-tile-frame-fullgrid-cook-20260929, docs/verify-o14-fullsuite-20260929), both tracing it to the same root cause.",
+      "proof": "Reproduced directly: verify_pinned_map('auto_map_of_record').get('rebase_dx') returned None pre-fix (KeyError/ValueError downstream), and importing scripts.cook_full_grid_tiles raised ValueError: Registry entry 'auto_map_of_record' is missing structured frame fields 'rebase_dx' / 'rebase_dy' pre-fix. tests/unit/test_a1_a2_path_and_frame_resolution.py::TestRegistryFrameAuthority::test_receipt_exposes_structured_frame (already written by the O-series checkpoint but never run to green) explicitly asserts this exact contract and FAILED pre-fix, PASSED post-fix.",
+      "affected_files": [
+        "ultimate_pipeline/carla_tools/map_registry.py",
+        "scripts/cook_full_grid_tiles.py",
+        "tools/probe_tile_fbx_densest.py",
+        "tests/unit/test_a1_a2_path_and_frame_resolution.py"
+      ],
+      "scientific_runtime_consequence": "A bare pytest (the documented, only-correct invocation per this program's own testpaths discipline) could not run a single test on this integration branch -- 100% test-suite blindness, not a partial degradation. Any CI or human relying on 'pytest passes' as a promotion gate would have been unable to get any signal at all.",
+      "owner_subagent": "direct (integration coordinator, integration/o1-o20-rebased-20260929)",
+      "status": "fixed",
+      "fixing_commit": "655671fd (branch integration/o1-o20-rebased-20260929) -- verify_pinned_map() now copies FRAME_STRUCTURED_FIELDS (frame_id/frame_kind/crs_authority/rebase_dx/rebase_dy) plus frame_status from norm into its returned receipt whenever present, instead of silently dropping them; no change to validate_registry_entry() or the registry data itself. Also fixed 2 adjacent A1 path-portability gaps surfaced by the same now-unblocked test file: tools/probe_tile_fbx_densest.py and ultimate_pipeline/enrichment/osm2world_runner.py both still hardcoded this workstation's dev-checkout absolute path as DEFAULT_OSM2WORLD_HOME (cook_full_grid_tiles.py had already been fixed for this by O1; its 2 siblings had not) -- both now resolve OSM2WORLD_HOME env var then repo-relative default, matching the established pattern. Also added CARLA_EXE/UP_CARLA_EXE env-var precedence to scripts/find_carla_server.py (previously zero env-var support, only a hardcoded COMMON_CARLA_PATHS scan), and fixed test_a1_a2_path_and_frame_resolution.py::test_find_carla_root_env_without_exe, which was missing os.path.exists()/subprocess.run() mocks its sibling test already had -- on a workstation with real CARLA installed at a common path (this one), the unmocked test silently launched the actual CarlaUE4.exe simulator (a confirmed livelock hazard per docs/verify-o14-fullsuite-20260929 section 5) instead of testing the intended 'no exe found, fall back to CARLA_ROOT env' path.",
+      "regression_test": "tests/unit/test_a1_a2_path_and_frame_resolution.py (13 tests, all passing post-fix, including the 2 that were the direct KeyError/ValueError symptom and the 2 CARLA-path env-precedence tests)",
+      "evidence_artifact": "this branch's own test run: tests/unit/test_a1_a2_path_and_frame_resolution.py 13 passed (was: 1 collection-time ValueError blocking the whole suite plus 2 FAILED plus 7 ERROR once collection was bypassed, per docs/verify-o14-fullsuite-20260929 section 5 item 1)",
+      "residual_risk": "LOW -- the fix only surfaces already-validated data (validate_registry_entry() was already computing these fields; verify_pinned_map() was simply not returning them), no new validation logic added, no change to what the registry accepts as valid. FRAME_STRUCTURED_FIELDS is copied via a guarded membership check so entries without structured frame data (frame_status=LEGACY_TEXT_ONLY) are unaffected and still omit these keys from the receipt, preserving backward compatibility for any caller that only checks .get('rebase_dx') defensively."
+    },
+    {
+      "id": "GAP-031",
+      "severity": "P1",
+      "subsystem": "tools/tile_frame_consistency.py (O3) + full-grid tile cook evidence -- latent ~170-270m north-south tile-seam misplacement",
+      "description": "Independently discovered and numerically demonstrated by docs/verify-o3-tile-frame-fullgrid-cook-20260929 (2026-09-29), not by O3 itself. O3's own seam check (tools/tile_frame_consistency.py) is weaker than a real geometric seam check: it compares each tile's raw, independently-OSM2World-auto-centered local bounding box against its neighbor's, never applying any tile-placement transform, and its per-pair 'status' field is dead code (always 'INCOMPLETE', never gates the top-level PASS/FAIL). The verifying subagent instead built a ground-truth-anchored check: for 4 adjacent tile pairs from the current-pin full-grid cook (reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/), it computed each named OSM building's true lat/lon centroid, projected it into the pipeline's native frame, subtracted the registry rebase offset, matched it to its OSM2World-exported mesh object by name (discovering and correcting for OSM2World's OBJ south-positive Z axis via two independent building-pair distance cross-checks, 1.4% agreement), and computed the per-tile median residual offset needed on top of the only tile-placement convention this codebase documents (tx*1000, ty*1000).",
+      "proof": "Both north-south adjacent pairs showed a statistically overwhelming, non-noise offset inconsistency: tile_8_8 vs tile_8_9 (y/north-south) delta=176.5m, standard error ~13.9m (~12.7 sigma); tile_7_8 vs tile_7_9 (y/north-south) delta=270.1m, standard error ~21.5m (~12.6 sigma). The east-west pair (tile_7_8 vs tile_8_8, x-axis) was comparatively closer to consistent (46.1m vs ~16.5m noise budget -- borderline). Root cause: OSM2World auto-centers every tile's output independently around its own local (0,0), regardless of the tile's true geographic position, and blender_convert.py applies zero translation on OBJ to FBX -- so nothing anywhere in the actual artifact chain places these 20 tiles in a shared frame. Each tile's own internal geometry is plausible and the per-tile roundtrip evidence (20/20 PASS) is real; the defect only appears when tiles are assembled using the pipeline's documented placement convention.",
+      "affected_files": [
+        "tools/tile_frame_consistency.py",
+        "ultimate_pipeline/tiling/tile_fbx_generator.py",
+        "scripts/cook_full_grid_tiles.py",
+        "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/"
+      ],
+      "scientific_runtime_consequence": "If the 20 currently-cooked tiles were assembled into a shared UE4/CARLA scene using the only placement convention this codebase documents, north-south-adjacent tiles would be visibly misaligned by roughly 170-270m -- most of a full tile width. This is a real, previously-undetected, numerically-demonstrated defect in the tile-based visual (buildings-only, non-road-truth) cooking path, not a false positive; O3's own check could never have caught it since it never introduces an independent ground-truth reference.",
+      "owner_subagent": "independent verification subagent (docs/verify-o3-tile-frame-fullgrid-cook-20260929, 2026-09-29)",
+      "status": "open (needs policy decision plus a real placement-correction fix, not attempted here per this program's discipline of not unilaterally redesigning frame/placement logic)",
+      "fixing_commit": "none -- tracked, not fixed",
+      "regression_test": "none yet -- would need a ground-truth-anchored seam check promoted from the verifying subagent's ad hoc analysis into a real, gated tool/test (unlike O3's current dead-code status field)",
+      "evidence_artifact": "docs/verify-o3-tile-frame-fullgrid-cook-20260929 (reports/verification/O3_FULLGRID_VERIFICATION_20260929.md), section 2c",
+      "residual_risk": "MEDIUM-HIGH until addressed -- affects only the buildings-visual tile-cook path (roads/OpenDRIVE truth is unaffected, per this program's established road-vs-visual-layer separation), but any downstream consumer of the multi-tile assembled visual scene (UE4 cook, screenshots, thesis figures) would show a real, visible defect at every north-south tile boundary."
+    },
+    {
+      "id": "GAP-032",
+      "severity": "P1",
+      "subsystem": "tools/rq3_pairing_preflight.py (O16) -- fail-open manual/automatic parity gap",
+      "description": "REQUIRED_SHARED presence-checks 14 fields (CARLA version, sensor rig, weather, timing, seed, route policy, class map, capture protocol) only against a separately-supplied 'shared' declared-contract dict, never against the manual/automatic capture manifests' own recorded content. The manual-vs-automatic mismatch check only fires for a field when it is present in BOTH manual and automatic dicts; if a required field is absent from both real capture manifests -- while the separate 'shared' file happens to declare it -- no mismatch is ever flagged and the pairing passes cleanly. Confirmed dead-code in practice: every test in tests/unit/test_o16_rq3_pairing_preflight.py only populates expected_map_identity/expected_map_hash/expected_map_version/available_in_runtime on the manual/automatic dicts; none of the 14 REQUIRED_SHARED fields are ever present on either side in any test, so the core parity comparison this tool exists for is structurally never exercised.",
+      "proof": "Read directly from tools/rq3_pairing_preflight.py's REQUIRED_SHARED handling and tests/unit/test_o16_rq3_pairing_preflight.py's _world() helper (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29 verification, section 'O16').",
+      "affected_files": [
+        "tools/rq3_pairing_preflight.py",
+        "tests/unit/test_o16_rq3_pairing_preflight.py"
+      ],
+      "scientific_runtime_consequence": "A manual/automatic RQ3 capture pairing where neither side's own manifest ever recorded CARLA version, sensor rig, seed, weather, or any of the other 13 required-shared fields could pass this preflight check cleanly, provided a separate 'shared' declaration file exists -- undermining the check's stated purpose of catching a real manual-vs-automatic capture mismatch before an expensive RQ3 data-collection run.",
+      "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
+      "status": "open (needs design decision on whether REQUIRED_SHARED should also be presence-checked against manual/automatic directly, not attempted here per this program's discipline)",
+      "fixing_commit": "none -- tracked, not fixed",
+      "regression_test": "none yet -- would need new tests that populate the 14 REQUIRED_SHARED fields on manual/automatic (not just 'shared') to actually exercise the parity path",
+      "evidence_artifact": "docs/verify-o15-o18-rq-claims-20260929 (reports/production_readiness/20260929T000000Z_O15_O18_VERIFICATION/RESULTS.md), section 'O16'",
+      "residual_risk": "MEDIUM -- RQ3 live capture remains blocked_external (GAP-017) so this gap has not yet had an opportunity to pass a real bad pairing; it must be closed before GAP-017 unblocks and any real RQ3 capture is preflighted with this tool."
+    },
+    {
+      "id": "GAP-033",
+      "severity": "P1",
+      "subsystem": "tools/rq3_dataset_manifest_verifier.py (O17) -- fail-open default pairing skip",
+      "description": "verify(manifest, paired=None)'s cross-manifest pairing comparison (route_id/weather_identity/seed/carla_version/sensor_transform_identity/class_map_version) only runs when paired is not None. The CLI's --paired argument is optional and defaults to None, so calling verify() with no second manifest skips the entire pairing check and returns status PASS (given a self-consistent single manifest) with paired_contract_mismatches empty -- indistinguishable in the status field from a real, checked pairing pass; there is no separate pairing_performed flag. tests/unit/test_o17_rq3_dataset_manifest_verifier.py::test_valid_manifest_passes calls verify() with no paired argument and asserts status == PASS, i.e. the test suite itself treats 'pairing check was never run' as a legitimate green result rather than INCOMPLETE/BLOCKED. (The comparison logic itself is sound when a paired manifest IS supplied -- test_paired_contract_mismatch_fails confirms mismatch detection works; only the no-second-manifest default path is fail-open.)",
+      "proof": "Read directly from tools/rq3_dataset_manifest_verifier.py's verify() signature/control flow and tests/unit/test_o17_rq3_dataset_manifest_verifier.py::test_valid_manifest_passes (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29 verification, section 'O17').",
+      "affected_files": [
+        "tools/rq3_dataset_manifest_verifier.py",
+        "tests/unit/test_o17_rq3_dataset_manifest_verifier.py"
+      ],
+      "scientific_runtime_consequence": "A single RQ3 dataset manifest verified without ever supplying its paired counterpart reports the same PASS status as a genuinely cross-checked pair -- a downstream consumer reading only the status field cannot distinguish 'pairing was checked and matched' from 'pairing was never attempted'.",
+      "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
+      "status": "open (needs a pairing_performed flag or equivalent status distinction, not attempted here per this program's discipline)",
+      "fixing_commit": "none -- tracked, not fixed",
+      "regression_test": "none yet -- would need a test asserting verify(manifest) with no paired argument returns a status distinguishable from a real checked pairing pass",
+      "evidence_artifact": "docs/verify-o15-o18-rq-claims-20260929 (reports/production_readiness/20260929T000000Z_O15_O18_VERIFICATION/RESULTS.md), section 'O17'",
+      "residual_risk": "MEDIUM -- same RQ3-blocked-external caveat as GAP-032; should be closed before this tool is trusted as a real pre-RQ3 gate."
+    },
+    {
+      "id": "GAP-034",
+      "severity": "P1",
+      "subsystem": "tools/rq5_contract_audit.py (O18) -- does not implement the RQ5(b) claim-boundary rule",
+      "description": "O18's stated goal (per its commit title, 'RQ5 experiment contract static audit') was believed to check the established RQ5(b) claim-boundary rule (docs/research/THESIS_TO_CURRENT_PROGRESS.md's RQ5 row: unlabeled distribution-shift/CORAL/MMD protocol checks are not model-generalization accuracy, and no manual-target training result may be relabeled as generated-to-manual transfer). It does not. tools/rq5_contract_audit.py instead greps 3 unrelated files (settings.py, exp_osm_to_xodr_determinism.py -- the RQ1 determinism script, an odd choice for an 'RQ5' audit -- and README.md) for loose keyword presence against a checklist of generic ML-experiment-design decisions (architecture, splits, learning rate, epochs, optimizer). Nothing in its REQUIRED list, keyword logic, or output schema mentions 'unlabeled', 'labeled', 'accuracy', 'mIoU', 'CORAL', 'MMD', or 'real-world' -- the RQ5(b) claim-boundary vocabulary. Cross-checked the one place that does encode an RQ5 metric allow-list (ultimate_pipeline/config/thesis_rq_contract.py's RQ_ALLOWED_METRICS[RQ5]): it lists both accuracy/mIoU-style metrics and unlabeled-shift metrics as equally allowed RQ5 tags, without restricting RQ5(b) specifically to the unlabeled subset either. This specific claim-boundary rule currently has no automated enforcement anywhere found in the branch.",
+      "proof": "Read directly from tools/rq5_contract_audit.py's REQUIRED list, keyword-match logic, and the 3 files it actually greps; cross-checked ultimate_pipeline/config/thesis_rq_contract.py's RQ_ALLOWED_METRICS[RQ5] (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29 verification, section 'O18').",
+      "affected_files": [
+        "tools/rq5_contract_audit.py",
+        "ultimate_pipeline/config/thesis_rq_contract.py",
+        "docs/research/THESIS_TO_CURRENT_PROGRESS.md"
+      ],
+      "scientific_runtime_consequence": "The specific claim-boundary rule this program has established for RQ5(b) (no relabeling manual-target training accuracy as generated-to-manual transfer) has no automated enforcement anywhere in the codebase -- a future RQ5(b) writeup could violate this rule without any tool catching it. Separately (leaning fail-closed rather than fail-open, noted for completeness not as a gap): O18's audit() by construction never emits status DEFINED, only AMBIGUOUS or MISSING, so its own overall status can never be PASS.",
+      "owner_subagent": "independent verification subagent (docs/verify-o15-o18-rq-claims-20260929, 2026-09-29)",
+      "status": "open (needs either a new tool or extending rq5_contract_audit.py with real RQ5(b) claim-boundary vocabulary; not attempted here per this program's discipline)",
+      "fixing_commit": "none -- tracked, not fixed",
+      "regression_test": "none yet",
+      "evidence_artifact": "docs/verify-o15-o18-rq-claims-20260929 (reports/production_readiness/20260929T000000Z_O15_O18_VERIFICATION/RESULTS.md), section 'O18'",
+      "residual_risk": "MEDIUM -- RQ5 has zero evidence currently (per this session's own memory index), so this gap has not yet had an opportunity to let a real violating claim through; should be closed before any RQ5(b) writeup is drafted."
+    },
+    {
+      "id": "GAP-035",
+      "severity": "P1",
+      "subsystem": "ultimate_pipeline/contracts/writer_lock.py -- load() leaked raw JSONDecodeError/TypeError instead of failing closed with RuntimeError",
+      "description": "Two related bugs found during this integration (distinct from, and not covered by, GAP-024/GAP-029): (1) WriterLock.load() called json.loads(path.read_text()) and cls.from_dict(data) with no exception handling at all -- a corrupt, zero-byte, or non-object-JSON (e.g. a JSON list) lock file raised a raw json.JSONDecodeError/UnicodeDecodeError/TypeError directly out of load(), inconsistent with this module's established fail-closed philosophy (compare acquire()'s own distinct 'not readable JSON; refusing to acquire or delete it' RuntimeError). Any direct caller of WriterLock.load() (not just acquire()'s internal fresh-publication-reread path) -- including the legacy .agent_lock.json check at the top of acquire(), which calls cls.load(legacy_lock_path) with no try/except at all -- was exposed to this. (2) Consequently, once load() is fixed to raise RuntimeError instead, acquire()'s FileExistsError branch (both the outer classification at the O_EXCL-loss point and the inner GAP-029 fresh-publication re-read sub-loop) needed updating too: both previously only caught (ValueError, TypeError) from load() (sufficient when load() itself only ever raised those types) and would otherwise let load()'s new RuntimeError propagate uncaught, skipping the bounded re-read window GAP-029 exists to provide for a real winner still mid-publish.",
+      "proof": "RED: WriterLock.load(corrupt_path) raised json.decoder.JSONDecodeError (Expecting value: line 1 column 1, char 0 for zero-byte; Expecting property name enclosed in double quotes for malformed) pre-fix, reproduced directly via interpreter and via 3 new regression tests (test_load_corrupt_json_raises_runtime_error_not_json_decode_error, test_load_zero_byte_raises_runtime_error_not_json_decode_error, test_load_json_non_object_raises_runtime_error in tests/unit/test_writer_lock.py), all 3 FAILED pre-fix with the raw stdlib exception type. GREEN: all 3 pass post-fix with RuntimeError (not json.JSONDecodeError) containing 'lock' in the message. Also ran the full writer_lock test family post-fix (tests/unit/test_writer_lock.py [18], test_writer_lock_adversarial.py [8], test_writer_lock_atomic_publication.py [4], test_writer_lock_concurrency.py [8], test_agent_sync_contract.py [6] = 44 tests): all 44 pass, including tests/unit/test_writer_lock_adversarial.py::test_scenario_6_7_malformed_and_zero_byte_lock_fail_closed which already covered acquire()'s corrupt-pre-existing-lock-file behavior end-to-end and continued to pass (confirming the except-clause update preserves GAP-029's bounded-reread/fail-closed contract, not just load()'s own new error type).",
+      "affected_files": [
+        "ultimate_pipeline/contracts/writer_lock.py",
+        "tests/unit/test_writer_lock.py"
+      ],
+      "scientific_runtime_consequence": "Before this fix, any code path that called WriterLock.load() directly on a corrupt/zero-byte lock file (not just the already-hardened acquire() re-read path) would crash with a raw stdlib exception type instead of the module's documented RuntimeError contract -- including the legacy .agent_lock.json compatibility check, which had no exception handling around its own load() call at all. This made corrupt-lock-file failures harder to diagnose/handle uniformly across every caller of this class's public API.",
+      "owner_subagent": "direct (integration coordinator, integration/o1-o20-rebased-20260929)",
+      "status": "fixed",
+      "fixing_commit": "655671fd (branch integration/o1-o20-rebased-20260929)",
+      "regression_test": "tests/unit/test_writer_lock.py: test_load_corrupt_json_raises_runtime_error_not_json_decode_error, test_load_zero_byte_raises_runtime_error_not_json_decode_error, test_load_json_non_object_raises_runtime_error, test_acquire_catches_runtime_error_from_load_during_fresh_publication_window (4 new tests, all passing)",
+      "evidence_artifact": "this branch's own RED->GREEN test run (see proof); also resolves GAP-029's own residual_risk note (1) ('the legacy .agent_lock.json path check still calls load() directly and would propagate a raw JSONDecodeError on a corrupt legacy file -- out of scope for GAP-029, pre-existing') as a side effect, since load() is now fail-closed everywhere it is called, including that legacy path",
+      "residual_risk": "LOW -- purely additive exception handling (try/except wrapping existing calls), no change to the JSON schema, to from_dict()'s accepted shape for well-formed input, or to any already-passing test's expected behavior. The GAP-029 fresh-publication re-read window's timing/budget is unchanged."
     }
   ],
   "counts": {
-    "total": 29,
-    "fixed": 22,
+    "total": 35,
+    "fixed": 24,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 1,
+    "open": 5,
     "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {

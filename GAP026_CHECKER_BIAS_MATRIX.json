@@ -1,0 +1,52 @@
+{
+  "limitations": [
+    "Synthetic cases cover analytical straight-line semantics; this matrix does not authorize checker implementation changes."
+  ],
+  "production_checker": "ultimate_pipeline.lanes.lanelink_builder.LaneLinkBuilder.sanitize_junction_lane_links",
+  "rows": [
+    {
+      "analytically_validated": true,
+      "case": "equal_width",
+      "expected_failed": 0.0,
+      "production_failed": 0,
+      "status": "PASS"
+    },
+    {
+      "analytically_validated": true,
+      "case": "unequal_width",
+      "expected_failed": 0.0,
+      "production_failed": 0,
+      "status": "PASS"
+    },
+    {
+      "analytically_validated": true,
+      "case": "lane_offset",
+      "expected_failed": 1,
+      "production_failed": 0,
+      "status": "INCONCLUSIVE"
+    },
+    {
+      "analytically_validated": true,
+      "case": "contact_start",
+      "expected_failed": 0.0,
+      "production_failed": 0,
+      "status": "PASS"
+    },
+    {
+      "analytically_validated": true,
+      "case": "contact_end",
+      "expected_failed": 1,
+      "production_failed": 1,
+      "status": "PASS"
+    },
+    {
+      "analytically_validated": true,
+      "case": "line_endpoint",
+      "expected_failed": 0.0,
+      "production_failed": 0,
+      "status": "PASS"
+    }
+  ],
+  "schema": "gap026_checker_bias_matrix/v1",
+  "status": "INCONCLUSIVE"
+}

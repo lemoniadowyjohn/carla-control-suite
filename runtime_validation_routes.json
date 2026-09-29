@@ -1,0 +1,221 @@
+{
+  "claim_boundary": "Offline deterministic route definitions only; no CARLA runtime validation or production-ready claim.",
+  "generated_at_utc": "2026-09-24T12:23:42.176373+00:00",
+  "missing_categories": [
+    "bridge_or_grade_separated",
+    "lane_merge",
+    "lane_split",
+    "roundabout"
+  ],
+  "route_seed": null,
+  "routes": [
+    {
+      "category": "straight_urban_segment",
+      "deterministic": true,
+      "diagnostic_only": false,
+      "points": [
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 7579.41178898904,
+            "y": 6144.809046086233,
+            "z": 5.475378567179586
+          },
+          "length_m": 164.69099341,
+          "road_id": "42330",
+          "start": {
+            "x": 7460.549599,
+            "y": 6255.159723,
+            "z": 5.945139687179586
+          }
+        }
+      ],
+      "route_id": "straight_urban_0001",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "category": "simple_intersection",
+      "deterministic": true,
+      "diagnostic_only": true,
+      "points": [
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 8081.814060508782,
+            "y": 4628.767126387222,
+            "z": 0.15881068
+          },
+          "length_m": 379.7392857,
+          "road_id": "46657",
+          "start": {
+            "x": 8164.07059,
+            "y": 4518.282536,
+            "z": 3.2427304871795863
+          }
+        }
+      ],
+      "route_id": "simple_intersection_27",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "category": "multi_lane_junction",
+      "deterministic": true,
+      "diagnostic_only": true,
+      "points": [
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 7460.549598550438,
+            "y": 6255.159722694534,
+            "z": 2.80354703
+          },
+          "length_m": 164.69090048,
+          "road_id": "47783",
+          "start": {
+            "x": 7579.411789,
+            "y": 6144.809046,
+            "z": 2.33378591
+          }
+        },
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 7447.787361777493,
+            "y": 6265.036742267091,
+            "z": 1.7817998198623173
+          },
+          "length_m": 16.78484754,
+          "road_id": "52024",
+          "start": {
+            "x": 7460.549599,
+            "y": 6255.159723,
+            "z": 2.80354703
+          }
+        }
+      ],
+      "route_id": "multilane_junction_1",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "category": "gap026_severe_candidate",
+      "deterministic": true,
+      "diagnostic_only": true,
+      "points": [
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 10281.513840015581,
+            "y": 7566.3465648060555,
+            "z": 1.69209811
+          },
+          "length_m": 389.37470667,
+          "road_id": "47383",
+          "start": {
+            "x": 10334.693231,
+            "y": 7183.403877,
+            "z": 1.67248965
+          }
+        },
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 10290.203387993866,
+            "y": 7575.198175998701,
+            "z": 0.10184518843265944
+          },
+          "length_m": 14.24457507,
+          "road_id": "54435",
+          "start": {
+            "x": 10281.51384,
+            "y": 7566.346565,
+            "z": 1.69209811
+          }
+        }
+      ],
+      "route_id": "gap026_0_25_0_5_j12_c3",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "category": "gap026_severe_candidate",
+      "deterministic": true,
+      "diagnostic_only": true,
+      "points": [
+        {
+          "driving_lanes": 2,
+          "end": {
+            "x": 7448.062892268017,
+            "y": 6245.557740271007,
+            "z": 1.70737499
+          },
+          "length_m": 150.06027268,
+          "road_id": "42486",
+          "start": {
+            "x": 7463.353488,
+            "y": 6096.291731,
+            "z": 1.65808116
+          }
+        },
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 7457.082161635701,
+            "y": 6254.683231741784,
+            "z": -0.33804211071483525
+          },
+          "length_m": 17.18665801,
+          "road_id": "52027",
+          "start": {
+            "x": 7448.062893,
+            "y": 6245.55774,
+            "z": 1.70737499
+          }
+        }
+      ],
+      "route_id": "gap026_3_5_j1_c3",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "category": "gap026_severe_candidate",
+      "deterministic": true,
+      "diagnostic_only": true,
+      "points": [
+        {
+          "driving_lanes": 5,
+          "end": {
+            "x": 9159.463916885994,
+            "y": 6875.152870094024,
+            "z": 1.99184163
+          },
+          "length_m": 94.63018576,
+          "road_id": "49561",
+          "start": {
+            "x": 9198.870371,
+            "y": 6789.131589,
+            "z": 2.01627806
+          }
+        },
+        {
+          "driving_lanes": 1,
+          "end": {
+            "x": 9157.936867166432,
+            "y": 6878.4570819430655,
+            "z": 2.012261895063781
+          },
+          "length_m": 3.64013702,
+          "road_id": "69981",
+          "start": {
+            "x": 9159.463917,
+            "y": 6875.15287,
+            "z": 1.99184163
+          }
+        }
+      ],
+      "route_id": "gap026_10_j3470_c0",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    }
+  ],
+  "schema": "runtime_validation_routes/v1",
+  "source_map_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "status": "INCOMPLETE"
+}
