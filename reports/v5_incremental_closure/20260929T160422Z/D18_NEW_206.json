@@ -1,0 +1,74 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": ".github/workflows/tests.yml, .github/workflows/carla-runtime.yml",
+  "evidence_paths": [
+    "D18_NEW_206.json"
+  ],
+  "files_changed": [
+    ".github/workflows/tests.yml",
+    ".github/workflows/carla-runtime.yml",
+    "ultimate_pipeline/tests/unit/test_workflow_hardening.py"
+  ],
+  "finding_id": "NEW-206",
+  "live_state_rechecked": {
+    "branch_protection": "not retrievable: GitHub API returned 401 Unauthorized without credentials",
+    "default_branch": "main",
+    "gh_cli_available": false,
+    "github_token_present": false,
+    "repository_public": true,
+    "repository_rulesets": []
+  },
+  "new_production_modules": 0,
+  "partial_status_note": "Repository-local workflow hardening is complete and tested; server-side branch/ruleset enforcement is BLOCKED_EXTERNAL_GITHUB_PERMISSION.",
+  "priority": "P0",
+  "remaining_blockers": [
+    {
+      "detail": "No GitHub credentials (no gh CLI, no GITHUB_TOKEN/GH_TOKEN). Branch protection and rulesets are server-side state and cannot be read or written.",
+      "exact_action_required": [
+        "gh auth login  (or export GITHUB_TOKEN with repo:administration scope for a classic PAT)",
+        "gh api -X PUT repos/lemoniadowyjohn/carla-control-suite/branches/integration%2Fproduction-large-map-20260918/protection -f 'required_status_checks[strict]=true' -f 'required_status_checks[contexts][]=offline release gate' -f 'enforce_admins=true' -f 'required_pull_request_reviews[dismiss_stale_reviews]=true' -f 'required_pull_request_reviews[required_approving_review_count]=1' -f 'restrictions=null' -f 'allow_force_pushes=false' -f 'allow_deletions=false'",
+        "gh api -X PATCH repos/lemoniadowyjohn/carla-control-suite/branches/integration%2Fproduction-large-map-20260918/protection/required_status_checks -f 'strict=true' -f 'contexts[]=offline release gate'"
+      ],
+      "id": "BLOCKED_EXTERNAL_GITHUB_PERMISSION",
+      "verification_after_apply": "gh api repos/lemoniadowyjohn/carla-control-suite/branches/integration%2Fproduction-large-map-20260918/protection"
+    }
+  ],
+  "required_checks_designed": [
+    "offline release gate (job 'offline release gate') -- satisfies GitHub-hosted CI",
+    "runtime certification gate -- NOT required on the branch by default because it needs a self-hosted CARLA runner"
+  ],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "status": "BLOCKED_EXTERNAL",
+  "task_id": "D18",
+  "test_results": {
+    "failed": 0,
+    "passed": 30,
+    "skipped": 0
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_workflow_hardening.py -q"
+  ],
+  "title": "GitHub enforcement and CI supply-chain hardening",
+  "workflow_hardening": {
+    "actions_pinned_to_commit_sha": true,
+    "concurrency": "offline gates cancel stale runs; the runtime certification workflow deliberately does NOT cancel long acceptance runs",
+    "least_privilege_permissions": "contents: read at workflow level and in every job",
+    "mutable_major_tags_removed": true,
+    "note_on_movable_tags": "The v4/v5 major tags were first resolved and rejected as pins because they are mutable; the SHAs above are the immutable release-tag commits, each re-verified to match its tag after selection.",
+    "pins_verified_against_upstream_release_tags": {
+      "actions/checkout": {
+        "sha": "34e114876b0b11c390a56381ad16ebd13914f8d5",
+        "tag": "v4.3.1"
+      },
+      "actions/setup-python": {
+        "sha": "a26af69be951a213d495a4c3e4e4022e16d87065",
+        "tag": "v5.6.0"
+      },
+      "actions/upload-artifact": {
+        "sha": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "tag": "v4.6.2"
+      }
+    },
+    "timeouts": "every job has timeout-minutes"
+  }
+}

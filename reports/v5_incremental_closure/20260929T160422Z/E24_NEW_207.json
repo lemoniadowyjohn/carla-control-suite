@@ -1,0 +1,51 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": ".github/workflows/carla-runtime.yml, ultimate_pipeline/tools/repo_health.py",
+  "defect_confirmed": "The runtime workflow ran a generic 'doctor' + 'test e2e' and recorded a packet that did not identify WHICH artifact was certified.",
+  "evidence_paths": [
+    "E24_NEW_207.json",
+    "RUNTIME_IDENTITY_CONTRACT.json"
+  ],
+  "files_changed": [
+    ".github/workflows/carla-runtime.yml",
+    "ultimate_pipeline/tools/repo_health.py",
+    "ultimate_pipeline/tests/unit/test_runtime_identity_gate.py"
+  ],
+  "finding_id": "NEW-207",
+  "implementation": [
+    "candidate manifest schema CARLA_CANDIDATE_RELEASE_MANIFEST/v1 with 12 required identity fields",
+    "validate_candidate_manifest() pre-runtime gate: existence, schema, every required field, repo SHA vs checked-out SHA, XODR path+hash, CARLA build identity",
+    "any mismatch is a hard FAIL; the workflow stops before contacting a server",
+    "workflow resolves the checked-out SHA with 'git rev-parse HEAD' and binds the manifest to it",
+    "receipt records candidate SHA, XODR, cook/package hashes, CARLA client+server version, UE build, runner class, workflow run ID and timestamps",
+    "receipt state is PASS only when the identity gate passed AND the job succeeded; IDENTITY_MISMATCH/FAIL otherwise",
+    "workflow resolves the named runtime-certification-gate so the runtime verdict is explicit"
+  ],
+  "new_production_modules": 0,
+  "partial_status_note": "The identity contract, pre-runtime gate, workflow binding and receipt are implemented and tested. The live runtime execution itself is BLOCKED_EXTERNAL because no CARLA 0.9.16 self-hosted runtime is reachable from this environment.",
+  "priority": "P0",
+  "remaining_blockers": [
+    {
+      "detail": "No live CARLA 0.9.16 server or self-hosted [carla] runner is available in this environment. World load, ego spawn, surface validity, waypoint-graph correspondence and navigation were NOT executed.",
+      "exact_action_required": [
+        "Provide a candidate manifest (CARLA_CANDIDATE_RELEASE_MANIFEST/v1) on a machine with a self-hosted CARLA runner",
+        "gh workflow run carla-runtime.yml -f candidate_manifest=<path> -f expected_carla_version=0.9.16",
+        "Confirm the uploaded receipt at reports/runtime_certification/receipt.json reports state=PASS"
+      ],
+      "id": "BLOCKED_EXTERNAL_CARLA_RUNTIME"
+    }
+  ],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "reuse_existing_schemas": "No competing manifest authority was invented: the gate extends the existing repo_health owner and the existing map registry / file_hashing helpers.",
+  "status": "INCOMPLETE",
+  "task_id": "E24",
+  "test_results": {
+    "failed": 0,
+    "passed": 42,
+    "skipped": 0
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_runtime_identity_gate.py -q"
+  ],
+  "title": "Exact-artifact CARLA runtime certification"
+}

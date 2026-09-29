@@ -38,7 +38,11 @@ from ultimate_pipeline.domain_gap.deterministic_alignment import (
     BBox,
 )
 from ultimate_pipeline.core.georef_utils import normalize_georeference, parse_georeference
-from ultimate_pipeline.utils.finalize_run_pack import write_signature_json, write_success_txt
+from ultimate_pipeline.utils.finalize_run_pack import (  # noqa: F401
+    finalize_run_pack,
+    write_signature_json,
+    write_success_txt,
+)
 from ultimate_pipeline.tools.coordinate_system_artifact import write_coordinate_system_json
 from ultimate_pipeline.core.run_manifest import update_run_manifest
 from ultimate_pipeline.tools.xodr_structural_summary import summarize_xodr
@@ -5895,7 +5899,27 @@ def run_full_domain_gap(
         _safe_dump_json(os.path.join(output_dir, "run_metadata.json"), run_meta)
         log.info("SMOKE mode: exiting after tile pairing artifacts (skipping whole-map/per-tile gap metrics).")
         try:
-            write_success_txt(output_dir, summary="run_full_domain_gap_smoke")
+            # V5/NEW-202 (D16): the smoke path must finalize a real manifest
+            # before it may publish SUCCESS.txt. Previously it wrote the success
+            # marker on its own, which is exactly the unbound-success defect this
+            # closure removes. Only the artifacts a smoke run is required to
+            # produce are mandatory here.
+            _smoke_mandatory = ["run_metadata.json"]
+            _smoke_conditional = ["tile_pairing_report.json", "tile_correspondence.csv"]
+            _smoke_receipt = finalize_run_pack(
+                output_dir,
+                _smoke_mandatory + _smoke_conditional,
+                mandatory=_smoke_mandatory,
+                summary="run_full_domain_gap_smoke",
+            )
+            if _smoke_receipt["status"] != "PASS":
+                raise RuntimeError(
+                    "mandatory smoke run-pack finalization failed: "
+                    + "; ".join(
+                        f"{f['key'] or f['requested']} ({f['category']})"
+                        for f in _smoke_receipt["failures"]
+                    )
+                )
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to write mandatory smoke success marker: {exc}"
@@ -6736,8 +6760,6 @@ def run_full_domain_gap(
         "reproducibility_hash.json",
     ]
     try:
-        from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
-
         _receipt = finalize_run_pack(
             output_dir,
             _mandatory_signature_artifacts + _conditional_signature_artifacts,

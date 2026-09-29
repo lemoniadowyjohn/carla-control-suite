@@ -1,0 +1,37 @@
+{
+  "absent_module_probe": [
+    "ultimate_pipeline/tiling/carla_0916_import_process_contract.py (NEW-196)",
+    "ultimate_pipeline/tiling/resumable_tile_cook.py (NEW-198)",
+    "ultimate_pipeline/tiling/fbx_dependency_authority.py",
+    "ultimate_pipeline/tiling/visual_mesh_authority.py",
+    "ultimate_pipeline/utils/atomic_artifact_io.py (NEW-189)",
+    "tests/test_v4_import_contracts.py"
+  ],
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "conclusion": "V4 IMPLEMENTED (for the findings that are actually present) BUT V4 REQUIRED CLOSURES STILL PENDING",
+  "conclusion_detail": "The V4 closures NEW-196..NEW-199 are not integrated into the canonical branch at all: their modules and tests are absent from the repository. V5 neither regressed nor advanced them. Production readiness must not be claimed on the basis of this V5 work alone.",
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "rq3_fail_closed_intact": true,
+  "rq3_verification": "test_rq3_paired_capture_contract.py passes 25/25 and no V5 change touches the perception or RQ3 modules. The fail-closed corrections around PAIRED_INGOLSTADT_CAPTURE are therefore not weakened by this work.",
+  "schema": "V5_V4_REGRESSION_CHECK/v1",
+  "v4_closures_present_in_repository": {
+    "NEW-196_commandlet_failure_propagation": {
+      "status": "ABSENT"
+    },
+    "NEW-197_198_material_pass_contract": {
+      "status": "ABSENT"
+    },
+    "NEW-199_tilesinfo_cross_consumer": {
+      "status": "ABSENT"
+    },
+    "NEW-200/201_rq3_identity_state_machine": {
+      "owner": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "result": "25 passed",
+      "status": "PRESENT_AND_TESTED",
+      "tests": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py",
+      "touched_by_v5": false
+    }
+  },
+  "v4_regressions_introduced_by_v5": 0,
+  "v5_is_additive": true
+}

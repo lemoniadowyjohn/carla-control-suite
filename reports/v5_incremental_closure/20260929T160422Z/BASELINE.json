@@ -1,0 +1,23 @@
+{
+  "canonical_advanced_since_audit": false,
+  "canonical_branch": "integration/production-large-map-20260918",
+  "canonical_lineage_note": "The audit-time SHA was re-checked live against origin. origin/integration/production-large-map-20260918 == cfa393726b645241f4eb3305090d69b8330e027e, so the V5 findings were reconciled against exactly the audited state. The LOCAL branch of that name was 129 commits behind origin; the local pointer was never used as authority.",
+  "canonical_sha_at_audit": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_sha_verified_live": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "implementation_branch": "hardening/v5-incremental-20260929",
+  "implementation_head": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "offline_suite_baseline": {
+    "failed": 0,
+    "passed": 6264,
+    "skipped": 6
+  },
+  "offline_suite_baseline_note": "measured live in the isolated worktree at the canonical SHA before any edit; matches the count recorded in the V4 report commit cfa39372",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "primary_checkout_state": "preserved: branch o20-failure-recovery-resume-audit with uncommitted work; never reset, cleaned or modified",
+  "python": "Python 3.12.2",
+  "remote": "https://github.com/lemoniadowyjohn/carla-control-suite.git",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "schema": "V5_CLOSURE_BASELINE/v1",
+  "worktree": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-v5-hardening",
+  "worktree_isolation": "isolated git worktree created from the canonical SHA; the dirty primary checkout was preserved untouched"
+}

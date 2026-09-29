@@ -1,0 +1,252 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "executed_by": "ultimate_pipeline/tests/adversarial/test_v5_adversarial_matrix.py",
+  "result": {
+    "failed": 0,
+    "passed": 33,
+    "skipped": 1,
+    "skipped_reason": "POSIX symlink-escape case (Windows host)"
+  },
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "scenarios": [
+    {
+      "attack": "delete file after manifest generation",
+      "category": "release_evidence",
+      "expected": "FAIL detected",
+      "id": "A01",
+      "observed": "FAIL detected"
+    },
+    {
+      "attack": "replace file after hashing",
+      "category": "release_evidence",
+      "expected": "tamper detected",
+      "id": "A02",
+      "observed": "tamper detected"
+    },
+    {
+      "attack": "path traversal",
+      "category": "release_evidence",
+      "expected": "outside_release_root -> FAIL",
+      "id": "A03",
+      "observed": "outside_release_root -> FAIL"
+    },
+    {
+      "attack": "duplicate logical path",
+      "category": "release_evidence",
+      "expected": "duplicate -> FAIL",
+      "id": "A04",
+      "observed": "duplicate -> FAIL"
+    },
+    {
+      "attack": "symlink escape",
+      "category": "release_evidence",
+      "expected": "outside_release_root -> FAIL",
+      "id": "A05",
+      "observed": "skipped on Windows host (POSIX semantics)"
+    },
+    {
+      "attack": "partial hash failure",
+      "category": "release_evidence",
+      "expected": "FAIL, no SUCCESS",
+      "id": "A06",
+      "observed": "FAIL, no SUCCESS"
+    },
+    {
+      "attack": "SUCCESS without manifest",
+      "category": "release_evidence",
+      "expected": "refused",
+      "id": "A07",
+      "observed": "refused (FinalizationError)"
+    },
+    {
+      "attack": "manifest without SUCCESS",
+      "category": "release_evidence",
+      "expected": "not promotable",
+      "id": "A08",
+      "observed": "status FAIL, no SUCCESS.txt"
+    },
+    {
+      "attack": "case collision in manifest",
+      "category": "release_evidence",
+      "expected": "deterministic, never a silent collapse",
+      "id": "A09",
+      "observed": "deterministic; duplicate flagged where keys collide"
+    },
+    {
+      "attack": "run from wrong CWD",
+      "category": "provenance",
+      "expected": "identity from supplied repo root",
+      "id": "B01",
+      "observed": "PASS bound to supplied root"
+    },
+    {
+      "attack": "run from another Git repo / non-repo",
+      "category": "provenance",
+      "expected": "non-repo FAIL",
+      "id": "B02",
+      "observed": "non-repo FAIL"
+    },
+    {
+      "attack": "spoof GIT_SHA / GITHUB_SHA env",
+      "category": "provenance",
+      "expected": "env cannot substitute for git identity",
+      "id": "B03",
+      "observed": "real HEAD used, PASS"
+    },
+    {
+      "attack": "dirty worktree",
+      "category": "provenance",
+      "expected": "FAIL",
+      "id": "B04",
+      "observed": "FAIL"
+    },
+    {
+      "attack": "detached HEAD",
+      "category": "provenance",
+      "expected": "FAIL without an expected SHA binding",
+      "id": "B05",
+      "observed": "FAIL"
+    },
+    {
+      "attack": "git missing",
+      "category": "provenance",
+      "expected": "FAIL",
+      "id": "B06",
+      "observed": "FAIL"
+    },
+    {
+      "attack": "wrong remote",
+      "category": "provenance",
+      "expected": "FAIL",
+      "id": "B07",
+      "observed": "FAIL"
+    },
+    {
+      "attack": "secret-like environment value",
+      "category": "provenance",
+      "expected": "never serialized",
+      "id": "B08",
+      "observed": "never serialized"
+    },
+    {
+      "attack": "INCOMPLETE health packet with exit 0",
+      "category": "ci",
+      "expected": "exit 1",
+      "id": "C01",
+      "observed": "exit 1"
+    },
+    {
+      "attack": "NOT_RUN required gate",
+      "category": "ci",
+      "expected": "exit 1",
+      "id": "C02",
+      "observed": "exit 1"
+    },
+    {
+      "attack": "BLOCKED required gate",
+      "category": "ci",
+      "expected": "exit 1",
+      "id": "C03",
+      "observed": "exit 1"
+    },
+    {
+      "attack": "failed upstream job",
+      "category": "ci",
+      "expected": "gate FAIL, exit 1",
+      "id": "C04",
+      "observed": "exit 1"
+    },
+    {
+      "attack": "WAIVED required gate",
+      "category": "ci",
+      "expected": "exit 1",
+      "id": "C05",
+      "observed": "exit 1"
+    },
+    {
+      "attack": "offline CI claiming runtime certification",
+      "category": "ci",
+      "expected": "runtime gate exit 1",
+      "id": "C06",
+      "observed": "exit 1"
+    },
+    {
+      "attack": "failing offline section laundered into a runtime PASS",
+      "category": "ci",
+      "expected": "offline still refuses",
+      "id": "C07",
+      "observed": "offline gate exit 1"
+    },
+    {
+      "attack": "correct workflow / wrong XODR",
+      "category": "runtime_identity",
+      "expected": "IDENTITY_MISMATCH",
+      "id": "D01",
+      "observed": "IDENTITY_MISMATCH"
+    },
+    {
+      "attack": "missing/empty cooked package identity",
+      "category": "runtime_identity",
+      "expected": "IDENTITY_MISMATCH",
+      "id": "D02",
+      "observed": "IDENTITY_MISMATCH"
+    },
+    {
+      "attack": "wrong repository SHA",
+      "category": "runtime_identity",
+      "expected": "IDENTITY_MISMATCH",
+      "id": "D03",
+      "observed": "IDENTITY_MISMATCH"
+    },
+    {
+      "attack": "wrong CARLA version",
+      "category": "runtime_identity",
+      "expected": "IDENTITY_MISMATCH",
+      "id": "D04",
+      "observed": "IDENTITY_MISMATCH"
+    },
+    {
+      "attack": "wrong/empty runtime map alias",
+      "category": "runtime_identity",
+      "expected": "IDENTITY_MISMATCH",
+      "id": "D05",
+      "observed": "IDENTITY_MISMATCH"
+    },
+    {
+      "attack": "stale manifest after artifact change",
+      "category": "runtime_identity",
+      "expected": "IDENTITY_MISMATCH",
+      "id": "D06",
+      "observed": "IDENTITY_MISMATCH"
+    },
+    {
+      "attack": "modified manifest",
+      "category": "runtime_identity",
+      "expected": "manifest digest changes",
+      "id": "D07",
+      "observed": "digest changed"
+    },
+    {
+      "attack": "both OpenCV providers installed",
+      "category": "dependency",
+      "expected": "conflict FAIL",
+      "id": "E01",
+      "observed": "FAIL"
+    },
+    {
+      "attack": "single OpenCV provider",
+      "category": "dependency",
+      "expected": "PASS",
+      "id": "E02",
+      "observed": "PASS"
+    },
+    {
+      "attack": "dependency conflict must block the offline gate",
+      "category": "dependency",
+      "expected": "offline gate exit 1",
+      "id": "E03",
+      "observed": "exit 1"
+    }
+  ],
+  "schema": "V5_ADVERSARIAL_MATRIX/v1"
+}

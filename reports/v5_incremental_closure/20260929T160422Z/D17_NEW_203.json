@@ -1,0 +1,37 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": "ultimate_pipeline/utils/run_provenance.py",
+  "defect_confirmed": "Git identity was derived from process CWD, omitted when git failed, and all UP_* environment variables were serialized without a release-safe allow-list.",
+  "evidence_paths": [
+    "D17_NEW_203.json"
+  ],
+  "files_changed": [
+    "ultimate_pipeline/utils/run_provenance.py",
+    "ultimate_pipeline/tests/unit/test_run_provenance_strict.py"
+  ],
+  "finding_id": "NEW-203",
+  "implementation": [
+    "strict release mode added alongside preserved best-effort diagnostic mode",
+    "git always invoked as 'git -C <repo_root> ...'; CWD is never trusted",
+    "required: repo root, HEAD, branch, dirty state, expected SHA, remote identity, tool versions, Python and CARLA versions",
+    "fail closed: missing git/repo identity/HEAD, expected-SHA mismatch, dirty-when-clean-required all FAIL",
+    "documented environment allow-list; secret-like names and secret-shaped values rejected",
+    "CLI exits nonzero unless strict status is PASS"
+  ],
+  "new_production_modules": 0,
+  "priority": "P0/P1",
+  "remaining_blockers": [],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "status": "PASS",
+  "task_id": "D17",
+  "test_results": {
+    "failed": 0,
+    "passed": 37,
+    "skipped": 1,
+    "skipped_reason": "POSIX relative-path case (Windows host)"
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_run_provenance_strict.py -q"
+  ],
+  "title": "Strict repository and tool provenance"
+}
