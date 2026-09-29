@@ -1,0 +1,20 @@
+# Desktop / GUI profile (V5 / NEW-205, NEW-204).
+#
+# Layer: base + the FULL OpenCV provider.
+#
+# Use this only on a workstation that actually needs OpenCV's GUI (imshow /
+# namedWindow / waitKey). The repository as committed contains NO OpenCV GUI
+# call sites (audited: no cv2.imshow / namedWindow / waitKey / destroyAllWindows
+# anywhere under the package), so this profile exists for operators running
+# ad-hoc inspection scripts, not for any gate the repository runs.
+#
+# MUTUALLY EXCLUSIVE with `opencv-python-headless` (see requirements-ci.txt).
+# Both distributions own the same `cv2` namespace. If you previously installed
+# the headless profile, uninstall it first:
+#   pip uninstall -y opencv-python-headless
+#   pip install -r requirements-desktop.txt
+# `ultimate_pipeline/tools/dependency_conflicts.py` will fail if both are present.
+
+-r requirements.txt
+
+opencv-python==4.13.0.92

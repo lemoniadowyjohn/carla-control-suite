@@ -1,0 +1,21 @@
+# CI / headless profile (V5 / NEW-205, NEW-204).
+#
+# Layer: base + the HEADLESS OpenCV provider.
+#
+# This is the profile GitHub-hosted runners and any non-GUI environment must use.
+# `opencv-python-headless` provides the full `cv2` API surface used by this
+# repository (imread/imwrite/filter2D/cvtColor) without linking GUI libraries,
+# so headless CI can never accidentally exercise an OpenCV windowing path.
+#
+# MUTUALLY EXCLUSIVE with `opencv-python` (see requirements-desktop.txt): both
+# distributions install the SAME `cv2` namespace, so installing both in one
+# environment produces a shadowed-module conflict that pip does not report.
+# `ultimate_pipeline/tools/dependency_conflicts.py` fails CI if both are present.
+#
+# Install:
+#   pip install -r requirements-ci.txt
+# and install torch/torchvision from the CPU index first (see .github/workflows/tests.yml).
+
+-r requirements.txt
+
+opencv-python-headless==4.13.0.92
