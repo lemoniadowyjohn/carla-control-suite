@@ -6708,37 +6708,52 @@ def run_full_domain_gap(
         )
     except Exception as exc:
         raise RuntimeError(f"Failed to write mandatory run manifest: {exc}") from exc
+    # V5/NEW-202 (D16): the requested artifact set is split into artifacts that
+    # MUST exist for a successful run, and conditional artifacts that are only
+    # produced when the corresponding stage ran (e.g. per-tile gap summaries or
+    # aligned tile metadata are absent for short/degenerate inputs). Mandatory
+    # artifacts are fail-closed: a missing one blocks SUCCESS.txt. Conditional
+    # artifacts are still hashed into the manifest when present, so the receipt
+    # records whatever evidence the run actually produced.
+    _mandatory_signature_artifacts = [
+        "full_report.json",
+        "summary.csv",
+        "alignment.json",
+        "auto_aligned_hardened.xodr",
+        "run_metadata.json",
+    ]
+    _conditional_signature_artifacts = [
+        "domain_gap_summary.json",
+        "tile_correspondence.csv",
+        "tile_pairing_report.json",
+        "tile_metrics_status.json",
+        "tile_metadata_aligned.json",
+        "tile_metrics.csv",
+        "worst_tiles.csv",
+        "aggregated_gap.json",
+        "perception_gap.json",
+        "summary_definitions.md",
+        "reproducibility_hash.json",
+    ]
     try:
-        write_signature_json(
+        from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
+
+        _receipt = finalize_run_pack(
             output_dir,
-            [
-                "full_report.json",
-                "summary.csv",
-                "domain_gap_summary.json",
-                "tile_correspondence.csv",
-                "tile_pairing_report.json",
-                "tile_metrics_status.json",
-                "tile_metadata_aligned.json",
-                "alignment.json",
-                "auto_aligned_hardened.xodr",
-                "run_metadata.json",
-                "tile_metrics.csv",
-                "worst_tiles.csv",
-                "aggregated_gap.json",
-                "perception_gap.json",
-                "summary_definitions.md",
-                "reproducibility_hash.json",
-            ],
+            _mandatory_signature_artifacts + _conditional_signature_artifacts,
+            mandatory=_mandatory_signature_artifacts,
+            summary="run_full_domain_gap",
         )
+        if _receipt["status"] != "PASS":
+            raise RuntimeError(
+                "mandatory run-pack finalization failed: "
+                + "; ".join(
+                    f"{f['key'] or f['requested']} ({f['category']})" for f in _receipt["failures"]
+                )
+            )
     except Exception as exc:
         raise RuntimeError(
             f"Failed to write mandatory signature artifact: {exc}"
-        ) from exc
-    try:
-        write_success_txt(output_dir, summary="run_full_domain_gap")
-    except Exception as exc:
-        raise RuntimeError(
-            f"Failed to write mandatory success marker: {exc}"
         ) from exc
     # Coordinate-system evidence artifact for thesis defensibility.
     try:
