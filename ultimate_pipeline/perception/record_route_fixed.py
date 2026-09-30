@@ -360,7 +360,45 @@ def _maybe_reload_world_for_stream_flush(
     client: Any,
     world: Any,
     fps: float,
+    load_mode: Optional[Any] = None,
 ) -> Any:
+    """
+    NEW-248 / NEW-249: conditionally reload the world to clear a stale stream registry.
+
+    This function used to run unconditionally with ``UP_FORCE_WORLD_RELOAD``
+    defaulting to true, which silently defeated ``--use-current-world``: the
+    operator loaded Grid0821, the safety check confirmed the right map, and then
+    this function called ``client.load_world("Grid0821")`` -- exactly the map
+    travel the mode exists to avoid.
+
+    For a generated OpenDRIVE world it was worse: ``load_world("OpenDriveMap")``
+    is not the generated world, so the capture could run against a different map
+    than the one that was generated.
+
+    Under ``GENERATED_XODR`` and ``MANUAL_COOKED_UNSTABLE`` this is now a hard
+    error rather than a silent reload. Streaming recovery for those modes is the
+    sensor canary's job (NEW-255), which proves the capability perception actually
+    needs instead of trusting a TCP port.
+    """
+    if load_mode is not None:
+        try:
+            from ultimate_pipeline.carla_tools.map_runtime_identity import assert_no_map_travel
+
+            current_name = ""
+            try:
+                current_name = str(world.get_map().name or "")
+            except Exception:
+                current_name = ""
+            assert_no_map_travel(
+                mode=load_mode,
+                operation="stream_flush_world_reload",
+                current_map_name=current_name,
+            )
+        except Exception as exc:
+            # Re-raise: this is a fail-closed guard, not a diagnostic.
+            print(f"[STREAM-FLUSH] FATAL: {exc}", flush=True)
+            raise
+
     if not _env_bool("UP_FORCE_WORLD_RELOAD", True):
         print(
             "[STREAM-FLUSH] WARNING: world reload disabled via UP_FORCE_WORLD_RELOAD=0",
@@ -469,11 +507,120 @@ def _is_first_frame_timeout_error_text(error_text: str) -> bool:
 
 
 def _map_name_contains(actual_map: Any, expected_map: str) -> bool:
-    expected = str(expected_map or "").strip().lower()
-    if not expected:
-        return True
-    actual = str(actual_map or "").strip().lower()
-    return expected in actual
+    """Deprecated map-name predicate. Retained only for import compatibility.
+
+    NEW-253: this was ``expected.lower() in actual.lower()``, a substring test
+    that accepted ``Broken_Grid0821_Test``, ``OldGrid0821Backup`` and
+    ``Foo/Grid0821_copy`` as Grid0821. All call sites now use
+    ``map_registry.map_names_match()``; no independent map-name semantics remain
+    in this module.
+    """
+    from ultimate_pipeline.carla_tools.map_registry import map_names_match
+
+    return map_names_match(str(actual_map or ""), str(expected_map or ""))
+
+
+def _load_expected_structural_fingerprint(
+    *,
+    expected_map_name: str,
+    xodr_path: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    """
+    NEW-250/NEW-252: resolve the approved structural fingerprint for this map.
+
+    For a generated XODR the fingerprint is computed from the source ``.xodr``,
+    which is the authority for what was requested. For a manually cooked Grid map
+    it is computed from the approved manual reference XODR recorded in the map
+    registry, so a stale same-named cooked package is detected.
+
+    Returns None when no approved reference can be resolved, which makes the
+    identity gate fail closed rather than silently degrading to a name check.
+    """
+    from ultimate_pipeline.carla_tools.map_runtime_identity import structural_fingerprint
+
+    if xodr_path:
+        candidate = Path(xodr_path)
+        if candidate.is_file():
+            try:
+                return structural_fingerprint(
+                    candidate.read_text(encoding="utf-8", errors="replace")
+                )
+            except Exception as exc:
+                print(
+                    f"[map_identity] WARNING: could not fingerprint source XODR {candidate}: {exc}",
+                    flush=True,
+                )
+        return None
+
+    normalized = str(expected_map_name or "").strip().lower()
+    if normalized not in ("grid0821", "grid0828", "carla/maps/grid0821", "carla/maps/grid0828"):
+        return None
+
+    # The map registry records the approved manual reference content.
+    reference = _approved_manual_reference_xodr()
+    if reference is None:
+        print(
+            "[map_identity] WARNING: no approved manual Grid reference XODR found; "
+            "the structural gate will fail closed",
+            flush=True,
+        )
+        return None
+    try:
+        return structural_fingerprint(
+            reference.read_text(encoding="utf-8", errors="replace")
+        )
+    except Exception as exc:
+        print(f"[map_identity] WARNING: manual reference fingerprint failed: {exc}", flush=True)
+        return None
+
+
+def _approved_manual_reference_xodr() -> Optional[Path]:
+    """
+    Locate the approved manual Grid reference XODR, verifying its SHA-256.
+
+    NEW-252: the registry already records an approved manual content digest for
+    Grid0828/Grid0821. Using it as the *content* authority (rather than only its
+    name) is what makes a stale cooked package detectable.
+    """
+    from ultimate_pipeline.carla_tools.map_registry import PINNED_MAP_REGISTRY
+
+    entry = PINNED_MAP_REGISTRY.get("manual_grid0828") or {}
+    expected_sha = str(entry.get("sha256") or "").strip().lower()
+    repo_root = Path(__file__).resolve().parents[2]
+    candidates: List[Path] = []
+    for key in ("path", "xodr_path", "file"):
+        value = str(entry.get(key) or "").strip()
+        if not value:
+            continue
+        path = Path(value)
+        # Registry paths are repository-relative.
+        candidates.append(path if path.is_absolute() else repo_root / path)
+    for value in entry.get("candidates") or []:
+        text = str(value or "").strip()
+        if not text:
+            continue
+        path = Path(text)
+        candidates.append(path if path.is_absolute() else repo_root / path)
+
+    for candidate in candidates:
+        if not candidate.is_file():
+            continue
+        if expected_sha:
+            try:
+                from ultimate_pipeline.utils.file_hashing import sha256_file
+
+                actual = sha256_file(candidate).lower()
+            except Exception:
+                continue
+            if actual != expected_sha:
+                print(
+                    f"[map_identity] WARNING: manual reference {candidate} sha256={actual} "
+                    f"does not match approved {expected_sha}; skipping",
+                    flush=True,
+                )
+                continue
+        return candidate
+    return None
 
 
 def _tick_snapshot(world, *, timeout_s: float = 2.0) -> Dict[str, Any]:
@@ -1335,8 +1482,32 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     ap.add_argument(
         "--use-current-world",
         action="store_true",
-        help="Do not call client.load_world. Use client.get_world and verify map name. "
-        "Recommended for Grid0821 to avoid CARLA map-travel crash.",
+        help=(
+            "NEW-248: do not call client.load_world or client.reload_world for the entire "
+            "capture lifetime. Use client.get_world and verify map identity. This now "
+            "genuinely means what it says: the stream-flush reload is prohibited too, and "
+            "the same rule applies to Grid0821 AND Grid0828 (NEW-254). Recommended for "
+            "both Grid maps to avoid the CARLA map-travel crash."
+        ),
+    )
+    ap.add_argument(
+        "--post-load-soak-ticks",
+        type=int,
+        default=int(os.environ.get("UP_POST_LOAD_SOAK_TICKS", "30")),
+        help=(
+            "NEW-260: advancing ticks required after map load, before any sensor is "
+            "attached, to distinguish MAP_LOAD_SUCCESS from MAP_STABLE. A single "
+            "successful tick cannot observe a delayed crash."
+        ),
+    )
+    ap.add_argument(
+        "--skip-structural-identity",
+        action="store_true",
+        help=(
+            "NEW-250/252: diagnostic escape hatch that downgrades the runtime map identity "
+            "gate to a name-only match. Never use for a governed capture: it re-admits "
+            "any same-named stale cooked package."
+        ),
     )
     ap.add_argument(
         "--expected-map-name",
@@ -1606,6 +1777,24 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     client = carla.Client(args.host, int(args.port))
     client.set_timeout(float(args.load_timeout_s))
 
+    # NEW-248/249/254: resolve the governed load mode BEFORE any map-changing
+    # call, so the safety policy is a single decision rather than a scattering of
+    # per-entrypoint special cases. Grid0821 and Grid0828 now get the same rule.
+    from ultimate_pipeline.carla_tools.map_runtime_identity import (
+        LoadMode,
+        resolve_load_mode,
+        verify_runtime_map_identity,
+    )
+
+    expected_map_name = str(args.expected_map_name or args.town or "").strip()
+    load_mode = resolve_load_mode(
+        use_current_world=bool(args.use_current_world),
+        requested_map_name=expected_map_name or str(args.town or ""),
+        xodr_path=args.xodr if not args.use_current_world and not args.town else None,
+    )
+    run_info["load_mode"] = load_mode.value
+    print(f"[record_route_fixed] load_mode={load_mode.value}", flush=True)
+
     # Load world
     if args.use_current_world:
         world = client.get_world()
@@ -1614,20 +1803,27 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
             current = world.get_map().name
         except Exception:
             current = None
-        expected_map_name = str(args.expected_map_name or args.town or "").strip()
         if expected_map_name:
-            # CARLA may return '/Game/Carla/Maps/Grid0821' or just 'Grid0821'
-            if current is None or (not _map_name_contains(current, expected_map_name)):
+            # NEW-253: canonical registry matching, never a substring test.
+            # "Broken_Grid0821_Test" or "OldGrid0821Backup" must not satisfy a
+            # Grid0821 request.
+            from ultimate_pipeline.carla_tools.map_registry import map_names_match
+
+            if current is None or (not map_names_match(str(current), expected_map_name)):
                 raise RuntimeError(
                     "wrong_map_loaded:"
                     f"expected={expected_map_name}:actual={current!r}"
                 )
     else:
         if args.town:
-            if str(args.town).strip().lower() == "grid0821":
+            # NEW-254: both Grid maps share one rule. Previously only Grid0821 was
+            # blocked here, so `--town Grid0828` could still trigger the risky
+            # load_world that this code is meant to prevent.
+            if load_mode is LoadMode.MANUAL_COOKED_UNSTABLE:
                 raise RuntimeError(
-                    "map_travel_risk_grid0821: risky load_world on Grid0821 is blocked by default. "
-                    "Load Grid0821 manually in CARLA and rerun with --use-current-world."
+                    f"map_travel_risk_{str(args.town).strip().lower()}: risky load_world on "
+                    f"{args.town} is blocked by default. "
+                    f"Load {args.town} manually in CARLA and rerun with --use-current-world."
                 )
             world = client.load_world(args.town)
         else:
@@ -1636,7 +1832,10 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 load_opendrive_world,
             )
 
-            world = load_opendrive_world(
+            # NEW-250/256: the loader now returns the source/payload identity it
+            # actually used, so the report can bind metrics to the exact payload
+            # rather than only to the file on disk.
+            load_outcome = load_opendrive_world(
                 client,
                 xodr_text,
                 timeout_s=float(args.load_timeout_s),
@@ -1644,18 +1843,76 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 retries=1,
                 do_reload=True,
             )
-    expected_map_name = str(args.expected_map_name or args.town or "").strip()
+            if isinstance(load_outcome, tuple):
+                world, load_identity = load_outcome
+                run_info["opendrive_identity"] = load_identity
+            else:
+                world = load_outcome
     if expected_map_name:
         loaded_map_name = ""
         try:
             loaded_map_name = str(world.get_map().name)
         except Exception:
             loaded_map_name = ""
-        if not _map_name_contains(loaded_map_name, expected_map_name):
+        from ultimate_pipeline.carla_tools.map_registry import map_names_match
+
+        if not map_names_match(loaded_map_name, expected_map_name):
             raise RuntimeError(
                 "wrong_map_loaded:"
                 f"expected={expected_map_name}:actual={loaded_map_name!r}"
             )
+
+    # NEW-250/252: prove the running world is the approved map. The structural
+    # fingerprint is required for the two governed modes; a same-named stale
+    # cooked Grid package must not pass on name alone.
+    if load_mode in (LoadMode.GENERATED_XODR, LoadMode.MANUAL_COOKED_UNSTABLE):
+        expected_fingerprint = _load_expected_structural_fingerprint(
+            expected_map_name=expected_map_name,
+            xodr_path=(args.xodr if load_mode is LoadMode.GENERATED_XODR else None),
+        )
+        identity = verify_runtime_map_identity(
+            world=world,
+            expected_map_name=expected_map_name or loaded_map_name,
+            mode=load_mode,
+            expected_fingerprint=expected_fingerprint,
+            source_xodr_sha256=(run_info.get("opendrive_identity") or {}).get(
+                "source_xodr_sha256"
+            ),
+            runtime_payload_sha256=(run_info.get("opendrive_identity") or {}).get(
+                "runtime_payload_sha256"
+            ),
+            require_structural=not bool(getattr(args, "skip_structural_identity", False)),
+        )
+        run_info["runtime_map_identity"] = identity.to_dict()
+        if not identity.ok:
+            raise RuntimeError(
+                "RUNTIME_MAP_IDENTITY_MISMATCH:" + "; ".join(identity.failures)
+            )
+        print(
+            f"[record_route_fixed] RUNTIME_MAP_IDENTITY_PASS "
+            f"structural={identity.runtime_map_structural_sha256}",
+            flush=True,
+        )
+
+        # NEW-260: MAP_LOAD_SUCCESS is not MAP_STABLE. Soak the map before any
+        # sensor is attached; the historical Grid failure was a delayed crash.
+        from ultimate_pipeline.carla_tools.map_runtime_identity import post_load_soak
+
+        soak = post_load_soak(
+            world,
+            min_ticks=int(getattr(args, "post_load_soak_ticks", 30) or 30),
+        )
+        run_info["post_load_soak"] = soak
+        _write_json(out_dir / "run_info.json", run_info)
+        if not soak["ok"]:
+            raise RuntimeError(
+                "MAP_STABILITY_FAILURE:post_load_soak:" + "; ".join(soak["errors"])
+            )
+        print(
+            f"[record_route_fixed] MAP_STABLE soak_ticks={soak['observed_ticks']}",
+            flush=True,
+        )
+
     try:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(world.get_map().name)
     except Exception:
@@ -1664,6 +1921,7 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
         client=client,
         world=world,
         fps=float(args.fps),
+        load_mode=load_mode,
     )
     try:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(world.get_map().name)

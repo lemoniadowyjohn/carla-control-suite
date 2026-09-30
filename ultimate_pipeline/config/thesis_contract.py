@@ -16,6 +16,24 @@ GENERALIZATION_STATUS_PROTOTYPE = "prototype_result_only"
 GENERALIZATION_STATUS_AUTHORITATIVE = "authoritative_result_available"
 GENERALIZATION_STATUS_DEFERRED = "deferred"
 
+# NEW-239: RQ5 splits into two independent claim families. Unlabeled real-world
+# data cannot support a generalization-accuracy claim (no labels => no mIoU), so
+# it gets its own authoritative scope that is explicitly about domain shift.
+GENERALIZATION_RQ5A = "rq5a_simulated_transfer"
+GENERALIZATION_RQ5B_SHIFT = "rq5b_real_unlabeled_shift"
+GENERALIZATION_RQ5B_ACCURACY = "rq5b_real_generalization_accuracy_deferred_labels"
+
+#: Claim families a real-unlabeled result may be reported under.
+REAL_UNLABELED_AUTHORITATIVE_SCOPE = GENERALIZATION_RQ5B_SHIFT
+
+#: Minimum decoded real-world images for real-unlabeled evidence to be admissible
+#: (NEW-241). Evidence requires ``n > REAL_UNLABELED_MIN_IMAGES``.
+REAL_UNLABELED_MIN_IMAGES = 1
+
+#: Minimum paired labeled frames for labeled-sim evidence to be admissible
+#: (NEW-240). Evidence requires ``frames_count >= SIM_LABELED_MIN_FRAMES``.
+SIM_LABELED_MIN_FRAMES = 1
+
 VARIABILITY_CLASS_SAME_INPUT = "same_input_repeat_determinism"
 VARIABILITY_CLASS_MULTI_MAP = "multi_map_variability_natural_randomization"
 
@@ -166,6 +184,82 @@ def classify_pair_perception_result(
     )
 
 
+def _is_present(value: Any) -> bool:
+    return value is not None and str(value).strip() != ""
+
+
+def _has_error(payload: Dict[str, Any]) -> bool:
+    """True when a result payload records any error condition.
+
+    NEW-238: a payload carrying an error is never admissible evidence, even when
+    its metric keys are present. ``ok: false`` plus ``mIoU: 0.0`` is a failed
+    evaluation, not a measurement.
+    """
+    if not _is_present(payload.get("error")):
+        errors = payload.get("errors")
+        if isinstance(errors, (list, tuple)) and len(errors) > 0:
+            return True
+    if "ok" in payload and not _is_true(payload.get("ok")):
+        return True
+    status = payload.get("status")
+    if status is not None and str(status).strip().lower() not in {"ok", "success", "succeeded", "pass", "passed"}:
+        return True
+    return False
+
+
+def _labeled_sim_evidence_is_valid(payload: Any) -> bool:
+    """
+    NEW-238: strict admissibility for labeled simulated evaluation evidence.
+
+    All of the following must hold:
+      * the payload is a dict with no error condition and a successful status;
+      * a positive ``frames_count`` meets the governed minimum;
+      * ``mIoU`` is present and is a real number (not null);
+      * the evaluated model and dataset are identified.
+    """
+    if not isinstance(payload, dict):
+        return False
+    if _has_error(payload):
+        return False
+    try:
+        frames = int(payload.get("frames_count") or 0)
+    except (TypeError, ValueError):
+        return False
+    if frames < SIM_LABELED_MIN_FRAMES:
+        return False
+    miou = payload.get("mIoU")
+    if not isinstance(miou, (int, float)) or isinstance(miou, bool):
+        return False
+    if not _is_present(payload.get("model")):
+        return False
+    if not _is_present(payload.get("dataset")):
+        return False
+    return True
+
+
+def _real_unlabeled_evidence_is_valid(payload: Any) -> bool:
+    """
+    NEW-238 / NEW-241: strict admissibility for real-unlabeled shift evidence.
+
+    Same failure rules as labeled evidence, plus a positive image count above the
+    governed minimum. An empty directory reporting ``{"n": 0, "entropy_mean":
+    null}`` is inadmissible.
+    """
+    if not isinstance(payload, dict):
+        return False
+    if _has_error(payload):
+        return False
+    try:
+        n = int(payload.get("n") or 0)
+    except (TypeError, ValueError):
+        return False
+    if n <= REAL_UNLABELED_MIN_IMAGES:
+        return False
+    if payload.get("entropy_mean") is None or payload.get("confidence_mean") is None:
+        return False
+    return True
+
+
 def infer_generalization_claim_status(
     *,
     results: Any,
@@ -196,28 +290,56 @@ def infer_generalization_claim_status(
     for result in result_list:
         if not isinstance(result, dict):
             continue
-        sim_payload = result.get("sim")
-        real_payload = result.get("real")
-        if isinstance(sim_payload, dict) and (_is_true(sim_payload.get("ok")) or any(key in sim_payload for key in ("mIoU", "pixel_accuracy", "frames_count"))):
+        if _labeled_sim_evidence_is_valid(result.get("sim")):
             sim_ok = True
-        if isinstance(real_payload, dict) and (_is_true(real_payload.get("ok")) or any(key in real_payload for key in ("entropy_mean", "confidence_mean", "n"))):
+        if _real_unlabeled_evidence_is_valid(result.get("real")):
             real_ok = True
 
     if sim_ok and real_ok and eval_manual_present and real_u_present:
+        # NEW-239: the aggregate status names both authoritative claim families
+        # rather than a single undifferentiated "generalization" claim. Only the
+        # simulated half supports an accuracy result; the real-unlabeled half
+        # supports domain-shift analysis only.
         return Classification(
             GENERALIZATION_STATUS_AUTHORITATIVE,
-            "both simulated-manual and real-unlabeled evaluation outputs are present in the result set",
+            (
+                f"authoritative evidence exists for {GENERALIZATION_RQ5A} (labeled simulated "
+                f"transfer) and {GENERALIZATION_RQ5B_SHIFT} (unlabeled real-world domain shift); "
+                f"{GENERALIZATION_RQ5B_ACCURACY} remains deferred because the real-world data is "
+                "unlabeled and cannot yield mIoU or pixel accuracy"
+            ),
         )
 
-    if sim_ok or real_ok:
+    if sim_ok:
         return Classification(
-            GENERALIZATION_STATUS_PROTOTYPE,
-            "generalization outputs exist, but the full simulated-and-real evidence chain is incomplete",
+            GENERALIZATION_STATUS_PROTOTYPE if real_u_present else GENERALIZATION_STATUS_AUTHORITATIVE,
+            (
+                f"authoritative labeled-simulated transfer evidence exists for {GENERALIZATION_RQ5A}, "
+                f"but {GENERALIZATION_RQ5B_SHIFT} evidence is not yet admissible"
+                if real_u_present
+                else f"authoritative labeled-simulated transfer evidence exists for {GENERALIZATION_RQ5A}"
+            ),
+        )
+
+    if real_ok:
+        return Classification(
+            GENERALIZATION_STATUS_PROTOTYPE if eval_manual_present else GENERALIZATION_STATUS_AUTHORITATIVE,
+            (
+                f"authoritative unlabeled real-world domain-shift evidence exists for "
+                f"{GENERALIZATION_RQ5B_SHIFT}; this does NOT support a generalization-accuracy "
+                f"claim -- {GENERALIZATION_RQ5B_ACCURACY} is deferred because the real-world data "
+                "carries no labels"
+            ),
         )
 
     return Classification(
         GENERALIZATION_STATUS_DEFERRED,
-        "result rows exist without evaluable simulated/manual or real-unlabeled evidence",
+        (
+            "result rows exist but none satisfy the governed evidence requirements: no error-free "
+            f"labeled-simulated evaluation with >= {SIM_LABELED_MIN_FRAMES} frames, and no "
+            f"error-free real-unlabeled evaluation with more than {REAL_UNLABELED_MIN_IMAGES} "
+            "decoded image(s)"
+        ),
     )
 
 
@@ -236,23 +358,18 @@ def infer_generalization_component_statuses(
     for result in result_list:
         if not isinstance(result, dict):
             continue
-        sim_payload = result.get("sim")
-        real_payload = result.get("real")
-        if isinstance(sim_payload, dict) and (
-            _is_true(sim_payload.get("ok"))
-            or any(key in sim_payload for key in ("mIoU", "pixel_accuracy", "frames_count"))
-        ):
+        if _labeled_sim_evidence_is_valid(result.get("sim")):
             sim_ok = True
-        if isinstance(real_payload, dict) and (
-            _is_true(real_payload.get("ok"))
-            or any(key in real_payload for key in ("entropy_mean", "confidence_mean", "n"))
-        ):
+        if _real_unlabeled_evidence_is_valid(result.get("real")):
             real_ok = True
 
     if sim_ok and eval_manual_present:
         simulated_status = Classification(
             GENERALIZATION_STATUS_AUTHORITATIVE,
-            "simulated/manual evaluation outputs are present for the configured evaluation dataset",
+            (
+                f"an error-free labeled-simulated evaluation with an identified model and "
+                f"dataset is present; authoritative for {GENERALIZATION_RQ5A} only"
+            ),
         )
     elif sim_ok:
         simulated_status = Classification(
@@ -273,7 +390,12 @@ def infer_generalization_component_statuses(
     if real_ok and real_u_present:
         real_status = Classification(
             GENERALIZATION_STATUS_AUTHORITATIVE,
-            "real-unlabeled evaluation outputs are present for the configured real-world image directory",
+            (
+                f"an error-free unlabeled real-world evaluation with more than "
+                f"{REAL_UNLABELED_MIN_IMAGES} decoded image(s) is present; authoritative for "
+                f"{GENERALIZATION_RQ5B_SHIFT} (domain shift) ONLY. It supports no accuracy or "
+                f"generalization-performance claim: {GENERALIZATION_RQ5B_ACCURACY}."
+            ),
         )
     elif real_ok:
         real_status = Classification(
@@ -301,9 +423,30 @@ def infer_generalization_component_statuses(
             "simulated and real evaluation outputs exist, but paired Ingolstadt provenance still requires a stronger authoritative artifact chain",
         )
 
+    # NEW-239: real-world generalization *accuracy* is only ever authoritative if
+    # labeled real-world evidence exists. Unlabeled real data is shift evidence
+    # and nothing more, so this component stays deferred by construction.
+    real_accuracy_status = Classification(
+        GENERALIZATION_STATUS_DEFERRED,
+        (
+            "no labeled real-world evaluation is configured; unlabeled real data cannot produce "
+            f"mIoU or pixel accuracy, so {GENERALIZATION_RQ5B_ACCURACY} cannot be claimed"
+        ),
+    )
+    if eval_manual_present and sim_ok:
+        real_accuracy_status = Classification(
+            GENERALIZATION_STATUS_DEFINED,
+            (
+                "an authorized labeled manual evaluation is configured and ran, but this contract "
+                f"receives no labeled real-world evaluation payload, so {GENERALIZATION_RQ5B_ACCURACY} "
+                "remains deferred rather than being inferred from simulated metrics"
+            ),
+        )
+
     return {
         "simulated_manual_eval": simulated_status,
         "real_unlabeled_eval": real_status,
+        "real_world_generalization_accuracy": real_accuracy_status,
         "paired_ingolstadt_generalization": paired_ingolstadt_status,
     }
 

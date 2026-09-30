@@ -18,6 +18,71 @@ class CarlaOpendrivePreflightError(RuntimeError):
     """Raised when XODR preflight validation fails before CARLA is touched."""
 
 
+def _sha256_text(text: str) -> str:
+    import hashlib
+
+    return hashlib.sha256(str(text).encode("utf-8")).hexdigest()
+
+
+def classify_opendrive_failure(text: str, duration_s: float | None = None) -> str:
+    """
+    NEW-256: classify an OpenDRIVE load failure using the existing diagnostic.
+
+    ``ultimate_pipeline.core.opendrive_gen_diagnostic`` already distinguishes
+    LENGTH_ASSERT / OOM / RPC_TIMEOUT / GENERIC_FATAL. It was a good diagnostic
+    that the principal load path never called, so every failure arrived as the
+    same opaque "attempt N failed". Wiring it in here is what makes a crash
+    bundle actionable.
+    """
+    from ultimate_pipeline.core.opendrive_gen_diagnostic import classify_failure
+
+    return classify_failure(str(text or ""), duration_s=duration_s)
+
+
+def _attach_runtime_structural_identity(
+    *,
+    identity: dict,
+    world: "carla.World",
+    expected_structural_sha256: str = "",
+) -> None:
+    """
+    NEW-250: record (and optionally enforce) the runtime structural fingerprint.
+
+    ``expected_structural_sha256`` is the fingerprint of the source XODR. When
+    supplied, a mismatch raises: the world that came up is not the world that was
+    generated, and proceeding would attribute perception metrics to the wrong map.
+    """
+    from ultimate_pipeline.carla_tools.map_runtime_identity import (
+        fingerprint_mismatches,
+        runtime_map_fingerprint,
+    )
+
+    runtime_fp = runtime_map_fingerprint(world)
+    if runtime_fp is None:
+        identity["runtime_map_structural_sha256"] = None
+        identity["runtime_structural_unavailable"] = True
+        if expected_structural_sha256:
+            raise RuntimeError(
+                "RUNTIME_MAP_IDENTITY_MISMATCH: runtime structural fingerprint unavailable "
+                "(world.get_map().to_opendrive() unsupported); refusing a name-only match"
+            )
+        return
+
+    actual = str(runtime_fp.get("fingerprint_sha256") or "")
+    identity["runtime_map_structural_sha256"] = actual
+    identity["runtime_map_structural_components"] = runtime_fp.get("components")
+
+    if expected_structural_sha256 and actual != expected_structural_sha256:
+        differences = fingerprint_mismatches(
+            identity.get("_expected_fingerprint") or {}, runtime_fp
+        )
+        raise RuntimeError(
+            "RUNTIME_MAP_IDENTITY_MISMATCH: expected_structural_sha256="
+            f"{expected_structural_sha256} runtime={actual}"
+            + (f" differences={differences[:6]}" if differences else "")
+        )
+
+
 def _preflight_xodr(xodr_text: str, source_sha256: str) -> None:
     """Run the strict CARLA-compatibility gate on XODR text before any CARLA call.
 
@@ -314,6 +379,8 @@ def load_opendrive_world(
     fallback_timeout_s: float = 60.0,
     source_sha256: str = "",
     governed_payload_sha256: str = "",
+    return_identity: bool = False,
+    expected_structural_sha256: str = "",
 ) -> carla.World:
     """Robust OpenDRIVE load with optional built-in map fallback.
 
@@ -321,6 +388,21 @@ def load_opendrive_world(
     ``xodr_text`` must be byte-identical to the governed load-payload
     artifact.  Any runtime-only transformation (in-memory re-normalization)
     is then forbidden and raises before CARLA is touched.
+
+    NEW-250: the loader now records three distinct identities rather than one
+    path. ``source_xodr_sha256`` is the file on disk, ``runtime_payload_sha256``
+    is the exact text handed to ``generate_opendrive_world()`` (which differs
+    whenever the georeference was normalized in memory), and
+    ``runtime_map_structural_sha256`` is the topology fingerprint of the world
+    that actually came up. Reporting only the source SHA let a
+    source/payload divergence pass unnoticed.
+
+    NEW-256: every failure is classified with the existing OpenDRIVE crash
+    classifier (``opendrive_gen_diagnostic``) so a LowLevelFatalError, an OOM
+    and an RPC timeout are distinguishable in the evidence rather than all
+    collapsing into "attempt N failed".
+
+    With ``return_identity=True`` this returns ``(world, identity_dict)``.
     """
     # Preflight: validate XODR before any CARLA interaction.
     _preflight_xodr(xodr_text, source_sha256=source_sha256)
@@ -340,10 +422,40 @@ def load_opendrive_world(
         xodr_text = _normalize_georef_in_xodr_text(xodr_text)
     ready_timeout_s = _resolve_ready_timeout_s(ready_timeout_s)
 
+    # NEW-250: the source and the runtime payload are different facts. Record
+    # both, always, so a divergence (in-memory georeference normalization) is
+    # visible in the evidence instead of being invisible.
+    if not source_sha256:
+        source_sha256 = _sha256_text(xodr_text)
+    runtime_payload_sha256 = _sha256_text(xodr_text)
+    identity: dict = {
+        "schema": "opendrive_load_identity_v1",
+        "source_xodr_sha256": source_sha256,
+        "runtime_payload_sha256": runtime_payload_sha256,
+        "runtime_payload_differs_from_source": runtime_payload_sha256 != source_sha256,
+        "runtime_map_structural_sha256": None,
+        "governed_payload_sha256": governed_payload_sha256,
+        "attempts": [],
+        "crash_classification": None,
+    }
+
+    # NEW-250: keep the expected fingerprint so a mismatch can name the differing
+    # component rather than only reporting two unequal digests.
+    if expected_structural_sha256:
+        try:
+            from ultimate_pipeline.carla_tools.map_runtime_identity import (
+                structural_fingerprint,
+            )
+
+            identity["_expected_fingerprint"] = structural_fingerprint(xodr_text)
+        except Exception as exc:
+            print(f"[CARLA_IMPORT] WARNING: could not fingerprint source XODR: {exc}")
+
     last_exc: Optional[BaseException] = None
     attempts = max(0, int(retries)) + 1
 
     for attempt in range(1, attempts + 1):
+        attempt_started = time.time()
         try:
             # Pre-flight: CARLA responding (probe uses short timeout but restores to long timeout)
             wait_for_carla_ready(
@@ -385,10 +497,44 @@ def load_opendrive_world(
             )
             if not bool((tick_report or {}).get("ok", False)):
                 raise RuntimeError("opendrive_load_tick_failed: world not confirmed")
+
+            # NEW-250: bind the world that actually came up to the payload that
+            # produced it. Structural, not bytewise: CARLA re-serializes
+            # OpenDRIVE, so only topology is comparable.
+            _attach_runtime_structural_identity(
+                identity=identity,
+                world=world,
+                expected_structural_sha256=expected_structural_sha256,
+            )
+
+            identity["attempts"].append(
+                {
+                    "attempt": attempt,
+                    "ok": True,
+                    "elapsed_s": float(time.time() - attempt_started),
+                    "map_name": str(getattr(map_obj, "name", "") or ""),
+                }
+            )
+            if return_identity:
+                return world, identity
             return world
 
         except Exception as e:
             last_exc = e
+            # NEW-256: classify the failure so a LowLevelFatalError, an OOM and
+            # an RPC timeout stay distinguishable in the run evidence.
+            identity["crash_classification"] = classify_opendrive_failure(
+                f"{type(e).__name__}: {e}", duration_s=float(time.time() - attempt_started)
+            )
+            identity["attempts"].append(
+                {
+                    "attempt": attempt,
+                    "ok": False,
+                    "elapsed_s": float(time.time() - attempt_started),
+                    "error": f"{type(e).__name__}: {e}",
+                    "crash_classification": identity["crash_classification"],
+                }
+            )
             # ASCII-only log (Windows-safe)
             print(f"[CARLA_IMPORT] attempt {attempt}/{attempts} failed: {type(e).__name__}: {e}")
             time.sleep(min(2.0, 0.5 * attempt))
@@ -437,6 +583,13 @@ def load_opendrive_world(
                     raise
                 continue
 
+    identity["final_error"] = f"{type(last_exc).__name__}: {last_exc}" if last_exc else None
+    if return_identity:
+        raise RuntimeError(
+            "opendrive_load_failed:"
+            f"crash_classification={identity.get('crash_classification')}:"
+            f"{identity['final_error']}"
+        )
     raise RuntimeError(f"Failed to generate OpenDRIVE world after {attempts} attempts. Last error: {last_exc}")
 
 
@@ -453,13 +606,24 @@ def load_opendrive_world_from_file(
     fallback_maps: Optional[Sequence[str]] = None,
     source_sha256: str = "",
     governed_payload_sha256: str = "",
-) -> carla.World:
-    """Convenience wrapper around `load_opendrive_world` for .xodr files."""
+    return_identity: bool = False,
+    expected_structural_sha256: str = "",
+):
+    """Convenience wrapper around `load_opendrive_world` for .xodr files.
+
+    NEW-250: when the file is read from disk, the source SHA is the *file* digest.
+    The runtime payload digest is computed independently by the loader, so a
+    georeference normalization that changes the payload before it reaches CARLA is
+    visible in the evidence rather than hidden.
+    """
     xodr_path = Path(xodr_path)
-    xodr_text = xodr_path.read_text(encoding="utf-8", errors="ignore")
+    raw_bytes = xodr_path.read_bytes()
+    xodr_text = raw_bytes.decode("utf-8", errors="ignore")
     if not source_sha256:
         import hashlib
-        source_sha256 = hashlib.sha256(xodr_text.encode("utf-8")).hexdigest()
+
+        # Digest the file bytes, not the decoded text: the file is the artifact.
+        source_sha256 = hashlib.sha256(raw_bytes).hexdigest()
     return load_opendrive_world(
         client,
         xodr_text,
@@ -472,6 +636,8 @@ def load_opendrive_world_from_file(
         fallback_maps=fallback_maps,
         source_sha256=source_sha256,
         governed_payload_sha256=governed_payload_sha256,
+        return_identity=return_identity,
+        expected_structural_sha256=expected_structural_sha256,
     )
 
 

@@ -13,11 +13,28 @@ This script intentionally does NOT depend on CARLA. It only needs:
 
 It reads defaults from SETTINGS (config/settings.py), but CLI args override.
 
-Typical local (single GPU):
+Typical local (single GPU), single dataset:
     python -m ultimate_pipeline.perception.train_launcher --dataset /path/to/run --camera front_left_camera
 
+NEW-234: multi-root training (RQ5 K-sweep):
+    python -m ultimate_pipeline.perception.train_launcher \\
+        --datasets /path/to/gen_001 /path/to/gen_002 /path/to/gen_003 \\
+        --camera front_left_camera
+
+    ``--datasets`` trains on a *true union* of every supplied root. Previously
+    the RQ5 runner recorded K roots in its training manifest but passed only the
+    first root to this script, so K=1/K=3/K=5 could all train on the same data.
+    ``--dataset`` remains supported and is mutually exclusive with
+    ``--datasets``.
+
+NEW-244: every run is seed-governed via ``--seed`` (see rq5_provenance.seed_everything).
+
+NEW-243: on success a ``model_manifest.json`` is written next to the
+checkpoints, binding the checkpoint SHA-256 to the dataset identities, git SHA,
+architecture, optimizer, learning rate and seed.
+
 Typical HPC (single node, multi-GPU) with torchrun:
-    torchrun --standalone --nproc_per_node=4 -m ultimate_pipeline.perception.train_launcher \
+    torchrun --standalone --nproc_per_node=4 -m ultimate_pipeline.perception.train_launcher \\
         --dataset /path/to/run --camera front_left_camera --ddp
 """
 
@@ -25,8 +42,9 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import torch
 from torch import nn, optim
@@ -40,8 +58,22 @@ from ultimate_pipeline.perception.carla_classes import CARLA_SEMANTIC_ANY_CLASS_
 from ultimate_pipeline.perception.class_weights import (
     compute_class_weights,
     scan_dataset_class_counts,
+    scan_multi_root_class_counts,
 )
-from ultimate_pipeline.perception.min_train_segmentation import SemanticSegDataset
+from ultimate_pipeline.perception.min_train_segmentation import (
+    MultiRootSegDataset,
+    SemanticSegDataset,
+)
+from ultimate_pipeline.perception.rq5_provenance import (
+    MULTI_ROOT_TRAIN,
+    build_model_manifest,
+    combine_dataset_identities,
+    dataset_content_identity,
+    seed_everything,
+    write_model_manifest,
+)
+
+DEFAULT_SEED = 1337
 
 
 def _resolve_out_dir(out_dir: str) -> Path:
@@ -92,9 +124,61 @@ def _build_model(num_classes: int) -> nn.Module:
     return model
 
 
-def main() -> None:
+def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
+    """
+    Resolve the training roots for this invocation.
+
+    NEW-234: ``--datasets`` yields every supplied root (true multi-root
+    training). ``--dataset`` yields exactly one. Supplying both is a hard error
+    rather than a silent preference, because a caller that thinks it trained on
+    K roots while the trainer saw one is precisely the defect being closed.
+    """
+    if args.datasets and args.dataset:
+        raise SystemExit(
+            "--dataset and --datasets are mutually exclusive: --dataset trains on "
+            "exactly one root, --datasets trains on the union of all supplied roots"
+        )
+
+    roots: List[Path] = [Path(p) for p in (args.datasets or ([args.dataset] if args.dataset else []))]
+    if not roots:
+        # Preserve the historical SETTINGS-driven default (run_training.py's
+        # "local" backend relies on it) before falling back to auto-discovery.
+        configured = getattr(SETTINGS, "TRAINING_DATASET_DIR", "") or ""
+        if configured:
+            roots = [Path(configured)]
+    if not roots:
+        # Preserve the historical auto-discovery behaviour for single-root runs.
+        guess = _find_latest_dataset(Path(SETTINGS.BASE_OUTPUT_DIR))
+        if guess is None:
+            raise FileNotFoundError(
+                "No dataset root supplied (--dataset / --datasets) and couldn't "
+                f"auto-discover under BASE_OUTPUT_DIR={SETTINGS.BASE_OUTPUT_DIR}"
+            )
+        roots = [guess]
+        print(f"📦 Auto-selected latest dataset: {roots[0]}")
+
+    for root in roots:
+        if not root.exists():
+            if len(roots) == 1:
+                guess = _find_latest_dataset(Path(SETTINGS.BASE_OUTPUT_DIR))
+                if guess is not None:
+                    roots[0] = guess
+                    print(f"📦 Auto-selected latest dataset: {guess}")
+                    continue
+            raise FileNotFoundError(f"Dataset directory not found: {root}")
+    return roots
+
+
+def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default=SETTINGS.TRAINING_DATASET_DIR or "", help="Dataset root directory")
+    parser.add_argument("--dataset", type=str, default=None, help="Single dataset root directory")
+    parser.add_argument(
+        "--datasets",
+        nargs="+",
+        type=str,
+        default=None,
+        help="NEW-234: train on the union of these dataset roots (RQ5 K-sweep)",
+    )
     parser.add_argument("--camera", type=str, default=SETTINGS.TRAINING_CAMERA)
     parser.add_argument("--out-dir", type=str, default=SETTINGS.TRAINING_OUT_DIR)
     parser.add_argument("--epochs", type=int, default=SETTINGS.TRAIN_EPOCHS)
@@ -111,19 +195,30 @@ def main() -> None:
         default="median_frequency",
     )
     parser.add_argument("--no-class-weights", action="store_true")
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=DEFAULT_SEED,
+        help=(
+            "NEW-244: governed experiment seed applied to random/numpy/torch/CUDA "
+            f"and the DataLoader generator (default {DEFAULT_SEED})"
+        ),
+    )
+    parser.add_argument(
+        "--no-manifest",
+        action="store_true",
+        help="NEW-243: skip writing model_manifest.json (diagnostic runs only)",
+    )
+    parser.add_argument(
+        "--dataset-identity-max-files",
+        type=int,
+        default=0,
+        help="Optional cap on files digested per dataset root when computing content identity (0 = no cap)",
+    )
     args = parser.parse_args()
 
-    dataset_root = Path(args.dataset) if args.dataset else Path()
-    if not dataset_root.exists():
-        # Try to auto-discover a dataset under BASE_OUTPUT_DIR
-        guess = _find_latest_dataset(Path(SETTINGS.BASE_OUTPUT_DIR))
-        if guess is None:
-            raise FileNotFoundError(
-                f"Dataset directory not found. Provided: '{args.dataset}'. "
-                f"Also couldn't auto-discover under BASE_OUTPUT_DIR={SETTINGS.BASE_OUTPUT_DIR}"
-            )
-        dataset_root = guess
-        print(f"📦 Auto-selected latest dataset: {dataset_root}")
+    dataset_roots = _resolve_dataset_roots(args)
+    multi_root = len(dataset_roots) > 1
 
     out_dir = _resolve_out_dir(args.out_dir)
 
@@ -131,15 +226,36 @@ def main() -> None:
     is_main = (rank == 0)
 
     device = torch.device(args.device if (args.device != "cuda" or torch.cuda.is_available()) else "cpu")
+
+    # NEW-244: seed BEFORE model construction, dataset sampling and DataLoader
+    # creation so every stochastic element of the run is bound to one recorded
+    # seed. A single source of truth lives in rq5_provenance.seed_everything.
+    seed_record = seed_everything(args.seed)
+    generator = torch.Generator()
+    generator.manual_seed(int(args.seed))
+
     if is_main:
         print(f"🧠 Training task: segmentation (FCN-ResNet50)")
-        print(f"   dataset={dataset_root}")
+        roots_text = ", ".join(p.as_posix() for p in dataset_roots)
+        print(f"   datasets({len(dataset_roots)})={roots_text}")
         print(f"   camera={args.camera}")
         print(f"   out_dir={out_dir}")
         print(f"   epochs={args.epochs} batch={args.batch} lr={args.lr} classes={args.num_classes}")
         print(f"   device={device} ddp={ddp_enabled} world_size={world_size}")
+        print(f"   seed={args.seed}")
 
-    ds = SemanticSegDataset(dataset_root, cam=args.camera, limit=args.limit if args.limit > 0 else None)
+    limit = args.limit if args.limit > 0 else None
+    if multi_root:
+        ds = MultiRootSegDataset(dataset_roots, cam=args.camera, limit=limit)
+        if is_main:
+            print(f"   multi_root=True frames={len(ds)} per_root={ds.root_frame_counts}")
+            for name in ds.unpaired_rgb[:10]:
+                print(f"   ⚠️  unpaired rgb (no label): {name}")
+            for name in ds.unpaired_labels[:10]:
+                print(f"   ⚠️  unpaired label (no rgb): {name}")
+    else:
+        ds = SemanticSegDataset(dataset_roots[0], cam=args.camera, limit=limit)
+
     if ddp_enabled:
         sampler = torch.utils.data.distributed.DistributedSampler(ds, shuffle=True)
         shuffle = False
@@ -154,6 +270,7 @@ def main() -> None:
         sampler=sampler,
         num_workers=int(args.num_workers),
         pin_memory=(device.type == "cuda"),
+        generator=generator,
     )
 
     model = _build_model(args.num_classes).to(device)
@@ -165,12 +282,20 @@ def main() -> None:
 
     class_weights = None
     if not args.no_class_weights:
-        class_counts = scan_dataset_class_counts(
-            dataset_root,
-            camera=args.camera,
-            limit=args.limit,
-            num_classes=args.num_classes,
-        )
+        if multi_root:
+            class_counts = scan_multi_root_class_counts(
+                dataset_roots,
+                camera=args.camera,
+                limit=args.limit,
+                num_classes=args.num_classes,
+            )
+        else:
+            class_counts = scan_dataset_class_counts(
+                dataset_roots[0],
+                camera=args.camera,
+                limit=args.limit,
+                num_classes=args.num_classes,
+            )
         class_weights = compute_class_weights(
             class_counts,
             num_classes=args.num_classes,
@@ -189,6 +314,7 @@ def main() -> None:
     optimizer = optim.Adam(model.parameters(), lr=float(args.lr))
 
     model.train()
+    last_ckpt: Optional[Path] = None
     for epoch in range(int(args.epochs)):
         if ddp_enabled:
             assert sampler is not None
@@ -214,11 +340,58 @@ def main() -> None:
             # unwrap DDP
             state = model.module.state_dict() if hasattr(model, "module") else model.state_dict()
             torch.save(state, ckpt)
+            last_ckpt = ckpt
             print(f"✅ Saved {ckpt}")
+
+    # NEW-243: bind the final checkpoint to the run that produced it.
+    if is_main and last_ckpt is not None and not args.no_manifest:
+        max_files = args.dataset_identity_max_files or None
+        identities = [
+            dataset_content_identity(root, args.camera, max_files=max_files)
+            for root in dataset_roots
+        ]
+        train_identity = (
+            combine_dataset_identities(identities, strategy=MULTI_ROOT_TRAIN)
+            if multi_root
+            else identities[0]
+        )
+        manifest = build_model_manifest(
+            checkpoint=last_ckpt,
+            train_dataset_identity=train_identity,
+            train_roots=[p.as_posix() for p in dataset_roots],
+            architecture_version="fcn_resnet50_torchvision_default",
+            num_classes=int(args.num_classes),
+            class_mapping={
+                "num_classes": int(args.num_classes),
+                "ignore_index": int(CARLA_SEMANTIC_ANY_CLASS_ID),
+                "label_space": "carla_semantic_tagn",
+            },
+            camera=args.camera,
+            optimizer="Adam",
+            learning_rate=float(args.lr),
+            epochs=int(args.epochs),
+            batch_size=int(args.batch),
+            seed=int(args.seed),
+            augmentation_policy="none",
+            extra={
+                "multi_root": bool(multi_root),
+                "train_frame_count": len(ds),
+                "train_frame_counts_per_root": (
+                    ds.root_frame_counts if multi_root else None
+                ),
+                "seed_applied": seed_record,
+                "ddp": bool(ddp_enabled),
+                "world_size": int(world_size),
+            },
+        )
+        manifest_path = write_model_manifest(out_dir, manifest)
+        print(f"🔒 Wrote model manifest → {manifest_path}")
 
     if ddp_enabled:
         torch.distributed.destroy_process_group()
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
