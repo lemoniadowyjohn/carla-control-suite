@@ -21,7 +21,7 @@ GitHub Actions verifies the toolkit on Python 3.10 and 3.12 with:
 - pytest + an explicit exact 90% coverage gate;
 - passing and intentional-rejection command-line quality-report checks.
 
-Latest fully verified portfolio commit: `c1133ad2717ef1af699979cfaff9399ba6176e8c`.
+Release authority: the portfolio branch's live GitHub Actions workflow plus its `docs/VERIFICATION.md` receipt.
 
 At that commit:
 
@@ -66,7 +66,7 @@ The toolkit is intentionally **not** presented as:
 - a replacement for CARLA runtime validation;
 - proof that illustrative synthetic thresholds are universal acceptance criteria.
 
-See the toolkit's `SANITIZATION.md`, `SECURITY.md`, and `docs/VERIFICATION.md` for the exact claim and public-data boundary.
+See the toolkit's `SANITIZATION.md`, `SECURITY.md`, `docs/VERIFICATION.md`, and [Acceptance checklist](https://github.com/lemoniadowyjohn/carla-control-suite/blob/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit/docs/ACCEPTANCE_CHECKLIST.md) for the exact claim, completion and public-data boundary.
 
 ## Portfolio relevance
 
