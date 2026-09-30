@@ -18,7 +18,7 @@ This runner focuses on three thesis-critical outputs:
    auto-map XODRs, and summarize mean+/-std.
 
 It does NOT record new CARLA datasets by default. Use:
-  python -m ultimate_pipeline.perception.record_route
+  python -m ultimate_pipeline.perception.record_route_fixed
 and then point this script to the resulting run folders.
 """
 

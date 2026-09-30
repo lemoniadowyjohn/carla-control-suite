@@ -29,7 +29,7 @@ def _md5(path: Path) -> str:
 
 
 def parse_args():
-    ap = argparse.ArgumentParser(description="Record auto-generated XODR via record_route.")
+    ap = argparse.ArgumentParser(description="Record auto-generated XODR via record_route_fixed (NEW-223 canonical authority).")
     ap.add_argument("--xodr-in", required=True, help="Auto-generated XODR path")
     ap.add_argument("--calib", required=True, help="Calibration JSON")
     ap.add_argument("--out-dir", required=True, help="Recording output root")
@@ -98,10 +98,14 @@ def main():
         )
         used_xodr = hardened
 
+    # NEW-223: canonical capture authority is record_route_fixed (correct
+    # CARLA 0.9.16 sync-tick semantics). The legacy record_route parser
+    # rejects this argv (--rpc-timeout/--startup-timeout are unrecognized
+    # there); record_route_fixed manages RPC timeouts internally per map.
     cmd = [
         sys.executable,
         "-m",
-        "ultimate_pipeline.perception.record_route",
+        "ultimate_pipeline.perception.record_route_fixed",
         "--xodr",
         str(used_xodr),
         "--calib",
@@ -114,10 +118,6 @@ def main():
         str(args.fps),
         "--duration",
         str(args.duration),
-        "--rpc-timeout",
-        "3",
-        "--startup-timeout",
-        "30",
         "--host",
         args.host,
         "--port",

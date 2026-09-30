@@ -147,11 +147,21 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
 
     if not getattr(self.settings, "ENABLE_TILING", False):
         print("⏭️ Tiling disabled — skipping STEP 10 tile QA.")
+        try:
+            with open(os.path.join(self.out_dir, "step10_tile_qa_status.json"), "w", encoding="utf-8") as f:
+                json.dump({"status": "SKIP", "reason": "tiling_disabled"}, f, indent=2)
+        except Exception:
+            pass
         return
 
     tiles_dir = os.path.join(self.out_dir, "tiles")
     if not os.path.isdir(tiles_dir):
         print(f"⚠️ STEP 10: tiles_dir missing: {tiles_dir} — skipping.")
+        try:
+            with open(os.path.join(self.out_dir, "step10_tile_qa_status.json"), "w", encoding="utf-8") as f:
+                json.dump({"status": "SKIP", "reason": "tiles_dir_missing", "tiles_dir": tiles_dir}, f, indent=2)
+        except Exception:
+            pass
         return
 
     if os.getenv("UP_SKIP_STEP10_TILE_QA", "").strip().lower() in (
