@@ -1,0 +1,43 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "fresh_bound_gates": {
+    "junction_links": {
+      "bound_to_current_pin": true,
+      "duration_s": 17.4,
+      "note": "",
+      "ok": true,
+      "status": "PASS"
+    },
+    "lane_count_classification": {
+      "bound_to_current_pin": true,
+      "duration_s": 13.2,
+      "note": "",
+      "ok": true,
+      "status": "PASS"
+    },
+    "lane_topology": {
+      "bound_to_current_pin": true,
+      "duration_s": 11.1,
+      "note": "",
+      "ok": true,
+      "status": "PASS"
+    },
+    "planview_completeness": {
+      "bound_to_current_pin": true,
+      "duration_s": 16.2,
+      "note": "junction-connector diagnostics are by-design non-blocking",
+      "ok": true,
+      "status": "PASS"
+    },
+    "xml_validity": {
+      "bound_to_current_pin": true,
+      "duration_s": 8.6,
+      "note": "",
+      "ok": true,
+      "status": "PASS"
+    }
+  },
+  "historical_matrix_overall": "STALE_OR_UNBOUND (historical reports predate current pin)",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}

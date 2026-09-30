@@ -1,0 +1,38 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "new196": [
+    "exit 1/255 after downstream queued -> STOP",
+    "timeout -> STOP",
+    "missing exe -> STOP",
+    "exception -> STOP",
+    "missing output -> STOP",
+    "stale-content hash mismatch -> STOP"
+  ],
+  "new197": [
+    "wrong package -> FAIL",
+    "renamed/absent config -> FAIL_MISSING",
+    "two configs -> FAIL_AMBIGUOUS",
+    "manifest hash mismatch -> FAIL",
+    "CLI vs resolved mismatch -> FAIL"
+  ],
+  "new198": [
+    "same input twice -> identical artifact hash",
+    "different tile -> different seed",
+    "cross-path stability: pure-python RNG, no machine-path input"
+  ],
+  "new199": [
+    "fractional/negative/large/scientific tokens agree across consumers",
+    "locale comma rejected",
+    "canonical roundtrip within 1e-9"
+  ],
+  "new210": [
+    "waive repository_sha/artifact/junction/xodr-integrity -> refused (strict)",
+    "waive unknown gate -> refused",
+    "blank/wrong-child waiver -> refused",
+    "FAIL+FAIL with mixed waivers -> FAIL, never PASS"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "runtime_identity": [
+    "right repo/wrong XODR, wrong package, wrong map, wrong server -> rejected by E24 preflight tests (live server N/A)"
+  ]
+}

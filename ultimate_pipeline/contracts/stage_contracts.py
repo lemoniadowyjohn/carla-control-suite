@@ -151,8 +151,83 @@ def lookup_warning(code: str) -> Optional[WarningDefinition]:
 
 
 # ---------------------------------------------------------------------------
-# Governed waiver semantics
+# Governed waiver semantics + gate taxonomy (NEW-210 / GAP-037)
 # ---------------------------------------------------------------------------
+
+
+class GateClass(StrEnum):
+    """Waiver taxonomy: what kind of claim a gate certifies (NEW-210)."""
+
+    IDENTITY_INTEGRITY = "identity_integrity"
+    STRUCTURAL_INTEGRITY = "structural_integrity"
+    QUALITY_DEVIATION = "quality_deviation"
+    HEURISTIC_ADVISORY = "heuristic_advisory"
+    RUNTIME_DEPENDENT = "runtime_dependent"
+
+
+NON_WAIVABLE_CLASSES = frozenset(
+    {
+        GateClass.IDENTITY_INTEGRITY,
+        GateClass.STRUCTURAL_INTEGRITY,
+        GateClass.RUNTIME_DEPENDENT,
+    }
+)
+
+# Canonical classification of known gates. Identity/integrity and structural
+# gates are never waivable; quality deviations (e.g. component_reachability)
+# may be WAIVED (never PASS) through a governed waiver.
+GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
+    # Identity / integrity (non-waivable)
+    "map_registry_identity": GateClass.IDENTITY_INTEGRITY,
+    "artifact_fingerprint": GateClass.IDENTITY_INTEGRITY,
+    "repository_sha": GateClass.IDENTITY_INTEGRITY,
+    "manifest_digest": GateClass.IDENTITY_INTEGRITY,
+    "candidate_identity": GateClass.IDENTITY_INTEGRITY,
+    "package_identity": GateClass.IDENTITY_INTEGRITY,
+    "deterministic_provenance": GateClass.IDENTITY_INTEGRITY,
+    "xodr_sha": GateClass.IDENTITY_INTEGRITY,
+    "cook_manifest_identity": GateClass.IDENTITY_INTEGRITY,
+    # Structural integrity (non-waivable)
+    "xodr_xml_integrity": GateClass.STRUCTURAL_INTEGRITY,
+    "junction_integrity": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_link_targets_exist": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_section_successors": GateClass.STRUCTURAL_INTEGRITY,
+    "carla_structural_compatibility": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_connectivity": GateClass.STRUCTURAL_INTEGRITY,
+    "topology_spec": GateClass.STRUCTURAL_INTEGRITY,
+    "required_artifact_presence": GateClass.STRUCTURAL_INTEGRITY,
+    # Runtime-dependent (non-waivable)
+    "runtime_map_identity": GateClass.RUNTIME_DEPENDENT,
+    "carla_runtime_identity": GateClass.RUNTIME_DEPENDENT,
+    "runtime_map": GateClass.RUNTIME_DEPENDENT,
+    # Quality deviations (waivable with governed justification)
+    "component_reachability": GateClass.QUALITY_DEVIATION,
+    "lane_width": GateClass.QUALITY_DEVIATION,
+    "geometry_continuity": GateClass.QUALITY_DEVIATION,
+    "elevation_quality": GateClass.QUALITY_DEVIATION,
+}
+
+
+def classify_gate(name: str) -> Optional[GateClass]:
+    """Return the registered class for `name`, or None when unknown.
+
+    Unknown gate classes fail closed: callers must treat None as
+    non-waivable, never default to QUALITY_DEVIATION.
+    """
+    if not isinstance(name, str):
+        return None
+    return GATE_CLASS_REGISTRY.get(name.strip())
+
+
+def _coerce_gate_class(value: object) -> Optional[GateClass]:
+    if isinstance(value, GateClass):
+        return value
+    if isinstance(value, str):
+        try:
+            return GateClass(value.strip().lower())
+        except ValueError:
+            return None
+    return None
 
 
 def _worst_of(statuses: List[QualityStatus]) -> QualityStatus:
@@ -187,7 +262,11 @@ def _worst_of(statuses: List[QualityStatus]) -> QualityStatus:
     return sorted(reduced, key=lambda s: severity.get(s, 4), reverse=True)[0]
 
 
-def governed_waiver_allowed(waivers: Optional[Dict[str, str]], child: str) -> bool:
+def governed_waiver_allowed(
+    waivers: Optional[Dict[str, str]],
+    child: str,
+    gate_class: Optional[object] = None,
+) -> bool:
     """True only when an explicit governed waiver covers `child`.
 
     A governed waiver is a mapping of a gate/check key to a free-text
@@ -195,7 +274,52 @@ def governed_waiver_allowed(waivers: Optional[Dict[str, str]], child: str) -> bo
     waiver must name this exact child key. This is what prevents the
     historical fail-open `not rep.get("ok", True)` default from silently
     promoting a never-evaluated gate to PASS.
+
+    This is the GENERIC utility (OC-35 contract): with `gate_class` omitted
+    it preserves the long-standing semantic that any exact-name, non-blank
+    justification waives the named child (subject to the caller's own
+    allow-list in `promote_aggregate_detailed`).
+
+    NEW-210 taxonomy: when `gate_class` is EXPLICITLY provided, gates in
+    NON_WAIVABLE_CLASSES (identity integrity, structural integrity,
+    runtime dependent) can NEVER be waived -- this returns False for them
+    regardless of justification -- and an unknown class fails closed
+    (returns False, never defaulted to QUALITY_DEVIATION). Production
+    quality gates should use :func:`production_gate_waiver_allowed`, which
+    resolves the class from the registry and fails closed on unknown names.
     """
+    if gate_class is not None:
+        resolved = _coerce_gate_class(gate_class)
+        if resolved is None or resolved in NON_WAIVABLE_CLASSES:
+            return False
+    if not waivers:
+        return False
+    justification = waivers.get(child)
+    return isinstance(justification, str) and bool(justification.strip())
+
+
+def production_gate_waiver_allowed(
+    waivers: Optional[Dict[str, str]], child: str
+) -> bool:
+    """Strict waiver check for PRODUCTION quality gates (NEW-210).
+
+    Resolves `child` through :func:`classify_gate` and fails closed:
+
+    - unknown gate name (not in :data:`GATE_CLASS_REGISTRY`) -> False;
+    - gate in NON_WAIVABLE_CLASSES -> False, regardless of justification;
+    - waivable class (QUALITY_DEVIATION / HEURISTIC_ADVISORY) -> True only
+      with an exact-name, non-blank justification.
+
+    Production callers (map acceptance, candidate regression, runtime
+    identity) must use this instead of the generic
+    :func:`governed_waiver_allowed` so integrity gates are structurally
+    non-waivable.
+    """
+    resolved = classify_gate(child)
+    if resolved is None:
+        return False
+    if resolved in NON_WAIVABLE_CLASSES:
+        return False
     if not waivers:
         return False
     justification = waivers.get(child)
@@ -232,6 +356,7 @@ def promote_aggregate_detailed(
     waivers: Optional[Dict[str, str]] = None,
     waivable_fail: bool = True,
     child_names: Optional[List[str]] = None,
+    enforce_taxonomy: bool = False,
 ) -> Dict[str, object]:
     """Aggregate child gate statuses per-child, with waiver-governed rules.
 
@@ -256,6 +381,12 @@ def promote_aggregate_detailed(
     the positional `mandatory_children` alignment (legacy) with ``str(index)``
     fill for overflow. A waiver can never waive a child it does not name, so a
     positional/label mismatch isolates rather than silently waives.
+
+    When `enforce_taxonomy` is True (NEW-210 production mode), waiver
+    conversion additionally requires
+    :func:`production_gate_waiver_allowed`: non-waivable classes and unknown
+    gate names stay FAIL even with a justification. The default False
+    preserves the generic OC-35 utility semantic.
 
     Returns a structured report: `aggregate`, per-child conversion rows, the
     positional/label audit and unused waiver keys.
@@ -315,12 +446,21 @@ def promote_aggregate_detailed(
         names_by_index.append(name)
 
         waiver: Optional[str] = None
-        if (
-            waivable_fail
-            and raw_status == QualityStatus.FAIL
-            and name in mandatory_children
-            and governed_waiver_allowed(waivers, name)
-        ):
+        if enforce_taxonomy:
+            waivable_here = (
+                waivable_fail
+                and raw_status == QualityStatus.FAIL
+                and name in mandatory_children
+                and production_gate_waiver_allowed(waivers, name)
+            )
+        else:
+            waivable_here = (
+                waivable_fail
+                and raw_status == QualityStatus.FAIL
+                and name in mandatory_children
+                and governed_waiver_allowed(waivers, name)
+            )
+        if waivable_here:
             status = QualityStatus.WAIVED
             waiver = waivers.get(name)
             waived_count += 1
@@ -384,6 +524,7 @@ def promote_aggregate(
     waivers: Optional[Dict[str, str]] = None,
     waivable_fail: bool = True,
     child_names: Optional[List[str]] = None,
+    enforce_taxonomy: bool = False,
 ) -> QualityStatus:
     """Aggregate child gate statuses with fail-closed, waiver-governed rules.
 
@@ -405,6 +546,8 @@ def promote_aggregate(
     `mandatory_children` restricts which named children may be waived;
     children outside that list are unwaivable. `child_names` explicitly binds
     per-child labels to positions and is validated for length/duplicates.
+    `enforce_taxonomy=True` enables NEW-210 production mode (registry-backed,
+    unknown/non-waivable gates stay FAIL).
     """
     return promote_aggregate_detailed(
         children,
@@ -412,6 +555,7 @@ def promote_aggregate(
         waivers=waivers,
         waivable_fail=waivable_fail,
         child_names=child_names,
+        enforce_taxonomy=enforce_taxonomy,
     )["aggregate"]
 
 

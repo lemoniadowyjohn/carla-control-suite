@@ -1,0 +1,9 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "carla_server_reachable": false,
+  "e24_preflight_tests": "green (rejection logic verified offline)",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "rpc_probe": "carla.Client 127.0.0.1:2000 get_server_version -> 3000ms timeout",
+  "ue4editor_accessible": false,
+  "verdict": "BLOCKED_EXTERNAL"
+}

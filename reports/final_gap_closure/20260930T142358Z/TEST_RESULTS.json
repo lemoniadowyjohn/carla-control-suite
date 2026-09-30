@@ -1,0 +1,29 @@
+{
+  "baseline_collected": 6656,
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "final_collected": 6717,
+  "full_suite": {
+    "duration_s": 1161.91,
+    "failed": 1,
+    "note": "single failure pre-existing environmental (a1_a2 username path), proven in pristine checkout",
+    "passed": 6706,
+    "skipped": 10
+  },
+  "new_tests": 61,
+  "new_tests_breakdown": {
+    "test_v4_import_contracts": 21,
+    "test_v4_large_map_contract": 26,
+    "test_waiver_taxonomy": 14
+  },
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "static": {
+    "compileall": "ok",
+    "git_diff_check": "ok"
+  },
+  "v5_rq3_subset": {
+    "duration_s": 42.01,
+    "failed": 0,
+    "passed": 264,
+    "skipped": 4
+  }
+}

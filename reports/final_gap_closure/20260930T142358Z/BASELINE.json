@@ -1,0 +1,31 @@
+{
+  "baseline_collected_tests": 6656,
+  "branch_protection_queryable": false,
+  "canonical_branch": "integration/production-large-map-20260918",
+  "canonical_sha_at_start": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "carla_python_package": "0.9.16",
+  "dirty_state_at_start": "clean (isolated worktree; user dirt left untouched in primary checkout)",
+  "platform": "win32",
+  "previously_reported_sha": "862972b96f97dd6897f07ca4b2b7210895084304",
+  "python_version": "3.12.2",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "sha_note": "862972b9 was superseded by 2 GAP-017/018 commits; 4ef5879d recorded as true start",
+  "ue_paths": {
+    "engine_dir": "G:/UnrealEngine_4.26_CARLA exists",
+    "ue4editor_exe": "ABSENT (Avast quarantine, GAP-017/018)"
+  },
+  "v4_files_at_baseline": {
+    "tests/test_v4_import_contracts.py": false,
+    "ultimate_pipeline/tiling/carla_0916_import_process_contract.py": false,
+    "ultimate_pipeline/tiling/carla_0916_large_map_contract.py": false
+  },
+  "v5_relation": "60 ahead, 0 behind (was 58/0 at last audit)",
+  "v5_sha": "2df5d6c6401d7b765babfed62c144571f91e78d2",
+  "workflows": [
+    ".github/workflows/tests.yml",
+    ".github/workflows/carla-runtime.yml"
+  ],
+  "working_branch": "hardening/final-gap-closure-20260930",
+  "worktree_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-final-hardening"
+}

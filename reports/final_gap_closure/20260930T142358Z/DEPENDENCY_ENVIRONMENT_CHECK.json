@@ -1,0 +1,18 @@
+{
+  "action": "pip uninstall -y opencv-python; force-reinstalled opencv-python-headless==4.13.0.92 per requirements-ci.txt",
+  "after": {
+    "cv2": "4.13.0 headless import ok",
+    "dependency_profile_tests": "20 passed, 1 skipped",
+    "repo_architecture": "unchanged (base declares no provider; ci=headless, desktop=non-headless, mutually exclusive)"
+  },
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "before": [
+    "opencv-python 4.12.0.88 + opencv-python-headless 4.13.0.92 co-installed",
+    "pip check error (numpy 2.5.3 vs opencv-python numpy<2.3)"
+  ],
+  "notes": [
+    "ultralytics metadata prefers opencv-python name but imports and runs against headless cv2 (verified); upstream packaging quirk, not a repo issue"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "PASS"
+}

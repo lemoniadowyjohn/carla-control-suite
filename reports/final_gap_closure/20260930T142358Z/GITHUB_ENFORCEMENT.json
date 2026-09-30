@@ -1,0 +1,22 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "code": "BLOCKED_EXTERNAL_GITHUB_PERMISSION",
+  "manual_instructions": [
+    "gh auth login",
+    "gh api repos/lemoniadowyjohn/carla-control-suite/branches/integration/production-large-map-20260918/protection",
+    "Protect branch integration/production-large-map-20260918 requiring check 'offline release gate' on target SHA 627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+    "gh api -X PUT repos/lemoniadowyjohn/carla-control-suite/branches/integration/production-large-map-20260918/protection -f required_status_checks[strict]=true -f required_status_checks[checks][]['context']='offline release gate' -f enforce_admins=true -f required_pull_request_reviews[required_approving_review_count]=1 -f restrictions=''  (adapt names to actual check names; verify status for the exact target SHA, never a historical green run)"
+  ],
+  "reason": "gh CLI unavailable in this environment; no credentials to query or set branch protection",
+  "repo_local_state_verified": [
+    "immutable action SHAs",
+    "permissions contents:read",
+    "per-job timeouts",
+    "concurrency cancel-in-progress (offline) / false (runtime)",
+    "named offline release gate (D19)",
+    "headless OpenCV CI profile",
+    "dependency conflict gate"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "BLOCKED_EXTERNAL"
+}

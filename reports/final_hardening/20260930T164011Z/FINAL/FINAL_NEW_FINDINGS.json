@@ -1,0 +1,33 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "findings": [
+    {
+      "id": "NEW-211",
+      "note": "taxonomy vs OC-35 tension resolved via layered design",
+      "status": "FOUND_AND_FIXED (prior campaign)"
+    },
+    {
+      "failure": "tiling-disabled and tiles-missing step-10 skips printed console only, no machine-readable receipt",
+      "file": "ultimate_pipeline/pipeline_stages/stage_10_tile_qa.py",
+      "fix": "both paths now write step10_tile_qa_status.json SKIP (mirrors siblings); 13 boundary tests",
+      "id": "NEW-212",
+      "severity": "low",
+      "status": "FOUND_AND_FIXED"
+    },
+    {
+      "failure": "subprocess argv (--rpc-timeout/--startup-timeout) rejected by legacy record_route parser (exit 2 latent crash, proven offline)",
+      "file": "ultimate_pipeline/tools/run_auto_xodr_record.py",
+      "fix": "migrated to record_route_fixed (parses; manages timeouts internally); CLI-compat regression test",
+      "id": "NEW-213",
+      "severity": "medium",
+      "status": "FOUND_AND_FIXED"
+    },
+    {
+      "id": "TECH-DEBT-001",
+      "note": "67 inline env-flag parses + ~10 local helpers with inconsistent truthy sets (y vs no-y); consolidate to one shared helper post-closure",
+      "severity": "low",
+      "status": "DOCUMENTED (AFTER_RESEARCH_CLOSURE)"
+    }
+  ],
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}
