@@ -21,7 +21,49 @@ def audit(repo: Path) -> dict[str, Any]:
         rows.append({"stage": stage, "path": str(path), "source_present": exists, "partial_naming": any(token in text for token in (".tmp", ".partial", "part-")), "atomic_rename": "replace" in text or "rename" in text or "os.replace" in text, "checkpoint_or_resume": any(token in text.lower() for token in ("checkpoint", "resume", "rebuild")), "hash_verification": "sha256" in text, "safe_interruption_tested": False})
     failures = [row["stage"] for row in rows if not row["source_present"]]
     incomplete = [row["stage"] for row in rows if row["source_present"] and not row["hash_verification"]]
-    return {"schema": "failure_recovery_resume_audit/v1", "status": "FAIL" if failures else "INCOMPLETE" if incomplete else "PASS", "stages": rows, "failures": failures, "incomplete": incomplete, "limitations": ["No Unreal process interrupted; source/read-only audit plus safe synthetic tests only.", "No production artifact was manipulated."]}
+
+    # NEW-247: a stage whose recovery/resume capability was never actually
+    # exercised cannot be reported as verified. Previously PASS was derived only
+    # from "source file exists AND text mentions sha256", so an audit that
+    # admitted in its own limitations that no process was ever interrupted could
+    # still say PASS while reporting safe_interruption_tested=false everywhere.
+    untested_interruption = [
+        row["stage"] for row in rows if not row["safe_interruption_tested"]
+    ]
+    no_resume_capability = [
+        row["stage"]
+        for row in rows
+        if row["source_present"] and not row["checkpoint_or_resume"]
+    ]
+
+    if failures:
+        status = "FAIL"
+    elif untested_interruption or no_resume_capability or incomplete:
+        # INCOMPLETE, not PASS: nothing here is a verified recovery result.
+        status = "INCOMPLETE"
+    else:
+        status = "PASS"
+
+    return {
+        "schema": "failure_recovery_resume_audit/v2",
+        "status": status,
+        "stages": rows,
+        "failures": failures,
+        "incomplete": incomplete,
+        "safe_interruption_untested_stages": untested_interruption,
+        "stages_without_resume_capability": no_resume_capability,
+        "pass_criteria": (
+            "PASS requires every stage to have been actually interrupted and recovered "
+            "from, and to expose a checkpoint/resume capability. A source-text audit "
+            "alone can never yield PASS."
+        ),
+        "limitations": [
+            "No Unreal process interrupted; source/read-only audit plus safe synthetic tests only.",
+            "No production artifact was manipulated.",
+            "Recovery/resume behaviour was NOT executed for any stage, so no stage is "
+            "certified as interrupt-safe by this audit.",
+        ],
+    }
 
 
 if __name__ == "__main__":

@@ -126,6 +126,12 @@ def test_evaluate_model_reports_a_clear_error_when_no_paired_files_exist(tmp_pat
     report a fake 0.0 mIoU as if 0 real frames were evaluated; it must surface an
     explicit error so a mismatched --camera flag is caught immediately, not mistaken
     for a real (if bad) RQ3-mIoU number.
+
+    NEW-240 tightened this further: an evaluation that measured nothing must not
+    carry a *numeric* metric at all. ``mIoU = 0.0`` is a measurement; "no frames
+    exist" is missing evidence, and the two must not share a representation. The
+    report therefore carries ``status="failed"``, ``mIoU is None`` and an
+    ``errors`` list, so no downstream consumer can read a fake zero.
     """
     dataset_root = tmp_path / "dataset"
     _write_labeled_dataset(dataset_root, "front_left_camera", n=2)
@@ -144,5 +150,8 @@ def test_evaluate_model_reports_a_clear_error_when_no_paired_files_exist(tmp_pat
     )
 
     assert result["frames_count"] == 0
-    assert result["mIoU"] == 0.0
+    assert result["status"] == "failed"
+    assert result["mIoU"] is None
+    assert result["pixel_accuracy"] is None
+    assert "no_paired_frames" in result["errors"]
     assert "error" in result and "front" in result["error"]

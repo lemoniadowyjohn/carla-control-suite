@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Dict, List, Tuple
 
 import numpy as np
 from PIL import Image
@@ -56,6 +57,99 @@ class SegDataset(Dataset):
     def __getitem__(self, idx):
         rgb_path = self.items[idx]
         lab_path = self.lab_dir / rgb_path.name
+        img = Image.open(rgb_path).convert("RGB")
+        lab = Image.open(lab_path).convert("L")
+
+        x = TF.to_tensor(img)
+        arr = np.array(lab, dtype=np.uint8)
+        assert_label_ids_in_range(arr)
+        y = torch.from_numpy(arr.astype(np.int64))
+        return x, y
+
+
+class MultiRootSegDataset(Dataset):
+    """NEW-234: train on a true union of K dataset roots.
+
+    The RQ5 K-sweep varies K = number of generated maps used for training. A
+    single-root dataset cannot express that: passing only ``dataset_roots[0]`` to
+    the trainer meant K=1, K=3 and K=5 could all train on the same first
+    dataset while their manifests claimed 1/3/5 roots.
+
+    This dataset indexes ``(root, rgb_path, lab_path)`` triples across every
+    supplied root. Only *paired* frames are indexed -- a root that has an RGB
+    frame with no matching label would otherwise raise deep inside
+    ``__getitem__`` at batch time, i.e. after the run has already been recorded.
+
+    The member order is deterministic: roots in the order supplied, frames
+    sorted by filename within each root. That keeps the K-sweep reproducible for
+    a fixed seed and keeps ``limit`` slicing meaningful.
+    """
+
+    def __init__(self, roots, cam: str, limit: int = 0):
+        if isinstance(roots, (str, Path)):
+            roots = [roots]
+        roots = [Path(r) for r in (roots or [])]
+        if not roots:
+            raise ValueError("MultiRootSegDataset requires at least one dataset root")
+        if len(roots) != len({str(r.resolve()) for r in roots if r.exists()}):
+            raise ValueError(
+                "MultiRootSegDataset received duplicate dataset roots: "
+                + ", ".join(str(r) for r in roots)
+            )
+
+        self.roots = roots
+        self.camera = str(cam)
+        self.items: List[Tuple[Path, Path]] = []
+        self.unpaired_rgb: List[str] = []
+        self.unpaired_labels: List[str] = []
+
+        for root in roots:
+            rgb_dir = root / "rgb" / self.camera
+            lab_dir = root / "semseg_raw" / self.camera
+            if not rgb_dir.is_dir() or not lab_dir.is_dir():
+                raise FileNotFoundError(
+                    f"dataset root {root} does not contain both rgb/{self.camera} and "
+                    f"semseg_raw/{self.camera}"
+                )
+            rgb_names = {p.name for p in rgb_dir.glob("*.png")}
+            lab_names = {p.name for p in lab_dir.glob("*.png")}
+            for name in sorted(rgb_names - lab_names):
+                self.unpaired_rgb.append(f"{root.as_posix()}/rgb/{self.camera}/{name}")
+            for name in sorted(lab_names - rgb_names):
+                self.unpaired_labels.append(
+                    f"{root.as_posix()}/semseg_raw/{self.camera}/{name}"
+                )
+            for name in sorted(rgb_names & lab_names):
+                self.items.append((rgb_dir / name, lab_dir / name))
+
+        if not self.items:
+            raise FileNotFoundError(
+                f"no paired rgb/semseg_raw/<{self.camera}> frames found across roots: "
+                + ", ".join(r.as_posix() for r in roots)
+            )
+
+        if limit and limit > 0:
+            self.items = self.items[:limit]
+
+    @property
+    def root_frame_counts(self) -> Dict[str, int]:
+        """Frames contributed by each root, for manifest/evidence recording."""
+        counts: Dict[str, int] = {r.as_posix(): 0 for r in self.roots}
+        for rgb_path, _ in self.items:
+            for root in self.roots:
+                try:
+                    rgb_path.relative_to(root)
+                except ValueError:
+                    continue
+                counts[root.as_posix()] += 1
+                break
+        return counts
+
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, idx):
+        rgb_path, lab_path = self.items[idx]
         img = Image.open(rgb_path).convert("RGB")
         lab = Image.open(lab_path).convert("L")
 
@@ -163,3 +257,8 @@ if __name__ == "__main__":
 # Some helper launchers in this repo expect a class name called
 # `SemanticSegDataset`. Keep an alias so imports don't explode.
 SemanticSegDataset = SegDataset
+
+# NEW-234: explicit alias for the governed multi-root variant used by the RQ5
+# K-sweep. Kept separate from ``SemanticSegDataset`` so existing single-root
+# callers (and their expectations) are unchanged.
+MultiRootSemanticSegDataset = MultiRootSegDataset
