@@ -19,8 +19,8 @@ Required receipt per process::
      "finished_at_utc": "...", "returncode": 0,
      "stdout_path": "...", "stderr_path": "...", "status": "PASS"}
 
-Statuses: PASS | FAIL | TIMEOUT | SPAWN_ERROR | CANCELLED. No unknown state
-may become PASS. Any mandatory failure raises :class:`ImportProcessError`
+Statuses: PASS | FAIL | TIMEOUT | SPAWN_ERROR | CANCELLED | OUTPUT_MISSING.
+No unknown state may become PASS. Any mandatory failure raises :class:`ImportProcessError`
 so callers cannot proceed downstream.
 """
 
@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence
 
-ALLOWED_STATUSES = ("PASS", "FAIL", "TIMEOUT", "SPAWN_ERROR", "CANCELLED")
+ALLOWED_STATUSES = ("PASS", "FAIL", "TIMEOUT", "SPAWN_ERROR", "CANCELLED", "OUTPUT_MISSING")
 
 
 class ImportProcessError(RuntimeError):
@@ -67,6 +67,7 @@ class ImportProcessResult:
 
     def to_dict(self) -> Dict:
         return {
+            "argv": list(self.command),
             "command": list(self.command),
             "cwd": self.cwd,
             "started_at_utc": self.started_at_utc,
@@ -226,7 +227,7 @@ def run_mandatory_process(
     missing = [p for p in expected if not Path(p).exists()]
     if missing:
         result = ImportProcessResult(
-            status="FAIL", command=cmd, cwd=workdir,
+            status="OUTPUT_MISSING", command=cmd, cwd=workdir,
             started_at_utc=started, finished_at_utc=_utc_now_iso(),
             returncode=returncode, stdout_path=stdout_path,
             stderr_path=stderr_path,
@@ -246,7 +247,7 @@ def run_mandatory_process(
             raise ImportProcessError(
                 f"required output unreadable: {hashed_path}: {exc}",
                 receipt=ImportProcessResult(
-                    status="FAIL", command=cmd, cwd=workdir,
+                    status="OUTPUT_MISSING", command=cmd, cwd=workdir,
                     started_at_utc=started, finished_at_utc=_utc_now_iso(),
                     returncode=returncode, stdout_path=stdout_path,
                     stderr_path=stderr_path,

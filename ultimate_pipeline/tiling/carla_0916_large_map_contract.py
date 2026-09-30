@@ -61,12 +61,14 @@ class PackageIdentity:
     package_root: str
     map_name: str
     build_id: str = "carla-0.9.16"
+    import_manifest_sha256: str = ""
 
     def to_dict(self) -> Dict[str, str]:
         return {
             "requested_package": self.requested_package,
             "resolved_package": self.resolved_package,
             "import_manifest": self.import_manifest,
+            "import_manifest_sha256": self.import_manifest_sha256,
             "source_json": self.source_json,
             "source_json_sha256": self.source_json_sha256,
             "package_root": self.package_root,
@@ -137,6 +139,7 @@ def resolve_package_identity(
                     "resolved_package": resolved_package})
     manifest_candidates = list(package_dir.glob("*.large_map_package.json"))
     manifest = str(manifest_candidates[0]) if manifest_candidates else ""
+    manifest_sha256 = _sha256_file(Path(manifest)) if manifest else ""
     if manifest:
         try:
             mdoc = json.loads(Path(manifest).read_text(encoding="utf-8"))
@@ -156,6 +159,7 @@ def resolve_package_identity(
         requested_package=requested_package.strip(),
         resolved_package=resolved_package,
         import_manifest=manifest,
+        import_manifest_sha256=manifest_sha256,
         source_json=str(source),
         source_json_sha256=_sha256_file(source),
         package_root=str(package_dir),

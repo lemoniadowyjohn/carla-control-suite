@@ -195,6 +195,11 @@ GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
     "carla_structural_compatibility": GateClass.STRUCTURAL_INTEGRITY,
     "lane_connectivity": GateClass.STRUCTURAL_INTEGRITY,
     "topology_spec": GateClass.STRUCTURAL_INTEGRITY,
+    "required_artifact_presence": GateClass.STRUCTURAL_INTEGRITY,
+    # Runtime-dependent (non-waivable)
+    "runtime_map_identity": GateClass.RUNTIME_DEPENDENT,
+    "carla_runtime_identity": GateClass.RUNTIME_DEPENDENT,
+    "runtime_map": GateClass.RUNTIME_DEPENDENT,
     # Quality deviations (waivable with governed justification)
     "component_reachability": GateClass.QUALITY_DEVIATION,
     "lane_width": GateClass.QUALITY_DEVIATION,

@@ -103,7 +103,7 @@ def test_success_missing_output_stops(tmp_path):
                               log_dir=str(tmp_path / "logs"),
                               platform="posix", runner=_ok_runner,
                               expected_outputs=[str(tmp_path / "nope.fbx")])
-    assert excinfo.value.receipt["status"] == "FAIL"
+    assert excinfo.value.receipt["status"] == "OUTPUT_MISSING"
     assert "required output absent" in str(excinfo.value)
 
 
@@ -191,7 +191,9 @@ def test_receipt_schema(tmp_path):
                                    log_dir=str(tmp_path / "logs"),
                                    runner=_ok_runner)
     receipt = result.to_dict()
-    for key in ("command", "cwd", "started_at_utc", "finished_at_utc",
-                "returncode", "stdout_path", "stderr_path", "status"):
+    for key in ("argv", "command", "cwd", "started_at_utc", "finished_at_utc",
+                "returncode", "stdout_path", "stderr_path", "status",
+                "expected_outputs"):
         assert key in receipt
     assert receipt["status"] == "PASS"
+    assert receipt["argv"] == ["fake-import"]
