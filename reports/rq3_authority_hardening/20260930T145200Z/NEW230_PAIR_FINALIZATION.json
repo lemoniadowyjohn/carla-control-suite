@@ -1,0 +1,23 @@
+{
+  "finding_id": "NEW-230",
+  "title": "Atomic pair manifest and finalization",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_perception_pair.py"
+  ],
+  "tests": [
+    "finalize_run_pack called with all evidence artifacts",
+    "SUCCESS.txt bound to manifest_sha256 and signature_sha256",
+    "key artifacts include: pair_manifest, perception_status, protocol_snapshot, strict_provenance, metrics, determinism_links, arm manifests, recorder manifests, rig_verification, capture_status",
+    "mandatory key_paths ensures all artifacts present"
+  ],
+  "adversarial_tests": [
+    "missing artifact -> FAIL",
+    "tampered artifact -> FAIL",
+    "SUCCESS.txt without signature.json -> FAIL",
+    "SUCCESS.txt with wrong manifest digest -> FAIL"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": "Tests need to be written"
+}

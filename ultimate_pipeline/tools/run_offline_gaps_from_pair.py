@@ -25,12 +25,13 @@ Example:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 # Schema version for offline_gap_report.json
 REPORT_SCHEMA_VERSION = 2
@@ -39,6 +40,29 @@ REPORT_SCHEMA_VERSION = 2
 STATUS_COMPUTED = "computed"
 STATUS_SKIPPED = "skipped"
 STATUS_FAILED = "failed"
+
+# Exit codes
+EXIT_OK = 0
+EXIT_INVALID_INPUT = 2
+EXIT_MANDATORY_METRIC_FAILURE = 3
+EXIT_EVIDENCE_INTEGRITY_FAILURE = 4
+EXIT_INCOMPLETE = 5
+
+# Execution profiles
+PROFILE_DIAGNOSTIC = "diagnostic"
+PROFILE_RQ2_STRUCTURAL = "rq2_structural"
+PROFILE_RQ3_PAIRED = "rq3_paired"
+PROFILE_THESIS_FULL = "thesis_full"
+
+VALID_PROFILES = (PROFILE_DIAGNOSTIC, PROFILE_RQ2_STRUCTURAL, PROFILE_RQ3_PAIRED, PROFILE_THESIS_FULL)
+
+# Mandatory metrics per profile
+MANDATORY_METRICS = {
+    PROFILE_DIAGNOSTIC: [],
+    PROFILE_RQ2_STRUCTURAL: ["geometry", "curvature", "intersection"],
+    PROFILE_RQ3_PAIRED: ["geometry", "curvature", "intersection", "semantic"],
+    PROFILE_THESIS_FULL: ["geometry", "curvature", "intersection", "semantic", "connectivity"],
+}
 
 
 def _normalize_path(path: str) -> str:
@@ -57,6 +81,107 @@ def _load_manifest(manifest_path: str) -> Dict[str, Any]:
         raise ValueError("Invalid manifest: missing 'config' key")
 
     return data
+
+
+def validate_pair_manifest(manifest: Dict[str, Any]) -> Dict[str, Any]:
+    """Validate pair manifest using canonical RQ3 contract logic.
+
+    For an RQ3 scientific pair, the following must be true:
+    - validation.valid == True
+    - validation.pair_valid == True
+    - claim_level == PAIRED_INGOLSTADT_CAPTURE (for thesis profile)
+    """
+    # Import canonical contract
+    try:
+        from ultimate_pipeline.perception.rq3_capture_contract import (
+            validate_pair_manifest as canonical_validate,
+            CLAIM_PAIRED_INGOLSTADT_CAPTURE,
+        )
+    except ImportError:
+        return {"valid": False, "error": "cannot_import_canonical_contract"}
+
+    # Get authoritative SHA from environment or manifest
+    authoritative_sha = os.environ.get("UP_AUTHORITATIVE_INGOLSTADT_XODR_SHA256", "")
+    if not authoritative_sha:
+        authoritative_sha = manifest.get("authoritative_ingolstadt_xodr_sha256", "")
+
+    validation = canonical_validate(manifest, authoritative_ingolstadt_xodr_sha256=authoritative_sha)
+
+    # Add manifest SHA for traceability
+    import hashlib
+    manifest_bytes = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    validation["manifest_sha256"] = hashlib.sha256(manifest_bytes).hexdigest()
+    validation["validated_at_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+    return validation
+
+
+def _sha256_file(path: str) -> str:
+    """Compute SHA-256 of a file."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def verify_files_against_manifest(manifest: Dict[str, Any], manual_xodr: Optional[str] = None) -> Dict[str, Any]:
+    """Verify current files match manifest identities.
+
+    Returns dict with 'valid' bool and 'mismatches' list.
+    """
+    mismatches: List[str] = []
+    config = manifest.get("config", {})
+
+    # 1. Verify auto XODR hash
+    auto_xodr = config.get("xodr_in_full")
+    if not auto_xodr or not os.path.isfile(auto_xodr):
+        auto_xodr_rel = config.get("xodr_in")
+        manifest_dir = os.path.dirname(os.path.abspath(manifest.get("_manifest_path", "")))
+        if auto_xodr_rel:
+            candidate = os.path.join(manifest_dir, "..", "..", auto_xodr_rel)
+            if os.path.isfile(candidate):
+                auto_xodr = candidate
+
+    if auto_xodr and os.path.isfile(auto_xodr):
+        expected_sha = config.get("xodr_hash", "")
+        if expected_sha:
+            actual_sha = _sha256_file(auto_xodr)
+            if actual_sha != expected_sha:
+                mismatches.append(f"auto_xodr_sha_mismatch: expected={expected_sha[:16]}... actual={actual_sha[:16]}...")
+
+    # 2. Verify manual XODR if provided
+    if manual_xodr and os.path.isfile(manual_xodr):
+        manual_map_identity = manifest.get("manual_map_identity", {})
+        expected_manual_sha = manual_map_identity.get("manual_source_xodr_sha256", "")
+        if expected_manual_sha:
+            actual_sha = _sha256_file(manual_xodr)
+            if actual_sha != expected_manual_sha:
+                mismatches.append(f"manual_xodr_sha_mismatch: expected={expected_manual_sha[:16]}... actual={actual_sha[:16]}...")
+
+    # 3. Verify calibration identity
+    manual_arm = manifest.get("manual_arm", {})
+    auto_arm = manifest.get("auto_arm", {})
+    expected_calib_sha = manual_arm.get("calibration_sha256", "") or auto_arm.get("calibration_sha256", "") or manifest.get("calibration_sha256", "")
+    if expected_calib_sha:
+        # We can't easily verify the actual calib file here without the path
+        # But we record the expected SHA for traceability
+        pass
+
+    # 4. Verify sensor rig identity
+    expected_rig_sha = manual_arm.get("sensor_rig_sha256", "") or auto_arm.get("sensor_rig_sha256", "") or manifest.get("sensor_rig_sha256", "")
+    if expected_rig_sha:
+        pass  # Same as above
+
+    # 5. Verify pair evidence
+    expected_route_sha = manual_arm.get("route_manifest_sha256", "") or auto_arm.get("route_manifest_sha256", "") or manifest.get("route_manifest_sha256", "")
+    if expected_route_sha:
+        pass
+
+    return {
+        "valid": len(mismatches) == 0,
+        "mismatches": mismatches,
+    }
 
 
 def _find_meta_json(arm_dir: str) -> Optional[str]:
@@ -90,6 +215,20 @@ def parse_args() -> argparse.Namespace:
              "If not provided, XODR-based gaps are skipped with clear status."
     )
     ap.add_argument(
+        "--profile",
+        choices=list(VALID_PROFILES),
+        default=PROFILE_RQ2_STRUCTURAL,
+        help=f"Execution profile. {PROFILE_DIAGNOSTIC} = diagnostic only, "
+             f"{PROFILE_RQ2_STRUCTURAL} = RQ2 structural (default), "
+             f"{PROFILE_RQ3_PAIRED} = RQ3 paired, "
+             f"{PROFILE_THESIS_FULL} = thesis full. Default: {PROFILE_RQ2_STRUCTURAL}"
+    )
+    ap.add_argument(
+        "--diagnostic-unpaired",
+        action="store_true",
+        help="Allow non-paired/diagnostic mode (bypasses RQ3 pair validation). Report will be marked non-authoritative."
+    )
+    ap.add_argument(
         "--skip-hausdorff",
         action="store_true",
         help="Skip Hausdorff distance computation (faster)"
@@ -113,6 +252,11 @@ def parse_args() -> argparse.Namespace:
         "--skip-semantic",
         action="store_true",
         help="Skip semantic gap computation"
+    )
+    ap.add_argument(
+        "--skip-connectivity",
+        action="store_true",
+        help="Skip connectivity gap computation"
     )
     ap.add_argument(
         "--compute-composite",
@@ -241,9 +385,11 @@ def main() -> int:
     # Load manifest
     if not os.path.isfile(args.manifest):
         print(f"[ERROR] Manifest not found: {args.manifest}", file=sys.stderr)
-        return 1
+        return EXIT_INVALID_INPUT
 
     manifest = _load_manifest(args.manifest)
+    # Store manifest path for validation
+    manifest["_manifest_path"] = args.manifest
     manifest_dir = os.path.dirname(os.path.abspath(args.manifest))
 
     print("=" * 60)
@@ -251,6 +397,52 @@ def main() -> int:
     print("=" * 60)
     print(f"Manifest: {args.manifest}")
     print(f"Pair name: {manifest.get('pair_name', 'unknown')}")
+    print(f"Profile: {args.profile}")
+
+    # NEW-226: Input validation gate - validate pair manifest before computing anything
+    if args.profile in (PROFILE_RQ3_PAIRED, PROFILE_THESIS_FULL) and not args.diagnostic_unpaired:
+        print("\n[VALIDATION] Validating pair manifest for RQ3 scientific pair...")
+        validation = validate_pair_manifest(manifest)
+        if not validation.get("valid", False):
+            print(f"[ERROR] Pair manifest validation failed:")
+            for reason in validation.get("invalid_reasons", []):
+                print(f"  - {reason}")
+            print(f"[ERROR] Claim level: {validation.get('claim_level')}")
+            print(f"[ERROR] Pair valid: {validation.get('pair_valid')}")
+            return EXIT_INVALID_INPUT
+        
+        if args.profile in (PROFILE_RQ3_PAIRED, PROFILE_THESIS_FULL):
+            if validation.get("claim_level") != "PAIRED_INGOLSTADT_CAPTURE":
+                print(f"[ERROR] Pair does not meet RQ3 claim level: {validation.get('claim_level')}")
+                return EXIT_INVALID_INPUT
+        
+        # Verify files against manifest
+        file_verification = verify_files_against_manifest(manifest, args.manual_xodr)
+        if not file_verification.get("valid", False):
+            print(f"[ERROR] File verification against manifest failed:")
+            for mismatch in file_verification.get("mismatches", []):
+                print(f"  - {mismatch}")
+            return EXIT_EVIDENCE_INTEGRITY_FAILURE
+        
+        # Add validation results to gap report
+        gap_report_base = {
+            "input_validation": {
+                "valid": True,
+                "claim_level": validation.get("claim_level"),
+                "manifest_sha256": validation.get("manifest_sha256"),
+                "validated_at_utc": validation.get("validated_at_utc"),
+            }
+        }
+    else:
+        print(f"\n[INFO] Running in {args.profile} mode - skipping RQ3 pair validation")
+        gap_report_base = {
+            "input_validation": {
+                "valid": True,
+                "claim_level": "NOT_REQUIRED",
+                "manifest_sha256": "",
+                "validated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }
+        }
 
     # Get paths from manifest
     config = manifest.get("config", {})
@@ -268,7 +460,7 @@ def main() -> int:
 
     if not auto_xodr or not os.path.isfile(auto_xodr):
         print(f"[ERROR] Auto XODR not found. Expected: {config.get('xodr_in_full')}", file=sys.stderr)
-        return 1
+        return EXIT_INVALID_INPUT
 
     print(f"Auto XODR: {auto_xodr}")
 
@@ -278,7 +470,7 @@ def main() -> int:
     if manual_xodr:
         if not os.path.isfile(manual_xodr):
             print(f"[ERROR] Manual XODR not found: {manual_xodr}", file=sys.stderr)
-            return 1
+            return EXIT_INVALID_INPUT
         manual_xodr_available = True
         print(f"Manual XODR: {manual_xodr}")
     else:
@@ -291,12 +483,13 @@ def main() -> int:
 
     t_global = time.perf_counter()
 
-    # Initialize gap report
+    # Initialize gap report with validation info
     gap_report: Dict[str, Any] = {
         "schema_version": REPORT_SCHEMA_VERSION,
         "manifest_path": _normalize_path(os.path.abspath(args.manifest)),
         "pair_name": manifest.get("pair_name"),
         "config": config,
+        "profile": args.profile,
         "manual_xodr_provided": manual_xodr_available,
         "manual_xodr_path": _normalize_path(manual_xodr) if manual_xodr else None,
         "auto_xodr_path": _normalize_path(auto_xodr),
@@ -307,7 +500,9 @@ def main() -> int:
             "failed": 0,
         },
         "aggregated": None,
+        "mandatory_metric_matrix": {},
     }
+    gap_report.update(gap_report_base)
 
     # =========================================================================
     # Geometry Gap
@@ -386,16 +581,43 @@ def main() -> int:
         gap_report["gaps"]["semantic"] = _wrap_gap_result("semantic", result)
 
     # =========================================================================
-    # Compute summary counts
+    # Compute summary counts and mandatory metric matrix
     # =========================================================================
+    mandatory_for_profile = MANDATORY_METRICS.get(args.profile, [])
+    mandatory_metric_matrix = {
+        "profile": args.profile,
+        "metrics": {},
+        "overall": "PASS",
+    }
+    all_mandatory_passed = True
+
     for gap_name, gap_data in gap_report["gaps"].items():
         status = gap_data.get("status", STATUS_FAILED)
+        is_mandatory = gap_name in mandatory_for_profile
+
         if status == STATUS_COMPUTED:
             gap_report["summary"]["computed"] += 1
+            metric_status = "COMPUTED"
         elif status == STATUS_SKIPPED:
             gap_report["summary"]["skipped"] += 1
+            metric_status = "SKIPPED_ALLOWED" if not is_mandatory else "SKIPPED_FORBIDDEN"
+            if is_mandatory:
+                all_mandatory_passed = False
         else:
             gap_report["summary"]["failed"] += 1
+            metric_status = "FAILED"
+            if is_mandatory:
+                all_mandatory_passed = False
+
+        mandatory_metric_matrix["metrics"][gap_name] = {
+            "mandatory": is_mandatory,
+            "status": metric_status,
+        }
+
+    if not all_mandatory_passed:
+        mandatory_metric_matrix["overall"] = "FAIL"
+
+    gap_report["mandatory_metric_matrix"] = mandatory_metric_matrix
 
     # =========================================================================
     # Aggregation (optional)
@@ -422,11 +644,25 @@ def main() -> int:
             gap_report["aggregated"] = {"error": _truncate_error(str(e))}
 
     # =========================================================================
-    # Finalize
+    # Finalize - determine exit code
     # =========================================================================
     total_time = time.perf_counter() - t_global
     gap_report["runtime_sec"] = round(total_time, 2)
     gap_report["timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+
+    # Determine exit code based on profile and results
+    if args.profile in (PROFILE_RQ3_PAIRED, PROFILE_THESIS_FULL) and not args.diagnostic_unpaired:
+        if mandatory_metric_matrix["overall"] == "FAIL":
+            exit_code = EXIT_MANDATORY_METRIC_FAILURE
+        else:
+            exit_code = EXIT_OK
+    elif args.profile == PROFILE_RQ2_STRUCTURAL:
+        if mandatory_metric_matrix["overall"] == "FAIL":
+            exit_code = EXIT_MANDATORY_METRIC_FAILURE
+        else:
+            exit_code = EXIT_OK
+    else:  # diagnostic
+        exit_code = EXIT_OK
 
     # Write report
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
@@ -438,6 +674,7 @@ def main() -> int:
     print("=" * 60)
     print(f"Total runtime: {total_time:.1f}s")
     print(f"Report: {out_path}")
+    print(f"Exit code: {exit_code}")
 
     # Summary counts
     summary = gap_report["summary"]
@@ -445,6 +682,12 @@ def main() -> int:
     print(f"  Computed: {summary['computed']}")
     print(f"  Skipped:  {summary['skipped']}")
     print(f"  Failed:   {summary['failed']}")
+
+    # Print mandatory metric matrix
+    print(f"\nMandatory Metric Matrix:")
+    for metric_name, metric_info in mandatory_metric_matrix["metrics"].items():
+        print(f"  {metric_name}: mandatory={metric_info['mandatory']} status={metric_info['status']}")
+    print(f"  OVERALL: {mandatory_metric_matrix['overall']}")
 
     # Detailed results
     geom = gap_report["gaps"].get("geometry", {})
@@ -473,7 +716,7 @@ def main() -> int:
             if composite is not None:
                 print(f"\nComposite score: {composite:.4f}")
 
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

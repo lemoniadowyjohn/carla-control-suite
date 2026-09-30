@@ -1,0 +1,25 @@
+{
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "canonical_branch": "integration/production-large-map-20260918",
+  "canonical_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "work_branch": "hardening/rq3-domain-gap-authority",
+  "worktree_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-rq3-hardening",
+  "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "current_rq3_modules": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "ultimate_pipeline/config/thesis_contract.py",
+    "ultimate_pipeline/tools/run_perception_pair.py",
+    "ultimate_pipeline/tools/run_perception_safe.py",
+    "ultimate_pipeline/tools/run_offline_gaps_from_pair.py",
+    "ultimate_pipeline/perception/perception_metrics.py",
+    "ultimate_pipeline/sensors/recorder.py",
+    "ultimate_pipeline/run_full_domain_gap.py",
+    "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py",
+    "ultimate_pipeline/utils/run_provenance.py",
+    "ultimate_pipeline/utils/finalize_run_pack.py"
+  ],
+  "current_pair_runner": "ultimate_pipeline/tools/run_perception_pair.py",
+  "current_offline_consumer": "ultimate_pipeline/tools/run_offline_gaps_from_pair.py",
+  "current_tests": "tests/ (to be discovered)"
+}

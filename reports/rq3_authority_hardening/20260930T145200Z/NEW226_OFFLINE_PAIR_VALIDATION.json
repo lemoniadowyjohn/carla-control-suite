@@ -1,0 +1,21 @@
+{
+  "finding_id": "NEW-226",
+  "title": "Harden run_offline_gaps_from_pair.py - input validation",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_offline_gaps_from_pair.py"
+  ],
+  "tests": [
+    "validate_pair_manifest called before computation",
+    "verify_files_against_manifest checks XODR hashes"
+  ],
+  "adversarial_tests": [
+    "invalid pair manifest -> EXIT_INVALID_INPUT (2)",
+    "missing auto XODR -> EXIT_INVALID_INPUT (2)",
+    "XODR hash mismatch -> EXIT_EVIDENCE_INTEGRITY_FAILURE (4)",
+    "pair_valid mismatch -> validation failure"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": "Tests need to be written"
+}

@@ -1,0 +1,26 @@
+{
+  "finding_id": "NEW-225",
+  "title": "Prevent Stale Capture Recertification",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_perception_safe.py"
+  ],
+  "tests": [
+    "capture identity verification on offline reuse"
+  ],
+  "adversarial_tests": [
+    "same exact identity -> reuse allowed",
+    "different XODR -> reject",
+    "same filename, changed bytes -> reject",
+    "different calibration -> reject",
+    "different rig -> reject",
+    "different weather -> reject",
+    "different route -> reject",
+    "different capture configuration -> reject",
+    "tampered image after capture -> reject",
+    "missing capture identity -> reject in strict research mode"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": "Tests need to be written for adversarial matrix"
+}

@@ -1,0 +1,24 @@
+{
+  "finding_id": "NEW-231",
+  "title": "Domain-gap pass must require required metrics",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_offline_gaps_from_pair.py",
+    "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py"
+  ],
+  "tests": [
+    "mandatory_metric_matrix per profile in offline gaps",
+    "profile-based failure propagation in stage 12"
+  ],
+  "adversarial_tests": [
+    "all mandatory computed -> PASS",
+    "mandatory geometry failure -> FAIL",
+    "mandatory curvature failure -> FAIL",
+    "only optional visualization failure -> PASS",
+    "mandatory skipped -> FAIL",
+    "stage 12 thesis profile propagates failure"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": "Tests need to be written"
+}

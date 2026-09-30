@@ -572,13 +572,29 @@ def is_ingolstadt_manual_arm(map_identity: Mapping[str, Any]) -> bool:
     return requested in INGOLSTADT_MANUAL_COOKED_TOWNS
 
 
-def is_ingolstadt_auto_arm(map_identity: Mapping[str, Any], *, ingolstadt_xodr_sha256=None) -> bool:
+def is_ingolstadt_auto_arm(
+    map_identity: Mapping[str, Any],
+    *,
+    authoritative_xodr_sha256: str = "",
+) -> bool:
+    """Check if an automatic arm uses the authoritative Ingolstadt XODR.
+
+    An automatic arm may be classified as authoritative Ingolstadt ONLY if its
+    map identity is bound to an authoritative map record via exact XODR SHA-256.
+    Path/filename heuristics are prohibited.
+    """
     if map_identity.get("map_type") != "xodr":
         return False
-    if ingolstadt_xodr_sha256:
-        return str(map_identity.get("xodr_sha256", "")) == str(ingolstadt_xodr_sha256)
-    path = str(map_identity.get("xodr_path", "")).replace("\\", "/")
-    return "ingolstadt" in path.lower() or "campaigns/" in path.lower()
+
+    actual_sha = str(map_identity.get("xodr_sha256", "")).strip()
+    expected_sha = str(authoritative_xodr_sha256).strip()
+
+    if not expected_sha:
+        return False
+    if not actual_sha:
+        return False
+
+    return actual_sha == expected_sha
 
 
 # ---------------------------------------------------------------------------
@@ -591,9 +607,9 @@ def classify_claim_level(
     is_pair: bool,
     pair_valid: bool,
     route_valid: bool,
-    both_arms_ingolstadt: bool,
-    manual_arm: Optional[Mapping[str, Any]] = None,
-    auto_arm: Optional[Mapping[str, Any]] = None,
+    manual_map_identity: Optional[Mapping[str, Any]] = None,
+    auto_map_identity: Optional[Mapping[str, Any]] = None,
+    authoritative_ingolstadt_xodr_sha256: str = "",
 ) -> Dict[str, Any]:
     """Compute the maximum claim a capture is allowed to make.
 
@@ -603,6 +619,9 @@ def classify_claim_level(
         equality fails, the pair is invalid (never a protocol-valid pair).
       * A Town10HD/control arm yields SENSOR_SMOKE at most and can never be
         PAIRED_INGOLSTADT_CAPTURE.
+      * The Ingolstadt claim requires BOTH arms to be independently verified as
+        Ingolstadt using the authoritative XODR SHA-256. Caller-supplied
+        `both_arms_ingolstadt` is NOT trusted; this function recomputes it.
     """
     reasons: List[str] = []
 
@@ -617,7 +636,18 @@ def classify_claim_level(
     if bool(reasons):
         return {"claim_level": CLAIM_UNPAIRED_CAPTURE, "reasons": reasons}
 
-    if both_arms_ingolstadt:
+    # Recompute Ingolstadt authority independently; do not trust caller.
+    manual_ingolstadt = False
+    auto_ingolstadt = False
+    if manual_map_identity is not None:
+        manual_ingolstadt = is_ingolstadt_manual_arm(manual_map_identity)
+    if auto_map_identity is not None:
+        auto_ingolstadt = is_ingolstadt_auto_arm(
+            auto_map_identity,
+            authoritative_xodr_sha256=authoritative_ingolstadt_xodr_sha256,
+        )
+
+    if manual_ingolstadt and auto_ingolstadt:
         return {"claim_level": CLAIM_PAIRED_INGOLSTADT_CAPTURE, "reasons": []}
 
     return {"claim_level": CLAIM_PAIRED_PROTOCOL_VALID, "reasons": []}
@@ -675,28 +705,53 @@ def build_pair_manifest(
     return manifest
 
 
-def validate_pair_manifest(manifest: Mapping[str, Any]) -> Dict[str, Any]:
+def validate_pair_manifest(
+    manifest: Mapping[str, Any],
+    *,
+    authoritative_ingolstadt_xodr_sha256: str = "",
+) -> Dict[str, Any]:
     """Fail-closed validation of an existing pair manifest.
 
     `pair_valid` may only be true when every mandatory equality holds and the
     claim-level boundary is respected.
+
+    Args:
+        manifest: The pair manifest to validate.
+        authoritative_ingolstadt_xodr_sha256: The authoritative XODR SHA-256 for
+            Ingolstadt. If empty, Ingolstadt claims will be rejected.
     """
     reasons: List[str] = []
     manual = manifest.get("manual_arm") or {}
     auto = manifest.get("auto_arm") or {}
 
-    for key in ("calibration_sha256", "sensor_rig_sha256", "weather_sha256",
-                "capture_config_sha256", "route_manifest_sha256"):
+    # NEW-200: Require mandatory identities on BOTH arms (not just top-level)
+    # Each mandatory identity must exist on top-level, manual arm, AND auto arm
+    mandatory_keys = (
+        "calibration_sha256",
+        "sensor_rig_sha256",
+        "weather_sha256",
+        "capture_config_sha256",
+        "route_manifest_sha256",
+    )
+    for key in mandatory_keys:
         ml = manual.get(key)
         al = auto.get(key)
         top = manifest.get(key)
+
+        # All three must be present and non-empty
         if not top:
-            reasons.append(f"{key}_missing")
-        if ml is not None and al is not None and ml != al:
+            reasons.append(f"{key}_top_missing")
+        if not ml:
+            reasons.append(f"{key}_manual_missing")
+        if not al:
+            reasons.append(f"{key}_auto_missing")
+
+        # All three must match exactly
+        if ml and al and ml != al:
             reasons.append(f"{key}_mismatch_manual_vs_auto:{ml}!={al}")
-        if ml is not None and top is not None and ml != top:
+        if ml and top and ml != top:
             reasons.append(f"{key}_mismatch_manual_vs_top:{ml}!={top}")
-        if al is not None and top is not None and al != top:
+        if al and top and al != top:
             reasons.append(f"{key}_mismatch_auto_vs_top:{al}!={top}")
 
     ml = manual.get("pair_frame_index")
@@ -704,15 +759,22 @@ def validate_pair_manifest(manifest: Mapping[str, Any]) -> Dict[str, Any]:
     if ml is not None and al is not None and ml != al:
         reasons.append("pair_frame_index_mismatch")
 
+    # NEW-200: Recompute pair_valid independently; do not trust declared value
+    computed_pair_valid = not bool(reasons)
+    declared_pair_valid = bool(manifest.get("pair_valid"))
+
+    if declared_pair_valid != computed_pair_valid:
+        reasons.append(f"pair_valid_mismatch:declared={declared_pair_valid},computed={computed_pair_valid}")
+
     claim = manifest.get("claim_level")
-    pair_valid = bool(manifest.get("pair_valid"))
+    pair_valid = computed_pair_valid
 
     if claim == CLAIM_PAIRED_INGOLSTADT_CAPTURE:
         manual_map = manifest.get("manual_map_identity") or {}
         auto_map = manifest.get("auto_map_identity") or {}
         if not is_ingolstadt_manual_arm(manual_map):
             reasons.append("claim_ingolstadt_requires_manual_ingolstadt_arm")
-        if not is_ingolstadt_auto_arm(auto_map):
+        if not is_ingolstadt_auto_arm(auto_map, authoritative_xodr_sha256=authoritative_ingolstadt_xodr_sha256):
             reasons.append("claim_ingolstadt_requires_auto_ingolstadt_xodr_arm")
     if claim == CLAIM_PAIRED_PROTOCOL_VALID and pair_valid and not reasons:
         pass

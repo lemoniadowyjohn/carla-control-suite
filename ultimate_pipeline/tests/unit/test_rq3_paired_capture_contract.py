@@ -172,9 +172,14 @@ def test_ingolstadt_manual_and_auto_arms():
     )
     assert is_ingolstadt_manual_arm(manual) is True
     auto = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr", xodr_sha256="def")
-    assert is_ingolstadt_auto_arm(auto) is True
+    # Path-based heuristic removed: must provide authoritative SHA
+    assert is_ingolstadt_auto_arm(auto, authoritative_xodr_sha256="") is False
+    assert is_ingolstadt_auto_arm(auto, authoritative_xodr_sha256="def") is True
+    assert is_ingolstadt_auto_arm(auto, authoritative_xodr_sha256="wrong") is False
     town10hd = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="ghi")
-    assert is_ingolstadt_auto_arm(town10hd) is False
+    # Authoritative SHA for Ingolstadt is "def", so town10hd with SHA "ghi" should not match
+    assert is_ingolstadt_auto_arm(town10hd, authoritative_xodr_sha256="def") is False
+    assert is_ingolstadt_auto_arm(town10hd, authoritative_xodr_sha256="") is False
 
 
 class _Pair:
@@ -299,14 +304,22 @@ def test_case03_calibration_differs_rejected():
     good_manifest["_validation"] = {}
     bad_manifest["_validation"] = {}
     assert good_manifest["manual_arm"]["calibration_sha256"] != bad_manifest["manual_arm"]["calibration_sha256"]
-    assert classify_claim_level(is_pair=True, pair_valid=False, route_valid=True, both_arms_ingolstadt=True)["claim_level"] == CLAIM_UNPAIRED_CAPTURE
+    assert classify_claim_level(
+        is_pair=True, pair_valid=False, route_valid=True,
+        manual_map_identity=_MANUAL, auto_map_identity=_AUTO,
+        authoritative_ingolstadt_xodr_sha256="",
+    )["claim_level"] == CLAIM_UNPAIRED_CAPTURE
 
 
 def test_case04_sensor_rig_differs_rejected():
     diff = _ok_pair(rig_sha="DIFFERENT")
     manifest = diff.build()
     assert manifest["sensor_rig_sha256"] == "DIFFERENT"
-    assert classify_claim_level(is_pair=True, pair_valid=False, route_valid=True, both_arms_ingolstadt=True)["claim_level"] == CLAIM_UNPAIRED_CAPTURE
+    assert classify_claim_level(
+        is_pair=True, pair_valid=False, route_valid=True,
+        manual_map_identity=_MANUAL, auto_map_identity=_AUTO,
+        authoritative_ingolstadt_xodr_sha256="",
+    )["claim_level"] == CLAIM_UNPAIRED_CAPTURE
 
 
 def test_case05_weather_differs_rejected():
@@ -315,7 +328,11 @@ def test_case05_weather_differs_rejected():
     assert w1["weather_sha256"] != w2["weather_sha256"]
     manifest = _ok_pair(weather_sha=w1["weather_sha256"]).build()
     assert manifest["weather_sha256"] == w1["weather_sha256"]
-    assert classify_claim_level(is_pair=True, pair_valid=False, route_valid=True, both_arms_ingolstadt=True)["claim_level"] == CLAIM_UNPAIRED_CAPTURE
+    assert classify_claim_level(
+        is_pair=True, pair_valid=False, route_valid=True,
+        manual_map_identity=_MANUAL, auto_map_identity=_AUTO,
+        authoritative_ingolstadt_xodr_sha256="",
+    )["claim_level"] == CLAIM_UNPAIRED_CAPTURE
 
 
 def test_case06_fixed_delta_differs_rejected():
@@ -338,7 +355,11 @@ def test_case08_partial_frames_after_timeout_incomplete():
 def test_case09_all_contracts_identical_protocol_valid():
     good = _ok_pair()
     manifest = good.build()
-    c = classify_claim_level(is_pair=True, pair_valid=True, route_valid=True, both_arms_ingolstadt=False)
+    c = classify_claim_level(
+        is_pair=True, pair_valid=True, route_valid=True,
+        manual_map_identity=_MANUAL, auto_map_identity=_AUTO,
+        authoritative_ingolstadt_xodr_sha256="",
+    )
     assert c["claim_level"] == CLAIM_PAIRED_PROTOCOL_VALID
     assert manifest["pair_valid"] is True
 
@@ -347,9 +368,14 @@ def test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture():
     pair = _ok_pair(auto_map=_AUTOTOWN10HD)
     manifest = pair.build()
     manual_ok = is_ingolstadt_manual_arm(manifest["manual_map_identity"])
-    auto_ok = is_ingolstadt_auto_arm(manifest["auto_map_identity"])
+    auto_ok = is_ingolstadt_auto_arm(manifest["auto_map_identity"], authoritative_xodr_sha256="")
     assert manual_ok is True and auto_ok is False
-    c = classify_claim_level(is_pair=True, pair_valid=True, route_valid=True, both_arms_ingolstadt=False)
+    c = classify_claim_level(
+        is_pair=True, pair_valid=True, route_valid=True,
+        manual_map_identity=manifest["manual_map_identity"],
+        auto_map_identity=manifest["auto_map_identity"],
+        authoritative_ingolstadt_xodr_sha256="",
+    )
     assert c["claim_level"] != CLAIM_PAIRED_INGOLSTADT_CAPTURE
     assert c["claim_level"] == CLAIM_PAIRED_PROTOCOL_VALID
 

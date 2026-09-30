@@ -1,0 +1,114 @@
+{
+  "nodes": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "ultimate_pipeline/config/thesis_contract.py",
+    "ultimate_pipeline/tools/run_perception_pair.py",
+    "ultimate_pipeline/tools/run_perception_safe.py",
+    "ultimate_pipeline/tools/run_offline_gaps_from_pair.py",
+    "ultimate_pipeline/perception/perception_metrics.py",
+    "ultimate_pipeline/sensors/recorder.py",
+    "ultimate_pipeline/run_full_domain_gap.py",
+    "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py",
+    "ultimate_pipeline/utils/run_provenance.py",
+    "ultimate_pipeline/utils/finalize_run_pack.py"
+  ],
+  "edges": [
+    {
+      "from": "ultimate_pipeline/tools/run_perception_pair.py",
+      "to": "ultimate_pipeline/config/thesis_contract.py",
+      "via": "import classify_pair_perception_result"
+    },
+    {
+      "from": "ultimate_pipeline/tools/run_perception_pair.py",
+      "to": "ultimate_pipeline/tools/run_perception_safe.py",
+      "via": "subprocess call"
+    },
+    {
+      "from": "ultimate_pipeline/tools/run_perception_pair.py",
+      "to": "ultimate_pipeline/tools/run_offline_gaps_from_pair.py",
+      "via": "CLI instruction output"
+    },
+    {
+      "from": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "to": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "via": "is_ingolstadt_auto_arm called by validate_pair_manifest"
+    },
+    {
+      "from": "ultimate_pipeline/config/thesis_contract.py",
+      "to": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "via": "NO direct call - independent authority (PROBLEM)"
+    }
+  ],
+  "functions": {
+    "is_ingolstadt_auto_arm": {
+      "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "line": 575,
+      "called_by": [
+        {
+          "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+          "line": 715,
+          "function": "validate_pair_manifest"
+        },
+        {
+          "file": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py",
+          "line": 175,
+          "function": "test_ingolstadt_manual_and_auto_arms"
+        },
+        {
+          "file": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py",
+          "line": 350,
+          "function": "test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture"
+        }
+      ]
+    },
+    "classify_pair_perception_result": {
+      "file": "ultimate_pipeline/config/thesis_contract.py",
+      "line": 128,
+      "called_by": [
+        {
+          "file": "ultimate_pipeline/tools/run_perception_pair.py",
+          "line": 462,
+          "function": "_write_perception_status"
+        }
+      ]
+    },
+    "classify_claim_level": {
+      "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "line": 589,
+      "called_by": [
+        {
+          "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+          "line": 710,
+          "function": "validate_pair_manifest"
+        }
+      ]
+    },
+    "validate_pair_manifest": {
+      "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "line": 678,
+      "called_by": []
+    },
+    "build_pair_manifest": {
+      "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "line": 631,
+      "called_by": [
+        {
+          "file": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py",
+          "line": 194,
+          "function": "_Pair.build"
+        }
+      ]
+    },
+    "run_offline_gaps_from_pair": {
+      "file": "ultimate_pipeline/tools/run_offline_gaps_from_pair.py",
+      "line": 239,
+      "called_by": [
+        {
+          "file": "ultimate_pipeline/tools/run_perception_pair.py",
+          "line": 2365,
+          "function": "main (CLI output)"
+        }
+      ]
+    }
+  }
+}

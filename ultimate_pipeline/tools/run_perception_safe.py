@@ -3618,6 +3618,165 @@ def _recording_satisfies_min_frames(recording_dir: Path, min_frames: int) -> boo
     return int(png_count) >= int(max(0, min_frames))
 
 
+# =============================================================================
+# NEW-225: Immutable Capture Identity & Reuse Contract
+# =============================================================================
+
+CAPTURE_IDENTITY_SCHEMA_VERSION = "capture_identity_v1"
+
+
+def _build_capture_identity(
+    *,
+    out_dir: Path,
+    recording_dir: Path,
+    pair_manifest: Dict[str, Any],
+    perception_status: Dict[str, Any],
+    map_name: str,
+    world_settings_payload: Dict[str, Any],
+    args: Any,
+    xodr_in_sha256: str,
+) -> Dict[str, Any]:
+    """Build immutable capture identity receipt.
+
+    This receipt binds the capture to its exact input identities and must never
+    be mutated after creation. Used to authenticate offline reuse.
+    """
+    inputs = pair_manifest.get("inputs", {}) if isinstance(pair_manifest, dict) else {}
+    status = pair_manifest.get("status", {}) if isinstance(pair_manifest, dict) else {}
+
+    # Dataset manifest SHA
+    dataset_manifest_path = out_dir / "dataset_manifest.json"
+    dataset_manifest_sha256 = safe_sha256_file(dataset_manifest_path) if dataset_manifest_path.exists() else ""
+
+    # Calibration SHA
+    calib_path = Path(perception_status.get("calib_path_resolved", "") or "")
+    calib_sha256 = safe_sha256_file(calib_path) if calib_path.exists() else ""
+
+    # Sensor rig SHA (from rig_verification.json)
+    rig_verification_path = out_dir / "rig_verification.json"
+    rig_sha256 = safe_sha256_file(rig_verification_path) if rig_verification_path.exists() else ""
+
+    # Weather SHA (from perception_status or run_info)
+    weather_params = perception_status.get("weather", {})
+    if isinstance(weather_params, dict):
+        import hashlib
+        import json
+        weather_sha256 = hashlib.sha256(json.dumps(weather_params, sort_keys=True).encode()).hexdigest()
+    else:
+        weather_sha256 = ""
+
+    # Capture config SHA
+    capture_config = {
+        "frames": int(args.frames),
+        "fps": float(args.fps),
+        "rig": str(args.rig),
+        "front_only": bool(args.front_only_strict),
+        "seg": bool(getattr(args, "seg", False)),
+        "lidar_format": str(getattr(args, "lidar_format", "npz")),
+        "vehicle": str(getattr(args, "vehicle", "vehicle.audi.a2")),
+        "seed": int(getattr(args, "seed", 42)),
+    }
+    import hashlib
+    import json
+    capture_config_sha256 = hashlib.sha256(json.dumps(capture_config, sort_keys=True).encode()).hexdigest()
+
+    # Route manifest SHA
+    route_manifest_sha256 = str(perception_status.get("route_manifest_sha256", "") or "")
+
+    # Map identity
+    map_identity = {
+        "type": "xodr" if args.xodr_in else "cooked",
+        "registry_identity": str(inputs.get("map_registry_identity", "") or ""),
+        "xodr_sha256": str(xodr_in_sha256),
+        "runtime_map_name": str(map_name),
+    }
+
+    # Software SHA
+    software_git_sha = str(run_info_payload.get("git_commit", "") or "") if 'run_info_payload' in locals() else ""
+
+    # CARLA versions
+    carla_client_version = str(perception_status.get("carla_client_version", "") or "")
+    carla_server_version = str(perception_status.get("carla_server_version", "") or "")
+
+    # Frame counts
+    frames_recorded = int(perception_status.get("frames_recorded", 0))
+    frames_requested = int(args.frames)
+
+    identity = {
+        "schema_version": CAPTURE_IDENTITY_SCHEMA_VERSION,
+        "dataset_manifest_sha256": dataset_manifest_sha256,
+        "map": map_identity,
+        "calibration_sha256": calib_sha256,
+        "sensor_rig_sha256": rig_sha256,
+        "weather_sha256": weather_sha256,
+        "capture_config_sha256": capture_config_sha256,
+        "route_manifest_sha256": route_manifest_sha256,
+        "software_git_sha": software_git_sha,
+        "carla_client_version": carla_client_version,
+        "carla_server_version": carla_server_version,
+        "frames": {
+            "requested": frames_requested,
+            "recorded": frames_recorded,
+        },
+        "artifact_manifest_sha256": safe_sha256_file(out_dir / "recorder_manifest.json") if (out_dir / "recorder_manifest.json").exists() else "",
+    }
+    return identity
+
+
+def _write_capture_identity(out_dir: Path, identity: Dict[str, Any]) -> Path:
+    """Write capture_identity.json atomically."""
+    path = out_dir / "capture_identity.json"
+    _write_json(path, identity)
+    return path
+
+
+def _read_capture_identity(out_dir: Path) -> Optional[Dict[str, Any]]:
+    """Read existing capture_identity.json."""
+    path = out_dir / "capture_identity.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _verify_capture_identity(
+    existing: Dict[str, Any],
+    requested: Dict[str, Any],
+) -> Tuple[bool, str]:
+    """Verify existing capture identity matches requested identity.
+
+    Returns (matches, reason). If matches is False, reuse is rejected.
+    """
+    mandatory_fields = [
+        "dataset_manifest_sha256",
+        "calibration_sha256",
+        "sensor_rig_sha256",
+        "weather_sha256",
+        "capture_config_sha256",
+        "route_manifest_sha256",
+    ]
+
+    for field in mandatory_fields:
+        existing_val = str(existing.get(field, "")).strip()
+        requested_val = str(requested.get(field, "")).strip()
+        if not existing_val:
+            return False, f"existing_{field}_missing"
+        if not requested_val:
+            return False, f"requested_{field}_missing"
+        if existing_val != requested_val:
+            return False, f"{field}_mismatch:existing={existing_val[:16]}...requested={requested_val[:16]}..."
+
+    # Map identity must also match
+    existing_map = existing.get("map", {})
+    requested_map = requested.get("map", {})
+    if existing_map.get("xodr_sha256") != requested_map.get("xodr_sha256"):
+        return False, f"map_xodr_sha256_mismatch"
+
+    return True, "identity_match"
+
+
 def _pick_primary_cam_dir(rgb_root: Path) -> Optional[Path]:
     cams = [p for p in rgb_root.iterdir() if p.is_dir()]
     cams.sort(key=lambda p: p.name)
@@ -4665,125 +4824,156 @@ def main() -> int:
                 raise _EarlyExit(EXIT_CODE_INFRA_FAILURE)
             raise _EarlyExit(2 if args.fail_nonzero else 0)
 
-        # Offline success path: if frames already exist, skip CARLA probes/capture and mark PASS.
+        # NEW-225: Immutable capture identity for offline reuse authentication
+        # Build the requested capture identity for this invocation
+        requested_capture_identity = _build_capture_identity(
+            out_dir=out_dir,
+            recording_dir=recording_dir,
+            pair_manifest=pair_manifest,
+            perception_status=perception_status,
+            map_name=map_name,
+            world_settings_payload=world_settings_payload,
+            args=args,
+            xodr_in_sha256=xodr_in_sha256,
+        )
+
+        # Offline success path: if frames already exist AND capture identity matches,
+        # skip CARLA probes/capture and mark PASS.
         if (
             (not bool(args.force_fresh_capture))
             and _recording_satisfies_min_frames(recording_dir, int(args.min_frames))
         ):
-            frames_recorded = (
-                _count_files(_find_rgb_root(recording_dir), ("*.png",))
-                if _find_rgb_root(recording_dir)
-                else 0
-            )
-            manifest_sync = _sync_recorder_manifest(
-                recording_dir,
-                out_dir,
-                fallback_timestamp=timestamp,
-                map_name=map_name,
-                world_settings_payload=world_settings_payload,
-            )
-            perception_status["recorder_manifest_path"] = str(manifest_sync.get("path", ""))
-            perception_status["recorder_manifest_recording_path"] = str(
-                manifest_sync.get("recording_path", "")
-            )
-            perception_status["recorder_manifest_root_copy_path"] = str(
-                manifest_sync.get("root_copy_path", "")
-            )
-            perception_status["recorder_manifest_written"] = bool(
-                manifest_sync.get("written", False)
-            )
-            perception_status["recorder_manifest_synthesized"] = bool(
-                manifest_sync.get("synthesized", False)
-            )
-            perception_status["recorder_manifest_source"] = str(
-                manifest_sync.get("data", {}).get("manifest_source", "")
-                if isinstance(manifest_sync.get("data"), dict)
-                else ""
-            )
-            if manifest_sync.get("error"):
-                perception_status["warnings"].append(
-                    f"recorder_manifest_write_failed:{manifest_sync.get('error')}"
-                )
-            if require_manifest_gate:
-                capture_status_payload = _read_capture_status_payload(recording_dir)
-                known_capture_failure = _enforce_manifest_gate_for_capture(
-                    require_manifest_gate=bool(require_manifest_gate),
-                    recording_dir=recording_dir,
-                    out_dir=out_dir,
-                    manifest_sync=manifest_sync,
-                    capture_status_payload=capture_status_payload,
-                )
-                if known_capture_failure:
-                    status["ok"] = False
-                    status["carla_failed"] = True
-                    status["failure_reason"] = str(known_capture_failure)
-                    perception_status["ok"] = False
-                    perception_status["failure_reason"] = str(known_capture_failure)
-                    if str(known_capture_failure) not in perception_status["warnings"]:
-                        perception_status["warnings"].append(str(known_capture_failure))
-                    copied_log = copy_latest_carla_log(out_dir)
-                    if copied_log:
-                        perception_status["carla_latest_log_path"] = str(copied_log)
-                else:
-                    _assert_recorder_manifest_integrity(
-                        recording_dir, out_dir, manifest_sync
-                    )
-            manifest_payload = (
-                manifest_sync.get("data", {})
-                if isinstance(manifest_sync.get("data"), dict)
-                else {}
-            )
-            semseg_files = _semseg_file_count(recording_dir, manifest_payload)
-            write_integrity = _build_write_integrity_status(
-                recording_dir=recording_dir, manifest_payload=manifest_payload
-            )
-            _write_json(out_dir / WRITE_INTEGRITY_STATUS_JSON, write_integrity)
-            perception_status["write_integrity_status_path"] = str(
-                out_dir / WRITE_INTEGRITY_STATUS_JSON
-            )
-            perception_status["semseg_files"] = int(semseg_files)
-            perception_status["corrupted_png_read"] = int(
-                write_integrity.get("corrupted_png_read", 0) or 0
-            )
-            perception_status["invalid_png_count"] = int(
-                write_integrity.get("invalid_png_count", 0) or 0
-            )
-            perception_status["queue_depth_at_shutdown"] = int(
-                write_integrity.get("queue_depth_at_shutdown", 0) or 0
-            )
-            corrupted_png = int(write_integrity.get("corrupted_png_read", 0) or 0)
-            # Offline short-circuit: existing RGB frames can satisfy default success
-            # without semseg requirements. Strict/evidence modes keep hard gates.
-            offline_reuse_block_reason = ""
-            if require_manifest_gate:
-                if int(semseg_files) <= 0:
-                    offline_reuse_block_reason = "semseg_missing"
-                elif corrupted_png != 0:
-                    offline_reuse_block_reason = "corrupted_png_read"
-            if offline_reuse_block_reason:
-                reuse_warning = f"offline_reuse_blocked:{offline_reuse_block_reason}"
-                if reuse_warning not in perception_status["warnings"]:
-                    perception_status["warnings"].append(reuse_warning)
+            # Check for existing capture identity
+            existing_capture_identity = _read_capture_identity(out_dir)
+            if existing_capture_identity is None:
+                perception_status["warnings"].append("offline_reuse_rejected:no_capture_identity")
+                offline_reuse_allowed = False
             else:
-                if require_manifest_gate:
-                    integrity_ok = bool(int(semseg_files) > 0 and corrupted_png == 0)
-                    integrity_reason = ""
+                identity_match, mismatch_reason = _verify_capture_identity(
+                    existing_capture_identity, requested_capture_identity
+                )
+                if not identity_match:
+                    perception_status["warnings"].append(f"offline_reuse_rejected:{mismatch_reason}")
+                    offline_reuse_allowed = False
                 else:
-                    integrity_ok = bool(int(frames_recorded) >= int(args.min_frames))
-                    integrity_reason = ""
-                    if not integrity_ok:
-                        integrity_reason = "insufficient_frames"
-                    elif int(semseg_files) <= 0:
-                        perception_status["warnings"].append("semseg_missing_optional")
-                    if corrupted_png != 0:
-                        perception_status["warnings"].append("corrupted_png_read_optional")
-                status["ok"] = bool(integrity_ok)
-                status["carla_failed"] = not bool(integrity_ok)
-                status["failure_reason"] = None if integrity_ok else integrity_reason
-                perception_status["ok"] = bool(integrity_ok)
-                perception_status["failure_reason"] = None if integrity_ok else integrity_reason
-                if not integrity_ok and integrity_reason not in perception_status["warnings"]:
-                    perception_status["warnings"].append(integrity_reason)
+                    offline_reuse_allowed = True
+
+            if offline_reuse_allowed:
+                perception_status["offline_reuse"] = "authenticated"
+                frames_recorded = (
+                    _count_files(_find_rgb_root(recording_dir), ("*.png",))
+                    if _find_rgb_root(recording_dir)
+                    else 0
+                )
+                manifest_sync = _sync_recorder_manifest(
+                    recording_dir,
+                    out_dir,
+                    fallback_timestamp=timestamp,
+                    map_name=map_name,
+                    world_settings_payload=world_settings_payload,
+                )
+                perception_status["recorder_manifest_path"] = str(manifest_sync.get("path", ""))
+                perception_status["recorder_manifest_recording_path"] = str(
+                    manifest_sync.get("recording_path", "")
+                )
+                perception_status["recorder_manifest_root_copy_path"] = str(
+                    manifest_sync.get("root_copy_path", "")
+                )
+                perception_status["recorder_manifest_written"] = bool(
+                    manifest_sync.get("written", False)
+                )
+                perception_status["recorder_manifest_synthesized"] = bool(
+                    manifest_sync.get("synthesized", False)
+                )
+                perception_status["recorder_manifest_source"] = str(
+                    manifest_sync.get("data", {}).get("manifest_source", "")
+                    if isinstance(manifest_sync.get("data"), dict)
+                    else ""
+                )
+                if manifest_sync.get("error"):
+                    perception_status["warnings"].append(
+                        f"recorder_manifest_write_failed:{manifest_sync.get('error')}"
+                    )
+                if require_manifest_gate:
+                    capture_status_payload = _read_capture_status_payload(recording_dir)
+                    known_capture_failure = _enforce_manifest_gate_for_capture(
+                        require_manifest_gate=bool(require_manifest_gate),
+                        recording_dir=recording_dir,
+                        out_dir=out_dir,
+                        manifest_sync=manifest_sync,
+                        capture_status_payload=capture_status_payload,
+                    )
+                    if known_capture_failure:
+                        status["ok"] = False
+                        status["carla_failed"] = True
+                        status["failure_reason"] = str(known_capture_failure)
+                        perception_status["ok"] = False
+                        perception_status["failure_reason"] = str(known_capture_failure)
+                        if str(known_capture_failure) not in perception_status["warnings"]:
+                            perception_status["warnings"].append(str(known_capture_failure))
+                        copied_log = copy_latest_carla_log(out_dir)
+                        if copied_log:
+                            perception_status["carla_latest_log_path"] = str(copied_log)
+                    else:
+                        _assert_recorder_manifest_integrity(
+                            recording_dir, out_dir, manifest_sync
+                        )
+                manifest_payload = (
+                    manifest_sync.get("data", {})
+                    if isinstance(manifest_sync.get("data"), dict)
+                    else {}
+                )
+                semseg_files = _semseg_file_count(recording_dir, manifest_payload)
+                write_integrity = _build_write_integrity_status(
+                    recording_dir=recording_dir, manifest_payload=manifest_payload
+                )
+                _write_json(out_dir / WRITE_INTEGRITY_STATUS_JSON, write_integrity)
+                perception_status["write_integrity_status_path"] = str(
+                    out_dir / WRITE_INTEGRITY_STATUS_JSON
+                )
+                perception_status["semseg_files"] = int(semseg_files)
+                perception_status["corrupted_png_read"] = int(
+                    write_integrity.get("corrupted_png_read", 0) or 0
+                )
+                perception_status["invalid_png_count"] = int(
+                    write_integrity.get("invalid_png_count", 0) or 0
+                )
+                perception_status["queue_depth_at_shutdown"] = int(
+                    write_integrity.get("queue_depth_at_shutdown", 0) or 0
+                )
+                corrupted_png = int(write_integrity.get("corrupted_png_read", 0) or 0)
+                # Offline short-circuit: existing RGB frames can satisfy default success
+                # without semseg requirements. Strict/evidence modes keep hard gates.
+                offline_reuse_block_reason = ""
+                if require_manifest_gate:
+                    if int(semseg_files) <= 0:
+                        offline_reuse_block_reason = "semseg_missing"
+                    elif corrupted_png != 0:
+                        offline_reuse_block_reason = "corrupted_png_read"
+                if offline_reuse_block_reason:
+                    reuse_warning = f"offline_reuse_blocked:{offline_reuse_block_reason}"
+                    if reuse_warning not in perception_status["warnings"]:
+                        perception_status["warnings"].append(reuse_warning)
+                else:
+                    if require_manifest_gate:
+                        integrity_ok = bool(int(semseg_files) > 0 and corrupted_png == 0)
+                        integrity_reason = ""
+                    else:
+                        integrity_ok = bool(int(frames_recorded) >= int(args.min_frames))
+                        integrity_reason = ""
+                        if not integrity_ok:
+                            integrity_reason = "insufficient_frames"
+                        elif int(semseg_files) <= 0:
+                            perception_status["warnings"].append("semseg_missing_optional")
+                        if corrupted_png != 0:
+                            perception_status["warnings"].append("corrupted_png_read_optional")
+                    status["ok"] = bool(integrity_ok)
+                    status["carla_failed"] = not bool(integrity_ok)
+                    status["failure_reason"] = None if integrity_ok else integrity_reason
+                    perception_status["ok"] = bool(integrity_ok)
+                    perception_status["failure_reason"] = None if integrity_ok else integrity_reason
+                    if not integrity_ok and integrity_reason not in perception_status["warnings"]:
+                        perception_status["warnings"].append(integrity_reason)
                 perception_status["frames_recorded"] = int(frames_recorded)
                 _write_json(
                     out_dir / "recording_summary.json",
@@ -6553,6 +6743,25 @@ def main() -> int:
             missing = _validate_evidence_pack(out_dir, require_overlay, require_objects)
             perception_status["missing_artifacts"] = missing
             perception_status["evidence_pack_ok"] = len(missing) == 0
+
+            # NEW-225: Write immutable capture identity for successful captures
+            if perception_status.get("ok") and perception_status.get("evidence_pack_ok"):
+                capture_identity = _build_capture_identity(
+                    out_dir=out_dir,
+                    recording_dir=recording_dir,
+                    pair_manifest=pair_manifest,
+                    perception_status=perception_status,
+                    map_name=map_name,
+                    world_settings_payload=world_settings_payload,
+                    args=args,
+                    xodr_in_sha256=xodr_in_sha256,
+                )
+                _write_capture_identity(out_dir, capture_identity)
+                perception_status["capture_identity_path"] = str(out_dir / "capture_identity.json")
+                perception_status["capture_identity_written"] = True
+            else:
+                perception_status["capture_identity_written"] = False
+
             qa_spawn_report = _build_qa_spawn_report(
                 out_dir, spawn_requested=bool(args.spawn_qa_objects)
             )

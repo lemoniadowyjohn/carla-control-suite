@@ -1,0 +1,24 @@
+{
+  "finding_id": "NEW-228",
+  "title": "Requested protocol must equal executed protocol",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_perception_pair.py",
+    "ultimate_pipeline/perception/capture_config.py (used)"
+  ],
+  "tests": [
+    "build_paired_capture_commands creates both arms from shared config",
+    "requested_capture_config recorded in results",
+    "effective_capture_config recorded in results",
+    "capture_config_sha256 computed from effective config"
+  ],
+  "adversarial_tests": [
+    "spawn_index mismatch detected",
+    "vehicle mismatch detected",
+    "seg_converter mismatch detected",
+    "protocol mapping incomplete -> PROTOCOL_MAPPING_INCOMPLETE"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": "Tests need to be written for unmapped_pair_flags strict mode"
+}

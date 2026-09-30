@@ -1,0 +1,28 @@
+{
+  "finding_id": "NEW-200",
+  "title": "Require Mandatory Identities on Both Arms",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py"
+  ],
+  "tests": [
+    "test_case03_calibration_differs_rejected",
+    "test_case04_sensor_rig_differs_rejected",
+    "test_case05_weather_differs_rejected"
+  ],
+  "adversarial_tests": [
+    "missing manual calibration_sha256",
+    "missing auto calibration_sha256",
+    "missing manual sensor_rig_sha256",
+    "missing auto sensor_rig_sha256",
+    "missing manual weather_sha256",
+    "missing auto weather_sha256",
+    "missing manual capture_config_sha256",
+    "missing auto capture_config_sha256",
+    "missing manual route_manifest_sha256",
+    "missing auto route_manifest_sha256"
+  ],
+  "status": "PASS",
+  "remaining_blocker": null
+}
