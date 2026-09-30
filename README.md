@@ -16,17 +16,18 @@ GitHub Actions verifies the toolkit on Python 3.10 and 3.12 with:
 
 - clean editable installation;
 - Ruff static/lint checks;
-- pytest + coverage;
-- command-line quality-report smoke test.
+- pytest + an explicit exact 90% coverage gate;
+- passing and intentional-rejection command-line quality-report checks.
 
-Latest fully verified portfolio commit: `b56d19394081ebb1d5086da5bc617fd0337abdf1`.
+Latest fully verified portfolio commit: `c1133ad2717ef1af699979cfaff9399ba6176e8c`.
 
 At that commit:
 
-- **18 automated tests pass**;
-- **91.27% measured package line coverage**, with a **90% CI floor**;
+- **21 automated tests pass**;
+- **91.39% measured package line coverage**, with a **90% CI floor**;
 - Ruff passes;
-- the synthetic CLI demo produces a PASS quality report.
+- the synthetic CLI demo produces a PASS quality report;
+- the intentional degraded-input demo is rejected with the expected FAIL report and exit code `2`.
 
 ## Engineering scope
 
