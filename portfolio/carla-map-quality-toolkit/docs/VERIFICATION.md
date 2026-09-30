@@ -2,22 +2,30 @@
 
 Verification date: 2026-09-30
 
-## Public release gates
+## Hosted verification
 
-The portfolio branch is configured to verify the toolkit on Python 3.10 and 3.12 with:
+GitHub Actions run **36716505814** verified the sanitized public toolkit on both Python 3.10 and Python 3.12.
 
-- clean editable installation from `pyproject.toml`;
-- Ruff static/lint checks;
-- pytest with coverage;
-- an enforced minimum package coverage threshold of 80%;
-- a command-line synthetic quality-report smoke test.
+Measured result:
 
-The exact hosted GitHub Actions result for the latest release commit is the release authority for installation and lint verification.
+- **18 tests passed**;
+- **91.27% Python package line coverage**;
+- **Ruff: PASS**;
+- editable package installation: **PASS**;
+- CLI synthetic quality-report smoke test: **PASS**.
 
-## Evidence already established
+The executable workflow now enforces a **90% minimum coverage gate** in addition to Ruff and the CLI smoke test.
 
-The public toolkit uses only repository-owned synthetic OSM/OpenDRIVE fixtures. It includes deterministic geometry/alignment checks, CRS sanity tests, topology fixtures, invalid lane-link tests, report generation, provenance hashing and regression tests.
+## Public-history sanitization
 
-## Scope boundary
+During verification, the previous portfolio branch lineage was found to include unrelated legacy CARLA files outside the intended public toolkit. The branch reference was rebuilt onto the safe public `main` lineage with a new clean tree. The recruiter-facing branch now retains only the sanitized portfolio toolkit plus its root CI workflow.
 
-This verification applies only to this sanitized public implementation. It does not claim validation of private CARLA maps, employer/customer assets, private thesis datasets, proprietary Unreal content, or a production CARLA deployment.
+This history repair is part of the release evidence: public portfolio code must be isolated from private/proprietary engineering assets, not merely documented as isolated.
+
+## Evidence scope
+
+The public toolkit uses repository-owned synthetic OSM/OpenDRIVE fixtures. It demonstrates deterministic geometry/alignment checks, CRS sanity tests, topology fixtures, invalid lane-link detection, report generation, provenance hashing and regression tests.
+
+This receipt does **not** claim validation of private CARLA maps, employer/customer assets, private thesis datasets, proprietary Unreal content, or a production CARLA deployment.
+
+Live CI remains the release authority for installation, lint, test and coverage status.
