@@ -1,27 +1,22 @@
 import json
-import sys
-from pathlib import Path
 
-from carla_map_quality_toolkit.cli import main
+from carla_map_quality_toolkit.cli import _demo
 
 
-def test_cli_demo_writes_pass_reports(tmp_path: Path, monkeypatch, capsys) -> None:
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        ["carla-map-quality", "demo", "--output", str(tmp_path)],
-    )
-    assert main() == 0
+def test_demo_writes_passing_report(tmp_path) -> None:
+    output = tmp_path / "pass"
+    assert _demo(output) == 0
+    payload = json.loads((output / "quality_report.json").read_text(encoding="utf-8"))
+    assert payload["status"] == "PASS"
+    assert payload["failures"] == []
+    assert payload["provenance"]["mode"] == "passing_demo"
 
-    stdout = capsys.readouterr().out
-    assert "PASS" in stdout
 
-    json_path = tmp_path / "quality_report.json"
-    md_path = tmp_path / "quality_report.md"
-    assert json_path.exists()
-    assert md_path.exists()
-
-    report = json.loads(json_path.read_text(encoding="utf-8"))
-    assert report["status"] == "PASS"
-    assert report["metrics"]["topology_errors"] == 0
-    assert "Provenance" in md_path.read_text(encoding="utf-8")
+def test_demo_failure_mode_rejects_degraded_input(tmp_path) -> None:
+    output = tmp_path / "fail"
+    assert _demo(output, inject_failure=True) == 2
+    payload = json.loads((output / "quality_report.json").read_text(encoding="utf-8"))
+    assert payload["status"] == "FAIL"
+    assert len(payload["failures"]) == 4
+    assert payload["metrics"]["topology_errors"] == 2
+    assert payload["provenance"]["mode"] == "intentional_failure"

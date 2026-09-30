@@ -4,21 +4,28 @@
 
 A sanitized, reproducible Python toolkit for **quality validation of road-network maps used in CARLA/OpenDRIVE workflows**. The repository is deliberately independent of private thesis assets, employer repositories, customer geometry and proprietary map exports.
 
+**Recruiter snapshot:** Python 3.10/3.12 CI · 90% enforced coverage gate · synthetic/public-safe data only · deterministic geometry/topology checks · machine-readable and human-readable evidence.
+
+### 60-second review
+
+1. Inspect the [architecture diagram](docs/architecture.svg).
+2. Compare the [PASS report](docs/quality_report_example.md) with the [intentional FAIL report](docs/quality_report_failure_example.md).
+3. Use the [evidence matrix](docs/EVIDENCE_MATRIX.md) to map claims to implementation and tests.
+4. Check the [verification receipt](docs/VERIFICATION.md) and live CI badge.
+
 ![Architecture](docs/architecture.svg)
-
-
 
 ## Verified public baseline
 
-Hosted GitHub Actions verifies the sanitized toolkit on Python 3.10 and 3.12. Current measured baseline:
+Hosted GitHub Actions verifies the sanitized toolkit on Python 3.10 and 3.12 with:
 
-- **18 automated tests passing**;
-- **91.27% Python package line coverage**;
-- **Ruff static/lint checks passing**;
-- **CLI synthetic quality-report smoke test passing**;
-- CI rejects coverage below **90%**.
+- editable installation from `pyproject.toml`;
+- Ruff static/lint checks;
+- pytest with a **90% minimum package coverage gate**;
+- a passing synthetic CLI quality-report smoke test;
+- an intentional-failure CLI check that must reject degraded input with exit code `2`.
 
-See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the evidence boundary. The portfolio branch history was rebuilt onto the safe public lineage so the recruiter-facing branch contains only this sanitized toolkit and its CI workflow.
+See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the latest measured result and evidence boundary. The portfolio branch history was rebuilt onto the safe public lineage so the recruiter-facing branch contains only this sanitized toolkit and its CI workflow.
 
 ## Engineering problem
 
@@ -107,11 +114,19 @@ pytest
 carla-map-quality demo --output out
 ```
 
-Expected demo result:
+Expected passing demo result:
 
 ```text
 PASS: wrote out/quality_report.json
 ```
+
+To demonstrate enforcement rather than only a happy path:
+
+```bash
+carla-map-quality demo --inject-failure --output out/failure
+```
+
+The failure demonstration intentionally returns exit code `2` and writes a FAIL report containing multiple threshold violations. It uses synthetic degraded values and is not a claim about a private or production map.
 
 ## Synthetic input example
 
@@ -121,7 +136,7 @@ The OSM fixture in `tests/fixtures/synthetic.osm` is also generated for this rep
 
 ## Example quality report
 
-The repository includes `docs/quality_report_example.md`, `docs/quality_report_example.json`, and a synthetic geometry plot:
+The repository includes PASS and intentional-FAIL report examples in Markdown/JSON, plus a synthetic geometry plot:
 
 ![Synthetic quality example](docs/quality_report_example.svg)
 
@@ -149,9 +164,10 @@ The test suite includes:
 - lane-width statistical tests;
 - valid and invalid lane-link fixtures;
 - a compact regression signature for the generated OpenDRIVE fixture;
-- report gate pass/fail tests.
+- report gate pass/fail tests;
+- CLI PASS/FAIL behavior, including a non-zero exit for intentional rejection.
 
-CI runs Ruff, pytest with a 90% minimum coverage gate, and the synthetic command-line demo on Python 3.10 and 3.12.
+CI runs Ruff, pytest with a 90% minimum coverage gate, the passing command-line demo, and the expected-rejection demo on Python 3.10 and 3.12.
 
 ## Reproducibility and provenance
 
@@ -171,9 +187,15 @@ This is a portfolio-grade validation toolkit, not a complete OpenDRIVE engine. C
 
 These boundaries are documented so the repository demonstrates engineering judgment without overstating scope.
 
-## Public-release policy
+## Evidence and public-release policy
 
-See [`SANITIZATION.md`](SANITIZATION.md). Do not add private map assets, employer/customer code, internal repository names, credentials or confidential benchmark data.
+- [Evidence matrix](docs/EVIDENCE_MATRIX.md) — claim → implementation → test mapping.
+- [Verification receipt](docs/VERIFICATION.md) — hosted release-gate evidence.
+- [Sanitization policy](SANITIZATION.md) — public-data boundary and checklist.
+- [Security policy](SECURITY.md) — sensitive-data handling rules.
+- [Contributing](CONTRIBUTING.md) — reproducibility and sanitization requirements.
+
+Do not add private map assets, employer/customer code, internal repository names, credentials or confidential benchmark data.
 
 ## Portfolio use
 

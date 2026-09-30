@@ -31,4 +31,11 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: pytest --cov=carla_map_quality_toolkit --cov-report=term-missing --cov-fail-under=90
-      - run: carla-map-quality demo --output out
+      - run: carla-map-quality demo --output out/pass
+      - name: Verify intentional rejection path
+        run: |
+          set +e
+          carla-map-quality demo --inject-failure --output out/failure
+          code=$?
+          set -e
+          test "$code" -eq 2

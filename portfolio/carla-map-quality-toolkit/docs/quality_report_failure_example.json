@@ -1,0 +1,30 @@
+{
+  "status": "FAIL",
+  "metrics": {
+    "hausdorff_m": 1.5,
+    "alignment_rmse_m": 0.8,
+    "lane_width_mean_m": 0.3,
+    "lane_width_p95_m": 0.3,
+    "lane_width_max_m": 0.3,
+    "lane_width_violation_fraction": 1.0,
+    "topology_errors": 2
+  },
+  "thresholds": {
+    "hausdorff_max_m": 1.0,
+    "alignment_rmse_max_m": 0.5,
+    "lane_width_p95_max_m": 0.15,
+    "topology_errors_max": 0
+  },
+  "failures": [
+    "Hausdorff distance exceeds geometric threshold",
+    "SE(2) alignment residual exceeds threshold",
+    "Lane-width p95 deviation exceeds threshold",
+    "Topology validation found invalid references/lane links"
+  ],
+  "provenance": {
+    "fixture": "synthetic_straight_road_v1",
+    "source": "generated; no proprietary assets",
+    "alignment": "paired-point deterministic SE(2)",
+    "mode": "intentional_failure"
+  }
+}

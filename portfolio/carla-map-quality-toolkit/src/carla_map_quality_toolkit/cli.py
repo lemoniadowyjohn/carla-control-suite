@@ -11,7 +11,7 @@ from carla_map_quality_toolkit.metrics import symmetric_hausdorff
 from carla_map_quality_toolkit.reporting import build_quality_report
 
 
-def _demo(output: Path) -> int:
+def _demo(output: Path, inject_failure: bool = False) -> int:
     output.mkdir(parents=True, exist_ok=True)
     reference = np.column_stack([np.linspace(0, 40, 81), np.zeros(81)])
     synthetic = SE2Transform(angle_rad=0.015, tx=0.20, ty=-0.10).apply(reference)
@@ -21,17 +21,26 @@ def _demo(output: Path) -> int:
 
     reference_widths = np.full(81, 3.50)
     observed_widths = 3.50 + 0.04 * np.sin(np.linspace(0, 3.0, 81))
+    topology_errors = 0
+
+    if inject_failure:
+        hausdorff = max(hausdorff, 1.50)
+        rmse = max(rmse, 0.80)
+        observed_widths = reference_widths + 0.30
+        topology_errors = 2
+
     width_metrics = compare_width_profiles(observed_widths, reference_widths)
 
     report = build_quality_report(
         hausdorff_m=hausdorff,
         alignment_rmse_m=rmse,
         lane_width=width_metrics,
-        topology_errors=0,
+        topology_errors=topology_errors,
         provenance={
             "fixture": "synthetic_straight_road_v1",
             "source": "generated; no proprietary assets",
             "alignment": "paired-point deterministic SE(2)",
+            "mode": "intentional_failure" if inject_failure else "passing_demo",
         },
     )
     report.write_json(output / "quality_report.json")
@@ -45,9 +54,14 @@ def main() -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     demo = sub.add_parser("demo", help="Run a sanitized synthetic quality-gate example")
     demo.add_argument("--output", type=Path, default=Path("out"))
+    demo.add_argument(
+        "--inject-failure",
+        action="store_true",
+        help="Deliberately violate multiple thresholds to demonstrate gate rejection",
+    )
     args = parser.parse_args()
     if args.command == "demo":
-        return _demo(args.output)
+        return _demo(args.output, inject_failure=args.inject_failure)
     return 1
 
 
