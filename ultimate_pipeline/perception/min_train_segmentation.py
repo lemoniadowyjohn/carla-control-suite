@@ -83,6 +83,9 @@ def parse_args():
     )
     ap.add_argument("--no-class-weights", action="store_true")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--seed", type=int, default=None,
+                    help="frozen-protocol seed (NEW-218): torch.manual_seed + seeded "
+                         "DataLoader order. Default None preserves legacy behavior.")
     return ap.parse_args()
 
 
@@ -95,7 +98,16 @@ def main():
     ckpt_dir.mkdir(exist_ok=True)
 
     ds = SegDataset(ds_root, args.camera, limit=args.limit)
-    dl = DataLoader(ds, batch_size=args.batch, shuffle=True, num_workers=2, pin_memory=True)
+    if args.seed is not None:
+        # Frozen-protocol path (NEW-218): fully seeded order. num_workers=0
+        # keeps ordering a pure function of the seed (no worker RNG split).
+        torch.manual_seed(int(args.seed))
+        generator = torch.Generator().manual_seed(int(args.seed))
+        dl = DataLoader(ds, batch_size=args.batch, shuffle=True, num_workers=0,
+                        pin_memory=True, generator=generator)
+    else:
+        # Legacy path: unchanged behavior.
+        dl = DataLoader(ds, batch_size=args.batch, shuffle=True, num_workers=2, pin_memory=True)
 
     num_classes = validate_num_classes(args.num_classes)
     model = torchvision.models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
@@ -123,6 +135,7 @@ def main():
 
     metrics = {
         "loss": [],
+        "seed": args.seed,
         "class_weighting": {
             "enabled": not args.no_class_weights,
             "scheme": args.class_weight_scheme if not args.no_class_weights else None,
