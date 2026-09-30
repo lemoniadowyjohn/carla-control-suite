@@ -31,7 +31,7 @@ A targeted GitHub code-search audit of the promoted default branch found no matc
 - private-key markers;
 - API-key/password/Bearer-token patterns searched;
 - Windows user paths or `/home/` paths;
-- Bertrandt, BMW or Noerr names;
+- employer/customer names included in the targeted audit list;
 - known legacy Ingolstadt/production-readiness artifact identifiers;
 - known private/legacy CARLA branch identifiers.
 
