@@ -13,6 +13,8 @@ import re
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 
+import numpy as np
+
 
 def _median(values: List[float]) -> Optional[float]:
     if not values:
@@ -83,35 +85,83 @@ def compute_perception_metrics(run_dir: str) -> Dict[str, Any]:
     if not root.exists():
         return {"enabled": False, "reason": "run_dir_missing"}
 
+    # NEW-272: Restrict to rgb/ subdirectories only, not the whole run dir
+    # This prevents semantic labels and visualizations from corrupting metrics
     camera_counts: Dict[str, int] = {}
     camera_first_image: Dict[str, Path] = {}
     timestamps: List[int] = []
     lidar_points: List[int] = []
     lidar_frames = 0
 
-    for dirpath, _dirnames, filenames in os.walk(root):
-        for fn in filenames:
-            lower = fn.lower()
-            path = Path(dirpath) / fn
-            ts = _extract_timestamp_from_name(path.stem)
-            if ts is not None:
-                timestamps.append(ts)
+    # Only look under rgb/ subdirectories for camera images
+    rgb_dir = root / "rgb"
+    if rgb_dir.is_dir():
+        for dirpath, _dirnames, filenames in os.walk(rgb_dir):
+            for fn in filenames:
+                lower = fn.lower()
+                path = Path(dirpath) / fn
+                ts = _extract_timestamp_from_name(path.stem)
+                if ts is not None:
+                    timestamps.append(ts)
 
-            if lower.endswith((".png", ".jpg", ".jpeg")):
-                cam_name = path.parent.name if path.parent != root else "root"
-                camera_counts[cam_name] = camera_counts.get(cam_name, 0) + 1
-                if cam_name not in camera_first_image:
-                    camera_first_image[cam_name] = path
-            elif lower.endswith(".ply"):
-                lidar_frames += 1
-                count = _read_ply_point_count(path)
-                if count is not None:
-                    lidar_points.append(count)
-            elif lower.endswith(".bin"):
-                lidar_frames += 1
-                count = _read_bin_point_count(path)
-                if count is not None:
-                    lidar_points.append(count)
+                if lower.endswith((".png", ".jpg", ".jpeg")):
+                    # Camera name is the parent directory name under rgb/
+                    rel_path = path.relative_to(rgb_dir)
+                    cam_name = rel_path.parts[0] if len(rel_path.parts) > 0 else "unknown"
+                    camera_counts[cam_name] = camera_counts.get(cam_name, 0) + 1
+                    if cam_name not in camera_first_image:
+                        camera_first_image[cam_name] = path
+    else:
+        # Fallback: if no rgb/ directory, scan entire run dir (legacy behavior but with warning)
+        for dirpath, _dirnames, filenames in os.walk(root):
+            for fn in filenames:
+                lower = fn.lower()
+                path = Path(dirpath) / fn
+                ts = _extract_timestamp_from_name(path.stem)
+                if ts is not None:
+                    timestamps.append(ts)
+
+                if lower.endswith((".png", ".jpg", ".jpeg")):
+                    cam_name = path.parent.name if path.parent != root else "root"
+                    camera_counts[cam_name] = camera_counts.get(cam_name, 0) + 1
+                    if cam_name not in camera_first_image:
+                        camera_first_image[cam_name] = path
+
+    # LiDAR files live under a dedicated lidar/ directory (a sibling of rgb/),
+    # never under rgb/ -- walked independently of the camera-scanning branches
+    # above so it runs regardless of whether rgb_dir exists, and with a
+    # per-file loop variable so an empty/missing lidar dir never leaves
+    # `lower`/`path` unbound (NEW-273: also handles .npz).
+    lidar_dir = root / "lidar"
+    if lidar_dir.is_dir():
+        for dirpath, _dirnames, filenames in os.walk(lidar_dir):
+            for fn in filenames:
+                lidar_lower = fn.lower()
+                lidar_path = Path(dirpath) / fn
+                if lidar_lower.endswith(".ply"):
+                    lidar_frames += 1
+                    count = _read_ply_point_count(lidar_path)
+                    if count is not None:
+                        lidar_points.append(count)
+                elif lidar_lower.endswith(".bin"):
+                    lidar_frames += 1
+                    count = _read_bin_point_count(lidar_path)
+                    if count is not None:
+                        lidar_points.append(count)
+                elif lidar_lower.endswith(".npz"):
+                    lidar_frames += 1
+                    try:
+                        # NPZ files contain arrays; we count the first
+                        # array's first dimension as a point-count proxy.
+                        data = np.load(lidar_path)
+                        if len(data.files) > 0:
+                            first_array = data[data.files[0]]
+                            count = first_array.shape[0] if first_array.ndim > 0 else 1
+                            lidar_points.append(int(count))
+                        else:
+                            lidar_points.append(0)
+                    except Exception:
+                        pass
 
     if not camera_counts and lidar_frames == 0:
         return {"enabled": False, "reason": "no_sensor_data_found"}

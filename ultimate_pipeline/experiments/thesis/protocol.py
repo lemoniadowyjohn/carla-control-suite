@@ -300,18 +300,22 @@ def write_protocol_snapshot(
     out_dir: str,
     protocol: Dict[str, Any],
     provenance: Optional[Dict[str, Any]] = None,
+    execution_binding: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Write protocol snapshot and provenance to output directory.
 
     Creates:
     - protocol_snapshot.yaml (or .json if pyyaml not available)
     - provenance.json
+    - protocol_execution_binding.json (NEW-292): binds protocol entities to runtime artifacts
 
     Args:
         out_dir: Output directory path.
         protocol: The protocol dictionary to snapshot.
         provenance: Optional provenance dictionary to write. If None, a minimal
                     provenance with timestamp is created.
+        execution_binding: Optional execution binding dictionary (NEW-292).
+                           If None, a minimal binding with timestamp is created.
     """
     out_path = Path(out_dir).expanduser().resolve()
     out_path.mkdir(parents=True, exist_ok=True)
@@ -343,10 +347,65 @@ def write_protocol_snapshot(
     with provenance_file.open("w", encoding="utf-8") as f:
         json.dump(provenance_with_meta, f, indent=2)
 
+    # NEW-292: Generate protocol_execution_binding.json
+    # This binds protocol entities to runtime artifacts for traceability.
+    if execution_binding is None:
+        execution_binding = {}
+    binding_payload = {
+        "protocol_version": str(protocol.get("version", "unknown")),
+        "protocol_source": protocol.get("_source_path", "unknown"),
+        "snapshot_timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "maps": _build_execution_binding_maps(protocol),
+        "simulation": _build_execution_binding_simulation(protocol),
+        "artifacts": {
+            "protocol_snapshot": "protocol_snapshot.yaml" if _HAS_YAML else "protocol_snapshot.json",
+            "provenance": "provenance.json",
+        },
+        **execution_binding,
+    }
+    binding_file = out_path / "protocol_execution_binding.json"
+    with binding_file.open("w", encoding="utf-8") as f:
+        json.dump(binding_payload, f, indent=2, sort_keys=True)
+
 
 def get_default_protocol_path() -> Path:
     """Return the default protocol.yaml path in the thesis experiments directory."""
     return Path(__file__).parent / "protocol.yaml"
+
+
+# NEW-292: Helper functions to build execution binding for protocol entities
+def _build_execution_binding_maps(protocol: Dict[str, Any]) -> Dict[str, Any]:
+    """Build the execution binding entry for maps."""
+    maps = protocol.get("maps", {})
+    if not isinstance(maps, dict):
+        return {"manual_maps": [], "generated_variants": 0}
+    manual_maps = maps.get("manual", [])
+    if isinstance(manual_maps, list):
+        manual_names = [
+            entry.get("name", entry) if isinstance(entry, dict) else entry
+            for entry in manual_maps
+        ]
+    else:
+        manual_names = []
+    generated = maps.get("generated", {})
+    if not isinstance(generated, dict):
+        generated = {}
+    return {
+        "manual_maps": [str(m) for m in manual_names],
+        "generated_variants": int(generated.get("n_variants", 0)) if generated else 0,
+    }
+
+
+def _build_execution_binding_simulation(protocol: Dict[str, Any]) -> Dict[str, Any]:
+    """Build the execution binding entry for simulation settings."""
+    sim = protocol.get("simulation", {})
+    if not isinstance(sim, dict):
+        return {}
+    return {
+        "fps": sim.get("fps"),
+        "fixed_delta_seconds": sim.get("fixed_delta_seconds"),
+        "synchronous_mode": sim.get("synchronous_mode"),
+    }
 
 
 # CLI for testing/debugging

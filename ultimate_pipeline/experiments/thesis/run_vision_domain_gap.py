@@ -72,9 +72,22 @@ def _load_array(path: Path):
     return arr
 
 
-def _align_shapes(a, b):
+def _align_shapes(a, b, a_path: Optional[Path] = None, b_path: Optional[Path] = None):
     if np is None:
         raise RuntimeError("numpy unavailable")
+
+    # Check for resolution mismatch before cropping
+    if (a is not None and b is not None and
+        a.shape[0] != b.shape[0] or a.shape[1] != b.shape[1]):
+        a_name = str(a_path) if a_path is not None else "<a>"
+        b_name = str(b_path) if b_path is not None else "<b>"
+        raise RuntimeError(
+            f"resolution_mismatch: '{a_name}' "
+            f"({a.shape[1]}x{a.shape[0]}) != "
+            f"'{b_name}' ({b.shape[1]}x{b.shape[0]})"
+        )
+    
+    # Proceed with safe cropping (should only happen when shapes are equal)
     min_h = int(min(a.shape[0], b.shape[0]))
     min_w = int(min(a.shape[1], b.shape[1]))
     min_c = int(min(a.shape[2], b.shape[2]))
@@ -98,7 +111,7 @@ def _compute_pair_metrics(relative_path: str, auto_path: Path, manual_path: Path
         raise RuntimeError("numpy unavailable")
     auto_arr = _load_array(auto_path)
     manual_arr = _load_array(manual_path)
-    auto_arr, manual_arr = _align_shapes(auto_arr, manual_arr)
+    auto_arr, manual_arr = _align_shapes(auto_arr, manual_arr, auto_path, manual_path)
     diff = auto_arr - manual_arr
     mse = float(np.mean(np.square(diff)))
     mae = float(np.mean(np.abs(diff)))
