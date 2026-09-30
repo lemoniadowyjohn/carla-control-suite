@@ -19,7 +19,7 @@ GitHub Actions verifies the toolkit on Python 3.10 and 3.12 with:
 - pytest + coverage;
 - command-line quality-report smoke test.
 
-Latest verified code-gate commit: `f7a56b545fdb49bec3bc538044eefd405f262c86`.
+Latest fully verified portfolio commit: `b56d19394081ebb1d5086da5bc617fd0337abdf1`.
 
 At that commit:
 
