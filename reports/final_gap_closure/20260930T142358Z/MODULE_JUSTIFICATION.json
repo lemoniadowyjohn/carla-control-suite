@@ -1,0 +1,55 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "extensions_instead_of_modules": {
+    "ultimate_pipeline/contracts/stage_contracts.py": "NEW-210 taxonomy added to canonical shared owner (GateClass, NON_WAIVABLE_CLASSES, GATE_CLASS_REGISTRY, production_gate_waiver_allowed, enforce_taxonomy mode)",
+    "ultimate_pipeline/quality/map_acceptance.py": "component_reachability waiver routed through strict helper (1-line change)"
+  },
+  "modules": [
+    {
+      "api": [
+        "run_mandatory_process",
+        "run_import_sequence",
+        "ImportProcessError",
+        "ImportProcessResult"
+      ],
+      "candidates_searched": [
+        "ultimate_pipeline/tiling/*",
+        "ultimate_pipeline/hpc/carla_server_launcher.py (subprocess.call, server-launch only, not import)",
+        "ultimate_pipeline/contracts/*"
+      ],
+      "path": "ultimate_pipeline/tiling/carla_0916_import_process_contract.py",
+      "responsibility": "NEW-196 fail-closed mandatory child-process execution",
+      "tests": "ultimate_pipeline/tests/unit/test_v4_import_contracts.py (21 tests)",
+      "why_new": "no canonical import/cook execution owner exists; scattered unchecked subprocess.run/call sites; extending an unrelated owner would couple server-launch to import"
+    },
+    {
+      "api": [
+        "PackageIdentity",
+        "resolve_package_identity",
+        "resolve_material_config",
+        "derive_decal_seed",
+        "generate_deterministic_decals",
+        "parse_tilesinfo*",
+        "format_tilesinfo",
+        "tilesinfo_roundtrip_check"
+      ],
+      "candidates_searched": [
+        "ultimate_pipeline/tiling/large_map_package.py (Import/<Pkg> staging only, no material/decal/TilesInfo ownership)",
+        "ultimate_pipeline/quality/* (no TilesInfo/decal owner found)",
+        "rq3 cooked_package_identity (plain string, not an identity object)"
+      ],
+      "path": "ultimate_pipeline/tiling/carla_0916_large_map_contract.py",
+      "responsibility": "NEW-197 package identity/material binding, NEW-198 deterministic decals, NEW-199 TilesInfo schema",
+      "tests": "ultimate_pipeline/tests/unit/test_v4_large_map_contract.py (26 tests)",
+      "why_new": "no owner for importer-visible package identity, roadpainter_decals binding, decal determinism, or TilesInfo numerics; large_map_package.py stages but does not bind downstream consumers"
+    }
+  ],
+  "not_added": {
+    "atomic_artifact_io.py": "artifact authority owned by ultimate_pipeline/contracts/artifact_authority.py",
+    "fbx_dependency_authority.py": "tile provenance already owned by large_map_package.py O1 checks",
+    "resumable_tile_cook.py": "no evidence of a missing resume owner; out of scope for NEW-196..199",
+    "visual_mesh_authority.py": "road-authority audit already owned by large_map_package.py O2 audit",
+    "yaml contract interpreter": "explicitly forbidden by campaign (NEW-209 decision stands)"
+  },
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09"
+}

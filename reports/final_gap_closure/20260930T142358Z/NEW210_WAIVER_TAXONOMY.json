@@ -1,0 +1,21 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "design": "layered: generic OC-35 utility preserved; explicit-class enforcement; production_gate_waiver_allowed (registry, unknown fails closed); enforce_taxonomy aggregate mode; map_acceptance wired through strict helper",
+  "non_waivable": [
+    "identity_integrity",
+    "structural_integrity",
+    "runtime_dependent"
+  ],
+  "owner": "ultimate_pipeline/contracts/stage_contracts.py (shared, not YAML layer)",
+  "preserved": "component_reachability -> QUALITY_DEVIATION -> WAIVED (never PASS)",
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "PASS",
+  "taxonomy": [
+    "identity_integrity",
+    "structural_integrity",
+    "quality_deviation",
+    "heuristic_advisory",
+    "runtime_dependent"
+  ],
+  "tests": "14 passed; OC-35 aggregate suite still green; FAIL can never become PASS via waiver"
+}

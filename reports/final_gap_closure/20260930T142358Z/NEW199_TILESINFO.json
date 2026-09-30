@@ -1,0 +1,17 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "decision": "floating-point parsing (Atof semantics); integer truncation rejected",
+  "properties": [
+    "locale-independent (regex + float, comma rejected)",
+    "scientific notation accepted",
+    "canonical repr serialization, roundtrip within 1e-9",
+    "fixtures: 0, 1, -1, 100.0, 100.25, -0.25, large coords, sci notation, locale edge"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "schema": {
+    "tile_center_x": "float64 meters map-frame",
+    "tile_center_y": "float64 meters map-frame",
+    "tile_size": "float64 meters map-frame"
+  },
+  "status": "PASS"
+}

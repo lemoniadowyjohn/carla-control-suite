@@ -1,0 +1,18 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "generator_version": "carla-decal-seed-v1",
+  "policy": "Option 1 - deterministic seed (recommended)",
+  "policy_version": "decal-determinism-v1",
+  "receipt_fields": [
+    "policy",
+    "seed",
+    "seed_derivation_inputs",
+    "generator_version",
+    "decal_count",
+    "artifact_hash"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "seed_derivation": "SHA256(policy_version | xodr_sha256 | package_identity | tile_identity) -> 64-bit",
+  "status": "PASS",
+  "tests": "same input twice -> identical hash; different tile -> different seed; disabled policy emits none; unknown policy rejected"
+}
