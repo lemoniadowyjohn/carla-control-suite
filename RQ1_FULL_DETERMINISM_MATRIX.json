@@ -1,8 +1,74 @@
 {
   "comparison_policy": "No normalization of unknown fields; timestamp, ordering, floating-point, and structural differences remain observable.",
-  "reason": "five isolated run receipts required, got 0",
-  "run_count": 0,
-  "runs": [],
+  "reason": "five isolated run receipts required, got 1",
+  "run_count": 1,
+  "runs": [
+    {
+      "data": {
+        "completed_stages": {
+          "01": {
+            "bytes": 149799632,
+            "mtime": 1790778956.1114483,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          },
+          "02": {
+            "bytes": 138053323,
+            "mtime": 1790779499.6958237,
+            "sha256": "336c06deb54373ebca4c5578c8a6318dbdcdd0303a26666f27d33a0051aa3983"
+          },
+          "03": {
+            "bytes": 138932131,
+            "mtime": 1790780814.4625652,
+            "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2"
+          },
+          "05": {
+            "bytes": 138932131,
+            "mtime": 1790780814.4625652,
+            "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2"
+          },
+          "06": {
+            "bytes": 138932131,
+            "mtime": 1790780814.4625652,
+            "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2"
+          }
+        },
+        "config": {
+          "INPUT_XODR": "pinned map-of-record",
+          "QA_AUTOVIS": false,
+          "boundary": "Unreal cook/runtime excluded (offline structural claim)",
+          "code_sha": "8eb80924"
+        },
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input": {
+          "registry_key": "auto_map_of_record",
+          "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+          "verification": "VERIFIED"
+        },
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "output_path": null,
+        "reason": "run killed at 60-min session timeout during stage 06/07; stages 01-06 complete",
+        "run": 0,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 3559,
+          "num_roads": 32266,
+          "total_road_length": 1487573.6902965326
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 3559,
+          "roads": 32266
+        },
+        "xodr_sha256": null
+      },
+      "receipt_path": "reports\\final_hardening_p11\\run_00_receipt.json",
+      "receipt_sha256": "9998297f7d8be3755ef7e2118f18aa404d55d23e9671c44d561ac0721a1c32fd",
+      "status": "AVAILABLE"
+    }
+  ],
   "schema": "rq1_full_determinism_matrix/v1",
   "status": "INCOMPLETE",
   "verdict": "INCOMPLETE"
