@@ -10,14 +10,14 @@ Why your current version is problematic
 - It assumes async capture but uses world.tick() without synchronous settings
 - It relies on cv2 for writing (often missing on HPC nodes)
 - It logs to Database unguarded (can crash if DB not configured)
-- It doesn’t align with the fixed DominikSensorSetup / calibration semantics
+- It doesn't align with the fixed DominikSensorSetup / calibration semantics
 
 This version
 ✅ Uses DominikSensorSetup (calib_data.json) correctly
 ✅ Runs CARLA in synchronous mode (deterministic, aligned frames)
 ✅ Records ONE chosen calibrated camera (or all cameras) using save_to_disk (no cv2 required)
 ✅ Supports label_mode=semantic (raw class-id PNG masks) or none (explicit no-op, no fabricated labels)
-✅ Augmentation is optional and auto-disables if OpenCV isn’t installed
+✅ Augmentation is optional and auto-disables if OpenCV isn't installed
 ✅ Database logging is optional and guarded
 
 Typical:
@@ -34,11 +34,11 @@ Label schema (C8 fix — unified with min_train_segmentation / eval_sim_labeled
 / class_weights, via ultimate_pipeline.perception.capture_writer):
 - rgb/<camera>/<frame>.png              RGB image
 - semseg_raw/<camera>/<frame>.png       label_mode=semantic training label:
-                                         single-channel uint8, R channel of
-                                         the raw sensor buffer == class id
-                                         (NOT CityScapes-palette colorized)
+                                          single-channel uint8, R channel of
+                                          the raw sensor buffer == class id
+                                          (NOT CityScapes-palette colorized)
 - semseg_viz/<camera>/<frame>.png       optional human-viewable palette copy
-                                         (never read by any trainer/eval)
+                                          (never read by any trainer/eval)
 - meta/label_schema.json records label_mode and format
 - label_mode="none" (detection): explicit no-op, no fabricated empty
   YOLO .txt labels (no 2D bbox projector exists in this codebase; see C8
@@ -63,7 +63,7 @@ from ultimate_pipeline.core.carla_opendrive_loader import load_opendrive_world, 
 
 from ultimate_pipeline.carla_tools.reload_ready_for_sensors import _reload_ready_for_sensors
 from ultimate_pipeline.perception.capture_writer import save_capture_frame
-# Optional dependencies (don’t crash on HPC)
+# Optional dependencies (don't crash on HPC)
 try:
     import cv2  # type: ignore
     _HAS_CV2 = True
@@ -287,7 +287,7 @@ class DatasetGenerator:
             strict=True,
         )
 
-        # Keep only cameras we actually want to record (others can exist but we won’t listen to them)
+        # Keep only cameras we actually want to record (others can exist but we won't listen to them)
         self._record_cams = cam_names
 
         # Sanity
@@ -389,6 +389,12 @@ class DatasetGenerator:
             while saved < self.n_frames:
                 frame = self.world.tick()
 
+                # For multi-camera setups, we save ALL cameras for this frame as one unit
+                # saved counts completed frame sets, not individual camera samples
+                all_have = True
+                imgs_for_frame: Dict[str, carla.Image] = {}
+                seg_imgs_for_frame: Dict[str, carla.Image] = {} if self.label_mode == "semantic" else None
+
                 for cn in self._record_cams:
                     # Wait (briefly) for matching frame
                     img: Optional[carla.Image] = None
@@ -404,10 +410,12 @@ class DatasetGenerator:
 
                     if img is None:
                         # Missing frame; skip this frame to keep dataset consistent
-                        continue
+                        all_have = False
+                        break
+                    imgs_for_frame[cn] = img
 
-                    seg_img: Optional[carla.Image] = None
                     if self.label_mode == "semantic":
+                        seg_img: Optional[carla.Image] = None
                         deadline = time.time() + 1.0
                         while time.time() < deadline:
                             try:
@@ -418,7 +426,17 @@ class DatasetGenerator:
                                 seg_img = cand
                                 break
                         if seg_img is None:
-                            continue
+                            all_have = False
+                            break
+                        seg_imgs_for_frame[cn] = seg_img
+
+                if not all_have:
+                    continue
+
+                # Save each camera sample for this frame (counts as ONE completed frame set)
+                for cn in self._record_cams:
+                    img = imgs_for_frame[cn]
+                    base = f"{frame:08d}"
 
                     # Save via the shared writer: rgb/<cam>/ + semseg_raw/<cam>/
                     # (raw class ids; palette conversion applied only to the
@@ -430,7 +448,7 @@ class DatasetGenerator:
                         camera=cn,
                         frame=frame,
                         rgb_image=img,
-                        seg_image=seg_img if self.label_mode == "semantic" else None,
+                        seg_image=seg_imgs_for_frame[cn] if self.label_mode == "semantic" else None,
                         label_mode=self.label_mode,
                         write_viz=(self.label_mode == "semantic"),
                     )
@@ -439,8 +457,10 @@ class DatasetGenerator:
 
                     cam_out_dir = _ensure_dir(self.dataset_dir / "rgb" / cn)
 
-                    # Optional augmentation (only if cv2 exists)
-                    if self.apply_augmentation and _HAS_CV2:
+# Optional augmentation (only if cv2 exists and not in semantic mode)
+                    # In semantic mode, we don't augment because we cannot properly
+                    # transform semantic labels to match augmented RGB images
+                    if self.apply_augmentation and _HAS_CV2 and self.label_mode != "semantic":
                         # decode RGBA -> RGB numpy
                         arr = np.frombuffer(img.raw_data, dtype=np.uint8).reshape((img.height, img.width, 4))[:, :, :3]
                         aug = _augment_numpy_rgb(arr)
@@ -465,9 +485,13 @@ class DatasetGenerator:
                         except Exception:
                             pass
 
-                    saved += 1
-                    if saved >= self.n_frames:
-                        break
+                # Only increment saved after successfully saving ALL cameras for this frame
+                saved += 1
+                if saved >= self.n_frames:
+                    break
+
+                if self.verbose and (saved % 50 == 0):
+                    print(f"   saved {saved}/{self.n_frames} frame sets")
 
             # Stop camera streams
             for cn in self._record_cams:

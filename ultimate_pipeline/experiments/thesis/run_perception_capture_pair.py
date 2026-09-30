@@ -345,36 +345,142 @@ def main(argv: Optional[List[str]] = None) -> int:
         encoding="utf-8",
     )
 
-    pair_manifest = {
-        "ok": bool(ok) and bool(manual_status.get("ok", ok)) and bool(auto_status.get("ok", ok)),
-        "error": error,
-        "frames": int(args.frames),
-        "carla_host": host,
-        "carla_port": int(port),
-        "manual_source": manual_source,
-        "auto_xodr": _resolve(str(auto_xodr_path)),
-        "calib_path": calib_path,
-        "outputs": {
-            "manual_dir": _resolve(str(manual_dir)),
-            "auto_dir": _resolve(str(auto_dir)),
-        },
-        "runner_artifacts": {
-            "manual": _collect_runner_artifacts(manual_dir),
-            "auto": _collect_runner_artifacts(auto_dir),
-        },
-        "arm_status": {
-            "manual": manual_status,
-            "auto": auto_status,
-            "manual_error": manual_error,
-            "auto_error": auto_error,
-        },
+    # NEW-271: Use the authoritative rq3_capture_contract to decide pair validity.
+    # The thesis pair runner must NOT independently declare scientific pair validity.
+    # It must delegate to validate_pair_manifest() which enforces:
+    #   - authoritative map hashes (manual + auto)
+    #   - canonical route digest
+    #   - equal effective capture config
+    #   - equal sensor-rig digest
+    #   - equal weather digest
+    #   - frame correspondence
+    #   - complete per-arm identities
+    from ultimate_pipeline.perception.rq3_capture_contract import (
+        build_pair_manifest,
+        validate_pair_manifest,
+        calibration_identity,
+        sensor_rig_from_calib,
+        weather_from_world,
+        capture_config_identity,
+        PairedCaptureConfig,
+        classify_claim_level,
+        CLAIM_PAIRED_INGOLSTADT_CAPTURE,
+        CLAIM_PAIRED_PROTOCOL_VALID,
+        CLAIM_UNPAIRED_CAPTURE,
+        CLAIM_SENSOR_SMOKE,
+        git_sha_of_repo,
+        carla_client_version,
+        carla_server_version,
+    )
+    from ultimate_pipeline.utils.run_provenance import collect_provenance
+
+    # Compute arm-level identities
+    manual_calib = calibration_identity(calib_path)
+    auto_calib = calibration_identity(calib_path)
+    manual_rig = sensor_rig_from_calib(calib_path)
+    auto_rig = sensor_rig_from_calib(calib_path)
+
+    # Read arm manifests if present
+    manual_arm_manifest_path = manual_dir / "pair_manifest.json"
+    auto_arm_manifest_path = auto_dir / "pair_manifest.json"
+    manual_arm = _safe_read_json(manual_arm_manifest_path) if manual_arm_manifest_path.is_file() else {}
+    auto_arm = _safe_read_json(auto_arm_manifest_path) if auto_arm_manifest_path.is_file() else {}
+
+    # Build the authoritative pair manifest
+    pair_id = f"thesis_pair_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+    software_sha = git_sha_of_repo()
+    carla_ver = carla_client_version(client)
+    carla_server_ver = carla_server_version(client)
+
+    # Determine map identities
+    manual_map_identity = {
+        "map_type": "cooked_manual",
+        "requested_map_name": manual_source.get("value", ""),
+        "resolved_carla_map_name": str(manual_status.get("carla_map_name", "")),
     }
+    auto_map_identity = {
+        "map_type": "xodr",
+        "xodr_path": _resolve(str(auto_xodr_path)),
+        "xodr_sha256": manual_refs.sha256_file(Path(auto_xodr_path)) if hasattr(manual_refs, 'sha256_file') else "",
+    }
+
+    # Compute capture config identity
+    capture_config = PairedCaptureConfig(
+        frames=int(args.frames),
+        fps=int(getattr(SETTINGS, "CAPTURE_FPS", 20)),
+        rig=str(getattr(SETTINGS, "CAPTURE_RIG", "thesis")),
+        front_only=bool(getattr(SETTINGS, "CAPTURE_FRONT_ONLY", False)),
+        seg=bool(getattr(SETTINGS, "CAPTURE_SEG", False)),
+        lidar_format=str(getattr(SETTINGS, "CAPTURE_LIDAR_FORMAT", "ply")),
+        vehicle=str(getattr(SETTINGS, "CAPTURE_VEHICLE", "vehicle.tesla.model3")),
+        seed=int(getattr(SETTINGS, "CAPTURE_SEED", 42)),
+    )
+    capture_config_id = capture_config_identity(capture_config)
+
+    # Weather identity from world (best-effort)
+    try:
+        world = client.get_world()
+        weather_id = weather_from_world(world)
+    except Exception:
+        weather_id = {"weather_sha256": "", "parameters": {}}
+
+    # Route manifest
+    route_manifest_path = str(pair_root / "route_manifest.json")
+    route_manifest_sha256 = ""
+
+    # Build manifest
+    raw_pair_valid = bool(ok) and bool(manual_status.get("ok", ok)) and bool(auto_status.get("ok", ok))
+    manifest = build_pair_manifest(
+        pair_id=pair_id,
+        software_git_sha=software_sha,
+        carla_client_version=carla_ver,
+        carla_server_version=carla_server_ver,
+        manual_map_identity=manual_map_identity,
+        auto_map_identity=auto_map_identity,
+        route_manifest_path=route_manifest_path,
+        route_manifest_sha256=route_manifest_sha256,
+        calibration_sha256=manual_calib["calib_sha256"],
+        sensor_rig_sha256=manual_rig["sensor_rig_sha256"],
+        weather_sha256=weather_id["weather_sha256"],
+        capture_config_sha256=capture_config_id["capture_config_sha256"],
+        manual_arm=manual_arm,
+        auto_arm=auto_arm,
+        pair_valid=raw_pair_valid,
+        invalid_reasons=[],
+        claim_level=CLAIM_UNPAIRED_CAPTURE,
+    )
+
+    # Validate the manifest through the authoritative contract
+    validation = validate_pair_manifest(manifest)
+    manifest["pair_valid"] = validation["valid"]
+    manifest["invalid_reasons"] = validation["invalid_reasons"]
+    manifest["validation"] = validation
+
+    # Reclassify claim level
+    both_arms_ingolstadt = (
+        manual_map_identity.get("requested_map_name", "") in ("Grid0821", "Grid0828")
+        and "ingolstadt" in str(auto_map_identity.get("xodr_path", "")).lower()
+    )
+    claim = classify_claim_level(
+        is_pair=True,
+        pair_valid=validation["valid"],
+        route_valid=validation.get("pair_route_closure") == "PAIR_ROUTE_VALID",
+        both_arms_ingolstadt=both_arms_ingolstadt,
+        manual_arm=manual_arm,
+        auto_arm=auto_arm,
+    )
+    manifest["claim_level"] = claim["claim_level"]
+    manifest["claim_reasons"] = claim["reasons"]
+
+    pair_manifest = manifest
     (pair_root / "pair_manifest.json").write_text(
         json.dumps(pair_manifest, indent=2, ensure_ascii=True) + "\n",
         encoding="utf-8",
     )
 
-    return 0 if ok else 1
+    # The authoritative ok is the validated manifest, not the raw runner status
+    authoritative_ok = validation["valid"]
+    return 0 if authoritative_ok else 1
 
 
 if __name__ == "__main__":

@@ -40,10 +40,10 @@ class LocalPerceptionRunner:
     - Writes defects.json (+ minimal run metadata)
     """
 
-    def __init__(
+def __init__(
         self,
         client: "carla.Client",
-        map_name: Optional[str] = None,   # kept for backward compatibility (ignored)
+        map_name: Optional[str] = None,   # kept for backward compatibility
         tiles=None,
         duration_ticks: int = 45,
         warmup_ticks: int = 30,
@@ -75,8 +75,17 @@ class LocalPerceptionRunner:
         self.map = self.world.get_map()
         self.blueprints = self.world.get_blueprint_library()
 
-        # NOTE: map_name is intentionally ignored here.
+        # NEW-290: Enforce map_name when explicitly provided
+        # For thesis/governed runs, the requested map must match the actual map
         self._map_name_hint = map_name
+        if map_name is not None:
+            actual_map_name = getattr(self.map, "name", None)
+            from ultimate_pipeline.carla_tools.map_registry import map_names_match
+            if not map_names_match(actual_map_name, map_name):
+                raise RuntimeError(
+                    f"MAP_MISMATCH: requested '{map_name}' but CARLA is running '{actual_map_name}'. "
+                    "For thesis runs, use run_perception_safe.py or load the correct map first."
+                )
 
         self.tiles = tiles
         self.tile_streamer = TileStreamer(client)
@@ -359,6 +368,9 @@ class LocalPerceptionRunner:
         allow_degraded = bool(getattr(SETTINGS, "LOCAL_PERCEPTION_ALLOW_DEGRADED", True))
         if bool(getattr(SETTINGS, "THESIS_STRICT", False)):
             allow_degraded = False
+        # NEW-288: In thesis strict mode, never allow degraded sensors
+        if bool(getattr(SETTINGS, "THESIS_STRICT", False)):
+            allow_degraded = False
         min_sensors = int(getattr(SETTINGS, "LOCAL_PERCEPTION_MIN_SENSORS", 1))
         fallback_res = str(getattr(SETTINGS, "LOCAL_PERCEPTION_FALLBACK_RES", "640x360"))
         fallback_res_tuple = self._parse_res(fallback_res)
@@ -624,9 +636,27 @@ class LocalPerceptionRunner:
             except Exception:
                 pngs, plys = [], []
 
-            outputs_present = bool(pngs or plys or self._saved_images > 0 or self._saved_lidars > 0)
+            # NEW-289: Use strict completion status instead of "any output exists"
+            # In thesis strict mode, require expected number of frames from all sensors
+            thesis_strict = bool(getattr(SETTINGS, "THESIS_STRICT", False))
+            if thesis_strict:
+                # In strict mode, require:
+                # 1. No failure reason
+                # 2. No save errors
+                # 3. At least one frame captured per sensor
+                strict_completion = (
+                    self._failure_reason is None and
+                    len(self._save_errors) == 0 and
+                    self._saved_images > 0
+                )
+                ok = strict_completion
+            else:
+                # For diagnostic mode, use the legacy behavior
+                outputs_present = bool(pngs or plys or self._saved_images > 0 or self._saved_lidars > 0)
+                ok = bool(outputs_present)
+
             status = {
-                "ok": bool(outputs_present),
+                "ok": bool(ok),
                 "failure_reason": self._failure_reason,
                 "warnings": self._warnings,
                 "output_dir": self.output_dir,
@@ -636,6 +666,8 @@ class LocalPerceptionRunner:
                 "ply_files": int(len(plys)),
                 "num_defects": int(len(self.results)),
                 "save_errors_tail": self._save_errors[-10:],
+                "thesis_strict": thesis_strict,
+                "completion_rule": "strict" if thesis_strict else "any_output",
             }
             try:
                 with open(os.path.join(self.output_dir, "perception_status.json"), "w", encoding="utf-8") as f:

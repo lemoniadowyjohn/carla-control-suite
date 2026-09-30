@@ -51,12 +51,24 @@ def resolve_manual_town(manual_town: str) -> Dict[str, Any]:
             f"Manual XODR not found for {key}. Searched primary '{entry['manual_xodr_path']}' "
             f"and {len(entry.get('manual_xodr_fallbacks', []))} fallbacks."
         )
-        
-    return {
+    
+    # NEW-291: Validate the SHA256 hash of the manual XODR file
+    manual_sha = sha256_file(manual_xodr)
+    pinned_sha = entry.get("manual_xodr_sha256_pin")
+    if pinned_sha is not None and manual_sha != pinned_sha:
+        raise RuntimeError(
+            f"SHA256 mismatch for manual XODR '{key}': "
+            f"expected {pinned_sha}, got {manual_sha}. "
+            "The file may have been corrupted or modified."
+        )
+
+    result = {
         "manual_town": key,
         "manual_xodr_path": str(manual_xodr),
         "cooked_town": entry["cooked_town"],
+        "manual_xodr_sha256": manual_sha,
     }
+    return result
 
 
 def sha256_file(path: Path) -> str:

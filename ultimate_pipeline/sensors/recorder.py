@@ -402,12 +402,7 @@ class SensorRecorder:
         frame = getattr(data, "frame", None)
         if isinstance(frame, int):
             return int(frame)
-        try:
-            return int(frame)
-        except Exception:
-            with self._lock:
-                self._fallback_frame_counter += 1
-                return int(self._fallback_frame_counter)
+        raise FRAME_ID_MISSING
 
     def _output_path(self, sensor_name: str, sensor_kind: str, frame_id: int, ext: str) -> Path:
         sensor_dir = (

@@ -75,6 +75,17 @@ def _load_array(path: Path):
 def _align_shapes(a, b):
     if np is None:
         raise RuntimeError("numpy unavailable")
+    
+    # Check for resolution mismatch before cropping
+    if (a is not None and b is not None and 
+        a.shape[0] != b.shape[0] or a.shape[1] != b.shape[1]):
+        raise RuntimeError(
+            f"resolution_mismatch: '{auto_dir}/{Path(a_path).name}' "
+            f"({a.shape[1]}x{a.shape[0]}) != "
+            f"'{manual_dir}/{Path(b_path).name}' ({b.shape[1]}x{b.shape[0]})"
+        )
+    
+    # Proceed with safe cropping (should only happen when shapes are equal)
     min_h = int(min(a.shape[0], b.shape[0]))
     min_w = int(min(a.shape[1], b.shape[1]))
     min_c = int(min(a.shape[2], b.shape[2]))
