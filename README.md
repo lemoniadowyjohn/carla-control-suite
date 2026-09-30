@@ -191,6 +191,7 @@ These boundaries are documented so the repository demonstrates engineering judgm
 
 ## Evidence and public-release policy
 
+- [Final portfolio status](docs/FINAL_STATUS.md) — consolidated completion verdict and verified metrics.
 - [Acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md) — original requirement → concrete evidence mapping.
 - [Evidence matrix](docs/EVIDENCE_MATRIX.md) — claim → implementation → test mapping.
 - [Verification receipt](docs/VERIFICATION.md) — hosted release-gate evidence.
