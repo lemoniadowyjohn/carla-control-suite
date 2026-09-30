@@ -1,0 +1,25 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "boundaries": [
+    "all 6 downstream steps raise on missing upstream or write SKIP receipt"
+  ],
+  "capture_cli": [
+    "legacy parser rejects run_auto_xodr argv (exit 2 latent crash) -> migrated to fixed; lint test guards"
+  ],
+  "commandlet": [
+    "exit 1/255/timeout/missing/exception/missing-output -> stop (OUTPUT_MISSING state added)"
+  ],
+  "decals": [
+    "repeat-run identical hash; tile-distinct seeds"
+  ],
+  "package": [
+    "wrong/ambiguous/missing/outside-root config -> FAIL; manifest mismatch -> FAIL"
+  ],
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "tilesinfo": [
+    "fractional/negative/large/scientific/locale cases agree"
+  ],
+  "waiver": [
+    "identity/structural/runtime/unknown waivers refused in strict mode; OC-35 generic suite green"
+  ]
+}

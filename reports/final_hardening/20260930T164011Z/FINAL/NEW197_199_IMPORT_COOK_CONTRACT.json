@@ -1,0 +1,20 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "decal_policy": "seeded from SHA256(policy|xodr|package|tile), v decal-determinism-v1",
+  "identity_fields": [
+    "requested_package",
+    "resolved_package",
+    "import_manifest",
+    "import_manifest_sha256",
+    "source_json",
+    "source_json_sha256",
+    "package_root",
+    "map_name",
+    "build_id"
+  ],
+  "module": "ultimate_pipeline/tiling/carla_0916_large_map_contract.py",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "status": "PASS",
+  "tests": 26,
+  "tilesinfo": "float64 meters map-frame, locale-independent, 1e-9 roundtrip"
+}

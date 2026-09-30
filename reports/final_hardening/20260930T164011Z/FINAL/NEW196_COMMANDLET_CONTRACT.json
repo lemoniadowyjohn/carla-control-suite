@@ -1,0 +1,27 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "module": "ultimate_pipeline/tiling/carla_0916_import_process_contract.py",
+  "receipt_fields": [
+    "argv",
+    "command",
+    "cwd",
+    "started_at_utc",
+    "finished_at_utc",
+    "returncode",
+    "stdout_path",
+    "stderr_path",
+    "expected_outputs",
+    "status"
+  ],
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "states": [
+    "PASS",
+    "FAIL",
+    "TIMEOUT",
+    "SPAWN_ERROR",
+    "CANCELLED",
+    "OUTPUT_MISSING"
+  ],
+  "status": "PASS",
+  "tests": 21
+}

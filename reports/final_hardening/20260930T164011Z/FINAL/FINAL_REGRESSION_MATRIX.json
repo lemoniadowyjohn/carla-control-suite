@@ -1,0 +1,26 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "full_suite": {
+    "campaign_regressions": 0,
+    "collected": 6744,
+    "duration_s": 1775.5,
+    "failed": 1,
+    "passed": 6734,
+    "single_failure": "a1_a2 username-path (PRE-EXISTING ENVIRONMENTAL, proven in pristine checkout)",
+    "skipped": 9
+  },
+  "new_tests_this_pack": {
+    "record_route_authority": 5,
+    "rq5_freeze": 9,
+    "stage_boundaries": 13,
+    "total": 27
+  },
+  "prior_new_tests": 61,
+  "research_audits": {
+    "c19_assembly": "4/4 steps passed",
+    "rq1_matrix": "INCOMPLETE run_count=1",
+    "rq5_contract": "PASS",
+    "static_gates_fresh": "5/5 PASS bound"
+  },
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}

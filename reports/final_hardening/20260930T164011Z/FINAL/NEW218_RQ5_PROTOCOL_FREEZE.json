@@ -1,0 +1,10 @@
+{
+  "audit": "tools/rq5_contract_audit.py -> PASS (16/16 DEFINED); legacy fallback preserved",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "contract": "configs/rq5_protocol_freeze_v1.json (schema rq5_protocol_freeze/v1, FROZEN)",
+  "o18_legacy_tests": "green",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "status": "PASS",
+  "tests": 9,
+  "trainer": "min_train_segmentation.py --seed (default path unchanged); seed in metrics.json"
+}

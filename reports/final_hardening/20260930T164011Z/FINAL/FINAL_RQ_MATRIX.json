@@ -1,0 +1,28 @@
+{
+  "RQ1": {
+    "reason": "N=5 full-pipeline requires ~70+ min/run on pinned 150MB map; 1 genuine run reached stage 06 (01-06 hashed); matrix run_count 0->1; resume plan recorded",
+    "status": "INCOMPLETE"
+  },
+  "RQ2": {
+    "reason": "5 static gates freshly bound to current pin (all PASS); historical matrix overall still STALE_OR_UNBOUND; map_acceptance execution authority intact",
+    "status": "BOUNDED"
+  },
+  "RQ3": {
+    "reason": "paired-capture contract, preflight, manifest verifier ready and tested; execution needs CARLA server (GAP-017/018 blocked)",
+    "status": "DEFERRED_RUNTIME"
+  },
+  "RQ4": {
+    "reason": "not re-executed in this campaign; prior GAP-026/leak-free evidence untouched (GAP-026 tolerance unchanged)",
+    "status": "BOUNDED"
+  },
+  "RQ5a": {
+    "reason": "protocol FROZEN (audit PASS); training requires RQ3 datasets; no-leak and failure policies frozen pre-data",
+    "status": "DEFERRED_RUNTIME"
+  },
+  "RQ5b": {
+    "reason": "no real-world Ingolstadt dataset in repo; unlabeled-accuracy ban frozen in protocol",
+    "status": "DEFERRED_EXTERNAL_DATA"
+  },
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}

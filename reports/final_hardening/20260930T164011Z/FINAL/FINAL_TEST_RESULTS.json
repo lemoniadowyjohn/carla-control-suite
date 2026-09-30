@@ -1,0 +1,13 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "build": "sdist+wheel ok",
+  "compileall": "ok",
+  "pip_check": "only known ultralytics/opencv-python-name upstream quirk (headless cv2 verified)",
+  "pytest": {
+    "duration_s": 1775.5,
+    "failed": 1,
+    "passed": 6734,
+    "skipped": 9
+  },
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}

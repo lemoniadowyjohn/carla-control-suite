@@ -1,0 +1,20 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "code": "BLOCKED_EXTERNAL_GITHUB_PERMISSION",
+  "manual": [
+    "gh auth login",
+    "gh api repos/lemoniadowyjohn/carla-control-suite/branches/integration/production-large-map-20260918/protection",
+    "create/verify ruleset requiring the offline release gate on exact SHA a93ba01390589bf749d218fd10540a2e14844ec0"
+  ],
+  "repo_local": [
+    "immutable SHAs",
+    "contents:read",
+    "timeouts",
+    "concurrency",
+    "named release gate",
+    "headless OpenCV",
+    "dependency gate"
+  ],
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "status": "BLOCKED_EXTERNAL"
+}
