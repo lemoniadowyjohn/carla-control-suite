@@ -1,87 +1,205 @@
-# CARLA / OpenDRIVE Map Quality & Validation
+# carla-map-quality-toolkit
 
-[![CARLA Map Quality Toolkit CI](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml/badge.svg?branch=portfolio%2Fcarla-map-quality-toolkit-20260930)](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml)
+[![CI](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml/badge.svg?branch=main)](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml)
 
-Public-safe portfolio landing page for Michał Dembski's CARLA / OpenDRIVE / OSM map-quality engineering work.
+A sanitized, reproducible Python toolkit for **quality validation of road-network maps used in CARLA/OpenDRIVE workflows**. The repository is deliberately independent of private thesis assets, employer repositories, customer geometry and proprietary map exports.
 
-## Recruiter-facing toolkit
+**Recruiter snapshot:** Python 3.10/3.12 CI · 90% enforced coverage gate · synthetic/public-safe data only · deterministic geometry/topology checks · machine-readable and human-readable evidence.
 
-The sanitized, runnable implementation is available on the dedicated portfolio branch:
+**Verified baseline:** 21 tests · 91.39% package line coverage · Ruff PASS · PASS-report CLI path · intentional FAIL/rejection path.
 
-**[Open `carla-map-quality-toolkit`](https://github.com/lemoniadowyjohn/carla-control-suite/tree/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit)**
+### 60-second review
 
-The portfolio branch contains a standalone Python package, synthetic OpenDRIVE/OSM fixtures, automated tests, CI, architecture documentation, quality-report examples, provenance handling and explicit public-release boundaries. Its branch history has been rebuilt onto the safe public lineage so unrelated private/legacy CARLA assets are not part of the recruiter-facing branch.
+1. Inspect the [architecture diagram](docs/architecture.svg).
+2. Compare the [PASS report](docs/quality_report_example.md) with the [intentional FAIL report](docs/quality_report_failure_example.md).
+3. Use the [evidence matrix](docs/EVIDENCE_MATRIX.md) to map claims to implementation and tests.
+4. Check the [verification receipt](docs/VERIFICATION.md) and live CI badge.
 
-### Verified release status
+![Architecture](docs/architecture.svg)
 
-GitHub Actions verifies the toolkit on Python 3.10 and 3.12 with:
+## Verified public baseline
 
-- clean editable installation;
+Hosted GitHub Actions verifies the sanitized toolkit on Python 3.10 and 3.12 with:
+
+- editable installation from `pyproject.toml`;
 - Ruff static/lint checks;
-- pytest + an explicit exact 90% coverage gate;
-- passing and intentional-rejection command-line quality-report checks.
+- pytest with a **90% minimum package coverage gate**;
+- a passing synthetic CLI quality-report smoke test;
+- an intentional-failure CLI check that must reject degraded input with exit code `2`.
 
-Release authority: the portfolio branch's live GitHub Actions workflow plus its `docs/VERIFICATION.md` receipt.
+See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the latest measured result and evidence boundary. The default `main` branch is the sanitized recruiter-facing implementation and contains only the public toolkit and its CI workflow.
 
-At that commit:
+## Engineering problem
 
-- **21 automated tests pass**;
-- **91.39% measured package line coverage**, with a **90% CI floor**;
-- Ruff passes;
-- the synthetic CLI demo produces a PASS quality report;
-- the intentional degraded-input demo is rejected with the expected FAIL report and exit code `2`.
+Generated simulation maps can look plausible while still containing defects that cause routing, lane-following, spawning or downstream validation failures. Typical failure classes include:
 
-## Engineering scope
+- coordinate-reference-system or axis-order mistakes;
+- rigid translation/rotation mismatch between map sources;
+- excessive geometric deviation after alignment;
+- incorrect or unstable lane widths;
+- broken predecessor/successor references;
+- junction lane links that point to non-existent lanes;
+- undocumented map provenance or acceptance thresholds.
 
-The public toolkit demonstrates transferable methods used in automotive simulation and digital-map validation:
+This toolkit converts those checks into **deterministic metrics, explicit topology findings and threshold-based quality gates**.
 
-- OpenDRIVE parsing;
-- synthetic OSM parsing;
-- road-reference and lane-center geometry;
-- coordinate-reference-system transformation and sanity checks;
-- deterministic SE(2) alignment;
-- symmetric discrete Hausdorff distance;
-- lane-width deviation metrics;
-- predecessor/successor integrity;
-- junction lane-link validation;
-- provenance hashing;
-- threshold-based PASS/FAIL quality gates;
-- JSON and Markdown evidence reports;
-- regression fixtures and CI.
+## Scope
 
-## Why map validation matters
+The public project focuses on the validation layer, not on reproducing a private end-to-end map-generation pipeline. It uses generated OpenDRIVE/OSM fixtures and synthetic geometry. The code is designed to demonstrate the transferable engineering methods behind CARLA/OpenDRIVE map QA.
 
-Generated road-network maps can appear visually plausible while containing geometric, coordinate-system or topology defects that affect routing, lane following and downstream simulation. The toolkit treats validation as a measurable engineering step rather than relying only on visual inspection.
+## Architecture
 
-## Evidence boundary
+```text
+Synthetic/Public Inputs
+    │
+    ├── OpenDRIVE (.xodr) ──► io/opendrive.py
+    └── OSM XML (.osm) ─────► io/osm.py
+                               │
+                               ▼
+                     Parsed road/lane data
+                               │
+               ┌───────────────┼────────────────┐
+               ▼               ▼                ▼
+          CRS checks       Geometry         Topology
+          (pyproj)      lane/reference      validation
+               │               │                │
+               └──────► deterministic SE(2) ◄───┘
+                               │
+                               ▼
+                      Metrics / deviations
+                  Hausdorff + lane-width QA
+                               │
+                               ▼
+                      Threshold quality gate
+                               │
+                  ┌────────────┴────────────┐
+                  ▼                         ▼
+             JSON evidence             Markdown report
+                  │                         │
+                  └──────────── CI / review ┘
+```
 
-This public portfolio does **not** publish proprietary maps, employer/customer data, private thesis assets, credentials or private repository history.
+A rendered version is in `docs/architecture.svg`.
 
-The defensible claim is hands-on academic/project engineering in Python-based CARLA/OpenDRIVE/OSM map-quality validation, plus a sanitized public implementation demonstrating the methods.
+## Package layout
 
-The toolkit is intentionally **not** presented as:
+```text
+src/carla_map_quality_toolkit/
+├── io/             # OpenDRIVE + OSM parsers
+├── geometry/       # plan-view sampling + lane centerlines
+├── crs/            # coordinate transformations / roundtrip sanity
+├── alignment/      # deterministic SE(2) fitting
+├── lane_quality/   # width-deviation statistics
+├── topology/       # road/junction/lane-link integrity
+├── metrics/        # Hausdorff geometry comparison
+└── reporting/      # quality gates + JSON/Markdown evidence
+```
 
-- a complete OpenDRIVE implementation;
-- a production CARLA deployment;
-- a replacement for CARLA runtime validation;
-- proof that illustrative synthetic thresholds are universal acceptance criteria.
+## Metrics
 
-See the toolkit's `SANITIZATION.md`, `SECURITY.md`, `docs/VERIFICATION.md`, and [Acceptance checklist](https://github.com/lemoniadowyjohn/carla-control-suite/blob/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit/docs/ACCEPTANCE_CHECKLIST.md) for the exact claim, completion and public-data boundary.
+| Check | Why it matters | Public implementation |
+|---|---|---|
+| CRS roundtrip | Detects CRS/axis-order setup mistakes | `crs.transform` |
+| SE(2) alignment RMSE | Quantifies residual mismatch after rigid alignment | `alignment.se2` |
+| Symmetric Hausdorff distance | Captures worst-case geometry separation | `metrics.hausdorff` |
+| Lane-width p95 / max deviation | Detects local lane-width defects | `lane_quality.width` |
+| Predecessor/successor integrity | Finds missing targets and broken reciprocal road links | `topology.validation` |
+| Junction lane-link integrity | Finds links to lanes that do not exist | `topology.validation` |
 
-## Portfolio relevance
+## Quick start
 
-This work supports applications in:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+pip install -e ".[dev]"
+pytest
+carla-map-quality demo --output out
+```
 
-- Automotive Digitalisation;
-- Simulation Engineering;
-- Digital Twin Engineering;
-- Python / Data Engineering;
-- Automotive Data;
-- Validation Engineering;
-- Technical Project Engineering;
-- Applied AI / industrial-data roles where deterministic validation and evidence quality matter.
+Expected passing demo result:
 
-## Related engineering portfolio
+```text
+PASS: wrote out/quality_report.json
+```
 
-- [Governed Agent Workflow Demo](https://github.com/lemoniadowyjohn/space-Y-) — policy-aware routing, provider health/quota gates, deterministic fallback and human-approval boundaries.
-- [Industrial Quality Documentation Assistant](https://github.com/lemoniadowyjohn/hermes) — evidence-grounded industrial RAG with citations, validation, refusal/escalation and synthetic evaluation.
+To demonstrate enforcement rather than only a happy path:
+
+```bash
+carla-map-quality demo --inject-failure --output out/failure
+```
+
+The failure demonstration intentionally returns exit code `2` and writes a FAIL report containing multiple threshold violations. It uses synthetic degraded values and is not a claim about a private or production map.
+
+## Synthetic input example
+
+`tests/fixtures/minimal_valid.xodr` contains two generated roads and a junction. The fixture has constant 3.5 m driving lanes and valid lane links. `tests/fixtures/invalid_lane_link.xodr` intentionally references non-existent lanes and is expected to fail topology validation.
+
+The OSM fixture in `tests/fixtures/synthetic.osm` is also generated for this repository. It is not a copy of a private or production map.
+
+## Example quality report
+
+The repository includes PASS and intentional-FAIL report examples in Markdown/JSON, plus a synthetic geometry plot:
+
+![Synthetic quality example](docs/quality_report_example.svg)
+
+Example gate excerpt:
+
+```text
+Gate: PASS
+Symmetric Hausdorff:       ~0.03 m   (threshold <= 1.00 m)
+SE(2) alignment RMSE:      ~0.02 m   (threshold <= 0.50 m)
+Lane-width p95 deviation:  <0.05 m   (threshold <= 0.15 m)
+Topology errors:           0         (threshold = 0)
+```
+
+Thresholds in this repository are **illustrative defaults for synthetic tests**, not universal CARLA acceptance criteria. Real projects must calibrate tolerances to map source, sampling density, intended simulation use and safety/validation context.
+
+## Test strategy
+
+The test suite includes:
+
+- parser unit tests;
+- synthetic line/lane geometry tests;
+- WGS84 ↔ UTM CRS roundtrip tests;
+- deterministic SE(2) recovery tests;
+- Hausdorff known-offset tests;
+- lane-width statistical tests;
+- valid and invalid lane-link fixtures;
+- a compact regression signature for the generated OpenDRIVE fixture;
+- report gate pass/fail tests;
+- CLI PASS/FAIL behavior, including a non-zero exit for intentional rejection.
+
+CI runs Ruff, pytest with a 90% minimum coverage gate, the passing command-line demo, and the expected-rejection demo on Python 3.10 and 3.12.
+
+## Reproducibility and provenance
+
+Every public example is generated from repository-owned fixtures. `io.provenance` provides SHA-256 input hashing, and quality reports include a `provenance` object so the source fixture, digest, generation mode and asset policy can be recorded alongside metrics. A production extension should also record CRS definitions, tool versions and pipeline configuration.
+
+## Limitations
+
+This is a portfolio-grade validation toolkit, not a complete OpenDRIVE engine. Current deliberate limitations include:
+
+- plan-view sampling supports `line` and `arc` primitives, not every OpenDRIVE geometry type;
+- lane centerlines are QA approximations based on lane widths/laneOffset rather than full road-surface reconstruction;
+- Hausdorff distance is discrete and therefore depends on sampling density;
+- SE(2) fitting assumes paired correspondences and does not implement ICP/outlier rejection;
+- topology checks focus on referential integrity and do not prove legal traffic movements;
+- thresholds are illustrative and must be calibrated per project;
+- CARLA ingestion/runtime behavior is not simulated in unit tests.
+
+These boundaries are documented so the repository demonstrates engineering judgment without overstating scope.
+
+## Evidence and public-release policy
+
+- [Acceptance checklist](docs/ACCEPTANCE_CHECKLIST.md) — original requirement → concrete evidence mapping.
+- [Evidence matrix](docs/EVIDENCE_MATRIX.md) — claim → implementation → test mapping.
+- [Verification receipt](docs/VERIFICATION.md) — hosted release-gate evidence.
+- [Sanitization policy](SANITIZATION.md) — public-data boundary and checklist.
+- [Security policy](SECURITY.md) — sensitive-data handling rules.
+- [Contributing](CONTRIBUTING.md) — reproducibility and sanitization requirements.
+
+Do not add private map assets, employer/customer code, internal repository names, credentials or confidential benchmark data.
+
+## Portfolio use
+
+Role-targeted CV wording is provided in [`CARLA_PORTFOLIO_CV_BLOCK.md`](CARLA_PORTFOLIO_CV_BLOCK.md).
