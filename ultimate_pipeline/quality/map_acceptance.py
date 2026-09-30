@@ -25,7 +25,7 @@ from ultimate_pipeline.tools.crash_safe_length_repair import (
 )
 from ultimate_pipeline.contracts.stage_contracts import (
     QualityStatus,
-    governed_waiver_allowed,
+    production_gate_waiver_allowed,
 )
 from ultimate_pipeline.quality.topology_certification import certify_topology
 
@@ -1049,7 +1049,7 @@ def build_map_acceptance(
             if float(gate_fraction) < 0.95:
                 waiver = component_reachability_waiver
                 waivable = isinstance(waiver, str) and bool(waiver.strip())
-                if waivable and governed_waiver_allowed(
+                if waivable and production_gate_waiver_allowed(
                     {"component_reachability": waiver}, "component_reachability"
                 ):
                     metrics["component_reachability_waiver_applied"] = True
