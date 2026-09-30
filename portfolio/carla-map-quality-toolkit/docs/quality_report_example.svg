@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#182a42"/>
+    </linearGradient>
+    <style>
+      .title{font:700 30px Arial,sans-serif;fill:#f7fafc}.sub{font:400 15px Arial,sans-serif;fill:#b8c7d9}
+      .card{fill:#16283d;stroke:#42698e;stroke-width:1.5}.k{font:600 13px Arial,sans-serif;fill:#9fb5cb}
+      .v{font:700 22px Arial,sans-serif;fill:#fff}.ok{fill:#143d2c;stroke:#38a169;stroke-width:1.5}
+      .oktxt{font:700 18px Arial,sans-serif;fill:#9ae6b4}.axis{stroke:#61758b;stroke-width:1}
+      .grid{stroke:#2d4359;stroke-width:1}.label{font:400 12px Arial,sans-serif;fill:#9fb5cb}
+      .legend{font:600 13px Arial,sans-serif;fill:#dce6f0}
+    </style>
+  </defs>
+  <rect width="1200" height="620" fill="url(#bg)"/>
+  <text x="50" y="55" class="title">Synthetic Map Quality Report</text>
+  <text x="50" y="82" class="sub">Deterministic validation example — no proprietary map assets</text>
+  <rect x="1010" y="34" width="140" height="52" rx="12" class="ok"/>
+  <text x="1050" y="67" class="oktxt">PASS</text>
+
+  <g transform="translate(50,115)">
+    <rect width="245" height="92" rx="14" class="card"/><text x="18" y="30" class="k">Hausdorff distance</text><text x="18" y="65" class="v">0.033 m</text>
+    <rect x="270" width="245" height="92" rx="14" class="card"/><text x="288" y="30" class="k">SE(2) alignment RMSE</text><text x="288" y="65" class="v">0.021 m</text>
+    <rect x="540" width="245" height="92" rx="14" class="card"/><text x="558" y="30" class="k">Lane-width p95 deviation</text><text x="558" y="65" class="v">0.050 m</text>
+    <rect x="810" width="290" height="92" rx="14" class="card"/><text x="828" y="30" class="k">Topology errors</text><text x="828" y="65" class="v">0</text>
+  </g>
+
+  <g transform="translate(70,260)">
+    <rect x="0" y="0" width="1060" height="285" rx="16" class="card"/>
+    <text x="25" y="34" class="legend">Geometry alignment — synthetic reference vs observed</text>
+    <line x1="80" y1="235" x2="1000" y2="235" class="axis"/><line x1="80" y1="60" x2="80" y2="235" class="axis"/>
+    <line x1="80" y1="95" x2="1000" y2="95" class="grid"/><line x1="80" y1="140" x2="1000" y2="140" class="grid"/><line x1="80" y1="185" x2="1000" y2="185" class="grid"/>
+    <path d="M90 165 C240 100, 340 190, 500 130 S760 165, 980 105" fill="none" stroke="#63b3ed" stroke-width="5"/>
+    <path d="M105 180 C255 112, 355 200, 515 142 S775 177, 995 118" fill="none" stroke="#f6ad55" stroke-width="3" stroke-dasharray="9 7"/>
+    <path d="M91 166 C241 101, 341 189, 501 131 S761 164, 981 106" fill="none" stroke="#68d391" stroke-width="3" stroke-dasharray="3 5"/>
+    <line x1="735" y1="55" x2="780" y2="55" stroke="#63b3ed" stroke-width="5"/><text x="790" y="60" class="legend">Reference</text>
+    <line x1="735" y1="80" x2="780" y2="80" stroke="#f6ad55" stroke-width="3" stroke-dasharray="9 7"/><text x="790" y="85" class="legend">Before alignment</text>
+    <line x1="735" y1="105" x2="780" y2="105" stroke="#68d391" stroke-width="3" stroke-dasharray="3 5"/><text x="790" y="110" class="legend">After SE(2)</text>
+    <text x="80" y="263" class="label">Local X [m]</text><text x="18" y="150" class="label" transform="rotate(-90 18 150)">Local Y [m]</text>
+  </g>
+  <text x="50" y="590" class="sub">Illustrative thresholds for synthetic fixtures; real projects require calibrated acceptance criteria.</text>
+</svg>

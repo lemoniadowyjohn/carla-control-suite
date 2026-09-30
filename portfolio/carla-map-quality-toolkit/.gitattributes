@@ -1,0 +1,2 @@
+*.xodr -filter -diff -merge text
+*.osm text

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="synthetic-fixture">
+  <node id="1" lat="48.137154" lon="11.576124"/>
+  <node id="2" lat="48.137154" lon="11.576500"/>
+  <node id="3" lat="48.137154" lon="11.576900"/>
+  <way id="100">
+    <nd ref="1"/><nd ref="2"/><nd ref="3"/>
+    <tag k="highway" v="residential"/>
+    <tag k="name" v="Synthetic Street"/>
+  </way>
+</osm>
