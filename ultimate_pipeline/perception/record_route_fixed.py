@@ -42,8 +42,24 @@ from typing import Any, Dict, List, Optional, Tuple
 from ultimate_pipeline.sensors.recorder import RecorderConfig, SensorRecorder
 from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
 
+try:  # pragma: no cover - hardening imports
+    from ultimate_pipeline.carla_tools.map_registry import map_names_match
+except Exception:  # pragma: no cover
+    map_names_match = None  # type: ignore
+
+from ultimate_pipeline.perception.world_state_machine import (
+    MapTravelForbidden,
+    WorldPipelineState,
+    WorldStateMachine,
+)
+
 LOW_MEM_DEFAULT_RES = (960, 540)
 _LAST_CAPTURE_CONTEXT: Dict[str, Any] = {}
+
+# Single world/map state machine for this capture process.  Once it reaches
+# MAP_ESTABLISHED, any map-changing operation raises MapTravelForbidden
+# (NEW-248 / NEW-249).
+_WORLD_STATE = WorldStateMachine()
 
 
 def _write_json(path: Path, payload: Dict[str, Any]) -> None:
@@ -361,64 +377,39 @@ def _maybe_reload_world_for_stream_flush(
     world: Any,
     fps: float,
 ) -> Any:
-    if not _env_bool("UP_FORCE_WORLD_RELOAD", True):
+    """LEGACY / NON_AUTHORITATIVE stream-flush helper (NEW-248 / NEW-249).
+
+    This function used to unconditionally call ``client.load_world(current_map)``
+    even under ``--use-current-world``, defeating the Grid map-travel avoidance
+    mechanism and reloading generated OpenDRIVE worlds mid-capture.
+
+    It is now fail-closed: the governed Grid/XODR path calls
+    ``_flush_stream_registry_without_map_travel`` instead, and any residual call
+    into this function is refused once the target world identity is established.
+    """
+    if _WORLD_STATE.established():
+        raise MapTravelForbidden(
+            "stream_flush_reload",
+            _WORLD_STATE.value,
+            "governed capture must flush the stream without map travel",
+        )
+    if not _env_bool("UP_FORCE_WORLD_RELOAD", False):
         print(
-            "[STREAM-FLUSH] WARNING: world reload disabled via UP_FORCE_WORLD_RELOAD=0",
+            "[STREAM-FLUSH] world reload disabled (UP_FORCE_WORLD_RELOAD unset/0); "
+            "using no-travel flush",
             flush=True,
         )
-        return world
-
-    try:
-        current_map = str(world.get_map().name)
-    except Exception as exc:
-        print(
-            f"[STREAM-FLUSH] WARNING: current map unavailable; skipping reload ({exc})",
-            flush=True,
+        return _flush_stream_registry_without_map_travel(
+            world=world, fps=fps, state_machine=_WORLD_STATE
         )
-        return world
-
-    if not current_map:
-        print(
-            "[STREAM-FLUSH] WARNING: current map name empty; skipping reload",
-            flush=True,
-        )
-        return world
-
     print(
-        f"[STREAM-FLUSH] Reloading world {current_map} to clear stale stream registry",
+        "[STREAM-FLUSH] WARNING: UP_FORCE_WORLD_RELOAD=1 requested but the state "
+        "machine has not established a world; using no-travel flush",
         flush=True,
     )
-    candidate_names: List[str] = []
-    for candidate in (
-        current_map,
-        str(current_map).replace("\\", "/").split("/")[-1],
-    ):
-        candidate_text = str(candidate or "").strip()
-        if candidate_text and candidate_text not in candidate_names:
-            candidate_names.append(candidate_text)
-
-    reloaded_world = None
-    last_error: Optional[Exception] = None
-    for candidate_name in candidate_names:
-        try:
-            reloaded_world = client.load_world(candidate_name)
-            current_map = candidate_name
-            break
-        except Exception as exc:
-            last_error = exc
-    if reloaded_world is None:
-        raise RuntimeError(
-            f"stream_flush_reload_failed:{candidate_names}:{last_error}"
-        ) from last_error
-    time.sleep(2.0)
-    settings = reloaded_world.get_settings()
-    settings.synchronous_mode = True
-    settings.fixed_delta_seconds = 1.0 / float(max(1.0, float(fps)))
-    if hasattr(settings, "substepping"):
-        settings.substepping = False
-    reloaded_world.apply_settings(settings)
-    print("[STREAM-FLUSH] World reloaded, sync mode reapplied", flush=True)
-    return reloaded_world
+    return _flush_stream_registry_without_map_travel(
+        world=world, fps=fps, state_machine=_WORLD_STATE
+    )
 
 
 def _spawn_actor_with_tick_validation(
@@ -469,11 +460,81 @@ def _is_first_frame_timeout_error_text(error_text: str) -> bool:
 
 
 def _map_name_contains(actual_map: Any, expected_map: str) -> bool:
+    """LEGACY substring match.
+
+    Retained only for compatibility with legacy callers.  It must never be used
+    for a scientific identity decision: see ``_map_identity_matches`` (NEW-252 /
+    NEW-253 / NEW-254), which requires ``map_names_match()``.
+    """
     expected = str(expected_map or "").strip().lower()
     if not expected:
         return True
     actual = str(actual_map or "").strip().lower()
     return expected in actual
+
+
+def _map_identity_matches(actual_map: Any, expected_map: str) -> bool:
+    """Layer-1 map identity: exact authority via ``map_names_match``.
+
+    Returns ``True`` only when the registry authority confirms the names
+    denote the same canonical map.  Substring matching such as
+    ``expected in actual`` is never consulted here; when the registry
+    authority is unavailable the check fails closed for non-empty expectations.
+    """
+    expected = str(expected_map or "").strip()
+    actual = str(actual_map or "").strip()
+    if not expected:
+        return True
+    if map_names_match is None:  # registry unavailable -> fail closed
+        return False
+    try:
+        return bool(map_names_match(expected, actual))
+    except Exception:
+        return False
+
+
+def _flush_stream_registry_without_map_travel(
+    *,
+    world: Any,
+    fps: float,
+    state_machine: Optional[WorldStateMachine] = None,
+) -> Any:
+    """Flush the streaming registry **without any map travel**.
+
+    Replaces ``_maybe_reload_world_for_stream_flush`` for governed Grid/XODR
+    capture (NEW-248 / NEW-249).  It only re-applies the world settings and
+    advances a few ticks; it never calls ``load_world`` / ``reload_world`` /
+    ``generate_opendrive_world``.
+    """
+    if state_machine is not None:
+        try:
+            state_machine.guard_map_change(
+                "stream_flush_reload",
+                detail="governed path must flush without map travel",
+            )
+        except MapTravelForbidden:
+            # This is the *correct* outcome: the guard proves the reload would
+            # have been forbidden.  We proceed with the no-travel flush.
+            pass
+    try:
+        settings = world.get_settings()
+        settings.synchronous_mode = True
+        settings.fixed_delta_seconds = 1.0 / float(max(1.0, float(fps)))
+        if hasattr(settings, "substepping"):
+            settings.substepping = False
+        world.apply_settings(settings)
+    except Exception as exc:
+        print(f"[STREAM-FLUSH] settings reapply skipped ({exc})", flush=True)
+    for _ in range(3):
+        try:
+            world.tick(5.0)
+        except Exception:
+            break
+    print(
+        "[STREAM-FLUSH] settings reapplied + ticks advanced; NO map travel issued",
+        flush=True,
+    )
+    return world
 
 
 def _tick_snapshot(world, *, timeout_s: float = 2.0) -> Dict[str, Any]:
@@ -1617,7 +1678,8 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
         expected_map_name = str(args.expected_map_name or args.town or "").strip()
         if expected_map_name:
             # CARLA may return '/Game/Carla/Maps/Grid0821' or just 'Grid0821'
-            if current is None or (not _map_name_contains(current, expected_map_name)):
+            # Layer-1 identity only: exact registry authority, never substring.
+            if current is None or (not _map_identity_matches(current, expected_map_name)):
                 raise RuntimeError(
                     "wrong_map_loaded:"
                     f"expected={expected_map_name}:actual={current!r}"
@@ -1629,6 +1691,7 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                     "map_travel_risk_grid0821: risky load_world on Grid0821 is blocked by default. "
                     "Load Grid0821 manually in CARLA and rerun with --use-current-world."
                 )
+            _WORLD_STATE.begin_map_load("load_world", detail=str(args.town))
             world = client.load_world(args.town)
         else:
             xodr_text = Path(args.xodr).read_text(encoding="utf-8", errors="replace")
@@ -1636,6 +1699,9 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 load_opendrive_world,
             )
 
+            _WORLD_STATE.begin_map_load(
+                "load_opendrive_world", detail=str(getattr(args, "xodr", ""))
+            )
             world = load_opendrive_world(
                 client,
                 xodr_text,
@@ -1651,7 +1717,7 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
             loaded_map_name = str(world.get_map().name)
         except Exception:
             loaded_map_name = ""
-        if not _map_name_contains(loaded_map_name, expected_map_name):
+        if not _map_identity_matches(loaded_map_name, expected_map_name):
             raise RuntimeError(
                 "wrong_map_loaded:"
                 f"expected={expected_map_name}:actual={loaded_map_name!r}"
@@ -1660,10 +1726,18 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(world.get_map().name)
     except Exception:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(args.town or "UNKNOWN")
-    world = _maybe_reload_world_for_stream_flush(
-        client=client,
+    # NEW-248 / NEW-249: the target world identity is now established.  From
+    # this point until capture ends there must be NO load_world(),
+    # NO reload_world() and NO second generate_opendrive_world(), for
+    # Grid0821, Grid0828 or a generated OpenDRIVE world alike.  The former
+    # `_maybe_reload_world_for_stream_flush()` violated exactly that
+    # invariant by defaulting to `client.load_world(current_map)`, which
+    # defeated the Grid map-travel avoidance mechanism.
+    _WORLD_STATE.mark_established(reason="target_world_identity_established")
+    world = _flush_stream_registry_without_map_travel(
         world=world,
         fps=float(args.fps),
+        state_machine=_WORLD_STATE,
     )
     try:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(world.get_map().name)

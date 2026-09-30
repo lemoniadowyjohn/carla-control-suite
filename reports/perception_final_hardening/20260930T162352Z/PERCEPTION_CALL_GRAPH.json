@@ -1,0 +1,97 @@
+{
+  "map_travel_invariant_targets": [
+    {
+      "call_site": 1663,
+      "defect": "NEW-248/NEW-249",
+      "file": "ultimate_pipeline/perception/record_route_fixed.py",
+      "inner_load_world": 404,
+      "line": 358,
+      "symbol": "_maybe_reload_world_for_stream_flush"
+    },
+    {
+      "call_sites": [
+        1620,
+        1654
+      ],
+      "defect": "NEW-252/NEW-253/NEW-254",
+      "file": "ultimate_pipeline/perception/record_route_fixed.py",
+      "line": 471,
+      "symbol": "_map_name_contains"
+    }
+  ],
+  "nodes": [
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 3842,
+      "role": "argparse: --manual-town, --xodr-in/--town, --use-current-world, --rig, --manual-via-xodr",
+      "symbol": "_parse_args"
+    },
+    {
+      "authority": "LAYER1_NAME_IDENTITY",
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 832,
+      "role": "wraps map_names_match()",
+      "symbol": "_map_matches_requested"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 1469,
+      "role": "--use-current-world short-circuit; unstable-map travel block at 1486; already-loaded short-circuit at 1502",
+      "symbol": "map_load_gate"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 1517,
+      "role": "loads via ultimate_pipeline/core/carla_opendrive_loader",
+      "symbol": "xodr_arm"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 5353,
+      "role": "spawns python -m ultimate_pipeline.perception.record_route_fixed with --use-current-world --expected-map-name",
+      "symbol": "delegation_to_record_route_fixed"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 6051,
+      "role": "ok = returncode==0 and frames>=min and integrity_ok and first_measurement_ok",
+      "symbol": "ok_boolean_promotion"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 6274,
+      "role": "perception_status['ok']=integrity_ok whenever outputs_present",
+      "symbol": "perception_status_ok_from_integrity"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": 6529,
+      "risk": "SINGLE_BOOLEAN_PROMOTION",
+      "role": "upgrades perception_status['ok'] to True if outputs_present",
+      "symbol": "finally_block_promotion"
+    },
+    {
+      "file": "ultimate_pipeline/config/thesis_contract.py",
+      "line": 63,
+      "risk": "INDEPENDENT_RQ3_AUTHORITY",
+      "role": "success-boolean ladder",
+      "symbol": "classify_single_perception_result"
+    },
+    {
+      "file": "ultimate_pipeline/config/thesis_contract.py",
+      "line": 128,
+      "risk": "INDEPENDENT_RQ3_AUTHORITY",
+      "role": "promotes pair from ok booleans + town tokens, zero digests",
+      "symbol": "classify_pair_perception_result"
+    },
+    {
+      "file": "ultimate_pipeline/tools/final_map_readiness_gate.py",
+      "line": 258,
+      "role": "consumes single ok boolean",
+      "symbol": "evaluate_perception_status"
+    }
+  ],
+  "root": "ultimate_pipeline/tools/run_perception_safe.py",
+  "schema": "PERCEPTION_CALL_GRAPH/v1",
+  "summary": "Orchestrator; never calls load_world itself. Spawns record_route_fixed as subprocess and promotes the dataset from a single boolean."
+}

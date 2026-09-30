@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
@@ -56,6 +57,60 @@ COMPLETION_INCOMPLETE = "INCOMPLETE"
 COMPLETION_FAIL = "FAIL"
 
 INGOLSTADT_MANUAL_COOKED_TOWNS = ("Grid0821", "Grid0828")
+
+# ---------------------------------------------------------------------------
+# Exact authoritative identity pins (NEW-200 / NEW-201 / NEW-224).
+#
+# Path-name heuristics ("ingolstadt" / "campaigns/" substrings) and
+# success-boolean shortcuts are removed as claim authorities.  An arm may only
+# be recognised as an Ingolstadt arm when it carries the exact authoritative
+# XODR identity (automatic arm) or the exact approved manual Grid identity
+# (manual arm).
+# ---------------------------------------------------------------------------
+
+APPROVED_MANUAL_GRID_REGISTRY_KEY = "manual_grid0828"
+APPROVED_INGOLSTADT_AUTO_REGISTRY_KEY = "auto_map_of_record"
+APPROVED_MANUAL_GRID_SHA256 = (
+    "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+)
+APPROVED_INGOLSTADT_AUTO_XODR_SHA256 = (
+    "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+)
+
+_HEX256 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def _is_sha256(value: Any) -> bool:
+    return bool(_HEX256.match(str(value or "").strip().lower()))
+
+
+def approved_ingolstadt_auto_xodr_sha256() -> str:
+    """Authoritative generated-Ingolstadt XODR identity from the registry."""
+    try:
+        from ultimate_pipeline.carla_tools.map_registry import PINNED_MAP_REGISTRY
+
+        entry = PINNED_MAP_REGISTRY.get(APPROVED_INGOLSTADT_AUTO_REGISTRY_KEY) or {}
+        sha = str(entry.get("sha256") or "")
+        if _is_sha256(sha):
+            return sha
+    except Exception:
+        pass
+    return APPROVED_INGOLSTADT_AUTO_XODR_SHA256
+
+
+def approved_manual_grid_sha256() -> str:
+    """Approved manual Grid identity (Grid0821 == Grid0828 on this machine)."""
+    try:
+        from ultimate_pipeline.carla_tools.map_registry import PINNED_MAP_REGISTRY
+
+        entry = PINNED_MAP_REGISTRY.get(APPROVED_MANUAL_GRID_REGISTRY_KEY) or {}
+        sha = str(entry.get("sha256") or "")
+        if _is_sha256(sha):
+            return sha
+    except Exception:
+        pass
+    return APPROVED_MANUAL_GRID_SHA256
+
 
 # Wall-clock / process-scoped fields excluded from deterministic digests.
 DETERMINISM_EXCLUDED_FIELDS = frozenset(
@@ -540,7 +595,7 @@ def xodr_arm_map_identity(
     final_artifact_authority_sha256: Optional[str] = None,
 ) -> Dict[str, Any]:
     return {
-        "map_type": "auto_xodr" if False else "xodr",
+        "map_type": "xodr",
         "xodr_path": str(xodr_path),
         "xodr_sha256": str(xodr_sha256),
         "final_artifact_authority_sha256": final_artifact_authority_sha256,
@@ -565,20 +620,81 @@ def cooked_arm_map_identity(
     }
 
 
-def is_ingolstadt_manual_arm(map_identity: Mapping[str, Any]) -> bool:
+def is_ingolstadt_manual_arm(
+    map_identity: Mapping[str, Any],
+    *,
+    approved_sha256: Optional[str] = None,
+) -> bool:
+    """Manual arm = exact **approved** manual map identity.
+
+    Requirements (all must hold):
+      1. ``map_type == "cooked_manual"``
+      2. the requested name is one of the approved manual Grid towns
+      3. the arm carries an exact ``manual_source_xodr_sha256``
+      4. when an approved SHA is supplied (or the registry pin resolves) the
+         arm's SHA must equal it
+
+    A town-name token alone is no longer sufficient (NEW-224).
+    """
     if map_identity.get("map_type") != "cooked_manual":
         return False
     requested = str(map_identity.get("requested_map_name", ""))
-    return requested in INGOLSTADT_MANUAL_COOKED_TOWNS
+    resolved = str(map_identity.get("resolved_carla_map_name", "") or requested)
+    if requested not in INGOLSTADT_MANUAL_COOKED_TOWNS:
+        return False
+    if resolved and resolved not in INGOLSTADT_MANUAL_COOKED_TOWNS:
+        return False
+
+    source_sha = str(map_identity.get("manual_source_xodr_sha256", "") or "")
+    if not _is_sha256(source_sha):
+        # Accept the registry identity as the exact approved identity when the
+        # content SHA was not carried on the arm, but only if it names the
+        # approved registry entry (never a bare token).
+        registry_identity = str(map_identity.get("registry_identity", "") or "")
+        if registry_identity != APPROVED_MANUAL_GRID_REGISTRY_KEY:
+            return False
+        return True
+
+    approved = approved_sha256 or approved_manual_grid_sha256()
+    if approved and _is_sha256(approved):
+        return source_sha.lower() == str(approved).lower()
+    return True
 
 
-def is_ingolstadt_auto_arm(map_identity: Mapping[str, Any], *, ingolstadt_xodr_sha256=None) -> bool:
+def is_ingolstadt_auto_arm(
+    map_identity: Mapping[str, Any],
+    *,
+    ingolstadt_xodr_sha256: Optional[str] = None,
+) -> bool:
+    """Automatic arm = exact authoritative XODR identity (NEW-224).
+
+    The former fallback ``"ingolstadt" in path or "campaigns/" in path`` is
+    removed: a generated XODR located under any ``campaigns/`` directory is no
+    longer classified as the Ingolstadt arm without a digest check.
+    """
     if map_identity.get("map_type") != "xodr":
         return False
-    if ingolstadt_xodr_sha256:
-        return str(map_identity.get("xodr_sha256", "")) == str(ingolstadt_xodr_sha256)
-    path = str(map_identity.get("xodr_path", "")).replace("\\", "/")
-    return "ingolstadt" in path.lower() or "campaigns/" in path.lower()
+    arm_sha = str(map_identity.get("xodr_sha256", "") or "")
+    if not _is_sha256(arm_sha):
+        return False
+    authoritative = ingolstadt_xodr_sha256 or approved_ingolstadt_auto_xodr_sha256()
+    if not _is_sha256(authoritative):
+        # No authoritative identity available -> cannot claim the arm.
+        return False
+    return arm_sha.lower() == str(authoritative).lower()
+
+
+def both_arms_ingolstadt(
+    manual_map_identity: Mapping[str, Any],
+    auto_map_identity: Mapping[str, Any],
+    *,
+    manual_sha256: Optional[str] = None,
+    auto_sha256: Optional[str] = None,
+) -> bool:
+    return bool(
+        is_ingolstadt_manual_arm(manual_map_identity, approved_sha256=manual_sha256)
+        and is_ingolstadt_auto_arm(auto_map_identity, ingolstadt_xodr_sha256=auto_sha256)
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -675,23 +791,46 @@ def build_pair_manifest(
     return manifest
 
 
+MANDATORY_IDENTITY_KEYS: tuple = (
+    "calibration_sha256",
+    "sensor_rig_sha256",
+    "weather_sha256",
+    "capture_config_sha256",
+    "route_manifest_sha256",
+)
+
+
 def validate_pair_manifest(manifest: Mapping[str, Any]) -> Dict[str, Any]:
     """Fail-closed validation of an existing pair manifest.
 
-    `pair_valid` may only be true when every mandatory equality holds and the
-    claim-level boundary is respected.
+    Hardened by NEW-200 / NEW-201 / NEW-224:
+
+    * every mandatory contract identity must EXIST at the top level, on the
+      manual arm and on the automatic arm, and the three must MATCH - an arm
+      that simply omits a digest is now a failure, not a pass;
+    * ``claim_level`` and ``pair_valid`` are RECOMPUTED from the digests, never
+      trusted from the manifest body;
+    * path-name heuristics are not consulted anywhere.
     """
     reasons: List[str] = []
-    manual = manifest.get("manual_arm") or {}
-    auto = manifest.get("auto_arm") or {}
+    manual = dict(manifest.get("manual_arm") or {})
+    auto = dict(manifest.get("auto_arm") or {})
 
-    for key in ("calibration_sha256", "sensor_rig_sha256", "weather_sha256",
-                "capture_config_sha256", "route_manifest_sha256"):
+    if not manual:
+        reasons.append("manual_arm_missing")
+    if not auto:
+        reasons.append("auto_arm_missing")
+
+    for key in MANDATORY_IDENTITY_KEYS:
         ml = manual.get(key)
         al = auto.get(key)
         top = manifest.get(key)
         if not top:
             reasons.append(f"{key}_missing")
+        if ml is None:
+            reasons.append(f"{key}_missing_manual_arm")
+        if al is None:
+            reasons.append(f"{key}_missing_auto_arm")
         if ml is not None and al is not None and ml != al:
             reasons.append(f"{key}_mismatch_manual_vs_auto:{ml}!={al}")
         if ml is not None and top is not None and ml != top:
@@ -701,28 +840,89 @@ def validate_pair_manifest(manifest: Mapping[str, Any]) -> Dict[str, Any]:
 
     ml = manual.get("pair_frame_index")
     al = auto.get("pair_frame_index")
+    if ml is None:
+        reasons.append("pair_frame_index_missing_manual_arm")
+    if al is None:
+        reasons.append("pair_frame_index_missing_auto_arm")
     if ml is not None and al is not None and ml != al:
         reasons.append("pair_frame_index_mismatch")
 
-    claim = manifest.get("claim_level")
-    pair_valid = bool(manifest.get("pair_valid"))
+    manual_map = dict(manifest.get("manual_map_identity") or {})
+    auto_map = dict(manifest.get("auto_map_identity") or {})
+    if not manual_map:
+        reasons.append("manual_map_identity_missing")
+    if not auto_map:
+        reasons.append("auto_map_identity_missing")
 
-    if claim == CLAIM_PAIRED_INGOLSTADT_CAPTURE:
-        manual_map = manifest.get("manual_map_identity") or {}
-        auto_map = manifest.get("auto_map_identity") or {}
+    # --- route validity -------------------------------------------------
+    route_closure = str(manifest.get("pair_route_closure") or "")
+    route_valid = route_closure == "PAIR_ROUTE_VALID"
+    if not route_valid:
+        reasons.append(f"pair_route_closure_invalid:{route_closure or 'MISSING'}")
+
+    # --- recompute, never trust the declared claim ----------------------
+    recomputed_pair_valid = not reasons
+    ingolstadt_both = both_arms_ingolstadt(manual_map, auto_map)
+    classification = classify_claim_level(
+        is_pair=True,
+        pair_valid=recomputed_pair_valid,
+        route_valid=route_valid,
+        both_arms_ingolstadt=ingolstadt_both,
+        manual_arm=manual_map,
+        auto_arm=auto_map,
+    )
+    recomputed_claim = classification["claim_level"]
+    reasons.extend(classification.get("reasons") or [])
+
+    declared_claim = manifest.get("claim_level")
+    declared_pair_valid = bool(manifest.get("pair_valid"))
+
+    # Declaring a LOWER claim than the digests support is a conservative
+    # under-claim and is allowed; claiming more than the digests support is a
+    # failure.
+    claim_rank = {
+        CLAIM_UNPAIRED_CAPTURE: 0,
+        CLAIM_SENSOR_SMOKE: 0,
+        CLAIM_PAIRED_PROTOCOL_VALID: 1,
+        CLAIM_PAIRED_INGOLSTADT_CAPTURE: 2,
+    }
+    if declared_claim is not None:
+        declared_rank = claim_rank.get(str(declared_claim), 3)
+        recomputed_rank = claim_rank.get(str(recomputed_claim), 3)
+        if declared_rank > recomputed_rank:
+            reasons.append(
+                f"claim_level_not_supported:declared={declared_claim}:recomputed={recomputed_claim}"
+            )
+    if declared_claim == CLAIM_PAIRED_INGOLSTADT_CAPTURE:
         if not is_ingolstadt_manual_arm(manual_map):
             reasons.append("claim_ingolstadt_requires_manual_ingolstadt_arm")
         if not is_ingolstadt_auto_arm(auto_map):
             reasons.append("claim_ingolstadt_requires_auto_ingolstadt_xodr_arm")
-    if claim == CLAIM_PAIRED_PROTOCOL_VALID and pair_valid and not reasons:
-        pass
-    if pair_valid and reasons:
-        return {"valid": False, "pair_valid": pair_valid, "claim_level": claim,
-                "invalid_reasons": reasons,
-                "pair_route_closure": manifest.get("pair_route_closure")}
-    return {"valid": not reasons, "pair_valid": pair_valid, "claim_level": claim,
-            "invalid_reasons": reasons,
-            "pair_route_closure": manifest.get("pair_route_closure")}
+    if declared_pair_valid and not recomputed_pair_valid:
+        reasons.append("pair_valid_declared_but_not_supported_by_digests")
+
+    reasons = sorted(set(reasons))
+    valid = not reasons
+
+    return {
+        "schema": "PAIR_MANIFEST_VALIDATION/v1",
+        "valid": bool(valid),
+        "pair_valid": bool(valid and recomputed_pair_valid),
+        "claim_level": recomputed_claim,
+        "declared_claim_level": declared_claim,
+        "declared_pair_valid": declared_pair_valid,
+        "claim_level_recomputed": True,
+        "pair_valid_recomputed": True,
+        "both_arms_ingolstadt": bool(ingolstadt_both),
+        "route_valid": bool(route_valid),
+        "invalid_reasons": reasons,
+        "pair_route_closure": manifest.get("pair_route_closure"),
+        "authority_note": (
+            "claim_level and pair_valid are recomputed from the mandatory "
+            "digests; declared values are reported but never trusted."
+        ),
+    }
+
 
 
 # ---------------------------------------------------------------------------

@@ -11,7 +11,7 @@ import math
 import os
 import re
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Sequence
 
 
 def _median(values: List[float]) -> Optional[float]:
@@ -201,22 +201,36 @@ def _capture_signature(metrics: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _frame_id_signature(metrics: Dict[str, Any]) -> Optional[Dict[str, set]]:
+    """Per-camera frame-id sets, when the capture recorded them."""
+    camera = metrics.get("camera") or {}
+    per_camera = camera.get("frame_ids")
+    if not isinstance(per_camera, dict) or not per_camera:
+        return None
+    out: Dict[str, set] = {}
+    for name, values in per_camera.items():
+        if isinstance(values, (list, tuple, set)):
+            out[str(name)] = {int(v) for v in values}
+    return out or None
+
+
 def assert_paired_captures_compatible(
     metrics_a: Dict[str, Any],
     metrics_b: Dict[str, Any],
     *,
     label_a: str = "capture_a",
     label_b: str = "capture_b",
+    pair_sequence_index_a: Optional[Sequence[int]] = None,
+    pair_sequence_index_b: Optional[Sequence[int]] = None,
+    require_frame_correspondence: bool = False,
 ) -> None:
-    """Fail fast unless two capture datasets have matching camera configs.
+    """Fail fast unless two capture datasets are genuinely corresponded.
 
-    `metrics_a`/`metrics_b` are the dicts returned by
-    `compute_perception_metrics()`. Raises `PairedCaptureMismatchError` with
-    a specific, actionable message (rather than letting downstream code
-    silently produce `null` KL-divergence/histogram metrics) when:
-      - either capture has no usable sensor data;
-      - the set of camera names differs between the two sides;
-      - the per-camera frame count differs for any shared camera.
+    NEW-266: matching camera names and matching frame *counts* are no longer
+    sufficient.  When frame-id sets are available they must correspond exactly;
+    when a governed ``pair_sequence_index`` (shared route/capture manifest) is
+    available it must be identical on both sides.  Same number of files with
+    different frame IDs is a mismatch, not a match.
     """
     issues: List[str] = []
 
@@ -246,6 +260,58 @@ def assert_paired_captures_compatible(
                     f"frame count mismatch for camera '{name}': "
                     f"{label_a}={frames_a} vs {label_b}={frames_b}"
                 )
+
+    # --- exact frame-id correspondence (NEW-266) -------------------------
+    ids_a = _frame_id_signature(metrics_a)
+    ids_b = _frame_id_signature(metrics_b)
+    correspondence_state = "NOT_AVAILABLE"
+    if ids_a is not None and ids_b is not None:
+        shared = sorted(set(sig_a["camera_names"]) & set(sig_b["camera_names"]))
+        disagreement: List[str] = []
+        for name in shared:
+            left = ids_a.get(name, set())
+            right = ids_b.get(name, set())
+            if left != right:
+                disagreement.append(
+                    f"{name}: only_{label_a}={sorted(left - right)[:8]} "
+                    f"only_{label_b}={sorted(right - left)[:8]}"
+                )
+        if disagreement:
+            correspondence_state = "MISMATCH"
+            issues.append(
+                "frame id set mismatch (equal counts do not imply correspondence): "
+                + "; ".join(disagreement)
+            )
+        else:
+            correspondence_state = "MATCH"
+    elif require_frame_correspondence:
+        correspondence_state = "MISSING"
+        issues.append(
+            "frame id correspondence required but not recorded by one or both captures"
+        )
+
+    # --- governed pair_sequence_index (shared route/capture manifest) -----
+    sequence_state = "NOT_SUPPLIED"
+    if pair_sequence_index_a is not None or pair_sequence_index_b is not None:
+        if pair_sequence_index_a is None or pair_sequence_index_b is None:
+            sequence_state = "MISSING"
+            issues.append(
+                "pair_sequence_index supplied for only one arm; the governed "
+                "route/capture manifest must produce it for both"
+            )
+        else:
+            seq_a = [int(x) for x in pair_sequence_index_a]
+            seq_b = [int(x) for x in pair_sequence_index_b]
+            if seq_a != seq_b:
+                sequence_state = "MISMATCH"
+                issues.append(
+                    f"pair_sequence_index mismatch: {label_a}={seq_a[:8]} vs {label_b}={seq_b[:8]}"
+                )
+            else:
+                sequence_state = "MATCH"
+
+    metrics_a.setdefault("_pairing_evidence", {})["frame_id_correspondence"] = correspondence_state
+    metrics_a["_pairing_evidence"]["pair_sequence_index"] = sequence_state
 
     if issues:
         raise PairedCaptureMismatchError(
@@ -424,6 +490,18 @@ def compute_paired_perception_metrics(
         "enabled": True,
         "label_a": label_a,
         "label_b": label_b,
+        # NEW-266: these numbers pool histograms over matched cameras; they
+        # compare DISTRIBUTIONS, not corresponding route poses.  They are
+        # therefore named `distributional_domain_gap` and must never be
+        # reported as a "paired frame metric".
+        "metric_family": "distributional_domain_gap",
+        "comparison_basis": "pooled_histograms_over_matched_cameras_not_pose_correspondence",
+        "paired_frame_metric": False,
+        "paired_frame_metrics_note": (
+            "Use a governed pair_sequence_index from the shared route/capture "
+            "manifest to compute pose-corresponded paired frame metrics; this "
+            "function intentionally reports distributional domain gap only."
+        ),
         "frames_a": int(metrics_a["camera"]["total_frames"]),
         "frames_b": int(metrics_b["camera"]["total_frames"]),
         "camera_names": shared_cameras,
@@ -436,4 +514,51 @@ def compute_paired_perception_metrics(
         "per_camera_kl": per_camera_kl,
         "per_camera_histogram_intersection": per_camera_histogram_intersection,
         "per_camera_brightness_difference": per_camera_brightness_difference,
+    }
+
+
+def paired_frame_correspondence_report(
+    metrics_a: Dict[str, Any],
+    metrics_b: Dict[str, Any],
+    *,
+    pair_sequence_index_a: Optional[Sequence[int]] = None,
+    pair_sequence_index_b: Optional[Sequence[int]] = None,
+) -> Dict[str, Any]:
+    """Report exact frame correspondence for genuinely PAIRED frame metrics."""
+    ids_a = _frame_id_signature(metrics_a) or {}
+    ids_b = _frame_id_signature(metrics_b) or {}
+    cameras = sorted(set(ids_a) | set(ids_b))
+    rows: List[Dict[str, Any]] = []
+    common: Optional[set] = None
+    for cam in cameras:
+        left = ids_a.get(cam, set())
+        right = ids_b.get(cam, set())
+        inter = left & right
+        common = inter if common is None else (common & inter)
+        rows.append(
+            {
+                "camera": cam,
+                "frames_a": len(left),
+                "frames_b": len(right),
+                "common_frame_ids": len(inter),
+                "equal": left == right,
+            }
+        )
+    seq_match = None
+    if pair_sequence_index_a is not None and pair_sequence_index_b is not None:
+        seq_match = [int(x) for x in pair_sequence_index_a] == [
+            int(x) for x in pair_sequence_index_b
+        ]
+    return {
+        "schema": "PAIRED_FRAME_CORRESPONDENCE/v1",
+        "rows": rows,
+        "common_frame_ids_across_cameras": sorted(common) if common else [],
+        "exact_correspondence": bool(all(r["equal"] for r in rows)) if rows else False,
+        "pair_sequence_index_match": seq_match,
+        "metric_family": "paired_frame_metric",
+        "policy": (
+            "A paired frame metric requires the same governed route pose index, "
+            "the same corresponding capture index and the same camera; equal "
+            "file counts alone are never sufficient."
+        ),
     }

@@ -114,6 +114,34 @@ class SensorRecorder:
         self._callbacks_in_flight = 0
         self._lock = Lock()
 
+        # NEW-264: writer integrity counters.  For a training-authoritative
+        # dataset a dropped frame is a HARD failure, never a warning.
+        self._writer_stats: Dict[str, int] = {
+            "write_jobs_submitted": 0,
+            "write_jobs_completed": 0,
+            "write_jobs_failed": 0,
+            "write_jobs_rejected": 0,
+            "maximum_queue_depth": 0,
+        }
+        self._queue_depth_now = 0
+
+        # NEW-263: run-scoped file tracking.  Fresh-run manifest counts derive
+        # exclusively from files created by this session, never from a
+        # re-glob over a directory that may hold a previous run's frames.
+        try:
+            from ultimate_pipeline.perception.capture_namespace import (
+                RunScopedFileTracker,
+                run_id as _new_run_id,
+            )
+
+            self._run_id = _new_run_id()
+            self._run_tracker = RunScopedFileTracker(
+                run_id_value=self._run_id, namespace=str(self.out_dir)
+            )
+        except Exception:
+            self._run_id = ""
+            self._run_tracker = None
+
         self._manifest_path = self.out_dir / "recorder_manifest.json"
         self._snapshot_log_path = self.out_dir / "meta" / "world_snapshots.jsonl"
         if self._attached:
@@ -418,11 +446,51 @@ class SensorRecorder:
         sensor_dir.mkdir(parents=True, exist_ok=True)
         return sensor_dir / f"{int(frame_id):08d}.{ext}"
 
+    #: Error tokens that mean a frame was dropped rather than merely noted.
+    _DROP_ERROR_TOKENS = (
+        "writer_queue_full",
+        "writer_submit_failed",
+        "writer_executor_missing",
+        "save_failed",
+    )
+
     def _record_error(self, message: str) -> None:
+        text = str(message)
+        is_drop = any(token in text for token in self._DROP_ERROR_TOKENS)
         with self._lock:
-            self._save_errors.append(str(message))
+            self._save_errors.append(text)
             if len(self._save_errors) > 5000:
                 self._save_errors = self._save_errors[-5000:]
+        if is_drop:
+            # NEW-264: surfaced loudly instead of silently disappearing.
+            try:
+                log.error("[recorder] dropped frame (hard failure): %s", text)
+            except Exception:
+                print(f"[recorder] DROPPED_FRAME {text}", flush=True)
+
+    def writer_integrity(self) -> Dict[str, Any]:
+        """Writer queue integrity snapshot (NEW-264)."""
+        with self._lock:
+            stats = dict(self._writer_stats)
+            depth = int(self._queue_depth_now)
+            errors = [str(e) for e in self._save_errors]
+        drop_errors = [e for e in errors if any(t in e for t in self._DROP_ERROR_TOKENS)]
+        rejected = int(stats.get("write_jobs_rejected", 0))
+        failed = int(stats.get("write_jobs_failed", 0))
+        ok = rejected == 0 and failed == 0 and not drop_errors
+        return {
+            "schema": "WRITER_INTEGRITY/v1",
+            "write_jobs_submitted": int(stats.get("write_jobs_submitted", 0)),
+            "write_jobs_completed": int(stats.get("write_jobs_completed", 0)),
+            "write_jobs_failed": failed,
+            "write_jobs_rejected": rejected,
+            "maximum_queue_depth": int(stats.get("maximum_queue_depth", 0)),
+            "current_queue_depth": depth,
+            "drop_error_count": len(drop_errors),
+            "drop_errors_tail": drop_errors[-20:],
+            "status": "PASS" if ok else "CAPTURE_INCOMPLETE",
+            "strict_rule": "rejected == 0 and failed == 0 required for training authority",
+        }
 
     def _record_saved_frame(self, sensor_name: str, sensor_kind: str) -> None:
         with self._lock:
@@ -475,9 +543,25 @@ class SensorRecorder:
                     sensor_name=str(sensor_name),
                     sensor_kind=str(sensor_kind),
                 )
+                with self._lock:
+                    self._writer_stats["write_jobs_completed"] = (
+                        self._writer_stats.get("write_jobs_completed", 0) + 1
+                    )
+            else:
+                with self._lock:
+                    self._writer_stats["write_jobs_failed"] = (
+                        self._writer_stats.get("write_jobs_failed", 0) + 1
+                    )
+                self._record_error(f"save_failed:{sensor_name}:{frame_id}:write_fn_not_callable")
         except Exception as exc:
+            with self._lock:
+                self._writer_stats["write_jobs_failed"] = (
+                    self._writer_stats.get("write_jobs_failed", 0) + 1
+                )
             self._record_error(f"save_failed:{sensor_name}:{frame_id}:{exc}")
         finally:
+            with self._lock:
+                self._queue_depth_now = max(0, int(self._queue_depth_now) - 1)
             self._release_write_slot()
 
     def _queue_write_job(
@@ -489,12 +573,28 @@ class SensorRecorder:
         write_fn: Any,
     ) -> bool:
         executor = getattr(self, "_executor", None)
+        with self._lock:
+            self._writer_stats["write_jobs_submitted"] = (
+                self._writer_stats.get("write_jobs_submitted", 0) + 1
+            )
         if executor is None or bool(getattr(self, "_executor_shutdown", False)):
+            with self._lock:
+                self._writer_stats["write_jobs_rejected"] = (
+                    self._writer_stats.get("write_jobs_rejected", 0) + 1
+                )
             self._record_error(f"writer_executor_missing:{sensor_name}:{frame_id}")
             return False
         if not self._reserve_write_slot():
+            with self._lock:
+                self._writer_stats["write_jobs_rejected"] = (
+                    self._writer_stats.get("write_jobs_rejected", 0) + 1
+                )
             self._record_error(f"writer_queue_full:{sensor_name}:{frame_id}")
             return False
+        with self._lock:
+            self._queue_depth_now += 1
+            if self._queue_depth_now > self._writer_stats.get("maximum_queue_depth", 0):
+                self._writer_stats["maximum_queue_depth"] = int(self._queue_depth_now)
         try:
             executor.submit(
                 self._run_write_job,
@@ -505,6 +605,11 @@ class SensorRecorder:
             )
             return True
         except Exception as exc:
+            with self._lock:
+                self._queue_depth_now = max(0, int(self._queue_depth_now) - 1)
+                self._writer_stats["write_jobs_rejected"] = (
+                    self._writer_stats.get("write_jobs_rejected", 0) + 1
+                )
             self._release_write_slot()
             self._record_error(f"writer_submit_failed:{sensor_name}:{frame_id}:{exc}")
             return False
@@ -851,7 +956,14 @@ class SensorRecorder:
                 frame_count_disk = self._count_sensor_files(
                     sensor_dir, sensor_kind, image_ext
                 )
-                frame_count = int(max(frame_count_mem, frame_count_disk))
+                # NEW-263: run-scoped authority.  `_sensor_frame_counts` only
+                # increments for frames written by THIS session, so it can never
+                # be inflated by a previous run's files sitting on disk.  The old
+                # `max(memory, disk)` arbitration let stale files manufacture
+                # frames that this capture never produced; disk is retained only
+                # as a diagnostic cross-check.
+                frame_count = int(frame_count_mem)
+                stale_ignored = max(0, int(frame_count_disk) - int(frame_count_mem))
                 type_id = str(getattr(sensor, "type_id", "")) if sensor is not None else ""
                 resolved_sensor_counts[sensor_name] = int(frame_count)
                 per_sensor_counts[sensor_name] = {
@@ -859,6 +971,9 @@ class SensorRecorder:
                     "frames": frame_count,
                     "rgb_frames": frame_count if sensor_kind == "rgb" else 0,
                     "lidar_frames": frame_count if sensor_kind == "lidar" else 0,
+                    "frames_on_disk_diagnostic": int(frame_count_disk),
+                    "stale_files_ignored": int(stale_ignored),
+                    "counting_authority": "run_scoped_memory_count",
                 }
                 sensors_payload.append(
                     {
@@ -866,6 +981,8 @@ class SensorRecorder:
                         "kind": sensor_kind,
                         "type_id": type_id,
                         "frame_count": frame_count,
+                        "frames_on_disk_diagnostic": int(frame_count_disk),
+                        "stale_files_ignored": int(stale_ignored),
                         "output_dir": str(sensor_dir),
                     }
                 )
@@ -878,6 +995,20 @@ class SensorRecorder:
 
             total_files = int(rgb_total + semseg_total + lidar_total)
 
+            # Inline writer stats: `writer_integrity()` takes the same lock and
+            # must not be called from inside this locked region.
+            _wstats = dict(self._writer_stats)
+            _drop_errors = [
+                str(e)
+                for e in self._save_errors
+                if any(t in str(e) for t in self._DROP_ERROR_TOKENS)
+            ]
+            _writer_ok = (
+                int(_wstats.get("write_jobs_rejected", 0)) == 0
+                and int(_wstats.get("write_jobs_failed", 0)) == 0
+                and not _drop_errors
+            )
+
             payload = {
                 "schema_version": 1,
                 "started_utc": self._started_utc,
@@ -885,6 +1016,8 @@ class SensorRecorder:
                 "start_time": self._started_utc,
                 "end_time": end_time,
                 "output_dir": str(self.out_dir),
+                "run_id": getattr(self, "_run_id", ""),
+                "counting_authority": "run_scoped_memory_count",
                 "output_roots": {
                     "rgb": str(self.out_dir / "rgb"),
                     "semseg": str(self.out_dir / "semseg_raw"),
@@ -902,6 +1035,19 @@ class SensorRecorder:
                 },
                 "sensor_frame_counts": resolved_sensor_counts,
                 "save_errors_tail": self._save_errors[-100:],
+                "writer_integrity": {
+                    "write_jobs_submitted": int(_wstats.get("write_jobs_submitted", 0)),
+                    "write_jobs_completed": int(_wstats.get("write_jobs_completed", 0)),
+                    "write_jobs_failed": int(_wstats.get("write_jobs_failed", 0)),
+                    "write_jobs_rejected": int(_wstats.get("write_jobs_rejected", 0)),
+                    "maximum_queue_depth": int(_wstats.get("maximum_queue_depth", 0)),
+                    "drop_error_count": len(_drop_errors),
+                    "status": "PASS" if _writer_ok else "CAPTURE_INCOMPLETE",
+                    "strict_rule": (
+                        "NEW-264: rejected == 0 and failed == 0 required; any "
+                        "dropped frame is CAPTURE_INCOMPLETE, not a warning."
+                    ),
+                },
                 "last_tick_snapshot": self._last_tick_snapshot,
                 "manifest_write_error": str(self._manifest_error or ""),
             }

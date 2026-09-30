@@ -37,28 +37,57 @@ def _env_float(name: str, default: float) -> float:
         return float(default)
 
 
-def _cleanup_spawned_sensor_actors(spawned: Dict[str, "SpawnedSensor"]) -> None:
-    for sensor_name, spawned_sensor in reversed(list(spawned.items())):
-        actor = getattr(spawned_sensor, "actor", None)
-        if actor is None:
-            continue
-        try:
-            if hasattr(actor, "stop"):
-                actor.stop()
-        except Exception as exc:
+#: Map name observed for the in-flight rig spawn; consulted by the cleanup
+#: path so policy resolution does not need a world handle.
+_ACTIVE_MAP_NAME: Dict[str, Optional[str]] = {"map_name": None}
+
+
+def _cleanup_spawned_sensor_actors(
+    spawned: Dict[str, "SpawnedSensor"],
+    *,
+    map_name: Optional[str] = None,
+    policy: Any = None,
+    report_path: Any = None,
+) -> Any:
+    """Partial-spawn cleanup routed through the single lifecycle authority.
+
+    NEW-267: this used to call ``actor.destroy()`` directly, bypassing the Grid
+    instability policy.  Failure cleanup is now at least as safe as successful
+    cleanup - both go through
+    :func:`ultimate_pipeline.perception.sensor_lifecycle.cleanup_spawned_sensors`,
+    which refuses per-actor destruction for known-unstable maps and marks the
+    session disposable instead.
+    """
+    from ultimate_pipeline.perception.sensor_lifecycle import (
+        cleanup_spawned_sensors,
+        env_forced_policy,
+    )
+
+    resolved_policy = env_forced_policy()
+    if resolved_policy is None and policy is not None:
+        resolved_policy = policy
+    if map_name is None:
+        map_name = _ACTIVE_MAP_NAME.get("map_name")
+
+    try:
+        report = cleanup_spawned_sensors(
+            spawned,
+            map_name=map_name,
+            policy=resolved_policy,
+            report_path=report_path,
+        )
+    except Exception as exc:
+        log.warning("sensor lifecycle cleanup failed: %s", exc)
+        return None
+    for action in report.actions:
+        if not action.ok:
             log.warning(
-                "Failed to stop partially spawned sensor '%s': %s",
-                sensor_name,
-                exc,
+                "sensor lifecycle %s on '%s': %s",
+                action.action,
+                action.sensor,
+                action.error,
             )
-        try:
-            actor.destroy()
-        except Exception as exc:
-            log.warning(
-                "Failed to destroy partially spawned sensor '%s': %s",
-                sensor_name,
-                exc,
-            )
+    return report
 
 
 def _sleep_and_verify_spawned_sensor(
@@ -695,6 +724,9 @@ class ThesisSensorRig:
 
         # P0 MAP IDENTITY VALIDATION (thesis safety)
         self._map_identity = validate_world_map(world, expected_substring=expected_map)
+        _ACTIVE_MAP_NAME["map_name"] = str(
+            (self._map_identity or {}).get("world_map_name") or expected_map or ""
+        ) or None
         log.info(
             "Map identity validated: %s (strict=%s)",
             self._map_identity.get("world_map_name"),

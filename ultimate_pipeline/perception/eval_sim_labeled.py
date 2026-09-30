@@ -134,6 +134,8 @@ def evaluate_model(
     num_classes: int = CARLA_SEMANTIC_NUM_CLASSES,
     device: str = "cpu",
     limit: int = 0,
+    strict: bool = True,
+    allow_partial: bool = False,
 ) -> Dict:
     """Evaluate model on labeled sim dataset.
 
@@ -143,10 +145,28 @@ def evaluate_model(
     device_obj = torch.device(device if (device != "cuda" or torch.cuda.is_available()) else "cpu")
     num_classes = validate_num_classes(num_classes)
 
-    # Load model
+    # Load model. NEW-246: strict loading is the default. `strict=False` used
+    # to discard mismatched heads silently, so a head trained for N classes
+    # could be evaluated at M classes with random weights and still produce
+    # a confident-looking mIoU.
     model = models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
     state_dict = torch.load(model_path, map_location="cpu")
-    model.load_state_dict(state_dict, strict=False)
+    load_error: str = ""
+    if strict:
+        try:
+            model.load_state_dict(state_dict, strict=True)
+        except RuntimeError as exc:
+            if not allow_partial:
+                raise RuntimeError(
+                    f"STRICT model load failed for {model_path}: {exc}. "
+                    "Pass allow_partial=True/--allow-partial-load only for "
+                    "explicitly labelled diagnostic runs."
+                ) from exc
+            load_error = str(exc)
+            model.load_state_dict(state_dict, strict=False)
+    else:
+        load_error = "strict=False requested"
+        model.load_state_dict(state_dict, strict=False)
     model.to(device_obj)
     model.eval()
 
@@ -161,6 +181,8 @@ def evaluate_model(
             "pixel_accuracy": 0.0,
             "per_class_iou": {},
             "frames_count": 0,
+            "strict_load_ok": not load_error,
+            "strict_load_error": load_error or None,
             "error": f"No paired RGB/semseg files found in {dataset_root} for camera {camera}",
         }
 
@@ -212,6 +234,8 @@ def evaluate_model(
         "dataset": str(dataset_root.resolve()),
         "camera": camera,
         "device": str(device_obj),
+        "strict_load_ok": not load_error,
+        "strict_load_error": load_error or None,
     }
 
 
@@ -224,6 +248,12 @@ def parse_args():
     ap.add_argument("--num-classes", type=int, default=CARLA_SEMANTIC_NUM_CLASSES)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--limit", type=int, default=0, help="Max frames to evaluate (0=all)")
+    ap.add_argument(
+        "--allow-partial-load",
+        action="store_true",
+        help="Diagnostic only: permit a non-strict checkpoint load and record "
+        "the mismatch instead of failing (NEW-246).",
+    )
     return ap.parse_args()
 
 
@@ -237,6 +267,7 @@ def main() -> None:
         num_classes=args.num_classes,
         device=args.device,
         limit=args.limit,
+        allow_partial=bool(args.allow_partial_load),
     )
 
     out_path = Path(args.out_json)

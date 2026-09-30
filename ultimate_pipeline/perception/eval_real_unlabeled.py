@@ -101,6 +101,11 @@ def parse_args():
     ap.add_argument("--sim-dataset", default="", help="optional simulator dataset root (for FID-like distance)")
     ap.add_argument("--sim-camera", default="front_left_camera")
     ap.add_argument("--limit", type=int, default=500)
+    ap.add_argument(
+        "--allow-partial-load",
+        action="store_true",
+        help="Diagnostic only: permit a non-strict checkpoint load (NEW-246).",
+    )
     return ap.parse_args()
 
 
@@ -149,7 +154,18 @@ def main() -> None:
     num_classes = validate_num_classes(args.num_classes)
     model = models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
     sd = torch.load(args.model, map_location="cpu")
-    model.load_state_dict(sd, strict=False)
+    # NEW-246: strict by default. A partially loaded head evaluates noise.
+    strict_load_error = None
+    try:
+        model.load_state_dict(sd, strict=True)
+    except RuntimeError as exc:
+        if not args.allow_partial_load:
+            raise RuntimeError(
+                f"STRICT model load failed for {args.model}: {exc}. Pass "
+                "--allow-partial-load only for explicitly labelled diagnostics."
+            ) from exc
+        strict_load_error = str(exc)
+        model.load_state_dict(sd, strict=False)
     model.to(device)
 
     real_dir = Path(args.real_dir)
@@ -159,6 +175,8 @@ def main() -> None:
     report = {
         "model": str(Path(args.model).resolve()),
         "device": str(device),
+        "strict_load_ok": strict_load_error is None,
+        "strict_load_error": strict_load_error,
         "real": _run_folder(model, real_dir, device, resize, args.limit),
         "sim": None,
         "frechet_pooled_logits": None,

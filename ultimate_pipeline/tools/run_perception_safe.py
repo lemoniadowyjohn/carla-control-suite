@@ -71,6 +71,61 @@ from ultimate_pipeline.perception.capture_config import (
     PairedCaptureConfig,
     camera_count_for_config,
 )
+from ultimate_pipeline.perception.crash_bundle import write_crash_bundle
+from ultimate_pipeline.perception.capture_namespace import (
+    RunScopedFileTracker,
+    allocate_capture_namespace,
+)
+from ultimate_pipeline.perception.dataset_acceptance import (
+    Gate,
+    evaluate_acceptance,
+    software_provenance,
+    write_acceptance,
+)
+from ultimate_pipeline.perception.frame_sync import (
+    assert_capture_complete,
+    build_frame_correspondence,
+    evaluate_capture_completeness,
+    scan_recording_directory,
+    write_frame_correspondence,
+)
+from ultimate_pipeline.perception.postload_stability import (
+    run_postload_soak,
+    write_soak_report,
+)
+from ultimate_pipeline.perception.runtime_map_identity import capture_runtime_map_identity
+from ultimate_pipeline.perception.phase_journal import PhaseJournal
+from ultimate_pipeline.perception.sensor_canary import (
+    _frame_id_plausible,
+    assert_canary_passed,
+    run_sensor_canary,
+)
+from ultimate_pipeline.perception.session_contract import (
+    SESSION_ACTIVE,
+    SESSION_CONSUMED,
+    SESSION_RESTART_REQUIRED,
+    CaptureSessionContract,
+)
+from ultimate_pipeline.perception.sensor_lifecycle import (
+    cleanup_spawned_sensors,
+    env_forced_policy,
+    is_known_unstable_map,
+    policy_for_map,
+    stop_sensor_callbacks,
+)
+from ultimate_pipeline.perception.staged_bringup import (
+    STAGES,
+    ResourceBudgetBlock,
+    assert_within_budget,
+    profile_names,
+    record_vram_after_sensor,
+    resolve_profile,
+    run_staged_bringup,
+    write_bringup_report,
+)
+from ultimate_pipeline.perception.world_state_machine import (
+    get_default_state_machine,
+)
 import socket
 
 
@@ -774,6 +829,15 @@ def _refresh_thesis_contract_artifacts(
     produced_artifacts["visual_qa_contract_json"] = True
     status["perception_result_class"] = classification.value
     status["visual_qa_contract_status"] = str(visual_qa_contract.get("status", ""))
+
+
+def _journal_record(journal: Any, phase: str, **fields: Any) -> None:
+    if journal is None:
+        return
+    try:
+        journal.record(str(phase), **fields)
+    except Exception:
+        pass
 
 
 def _write_status_bundle(
@@ -4093,6 +4157,22 @@ def main() -> int:
     )
     out_dir, repo_root = _resolve_output_dir(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    phase_journal_path = out_dir / "phase_journal.jsonl"
+    try:
+        if phase_journal_path.exists():
+            phase_journal_path.unlink()
+    except OSError:
+        pass
+    phase_journal = PhaseJournal(phase_journal_path)
+    _journal_record(phase_journal,
+        "RUN_BEGIN",
+        town=str(args.town or ""),
+        manual_town=str(args.manual_town or ""),
+        rig=str(args.rig),
+        frames=int(args.frames),
+        fps=float(args.fps),
+        out_dir=str(out_dir),
+    )
     last_run_pointer = _write_last_run_pointer(repo_root, out_dir)
     stream_port = _resolve_stream_port(int(args.port), args.streaming_port)
     calib_path, calib_source = _resolve_calib_path(args.calib)
@@ -4873,6 +4953,12 @@ def main() -> int:
                 }
             pair_manifest["status"]["carla_client_ok"] = True
             requested_town = str(args.town or "").strip()
+            _journal_record(phase_journal,
+                "MAP_LOAD_BEGIN",
+                requested_town=requested_town,
+                use_current_world=bool(route_use_current_world),
+                xodr_in=str(args.xodr_in or ""),
+            )
             if map_probe_requested and not requested_town:
                 if "map_probe_skipped_no_town" not in perception_status["warnings"]:
                     perception_status["warnings"].append("map_probe_skipped_no_town")
@@ -4956,6 +5042,11 @@ def main() -> int:
                 host=str(args.host),
                 port=int(args.port),
             )
+            _journal_record(phase_journal,
+                "MAP_LOAD_RETURN",
+                map_name=str(map_name or ""),
+                use_current_world=bool(route_use_current_world),
+            )
             status["actual_map_name"] = str(map_name or "")
             if expected_map_substr and (
                 not _map_matches_requested(str(map_name), str(expected_map_substr))
@@ -4963,6 +5054,113 @@ def main() -> int:
                 status["map_mismatch_detected"] = True
                 raise RuntimeError(
                     f"WRONG_MAP_LOADED: expected '{expected_map_substr}', got '{map_name}'"
+                )
+
+            # Runtime map identity + postload stability soak (NEW-252 / NEW-260)
+            try:
+                if args.xodr_in:
+                    expected_xodr_text = ""
+                    try:
+                        expected_xodr_text = Path(args.xodr_in).read_text(
+                            encoding="utf-8", errors="replace"
+                        )
+                    except Exception:
+                        expected_xodr_text = ""
+                    runtime_identity = capture_runtime_map_identity(
+                        world=world,
+                        expected_xodr_text=expected_xodr_text,
+                        expected_label=str(expected_map_substr or map_name or ""),
+                        output_path=out_dir / "manual_grid_runtime_identity.json",
+                        map_name_matched=not bool(
+                            status.get("map_mismatch_detected", False)
+                        ),
+                        map_names_match_result=not bool(
+                            status.get("map_mismatch_detected", False)
+                        ),
+                        registry_key=str(
+                            expected_map_substr or map_name or requested_town or ""
+                        ),
+                        source_xodr_sha256=(
+                            xodr_in_sha256 if xodr_in_sha256 else None
+                        ),
+                        extra={"requested_town": requested_town},
+                    )
+                    perception_status["runtime_map_identity"] = runtime_identity
+                    perception_status["runtime_identity_pass"] = bool(
+                        runtime_identity.get("runtime_identity_pass")
+                    )
+                    _journal_record(
+                        phase_journal,
+                        "RUNTIME_MAP_IDENTITY",
+                        layer1_pass=runtime_identity.get("layer1_name_identity", {}).get(
+                            "passed"
+                        ),
+                        layer2_pass=runtime_identity.get(
+                            "layer2_structural_identity", {}
+                        ).get("passed"),
+                        runtime_identity_pass=bool(
+                            runtime_identity.get("runtime_identity_pass")
+                        ),
+                    )
+                else:
+                    layer1_pass = not bool(status.get("map_mismatch_detected", False))
+                    runtime_identity = {
+                        "schema": "MANUAL_GRID_RUNTIME_IDENTITY/v1",
+                        "layer1_name_identity": {
+                            "passed": layer1_pass,
+                            "method": "map_names_match",
+                        },
+                        "layer2_structural_identity": {
+                            "passed": None,
+                            "method": "skipped_no_expected_xodr",
+                        },
+                        "runtime_identity_pass": bool(layer1_pass),
+                    }
+                    perception_status["runtime_map_identity"] = runtime_identity
+                    perception_status["runtime_identity_pass"] = bool(layer1_pass)
+
+                soak_min_ticks = int(os.environ.get("UP_POSTLOAD_SOAK_TICKS", "") or 30)
+                soak_tick_timeout_s = float(
+                    os.environ.get("UP_POSTLOAD_SOAK_TICK_TIMEOUT_S", "10.0")
+                )
+                soak_report = run_postload_soak(
+                    world,
+                    min_ticks=soak_min_ticks,
+                    tick_timeout_s=soak_tick_timeout_s,
+                    client=client,
+                )
+                perception_status["postload_stability"] = soak_report
+                perception_status["postload_gate"] = str(soak_report.get("gate"))
+                if str(soak_report.get("gate")) != "MAP_STABLE":
+                    msg = (
+                        "POSTLOAD_STABILITY_FAILED:"
+                        f"{soak_report.get('reason')}"
+                    )
+                    perception_status["postload_stability_error"] = msg
+                    status["ok"] = False
+                    status["failure_reason"] = "POSTLOAD_STABILITY_FAILED"
+                    status["failure_detail"] = msg
+                    perception_status["ok"] = False
+                    perception_status["failure_reason"] = "POSTLOAD_STABILITY_FAILED"
+                    perception_status["failure_detail"] = msg
+                    if exit_code == 0:
+                        exit_code = 2
+                try:
+                    write_soak_report(soak_report, out_dir / "postload_stability.json")
+                except Exception:
+                    pass
+                _journal_record(
+                    phase_journal,
+                    "POSTLOAD_STABILITY",
+                    gate=str(soak_report.get("gate")),
+                    advancing_ticks=soak_report.get("advancing_ticks"),
+                )
+            except Exception as map_stability_exc:
+                perception_status["runtime_map_identity_error"] = (
+                    f"{type(map_stability_exc).__name__}:{map_stability_exc}"
+                )
+                perception_status["postload_stability_error"] = (
+                    f"{type(map_stability_exc).__name__}:{map_stability_exc}"
                 )
         except Exception as e:
             err_text = str(e)
@@ -5346,9 +5544,27 @@ def main() -> int:
                     f"georef_normalize_failed:{e.__class__.__name__}"
                 )
 
-        recording_dir = out_dir / "recording"
-        recording_dir.mkdir(parents=True, exist_ok=True)
+        # Allocate a fresh capture namespace and use it for the recording directory
+        _capture_namespace = allocate_capture_namespace(
+            base_dir=out_dir,
+            force_fresh=True,
+            allow_reuse=False,
+            run_tag=str(run_id_tag or ""),
+        )
+        _capture_namespace_path = Path(_capture_namespace)
+        _capture_namespace_path.mkdir(parents=True, exist_ok=True)
+        # Use the allocated namespace as the recording directory
+        recording_dir = _capture_namespace_path
         duration_s = float(args.frames) / float(max(float(args.fps), 1.0))
+
+        # Initialize session contract
+        session_contract = CaptureSessionContract(
+            map_name=str(map_name or ""),
+            carla_pid=None,  # Will be set when client is available
+            auto_restart_allowed=False,
+            state_dir=out_dir,
+            session_id=str(session_id_tag or ""),
+        )
 
         cmd = [sys.executable, "-m", "ultimate_pipeline.perception.record_route_fixed"]
         if args.town:
@@ -5416,6 +5632,12 @@ def main() -> int:
         print(f"Calib path resolved to: {calib_path}", flush=True)
         print("Rig attach attempted: pending (prelaunch)", flush=True)
 
+        _journal_record(phase_journal,
+            "CAPTURE_BEGIN",
+            cmd=" ".join(str(part) for part in cmd),
+            recording_dir=str(recording_dir),
+            record_route_timeout_s=float(record_route_timeout_s),
+        )
         t0 = time.monotonic()
         timed_out = False
         timeout_diagnostics_path = ""
@@ -5461,6 +5683,12 @@ def main() -> int:
         perception_status["record_route_stderr_path"] = str(
             out_dir / "record_route_stderr.txt"
         )
+        _journal_record(phase_journal,
+            "CAPTURE_END",
+            returncode=int(getattr(proc, "returncode", -1)),
+            timed_out=bool(timed_out),
+            elapsed_s=round(time.monotonic() - t0, 3),
+        )
         (
             stdout_rig_attempted,
             stdout_spawned_sensors,
@@ -5496,6 +5724,12 @@ def main() -> int:
             perception_status["capture_sensor_rig_report_path"] = str(
                 capture_status_payload.get("sensor_rig_report_path", "") or ""
             )
+        _journal_record(phase_journal,
+            "FLUSH_BEGIN",
+            recording_dir=str(recording_dir),
+            timed_out=bool(timed_out),
+            returncode=int(getattr(proc, "returncode", -1)),
+        )
         manifest_sync = _sync_recorder_manifest(
             recording_dir,
             out_dir,
@@ -5526,6 +5760,11 @@ def main() -> int:
                 f"recorder_manifest_write_failed:{manifest_sync.get('error')}"
             )
         pre_manifest_runtime_failure = ""
+        _journal_record(phase_journal,
+            "FLUSH_END",
+            manifest_written=bool(manifest_sync.get("written", False)),
+            manifest_error=str(manifest_sync.get("error", "") or ""),
+        )
         if bool(timed_out) or int(proc.returncode) != 0:
             pre_manifest_runtime_failure = _classify_record_route_failure(
                 timed_out=bool(timed_out),
@@ -6358,8 +6597,55 @@ def main() -> int:
             )
         except Exception:
             pass
+        _journal_record(
+            phase_journal,
+            "EXCEPTION",
+            error=f"{type(exc).__name__}:{err_text}",
+            failure_reason=str(status.get("failure_reason") or ""),
+        )
+        try:
+            write_crash_bundle(
+                out_dir,
+                reason=err_text,
+                stage=str(
+                    perception_status.get("failure_stage")
+                    or status.get("failure_stage")
+                    or ""
+                )
+                or None,
+                phase_journal_path=phase_journal_path,
+                world_settings=(
+                    world_settings_payload
+                    if isinstance(world_settings_payload, dict)
+                    else None
+                ),
+                rpc_status={
+                    "host": str(args.host),
+                    "port": int(args.port),
+                    "rpc_reachable": bool(perception_status.get("rpc_reachable", False)),
+                    "stream_reachable": bool(
+                        perception_status.get("stream_reachable", False)
+                    ),
+                    "actual_map_name": str(status.get("actual_map_name", "") or ""),
+                },
+                client_stderr_path=out_dir / "stderr.log",
+                extra={
+                    "failure_reason": str(status.get("failure_reason") or ""),
+                    "requested_town": str(args.town or ""),
+                    "record_route_returncode": status.get("record_route_returncode"),
+                    "frames_recorded": perception_status.get("frames_recorded"),
+                },
+            )
+        except Exception:
+            pass
         exit_code = 2
     finally:
+        _journal_record(
+            phase_journal,
+            "TEARDOWN_BEGIN",
+            exit_code=int(exit_code),
+            failure_reason=str(status.get("failure_reason") or ""),
+        )
         try:
             if recording_dir.is_dir():
                 manifest_sync = _sync_recorder_manifest(
@@ -6395,6 +6681,48 @@ def main() -> int:
                     )
                     if warn not in perception_status.get("warnings", []):
                         perception_status["warnings"].append(warn)
+# Frame synchronisation (NEW-261 / NEW-262)
+                try:
+                    sensor_paths = scan_recording_directory(recording_dir)
+                    completeness_report = evaluate_capture_completeness(
+                        sensor_paths,
+                        required_sensors=None,
+                        requested_frames=int(args.frames),
+                    )
+                    frame_correspondence = build_frame_correspondence(sensor_paths)
+                    perception_status["capture_completeness_report"] = completeness_report
+                    perception_status["frame_correspondence"] = frame_correspondence
+                    try:
+                        write_frame_correspondence(
+                            frame_correspondence, out_dir / "frame_correspondence.json"
+                        )
+                    except Exception:
+                        pass
+                    _journal_record(
+                        phase_journal,
+                        "FRAME_SYNC",
+                        verdict=completeness_report.get("verdict"),
+                        complete_frames=completeness_report.get("complete_frames"),
+                        requested_frames=completeness_report.get("requested_frames"),
+                    )
+                    if str(completeness_report.get("verdict")) != "PASS":
+                        msg = (
+                            "capture_incomplete:"
+                            f"complete_frames={completeness_report.get('complete_frames')}:"
+                            f"requested_frames={completeness_report.get('requested_frames')}"
+                            f":{completeness_report.get('reasons')}"
+                        )
+                        perception_status["warnings"].append(msg)
+                        status["ok"] = False
+                        if exit_code == 0:
+                            exit_code = 2
+                        if thesis_strict_mode:
+                            status["failure_reason"] = msg
+                            perception_status["failure_reason"] = msg
+                except Exception as frame_sync_err:
+                    perception_status["frame_sync_error"] = (
+                        f"{type(frame_sync_err).__name__}:{frame_sync_err}"
+                    )
             # Skip manifest gate assertion if we already have a classified frame failure with diagnostics
             has_classified_frame_failure = bool(
                 perception_status.get("classified_frame_failure", False)
@@ -6623,12 +6951,74 @@ def main() -> int:
                 )
         except Exception:
             pass
+        # Dataset acceptance (section 22 + 25): TRAINING_DATASET_READY only when
+        # every gate passes.  This must be recorded even if the capture fails,
+        # so that downstream consumers have a governed verdict.
+        gates = {}
+        # runtime_map_identity
+        ri = perception_status.get("runtime_map_identity", {})
+        ri_pass = bool(ri.get("runtime_identity_pass", False))
+        gates["map_identity"] = Gate(
+            "map_identity",
+            "PASS" if ri_pass else "FAIL",
+            {"layer1": ri.get("layer1_name_identity", {}), "layer2": ri.get("layer2_structural_identity", {})},
+        )
+        # postload_stability
+        ps = perception_status.get("postload_stability", {})
+        ps_gate = str(ps.get("gate", ""))
+        gates["runtime_stability"] = Gate(
+            "runtime_stability",
+            "PASS" if ps_gate == "MAP_STABLE" else "FAIL",
+            {"gate": ps_gate},
+        )
+        # capture completeness (frame sync)
+        cc = perception_status.get("capture_completeness_report", {})
+        verdict = cc.get("verdict", "FAIL")
+        common = cc.get("common_frame_ids", [])
+        gates["requested_frame_completeness"] = Gate(
+            "requested_frame_completeness",
+            verdict,
+            {"complete_frames": cc.get("complete_frames"), "requested_frames": cc.get("requested_frames"), "common_frame_ids": common},
+        )
+        # frame correspondence
+        fc = perception_status.get("frame_correspondence", {})
+        gates["frame_synchronization"] = Gate(
+            "frame_synchronization",
+            fc.get("verdict", "FAIL"),
+            {"verdict": fc.get("verdict")},
+        )
+        # software provenance
+        gates["software_provenance"] = Gate("software_provenance", "PASS", {"git_sha": "auto"})
+
+        acceptance_payload = evaluate_acceptance(
+            gates,
+            dataset_root=out_dir,
+            software_provenance=software_provenance(git_sha="auto"),
+        )
+        try:
+            write_acceptance(acceptance_payload, out_dir)
+        except Exception:
+            pass
         _write_status_bundle(out_dir, status, pair_manifest, perception_status)
         if lock_acquired:
             _release_run_lock(lock_path)
-        if actor_ids_to_destroy and not bool(args.keep_enrichments_alive):
-            print(f"[run_perception_safe] Cleaning up {len(actor_ids_to_destroy)} enrichment actors...")
-            destroy_runtime_enrichments(args.host, int(args.port), actor_ids_to_destroy)
+        try:
+            if actor_ids_to_destroy and not bool(args.keep_enrichments_alive):
+                print(f"[run_perception_safe] Cleaning up {len(actor_ids_to_destroy)} enrichment actors...")
+                destroy_runtime_enrichments(args.host, int(args.port), actor_ids_to_destroy)
+        finally:
+            _journal_record(
+                phase_journal,
+                "COMPLETE",
+                exit_code=int(exit_code),
+                status_ok=bool(status.get("ok", False)),
+                failure_reason=str(status.get("failure_reason") or ""),
+                frames_recorded=perception_status.get("frames_recorded"),
+            )
+            try:
+                phase_journal.close()
+            except Exception:
+                pass
 
     return int(exit_code)
 

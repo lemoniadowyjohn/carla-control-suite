@@ -1,0 +1,22 @@
+{
+  "audited_canonical_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "audited_sha_is_origin_head": true,
+  "baseline_matches_audited": true,
+  "campaign": "CARLA perception final operational, stability and training-data hardening",
+  "canonical_branch": "integration/production-large-map-20260918",
+  "live_runtime": {
+    "binary": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "blocker": "GAP-017 / GAP-018",
+    "note": "No live runtime closure may be claimed until RPC-backed runtime tests actually execute.",
+    "reason": "Avast quarantine/exclusion issue prevents materialization/execution",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  "main_checkout_policy": "main checkout had user changes; untouched. All work isolated in this worktree.",
+  "origin_head_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "schema": "PERCEPTION_FINAL_HARDENING_BASELINE/v1",
+  "utc": "2026-09-30T16:24:29.295945+00:00",
+  "worktree_branch": "hardening/perception-final-operational-20260930",
+  "worktree_head_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "worktree_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening"
+}

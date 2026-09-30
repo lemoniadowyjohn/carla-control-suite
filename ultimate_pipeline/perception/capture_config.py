@@ -29,7 +29,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 # Fallback camera-count table, used only when the calib JSON can't be read
 # (e.g. in a unit test with no fixture file, or a future rig name). The
@@ -77,6 +77,138 @@ class PairedCaptureConfig:
 
     def duration_s(self) -> float:
         return float(self.frames) / float(max(1, int(self.fps)))
+
+
+# ---------------------------------------------------------------------------
+# Requested config == effective config (NEW-228)
+# ---------------------------------------------------------------------------
+
+PROTOCOL_MAPPING_INCOMPLETE = "PROTOCOL_MAPPING_INCOMPLETE"
+
+#: The canonical governed option -> ``PairedCaptureConfig`` field mapping.
+#: Any requested option that is NOT a key here (and not an explicitly exempt
+#: transport/path option) makes the protocol mapping incomplete, which fails
+#: RQ3 scientific validity.
+PROTOCOL_OPTION_FIELDS: Dict[str, str] = {
+    "frames": "frames",
+    "fps": "fps",
+    "rig": "rig",
+    "front_only": "front_only",
+    "seg": "seg",
+    "lidar_format": "lidar_format",
+    "vehicle": "vehicle",
+    "spawn_index": "spawn_index",
+    "seed": "seed",
+    "record_route_timeout_s": "record_route_timeout_s",
+}
+
+#: Options that legitimately differ per arm / per invocation and therefore do
+#: not need a protocol mapping (they are not controlled variables).
+TRANSPORT_ONLY_OPTIONS = frozenset(
+    {
+        "map",
+        "town",
+        "xodr",
+        "xodr_in",
+        "out_dir",
+        "output_dir",
+        "manual_map",
+        "manual_xodr",
+        "auto_xodr",
+        "host",
+        "port",
+        "calib",
+        "calib_json",
+        "cooldown_s",
+        "mode",
+        "label",
+        "arm",
+    }
+)
+
+
+def config_to_payload(config: PairedCaptureConfig) -> Dict[str, Any]:
+    from dataclasses import asdict
+
+    payload = dict(asdict(config))
+    payload["duration_s"] = config.duration_s()
+    return payload
+
+
+def config_sha256(config: PairedCaptureConfig) -> str:
+    import hashlib
+
+    canonical = json.dumps(
+        config_to_payload(config), sort_keys=True, separators=(",", ":"), default=str
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def validate_protocol_mapping(
+    requested_options: Mapping[str, Any],
+    *,
+    config: PairedCaptureConfig,
+) -> Dict[str, Any]:
+    """Detect requested options that never reach the governed protocol.
+
+    Returns a payload whose ``reasons`` contains ``PROTOCOL_MAPPING_INCOMPLETE``
+    when at least one requested option is unmapped; RQ3 scientific validity
+    fails in that case.
+    """
+    mapped: Dict[str, Any] = {}
+    unmapped: List[str] = []
+    effective = config_to_payload(config)
+
+    for key, value in sorted((requested_options or {}).items()):
+        name = str(key).lstrip("-").replace("-", "_")
+        if name in PROTOCOL_OPTION_FIELDS:
+            field = PROTOCOL_OPTION_FIELDS[name]
+            mapped[name] = {"requested": value, "effective": effective.get(field)}
+        elif name in TRANSPORT_ONLY_OPTIONS:
+            mapped[name] = {"requested": value, "effective": None, "transport_only": True}
+        else:
+            unmapped.append(name)
+
+    reasons: List[str] = []
+    if unmapped:
+        reasons.append(f"{PROTOCOL_MAPPING_INCOMPLETE}:{','.join(unmapped)}")
+
+    return {
+        "schema": "PROTOCOL_MAPPING/v1",
+        "status": "PASS" if not reasons else "FAIL",
+        "reasons": reasons,
+        "unmapped_requested_options": unmapped,
+        "mapped_options": mapped,
+        "option_fields": dict(PROTOCOL_OPTION_FIELDS),
+        "transport_only_options": sorted(TRANSPORT_ONLY_OPTIONS),
+    }
+
+
+def requested_and_effective(
+    config: PairedCaptureConfig,
+    *,
+    requested_options: Optional[Mapping[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Record ``requested_config`` / ``effective_config`` / ``effective_config_sha256``."""
+    requested = dict(requested_options or {})
+    if not requested:
+        requested = config_to_payload(config)
+    mapping = validate_protocol_mapping(requested, config=config)
+    effective = config_to_payload(config)
+    return {
+        "schema": "PAIRED_CAPTURE_CONFIG_PROVENANCE/v1",
+        "requested_config": requested,
+        "effective_config": effective,
+        "effective_config_sha256": config_sha256(config),
+        "protocol_mapping": mapping,
+        "protocol_mapping_incomplete": bool(mapping["unmapped_requested_options"]),
+        "both_arms_must_share": True,
+        "authority_note": (
+            "One canonical PairedCaptureConfig drives both arms; any unmapped "
+            f"requested option raises {PROTOCOL_MAPPING_INCOMPLETE} and fails "
+            "RQ3 scientific validity."
+        ),
+    }
 
 
 def camera_count_for_config(

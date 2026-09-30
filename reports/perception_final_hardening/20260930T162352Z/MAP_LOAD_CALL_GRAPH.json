@@ -1,0 +1,135 @@
+{
+  "call_sites": [
+    {
+      "file": "ultimate_pipeline/perception/record_route_fixed.py",
+      "guard": "not use_current_world; grid0821 blocked at 1629",
+      "line": 1632,
+      "op": "load_world"
+    },
+    {
+      "file": "ultimate_pipeline/perception/record_route_fixed.py",
+      "guard": "_maybe_reload_world_for_stream_flush, default UP_FORCE_WORLD_RELOAD=True",
+      "line": 404,
+      "op": "load_world",
+      "status": "DEFECT_NEW_248_249"
+    },
+    {
+      "file": "ultimate_pipeline/tools/preload_map.py",
+      "guard": "grid0821 returns early manual_preload_required",
+      "line": 153,
+      "op": "load_world"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_full_perception_collect.py",
+      "guard": "_should_preload_manual_town",
+      "line": 174,
+      "op": "load_world"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_retry.py",
+      "guard": "town==grid0828 after restart",
+      "line": 127,
+      "op": "load_world"
+    },
+    {
+      "file": "ultimate_pipeline/tools/map_only_probe.py",
+      "guard": "not use_current_world; already-matches shortcut",
+      "line": 332,
+      "op": "load_world/_load_xodr_map"
+    },
+    {
+      "file": "ultimate_pipeline/carla_tools/reload_ready_for_sensors.py",
+      "guard": "3-way branch",
+      "line": 98,
+      "op": "generate_opendrive_world|load_world|reload_world"
+    },
+    {
+      "file": "ultimate_pipeline/carla_tools/session.py",
+      "guard": "None-client check",
+      "line": 27,
+      "op": "load_world/reload_world"
+    },
+    {
+      "file": "ultimate_pipeline/core/carla_opendrive_loader.py",
+      "guard": "post-flight rejects builtin-town fallback",
+      "line": 370,
+      "op": "generate_opendrive_world"
+    },
+    {
+      "file": "ultimate_pipeline/core/carla_opendrive_loader.py",
+      "guard": "load_builtin_world",
+      "line": 283,
+      "op": "load_world"
+    },
+    {
+      "file": "ultimate_pipeline/core/carla_opendrive_loader.py",
+      "guard": "safe_reload_world version tolerant",
+      "line": 59,
+      "op": "reload_world"
+    },
+    {
+      "file": "tools/runtime_map_qa.py",
+      "guard": "map_name required",
+      "line": 50,
+      "op": "load_world"
+    },
+    {
+      "file": "certify_ingolstadt.py",
+      "guard": "phase E sequential",
+      "line": 368,
+      "op": "load_world"
+    },
+    {
+      "file": "ultimate_pipeline/perception/dataset_generator.py",
+      "guard": "if self.map_name",
+      "line": 244,
+      "op": "_reload_ready_for_sensors"
+    },
+    {
+      "file": "scripts/opendrive_gen_probe.py",
+      "line": 117,
+      "op": "generate_opendrive_world",
+      "role": "diagnostic bench, self-managed server, no map-travel guard"
+    },
+    {
+      "file": "scripts/opendrive_gen_watch.py",
+      "line": 151,
+      "op": "generate_opendrive_world",
+      "role": "diagnostic bench"
+    },
+    {
+      "file": "scripts/opendrive_smooth_test.py",
+      "line": 80,
+      "op": "generate_opendrive_world",
+      "role": "diagnostic bench"
+    },
+    {
+      "file": "scripts/xodr_bisect.py",
+      "line": 123,
+      "op": "generate_opendrive_world",
+      "role": "diagnostic bench"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_perception_safe.py",
+      "line": null,
+      "op": "load_world",
+      "status": "NONE - orchestrator never loads"
+    }
+  ],
+  "map_names_match_definition": {
+    "file": "ultimate_pipeline/carla_tools/map_registry.py",
+    "line": 242
+  },
+  "schema": "MAP_LOAD_CALL_GRAPH/v1",
+  "state_machine_target": {
+    "rule": "after MAP_ESTABLISHED any map-changing operation must fail",
+    "states": [
+      "UNRESOLVED",
+      "MAP_LOADING",
+      "MAP_ESTABLISHED",
+      "CAPTURE_PREPARING",
+      "CAPTURE_ACTIVE",
+      "FINALIZING"
+    ]
+  }
+}

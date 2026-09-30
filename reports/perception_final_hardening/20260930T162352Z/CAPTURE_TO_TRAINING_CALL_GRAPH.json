@@ -1,0 +1,209 @@
+{
+  "acceptance": {
+    "DATASET_ACCEPTANCE": "NONE",
+    "TRAINING_DATASET_READY": "NONE",
+    "defect": "section 25/26"
+  },
+  "alternative_capture_authorities": [
+    {
+      "class": "LEGACY",
+      "file": "ultimate_pipeline/perception/record_route.py"
+    },
+    {
+      "class": "DIAGNOSTIC",
+      "file": "ultimate_pipeline/perception/dataset_generator.py"
+    },
+    {
+      "class": "PRODUCTION_LIBRARY",
+      "file": "ultimate_pipeline/perception/segmentation_dataset_generator_queues.py"
+    },
+    {
+      "class": "DIAGNOSTIC",
+      "file": "ultimate_pipeline/perception/run_capture_end2end.py"
+    },
+    {
+      "class": "LEGACY_EXPERIMENT",
+      "file": "ultimate_pipeline/tools/capture_rgb_200frames.py"
+    },
+    {
+      "class": "DIAGNOSTIC_ONLY",
+      "file": "ultimate_pipeline/tools/capture_perception_pair_safe.py"
+    },
+    {
+      "class": "LEGACY",
+      "file": "ultimate_pipeline/perception/perception_runner_local_aug.py"
+    }
+  ],
+  "canonical_components": [
+    "run_perception_safe.py",
+    "record_route_fixed.py",
+    "rq3_capture_contract.py",
+    "ThesisSensorRig",
+    "SensorRecorder"
+  ],
+  "dataset_verifier": {
+    "defect": "NEW-265",
+    "file": "tools/rq3_dataset_manifest_verifier.py",
+    "file_inspection": "NONE",
+    "mode": "FIELD_PRESENCE_ONLY",
+    "self_hash": "NONE (manifest_sha256 computed, never compared)"
+  },
+  "governed_chain_target": [
+    "input authority",
+    "map static validation",
+    "isolated CARLA map probe",
+    "runtime map identity validation",
+    "post-load stability",
+    "ego-only probe",
+    "sensor canary",
+    "staged rig",
+    "governed capture",
+    "frame synchronization validation",
+    "dataset integrity/finalization",
+    "RQ3 validation",
+    "training-dataset promotion",
+    "training/evaluation"
+  ],
+  "label_quality": {
+    "defect": "section 26",
+    "file": "ultimate_pipeline/perception/label_quality.py",
+    "fns": [
+      "label_stats",
+      "is_degenerate_label"
+    ],
+    "integrated_into_acceptance": "NONE"
+  },
+  "paired_config": {
+    "PROTOCOL_MAPPING_INCOMPLETE": "NONE",
+    "build_paired_capture_argvs": 157,
+    "class_line": 53,
+    "defect": "NEW-228",
+    "effective_config": "NONE",
+    "effective_config_sha256": "NONE",
+    "file": "ultimate_pipeline/perception/capture_config.py",
+    "production_callers": "NONE",
+    "requested_config": "NONE"
+  },
+  "paired_metrics": {
+    "compares": [
+      "enabled",
+      "camera_names",
+      "per-camera frame counts"
+    ],
+    "defect": "NEW-266",
+    "file": "ultimate_pipeline/perception/perception_metrics.py",
+    "fn": "assert_paired_captures_compatible",
+    "line": 204,
+    "missing": [
+      "frame ID correspondence",
+      "route pose index"
+    ]
+  },
+  "rq3_authority": {
+    "dead_code": {
+      "build_pair_manifest": 631,
+      "capture_config_identity": 385,
+      "classify_claim_level": 589,
+      "compute_strict_completion_status": 466,
+      "is_ingolstadt_auto_arm": 575,
+      "is_ingolstadt_manual_arm": 568,
+      "note": "zero production call sites",
+      "validate_pair_manifest": 678
+    },
+    "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "problems": [
+      {
+        "findings": [
+          "NEW-200",
+          "NEW-201",
+          "NEW-224"
+        ],
+        "issue": "'ingolstadt' or 'campaigns/' substring fallback classifies auto arm with no digest",
+        "line": 581
+      },
+      {
+        "issue": "manual arm heuristic on requested name token only",
+        "line": 572
+      },
+      {
+        "issue": "arm-level identity may be absent and validation still passes",
+        "line": 695
+      },
+      {
+        "issue": "claim_level/pair_valid read from manifest, never recomputed",
+        "line": 707
+      },
+      {
+        "issue": "valid may be True while declared pair_valid is False",
+        "line": 719
+      }
+    ],
+    "structure": {
+      "classes": "NONE",
+      "lines": 817
+    }
+  },
+  "rq5": [
+    {
+      "file": "ultimate_pipeline/run_generalization_experiments.py",
+      "finding": "NEW-234..246",
+      "issue": "only dataset_roots[0] passed to trainer while K roots recorded",
+      "line": 143
+    },
+    {
+      "file": "ultimate_pipeline/perception/train_launcher.py",
+      "finding": "NEW-235",
+      "issue": "mtime auto-select-latest dataset",
+      "line": 69
+    },
+    {
+      "file": "ultimate_pipeline/perception/train_launcher.py",
+      "finding": "NEW-235",
+      "issue": "silent dataset substitution when path missing",
+      "line": 116
+    },
+    {
+      "file": "ultimate_pipeline/perception/train_launcher.py",
+      "finding": "NEW-236",
+      "issue": "no train/val/test split; whole root trained",
+      "line": 142
+    },
+    {
+      "file": "ultimate_pipeline/perception/eval_sim_labeled.py",
+      "finding": "NEW-244",
+      "issue": "0 frames -> mIoU 0.0 exit 0",
+      "line": 158
+    },
+    {
+      "file": "ultimate_pipeline/perception/eval_sim_labeled.py",
+      "finding": "NEW-245",
+      "issue": "strict=False load",
+      "line": 149
+    },
+    {
+      "file": "ultimate_pipeline/perception/eval_real_unlabeled.py",
+      "finding": "NEW-245",
+      "issue": "strict=False load",
+      "line": 152
+    },
+    {
+      "file": "ultimate_pipeline/run_generalization_experiments.py",
+      "finding": "NEW-243",
+      "issue": "model_last.pt reuse, no checkpoint digest",
+      "line": 88
+    },
+    {
+      "file": "ultimate_pipeline/perception/train_launcher.py",
+      "finding": "NEW-242",
+      "issue": "no seed setting anywhere",
+      "line": null
+    },
+    {
+      "file": "ultimate_pipeline/config/thesis_contract.py",
+      "finding": "NEW-246",
+      "issue": "key-presence shortcut awards GENERALIZATION_STATUS_AUTHORITATIVE",
+      "line": 201
+    }
+  ],
+  "schema": "CAPTURE_TO_TRAINING_CALL_GRAPH/v1"
+}

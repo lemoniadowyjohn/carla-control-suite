@@ -19,6 +19,9 @@ from ultimate_pipeline.perception.rq3_capture_contract import (
     CLAIM_PAIRED_INGOLSTADT_CAPTURE,
     CLAIM_PAIRED_PROTOCOL_VALID,
     CLAIM_UNPAIRED_CAPTURE,
+    CLAIM_PAIRED_INGOLSTADT_CAPTURE,
+    APPROVED_INGOLSTADT_AUTO_XODR_SHA256,
+    APPROVED_MANUAL_GRID_SHA256,
     COMPLETION_FAIL,
     COMPLETION_INCOMPLETE,
     COMPLETION_PASS,
@@ -38,6 +41,7 @@ from ultimate_pipeline.perception.rq3_capture_contract import (
     is_ingolstadt_manual_arm,
     sensor_rig_from_calib,
     sim_timing_identity,
+    validate_pair_manifest,
     weather_identity,
     xodr_arm_map_identity,
 )
@@ -166,15 +170,69 @@ def test_ingolstadt_manual_and_auto_arms():
     manual = cooked_arm_map_identity(
         requested_map_name="Grid0821",
         resolved_carla_map_name="Grid0821",
-        registry_identity="manual_refs",
-        manual_source_xodr_sha256="abc",
+        registry_identity="manual_grid0828",
+        manual_source_xodr_sha256=APPROVED_MANUAL_GRID_SHA256,
         cooked_package_identity="Grid0821",
     )
     assert is_ingolstadt_manual_arm(manual) is True
-    auto = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr", xodr_sha256="def")
+    auto = xodr_arm_map_identity(
+        xodr_path="campaigns/ingolstadt_.../x.xodr",
+        xodr_sha256=APPROVED_INGOLSTADT_AUTO_XODR_SHA256,
+    )
     assert is_ingolstadt_auto_arm(auto) is True
     town10hd = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="ghi")
     assert is_ingolstadt_auto_arm(town10hd) is False
+
+
+def test_path_name_heuristics_are_not_claim_authorities():
+    """NEW-224: 'campaigns/' / 'ingolstadt' substrings must never classify a
+    generated XODR arm as Ingolstadt without the authoritative digest."""
+    under_campaigns = xodr_arm_map_identity(
+        xodr_path="campaigns/ingolstadt_cooked_perception_v1/candidate/any.xodr",
+        xodr_sha256="0" * 64,
+    )
+    assert is_ingolstadt_auto_arm(under_campaigns) is False
+    name_only_manual = cooked_arm_map_identity(
+        requested_map_name="Grid0828",
+        resolved_carla_map_name="Grid0828",
+    )
+    assert is_ingolstadt_manual_arm(name_only_manual) is False
+    wrong_manual_sha = cooked_arm_map_identity(
+        requested_map_name="Grid0828",
+        resolved_carla_map_name="Grid0828",
+        manual_source_xodr_sha256="1" * 64,
+    )
+    assert is_ingolstadt_manual_arm(wrong_manual_sha) is False
+    assert is_ingolstadt_auto_arm(
+        xodr_arm_map_identity(xodr_path="campaigns/x.xodr", xodr_sha256="a" * 64),
+        ingolstadt_xodr_sha256="b" * 64,
+    ) is False
+
+
+def test_validate_pair_manifest_requires_arm_level_identities():
+    """NEW-200/NEW-201: an arm that omits a mandatory digest must FAIL."""
+    good = _ok_pair().build()
+    result = validate_pair_manifest(good)
+    assert result["valid"] is True
+    assert result["claim_level_recomputed"] is True
+    assert result["pair_valid_recomputed"] is True
+
+    tampered = dict(good)
+    tampered["manual_arm"] = dict(good["manual_arm"])
+    del tampered["manual_arm"]["calibration_sha256"]
+    bad = validate_pair_manifest(tampered)
+    assert bad["valid"] is False
+    assert any("calibration_sha256_missing_manual_arm" in r for r in bad["invalid_reasons"])
+
+    # Declared pair_valid=True with digests removed must not survive.
+    claimed = dict(good)
+    claimed["pair_valid"] = True
+    claimed["claim_level"] = CLAIM_PAIRED_PROTOCOL_VALID
+    claimed["manual_arm"] = {k: v for k, v in good["manual_arm"].items() if k != "weather_sha256"}
+    bad2 = validate_pair_manifest(claimed)
+    assert bad2["valid"] is False
+    assert bad2["pair_valid"] is False
+
 
 
 class _Pair:
@@ -229,8 +287,16 @@ class _Pair:
         )
 
 
-_MANUAL = cooked_arm_map_identity(requested_map_name="Grid0821", resolved_carla_map_name="Grid0821")
-_AUTO = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_auto.xodr", xodr_sha256="x")
+_MANUAL = cooked_arm_map_identity(
+    requested_map_name="Grid0821",
+    resolved_carla_map_name="Grid0821",
+    registry_identity="manual_grid0828",
+    manual_source_xodr_sha256=APPROVED_MANUAL_GRID_SHA256,
+)
+_AUTO = xodr_arm_map_identity(
+    xodr_path="campaigns/ingolstadt_auto.xodr",
+    xodr_sha256=APPROVED_INGOLSTADT_AUTO_XODR_SHA256,
+)
 _AUTOTOWN10HD = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="y")
 
 

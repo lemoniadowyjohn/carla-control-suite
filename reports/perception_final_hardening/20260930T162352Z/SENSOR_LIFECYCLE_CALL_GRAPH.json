@@ -1,0 +1,106 @@
+{
+  "authority": "NEW-267 lifecycle authority required; single cleanup path",
+  "frame_sync": {
+    "common_frame_ids": "NONE",
+    "complete_frames": "NONE",
+    "count_based_only": [
+      {
+        "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+        "line": 408,
+        "symbol": "evaluate_frame_completeness"
+      },
+      {
+        "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+        "line": 793,
+        "symbol": "count_frames_by_sensor"
+      }
+    ],
+    "defect": "NEW-261/NEW-262",
+    "frame_correspondence": "NONE",
+    "required_frame_sets": "NONE"
+  },
+  "readiness": {
+    "MAP_STABLE": "NONE",
+    "canary": "NONE",
+    "defect": "NEW-255 port 2001 is not a readiness oracle; NEW-260 no post-load soak",
+    "port_2001_gates": [
+      {
+        "file": "ultimate_pipeline/carla_tools/reload_ready_for_sensors.py",
+        "line": 22,
+        "symbol": "_wait_for_streaming_port"
+      },
+      {
+        "file": "ultimate_pipeline/tools/run_perception_safe.py",
+        "line": 323,
+        "symbol": "_wait_for_port_open"
+      },
+      {
+        "file": "ultimate_pipeline/perception/record_route_fixed.py",
+        "line": 298,
+        "symbol": "_run_stream_precheck"
+      }
+    ],
+    "soak": "NONE"
+  },
+  "recorder": {
+    "build_manifest": 825,
+    "class_line": 46,
+    "count_max_line": 854,
+    "count_min_line": 349,
+    "defect": "NEW-263 stale file inflation",
+    "file": "ultimate_pipeline/sensors/recorder.py",
+    "manifest_path": 117,
+    "max_mem_disk_line": 854,
+    "policy_conflict": true,
+    "writer": {
+      "defect": "NEW-264 drops are not hard failures",
+      "errors": {
+        "save_failed": [
+          479,
+          731
+        ],
+        "writer_executor_missing": 493,
+        "writer_queue_full": 496,
+        "writer_submit_failed": 509
+      },
+      "executor": 443,
+      "queue_job": 483,
+      "reserve_slot": 449,
+      "severity": "silent append to _save_errors; no log.error"
+    }
+  },
+  "rig": {
+    "class_line": 473,
+    "cleanup_call_sites": [
+      920,
+      1043
+    ],
+    "cleanup_fn": "_cleanup_spawned_sensor_actors",
+    "cleanup_line": 40,
+    "defect": "NEW-267 direct actor.destroy() bypasses Grid instability policy",
+    "destroy_line": 55,
+    "file": "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+    "profiles": {
+      "front_only_env": "UP_FRONT_ONLY_STRICT",
+      "low_memory_env": "UP_LOW_MEMORY_PROFILE",
+      "select": 1489
+    },
+    "spawn": {
+      "camera": 835,
+      "fallback_world_spawn": [
+        871,
+        1004
+      ],
+      "lidar": 975
+    },
+    "spawn_evidence": {
+      "defect": "NEW-268 best-effort non-atomic writes, silent failure",
+      "emit": 532,
+      "record_entered": 553,
+      "record_exception": 598,
+      "record_responses": 560,
+      "report_path_setter": 519
+    }
+  },
+  "schema": "SENSOR_LIFECYCLE_CALL_GRAPH/v1"
+}
