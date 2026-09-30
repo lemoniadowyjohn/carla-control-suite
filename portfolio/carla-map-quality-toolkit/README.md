@@ -1,8 +1,24 @@
 # carla-map-quality-toolkit
 
+[![CI](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml/badge.svg?branch=portfolio%2Fcarla-map-quality-toolkit-20260930)](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml)
+
 A sanitized, reproducible Python toolkit for **quality validation of road-network maps used in CARLA/OpenDRIVE workflows**. The repository is deliberately independent of private thesis assets, employer repositories, customer geometry and proprietary map exports.
 
 ![Architecture](docs/architecture.svg)
+
+
+
+## Verified public baseline
+
+Hosted GitHub Actions verifies the sanitized toolkit on Python 3.10 and 3.12. Current measured baseline:
+
+- **18 automated tests passing**;
+- **91.27% Python package line coverage**;
+- **Ruff static/lint checks passing**;
+- **CLI synthetic quality-report smoke test passing**;
+- CI rejects coverage below **90%**.
+
+See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the evidence boundary. The portfolio branch history was rebuilt onto the safe public lineage so the recruiter-facing branch contains only this sanitized toolkit and its CI workflow.
 
 ## Engineering problem
 
@@ -135,7 +151,7 @@ The test suite includes:
 - a compact regression signature for the generated OpenDRIVE fixture;
 - report gate pass/fail tests.
 
-CI runs Ruff, pytest with coverage, and the synthetic command-line demo.
+CI runs Ruff, pytest with a 90% minimum coverage gate, and the synthetic command-line demo on Python 3.10 and 3.12.
 
 ## Reproducibility and provenance
 
