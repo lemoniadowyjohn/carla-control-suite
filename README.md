@@ -1,42 +1,79 @@
 # CARLA / OpenDRIVE Map Quality & Validation
 
-Public-safe portfolio landing page for Michał Dembski's CARLA/OpenDRIVE/OSM map-quality work.
+Public-safe portfolio landing page for Michał Dembski's CARLA / OpenDRIVE / OSM map-quality engineering work.
 
-## Scope
+## Recruiter-facing toolkit
 
-The underlying academic and engineering work covers a Python-based evaluation workflow for comparing OSM-derived CARLA/OpenDRIVE maps with reference geometry. The methodology includes:
+The sanitized, runnable implementation is available on the dedicated portfolio branch:
 
-- OpenDRIVE geometry extraction;
-- coordinate-reference-system handling and transformation;
+**[Open `carla-map-quality-toolkit`](https://github.com/lemoniadowyjohn/carla-control-suite/tree/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit)**
+
+The portfolio branch contains a standalone Python package, synthetic OpenDRIVE/OSM fixtures, automated tests, CI, architecture documentation, quality-report examples, provenance handling and explicit public-release boundaries.
+
+### Verified release status
+
+GitHub Actions verifies the toolkit on Python 3.11 with:
+
+- clean editable installation;
+- Ruff static/lint checks;
+- pytest + coverage;
+- command-line quality-report smoke test.
+
+Latest verified portfolio commit: `79fb506d96c01dddbcf6431d0c8f54c7984ed7ed`.
+
+At that commit:
+
+- **14 tests pass**;
+- **83% package coverage**;
+- Ruff passes;
+- the synthetic CLI demo produces a PASS quality report.
+
+## Engineering scope
+
+The public toolkit demonstrates transferable methods used in automotive simulation and digital-map validation:
+
+- OpenDRIVE parsing;
+- synthetic OSM parsing;
+- road-reference and lane-center geometry;
+- coordinate-reference-system transformation and sanity checks;
 - deterministic SE(2) alignment;
-- Hausdorff-distance analysis;
-- lane-width comparison;
-- topology checks;
-- predecessor/successor and lane-link reasoning;
-- reproducible report generation and provenance concepts.
+- symmetric discrete Hausdorff distance;
+- lane-width deviation metrics;
+- predecessor/successor integrity;
+- junction lane-link validation;
+- provenance hashing;
+- threshold-based PASS/FAIL quality gates;
+- JSON and Markdown evidence reports;
+- regression fixtures and CI.
+
+## Why map validation matters
+
+Generated road-network maps can appear visually plausible while containing geometric, coordinate-system or topology defects that affect routing, lane following and downstream simulation. The toolkit treats validation as a measurable engineering step rather than relying only on visual inspection.
 
 ## Evidence boundary
 
-This repository currently documents the **public-safe methodology and portfolio scope**. It does not expose proprietary maps, employer data, private thesis source material, or private engineering repositories.
+This public portfolio does **not** publish proprietary maps, employer/customer data, private thesis assets, credentials or private repository history.
 
-The public repository must not be treated as proof of a production CARLA deployment. The defensible claim is: **academic/project hands-on work in Python-based CARLA/OpenDRIVE/OSM map-quality validation and reproducible technical analysis**.
+The defensible claim is hands-on academic/project engineering in Python-based CARLA/OpenDRIVE/OSM map-quality validation, plus a sanitized public implementation demonstrating the methods.
 
-## Current status
+The toolkit is intentionally **not** presented as:
 
-The recruiter-facing runnable toolkit is still being sanitized for public release. Until sample fixtures, tests and a documented end-to-end command are present here, CV/LinkedIn wording should remain method-focused rather than claiming a production-ready simulation toolkit.
+- a complete OpenDRIVE implementation;
+- a production CARLA deployment;
+- a replacement for CARLA runtime validation;
+- proof that illustrative synthetic thresholds are universal acceptance criteria.
 
-## Planned public release gate
+See the toolkit's `SANITIZATION.md` and documented limitations for the exact claim boundary.
 
-A recruiter-ready release should contain:
+## Portfolio relevance
 
-- synthetic or public OSM/OpenDRIVE fixtures;
-- documented Python package structure;
-- deterministic sample alignment;
-- map-quality metrics;
-- topology validation;
-- automated report output;
-- tests;
-- reproducible setup;
-- limitations and data-provenance notes.
+This work supports applications in:
 
-No confidential customer/employer material should be committed.
+- Automotive Digitalisation;
+- Simulation Engineering;
+- Digital Twin Engineering;
+- Python / Data Engineering;
+- Automotive Data;
+- Validation Engineering;
+- Technical Project Engineering;
+- Applied AI / industrial-data roles where deterministic validation and evidence quality matter.
