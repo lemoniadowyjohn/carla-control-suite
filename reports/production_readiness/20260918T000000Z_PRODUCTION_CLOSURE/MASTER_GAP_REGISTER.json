@@ -699,16 +699,38 @@
       "regression_test": "test_v4_import_contracts.py (21 tests) and test_v4_large_map_contract.py (26 tests) verify the modules' own internal correctness, not that anything calls them -- there is no regression test for 'is this wired in' because it is not",
       "evidence_artifact": "reports/final_gap_closure/20260930T142358Z/MODULE_JUSTIFICATION.json (the branch's own admission); independent verification subagent's 2026-09-30 report (grep evidence above)",
       "residual_risk": "MEDIUM -- no regression (nothing was broken), but a real risk of false confidence: the gap register's own v4_caveat_preserved field previously said these were 'never implemented anywhere in this repo' (accurate as of 2026-09-30 morning, now stale as of this merge) and needs its own correction to avoid contradicting this entry. Recommend: either scope a follow-up to identify and wire the real call sites (a bounded, well-defined task now that the contract modules themselves are written and tested), or explicitly relabel these as reference/scaffolding-only in project docs if wiring is deliberately deferred."
+    },
+    {
+      "id": "GAP-039",
+      "severity": "P2",
+      "subsystem": "Perception pipeline (5 files) -- NEW-274/275/276/277/288 claimed fixed but never implemented; NEW-291 implemented but permanently dead (no SHA pins set)",
+      "description": "A batch of 22 claimed perception fixes (NEW-271..292) was independently verified file-by-file. 5 of them (NEW-274 atomic capture_writer.py commit-via-temp-rename, NEW-275 perception_api docs clarification, NEW-276 label_quality.py any/unlabeled/learnable-fraction split, NEW-277 train_launcher.py DATASET_ACCEPTANCE enforcement, NEW-288 THESIS_STRICT degraded-sensor disable) have zero trace in the actual diff -- their target files are byte-identical to the pre-commit base, confirmed via blob-SHA comparison, not just a grep miss. NEW-288 additionally exists already, unrelated to this branch (the THESIS_STRICT check pre-dates it entirely). Separately, NEW-291 (SHA256 pin validation for manual XODR references, manual_refs.py) IS genuinely implemented and wired -- but its only registry (MANUAL_INGOLSTADT_REFS, same file) has no manual_xodr_sha256_pin value set for either Grid0821 or Grid0828, so the gate always computes and reports a hash but can never currently reject a mismatch, since nothing exists to compare against. Functionally equivalent to not being implemented at all, just for a different reason (dead due to missing configuration, not missing code).",
+      "proof": "Independent verification subagent, 2026-10-01: git rev-parse <base>:<path> vs <branch-tip>:<path> blob-SHA comparison for each of NEW-274/275/276/277/288's named target files -- all identical to base. For NEW-291: read manual_refs.py's MANUAL_INGOLSTADT_REFS dict directly (2 entries) plus a repo-wide grep for manual_xodr_sha256_pin -- zero assignments anywhere.",
+      "affected_files": [
+        "ultimate_pipeline/perception/capture_writer.py",
+        "ultimate_pipeline/perception/perception_api.py",
+        "ultimate_pipeline/perception/label_quality.py",
+        "ultimate_pipeline/perception/train_launcher.py",
+        "ultimate_pipeline/carla_tools/local_perception_runner.py",
+        "ultimate_pipeline/experiments/thesis/manual_refs.py"
+      ],
+      "scientific_runtime_consequence": "None of these 6 gaps cause active harm (no regression, nothing was broken) but all 6 represent false confidence: a reader trusting the original 'NEW-271..292 all fixed' framing would incorrectly believe atomic capture-writer commits, DATASET_ACCEPTANCE enforcement in training, label-fraction reporting, and SHA-pinned manual-reference validation are all real protections in the live pipeline today. None of them currently do anything.",
+      "owner_subagent": "hardening/perception-new271-292-real-20260930 (OpenCode, wrote the original claims); independent verification subagent (2026-10-01, found the gaps via blob-SHA diffing, not just grep); this coordinator logged them as a tracked gap rather than accept the 'all fixed' framing",
+      "status": "open -- 5 items never implemented, 1 item (NEW-291) implemented but permanently inert pending real SHA pin values; needs a decision on priority/scheduling, not a policy call",
+      "fixing_commit": "none for the 5 not-implemented items. For NEW-291 specifically, the fix is narrow and known: compute and populate manual_xodr_sha256_pin for Grid0821 and Grid0828 in MANUAL_INGOLSTADT_REFS from the current approved reference XODR files.",
+      "regression_test": "none -- there is nothing to regression-test for code that doesn't exist yet",
+      "evidence_artifact": "independent verification subagent's 2026-10-01 report (blob-SHA comparisons, grep evidence above)",
+      "residual_risk": "LOW -- no active harm, but real technical debt and a documentation-accuracy risk if the original branch's claims are ever cited without this correction. Recommend scheduling these 6 items as ordinary follow-up work, not urgent."
     }
   ],
   "counts": {
-    "total": 38,
+    "total": 39,
     "fixed": 28,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 4,
-    "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total was 35 at that point in the day. SUPERSEDED same day by the V5 hardening merge (commit 38bb7c79), which added GAP-036 and GAP-037 (both open, needing a policy decision) -- total became 37, open 3 (026/036/037). SUPERSEDED AGAIN 2026-09-30 by the hardening/final-gap-closure-20260930 merge, which added GAP-038 (NEW-196/197-199's modules exist but are unwired -- open, needs a wire-in-or-defer decision) -- current total is 38, open is 4 (026/036/037/038), all other buckets unchanged from this note's figures.",
+    "open": 5,
+    "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total was 35 at that point in the day. SUPERSEDED same day by the V5 hardening merge (commit 38bb7c79), which added GAP-036 and GAP-037 (both open, needing a policy decision) -- total became 37, open 3 (026/036/037). SUPERSEDED AGAIN 2026-09-30 by the hardening/final-gap-closure-20260930 merge, which added GAP-038 (NEW-196/197-199's modules exist but are unwired -- open, needs a wire-in-or-defer decision) -- current total is 38, open is 4 (026/036/037/038), all other buckets unchanged from this note's figures. SUPERSEDED AGAIN 2026-10-01 by the NEW-271..292 merge, which added GAP-039 (5 perception fixes never implemented + 1 permanently-dead validation gate, open, low-priority follow-up) -- current total is 39, open is 5 (026/036/037/038/039), all other buckets unchanged.",
     "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {
