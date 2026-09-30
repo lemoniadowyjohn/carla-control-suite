@@ -2,31 +2,57 @@
 
 Verification date: 2026-09-30
 
-## Hosted verification
+## Canonical public release
 
-GitHub Actions run **36717210086** verified the sanitized public toolkit on both Python 3.10 and Python 3.12.
+The sanitized toolkit is published directly on the repository's default `main` branch.
 
-Measured result:
+Canonical promotion commit:
+
+`bcd36de4e80a09d9fbd11d2104bda27b1519b3e6`
+
+Hosted GitHub Actions run **36718173073** verified that default-branch release on both Python 3.10 and Python 3.12.
+
+Measured result on both jobs:
 
 - **21 tests passed**;
 - **91.39% Python package line coverage**;
 - **Ruff: PASS**;
 - editable package installation: **PASS**;
-- CLI passing synthetic quality-report smoke test: **PASS**;
-- CLI intentional-failure rejection path: **PASS** (expected process exit code `2`).
+- CLI passing synthetic quality-report path: **PASS**;
+- CLI intentional-failure rejection path: **PASS** with expected process exit code `2`;
+- separate exact coverage gate: **PASS** at the enforced 90% minimum.
 
-The executable workflow enforces a separate exact **90% minimum coverage gate** after pytest, in addition to Ruff and both CLI behavior checks.
+## Public-scope audit
 
-## Public-history sanitization
+The default branch was constructed from the sanitized toolkit tree rather than from the legacy CARLA development tree.
 
-During verification, the previous portfolio branch lineage was found to include unrelated legacy CARLA files outside the intended public toolkit. The branch reference was rebuilt onto the safe public `main` lineage with a new clean tree. The recruiter-facing branch now retains only the sanitized portfolio toolkit plus its root CI workflow.
+A targeted GitHub code-search audit of the promoted default branch found no matches for:
 
-This history repair is part of the release evidence: public portfolio code must be isolated from private/proprietary engineering assets, not merely documented as isolated.
+- private-key markers;
+- API-key/password/Bearer-token patterns searched;
+- Windows user paths or `/home/` paths;
+- Bertrandt, BMW or Noerr names;
+- known legacy Ingolstadt/production-readiness artifact identifiers;
+- known private/legacy CARLA branch identifiers.
+
+This is a targeted public-scope check, not a claim that pattern matching can prove the absence of every possible sensitive value.
+
+## Historical branch boundary
+
+The acceptance claim applies to the default `main` branch and the sanitized toolkit. Historical/non-default branches in the parent repository are not part of this portfolio release boundary.
+
+The earlier recruiter-facing portfolio branch was rebuilt onto a safe public lineage before the toolkit was promoted to `main`.
 
 ## Evidence scope
 
-The public toolkit uses repository-owned synthetic OSM/OpenDRIVE fixtures. It demonstrates deterministic geometry/alignment checks, CRS sanity tests, topology fixtures, invalid lane-link detection, report generation, provenance hashing and regression tests.
+The toolkit uses repository-owned synthetic OSM/OpenDRIVE fixtures. It demonstrates deterministic geometry/alignment checks, CRS sanity tests, topology fixtures, invalid lane-link detection, report generation, provenance hashing, regression protection and executable PASS/FAIL gates.
 
-This receipt does **not** claim validation of private CARLA maps, employer/customer assets, private thesis datasets, proprietary Unreal content, or a production CARLA deployment.
+This receipt does **not** claim:
 
-Live CI remains the release authority for installation, lint, test and coverage status.
+- a complete OpenDRIVE implementation;
+- a production CARLA deployment;
+- validation of private employer/customer assets;
+- publication of private thesis datasets;
+- universal real-world acceptance thresholds.
+
+Live GitHub Actions on `main` is the release authority for installation, lint, tests, coverage and CLI behavior.
