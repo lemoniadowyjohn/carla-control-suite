@@ -1,5 +1,7 @@
 # CARLA / OpenDRIVE Map Quality & Validation
 
+[![CARLA Map Quality Toolkit CI](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml/badge.svg?branch=portfolio%2Fcarla-map-quality-toolkit-20260930)](https://github.com/lemoniadowyjohn/carla-control-suite/actions/workflows/carla-map-quality-toolkit-ci.yml)
+
 Public-safe portfolio landing page for Michał Dembski's CARLA / OpenDRIVE / OSM map-quality engineering work.
 
 ## Recruiter-facing toolkit
@@ -78,3 +80,8 @@ This work supports applications in:
 - Validation Engineering;
 - Technical Project Engineering;
 - Applied AI / industrial-data roles where deterministic validation and evidence quality matter.
+
+## Related engineering portfolio
+
+- [Governed Agent Workflow Demo](https://github.com/lemoniadowyjohn/space-Y-) — policy-aware routing, provider health/quota gates, deterministic fallback and human-approval boundaries.
+- [Industrial Quality Documentation Assistant](https://github.com/lemoniadowyjohn/hermes) — evidence-grounded industrial RAG with citations, validation, refusal/escalation and synthetic evaluation.
