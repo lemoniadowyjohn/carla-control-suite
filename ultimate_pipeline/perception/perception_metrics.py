@@ -127,30 +127,41 @@ def compute_perception_metrics(run_dir: str) -> Dict[str, Any]:
                     if cam_name not in camera_first_image:
                         camera_first_image[cam_name] = path
 
-    if lower.endswith(".ply"):
-        lidar_frames += 1
-        count = _read_ply_point_count(path)
-        if count is not None:
-            lidar_points.append(count)
-    elif lower.endswith(".bin"):
-        lidar_frames += 1
-        count = _read_bin_point_count(path)
-        if count is not None:
-            lidar_points.append(count)
-    # NEW-273: Support .npz LiDAR format
-    elif lower.endswith(".npz"):
-        lidar_frames += 1
-        try:
-            # NPZ files contain arrays; we'll count the first array's first dimension as proxy
-            data = np.load(path)
-            if len(data.files) > 0:
-                first_array = data[data.files[0]]
-                count = first_array.shape[0] if first_array.ndim > 0 else 1
-                lidar_points.append(int(count))
-            else:
-                lidar_points.append(0)
-        except Exception:
-            pass
+    # LiDAR files live under a dedicated lidar/ directory (a sibling of rgb/),
+    # never under rgb/ -- walked independently of the camera-scanning branches
+    # above so it runs regardless of whether rgb_dir exists, and with a
+    # per-file loop variable so an empty/missing lidar dir never leaves
+    # `lower`/`path` unbound (NEW-273: also handles .npz).
+    lidar_dir = root / "lidar"
+    if lidar_dir.is_dir():
+        for dirpath, _dirnames, filenames in os.walk(lidar_dir):
+            for fn in filenames:
+                lidar_lower = fn.lower()
+                lidar_path = Path(dirpath) / fn
+                if lidar_lower.endswith(".ply"):
+                    lidar_frames += 1
+                    count = _read_ply_point_count(lidar_path)
+                    if count is not None:
+                        lidar_points.append(count)
+                elif lidar_lower.endswith(".bin"):
+                    lidar_frames += 1
+                    count = _read_bin_point_count(lidar_path)
+                    if count is not None:
+                        lidar_points.append(count)
+                elif lidar_lower.endswith(".npz"):
+                    lidar_frames += 1
+                    try:
+                        # NPZ files contain arrays; we count the first
+                        # array's first dimension as a point-count proxy.
+                        data = np.load(lidar_path)
+                        if len(data.files) > 0:
+                            first_array = data[data.files[0]]
+                            count = first_array.shape[0] if first_array.ndim > 0 else 1
+                            lidar_points.append(int(count))
+                        else:
+                            lidar_points.append(0)
+                    except Exception:
+                        pass
 
     if not camera_counts and lidar_frames == 0:
         return {"enabled": False, "reason": "no_sensor_data_found"}

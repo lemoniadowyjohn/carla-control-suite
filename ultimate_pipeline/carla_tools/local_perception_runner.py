@@ -40,7 +40,7 @@ class LocalPerceptionRunner:
     - Writes defects.json (+ minimal run metadata)
     """
 
-def __init__(
+    def __init__(
         self,
         client: "carla.Client",
         map_name: Optional[str] = None,   # kept for backward compatibility

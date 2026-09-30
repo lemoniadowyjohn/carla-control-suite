@@ -15,6 +15,11 @@ from typing import Any, Dict, Optional, Tuple
 log = logging.getLogger(__name__)
 
 
+class FrameIdMissingError(RuntimeError):
+    """Raised by _next_frame_id (NEW-287) when a sensor callback's data has
+    no valid integer .frame -- fail closed instead of fabricating an ID."""
+
+
 @dataclass
 class RecorderConfig:
     """
@@ -402,7 +407,10 @@ class SensorRecorder:
         frame = getattr(data, "frame", None)
         if isinstance(frame, int):
             return int(frame)
-        raise FRAME_ID_MISSING
+        raise FrameIdMissingError(
+            f"sensor data has no valid integer .frame (got {frame!r}); "
+            "refusing to fabricate a frame id"
+        )
 
     def _output_path(self, sensor_name: str, sensor_kind: str, frame_id: int, ext: str) -> Path:
         sensor_dir = (
