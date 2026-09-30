@@ -9,7 +9,7 @@ These variants describe the **sanitized public toolkit** and the underlying engi
 - Implemented OpenDRIVE parsing, lane-geometry reconstruction, CRS transformation checks, deterministic SE(2) alignment, discrete Hausdorff distance, lane-width deviation metrics, and topology/lane-link validation.
 - Added quantitative quality gates for geometry, alignment residuals, lane-width tolerances, predecessor/successor integrity and invalid junction lane links, with machine-readable and human-readable reports.
 - Created unit, synthetic-geometry, CRS, topology, invalid-link and regression tests plus CI to make map-quality checks reproducible and reviewable.
-- Verified the sanitized public implementation in GitHub Actions on Python 3.10/3.12 with Ruff, 18 automated tests, 91.27% package coverage and a CLI quality-report smoke test.
+- Verified the sanitized public implementation in GitHub Actions on Python 3.10/3.12 with Ruff, 21 automated tests, 91.39% package coverage, a passing CLI report, and verified rejection of intentionally degraded input.
 
 ## Variant B — Python / Data
 
@@ -18,7 +18,7 @@ These variants describe the **sanitized public toolkit** and the underlying engi
 - Implemented vectorized numerical checks with NumPy, coordinate transformations with pyproj, deterministic rigid 2D alignment, Hausdorff-based geometry comparison and statistical lane-width deviation analysis.
 - Designed threshold-based quality reports with explicit provenance, failure reasons and JSON/Markdown outputs suitable for automated pipelines and CI.
 - Added regression fixtures and automated tests for geometry, coordinate systems and referential integrity to detect map-generation defects before downstream simulation use.
-- Verified the sanitized public implementation in GitHub Actions on Python 3.10/3.12 with Ruff, 18 automated tests, 91.27% package coverage and a CLI quality-report smoke test.
+- Verified the sanitized public implementation in GitHub Actions on Python 3.10/3.12 with Ruff, 21 automated tests, 91.39% package coverage, a passing CLI report, and verified rejection of intentionally degraded input.
 
 ## Variant C — Digital Twin / Industrial AI
 
@@ -27,7 +27,7 @@ These variants describe the **sanitized public toolkit** and the underlying engi
 - Combined CRS sanity checks, deterministic spatial alignment, lane-level deviation metrics and graph-style topology validation to identify malformed or inconsistent road-network data before simulation ingestion.
 - Implemented provenance-aware reports and regression tests so map-generation changes can be evaluated against measurable acceptance criteria rather than visual inspection alone.
 - Structured the toolkit for future integration with automated map-generation and AI-assisted engineering workflows while keeping validation deterministic and independently testable.
-- Verified the sanitized public implementation in GitHub Actions on Python 3.10/3.12 with Ruff, 18 automated tests, 91.27% package coverage and a CLI quality-report smoke test.
+- Verified the sanitized public implementation in GitHub Actions on Python 3.10/3.12 with Ruff, 21 automated tests, 91.39% package coverage, a passing CLI report, and verified rejection of intentionally degraded input.
 
 ## Claim boundary
 

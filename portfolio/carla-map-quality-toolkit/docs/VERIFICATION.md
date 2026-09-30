@@ -4,17 +4,18 @@ Verification date: 2026-09-30
 
 ## Hosted verification
 
-GitHub Actions run **36716505814** verified the sanitized public toolkit on both Python 3.10 and Python 3.12.
+GitHub Actions run **36717210086** verified the sanitized public toolkit on both Python 3.10 and Python 3.12.
 
 Measured result:
 
-- **18 tests passed**;
-- **91.27% Python package line coverage**;
+- **21 tests passed**;
+- **91.39% Python package line coverage**;
 - **Ruff: PASS**;
 - editable package installation: **PASS**;
-- CLI synthetic quality-report smoke test: **PASS**.
+- CLI passing synthetic quality-report smoke test: **PASS**;
+- CLI intentional-failure rejection path: **PASS** (expected process exit code `2`).
 
-The executable workflow now enforces a **90% minimum coverage gate** in addition to Ruff and the CLI smoke test.
+The executable workflow enforces a separate exact **90% minimum coverage gate** after pytest, in addition to Ruff and both CLI behavior checks.
 
 ## Public-history sanitization
 
