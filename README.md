@@ -8,23 +8,23 @@ The sanitized, runnable implementation is available on the dedicated portfolio b
 
 **[Open `carla-map-quality-toolkit`](https://github.com/lemoniadowyjohn/carla-control-suite/tree/portfolio/carla-map-quality-toolkit-20260930/portfolio/carla-map-quality-toolkit)**
 
-The portfolio branch contains a standalone Python package, synthetic OpenDRIVE/OSM fixtures, automated tests, CI, architecture documentation, quality-report examples, provenance handling and explicit public-release boundaries.
+The portfolio branch contains a standalone Python package, synthetic OpenDRIVE/OSM fixtures, automated tests, CI, architecture documentation, quality-report examples, provenance handling and explicit public-release boundaries. Its branch history has been rebuilt onto the safe public lineage so unrelated private/legacy CARLA assets are not part of the recruiter-facing branch.
 
 ### Verified release status
 
-GitHub Actions verifies the toolkit on Python 3.11 with:
+GitHub Actions verifies the toolkit on Python 3.10 and 3.12 with:
 
 - clean editable installation;
 - Ruff static/lint checks;
 - pytest + coverage;
 - command-line quality-report smoke test.
 
-Latest verified portfolio commit: `79fb506d96c01dddbcf6431d0c8f54c7984ed7ed`.
+Latest verified code-gate commit: `f7a56b545fdb49bec3bc538044eefd405f262c86`.
 
 At that commit:
 
-- **14 tests pass**;
-- **83% package coverage**;
+- **18 automated tests pass**;
+- **91.27% measured package line coverage**, with a **90% CI floor**;
 - Ruff passes;
 - the synthetic CLI demo produces a PASS quality report.
 
@@ -63,7 +63,7 @@ The toolkit is intentionally **not** presented as:
 - a replacement for CARLA runtime validation;
 - proof that illustrative synthetic thresholds are universal acceptance criteria.
 
-See the toolkit's `SANITIZATION.md` and documented limitations for the exact claim boundary.
+See the toolkit's `SANITIZATION.md`, `SECURITY.md`, and `docs/VERIFICATION.md` for the exact claim and public-data boundary.
 
 ## Portfolio relevance
 
