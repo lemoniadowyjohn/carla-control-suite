@@ -32,7 +32,7 @@ from ultimate_pipeline.pipeline_stages import (
 )
 
 
-def _fake_self(**settings_overrides):
+def _fake_self(tmp_path, **settings_overrides):
     fake = mock.Mock()
     settings = mock.Mock()
     for key, value in settings_overrides.items():
@@ -40,68 +40,70 @@ def _fake_self(**settings_overrides):
     fake.settings = settings
     fake.vreport = mock.Mock()
     fake.qgate = mock.Mock()
-    fake.out_dir = "MISSING_OUTDIR"
+    out = Path(tmp_path) / "run"
+    out.mkdir(parents=True, exist_ok=True)
+    fake.out_dir = str(out)
     return fake
 
 
-def test_04_missing_upstream_blocks():
+def test_04_missing_upstream_blocks(tmp_path):
     with pytest.raises(Exception):
-        stage_04_enrichment._step4_enrichment(_fake_self(), "MISSING_TOPO.xodr")
+        stage_04_enrichment._step4_enrichment(_fake_self(tmp_path), "MISSING_TOPO.xodr")
 
 
-def test_05a_missing_upstream_blocks():
+def test_05a_missing_upstream_blocks(tmp_path):
     with pytest.raises(Exception):
-        stage_05_geometry._step5_geometry_elevation_continuity(_fake_self(), "MISSING_TOPO.xodr")
+        stage_05_geometry._step5_geometry_elevation_continuity(_fake_self(tmp_path), "MISSING_TOPO.xodr")
 
 
-def test_05b_strict_dem_blocks_without_silent_continuation(monkeypatch):
+def test_05b_strict_dem_blocks_without_silent_continuation(tmp_path, monkeypatch):
     monkeypatch.setenv("THESIS_STRICT", "1")
     monkeypatch.setenv("DEM_STRICT_MODE", "1")
     with pytest.raises(Exception):
-        stage_05_geometry._step5_dem_and_geometry(_fake_self(), "MISSING_TOPO.xodr", "MISSING_ELEV.xodr")
+        stage_05_geometry._step5_dem_and_geometry(_fake_self(tmp_path), "MISSING_TOPO.xodr", "MISSING_ELEV.xodr")
 
 
-def test_06_missing_upstream_blocks():
+def test_06_missing_upstream_blocks(tmp_path):
     with pytest.raises(FileNotFoundError):
         stage_06_links._step6_planview_continuity(
-            _fake_self(), "MISSING_ELEV.xodr", "MISSING_GEO.xodr", "OUT.xodr")
+            _fake_self(tmp_path), "MISSING_ELEV.xodr", "MISSING_GEO.xodr", "OUT.xodr")
 
 
-def test_07_missing_upstream_blocks():
+def test_07_missing_upstream_blocks(tmp_path):
     with pytest.raises(FileNotFoundError):
-        stage_07_lanes._step7_lanes_sidewalks(_fake_self(), "MISSING_CONT.xodr", "OUT.xodr")
+        stage_07_lanes._step7_lanes_sidewalks(_fake_self(tmp_path), "MISSING_CONT.xodr", "OUT.xodr")
 
 
-def test_08h_missing_upstream_blocks_with_explicit_message():
+def test_08h_missing_upstream_blocks_with_explicit_message(tmp_path):
     with pytest.raises(FileNotFoundError, match="map hygiene"):
-        stage_08_hygiene._step8h_map_hygiene(_fake_self(), "MISSING_FINAL.xodr")
+        stage_08_hygiene._step8h_map_hygiene(_fake_self(tmp_path), "MISSING_FINAL.xodr")
 
 
-def test_08m_missing_upstream_blocks():
+def test_08m_missing_upstream_blocks(tmp_path):
     with pytest.raises(FileNotFoundError):
-        stage_08_integrity._step8_markings_and_integrity(_fake_self(), "MISSING_LANES.xodr", "OUT.xodr")
+        stage_08_integrity._step8_markings_and_integrity(_fake_self(tmp_path), "MISSING_LANES.xodr", "OUT.xodr")
 
 
-def test_09pos_missing_upstream_blocks():
+def test_09pos_missing_upstream_blocks(tmp_path):
     with pytest.raises(FileNotFoundError):
-        stage_09_positional_semantics._step9_positional_semantics(_fake_self(), "MISSING_FINAL.xodr")
+        stage_09_positional_semantics._step9_positional_semantics(_fake_self(tmp_path), "MISSING_FINAL.xodr")
 
 
-def test_09tiling_disabled_returns_none_without_inputs():
+def test_09tiling_disabled_returns_none_without_inputs(tmp_path):
     assert stage_09_tiling._step9_tiling(
-        _fake_self(ENABLE_TILING=False), "MISSING_FINAL.xodr") is None
+        _fake_self(tmp_path, ENABLE_TILING=False), "MISSING_FINAL.xodr") is None
 
 
-def test_09tiling_enabled_missing_upstream_blocks():
+def test_09tiling_enabled_missing_upstream_blocks(tmp_path):
     with pytest.raises(FileNotFoundError):
         stage_09_tiling._step9_tiling(
-            _fake_self(ENABLE_TILING=True), "MISSING_FINAL.xodr")
+            _fake_self(tmp_path, ENABLE_TILING=True), "MISSING_FINAL.xodr")
 
 
 def test_10_sim_gate_off_writes_skip_receipt(tmp_path):
     out = tmp_path / "run"
     out.mkdir()
-    fake = _fake_self(ENABLE_SIMULATION_GATE=False)
+    fake = _fake_self(tmp_path, ENABLE_SIMULATION_GATE=False)
     fake.out_dir = str(out)
     assert stage_10_tile_qa._step10_tile_qa(fake, None, "MISSING_FINAL.xodr") is None
     receipt = json.loads((out / "step10_tile_qa_status.json").read_text(encoding="utf-8"))
@@ -112,7 +114,7 @@ def test_10_tiling_disabled_writes_skip_receipt(tmp_path, monkeypatch):
     out = tmp_path / "run"
     out.mkdir()
     monkeypatch.setenv("UP_DISABLE_CARLA", "1")
-    fake = _fake_self(ENABLE_SIMULATION_GATE=True, ENABLE_TILING=False)
+    fake = _fake_self(tmp_path, ENABLE_SIMULATION_GATE=True, ENABLE_TILING=False)
     fake.out_dir = str(out)
     assert stage_10_tile_qa._step10_tile_qa(fake, None, "MISSING_FINAL.xodr") is None
     receipt = json.loads((out / "step10_tile_qa_status.json").read_text(encoding="utf-8"))
@@ -123,7 +125,7 @@ def test_10_tiles_missing_writes_skip_receipt(tmp_path, monkeypatch):
     out = tmp_path / "run"
     out.mkdir()
     monkeypatch.setenv("UP_DISABLE_CARLA", "1")
-    fake = _fake_self(ENABLE_SIMULATION_GATE=True, ENABLE_TILING=True)
+    fake = _fake_self(tmp_path, ENABLE_SIMULATION_GATE=True, ENABLE_TILING=True)
     fake.out_dir = str(out)
     assert stage_10_tile_qa._step10_tile_qa(fake, None, "MISSING_FINAL.xodr") is None
     receipt = json.loads((out / "step10_tile_qa_status.json").read_text(encoding="utf-8"))
