@@ -90,8 +90,26 @@ class MockActor:
     def get_transform(self) -> MockTransform:
         return self.transform
 
+    def set_transform(self, transform: MockTransform) -> None:
+        # A real CARLA actor exposes set_transform (and never apply_transform).
+        self.transform = transform
+
     def destroy(self):
         self._destroyed = True
+
+
+class MockActorNoSetTransform:
+    """Actor that only exposes apply_transform, i.e. NOT the governed API."""
+
+    def __init__(self, transform: MockTransform = None, actor_id: int = 456):
+        self.transform = transform or MockTransform()
+        self.id = actor_id
+
+    def get_transform(self) -> MockTransform:
+        return self.transform
+
+    def apply_transform(self, transform: MockTransform) -> None:
+        self.transform = transform
 
 
 class MockWorld:
@@ -219,8 +237,8 @@ def test_new293_set_transform_with_verification():
 def test_new293_actor_missing_set_transform():
     """Test NEW-293: actor with apply_transform but no set_transform (should fail)."""
     world = MockWorld()
-    ego = MockActor()  # No set_transform method
-    ego.apply_transform = lambda x: None  # Add apply_transform to simulate bug
+    # Exposes apply_transform but NOT the governed set_transform API.
+    ego = MockActorNoSetTransform()
 
     route_poses = [
         {
@@ -382,9 +400,22 @@ def test_new295_wrong_crs_fails():
         auto_geo_reference=auto_geo_ref,
     )
 
-    # Should fail validation due to CRS mismatch
+    # Should fail validation due to CRS mismatch. The route declares EPSG:32633
+    # (UTM zone 33N) while its own geo_reference and both map georeferences are
+    # UTM zone 32. Each arm's georeference is therefore unusable for this route.
     assert binding["valid"] is False
-    assert any("manual_georeference_invalid_or_incomplete" in err for err in binding["validation_errors"])
+    assert any(
+        "manual_georeference_crs_mismatch" in err for err in binding["validation_errors"]
+    ), binding["validation_errors"]
+    assert any(
+        "auto_georeference_crs_mismatch" in err for err in binding["validation_errors"]
+    ), binding["validation_errors"]
+    # The manifest is additionally self-inconsistent: declared CRS vs its own
+    # declared geo_reference.
+    assert any(
+        "route_crs_georeference_mismatch" in err for err in binding["validation_errors"]
+    ), binding["validation_errors"]
+    assert binding["both_maps_share_exact_frame"] is False
 
 
 def test_new297_route_movement_failures_fatal():

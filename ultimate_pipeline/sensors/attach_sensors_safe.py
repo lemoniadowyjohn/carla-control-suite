@@ -207,6 +207,15 @@ def attach_sensors_safe(
 
     try:
         cams, lids = load_calib(calib_path)
+        # NEW-301: the canonical LiDAR spec is resolved from the calibration
+        # document itself. `load_calib` returns only the parsed camera/LiDAR
+        # sub-records, so the raw document is read here as well; referencing
+        # the parsed views instead would silently drop the per-LiDAR runtime
+        # attributes (range/channels/...) that the spec is built from.
+        with open(calib_path, "r", encoding="utf-8") as fh:
+            calib_data = json.load(fh)
+        if not isinstance(calib_data, dict):
+            raise ValueError("calibration document must be a JSON object")
     except Exception as exc:
         report["errors"].append(f"failed to load calib: {exc}")
         contract["errors"] = list(report["errors"])
@@ -255,7 +264,12 @@ def attach_sensors_safe(
         report["warnings"].append("missing blueprint: sensor.lidar.ray_cast")
     else:
         # NEW-301: Consume canonical LiDAR runtime spec instead of hard-coded values
-        lidar_specs = resolve_active_lidars(data, low_memory_profile=False)
+        lidar_specs = resolve_active_lidars(calib_data, low_memory_profile=False)
+        # NEW-300/301: a required active LiDAR that is absent from calibration is
+        # a FAIL, not a warning: silently spawning zero LiDARs would invalidate
+        # every downstream perception claim.
+        if not lidar_specs:
+            report["errors"].append("required_active_lidar_missing_from_calibration")
         for lidar_spec in lidar_specs:
             name = lidar_spec.name
             lid = lids.get(name)
