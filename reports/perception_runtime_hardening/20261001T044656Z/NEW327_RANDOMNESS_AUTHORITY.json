@@ -1,0 +1,53 @@
+{
+  "child_env_exports": {
+    "UP_EXPERIMENT_SEED": "7",
+    "UP_NPC_BLUEPRINT_SEED": "3483986275",
+    "UP_NPC_SPAWN_SEED": "1739607696",
+    "UP_PEDESTRIAN_SEED": "4258970640",
+    "UP_SCENARIO_SEED": "3869524084",
+    "UP_SEED_TREE_SHA256": "fddeb8f6e84efc06e93e0707b4e9af0884f1a484d315be543f51455a5094c9b4",
+    "UP_TM_SEED": "738364817",
+    "UP_WEATHER_SEED": "3172531575"
+  },
+  "defects_before": {
+    "UP_TM_SEED": "defaulted to '42' and silently fell back to 42 on a malformed value",
+    "fixed_traffic_manager_actor_stream_carla_sim": "bare random.choice/shuffle/uniform with no seed at all",
+    "record_route_fixed": "_random.seed(42) on the PROCESS-GLOBAL random module, hardcoded literal 42, bound to no CLI/env seed",
+    "vehicle_manager_spawner": "random.seed(SPAWNER_SEED) at IMPORT time, mutating randomness for unrelated modules"
+  },
+  "different_root_differs": true,
+  "domains_are_distinct": true,
+  "experiment_seed": 7,
+  "finding": "NEW-327",
+  "import_time_seeding_removed": true,
+  "malformed_is_never_silent_42": true,
+  "malformed_root_rejected": "SEED_INVALID:UP_EXPERIMENT_SEED:'abc'",
+  "npc_blueprint_seed_bound_to_experiment_seed": 3483986275,
+  "reproducible_same_root": true,
+  "resolved_seeds": {
+    "npc_blueprint": 3483986275,
+    "npc_spawn": 1739607696,
+    "pedestrian": 4258970640,
+    "scenario": 3869524084,
+    "tm": 738364817,
+    "weather": 3172531575
+  },
+  "rng_ownership": "random.Random(seed) instances; process-global RNG never seeded or mutated",
+  "schema": "NEW327_RANDOMNESS_AUTHORITY/v1",
+  "seed_tree_domains": [
+    "tm",
+    "npc_blueprint",
+    "npc_spawn",
+    "pedestrian",
+    "weather",
+    "scenario"
+  ],
+  "seed_tree_sha256": "fddeb8f6e84efc06e93e0707b4e9af0884f1a484d315be543f51455a5094c9b4",
+  "status": "PASS",
+  "wired_into": [
+    "ultimate_pipeline/perception/record_route_fixed.py",
+    "ultimate_pipeline/carla_tools/fixed_traffic_manager.py",
+    "ultimate_pipeline/carla_tools/actor_stream_manager.py",
+    "ultimate_pipeline/carla_tools/carla_sim_consolidated.py"
+  ]
+}

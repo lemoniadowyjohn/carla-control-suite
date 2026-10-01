@@ -270,8 +270,11 @@ class DominikSensorSetup:
         lidar_axes_mode: str = "auto",
         verbose: bool = False,
         resolution_override: Optional[Tuple[int, int]] = None,
+        camera_response_profile: Optional[str] = None,
     ):
         self.calib_path = Path(calib_json_path)
+        # NEW-333: governed photometric response profile.
+        self.camera_response_profile = camera_response_profile
         if not self.calib_path.exists():
             raise FileNotFoundError(f"Calibration JSON not found: {self.calib_path}")
 
@@ -287,11 +290,29 @@ class DominikSensorSetup:
         w, h = image_width, image_height
         if self.resolution_override is not None:
             w, h = self.resolution_override
-        return {
+        attrs: Dict[str, str] = {
             "fov": str(round(float(fov), 2)),
             "image_size_x": str(int(w)),
             "image_size_y": str(int(h)),
         }
+        # NEW-333: pin the camera photometric response explicitly.  Previously
+        # only fov/size were set, so gamma, exposure, ISO, shutter, bloom, lens
+        # flare, chromatic aberration and motion blur were all left at implicit
+        # CARLA defaults -- which is exactly what is forbidden for an RQ3
+        # image-appearance claim.
+        from ultimate_pipeline.perception.environment.camera_response import (
+            profile_attributes,
+            PROFILE_PINHOLE_POSTPROCESS_DISABLED,
+        )
+
+        response = profile_attributes(
+            self.camera_response_profile or PROFILE_PINHOLE_POSTPROCESS_DISABLED
+        )
+        # Geometry stays owned by this method; the profile owns everything that
+        # affects photometric response.
+        for key, value in response.items():
+            attrs.setdefault(key, value)
+        return attrs
 
     def _parse_camera_transform(self, cam_data: Dict) -> Dict[str, float]:
         """Parse cTv matrix for CARLA attachment using canonical conventions.

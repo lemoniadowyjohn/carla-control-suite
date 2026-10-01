@@ -1,0 +1,16 @@
+{
+  "artifact": "SIMULATION_PHYSICS_PROFILE.json",
+  "claim_boundary": "SYNC_APPLIED_POST_GENERATION",
+  "experiment_start_state_ready_gate": "SIMULATION_STATE_NOT_READY",
+  "fixed_delta_seconds": 0.1,
+  "inequality_holds": true,
+  "live_verification": "BLOCKED_EXTERNAL",
+  "max_desired_physical_substep_s": 0.01,
+  "max_substep_delta_time": 0.01,
+  "max_substeps": 11,
+  "profile_name": "carla_0_9_16_high_fidelity_substepped",
+  "schema": "SIMULATION_PHYSICS_MATRIX/v1",
+  "simulation_physics_sha256": "e66aef0a49503a221a98227e8551631141e55fbd06c6ce652403d3077ee90538",
+  "substep_budget_seconds": 0.11,
+  "substepping": true
+}

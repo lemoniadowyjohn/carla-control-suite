@@ -61,27 +61,67 @@ class FixedTrafficManager:
         self.traffic_manager = None
         self.world = None
         self.client = None
+        # NEW-327: owned RNG instance for blueprint/location selection.
+        self._rng = random.Random(0)
         self.tm_available = False
 
     # -------------------------------------------------------
     # INITIALIZATION
     # -------------------------------------------------------
-    def initialize(self, client, world, traffic_manager_port=8000):
-        """Initialize TM if available. Always succeeds safely."""
+    def initialize(self, client, world, traffic_manager_port=8000, *, port=None, seed=None):
+        """Initialize TM if available, via the governed session authority.
+
+        NEW-326/327/328: this previously called
+        ``client.get_trafficmanager(8000)`` directly, set
+        ``synchronous_mode(True)`` unconditionally and never seeded the TM.
+        It now routes through :class:`TrafficManagerSession`, which owns the
+        port, the master claim, the synchronous state and the seed, so there is
+        exactly one TM authority per governed session.
+        """
         self.client = client
         self.world = world
+        resolved_port = int(port if port is not None else traffic_manager_port)
 
         if not _carla_runtime_available():
             print("⚠ No CARLA — using mock mode.")
             return False
 
+        from ultimate_pipeline.perception.environment.seed_tree import (
+            seed_tree_from_environment,
+        )
+
+        if seed is None:
+            try:
+                seed = int(seed_tree_from_environment()["seeds"]["tm"])
+            except Exception as exc:
+                # NEW-327: a missing/malformed seed is an explicit failure, not
+                # a silent fallback to an unseeded traffic manager.
+                print(f"⚠ Traffic Manager seed unresolved: {exc}")
+                self.traffic_manager = None
+                self.tm_available = False
+                return False
+
+        from ultimate_pipeline.perception.environment.traffic_manager_session import (
+            TrafficManagerSession,
+        )
+
+        self.tm_session = TrafficManagerSession(
+            host="127.0.0.1",
+            tm_port=resolved_port,
+            is_master=True,
+            synchronous_mode=True,
+            seed=int(seed),
+            global_distance=2.0,
+            strict=_strict_mode(),
+            session_id=f"fixed_tm:{resolved_port}",
+        )
         try:
             # Attempt TM retrieval (fails on OpenDRIVE)
-            self.traffic_manager = self.client.get_trafficmanager(traffic_manager_port)
-            self.traffic_manager.set_global_distance_to_leading_vehicle(2.0)
-            self.traffic_manager.set_synchronous_mode(True)
+            self.traffic_manager = self.tm_session.acquire(client)
             self.tm_available = True
-            print("✅ Traffic Manager initialized")
+            print(
+                f"✅ Traffic Manager initialized (port={resolved_port}, seed={int(seed)})"
+            )
             return True
 
         except Exception as e:
@@ -119,7 +159,8 @@ class FixedTrafficManager:
         batch = []
 
         for i in range(min(count, len(spawn_points))):
-            bp = random.choice(vehicle_bps)
+            # NEW-327: owned RNG, not the process-global `random`.
+            bp = self._rng.choice(vehicle_bps)
             sp = spawn_points[i]
 
             if self.tm_available:
@@ -173,13 +214,13 @@ class FixedTrafficManager:
                 loc = self.world.get_random_location_from_navigation()
                 if not loc:
                     loc = carla.Location(
-                        x=random.uniform(-50, 50),
-                        y=random.uniform(-50, 50),
+                        x=self._rng.uniform(-50, 50),
+                        y=self._rng.uniform(-50, 50),
                         z=1.0
                     )
 
                 transform = carla.Transform(loc)
-                walker_bp = random.choice(blueprints)
+                walker_bp = self._rng.choice(blueprints)
                 walker = self.world.try_spawn_actor(walker_bp, transform)
 
                 if not walker:
