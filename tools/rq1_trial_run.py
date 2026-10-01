@@ -56,6 +56,10 @@ def main() -> None:
         error = str(e)[:500]
     dur = time.time() - t0
     rec = {
+        # NEW-346: declare the receipt schema tools/rq1_five_run_matrix.py
+        # validates, so a raw trial run receipt is comparable without the
+        # historical post-processing step.
+        "schema": "rq1_run_receipt/v1",
         "run": run_idx,
         "status": status,
         "error": error,
@@ -64,6 +68,21 @@ def main() -> None:
         "input_sha256": pinned["sha256_actual"],
         "out_dir": str(out_dir),
     }
+    # NEW-338: the registry declares receipt_run_XX.json as this signal's
+    # artifact, but the script only ever *printed* the receipt -- nothing wrote
+    # the file, so the artifact was dead for every consumer.
+    try:
+        receipt_path = Path(out_dir) / f"receipt_run_{run_idx:02d}.json"
+        receipt_path.parent.mkdir(parents=True, exist_ok=True)
+        rec["receipt_path"] = str(receipt_path)
+        receipt_path.write_text(
+            json.dumps(rec, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        rec["receipt_written"] = True
+        print(f"receipt -> {receipt_path}")
+    except Exception as exc:  # noqa: BLE001
+        rec["receipt_written"] = False
+        rec["receipt_error"] = f"{type(exc).__name__}: {exc}"
     print(json.dumps(rec, indent=1))
 
 
