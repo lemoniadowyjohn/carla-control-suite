@@ -364,7 +364,11 @@ def stage_large_map_package(
         for p in tile_fbx_paths
         if Path(p).is_file() and parse_tile_fbx_filename(Path(p).name) is not None
     )
-    strict_provenance = has_any_manifest
+    # P0-4: an explicitly supplied expected XODR SHA is itself an authority for
+    # strict provenance. Keying strictness only on has_any_manifest meant a
+    # caller that pinned the map SHA but supplied no per-tile manifests silently
+    # ran the permissive path.
+    strict_provenance = bool(expected_xodr_sha256) or has_any_manifest
     provenance_authority_sha = (
         expected_xodr_sha256.lower() if expected_xodr_sha256 else xodr_sha256.lower()
     )
