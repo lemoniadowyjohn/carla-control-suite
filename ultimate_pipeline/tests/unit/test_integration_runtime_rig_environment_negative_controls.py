@@ -948,13 +948,19 @@ def test_tm_session_state_does_not_leak_between_runs():
     assert first.effective_config()["seed"] == 1001
 
     # Without release, a new session on the same port is a double-ownership bug.
+    # Note the session LABELS differ but ownership is keyed on the owner token,
+    # so the label difference is irrelevant to the guard.
     second = tms.TrafficManagerSession(
         tm_port=8000, seed=2002, session_id="run_b"
     )
     with pytest.raises(RuntimeError, match="MASTER"):
         second.acquire(_Client(handle=_FakeTM()))
 
-    tms.TrafficManagerSession.release_master(8000, "run_a")
+    # Ownership is released by owner token, not by the human-readable label.
+    released = tms.TrafficManagerSession.release_master(
+        8000, owner_token=first.owner_token
+    )
+    assert released is True
     second.acquire(_Client(handle=_FakeTM()))
     assert second.effective_config()["seed"] == 2002
     assert second.effective_config()["seed"] != first.effective_config()["seed"]
