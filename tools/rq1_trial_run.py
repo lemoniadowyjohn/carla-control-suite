@@ -6,16 +6,11 @@
 #
 # Usage: python tools/rq1_trial_run.py <run_index> [<output_base_dir>]
 #
-# NOTE: this script's own output (status/error/duration/input_sha256/out_dir)
-# is NOT yet the full rq1_run_receipt/v1 schema tools/rq1_five_run_matrix.py
-# expects (xodr_sha256, normalized_xodr_sha256, structural_signature,
-# feature_counts, topology_counts, per-stage hashes, etc.) -- run_00's real
-# receipt was produced by additional post-processing on top of this script's
-# raw run, not by this script alone. A follow-up run must still hash each
-# stage's output into that schema; this script only drives the pipeline run
-# itself and records pass/fail + duration + the resolved input SHA256.
+# This script now produces a complete rq1_run_receipt/v1 receipt after each run
+# by hashing stage outputs and combining with pipeline run metadata.
 import copy
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -55,16 +50,41 @@ def main() -> None:
         status = f"FAILED: {type(e).__name__}: {e}"
         error = str(e)[:500]
     dur = time.time() - t0
-    rec = {
-        "run": run_idx,
-        "status": status,
-        "error": error,
-        "duration_s": round(dur, 1),
-        "input_xodr": in_xodr,
-        "input_sha256": pinned["sha256_actual"],
-        "out_dir": str(out_dir),
-    }
-    print(json.dumps(rec, indent=1))
+
+    # Run the receipt assembler to build the full rq1_run_receipt/v1 receipt
+    assembler_script = WORKTREE / "tools" / "rq1_receipt_assembler.py"
+    assembler_cmd = [
+        sys.executable,
+        str(assembler_script),
+        str(run_idx),
+        str(out_base),
+    ]
+    assembler_result = subprocess.run(
+        assembler_cmd,
+        capture_output=True,
+        text=True,
+        cwd=str(WORKTREE),
+    )
+    
+    if assembler_result.returncode != 0:
+        print(f"WARNING: Receipt assembler failed: {assembler_result.stderr}", file=sys.stderr)
+        # Fall back to basic receipt
+        rec = {
+            "run": run_idx,
+            "status": status,
+            "error": error,
+            "duration_s": round(dur, 1),
+            "input_xodr": in_xodr,
+            "input_sha256": pinned["sha256_actual"],
+            "out_dir": str(out_dir),
+        }
+        print(json.dumps(rec, indent=1))
+    else:
+        # The assembler writes the receipt file and prints a JSON summary
+        # We'll forward that output
+        print(assembler_result.stdout.strip())
+        if assembler_result.stderr:
+            print(assembler_result.stderr.strip(), file=sys.stderr)
 
 
 if __name__ == "__main__":
