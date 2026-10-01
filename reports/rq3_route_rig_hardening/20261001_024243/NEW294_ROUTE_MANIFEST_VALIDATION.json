@@ -1,0 +1,28 @@
+{
+  "adversarial_tests": {
+    "test_new294_duplicate_sequence_index": "PASS",
+    "test_new294_tampered_route_manifest": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Route manifest validated before any pose is used",
+  "finding_id": "NEW-294",
+  "implementation": {
+    "file": "ultimate_pipeline/perception/route_manifest.py",
+    "functions": [
+      "validate_route_manifest_bytes",
+      "get_capture_poses_after_validation"
+    ],
+    "validation_sequence": [
+      "read_bytes",
+      "parse_json",
+      "schema_validation",
+      "self_digest_validation",
+      "sequence_index_validation",
+      "finite_coordinate_validation",
+      "coordinate_frame_validation"
+    ]
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

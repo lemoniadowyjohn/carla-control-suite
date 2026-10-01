@@ -20,6 +20,10 @@ from ultimate_pipeline.sensors.transform_conventions import (
     vehicle_to_camera_from_cTv,
     vehicle_to_lidar_from_vTl,
 )
+from ultimate_pipeline.sensors.canonical_lidar_spec import (
+    resolve_active_lidars,
+    canonical_lidar_hash,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     import carla
@@ -924,6 +928,16 @@ class ThesisSensorRig:
         # LiDARs
         for lidar_name, lidar_data in lidar_items:
             try:
+                # NEW-301: Consume canonical LiDAR runtime spec
+                lidar_specs = resolve_active_lidars(self.calib_data, low_memory_profile=False)
+                lidar_spec = None
+                for spec in lidar_specs:
+                    if spec.name == lidar_name:
+                        lidar_spec = spec
+                        break
+                if lidar_spec is None:
+                    raise RuntimeError(f"LiDAR '{lidar_name}' not in canonical active spec")
+
                 # Thesis contract: vTl is LiDAR→Vehicle and MUST be inverted for attachment.
                 vtl_inverted = True
                 T_used = vehicle_to_lidar_from_vTl(lidar_data["vTl"], flip_vehicle_y=False)
@@ -936,39 +950,39 @@ class ThesisSensorRig:
                 )
 
                 bp = bp_lib.find("sensor.lidar.ray_cast")
-                # Conservative defaults that are known to work across versions.
+                # NEW-301: Use canonical LiDAR spec values
                 try:
                     if hasattr(bp, "has_attribute") and bp.has_attribute("range"):
-                        bp.set_attribute("range", str(float(lidar_data.get("range", 80.0))))
+                        bp.set_attribute("range", str(lidar_spec.range))
                     if hasattr(bp, "has_attribute") and bp.has_attribute(
                         "rotation_frequency"
                     ):
                         bp.set_attribute(
                             "rotation_frequency",
-                            str(float(lidar_data.get("rotation_frequency", 10.0))),
+                            str(int(lidar_spec.rotation_frequency)),
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute(
                         "points_per_second"
                     ):
                         bp.set_attribute(
                             "points_per_second",
-                            str(int(lidar_data.get("points_per_second", 200000))),
+                            str(int(lidar_spec.points_per_second)),
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("channels"):
                         bp.set_attribute(
-                            "channels", str(int(lidar_data.get("channels", 32)))
+                            "channels", str(int(lidar_spec.channels))
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("upper_fov"):
                         bp.set_attribute(
-                            "upper_fov", str(float(lidar_data.get("upper_fov", 10.0)))
+                            "upper_fov", str(float(lidar_spec.upper_fov))
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("lower_fov"):
                         bp.set_attribute(
-                            "lower_fov", str(float(lidar_data.get("lower_fov", -30.0)))
+                            "lower_fov", str(float(lidar_spec.lower_fov))
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("sensor_tick"):
                         bp.set_attribute(
-                            "sensor_tick", str(float(lidar_data.get("sensor_tick", 0.0)))
+                            "sensor_tick", str(float(lidar_spec.sensor_tick))
                         )
                 except Exception:
                     pass

@@ -3,6 +3,9 @@
 
 """
 Safe sensor attachment helper using calib_data.json.
+
+NEW-301: Consumes canonical LiDAR runtime spec from canonical_lidar_spec.py
+NEW-299: Returns runtime rig identity from spawned/verified actors
 """
 
 from __future__ import annotations
@@ -12,6 +15,12 @@ import json
 import math
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
+
+from ultimate_pipeline.sensors.canonical_lidar_spec import (
+    resolve_active_lidars,
+    all_lidar_specs,
+    canonical_lidar_hash,
+)
 
 
 def _ensure_mat4(m: Any, name: str) -> List[List[float]]:
@@ -245,25 +254,39 @@ def attach_sensors_safe(
     if lidar_bp is None:
         report["warnings"].append("missing blueprint: sensor.lidar.ray_cast")
     else:
-        for name, lid in lids.items():
+        # NEW-301: Consume canonical LiDAR runtime spec instead of hard-coded values
+        lidar_specs = resolve_active_lidars(data, low_memory_profile=False)
+        for lidar_spec in lidar_specs:
+            name = lidar_spec.name
+            lid = lids.get(name)
+            if lid is None:
+                report["attached"][name] = {"type": "lidar", "ok": False,
+                                            "error": "lidar_not_in_calibration"}
+                continue
             try:
                 bp = lidar_bp
-                bp.set_attribute("range", "80")
-                bp.set_attribute("rotation_frequency", "20")
-                bp.set_attribute("channels", "64")
-                bp.set_attribute("points_per_second", "200000")
-                bp.set_attribute("upper_fov", "10")
-                bp.set_attribute("lower_fov", "-30")
-                bp.set_attribute("sensor_tick", "0.0")
+                bp.set_attribute("range", str(lidar_spec.range))
+                bp.set_attribute("rotation_frequency",
+                                 str(int(lidar_spec.rotation_frequency)))
+                bp.set_attribute("channels", str(lidar_spec.channels))
+                bp.set_attribute("points_per_second",
+                                 str(lidar_spec.points_per_second))
+                bp.set_attribute("upper_fov", str(lidar_spec.upper_fov))
+                bp.set_attribute("lower_fov", str(lidar_spec.lower_fov))
+                bp.set_attribute("sensor_tick", str(lidar_spec.sensor_tick))
 
                 vTl_inv = invert_rigid_transform(lid.vTl)
-                tf = _carla_transform_from_vehicle_to_sensor(vTl_inv, camera_optical_frame=False)
+                tf = _carla_transform_from_vehicle_to_sensor(
+                    vTl_inv, camera_optical_frame=False
+                )
                 actor = world.spawn_actor(bp, tf, attach_to=ego)
                 sensors[name] = actor
                 report["attached"][name] = {"type": "lidar", "ok": True}
                 active_lidar_count += 1
             except Exception as exc:
-                report["attached"][name] = {"type": "lidar", "ok": False, "error": str(exc)}
+                report["attached"][name] = {
+                    "type": "lidar", "ok": False, "error": str(exc)
+                }
 
     report["ok"] = all(item.get("ok", False) for item in report["attached"].values()) if report["attached"] else False
     contract["ok"] = bool(report["ok"])
