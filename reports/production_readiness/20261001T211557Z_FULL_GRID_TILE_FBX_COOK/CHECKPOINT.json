@@ -1,0 +1,689 @@
+{
+  "results": [
+    {
+      "blender_sec": 12.085,
+      "building_count": 625,
+      "faces_total": 13789,
+      "fbx_bytes": 1603244,
+      "fbx_name": "Ingolstadt_Tile_6_8.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.fbx",
+      "fbx_sha256": "6036f99414df74f2bfe27568352301a73005ed0e31f8d2e9e8223c7d1e0016b1",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.obj",
+      "objects_total": 625,
+      "osm2world_sec": 8.293,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_8\\Ingolstadt_Tile_6_8.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 9.664,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 625,
+        "counts_by_folder": {
+          "Buildings": 625
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        6,
+        8
+      ],
+      "total_sec": 30.526,
+      "vertices_total": 9928
+    },
+    {
+      "blender_sec": 17.116,
+      "building_count": 573,
+      "faces_total": 17746,
+      "fbx_bytes": 1580412,
+      "fbx_name": "Ingolstadt_Tile_7_8.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.fbx",
+      "fbx_sha256": "c86c705cc083c0ca97c7816a3e5b0ed895c3e98f5c5ac2c1d3563c6e9e40110d",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.obj",
+      "objects_total": 573,
+      "osm2world_sec": 9.609,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_8\\Ingolstadt_Tile_7_8.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 14.715,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 573,
+        "counts_by_folder": {
+          "Buildings": 573
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        7,
+        8
+      ],
+      "total_sec": 41.911,
+      "vertices_total": 11671
+    },
+    {
+      "blender_sec": 15.727,
+      "building_count": 493,
+      "faces_total": 11821,
+      "fbx_bytes": 1279436,
+      "fbx_name": "Ingolstadt_Tile_8_8.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.fbx",
+      "fbx_sha256": "7873ee3dfcb5316f5028f27cc182036dd622024c348bf964b49fa537dd3837a9",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.obj",
+      "objects_total": 493,
+      "osm2world_sec": 9.539,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_8\\Ingolstadt_Tile_8_8.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 13.456,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 493,
+        "counts_by_folder": {
+          "Buildings": 493
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        8,
+        8
+      ],
+      "total_sec": 39.144,
+      "vertices_total": 7992
+    },
+    {
+      "blender_sec": 13.312,
+      "building_count": 429,
+      "faces_total": 13731,
+      "fbx_bytes": 1199484,
+      "fbx_name": "Ingolstadt_Tile_7_9.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.fbx",
+      "fbx_sha256": "f127be4d8c6c730824cf265b3aca99fbb37a50a2819417eb4d194fd1aec00109",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.obj",
+      "objects_total": 429,
+      "osm2world_sec": 9.978,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 11.899,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 429,
+        "counts_by_folder": {
+          "Buildings": 429
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        7,
+        9
+      ],
+      "total_sec": 35.647,
+      "vertices_total": 9022
+    },
+    {
+      "blender_sec": 13.221,
+      "building_count": 411,
+      "faces_total": 15892,
+      "fbx_bytes": 1177164,
+      "fbx_name": "Ingolstadt_Tile_7_7.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.fbx",
+      "fbx_sha256": "6cd01e52b54a8734167e35a5def2d2969e5bb9c366652fbd1b4c8104465b2163",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.obj",
+      "objects_total": 411,
+      "osm2world_sec": 10.272,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_7\\Ingolstadt_Tile_7_7.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 12.035,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 411,
+        "counts_by_folder": {
+          "Buildings": 411
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        7,
+        7
+      ],
+      "total_sec": 36.021,
+      "vertices_total": 10341
+    },
+    {
+      "blender_sec": 14.856,
+      "building_count": 409,
+      "faces_total": 9357,
+      "fbx_bytes": 1063260,
+      "fbx_name": "Ingolstadt_Tile_8_7.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.fbx",
+      "fbx_sha256": "eff9fc8fea5dbae88fc47693cdd74de4397486b36b6a1ce03d38dfe0d0ba99a0",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.obj",
+      "objects_total": 409,
+      "osm2world_sec": 8.92,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_7\\Ingolstadt_Tile_8_7.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 15.171,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 409,
+        "counts_by_folder": {
+          "Buildings": 409
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        8,
+        7
+      ],
+      "total_sec": 39.391,
+      "vertices_total": 6496
+    },
+    {
+      "blender_sec": 12.674,
+      "building_count": 395,
+      "faces_total": 8059,
+      "fbx_bytes": 1008284,
+      "fbx_name": "Ingolstadt_Tile_6_7.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.fbx",
+      "fbx_sha256": "176d9b262e2a37587a92db1cb1c859e9dd1bf8c01eec3be8df2615b2efc58a56",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj",
+      "objects_total": 395,
+      "osm2world_sec": 9.043,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 10.111,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 395,
+        "counts_by_folder": {
+          "Buildings": 395
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        6,
+        7
+      ],
+      "total_sec": 32.301,
+      "vertices_total": 5867
+    },
+    {
+      "blender_sec": 13.678,
+      "building_count": 395,
+      "faces_total": 14219,
+      "fbx_bytes": 1121788,
+      "fbx_name": "Ingolstadt_Tile_9_9.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.fbx",
+      "fbx_sha256": "a70d5487207177f01cc62841ba5c1c5ade60180b3688fe9ffe311d4a0f048492",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.obj",
+      "objects_total": 395,
+      "osm2world_sec": 9.187,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_9\\Ingolstadt_Tile_9_9.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 10.073,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 395,
+        "counts_by_folder": {
+          "Buildings": 395
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        9,
+        9
+      ],
+      "total_sec": 33.327,
+      "vertices_total": 9075
+    },
+    {
+      "blender_sec": 10.652,
+      "building_count": 353,
+      "faces_total": 13818,
+      "fbx_bytes": 1028220,
+      "fbx_name": "Ingolstadt_Tile_8_9.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.fbx",
+      "fbx_sha256": "ad0bd9cacb9d06f2d75916c4ac07ecf58ebfea6211d1f7a894ed72a0ba8b502c",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.obj",
+      "objects_total": 353,
+      "osm2world_sec": 8.198,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_9\\Ingolstadt_Tile_8_9.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 9.528,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 353,
+        "counts_by_folder": {
+          "Buildings": 353
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        8,
+        9
+      ],
+      "total_sec": 28.668,
+      "vertices_total": 8935
+    },
+    {
+      "blender_sec": 10.178,
+      "building_count": 326,
+      "faces_total": 8896,
+      "fbx_bytes": 878124,
+      "fbx_name": "Ingolstadt_Tile_7_6.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.fbx",
+      "fbx_sha256": "8adc12bd509566d2551ab992349b749e0cd0d1d53585bcbb636a904fcc305bb1",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.obj",
+      "objects_total": 326,
+      "osm2world_sec": 8.027,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_6\\Ingolstadt_Tile_7_6.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 9.107,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 326,
+        "counts_by_folder": {
+          "Buildings": 326
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        7,
+        6
+      ],
+      "total_sec": 27.658,
+      "vertices_total": 5989
+    },
+    {
+      "blender_sec": 10.693,
+      "building_count": 303,
+      "faces_total": 8443,
+      "fbx_bytes": 818284,
+      "fbx_name": "Ingolstadt_Tile_10_9.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.fbx",
+      "fbx_sha256": "02a5d721f8a533cebaaf1e14f0b66d7ffbf154ad9502eb20ada8f223f0b8f2b8",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.obj",
+      "objects_total": 303,
+      "osm2world_sec": 7.111,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 11.035,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 303,
+        "counts_by_folder": {
+          "Buildings": 303
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        10,
+        9
+      ],
+      "total_sec": 29.118,
+      "vertices_total": 5544
+    },
+    {
+      "blender_sec": 9.127,
+      "building_count": 263,
+      "faces_total": 10265,
+      "fbx_bytes": 772028,
+      "fbx_name": "Ingolstadt_Tile_6_6.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.fbx",
+      "fbx_sha256": "eb9889eb7785bbf463ba794603473b9fc259a9cdc6c0944e25a7fb6bca14943b",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+      "objects_total": 263,
+      "osm2world_sec": 6.48,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.842,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 263,
+        "counts_by_folder": {
+          "Buildings": 263
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        6,
+        6
+      ],
+      "total_sec": 24.651,
+      "vertices_total": 6508
+    },
+    {
+      "blender_sec": 9.909,
+      "building_count": 263,
+      "faces_total": 4874,
+      "fbx_bytes": 661724,
+      "fbx_name": "Ingolstadt_Tile_8_6.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.fbx",
+      "fbx_sha256": "fd4f8749f8655c088ade625855c070430fc9888c582dd41d39e34f4f84d8362b",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.obj",
+      "objects_total": 263,
+      "osm2world_sec": 5.744,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_8_6\\Ingolstadt_Tile_8_6.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.141,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 263,
+        "counts_by_folder": {
+          "Buildings": 263
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        8,
+        6
+      ],
+      "total_sec": 23.955,
+      "vertices_total": 3432
+    },
+    {
+      "blender_sec": 10.465,
+      "building_count": 193,
+      "faces_total": 3938,
+      "fbx_bytes": 499388,
+      "fbx_name": "Ingolstadt_Tile_9_8.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.fbx",
+      "fbx_sha256": "6ea34e0a4227da8718d9d47aef4f394c451abb5b5844fcfcb3ce914a7bc4f7b5",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.obj",
+      "objects_total": 193,
+      "osm2world_sec": 5.992,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_8\\Ingolstadt_Tile_9_8.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.971,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 193,
+        "counts_by_folder": {
+          "Buildings": 193
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        9,
+        8
+      ],
+      "total_sec": 25.564,
+      "vertices_total": 2712
+    },
+    {
+      "blender_sec": 10.266,
+      "building_count": 159,
+      "faces_total": 5372,
+      "fbx_bytes": 448636,
+      "fbx_name": "Ingolstadt_Tile_6_9.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.fbx",
+      "fbx_sha256": "35811b1cd843efe3bea90165287ee2192e152097eff05188359ac50a4665e81f",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+      "objects_total": 159,
+      "osm2world_sec": 6.461,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.52,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 159,
+        "counts_by_folder": {
+          "Buildings": 159
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        6,
+        9
+      ],
+      "total_sec": 25.425,
+      "vertices_total": 3499
+    },
+    {
+      "blender_sec": 10.314,
+      "building_count": 74,
+      "faces_total": 1175,
+      "fbx_bytes": 195036,
+      "fbx_name": "Ingolstadt_Tile_10_7.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.fbx",
+      "fbx_sha256": "65e525eeb58d618043208f1391e3fd591bdb06463707fd6312f682815a3ab3f1",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.obj",
+      "objects_total": 74,
+      "osm2world_sec": 5.054,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_7\\Ingolstadt_Tile_10_7.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.283,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 74,
+        "counts_by_folder": {
+          "Buildings": 74
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        10,
+        7
+      ],
+      "total_sec": 23.737,
+      "vertices_total": 892
+    },
+    {
+      "blender_sec": 9.784,
+      "building_count": 28,
+      "faces_total": 326,
+      "fbx_bytes": 79292,
+      "fbx_name": "Ingolstadt_Tile_9_7.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.fbx",
+      "fbx_sha256": "6afd0f04198632c2736a059e68d92be552abc6b075674eee3c22c050c4d44046",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.obj",
+      "objects_total": 28,
+      "osm2world_sec": 4.115,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_7\\Ingolstadt_Tile_9_7.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.389,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 28,
+        "counts_by_folder": {
+          "Buildings": 28
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        9,
+        7
+      ],
+      "total_sec": 22.323,
+      "vertices_total": 260
+    },
+    {
+      "blender_sec": 10.342,
+      "building_count": 8,
+      "faces_total": 98,
+      "fbx_bytes": 32428,
+      "fbx_name": "Ingolstadt_Tile_9_6.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.fbx",
+      "fbx_sha256": "1f22b8e21ccc5aeb97ffb5a2d8abbe01e1a46047f4a290cbd9a19a0a7c73af10",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.obj",
+      "objects_total": 8,
+      "osm2world_sec": 3.491,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_9_6\\Ingolstadt_Tile_9_6.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 8.815,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 8,
+        "counts_by_folder": {
+          "Buildings": 8
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        9,
+        6
+      ],
+      "total_sec": 22.667,
+      "vertices_total": 76
+    },
+    {
+      "blender_sec": 10.389,
+      "building_count": 6,
+      "faces_total": 93,
+      "fbx_bytes": 27900,
+      "fbx_name": "Ingolstadt_Tile_10_6.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
+      "fbx_sha256": "66050b038cb4dc382323045695f0c62c3edc3cdf7dae9c1542c4caa17f964ee7",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.obj",
+      "objects_total": 6,
+      "osm2world_sec": 3.947,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 9.119,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 6,
+        "counts_by_folder": {
+          "Buildings": 6
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        10,
+        6
+      ],
+      "total_sec": 23.467,
+      "vertices_total": 72
+    },
+    {
+      "blender_sec": 11.641,
+      "building_count": 5,
+      "faces_total": 80,
+      "fbx_bytes": 25516,
+      "fbx_name": "Ingolstadt_Tile_10_8.fbx",
+      "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.fbx",
+      "fbx_sha256": "1944920b235e22346d8ca1e374cb80c83032889f43bce1e2700f56a7c7c6f1c0",
+      "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.tile_fbx.json",
+      "obj_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.obj",
+      "objects_total": 5,
+      "osm2world_sec": 3.663,
+      "osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_8\\Ingolstadt_Tile_10_8.osm",
+      "reason": "",
+      "roundtrip_ok": true,
+      "roundtrip_sec": 10.426,
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "semantic_classification": {
+        "buildings_classified": 5,
+        "counts_by_folder": {
+          "Buildings": 5
+        },
+        "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+        "non_buildings_anomalies": [],
+        "non_buildings_count": 0
+      },
+      "status": "ok",
+      "tile_index": [
+        10,
+        8
+      ],
+      "total_sec": 25.744,
+      "vertices_total": 60
+    }
+  ],
+  "run_id": "20261001T211557Z",
+  "schema_version": 1,
+  "tiles_completed": 20,
+  "tiles_remaining": 0,
+  "wall_elapsed_sec": 596.46
+}

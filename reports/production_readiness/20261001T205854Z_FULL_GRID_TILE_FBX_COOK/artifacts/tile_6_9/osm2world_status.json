@@ -1,0 +1,138 @@
+{
+  "status": "failed",
+  "reason": "OSM2World did not produce any requested outputs",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "--config",
+      "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties",
+      "--input",
+      "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+      "--output",
+      "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+      "--center",
+      "48.77344000",
+      "11.42821160"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {},
+  "hashes": {
+    "input_osm": "4e8b4b017ebb1cef31f9739869bb536f644d439e887d6969c9255aed2888cb70",
+    "config": "1d638a545e3fec49497e98fc7e12575bea5baeefd02acfab67f9d90667ac3a66"
+  },
+  "config_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties",
+  "config_hash": "1d638a545e3fec49497e98fc7e12575bea5baeefd02acfab67f9d90667ac3a66",
+  "input_osm_hash": "4e8b4b017ebb1cef31f9739869bb536f644d439e887d6969c9255aed2888cb70",
+  "cache_key": "c761741ecbad0e37",
+  "start_time": "2026-10-01T23:01:38.410979",
+  "end_time": "2026-10-01T23:01:42.545009",
+  "duration_sec": 4.134,
+  "exit_codes": {
+    "scene.obj": 1
+  },
+  "exception": "",
+  "stdout_log": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+        "-o",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+        "--center",
+        "48.77344000",
+        "11.42821160",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties"
+      ],
+      "exit_code": 1,
+      "stderr_head": "ERROR: duplicate key 'type' in: [amenity=parking_space, building=yes, fee=yes, layer=1, name=Nordbahnhof, parking=multi-storey, ref=P9, type=multipolygon, type=multipolygon]\nCaused by: java.lang.IllegalArgumentException: duplicate key 'type' in: [amenity=parking_space, building=yes, fee=yes, layer=1, name=Nordbahnhof, parking=multi-storey, ref=P9, type=multipolygon, type=multipolygon]\n\tat org.osm2world.map_data.data.TagSet.<init>(TagSet.java:33)\n\tat org.osm2world.map_data.data.TagSet.of(TagSet.java:61)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.tagsOfEntity(OSMToMapDataConverter.java:396)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForSimpleMultipolygon(MultipolygonAreaBuilder.java:146)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForMultipolygon(MultipolygonAreaBuilder.java:77)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.lambda$createMapElements$2(OSMToMapDataConverter.java:198)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapElements(OSMToMapDataConverter.java:187)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapData(OSMToMapDataConverter.java:64)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:119)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLi",
+      "stdout_head": ""
+    },
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+      "variant": 2,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties",
+        "convert",
+        "-i",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+        "-o",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+        "--center",
+        "48.77344000",
+        "11.42821160"
+      ],
+      "exit_code": 1,
+      "stderr_head": "Unexpected Option: center\n",
+      "stdout_head": "The first argument is not a subcommand, falling back to legacy command line parsing\n"
+    },
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+      "variant": 3,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties",
+        "-i",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+        "-o",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+        "--center",
+        "48.77344000",
+        "11.42821160"
+      ],
+      "exit_code": 1,
+      "stderr_head": "Unexpected Option: center\n",
+      "stdout_head": "The first argument is not a subcommand, falling back to legacy command line parsing\n"
+    },
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+      "variant": 4,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties",
+        "--input",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+        "--output",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.obj",
+        "--center",
+        "48.77344000",
+        "11.42821160"
+      ],
+      "exit_code": 1,
+      "stderr_head": "Unexpected Option: center\n",
+      "stdout_head": "The first argument is not a subcommand, falling back to legacy command line parsing\n"
+    }
+  ],
+  "glb_valid": null,
+  "glb_validation_reason": "",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\Ingolstadt_Tile_6_9.osm",
+  "abs_config_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T205854Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_9\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 0,
+  "center_lat": 48.77344,
+  "center_lon": 11.428211600000001
+}

@@ -1,0 +1,121 @@
+{
+  "status": "failed",
+  "reason": "OSM2World did not produce any requested outputs",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "--config",
+      "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties",
+      "--input",
+      "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+      "--output",
+      "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {},
+  "hashes": {
+    "input_osm": "84f271999eae811f1de4d2c8fadf9cf0eb613c7305885de7d220637db84ccd81",
+    "config": "1d638a545e3fec49497e98fc7e12575bea5baeefd02acfab67f9d90667ac3a66"
+  },
+  "config_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties",
+  "config_hash": "1d638a545e3fec49497e98fc7e12575bea5baeefd02acfab67f9d90667ac3a66",
+  "input_osm_hash": "84f271999eae811f1de4d2c8fadf9cf0eb613c7305885de7d220637db84ccd81",
+  "cache_key": "50e9a1641f18e251",
+  "start_time": "2026-10-01T23:10:30.075133",
+  "end_time": "2026-10-01T23:10:36.699797",
+  "duration_sec": 6.625,
+  "exit_codes": {
+    "scene.obj": 1
+  },
+  "exception": "",
+  "stdout_log": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+        "-o",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties"
+      ],
+      "exit_code": 1,
+      "stderr_head": "ERROR: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\nCaused by: java.lang.IllegalArgumentException: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\n\tat org.osm2world.map_data.data.TagSet.<init>(TagSet.java:33)\n\tat org.osm2world.map_data.data.TagSet.of(TagSet.java:61)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.tagsOfEntity(OSMToMapDataConverter.java:396)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForSimpleMultipolygon(MultipolygonAreaBuilder.java:146)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForMultipolygon(MultipolygonAreaBuilder.java:77)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.lambda$createMapElements$2(OSMToMapDataConverter.java:198)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapElements(OSMToMapDataConverter.java:187)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapData(OSMToMapDataConverter.java:64)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:119)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat ",
+      "stdout_head": ""
+    },
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj",
+      "variant": 2,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties",
+        "convert",
+        "-i",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+        "-o",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj"
+      ],
+      "exit_code": 1,
+      "stderr_head": "could not read config, ignoring it:\njava.lang.RuntimeException: Error loading configuration file\nERROR: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\nCaused by: java.lang.IllegalArgumentException: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\n\tat org.osm2world.map_data.data.TagSet.<init>(TagSet.java:33)\n\tat org.osm2world.map_data.data.TagSet.of(TagSet.java:61)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.tagsOfEntity(OSMToMapDataConverter.java:396)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForSimpleMultipolygon(MultipolygonAreaBuilder.java:146)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForMultipolygon(MultipolygonAreaBuilder.java:77)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.lambda$createMapElements$2(OSMToMapDataConverter.java:198)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapElements(OSMToMapDataConverter.java:187)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapData(OSMToMapDataConverter.java:64)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:119)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.legacy.LegacyCLIOutput.output(LegacyCLIOutput.java:70)\n\tat org.osm2world.console.legacy.LegacyCLI.executeArgumentsGroup(LegacyCLI.java:215)\n\tat org.osm2world.console.legacy.LegacyCLI.main(LegacyCLI.java:150)\n\tat org.osm2world.console.OSM2World.main(OSM2World.java:46",
+      "stdout_head": "The first argument is not a subcommand, falling back to legacy command line parsing\n"
+    },
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj",
+      "variant": 3,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties",
+        "-i",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+        "-o",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj"
+      ],
+      "exit_code": 1,
+      "stderr_head": "ERROR: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\nCaused by: java.lang.IllegalArgumentException: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\n\tat org.osm2world.map_data.data.TagSet.<init>(TagSet.java:33)\n\tat org.osm2world.map_data.data.TagSet.of(TagSet.java:61)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.tagsOfEntity(OSMToMapDataConverter.java:396)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForSimpleMultipolygon(MultipolygonAreaBuilder.java:146)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForMultipolygon(MultipolygonAreaBuilder.java:77)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.lambda$createMapElements$2(OSMToMapDataConverter.java:198)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapElements(OSMToMapDataConverter.java:187)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapData(OSMToMapDataConverter.java:64)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:119)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.legacy.LegacyCLIOutput.output(LegacyCLIOutput.java:70)\n\tat org.osm2world.console.legacy.LegacyCLI.executeArgumentsGroup(LegacyCLI.java:215)\n\tat org.osm2world.console.legacy.LegacyCLI.main(LegacyCLI.java:150)\n\tat org.osm2world.console.OSM2World.main(OSM2World.java:46)\n\tat org.osm2world.console.OSM2World.main(OSM2World.java:26)\n\nERROR: duplicate key 'type' in: [b",
+      "stdout_head": "The first argument is not a subcommand, falling back to legacy command line parsing\n"
+    },
+    {
+      "output": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj",
+      "variant": 4,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "--config",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties",
+        "--input",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+        "--output",
+        "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.obj"
+      ],
+      "exit_code": 1,
+      "stderr_head": "ERROR: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\nCaused by: java.lang.IllegalArgumentException: duplicate key 'type' in: [addr:city=Ingolstadt, addr:country=DE, addr:housenumber=10, addr:postcode=85049, addr:street=Mauthstra\ufffde, building=house, building:levels=4, roof:levels=1, type=multipolygon, type=multipolygon]\n\tat org.osm2world.map_data.data.TagSet.<init>(TagSet.java:33)\n\tat org.osm2world.map_data.data.TagSet.of(TagSet.java:61)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.tagsOfEntity(OSMToMapDataConverter.java:396)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForSimpleMultipolygon(MultipolygonAreaBuilder.java:146)\n\tat org.osm2world.map_data.creation.MultipolygonAreaBuilder.createAreasForMultipolygon(MultipolygonAreaBuilder.java:77)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.lambda$createMapElements$2(OSMToMapDataConverter.java:198)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapElements(OSMToMapDataConverter.java:187)\n\tat org.osm2world.map_data.creation.OSMToMapDataConverter.createMapData(OSMToMapDataConverter.java:64)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:119)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.legacy.LegacyCLIOutput.output(LegacyCLIOutput.java:70)\n\tat org.osm2world.console.legacy.LegacyCLI.executeArgumentsGroup(LegacyCLI.java:215)\n\tat org.osm2world.console.legacy.LegacyCLI.main(LegacyCLI.java:150)\n\tat org.osm2world.console.OSM2World.main(OSM2World.java:46)\n\tat org.osm2world.console.OSM2World.main(OSM2World.java:26)\n\nERROR: duplicate key 'type' in: [b",
+      "stdout_head": "The first argument is not a subcommand, falling back to legacy command line parsing\n"
+    }
+  ],
+  "glb_valid": null,
+  "glb_validation_reason": "",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\Ingolstadt_Tile_6_7.osm",
+  "abs_config_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T210947Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_7\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 0
+}

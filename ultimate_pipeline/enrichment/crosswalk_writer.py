@@ -23,7 +23,7 @@ import math
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Tuple
 
-from pyproj import CRS, Transformer
+from ultimate_pipeline.geometry import FRAME_NATIVE_CRS, wgs84_to_native
 
 from ultimate_pipeline.enrichment.crosswalk_schema import (
     carla_local_corners,
@@ -33,16 +33,6 @@ from ultimate_pipeline.quality.check_geometric_continuity import (
     _parse_geometries,
     _pose_for_geometry,
 )
-
-# Sampling step for curve-aware road matching (round-6 fix). Coarser than this
-# risks missing narrow crossings; finer wastes time over 32k+ roads x ~179
-# crossings without meaningfully changing the match outcome.
-_CURVE_SAMPLE_STEP_M = 2.0
-
-# Same bare-tmerc frame Osm2Odr uses for road geometry (matches
-# osm_polygon_loader.PROJ_STRING and local_registration.BARE_TMERC_DEFAULT).
-_BARE_TMERC = "+proj=tmerc +datum=WGS84 +units=m +no_defs"
-_TO_LOCAL = Transformer.from_crs("EPSG:4326", CRS.from_proj4(_BARE_TMERC), always_xy=True)
 
 # 5.0m dropped 18 real OSM crossings whose true nearest road was 5.01m-14.53m
 # away (verified against the pinned map/OSM pair: every one either has a
@@ -115,7 +105,7 @@ def project_crossing_to_local(
     ox, oy = auto_offset
     out = []
     for lon, lat in lonlat_points:
-        gx, gy = _TO_LOCAL.transform(lon, lat)
+        gx, gy = wgs84_to_native(lon, lat)
         out.append((gx - ox, gy - oy))
     return out
 

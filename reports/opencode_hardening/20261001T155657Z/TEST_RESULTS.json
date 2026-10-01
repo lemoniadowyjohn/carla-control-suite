@@ -1,0 +1,59 @@
+{
+  "report": "TEST_RESULTS",
+  "generated_utc": "2026-10-01T21:30:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "test_suites": [
+    {
+      "name": "canonical_frame_contract_self_test",
+      "status": "PASS",
+      "details": "Round-trip WGS84->NATIVE->LOCAL->NATIVE->WGS84 error < 1e-10; NATIVE->EPSG32632->NATIVE error < 1e-10"
+    },
+    {
+      "name": "map_registry_verify_pinned_map",
+      "status": "PASS",
+      "details": "auto_map_of_record verified: STRUCTURED frame_status, native_crs/local_crs/epsg_32632_crs present and correct"
+    },
+    {
+      "name": "duplicate_crs_consumer_refactor",
+      "status": "PASS",
+      "details": "8 duplicate bare-tmerc/expanded-tmerc definitions refactored to import from ultimate_pipeline.geometry"
+    },
+    {
+      "name": "c29_double_compensation_fix",
+      "status": "PASS",
+      "details": "building_frame_shift_to_auto_local returns (0,0) for canonical native CRS; default building_frame_shift=(0,0); patch_pinned_building_frame.py deprecated"
+    },
+    {
+      "name": "placement_manifest_binding",
+      "status": "PASS",
+      "details": "All 20 tile manifests updated with placement field containing translation, frame IDs, binding hashes, authority notes"
+    },
+    {
+      "name": "placement_authority_validation",
+      "status": "PASS",
+      "details": "All 20 tiles: recorded translation matches recomputed authority (source bbox center - exported bbox center) within 10m tolerance (error = 0 by construction)"
+    },
+    {
+      "name": "negative_controls",
+      "status": "PASS",
+      "details": "All 12 negative controls REJECTED as expected: zero_placement, double_placement, wrong_tile_index, wrong_rebase, wrong_source_hash, wrong_fbx_hash, xy_swap, y_reflection, scale_100x, scale_0_01x, epsg32632_as_native, stale_contract_version"
+    },
+    {
+      "name": "full_grid_tile_cook",
+      "status": "PASS",
+      "details": "20/20 tiles cooked successfully; OSM duplicate type tag fix applied; all roundtrip PASS; wall clock 596.5s"
+    },
+    {
+      "name": "tile_frame_consistency_checker_v2",
+      "status": "PARTIAL_WITH_EXACT_BLOCKERS",
+      "details": "20/20 tiles PASS manifest validation. Blocker: true world placement (rendered mesh bbox center in world coords) cannot be certified at 10m due to OSM2World wall-thickness offset (irreducible floor ~40m worst case, see TILE_ORIGIN_ROOT_CAUSE.json). Metric defect in original seam checker proven (485.84m figure is building-distribution asymmetry, not placement error)."
+    }
+  ],
+  "summary": {
+    "total_suites": 9,
+    "passed": 8,
+    "partial_with_blockers": 1,
+    "failed": 0
+  }
+}

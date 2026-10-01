@@ -1,0 +1,51 @@
+{
+  "report": "PRE_C29_COMPENSATION_AUDIT",
+  "generated_utc": "2026-10-01T16:45:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "stale_compensation_paths": [
+    {
+      "file": "ultimate_pipeline/domain_gap/local_registration.py",
+      "line": 153,
+      "function": "building_frame_shift_to_auto_local",
+      "status": "DANGEROUS_STALE",
+      "description": "Under current native CRS and pinned rebase, computes shift = projected_bbox_corner - rebase = (6547.35, 6368.80) m, not zero. Pinned map buildings are already in rebased local frame (cornerGlobal x=6119..10738, y=6350..9781). This function would double-shift C29-corrected geometry.",
+      "call_sites": [
+        "compute_local_registration (line 399-412) default building_frame_shift='auto'",
+        "scripts/regen_local_registration.py"
+      ]
+    },
+    {
+      "file": "scripts/patch_pinned_building_frame.py",
+      "line": 37,
+      "status": "DANGEROUS_STALE",
+      "description": "Applies building_frame_shift_to_auto_local result to pinned map. If run today would corrupt the already-correct rebased building coordinates."
+    },
+    {
+      "file": "scripts/patch_pinned_building_frame.py",
+      "line": 69,
+      "status": "DANGEROUS_STALE",
+      "description": "Same double-correction risk; writes shifted coordinates back to pinned map."
+    }
+  ],
+  "c29_correction_evidence": [
+    {
+      "file": "ultimate_pipeline/enrichment/osm_polygon_loader.py",
+      "lines": "35-40",
+      "note": "Documents C29 change: old bbox-origin tmerc -> bare native tmerc. Building projection now matches pinned map frame."
+    },
+    {
+      "file": "ultimate_pipeline/carla_tools/regen_map_of_record.py",
+      "note": "Applies same cornerGlobal shift; confirms pinned map buildings are already in rebased local frame."
+    },
+    {
+      "measurement": "pinned map building cornerGlobal sample x=[6119.54,10738.34], y=[6350.06,9781.52] -- already rebased local, no further shift needed."
+    }
+  ],
+  "required_fix": {
+    "classification": "building_frame_shift_to_auto_local must return (0.0, 0.0) under current CRS contract",
+    "negative_control": "auto default must not resolve to historical offset; must be explicitly rejected by schema validation",
+    "test": "unit test asserting shift == (0,0) for auto_map_of_record under native CRS"
+  },
+  "scope": "This audit covers the pre-C29 coordinate frame compensation that became obsolete after the C29 native CRS correction. The stale code paths must be neutralized to prevent double-application on future pinned-map regeneration."
+}

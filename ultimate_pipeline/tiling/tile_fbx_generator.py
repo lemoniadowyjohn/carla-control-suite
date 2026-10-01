@@ -90,21 +90,24 @@ from ultimate_pipeline.enrichment.fbx_roundtrip import run_fbx_roundtrip
 # file-placement API).
 from ultimate_pipeline.enrichment.carla_semantic_organizer import classify_object
 
+# Canonical coordinate frame contract (replaces duplicate bare-tmerc definitions).
+from ultimate_pipeline.geometry import (
+    FRAME_NATIVE_CRS,
+    FRAME_WGS84_CRS,
+    wgs84_to_native,
+    native_to_wgs84,
+)
 
 # ---------------------------------------------------------------------------
-# Coordinate transform: identical convention to
-# ultimate_pipeline.enrichment.osm_polygon_loader (bare tmerc global frame).
-# Do NOT change this string; roads and buildings must share exactly this frame
-# (C29, AG04). See osm_polygon_loader.PROJ_STRING for the load-bearing rationale.
+# Coordinate transform: uses canonical FRAME_NATIVE_CRS (bare tmerc global frame).
+# Do NOT change this; roads and buildings must share exactly this frame
+# (C29, AG04). See ultimate_pipeline.geometry for the single source of truth.
 # ---------------------------------------------------------------------------
-_PROJ_STRING = "+proj=tmerc +datum=WGS84 +units=m +no_defs"
+_PROJ_STRING = FRAME_NATIVE_CRS
 
-# (lon, lat) -> global tmerc (x, y) metres. Module-level singletons: pyproj
-# Transformer construction is relatively expensive and these are stateless.
-_FWD_TRANSFORMER = Transformer.from_crs("EPSG:4326", _PROJ_STRING, always_xy=True)
-# global tmerc (x, y) metres -> (lon, lat). Used to express tile windows as
-# lat/lon boxes for provenance/debugging.
-_INV_TRANSFORMER = Transformer.from_crs(_PROJ_STRING, "EPSG:4326", always_xy=True)
+# Module-level transformers for performance; delegate to canonical functions.
+_FWD_TRANSFORMER = Transformer.from_crs(FRAME_WGS84_CRS, FRAME_NATIVE_CRS, always_xy=True)
+_INV_TRANSFORMER = Transformer.from_crs(FRAME_NATIVE_CRS, FRAME_WGS84_CRS, always_xy=True)
 
 
 def _sha256(path: Path) -> str:
@@ -113,6 +116,33 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _fix_osm_duplicate_type_tags(osm_path: Path) -> None:
+    """
+    Fix duplicate 'type' keys in multipolygon relations in OSM XML.
+    
+    OSM2World fails on multipolygon relations with duplicate 'type=multipolygon' tags.
+    This function reads the OSM XML, removes duplicate 'type' tags in each element,
+    and writes the fixed XML back.
+    """
+    try:
+        tree = ET.parse(osm_path)
+        root = tree.getroot()
+        
+        for elem in root.iter():
+            # Check for duplicate 'type' tags
+            type_tags = [tag for tag in elem.findall("tag") if tag.get("k") == "type"]
+            if len(type_tags) > 1:
+                # Keep only the first 'type' tag, remove duplicates
+                for dup_tag in type_tags[1:]:
+                    elem.remove(dup_tag)
+        
+        # Write back the fixed XML
+        tree.write(osm_path, encoding="utf-8", xml_declaration=True)
+    except (ET.ParseError, OSError) as e:
+        # If fixing fails, leave original file (will fail later with clear error)
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +218,7 @@ class TileGridSpec:
         lons: List[float] = []
         lats: List[float] = []
         for lx, ly in corners_local:
-            lon, lat = _INV_TRANSFORMER.transform(lx + ox, ly + oy)
+            lon, lat = native_to_wgs84(lx + ox, ly + oy)
             lons.append(lon)
             lats.append(lat)
         return {
@@ -328,7 +358,7 @@ class TileBuilding:
             outer_xy: List[Tuple[float, float]] = []
             for lon, lat in part.outer:
                 try:
-                    gx, gy = _FWD_TRANSFORMER.transform(float(lon), float(lat))
+                    gx, gy = wgs84_to_native(float(lon), float(lat))
                 except (TypeError, ValueError):
                     continue
                 if not (math.isfinite(gx) and math.isfinite(gy)):
@@ -343,7 +373,7 @@ class TileBuilding:
                 inner_xy: List[Tuple[float, float]] = []
                 for lon, lat in inner:
                     try:
-                        gx, gy = _FWD_TRANSFORMER.transform(float(lon), float(lat))
+                        gx, gy = wgs84_to_native(float(lon), float(lat))
                     except (TypeError, ValueError):
                         continue
                     if not (math.isfinite(gx) and math.isfinite(gy)):
@@ -687,7 +717,7 @@ def compute_building_statistics(buildings: List[TileBuilding]) -> Dict[str, Any]
 def _latlon_to_xy_approx(lon: float, lat: float) -> Tuple[float, float]:
     """Quick approximate projection using the module's transformer."""
     try:
-        return _FWD_TRANSFORMER.transform(lon, lat)
+        return wgs84_to_native(lon, lat)
     except Exception:
         return (0.0, 0.0)
 
@@ -1088,6 +1118,9 @@ def generate_tile_fbx(
         result.reason = "clip produced 0 ways"
         result.total_sec = round(time.time() - started, 3)
         return result
+
+    # Fix duplicate 'type' tags in multipolygon relations (OSM2World bug workaround)
+    _fix_osm_duplicate_type_tags(osm_path)
 
     # 2. OSM2World -> OBJ
     config_path = out_dir / f"{stem}.osm2world.properties"

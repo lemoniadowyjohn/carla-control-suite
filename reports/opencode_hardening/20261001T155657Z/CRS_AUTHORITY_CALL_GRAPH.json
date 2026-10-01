@@ -1,0 +1,114 @@
+{
+  "report": "CRS_AUTHORITY_CALL_GRAPH",
+  "generated_utc": "2026-10-01T16:45:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "canonical_target_module": "ultimate_pipeline/geometry/coordinate_frame_contract.py",
+  "duplicate_bare_tmerc_definitions": 5,
+  "bare_tmerc_sites": [
+    {
+      "file": "ultimate_pipeline/enrichment/osm_polygon_loader.py",
+      "line": 41,
+      "symbol": "PROJ_STRING",
+      "value": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+      "usage": "OSM polygon loading projection"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap/local_registration.py",
+      "line": 29,
+      "symbol": "BARE_TMERC_DEFAULT",
+      "value": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+      "usage": "Local registration default projection"
+    },
+    {
+      "file": "ultimate_pipeline/tiling/tile_fbx_generator.py",
+      "line": 100,
+      "symbol": "_PROJ_STRING",
+      "value": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+      "usage": "Tile FBX generation projection"
+    },
+    {
+      "file": "ultimate_pipeline/enrichment/crosswalk_writer.py",
+      "line": 44,
+      "symbol": "_BARE_TMERC",
+      "value": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+      "usage": "Crosswalk writer projection"
+    },
+    {
+      "file": "tools/tile_frame_consistency.py",
+      "line": 46,
+      "symbol": "_PROJ_STRING",
+      "value": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+      "usage": "Checker projection for source node projection"
+    }
+  ],
+  "duplicate_expanded_tmerc_definitions": 3,
+  "expanded_tmerc_sites": [
+    {
+      "file": "ultimate_pipeline/dem/dem_crs_contract.py",
+      "line": 50,
+      "symbol": "OSM2ODR_NATIVE_PROJ4",
+      "value": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "usage": "Native CRS contract for OSM->ODR"
+    },
+    {
+      "file": "ultimate_pipeline/enrichment/coordinate_control.py",
+      "line": 57,
+      "symbol": "VERIFIED_XODR_GEOMETRY_CRS_PROJ4",
+      "value": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "usage": "Verified XODR geometry CRS"
+    },
+    {
+      "file": "ultimate_pipeline/core/georef_utils.py",
+      "line": 45,
+      "symbol": "CANONICAL_MANUAL_GEOREFERENCE",
+      "value": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "usage": "Manual georeference - THIS IS UTM-32N (EPSG:32632), NOT the native bare tmerc",
+      "note": "Distinct from native; used for manual alignment"
+    }
+  ],
+  "rebase_literal_sites": [
+    {
+      "file": "tools/tile_frame_consistency.py",
+      "line": 358,
+      "context": "hardcoded rebase dx=832671.676, dy=5458671.104 in checker"
+    },
+    {
+      "file": "scripts/cook_full_grid_tiles.py",
+      "line": 74,
+      "context": "comment with rebase values"
+    },
+    {
+      "file": "tools/preflight_import_package.py",
+      "line": 234,
+      "context": "comment with rebase values"
+    },
+    {
+      "file": "certify_ingolstadt.py",
+      "line": 326,
+      "context": "hardcoded rebase values"
+    },
+    {
+      "file": "certify_ingolstadt.py",
+      "line": 583,
+      "context": "hardcoded rebase values"
+    },
+    {
+      "file": "ultimate_pipeline/tiling/tile_fbx_generator.py",
+      "line": 133,
+      "context": "docstring mentions rebase values"
+    }
+  ],
+  "required_apis": [
+    "wgs84_to_native", "native_to_wgs84",
+    "native_to_local", "local_to_native",
+    "wgs84_to_local", "local_to_wgs84",
+    "native_to_epsg32632", "epsg32632_to_native"
+  ],
+  "frame_semantics": {
+    "WGS84": "EPSG:4326 geographic",
+    "NATIVE": "bare tmerc: +proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "LOCAL": "NATIVE minus pinned rebase (dx=832671.676, dy=5458671.104)",
+    "EPSG_32632": "UTM-32N: +proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs -- DISTINCT from NATIVE, requires reprojection"
+  }
+}

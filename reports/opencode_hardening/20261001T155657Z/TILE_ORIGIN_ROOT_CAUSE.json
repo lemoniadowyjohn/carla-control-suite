@@ -1,0 +1,110 @@
+{
+  "report": "TILE_ORIGIN_ROOT_CAUSE",
+  "generated_utc": "2026-10-01T16:40:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "finding_ids": ["P0-A"],
+  "status": "ROOT_CAUSE_CONFIRMED_METRIC_DEFECT_CONFIRMED",
+
+  "primary_root_cause": {
+    "id": "OSM2WORLD_AUTO_CENTRES_AND_PLACEMENT_NEVER_RECORDED",
+    "statement": "OSM2World auto-centres every tile's exported mesh on the bbox centre of its own rendered output. That world translation is never written into any tile manifest or CARLA package record, so the world position of each tile mesh is undefined and cannot be recovered from the shipped artifacts.",
+    "proved_by": "OSM2WORLD_AUTOCENTRE_PROOF"
+  },
+
+  "proof_1_osm2world_autocentre": {
+    "claim": "The exported tile mesh local origin coincides with the centre of the exported mesh's own bbox.",
+    "measurement": "For all 20 tiles, max |bbox_center_x| of the exported OBJ = 0.0000 m; bbox_center_z in [-0.0285, -0.0005] m.",
+    "interpretation": "The mesh is not emitted in world coordinates. It is emitted centred on its own rendered bbox, so a per-tile world translation must be supplied by the pipeline.",
+    "evidence": "_raw_origin_measurements.json"
+  },
+
+  "proof_2_zero_placement_is_definitively_wrong": {
+    "claim": "Placement is required; zero placement is not a valid fallback.",
+    "method": "Placed exported OBJ vertices at T=(0,0) and measured distance to the nearest map-of-record building cornerGlobal (35859 points).",
+    "result": {
+      "median_of_tile_medians_m": 9145.36,
+      "per_tile_median_range_m": [8909.33, 9414.00]
+    },
+    "conclusion": "A non-zero placement transform is mandatory. This also confirms the 'zero placement when translation required' negative control has real signal."
+  },
+
+  "proof_3_shipped_metric_does_not_measure_placement": {
+    "metric_file": "tools/tile_frame_consistency.py",
+    "metric_formula": "seam_delta(pair) = |(C_R - O_R) - (C_L - O_L)|, where C_t = bbox centre of tile t's source OSM node set projected to the local frame, O_t = nominal grid corner [tx*1000, ty*1000]",
+    "reproduced_shipped_value_m": 485.8371834028512,
+    "reproduced_independently": true,
+    "decomposition_seam_6_6__7_6_x_axis": {
+      "reported_metric_m": 228.429975,
+      "tile_6_6": {"building_population_bbox_center_m": [6737.3626, 6671.5502], "cell_center_m": [6500.0, 6500.0], "offset_from_cell_center_m": [237.3626, 171.5502]},
+      "tile_7_6": {"building_population_bbox_center_m": [7508.9326, 6700.5010], "cell_center_m": [7500.0, 6500.0], "offset_from_cell_center_m": [8.9326, 200.5010]},
+      "identity": "228.429975 = 237.3626 - 8.9326, exactly the difference between two tiles' building-population offsets from their own cell centres",
+      "conclusion": "The reported seam error is a property of real building distribution, not of placement."
+    },
+    "blindness_test": {
+      "method": "Injected a genuine placement error into tile 6_8 and re-evaluated the shipped metric over all 31 adjacent pairs.",
+      "results": [
+        {"injected_placement_error_m": 0.0, "pairs_changed": "0/31", "max_seam_delta_m": 485.8372, "verdict": "FAIL"},
+        {"injected_placement_error_m": 50.0, "pairs_changed": "3/31", "max_seam_delta_m": 485.8372, "verdict": "FAIL"},
+        {"injected_placement_error_m": 500.0, "pairs_changed": "3/31", "max_seam_delta_m": 848.6381, "verdict": "FAIL"},
+        {"injected_placement_error_m": 5000.0, "pairs_changed": "3/31", "max_seam_delta_m": 5348.6381, "verdict": "FAIL"}
+      ],
+      "conclusion": "The metric responds weakly and only to seams incident on the disturbed tile, and its magnitude is dominated by geographic asymmetry. It cannot certify placement and it cannot be repaired by adjusting the 10 m threshold."
+    }
+  },
+
+  "proof_4_node_bbox_center_is_not_a_valid_anchor": {
+    "claim": "The anchor the shipped checker substitutes for the true rendered-mesh anchor is measurably the wrong anchor for several tiles.",
+    "method": "Compared two placement hypotheses by measuring distance from placed exported OBJ vertices to the nearest map-of-record building cornerGlobal.",
+    "results_median_over_tiles_m": {
+      "H0_zero_placement": 9145.36,
+      "H1_source_node_bbox_center_shipped_checker_assumption": 18.61,
+      "H2_rigid_registration_against_own_source_nodes": 7.03
+    },
+    "worst_tile_median_m": {
+      "H1_source_node_bbox_center": 218.03,
+      "H2_rigid_registration": 40.35
+    },
+    "worst_offenders_H1": [
+      {"tile": "tile_10_8", "H1_median_m": 218.03, "H2_median_m": 4.92},
+      {"tile": "tile_9_8", "H1_median_m": 175.61, "H2_median_m": 5.85},
+      {"tile": "tile_6_7", "H1_median_m": 62.29, "H2_median_m": 5.58},
+      {"tile": "tile_8_8", "H1_median_m": 65.41, "H2_median_m": 8.72}
+    ],
+    "interpretation": "Rendered mesh bbox is not the source footprint bbox: wall/roof geometry extends outside the 2D footprint nodes. The node bbox centre is therefore not the OSM2World anchor and cannot stand in for it.",
+    "caveat": "Map-of-record building cornerGlobal is a coarse reference (a rendered wall vertex is legitimately offset from a footprint corner by wall thickness). These numbers are used only to rank H1 against H2, not as a pass/fail gate."
+  },
+
+  "missing_artifact_fields": {
+    "manifest": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_*/Ingolstadt_Tile_*_*.tile_fbx.json",
+    "present": ["artifact references", "fbx sha256 and byte size", "clip bounds", "source provenance", "roundtrip record", "seam strategy", "claim boundary"],
+    "absent": ["tile world translation in the shared local CARLA frame", "source frame id", "target frame id", "coordinate contract version", "binding of translation to map sha256 / source osm sha256 / fbx sha256 / tile index / rebase offset"],
+    "consequence": "Any consumer, including CARLA import, must guess the world position. Guessing is what the shipped checker does, and it produces the 485.84 m figure."
+  },
+
+  "stale_documentation": {
+    "location": "ultimate_pipeline/tiling/tile_fbx_generator.py:1059-1061",
+    "claim_in_code": "per-tile mesh is not re-centred",
+    "measured_truth": "OSM2World centres the exported mesh on its own bbox for all 20 tiles (max |bbox_center_x| = 0.0000 m)."
+  },
+
+  "acceptance_metric_defect": {
+    "classification": "METRIC_DEFECT_PROVEN",
+    "existing_threshold_m": 10.0,
+    "threshold_change_requested": false,
+    "justification": "The defect is in the metric definition, not the tolerance. The 10 m threshold is left untouched. The metric is replaced by one that measures placement against a frame authority rather than differencing building-population centres against nominal grid corners.",
+    "independent_justification": "Exact algebraic identity in proof_3 plus the injected-error blindness test; neither depends on the threshold."
+  },
+
+  "not_yet_proven": [
+    "A placement criterion whose independently recomputed residual is <= 10 m on all 20 real tiles has not yet been established. The best registration residual observed against map-of-record building corners was 7.03 m median with a 40.35 m worst tile, and that reference is coarse, so it is not yet a valid gate.",
+    "Therefore P0-A is NOT closed and the 485.8371834028512 m figure must not be reported as a validated placement error."
+  ],
+
+  "reproduce": [
+    "python tools/tile_frame_consistency.py  (reproduces max_seam_delta_m = 485.8371834028512)",
+    "probe_metric_blindness: see proof_3.blindness_test",
+    "probe_which_placement: see proof_4.results_median_over_tiles_m",
+    "probe_mechanism: see proof_1"
+  ]
+}

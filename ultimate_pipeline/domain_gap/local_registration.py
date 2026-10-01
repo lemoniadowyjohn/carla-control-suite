@@ -25,8 +25,7 @@ from shapely.geometry import MultiPoint, Point, Polygon
 from shapely.prepared import prep
 
 from ultimate_pipeline.core.xodr_sanitizer import _safe_float
-
-BARE_TMERC_DEFAULT = "+proj=tmerc +datum=WGS84 +units=m +no_defs"
+from ultimate_pipeline.geometry import FRAME_NATIVE_CRS, FRAME_EPSG_32632_CRS
 
 
 # ------------------------------------------------------------------ header I/O
@@ -39,7 +38,7 @@ def read_offset(root: ET.Element) -> Tuple[float, float]:
     return _safe_float(off.get("x", "0"), 0.0), _safe_float(off.get("y", "0"), 0.0)
 
 
-def read_georef_proj4(root: ET.Element, *, bare_default: str = BARE_TMERC_DEFAULT) -> str:
+def read_georef_proj4(root: ET.Element, *, bare_default: str = FRAME_NATIVE_CRS) -> str:
     """proj4 from <geoReference>; a bare `+proj=tmerc` (Osm2Odr) is expanded to usable defaults."""
     hdr = root.find(".//header")
     geo = hdr.find("geoReference") if hdr is not None else None
@@ -158,13 +157,25 @@ def building_frame_shift_to_auto_local(
 ) -> Tuple[float, float]:
     """(dx, dy) to translate building `cornerGlobal` points into the auto map's local frame.
 
-    The building enrichment step projects OSM lon/lat with
-    `+proj=tmerc +lat_0=<osm_lat_min> +lon_0=<osm_lon_min> +x_0=0 +y_0=0` (see
-    `osm_polygon_loader.py`), i.e. building-local (0,0) = (osm_lon_min, osm_lat_min). The
-    shift is simply that origin's position in auto-local space: project it through the
-    auto map's own bare-tmerc CRS, then subtract the auto header `<offset>` — the same
-    "global minus offset" step used to register the manual map's footprint.
+    C29 CORRECTION: This function is STALE and MUST NOT BE USED for C29+ maps.
+
+    Pre-C29: building enrichment projected OSM lon/lat with
+    `+proj=tmerc +lat_0=<osm_lat_min> +lon_0=<osm_lon_min> +x_0=0 +y_0=0` (building-local
+    origin at GPS bbox corner). The shift was that origin's position in auto-local space.
+
+    Post-C29 (current): building enrichment uses the SAME bare-tmerc CRS as roads
+    (`+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs`).
+    Building `cornerGlobal` is already in the rebased local frame. The correct shift is
+    (0.0, 0.0).
+
+    This function is retained for historical superseded map compatibility ONLY. It will
+    return (0.0, 0.0) when `auto_proj4` matches the canonical native CRS.
     """
+    # C29 fix: if the auto map uses the canonical native CRS, buildings are already rebased
+    CANONICAL_NATIVE = "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    if auto_proj4.strip() == CANONICAL_NATIVE:
+        return (0.0, 0.0)
+    # Pre-C29 path (should not be reached for current pinned maps)
     ox, oy = auto_offset
     to_auto_global = Transformer.from_crs("EPSG:4326", CRS.from_proj4(auto_proj4), always_xy=True)
     gx, gy = to_auto_global.transform(osm_lon_min, osm_lat_min)
@@ -348,7 +359,7 @@ def compute_local_registration(
     manual_xodr: str,
     *,
     footprint: str = "hull",
-    building_frame_shift: Union[Tuple[float, float], str] = "auto",
+    building_frame_shift: Union[Tuple[float, float], str] = (0.0, 0.0),
 ) -> LocalRegistrationResult:
     """Crop auto -> manual footprint, then compute the LOCAL structural gap (ref=manual).
 
@@ -366,11 +377,9 @@ def compute_local_registration(
     them out).
 
     `building_frame_shift`: buildings' `cornerGlobal` points are written by the OSM
-    enrichment step in a DIFFERENT local tmerc frame than the road network (see
-    `building_frame_shift_to_auto_local`'s docstring for why). Pass an explicit (dx, dy) to
-    correct for it, `(0.0, 0.0)` to disable the correction, or the default `"auto"` to
-    resolve it from `ultimate_pipeline.config.settings.SETTINGS.load_gps_bounds()` (falls
-    back to no shift if settings/gps-bounds are unavailable, e.g. in isolated unit tests).
+    enrichment step in the SAME local tmerc frame as the road network (C29 correction).
+    The default is (0.0, 0.0) -- no shift required. The "auto" option is DEPRECATED and
+    will resolve to (0.0, 0.0) with a warning for pre-C29 map compatibility only.
     """
     from ultimate_pipeline.domain_gap.map_stats_xodr import XODRMapStatsExtractor
     from ultimate_pipeline.domain_gap.gap_analyzer import DomainGapAnalyzer
@@ -397,8 +406,18 @@ def compute_local_registration(
     keep_j = kept_junction_ids(kept_roads)
 
     bld_shift = building_frame_shift
-    bld_shift_source = "explicit"
     if bld_shift == "auto":
+        import warnings
+        warnings.warn(
+            "building_frame_shift='auto' is deprecated; C29+ maps require (0.0, 0.0). "
+            "Resolving to (0.0, 0.0).",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        bld_shift = (0.0, 0.0)
+        bld_shift_source = "deprecated_auto_resolved_to_zero"
+    elif bld_shift == "auto":
+        # This branch is unreachable due to the check above, but kept for clarity
         bld_shift_source = "settings_gps_bounds"
         try:
             from ultimate_pipeline.config.settings import SETTINGS

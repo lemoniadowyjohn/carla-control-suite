@@ -54,5 +54,31 @@
     "osm2world": 4.607,
     "roundtrip": 8.76,
     "total": 22.574
+  },
+  "placement": {
+    "schema_version": "1.0.0",
+    "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "tile_index": [
+      8,
+      6
+    ],
+    "source_osm_sha256": "0f98d78b72dab46d3cf3771e08516a24ee5882cec84fa6a291cf418ed0a11ada",
+    "exported_fbx_sha256": "051b3443abc0b6d3e6a963182ab9ce3110b8ac937a2c42550f9d0b30902f2389",
+    "source_frame": "NATIVE",
+    "target_frame": "LOCAL",
+    "translation_local_m": [
+      8392.892833131016,
+      6798.481531294804
+    ],
+    "translation_bbox_center_source_local_m": [
+      8392.892833131016,
+      6798.477531294804
+    ],
+    "translation_bbox_center_exported_local_m": [
+      0.0,
+      -0.0040000000000048885
+    ],
+    "authority": "source_osm_bbox_center_minus_exported_mesh_bbox_center",
+    "notes": "Derived from source OSM node bbox and exported OBJ bbox. OSM2World auto-centers on exported mesh bbox; this records the translation needed to place the auto-centered mesh at the source footprint bbox center. Wall thickness causes irreducible offset vs true footprint geometry (see TILE_ORIGIN_ROOT_CAUSE.json)."
   }
 }

@@ -409,7 +409,10 @@ SUPPORTED_ROLES: Tuple[str, ...] = ("auto", "manual")
 FRAME_STRUCTURED_FIELDS: Tuple[str, ...] = (
     "frame_id",
     "frame_kind",
-    "crs_authority",
+    "crs_authority",  # DEPRECATED: retained for backward compatibility only
+    "native_crs",     # Osm2Odr native bare tmerc CRS string
+    "local_crs",      # CARLA local CRS string (same projection, rebased origin)
+    "epsg_32632_crs", # EPSG:32632 UTM zone 32N CRS string (distinct from native)
     "rebase_dx",
     "rebase_dy",
 )
@@ -540,7 +543,7 @@ def validate_registry_entry(key: Any, entry: Any) -> Dict[str, Any]:
         norm["equivalent_names"] = [_normalize_alias(a) for a in entry["equivalent_names"]]
 
     frame_structured = True
-    for field in ("frame_id", "frame_kind", "crs_authority"):
+    for field in ("frame_id", "frame_kind", "crs_authority", "native_crs", "local_crs", "epsg_32632_crs"):
         if entry.get(field) is None:
             frame_structured = False
         else:
@@ -560,6 +563,19 @@ def validate_registry_entry(key: Any, entry: Any) -> Dict[str, Any]:
         for field in ("rebase_dx", "rebase_dy"):
             if entry.get(field) is not None:
                 norm[field] = entry[field]
+    # Validate native_crs equals the canonical bare tmerc
+    if "native_crs" in norm and norm["native_crs"] != "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs":
+        raise MapRegistryValidationError(
+            f"registry entry {key!r}: native_crs must equal canonical bare tmerc "
+            f"('+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs'), "
+            f"got {norm['native_crs']!r}"
+        )
+    # Validate epsg_32632_crs is distinct from native_crs
+    if "epsg_32632_crs" in norm and "native_crs" in norm and norm["epsg_32632_crs"] == norm["native_crs"]:
+        raise MapRegistryValidationError(
+            f"registry entry {key!r}: epsg_32632_crs must be distinct from native_crs "
+            f"(EPSG:32632 requires actual reprojection, not offset-only equivalence)"
+        )
     norm["frame_status"] = STRUCTURED_FRAME if frame_structured else LEGACY_TEXT_ONLY
     return norm
 
@@ -744,7 +760,10 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
         "frame_id": "ingolstadt_local_rebased",
         "frame_kind": "rebased_local",
-        "crs_authority": "local Cartesian via fixed offset from UTM-32N (EPSG:32632)",
+        "crs_authority": "local Cartesian via fixed offset from UTM-32N (EPSG:32632) -- DEPRECATED, not geographic truth",
+        "native_crs": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+        "local_crs": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+        "epsg_32632_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
         "rebase_dx": 832671.676,
         "rebase_dy": 5458671.104,
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],

@@ -33,10 +33,12 @@ import shutil
 import subprocess
 import sys
 import time
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+import math
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -237,6 +239,36 @@ lodDistances=100,500,2000
             return h.hexdigest()
         except Exception:
             return ""
+
+    def _compute_osm_bbox_center(self) -> Optional[Tuple[float, float]]:
+        """
+        Compute the bounding box center of the input OSM file in WGS84 (lat, lon).
+        
+        Returns (center_lat, center_lon) or None if no nodes found.
+        """
+        try:
+            tree = ET.parse(self.osm_path)
+        except (ET.ParseError, OSError):
+            return None
+        
+        lats, lons = [], []
+        for node in tree.getroot().iter("node"):
+            lat_s, lon_s = node.get("lat"), node.get("lon")
+            if lat_s is None or lon_s is None:
+                continue
+            try:
+                lat, lon = float(lat_s), float(lon_s)
+            except ValueError:
+                continue
+            if not (math.isfinite(lat) and math.isfinite(lon)):
+                continue
+            lats.append(lat)
+            lons.append(lon)
+        
+        if not lats:
+            return None
+        
+        return ((min(lats) + max(lats)) / 2.0, (min(lons) + max(lons)) / 2.0)
 
     def _check_java(self) -> Tuple[bool, str]:
         """
@@ -661,6 +693,13 @@ except Exception as e:
                 result.config_header_hex = header_bytes.hex()
             except Exception:
                 result.config_header_hex = "read_error"
+
+            # Compute hashes for caching
+            result.input_osm_hash = self._hash_file(self.osm_path)
+            result.config_hash = self._hash_file(config_path)
+            result.cache_key = self._compute_cache_key(result.input_osm_hash, result.config_hash)
+            result.hashes["input_osm"] = result.input_osm_hash
+            result.hashes["config"] = result.config_hash
 
             # Compute hashes for caching
             result.input_osm_hash = self._hash_file(self.osm_path)

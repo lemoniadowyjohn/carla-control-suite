@@ -1,0 +1,101 @@
+{
+  "artifact_type": "carla_large_map_tile_fbx",
+  "canonical_source": {
+    "buildings_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "buildings_source": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "xodr_path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+  },
+  "claim_boundary": "Offline FBX generation only. This tile has NOT been imported by a UE4/UE5 Editor or cooked; runtime streaming/seam behavior is UNCONFIRMED until the live UE4 track runs.",
+  "clip": {
+    "buildings": 429,
+    "nodes_written": 2000,
+    "relations_written": 1,
+    "ways_written": 430
+  },
+  "fbx": {
+    "bytes": 1199484,
+    "faces_total": 13731,
+    "objects_total": 429,
+    "path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.fbx",
+    "sha256": "f127be4d8c6c730824cf265b3aca99fbb37a50a2819417eb4d194fd1aec00109",
+    "vertices_total": 9022
+  },
+  "fbx_name": "Ingolstadt_Tile_7_9.fbx",
+  "generating_command": "F:\\p0-coord-frame-tile-placement-20261001\\scripts\\cook_full_grid_tiles.py --verbose",
+  "map_name": "Ingolstadt",
+  "output": {
+    "fbx_bytes": 1199484,
+    "fbx_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.fbx",
+    "fbx_sha256": "f127be4d8c6c730824cf265b3aca99fbb37a50a2819417eb4d194fd1aec00109",
+    "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_7_9\\Ingolstadt_Tile_7_9.tile_fbx.json"
+  },
+  "provenance_field": "source_provenance.map_of_record_sha256",
+  "roundtrip": {
+    "ok": true,
+    "verdict": "ROUNDTRIP_PASS"
+  },
+  "schema_version": 1,
+  "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+  "semantic_classification": {
+    "buildings_classified": 429,
+    "counts_by_folder": {
+      "Buildings": 429
+    },
+    "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+    "non_buildings_anomalies": [],
+    "non_buildings_count": 0
+  },
+  "source_provenance": {
+    "buildings_source": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "header_offset_xy": [
+      832671.676,
+      5458671.104
+    ],
+    "map_of_record": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+    "provenance_authority": "verify_pinned_map('auto_map_of_record')",
+    "registry_sha256": "884ce8b49335bac69f4f89e33c67f8f6fed10bcb616c535d4f420e4cd91790a9",
+    "tile_size_m": 1000.0
+  },
+  "status": "ok",
+  "tile_index": [
+    7,
+    9
+  ],
+  "timing_sec": {
+    "blender": 13.312,
+    "osm2world": 9.978,
+    "roundtrip": 11.899,
+    "total": 35.647
+  },
+  "tool_version": "f897e0eb747ac827941ac4883170a5181a603111",
+  "placement": {
+    "schema_version": "1.0.0",
+    "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "tile_index": [
+      7,
+      9
+    ],
+    "source_osm_sha256": "6eb3da7df0e20a40346d90b8f0377e6f348acd40d08f552aeb70d4f91d21be64",
+    "exported_fbx_sha256": "f127be4d8c6c730824cf265b3aca99fbb37a50a2819417eb4d194fd1aec00109",
+    "source_frame": "NATIVE",
+    "target_frame": "LOCAL",
+    "translation_local_m": [
+      7505.7078424549545,
+      9213.049618125457
+    ],
+    "translation_bbox_center_source_local_m": [
+      7505.7078424549545,
+      9213.044118125457
+    ],
+    "translation_bbox_center_exported_local_m": [
+      0.0,
+      -0.00549999999999784
+    ],
+    "authority": "source_osm_bbox_center_minus_exported_mesh_bbox_center",
+    "notes": "Derived from source OSM node bbox and exported OBJ bbox. OSM2World auto-centers on exported mesh bbox; this records the translation needed to place the auto-centered mesh at the source footprint bbox center. Wall thickness causes irreducible offset vs true footprint geometry (see TILE_ORIGIN_ROOT_CAUSE.json)."
+  }
+}

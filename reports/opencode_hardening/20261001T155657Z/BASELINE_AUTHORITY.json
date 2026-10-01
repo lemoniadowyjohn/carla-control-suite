@@ -1,0 +1,58 @@
+{
+  "report": "BASELINE_AUTHORITY",
+  "generated_utc": "2026-10-01T16:45:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "branch": "fix/p0-coordinate-frame-tile-placement-authority-20261001",
+  "immutable": {
+    "repository": "lemoniadowyjohn/carla-control-suite",
+    "remote": "origin",
+    "authority_branch": "integration/production-large-map-20260918",
+    "authority_sha": "f897e0eb747ac827941ac4883170a5181a603111"
+  },
+  "pinned_map": {
+    "key": "auto_map_of_record",
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "bytes": 149799632,
+    "role": "auto",
+    "frame": {
+      "frame_id": "ingolstadt_local_rebased",
+      "frame_kind": "rebased_local",
+      "rebase_dx": 832671.676,
+      "rebase_dy": 5458671.104,
+      "crs_authority_note": "local Cartesian via fixed offset from UTM-32N (EPSG:32632) -- under investigation, not geographic truth"
+    },
+    "verification": {
+      "status": "VERIFIED",
+      "lfs_pointer": false,
+      "registry_sha256": "4f5ba5f5f088ab8814ce4027ec7882f1e1650299f28213d8e1d84da91fa11d91",
+      "frame_status": "STRUCTURED"
+    }
+  },
+  "preflight_results": {
+    "remote_fetch": "ok",
+    "authority_branch_match": true,
+    "map_verify": "VERIFIED",
+    "map_materialized": true
+  },
+  "dirty_main_worktree_preserved": true,
+  "disk_constraint": {
+    "C_drive_free_before_work": "2.0 GB",
+    "active_worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+    "active_free": "73.6 GB"
+  },
+  "tool_availability": {
+    "java": "Temurin 17.0.17+10 on PATH",
+    "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+    "blender_exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "pyproj": "3.7.2",
+    "scipy": "1.16.3",
+    "pytest": "9.0.1"
+  },
+  "known_failing_checker": {
+    "file": "tools/tile_frame_consistency.py",
+    "metric_max_seam_delta_m": 485.8371834028512,
+    "metric_defect": "proven in TILE_ORIGIN_ROOT_CAUSE.json"
+  }
+}

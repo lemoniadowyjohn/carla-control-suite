@@ -1,0 +1,424 @@
+{
+  "status": "ok",
+  "reason": "Converted to FBX (0.03 MB, objects=6)",
+  "command_line": [
+    "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "--background",
+    "--python-exit-code",
+    "1",
+    "--python",
+    "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\blender_convert.py",
+    "--",
+    "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.obj",
+    "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
+    "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.blender_manifest.json"
+  ],
+  "blender_version": "Blender 4.3.0",
+  "blender_exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+  "blender_exe_hash": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+  "script_hash": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+  "input_obj": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.obj",
+  "output_fbx": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
+  "input_hash": "e745df353882caabcc856be57b2dc9d3e5ca333b6c06f686b64d85a9f689cd49",
+  "output_hash": "66050b038cb4dc382323045695f0c62c3edc3cdf7dae9c1542c4caa17f964ee7",
+  "conversion_script": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\blender_convert.py",
+  "manifest": {
+    "blender_build_commit_time": "08:52",
+    "blender_version": "4.3.0",
+    "export_operator": "export_scene.fbx",
+    "export_options": {
+      "add_leaf_bones": false,
+      "apply_scale_options": "FBX_SCALE_NONE",
+      "apply_unit_scale": true,
+      "armature_nodetype": "NULL",
+      "axis_forward": "-Z",
+      "axis_up": "Y",
+      "bake_anim": false,
+      "batch_mode": "OFF",
+      "embed_textures": false,
+      "filepath": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
+      "global_scale": 1.0,
+      "mesh_smooth_type": "OFF",
+      "object_types": [
+        "ARMATURE",
+        "EMPTY",
+        "MESH"
+      ],
+      "path_mode": "AUTO",
+      "primary_bone_axis": "Y",
+      "secondary_bone_axis": "X",
+      "use_custom_props": false,
+      "use_mesh_edges": false,
+      "use_mesh_modifiers": true,
+      "use_selection": false,
+      "use_tspace": false
+    },
+    "fbx_format": "binary",
+    "fbx_header": "Kaydara FBX Binary",
+    "fbx_signature": "Kaydara FBX Binary",
+    "fbx_version": "FBX binary int=7400",
+    "fbx_version_int": 7400,
+    "images_total": 0,
+    "import_operator": "wm.obj_import",
+    "import_options": {
+      "filepath": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.obj"
+    },
+    "input_obj_hash": "e745df353882caabcc856be57b2dc9d3e5ca333b6c06f686b64d85a9f689cd49",
+    "materials_total": 2,
+    "objects": [
+      {
+        "bounds": [
+          [
+            84.584999,
+            0.0,
+            -66.152
+          ],
+          [
+            84.584999,
+            0.0,
+            1.364
+          ],
+          [
+            84.584999,
+            7.5,
+            1.364
+          ],
+          [
+            84.584999,
+            7.5,
+            -66.152
+          ],
+          [
+            171.591995,
+            0.0,
+            -66.152
+          ],
+          [
+            171.591995,
+            0.0,
+            1.364
+          ],
+          [
+            171.591995,
+            7.5,
+            1.364
+          ],
+          [
+            171.591995,
+            7.5,
+            -66.152
+          ]
+        ],
+        "faces": 22,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building Mmax",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 16
+      },
+      {
+        "bounds": [
+          [
+            -171.591995,
+            0.0,
+            1.575
+          ],
+          [
+            -171.591995,
+            0.0,
+            75.847
+          ],
+          [
+            -171.591995,
+            7.5,
+            75.847
+          ],
+          [
+            -171.591995,
+            7.5,
+            1.575
+          ],
+          [
+            -74.302002,
+            0.0,
+            1.575
+          ],
+          [
+            -74.302002,
+            0.0,
+            75.847
+          ],
+          [
+            -74.302002,
+            7.5,
+            75.847
+          ],
+          [
+            -74.302002,
+            7.5,
+            1.575
+          ]
+        ],
+        "faces": 16,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building tedox",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 12
+      },
+      {
+        "bounds": [
+          [
+            3.068,
+            0.0,
+            -68.043999
+          ],
+          [
+            3.068,
+            0.0,
+            -15.212
+          ],
+          [
+            3.068,
+            12.5,
+            -15.212
+          ],
+          [
+            3.068,
+            12.5,
+            -68.043999
+          ],
+          [
+            48.928001,
+            0.0,
+            -68.043999
+          ],
+          [
+            48.928001,
+            0.0,
+            -15.212
+          ],
+          [
+            48.928001,
+            12.5,
+            -15.212
+          ],
+          [
+            48.928001,
+            12.5,
+            -68.043999
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building0",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      },
+      {
+        "bounds": [
+          [
+            15.135,
+            0.0,
+            -75.848
+          ],
+          [
+            15.135,
+            0.0,
+            26.320999
+          ],
+          [
+            15.135,
+            7.5,
+            26.320999
+          ],
+          [
+            15.135,
+            7.5,
+            -75.848
+          ],
+          [
+            84.049004,
+            0.0,
+            -75.848
+          ],
+          [
+            84.049004,
+            0.0,
+            26.320999
+          ],
+          [
+            84.049004,
+            7.5,
+            26.320999
+          ],
+          [
+            84.049004,
+            7.5,
+            -75.848
+          ]
+        ],
+        "faces": 16,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building1",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 12
+      },
+      {
+        "bounds": [
+          [
+            -63.431,
+            0.0,
+            -36.407001
+          ],
+          [
+            -63.431,
+            0.0,
+            28.681
+          ],
+          [
+            -63.431,
+            7.5,
+            28.681
+          ],
+          [
+            -63.431,
+            7.5,
+            -36.407001
+          ],
+          [
+            12.691,
+            0.0,
+            -36.407001
+          ],
+          [
+            12.691,
+            0.0,
+            28.681
+          ],
+          [
+            12.691,
+            7.5,
+            28.681
+          ],
+          [
+            12.691,
+            7.5,
+            -36.407001
+          ]
+        ],
+        "faces": 19,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building2",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 16
+      },
+      {
+        "bounds": [
+          [
+            -88.210999,
+            0.0,
+            -7.765
+          ],
+          [
+            -88.210999,
+            0.0,
+            10.436
+          ],
+          [
+            -88.210999,
+            7.5,
+            10.436
+          ],
+          [
+            -88.210999,
+            7.5,
+            -7.765
+          ],
+          [
+            -73.847,
+            0.0,
+            -7.765
+          ],
+          [
+            -73.847,
+            0.0,
+            10.436
+          ],
+          [
+            -73.847,
+            7.5,
+            10.436
+          ],
+          [
+            -73.847,
+            7.5,
+            -7.765
+          ]
+        ],
+        "faces": 10,
+        "materials": [
+          "MAT_0_0",
+          "MAT_1_0"
+        ],
+        "name": "Building3",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 8
+      }
+    ],
+    "objects_total": 6,
+    "output_fbx_hash": "66050b038cb4dc382323045695f0c62c3edc3cdf7dae9c1542c4caa17f964ee7",
+    "scene_unit_scale": 1.0,
+    "scene_unit_system": "METRIC"
+  },
+  "manifest_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.blender_manifest.json",
+  "provenance_path": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx.provenance.json",
+  "start_time": "2026-10-01T23:25:10.047521",
+  "end_time": "2026-10-01T23:25:20.433601",
+  "duration_sec": 10.386,
+  "exit_code": 0,
+  "exception": "",
+  "stdout_log": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\blender_stdout.log",
+  "stderr_log": "F:\\p0-coord-frame-tile-placement-20261001\\reports\\production_readiness\\20261001T211557Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\blender_stderr.log",
+  "run_id": "12adc65a62c7",
+  "verification": {
+    "marker_present": true,
+    "exit_code_ok": true,
+    "fbx_present": true,
+    "fbx_container": {
+      "container_ok": true,
+      "format": "binary",
+      "signature": "Kaydara FBX Binary",
+      "detail": "Valid FBX binary header"
+    },
+    "manifest_parse_ok": true,
+    "manifest_present": true,
+    "input_hash_match": true,
+    "output_hash_match": true,
+    "objects_total": 6,
+    "objects_nonempty": true,
+    "input_hash_readable": true
+  },
+  "objects_total": 6,
+  "fbx_format": "binary",
+  "fbx_signature": "Kaydara FBX Binary"
+}

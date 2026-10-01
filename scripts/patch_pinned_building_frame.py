@@ -1,24 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-C29 remediation option (b) — surgical patch for an already-pinned XODR whose building
-`cornerGlobal` points were written before the C29 fix (`osm_polygon_loader.py` +
-`regen_map_of_record.py::_rebase_to_local`) and therefore sit in the pre-fix projection
-origin, un-rebased (see reports/post_audit_hardening/C29_building_frame_root_cause.md).
+DEPRECATED / STALE — DO NOT USE ON C29+ MAPS.
 
-This does NOT re-derive buildings from source OSM data and does NOT touch anything except
-`.//object[@type='building']/outline/cornerGlobal` x/y (z, roads, lanes, signals, elevation,
-everything else is byte-for-byte unaffected). The correction is the same (dx, dy) translation
-already used (read-only, for cropping) by
-`ultimate_pipeline.domain_gap.local_registration.building_frame_shift_to_auto_local` —
-this script is the first place that WRITES it back into the file.
+This script was C29 remediation option (b) for pre-C29 pinned XODR whose building
+`cornerGlobal` points were written in the pre-fix projection origin. The CURRENT
+pinned map (auto_map_of_record, sha256=370abbbb...) is ALREADY C29-corrected:
+building `cornerGlobal` is in the rebased local frame. Running this script on the
+current pin would CORRUPT it by applying a double-correction.
 
-Usage:
-    python scripts/patch_pinned_building_frame.py <input_xodr> <output_xodr>
-
-Produces a NEW file with a NEW sha256 — never overwrites the input. The output is a
-candidate for review, not an automatic re-pin: promoting it to the map-of-record pointer
-is a separate, explicit decision.
+Retained only for historical superseded map reference. Any invocation on a C29+
+map is an error.
 """
 from __future__ import annotations
 
@@ -26,6 +18,7 @@ import argparse
 import hashlib
 import json
 import sys
+import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Dict, Tuple
@@ -36,6 +29,14 @@ sys.path.insert(0, str(REPO_ROOT))
 from ultimate_pipeline.domain_gap.local_registration import (
     building_frame_shift_to_auto_local,
     read_georef_proj4,
+)
+
+# Emit deprecation warning on import
+warnings.warn(
+    "patch_pinned_building_frame.py is DEPRECATED and STALE for C29+ maps. "
+    "The current pinned map is already C29-corrected; this script would double-shift.",
+    DeprecationWarning,
+    stacklevel=2
 )
 
 

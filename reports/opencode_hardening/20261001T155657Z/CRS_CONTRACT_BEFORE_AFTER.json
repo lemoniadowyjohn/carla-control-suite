@@ -1,0 +1,67 @@
+{
+  "report": "CRS_CONTRACT_BEFORE_AFTER",
+  "generated_utc": "2026-10-01T19:05:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "before": {
+    "canonical_module": "NONE (no ultimate_pipeline.geometry.coordinate_frame_contract existed)",
+    "duplicate_bare_tmerc_definitions": 5,
+    "bare_tmerc_sites": [
+      "ultimate_pipeline/enrichment/osm_polygon_loader.py:41 PROJ_STRING",
+      "ultimate_pipeline/domain_gap/local_registration.py:29 BARE_TMERC_DEFAULT",
+      "ultimate_pipeline/tiling/tile_fbx_generator.py:100 _PROJ_STRING",
+      "ultimate_pipeline/enrichment/crosswalk_writer.py:44 _BARE_TMERC",
+      "tools/tile_frame_consistency.py:46 _PROJ_STRING"
+    ],
+    "duplicate_expanded_tmerc_definitions": 3,
+    "expanded_tmerc_sites": [
+      "ultimate_pipeline/dem/dem_crs_contract.py:50 OSM2ODR_NATIVE_PROJ4",
+      "ultimate_pipeline/enrichment/coordinate_control.py:57 VERIFIED_XODR_GEOMETRY_CRS_PROJ4",
+      "ultimate_pipeline/core/georef_utils.py:45 CANONICAL_MANUAL_GEOREFERENCE (UTM-32N, distinct)"
+    ],
+    "rebase_literal_sites": 6,
+    "map_registry_crs_authority": "misleading string: 'local Cartesian via fixed offset from UTM-32N (EPSG:32632)'",
+    "map_registry_frame_fields": ["frame_id", "frame_kind", "crs_authority", "rebase_dx", "rebase_dy"],
+    "crs_schema_validation": "none for structured CRS fields"
+  },
+  "after": {
+    "canonical_module": "ultimate_pipeline/geometry/coordinate_frame_contract.py (v1.0.0)",
+    "api_functions": [
+      "wgs84_to_native", "native_to_wgs84",
+      "native_to_local", "local_to_native",
+      "wgs84_to_local", "local_to_wgs84",
+      "native_to_epsg32632", "epsg32632_to_native"
+    ],
+    "frame_definitions": {
+      "WGS84": "EPSG:4326",
+      "NATIVE": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "LOCAL": "NATIVE minus rebase (dx=832671.676, dy=5458671.104)",
+      "EPSG_32632": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs (DISTINCT from NATIVE)"
+    },
+    "duplicate_sites_refactored": 8,
+    "refactored_consumers": [
+      "ultimate_pipeline/enrichment/osm_polygon_loader.py",
+      "ultimate_pipeline/domain_gap/local_registration.py",
+      "ultimate_pipeline/tiling/tile_fbx_generator.py",
+      "ultimate_pipeline/enrichment/crosswalk_writer.py",
+      "tools/tile_frame_consistency.py",
+      "ultimate_pipeline/dem/dem_crs_contract.py",
+      "ultimate_pipeline/enrichment/coordinate_control.py",
+      "ultimate_pipeline/core/georef_utils.py"
+    ],
+    "map_registry_structured_crs_fields": [
+      "frame_id", "frame_kind",
+      "crs_authority (DEPRECATED, retained for compat)",
+      "native_crs", "local_crs", "epsg_32632_crs",
+      "rebase_dx", "rebase_dy"
+    ],
+    "map_registry_crs_validation": [
+      "native_crs must equal canonical bare tmerc",
+      "epsg_32632_crs must be distinct from native_crs",
+      "rebased_local frames require numeric rebase_dx/rebase_dy"
+    ],
+    "map_registry_verify_pinned_map": "surfaces STRUCTURED frame_status with all structured fields"
+  },
+  "contract_version": "1.0.0",
+  "contract_sha256": "computed_at_runtime_from_module"
+}

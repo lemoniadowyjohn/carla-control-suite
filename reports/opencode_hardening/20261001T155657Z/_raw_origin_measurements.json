@@ -1,0 +1,782 @@
+[
+  {
+    "tile_index": [
+      6,
+      8
+    ],
+    "fbx_name": "Ingolstadt_Tile_6_8.fbx",
+    "fbx_sha256": "c2d1315dbfc88568920a52d6fad50a6c208492eda548b05631fecc400107a7bf",
+    "osm_source_bbox_center_local_m": [
+      6604.085740126087,
+      8502.405789257959
+    ],
+    "osm_source_bbox_local_m": [
+      6194.629636508413,
+      7013.541843743762,
+      7982.876905229874,
+      9021.934673286043
+    ],
+    "osm_nodes": 3263,
+    "nominal_grid_corner_local_m": [
+      6000.0,
+      8000.0
+    ],
+    "obj_vertex_count": 7849,
+    "obj_bounds_min": [
+      -431.458,
+      0.0,
+      -508.213
+    ],
+    "obj_bounds_max": [
+      431.458,
+      17.0,
+      508.167
+    ],
+    "obj_center": [
+      0.0,
+      8.5,
+      -0.023000000000024556
+    ]
+  },
+  {
+    "tile_index": [
+      7,
+      8
+    ],
+    "fbx_name": "Ingolstadt_Tile_7_8.fbx",
+    "fbx_sha256": "f151a52e8ff2a7967f13890ca8954c74eb748f7643bcf3354b79a60e14749d02",
+    "osm_source_bbox_center_local_m": [
+      7475.168247476802,
+      8509.524870158173
+    ],
+    "osm_source_bbox_local_m": [
+      6946.17933199578,
+      8004.157162957825,
+      7993.847960328683,
+      9025.201779987663
+    ],
+    "osm_nodes": 2773,
+    "nominal_grid_corner_local_m": [
+      7000.0,
+      8000.0
+    ],
+    "obj_vertex_count": 11384,
+    "obj_bounds_min": [
+      -556.992,
+      0.0,
+      -531.737
+    ],
+    "obj_bounds_max": [
+      556.992,
+      47.5,
+      531.687
+    ],
+    "obj_center": [
+      0.0,
+      23.75,
+      -0.024999999999977263
+    ]
+  },
+  {
+    "tile_index": [
+      8,
+      8
+    ],
+    "fbx_name": "Ingolstadt_Tile_8_8.fbx",
+    "fbx_sha256": "6dfff61055d269e9a50fcb51cb1e7155bb36ff3e7cb498b68cc407f09eb4d7b4",
+    "osm_source_bbox_center_local_m": [
+      8466.213331973064,
+      8503.107289346866
+    ],
+    "osm_source_bbox_local_m": [
+      7989.610326065333,
+      8942.816337880795,
+      7989.186956953257,
+      9017.027621740475
+    ],
+    "osm_nodes": 2041,
+    "nominal_grid_corner_local_m": [
+      8000.0,
+      8000.0
+    ],
+    "obj_vertex_count": 7562,
+    "obj_bounds_min": [
+      -528.442,
+      0.0,
+      -549.773
+    ],
+    "obj_bounds_max": [
+      528.442,
+      12.5,
+      549.719
+    ],
+    "obj_center": [
+      0.0,
+      6.25,
+      -0.026999999999986812
+    ]
+  },
+  {
+    "tile_index": [
+      7,
+      9
+    ],
+    "fbx_name": "Ingolstadt_Tile_7_9.fbx",
+    "fbx_sha256": "d31f9931025e07b930fb913bcb1e042a61a99b92b246171851c92de10df79510",
+    "osm_source_bbox_center_local_m": [
+      7505.7078424549545,
+      9213.044118125457
+    ],
+    "osm_source_bbox_local_m": [
+      6990.315384374815,
+      8021.100300535094,
+      8989.558136654086,
+      9436.530099596828
+    ],
+    "osm_nodes": 2000,
+    "nominal_grid_corner_local_m": [
+      7000.0,
+      9000.0
+    ],
+    "obj_vertex_count": 8675,
+    "obj_bounds_min": [
+      -510.276,
+      0.0,
+      -251.994
+    ],
+    "obj_bounds_max": [
+      510.276,
+      40.0,
+      251.983
+    ],
+    "obj_center": [
+      0.0,
+      20.0,
+      -0.00549999999999784
+    ]
+  },
+  {
+    "tile_index": [
+      7,
+      7
+    ],
+    "fbx_name": "Ingolstadt_Tile_7_7.fbx",
+    "fbx_sha256": "0b51b4e2fe9efad2e45f3624ac03180bfb76e3a0492f5b0635458a7651c4879a",
+    "osm_source_bbox_center_local_m": [
+      7471.78564469883,
+      7515.584177598823
+    ],
+    "osm_source_bbox_local_m": [
+      6925.690723884385,
+      8017.880565513275,
+      6967.009380743839,
+      8064.158974453807
+    ],
+    "osm_nodes": 2475,
+    "nominal_grid_corner_local_m": [
+      7000.0,
+      7000.0
+    ],
+    "obj_vertex_count": 10282,
+    "obj_bounds_min": [
+      -531.556,
+      0.0,
+      -561.357
+    ],
+    "obj_bounds_max": [
+      531.556,
+      32.5,
+      561.3
+    ],
+    "obj_center": [
+      0.0,
+      16.25,
+      -0.028500000000008185
+    ]
+  },
+  {
+    "tile_index": [
+      8,
+      7
+    ],
+    "fbx_name": "Ingolstadt_Tile_8_7.fbx",
+    "fbx_sha256": "6d99826a26320dbaec0da0d5fec13a4a9a3ad41023b35db939844fdb765f4ec6",
+    "osm_source_bbox_center_local_m": [
+      8468.587555679027,
+      7500.566864383873
+    ],
+    "osm_source_bbox_local_m": [
+      7986.751960332622,
+      8950.423151025432,
+      6990.007721472532,
+      8011.126007295214
+    ],
+    "osm_nodes": 2200,
+    "nominal_grid_corner_local_m": [
+      8000.0,
+      7000.0
+    ],
+    "obj_vertex_count": 6420,
+    "obj_bounds_min": [
+      -510.518,
+      0.0,
+      -524.161
+    ],
+    "obj_bounds_max": [
+      510.518,
+      12.5,
+      524.112
+    ],
+    "obj_center": [
+      0.0,
+      6.25,
+      -0.024499999999989086
+    ]
+  },
+  {
+    "tile_index": [
+      6,
+      7
+    ],
+    "fbx_name": "Ingolstadt_Tile_6_7.fbx",
+    "fbx_sha256": "e934ec95be05b9f2fb6fc1dad838e839e2790851d64701882a9d4219fe7dfc2b",
+    "osm_source_bbox_center_local_m": [
+      6640.841449444066,
+      7515.278062151745
+    ],
+    "osm_source_bbox_local_m": [
+      6279.142677675583,
+      7002.540221212548,
+      6998.574259694666,
+      8031.981864608824
+    ],
+    "osm_nodes": 1859,
+    "nominal_grid_corner_local_m": [
+      6000.0,
+      7000.0
+    ],
+    "obj_vertex_count": 4506,
+    "obj_bounds_min": [
+      -325.971,
+      0.0,
+      -540.772
+    ],
+    "obj_bounds_max": [
+      325.971,
+      63.000000000000036,
+      540.719
+    ],
+    "obj_center": [
+      0.0,
+      31.500000000000018,
+      -0.026499999999998636
+    ]
+  },
+  {
+    "tile_index": [
+      9,
+      9
+    ],
+    "fbx_name": "Ingolstadt_Tile_9_9.fbx",
+    "fbx_sha256": "0d5f5594e242589eeb078ea1958d9da37bb9963ef1533236e72a6a0f31bb446d",
+    "osm_source_bbox_center_local_m": [
+      9534.826270788617,
+      9343.767745389137
+    ],
+    "osm_source_bbox_local_m": [
+      9059.030967505532,
+      10010.621574071702,
+      8991.961659588851,
+      9695.573831189424
+    ],
+    "osm_nodes": 1664,
+    "nominal_grid_corner_local_m": [
+      9000.0,
+      9000.0
+    ],
+    "obj_vertex_count": 8987,
+    "obj_bounds_min": [
+      -507.048,
+      0.0,
+      -353.3
+    ],
+    "obj_bounds_max": [
+      507.048,
+      12.5,
+      353.278
+    ],
+    "obj_center": [
+      0.0,
+      6.25,
+      -0.01099999999999568
+    ]
+  },
+  {
+    "tile_index": [
+      8,
+      9
+    ],
+    "fbx_name": "Ingolstadt_Tile_8_9.fbx",
+    "fbx_sha256": "c7977e4142a9447fc68d3bbcfd6e14d7a5664d1b301b4814a39a7c94f324c2a1",
+    "osm_source_bbox_center_local_m": [
+      8451.032543906127,
+      9329.79400193505
+    ],
+    "osm_source_bbox_local_m": [
+      7991.373520661611,
+      8910.691567150643,
+      8979.633126732893,
+      9679.954877137206
+    ],
+    "osm_nodes": 1688,
+    "nominal_grid_corner_local_m": [
+      8000.0,
+      9000.0
+    ],
+    "obj_vertex_count": 8491,
+    "obj_bounds_min": [
+      -450.609,
+      0.0,
+      -344.249
+    ],
+    "obj_bounds_max": [
+      450.609,
+      22.5,
+      344.228
+    ],
+    "obj_center": [
+      0.0,
+      11.25,
+      -0.010500000000007503
+    ]
+  },
+  {
+    "tile_index": [
+      7,
+      6
+    ],
+    "fbx_name": "Ingolstadt_Tile_7_6.fbx",
+    "fbx_sha256": "f106baf8ccaf0b41f44f019360e5b77b664464903db4b19da215caa35875f1db",
+    "osm_source_bbox_center_local_m": [
+      7508.932649335591,
+      6700.500999583397
+    ],
+    "osm_source_bbox_local_m": [
+      6991.489685401204,
+      8026.375613269978,
+      6381.281002510339,
+      7019.720996656455
+    ],
+    "osm_nodes": 1641,
+    "nominal_grid_corner_local_m": [
+      7000.0,
+      6000.0
+    ],
+    "obj_vertex_count": 5910,
+    "obj_bounds_min": [
+      -531.289,
+      0.0,
+      -372.666
+    ],
+    "obj_bounds_max": [
+      531.289,
+      15.0,
+      372.641
+    ],
+    "obj_center": [
+      0.0,
+      7.5,
+      -0.012499999999988631
+    ]
+  },
+  {
+    "tile_index": [
+      10,
+      9
+    ],
+    "fbx_name": "Ingolstadt_Tile_10_9.fbx",
+    "fbx_sha256": "da16cdbe45bd5ef98f80c8b32614913a668dffa5190119105b18feedac9e6b02",
+    "osm_source_bbox_center_local_m": [
+      10189.441707379243,
+      9407.001983283553
+    ],
+    "osm_source_bbox_local_m": [
+      9991.041617945186,
+      10387.8417968133,
+      9032.485054706223,
+      9781.518911860883
+    ],
+    "osm_nodes": 1238,
+    "nominal_grid_corner_local_m": [
+      10000.0,
+      9000.0
+    ],
+    "obj_vertex_count": 5455,
+    "obj_bounds_min": [
+      -192.277,
+      0.0,
+      -372.287
+    ],
+    "obj_bounds_max": [
+      192.277,
+      7.5,
+      372.262
+    ],
+    "obj_center": [
+      0.0,
+      3.75,
+      -0.012499999999988631
+    ]
+  },
+  {
+    "tile_index": [
+      6,
+      6
+    ],
+    "fbx_name": "Ingolstadt_Tile_6_6.fbx",
+    "fbx_sha256": "395a989f8f8818af5af1b5b27f26cb3a9462606dfac7e5e18d691307e9c2fa85",
+    "osm_source_bbox_center_local_m": [
+      6737.3626244168845,
+      6671.550213050563
+    ],
+    "osm_source_bbox_local_m": [
+      6459.442952904734,
+      7015.282295929035,
+      6350.058718639426,
+      6993.0417074617
+    ],
+    "osm_nodes": 1164,
+    "nominal_grid_corner_local_m": [
+      6000.0,
+      6000.0
+    ],
+    "obj_vertex_count": 6499,
+    "obj_bounds_min": [
+      -283.072,
+      0.0,
+      -296.875
+    ],
+    "obj_bounds_max": [
+      283.072,
+      7.5,
+      296.859
+    ],
+    "obj_center": [
+      0.0,
+      3.75,
+      -0.008000000000009777
+    ]
+  },
+  {
+    "tile_index": [
+      8,
+      6
+    ],
+    "fbx_name": "Ingolstadt_Tile_8_6.fbx",
+    "fbx_sha256": "051b3443abc0b6d3e6a963182ab9ce3110b8ac937a2c42550f9d0b30902f2389",
+    "osm_source_bbox_center_local_m": [
+      8392.892833131016,
+      6798.477531294804
+    ],
+    "osm_source_bbox_local_m": [
+      7991.361000636825,
+      8794.424665625207,
+      6584.006705754437,
+      7012.948356835172
+    ],
+    "osm_nodes": 1205,
+    "nominal_grid_corner_local_m": [
+      8000.0,
+      6000.0
+    ],
+    "obj_vertex_count": 3418,
+    "obj_bounds_min": [
+      -398.851,
+      0.0,
+      -206.535
+    ],
+    "obj_bounds_max": [
+      398.851,
+      7.5,
+      206.527
+    ],
+    "obj_center": [
+      0.0,
+      3.75,
+      -0.0040000000000048885
+    ]
+  },
+  {
+    "tile_index": [
+      9,
+      8
+    ],
+    "fbx_name": "Ingolstadt_Tile_9_8.fbx",
+    "fbx_sha256": "d40f7f916a5465fd6b349489a92fe0403fdd6504b7a8ebd0bb537168f6a1c033",
+    "osm_source_bbox_center_local_m": [
+      9496.777697248093,
+      8730.801323489752
+    ],
+    "osm_source_bbox_local_m": [
+      9058.072967670509,
+      9935.482426825678,
+      8453.061726748012,
+      9008.540920231491
+    ],
+    "osm_nodes": 822,
+    "nominal_grid_corner_local_m": [
+      9000.0,
+      8000.0
+    ],
+    "obj_vertex_count": 2695,
+    "obj_bounds_min": [
+      -417.071,
+      0.0,
+      -330.924
+    ],
+    "obj_bounds_max": [
+      417.071,
+      12.5,
+      330.904
+    ],
+    "obj_center": [
+      0.0,
+      6.25,
+      -0.009999999999990905
+    ]
+  },
+  {
+    "tile_index": [
+      6,
+      9
+    ],
+    "fbx_name": "Ingolstadt_Tile_6_9.fbx",
+    "fbx_sha256": "a76d743181906ca581f2ed047b9b91e5fb03af26ce1fc4ddb03642be2d8e22fe",
+    "osm_source_bbox_center_local_m": [
+      6563.623131075408,
+      9153.767737239134
+    ],
+    "osm_source_bbox_local_m": [
+      6119.535324321478,
+      7007.710937829339,
+      8997.104985744692,
+      9310.430488733575
+    ],
+    "osm_nodes": 761,
+    "nominal_grid_corner_local_m": [
+      6000.0,
+      9000.0
+    ],
+    "obj_vertex_count": 3390,
+    "obj_bounds_min": [
+      -450.923,
+      0.0,
+      -153.734
+    ],
+    "obj_bounds_max": [
+      450.923,
+      12.5,
+      153.73
+    ],
+    "obj_center": [
+      0.0,
+      6.25,
+      -0.0020000000000095497
+    ]
+  },
+  {
+    "tile_index": [
+      10,
+      7
+    ],
+    "fbx_name": "Ingolstadt_Tile_10_7.fbx",
+    "fbx_sha256": "7b7d2cb278fe74e02c2aa30810de9f75b64e12249d17da859b1a5aa26e235dff",
+    "osm_source_bbox_center_local_m": [
+      10509.911237139779,
+      7443.279624219518
+    ],
+    "osm_source_bbox_local_m": [
+      10281.487672389485,
+      10738.334801890072,
+      6997.084856718779,
+      7889.474391720258
+    ],
+    "osm_nodes": 420,
+    "nominal_grid_corner_local_m": [
+      10000.0,
+      7000.0
+    ],
+    "obj_vertex_count": 855,
+    "obj_bounds_min": [
+      -261.73,
+      0.0,
+      -431.97
+    ],
+    "obj_bounds_max": [
+      261.73,
+      15.0,
+      431.936
+    ],
+    "obj_center": [
+      0.0,
+      7.5,
+      -0.01700000000002433
+    ]
+  },
+  {
+    "tile_index": [
+      9,
+      7
+    ],
+    "fbx_name": "Ingolstadt_Tile_9_7.fbx",
+    "fbx_sha256": "3b85ab2d600e7406653fc7794e38737ca97abe9a46b46ecb80f1c2da5e87f12e",
+    "osm_source_bbox_center_local_m": [
+      9520.935388522688,
+      7487.304493548349
+    ],
+    "osm_source_bbox_local_m": [
+      9095.36068368284,
+      9946.510093362536,
+      7042.43579605408,
+      7932.173191042617
+    ],
+    "osm_nodes": 124,
+    "nominal_grid_corner_local_m": [
+      9000.0,
+      7000.0
+    ],
+    "obj_vertex_count": 260,
+    "obj_bounds_min": [
+      -419.122,
+      0.0,
+      -449.855
+    ],
+    "obj_bounds_max": [
+      419.122,
+      7.5,
+      449.818
+    ],
+    "obj_center": [
+      0.0,
+      3.75,
+      -0.01850000000001728
+    ]
+  },
+  {
+    "tile_index": [
+      9,
+      6
+    ],
+    "fbx_name": "Ingolstadt_Tile_9_6.fbx",
+    "fbx_sha256": "2de2ec767047b88e7d19bbbdb6219be4686fcfbad4ca0ca5578d5a9f99174264",
+    "osm_source_bbox_center_local_m": [
+      9422.686248352751,
+      6891.875101755839
+    ],
+    "osm_source_bbox_local_m": [
+      9341.500520827482,
+      9503.87197587802,
+      6811.974289648235,
+      6971.775913863443
+    ],
+    "osm_nodes": 38,
+    "nominal_grid_corner_local_m": [
+      9000.0,
+      6000.0
+    ],
+    "obj_vertex_count": 76,
+    "obj_bounds_min": [
+      -82.074,
+      0.0,
+      -82.923
+    ],
+    "obj_bounds_max": [
+      82.074,
+      7.5,
+      82.921
+    ],
+    "obj_center": [
+      0.0,
+      3.75,
+      -0.0009999999999976694
+    ]
+  },
+  {
+    "tile_index": [
+      10,
+      6
+    ],
+    "fbx_name": "Ingolstadt_Tile_10_6.fbx",
+    "fbx_sha256": "2eec3857c6046616411c9c9628b01b3757c03aba9b42d939cdaf648126e8249c",
+    "osm_source_bbox_center_local_m": [
+      10239.471670906933,
+      6929.116807622369
+    ],
+    "osm_source_bbox_local_m": [
+      10071.240396449808,
+      10407.702945364057,
+      6835.574240672402,
+      7022.659374572337
+    ],
+    "osm_nodes": 33,
+    "nominal_grid_corner_local_m": [
+      10000.0,
+      6000.0
+    ],
+    "obj_vertex_count": 70,
+    "obj_bounds_min": [
+      -171.592,
+      0.0,
+      -75.848
+    ],
+    "obj_bounds_max": [
+      171.592,
+      12.5,
+      75.847
+    ],
+    "obj_center": [
+      0.0,
+      6.25,
+      -0.0005000000000023874
+    ]
+  },
+  {
+    "tile_index": [
+      10,
+      8
+    ],
+    "fbx_name": "Ingolstadt_Tile_10_8.fbx",
+    "fbx_sha256": "006df1f61753c7ae20a761b162cd93bdc5f8122bc2fe34223249373bf143e922",
+    "osm_source_bbox_center_local_m": [
+      10132.020800078462,
+      8502.241801482625
+    ],
+    "osm_source_bbox_local_m": [
+      10010.268133599195,
+      10253.77346655773,
+      8083.746058270335,
+      8920.737544694915
+    ],
+    "osm_nodes": 30,
+    "nominal_grid_corner_local_m": [
+      10000.0,
+      8000.0
+    ],
+    "obj_vertex_count": 60,
+    "obj_bounds_min": [
+      -178.959,
+      0.0,
+      -395.783
+    ],
+    "obj_bounds_max": [
+      178.959,
+      7.5,
+      395.755
+    ],
+    "obj_center": [
+      0.0,
+      3.75,
+      -0.014000000000010004
+    ]
+  }
+]

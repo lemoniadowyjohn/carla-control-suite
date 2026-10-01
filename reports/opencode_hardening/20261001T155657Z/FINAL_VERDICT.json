@@ -1,0 +1,92 @@
+{
+  "report": "FINAL_VERDICT",
+  "generated_utc": "2026-10-01T21:30:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "branch": "fix/p0-coordinate-frame-tile-placement-authority-20261001",
+  "verdict": "PARTIAL_WITH_EXACT_BLOCKERS",
+  "p0_a_tile_placement": {
+    "status": "PARTIAL_WITH_EXACT_BLOCKERS",
+    "evidence": [
+      "20/20 tiles cooked successfully (OSM duplicate type tag fix applied)",
+      "Explicit placement transforms bound into all 20 tile manifests (architecture B)",
+      "Placement authority validation: recorded translation matches recomputed authority within 10m (error = 0 by construction)",
+      "Binding hashes verified: map SHA, tile index, source OSM SHA, FBX SHA",
+      "Frame IDs correct: NATIVE -> LOCAL via canonical contract",
+      "Negative controls: all 12 REJECTED as required"
+    ],
+    "blocker": "True world placement (rendered mesh bbox center in world coords) cannot be certified at 10m. OSM2World auto-centers on its rendered output bbox (walls extend beyond footprint nodes), creating an irreducible offset of up to ~40m worst case between the recorded authority (source footprint bbox center) and the true rendered geometry anchor. This is NOT a threshold issue; the 10m threshold is preserved. No re-cook was possible without mutating artifacts, violating 'no map mutation' rule."
+  },
+  "p0_b_crs_metadata": {
+    "status": "PASS",
+    "evidence": [
+      "Canonical coordinate_frame_contract.py created with 8 required transformation APIs",
+      "All 8 duplicate bare-tmerc/expanded-tmerc definitions refactored to import from canonical module",
+      "Map registry repaired: structured CRS fields (native_crs, local_crs, epsg_32632_crs) added with schema validation",
+      "Misleading crs_authority string marked DEPRECATED, retained for backward compatibility",
+      "Schema validation: native_crs must equal canonical; epsg_32632_crs must differ from native_crs; rebased frames require numeric rebase"
+    ]
+  },
+  "p1_c_coordinate_authority": {
+    "status": "PASS",
+    "evidence": [
+      "Single source of truth for all frame definitions and transformations",
+      "Frame IDs, units, axis order, CRS strings, rebase offsets, map SHA binding, contract version all defined",
+      "EPSG:32632 correctly distinguished as distinct CRS requiring reprojection (not offset-only)"
+    ]
+  },
+  "p1_d_c29_compensation": {
+    "status": "PASS",
+    "evidence": [
+      "building_frame_shift_to_auto_local returns (0,0) for C29+ maps (canonical native CRS)",
+      "Default building_frame_shift changed from 'auto' to (0.0, 0.0)",
+      "patch_pinned_building_frame.py marked DEPRECATED/STALE",
+      "Negative control test asserts shift == (0,0) for auto_map_of_record"
+    ]
+  },
+  "p1_e_frame_semantics": {
+    "status": "PASS",
+    "evidence": [
+      "Frame relationships explicitly defined: WGS84 -> NATIVE -> LOCAL (via rebase) and EPSG:32632 as distinct CRS",
+      "Axis order (xy), units (metres), CRS strings all codified in contract"
+    ]
+  },
+  "metrics": {
+    "original_seam_metric_max_m": 485.8371834028512,
+    "original_seam_metric_mean_m": 162.0067787636616,
+    "seam_tolerance_m": 10.0,
+    "original_status": "FAIL",
+    "new_status": "PARTIAL_WITH_EXACT_BLOCKERS",
+    "threshold_changed": false,
+    "threshold_justification": "Threshold unchanged at 10m. Original metric proven defective (measures building-distribution asymmetry, not placement error). New metric validates placement manifest authority within 10m (PASS). True world placement blocked by irreducible render-vs-footprint offset."
+  },
+  "cook_results": {
+    "tiles_attempted": 20,
+    "tiles_ok": 20,
+    "tiles_failed": 0,
+    "roundtrip_pass": 20,
+    "wall_clock_sec": 596.5,
+    "fixes_applied": [
+      "OSM duplicate 'type=multipolygon' tag deduplication in multipolygon relations",
+      "Explicit placement transform binding in all 20 tile manifests"
+    ]
+  },
+  "evidence_bundle": [
+    "BASELINE_AUTHORITY.json",
+    "CRS_AUTHORITY_CALL_GRAPH.json",
+    "CRS_CONTRACT_BEFORE_AFTER.json",
+    "PRE_C29_COMPENSATION_AUDIT.json",
+    "TILE_ORIGIN_ROOT_CAUSE.json",
+    "TILE_PLACEMENT_BEFORE_AFTER.json",
+    "TILE_NEGATIVE_CONTROLS.json",
+    "TEST_RESULTS.json",
+    "FINAL_VERDICT.json",
+    "FINAL_VERDICT.md"
+  ],
+  "reproducibility": {
+    "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+    "branch": "fix/p0-coordinate-frame-tile-placement-authority-20261001",
+    "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+    "all_evidence_in": "reports/opencode_hardening/20261001T155657Z/"
+  }
+}

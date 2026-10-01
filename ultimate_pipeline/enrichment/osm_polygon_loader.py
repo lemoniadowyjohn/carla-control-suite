@@ -19,33 +19,9 @@ from typing import Dict, List, Tuple, Optional
 import math
 from dataclasses import field
 
-from pyproj import Transformer
+from ultimate_pipeline.geometry import FRAME_NATIVE_CRS, wgs84_to_native
 
 from ultimate_pipeline.enrichment.building_extruder import BuildingFootprint
-
-
-# ---------------------------------------------------------------------
-# Coordinate system / transformer
-# ---------------------------------------------------------------------
-# Use the SAME frame as the road network's <geoReference>: a BARE tmerc projection
-# (implicit lat_0=0/lon_0=0 -- the global equator/prime-meridian origin), matching
-# Osm2Odr's own convention and
-# ultimate_pipeline.domain_gap.local_registration.BARE_TMERC_DEFAULT.
-#
-# C29 (2026-08-26): this used to be `+lat_0=<gps.lat_min> +lon_0=<gps.lon_min>` -- a
-# DIFFERENT tmerc origin (the configured GPS bbox corner) than roads. Verified on the
-# real pinned map: building cornerGlobal centroid was 7,665m from the road centroid as
-# a direct result. Buildings must project through the same global frame roads use so
-# that scripts/regen_map_of_record.py's _rebase_to_local (which also had to be extended
-# to shift cornerGlobal points, see the same C29 fix) produces a consistent local frame.
-PROJ_STRING = "+proj=tmerc +datum=WGS84 +units=m +no_defs"
-
-# Global transformer: WGS84 (lon, lat) → local tmerc (x, y) in meters
-TRANSFORMER = Transformer.from_crs(
-    "EPSG:4326",
-    PROJ_STRING,
-    always_xy=True,
-)
 
 
 class OSMPolygonLoader:
@@ -126,7 +102,7 @@ class OSMPolygonLoader:
                 lat, lon = nodes[nid]
 
                 # Transform to projected coordinates (meters)
-                x, y = TRANSFORMER.transform(lon, lat)
+                x, y = wgs84_to_native(lon, lat)
                 coords_xy.append((x, y))
 
             if len(coords_xy) < 3:
@@ -309,7 +285,7 @@ class OSMPolygonLoader:
         """
         Helper to project a single WGS84 coordinate into local CRS.
         """
-        x, y = TRANSFORMER.transform(lon, lat)
+        x, y = wgs84_to_native(lon, lat)
         return x, y
 
     # ------------------------------------------------------------------
@@ -346,7 +322,7 @@ class OSMPolygonLoader:
         def _ring_to_xy(ring):
             coords_xy = []
             for lon, lat in ring:
-                x, y = TRANSFORMER.transform(lon, lat)
+                x, y = wgs84_to_native(lon, lat)
                 coords_xy.append((x, y))
             return coords_xy
 

@@ -47,10 +47,8 @@ except Exception:  # pragma: no cover - pyproj is required for DEM phases
     Transformer = None
 
 #: Osm2Odr native output frame (verified against WP1 reprojection, 0.0 m).
-OSM2ODR_NATIVE_PROJ4 = (
-    "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 "
-    "+units=m +no_defs"
-)
+#: Imported from canonical coordinate frame contract.
+from ultimate_pipeline.geometry import FRAME_NATIVE_CRS as OSM2ODR_NATIVE_PROJ4
 
 #: Pinned-candidate control point and its verified WGS84 location.
 #: Pinned XODR geometry start of road 39830 == WP1 candidate_actual_reprojection

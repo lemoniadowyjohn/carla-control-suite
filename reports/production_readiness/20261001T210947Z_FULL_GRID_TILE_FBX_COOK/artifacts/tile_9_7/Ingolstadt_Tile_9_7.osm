@@ -1,0 +1,393 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="tile_fbx_generator.py">
+  <node id="-1" lat="48.7550322" lon="11.4590148" visible="true" />
+  <node id="-2" lat="48.7548761" lon="11.4589671" visible="true" />
+  <node id="-3" lat="48.7548572" lon="11.4591090" visible="true" />
+  <node id="-4" lat="48.7549322" lon="11.4591319" visible="true" />
+  <node id="-5" lat="48.7549057" lon="11.4593302" visible="true" />
+  <node id="-6" lat="48.7549867" lon="11.4593549" visible="true" />
+  <node id="-7" lat="48.7575240" lon="11.4598233" visible="true" />
+  <node id="-8" lat="48.7573907" lon="11.4598106" visible="true" />
+  <node id="-9" lat="48.7573204" lon="11.4615088" visible="true" />
+  <node id="-10" lat="48.7574537" lon="11.4615215" visible="true" />
+  <node id="-11" lat="48.7581796" lon="11.4598934" visible="true" />
+  <node id="-12" lat="48.7580437" lon="11.4598566" visible="true" />
+  <node id="-13" lat="48.7579714" lon="11.4604705" visible="true" />
+  <node id="-14" lat="48.7581073" lon="11.4605073" visible="true" />
+  <node id="-15" lat="48.7581027" lon="11.4605223" visible="true" />
+  <node id="-16" lat="48.7579555" lon="11.4604800" visible="true" />
+  <node id="-17" lat="48.7578404" lon="11.4614028" visible="true" />
+  <node id="-18" lat="48.7579874" lon="11.4614451" visible="true" />
+  <node id="-19" lat="48.7596557" lon="11.4599087" visible="true" />
+  <node id="-20" lat="48.7589015" lon="11.4596838" visible="true" />
+  <node id="-21" lat="48.7588511" lon="11.4600720" visible="true" />
+  <node id="-22" lat="48.7596053" lon="11.4602971" visible="true" />
+  <node id="-23" lat="48.7587717" lon="11.4615267" visible="true" />
+  <node id="-24" lat="48.7582520" lon="11.4613690" visible="true" />
+  <node id="-25" lat="48.7582198" lon="11.4616133" visible="true" />
+  <node id="-26" lat="48.7587395" lon="11.4617711" visible="true" />
+  <node id="-27" lat="48.7543411" lon="11.4631536" visible="true" />
+  <node id="-28" lat="48.7538692" lon="11.4629928" visible="true" />
+  <node id="-29" lat="48.7538361" lon="11.4632161" visible="true" />
+  <node id="-30" lat="48.7539362" lon="11.4632502" visible="true" />
+  <node id="-31" lat="48.7539218" lon="11.4633468" visible="true" />
+  <node id="-32" lat="48.7540790" lon="11.4634004" visible="true" />
+  <node id="-33" lat="48.7540998" lon="11.4632603" visible="true" />
+  <node id="-34" lat="48.7541943" lon="11.4632925" visible="true" />
+  <node id="-35" lat="48.7541777" lon="11.4634046" visible="true" />
+  <node id="-36" lat="48.7542978" lon="11.4634455" visible="true" />
+  <node id="-37" lat="48.7570458" lon="11.4702403" visible="true" />
+  <node id="-38" lat="48.7569118" lon="11.4701891" visible="true" />
+  <node id="-39" lat="48.7568871" lon="11.4703377" visible="true" />
+  <node id="-40" lat="48.7570212" lon="11.4703889" visible="true" />
+  <node id="-41" lat="48.7525592" lon="11.4677686" visible="true" />
+  <node id="-42" lat="48.7524731" lon="11.4679237" visible="true" />
+  <node id="-43" lat="48.7524307" lon="11.4678764" visible="true" />
+  <node id="-44" lat="48.7525149" lon="11.4677213" visible="true" />
+  <node id="-45" lat="48.7540160" lon="11.4639901" visible="true" />
+  <node id="-46" lat="48.7539423" lon="11.4639681" visible="true" />
+  <node id="-47" lat="48.7539135" lon="11.4641890" visible="true" />
+  <node id="-48" lat="48.7539873" lon="11.4642111" visible="true" />
+  <node id="-49" lat="48.7545274" lon="11.4663526" visible="true" />
+  <node id="-50" lat="48.7544521" lon="11.4663005" visible="true" />
+  <node id="-51" lat="48.7543665" lon="11.4665852" visible="true" />
+  <node id="-52" lat="48.7544418" lon="11.4666373" visible="true" />
+  <node id="-53" lat="48.7536811" lon="11.4681829" visible="true" />
+  <node id="-54" lat="48.7536044" lon="11.4681338" visible="true" />
+  <node id="-55" lat="48.7535484" lon="11.4683346" visible="true" />
+  <node id="-56" lat="48.7536251" lon="11.4683838" visible="true" />
+  <node id="-57" lat="48.7539188" lon="11.4596245" visible="true" />
+  <node id="-58" lat="48.7539985" lon="11.4596516" visible="true" />
+  <node id="-59" lat="48.7539830" lon="11.4597568" visible="true" />
+  <node id="-60" lat="48.7539032" lon="11.4597296" visible="true" />
+  <node id="-61" lat="48.7552804" lon="11.4621494" visible="true" />
+  <node id="-62" lat="48.7551900" lon="11.4621154" visible="true" />
+  <node id="-63" lat="48.7551570" lon="11.4623160" visible="true" />
+  <node id="-64" lat="48.7552473" lon="11.4623500" visible="true" />
+  <node id="-65" lat="48.7540054" lon="11.4636454" visible="true" />
+  <node id="-66" lat="48.7539399" lon="11.4637046" visible="true" />
+  <node id="-67" lat="48.7539303" lon="11.4637734" visible="true" />
+  <node id="-68" lat="48.7540124" lon="11.4637966" visible="true" />
+  <node id="-69" lat="48.7540214" lon="11.4637179" visible="true" />
+  <node id="-70" lat="48.7541530" lon="11.4637373" visible="true" />
+  <node id="-71" lat="48.7541571" lon="11.4636615" visible="true" />
+  <node id="-72" lat="48.7550240" lon="11.4631769" visible="true" />
+  <node id="-73" lat="48.7550131" lon="11.4632848" visible="true" />
+  <node id="-74" lat="48.7549297" lon="11.4632671" visible="true" />
+  <node id="-75" lat="48.7549366" lon="11.4632031" visible="true" />
+  <node id="-76" lat="48.7549402" lon="11.4631534" visible="true" />
+  <node id="-77" lat="48.7589696" lon="11.4592295" visible="true" />
+  <node id="-78" lat="48.7589412" lon="11.4594566" visible="true" />
+  <node id="-79" lat="48.7596854" lon="11.4596703" visible="true" />
+  <node id="-80" lat="48.7597138" lon="11.4594435" visible="true" />
+  <node id="-81" lat="48.7582276" lon="11.4619488" visible="true" />
+  <node id="-82" lat="48.7580780" lon="11.4625732" visible="true" />
+  <node id="-83" lat="48.7582962" lon="11.4626934" visible="true" />
+  <node id="-84" lat="48.7584457" lon="11.4620690" visible="true" />
+  <node id="-85" lat="48.7576353" lon="11.4621406" visible="true" />
+  <node id="-86" lat="48.7573975" lon="11.4619784" visible="true" />
+  <node id="-87" lat="48.7566466" lon="11.4645104" visible="true" />
+  <node id="-88" lat="48.7568847" lon="11.4646728" visible="true" />
+  <node id="-89" lat="48.7576871" lon="11.4643042" visible="true" />
+  <node id="-90" lat="48.7576562" lon="11.4642857" visible="true" />
+  <node id="-91" lat="48.7576220" lon="11.4642652" visible="true" />
+  <node id="-92" lat="48.7575800" lon="11.4644267" visible="true" />
+  <node id="-93" lat="48.7576141" lon="11.4644471" visible="true" />
+  <node id="-94" lat="48.7576451" lon="11.4644657" visible="true" />
+  <node id="-95" lat="48.7582734" lon="11.4628612" visible="true" />
+  <node id="-96" lat="48.7582384" lon="11.4629782" visible="true" />
+  <node id="-97" lat="48.7581115" lon="11.4628909" visible="true" />
+  <node id="-98" lat="48.7581464" lon="11.4627740" visible="true" />
+  <node id="-99" lat="48.7531079" lon="11.4596871" visible="true" />
+  <node id="-100" lat="48.7531251" lon="11.4596542" visible="true" />
+  <node id="-101" lat="48.7531406" lon="11.4596729" visible="true" />
+  <node id="-102" lat="48.7531234" lon="11.4597058" visible="true" />
+  <node id="-103" lat="48.7547719" lon="11.4631828" visible="true" />
+  <node id="-104" lat="48.7547600" lon="11.4632779" visible="true" />
+  <node id="-105" lat="48.7547108" lon="11.4632637" visible="true" />
+  <node id="-106" lat="48.7547226" lon="11.4631686" visible="true" />
+  <node id="-107" lat="48.7548492" lon="11.4632472" visible="true" />
+  <node id="-108" lat="48.7548560" lon="11.4631831" visible="true" />
+  <node id="-109" lat="48.7521565" lon="11.4601186" visible="true" />
+  <node id="-110" lat="48.7519379" lon="11.4601085" visible="true" />
+  <node id="-111" lat="48.7519343" lon="11.4602888" visible="true" />
+  <node id="-112" lat="48.7521529" lon="11.4602989" visible="true" />
+  <node id="-113" lat="48.7524193" lon="11.4678468" visible="true" />
+  <node id="-114" lat="48.7523841" lon="11.4678153" visible="true" />
+  <node id="-115" lat="48.7523489" lon="11.4679057" visible="true" />
+  <node id="-116" lat="48.7523841" lon="11.4679373" visible="true" />
+  <node id="-117" lat="48.7524220" lon="11.4679200" visible="true" />
+  <node id="-118" lat="48.7524562" lon="11.4679522" visible="true" />
+  <node id="-119" lat="48.7524349" lon="11.4679951" visible="true" />
+  <node id="-120" lat="48.7524067" lon="11.4679576" visible="true" />
+  <node id="-121" lat="48.7516895" lon="11.4600102" visible="true" />
+  <node id="-122" lat="48.7516335" lon="11.4600083" visible="true" />
+  <node id="-123" lat="48.7516319" lon="11.4601186" visible="true" />
+  <node id="-124" lat="48.7516879" lon="11.4601204" visible="true" />
+  <way id="-1000000000" visible="true">
+    <nd ref="-1" />
+    <nd ref="-2" />
+    <nd ref="-3" />
+    <nd ref="-4" />
+    <nd ref="-5" />
+    <nd ref="-6" />
+    <nd ref="-1" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000001" visible="true">
+    <nd ref="-7" />
+    <nd ref="-8" />
+    <nd ref="-9" />
+    <nd ref="-10" />
+    <nd ref="-7" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000002" visible="true">
+    <nd ref="-11" />
+    <nd ref="-12" />
+    <nd ref="-13" />
+    <nd ref="-14" />
+    <nd ref="-11" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000003" visible="true">
+    <nd ref="-15" />
+    <nd ref="-16" />
+    <nd ref="-17" />
+    <nd ref="-18" />
+    <nd ref="-15" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000004" visible="true">
+    <nd ref="-19" />
+    <nd ref="-20" />
+    <nd ref="-21" />
+    <nd ref="-22" />
+    <nd ref="-19" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000005" visible="true">
+    <nd ref="-23" />
+    <nd ref="-24" />
+    <nd ref="-25" />
+    <nd ref="-26" />
+    <nd ref="-23" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000006" visible="true">
+    <nd ref="-27" />
+    <nd ref="-28" />
+    <nd ref="-29" />
+    <nd ref="-30" />
+    <nd ref="-31" />
+    <nd ref="-32" />
+    <nd ref="-33" />
+    <nd ref="-34" />
+    <nd ref="-35" />
+    <nd ref="-36" />
+    <nd ref="-27" />
+    <tag k="addr:housenumber" v="20" />
+    <tag k="addr:postcode" v="85053" />
+    <tag k="addr:street" v="Am Auwaldsee" />
+    <tag k="amenity" v="restaurant" />
+    <tag k="building" v="yes" />
+    <tag k="cuisine" v="regional" />
+    <tag k="fax" v="+49 841 99390819" />
+    <tag k="name" v="Wirtshaus am Auwaldsee" />
+    <tag k="operator" v="Maria Stiftl" />
+    <tag k="phone" v="+49 841 99390815" />
+    <tag k="toilets:wheelchair" v="yes" />
+    <tag k="website" v="http://www.auwaldsee-in.de/" />
+    <tag k="wheelchair" v="yes" />
+  </way>
+  <way id="-1000000007" visible="true">
+    <nd ref="-37" />
+    <nd ref="-38" />
+    <nd ref="-39" />
+    <nd ref="-40" />
+    <nd ref="-37" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000008" visible="true">
+    <nd ref="-41" />
+    <nd ref="-42" />
+    <nd ref="-43" />
+    <nd ref="-44" />
+    <nd ref="-41" />
+    <tag k="building" v="yes" />
+    <tag k="disused:amenity" v="toilets" />
+    <tag k="wheelchair" v="no" />
+  </way>
+  <way id="-1000000009" visible="true">
+    <nd ref="-45" />
+    <nd ref="-46" />
+    <nd ref="-47" />
+    <nd ref="-48" />
+    <nd ref="-45" />
+    <tag k="building" v="yes" />
+    <tag k="name" v="AZUR Reception" />
+  </way>
+  <way id="-1000000010" visible="true">
+    <nd ref="-49" />
+    <nd ref="-50" />
+    <nd ref="-51" />
+    <nd ref="-52" />
+    <nd ref="-49" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000011" visible="true">
+    <nd ref="-53" />
+    <nd ref="-54" />
+    <nd ref="-55" />
+    <nd ref="-56" />
+    <nd ref="-53" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000012" visible="true">
+    <nd ref="-57" />
+    <nd ref="-58" />
+    <nd ref="-59" />
+    <nd ref="-60" />
+    <nd ref="-57" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000013" visible="true">
+    <nd ref="-61" />
+    <nd ref="-62" />
+    <nd ref="-63" />
+    <nd ref="-64" />
+    <nd ref="-61" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000014" visible="true">
+    <nd ref="-65" />
+    <nd ref="-66" />
+    <nd ref="-67" />
+    <nd ref="-68" />
+    <nd ref="-69" />
+    <nd ref="-70" />
+    <nd ref="-71" />
+    <nd ref="-65" />
+    <tag k="addr:city" v="Ingolstadt" />
+    <tag k="addr:country" v="DE" />
+    <tag k="addr:housenumber" v="22" />
+    <tag k="addr:postcode" v="85053" />
+    <tag k="addr:street" v="Am Auwaldsee" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000015" visible="true">
+    <nd ref="-72" />
+    <nd ref="-73" />
+    <nd ref="-74" />
+    <nd ref="-75" />
+    <nd ref="-76" />
+    <nd ref="-72" />
+    <tag k="building" v="yes" />
+    <tag k="name" v="Anglerverein Ingolstadt" />
+  </way>
+  <way id="-1000000016" visible="true">
+    <nd ref="-77" />
+    <nd ref="-78" />
+    <nd ref="-79" />
+    <nd ref="-80" />
+    <nd ref="-77" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000017" visible="true">
+    <nd ref="-81" />
+    <nd ref="-82" />
+    <nd ref="-83" />
+    <nd ref="-84" />
+    <nd ref="-81" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000018" visible="true">
+    <nd ref="-85" />
+    <nd ref="-86" />
+    <nd ref="-87" />
+    <nd ref="-88" />
+    <nd ref="-85" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000019" visible="true">
+    <nd ref="-89" />
+    <nd ref="-90" />
+    <nd ref="-91" />
+    <nd ref="-92" />
+    <nd ref="-93" />
+    <nd ref="-94" />
+    <nd ref="-89" />
+    <tag k="access" v="private" />
+    <tag k="amenity" v="car_wash" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000020" visible="true">
+    <nd ref="-95" />
+    <nd ref="-96" />
+    <nd ref="-97" />
+    <nd ref="-98" />
+    <nd ref="-95" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000021" visible="true">
+    <nd ref="-99" />
+    <nd ref="-100" />
+    <nd ref="-101" />
+    <nd ref="-102" />
+    <nd ref="-99" />
+    <tag k="building" v="service" />
+    <tag k="location" v="indoor" />
+    <tag k="power" v="substation" />
+  </way>
+  <way id="-1000000022" visible="true">
+    <nd ref="-103" />
+    <nd ref="-104" />
+    <nd ref="-105" />
+    <nd ref="-106" />
+    <nd ref="-103" />
+    <tag k="building" v="roof" />
+    <tag k="layer" v="1" />
+  </way>
+  <way id="-1000000023" visible="true">
+    <nd ref="-74" />
+    <nd ref="-107" />
+    <nd ref="-108" />
+    <nd ref="-75" />
+    <nd ref="-74" />
+    <tag k="building" v="roof" />
+    <tag k="layer" v="1" />
+  </way>
+  <way id="-1000000024" visible="true">
+    <nd ref="-109" />
+    <nd ref="-110" />
+    <nd ref="-111" />
+    <nd ref="-112" />
+    <nd ref="-109" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000025" visible="true">
+    <nd ref="-113" />
+    <nd ref="-114" />
+    <nd ref="-115" />
+    <nd ref="-116" />
+    <nd ref="-113" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000026" visible="true">
+    <nd ref="-117" />
+    <nd ref="-118" />
+    <nd ref="-119" />
+    <nd ref="-120" />
+    <nd ref="-117" />
+    <tag k="building" v="container" />
+    <tag k="name" v="Rettungswacht" />
+  </way>
+  <way id="-1000000027" visible="true">
+    <nd ref="-121" />
+    <nd ref="-122" />
+    <nd ref="-123" />
+    <nd ref="-124" />
+    <nd ref="-121" />
+    <tag k="building" v="yes" />
+  </way>
+</osm>

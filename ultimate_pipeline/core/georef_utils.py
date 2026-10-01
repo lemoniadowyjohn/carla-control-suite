@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Optional, Dict, Any, Tuple
 
+from ultimate_pipeline.geometry import FRAME_EPSG_32632_CRS as CANONICAL_MANUAL_GEOREFERENCE
+
 
 def _strip_cdata(text: str) -> str:
     stripped = text.strip()
     if stripped.startswith("<![CDATA[") and stripped.endswith("]]>"):
         return stripped[9:-3]
-    return text
+    return stripped
 
 
 def normalize_georeference(text: Optional[str]) -> str:
@@ -40,12 +42,6 @@ def parse_georeference_dict(text: Optional[str]) -> Dict[str, Any]:
     """Legacy helper for dict-style access."""
     valid, params_complete, norm = parse_georeference(text)
     return {"valid": valid, "params_complete": params_complete, "norm": norm}
-
-# Canonical manual map CRS (used to make auto/manual maps comparable).
-CANONICAL_MANUAL_GEOREFERENCE = (
-    "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 "
-    "+datum=WGS84 +units=m +no_defs"
-)
 
 
 def canonical_manual_georeference() -> str:

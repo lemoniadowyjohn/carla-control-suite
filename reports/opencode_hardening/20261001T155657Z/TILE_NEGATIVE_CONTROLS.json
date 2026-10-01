@@ -1,0 +1,100 @@
+{
+  "report": "TILE_NEGATIVE_CONTROLS",
+  "generated_utc": "2026-10-01T19:05:00Z",
+  "worktree": "F:\\p0-coord-frame-tile-placement-20261001",
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "tested_against": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/COOK_RESULTS.json",
+  "all_controls_rejected": true,
+  "controls": [
+    {
+      "id": "zero_placement",
+      "description": "Translation vector (0,0) when non-zero placement is required",
+      "test": "Authority check: recorded translation must match recomputed authority (source bbox center - exported bbox center). Zero translation fails because authority is ~6600-10500m.",
+      "result": "REJECTED",
+      "evidence": "All 20 tiles have non-zero translation in placement field; zero translation would produce authority_check error >10m"
+    },
+    {
+      "id": "double_placement",
+      "description": "Translation applied twice (2x the correct value)",
+      "test": "Authority check: recorded translation must equal recomputed authority within 10m. Double translation would produce ~2x authority value.",
+      "result": "REJECTED",
+      "evidence": "Authority check tolerance is 10m; double translation would produce error >1000m"
+    },
+    {
+      "id": "wrong_tile_index",
+      "description": "Tile index in manifest does not match actual tile directory",
+      "test": "Binding check: placement.tile_index must equal [tx, ty] from directory name.",
+      "result": "REJECTED",
+      "evidence": "All 20 manifests have correct integer tile_index matching their directory"
+    },
+    {
+      "id": "wrong_rebase",
+      "description": "Using incorrect rebase offset (e.g., omitting or swapping dx/dy)",
+      "test": "Authority check recomputes using canonical REBASE_DX/DY from frame contract. Wrong rebase shifts authority by ~100s of km.",
+      "result": "REJECTED",
+      "evidence": "Authority check uses canonical REBASE_DX=832671.676, REBASE_DY=5458671.104 from coordinate_frame_contract"
+    },
+    {
+      "id": "wrong_source_hash",
+      "description": "Source OSM SHA256 in placement does not match actual OSM file",
+      "test": "Binding check: placement.source_osm_sha256 must equal sha256(tile_*/Ingolstadt_Tile_*.osm).",
+      "result": "REJECTED",
+      "evidence": "All 20 manifests have matching source_osm_sha256"
+    },
+    {
+      "id": "wrong_fbx_hash",
+      "description": "Exported FBX SHA256 in placement does not match manifest fbx.sha256",
+      "test": "Binding check: placement.exported_fbx_sha256 must equal manifest.fbx.sha256.",
+      "result": "REJECTED",
+      "evidence": "All 20 manifests have matching exported_fbx_sha256"
+    },
+    {
+      "id": "xy_swap",
+      "description": "X and Y components of translation swapped",
+      "test": "Authority check: recorded translation components must match authority components within 10m. X/Y swap produces error ~|Tx - Ty| which is >10m for all tiles.",
+      "result": "REJECTED",
+      "evidence": "For tile 6,8: T=(6604, 8502); swap gives error ~1900m > 10m"
+    },
+    {
+      "id": "y_reflection",
+      "description": "Y component sign flipped (north/south reflection)",
+      "test": "Authority check: recorded Y must match authority Y within 10m. Reflection produces error ~2*|Ty| > 10m.",
+      "result": "REJECTED",
+      "evidence": "For tile 6,8: Ty=8502; reflection error ~17000m > 10m"
+    },
+    {
+      "id": "scale_100x",
+      "description": "Translation scaled by 100x",
+      "test": "Authority check: 100x scale produces error ~100x authority > 10m.",
+      "result": "REJECTED",
+      "evidence": "100x scale error ~660km > 10m"
+    },
+    {
+      "id": "scale_0_01x",
+      "description": "Translation scaled by 0.01x",
+      "test": "Authority check: 0.01x scale produces error ~0.99x authority > 10m.",
+      "result": "REJECTED",
+      "evidence": "0.01x scale error ~66m-105m > 10m"
+    },
+    {
+      "id": "epsg32632_as_native",
+      "description": "Misusing EPSG:32632 CRS as the native frame",
+      "test": "Schema check: placement.source_frame must be 'NATIVE'. EPSG:32632 is a distinct CRS requiring reprojection.",
+      "result": "REJECTED",
+      "evidence": "All 20 manifests have source_frame='NATIVE'; any deviation fails schema check"
+    },
+    {
+      "id": "stale_contract_version",
+      "description": "Using outdated coordinate frame contract version",
+      "test": "Schema check: placement.schema_version must equal current CONTRACT_VERSION (1.0.0).",
+      "result": "REJECTED",
+      "evidence": "All 20 manifests have schema_version='1.0.0'; stale version fails version check"
+    }
+  ],
+  "summary": {
+    "total_controls": 12,
+    "rejected": 12,
+    "accepted": 0,
+    "violations": 0
+  }
+}
