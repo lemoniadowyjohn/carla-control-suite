@@ -1,0 +1,58 @@
+{
+  "artifact": "SIMULATION_PHYSICS_PROFILE.json",
+  "coarse_substep_fails": {
+    "invalid_reasons": [
+      "PHYSICS_SUBSTEP_TOO_COARSE:0.05>0.01"
+    ]
+  },
+  "defect_before": "record_route_fixed explicitly set settings.substepping = False with no profile, no budget check and no verification, and never set max_substep_delta_time / max_substeps at all",
+  "finding": "NEW-331",
+  "fixed_delta_exceeds_budget_fails": {
+    "invalid_reasons": [
+      "PHYSICS_SUBSTEP_BUDGET_EXCEEDED:fixed_delta_seconds=0.5>max_substep_delta_time*max_substeps=0.11"
+    ]
+  },
+  "inequality_enforced": "fixed_delta_seconds <= max_substep_delta_time * max_substeps",
+  "inequality_holds": true,
+  "max_desired_physical_substep_s": 0.01,
+  "pair_arms_must_share_digest": "simulation_physics_sha256",
+  "profile": {
+    "digest_excludes": [
+      "evaluation",
+      "settings_readback"
+    ],
+    "fixed_delta_seconds": 0.1,
+    "fps_target": 10,
+    "max_desired_physical_substep_s": 0.01,
+    "max_substep_delta_time": 0.01,
+    "max_substeps": 11,
+    "no_rendering_mode": false,
+    "overrides_applied": {},
+    "profile_name": "carla_0_9_16_high_fidelity_substepped",
+    "render_blocking": false,
+    "schema": "SIMULATION_PHYSICS_PROFILE/v1",
+    "simulation_physics_sha256": "e66aef0a49503a221a98227e8551631141e55fbd06c6ce652403d3077ee90538",
+    "substep_budget_seconds": 0.11,
+    "substepping": true,
+    "synchronous_mode": true
+  },
+  "schema": "NEW331_PHYSICS_SUBSTEPPING.json",
+  "simulation_physics_sha256": "e66aef0a49503a221a98227e8551631141e55fbd06c6ce652403d3077ee90538",
+  "status": "PASS",
+  "strict_validation": {
+    "fixed_delta_seconds": 0.1,
+    "invalid_reasons": [],
+    "profile_name": "carla_0_9_16_high_fidelity_substepped",
+    "simulation_physics_sha256": "e66aef0a49503a221a98227e8551631141e55fbd06c6ce652403d3077ee90538",
+    "strict": true,
+    "substep_budget_seconds": 0.11,
+    "substepping": true,
+    "valid": true
+  },
+  "substepping_disabled_fails": {
+    "invalid_reasons": [
+      "PHYSICS_SUBSTEPPING_DISABLED:carla_0_9_16_high_fidelity_substepped"
+    ]
+  },
+  "wired_into": "ultimate_pipeline/perception/record_route_fixed.py"
+}

@@ -78,6 +78,14 @@ def _env_int(name: str, default: int) -> int:
         return int(default)
 
 
+def _env_str(name: str, default: str = "") -> str:
+    """Read a governed environment string (NEW-316/331/333 environment owner)."""
+    v = os.environ.get(name)
+    if v is None:
+        return str(default)
+    return str(v).strip()
+
+
 def _tcp_port_open(host: str, port: int, timeout_s: float = 1.0) -> bool:
     try:
         with socket.create_connection((str(host), int(port)), timeout=float(timeout_s)):
@@ -1975,6 +1983,137 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     run_info["settings_applied_before_tick"] = bool(settings_applied_before_tick)
     _write_json(out_dir / "run_info.json", run_info)
 
+    # =======================================================================
+    # NEW-316 .. NEW-333: governed experiment environment.
+    #
+    # Everything below establishes the governed runtime state BEFORE any
+    # experimental actor (ego, sensors, NPCs) is materialised.  Previously
+    # synchronous mode was switched on only after the whole rig had been built,
+    # so the world advanced asynchronously during rig construction, weather was
+    # never applied at all, the traffic manager was hardcoded to port 8000 with
+    # an unseeded ``ego.set_autopilot(True)`` fallback, substepping was silently
+    # disabled, and NPC blueprints were chosen with a hardcoded global
+    # ``random.seed(42)``.
+    # =======================================================================
+    from ultimate_pipeline.perception.environment import (
+        physics_profile as _phys,
+        seed_tree as _seeds,
+        weather_spec as _weather,
+    )
+    from ultimate_pipeline.perception.environment.deterministic_weather import (
+        controller_from_environment as _weather_controller,
+    )
+
+    start_state = _phys.ExperimentStartState(
+        claim_boundary=_phys.claim_boundary_for(
+            "xodr" if args.xodr else "builtin"
+        )
+    )
+    start_state.complete("LOAD_OR_GENERATE_INTENDED_WORLD", {"map": str(getattr(world.get_map(), "name", ""))})
+    start_state.complete("ESTABLISH_FINAL_WORLD_IDENTITY", {"carla_map_name": _LAST_CAPTURE_CONTEXT.get("carla_map_name")})
+
+    # --- NEW-331: governed physics profile ---------------------------------
+    physics_profile = _phys.build_physics_profile(
+        int(args.fps),
+        profile=_env_str("UP_PHYSICS_PROFILE", _phys.DEFAULT_PROFILE),
+    )
+    physics_verdict = _phys.validate_physics_profile(physics_profile, strict=True)
+    if not physics_verdict["valid"]:
+        raise RuntimeError(
+            "physics_profile_invalid:" + ",".join(physics_verdict["invalid_reasons"])
+        )
+    _write_json(out_dir / "SIMULATION_PHYSICS_PROFILE.json", physics_profile)
+    apply_report = _phys.apply_physics_profile(world.get_settings(), physics_profile)
+    governed_settings = world.get_settings()
+    apply_report = _phys.apply_physics_profile(governed_settings, physics_profile)
+    world.apply_settings(governed_settings)
+    world.apply_settings(governed_settings)
+    verify_report = _phys.verify_physics_settings(world, physics_profile)
+    if not verify_report["verified"]:
+        raise RuntimeError(
+            "simulation_settings_verify_failed:"
+            + ",".join(verify_report["invalid_reasons"])
+        )
+    applied_world_settings = {
+        "synchronous_mode": True,
+        "fixed_delta_seconds": float(physics_profile["fixed_delta_seconds"]),
+        "substepping": bool(physics_profile.get("substepping")),
+    }
+    settings_applied_before_tick = True
+    start_state.complete("APPLY_GOVERNED_SIMULATION_SETTINGS", apply_report)
+    start_state.complete("VERIFY_SIMULATION_SETTINGS", verify_report["readback"])
+    run_info["applied_world_settings"] = dict(applied_world_settings)
+    run_info["settings_applied_before_tick"] = True
+    run_info["simulation_physics_sha256"] = physics_profile[
+        _phys.PHYSICS_DIGEST_FIELD
+    ]
+    _write_json(out_dir / "run_info.json", run_info)
+
+    # --- NEW-316 / NEW-317 / NEW-319: governed weather ---------------------
+    requested_weather = _env_str("UP_WEATHER_PRESET", "ClearNoon")
+    weather_spec = _weather.resolve_weather_spec(requested_weather, strict=True)
+    if not weather_spec["ok"]:
+        raise RuntimeError(
+            f"weather_spec_unresolved:{weather_spec['failure_code']}:{requested_weather}"
+        )
+    _write_json(
+        out_dir / "weather_requested.json",
+        _weather.weather_requested_artifact(requested_weather, weather_spec),
+    )
+    weather_evidence: Dict[str, Any] = {}
+    try:
+        weather_evidence = _weather.apply_weather_and_verify(
+            world, requested_weather, settle_ticks=2, strict=True
+        )
+    except _weather.WeatherApplicationError as exc:
+        _write_json(
+            out_dir / "weather_effective.json",
+            _weather.weather_effective_artifact(exc.payload),
+        )
+        raise RuntimeError(
+            f"{exc.failure_code}:weather_application_failed:{exc}"
+        ) from exc
+    _write_json(
+        out_dir / "weather_effective.json",
+        _weather.weather_effective_artifact(weather_evidence),
+    )
+    weather_sha256 = str(weather_evidence.get("weather_sha256") or "")
+
+    # --- NEW-319: deterministic weather controller ------------------------
+    weather_controller = _weather_controller()
+    weather_determinism_proof = {
+        "schema": "WEATHER_DETERMINISM/v1",
+        "mode": weather_controller.mode,
+        "governed": weather_controller.mode in ("GOVERNED_FIXED_WEATHER", "GOVERNED_SCHEDULED_WEATHER"),
+        "weather_seed": weather_controller.seed,
+        "schedule": [],
+        "schedule_sha256": "",
+        "transition_frame_ids": [],
+        "ticks_per_step": weather_controller.ticks_per_step,
+        "requested_preset": requested_weather,
+        "weather_sha256": weather_sha256,
+    }
+    run_info["weather_preset"] = requested_weather
+    run_info["weather_sha256"] = weather_sha256
+
+    # --- NEW-327: owned seed tree -----------------------------------------
+    seed_env = dict(os.environ)
+    seed_env["UP_EXPERIMENT_SEED"] = str(
+        _env_str("UP_EXPERIMENT_SEED", "") or _env_str("UP_TM_SEED", "0") or "0"
+    )
+    try:
+        seed_tree = _seeds.seed_tree_from_environment(seed_env)
+    except ValueError as exc:
+        raise RuntimeError(f"seed_tree_invalid:{exc}") from exc
+    _write_json(out_dir / "seed_tree.json", seed_tree)
+    run_info["seed_tree_sha256"] = seed_tree.get("seed_tree_sha256")
+    run_info["experiment_seed"] = seed_tree["experiment_seed"]
+    governed_rng = _seeds.owned_rng(seed_tree["experiment_seed"], "npc_blueprint")
+
+    # =======================================================================
+    # EGO / NPC / SENSOR SPAWN (governed actors)
+    # =======================================================================
+
     # Spawn ego
     bp_lib = world.get_blueprint_library()
     candidates = bp_lib.filter(args.vehicle)
@@ -2106,13 +2245,15 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 "vehicle_blueprints_available": int(len(vehicle_bps)),
             }
         else:
-            import random as _random
-
-            _random.seed(42)
+            # NEW-327: blueprint choice is driven by an OWNED RNG derived from
+            # the governed experiment seed.  The previous code called
+            # ``_random.seed(42)`` on the process-global ``random`` module,
+            # mutating randomness for every unrelated module, and bound the NPC
+            # mix to the literal 42 instead of the experiment seed.
             npc_count = min(int(args.num_npcs), usable_spawn_points)
             batch_cmds = []
             for i in range(1, npc_count + 1):
-                bp = _random.choice(vehicle_bps)
+                bp = governed_rng.choice(vehicle_bps)
                 sp = spawn_points[i % len(spawn_points)]
                 batch_cmds.append(carla.command.SpawnActor(bp, sp))
 
@@ -2778,30 +2919,27 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     ):
         raise RuntimeError("Rig validation failed; see rig_validation.json")
 
-    # Switch to synchronous mode only after ego + sensors are fully materialized.
-    settings = world.get_settings()
-    settings.synchronous_mode = True
-    settings.fixed_delta_seconds = 1.0 / float(args.fps)
-    if hasattr(settings, "substepping"):
-        settings.substepping = False
-    apply_error: Optional[Exception] = None
-    settings_applied = False
-    for _ in range(2):
-        try:
-            world.apply_settings(settings)
-            time.sleep(0.2)
-            if _world_settings_match(world, fps=int(args.fps)):
-                settings_applied = True
-                break
-        except Exception as exc:
-            apply_error = exc
-        time.sleep(0.2)
-    if not settings_applied:
-        if apply_error is not None:
-            raise RuntimeError(
-                f"streaming_unavailable:world_settings_apply_failed:{apply_error}"
-            ) from apply_error
-        raise RuntimeError("streaming_unavailable:world_settings_apply_failed")
+    # NEW-332: simulation settings are NO LONGER (re)applied here.  They were
+    # already applied and verified *before* the ego, sensors and NPCs were
+    # materialised (see the governed environment block earlier in this
+    # function), and this late block additionally forced
+    # ``settings.substepping = False`` with no profile and no budget check
+    # (NEW-331).  Here we only RE-VERIFY the governed profile, so a mid-capture
+    # settings drift is still caught rather than silently accepted.
+    verify_report = _phys.verify_physics_settings(world, physics_profile)
+    if not verify_report["verified"]:
+        apply_error = None
+        raise RuntimeError(
+            "streaming_unavailable:governed_simulation_settings_drift:"
+            + ",".join(verify_report["invalid_reasons"])
+        )
+    settings_applied = True
+
+    start_state.complete("DETERMINISTIC_WARMUP", {"post_attach_ticks": 5})
+    start_state.complete("SPAWN_GOVERNED_ACTORS", {"ego": int(getattr(ego, "id", 0) or 0)})
+    start_state.complete("ATTACH_SENSORS", {"sensor_count": len(sensors)})
+    start_state.require_capture_ready()
+    _write_json(out_dir / "experiment_start_state.json", start_state.proof())
 
     initial_tick_timeout_s = max(float(args.tick_timeout_s), float(runtime_timeout_s))
     try:
@@ -2870,46 +3008,96 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     run_info["settings_applied_before_tick"] = bool(settings_applied_before_tick)
     _write_json(out_dir / "run_info.json", run_info)
 
-    # Autopilot via TM if possible
+    # =======================================================================
+    # NEW-326 / NEW-328: one governed traffic-manager session, fail closed.
+    #
+    # The previous block obtained a hardcoded ``client.get_trafficmanager(8000)``
+    # and, on ANY exception, fell back to ``ego.set_autopilot(True)`` with no
+    # port.  CARLA then binds the actor to the *default* traffic manager, which
+    # was never seeded, never configured and never made synchronous -- so the
+    # capture silently changed traffic-manager ownership semantics.  Strict
+    # perception now fails closed with TRAFFIC_MANAGER_SETUP_FAILED.
+    # =======================================================================
+    from ultimate_pipeline.perception.environment.traffic_manager_session import (
+        TRAFFIC_MANAGER_SETUP_FAILED,
+        TrafficManagerSession,
+        validate_tm_config,
+        validate_world_tm_sync,
+    )
+
     tm = None
     world_sync_mode = False
     try:
-        world_settings = world.get_settings()
-        world_sync_mode = bool(getattr(world_settings, "synchronous_mode", False))
+        world_sync_mode = bool(
+            getattr(world.get_settings(), "synchronous_mode", False)
+        )
     except Exception:
         world_sync_mode = False
+
+    tm_strict = not _env_bool("UP_ALLOW_DIAGNOSTIC_TM_FALLBACK", False)
+    tm_session = TrafficManagerSession(
+        host=str(args.host),
+        tm_port=_env_int("UP_TM_PORT", 8000),
+        is_master=True,
+        synchronous_mode=bool(world_sync_mode),
+        seed=int(seed_tree["seeds"]["tm"]),
+        global_distance=5.0,
+        auto_lane_change=False,
+        ignore_lights_percentage=0.0,
+        keep_right_rule_percentage=0.0,
+        strict=tm_strict,
+        session_id=f"{args.host}:{_env_int('UP_TM_PORT', 8000)}",
+    )
     try:
-        tm_seed_raw = str(os.environ.get("UP_TM_SEED", "42") or "42").strip()
-        try:
-            tm_seed = int(tm_seed_raw)
-        except (TypeError, ValueError):
-            tm_seed = 42
-        tm = client.get_trafficmanager(8000)
-        tm.set_synchronous_mode(bool(world_sync_mode))
-        try:
-            tm.set_global_distance_to_leading_vehicle(5.0)
-        except Exception:
-            pass
-        try:
-            tm.keep_right_rule_percentage(ego, 0.0)
-        except Exception:
-            pass
-        tm.set_random_device_seed(int(tm_seed))
-        ego.set_autopilot(True, tm.get_port())
-    except Exception:
-        try:
-            ego.set_autopilot(True)
-        except Exception:
-            pass
+        tm = tm_session.acquire(client, world_sync_mode=bool(world_sync_mode))
+        sync_verdict = validate_world_tm_sync(world, tm_session)
+        if not sync_verdict["valid"]:
+            raise RuntimeError(
+                TRAFFIC_MANAGER_SETUP_FAILED + ":" + ",".join(sync_verdict["invalid_reasons"])
+            )
+        tm_session.configure_actor(ego)
+        ego_autopilot = tm_session.enable_autopilot(ego)
+        if not bool(ego_autopilot.get("attached")):
+            raise RuntimeError(
+                TRAFFIC_MANAGER_SETUP_FAILED + ":ego_autopilot_not_attached"
+            )
+        start_state.complete(
+            "INITIALIZE_AND_SEED_TRAFFIC_MANAGER",
+            {"tm_port": tm_session.tm_port, "seed": tm_session.seed},
+        )
+    except RuntimeError:
+        if tm_strict:
+            raise
+        tm = None
+        start_state.complete("INITIALIZE_AND_SEED_TRAFFIC_MANAGER",
+                             {"diagnostic_fallback": True})
+
+    tm_config = tm_session.effective_config()
+    tm_verdict = validate_tm_config(tm_config, strict=tm_strict)
+    _write_json(out_dir / "TRAFFIC_MANAGER_EFFECTIVE_CONFIG.json", tm_config)
+    run_info["traffic_manager_sha256"] = tm_config["traffic_manager_sha256"]
+    run_info["tm_port"] = tm_session.tm_port
+    run_info["tm_seed"] = tm_session.seed
+    run_info["tm_strict"] = tm_strict
+    _write_json(out_dir / "run_info.json", run_info)
 
     if npc_actors:
         npc_autopilot_errors = []
         npc_autopilot_enabled = 0
-        tm_port = tm.get_port() if tm is not None else 8000
         for actor in npc_actors:
             try:
-                actor.set_autopilot(True, tm_port)
-                npc_autopilot_enabled += 1
+                # NEW-328: every governed autopilot actor uses the SAME explicit
+                # TM port.  No default-TM fallback per actor.
+                result = tm_session.enable_autopilot(actor)
+                if result.get("attached"):
+                    npc_autopilot_enabled += 1
+                else:
+                    npc_autopilot_errors.append(
+                        {
+                            "actor_id": int(getattr(actor, "id", -1) or -1),
+                            "error": str(result.get("reason")),
+                        }
+                    )
             except Exception as exc:
                 npc_autopilot_errors.append(
                     {
@@ -2918,6 +3106,7 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                     }
                 )
         npc_spawn_report["autopilot_enabled"] = int(npc_autopilot_enabled)
+        npc_spawn_report["tm_port"] = tm_session.tm_port
         if npc_autopilot_errors:
             npc_spawn_report["autopilot_errors"] = npc_autopilot_errors
         _write_json(out_dir / "npc_spawn_report.json", npc_spawn_report)

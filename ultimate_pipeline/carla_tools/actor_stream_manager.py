@@ -15,6 +15,26 @@ except Exception:  # pragma: no cover
     _CARLA_AVAILABLE = False
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.perception.environment.traffic_manager_session import (
+    VALID_WALKER_MODES,
+    WALKER_CONTROLLER_BLUEPRINT,
+    WALKER_MODE_CONTROLLED,
+    build_controlled_walker,
+)
+
+
+def _default_stream_seed() -> int:
+    """Resolve the governed stream seed from the NEW-327 seed tree."""
+    import os
+
+    try:
+        from ultimate_pipeline.perception.environment.seed_tree import (
+            seed_tree_from_environment,
+        )
+
+        return int(seed_tree_from_environment()["seeds"]["npc_spawn"])
+    except Exception:
+        return int(os.environ.get("UP_STREAM_SEED", "0") or 0)
 
 
 class ActorStreamManager:
@@ -35,6 +55,9 @@ class ActorStreamManager:
         max_walkers: int | None = None,
         spawn_distance: float | None = None,
         despawn_distance: float | None = None,
+        traffic_manager_port: int = 8000,
+        walker_mode: str = WALKER_MODE_CONTROLLED,
+        seed: int | None = None,
     ):
         if not _CARLA_AVAILABLE:
             raise RuntimeError(
@@ -44,6 +67,33 @@ class ActorStreamManager:
         self.client = client
         self.world = client.get_world()
         self.map = self.world.get_map()
+
+        # NEW-326/328: one explicit TM port for every governed autopilot actor.
+        self.traffic_manager_port = int(traffic_manager_port)
+
+        # NEW-327: owned RNG.  `import random` at module scope left the module
+        # using (and mutating) the process-global generator.
+        self.seed = (
+            int(seed)
+            if seed is not None
+            else _default_stream_seed()
+        )
+        self._rng = random.Random(self.seed)
+
+        # NEW-329: explicit walker mode.  Uncontrolled walkers are never counted
+        # as pedestrian traffic.
+        if walker_mode not in VALID_WALKER_MODES:
+            raise ValueError(f"invalid_walker_mode:{walker_mode}")
+        self.walker_mode = str(walker_mode)
+        self.walker_controllers: Dict[int, int] = {}
+        self.walker_controller_bp = None
+        if self.walker_mode == WALKER_MODE_CONTROLLED:
+            try:
+                self.walker_controller_bp = self.world.get_blueprint_library().find(
+                    WALKER_CONTROLLER_BLUEPRINT
+                )
+            except Exception:
+                self.walker_controller_bp = None
 
         self.tile_streamer = tile_streamer
 
@@ -160,15 +210,29 @@ class ActorStreamManager:
         if current_vehicle_count < self.max_vehicles:
             for t in loaded_tiles:
                 sps = self.tile_spawn_points.get(t, [])
-                random.shuffle(sps)
-                for sp in sps:
+                # NEW-327: owned RNG instance.  `random.shuffle(sps)` mutated the
+                # process-global generator AND the module-level index list, so
+                # spawn order depended on unrelated call history.
+                order = list(sps)
+                self._rng.shuffle(order)
+                for sp in order:
                     # don't spawn directly on top of ego
                     if self._dist(sp.location, ego_loc) < self.spawn_distance:
                         continue
 
-                    actor = self.world.try_spawn_actor(random.choice(bp_vehicles), sp)
+                    actor = self.world.try_spawn_actor(self._rng.choice(bp_vehicles), sp)
                     if actor:
-                        actor.set_autopilot(True)
+                        # NEW-326/328: autopilot must name an explicit TM port.
+                        # A bare `set_autopilot(True)` binds the DEFAULT traffic
+                        # manager, which is never seeded nor configured.
+                        try:
+                            actor.set_autopilot(True, self.traffic_manager_port)
+                        except Exception as exc:
+                            print(
+                                f"[ActorStreamManager] autopilot failed for actor "
+                                f"{getattr(actor, 'id', '?')} on TM port "
+                                f"{self.traffic_manager_port}: {exc}"
+                            )
                         self.managed_actors.add(actor.id)
                         current_vehicle_count += 1
                         print(f"[ActorStreamManager] spawned vehicle {actor.id} in {t}")
@@ -181,16 +245,49 @@ class ActorStreamManager:
         if bp_walkers and current_walker_count < self.max_walkers:
             for t in loaded_tiles:
                 sps = self.tile_spawn_points.get(t, [])
-                random.shuffle(sps)
-                for sp in sps:
+                order = list(sps)
+                self._rng.shuffle(order)
+                for sp in order:
                     if self._dist(sp.location, ego_loc) < self.spawn_distance:
                         continue
 
-                    actor = self.world.try_spawn_actor(random.choice(bp_walkers), sp)
+                    walker_bp = self._rng.choice(bp_walkers)
+                    # NEW-329: a walker spawned WITHOUT a started
+                    # `controller.ai.walker` is a static prop, not pedestrian
+                    # traffic.  The mode is now explicit, controlled walkers get
+                    # a controller with a deterministic destination, and the
+                    # controller/actor pair is tracked for joint cleanup.
+                    if self.walker_mode == WALKER_MODE_CONTROLLED and self.walker_controller_bp is not None:
+                        built = build_controlled_walker(
+                            self.world,
+                            None,
+                            walker_bp,
+                            controller_bp=self.walker_controller_bp,
+                            rng=self._rng,
+                        )
+                        actor_id = built.get("walker_actor_id")
+                        controller_id = built.get("controller_actor_id")
+                        if actor_id is not None:
+                            self.managed_actors.add(int(actor_id))
+                            if controller_id is not None:
+                                self.walker_controllers[int(actor_id)] = int(controller_id)
+                            current_walker_count += 1
+                            print(
+                                f"[ActorStreamManager] spawned CONTROLLED walker "
+                                f"{actor_id} (controller {controller_id}) in {t}"
+                            )
+                            if current_walker_count >= self.max_walkers:
+                                break
+                        continue
+
+                    actor = self.world.try_spawn_actor(walker_bp, sp)
                     if actor:
                         self.managed_actors.add(actor.id)
                         current_walker_count += 1
-                        print(f"[ActorStreamManager] spawned walker {actor.id} in {t}")
+                        print(
+                            f"[ActorStreamManager] spawned STATIC walker prop "
+                            f"{actor.id} in {t} (not counted as pedestrian traffic)"
+                        )
                         if current_walker_count >= self.max_walkers:
                             break
                 if current_walker_count >= self.max_walkers:
@@ -215,5 +312,51 @@ class ActorStreamManager:
 
             if tile not in loaded_tiles or too_far:
                 print(f"[ActorStreamManager] destroying actor {aid} (tile={tile}, too_far={too_far})")
+                # NEW-329: destroy the walker controller together with its
+                # walker, otherwise an orphaned controller keeps steering a
+                # destroyed actor.
+                controller_id = self.walker_controllers.pop(aid, None)
+                if controller_id is not None:
+                    controller = self.world.get_actor(controller_id)
+                    if controller is not None:
+                        try:
+                            controller.stop()
+                        except Exception:
+                            pass
+                        try:
+                            controller.destroy()
+                        except Exception:
+                            pass
                 actor.destroy()
                 self.managed_actors.discard(aid)
+
+    # ---------------------------------------------------------
+    # NEW-329: destroy everything this manager owns
+    # ---------------------------------------------------------
+    def destroy_all(self) -> Dict[str, List[int]]:
+        """Destroy every managed actor and its walker controller."""
+        destroyed: List[int] = []
+        controllers: List[int] = []
+        for aid in list(self.managed_actors):
+            actor = self.world.get_actor(aid)
+            if actor is not None:
+                try:
+                    actor.destroy()
+                except Exception:
+                    pass
+            destroyed.append(aid)
+        for aid, controller_id in list(self.walker_controllers.items()):
+            controller = self.world.get_actor(controller_id)
+            if controller is not None:
+                try:
+                    controller.stop()
+                except Exception:
+                    pass
+                try:
+                    controller.destroy()
+                except Exception:
+                    pass
+            controllers.append(controller_id)
+        self.managed_actors.clear()
+        self.walker_controllers.clear()
+        return {"actors": destroyed, "walker_controllers": controllers}

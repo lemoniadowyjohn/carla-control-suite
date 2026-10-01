@@ -37,7 +37,41 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 
-MANIFEST_SCHEMA_VERSION = "paired_capture_manifest_v1"
+from ultimate_pipeline.perception.environment.weather_spec import (
+    WEATHER_NUMERIC_FIELDS,
+    WEATHER_SCHEMA_VERSION,
+    weather_identity_v2,
+)
+
+MANIFEST_SCHEMA_VERSION = "paired_capture_manifest_v2"
+
+#: NEW-317 + the governed environment identity block.  Every one of these must
+#: be present on BOTH arms, equal across arms, and equal to the top-level value.
+#: Top-level values alone are never sufficient.
+REQUIRED_ARM_IDENTITY_KEYS = (
+    "calibration_sha256",
+    "sensor_rig_sha256",
+    "weather_sha256",
+    "capture_config_sha256",
+    "route_manifest_sha256",
+    "camera_response_sha256",
+    "traffic_manager_sha256",
+    "simulation_physics_sha256",
+    "runtime_sensor_rig_sha256",
+    "vehicle_calibration_binding_sha256",
+)
+
+#: Identity keys whose absence invalidates a pair claim.  These are the fields
+#: NEW-316..NEW-333 introduced; a manifest predating them cannot support a
+#: governed claim.
+GOVERNED_ENVIRONMENT_IDENTITY_KEYS = (
+    "weather_sha256",
+    "camera_response_sha256",
+    "traffic_manager_sha256",
+    "simulation_physics_sha256",
+    "runtime_sensor_rig_sha256",
+    "vehicle_calibration_binding_sha256",
+)
 
 CLAIM_SENSOR_SMOKE = "SENSOR_SMOKE"
 CLAIM_UNPAIRED_CAPTURE = "UNPAIRED_CAPTURE"
@@ -50,6 +84,14 @@ VALID_MODES = (MODE_SMOKE_RECOVERY, MODE_THESIS_PAIRED_STRICT)
 
 PAIR_ROUTE_INVALID = "PAIR_ROUTE_INVALID"
 INCOMPLETE_PAIR = "INCOMPLETE_PAIR"
+
+# --- NEW-317 pair weather binding -----------------------------------------
+PAIR_WEATHER_MISMATCH = "PAIR_WEATHER_MISMATCH"
+PAIR_WEATHER_MISSING_ARM = "PAIR_WEATHER_MISSING_ARM"
+#: Arm-level environment identity missing (NEW-316..333 governed fields).
+PAIR_ARM_IDENTITY_MISSING = "PAIR_ARM_IDENTITY_MISSING"
+#: Arm-level environment identity present but divergent.
+PAIR_ARM_IDENTITY_MISMATCH = "PAIR_ARM_IDENTITY_MISMATCH"
 
 COMPLETION_PASS = "PASS"
 COMPLETION_INCOMPLETE = "INCOMPLETE"
@@ -300,32 +342,37 @@ def sensor_rig_from_calib(
 # ---------------------------------------------------------------------------
 
 
+WEATHER_IDENTITY_V1_FIELDS = (
+    "cloudiness", "precipitation", "precipitation_deposits", "wind_intensity",
+    "sun_azimuth_angle", "sun_altitude_angle", "fog_density", "fog_distance",
+    "wetness", "scattering_intensity", "mie_scattering_scale",
+)
+
+#: NEW-318: `weather_from_world` previously read only the eleven fields above and
+#: silently dropped `fog_falloff`, `rayleigh_scattering_scale` and
+#: `dust_storm`.  Two arms with materially different fog falloff, Rayleigh
+#: scattering or dust storm therefore produced the SAME `weather_sha256`.
+#: Delegating to the governed resolver restores the complete identity.
+WEATHER_IDENTITY_COMPLETE_FIELDS = WEATHER_NUMERIC_FIELDS
+
+
 def weather_identity(weather_params: Mapping[str, Any]) -> Dict[str, Any]:
     """Normalized weather digest from ACTUAL world parameters.
 
     Only a preset name is never enough for a paired claim; we digest the
     effective parameters so two arms with nominally identical presets but
-    different actual values diverge.
+    different actual values diverge.  NEW-318: the digest covers every field the
+    installed API supports, and records which fields were unsupported.
     """
-    normalized: Dict[str, Any] = {}
-    for k, v in weather_params.items():
-        if v is None:
-            continue
-        if isinstance(v, (int, float)) and not isinstance(v, bool):
-            normalized[str(k)] = _round6(float(v))
-        elif isinstance(v, (str, bool)):
-            normalized[str(k)] = v
-        else:
-            normalized[str(k)] = repr(v)
-    return {
-        "weather_sha256": sha256_text(canonical_dumps(normalized)) if normalized else "",
-        "parameters": normalized,
-        "parameter_count": len(normalized),
-    }
+    return weather_identity_v2(weather_params)
 
 
 def weather_from_world(world: Any) -> Dict[str, Any]:
-    """Read the effective weather from a duck-typed CARLA world."""
+    """Read the complete effective weather from a duck-typed CARLA world."""
+    from ultimate_pipeline.perception.environment.weather_spec import (
+        weather_identity_v2 as _identity,
+    )
+
     weather = None
     try:
         weather = world.get_weather()
@@ -335,18 +382,8 @@ def weather_from_world(world: Any) -> Dict[str, Any]:
         except Exception:
             weather = None
     if weather is None:
-        return weather_identity({})
-    keys = ("cloudiness", "precipitation", "precipitation_deposits", "wind_intensity",
-            "sun_azimuth_angle", "sun_altitude_angle", "fog_density", "fog_distance",
-            "wetness", "scattering_intensity", "mie_scattering_scale")
-    params = {}
-    for key in keys:
-        if hasattr(weather, key):
-            try:
-                params[key] = getattr(weather, key)
-            except Exception:
-                continue
-    return weather_identity(params)
+        return _identity({})
+    return _identity(weather)
 
 
 # ---------------------------------------------------------------------------
@@ -649,6 +686,12 @@ def build_pair_manifest(
     claim_level: str,
     route_mode: str = MODE_THESIS_PAIRED_STRICT,
     pair_route_closure: str = "PAIR_ROUTE_VALID",
+    camera_response_sha256: str = "",
+    traffic_manager_sha256: str = "",
+    simulation_physics_sha256: str = "",
+    runtime_sensor_rig_sha256: str = "",
+    vehicle_calibration_binding_sha256: str = "",
+    weather_schema_version: str = "",
 ) -> Dict[str, Any]:
     manifest: Dict[str, Any] = {
         "schema_version": MANIFEST_SCHEMA_VERSION,
@@ -664,7 +707,13 @@ def build_pair_manifest(
         "calibration_sha256": str(calibration_sha256),
         "sensor_rig_sha256": str(sensor_rig_sha256),
         "weather_sha256": str(weather_sha256),
+        "weather_schema_version": str(weather_schema_version),
         "capture_config_sha256": str(capture_config_sha256),
+        "camera_response_sha256": str(camera_response_sha256),
+        "traffic_manager_sha256": str(traffic_manager_sha256),
+        "simulation_physics_sha256": str(simulation_physics_sha256),
+        "runtime_sensor_rig_sha256": str(runtime_sensor_rig_sha256),
+        "vehicle_calibration_binding_sha256": str(vehicle_calibration_binding_sha256),
         "manual_arm": dict(manual_arm),
         "auto_arm": dict(auto_arm),
         "pair_route_closure": str(pair_route_closure),
@@ -675,29 +724,71 @@ def build_pair_manifest(
     return manifest
 
 
-def validate_pair_manifest(manifest: Mapping[str, Any]) -> Dict[str, Any]:
+def validate_pair_manifest(
+    manifest: Mapping[str, Any],
+    *,
+    require_governed_environment: bool = True,
+) -> Dict[str, Any]:
     """Fail-closed validation of an existing pair manifest.
 
     `pair_valid` may only be true when every mandatory equality holds and the
     claim-level boundary is respected.
+
+    NEW-317 / NEW-333: mandatory identities are enforced on the **arm**
+    manifests, not only at the top level.  A pair-level SHA that was hand-edited
+    to agree with a missing or divergent arm identity does not rescue the pair.
     """
     reasons: List[str] = []
     manual = manifest.get("manual_arm") or {}
     auto = manifest.get("auto_arm") or {}
 
-    for key in ("calibration_sha256", "sensor_rig_sha256", "weather_sha256",
-                "capture_config_sha256", "route_manifest_sha256"):
+    for key in REQUIRED_ARM_IDENTITY_KEYS:
         ml = manual.get(key)
         al = auto.get(key)
         top = manifest.get(key)
-        if not top:
-            reasons.append(f"{key}_missing")
-        if ml is not None and al is not None and ml != al:
-            reasons.append(f"{key}_mismatch_manual_vs_auto:{ml}!={al}")
-        if ml is not None and top is not None and ml != top:
-            reasons.append(f"{key}_mismatch_manual_vs_top:{ml}!={top}")
-        if al is not None and top is not None and al != top:
-            reasons.append(f"{key}_mismatch_auto_vs_top:{al}!={top}")
+
+        if key in GOVERNED_ENVIRONMENT_IDENTITY_KEYS and require_governed_environment:
+            # Arm-level identity must EXIST on both arms.
+            if not ml:
+                reasons.append(f"{PAIR_ARM_IDENTITY_MISSING}:manual:{key}")
+            if not al:
+                reasons.append(f"{PAIR_ARM_IDENTITY_MISSING}:auto:{key}")
+            if not top:
+                reasons.append(f"{PAIR_ARM_IDENTITY_MISSING}:pair:{key}")
+
+        if ml and al and ml != al:
+            if key == "weather_sha256":
+                reasons.append(
+                    f"{PAIR_WEATHER_MISMATCH}:{key}:manual_vs_auto:{ml}!={al}"
+                )
+            elif key in GOVERNED_ENVIRONMENT_IDENTITY_KEYS:
+                reasons.append(
+                    f"{PAIR_ARM_IDENTITY_MISMATCH}:{key}:manual_vs_auto:{ml}!={al}"
+                )
+            else:
+                reasons.append(f"{key}_mismatch_manual_vs_auto:{ml}!={al}")
+        if ml and top and ml != top:
+            if key == "weather_sha256":
+                reasons.append(
+                    f"{PAIR_WEATHER_MISMATCH}:{key}:manual_vs_pair:{ml}!={top}"
+                )
+            elif key in GOVERNED_ENVIRONMENT_IDENTITY_KEYS:
+                reasons.append(
+                    f"{PAIR_ARM_IDENTITY_MISMATCH}:{key}:manual_vs_pair:{ml}!={top}"
+                )
+            else:
+                reasons.append(f"{key}_mismatch_manual_vs_top:{ml}!={top}")
+        if al and top and al != top:
+            if key == "weather_sha256":
+                reasons.append(
+                    f"{PAIR_WEATHER_MISMATCH}:{key}:auto_vs_pair:{al}!={top}"
+                )
+            elif key in GOVERNED_ENVIRONMENT_IDENTITY_KEYS:
+                reasons.append(
+                    f"{PAIR_ARM_IDENTITY_MISMATCH}:{key}:auto_vs_pair:{al}!={top}"
+                )
+            else:
+                reasons.append(f"{key}_mismatch_auto_vs_top:{al}!={top}")
 
     ml = manual.get("pair_frame_index")
     al = auto.get("pair_frame_index")
@@ -714,15 +805,15 @@ def validate_pair_manifest(manifest: Mapping[str, Any]) -> Dict[str, Any]:
             reasons.append("claim_ingolstadt_requires_manual_ingolstadt_arm")
         if not is_ingolstadt_auto_arm(auto_map):
             reasons.append("claim_ingolstadt_requires_auto_ingolstadt_xodr_arm")
-    if claim == CLAIM_PAIRED_PROTOCOL_VALID and pair_valid and not reasons:
-        pass
     if pair_valid and reasons:
         return {"valid": False, "pair_valid": pair_valid, "claim_level": claim,
                 "invalid_reasons": reasons,
                 "pair_route_closure": manifest.get("pair_route_closure")}
     return {"valid": not reasons, "pair_valid": pair_valid, "claim_level": claim,
             "invalid_reasons": reasons,
-            "pair_route_closure": manifest.get("pair_route_closure")}
+            "pair_route_closure": manifest.get("pair_route_closure"),
+            "required_arm_identity_keys": list(REQUIRED_ARM_IDENTITY_KEYS),
+            "governed_environment_keys": list(GOVERNED_ENVIRONMENT_IDENTITY_KEYS)}
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,31 @@
+{
+  "artifact": "TRAFFIC_MANAGER_EFFECTIVE_CONFIG.json",
+  "authority": "traffic_manager_sha256",
+  "carla_documented_hazard": "multiple synchronous TM servers/clients can break synchrony",
+  "legacy_independent_access_paths_found": [
+    "record_route_fixed.py: client.get_trafficmanager(8000) hardcoded",
+    "fixed_traffic_manager.py: client.get_trafficmanager(port)",
+    "vehicle_manager/core.py: client.get_trafficmanager(8000)",
+    "vehicle_manager/vehicle_manager.py: client.get_trafficmanager(8000)",
+    "actor_stream_manager.py: actor.set_autopilot(True) with no port",
+    "perception_runner_local_aug.py / dataset_generator.py / local_perception_runner.py / road_defect_detector.py / tile_stress_tester.py: get_trafficmanager() with NO port",
+    "carla_sim_consolidated.py: ScenarioManager -> FixedTrafficManager",
+    "run_stage_jq_live.py: get_trafficmanager(8080) (a THIRD port)"
+  ],
+  "multi_master_refused": true,
+  "reseed_after_world_reload_required": true,
+  "scenario_actor_ownership_verified": true,
+  "schema": "TRAFFIC_MANAGER_AUTHORITY_MATRIX/v1",
+  "seed_required": true,
+  "session_actor_leak_detected": "SCENARIO_ACTOR_LEAK",
+  "single_authority_now": "ultimate_pipeline.perception.environment.traffic_manager_session.TrafficManagerSession",
+  "single_master_enforced": true,
+  "strict_fail_closed": true,
+  "unbound_autopilot_forbidden": true,
+  "uncontrolled_walkers_counted_as_traffic": false,
+  "walker_modes": [
+    "STATIC_WALKER_PROP",
+    "CONTROLLED_PEDESTRIAN"
+  ],
+  "world_tm_sync_consistency_required": true
+}

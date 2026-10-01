@@ -404,6 +404,13 @@ def attach_lidar(world: carla.World, ego: carla.Actor, T_v_l: List[List[float]])
 # ==========================================================
 
 def main():
+    from ultimate_pipeline.perception.environment.calibration_authority import (
+        STATUS_AUTHORITATIVE,
+        STATUS_DIAGNOSTIC,
+        attach_diagnostic_status,
+        reject_heuristic_convention_selection,
+    )
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--calib", required=True, help="Path to calib_data.json")
     ap.add_argument("--host", default="127.0.0.1")
@@ -414,6 +421,21 @@ def main():
     ap.add_argument("--ticks", type=int, default=40)
     ap.add_argument("--output", default="calib_test_out")
     ap.add_argument("--sync", action="store_true", help="Temporarily enable synchronous mode for stable tick capture")
+    # NEW-325: this tool is a LEGACY_DIAGNOSTIC_CONVENTION_EXPLORER.  It picks
+    # the extrinsic convention heuristically from marker visibility, which
+    # contradicts the authoritative thesis rule.  Strict mode therefore refuses
+    # heuristic convention selection outright, and canonical thesis mode
+    # consumes calibration_contract.py instead of this tool's output.
+    ap.add_argument(
+        "--strict",
+        action="store_true",
+        help="Refuse heuristic convention selection (authoritative-governed mode).",
+    )
+    ap.add_argument(
+        "--canonical-thesis-mode",
+        action="store_true",
+        help="Emit calibration_contract.py semantics; no heuristic convention search.",
+    )
     args = ap.parse_args()
 
     out_dir = Path(args.output).resolve()
@@ -471,37 +493,61 @@ def main():
             Convention("stored as sensor->vehicle (invert)",    invert_extrinsic=True),
         ]
 
-        # Basis conversions (assumption: vehicle frame is ROS-ish, camera is optical)
-        Bv = basis_ros_vehicle_to_carla_vehicle()
-        Bc = basis_optical_to_carla_sensor()
+        # NEW-325: canonical thesis mode fixes the convention from
+        # calibration_contract.py and performs NO heuristic search.
+        if args.canonical_thesis_mode:
+            from ultimate_pipeline.sensors.calibration_contract import (
+                CALIBRATION_SEMANTICS,
+            )
 
-        # Choose ONE convention globally (sum over cameras)
-        best_conv = conventions[0]
-        best_sum = -1
+            best_conv = conventions[0]  # cTv used DIRECTLY, never inverted
+            best_sum = 0
+            convention_search_performed = False
+        else:
+            # Basis conversions (assumption: vehicle frame is ROS-ish, camera is optical)
+            Bv = basis_ros_vehicle_to_carla_vehicle()
+            Bc = basis_optical_to_carla_sensor()
 
-        for conv in conventions:
-            total = 0
-            for _, cam in cams.items():
-                m = cam.cTv
+            # Choose ONE convention globally (sum over cameras)
+            best_conv = conventions[0]
+            best_sum = -1
+            convention_search_performed = True
 
-                # Convert stored to CARLA-consistent basis
-                # m is "camera<->vehicle" but in ROS vehicle basis + optical camera basis
-                m2 = change_basis(m, Bv, Bc)
+            for conv in conventions:
+                total = 0
+                for _, cam in cams.items():
+                    m = cam.cTv
 
-                # If stored direction is opposite, invert
-                if conv.invert_extrinsic:
-                    m2 = mat4_inv(m2)
+                    # Convert stored to CARLA-consistent basis
+                    # m is "camera<->vehicle" but in ROS vehicle basis + optical camera basis
+                    m2 = change_basis(m, Bv, Bc)
 
-                # Now interpret as T_vehicle_camera (vehicle -> camera) ? or camera -> vehicle ?
-                # We want vehicle->camera for CARLA attachment. If your stored is camera->vehicle,
-                # inversion above makes it vehicle->camera.
-                T_v_c = m2
+                    # If stored direction is opposite, invert
+                    if conv.invert_extrinsic:
+                        m2 = mat4_inv(m2)
 
-                total += score_camera(cam, T_v_c, marker_points, ego_tf) if marker_points else 0
+                    # Now interpret as T_vehicle_camera (vehicle -> camera) ? or camera -> vehicle ?
+                    # We want vehicle->camera for CARLA attachment. If your stored is camera->vehicle,
+                    # inversion above makes it vehicle->camera.
+                    T_v_c = m2
 
-            if total > best_sum:
-                best_sum = total
-                best_conv = conv
+                    total += score_camera(cam, T_v_c, marker_points, ego_tf) if marker_points else 0
+
+                if total > best_sum:
+                    best_sum = total
+                    best_conv = conv
+
+        # NEW-325: strict mode refuses heuristic convention selection.
+        gate = reject_heuristic_convention_selection(
+            strict=bool(args.strict) and not bool(args.canonical_thesis_mode),
+            selected_convention=best_conv.name,
+            source=str(calib_path),
+        )
+        if not gate["allowed"]:
+            raise RuntimeError(
+                "strict_mode_refuses_heuristic_convention_selection:"
+                + ",".join(gate["invalid_reasons"])
+            )
 
         # Build final T_vehicle_camera per camera
         T_vehicle_camera: Dict[str, List[List[float]]] = {}
@@ -589,9 +635,32 @@ def main():
             "format": "carla_export_v1",
             "source_calib": str(calib_path),
             "global_selected_convention": best_conv.name,
+            "convention_search_performed": bool(convention_search_performed),
+            "convention_score": int(best_sum),
             "cameras": {},
             "lidars": {},
         }
+
+        # NEW-325: every heuristic export is stamped non-authoritative.  In
+        # canonical thesis mode the status is authoritative only because no
+        # heuristic search ran and the convention came from
+        # calibration_contract.py; otherwise the export is explicitly a
+        # LEGACY_DIAGNOSTIC_CONVENTION_EXPLORER artifact and a perception
+        # loader will refuse it.
+        export = attach_diagnostic_status(
+            export,
+            tool="ultimate_pipeline.tools.calibrate_sensors_in_carla",
+            selected_convention=best_conv.name,
+        )
+        if args.canonical_thesis_mode:
+            export["calibration_authority"]["status"] = STATUS_AUTHORITATIVE
+            export["calibration_authority"]["authoritative"] = True
+            export["calibration_authority"]["convention_search_performed"] = False
+            export["calibration_authority"]["permissible_use"] = (
+                "thesis calibration input (canonical thesis mode)"
+            )
+            export["authoritative"] = True
+            export["schema"] = "carla_export_v1_AUTHORITATIVE_CANONICAL"
 
         for name, cam in cams.items():
             export["cameras"][name] = {

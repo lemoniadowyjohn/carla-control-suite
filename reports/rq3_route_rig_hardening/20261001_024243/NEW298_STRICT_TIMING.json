@@ -1,0 +1,27 @@
+{
+  "adversarial_tests": {
+    "test_new298_strict_timing_enforcement": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "THESIS_PAIRED_STRICT forces exact timing",
+  "finding_id": "NEW-298",
+  "implementation": {
+    "evidence_fields": [
+      "requested_timing",
+      "effective_timing",
+      "sim_timing_sha256"
+    ],
+    "file": "ultimate_pipeline/sensors/canonical_lidar_spec.py",
+    "protocol_authority": "THESIS_SYNC_SETTINGS",
+    "settings": {
+      "fixed_delta_seconds": 0.05,
+      "synchronous_mode": true,
+      "target_fps": 20,
+      "traffic_manager_synchronous": true
+    },
+    "validation": "validate_effective_timing verifies requested vs effective"
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

@@ -32,11 +32,30 @@ def _pose(x, y, seq, yaw=0.0):
     return pose_payload(x=x, y=y, z=0.0, yaw=yaw, pitch=0.0, roll=0.0, sequence_index=seq)
 
 
-def _manifest(poses):
+CANONICAL_CRS = "EPSG:25832"
+CANONICAL_GEOREF = "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"
+
+
+def _manifest(poses, *, crs=CANONICAL_CRS, geo_reference=CANONICAL_GEOREF):
+    """Build a canonical manifest.
+
+    NEW-294/295 strengthened ``paired_route_manifest_v1`` so a manifest must
+    declare its coordinate frame explicitly: ``coordinate_frame`` alone is not
+    enough, the CRS identity and geo-reference must be present too. These tests
+    exercise route digesting/projection rather than frame declaration, so the
+    helper supplies the canonical frame fields. Tests that specifically assert
+    the frame requirements pass ``crs=None`` / ``geo_reference=None``.
+    """
+    kwargs = {}
+    if crs is not None:
+        kwargs["crs"] = crs
+    if geo_reference is not None:
+        kwargs["geo_reference"] = geo_reference
     return build_route_manifest(
         route_id="route-1",
         coordinate_frame="local_carlamap",
         capture_poses=poses,
+        **kwargs,
     )
 
 
@@ -100,6 +119,21 @@ def test_route_digest_is_deterministic_and_order_safe():
     m2 = _manifest(list(reversed(poses)))
     assert route_digest(m1) == route_digest(m2)
     assert m1["sha256"] == route_digest(m1)
+
+
+def test_validate_route_manifest_requires_declared_frame():
+    """NEW-294/295: coordinate_frame alone is not a frame binding.
+
+    The manifest must declare `crs` and `geo_reference` explicitly, otherwise a
+    route can carry numerically-plausible coordinates in an undeclared frame.
+    """
+    without_crs = _manifest([_pose(0.0, 0.0, 0)], crs=None)
+    assert "route_manifest_missing_crs" in validate_route_manifest(without_crs)
+
+    without_georef = _manifest([_pose(0.0, 0.0, 0)], geo_reference=None)
+    assert "route_manifest_missing_geo_reference" in validate_route_manifest(
+        without_georef
+    )
 
 
 def test_validate_route_manifest_detects_missing_pose_field():

@@ -1,0 +1,113 @@
+{
+  "schema": "sensor_authority_matrix/v1",
+  "scope": "post-integration sensor/rig authority (NEW-299/300/301 + NEW-323 + NEW-333)",
+  "canonical_active_lidar_spec": {
+    "module": "ultimate_pipeline/sensors/canonical_lidar_spec.py",
+    "introduced_by": "Candidate A",
+    "retained_as": "sole LiDAR runtime-spec authority",
+    "consumers": [
+      "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+      "ultimate_pipeline/sensors/dominik_sensor_setup.py",
+      "ultimate_pipeline/sensors/attach_sensors_safe.py"
+    ],
+    "second_implementation_found": false
+  },
+  "expected_lidar_ids_explicitly_defined": {
+    "authority": "canonical_lidar_spec.active_lidar_policy()",
+    "active_lidars": ["middle_lidar"],
+    "inactive_calibration_entries": ["middle_lidar_old"],
+    "enforced_in": [
+      "resolve_active_lidars default active_names",
+      "all_lidar_specs active flags",
+      "ThesisSensorRig._select_capture_profile_items spawn-set filter",
+      "DominikSensorSetup spawn loop"
+    ],
+    "verified_by_test": "test_inactive_lidar_cannot_be_activated_by_presence_in_calibration"
+  },
+  "inactive_calibration_entries_explicitly_excluded": {
+    "verified": true,
+    "evidence": "mutating middle_lidar_old does not change the runtime rig identity (test_rig_identity_excludes_inactive_calibration_entries); spawn set is filtered to the canonical active set (FIX-2)"
+  },
+  "spawned_rig_identity_hashable": {
+    "api": "ThesisSensorRig.runtime_rig_identity(spawned)",
+    "recorded_at": "end of spawn_rig as self._runtime_rig_identity",
+    "digest_field": "rig_identity_sha256",
+    "covers": "spawned sensor names, kinds, effective attributes, canonical LiDAR spec hash",
+    "deterministic": true,
+    "attribute_sensitive": true,
+    "inactive_entry_insensitive": true,
+    "verified_by_tests": [
+      "test_rig_identity_is_hashable_and_changes_with_attributes",
+      "test_rig_identity_excludes_inactive_calibration_entries"
+    ],
+    "note": "Newly implemented: NEW-299 imported canonical_lidar_hash but never produced an identity (FIX-3)."
+  },
+  "rig_identity_in_capture_evidence": {
+    "status": "AVAILABLE_NOT_YET_PROPAGATED",
+    "detail": "The identity is produced and recorded on the rig. Whether a given capture-evidence writer emits it is a per-call-site concern; the negative controls assert the identity itself. Live propagation cannot be demonstrated without a CARLA server.",
+    "blocker": "BLOCKED_EXTERNAL"
+  },
+  "missing_required_lidar_is_fail": {
+    "verified": true,
+    "paths": {
+      "ThesisSensorRig": "RuntimeError sensor_spawn_missing_required_modalities:lidar (FIX-2)",
+      "attach_sensors_safe": "report['errors'] += required_active_lidar_missing_from_calibration, drives ok=False (FIX-5)",
+      "spawn_rig": "NEW-301 RuntimeError when a requested LiDAR is not in the canonical active spec"
+    },
+    "verified_by_test": "test_missing_required_lidar_is_fail_closed"
+  },
+  "partial_rig_creation_is_transactional_rollback": {
+    "verified": true,
+    "implementation": "ThesisSensorRig._cleanup_spawned_sensor_actors(spawned) + self._sensors = [] + re-raise, on both the camera and LiDAR spawn paths; destroy failures are logged, not swallowed silently",
+    "pre_existing": true
+  },
+  "no_sensor_actor_leak_after_failure": {
+    "verified": true,
+    "verified_by_test": "test_sensor_cleanup_misses_actor_is_detected (an actor that survives destroy is reported as remaining with a failure code, not counted as clean)"
+  },
+  "sensor_callback_evidence_required_for_live_acceptance": {
+    "status": "REQUIRED_AND_UNMET",
+    "detail": "Sensor frame health / callback evidence is a live-server property. _healthcheck_sensor_stream failures are logged as warnings, so a live acceptance gate must not treat their absence as a pass.",
+    "verdict": "BLOCKED_EXTERNAL"
+  },
+  "calibration_authority_cannot_be_overridden_by_heuristic_fallback": {
+    "verified": true,
+    "authority": "ultimate_pipeline/perception/environment/calibration_authority.py -> sensors/calibration_contract.validate_calibration_contract",
+    "heuristic_exports": "detected as diagnostic and rejected in strict mode (reject_heuristic_convention_selection, assert_loadable_by_perception)",
+    "verified_by_tests": [
+      "test_calibration_authority_cannot_be_overridden_by_heuristic",
+      "test_strict_mode_rejects_heuristic_convention_selection"
+    ]
+  },
+  "rig_transforms_audit": {
+    "path_before": "ultimate_pipeline/sensors/rig_transforms.py",
+    "verdict": "BROKEN_DEAD_CODE_RELOCATED",
+    "problems": [
+      "read calib_data.json relative to the current working directory at import time",
+      "self-imported (import ultimate_pipeline.sensors.rig_transforms as rt)",
+      "reimplemented attachment-pose math, competing with transform_conventions"
+    ],
+    "production_callers": 0,
+    "action": "relocated to ultimate_pipeline/tools/rig_transforms_check.py, rewritten to delegate to transform_conventions, main() guarded, explicit CLI path argument, no module-level execution",
+    "competing_authority_remaining": false
+  },
+  "sensor_module_import_side_effects": {
+    "requirement": "importing a supported sensor module must have no cwd-dependent execution side effects",
+    "verified": true,
+    "verified_by": "python -c 'import ultimate_pipeline.sensors.canonical_lidar_spec' and imports of dominik_sensor_setup / attach_sensors_safe succeed with no file reads or execution; rig_transforms (the only offender) removed from the package"
+  },
+  "camera_response_profile": {
+    "authority": "ultimate_pipeline/perception/environment/camera_response.py (Candidate B)",
+    "wired_into": [
+      "ThesisSensorRig (constructor param + UP_CAMERA_RESPONSE_PROFILE env + apply_response_profile per camera)",
+      "DominikSensorSetup (profile_attributes merged via setdefault, geometry stays owned by the method)"
+    ],
+    "duplicate_authority": false
+  },
+  "lidar_camera_gate": {
+    "authority": "ultimate_pipeline/perception/environment/lidar_camera_gate.py (Candidate B)",
+    "note": "quantitative gate; empirical reprojection acceptance still requires a live server",
+    "verdict": "BLOCKED_EXTERNAL"
+  },
+  "verdict": "SENSOR_RIG_AUTHORITY_SINGLE_SOURCE_OFFLINE_PASS_LIVE_BLOCKED"
+}

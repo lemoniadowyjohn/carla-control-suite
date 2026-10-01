@@ -1,0 +1,110 @@
+{
+  "allowed_statuses": [
+    "PASS",
+    "FAIL",
+    "PARTIAL",
+    "ALREADY_RESOLVED_VERIFIED",
+    "BLOCKED_EXTERNAL",
+    "NOT_APPLICABLE"
+  ],
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "counts": {
+    "BLOCKED_EXTERNAL": 1,
+    "PASS": 17
+  },
+  "findings": [
+    {
+      "finding": "NEW-316",
+      "status": "PASS",
+      "summary": "governed weather resolver + fail-closed application"
+    },
+    {
+      "finding": "NEW-317",
+      "status": "PASS",
+      "summary": "per-arm weather identity binding"
+    },
+    {
+      "finding": "NEW-318",
+      "status": "PASS",
+      "summary": "complete 14-field weather identity"
+    },
+    {
+      "finding": "NEW-319",
+      "status": "PASS",
+      "summary": "deterministic frame-driven weather"
+    },
+    {
+      "finding": "NEW-320",
+      "status": "PASS",
+      "summary": "intrinsic realization contract; bounded approximation quantified"
+    },
+    {
+      "finding": "NEW-321",
+      "status": "BLOCKED_EXTERNAL",
+      "summary": "empirical reprojection assay; contract implemented, live evidence blocked"
+    },
+    {
+      "finding": "NEW-322",
+      "status": "PASS",
+      "summary": "transactional calibration cleanup"
+    },
+    {
+      "finding": "NEW-323",
+      "status": "PASS",
+      "summary": "quantitative LiDAR/camera gate"
+    },
+    {
+      "finding": "NEW-324",
+      "status": "PASS",
+      "summary": "vehicle/calibration binding with claim levels"
+    },
+    {
+      "finding": "NEW-325",
+      "status": "PASS",
+      "summary": "heuristic calibration demoted to diagnostic"
+    },
+    {
+      "finding": "NEW-326",
+      "status": "PASS",
+      "summary": "TM fail-closed, no unbound autopilot"
+    },
+    {
+      "finding": "NEW-327",
+      "status": "PASS",
+      "summary": "seed tree + owned RNG"
+    },
+    {
+      "finding": "NEW-328",
+      "status": "PASS",
+      "summary": "single TM session authority"
+    },
+    {
+      "finding": "NEW-329",
+      "status": "PASS",
+      "summary": "explicit walker control modes"
+    },
+    {
+      "finding": "NEW-330",
+      "status": "PASS",
+      "summary": "scenario actor ownership registry"
+    },
+    {
+      "finding": "NEW-331",
+      "status": "PASS",
+      "summary": "governed substepping profile"
+    },
+    {
+      "finding": "NEW-332",
+      "status": "PASS",
+      "summary": "experiment-start lifecycle"
+    },
+    {
+      "finding": "NEW-333",
+      "status": "PASS",
+      "summary": "frozen camera photometric response"
+    }
+  ],
+  "generated_utc": "20261001T044700Z",
+  "live_carla_rpc_reachable": false,
+  "schema": "FINDING_MATRIX/v1"
+}

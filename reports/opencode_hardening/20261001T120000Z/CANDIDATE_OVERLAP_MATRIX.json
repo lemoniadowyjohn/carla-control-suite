@@ -1,0 +1,118 @@
+{
+  "schema": "opencode_hardening_candidate_overlap_matrix/v1",
+  "baseline": "f897e0eb747ac827941ac4883170a5181a603111",
+  "candidate_a": "f5668a9e6ad69a22b010852ac78364fba0d41185",
+  "candidate_b": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+  "candidate_c": "f3a996f7d539677357b2fa8ba3cabc27f02be66f",
+  "method": "git diff --name-status per candidate against baseline, then pairwise set intersection of changed paths, then per-file hunk-level semantic review of every intersecting file. No cherry-pick-and-accept-default-resolution.",
+  "same_file_edit_counts": {
+    "A_vs_B": 2,
+    "A_vs_C": 0,
+    "B_vs_C": 0
+  },
+  "intersecting_files_A_B": [
+    "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+    "ultimate_pipeline/sensors/dominik_sensor_setup.py"
+  ],
+  "overlaps": [
+    {
+      "file": "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+      "candidate_a_change": "NEW-301: consume canonical LiDAR runtime spec (resolve_active_lidars) and set LiDAR blueprint attributes from the spec instead of hard-coded per-call defaults.",
+      "candidate_b_change": "NEW-333: governed camera photometric response profile. Adds camera_response_profile to __init__ (env UP_CAMERA_RESPONSE_PROFILE or strict baseline default), applies apply_response_profile per camera and records per-camera reports.",
+      "same_function_edits": false,
+      "same_hunks": false,
+      "classification": "COMPATIBLE",
+      "reasoning": "Different modality and different call sites. A edits the LiDAR loop (lidar_items), B edits the camera loop plus the constructor signature. Touching the same file is not the same authority.",
+      "resolution": "Auto-merged; both contracts preserved and verified present in the merged file: canonical_lidar_spec import + resolve_active_lidars call in the LiDAR loop, and camera_response_profile/apply_response_profile in the camera path.",
+      "post_merge_conflict_found_by_inspection_only": true,
+      "post_merge_defect_fixed": "A's _select_capture_profile_items still passed every calibration LiDAR entry into the spawn loop, so an inactive entry (middle_lidar_old) hit A's own NEW-301 'not in canonical active spec' RuntimeError and aborted the entire rig. This is an A-intra semantic bug that a text-level merge cannot surface. Fixed: spawn only the canonical active set; a missing active LiDAR is a fail-closed RuntimeError."
+    },
+    {
+      "file": "ultimate_pipeline/sensors/dominik_sensor_setup.py",
+      "candidate_a_change": "NEW-300/301: restrict the spawn loop to the canonical active LiDAR set.",
+      "candidate_b_change": "NEW-333: add camera_response_profile param and apply profile_attributes to the camera attribute dict via setdefault, keeping geometry owned by the method.",
+      "same_function_edits": false,
+      "same_hunks": false,
+      "classification": "COMPATIBLE",
+      "reasoning": "A's hunk is in the LiDAR spawn path; B's is in the camera attribute builder (_camera_attributes) plus __init__. Independent contracts.",
+      "resolution": "Auto-merged; both preserved (canonical_lidar_spec import + active_lidars loop; camera_response_profile + profile_attributes setdefault).",
+      "post_merge_defect_fixed": null
+    },
+    {
+      "file": "ultimate_pipeline/sensors/attach_sensors_safe.py",
+      "candidate_a_change": "NEW-299/301: consume canonical LiDAR spec for attribute setting and return runtime rig identity.",
+      "candidate_b_change": "no change",
+      "classification": "A_ONLY",
+      "resolution": "Taken from A unchanged, then repaired: resolve_active_lidars(data, ...) referenced an undefined name (load_calib returns cams, lids, not data), so the canonical path would raise NameError at runtime; and a missing active LiDAR produced a warning rather than a failure. Both fixed in the integration commit."
+    },
+    {
+      "file": "ultimate_pipeline/carla_tools/fixed_traffic_manager.py",
+      "candidate_a_change": "no change",
+      "candidate_b_change": "NEW-326/327/328: route initialize() through TrafficManagerSession; seed from the governed seed tree; fail closed on unresolved seed.",
+      "classification": "B_ONLY",
+      "resolution": "Preserved as a compatibility facade over traffic_manager_session.py. It does not implement its own TM authority; it constructs one session and delegates. No second TM wrapper was created."
+    },
+    {
+      "file": "ultimate_pipeline/perception/record_route_fixed.py",
+      "candidate_a_change": "no change",
+      "candidate_b_change": "NEW-316/317/318/327: governed weather resolver, per-arm weather binding, complete weather schema, seed tree.",
+      "classification": "B_ONLY",
+      "resolution": "Preserved. Weather authority remains weather_spec.py + deterministic_weather.py."
+    },
+    {
+      "file": "ultimate_pipeline/perception/route_manifest.py",
+      "candidate_a_change": "NEW-294: schema v1 requires crs and geo_reference, digest and sequence validation.",
+      "candidate_b_change": "no change to route_manifest.py (B touches rq3_capture_contract.py instead)",
+      "classification": "A_ONLY",
+      "resolution": "Preserved as authoritative. This strengthening exposed a stale production test helper (see INTEGRATION_DECISIONS.json), which was repaired to supply the now-required frame fields plus a new test asserting the frame requirement."
+    },
+    {
+      "file": "ultimate_pipeline/perception/route_frame_binding.py",
+      "candidate_a_change": "NEW-295: coordinate-frame binding module.",
+      "candidate_b_change": "no change",
+      "classification": "A_ONLY",
+      "resolution": "Preserved as authoritative, then repaired. Frame identity was compared as raw strings (declared 'EPSG:25832' vs map '+proj=utm +zone=32 ...'), so a genuinely shared frame was always reported as unshared; and a manifest whose declared CRS contradicted its own geo_reference was accepted. Both repaired fail-closed."
+    }
+  ],
+  "duplicate_authority_audit": {
+    "method": "search the merged tree for a second implementation of each governed concern",
+    "second_lidar_spec": "none - ultimate_pipeline/sensors/canonical_lidar_spec.py is the only LiDAR runtime-spec resolver; all three rig constructors (ThesisSensorRig, DominikSensorSetup, attach_sensors_safe) import it",
+    "second_weather_spec": "none - weather_spec.py (resolve/identity/apply/verify) + deterministic_weather.py (frame-driven schedule) are the only weather authorities",
+    "second_tm_wrapper": "none - traffic_manager_session.TrafficManagerSession is the single TM authority; fixed_traffic_manager.py delegates to it",
+    "second_seed_tree": "none - seed_tree.py is the only RNG/seed-tree authority; deterministic_weather uses its own seeded random.Random instance and does not touch the process-global RNG",
+    "second_calibration_authority": "none - calibration_authority.py delegates to sensors/calibration_contract.py as the canonical validator; heuristic exports are explicitly non-authoritative",
+    "second_route_execution_engine": "none - route_execution.py is the only strict route executor; legacy apply_transform movement is not an alternative authority",
+    "competing_rig_transforms": "found and removed - ultimate_pipeline/sensors/rig_transforms.py self-imported and read calib_data.json from cwd at import time, making the sensors package non-import-safe. It was relocated to ultimate_pipeline/tools/rig_transforms_check.py, rewritten to delegate to transform_conventions (the real pose authority) with no module-level execution. Production callers: zero (only self-reference plus one historical report mention).",
+    "verdict": "NO_DUPLICATE_AUTHORITY_REMAINS"
+  },
+  "semantic_conflicts_found": [
+    {
+      "id": "SEM-1",
+      "concern": "coordinate-frame identity",
+      "detail": "Candidate A's NEW-295 module decided frame sharing by string equality between an EPSG authority code and a PROJ.4 string, which is never equal. This is a false-negative machine for frame binding: it would reject correct paired captures and, combined with the missing manifest self-consistency check, accept a route declaring one CRS while carrying another zone's parameters.",
+      "classification": "SEMANTIC_CONFLICT",
+      "resolution": "Repaired in the integration commit with canonical_crs_identity() (lazy pyproj) and fail-closed comparison. Unknown/unresolvable CRS is never treated as a match."
+    },
+    {
+      "id": "SEM-2",
+      "concern": "inactive LiDAR entries vs rig construction",
+      "detail": "A's own two NEW-300/NEW-301 changes conflict: the canonical active-set restriction in _select_capture_profile_items was not applied, so an inactive calibration entry would abort the whole rig via A's own RuntimeError.",
+      "classification": "SEMANTIC_CONFLICT",
+      "resolution": "Repaired: spawn set = canonical active LiDARs only; missing active LiDAR = fail-closed."
+    },
+    {
+      "id": "SEM-3",
+      "concern": "NEW-299 rig identity was not hashable/reachable",
+      "detail": "A imported canonical_lidar_hash into thesis_sensor_rig.py but never used it; no runtime rig identity was produced, so NEW-299's 'hash the actually spawned rig' contract was unmet.",
+      "classification": "SEMANTIC_CONFLICT",
+      "resolution": "Added ThesisSensorRig.runtime_rig_identity() over the spawned sensors' effective attributes, recorded at the end of spawn_rig, including the canonical LiDAR spec hash so inactive entries cannot affect identity."
+    }
+  ],
+  "compatible_independent_changes_confirmed": [
+    "A route authority + B environment authority do not compete for any function",
+    "B camera response (photometric) vs A canonical LiDAR spec (geometric/attribute) are disjoint concerns",
+    "B seed tree feeds B TM and B weather without competing with A route framing"
+  ],
+  "requires_manual_merge": [],
+  "verdict": "OVERLAP_RESOLVED_WITH_BOTH_CONTRACTS_PRESERVED"
+}

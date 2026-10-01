@@ -1,0 +1,86 @@
+{
+  "schema": "state_contamination_test/v1",
+  "purpose": "Section 16: prove run B starts from B's requested state and not from run A's residue.",
+  "execution_mode": "offline duck-typed world (no CARLA server available)",
+  "dimensions_governed_per_run": [
+    "experiment seed / seed tree",
+    "weather preset and weather schedule",
+    "physics profile (fps -> fixed_delta_seconds, substep budget)",
+    "traffic-manager session (port, seed, master ownership)",
+    "sensor configuration (canonical LiDAR spec resolution)"
+  ],
+  "run_a": {
+    "experiment_seed": 1001,
+    "fps": 20,
+    "weather": "ClearNoon"
+  },
+  "run_b": {
+    "experiment_seed": 2002,
+    "fps": 10,
+    "weather": "WetCloudySunset"
+  },
+  "assertions": [
+    {
+      "check": "seed tree identity differs between runs",
+      "result": "PASS"
+    },
+    {
+      "check": "physics profile digest differs between runs",
+      "result": "PASS"
+    },
+    {
+      "check": "weather identity differs between runs",
+      "result": "PASS"
+    },
+    {
+      "check": "run B world readback equals run B requested weather",
+      "result": "PASS"
+    },
+    {
+      "check": "run B world readback does not equal run A weather (no residue)",
+      "result": "PASS"
+    },
+    {
+      "check": "run A and run B world states differ",
+      "result": "PASS"
+    },
+    {
+      "check": "weather controllers are independent objects with different seeds/proofs",
+      "result": "PASS"
+    },
+    {
+      "check": "TM: a second session on the same port without release is refused as double ownership (residual session cannot be inherited)",
+      "result": "PASS"
+    },
+    {
+      "check": "TM: after explicit release, run B acquires with seed 2002 and not run A's seed 1001",
+      "result": "PASS"
+    },
+    {
+      "check": "identical inputs reproduce identical identities (run A replayed == run A)",
+      "result": "PASS"
+    },
+    {
+      "check": "canonical LiDAR spec resolution is reproducible across fresh calibration loads",
+      "result": "PASS"
+    },
+    {
+      "check": "spec resolution does not mutate the caller's calibration document",
+      "result": "PASS"
+    }
+  ],
+  "tests": [
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py::test_run_b_starts_from_b_state_not_run_a_residue",
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py::test_tm_session_state_does_not_leak_between_runs",
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py::test_repeat_run_with_same_seed_reproduces_identity",
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py::test_recovered_lidar_spec_is_reproducible",
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py::test_mapping_import_is_used_for_type_check",
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py::test_mapping_like_calibration_is_not_mutated"
+  ],
+  "result": "PASS_OFFLINE",
+  "live_variant": {
+    "status": "BLOCKED_EXTERNAL",
+    "reason": "no CARLA server; a live back-to-back pair (same server, sequential maps/arms, real residual world state) could not be executed",
+    "not_simulated": true
+  }
+}
