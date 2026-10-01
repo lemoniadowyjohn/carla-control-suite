@@ -1,0 +1,39 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "canonical_branch": "integration/production-large-map-20260918",
+  "inspected_files": [
+    "ultimate_pipeline/perception/route_manifest.py",
+    "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "ultimate_pipeline/perception/capture_config.py",
+    "ultimate_pipeline/tools/capture_perception_pair_safe.py",
+    "ultimate_pipeline/tools/run_perception_pair.py",
+    "ultimate_pipeline/carla_tools/safe_spawn_ego.py",
+    "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+    "ultimate_pipeline/sensors/dominik_sensor_setup.py",
+    "ultimate_pipeline/sensors/attach_sensors_safe.py",
+    "ultimate_pipeline/sensors/calibration_contract.py",
+    "ultimate_pipeline/sensors/calib_data.json",
+    "ultimate_pipeline/core/georef_utils.py",
+    "ultimate_pipeline/tools/coordinate_system_artifact.py"
+  ],
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "schema_version": "rq3_baseline_v1",
+  "scope": {
+    "excluded": [
+      "NEW-200 through NEW-292"
+    ],
+    "new_items": [
+      "NEW-293",
+      "NEW-294",
+      "NEW-295",
+      "NEW-296",
+      "NEW-297",
+      "NEW-298",
+      "NEW-299",
+      "NEW-300",
+      "NEW-301"
+    ]
+  },
+  "timestamp_utc": "2026-10-01T03:13:09.440546Z",
+  "worktree_branch": "work-integration/production-large-map-20260918"
+}

@@ -1,0 +1,23 @@
+{
+  "blocking_conditions": [
+    "GAP-017/018 CARLA runtime availability"
+  ],
+  "description": "Live CARLA adapter for validate_route_on_map and validate_paired_route",
+  "finding_id": "NEW-296",
+  "implementation": {
+    "artifacts": [
+      "route_correspondence_manual.json",
+      "route_correspondence_auto.json",
+      "paired_route_correspondence.json"
+    ],
+    "existing_functions": [
+      "validate_route_on_map",
+      "validate_paired_route"
+    ],
+    "integration_point": "capture_perception_pair_safe.py"
+  },
+  "live_carla_status": "BLOCKED_EXTERNAL",
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

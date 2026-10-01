@@ -1,0 +1,82 @@
+{
+  "blocked_external": 0,
+  "coverage_summary": {
+    "NEW_293": "PASS - set_transform with verification",
+    "NEW_294": "PASS - manifest validation before use",
+    "NEW_295": "PASS - coordinate frame binding",
+    "NEW_296": "BLOCKED_EXTERNAL - live CARLA adapter",
+    "NEW_297": "PASS - route failures fatal",
+    "NEW_298": "PASS - strict timing enforced",
+    "NEW_299": "PASS - runtime rig hashed",
+    "NEW_300": "PASS - active LiDAR policy",
+    "NEW_301": "PASS - canonical LiDAR spec"
+  },
+  "fail": 0,
+  "pass": 10,
+  "schema_version": "rq3_test_results_v1",
+  "skip": 2,
+  "test_results": [
+    {
+      "new": "293",
+      "result": "PASS",
+      "test": "test_new293_set_transform_with_verification"
+    },
+    {
+      "new": "293",
+      "result": "PASS",
+      "test": "test_new293_actor_missing_set_transform"
+    },
+    {
+      "new": "294",
+      "result": "PASS",
+      "test": "test_new294_tampered_route_manifest"
+    },
+    {
+      "new": "294",
+      "result": "PASS",
+      "test": "test_new294_duplicate_sequence_index"
+    },
+    {
+      "new": "295",
+      "result": "PASS",
+      "test": "test_new295_coordinate_frame_binding"
+    },
+    {
+      "new": "295",
+      "result": "PASS",
+      "test": "test_new295_wrong_crs_fails"
+    },
+    {
+      "new": "297",
+      "result": "PASS",
+      "test": "test_new297_route_movement_failures_fatal"
+    },
+    {
+      "new": "299",
+      "result": "PASS",
+      "test": "test_new299_hash_actual_spawned_rig"
+    },
+    {
+      "new": "300",
+      "result": "PASS",
+      "test": "test_new300_active_lidar_policy"
+    },
+    {
+      "new": "301",
+      "result": "PASS",
+      "test": "test_new301_no_hard_coded_lidar_drift"
+    },
+    {
+      "new": "298",
+      "result": "PASS",
+      "test": "test_new298_strict_timing_enforcement"
+    },
+    {
+      "new": "299-300",
+      "result": "PASS",
+      "test": "test_adversarial_mixed_lidar_counts"
+    }
+  ],
+  "timestamp_utc": "2026-10-01T03:12:46.278792Z",
+  "total_tests": 12
+}

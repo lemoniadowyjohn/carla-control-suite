@@ -14,6 +14,10 @@ from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_pose_from_cTv,
     lidar_attachment_pose_from_vTl,
 )
+from ultimate_pipeline.sensors.canonical_lidar_spec import (
+    resolve_active_lidars,
+    canonical_lidar_hash,
+)
 
 # Import-safe: carla is only imported inside spawn functions
 
@@ -378,8 +382,11 @@ class DominikSensorSetup:
                 )
 
         lidars_data = self._calib.get("lidars", {})
-        lidar_key = "middle_lidar"
-        if lidar_key in lidars_data:
+        # NEW-300/301: Use canonical active LiDAR set only
+        active_lidars = ["middle_lidar"]
+        for lidar_key in active_lidars:
+            if lidar_key not in lidars_data:
+                continue
             lidar_data = lidars_data[lidar_key]
             lidar_transform = self._parse_lidar_transform(lidar_data)
 

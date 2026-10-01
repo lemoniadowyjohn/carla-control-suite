@@ -1,0 +1,34 @@
+{
+  "adversarial_tests": {
+    "test_new299_hash_actual_spawned_rig": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Hash the actual spawned rig, not nominal calibration",
+  "finding_id": "NEW-299",
+  "implementation": {
+    "derives_from": "spawned/verified actors and their effective attributes",
+    "digest": "runtime_sensor_rig_sha256 computed after successful attachment",
+    "file": "ultimate_pipeline/sensors/attach_sensors_safe.py",
+    "function": "_build_runtime_rig_identity",
+    "includes": [
+      "logical_sensor_name",
+      "carla_blueprint",
+      "relative_transform",
+      "actual_world_transform",
+      "image_width",
+      "image_height",
+      "fov",
+      "sensor_tick",
+      "lidar_range",
+      "lidar_channels",
+      "lidar_points_per_second",
+      "lidar_rotation_frequency",
+      "lidar_upper_fov",
+      "lidar_lower_fov",
+      "capture_modality"
+    ]
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}
