@@ -179,7 +179,9 @@ def test_ingolstadt_manual_and_auto_arms():
 
 class _Pair:
     def __init__(self, *, manual_map, auto_map, calib_sha, rig_sha, weather_sha,
-                 cfg_sha, route_sha, manual_completion, auto_completion):
+                 cfg_sha, route_sha, manual_completion, auto_completion,
+                 cam_resp_sha="cam1", tm_sha="tm1", physics_sha="ph1",
+                 runtime_rig_sha="rr1", vehicle_binding_sha="vb1"):
         self.manual_map = manual_map
         self.auto_map = auto_map
         self.calib_sha = calib_sha
@@ -189,8 +191,30 @@ class _Pair:
         self.route_sha = route_sha
         self.manual_completion = manual_completion
         self.auto_completion = auto_completion
+        self.cam_resp_sha = cam_resp_sha
+        self.tm_sha = tm_sha
+        self.physics_sha = physics_sha
+        self.runtime_rig_sha = runtime_rig_sha
+        self.vehicle_binding_sha = vehicle_binding_sha
 
     def build(self):
+        # NEW-317 / NEW-316..333: a governed pair carries the full environment
+        # identity on BOTH arms, not only at the top level.
+        governed = {
+            "camera_response_sha256": self.cam_resp_sha,
+            "traffic_manager_sha256": self.tm_sha,
+            "simulation_physics_sha256": self.physics_sha,
+            "runtime_sensor_rig_sha256": self.runtime_rig_sha,
+            "vehicle_calibration_binding_sha256": self.vehicle_binding_sha,
+        }
+        arm_base = {
+            "calibration_sha256": self.calib_sha,
+            "sensor_rig_sha256": self.rig_sha,
+            "weather_sha256": self.weather_sha,
+            "capture_config_sha256": self.cfg_sha,
+            "route_manifest_sha256": self.route_sha,
+        }
+        arm_base.update(governed)
         return build_pair_manifest(
             pair_id="p1",
             software_git_sha="abc123",
@@ -204,24 +228,15 @@ class _Pair:
             sensor_rig_sha256=self.rig_sha,
             weather_sha256=self.weather_sha,
             capture_config_sha256=self.cfg_sha,
-            manual_arm={
-                "calibration_sha256": self.calib_sha,
-                "sensor_rig_sha256": self.rig_sha,
-                "weather_sha256": self.weather_sha,
-                "capture_config_sha256": self.cfg_sha,
-                "route_manifest_sha256": self.route_sha,
-                "completion_status": self.manual_completion,
-                "pair_frame_index": [0, 1, 2],
-            },
-            auto_arm={
-                "calibration_sha256": self.calib_sha,
-                "sensor_rig_sha256": self.rig_sha,
-                "weather_sha256": self.weather_sha,
-                "capture_config_sha256": self.cfg_sha,
-                "route_manifest_sha256": self.route_sha,
-                "completion_status": self.auto_completion,
-                "pair_frame_index": [0, 1, 2],
-            },
+            camera_response_sha256=self.cam_resp_sha,
+            traffic_manager_sha256=self.tm_sha,
+            simulation_physics_sha256=self.physics_sha,
+            runtime_sensor_rig_sha256=self.runtime_rig_sha,
+            vehicle_calibration_binding_sha256=self.vehicle_binding_sha,
+            manual_arm=dict(arm_base, completion_status=self.manual_completion,
+                            pair_frame_index=[0, 1, 2]),
+            auto_arm=dict(arm_base, completion_status=self.auto_completion,
+                          pair_frame_index=[0, 1, 2]),
             pair_valid=True,
             invalid_reasons=[],
             claim_level="UNPAIRED_CAPTURE",

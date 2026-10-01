@@ -1,0 +1,37 @@
+{
+  "arm_manifest_field": "weather_sha256",
+  "auto_CloudyNoon_sha256": "506745df9478c943a711f04b18ed3a3a85c030ec084cff13968d8258da41540c",
+  "defect_before": "one pair-level weather_sha256 computed AFTER both arms finished by reading whichever weather CARLA held",
+  "digests_differ": true,
+  "equal_arms_valid": true,
+  "finding": "NEW-317",
+  "live_evidence": "BLOCKED_EXTERNAL",
+  "manual_ClearNoon_sha256": "8e71402694d974c8e3fae852b136a977b99a7a100f2b268db75f0b364aa3a3a8",
+  "missing_manual_arm": {
+    "invalid_reasons": [
+      "PAIR_WEATHER_MISSING_ARM:manual"
+    ],
+    "valid": false
+  },
+  "pair_validator_enforces_arm_level": true,
+  "per_arm_artifact": "weather_effective.json",
+  "rq3_contract_integration": {
+    "required_arm_identity_keys": [
+      "calibration_sha256",
+      "sensor_rig_sha256",
+      "weather_sha256",
+      "capture_config_sha256",
+      "route_manifest_sha256",
+      "camera_response_sha256",
+      "traffic_manager_sha256",
+      "simulation_physics_sha256",
+      "runtime_sensor_rig_sha256",
+      "vehicle_calibration_binding_sha256"
+    ],
+    "schema_version": "paired_capture_manifest_v2"
+  },
+  "schema": "NEW317_ARM_WEATHER_BINDING/v1",
+  "status": "PASS",
+  "top_level_edit_cannot_rescue_missing_arm": true,
+  "validator": "ultimate_pipeline.perception.environment.weather_spec.validate_arm_weather_binding"
+}

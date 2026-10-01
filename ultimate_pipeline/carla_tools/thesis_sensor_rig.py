@@ -13,6 +13,9 @@ from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING
 import numpy as np
 
 from ultimate_pipeline.carla_tools.map_identity_guard import validate_world_map
+from ultimate_pipeline.perception.environment.camera_response import (
+    PROFILE_PINHOLE_POSTPROCESS_DISABLED,
+)
 from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_pose_from_cTv,
     lidar_attachment_pose_from_vTl,
@@ -487,10 +490,23 @@ class ThesisSensorRig:
     If UP_THESIS_STRICT=1 and any manual override env var is set, RuntimeError is raised.
     """
 
-    def __init__(self, calib_path: str | Path):
+    def __init__(
+        self,
+        calib_path: str | Path,
+        camera_response_profile: str | None = None,
+    ):
         self._map_identity = None
         self._sensors: list[Any] = []
         self._client: Any = None
+        # NEW-333: governed camera photometric response profile.  Defaults to the
+        # strict scientific baseline so an implicit CARLA default can never
+        # decide RQ3 image appearance.
+        self.camera_response_profile = (
+            camera_response_profile
+            or os.environ.get("UP_CAMERA_RESPONSE_PROFILE")
+            or PROFILE_PINHOLE_POSTPROCESS_DISABLED
+        )
+        self._camera_response_reports: dict[str, Any] = {}
         self.calib_path = Path(calib_path)
         if not self.calib_path.exists():
             raise FileNotFoundError(f"Calibration file not found: {self.calib_path}")
@@ -835,6 +851,33 @@ class ThesisSensorRig:
                         bp.set_attribute("sensor_tick", str(tick))
                 except Exception:
                     pass
+
+                # NEW-333: pin the governed camera photometric response profile.
+                # Previously only image_size_x/y, fov and sensor_tick were set, so
+                # gamma, exposure mode/compensation, ISO, shutter speed, bloom,
+                # lens flare, lens distortion, chromatic aberration and motion
+                # blur were all left at implicit CARLA defaults.  Capability
+                # detection is per attribute; nothing unsupported is set blindly.
+                try:
+                    from ultimate_pipeline.perception.environment.camera_response import (
+                        apply_response_profile,
+                    )
+
+                    response_report = apply_response_profile(
+                        bp, profile=self.camera_response_profile
+                    )
+                    self._camera_response_reports = getattr(
+                        self, "_camera_response_reports", {}
+                    )
+                    self._camera_response_reports[cam_name] = response_report
+                except Exception as exc:  # pragma: no cover - defensive
+                    self._camera_response_reports = getattr(
+                        self, "_camera_response_reports", {}
+                    )
+                    self._camera_response_reports[cam_name] = {
+                        "schema": "CAMERA_RESPONSE_PROFILE/v1",
+                        "error": f"{type(exc).__name__}:{exc}",
+                    }
 
                 # In CARLA 0.9.x synchronous mode, world.spawn_actor() for streaming
                 # sensors (cameras, LiDAR) blocks until the world ticks because the

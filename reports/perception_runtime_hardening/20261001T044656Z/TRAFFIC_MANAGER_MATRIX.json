@@ -1,0 +1,19 @@
+{
+  "artifact": "TRAFFIC_MANAGER_EFFECTIVE_CONFIG.json",
+  "authority": "traffic_manager_sha256",
+  "multi_master_refused": true,
+  "reseed_after_world_reload_required": true,
+  "scenario_actor_ownership_verified": true,
+  "schema": "TRAFFIC_MANAGER_MATRIX/v1",
+  "seed_required": true,
+  "session_actor_leak_detected": "SCENARIO_ACTOR_LEAK",
+  "single_master_enforced": true,
+  "strict_fail_closed": true,
+  "unbound_autopilot_forbidden": true,
+  "uncontrolled_walkers_counted_as_traffic": false,
+  "walker_modes": [
+    "STATIC_WALKER_PROP",
+    "CONTROLLED_PEDESTRIAN"
+  ],
+  "world_tm_sync_consistency_required": true
+}

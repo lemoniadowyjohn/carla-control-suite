@@ -1,0 +1,1306 @@
+{
+  "artifact": "camera_intrinsic_realization.json",
+  "bounded_approximations": [
+    "back_left_camera",
+    "back_right_camera",
+    "front_left_camera",
+    "front_right_camera",
+    "left_camera",
+    "right_camera"
+  ],
+  "camera_count": 6,
+  "exact_realization_full_frame": false,
+  "finding": "NEW-320",
+  "full_report": {
+    "bounded_approximations": [
+      "back_left_camera",
+      "back_right_camera",
+      "front_left_camera",
+      "front_right_camera",
+      "left_camera",
+      "right_camera"
+    ],
+    "camera_count": 6,
+    "cameras": [
+      {
+        "K_native_carla": [
+          [
+            1650.2790864483356,
+            0.0,
+            960.0
+          ],
+          [
+            0.0,
+            1650.2790864483356,
+            540.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "K_target": [
+          [
+            1650.2790864483354,
+            0.0,
+            935.7573520812683
+          ],
+          [
+            0.0,
+            1874.8368239809517,
+            520.5785898265956
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "bounded_reason": "remap_coverage_below_threshold:0.986979<0.999",
+        "camera": "back_left_camera",
+        "configured_horizontal_fov_deg": 60.374822,
+        "cx_relative_error_pct": 2.590698,
+        "cy_relative_error_pct": 3.730735,
+        "delta_cx": 24.242648,
+        "delta_cy": 19.42141,
+        "delta_fx": 0.0,
+        "delta_fy": -224.557738,
+        "exact_calibration_claim": false,
+        "fx_relative_error_pct": 0.0,
+        "fy_relative_error_pct": -11.977455,
+        "height_px": 1080,
+        "mapping": {
+          "coverage_fraction": 0.986979,
+          "extrapolation_policy": "forbidden_targets_outside_native_domain_are_masked_invalid",
+          "height_px": 1080,
+          "homography": [
+            [
+              1.0,
+              0.0,
+              24.242648
+            ],
+            [
+              0.0,
+              0.880225,
+              81.773477
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "interpolation": "BILINEAR_CONTINUOUS",
+          "invalid_pixel_count": 27000,
+          "mapping_sha256": "2d9485972d0aa19dd5d07554b2a7838661deca3dd830997f4ca90e057a693d6a",
+          "max_pixel_scale_change": 1.0,
+          "no_hidden_extrapolation": true,
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.986979,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 0,
+            "target_u1": 1895,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1895
+          },
+          "policies": {
+            "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+            "flow": "NEAREST_NEIGHBOR_ONLY",
+            "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+            "rgb": "BILINEAR_CONTINUOUS",
+            "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+          },
+          "remap_semantics": "H maps homogeneous TARGET pixel coords to NATIVE pixel coords",
+          "schema": "CAMERA_REMAP_MAPPING/v1",
+          "width_px": 1920
+        },
+        "native": {
+          "cx": 960.0,
+          "cy": 540.0,
+          "fx": 1650.2790864483356,
+          "fy": 1650.2790864483356
+        },
+        "remap_policies": {
+          "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+          "flow": "NEAREST_NEIGHBOR_ONLY",
+          "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+          "rgb": "BILINEAR_CONTINUOUS",
+          "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+        },
+        "remap_required": false,
+        "residual": {
+          "max_abs_delta_px": 224.557738,
+          "note": "exact_K_realizable_only_on_cropped_field_of_view:1895x1080px",
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.986979,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 0,
+            "target_u1": 1895,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1895
+          },
+          "rmse_cx_px": 24.242648,
+          "rmse_cy_px": 19.42141,
+          "rmse_fx_px": 0.0,
+          "rmse_fy_px": 224.557738,
+          "unobservable_target_pixels": 27000
+        },
+        "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+        "strategy": "INTRINSICS_APPROXIMATION_BOUNDED",
+        "target": {
+          "cx": 935.7573520812683,
+          "cy": 520.5785898265956,
+          "fx": 1650.2790864483354,
+          "fy": 1874.8368239809517
+        },
+        "width_px": 1920
+      },
+      {
+        "K_native_carla": [
+          [
+            1755.8580533401666,
+            0.0,
+            960.0
+          ],
+          [
+            0.0,
+            1755.8580533401666,
+            540.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "K_target": [
+          [
+            1755.8580533401666,
+            0.0,
+            984.3712187487318
+          ],
+          [
+            0.0,
+            1972.5116737137512,
+            557.4521127288415
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "bounded_reason": "remap_coverage_below_threshold:0.986979<0.999",
+        "camera": "back_right_camera",
+        "configured_horizontal_fov_deg": 57.334493,
+        "cx_relative_error_pct": -2.475816,
+        "cy_relative_error_pct": -3.130693,
+        "delta_cx": -24.371219,
+        "delta_cy": -17.452113,
+        "delta_fx": 0.0,
+        "delta_fy": -216.65362,
+        "exact_calibration_claim": false,
+        "fx_relative_error_pct": 0.0,
+        "fy_relative_error_pct": -10.983642,
+        "height_px": 1080,
+        "mapping": {
+          "coverage_fraction": 0.986979,
+          "extrapolation_policy": "forbidden_targets_outside_native_domain_are_masked_invalid",
+          "height_px": 1080,
+          "homography": [
+            [
+              1.0,
+              0.0,
+              -24.371219
+            ],
+            [
+              0.0,
+              0.890164,
+              43.776432
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "interpolation": "BILINEAR_CONTINUOUS",
+          "invalid_pixel_count": 27000,
+          "mapping_sha256": "801c04d74a3f7a682f11ff0af0827d380622375870974268592f716bdfb47da2",
+          "max_pixel_scale_change": 1.0,
+          "no_hidden_extrapolation": true,
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.986979,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 25,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1895
+          },
+          "policies": {
+            "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+            "flow": "NEAREST_NEIGHBOR_ONLY",
+            "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+            "rgb": "BILINEAR_CONTINUOUS",
+            "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+          },
+          "remap_semantics": "H maps homogeneous TARGET pixel coords to NATIVE pixel coords",
+          "schema": "CAMERA_REMAP_MAPPING/v1",
+          "width_px": 1920
+        },
+        "native": {
+          "cx": 960.0,
+          "cy": 540.0,
+          "fx": 1755.8580533401666,
+          "fy": 1755.8580533401666
+        },
+        "remap_policies": {
+          "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+          "flow": "NEAREST_NEIGHBOR_ONLY",
+          "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+          "rgb": "BILINEAR_CONTINUOUS",
+          "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+        },
+        "remap_required": false,
+        "residual": {
+          "max_abs_delta_px": 216.65362,
+          "note": "exact_K_realizable_only_on_cropped_field_of_view:1895x1080px",
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.986979,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 25,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1895
+          },
+          "rmse_cx_px": 24.371219,
+          "rmse_cy_px": 17.452113,
+          "rmse_fx_px": 0.0,
+          "rmse_fy_px": 216.65362,
+          "unobservable_target_pixels": 27000
+        },
+        "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+        "strategy": "INTRINSICS_APPROXIMATION_BOUNDED",
+        "target": {
+          "cx": 984.3712187487318,
+          "cy": 557.4521127288415,
+          "fx": 1755.8580533401666,
+          "fy": 1972.5116737137512
+        },
+        "width_px": 1920
+      },
+      {
+        "K_native_carla": [
+          [
+            1621.7174520689396,
+            0.0,
+            960.0
+          ],
+          [
+            0.0,
+            1621.7174520689396,
+            540.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "K_target": [
+          [
+            1621.7174520689396,
+            0.0,
+            944.1163589656635
+          ],
+          [
+            0.0,
+            1834.8994177707268,
+            531.8850293359211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "bounded_reason": "remap_coverage_below_threshold:0.991667<0.999",
+        "camera": "front_left_camera",
+        "configured_horizontal_fov_deg": 61.248097,
+        "cx_relative_error_pct": 1.682382,
+        "cy_relative_error_pct": 1.5257,
+        "delta_cx": 15.883641,
+        "delta_cy": 8.114971,
+        "delta_fx": 0.0,
+        "delta_fy": -213.181966,
+        "exact_calibration_claim": false,
+        "fx_relative_error_pct": 0.0,
+        "fy_relative_error_pct": -11.618183,
+        "height_px": 1080,
+        "mapping": {
+          "coverage_fraction": 0.991667,
+          "extrapolation_policy": "forbidden_targets_outside_native_domain_are_masked_invalid",
+          "height_px": 1080,
+          "homography": [
+            [
+              1.0,
+              0.0,
+              15.883641
+            ],
+            [
+              0.0,
+              0.883818,
+              69.910345
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "interpolation": "BILINEAR_CONTINUOUS",
+          "invalid_pixel_count": 17280,
+          "mapping_sha256": "f2114c38333f1f65a156bac95096721c48d193de5b3adc5169781ed1379b9d02",
+          "max_pixel_scale_change": 1.0,
+          "no_hidden_extrapolation": true,
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.991667,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 0,
+            "target_u1": 1904,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1904
+          },
+          "policies": {
+            "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+            "flow": "NEAREST_NEIGHBOR_ONLY",
+            "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+            "rgb": "BILINEAR_CONTINUOUS",
+            "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+          },
+          "remap_semantics": "H maps homogeneous TARGET pixel coords to NATIVE pixel coords",
+          "schema": "CAMERA_REMAP_MAPPING/v1",
+          "width_px": 1920
+        },
+        "native": {
+          "cx": 960.0,
+          "cy": 540.0,
+          "fx": 1621.7174520689396,
+          "fy": 1621.7174520689396
+        },
+        "remap_policies": {
+          "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+          "flow": "NEAREST_NEIGHBOR_ONLY",
+          "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+          "rgb": "BILINEAR_CONTINUOUS",
+          "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+        },
+        "remap_required": false,
+        "residual": {
+          "max_abs_delta_px": 213.181966,
+          "note": "exact_K_realizable_only_on_cropped_field_of_view:1904x1080px",
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.991667,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 0,
+            "target_u1": 1904,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1904
+          },
+          "rmse_cx_px": 15.883641,
+          "rmse_cy_px": 8.114971,
+          "rmse_fx_px": 0.0,
+          "rmse_fy_px": 213.181966,
+          "unobservable_target_pixels": 17280
+        },
+        "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+        "strategy": "INTRINSICS_APPROXIMATION_BOUNDED",
+        "target": {
+          "cx": 944.1163589656635,
+          "cy": 531.8850293359211,
+          "fx": 1621.7174520689396,
+          "fy": 1834.8994177707268
+        },
+        "width_px": 1920
+      },
+      {
+        "K_native_carla": [
+          [
+            1660.9117138912482,
+            0.0,
+            960.0
+          ],
+          [
+            0.0,
+            1660.9117138912482,
+            540.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "K_target": [
+          [
+            1660.9117138912482,
+            0.0,
+            963.0186896402139
+          ],
+          [
+            0.0,
+            1873.6734442297836,
+            499.7326545439162
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "bounded_reason": "remap_coverage_below_threshold:0.997917<0.999",
+        "camera": "front_right_camera",
+        "configured_horizontal_fov_deg": 60.055464,
+        "cx_relative_error_pct": -0.313461,
+        "cy_relative_error_pct": 8.057778,
+        "delta_cx": -3.01869,
+        "delta_cy": 40.267345,
+        "delta_fx": 0.0,
+        "delta_fy": -212.76173,
+        "exact_calibration_claim": false,
+        "fx_relative_error_pct": 0.0,
+        "fy_relative_error_pct": -11.355326,
+        "height_px": 1080,
+        "mapping": {
+          "coverage_fraction": 0.997917,
+          "extrapolation_policy": "forbidden_targets_outside_native_domain_are_masked_invalid",
+          "height_px": 1080,
+          "homography": [
+            [
+              1.0,
+              0.0,
+              -3.01869
+            ],
+            [
+              0.0,
+              0.886447,
+              97.013618
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "interpolation": "BILINEAR_CONTINUOUS",
+          "invalid_pixel_count": 4320,
+          "mapping_sha256": "44ad4667b92e66de106ea00c54b5297e70b8282f85846eb0dc4648d83d68b58a",
+          "max_pixel_scale_change": 1.0,
+          "no_hidden_extrapolation": true,
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.997917,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 4,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1916
+          },
+          "policies": {
+            "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+            "flow": "NEAREST_NEIGHBOR_ONLY",
+            "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+            "rgb": "BILINEAR_CONTINUOUS",
+            "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+          },
+          "remap_semantics": "H maps homogeneous TARGET pixel coords to NATIVE pixel coords",
+          "schema": "CAMERA_REMAP_MAPPING/v1",
+          "width_px": 1920
+        },
+        "native": {
+          "cx": 960.0,
+          "cy": 540.0,
+          "fx": 1660.9117138912482,
+          "fy": 1660.9117138912482
+        },
+        "remap_policies": {
+          "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+          "flow": "NEAREST_NEIGHBOR_ONLY",
+          "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+          "rgb": "BILINEAR_CONTINUOUS",
+          "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+        },
+        "remap_required": false,
+        "residual": {
+          "max_abs_delta_px": 212.76173,
+          "note": "exact_K_realizable_only_on_cropped_field_of_view:1916x1080px",
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.997917,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1080,
+            "target_u0": 4,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 1080,
+            "width_px": 1916
+          },
+          "rmse_cx_px": 3.01869,
+          "rmse_cy_px": 40.267345,
+          "rmse_fx_px": 0.0,
+          "rmse_fy_px": 212.76173,
+          "unobservable_target_pixels": 4320
+        },
+        "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+        "strategy": "INTRINSICS_APPROXIMATION_BOUNDED",
+        "target": {
+          "cx": 963.0186896402139,
+          "cy": 499.7326545439162,
+          "fx": 1660.9117138912482,
+          "fy": 1873.6734442297836
+        },
+        "width_px": 1920
+      },
+      {
+        "K_native_carla": [
+          [
+            896.2515612229312,
+            0.0,
+            960.0
+          ],
+          [
+            0.0,
+            896.2515612229312,
+            540.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "K_target": [
+          [
+            896.2515612229313,
+            0.0,
+            1010.0996370876367
+          ],
+          [
+            0.0,
+            897.4281631879534,
+            485.49829429633445
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "bounded_reason": "remap_coverage_below_threshold:0.924766<0.999",
+        "camera": "left_camera",
+        "configured_horizontal_fov_deg": 93.933822,
+        "cx_relative_error_pct": -4.959871,
+        "cy_relative_error_pct": 11.225931,
+        "delta_cx": -50.099637,
+        "delta_cy": 54.501706,
+        "delta_fx": -0.0,
+        "delta_fy": -1.176602,
+        "exact_calibration_claim": false,
+        "fx_relative_error_pct": -0.0,
+        "fy_relative_error_pct": -0.131108,
+        "height_px": 1080,
+        "mapping": {
+          "coverage_fraction": 0.924766,
+          "extrapolation_policy": "forbidden_targets_outside_native_domain_are_masked_invalid",
+          "height_px": 1080,
+          "homography": [
+            [
+              1.0,
+              0.0,
+              -50.099637
+            ],
+            [
+              0.0,
+              0.998689,
+              55.138234
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "interpolation": "BILINEAR_CONTINUOUS",
+          "invalid_pixel_count": 156006,
+          "mapping_sha256": "d78490e1537c17ec758a519c4fcab6df7d49c8391f5b319ea97d0f6aee67ce25",
+          "max_pixel_scale_change": 1.0,
+          "no_hidden_extrapolation": true,
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.924766,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1026,
+            "target_u0": 51,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 1026,
+            "width_px": 1869
+          },
+          "policies": {
+            "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+            "flow": "NEAREST_NEIGHBOR_ONLY",
+            "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+            "rgb": "BILINEAR_CONTINUOUS",
+            "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+          },
+          "remap_semantics": "H maps homogeneous TARGET pixel coords to NATIVE pixel coords",
+          "schema": "CAMERA_REMAP_MAPPING/v1",
+          "width_px": 1920
+        },
+        "native": {
+          "cx": 960.0,
+          "cy": 540.0,
+          "fx": 896.2515612229312,
+          "fy": 896.2515612229312
+        },
+        "remap_policies": {
+          "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+          "flow": "NEAREST_NEIGHBOR_ONLY",
+          "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+          "rgb": "BILINEAR_CONTINUOUS",
+          "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+        },
+        "remap_required": false,
+        "residual": {
+          "max_abs_delta_px": 54.501706,
+          "note": "exact_K_realizable_only_on_cropped_field_of_view:1869x1026px",
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.924766,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 1026,
+            "target_u0": 51,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 1026,
+            "width_px": 1869
+          },
+          "rmse_cx_px": 50.099637,
+          "rmse_cy_px": 54.501706,
+          "rmse_fx_px": 0.0,
+          "rmse_fy_px": 1.176602,
+          "unobservable_target_pixels": 156006
+        },
+        "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+        "strategy": "INTRINSICS_APPROXIMATION_BOUNDED",
+        "target": {
+          "cx": 1010.0996370876367,
+          "cy": 485.49829429633445,
+          "fx": 896.2515612229313,
+          "fy": 897.4281631879534
+        },
+        "width_px": 1920
+      },
+      {
+        "K_native_carla": [
+          [
+            903.1073794291844,
+            0.0,
+            960.0
+          ],
+          [
+            0.0,
+            903.1073794291844,
+            540.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "K_target": [
+          [
+            903.1073794291846,
+            0.0,
+            1016.0529456555364
+          ],
+          [
+            0.0,
+            904.3810451783896,
+            453.17071071013123
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "bounded_reason": "remap_coverage_below_threshold:0.892148<0.999",
+        "camera": "right_camera",
+        "configured_horizontal_fov_deg": 93.498128,
+        "cx_relative_error_pct": -5.516735,
+        "cy_relative_error_pct": 19.160393,
+        "delta_cx": -56.052946,
+        "delta_cy": 86.829289,
+        "delta_fx": -0.0,
+        "delta_fy": -1.273666,
+        "exact_calibration_claim": false,
+        "fx_relative_error_pct": -0.0,
+        "fy_relative_error_pct": -0.140833,
+        "height_px": 1080,
+        "mapping": {
+          "coverage_fraction": 0.892148,
+          "extrapolation_policy": "forbidden_targets_outside_native_domain_are_masked_invalid",
+          "height_px": 1080,
+          "homography": [
+            [
+              1.0,
+              0.0,
+              -56.052946
+            ],
+            [
+              0.0,
+              0.998592,
+              87.467503
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "interpolation": "BILINEAR_CONTINUOUS",
+          "invalid_pixel_count": 223641,
+          "mapping_sha256": "f839cee0ecc0825f6ab58db38b65d6142b49323ac44ece10d180bf357b67f02b",
+          "max_pixel_scale_change": 1.0,
+          "no_hidden_extrapolation": true,
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.892148,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 993,
+            "target_u0": 57,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 993,
+            "width_px": 1863
+          },
+          "policies": {
+            "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+            "flow": "NEAREST_NEIGHBOR_ONLY",
+            "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+            "rgb": "BILINEAR_CONTINUOUS",
+            "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+          },
+          "remap_semantics": "H maps homogeneous TARGET pixel coords to NATIVE pixel coords",
+          "schema": "CAMERA_REMAP_MAPPING/v1",
+          "width_px": 1920
+        },
+        "native": {
+          "cx": 960.0,
+          "cy": 540.0,
+          "fx": 903.1073794291844,
+          "fy": 903.1073794291844
+        },
+        "remap_policies": {
+          "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+          "flow": "NEAREST_NEIGHBOR_ONLY",
+          "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+          "rgb": "BILINEAR_CONTINUOUS",
+          "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+        },
+        "remap_required": false,
+        "residual": {
+          "max_abs_delta_px": 86.829289,
+          "note": "exact_K_realizable_only_on_cropped_field_of_view:1863x993px",
+          "observable_crop": {
+            "all_pixels_observable": true,
+            "crop_area_fraction": 0.892148,
+            "exact_K_realizable_on_crop": true,
+            "height_px": 993,
+            "target_u0": 57,
+            "target_u1": 1920,
+            "target_v0": 0,
+            "target_v1": 993,
+            "width_px": 1863
+          },
+          "rmse_cx_px": 56.052946,
+          "rmse_cy_px": 86.829289,
+          "rmse_fx_px": 0.0,
+          "rmse_fy_px": 1.273666,
+          "unobservable_target_pixels": 223641
+        },
+        "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+        "strategy": "INTRINSICS_APPROXIMATION_BOUNDED",
+        "target": {
+          "cx": 1016.0529456555364,
+          "cy": 453.17071071013123,
+          "fx": 903.1073794291846,
+          "fy": 904.3810451783896
+        },
+        "width_px": 1920
+      }
+    ],
+    "exact_realization": false,
+    "fov_policy": "derive_from_target_fx",
+    "legacy_claim_withdrawn": "native CARLA frames are NOT K_undistortion; see per-camera delta_fy / delta_cx / delta_cy",
+    "requires_deterministic_remap": false,
+    "schema": "CAMERA_INTRINSIC_REALIZATION/v1",
+    "strategy_counts": {
+      "INTRINSICS_APPROXIMATION_BOUNDED": 6
+    }
+  },
+  "key_finding": "no camera in the current calibration can realize its target K exactly over the full 1920x1080 frame; the target K is exactly realizable only on a cropped field of view, with 0.2%-10.8% of target pixels having no native observation",
+  "label_modalities_forbid_bilinear": [
+    "semantic_seg",
+    "instance_seg"
+  ],
+  "legacy_claim_withdrawn": "native CARLA frames are NOT K_undistortion; see per-camera delta_fy / delta_cx / delta_cy",
+  "mapping_identity_recorded": true,
+  "no_hidden_extrapolation": true,
+  "per_camera": [
+    {
+      "K_native_carla": [
+        [
+          1650.2790864483356,
+          0.0,
+          960.0
+        ],
+        [
+          0.0,
+          1650.2790864483356,
+          540.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "K_target": [
+        [
+          1650.2790864483354,
+          0.0,
+          935.7573520812683
+        ],
+        [
+          0.0,
+          1874.8368239809517,
+          520.5785898265956
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "bounded_reason": "remap_coverage_below_threshold:0.986979<0.999",
+      "camera": "back_left_camera",
+      "cx_relative_error_pct": 2.590698,
+      "cy_relative_error_pct": 3.730735,
+      "delta_cx": 24.242648,
+      "delta_cy": 19.42141,
+      "delta_fx": 0.0,
+      "delta_fy": -224.557738,
+      "fx_relative_error_pct": 0.0,
+      "fy_relative_error_pct": -11.977455,
+      "mapping_sha256": "2d9485972d0aa19dd5d07554b2a7838661deca3dd830997f4ca90e057a693d6a",
+      "residual": {
+        "max_abs_delta_px": 224.557738,
+        "note": "exact_K_realizable_only_on_cropped_field_of_view:1895x1080px",
+        "observable_crop": {
+          "all_pixels_observable": true,
+          "crop_area_fraction": 0.986979,
+          "exact_K_realizable_on_crop": true,
+          "height_px": 1080,
+          "target_u0": 0,
+          "target_u1": 1895,
+          "target_v0": 0,
+          "target_v1": 1080,
+          "width_px": 1895
+        },
+        "rmse_cx_px": 24.242648,
+        "rmse_cy_px": 19.42141,
+        "rmse_fx_px": 0.0,
+        "rmse_fy_px": 224.557738,
+        "unobservable_target_pixels": 27000
+      },
+      "strategy": "INTRINSICS_APPROXIMATION_BOUNDED"
+    },
+    {
+      "K_native_carla": [
+        [
+          1755.8580533401666,
+          0.0,
+          960.0
+        ],
+        [
+          0.0,
+          1755.8580533401666,
+          540.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "K_target": [
+        [
+          1755.8580533401666,
+          0.0,
+          984.3712187487318
+        ],
+        [
+          0.0,
+          1972.5116737137512,
+          557.4521127288415
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "bounded_reason": "remap_coverage_below_threshold:0.986979<0.999",
+      "camera": "back_right_camera",
+      "cx_relative_error_pct": -2.475816,
+      "cy_relative_error_pct": -3.130693,
+      "delta_cx": -24.371219,
+      "delta_cy": -17.452113,
+      "delta_fx": 0.0,
+      "delta_fy": -216.65362,
+      "fx_relative_error_pct": 0.0,
+      "fy_relative_error_pct": -10.983642,
+      "mapping_sha256": "801c04d74a3f7a682f11ff0af0827d380622375870974268592f716bdfb47da2",
+      "residual": {
+        "max_abs_delta_px": 216.65362,
+        "note": "exact_K_realizable_only_on_cropped_field_of_view:1895x1080px",
+        "observable_crop": {
+          "all_pixels_observable": true,
+          "crop_area_fraction": 0.986979,
+          "exact_K_realizable_on_crop": true,
+          "height_px": 1080,
+          "target_u0": 25,
+          "target_u1": 1920,
+          "target_v0": 0,
+          "target_v1": 1080,
+          "width_px": 1895
+        },
+        "rmse_cx_px": 24.371219,
+        "rmse_cy_px": 17.452113,
+        "rmse_fx_px": 0.0,
+        "rmse_fy_px": 216.65362,
+        "unobservable_target_pixels": 27000
+      },
+      "strategy": "INTRINSICS_APPROXIMATION_BOUNDED"
+    },
+    {
+      "K_native_carla": [
+        [
+          1621.7174520689396,
+          0.0,
+          960.0
+        ],
+        [
+          0.0,
+          1621.7174520689396,
+          540.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "K_target": [
+        [
+          1621.7174520689396,
+          0.0,
+          944.1163589656635
+        ],
+        [
+          0.0,
+          1834.8994177707268,
+          531.8850293359211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "bounded_reason": "remap_coverage_below_threshold:0.991667<0.999",
+      "camera": "front_left_camera",
+      "cx_relative_error_pct": 1.682382,
+      "cy_relative_error_pct": 1.5257,
+      "delta_cx": 15.883641,
+      "delta_cy": 8.114971,
+      "delta_fx": 0.0,
+      "delta_fy": -213.181966,
+      "fx_relative_error_pct": 0.0,
+      "fy_relative_error_pct": -11.618183,
+      "mapping_sha256": "f2114c38333f1f65a156bac95096721c48d193de5b3adc5169781ed1379b9d02",
+      "residual": {
+        "max_abs_delta_px": 213.181966,
+        "note": "exact_K_realizable_only_on_cropped_field_of_view:1904x1080px",
+        "observable_crop": {
+          "all_pixels_observable": true,
+          "crop_area_fraction": 0.991667,
+          "exact_K_realizable_on_crop": true,
+          "height_px": 1080,
+          "target_u0": 0,
+          "target_u1": 1904,
+          "target_v0": 0,
+          "target_v1": 1080,
+          "width_px": 1904
+        },
+        "rmse_cx_px": 15.883641,
+        "rmse_cy_px": 8.114971,
+        "rmse_fx_px": 0.0,
+        "rmse_fy_px": 213.181966,
+        "unobservable_target_pixels": 17280
+      },
+      "strategy": "INTRINSICS_APPROXIMATION_BOUNDED"
+    },
+    {
+      "K_native_carla": [
+        [
+          1660.9117138912482,
+          0.0,
+          960.0
+        ],
+        [
+          0.0,
+          1660.9117138912482,
+          540.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "K_target": [
+        [
+          1660.9117138912482,
+          0.0,
+          963.0186896402139
+        ],
+        [
+          0.0,
+          1873.6734442297836,
+          499.7326545439162
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "bounded_reason": "remap_coverage_below_threshold:0.997917<0.999",
+      "camera": "front_right_camera",
+      "cx_relative_error_pct": -0.313461,
+      "cy_relative_error_pct": 8.057778,
+      "delta_cx": -3.01869,
+      "delta_cy": 40.267345,
+      "delta_fx": 0.0,
+      "delta_fy": -212.76173,
+      "fx_relative_error_pct": 0.0,
+      "fy_relative_error_pct": -11.355326,
+      "mapping_sha256": "44ad4667b92e66de106ea00c54b5297e70b8282f85846eb0dc4648d83d68b58a",
+      "residual": {
+        "max_abs_delta_px": 212.76173,
+        "note": "exact_K_realizable_only_on_cropped_field_of_view:1916x1080px",
+        "observable_crop": {
+          "all_pixels_observable": true,
+          "crop_area_fraction": 0.997917,
+          "exact_K_realizable_on_crop": true,
+          "height_px": 1080,
+          "target_u0": 4,
+          "target_u1": 1920,
+          "target_v0": 0,
+          "target_v1": 1080,
+          "width_px": 1916
+        },
+        "rmse_cx_px": 3.01869,
+        "rmse_cy_px": 40.267345,
+        "rmse_fx_px": 0.0,
+        "rmse_fy_px": 212.76173,
+        "unobservable_target_pixels": 4320
+      },
+      "strategy": "INTRINSICS_APPROXIMATION_BOUNDED"
+    },
+    {
+      "K_native_carla": [
+        [
+          896.2515612229312,
+          0.0,
+          960.0
+        ],
+        [
+          0.0,
+          896.2515612229312,
+          540.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "K_target": [
+        [
+          896.2515612229313,
+          0.0,
+          1010.0996370876367
+        ],
+        [
+          0.0,
+          897.4281631879534,
+          485.49829429633445
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "bounded_reason": "remap_coverage_below_threshold:0.924766<0.999",
+      "camera": "left_camera",
+      "cx_relative_error_pct": -4.959871,
+      "cy_relative_error_pct": 11.225931,
+      "delta_cx": -50.099637,
+      "delta_cy": 54.501706,
+      "delta_fx": -0.0,
+      "delta_fy": -1.176602,
+      "fx_relative_error_pct": -0.0,
+      "fy_relative_error_pct": -0.131108,
+      "mapping_sha256": "d78490e1537c17ec758a519c4fcab6df7d49c8391f5b319ea97d0f6aee67ce25",
+      "residual": {
+        "max_abs_delta_px": 54.501706,
+        "note": "exact_K_realizable_only_on_cropped_field_of_view:1869x1026px",
+        "observable_crop": {
+          "all_pixels_observable": true,
+          "crop_area_fraction": 0.924766,
+          "exact_K_realizable_on_crop": true,
+          "height_px": 1026,
+          "target_u0": 51,
+          "target_u1": 1920,
+          "target_v0": 0,
+          "target_v1": 1026,
+          "width_px": 1869
+        },
+        "rmse_cx_px": 50.099637,
+        "rmse_cy_px": 54.501706,
+        "rmse_fx_px": 0.0,
+        "rmse_fy_px": 1.176602,
+        "unobservable_target_pixels": 156006
+      },
+      "strategy": "INTRINSICS_APPROXIMATION_BOUNDED"
+    },
+    {
+      "K_native_carla": [
+        [
+          903.1073794291844,
+          0.0,
+          960.0
+        ],
+        [
+          0.0,
+          903.1073794291844,
+          540.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "K_target": [
+        [
+          903.1073794291846,
+          0.0,
+          1016.0529456555364
+        ],
+        [
+          0.0,
+          904.3810451783896,
+          453.17071071013123
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "bounded_reason": "remap_coverage_below_threshold:0.892148<0.999",
+      "camera": "right_camera",
+      "cx_relative_error_pct": -5.516735,
+      "cy_relative_error_pct": 19.160393,
+      "delta_cx": -56.052946,
+      "delta_cy": 86.829289,
+      "delta_fx": -0.0,
+      "delta_fy": -1.273666,
+      "fx_relative_error_pct": -0.0,
+      "fy_relative_error_pct": -0.140833,
+      "mapping_sha256": "f839cee0ecc0825f6ab58db38b65d6142b49323ac44ece10d180bf357b67f02b",
+      "residual": {
+        "max_abs_delta_px": 86.829289,
+        "note": "exact_K_realizable_only_on_cropped_field_of_view:1863x993px",
+        "observable_crop": {
+          "all_pixels_observable": true,
+          "crop_area_fraction": 0.892148,
+          "exact_K_realizable_on_crop": true,
+          "height_px": 993,
+          "target_u0": 57,
+          "target_u1": 1920,
+          "target_v0": 0,
+          "target_v1": 993,
+          "width_px": 1863
+        },
+        "rmse_cx_px": 56.052946,
+        "rmse_cy_px": 86.829289,
+        "rmse_fx_px": 0.0,
+        "rmse_fy_px": 1.273666,
+        "unobservable_target_pixels": 223641
+      },
+      "strategy": "INTRINSICS_APPROXIMATION_BOUNDED"
+    }
+  ],
+  "remap_policies": {
+    "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+    "flow": "NEAREST_NEIGHBOR_ONLY",
+    "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+    "rgb": "BILINEAR_CONTINUOUS",
+    "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+  },
+  "schema": "NEW320_INTRINSIC_REALIZATION/v1",
+  "scientific_issue": "native CARLA RGB frames were described as exactly K_undistortion; CARLA's camera exposes only image_size_x/y and a horizontal fov, so fx==fy and the principal point is the image centre",
+  "status": "PASS",
+  "strategy_counts": {
+    "INTRINSICS_APPROXIMATION_BOUNDED": 6
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "artifact": "vehicle_calibration_binding.json",
+  "calibration_vehicle_dimension": {
+    "dimension": [
+      4.915,
+      1.937,
+      1.633
+    ]
+  },
+  "claim_levels": [
+    "PAIRWISE_SIM_COMPARABILITY",
+    "REAL_SENSOR_RIG_GEOMETRY_REPLICA"
+  ],
+  "defect_before": "calib_data.json declared vehicle.dimension [4.915,1.937,1.633] but NO code ever read it, while the runner accepted any blueprint",
+  "finding": "NEW-324",
+  "frame_origin_assumptions_recorded": {
+    "calibration_vehicle_origin": "rear-axle-centre projected onto the ground plane, vehicle x forward, y left, z up (ROS/vehicle convention)",
+    "carla_actor_origin": "centre of the actor bounding box at spawn (CARLA convention); NOT the rear axle",
+    "origin_offset_is_undocumented_residual": "the difference between the two origins is unquantified by calib_data.json and shifts every extrinsic translation"
+  },
+  "matching_geometry_rig_replica_granted": true,
+  "physical_rig_fidelity_never_silently_claimed": true,
+  "rig_replica_claim_for_tesla_refused": {
+    "invalid_reasons": [
+      "VEHICLE_RIG_REPLICA_FORBIDDEN:dimensions_incompatible"
+    ],
+    "valid": false
+  },
+  "same_invalid_calibration_both_arms_not_rig_pass": {
+    "pairwise_sim_granted": true,
+    "resolved_claim": "PAIRWISE_SIM_COMPARABILITY",
+    "rig_replica_still_refused": true
+  },
+  "schema": "NEW324_VEHICLE_CALIBRATION_BINDING/v1",
+  "status": "PASS",
+  "tesla_model3_binding": {
+    "actual_bounding_box_dimension": {
+      "available": true,
+      "axis_convention": "carla_bounding_box_extent x2 (x fwd, y right, z up)",
+      "height_m": 1.4,
+      "length_m": 4.6,
+      "width_m": 1.9
+    },
+    "auto_blueprint_id": "vehicle.tesla.model3",
+    "calibration_frame_origin_assumptions": {
+      "calibration_vehicle_origin": "rear-axle-centre projected onto the ground plane, vehicle x forward, y left, z up (ROS/vehicle convention)",
+      "carla_actor_origin": "centre of the actor bounding box at spawn (CARLA convention); NOT the rear axle",
+      "origin_offset_is_undocumented_residual": "the difference between the two origins is unquantified by calib_data.json and shifts every extrinsic translation"
+    },
+    "calibration_vehicle_dimension": {
+      "axis_convention": "length,width,height in metres",
+      "failure_code": null,
+      "height_m": 1.633,
+      "length_m": 4.915,
+      "present": true,
+      "width_m": 1.937
+    },
+    "carla_blueprint_id": "vehicle.tesla.model3",
+    "claim_granted": true,
+    "claim_reasons": [],
+    "dimensional_comparison": {
+      "comparable": true,
+      "dimensions_compatible": false,
+      "per_axis": [
+        {
+          "actual_m": 4.6,
+          "axis": "length_m",
+          "declared_m": 4.915,
+          "delta_m": -0.315,
+          "delta_pct": -6.409,
+          "within_tolerance": false
+        },
+        {
+          "actual_m": 1.9,
+          "axis": "width_m",
+          "declared_m": 1.937,
+          "delta_m": -0.037,
+          "delta_pct": -1.9102,
+          "within_tolerance": true
+        },
+        {
+          "actual_m": 1.4,
+          "axis": "height_m",
+          "declared_m": 1.633,
+          "delta_m": -0.233,
+          "delta_pct": -14.2682,
+          "within_tolerance": false
+        }
+      ],
+      "tolerance_m": 0.1,
+      "tolerance_pct": 5.0,
+      "worst_delta_pct": 14.2682
+    },
+    "invalid_reasons": [
+      "VEHICLE_DIMENSION_INCOMPATIBLE:[{'axis': 'length_m', 'declared_m': 4.915, 'actual_m': 4.6, 'delta_m': -0.315, 'delta_pct': -6.409, 'within_tolerance': False}, {'axis': 'width_m', 'declared_m': 1.937, 'actual_m': 1.9, 'delta_m': -0.037, 'delta_pct': -1.9102, 'within_tolerance': True}, {'axis': 'height_m', 'declared_m': 1.633, 'actual_m': 1.4, 'delta_m': -0.233, 'delta_pct': -14.2682, 'within_tolerance': False}]"
+    ],
+    "limitation_statement": "Extrinsics were measured on the declared calibration vehicle. Applying them to a different CARLA blueprint does not reproduce the physical rig geometry unless the bounding boxes are compatible and the frame-origin assumption is explicitly accepted.",
+    "manual_blueprint_id": "vehicle.tesla.model3",
+    "requested_claim": "PAIRWISE_SIM_COMPARABILITY",
+    "resolved_claim": "PAIRWISE_SIM_COMPARABILITY",
+    "same_simulated_vehicle_both_arms": true,
+    "schema": "VEHICLE_CALIBRATION_BINDING/v1",
+    "spawned_actor_type_id": null,
+    "spawned_type_id_matches_blueprint": null,
+    "valid": false,
+    "vehicle_calibration_binding_sha256": "e3ffa983598eaf1b2e0a3976de62567c6e04ad49f8a47f575b39154ca6b3cd6e",
+    "vehicle_frame_origin_assumptions": {
+      "calibration_vehicle_origin": "rear-axle-centre projected onto the ground plane, vehicle x forward, y left, z up (ROS/vehicle convention)",
+      "carla_actor_origin": "centre of the actor bounding box at spawn (CARLA convention); NOT the rear axle",
+      "origin_offset_is_undocumented_residual": "the difference between the two origins is unquantified by calib_data.json and shifts every extrinsic translation"
+    }
+  },
+  "vehicle_frame_origin_assumptions": "explicitly recorded as assumptions, not derived"
+}
