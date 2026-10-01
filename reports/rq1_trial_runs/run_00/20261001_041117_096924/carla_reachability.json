@@ -1,0 +1,19 @@
+{
+  "ok": false,
+  "host": "127.0.0.1",
+  "port": 2000,
+  "streaming_port": 2001,
+  "rpc_open": false,
+  "stream_open": false,
+  "api_ok": false,
+  "tick_ok": false,
+  "server_version": null,
+  "map_name": null,
+  "spawn_points": null,
+  "error": "rpc_port_closed (127.0.0.1:2000)",
+  "timestamp": "2026-10-01T02:13:56.509682+00:00",
+  "elapsed_s": 4.0,
+  "autostart": null,
+  "kill": null,
+  "artifact_path": "reports\\rq1_trial_runs\\run_00\\20261001_041117_096924\\carla_reachability.json"
+}

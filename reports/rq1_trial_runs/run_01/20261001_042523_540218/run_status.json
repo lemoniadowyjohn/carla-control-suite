@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "geometry",
+  "message": null,
+  "error": "\u274c Failed to load DEM sampler in strict mode: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of reports\\rq1_trial_runs\\run_01\\20261001_042523_540218\\06_geometry_frozen_20261001_042523_540218.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.",
+  "out_dir": "reports\\rq1_trial_runs\\run_01\\20261001_042523_540218",
+  "timestamp": "2026-10-01T05:56:59.673268"
+}
