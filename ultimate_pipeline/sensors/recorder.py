@@ -280,13 +280,22 @@ class SensorRecorder:
             self.start()
         self._append_world_snapshot()
         with self._lock:
+            # P0-1: frames_recorded is computed inline. get_recorded_frame_count()
+            # acquires this same non-reentrant Lock, so calling it while already
+            # holding the lock deadlocked tick() on every invocation.
+            if not self._sensor_frame_counts:
+                frames_recorded = 0
+            else:
+                frames_recorded = int(
+                    min(int(v or 0) for v in self._sensor_frame_counts.values())
+                )
             return {
                 "ok": True,
                 "running": bool(self._running),
                 "saved_images": int(self._saved_images),
                 "saved_semseg": int(self._saved_semseg),
                 "saved_lidars": int(self._saved_lidars),
-                "frames_recorded": int(self.get_recorded_frame_count()),
+                "frames_recorded": frames_recorded,
                 "sensor_frame_counts": dict(self._sensor_frame_counts),
                 "save_errors_tail": self._save_errors[-10:],
             }
@@ -655,8 +664,12 @@ class SensorRecorder:
                 return
             with self._lock:
                 self._callbacks_in_flight += 1
-            frame_id = self._next_frame_id(data)
             try:
+                # P0-2: frame_id is resolved INSIDE the try. Previously
+                # _next_frame_id() ran before the try, so a FrameIdMissingError
+                # escaped before the finally decrement and permanently leaked
+                # _callbacks_in_flight, making every later drain wait forever.
+                frame_id = self._next_frame_id(data)
                 if sensor_kind in {"rgb", "semseg_raw", "other"}:
                     image_ext = str(getattr(self.cfg, "image_format", "png") or "png")
                     image_ext = image_ext.lstrip(".").lower() or "png"
@@ -731,7 +744,11 @@ class SensorRecorder:
                     return
 
             except Exception as exc:
-                self._record_error(f"save_failed:{sensor_name}:{frame_id}:{exc}")
+                # P0-2: frame_id is unbound when _next_frame_id() raised, so
+                # referencing it directly would raise NameError and mask the
+                # original error.
+                fid = frame_id if "frame_id" in locals() else "unknown"
+                self._record_error(f"save_failed:{sensor_name}:{fid}:{exc}")
             finally:
                 with self._lock:
                     self._callbacks_in_flight = max(
