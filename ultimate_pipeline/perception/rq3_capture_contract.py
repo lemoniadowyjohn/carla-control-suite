@@ -97,7 +97,7 @@ COMPLETION_PASS = "PASS"
 COMPLETION_INCOMPLETE = "INCOMPLETE"
 COMPLETION_FAIL = "FAIL"
 
-INGOLSTADT_MANUAL_COOKED_TOWNS = ("Grid0821", "Grid0828")
+INGOLSTADT_MANUAL_COOKED_TOWNS = ("Grid0828",)
 
 # Wall-clock / process-scoped fields excluded from deterministic digests.
 DETERMINISM_EXCLUDED_FIELDS = frozenset(
@@ -591,15 +591,30 @@ def cooked_arm_map_identity(
     registry_identity: Optional[str] = None,
     manual_source_xodr_sha256: Optional[str] = None,
     cooked_package_identity: Optional[str] = None,
+    # Governed identity fields (required for Grid0828)
+    grid0828_source_xodr_sha256: Optional[str] = None,
+    grid0828_cooked_package_sha256: Optional[str] = None,
+    grid0828_runtime_identity_sha256: Optional[str] = None,
 ) -> Dict[str, Any]:
-    return {
+    identity = {
         "map_type": "cooked_manual",
         "requested_map_name": str(requested_map_name),
         "resolved_carla_map_name": str(resolved_carla_map_name),
-        "registry_identity": registry_identity,
-        "manual_source_xodr_sha256": manual_source_xodr_sha256,
-        "cooked_package_build_identity": cooked_package_identity,
     }
+    if registry_identity:
+        identity["registry_identity"] = registry_identity
+    if manual_source_xodr_sha256:
+        identity["manual_source_xodr_sha256"] = manual_source_xodr_sha256
+    if cooked_package_identity:
+        identity["cooked_package_identity"] = cooked_package_identity
+    # Governed Grid0828 identity fields (required for Ingolstadt manual arm)
+    if grid0828_source_xodr_sha256:
+        identity["grid0828_source_xodr_sha256"] = grid0828_source_xodr_sha256
+    if grid0828_cooked_package_sha256:
+        identity["grid0828_cooked_package_sha256"] = grid0828_cooked_package_sha256
+    if grid0828_runtime_identity_sha256:
+        identity["grid0828_runtime_identity_sha256"] = grid0828_runtime_identity_sha256
+    return identity
 
 
 def is_ingolstadt_manual_arm(map_identity: Mapping[str, Any]) -> bool:
@@ -609,13 +624,31 @@ def is_ingolstadt_manual_arm(map_identity: Mapping[str, Any]) -> bool:
     return requested in INGOLSTADT_MANUAL_COOKED_TOWNS
 
 
-def is_ingolstadt_auto_arm(map_identity: Mapping[str, Any], *, ingolstadt_xodr_sha256=None) -> bool:
+def is_ingolstadt_auto_arm(map_identity: Mapping[str, Any], *, ingolstadt_xodr_sha256: Optional[str] = None) -> bool:
+    """
+    Check if an auto arm is the Ingolstadt map by SHA256.
+
+    A valid auto arm MUST match the pinned auto_map_of_record SHA256.
+    Path-based heuristics ("ingolstadt" in path, "campaigns/" in path) are
+    explicitly forbidden as they are not cryptographically verifiable.
+
+    Args:
+        map_identity: The map identity dict from the capture manifest
+        ingolstadt_xodr_sha256: Optional override SHA256; if None, resolves
+            from the pinned map registry.
+
+    Returns:
+        True if the auto arm's xodr_sha256 matches the pinned Ingolstadt map.
+    """
     if map_identity.get("map_type") != "xodr":
         return False
-    if ingolstadt_xodr_sha256:
-        return str(map_identity.get("xodr_sha256", "")) == str(ingolstadt_xodr_sha256)
-    path = str(map_identity.get("xodr_path", "")).replace("\\", "/")
-    return "ingolstadt" in path.lower() or "campaigns/" in path.lower()
+    if ingolstadt_xodr_sha256 is None:
+        from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
+        pinned = verify_pinned_map("auto_map_of_record")
+        if pinned.get("verification_status") != "VERIFIED":
+            return False
+        ingolstadt_xodr_sha256 = pinned["sha256_actual"]
+    return str(map_identity.get("xodr_sha256", "")).lower() == str(ingolstadt_xodr_sha256).lower()
 
 
 # ---------------------------------------------------------------------------
