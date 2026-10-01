@@ -3,7 +3,7 @@
 **Repository:** `lemoniadowyjohn/carla-control-suite`
 **Authoritative branch:** `integration/production-large-map-20260918` @ `f897e0eb747ac827941ac4883170a5181a603111` (verified, no drift)
 **Work branch:** `integration/opencode-runtime-rig-environment-closure-20261001`
-**Result head:** `3a285e733d9ada1a7b70b503b9773bc4090ca8e6`
+**Result head:** `5bac4c9188268d9247bb4898c040b14cbaeb0d48` (code changes at `7b09cfbc`)
 **Not merged into the authoritative branch.** Left for independent review.
 
 ## Map pin
