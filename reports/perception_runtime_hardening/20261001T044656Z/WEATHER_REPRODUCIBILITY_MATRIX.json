@@ -1,0 +1,23 @@
+{
+  "arm_digest_divergence_detected": true,
+  "different_seed_different_schedule": true,
+  "dynamic_forbidden_for_pair": true,
+  "full_field_count": 14,
+  "legacy_omitted_now_included": [
+    "fog_falloff",
+    "rayleigh_scattering_scale",
+    "dust_storm"
+  ],
+  "live_verification": "BLOCKED_EXTERNAL",
+  "missing_arm_fails": true,
+  "modes": [
+    "DIAGNOSTIC_DYNAMIC_WEATHER",
+    "GOVERNED_FIXED_WEATHER",
+    "GOVERNED_SCHEDULED_WEATHER"
+  ],
+  "per_arm_measurement": true,
+  "same_seed_same_schedule": false,
+  "schema": "WEATHER_REPRODUCIBILITY_MATRIX/v1",
+  "wall_clock_independent": true,
+  "weather_schema_version": "weather_effective_v2"
+}

@@ -1,0 +1,89 @@
+{
+  "artifacts": [
+    "weather_requested.json",
+    "weather_effective.json"
+  ],
+  "experimental_presets": [
+    "ExperimentalDenseFog",
+    "ExperimentalHeavyRain",
+    "ExperimentalScatterProbe",
+    "ExperimentalSoftRain"
+  ],
+  "failure_codes": [
+    "WEATHER_PRESET_UNSUPPORTED",
+    "WEATHER_APPLICATION_FAILED",
+    "WEATHER_READBACK_FAILED",
+    "WEATHER_SETTLE_FAILED",
+    "PAIR_WEATHER_MISMATCH",
+    "PAIR_WEATHER_MISSING_ARM"
+  ],
+  "failure_is_warning_only": false,
+  "legacy_env_var_consumers_before": {
+    "UP_WEATHER_PRESET": "written by run_perception_pair._build_safe_runner_env_overrides, read by NOTHING",
+    "record_route_fixed": "contained zero occurrences of 'weather'"
+  },
+  "legacy_v1_omitted_fields_now_included": [
+    "fog_falloff",
+    "rayleigh_scattering_scale",
+    "dust_storm"
+  ],
+  "preset_source": "live_carla_module",
+  "resolver": "ultimate_pipeline.perception.environment.weather_spec.resolve_weather_spec",
+  "schema": "WEATHER_AUTHORITY_MATRIX/v1",
+  "single_resolver": true,
+  "stock_presets": [
+    "ClearNight",
+    "ClearNoon",
+    "ClearSunset",
+    "CloudyNight",
+    "CloudyNoon",
+    "CloudySunset",
+    "Default",
+    "DustStorm",
+    "HardRainNight",
+    "HardRainNoon",
+    "HardRainSunset",
+    "MidRainSunset",
+    "MidRainyNight",
+    "MidRainyNoon",
+    "SoftRainNight",
+    "SoftRainNoon",
+    "SoftRainSunset",
+    "WetCloudyNight",
+    "WetCloudyNoon",
+    "WetCloudySunset",
+    "WetNight",
+    "WetNoon",
+    "WetSunset"
+  ],
+  "strict_sequence": [
+    "requested weather",
+    "resolve exact parameters",
+    "world.set_weather",
+    "advance settle ticks",
+    "world.get_weather",
+    "normalize effective",
+    "compare requested/effective",
+    "generate digest",
+    "permit capture"
+  ],
+  "supported_field_count": 14,
+  "supported_fields": [
+    "cloudiness",
+    "precipitation",
+    "precipitation_deposits",
+    "wind_intensity",
+    "sun_azimuth_angle",
+    "sun_altitude_angle",
+    "fog_density",
+    "fog_distance",
+    "fog_falloff",
+    "wetness",
+    "scattering_intensity",
+    "mie_scattering_scale",
+    "rayleigh_scattering_scale",
+    "dust_storm"
+  ],
+  "unsupported_fields": [],
+  "weather_schema_version": "weather_effective_v2"
+}

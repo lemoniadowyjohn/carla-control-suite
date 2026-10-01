@@ -1,0 +1,58 @@
+{
+  "defect_before": "the check was {'ok': pxl is not None} where _project_point only required z > 1e-6, so pixel [-5000, 20000] counted as a successful LiDAR-camera check",
+  "explicit_thresholds": {
+    "max_mean_reprojection_residual_px": 1.0,
+    "max_reprojection_residual_px": 2.0,
+    "min_camera_depth_m": 0.001,
+    "min_target_correspondence_rate": 1.0,
+    "require_finite": 1.0,
+    "require_inside_image": 1.0
+  },
+  "failure_codes": [
+    "LIDAR_PROJECTION_NON_FINITE",
+    "LIDAR_PROJECTION_NON_POSITIVE_DEPTH",
+    "LIDAR_PROJECTION_OUTSIDE_IMAGE",
+    "LIDAR_PROJECTION_NO_CORRESPONDENCE",
+    "LIDAR_PROJECTION_RESIDUAL_EXCEEDED"
+  ],
+  "finding": "NEW-323",
+  "finding_note": "the strengthened gate finds a real out-of-image target in the CURRENT calibration (right_10m at x=1965 > width 1920) that the legacy gate accepted",
+  "out_of_image_projection_rejected": {
+    "invalid_reasons": [
+      "LIDAR_PROJECTION_OUTSIDE_IMAGE:right_10m:pixel=(1965.029,786.804):image=1920x1080"
+    ],
+    "ok": false,
+    "pixel": [
+      1965.029469,
+      786.803725
+    ],
+    "target": "right_10m"
+  },
+  "real_calibration_gate": {
+    "correspondence_rate": 0.75,
+    "invalid_reasons": [
+      "LIDAR_PROJECTION_OUTSIDE_IMAGE:right_10m:pixel=(1965.029,786.804):image=1920x1080",
+      "LIDAR_PROJECTION_NO_CORRESPONDENCE:rate=0.75<1.0"
+    ],
+    "ok": false,
+    "targets_expected": 4,
+    "targets_passed": 3
+  },
+  "required_conditions": [
+    "finite coordinates",
+    "positive camera depth",
+    "pixel inside valid image domain",
+    "correct target correspondence",
+    "residual below explicit threshold"
+  ],
+  "schema": "NEW323_LIDAR_CAMERA_GATE/v1",
+  "status": "PASS",
+  "wild_pixel_with_positive_depth_rejected": {
+    "invalid_reasons": [
+      "LIDAR_PROJECTION_RESIDUAL_EXCEEDED:forward_5m:20144.4816>2.0"
+    ],
+    "ok": false,
+    "target": "forward_5m"
+  },
+  "wired_into": "ultimate_pipeline/sensors/calibration_sanity_check.py"
+}

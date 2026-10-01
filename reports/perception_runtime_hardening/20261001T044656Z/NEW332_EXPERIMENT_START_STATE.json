@@ -1,0 +1,36 @@
+{
+  "SIMULATION_STATE_READY_before_stages": true,
+  "capture_permitted_after_full_sequence": true,
+  "capture_refused_before_ready": "SIMULATION_STATE_NOT_READY:SIMULATION_STATE_READY=False:incomplete=['LOAD_OR_GENERATE_INTENDED_WORLD', 'ESTABLISH_FINAL_WORLD_IDENTITY', 'APPLY_GOVERNED_SIMULATION_SETTINGS', 'VERIFY_SIMULATION_SETTINGS', 'INITIALIZE_AND_SEED_TRAFFIC_MANAGER', 'DETERMINISTIC_WARMUP', 'SPAWN_GOVERNED_ACTORS', 'ATTACH_SENSORS']",
+  "claim_boundary": "SYNC_APPLIED_POST_GENERATION",
+  "claim_boundary_for_builtin_map": "SYNC_FROM_WORLD_LOAD",
+  "defect_before": "synchronous mode was enabled only AFTER ego and sensors were materialised, so the world advanced asynchronously during rig construction",
+  "finding": "NEW-332",
+  "governed_sequence": [
+    "LOAD_OR_GENERATE_INTENDED_WORLD",
+    "ESTABLISH_FINAL_WORLD_IDENTITY",
+    "APPLY_GOVERNED_SIMULATION_SETTINGS",
+    "VERIFY_SIMULATION_SETTINGS",
+    "INITIALIZE_AND_SEED_TRAFFIC_MANAGER",
+    "DETERMINISTIC_WARMUP",
+    "SPAWN_GOVERNED_ACTORS",
+    "ATTACH_SENSORS",
+    "CAPTURE"
+  ],
+  "live_verification": "BLOCKED_EXTERNAL",
+  "no_capture_before_ready": true,
+  "opendrive_claim_note": "CARLA 0.9.16 cannot hold synchronous mode across generate_opendrive_world/reload_world because the server rebuilds the world and resets settings; the supported sequence is load/generate -> apply governed settings -> verify -> reseed TM -> warmup -> spawn -> attach -> capture, which is the governed sequence. The resulting claim boundary is SYNC_APPLIED_POST_GENERATION: synchrony governs the repeatable episode, not the map-generation step.",
+  "ordering_enforced_fail_closed": true,
+  "out_of_order_detected": [
+    "ATTACH_SENSORS:out_of_order:LOAD_OR_GENERATE_INTENDED_WORLD_incomplete",
+    "ATTACH_SENSORS:out_of_order:ESTABLISH_FINAL_WORLD_IDENTITY_incomplete",
+    "ATTACH_SENSORS:out_of_order:APPLY_GOVERNED_SIMULATION_SETTINGS_incomplete",
+    "ATTACH_SENSORS:out_of_order:VERIFY_SIMULATION_SETTINGS_incomplete",
+    "ATTACH_SENSORS:out_of_order:INITIALIZE_AND_SEED_TRAFFIC_MANAGER_incomplete",
+    "ATTACH_SENSORS:out_of_order:DETERMINISTIC_WARMUP_incomplete",
+    "ATTACH_SENSORS:out_of_order:SPAWN_GOVERNED_ACTORS_incomplete"
+  ],
+  "schema": "NEW332_EXPERIMENT_START_STATE.json",
+  "status": "PASS",
+  "wired_into": "ultimate_pipeline/perception/record_route_fixed.py"
+}

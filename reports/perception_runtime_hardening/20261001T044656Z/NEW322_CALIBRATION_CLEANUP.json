@@ -1,0 +1,38 @@
+{
+  "all_paths_clean": [
+    "listeners stopped",
+    "sensors destroyed",
+    "temporary props destroyed",
+    "ego destroyed",
+    "world settings restored",
+    "actor cleanup verified"
+  ],
+  "artifact": "calibration_cleanup_receipt.json",
+  "defect_before": "calibration_sanity_check.py spawned ego+sensors in straight-line code with NO try/finally; every early return leaked actors and listeners",
+  "exception_during_image_callback": {
+    "cleanup_complete": true,
+    "listeners_stopped": true,
+    "total_actors_destroyed": 3
+  },
+  "exception_during_sensor_spawn": {
+    "cleanup_complete": true,
+    "listeners_stopped": true,
+    "next_perception_run_contaminated": false,
+    "settings_restored": true,
+    "total_actors_destroyed": 3
+  },
+  "finding": "NEW-322",
+  "guard": "ultimate_pipeline.perception.environment.calibration_lifecycle.CalibrationCleanupGuard",
+  "live_verification": "BLOCKED_EXTERNAL",
+  "schema": "NEW322_CALIBRATION_CLEANUP.json",
+  "status": "PASS",
+  "surviving_actor_detected": {
+    "cleanup_complete": false,
+    "invalid_reasons": [
+      "CLEANUP_ACTOR_SURVIVED:ego:['9']",
+      "CLEANUP_SETTINGS_NOT_RESTORED:original_settings_never_captured"
+    ],
+    "residual_actor_leak_possible": true
+  },
+  "wired_into": "ultimate_pipeline/sensors/calibration_sanity_check.py"
+}

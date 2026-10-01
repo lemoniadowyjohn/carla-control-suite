@@ -1,0 +1,198 @@
+{
+  "cases": {
+    "all_temporary_actors_cleaned_up": {
+      "enforced": true,
+      "total_actors_destroyed": 3
+    },
+    "auto_weather_missing": {
+      "enforced": true,
+      "required_code": "PAIR_WEATHER_MISSING_ARM"
+    },
+    "calibration_sanity_exception_during_image_callback": {
+      "cleanup_complete": true,
+      "enforced": true
+    },
+    "calibration_sanity_exception_during_sensor_spawn": {
+      "cleanup_complete": true,
+      "enforced": true
+    },
+    "camera_fx_matches_but_fy_differs": {
+      "delta_fy_nonzero": true,
+      "enforced": true
+    },
+    "camera_response_manual_vs_auto_differs_invalidates_pair": {
+      "enforced": true,
+      "invalid_reasons": [
+        "CAMERA_RESPONSE_MISMATCH:bde5db26a734a48e82d0ab4f0ca02d353e44c198b2e4a1f5ad7b1110497588d5!=deadbeef"
+      ],
+      "required_code": "CAMERA_RESPONSE_MISMATCH"
+    },
+    "dust_storm_differs": {
+      "enforced": true
+    },
+    "fixed_delta_exceeds_substep_budget_must_fail": {
+      "enforced": true,
+      "invalid_reasons": [
+        "PHYSICS_SUBSTEP_BUDGET_EXCEEDED:fixed_delta_seconds=0.5>max_substep_delta_time*max_substeps=0.11"
+      ],
+      "required_code": "PHYSICS_SUBSTEP_BUDGET_EXCEEDED"
+    },
+    "fog_falloff_differs": {
+      "enforced": true
+    },
+    "heuristic_calibration_export_rejected_by_strict_perception": {
+      "enforced": true,
+      "loadable": false
+    },
+    "invalid_remap_coverage_reported": {
+      "enforced": true,
+      "invalid_pixel_count_positive": true
+    },
+    "lidar_projection_outside_image": {
+      "enforced": true,
+      "pixel": [
+        1965.029469,
+        786.803725
+      ],
+      "required_code": "LIDAR_PROJECTION_OUTSIDE_IMAGE",
+      "target": "right_10m"
+    },
+    "lidar_residual_above_threshold": {
+      "enforced": true,
+      "required_code": "LIDAR_PROJECTION_RESIDUAL_EXCEEDED"
+    },
+    "live_reprojection_target_not_detected": {
+      "enforced": true,
+      "live_evidence": "BLOCKED_EXTERNAL",
+      "required_code": "REPROJECTION_TARGET_NOT_DETECTED"
+    },
+    "manual_weather_missing": {
+      "enforced": true,
+      "required_code": "PAIR_WEATHER_MISSING_ARM",
+      "result": [
+        "PAIR_WEATHER_MISSING_ARM:manual"
+      ]
+    },
+    "principal_point_offset_differs": {
+      "delta_cx_cy_nonzero": true,
+      "enforced": true
+    },
+    "rayleigh_scattering_differs": {
+      "enforced": true
+    },
+    "remapped_rgb_and_semantic_retain_exact_correspondence": {
+      "enforced": true
+    },
+    "reprojection_p95_above_threshold": {
+      "enforced": true,
+      "required_code": "REPROJECTION_P95_EXCEEDED"
+    },
+    "same_invalid_calibration_both_arms_not_rig_pass": {
+      "enforced": true,
+      "rig_replica_still_refused": true
+    },
+    "scenario_anomaly_actor_survives_cleanup_must_fail": {
+      "enforced": true,
+      "failure_code": "SCENARIO_ACTOR_LEAK",
+      "required_code": "SCENARIO_ACTOR_LEAK"
+    },
+    "semantic_remap_never_bilinear": {
+      "enforced": true,
+      "guard": "apply_remap raises for label modality + non-nearest interpolation",
+      "policies": {
+        "depth": "NEAREST_NEIGHBOR_RANGE_PRESERVING",
+        "flow": "NEAREST_NEIGHBOR_ONLY",
+        "instance_seg": "NEAREST_NEIGHBOR_ONLY",
+        "rgb": "BILINEAR_CONTINUOUS",
+        "semantic_seg": "NEAREST_NEIGHBOR_ONLY"
+      }
+    },
+    "substepping_disabled_under_strict_profile_must_fail": {
+      "enforced": true,
+      "invalid_reasons": [
+        "PHYSICS_SUBSTEPPING_DISABLED:carla_0_9_16_high_fidelity_substepped"
+      ],
+      "required_code": "PHYSICS_SUBSTEPPING_DISABLED"
+    },
+    "target_K_impossible_natively": {
+      "enforced": true,
+      "residual_quantified": true,
+      "result": {
+        "INTRINSICS_APPROXIMATION_BOUNDED": 6
+      }
+    },
+    "tm_seed_missing_strict_must_fail": {
+      "enforced": true,
+      "raised": "TRAFFIC_MANAGER_SEED_MISSING:127.0.0.1:8000"
+    },
+    "tm_unavailable_strict_no_default_manager": {
+      "enforced": true,
+      "raised": "TRAFFIC_MANAGER_SETUP_FAILED:get_trafficmanager:port=8000:RuntimeError:no traffic manager in this world"
+    },
+    "two_tm_masters_requested_must_fail": {
+      "enforced": true,
+      "raised": "TRAFFIC_MANAGER_MULTIPLE_MASTERS:port=8000:already_owned_by=sessionA:requested_by=sessionB",
+      "required_code": "TRAFFIC_MANAGER_MULTIPLE_MASTERS"
+    },
+    "uncontrolled_walker_counted_as_controlled_must_fail": {
+      "enforced": true,
+      "invalid_reasons": [
+        "WALKER_UNCONTROLLED:7",
+        "WALKER_CONTROLLER_MISMATCH:7",
+        "WALKER_UNCONTROLLED:no_controlled_walkers"
+      ],
+      "required_code": "WALKER_UNCONTROLLED"
+    },
+    "vehicle_blueprint_dimensions_incompatible": {
+      "enforced": true,
+      "rig_replica_refused": true
+    },
+    "wall_clock_speed_change_does_not_change_governed_schedule": {
+      "enforced": true
+    },
+    "weather_manual_differs_from_auto": {
+      "digests_differ": true,
+      "enforced": true,
+      "required_code": "PAIR_WEATHER_MISMATCH"
+    },
+    "weather_requested_but_not_applied": {
+      "enforced": true,
+      "required_code": "WEATHER_APPLICATION_FAILED",
+      "result": "raises WeatherApplicationError"
+    },
+    "weather_schedule_different_seed_differs": {
+      "enforced": true
+    },
+    "weather_schedule_same_seed_same_transitions": {
+      "enforced": false
+    },
+    "world_reload_then_missing_tm_reseed_must_fail": {
+      "enforced": true,
+      "raised": "TRAFFIC_MANAGER_RESEED_REQUIRED:world_reload_without_traffic_manager_reseed:127.0.0.1:8000",
+      "required_code": "TRAFFIC_MANAGER_RESEED_REQUIRED"
+    },
+    "world_sync_true_tm_sync_false_must_fail": {
+      "enforced": true,
+      "invalid_reasons": [
+        "TRAFFIC_MANAGER_SYNC_MISMATCH:world_sync=True:tm_sync=False"
+      ],
+      "required_code": "TRAFFIC_MANAGER_SYNC_MISMATCH"
+    }
+  },
+  "explicitly_not_satisfied": [
+    {
+      "case": "invalid remap coverage: 'no target pixel is ever observable'",
+      "finding": "unsatisfiable as literally stated -- real calib cameras have coverage 0.892-0.998, so SOME target pixels are always observable",
+      "not_threshold_loosened": true,
+      "what_is_enforced": "coverage_fraction < 1.0, invalid_pixel_count > 0, valid.all() is False, observable crop reported, remap_depth masks every invalid pixel (no hidden extrapolation)"
+    },
+    {
+      "case": "reprojection p95 above threshold, isolated",
+      "finding": "with the declared thresholds (p95<=4, max<=8, mean<=2) a p95-only violation is arithmetically unreachable on a linearly interpolated percentile; the mean gate trips as well",
+      "thresholds_retuned_after_the_fact": false,
+      "what_is_enforced": "the p95 reason fires and the observed p95 genuinely exceeds its threshold"
+    }
+  ],
+  "schema": "PERCEPTION_ENVIRONMENT_ADVERSARIAL_MATRIX/v1",
+  "test_file": "ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py"
+}

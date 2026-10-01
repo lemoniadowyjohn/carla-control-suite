@@ -1,0 +1,68 @@
+{
+  "capability_detection": {
+    "carla_module_available": true,
+    "detection_is_per_field": true,
+    "preset_source": "live_carla_module",
+    "supported_fields": [
+      "cloudiness",
+      "precipitation",
+      "precipitation_deposits",
+      "wind_intensity",
+      "sun_azimuth_angle",
+      "sun_altitude_angle",
+      "fog_density",
+      "fog_distance",
+      "fog_falloff",
+      "wetness",
+      "scattering_intensity",
+      "mie_scattering_scale",
+      "rayleigh_scattering_scale",
+      "dust_storm"
+    ],
+    "unsupported_fields": []
+  },
+  "dust_storm_exposed_by_installed_api": true,
+  "finding": "NEW-318",
+  "full_field_count": 14,
+  "full_field_list": [
+    "cloudiness",
+    "precipitation",
+    "precipitation_deposits",
+    "wind_intensity",
+    "sun_azimuth_angle",
+    "sun_altitude_angle",
+    "fog_density",
+    "fog_distance",
+    "fog_falloff",
+    "wetness",
+    "scattering_intensity",
+    "mie_scattering_scale",
+    "rayleigh_scattering_scale",
+    "dust_storm"
+  ],
+  "legacy_consequence": "two arms with different fog_falloff / rayleigh_scattering_scale / dust_storm produced the SAME weather_sha256",
+  "legacy_v1_field_count": 11,
+  "legacy_v1_omitted_fields": [
+    "fog_falloff",
+    "rayleigh_scattering_scale",
+    "dust_storm"
+  ],
+  "schema": "NEW318_WEATHER_SCHEMA/v1",
+  "sensitivity_probes": {
+    "dust_storm": {
+      "v1_field_present": false,
+      "v2_digest_changes": true
+    },
+    "fog_falloff": {
+      "v1_field_present": false,
+      "v2_digest_changes": true
+    },
+    "rayleigh_scattering_scale": {
+      "v1_field_present": false,
+      "v2_digest_changes": true
+    }
+  },
+  "status": "PASS",
+  "unsupported_fields_recorded_explicitly": true,
+  "weather_schema_version": "weather_effective_v2"
+}
