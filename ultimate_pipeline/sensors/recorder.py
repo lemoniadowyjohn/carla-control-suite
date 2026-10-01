@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import concurrent.futures
+import hashlib
 import json
 import logging
 import os
@@ -9,10 +10,29 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import BoundedSemaphore, Lock
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 log = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Backpressure / drain / frame-integrity outcome codes
+# ---------------------------------------------------------------------------
+
+CAPTURE_FRAME_DROP = "CAPTURE_FRAME_DROP"
+CAPTURE_FRAME_ARTIFACT_MISMATCH = "CAPTURE_FRAME_ARTIFACT_MISMATCH"
+CAPTURE_FRAME_ID_INVALID = "CAPTURE_FRAME_ID_INVALID"
+
+WRITER_DRAIN_PASS = "WRITER_DRAIN_PASS"
+WRITER_DRAIN_TIMEOUT = "WRITER_DRAIN_TIMEOUT"
+WRITER_DRAIN_FAILURE = "WRITER_DRAIN_FAILURE"
+
+FRAME_CORRESPONDENCE_SCHEMA = "FRAME_CORRESPONDENCE/v1"
+
+#: Default writer queue capacity. Explicit so the accounted capacity and the
+#: semaphore are provably the same number.
+DEFAULT_WRITER_QUEUE_CAPACITY = 200
 
 
 class FrameIdMissingError(RuntimeError):
@@ -46,6 +66,24 @@ class RecorderConfig:
 
     # low-mem mode override
     low_mem_resolution: Optional[Tuple[int, int]] = None
+
+    # --- backpressure / strictness -------------------------------------
+    #: Writer queue capacity. This is the capacity the accounting is measured
+    #: against, so reducing it is how a caller or test exercises saturation
+    #: deterministically. None restores DEFAULT_WRITER_QUEUE_CAPACITY.
+    writer_queue_capacity: Optional[int] = None
+    writer_max_workers: int = 4
+    #: Strict mode: ANY dropped or failed mandatory-sensor frame invalidates the
+    #: capture as CAPTURE_FRAME_DROP. Completeness may never be inferred from
+    #: aggregate file counts.
+    strict: bool = False
+    #: Sensor names whose frames are mandatory. Empty means every attached
+    #: sensor is mandatory.
+    required_sensors: Tuple[str, ...] = ()
+    #: Require the strict multimodal frame intersection across mandatory sensors.
+    require_frame_correspondence: bool = False
+    #: Require every artifact to be bound to an actual callback frame id.
+    require_artifact_frame_binding: bool = False
 
 
 class SensorRecorder:
@@ -108,7 +146,23 @@ class SensorRecorder:
         self._fallback_frame_counter = 0
         self._executor: Optional[concurrent.futures.ThreadPoolExecutor] = None
         self._executor_shutdown = False
-        self._write_slots = BoundedSemaphore(value=200)
+
+        self._queue_capacity = int(
+            getattr(self.cfg, "writer_queue_capacity", None)
+            or DEFAULT_WRITER_QUEUE_CAPACITY
+        )
+        self._write_slots = BoundedSemaphore(value=self._queue_capacity)
+        #: Slots held: pending (queued, not started) + executing.
+        self._write_jobs_pending = 0
+        self._write_jobs_executing = 0
+        self._queue_high_water_mark = 0
+        self._write_jobs_completed = 0
+        self._write_jobs_failed = 0
+        self._frames_dropped = 0
+        #: Cleared when the recorder stops accepting new callbacks (drain).
+        self._accept_callbacks = True
+        self._drain_state: Optional[str] = None
+        self._drain_evidence: Dict[str, Any] = {}
 
         self._saved_images = 0
         self._saved_semseg = 0
@@ -118,6 +172,23 @@ class SensorRecorder:
         self._listener_attach: Dict[str, Dict[str, Any]] = {}
         self._callbacks_in_flight = 0
         self._lock = Lock()
+
+        # --- per-sensor frame accounting (authoritative for completeness) ---
+        # These hold callback frame ids, never counts. Counts cannot detect a
+        # duplicated frame, a missing frame, or cross-sensor skew, so the
+        # completeness verdict is computed from these ordered id sets.
+        self._frame_ids: Dict[str, List[int]] = {}
+        self._write_attempted_frame_ids: Dict[str, List[int]] = {}
+        self._write_accepted_frame_ids: Dict[str, List[int]] = {}
+        self._write_completed_frame_ids: Dict[str, List[int]] = {}
+        self._write_failed_frame_ids: Dict[str, List[int]] = {}
+        self._write_dropped_frame_ids: Dict[str, List[int]] = {}
+        self._duplicate_frame_ids: Dict[str, List[int]] = {}
+        self._invalid_frame_ids: Dict[str, List[str]] = {}
+        #: sensor_name -> callback_frame_id -> artifact record
+        self._artifacts: Dict[str, Dict[int, Dict[str, Any]]] = {}
+        #: sensor_name -> frame ids that produced more than one artifact
+        self._duplicate_artifacts: Dict[str, List[int]] = {}
 
         self._manifest_path = self.out_dir / "recorder_manifest.json"
         self._snapshot_log_path = self.out_dir / "meta" / "world_snapshots.jsonl"
@@ -230,11 +301,17 @@ class SensorRecorder:
             except Exception as exc:
                 self._record_error(f"sensor_stop_failed:{sensor_name}:{exc}")
 
-    def close(self) -> None:
-        """Finalize recording and release resources."""
-        self.prepare_for_destroy()
+    def close(self) -> Dict[str, Any]:
+        """Finalize recording and release resources.
+
+        Returns the completeness verdict, derived from exact callback frame ids,
+        artifact-to-frame binding and the writer drain state. It is never
+        derived from aggregate file counts.
+        """
+        drain = self.prepare_for_destroy()
         if not self._manifest_written:
             self._manifest_written = bool(self._write_manifest())
+        return self.final_report(drain=drain)
 
     def _drain_in_flight_callbacks(self, timeout_s: float = 2.0) -> None:
         drain_deadline = time.time() + float(timeout_s)
@@ -244,36 +321,504 @@ class SensorRecorder:
                     break
             time.sleep(0.05)
 
-    def prepare_for_destroy(self) -> None:
-        """Stop listeners and drain queued writes before actor destroy."""
+    def prepare_for_destroy(self) -> Dict[str, Any]:
+        """Stop listeners and drain queued writes before actor destroy.
+
+        Returns the drain outcome; the caller must not treat a non-PASS drain as
+        a finished capture.
+        """
         try:
             self.stop()
         except Exception as exc:
             self._record_error(f"sensor_stop_failed:close:{exc}")
         self._flush_post_stop_tick()
         self._drain_in_flight_callbacks(timeout_s=2.0)
-        self.join_writer_threads(timeout_s=5.0)
+        return self.join_writer_threads(timeout_s=5.0)
 
-    def finalize(self) -> None:
+    def finalize(self) -> Dict[str, Any]:
         """Compatibility alias used by older callers/tests."""
-        self.close()
+        return self.close()
 
-    def join_writer_threads(self, timeout_s: float = 5.0) -> None:
-        """Drain queued writes and wait for executor-backed write tasks to finish."""
-        del timeout_s  # compatibility shim; executor shutdown blocks until completion
+    # ------------------------------------------------------------------
+    # frame correspondence + completeness verdict
+    # ------------------------------------------------------------------
+
+    def _mandatory_sensors(self) -> List[str]:
+        required = [str(n) for n in (getattr(self.cfg, "required_sensors", ()) or ())]
+        if required:
+            return [n for n in required if n in self.sensors]
+        return sorted(self.sensors)
+
+    def frame_correspondence(self) -> Dict[str, Any]:
+        """Exact per-sensor callback frame correspondence.
+
+        Built from actual callback frame ids only. Equal per-sensor frame COUNTS
+        are explicitly not treated as synchronisation evidence: two sensors can
+        each deliver N frames over entirely disjoint frame ranges.
+        """
+        with self._lock:
+            per_sensor_all = {
+                name: [int(i) for i in ids]
+                for name, ids in sorted(self._frame_ids.items())
+            }
+            duplicates = {
+                name: [int(i) for i in ids]
+                for name, ids in sorted(self._duplicate_frame_ids.items())
+                if ids
+            }
+
+        mandatory = self._mandatory_sensors()
+        considered = {n: per_sensor_all.get(n, []) for n in mandatory}
+
+        # None means "no accumulator yet". An empty list is a real result: a
+        # sensor that delivered no frames intersects to nothing, and that must
+        # not be mistaken for an unstarted accumulator (which would let a later
+        # sensor's frames leak in as if they were common to all).
+        common: Optional[List[int]] = None
+        for ids in considered.values():
+            id_set = set(ids)
+            common = (
+                sorted(id_set) if common is None else [i for i in common if i in id_set]
+            )
+        common_ids = sorted(int(i) for i in (common or []))
+        common_set = set(common_ids)
+
+        missing_by_sensor: Dict[str, List[int]] = {}
+        extra_by_sensor: Dict[str, List[int]] = {}
+        for name, ids in considered.items():
+            id_set = set(ids)
+            missing_by_sensor[name] = sorted(
+                int(i) for i in common_ids if i not in id_set
+            )
+            extra_by_sensor[name] = sorted(int(i) for i in ids if i not in common_set)
+
+        sequence_non_decreasing: Dict[str, bool] = {}
+        for name, ids in considered.items():
+            finite_ints = all(
+                isinstance(i, int) and not isinstance(i, bool) for i in ids
+            )
+            non_decreasing = all(int(a) <= int(b) for a, b in zip(ids, ids[1:]))
+            sequence_non_decreasing[name] = bool(finite_ints and non_decreasing)
+
+        return {
+            "schema": FRAME_CORRESPONDENCE_SCHEMA,
+            "mandatory_sensors": list(mandatory),
+            "per_sensor_frame_ids": considered,
+            "common_frame_ids": common_ids,
+            "common_frame_count": len(common_ids),
+            "first_common_frame": common_ids[0] if common_ids else None,
+            "last_common_frame": common_ids[-1] if common_ids else None,
+            "missing_by_sensor": missing_by_sensor,
+            "extra_by_sensor": extra_by_sensor,
+            "duplicates_by_sensor": duplicates,
+            "callback_sequence_non_decreasing": sequence_non_decreasing,
+            "frame_ids_finite_integers": {
+                name: all(
+                    isinstance(i, int) and not isinstance(i, bool) for i in ids
+                )
+                for name, ids in considered.items()
+            },
+            "note": (
+                "Correspondences come from actual CARLA callback data.frame values. "
+                "Equal per-sensor frame counts are not synchronisation evidence."
+            ),
+        }
+
+    def write_frame_correspondence_artifact(self, path: Any = None) -> Path:
+        """Emit FRAME_CORRESPONDENCE.json next to the capture."""
+        payload = self.frame_correspondence()
+        out = (
+            Path(path) if path is not None else (self.out_dir / "FRAME_CORRESPONDENCE.json")
+        )
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+        return out
+
+    def _artifact_report(self) -> Dict[str, Any]:
+        with self._lock:
+            artifacts = {
+                name: {str(fid): dict(rec) for fid, rec in sorted(per.items())}
+                for name, per in sorted(self._artifacts.items())
+            }
+            duplicate_artifacts = {
+                name: sorted(int(i) for i in ids)
+                for name, ids in sorted(self._duplicate_artifacts.items())
+                if ids
+            }
+            dropped = {
+                name: [int(i) for i in ids]
+                for name, ids in sorted(self._write_dropped_frame_ids.items())
+                if ids
+            }
+            failed = {
+                name: [int(i) for i in ids]
+                for name, ids in sorted(self._write_failed_frame_ids.items())
+                if ids
+            }
+            completed = {
+                name: set(int(i) for i in ids)
+                for name, ids in self._write_completed_frame_ids.items()
+            }
+
+        mismatched: List[Dict[str, Any]] = []
+        for name, per in artifacts.items():
+            for _fid, rec in per.items():
+                if not rec.get("filename_matches_callback_frame_id"):
+                    mismatched.append(
+                        {
+                            "sensor_name": name,
+                            "callback_frame_id": rec.get("callback_frame_id"),
+                            "filename_frame_id": rec.get("filename_frame_id"),
+                            "output_path": rec.get("output_path"),
+                        }
+                    )
+
+        # A callback receipt with no artifact, and an artifact with no receipt.
+        receipts_without_file: List[Dict[str, Any]] = []
+        files_without_receipt: List[Dict[str, Any]] = []
+        for name, ids in completed.items():
+            per = artifacts.get(name, {})
+            for fid in sorted(ids):
+                if int(fid) not in per:
+                    receipts_without_file.append(
+                        {"sensor_name": name, "callback_frame_id": int(fid)}
+                    )
+        for name, per in artifacts.items():
+            for fid, rec in per.items():
+                if (
+                    str(rec.get("write_status")) != "WRITTEN"
+                    or int(fid) not in completed.get(name, set())
+                ):
+                    files_without_receipt.append(
+                        {
+                            "sensor_name": name,
+                            "callback_frame_id": int(fid),
+                            "output_path": rec.get("output_path"),
+                            "write_status": rec.get("write_status"),
+                        }
+                    )
+
+        return {
+            "artifacts": artifacts,
+            "duplicate_artifacts_by_sensor": duplicate_artifacts,
+            "dropped_frames_by_sensor": dropped,
+            "failed_frames_by_sensor": failed,
+            "filename_frame_id_mismatches": mismatched,
+            "callback_receipt_without_file": receipts_without_file,
+            "file_without_callback_receipt": files_without_receipt,
+        }
+
+    def backpressure_report(self) -> Dict[str, Any]:
+        """Per-sensor write accounting plus queue-level counters."""
+        with self._lock:
+            return {
+                "schema": "RECORDER_BACKPRESSURE/v1",
+                "queue_capacity": int(self._queue_capacity),
+                "queue_high_water_mark": int(self._queue_high_water_mark),
+                "write_jobs_pending": int(self._write_jobs_pending),
+                "write_jobs_executing": int(self._write_jobs_executing),
+                "write_jobs_completed": int(self._write_jobs_completed),
+                "write_jobs_failed": int(self._write_jobs_failed),
+                "frames_dropped": int(self._frames_dropped),
+                "accepting_callbacks": bool(self._accept_callbacks),
+                "callback_frame_ids": {
+                    k: [int(i) for i in v] for k, v in sorted(self._frame_ids.items())
+                },
+                "write_attempted_frame_ids": {
+                    k: [int(i) for i in v]
+                    for k, v in sorted(self._write_attempted_frame_ids.items())
+                },
+                "write_accepted_frame_ids": {
+                    k: [int(i) for i in v]
+                    for k, v in sorted(self._write_accepted_frame_ids.items())
+                },
+                "write_completed_frame_ids": {
+                    k: [int(i) for i in v]
+                    for k, v in sorted(self._write_completed_frame_ids.items())
+                },
+                "write_failed_frame_ids": {
+                    k: [int(i) for i in v]
+                    for k, v in sorted(self._write_failed_frame_ids.items())
+                },
+                "write_dropped_frame_ids": {
+                    k: [int(i) for i in v]
+                    for k, v in sorted(self._write_dropped_frame_ids.items())
+                },
+                "duplicate_frame_ids": {
+                    k: [int(i) for i in v]
+                    for k, v in sorted(self._duplicate_frame_ids.items())
+                    if v
+                },
+                "invalid_frame_ids": {
+                    k: list(v) for k, v in sorted(self._invalid_frame_ids.items()) if v
+                },
+            }
+
+    def final_report(self, *, drain: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Assemble the capture verdict from exact frame-id evidence.
+
+        Completeness is never inferred from aggregate file counts: a dropped
+        mandatory frame invalidates the capture even when the surviving files
+        look complete.
+        """
+        drain = drain if drain is not None else dict(self._drain_evidence)
+        drain_state = str(drain.get("state") or self._drain_state or "")
+        correspondence = self.frame_correspondence()
+        artifacts = self._artifact_report()
+        backpressure = self.backpressure_report()
+
+        strict = bool(getattr(self.cfg, "strict", False))
+        mandatory = set(correspondence["mandatory_sensors"])
+        invalid: List[str] = []
+        warnings: List[str] = []
+
+        dropped = {
+            name: ids
+            for name, ids in artifacts["dropped_frames_by_sensor"].items()
+            if name in mandatory
+        }
+        failed = {
+            name: ids
+            for name, ids in artifacts["failed_frames_by_sensor"].items()
+            if name in mandatory
+        }
+        if dropped:
+            invalid.append(CAPTURE_FRAME_DROP)
+        if failed:
+            invalid.append(f"{CAPTURE_FRAME_DROP}:write_failed:{sorted(failed)}")
+
+        duplicates = {
+            name: ids
+            for name, ids in correspondence["duplicates_by_sensor"].items()
+            if name in mandatory
+        }
+        if duplicates and strict:
+            invalid.append(f"{CAPTURE_FRAME_DROP}:duplicate_frames:{sorted(duplicates)}")
+
+        for name, ok in correspondence["frame_ids_finite_integers"].items():
+            if not ok and name in mandatory:
+                invalid.append(f"{CAPTURE_FRAME_ID_INVALID}:{name}")
+
+        if drain_state and drain_state != WRITER_DRAIN_PASS:
+            invalid.append(str(drain_state))
+
+        if strict and bool(getattr(self.cfg, "require_frame_correspondence", False)):
+            for name in sorted(mandatory):
+                if correspondence["missing_by_sensor"].get(name):
+                    invalid.append(
+                        f"{CAPTURE_FRAME_DROP}:missing_frames:{name}:"
+                        f"{correspondence['missing_by_sensor'][name][:20]}"
+                    )
+            if correspondence["common_frame_count"] == 0 and mandatory:
+                invalid.append(f"{CAPTURE_FRAME_DROP}:no_common_frames:{sorted(mandatory)}")
+            for name, ok in correspondence["callback_sequence_non_decreasing"].items():
+                if not ok and name in mandatory:
+                    invalid.append(f"{CAPTURE_FRAME_ID_INVALID}:{name}:non_monotonic")
+
+        if strict or bool(getattr(self.cfg, "require_artifact_frame_binding", False)):
+            if artifacts["filename_frame_id_mismatches"]:
+                invalid.append(CAPTURE_FRAME_ARTIFACT_MISMATCH)
+            if artifacts["duplicate_artifacts_by_sensor"]:
+                invalid.append(
+                    f"{CAPTURE_FRAME_ARTIFACT_MISMATCH}:duplicate_files:"
+                    f"{sorted(artifacts['duplicate_artifacts_by_sensor'])}"
+                )
+            if artifacts["callback_receipt_without_file"]:
+                invalid.append(
+                    f"{CAPTURE_FRAME_ARTIFACT_MISMATCH}:receipt_without_file:"
+                    f"{len(artifacts['callback_receipt_without_file'])}"
+                )
+            if artifacts["file_without_callback_receipt"]:
+                invalid.append(
+                    f"{CAPTURE_FRAME_ARTIFACT_MISMATCH}:file_without_receipt:"
+                    f"{len(artifacts['file_without_callback_receipt'])}"
+                )
+
+        # A mandatory sensor that never delivered a frame is a hard failure:
+        # "zero frames" is not "fine".
+        for name in sorted(mandatory):
+            if not correspondence["per_sensor_frame_ids"].get(name):
+                invalid.append(f"{CAPTURE_FRAME_DROP}:no_frames:{name}")
+                warnings.append(f"sensor_delivered_no_frames:{name}")
+
+        return {
+            "schema": "RECORDER_CAPTURE_VERDICT/v1",
+            "valid": not invalid,
+            "capture_valid": not invalid,
+            "strict": strict,
+            "invalid_reasons": invalid,
+            "warnings": warnings,
+            "drain": drain,
+            "drain_state": drain_state,
+            "backpressure": backpressure,
+            "frame_correspondence": correspondence,
+            "artifacts": artifacts,
+            "verdict_basis": (
+                "exact callback frame ids, artifact-to-frame binding and writer drain "
+                "state; aggregate file counts are not used"
+            ),
+        }
+
+    def _pending_write_frames(self) -> Dict[str, List[int]]:
+        """Frame ids accepted by the writer but not yet completed."""
+        with self._lock:
+            settled: set = set()
+            for lst in self._write_completed_frame_ids.values():
+                settled.update(int(x) for x in lst)
+            for lst in self._write_failed_frame_ids.values():
+                settled.update(int(x) for x in lst)
+            out: Dict[str, List[int]] = {}
+            for name, ids in self._write_accepted_frame_ids.items():
+                remaining = sorted(int(i) for i in ids if int(i) not in settled)
+                if remaining:
+                    out[name] = remaining
+            return out
+
+    def _record_drain_outcome(
+        self,
+        state: str,
+        *,
+        timeout_s: float,
+        pending: Dict[str, List[int]],
+        error: str = "",
+    ) -> Dict[str, Any]:
+        with self._lock:
+            payload: Dict[str, Any] = {
+                "state": str(state),
+                "timeout_s": float(timeout_s),
+                "pending_frame_ids_by_sensor": {k: list(v) for k, v in pending.items()},
+                "pending_frame_count": int(sum(len(v) for v in pending.values())),
+                "write_jobs_pending": int(self._write_jobs_pending),
+                "write_jobs_executing": int(self._write_jobs_executing),
+                "write_jobs_completed": int(self._write_jobs_completed),
+                "write_jobs_failed": int(self._write_jobs_failed),
+                "queue_high_water_mark": int(self._queue_high_water_mark),
+                "frames_dropped": int(self._frames_dropped),
+                "error": str(error),
+                "capture_complete": state == WRITER_DRAIN_PASS,
+                "note": (
+                    "All queued writer jobs completed before the timeout."
+                    if state == WRITER_DRAIN_PASS
+                    else "Writer drain did not complete cleanly. Output is incomplete "
+                    "and must not be treated as a passing capture."
+                ),
+            }
+        self._drain_evidence = dict(payload)
+        self._drain_state = str(state)
+        return payload
+
+    def join_writer_threads(self, timeout_s: float = 5.0) -> Dict[str, Any]:
+        """Drain queued writes under a REAL deadline and report the outcome.
+
+        The previous implementation accepted ``timeout_s`` and discarded it
+        (``del timeout_s``) before calling ``executor.shutdown(wait=True)``, which
+        blocks until every job finishes. A hanging writer therefore hung the
+        caller forever and the timeout was a lie.
+
+        A Python thread cannot be force-killed, so this method does not pretend a
+        running job can be cancelled. It:
+
+        1. stops accepting new callbacks;
+        2. hands the already-accepted work to the executor without discarding it
+           (``cancel_futures`` is deliberately not used: every queued job is an
+           accepted frame, so cancelling one would silently lose a frame the
+           recorder already promised to write);
+        3. waits at most ``timeout_s``, polling a real deadline;
+        4. on timeout reports WRITER_DRAIN_TIMEOUT with the still-pending frame
+           ids and the still-executing job count, quarantines the output, and
+           never claims the capture is complete.
+
+        Architectural limitation: with a ThreadPoolExecutor a strict shutdown
+        cannot be *guaranteed* bounded, because a job already running in a
+        thread cannot be interrupted. For a hard bound, strict writer execution
+        must be isolated in a separate process whose lifetime can be terminated.
+        """
+        timeout_s = float(timeout_s)
+        # 1. Refuse new work from this point on.
+        self._accept_callbacks = False
+
         executor = getattr(self, "_executor", None)
-        if executor is None or bool(getattr(self, "_executor_shutdown", False)):
-            return
+        if executor is None:
+            return self._record_drain_outcome(
+                WRITER_DRAIN_PASS, timeout_s=timeout_s, pending={}
+            )
+
         self._executor_shutdown = True
+
+        # 2. Hand the accepted work over, then poll to the deadline.
+        #
+        # `cancel_futures=True` is deliberately NOT used. Every queued job is
+        # already accounted as an accepted frame, so cancelling a not-yet-started
+        # one would silently discard a frame the recorder promised to write --
+        # exactly the silent frame loss this module exists to prevent. The drain
+        # therefore waits for accepted work up to the deadline and, if the
+        # deadline passes, reports the pending frame ids explicitly so the
+        # capture is visibly incomplete rather than quietly short.
         try:
-            try:
-                executor.shutdown(wait=True, cancel_futures=False)
-            except TypeError:
-                executor.shutdown(wait=True)
+            executor.shutdown(wait=False)
         except Exception as exc:
-            self._record_error(f"writer_join_failed:{exc}")
-        finally:
-            self._executor = None
+            return self._record_drain_outcome(
+                WRITER_DRAIN_FAILURE,
+                timeout_s=timeout_s,
+                pending=self._pending_write_frames(),
+                error=f"{type(exc).__name__}:{exc}",
+            )
+
+        # 3. Poll to a real deadline.
+        deadline = time.monotonic() + max(0.0, timeout_s)
+        while True:
+            with self._lock:
+                busy = (
+                    int(self._write_jobs_pending) > 0
+                    or int(self._write_jobs_executing) > 0
+                )
+            if not busy:
+                break
+            if time.monotonic() >= deadline:
+                payload = self._record_drain_outcome(
+                    WRITER_DRAIN_TIMEOUT,
+                    timeout_s=timeout_s,
+                    pending=self._pending_write_frames(),
+                    error=(
+                        "writer_drain_timeout:still_running="
+                        f"{int(self._write_jobs_pending)}+{int(self._write_jobs_executing)}"
+                    ),
+                )
+                self._write_drain_quarantine_marker(payload)
+                self._executor = None
+                return payload
+            time.sleep(0.01)
+
+        self._executor = None
+        return self._record_drain_outcome(
+            WRITER_DRAIN_PASS, timeout_s=timeout_s, pending={}
+        )
+
+    def _write_drain_quarantine_marker(self, payload: Dict[str, Any]) -> None:
+        """Mark an undrained capture incomplete on disk.
+
+        Output of a timed-out drain is quarantined rather than published as a
+        finished capture.
+        """
+        marker = {
+            "schema": "RECORDER_DRAIN_QUARANTINE/v1",
+            "state": str(payload.get("state")),
+            "capture_complete": False,
+            "invalid_reason": WRITER_DRAIN_TIMEOUT,
+            "timeout_s": payload.get("timeout_s"),
+            "pending_frame_ids_by_sensor": payload.get("pending_frame_ids_by_sensor"),
+            "pending_frame_count": payload.get("pending_frame_count"),
+            "write_jobs_executing": payload.get("write_jobs_executing"),
+            "write_jobs_pending": payload.get("write_jobs_pending"),
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        try:
+            self.out_dir.mkdir(parents=True, exist_ok=True)
+            (self.out_dir / "DRAIN_INCOMPLETE.json").write_text(
+                json.dumps(marker, indent=2, sort_keys=True), encoding="utf-8"
+            )
+        except Exception as exc:
+            self._record_error(f"drain_quarantine_marker_failed:{exc}")
 
     def tick(self) -> Dict[str, Any]:
         if self._attached and self.sensors and not self._running:
@@ -472,6 +1017,131 @@ class SensorRecorder:
         except Exception:
             pass
 
+    # ------------------------------------------------------------------
+    # per-sensor frame accounting
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _append_frame_id(bucket: Dict[str, List[int]], sensor_name: str, frame_id: int) -> None:
+        lst = bucket.setdefault(sensor_name, [])
+        if frame_id not in lst:
+            lst.append(int(frame_id))
+            lst.sort()
+
+    def _record_callback_frame(self, sensor_name: str, frame_id: int) -> None:
+        """Record a callback frame id, flagging a repeated delivery.
+
+        Deliberately does NOT touch ``_sensor_frame_counts``: that counter means
+        "frames whose bytes reached disk" and is maintained by
+        ``_record_saved_frame``. Conflating delivered frames with saved frames
+        would let a dropped write still read as a recorded frame.
+        """
+        with self._lock:
+            seen = self._frame_ids.setdefault(sensor_name, [])
+            if frame_id in seen:
+                dups = self._duplicate_frame_ids.setdefault(sensor_name, [])
+                if frame_id not in dups:
+                    dups.append(int(frame_id))
+                    dups.sort()
+                return
+            seen.append(int(frame_id))
+            seen.sort()
+
+    def _record_invalid_frame(self, sensor_name: str, reason: str) -> None:
+        with self._lock:
+            self._invalid_frame_ids.setdefault(sensor_name, []).append(str(reason))
+            self._save_errors.append(f"{CAPTURE_FRAME_ID_INVALID}:{sensor_name}:{reason}")
+
+    def _record_write_attempted(self, sensor_name: str, frame_id: int) -> None:
+        with self._lock:
+            self._append_frame_id(self._write_attempted_frame_ids, sensor_name, frame_id)
+
+    def _record_write_accepted(self, sensor_name: str, frame_id: int) -> None:
+        with self._lock:
+            self._append_frame_id(self._write_accepted_frame_ids, sensor_name, frame_id)
+            self._write_jobs_pending = int(self._write_jobs_pending) + 1
+            in_use = int(self._write_jobs_pending) + int(self._write_jobs_executing)
+            if in_use > int(self._queue_high_water_mark):
+                self._queue_high_water_mark = in_use
+
+    def _record_write_dropped(self, sensor_name: str, frame_id: int, reason: str) -> None:
+        """A callback arrived but its write was refused: the frame is lost.
+
+        This is the backpressure signal that must never be laundered into a
+        successful capture.
+        """
+        with self._lock:
+            self._append_frame_id(self._write_dropped_frame_ids, sensor_name, frame_id)
+            self._frames_dropped = int(self._frames_dropped) + 1
+            self._save_errors.append(
+                f"{CAPTURE_FRAME_DROP}:{sensor_name}:{frame_id}:{reason}"
+            )
+
+    def _record_write_completed(self, sensor_name: str, frame_id: int) -> None:
+        with self._lock:
+            self._append_frame_id(self._write_completed_frame_ids, sensor_name, frame_id)
+            self._write_jobs_completed = int(self._write_jobs_completed) + 1
+
+    def _record_write_failed(self, sensor_name: str, frame_id: int, reason: str) -> None:
+        with self._lock:
+            self._append_frame_id(self._write_failed_frame_ids, sensor_name, frame_id)
+            self._write_jobs_failed = int(self._write_jobs_failed) + 1
+            self._save_errors.append(f"save_failed:{sensor_name}:{frame_id}:{reason}")
+
+    def _bind_artifact(
+        self,
+        *,
+        sensor_name: str,
+        sensor_kind: str,
+        callback_frame_id: int,
+        output_path: Path,
+        write_status: str,
+        sensor: Any = None,
+        sim_timestamp: Any = None,
+    ) -> Dict[str, Any]:
+        """Bind one written artifact to the callback frame id that produced it.
+
+        The filename frame id must equal the callback frame id; a mismatch is
+        recorded rather than silently accepted.
+        """
+        try:
+            digest = hashlib.sha256(Path(output_path).read_bytes()).hexdigest()
+        except Exception:
+            digest = ""
+        record: Dict[str, Any] = {
+            "sensor_name": str(sensor_name),
+            "sensor_kind": str(sensor_kind),
+            "sensor_actor_id": int(getattr(sensor, "id", -1) or -1) if sensor is not None else -1,
+            "sensor_type": str(getattr(sensor, "type_id", "") or ""),
+            "callback_frame_id": int(callback_frame_id),
+            "sim_timestamp": float(sim_timestamp) if sim_timestamp is not None else None,
+            "output_path": str(output_path),
+            "output_sha256": digest,
+            "write_status": str(write_status),
+        }
+        try:
+            filename_frame_id: Optional[int] = int(Path(output_path).stem)
+        except (TypeError, ValueError):
+            filename_frame_id = None
+        record["filename_frame_id"] = filename_frame_id
+        record["filename_matches_callback_frame_id"] = (
+            filename_frame_id is not None and filename_frame_id == int(callback_frame_id)
+        )
+        if not record["filename_matches_callback_frame_id"]:
+            self._record_error(
+                f"{CAPTURE_FRAME_ARTIFACT_MISMATCH}:{sensor_name}:"
+                f"callback={callback_frame_id}:filename={filename_frame_id}"
+            )
+        with self._lock:
+            per_sensor = self._artifacts.setdefault(str(sensor_name), {})
+            if int(callback_frame_id) in per_sensor:
+                dups = self._duplicate_artifacts.setdefault(str(sensor_name), [])
+                if int(callback_frame_id) not in dups:
+                    dups.append(int(callback_frame_id))
+                    dups.sort()
+            per_sensor[int(callback_frame_id)] = record
+        return record
+
     def _run_write_job(
         self,
         *,
@@ -479,17 +1149,46 @@ class SensorRecorder:
         sensor_kind: str,
         frame_id: int,
         write_fn: Any,
+        sensor: Any = None,
+        out_path: Optional[Path] = None,
     ) -> None:
+        # Executing is counted separately from pending so a drain timeout can
+        # report exactly what was still running.
+        with self._lock:
+            self._write_jobs_executing = int(self._write_jobs_executing) + 1
+            if int(self._write_jobs_pending) > 0:
+                self._write_jobs_pending = int(self._write_jobs_pending) - 1
         try:
             if callable(write_fn):
-                write_fn()
+                written = write_fn()
+                # Bind to the path the writer ACTUALLY used. If a writer
+                # substitutes a different filename, binding to the requested
+                # out_path would hide that substitution, so a returned Path is
+                # preferred and the requested path is only a fallback.
+                actual = written if isinstance(written, Path) else out_path
+                if actual is not None:
+                    self._bind_artifact(
+                        sensor_name=str(sensor_name),
+                        sensor_kind=str(sensor_kind),
+                        callback_frame_id=int(frame_id),
+                        output_path=Path(actual),
+                        write_status="WRITTEN",
+                        sensor=sensor,
+                    )
                 self._record_saved_frame(
                     sensor_name=str(sensor_name),
                     sensor_kind=str(sensor_kind),
                 )
+                self._record_write_completed(str(sensor_name), int(frame_id))
         except Exception as exc:
-            self._record_error(f"save_failed:{sensor_name}:{frame_id}:{exc}")
+            self._record_write_failed(
+                str(sensor_name), int(frame_id), f"{type(exc).__name__}:{exc}"
+            )
         finally:
+            with self._lock:
+                self._write_jobs_executing = max(
+                    0, int(self._write_jobs_executing) - 1
+                )
             self._release_write_slot()
 
     def _queue_write_job(
@@ -499,14 +1198,38 @@ class SensorRecorder:
         sensor_kind: str,
         frame_id: int,
         write_fn: Any,
+        sensor: Any = None,
+        out_path: Optional[Path] = None,
     ) -> bool:
+        """Queue one write. False means the frame was DROPPED.
+
+        In strict mode a False return is CAPTURE_FRAME_DROP; it may never be
+        absorbed as a successful capture.
+        """
+        self._record_write_attempted(str(sensor_name), int(frame_id))
+
+        if not bool(getattr(self, "_accept_callbacks", True)):
+            self._record_write_dropped(
+                str(sensor_name), int(frame_id), "writer_not_accepting"
+            )
+            return False
+
         executor = getattr(self, "_executor", None)
         if executor is None or bool(getattr(self, "_executor_shutdown", False)):
-            self._record_error(f"writer_executor_missing:{sensor_name}:{frame_id}")
+            self._record_write_dropped(
+                str(sensor_name), int(frame_id), "writer_executor_missing"
+            )
             return False
         if not self._reserve_write_slot():
-            self._record_error(f"writer_queue_full:{sensor_name}:{frame_id}")
+            self._record_write_dropped(
+                str(sensor_name), int(frame_id), "writer_queue_full"
+            )
             return False
+        # Account as pending BEFORE submitting: the worker may start and
+        # decrement pending before submit() returns, so accounting after the
+        # submit would re-increment a job that already ran and leave pending
+        # permanently non-zero, making every later drain look like a timeout.
+        self._record_write_accepted(str(sensor_name), int(frame_id))
         try:
             executor.submit(
                 self._run_write_job,
@@ -514,11 +1237,19 @@ class SensorRecorder:
                 sensor_kind=str(sensor_kind),
                 frame_id=int(frame_id),
                 write_fn=write_fn,
+                sensor=sensor,
+                out_path=out_path,
             )
             return True
         except Exception as exc:
             self._release_write_slot()
-            self._record_error(f"writer_submit_failed:{sensor_name}:{frame_id}:{exc}")
+            with self._lock:
+                self._write_jobs_pending = max(0, int(self._write_jobs_pending) - 1)
+            self._record_write_dropped(
+                str(sensor_name),
+                int(frame_id),
+                f"writer_submit_failed:{type(exc).__name__}:{exc}",
+            )
             return False
 
     @staticmethod
@@ -584,7 +1315,9 @@ class SensorRecorder:
 
     def _save_camera_frame(
         self, data: Any, *, out_path: Path, apply_cityscapes: bool
-    ) -> None:
+    ) -> Path:
+        # Returns the path actually written so the caller can bind the artifact
+        # to it (and detect a substituted filename).
         # NOTE: apply_cityscapes must only ever be True for the semseg_viz
         # copy (see _make_sensor_callback). Training labels in semseg_raw/
         # are always written by _write_semseg_raw_png from the raw R channel.
@@ -597,14 +1330,17 @@ class SensorRecorder:
             except Exception:
                 pass
         data.save_to_disk(str(out_path))
+        return out_path
 
     def _write_semseg_frame(
         self, data: Any, *, out_path: Path, viz_path: Optional[Path] = None
-    ) -> None:
+    ) -> Path:
         """Persist one semantic frame: raw class-id training label first,
         then (optionally) a palette copy for human viewing.  The palette
         conversion mutates the image in place, so it must run AFTER the raw
-        label has been written — never before (C8)."""
+        label has been written — never before (C8).
+
+        Returns the training-label path actually written."""
         self._write_semseg_raw_png(data, out_path)
         if viz_path is not None:
             try:
@@ -612,6 +1348,7 @@ class SensorRecorder:
             except Exception:
                 pass
             self._write_semseg_viz_png(data, viz_path)
+        return out_path
 
     def _save_lidar_frame(self, data: Any, *, out_path: Path) -> Path:
         lidar_format = str(getattr(self.cfg, "lidar_format", "npz") or "npz").lower()
@@ -670,6 +1407,9 @@ class SensorRecorder:
                 # escaped before the finally decrement and permanently leaked
                 # _callbacks_in_flight, making every later drain wait forever.
                 frame_id = self._next_frame_id(data)
+                # Exact frame-id authority: this is the actual CARLA callback
+                # frame, recorded before any queueing decision.
+                self._record_callback_frame(sensor_name, frame_id)
                 if sensor_kind in {"rgb", "semseg_raw", "other"}:
                     image_ext = str(getattr(self.cfg, "image_format", "png") or "png")
                     image_ext = image_ext.lstrip(".").lower() or "png"
@@ -701,10 +1441,12 @@ class SensorRecorder:
                             )
                             viz_path = viz_dir / f"{int(frame_id):08d}.{image_ext}"
                         self._queue_write_job(
-                            sensor_name=sensor_name,
-                            sensor_kind="semseg_raw",
-                            frame_id=frame_id,
-                            write_fn=lambda data=data, out_path=out_path, viz_path=viz_path: self._write_semseg_frame(
+                                sensor_name=sensor_name,
+                                sensor_kind="semseg_raw",
+                                frame_id=frame_id,
+                                sensor=sensor,
+                                out_path=out_path,
+                                write_fn=lambda data=data, out_path=out_path, viz_path=viz_path: self._write_semseg_frame(
                                 data, out_path=out_path, viz_path=viz_path
                             ),
                         )
@@ -717,10 +1459,12 @@ class SensorRecorder:
                         ext=image_ext,
                     )
                     self._queue_write_job(
-                        sensor_name=sensor_name,
-                        sensor_kind=effective_sensor_kind,
-                        frame_id=frame_id,
-                        write_fn=lambda data=data, out_path=out_path: self._save_camera_frame(
+                            sensor_name=sensor_name,
+                            sensor_kind=effective_sensor_kind,
+                            frame_id=frame_id,
+                            sensor=sensor,
+                            out_path=out_path,
+                            write_fn=lambda data=data, out_path=out_path: self._save_camera_frame(
                             data, out_path=out_path, apply_cityscapes=False
                         ),
                     )
@@ -737,6 +1481,8 @@ class SensorRecorder:
                         sensor_name=sensor_name,
                         sensor_kind="lidar",
                         frame_id=frame_id,
+                        sensor=sensor,
+                        out_path=out_path,
                         write_fn=lambda data=data, out_path=out_path: self._save_lidar_frame(
                             data, out_path=out_path
                         ),
