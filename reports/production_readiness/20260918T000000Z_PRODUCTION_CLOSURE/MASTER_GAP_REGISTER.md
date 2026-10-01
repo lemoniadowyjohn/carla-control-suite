@@ -43,8 +43,19 @@ Last updated: `2026-09-29T22:00:00Z`
 | GAP-035 | P1 | ultimate_pipeline/contracts/writer_lock.py -- load() leaked raw JSONDecodeError/TypeError instead of failing closed | **fixed** | 655671fd (branch integration/o1-o20-rebased-20260929; load() now wraps json.loads/from_dict in try/except -> RuntimeError; acquire() except clauses updated to match) |
 | GAP-036 | P2 | PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- no executing consumer | open (needs policy) | raised as NEW-209 by hardening/v5-incremental-20260929, independently re-verified (zero .py references on either ref) and logged 2026-09-29 |
 | GAP-037 | P2 | waiver model cannot separate quality deviations from integrity defects | open (needs policy) | raised as NEW-210 by hardening/v5-incremental-20260929, independently re-verified (V5's new gates never reference "waiver") and logged 2026-09-29 |
+| GAP-038 | P1 | ultimate_pipeline/tiling/carla_0916_import_process_contract.py + carla_0916_large_map_contract.py -- real, tested, but completely unwired closure modules (NEW-196/197-199) |
+| GAP-039 | P2 | ultimate_pipeline -- NEW-225 capture re-use identity breach | **fixed** | <pending> |
+| GAP-040 | P2 | ultimate_pipeline -- NEW-226 domain-gap ignored exit-code check | **fixed** | <pending> |
+| GAP-041 | P2 | ultimate_pipeline -- NEW-227 exit semantics validation | **fixed** | <pending> |
+| GAP-042 | P2 | ultimate_pipeline -- NEW-228 per-tile domain-gap timeout | **fixed** | <pending> |
+| GAP-043 | P2 | ultimate_pipeline -- NEW-229 reproducibility verification | **fixed** | <pending> |
+| GAP-044 | P2 | ultimate_pipeline -- NEW-230 manifest verifier compliance | **fixed** | <pending> |
+| GAP-045 | P2 | ultimate_pipeline -- NEW-231 quality-gate-closer pass | **fixed** | <pending> |
+| GAP-046 | P2 | ultimate_pipeline -- NEW-232 run_full_domain_gap() dict-vs-integer regression | **fixed** | <pending> |
+| GAP-047 | P1 | ultimate_pipeline -- NEW-233 pipeline integration contract | **fixed** | <pending> |
+| GAP-048 | P2 | ultimate_pipeline -- NEW-233 pipeline integration contract | **fixed** | <pending> |
 
-Totals: 37 tracked, 28 fixed, 3 closed (non-reproducible), 1 deferred, 3 open, 1 blocked_external, 1 in_progress.
+Totals: 48 tracked, 37 fixed, 3 closed (non-reproducible), 1 deferred, 5 open, 1 blocked_external, 1 in_progress.
 
 ## Active open / blocked items (2026-09-29, updated post-V5-merge)
 

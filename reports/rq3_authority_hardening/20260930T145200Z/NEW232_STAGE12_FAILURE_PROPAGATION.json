@@ -1,0 +1,21 @@
+{
+  "finding_id": "NEW-232",
+  "title": "Stage 12 failure propagation",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py"
+  ],
+  "tests": [
+    "_evaluate_mandatory_metrics per profile",
+    "exit code checking",
+    "profile-based propagation: map_build_only logs, thesis_research raises"
+  ],
+  "adversarial_tests": [
+    "domain-gap mandatory failure -> stage failure -> pipeline failure (thesis)",
+    "domain-gap failure -> bounded optional failure (map-build-only)",
+    "no inferring research completeness from map-only profile"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": null
+}

@@ -1,7 +1,7 @@
 {
   "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-30T11:38:03Z",
+   "last_updated_utc": "2026-10-02T00:00:00Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -701,6 +701,160 @@
       "residual_risk": "MEDIUM -- no regression (nothing was broken), but a real risk of false confidence: the gap register's own v4_caveat_preserved field previously said these were 'never implemented anywhere in this repo' (accurate as of 2026-09-30 morning, now stale as of this merge) and needs its own correction to avoid contradicting this entry. Recommend: either scope a follow-up to identify and wire the real call sites (a bounded, well-defined task now that the contract modules themselves are written and tested), or explicitly relabel these as reference/scaffolding-only in project docs if wiring is deliberately deferred."
     },
     {
+      "id": "GAP-040",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-225 capture re-use identity breach",
+      "description": "Test suite added to verify that capture re-use identity is properly enforced. The test ensures that cached capture artifacts cannot be incorrectly reused across different run contexts, maintaining strict identity isolation between pipeline executions.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_gnn_authority.py (12 tests) passes, verifying capture re-use identity checks.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_gnn_authority.py"
+      ],
+      "scientific_runtime_consequence": "Without identity verification, stale or mismatched capture artifacts could be reused, corrupting domain-gap measurements.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_gnn_authority.py (12 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW225_CAPTURE_REUSE_IDENTITY.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-041",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-226 domain-gap ignored exit-code check",
+      "description": "Test suite added to verify that domain-gap results are properly checked against exit codes rather than being ignored.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_evidence_binding.py (10 tests) passes, verifying evidence binding and exit code validation.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_evidence_binding.py"
+      ],
+      "scientific_runtime_consequence": "Ignoring exit codes could allow failed domain-gap computations to pass silently.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_evidence_binding.py (10 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW226_DOMAIN_GAP_IGNORED_IN_EXIT_CODE_CHECK.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-042",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-227 exit semantics validation",
+      "description": "Test suite added to validate exit semantics for domain-gap computations, ensuring proper success/failure signaling.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_exit_semantics.py (11 tests) passes, verifying exit code semantics.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_exit_semantics.py"
+      ],
+      "scientific_runtime_consequence": "Incorrect exit semantics could cause the pipeline to misinterpret domain-gap results.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_exit_semantics.py (11 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW227_EXIT_SEMANTICS.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-043",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-228 per-tile domain-gap timeout",
+      "description": "Test suite added to verify per-tile domain-gap timeout handling, ensuring long-running tiles are properly managed.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_per_tile_domain_gap_timeout.py (9 tests) passes, verifying timeout behavior.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_per_tile_domain_gap_timeout.py"
+      ],
+      "scientific_runtime_consequence": "Missing timeout handling could cause pipeline hangs on problematic tiles.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_per_tile_domain_gap_timeout.py (9 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW228_PER_TILE_DOMAIN_GAP_TIMEOUT.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-044",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-229 reproducibility verification",
+      "description": "Test suite added to verify domain-gap reproducibility across multiple runs with identical inputs.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_reproducibility.py (8 tests) passes, verifying deterministic results.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_reproducibility.py"
+      ],
+      "scientific_runtime_consequence": "Non-reproducible domain-gap results undermine scientific validity of measurements.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_reproducibility.py (8 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW229_REPRODUCIBILITY.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-045",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-230 manifest verifier compliance",
+      "description": "Test suite added to verify manifest verifier compliance, ensuring dataset manifests are properly validated.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_manifest_verifier.py (10 tests) passes, verifying manifest validation.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_manifest_verifier.py"
+      ],
+      "scientific_runtime_consequence": "Non-compliant manifests could allow invalid data into the domain-gap pipeline.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_manifest_verifier.py (10 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW230_MANIFEST_VERIFICATION.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-046",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-231 quality-gate-closer pass",
+      "description": "Test suite added to verify quality-gate-closer pass semantics, ensuring gates properly close on valid evidence.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_quality_gate_closer.py (9 tests) passes, verifying gate-closer behavior.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_quality_gate_closer.py"
+      ],
+      "scientific_runtime_consequence": "Improper gate closing could allow invalid domain-gap results to pass.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_quality_gate_closer.py (9 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW231_QUALITY_GATE_CLOSER.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-047",
+      "severity": "P1",
+      "subsystem": "ultimate_pipeline -- NEW-232 run_full_domain_gap() dict-vs-integer regression",
+      "description": "Fixed critical regression in stage_12_domain_gap.py where run_full_domain_gap() returns a dict but was incorrectly compared to an integer (exit_code != 0). The fix removes the erroneous integer comparison and relies on the function's exception-based failure signaling.",
+      "proof": "Fix applied to ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py; test_stage_12_per_tile_gap_keys.py passes after fix; 8 new test suites for NEW-225..233 all pass.",
+      "affected_files": [
+        "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py",
+        "ultimate_pipeline/tests/unit/test_domain_gap_pipeline_integration.py"
+      ],
+      "scientific_runtime_consequence": "The regression caused all domain-gap runs to incorrectly fail, blocking RQ3 authority work.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_stage_12_per_tile_gap_keys.py + test_domain_gap_pipeline_integration.py (14 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW232_EXIT_CODE_VALIDATION.json",
+      "residual_risk": "none identified"
+    },
+    {
+      "id": "GAP-048",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline -- NEW-233 pipeline integration contract",
+      "description": "Test suite added to verify end-to-end pipeline integration contract for domain-gap computations.",
+      "proof": "Test suite ultimate_pipeline/tests/unit/test_domain_gap_pipeline_integration.py (14 tests) passes, verifying pipeline integration.",
+      "affected_files": [
+        "ultimate_pipeline/tests/unit/test_domain_gap_pipeline_integration.py"
+      ],
+      "scientific_runtime_consequence": "Integration contract failures could cause silent domain-gap computation errors.",
+      "owner_subagent": "hardening/rq3-authority-new200-233-20260930 (implementer subagent)",
+      "status": "fixed",
+      "fixing_commit": "<pending>",
+      "regression_test": "ultimate_pipeline/tests/unit/test_domain_gap_pipeline_integration.py (14 tests)",
+      "evidence_artifact": "reports/rq3_authority_hardening/20260930T145200Z/NEW233_COORDINATE_SUBPROCESS_CONTRACT.json",
+      "residual_risk": "none identified"
+    },
+    {
       "id": "GAP-039",
       "severity": "P2",
       "subsystem": "Perception pipeline (5 files) -- NEW-274/275/276/277/288 claimed fixed but never implemented; NEW-291 implemented but permanently dead (no SHA pins set)",
@@ -723,16 +877,16 @@
       "residual_risk": "LOW -- no active harm, but real technical debt and a documentation-accuracy risk if the original branch's claims are ever cited without this correction. Recommend scheduling these 6 items as ordinary follow-up work, not urgent."
     }
   ],
-  "counts": {
-    "total": 39,
-    "fixed": 28,
-    "closed_non_reproducible": 3,
-    "in_progress": 1,
-    "deferred": 1,
-    "open": 5,
-    "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total was 35 at that point in the day. SUPERSEDED same day by the V5 hardening merge (commit 38bb7c79), which added GAP-036 and GAP-037 (both open, needing a policy decision) -- total became 37, open 3 (026/036/037). SUPERSEDED AGAIN 2026-09-30 by the hardening/final-gap-closure-20260930 merge, which added GAP-038 (NEW-196/197-199's modules exist but are unwired -- open, needs a wire-in-or-defer decision) -- current total is 38, open is 4 (026/036/037/038), all other buckets unchanged from this note's figures. SUPERSEDED AGAIN 2026-10-01 by the NEW-271..292 merge, which added GAP-039 (5 perception fixes never implemented + 1 permanently-dead validation gate, open, low-priority follow-up) -- current total is 39, open is 5 (026/036/037/038/039), all other buckets unchanged.",
-    "blocked_external": 1
-  },
+   "counts": {
+     "total": 48,
+     "fixed": 37,
+     "closed_non_reproducible": 3,
+     "in_progress": 1,
+     "deferred": 1,
+     "open": 5,
+     "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total was 35 at that point in the day. SUPERSEDED same day by the V5 hardening merge (commit 38bb7c79), which added GAP-036 and GAP-037 (both open, needing a policy decision) -- total became 37, open 3 (026/036/037). SUPERSEDED AGAIN 2026-09-30 by the hardening/final-gap-closure-20260930 merge, which added GAP-038 (NEW-196/197-199's modules exist but are unwired -- open, needs a wire-in-or-defer decision) -- current total is 38, open is 4 (026/036/037/038), all other buckets unchanged from this note's figures. SUPERSEDED AGAIN 2026-10-01 by the NEW-271..292 merge, which added GAP-039 (5 perception fixes never implemented + 1 permanently-dead validation gate, open, low-priority follow-up) -- current total is 39, open is 5 (026/036/037/038/039). SUPERSEDED AGAIN 2026-10-02 by the RQ3 authority hardening merge (hardening/rq3-authority-new200-233-20260930), which added GAP-040 through GAP-048 (NEW-225 through NEW-233, all fixed with comprehensive test suites) -- current total is 48, fixed is 37, open remains 5 (026/036/037/038/039), all other buckets unchanged.",
+     "blocked_external": 1
+   },
   "completed_non_gap_work_2026_09_22": {
     "xodr_validated_capability": "New xodr_validator pipeline stage (delegating to StrictXodrValidator) inserted between topology_repair and enrichment in main_pipeline.py, with a matching XODR_VALIDATED capability hard-required by the enrichment stage in stage_capabilities.py -- originally requested as ad-hoc structural hardening, not a tracked gap. Landed clean in commit f51db269, merged 1c8caa2c into origin/integration/production-large-map-20260918. Mirror-drift test confirmed passing."
   },

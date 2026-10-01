@@ -1,0 +1,23 @@
+{
+  "finding_id": "NEW-227",
+  "title": "Make offline gap exit status semantic",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_offline_gaps_from_pair.py"
+  ],
+  "tests": [
+    "mandatory_metric_matrix computed per profile",
+    "exit code based on profile and results"
+  ],
+  "adversarial_tests": [
+    "all mandatory computed -> EXIT_OK (0)",
+    "mandatory geometry failure -> EXIT_MANDATORY_METRIC_FAILURE (3)",
+    "mandatory curvature failure -> EXIT_MANDATORY_METRIC_FAILURE (3)",
+    "only optional visualization failure -> EXIT_OK (0)",
+    "mandatory skipped -> EXIT_MANDATORY_METRIC_FAILURE (3)",
+    "invalid pair -> EXIT_INVALID_INPUT (2)"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": null
+}

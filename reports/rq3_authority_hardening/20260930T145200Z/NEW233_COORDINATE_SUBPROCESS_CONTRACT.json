@@ -1,0 +1,25 @@
+{
+  "finding_id": "NEW-233",
+  "title": "Verify coordinate report subprocesses",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py"
+  ],
+  "tests": [
+    "subprocess.run with check=False, capture_output=True",
+    "verify return code == 0",
+    "verify output file exists",
+    "verify output is valid JSON",
+    "verify schema/XODR SHA in report"
+  ],
+  "adversarial_tests": [
+    "coordinate report failure -> stage failure (thesis profile)",
+    "coordinate report failure -> bounded warning (map-build-only)",
+    "missing output file -> failure",
+    "invalid JSON -> failure",
+    "wrong XODR SHA in report -> failure"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": null
+}

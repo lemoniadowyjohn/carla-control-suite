@@ -1,0 +1,25 @@
+{
+  "finding_id": "NEW-201",
+  "title": "Remove Path-Based Ingolstadt Claim Escalation",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py"
+  ],
+  "tests": [
+    "test_ingolstadt_manual_and_auto_arms",
+    "test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture"
+  ],
+  "adversarial_tests": [
+    "correct authoritative SHA -> True",
+    "wrong SHA -> False",
+    "empty expected SHA -> False",
+    "missing actual SHA -> False",
+    "file called ingolstadt.xodr with wrong hash -> False",
+    "file under campaigns/... with wrong hash -> False",
+    "correct hash with arbitrary filename -> True"
+  ],
+  "status": "PASS",
+  "remaining_blocker": null
+}

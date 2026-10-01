@@ -1,0 +1,26 @@
+{
+  "finding_id": "NEW-229",
+  "title": "Strict provenance in pair runner",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "HEAD",
+  "files_changed": [
+    "ultimate_pipeline/tools/run_perception_pair.py"
+  ],
+  "tests": [
+    "collect_and_write_strict_release_provenance called on success",
+    "repo_root explicitly bound via git -C",
+    "expected_sha from UP_EXPECTED_GIT_SHA env var",
+    "expected_repo from UP_EXPECTED_REPO env var",
+    "clean worktree check via UP_REQUIRE_CLEAN_WORKTREE",
+    "fail-closed: any failure written to strict_release_provenance.json"
+  ],
+  "adversarial_tests": [
+    "git unavailable -> FAIL",
+    "HEAD unresolved -> FAIL",
+    "expected SHA mismatch -> FAIL",
+    "dirty worktree -> FAIL (when required)",
+    "wrong repo -> FAIL"
+  ],
+  "status": "IMPLEMENTED",
+  "remaining_blocker": null
+}
