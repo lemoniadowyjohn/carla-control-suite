@@ -29,7 +29,7 @@ future mechanical migration would move where.
 
 - [`map_quality/JUNCTIONS_AND_CONNECTORS.md`](map_quality/JUNCTIONS_AND_CONNECTORS.md)
 - [`map_quality/JUNCTIONS_AND_ROUNDABOUTS.md`](map_quality/JUNCTIONS_AND_ROUNDABOUTS.md)
-- `../PRODUCTION_MAP_QUALITY_CONTRACT.yaml` -- the unified acceptance-profile contract
+- `../PRODUCTION_MAP_QUALITY_CONTRACT.yaml` -- (historical reference) the unified acceptance-profile contract (not executed by runtime)
   (`research_release` / `production_candidate` / `runtime_certified`).
 - `../MAP_QUALITY_GAP_REGISTER.json` -- the full, ranked (P0-P3) gap list this contract and the
   task graph are built from.

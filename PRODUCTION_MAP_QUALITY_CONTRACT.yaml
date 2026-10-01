@@ -1,3 +1,12 @@
+# =====================================================================
+# NON-NORMATIVE REFERENCE DOCUMENTATION
+# =====================================================================
+# This file is a historical reference architecture and is NOT executed
+# or enforced by the Python runtime pipeline. Actual gate enforcement
+# is governed by ultimate_pipeline/quality/map_acceptance.py and
+# ultimate_pipeline/contracts/stage_contracts.py.
+# =====================================================================
+
 # Production Map Quality Contract
 #
 # Unifies the existing, extensive quality-gate system (ultimate_pipeline/quality/*,
