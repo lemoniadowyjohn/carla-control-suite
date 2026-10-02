@@ -1,0 +1,311 @@
+{
+  "artifacts": [
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Five-seed leak-free GAP-010 retrain aggregates; the live RQ4 number.",
+      "recorded_claim": "cosine_distance mean 0.9207, bootstrap CI95 [0.8446, 0.9760]",
+      "role": "CURRENT_AUTHORITY",
+      "sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/POST_HOC_LEAKAGE_AUDIT.json",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Per-checkpoint post-hoc leakage audit; the zero-overlap claim.",
+      "recorded_claim": "overall_status PASS, eval_pair_hash_overlap [] for all 5 seeds",
+      "role": "CURRENT_AUTHORITY",
+      "sha256": "d6a72de647693ad1a492deb0cb3cb36e3dbc835406cfb3544e94a2cc77f17bfc"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/PRE_TRAINING_LEAKAGE_AUDIT.json",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Pre-training leakage audit proving the exclusion was active.",
+      "recorded_claim": "status PASS, 562/562 tiles retained post-exclusion",
+      "role": "CURRENT_AUTHORITY",
+      "sha256": "02d7cbb71e3eb45fe9ac050b88436dcb82d8a6959ae7097f95a8b1315d465191"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/RESULTS.md",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Human-readable result write-up for the current campaign.",
+      "recorded_claim": "UNKNOWN",
+      "role": "CURRENT_AUTHORITY",
+      "sha256": "bea5f3d2ee9bff94f34f9875f7128e06f8f858f7620aad4605f379ee3601bc7c"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/run_seed_ensemble_leakfree.py",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Leak-free seed-ensemble driver used by the producer.",
+      "recorded_claim": "UNKNOWN",
+      "role": "REPRODUCTION_ENTRYPOINT",
+      "sha256": "db3f9b003cfe305d4347126e466d38456d7795f5667ad695a8e23bb670795003"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/compute_aggregate_stats.py",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Producer's aggregate script; delegates to gnn_provenance.summarize_runs.",
+      "recorded_claim": "UNKNOWN",
+      "role": "AGGREGATE_COMPUTATION",
+      "sha256": "9676abd8f60107d5e4460ce551db47fe288b15c8492bf9042a615efddffce64b"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T120000Z_RQ1_RQ4_MASTER_CLOSE/RQ4_MASTER_CLOSE_VERIFICATION.json",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Independent second record of the same five per-seed runs.",
+      "recorded_claim": "RQ4_CLEAN_EXTENSION_SUPPORTED",
+      "role": "SUPPORTING_SECOND_RECORD",
+      "sha256": "cad952033fa0abb6ced6268aad2942ec67f05aac110350d698d2c22921d35576"
+    },
+    {
+      "artifact": "reports/production_readiness/20260923T140000Z_GAP010_RQ4_LEAKAGE_FIX/RESULTS.md",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "GAP-010 root-cause fix write-up.",
+      "recorded_claim": "UNKNOWN",
+      "role": "ROOT_CAUSE_FIX",
+      "sha256": "bcb87fbf74b1c45b8d18d02b0acd3bffbffb1931fe0d6000aafe3e3b3fe7f3ec"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "status FAIL scoped to the 2026-09-01 C21 split; this is the evidence that establishes the leaky number must be superseded.",
+      "recorded_claim": "status FAIL, eval_pair_content_in_training_set [69ee3498...]",
+      "role": "SUPERSESSION_RATIONALE",
+      "sha256": "0cdd9ea2234f7eff24fd04b8532420f9b1045aaf9fcd6e6e7a0a983ccf8d5658"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/CHECKPOINT_CONTRACT.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "Reuse policy and manifest fields the leak-free checkpoints claim.",
+      "recorded_claim": "UNKNOWN",
+      "role": "CHECKPOINT_CONTRACT",
+      "sha256": "53f3a3558b2a677a6bf0ba068703b8e4377d8744c241d67f6f6a6d9277a768fa"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/DATASET_MANIFEST.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "Tile-manifest construction rule.",
+      "recorded_claim": "INCOMPLETE - training tile bytes absent from that checkout",
+      "role": "MANIFEST_CONTRACT",
+      "sha256": "263b02c14f80d7053194021eccd3ea6c9e5f1831bf4d2b5abfbe06583ae65570"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/HISTORICAL_PROVENANCE_CLASSIFICATION.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "Reclassifies C18/C21/V2 placeholders as LEGACY_DESCRIPTIVE_PROVENANCE.",
+      "recorded_claim": "UNKNOWN",
+      "role": "PROVENANCE_RECLASSIFICATION",
+      "sha256": "25859a3c29a7b762f97671e53e50b0f230c7fbae54323cc43ffffd282dff64d0"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/AUTHORITATIVE_PATH.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "Authoritative module list with recorded SHA256 values.",
+      "recorded_claim": "UNKNOWN",
+      "role": "MODULE_AUTHORITY",
+      "sha256": "27bba64a868edc119c69877f11de188a47e5d814d1fc85c5a471ca00d1766412"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/TEST_RESULTS.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "GNN-focused test subset result.",
+      "recorded_claim": "79 passed, 0 failed",
+      "role": "TEST_EVIDENCE",
+      "sha256": "6f10292f8899460e9b4ad56404099eb4e34f8a7efd60211dc853c47f3f823640"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_DOMAIN_RANDOMIZATION.json",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "RQ4 part A; unaffected by the GNN leak-fix supersession.",
+      "recorded_claim": "UNKNOWN",
+      "role": "PART_A_DOMAIN_RANDOMIZATION",
+      "sha256": "fcdb6d6ffd6c984a32da0fe325722345a236b6a1403c61afc1955bdcc03af796"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C15_RQ4_DR/determinism/report.json",
+      "classification": "CURRENT",
+      "exists": true,
+      "note": "Three-run structural determinism evidence.",
+      "recorded_claim": "UNKNOWN",
+      "role": "PART_A_EVIDENCE",
+      "sha256": "3f7743c9780bf8dfd4f8051b8347eb37115ebea1669bce192beaa036b77a0911"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json",
+      "classification": "SUPERSEDED",
+      "exists": true,
+      "note": "The 2026-09-01 five-seed number; leaky by construction.",
+      "recorded_claim": "cosine_distance mean 0.6433733820915222",
+      "role": "SUPERSEDED_LEAKY_GENERATION",
+      "sha256": "e66a455284584b562cd3124dd62c057d1a348152cc1b86b3d106ce6a8ffe3bd9"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/seed_42/gnn_training_report.json",
+      "classification": "SUPERSEDED",
+      "exists": true,
+      "note": "Committed per-seed report of the leaky run.",
+      "recorded_claim": "UNKNOWN",
+      "role": "SUPERSEDED_LEAKY_PER_SEED",
+      "sha256": "24658316b70c039a2d9973735f77080b532960aa057e09bd7f8e714c3d70f4c4"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/isolation_old_checkpoints_new_graph_builder.json",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "Separate isolation probe (old checkpoints, new graph builder). Its cosine_distance > 1.0 values are a DIFFERENT metric instance and must not be mistaken for the C21 aggregate.",
+      "recorded_claim": "cosine_distance 1.02-1.11 with negative cosine_similarity",
+      "role": "ISOLATION_PROBE",
+      "sha256": "d6deca783a89a3e50dcdfdf86acf6ab9d778da7114d4342b8ba34c3663d2e2c8"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/C21_STATISTICAL_PROVENANCE.md",
+      "classification": "SUPPORTING",
+      "exists": true,
+      "note": "Origin of the in-sample-diagnostic claim boundary.",
+      "recorded_claim": "UNKNOWN",
+      "role": "CLAIM_BOUNDARY_SOURCE",
+      "sha256": "86e72e298ad43694c316dbecc53cd07d9d5aafc030ed05afd44c33f3f53e97b4"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE_PREBUGFIX_20260826/aggregate_stats.json",
+      "classification": "SUPERSEDED",
+      "exists": true,
+      "note": "2026-08-26 pre-graph-bugfix generation.",
+      "recorded_claim": "cosine_distance mean 1.153711485862732",
+      "role": "SUPERSEDED_PREBUGFIX_GENERATION",
+      "sha256": "c47286a47dc1abd777882e98f587ff78e4c10638bbcb9abbfd6354e212ad5ab4"
+    },
+    {
+      "artifact": "RQ4_SEED_RECOVERY.json",
+      "classification": "STALE",
+      "exists": true,
+      "note": "States MISSING / 'Retraining required' for a five-seed leak-free RQ4 extension. That campaign was executed on 2026-09-24 and is committed as aggregate_stats.json. The recovery artifact was never retired.",
+      "recorded_claim": "complete_valid 0, all seed states {}, 'Retraining required'",
+      "role": "STALE_SEED_RECOVERY",
+      "sha256": "9b90851bdaa3fb38e23605221641075d8e8c8907f47603f196c21123c1bb8efa"
+    },
+    {
+      "artifact": "reports/production_readiness/20260923_MASTER_CLOSURE_PLAN/PLAN.md",
+      "classification": "STALE",
+      "exists": true,
+      "note": "Lists RQ4 as blocked by GAP-010 and retraining 'not yet actionable'; both were resolved on 2026-09-23/24.",
+      "recorded_claim": "'RQ4 retraining ... not yet actionable'",
+      "role": "STALE_PLAN",
+      "sha256": "696b5e0f2dc9a478045b2524a1f1c027ea68e50308c54d47457f80772e808974"
+    },
+    {
+      "artifact": "reports/production_readiness/20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT/TEST_RESULTS.json",
+      "classification": "STALE",
+      "exists": true,
+      "note": "Excludes test_rq4_gnn_provenance.py claiming an IndentationError at line 551. Superseded by clean full-suite runs recorded in MASTER_GAP_REGISTER.json (GAP-015, closed).",
+      "recorded_claim": "collection_blocker_excluded: IndentationError at line 551",
+      "role": "STALE_TEST_EXCLUSION",
+      "sha256": "df0cb7a66aa022627c0f247fb6b094211864b18fced2ab2c1162faf6a9451b57"
+    },
+    {
+      "artifact": "reports/production_readiness/20260915T233000Z_DOMAIN_GAP_GNN_V2/GNN_SCHEMA_CHECKPOINT_AUDIT.json",
+      "classification": "CONTRADICTORY",
+      "exists": true,
+      "note": "Marks descriptive placeholder identifiers as VERIFIED; reclassified LEGACY_DESCRIPTIVE_PROVENANCE by HISTORICAL_PROVENANCE_CLASSIFICATION.json.",
+      "recorded_claim": "UNKNOWN",
+      "role": "DESCRIPTIVE_PLACEHOLDER_HASHES",
+      "sha256": "ed38226a2a1fe083a05fa9780959968c32ca5cd51a92f485344ade7e59038f8b"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/THESIS_VS_CURRENT_STATE_COMPARISON_20260827.md",
+      "classification": "CONTRADICTORY",
+      "exists": true,
+      "note": "Presents 1.1537 as the current C21 mean; that is the PREBUGFIX generation's number, contradicting the 2026-09-01 C21 aggregate (0.6434) held in the same report tree.",
+      "recorded_claim": "C21 cosine_distance mean=1.1537 CI [1.0803, 1.2476]",
+      "role": "CONTRADICTORY_GENERATION_NUMBER",
+      "sha256": "b2ce55519fbcad243d5a3ea943a98ebf99d098c7b2444a9c74d3e717923ffe0d"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
+      "classification": "SUPERSEDED",
+      "exists": true,
+      "note": "Ranks the leaky 0.6434 as [AUTHORITATIVE]; retained because its evidence_sha256 anchors C21 aggregate_stats.json.",
+      "recorded_claim": "gnn_latent_cosine_distance 0.6433733820915222 AUTHORITATIVE",
+      "role": "SUPERSEDED_THESIS_TABLE",
+      "sha256": "5d7e8d735fac6b80807d0196f0ef287c49e79c8cd93821c814dc26793f2f48f2"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.md",
+      "classification": "SUPERSEDED",
+      "exists": true,
+      "note": "Same leaked number.",
+      "recorded_claim": "UNKNOWN",
+      "role": "SUPERSEDED_THESIS_TABLE_MD",
+      "sha256": "70bb4c6f5078b034e91589df6f53840e6b02fe8f76e4b7b46db0d2b5d78e31a6"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/THESIS_RUN_BUNDLE.md",
+      "classification": "SUPERSEDED",
+      "exists": true,
+      "note": "Cites the leaky CI as the RQ4 authoritative interval.",
+      "recorded_claim": "UNKNOWN",
+      "role": "SUPERSEDED_BUNDLE_MD",
+      "sha256": "74c11da8f0ae862d0c7f3ba7a07696c46a8594fcdf42f7b76d5d29a5d5194c54"
+    },
+    {
+      "artifact": "submission/results/gnn_v1_full/permutation_test_n30.json",
+      "classification": "HISTORICAL",
+      "exists": true,
+      "note": "Frozen thesis permutation test. Immutable; explicitly NOT transferred to the leak-free metric.",
+      "recorded_claim": "p=0.0000 on the PRE-LEAK-FIX lineage",
+      "role": "FROZEN_THESIS_EVIDENCE",
+      "sha256": "5b0483233e5d2faf021337e5bf4fb4714c1cced6b0196c2f6c9adf51811b6478"
+    }
+  ],
+  "candidate_git_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "checkpoint_durability_status": "CONTRADICTORY_CROSS_RECORD_HASHES",
+  "classification_counts": {
+    "CONTRADICTORY": 2,
+    "CURRENT": 9,
+    "EXTERNAL_PATH_UNAVAILABLE": 1,
+    "HISTORICAL": 1,
+    "MISSING_SOURCE": 3,
+    "STALE": 3,
+    "SUPERSEDED": 6,
+    "SUPPORTING": 9
+  },
+  "missing_sources": [
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles",
+      "impact": "training tile bytes; blocks independent recomputation of training_dataset_manifest_sha256 and of a retrain",
+      "status": "MISSING_SOURCE"
+    },
+    {
+      "artifact": "cities/ingolstadt/manual_grid0821.xodr",
+      "impact": "one of the two eval-pair reference files; blocks independent recomputation of eval-pair hash 69ee3498...",
+      "status": "MISSING_SOURCE"
+    },
+    {
+      "artifact": "G:\\gap010-rq4-retrain-20260924",
+      "impact": "producer worktree; holds all 5 checkpoints, the per-seed gnn_training_report.json files and union_tiles",
+      "status": "EXTERNAL_PATH_UNAVAILABLE"
+    },
+    {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/seed_{42..46}/gnn_training_report.json",
+      "impact": "per-seed training reports for the current campaign; only their aggregate and audit projections are committed",
+      "status": "MISSING_SOURCE"
+    }
+  ],
+  "read_only_guarantee": "No pre-existing RQ4 artifact was edited, deleted or quarantined by this lane. Promotion is the later integration batch's job.",
+  "reproducibility_level": "EVIDENCE_RECOMPUTABLE_ONLY",
+  "schema": "RQ4_EVIDENCE_INVENTORY/v1"
+}
