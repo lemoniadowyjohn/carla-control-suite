@@ -1,7 +1,7 @@
 {
   "claim_boundary": "Preflight is an offline readiness audit. It performs no training, creates no capture, and proves nothing about RQ5 accuracy or generalization. RQ5_OFFLINE_READY_DATASET_BLOCKED is the correct outcome whenever no validated RQ3 paired dataset exists.",
   "claim_scope": "OFFLINE_READINESS_AUDIT",
-  "created_utc": "2026-10-02T20:38:38.900055+00:00",
+  "created_utc": "2026-10-02T20:40:48.391328+00:00",
   "dataset_blocked": true,
   "dataset_inputs": {
     "camera": null,
@@ -14,7 +14,7 @@
   "final_status": "PARTIAL_WITH_EXACT_BLOCKERS",
   "offline_authority_ok": false,
   "rationale": "one or more offline authority checks failed; see checks for the exact blockers",
-  "report_sha256": "bdb63ececb40f89ed041d08b701c7812233633700b55dd3f97c2b19d7ea6df6e",
+  "report_sha256": "8b454162660374043f8c3681be51cc562f22a041754e703b8690d42f20e1b090",
   "schema": "rq5_preflight_v1",
   "sections": {
     "candidate": {
@@ -22,22 +22,22 @@
         {
           "code": "candidate_head_resolvable",
           "data": {
-            "sha": "e5e5da4d294476ab7caf27d8c232b88133df0c1e"
+            "sha": "dcf55d1dbb215b4c80c3948e58721b4f4465da90"
           },
-          "detail": "git HEAD = e5e5da4d294476ab7caf27d8c232b88133df0c1e",
+          "detail": "git HEAD = dcf55d1dbb215b4c80c3948e58721b4f4465da90",
           "status": "PASS"
         },
         {
           "code": "candidate_clean",
           "data": {
-            "ignored_evidence_entries": 11
+            "ignored_evidence_entries": 0
           },
-          "detail": "working tree is dirty:\nM reports/parallel_wave/rq5/RQ5_PREFLIGHT.json\n M tests/unit/test_rq5_protocol_v2_contract.py\n M ultimate_pipeline/perception/rq5_provenance.py",
+          "detail": "working tree is dirty:\nM reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
           "status": "FAIL"
         }
       ],
-      "head": "e5e5da4d294476ab7caf27d8c232b88133df0c1e",
-      "ignored_evidence_entries": 11,
+      "head": "dcf55d1dbb215b4c80c3948e58721b4f4465da90",
+      "ignored_evidence_entries": 0,
       "ok": false
     },
     "datasets": {
