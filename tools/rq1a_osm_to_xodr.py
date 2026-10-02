@@ -21,12 +21,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Set OSM_FILE env var BEFORE importing settings to override the default path
+# Authoritative OSM for Ingolstadt campaign
+AUTHORITATIVE_OSM = Path(__file__).resolve().parents[1] / "campaigns" / "ingolstadt_cooked_perception_v1" / "source" / "ingolstadt_authoritative.osm"
+os.environ["UP_OSM_FILE"] = str(AUTHORITATIVE_OSM)
+
 WORKTREE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKTREE))
 os.chdir(str(WORKTREE))
 
 from ultimate_pipeline.config.settings import SETTINGS
-from ultimate_pipeline.core.xodr_sanitizer import XODRSanitizer
+from ultimate_pipeline.osm.osm_to_xodr_wrapper import convert_osm_to_xodr, OSMToXODRConfig
 from ultimate_pipeline.config.settings import Settings
 
 
@@ -126,27 +131,28 @@ def main() -> int:
     osm_result = _resolve_osm_input(SETTINGS, Path(run_dir) / "cache")
     osm_path = Path(osm_result["osm_path"])
 
-    # Stage 2: Sanitization (OSM→XODR)
-    output_xodr = run_dir / f"rq1a_sanitized_run_{args.run_index:02d}.xodr"
+    # Stage 2: OSM→XODR conversion
+    output_xodr = run_dir / f"rq1a_generated_run_{args.run_index:02d}.xodr"
 
     t0 = time.time()
-    XODRSanitizer.sanitize_xodr(
-        input_path=str(Path(osm_result["osm_path"])),
-        output_path=str(run_dir / "sanitized.xodr"),
-        run_sumo=args.run_summo
+    cfg = OSMToXODRConfig(overwrite=True)
+    convert_osm_to_xodr(
+        osm_path=osm_result["osm_path"],
+        xodr_path=output_xodr,
+        cfg=cfg
     )
     duration = time.time() - t0
 
-    output_xodr_path = run_dir / "sanitized.xodr"
-    output_sha = _sha256(run_dir / "sanitized.xodr")
+    output_xodr_path = output_xodr
+    output_sha = _sha256(output_xodr)
 
     receipt = {
         "schema": "rq1a_run_receipt/v1",
         "run_index": args.run_index,
         "status": "ok",
-        "duration_s": round(time.time() - t0, 3),
+        "duration_s": round(duration, 3),
         "input_osm_sha256": _sha256(Path(osm_result["osm_path"])),
-        "output_xodr_sha256": _sha256(run_dir / "sanitized.xodr"),
+        "output_xodr_sha256": _sha256(output_xodr),
         "osm_source": osm_result.get("source", "unknown"),
         "buildings_source": osm_result.get("buildings_source"),
         "run_summo": args.run_summo,
