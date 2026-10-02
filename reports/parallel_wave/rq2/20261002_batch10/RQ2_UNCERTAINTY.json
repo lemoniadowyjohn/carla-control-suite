@@ -1,0 +1,90 @@
+{
+  "method": "spatial blocks (grid over manual footprint), roads binned by centroid; low-support blocks excluded from dispersion (listed, not dropped silently)",
+  "grid": [
+    2,
+    2
+  ],
+  "footprint": "hull",
+  "n_blocks": 4,
+  "n_supported": 4,
+  "low_support_block_ids": [],
+  "blocks": [
+    {
+      "block_id": "c0r0",
+      "col": 0,
+      "row": 0,
+      "manual_roads": 274,
+      "auto_roads": 1113,
+      "manual_length_m": 13248.4,
+      "auto_length_m": 43571.2,
+      "lane_width_gap": 0.0274,
+      "curvature_gap": 0.2628,
+      "road_length_ratio": 3.289,
+      "low_support": false
+    },
+    {
+      "block_id": "c0r1",
+      "col": 0,
+      "row": 1,
+      "manual_roads": 438,
+      "auto_roads": 1459,
+      "manual_length_m": 19128.2,
+      "auto_length_m": 52508.0,
+      "lane_width_gap": 0.0351,
+      "curvature_gap": 0.2196,
+      "road_length_ratio": 2.745,
+      "low_support": false
+    },
+    {
+      "block_id": "c1r0",
+      "col": 1,
+      "row": 0,
+      "manual_roads": 182,
+      "auto_roads": 404,
+      "manual_length_m": 14465.9,
+      "auto_length_m": 24324.1,
+      "lane_width_gap": 0.1494,
+      "curvature_gap": 0.2189,
+      "road_length_ratio": 1.681,
+      "low_support": false
+    },
+    {
+      "block_id": "c1r1",
+      "col": 1,
+      "row": 1,
+      "manual_roads": 99,
+      "auto_roads": 560,
+      "manual_length_m": 6682.8,
+      "auto_length_m": 23202.8,
+      "lane_width_gap": 0.0927,
+      "curvature_gap": 0.1054,
+      "road_length_ratio": 3.472,
+      "low_support": false
+    }
+  ],
+  "dispersion": {
+    "lane_width_gap": {
+      "n": 4,
+      "mean": 0.0761,
+      "min": 0.0274,
+      "max": 0.1494,
+      "stdev": 0.0569
+    },
+    "curvature_gap": {
+      "n": 4,
+      "mean": 0.2017,
+      "min": 0.1054,
+      "max": 0.2628,
+      "stdev": 0.0674
+    },
+    "road_length_ratio": {
+      "n": 4,
+      "mean": 2.7968,
+      "min": 1.681,
+      "max": 3.472,
+      "stdev": 0.8054
+    }
+  },
+  "no_pass_thresholds": true,
+  "elapsed_sec": 32.3
+}
