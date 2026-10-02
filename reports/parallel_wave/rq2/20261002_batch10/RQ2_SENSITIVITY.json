@@ -1,0 +1,196 @@
+{
+  "primary_first": true,
+  "primary": {
+    "lane_width_gap": 0.0597,
+    "curvature_gap": 0.2206,
+    "curvature_wasserstein_gap": 0.0752,
+    "road_length_ratio": 2.683,
+    "junction_ratio": 3.782,
+    "road_count_ratio": 3.561,
+    "building_density_gap": 0.2308,
+    "frechet_distance": {
+      "matched_pair_count": 894,
+      "mean_m": 58.18353368018363,
+      "median_m": 36.13256042794515,
+      "p90_m": 140.4752823467876,
+      "spacing_m": 5.0,
+      "match_threshold_m": 50.0,
+      "footprint": "hull",
+      "auto_road_count_total": 32267,
+      "auto_road_count_cropped": 3536,
+      "manual_road_count": 993
+    },
+    "connectivity_gap": {
+      "road_link": {
+        "predecessor_declared_rate": 0.05766382779000523,
+        "successor_declared_rate": 0.025721054166495838,
+        "predecessor_valid_rate": -0.026195899772209597,
+        "successor_valid_rate": -0.02163393111300882,
+        "roads_with_valid_pred_pct": 0.0316457282424939,
+        "roads_with_valid_succ_pct": 0.0042278414968125455
+      },
+      "lane_count": {
+        "l1_gap": 0.2860020140986971,
+        "mean_delta": -41.5122600283432,
+        "median_delta": -10.0
+      },
+      "junction_degree": {
+        "total_connections_l1_gap": 0.22573295985060643,
+        "mean_incoming_delta": -0.38907563025210123,
+        "mean_outgoing_delta": -0.5702147525676935
+      },
+      "lane_link": {
+        "junction_lane_link_completeness_delta": 0.0,
+        "road_lane_link_valid_rate_delta": 0.0
+      }
+    },
+    "semantic_object_gap": {
+      "objects": {
+        "manual": {
+          "pole": 3436,
+          "vegetation": 2043,
+          "roadmark": 1998,
+          "barrier": 1547,
+          "tree": 4234,
+          "none": 22,
+          "obstacle": 469,
+          "building": 993,
+          "gantry": 11
+        },
+        "auto": {
+          "building": 3279,
+          "lamp_post": 2243,
+          "traffic_light": 2194,
+          "guard_rail": 2350,
+          "trash_bin": 161,
+          "bench": 105,
+          "crosswalk": 17
+        },
+        "delta": {
+          "barrier": -1547,
+          "bench": 105,
+          "building": 2286,
+          "crosswalk": 17,
+          "gantry": -11,
+          "guard_rail": 2350,
+          "lamp_post": 2243,
+          "none": -22,
+          "obstacle": -469,
+          "pole": -3436,
+          "roadmark": -1998,
+          "traffic_light": 2194,
+          "trash_bin": 161,
+          "tree": -4234,
+          "vegetation": -2043
+        }
+      },
+      "road_types": {
+        "manual_length": {
+          "town": 44727.4050957699,
+          "motorway": 7928.778760748474,
+          "rural": 869.1090732030341
+        },
+        "auto_length": {
+          "town": 143606.06568037966
+        },
+        "delta_length": {
+          "motorway": -7928.778760748474,
+          "rural": -869.1090732030341,
+          "town": 98878.66058460975
+        },
+        "delta_normalized": {
+          "motorway": -0.14813144079676385,
+          "rural": -0.016237352952821235,
+          "town": 0.16436879374958324
+        }
+      },
+      "traffic_lights": {
+        "manual_count": 0,
+        "auto_count": 2194,
+        "manual_density": 0.0,
+        "auto_density": 0.015277906191533193,
+        "delta_density": 0.015277906191533193
+      },
+      "lane_markings": {
+        "manual_count": 0,
+        "auto_count": 0,
+        "manual_density": 0.0,
+        "auto_density": 0.0,
+        "delta_density": 0.0
+      },
+      "meta": {
+        "manual_total_road_length": 53525.29292972144,
+        "auto_total_road_length": 143606.06568038,
+        "normalized": true,
+        "settings": {
+          "reference": "unknown"
+        }
+      }
+    }
+  },
+  "variants": [
+    {
+      "variant": "footprint=bbox (context; primary is hull)",
+      "lane_width_gap": 0.0614,
+      "curvature_gap": 0.2248,
+      "road_length_ratio": 4.488,
+      "junction_ratio": 6.05,
+      "road_count_ratio": 6.119,
+      "frechet_mean_m": 58.15049656440021,
+      "frechet_median_m": 36.12580836676495,
+      "frechet_p90_m": 140.36560389366187,
+      "frechet_pairs": 896
+    },
+    {
+      "variant": "frechet match_threshold_m=30.0",
+      "frechet_mean_m": 57.048867553021864,
+      "frechet_median_m": 34.79955111335279,
+      "frechet_p90_m": 140.69191840254712,
+      "frechet_pairs": 870
+    },
+    {
+      "variant": "frechet match_threshold_m=50.0",
+      "frechet_mean_m": 58.18353368018363,
+      "frechet_median_m": 36.13256042794515,
+      "frechet_p90_m": 140.4752823467876,
+      "frechet_pairs": 894
+    },
+    {
+      "variant": "frechet match_threshold_m=75.0",
+      "frechet_mean_m": 59.597841784694765,
+      "frechet_median_m": 37.15458277460179,
+      "frechet_p90_m": 141.10886541111535,
+      "frechet_pairs": 922
+    },
+    {
+      "variant": "frechet spacing_m=2.5",
+      "frechet_mean_m": 58.183639186788604,
+      "frechet_median_m": 36.13256042794515,
+      "frechet_p90_m": 140.4752823467876,
+      "frechet_pairs": 894
+    },
+    {
+      "variant": "frechet spacing_m=5.0",
+      "frechet_mean_m": 58.18353368018363,
+      "frechet_median_m": 36.13256042794515,
+      "frechet_p90_m": 140.4752823467876,
+      "frechet_pairs": 894
+    },
+    {
+      "variant": "frechet spacing_m=10.0",
+      "frechet_mean_m": 58.181017239925225,
+      "frechet_median_m": 36.13256042794515,
+      "frechet_p90_m": 140.4752823467876,
+      "frechet_pairs": 894
+    },
+    {
+      "variant": "small alignment perturbations",
+      "status": "NOT_APPLICABLE",
+      "reason": "authority path uses datum-correct CRS reprojection (no fitted alignment parameters to perturb); GeoAligner fitted path is oracle-only"
+    }
+  ],
+  "auto_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "manual_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+  "no_cherry_picking": "all predeclared variants reported; primary (hull, threshold 50 m, spacing 5 m) stated first regardless of outcome",
+  "elapsed_sec": 844.2
+}

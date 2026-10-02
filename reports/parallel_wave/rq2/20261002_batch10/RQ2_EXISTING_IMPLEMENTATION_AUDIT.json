@@ -1,0 +1,191 @@
+{
+  "candidate_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "lane": "batch10-rq2",
+  "thesis_contract": "research/thesis_rq_contract.yaml (RQ2 STRUCTURAL DOMAIN GAP, 10 valid_metrics)",
+  "responsibility_legend": [
+    "coordinate/frame normalization",
+    "scope/crop",
+    "road matching",
+    "lane width",
+    "curvature",
+    "road counts",
+    "road length",
+    "junctions",
+    "buildings",
+    "frechet",
+    "connectivity",
+    "semantics"
+  ],
+  "implementations": [
+    {
+      "path": "ultimate_pipeline/domain_gap/local_registration.py",
+      "lines": 463,
+      "role": "PRIMARY_THESIS_PATH",
+      "responsibilities": {
+        "coordinate/frame normalization": "OWNED: read_offset, read_georef_proj4, transform_manual_points_to_auto_local / transform_auto_points_to_manual_local via pyproj lat/lon round-trip, building_frame_shift_to_auto_local",
+        "scope/crop": "OWNED: hull (default, convex hull of manual planView geometry) and bbox footprints; crop_roads_to_polygon (centroid-in-polygon); crop_buildings_to_polygon via cornerGlobal centroids",
+        "road matching": "NONE: scope is centroid-in-footprint, not 1-1 correspondence",
+        "lane width": "DELEGATED to DomainGapAnalyzer.compare_xodr_to_xodr on cropped tree",
+        "curvature": "DELEGATED to DomainGapAnalyzer.compare_xodr_to_xodr on cropped tree (30-bin L1 histogram + W1 companion)",
+        "road counts": "DELEGATED to XODRMapStatsExtractor (cropped vs manual) + ratio in local_structural_summary",
+        "road length": "DELEGATED same as road counts",
+        "junctions": "DELEGATED same as road counts (kept_junction_ids)",
+        "buildings": "OWNED collection/crop (collect_building_objects, cornerGlobal centroid, frame shift); density gap DELEGATED to DomainGapAnalyzer",
+        "frechet": "NONE (provides the reproject-into-manual-frame primitive frechet_gap reuses)",
+        "connectivity": "NONE (only kept_fraction footprint statistic)",
+        "semantics": "NONE beyond traffic-light exclusion note"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/frechet_gap.py",
+      "lines": 361,
+      "role": "PRIMARY_THESIS_PATH (thesis future-work item #14, local methodology)",
+      "responsibilities": {
+        "coordinate/frame normalization": "REUSED from local_registration (no independent implementation)",
+        "scope/crop": "REUSED from local_registration (same hull/bbox polygon, same crop)",
+        "road matching": "REUSED elevation_gap._match_roads on coarse profiles in common manual frame (shared with elevation gap, not duplicated)",
+        "lane width": "NONE",
+        "curvature": "INDEPENDENT SAMPLING: dense_road_centerline_local + resample_polyline_at_spacing (arc-length resampling for curve comparison; distinct purpose from distribution curvature, not a duplicate metric)",
+        "road counts": "REPORTED only (total/cropped/manual counts)",
+        "road length": "NONE",
+        "junctions": "NONE",
+        "buildings": "NONE",
+        "frechet": "OWNED: discrete_frechet_distance (Eiter-Mannila DP), mean/median/p90 over matched pairs",
+        "connectivity": "NONE",
+        "semantics": "NONE"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/run_full_domain_gap.py",
+      "lines": 7554,
+      "role": "LEGACY_WHOLE_MAP_ORCHESTRATOR (scope artifact documented; NOT primary)",
+      "responsibilities": {
+        "coordinate/frame normalization": "INDEPENDENT: GeoAligner SE(2)/similarity estimation + apply_to_xodr (XODR-mutating alignment). Different algorithm from local_registration pyproj path -> DUPLICATE scientific implementation, classified INDEPENDENT_ORACLE, not authoritative",
+        "scope/crop": "TILED whole-map evaluation (tile_grid_meta, tile_matcher, tile_gap_evaluator); mixes full-auto vs curated-manual extents -> known scope artifact",
+        "road matching": "INDEPENDENT: tile_matcher.py road correspondence for tiled pipeline, separate from elevation_gap._match_roads -> DUPLICATE, oracle only",
+        "lane width": "via DomainGapAnalyzer on whole/aligned maps (same metric impl, different scope)",
+        "curvature": "VIA STANDALONE CurvatureGap.compute (KL divergence) on whole/aligned maps -> DUPLICATE metric algorithm vs gap_analyzer L1/W1; oracle only",
+        "road counts": "map_stats whole-map",
+        "road length": "map_stats whole-map",
+        "junctions": "whole-map + junction_complexity_gap / intersection_gap variants",
+        "buildings": "whole-map (uncropped -> scope artifact)",
+        "frechet": "NONE (predates frechet_gap module)",
+        "connectivity": "VIA STANDALONE ConnectivityGap.compute",
+        "semantics": "VIA STANDALONE SemanticGap.compute/compare"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/geo_alignment.py (GeoAligner)",
+      "lines": 834,
+      "role": "INDEPENDENT_ORACLE (legacy SE(2) alignment; also used by run_alignment_and_matching.py and visualization/city_map_diff.py)",
+      "responsibilities": {
+        "coordinate/frame normalization": "INDEPENDENT: bbox/SVD-rigid/small-rotation-search estimation, CRS-reprojection fallback inside apply_to_xodr. Coexists with local_registration pyproj path -> DUPLICATE",
+        "scope/crop": "NONE",
+        "road matching": "NONE (geometry-set alignment, not correspondence)",
+        "other": "NONE: pure alignment primitive"
+      },
+      "duplicate_of": "local_registration frame handling",
+      "classification": "INDEPENDENT_ORACLE"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/curvature_gap.py (CurvatureGap)",
+      "lines": 241,
+      "role": "INDEPENDENT_ORACLE for curvature distribution (KL divergence); also used by domain_gap_stats.py self-check and thesis figure generator",
+      "responsibilities": {
+        "curvature": "INDEPENDENT: paramPoly3 curvature sampling (_sample_parampoly3_curvatures, _extract_curvatures) + KL divergence. Overlaps map_stats_xodr._collect_curvatures + gap_analyzer L1/W1 -> DUPLICATE metric algorithm"
+      },
+      "duplicate_of": "map_stats_xodr curvature collection + gap_analyzer curvature_gap/curvature_wasserstein_gap",
+      "classification": "INDEPENDENT_ORACLE"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/map_stats_xodr.py (XODRMapStatsExtractor)",
+      "lines": 231,
+      "role": "SHARED_PRIMITIVE (single road/lane/curvature/count extraction used by authority)",
+      "responsibilities": {
+        "road matching": "NONE",
+        "lane width": "OWNED: _collect_lane_widths -> avg_lane_width",
+        "curvature": "OWNED: _collect_curvatures -> curvature_samples",
+        "road counts": "OWNED: num_roads",
+        "road length": "OWNED: total_road_length",
+        "junctions": "OWNED: num_junctions",
+        "buildings": "OWNED: num_buildings (object scan incl. synthetic holder road)",
+        "semantics": "OWNED: num_traffic_lights, road-type info"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/gap_analyzer.py (DomainGapAnalyzer)",
+      "lines": 329,
+      "role": "SHARED_PRIMITIVE (single distribution-gap math used by authority)",
+      "responsibilities": {
+        "lane width": "OWNED: _relative_gap scale 3.5 m",
+        "curvature": "OWNED: 30-bin L1 histogram gap + W1 companion (scale 0.2 1/m)",
+        "road length": "OWNED: capped ratio gap (supplemented by explicit ratio in authority)",
+        "buildings": "OWNED: density gap",
+        "semantics": "OWNED: road_type_coverage_gap, traffic-light density gap"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/connectivity_gap.py (ConnectivityGap)",
+      "lines": 460,
+      "role": "SUPPLEMENTARY (connectivity_gap thesis metric)",
+      "responsibilities": {
+        "connectivity": "OWNED: road-link metrics, lane counts, junction degree, lane-link completeness/validity"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/semantic_gap.py (SemanticGap)",
+      "lines": 100,
+      "role": "SUPPLEMENTARY (semantic_object_gap thesis metric)",
+      "responsibilities": {
+        "semantics": "OWNED: object counts by type, traffic lights, lane markings, road-type lengths"
+      }
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap/tile_matcher.py vs elevation_gap._match_roads",
+      "role": "DUPLICATE road-matching pair",
+      "responsibilities": {
+        "road matching": "tile_matcher: tiled-pipeline correspondence; elevation_gap._match_roads: profile matcher reused by frechet_gap. Two independent correspondence algorithms -> oracle only, not averaged"
+      },
+      "classification": "tile_matcher INDEPENDENT_ORACLE; _match_roads SHARED_PRIMITIVE (via frechet_gap)"
+    },
+    {
+      "path": "scripts/regen_local_registration.py",
+      "role": "CANONICAL_EVIDENCE_PRODUCER (registry-resolved, hull+bbox; writes reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json). NOT modified by this lane.",
+      "responsibilities": {
+        "scope/crop": "invokes compute_local_registration twice (hull, bbox)",
+        "other": "thin resolve-wrap-persist layer"
+      }
+    },
+    {
+      "path": "scripts/regen_frechet_distance.py",
+      "role": "CANONICAL_EVIDENCE_PRODUCER (writes .../frechet_distance.json). NOT modified by this lane.",
+      "responsibilities": {
+        "frechet": "invokes compute_frechet_gap (hull) + provenance wrap"
+      }
+    }
+  ],
+  "duplicate_scientific_implementations": [
+    {
+      "metric": "coordinate/frame normalization",
+      "producers": ["local_registration pyproj lat/lon round-trip", "GeoAligner SE(2)/similarity estimation"],
+      "authority": "local_registration (CRS-correct reprojection)",
+      "oracle": "GeoAligner",
+      "verdict": "EXPECTED_METHODOLOGY_DIFFERENCE (distinct algorithms, distinct eras); oracle comparison required"
+    },
+    {
+      "metric": "curvature distribution gap",
+      "producers": ["gap_analyzer L1 histogram + W1 companion", "CurvatureGap KL divergence"],
+      "authority": "gap_analyzer (used by primary local comparison)",
+      "oracle": "CurvatureGap",
+      "verdict": "EXPECTED_METHODOLOGY_DIFFERENCE (different divergences); values NOT interchangeable; oracle comparison required"
+    },
+    {
+      "metric": "road matching / correspondence",
+      "producers": ["elevation_gap._match_roads (frechet path)", "tile_matcher (tiled pipeline)"],
+      "authority": "_match_roads for RQ2 curve metrics",
+      "oracle": "tile_matcher",
+      "verdict": "EXPECTED_METHODOLOGY_DIFFERENCE; oracle comparison required"
+    }
+  ],
+  "deletion_policy": "No alternate implementation deleted. Alternates classified INDEPENDENT_ORACLE only."
+}

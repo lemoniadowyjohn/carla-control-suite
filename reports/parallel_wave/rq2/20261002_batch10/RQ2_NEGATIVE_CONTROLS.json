@@ -1,0 +1,79 @@
+{
+  "run_id": "20261002_batch10",
+  "suite": "tests/unit/test_rq2_metric_authority.py (14 passed)",
+  "controls": [
+    {
+      "control": "wrong auto SHA",
+      "method": "end-to-end: verify_shas with bogus expected_auto_sha256",
+      "expected": "ValueError 'wrong auto SHA'",
+      "result": "PASS"
+    },
+    {
+      "control": "wrong manual source",
+      "method": "end-to-end: verify_shas with bogus expected_manual_sha256",
+      "expected": "ValueError 'wrong manual source SHA'",
+      "result": "PASS"
+    },
+    {
+      "control": "LFS pointer",
+      "method": "end-to-end: auto file with git-lfs pointer content",
+      "expected": "ValueError MAP_LFS_UNRESOLVED",
+      "result": "PASS"
+    },
+    {
+      "control": "invalid XODR",
+      "method": "end-to-end: truncated XML + non-OpenDRIVE root tag",
+      "expected": "ValueError invalid XODR",
+      "result": "PASS"
+    },
+    {
+      "control": "frame mismatch",
+      "method": "end-to-end: auto map without geoReference",
+      "expected": "ValueError frame/geoReference",
+      "result": "PASS"
+    },
+    {
+      "control": "unsupported scope",
+      "method": "end-to-end: scope='mixed_scope'",
+      "expected": "ValueError unsupported scope",
+      "result": "PASS"
+    },
+    {
+      "control": "empty road network",
+      "method": "end-to-end: auto with zero roads; manual with zero roads (whole_map)",
+      "expected": "ValueError empty road network",
+      "result": "PASS"
+    },
+    {
+      "control": "missing required metric",
+      "method": "unit: _check_required_metrics on incomplete dict",
+      "expected": "ValueError missing required metric(s)",
+      "result": "PASS"
+    },
+    {
+      "control": "NaN/inf metric",
+      "method": "unit: _require_finite(nan), _require_finite(inf)",
+      "expected": "ValueError NaN/inf",
+      "result": "PASS"
+    },
+    {
+      "control": "duplicate/malformed output",
+      "method": "unit+e2e: to_dict key uniqueness + _check_required_metrics rejection; determinism (two runs identical)",
+      "expected": "unique keys, all 10 thesis metrics, bit-identical reruns",
+      "result": "PASS"
+    },
+    {
+      "control": "unknown config key",
+      "method": "end-to-end: config with bogus key",
+      "expected": "ValueError unknown config key(s)",
+      "result": "PASS"
+    },
+    {
+      "control": "whole_map frechet guard",
+      "method": "end-to-end: whole_map scope returns frechet NOT_RUN (methodology-invalid, not silent)",
+      "expected": "status NOT_RUN with reason",
+      "result": "PASS"
+    }
+  ],
+  "overall": "ALL_CONTROLS_PASS"
+}

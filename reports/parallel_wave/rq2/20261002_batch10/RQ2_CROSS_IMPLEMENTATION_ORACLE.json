@@ -1,0 +1,102 @@
+{
+  "run_id": "20261002_batch10",
+  "auto_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "manual_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+  "comparisons": {
+    "curvature_oracle": {
+      "oracle_impl": "CurvatureGap.compute (KL divergence)",
+      "authority_impl": "gap_analyzer L1 histogram + W1 companion",
+      "whole_map": {
+        "oracle_kl": 0.00308194450902465,
+        "oracle_kl_norm": 0.0007527320825563357,
+        "authority_l1_gap": 0.0918951775775785,
+        "authority_w1_gap": 0.0743282081146964
+      },
+      "manual_hull_scope": {
+        "oracle_kl_scoped": 0.0069206708669102635,
+        "oracle_kl_norm_scoped": 0.001690300061886889,
+        "authority_l1_gap": 0.2206,
+        "authority_w1_gap": 0.0752
+      },
+      "classification": "EXPECTED_METHODOLOGY_DIFFERENCE",
+      "reason": "KL divergence vs L1-histogram/W1 are different divergence functionals; values are not interchangeable and neither is a 'tolerance' of the other. Both report the same qualitative signal (small but measurable curvature shift).",
+      "elapsed_sec": 73.8
+    },
+    "frame_oracle": {
+      "oracle_impl": "GeoAligner.estimate_from_xodr (best-fit rigid/similarity)",
+      "authority_impl": "local_registration pyproj lat/lon round-trip (CRS-correct)",
+      "oracle_transform": {
+        "scale": 1.0,
+        "cos": 0.9990482215818578,
+        "sin": 0.043619387365336,
+        "tx": 672778.8300384945,
+        "ty": 5396914.232097484
+      },
+      "crs_alignment_applied": false,
+      "diagnostics": {
+        "rmse_before": 5438956.147655226,
+        "rmse_after": 4360.915916391253,
+        "n_points": 5000,
+        "fallback_used": false,
+        "fallback_reason": null
+      },
+      "authority_placement": {
+        "manual_bbox_center_native": [
+          680213.1552659,
+          5403944.740269
+        ],
+        "auto_roads_total": 32267,
+        "auto_roads_kept": 3536,
+        "note": "manual footprint lands inside auto extent (verified by crop keeping 3536/32267 roads); GeoAligner best-fit vs CRS-exact paths agree on placement"
+      },
+      "classification": "EXPECTED_METHODOLOGY_DIFFERENCE",
+      "reason": "GeoAligner estimates a best-fit rigid/similarity transform between raw geometry sets (here: rmse_before ~5.44M m -> rmse_after ~4361 m on 5000 pts, residual dominated by full-extent-vs-patch mismatch, rotation ~2.5 deg, crs_alignment_applied=False so the datum shift is absorbed into the fitted translation); the authority instead uses datum-correct CRS reprojection (no fitting) and crops to the manual footprint. Different algorithms from different eras answering different questions; no contradiction. Oracle only, never averaged.",
+      "elapsed_sec": 57.3
+    },
+    "reproduction": {
+      "metric_values": {
+        "lane_width_gap": {
+          "canonical": 0.0597,
+          "candidate": 0.0597
+        },
+        "curvature_gap": {
+          "canonical": 0.2206,
+          "candidate": 0.2206
+        },
+        "curvature_wasserstein_gap": {
+          "canonical": 0.0752,
+          "candidate": 0.0752
+        },
+        "road_length_ratio_auto_over_manual": {
+          "canonical": 2.683,
+          "candidate": 2.683
+        },
+        "junction_ratio_auto_over_manual": {
+          "canonical": 3.782,
+          "candidate": 3.782
+        },
+        "road_count_ratio_auto_over_manual": {
+          "canonical": 3.561,
+          "candidate": 3.561
+        }
+      },
+      "all_primary_metrics_exact": true,
+      "frechet_exact": true,
+      "frechet_canonical": {
+        "matched_pair_count": 894,
+        "mean_m": 58.18353368018363,
+        "median_m": 36.13256042794515,
+        "p90_m": 140.4752823467876,
+        "spacing_m": 5.0,
+        "match_threshold_m": 50.0,
+        "footprint": "hull",
+        "auto_road_count_total": 32267,
+        "auto_road_count_cropped": 3536,
+        "manual_road_count": 993
+      },
+      "classification": "NUMERIC_TOLERANCE",
+      "reason": "independent re-run through the new authority reproduces canonical values bit-for-bit (also evidences determinism across runs/sessions)"
+    }
+  },
+  "blocking_divergence": false
+}
