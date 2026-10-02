@@ -653,6 +653,11 @@ def protocol_identity(
 
     A governed model manifest must be bound to a protocol *file digest*, not to
     a version string: "v2" proves nothing if the file changes afterwards.
+
+    The digest is taken over line-ending-normalised text. A raw byte digest
+    would differ between a Windows checkout (CRLF) and a Linux checkout (LF) for
+    a file whose *content* is identical, which would make an unchanged protocol
+    look amended to every cross-platform reviewer.
     """
     path = Path(protocol_path) if protocol_path else None
     if path is None:
@@ -660,13 +665,17 @@ def protocol_identity(
         path = root / PROTOCOL_V2_RELPATH
     if not path.is_file():
         raise FileNotFoundError(f"frozen RQ5 protocol not found: {path}")
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw = path.read_bytes()
+    payload = json.loads(raw.decode("utf-8"))
+    normalized = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
     return {
         "path": str(path),
         "relpath": PROTOCOL_V2_RELPATH,
         "schema": payload.get("schema"),
         "status": payload.get("status"),
-        "sha256": sha256_file(path),
+        "sha256": hashlib.sha256(normalized).hexdigest(),
+        "sha256_raw_bytes": hashlib.sha256(raw).hexdigest(),
+        "digest_normalizes_line_endings": True,
         "checkpoint_policy": dict(PROTOCOL_V2_POLICY),
     }
 

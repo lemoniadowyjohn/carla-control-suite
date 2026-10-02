@@ -218,10 +218,25 @@ def test_v2_routes_absent_rq3_data_to_a_blocked_status(v2):
 
 def test_protocol_identity_binds_the_file_digest_not_the_version_string():
     identity = protocol_identity(V2_PATH)
-    assert identity["sha256"] == sha256_file(V2_PATH)
     assert identity["schema"] == "rq5_protocol_freeze/v2"
     assert identity["status"] == "FROZEN"
     assert identity["relpath"] == PROTOCOL_V2_RELPATH
+    assert identity["sha256_raw_bytes"] == sha256_file(V2_PATH)
+
+
+def test_protocol_digest_is_independent_of_line_endings(tmp_path):
+    """A CRLF checkout must not look like an amended protocol."""
+    payload = json.loads(V2_PATH.read_text(encoding="utf-8"))
+    lf = tmp_path / "lf.json"
+    lf.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8", newline="\n")
+    crlf = tmp_path / "crlf.json"
+    crlf.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8", newline="\r\n")
+
+    lf_identity = protocol_identity(lf)
+    crlf_identity = protocol_identity(crlf)
+    assert lf_identity["sha256"] == crlf_identity["sha256"]
+    assert lf_identity["sha256_raw_bytes"] != crlf_identity["sha256_raw_bytes"]
+    assert lf_identity["digest_normalizes_line_endings"] is True
 
 
 def test_manifest_checkpoint_policy_matches_the_protocol_decision():
