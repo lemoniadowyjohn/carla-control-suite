@@ -1,0 +1,35 @@
+{
+  "run_id": "20261002_batch10",
+  "note": "PROPOSAL ONLY. This lane does not rewrite canonical evidence, matrices, or thesis progress docs. The integration batch decides promotion.",
+  "proposals": [
+    {
+      "new_artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json (manual_hull primary)",
+      "old_artifact_it_supersedes": "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/local_registration.json (hull block) + frechet_distance.json",
+      "reason": "same values bit-for-bit, produced through the single RQ2 production authority with unified provenance instead of two independent regen scripts",
+      "input_sha_difference": "none (auto 370abbbb..., manual 5eaece23..., identical)",
+      "methodology_difference": "none for primary metrics; authority delegates to the same local_registration/frechet_gap implementations",
+      "recommended_supersedes_edge": "candidate RQ2_RESULTS.json -> canonical C14 hull/frechet evidence, ONLY after integration-batch review"
+    },
+    {
+      "new_artifact": "ultimate_pipeline/domain_gap/rq2_metric_authority.py",
+      "old_artifact_it_supersedes": "n/a (new single production API; GeoAligner/CurvatureGap/tile_matcher remain as INDEPENDENT_ORACLE)",
+      "reason": "one authoritative RQ2 entry point; input validation; explicit scopes; finite-metric guards",
+      "input_sha_difference": "n/a",
+      "methodology_difference": "consolidation, not a metric change",
+      "recommended_supersedes_edge": "none (additive)"
+    },
+    {
+      "new_artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_SENSITIVITY.json + RQ2_UNCERTAINTY.json",
+      "old_artifact_it_supersedes": "none (new robustness context; no canonical counterpart exists)",
+      "reason": "predeclared sensitivity variants + spatial-block dispersion; exploratory, no thresholds",
+      "input_sha_difference": "none",
+      "methodology_difference": "new supplementary analyses",
+      "recommended_supersedes_edge": "none (additive context)"
+    }
+  ],
+  "not_proposed": [
+    "No change to RQ_CLOSURE_MATRIX.json / PRODUCTION_READINESS_MATRIX.json (other lanes own them)",
+    "No change to docs/research/THESIS_TO_CURRENT_PROGRESS.md",
+    "No deletion of GeoAligner, CurvatureGap, tile_matcher, or run_full_domain_gap.py"
+  ]
+}
