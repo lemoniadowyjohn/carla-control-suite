@@ -1,0 +1,43 @@
+{
+  "checkpoint_policy": {
+    "checkpoint_policy": "final_epoch_only",
+    "early_stopping": false,
+    "selection_consults_manual": false,
+    "validation_selects_epoch": false
+  },
+  "claim_scope": "TEST_FIXTURE_ONLY",
+  "class_weighting": {
+    "scheme": "median_frequency",
+    "source": "train_split_manifest:generated_train"
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 3.3377001881599426,
+      "validation_batches": 1,
+      "validation_loss": 3.341017723083496,
+      "validation_miou": 0.02495873081080169
+    },
+    {
+      "epoch": 2,
+      "train_loss": 3.221232533454895,
+      "validation_batches": 1,
+      "validation_loss": 3.2718849182128906,
+      "validation_miou": 0.018974292070598288
+    },
+    {
+      "epoch": 3,
+      "train_loss": 3.1254847645759583,
+      "validation_batches": 1,
+      "validation_loss": 3.1528120040893555,
+      "validation_miou": 0.02508067050254745
+    }
+  ],
+  "epochs_completed": 3,
+  "epochs_requested": 3,
+  "research_strict": true,
+  "schema": "rq5_training_history_v1",
+  "seed": 7,
+  "validation_dataset_role": "generated_validation",
+  "validation_miou_recorded": true
+}

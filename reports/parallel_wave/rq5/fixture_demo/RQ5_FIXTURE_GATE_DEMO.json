@@ -1,0 +1,42 @@
+{
+  "artifacts_sha256": {
+    "checkpoint": "dff08ef825b4bffdcbff3580b421a0616473f8661cdde3c6a85dbe483bb63dbc",
+    "dataset_quality_generated": "c996af3ae4115ae3e44d3625b99d5a0021f1150aca7d477454211a62fd69a6f5",
+    "dataset_quality_manual": "6897f508becc2049453a3593c2c31e8c8319400afc708b45e73fcb79415ee99f",
+    "leakage_audit": "c30d6f7a494986d1e2accf041cde5c38a70b9e26765ec409df2e31d250665407",
+    "model_manifest": "0f1ec1bb3c5ed453e3f5c0e06097154b23061c612ffd53421d173d292257e45b",
+    "split_manifest::generated_test": "dd2fb4a558328af6170529c7de406e6e04ac4b67b3bc877637fea18dc27dae61",
+    "split_manifest::generated_train": "2c7a54347f9e8685ee7be1fe29082885a94b21f9766cf4e810b45c54d91e2919",
+    "split_manifest::generated_validation": "efd78d5c25f98781359f8e793d940accdcb2bddd512dc49239490b6aa2958c06",
+    "split_manifest::manual_test": "f3fe9f614c4989034b0669efe8177ae6c74ad46284d642c40970731910669b1d",
+    "training_convergence": "6e484cde2914ac9728747e7cc73f275792670fe104f0064aa49f5d1a759912af",
+    "training_history": "72d45551f5bca9e30508f958d088f91527effefc58a63e2b3bae1f8fc8f57b92"
+  },
+  "checkpoint_policy": "final_epoch_only",
+  "claim_boundary": "Synthetic fixture run with claim_scope=TEST_FIXTURE_ONLY. It demonstrates that the RQ5 offline chain executes and that the gates agree. It is not RQ5 evidence, it trains no governed model, and no metric produced here may be quoted as an RQ5 result. Final RQ5 training remains blocked on a validated RQ3 paired dataset.",
+  "claim_scope": "TEST_FIXTURE_ONLY",
+  "created_utc": "2026-10-02T20:24:27.056338+00:00",
+  "dataset_quality": {
+    "generated": "PASS",
+    "manual": "PASS"
+  },
+  "final_rq5_training_executed": false,
+  "fixture_seed": 7,
+  "generated_frames": 24,
+  "group_kind": "route_segment",
+  "is_rq5_evidence": false,
+  "leakage_free": true,
+  "manual_frames": 9,
+  "protocol_sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+  "report_sha256": "d30316ae3661529da582574bd66b62125a2be892a108a68a75576e9b3f942d2c",
+  "role_frame_counts": {
+    "generated_test": 4,
+    "generated_train": 16,
+    "generated_validation": 4,
+    "manual_test": 9
+  },
+  "schema": "rq5_fixture_gate_demo_v1",
+  "scientific_performance": "NOT_ASSESSED_OFFLINE",
+  "technical_convergence": "PASS",
+  "validation_selects_epoch": false
+}

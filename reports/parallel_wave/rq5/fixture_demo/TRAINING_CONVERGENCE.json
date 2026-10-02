@@ -1,0 +1,164 @@
+{
+  "claim_scope": "TEST_FIXTURE_ONLY",
+  "created_utc": "2026-10-02T20:24:26.207285+00:00",
+  "report_sha256": "dac67fcc51be0e2e4a5bd079a652dd27812f505d5494344255a0e3eaa6a042ee",
+  "schema": "rq5_training_convergence_v1",
+  "scientific_performance": {
+    "assessed": false,
+    "claim_boundary": "This gate never judges mIoU, degradation or any scientific target. Technical convergence sanity and scientific target performance are independent verdicts; a PASS here does not license a performance claim.",
+    "observations": {
+      "epochs": [
+        {
+          "epoch": 1,
+          "train_loss": 3.3377001881599426,
+          "validation_batches": 1,
+          "validation_loss": 3.341017723083496,
+          "validation_miou": 0.02495873081080169
+        },
+        {
+          "epoch": 2,
+          "train_loss": 3.221232533454895,
+          "validation_batches": 1,
+          "validation_loss": 3.2718849182128906,
+          "validation_miou": 0.018974292070598288
+        },
+        {
+          "epoch": 3,
+          "train_loss": 3.1254847645759583,
+          "validation_batches": 1,
+          "validation_loss": 3.1528120040893555,
+          "validation_miou": 0.02508067050254745
+        }
+      ],
+      "note": "Technical convergence sanity only. Whether 3 frozen epochs are scientifically adequate is not decided here; if they are not, the correct outcome is RQ5_PROTOCOL_UNDERPOWERED and a v3 preregistered before any manual-target performance is viewed.",
+      "prediction_probe_classes": [
+        1,
+        2,
+        8,
+        9
+      ]
+    },
+    "status": "NOT_ASSESSED_OFFLINE"
+  },
+  "technical_convergence": {
+    "checks": [
+      {
+        "code": "manifest_present",
+        "data": null,
+        "detail": "model_manifest.json loaded from C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\reports\\parallel_wave\\rq5\\fixture_demo\\run\\seed_7\\model_manifest.json",
+        "status": "PASS"
+      },
+      {
+        "code": "checkpoint_exists",
+        "data": null,
+        "detail": "governed checkpoint found: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\reports\\parallel_wave\\rq5\\fixture_demo\\run\\seed_7\\seg_fcn_epoch003.pt",
+        "status": "PASS"
+      },
+      {
+        "code": "checkpoint_policy_final_epoch",
+        "data": null,
+        "detail": "checkpoint policy is {'checkpoint_policy': 'final_epoch_only', 'early_stopping': False, 'protocol': 'rq5_protocol_freeze/v2', 'selection_consults_manual': False, 'validation_selects_epoch': False}; protocol v2 requires final_epoch_only with no validation-based selection and no early stopping",
+        "status": "PASS"
+      },
+      {
+        "code": "checkpoint_manifest_binding",
+        "data": {
+          "checkpoint_sha256": "dff08ef825b4bffdcbff3580b421a0616473f8661cdde3c6a85dbe483bb63dbc",
+          "protocol_sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440"
+        },
+        "detail": "checkpoint sha256 and provenance match the manifest",
+        "status": "PASS"
+      },
+      {
+        "code": "dataset_identity_match",
+        "data": {
+          "observed": {
+            "generated_test": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+            "generated_train": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+            "generated_validation": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+            "manual_test": "7f8e603647cd1ea6c42c3fbd7c5cd82275140f12043d663c33162c42fa3bed04"
+          }
+        },
+        "detail": "manifest dataset identities match the requested splits",
+        "status": "PASS"
+      },
+      {
+        "code": "seed_contract",
+        "data": null,
+        "detail": "manifest seed 7 vs expected 7",
+        "status": "PASS"
+      },
+      {
+        "code": "determinism_recorded",
+        "data": {
+          "blockers": [],
+          "status": "DETERMINISM_ENFORCED"
+        },
+        "detail": "determinism contract recorded with status 'DETERMINISM_ENFORCED'; bit-exactness is never claimed",
+        "status": "PASS"
+      },
+      {
+        "code": "training_history_present",
+        "data": null,
+        "detail": "TRAINING_HISTORY.json loaded from C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\reports\\parallel_wave\\rq5\\fixture_demo\\run\\seed_7\\TRAINING_HISTORY.json",
+        "status": "PASS"
+      },
+      {
+        "code": "epochs_completed",
+        "data": {
+          "expected": 3,
+          "observed": 3
+        },
+        "detail": "3 epoch record(s) present, 3 expected",
+        "status": "PASS"
+      },
+      {
+        "code": "train_loss_finite",
+        "data": {
+          "values": [
+            3.3377001881599426,
+            3.221232533454895,
+            3.1254847645759583
+          ]
+        },
+        "detail": "training losses finite: [3.3377001881599426, 3.221232533454895, 3.1254847645759583]",
+        "status": "PASS"
+      },
+      {
+        "code": "validation_loss_finite",
+        "data": {
+          "values": [
+            3.341017723083496,
+            3.2718849182128906,
+            3.1528120040893555
+          ]
+        },
+        "detail": "validation losses finite: [3.341017723083496, 3.2718849182128906, 3.1528120040893555]",
+        "status": "PASS"
+      },
+      {
+        "code": "model_loads_completely",
+        "data": {
+          "parameter_count": 326
+        },
+        "detail": "strict load succeeded with 326 parameter tensors",
+        "status": "PASS"
+      },
+      {
+        "code": "prediction_not_single_class",
+        "data": {
+          "distinct_classes": [
+            1,
+            2,
+            8,
+            9
+          ]
+        },
+        "detail": "predictions cover 4 distinct class id(s)",
+        "status": "PASS"
+      }
+    ],
+    "failures": [],
+    "status": "PASS"
+  }
+}

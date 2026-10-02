@@ -1,0 +1,237 @@
+{
+  "augmentation_policy": "none",
+  "camera": "front_left_camera",
+  "checkpoint": {
+    "filename": "seg_fcn_epoch003.pt",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\reports\\parallel_wave\\rq5\\fixture_demo\\run\\seed_7\\seg_fcn_epoch003.pt",
+    "policy": {
+      "checkpoint_policy": "final_epoch_only",
+      "early_stopping": false,
+      "protocol": "rq5_protocol_freeze/v2",
+      "selection_consults_manual": false,
+      "validation_selects_epoch": false
+    },
+    "sha256": "dff08ef825b4bffdcbff3580b421a0616473f8661cdde3c6a85dbe483bb63dbc"
+  },
+  "class_weighting": {
+    "class_counts": [
+      1355,
+      1315,
+      1397,
+      1340,
+      1316,
+      1346,
+      1385,
+      1333,
+      1319,
+      1346,
+      1278,
+      1336,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "computed_from": "generated training split only",
+    "enabled": true,
+    "forbidden_sources": [
+      "generated_validation",
+      "generated_test",
+      "manual_test",
+      "real_target"
+    ],
+    "scheme": "median_frequency",
+    "source": "train_split_manifest:generated_train"
+  },
+  "code": {
+    "available": true,
+    "branch": "opencode/batch12-rq5-readiness-20261002",
+    "commit": "d13a5f9322446ff0bd4568257ee4d5904bf79e83",
+    "dirty": true,
+    "reason": null,
+    "repo_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5"
+  },
+  "created_utc": "2026-10-02T20:24:21.522132+00:00",
+  "dataset": {
+    "test_identities": {
+      "generated_test": {
+        "camera": "front_left_camera",
+        "complete": true,
+        "frame_count": 4,
+        "group_kind": "route_segment",
+        "identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+        "role": "generated_test",
+        "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+        "schema": "rq5_split_entry/v1"
+      },
+      "manual_test": {
+        "camera": "front_left_camera",
+        "complete": true,
+        "frame_count": 9,
+        "group_kind": "route_segment",
+        "identity_sha256": "7f8e603647cd1ea6c42c3fbd7c5cd82275140f12043d663c33162c42fa3bed04",
+        "role": "manual_test",
+        "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual",
+        "schema": "rq5_split_entry/v1"
+      }
+    },
+    "train_identity": {
+      "camera": "front_left_camera",
+      "complete": true,
+      "frame_count": 16,
+      "group_kind": "route_segment",
+      "identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+      "role": "generated_train",
+      "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+      "schema": "rq5_split_entry/v1"
+    },
+    "train_identity_complete": true,
+    "train_identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+    "train_root_count": 1,
+    "train_roots": [
+      "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated"
+    ],
+    "train_strategy": "single_root",
+    "validation_identity": {
+      "camera": "front_left_camera",
+      "complete": true,
+      "frame_count": 4,
+      "group_kind": "route_segment",
+      "identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+      "role": "generated_validation",
+      "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+      "schema": "rq5_split_entry/v1"
+    },
+    "validation_identity_complete": true,
+    "validation_identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a"
+  },
+  "determinism": {
+    "bit_exactness_claimed": false,
+    "environment": {
+      "cuda_device_count": 0,
+      "pythonhashseed": "7"
+    },
+    "schema": "rq5_determinism_contract_v1",
+    "seed": 7,
+    "seed_applied": {
+      "numpy": "seeded",
+      "pythonhashseed": "7",
+      "random": "seeded",
+      "schema": "rq5_seed_contract_v1",
+      "seed": 7,
+      "torch": {
+        "cuda_devices": 0,
+        "seeded": true
+      }
+    },
+    "status": "DETERMINISM_ENFORCED",
+    "strict_determinism_blockers": [],
+    "strict_determinism_supported": true,
+    "torch_cudnn_benchmark": false,
+    "torch_cudnn_deterministic": true,
+    "torch_use_deterministic_algorithms": true
+  },
+  "extra": {
+    "ddp": false,
+    "multi_root": false,
+    "research_strict": {
+      "auto_dataset_discovery": false,
+      "implicit_camera": false,
+      "implicit_seed": false,
+      "implicit_split_creation": false,
+      "latest_checkpoint_fallback": false,
+      "limit_truncation": false,
+      "missing_dataset_fallback": false,
+      "mtime_selection": false,
+      "pinned": {
+        "augmentations": "none",
+        "batch_size": 4,
+        "camera": "front_left_camera",
+        "epochs": 3,
+        "learning_rate": 0.0001,
+        "optimizer": "Adam",
+        "seed": 7,
+        "split_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\reports\\parallel_wave\\rq5\\fixture_demo\\splits"
+      },
+      "research_strict": true
+    },
+    "seed_applied": {
+      "numpy": "seeded",
+      "pythonhashseed": "7",
+      "random": "seeded",
+      "schema": "rq5_seed_contract_v1",
+      "seed": 7,
+      "torch": {
+        "cuda_devices": 0,
+        "seeded": true
+      }
+    },
+    "split_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\reports\\parallel_wave\\rq5\\fixture_demo\\splits",
+    "train_frame_count": 16,
+    "train_frame_counts_per_root": null,
+    "training_history_file": "TRAINING_HISTORY.json",
+    "world_size": 1
+  },
+  "model": {
+    "architecture": "torchvision.models.segmentation.fcn_resnet50",
+    "architecture_version": "fcn_resnet50_torchvision_default",
+    "class_mapping": {
+      "ignore_index": 255,
+      "label_space": "carla_semantic_tagn",
+      "num_classes": 29
+    },
+    "num_classes": 29
+  },
+  "optimization": {
+    "batch_size": 4,
+    "epochs": 3,
+    "learning_rate": 0.0001,
+    "optimizer": "Adam"
+  },
+  "preprocessing": "PIL_RGB_to_float_tensor_div255",
+  "protocol": {
+    "checkpoint_policy": {
+      "checkpoint_policy": "final_epoch_only",
+      "early_stopping": false,
+      "protocol": "rq5_protocol_freeze/v2",
+      "selection_consults_manual": false,
+      "validation_selects_epoch": false
+    },
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\configs\\rq5_protocol_freeze_v2.json",
+    "relpath": "configs/rq5_protocol_freeze_v2.json",
+    "schema": "rq5_protocol_freeze/v2",
+    "sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+    "status": "FROZEN"
+  },
+  "schema": "rq5_model_manifest_v1",
+  "seed": {
+    "applied_to": [
+      "random",
+      "numpy",
+      "torch",
+      "torch.cuda",
+      "PYTHONHASHSEED"
+    ],
+    "dataloader_generator": "seeded_per_run",
+    "schema": "rq5_seed_contract_v1",
+    "seed": 7
+  },
+  "training_history": {
+    "epochs": 3,
+    "training_history_sha256": "5e7ff29d6f2a7cc02f52cc0e33bef15c7a6a89c57a2960ce584626a22f0caed8",
+    "validation_role": "generated_validation"
+  }
+}
