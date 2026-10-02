@@ -1,0 +1,28 @@
+{
+  "candidate_git_sha": "2a0f538bbc782528c008dc7d4bbe3e370de579f2",
+  "carla_required": false,
+  "commands": [
+    {
+      "command": "python tools/rq4_reproducibility_pack.py",
+      "result": "exit 0; 9 artifacts emitted"
+    },
+    {
+      "command": "python -m pytest tests/unit/test_rq4_reproducibility_pack.py -q",
+      "result": "40 passed"
+    },
+    {
+      "command": "python -m pytest tests/unit/test_rq4_reproducibility_pack.py tests/unit/test_rq4_gnn_provenance.py tests/unit/test_domain_gap_gnn.py tests/unit/test_run_gnn_pipeline_seed.py ultimate_pipeline/tests/unit/test_gnn_checkpoint_epoch_selection.py ultimate_pipeline/tests/unit/test_map_tile_dataset.py ultimate_pipeline/tests/unit/test_latent_gap_runner.py -q",
+      "result": "118 passed, 1 skipped, 0 failed"
+    }
+  ],
+  "new_regressions": [],
+  "note": "No live CARLA, no 5x50-epoch retrain. No PASS is claimed for either.",
+  "regression_baseline": "Not re-run at the base SHA; this lane is purely additive (one new module, one new tool, one new test file) and touches no pre-existing test or source path.",
+  "schema": "RQ4_BATCH11_TEST_RESULTS/v1",
+  "stale_claim_falsified": {
+    "artifact": "reports/production_readiness/20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT/TEST_RESULTS.json",
+    "claim": "test_rq4_gnn_provenance.py fails to COLLECT (IndentationError at line 551)",
+    "observed": "the file collects and all of its tests pass in this run",
+    "status": "FALSIFIED"
+  }
+}
