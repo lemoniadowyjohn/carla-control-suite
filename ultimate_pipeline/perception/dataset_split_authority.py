@@ -902,8 +902,15 @@ def audit_leakage(
     adjacency_checks: List[Dict[str, Any]] = []
     by_capture: Dict[str, List[Tuple[int, str, str]]] = {}
     for role in present_roles:
-        for entry in manifests[role].get("entries", []):
-            capture = str(entry.get("capture_id") or entry.get("group_key"))
+        manifest = manifests[role]
+        for entry in manifest.get("entries", []):
+            # Adjacency is only meaningful *within one capture*. The dataset root
+            # is part of the key so two unrelated captures that happen to share a
+            # capture_id (a generated block and a manual block, say) are not
+            # mistaken for temporally adjacent frames.
+            capture = "|".join(
+                [str(manifest.get("dataset_root") or ""), str(entry.get("capture_id") or entry.get("group_key"))]
+            )
             index = entry.get("frame_index")
             if index is None:
                 continue
