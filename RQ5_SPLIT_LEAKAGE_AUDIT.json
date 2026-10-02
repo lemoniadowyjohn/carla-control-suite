@@ -1,0 +1,50 @@
+{
+  "content_copy_leakage": "zero",
+  "disjoint": true,
+  "fixture_manifest": "fixtures_rq5\\split_manifest.fixture.json",
+  "near_temporal_group_leakage": "zero (grouped units seg_A/seg_B/block_C/region_D disjoint)",
+  "note": "FIXTURE audit proving gate logic; not scientific evidence",
+  "pairs": {
+    "generated_test\u2229manual_test": {
+      "content_hashes": [],
+      "empty": true,
+      "frames": [],
+      "units": []
+    },
+    "train\u2229generated_test": {
+      "content_hashes": [],
+      "empty": true,
+      "frames": [],
+      "units": []
+    },
+    "train\u2229manual_test": {
+      "content_hashes": [],
+      "empty": true,
+      "frames": [],
+      "units": []
+    },
+    "train\u2229val": {
+      "content_hashes": [],
+      "empty": true,
+      "frames": [],
+      "units": []
+    },
+    "val\u2229generated_test": {
+      "content_hashes": [],
+      "empty": true,
+      "frames": [],
+      "units": []
+    },
+    "val\u2229manual_test": {
+      "content_hashes": [],
+      "empty": true,
+      "frames": [],
+      "units": []
+    }
+  },
+  "schema": "rq5_split_leakage_audit/v1",
+  "train_generated_test_empty": true,
+  "train_manual_empty": true,
+  "train_val_empty": true,
+  "val_manual_empty": true
+}

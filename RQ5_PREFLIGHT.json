@@ -1,0 +1,22 @@
+{
+  "blocking": {
+    "real_training": "NOT_RUN",
+    "rq3_paired_data": "MISSING"
+  },
+  "gates": {
+    "convergence_gate": true,
+    "quality_gate": true,
+    "research_strict": true,
+    "split_authority": true,
+    "train_only_weights": true,
+    "validation_loop": true
+  },
+  "note": "Code paths proven on fixtures; scientific training blocked until RQ3 paired capture exists. Fixtures are never evidence.",
+  "protocol": {
+    "checkpoint_rule": "fixed 3 epochs; final epoch governs; validation diagnostics-only; manual never for selection",
+    "v1_preserved": true,
+    "v2": "configs/rq5_protocol_freeze_v2.json"
+  },
+  "schema": "rq5_preflight/v1",
+  "verdict": "RQ5_OFFLINE_READY_DATASET_BLOCKED"
+}

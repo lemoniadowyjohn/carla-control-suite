@@ -1,0 +1,56 @@
+{
+  "controls": [
+    {
+      "detail": "rejected: research-strict rejects 'latest' dataset selection",
+      "name": "latest_dataset",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict rejects 'fallback' dataset selection",
+      "name": "fallback_dataset",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict rejects 'mtime' dataset selection",
+      "name": "mtime_selection",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict requires dataset_identity.complete == true, got False (partial prefix hashing is diagnostic only)",
+      "name": "partial_prefix_hash_only",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict rejects implicit camera",
+      "name": "implicit_camera",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict rejects implicit seed",
+      "name": "implicit_seed",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict rejects implicit split",
+      "name": "implicit_split",
+      "passed": true
+    },
+    {
+      "detail": "rejected: split 'train' must declare group_unit in ('route_segment', 'capture_block', 'scenario', 'spatial_region'), got 'random_frames' (random adjacent-frame splits forbidden)",
+      "name": "random_adjacent_frames",
+      "passed": true
+    },
+    {
+      "detail": "leaked manifest correctly reports non-empty train\u2229manual: ['mt_0000.png']",
+      "name": "manual_target_leak",
+      "passed": true
+    },
+    {
+      "detail": "rejected: research-strict rejects best-epoch checkpoints: [WindowsPath('fixtures_rq5/tiny_run/checkpoints/model_best.pt')]",
+      "name": "latest_checkpoint",
+      "passed": true
+    }
+  ],
+  "schema": "rq5_negative_controls/v1",
+  "verdict": "PASS"
+}
