@@ -1,0 +1,257 @@
+{
+  "claim_boundary": "These controls exercise code paths on synthetic fixtures. They prove the authority rejects the listed defects; they prove nothing about RQ5 accuracy, generalization or dataset quality, and are not RQ5 evidence.",
+  "claim_scope": "TEST_FIXTURE_ONLY",
+  "controls_executed": [
+    "missing_explicit_dataset_research_strict",
+    "fallback_to_latest_dataset",
+    "partial_dataset_identity",
+    "copied_duplicate_across_train_test",
+    "adjacent_group_leakage",
+    "manual_frame_in_train",
+    "manual_frame_in_validation",
+    "manual_class_statistics_in_class_weights",
+    "missing_seed",
+    "wrong_checkpoint_sha256",
+    "wrong_dataset_sha256",
+    "nan_training_loss",
+    "single_class_collapsed_model",
+    "checkpoint_missing_parameters"
+  ],
+  "controls_expected": [
+    "missing_explicit_dataset_research_strict",
+    "fallback_to_latest_dataset",
+    "partial_dataset_identity",
+    "copied_duplicate_across_train_test",
+    "adjacent_group_leakage",
+    "manual_frame_in_train",
+    "manual_frame_in_validation",
+    "manual_class_statistics_in_class_weights",
+    "missing_seed",
+    "wrong_checkpoint_sha256",
+    "wrong_dataset_sha256",
+    "nan_training_loss",
+    "single_class_collapsed_model",
+    "checkpoint_missing_parameters"
+  ],
+  "controls_missing": [],
+  "created_utc": "2026-10-02T20:22:04.831142+00:00",
+  "fixture_note": "fixtures were written to a temporary directory and discarded; rerun with --workdir to keep them for inspection",
+  "fixtures_persisted": false,
+  "is_rq5_evidence": false,
+  "missed": 0,
+  "protocol_sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+  "rejected": 14,
+  "report_sha256": "f9e0ddd9054ebb121e4fd84fe7b2242e2ea19a63f5d9ad771c66cc646df54f18",
+  "rows": [
+    {
+      "control": "missing_explicit_dataset_research_strict",
+      "detail": "research-strict: --split-dir does not exist: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\absent_splits",
+      "evidence": "research-strict: --split-dir does not exist: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\absent_splits",
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "fallback_to_latest_dataset",
+      "detail": "research-strict: explicitly requested dataset root not found: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\no_such_dataset",
+      "evidence": "research-strict: explicitly requested dataset root not found: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\no_such_dataset",
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "partial_dataset_identity",
+      "detail": "role 'generated_train' dataset identity is incomplete (complete=false; digested=10 of 100 members). Partial identities produced by max_files/prefix hashing/sampling are diagnostic only and must not be bound to an authoritative RQ5 role",
+      "evidence": "role 'generated_train' dataset identity is incomplete (complete=false; digested=10 of 100 members). Partial identities produced by max_files/prefix hashing/sampling are diagnostic only and must not be bound to an authoritative RQ5 role",
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "copied_duplicate_across_train_test",
+      "detail": "leak_free=False violations=3",
+      "evidence": {
+        "violations": [
+          {
+            "kind": "content_equality",
+            "left_entry": {
+              "capture_id": "cap_001",
+              "dataset_identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+              "degraded_grouping": false,
+              "filename": "00001000.png",
+              "frame_id": "1000",
+              "frame_index": 1000,
+              "group_key": "ing_sim|1",
+              "group_kind": "route_segment",
+              "label_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/semseg_raw/front_left_camera/00001000.png",
+              "label_sha256": "f739af0ad113eb7171ac1d64a31d226ebbe8757c3b32f0ece3c006dbb79c265e",
+              "rgb_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/rgb/front_left_camera/00001000.png",
+              "rgb_sha256": "3e5a95b3f34ebd0f8ce133b09538e00dc2c537d38c4aa76c6a84d2e1d3387467",
+              "role": "generated_train",
+              "sample_identity": "9034882309c69723214bb53eea6b34c9325ddcc2b3397fdbba14a1dd3f4ee225"
+            },
+            "right_entry": {
+              "capture_id": "cap_001",
+              "dataset_identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
+              "degraded_grouping": false,
+              "filename": "00001000.png",
+              "frame_id": "1000",
+              "frame_index": 1000,
+              "group_key": "ing_sim|1",
+              "group_kind": "route_segment",
+              "label_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/semseg_raw/front_left_camera/00001000.png",
+              "label_sha256": "f739af0ad113eb7171ac1d64a31d226ebbe8757c3b32f0ece3c006dbb79c265e",
+              "rgb_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/rgb/front_left_camera/00001000.png",
+              "rgb_sha256": "3e5a95b3f34ebd0f8ce133b09538e00dc2c537d38c4aa76c6a84d2e1d3387467",
+              "role": "generated_train",
+              "sample_identity": "9034882309c69723214bb53eea6b34c9325ddcc2b3397fdbba14a1dd3f4ee225"
+            },
+            "roles": [
+              "generated_train",
+              "generated_test"
+            ],
+            "sample_identity": "9034882309c69723214bb53eea6b34c9325ddcc2b3397fdbba14a1dd3f4ee225"
+          },
+          {
+            "group_key": "ing_sim|1",
+            "kind": "group_identity",
+            "roles": [
+              "generated_test",
+              "generated_train"
+            ]
+          }
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "adjacent_group_leakage",
+      "detail": "leak_free=False kinds=['content_equality', 'group_identity', 'temporal_adjacency']",
+      "evidence": {
+        "kinds": [
+          "content_equality",
+          "group_identity",
+          "temporal_adjacency"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "manual_frame_in_train",
+      "detail": "shared manual sample identities in generated_train: 1",
+      "evidence": {
+        "shared": 1
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "manual_frame_in_validation",
+      "detail": "shared manual sample identities in generated_validation: 1",
+      "evidence": {
+        "shared": 1
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "manual_class_statistics_in_class_weights",
+      "detail": "train class counts invariant to manual relabel: True; manual labels are sensitive (non-zero manual pixels: True)",
+      "evidence": {
+        "manual_pixels": 9216,
+        "train_pixels": 16066
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "missing_seed",
+      "detail": "technical_status=FAIL failed=['checkpoint_manifest_binding', 'epochs_completed', 'seed_contract']",
+      "evidence": {
+        "failures": [
+          "checkpoint_manifest_binding: model manifest does not record a seed",
+          "seed_contract: manifest records seed None",
+          "epochs_completed: 3 epoch record(s) present, 0 expected"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "wrong_checkpoint_sha256",
+      "detail": "ok=False",
+      "evidence": {
+        "failures": [
+          "checkpoint sha256 mismatch: manifest=534133499a5891a2c203352720fa41dff98cad2d011baec352a6453fee791f75 actual=e3911fb71182818661bc0187e746bda7ee51e74e58411c6617800fef7bfea5b3"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "wrong_dataset_sha256",
+      "detail": "technical_status=FAIL failed=['dataset_identity_match', 'epochs_completed']",
+      "evidence": {
+        "failures": [
+          "dataset_identity_match: generated_train: manifest=generated_train-sha expected=some-other-split",
+          "epochs_completed: 3 epoch record(s) present, 0 expected"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "nan_training_loss",
+      "detail": "technical_status=FAIL failed=['epochs_completed', 'train_loss_finite']",
+      "evidence": {
+        "failures": [
+          "epochs_completed: 3 epoch record(s) present, 0 expected",
+          "train_loss_finite: training losses finite: [nan, nan, nan]"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "single_class_collapsed_model",
+      "detail": "technical_status=FAIL failed=['epochs_completed', 'prediction_not_single_class']",
+      "evidence": {
+        "failures": [
+          "epochs_completed: 3 epoch record(s) present, 0 expected",
+          "prediction_not_single_class: predictions cover 1 distinct class id(s) (single-class collapse)"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    },
+    {
+      "control": "checkpoint_missing_parameters",
+      "detail": "technical_status=FAIL failed=['epochs_completed', 'model_loads_completely']",
+      "evidence": {
+        "failures": [
+          "epochs_completed: 3 epoch record(s) present, 0 expected",
+          "model_loads_completely: strict load failed: StateDictLoadError: checkpoint parameter set does not match the target model: missing=['backbone.bn1.bias'] unexpected=[] (pass allow_partial=True to accept a recorded partial load)"
+        ]
+      },
+      "expected": "REJECTED",
+      "rejected": true,
+      "status": "PASS"
+    }
+  ],
+  "schema": "rq5_negative_controls_v1",
+  "status": "PASS",
+  "total": 14,
+  "unexpected_controls": []
+}
