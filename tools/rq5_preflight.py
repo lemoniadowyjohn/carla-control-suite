@@ -640,7 +640,11 @@ def run_preflight(
 
     sections: Dict[str, Any] = {
         "protocol": check_protocol(protocol_path),
-        "candidate": check_candidate_clean(repo_root, ignore_paths=(out_dir,)),
+        # The preflight output file is this tool's own product: writing it must
+        # not make the candidate it just audited look dirty.
+        "candidate": check_candidate_clean(
+            repo_root, ignore_paths=(out_dir, out_dir / PREFLIGHT_FILENAME)
+        ),
         "seeds": check_seed_list(seeds),
         "evaluation_roles": check_evaluation_roles(),
         "output_isolation": check_output_isolation(out_dir, seeds),
