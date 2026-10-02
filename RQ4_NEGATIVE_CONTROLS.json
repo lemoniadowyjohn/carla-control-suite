@@ -1,0 +1,46 @@
+{
+  "controls": [
+    {
+      "detail": "n=5 required; 4-seed subset changes CI and is INCOMPLETE by construction",
+      "name": "four_seeds_instead_of_five",
+      "passed": true
+    },
+    {
+      "detail": "duplicated seed value collapses variance; std/CI mismatch vs recorded, rejected",
+      "name": "duplicate_seed",
+      "passed": true
+    },
+    {
+      "detail": "altering one per-seed cosine_distance breaks mean/CI exact reproduction",
+      "name": "tampered_value",
+      "passed": true
+    },
+    {
+      "detail": "non-empty eval_pair_hash_overlap fails leakage reverification (observed: all empty)",
+      "name": "hash_overlap",
+      "passed": true
+    },
+    {
+      "detail": "training manifest SHA mismatch across seeds or vs pre-audit fails consistency check",
+      "name": "wrong_manifest",
+      "passed": true
+    },
+    {
+      "detail": "checkpoint SHA not matching audit record fails durability binding",
+      "name": "checkpoint_mismatch",
+      "passed": true
+    },
+    {
+      "detail": "pre-fix K=1000 p<0.001 explicitly NOT transferred (supersession policy)",
+      "name": "permutation_pvalue_transfer",
+      "passed": true
+    },
+    {
+      "detail": "C21 leaky values (mean 0.6434) do not reproduce leak-free aggregate; correctly classified SUPERSEDED",
+      "name": "leaky_as_clean",
+      "passed": true
+    }
+  ],
+  "schema": "rq4_negative_controls/v1",
+  "verdict": "PASS"
+}

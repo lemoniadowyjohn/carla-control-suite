@@ -1,0 +1,8 @@
+{
+  "checkpoints_reproducible_in_clean_clone": false,
+  "detail": "aggregate_stats.json per-seed values + canonical summarize_runs reproduce mean/std/CI exactly in a clean clone (verified above).",
+  "schema": "rq4_clean_clone_reproducibility/v1",
+  "statistics_reproducible_from_committed_values": true,
+  "tiles_reproducible_in_clean_clone": false,
+  "verdict": "STATISTICS_REPRODUCIBLE_BYTES_EXTERNAL"
+}

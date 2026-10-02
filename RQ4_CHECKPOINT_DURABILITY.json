@@ -1,0 +1,42 @@
+{
+  "note": "Per RESULTS.md precedent (matching original C21): checkpoints gitignored, referenced by SHA256/MD5. No retraining performed in this wave to manufacture new bytes.",
+  "schema": "rq4_checkpoint_durability/v1",
+  "seeds": [
+    {
+      "bytes_present_in_this_clone": false,
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_42\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "acdb7f57bd6a10b62bac4991c45da3cc",
+      "checkpoint_sha256": "6d39198fccaff24b7291cbde54d7f0be04a7f879687696ac14373d45c54d3db6",
+      "seed": 42
+    },
+    {
+      "bytes_present_in_this_clone": false,
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "25ee5406c514a4f40e8ccc74561deb30",
+      "checkpoint_sha256": "79965135d12945dc9d02bd184d30367d7e87aaf0d2b69b5eacc5ead3f323c144",
+      "seed": 43
+    },
+    {
+      "bytes_present_in_this_clone": false,
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_44\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "d3d4073f9e3416468e0bc0a4b14dda6d",
+      "checkpoint_sha256": "4f935285709ec6efaa0469643dbcd23eda8f6a93ab105704998a3444d1fdec8e",
+      "seed": 44
+    },
+    {
+      "bytes_present_in_this_clone": false,
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "213af83e592095d6ff7b60590b2e46cf",
+      "checkpoint_sha256": "1b144836334cf9d5aafca7451da42d87fe6cbcaae1b2749725e7ca5af4c79826",
+      "seed": 45
+    },
+    {
+      "bytes_present_in_this_clone": false,
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_46\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "3cb146e6a0d091f143e67e41f29957a3",
+      "checkpoint_sha256": "469eded69fa28a56a731945dc1c60b13888ccd101ca8ecc7ed42d9f7124ff207",
+      "seed": 46
+    }
+  ],
+  "verdict": "HASH_RECORDED_BYTES_NOT_DURABLE_IN_CLEAN_CLONE"
+}
