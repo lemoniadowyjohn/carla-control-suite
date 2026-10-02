@@ -1,7 +1,7 @@
 {
   "claim_boundary": "Preflight is an offline readiness audit. It performs no training, creates no capture, and proves nothing about RQ5 accuracy or generalization. RQ5_OFFLINE_READY_DATASET_BLOCKED is the correct outcome whenever no validated RQ3 paired dataset exists.",
   "claim_scope": "OFFLINE_READINESS_AUDIT",
-  "created_utc": "2026-10-02T20:40:48.391328+00:00",
+  "created_utc": "2026-10-02T20:41:46.382350+00:00",
   "dataset_blocked": true,
   "dataset_inputs": {
     "camera": null,
@@ -11,10 +11,10 @@
   },
   "evidence_sha256": {},
   "final_rq5_training_executed": false,
-  "final_status": "PARTIAL_WITH_EXACT_BLOCKERS",
-  "offline_authority_ok": false,
-  "rationale": "one or more offline authority checks failed; see checks for the exact blockers",
-  "report_sha256": "8b454162660374043f8c3681be51cc562f22a041754e703b8690d42f20e1b090",
+  "final_status": "RQ5_OFFLINE_READY_DATASET_BLOCKED",
+  "offline_authority_ok": true,
+  "rationale": "every offline authority check passed; no validated RQ3 paired dataset exists, so final RQ5 training is blocked on data rather than on code",
+  "report_sha256": "868864e77daa362ded70cce6a12d0b14531b717acdeeb3f62027388a71bd08de",
   "schema": "rq5_preflight_v1",
   "sections": {
     "candidate": {
@@ -22,9 +22,9 @@
         {
           "code": "candidate_head_resolvable",
           "data": {
-            "sha": "dcf55d1dbb215b4c80c3948e58721b4f4465da90"
+            "sha": "bd92f31c8c56b9f4096aabc12491c19a3144520a"
           },
-          "detail": "git HEAD = dcf55d1dbb215b4c80c3948e58721b4f4465da90",
+          "detail": "git HEAD = bd92f31c8c56b9f4096aabc12491c19a3144520a",
           "status": "PASS"
         },
         {
@@ -32,13 +32,13 @@
           "data": {
             "ignored_evidence_entries": 0
           },
-          "detail": "working tree is dirty:\nM reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
-          "status": "FAIL"
+          "detail": "working tree is clean",
+          "status": "PASS"
         }
       ],
-      "head": "dcf55d1dbb215b4c80c3948e58721b4f4465da90",
+      "head": "bd92f31c8c56b9f4096aabc12491c19a3144520a",
       "ignored_evidence_entries": 0,
-      "ok": false
+      "ok": true
     },
     "datasets": {
       "checks": [
