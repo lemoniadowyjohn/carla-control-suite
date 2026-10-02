@@ -10,7 +10,17 @@ name: offline research gates
 
 on:
   push:
-    branches: [main, "stabilize/**", "stable/**", "fix/**", "integration/**"]
+    # Wave B: review/** and hardening/** are first-class delivery lanes and must
+    # trigger the offline gates exactly like the others. Omitting them let the
+    # entire production-convergence review lane ship without any CI signal.
+    branches:
+      - main
+      - "stabilize/**"
+      - "stable/**"
+      - "fix/**"
+      - "integration/**"
+      - "review/**"
+      - "hardening/**"
   pull_request:
   workflow_dispatch: {}
 
@@ -208,6 +218,33 @@ jobs:
       - name: Run provenance tests
         run: python -m pytest tests/unit/test_validate_thesis_claim_provenance.py tests/unit/test_evidence_sha256_anchors.py -q
 
+  # Wave B: offline evidence-graph / freshness validation. Deliberately requires
+  # NO live CARLA, NO UE4, NO Blender and NO OSM2World binary, so it runs on
+  # GitHub-hosted runners. It refuses to let an evidence packet claim authority
+  # over a blocked result, and refuses a closure matrix that names a blocker the
+  # readiness matrix does not define.
+  offline-evidence-graph:
+    name: offline evidence graph / freshness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          lfs: true
+          # The evidence matrices are committed evidence; a shallow clone would
+          # still resolve the candidate_commit they name, but keep full history
+          # so `git cat-file -e <sha>^{commit}` is authoritative.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Validate evidence / freshness / closure matrices
+        run: python tools/verify_offline_evidence_matrix.py
+
   # D19: the required release check. It resolves the NAMED offline release gate,
   # which exits 0 only when every required offline section is PASS. A runtime
   # status of NOT_RUN no longer forces this to fail (GitHub-hosted CI cannot run
@@ -222,6 +259,7 @@ jobs:
       - governance-integrity
       - thesis-rq-contract
       - research-provenance
+      - offline-evidence-graph
     permissions:
       contents: read
     steps:

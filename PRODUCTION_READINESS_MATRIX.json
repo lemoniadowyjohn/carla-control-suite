@@ -2,9 +2,7 @@
   "schema": "production_readiness_matrix/v1",
   "generated_at_utc": "2026-10-02T19:56:00Z",
   "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
-
   "critical_rule_applied": "Implementation readiness is NOT scientific authority. A capability being implementable, and a tool being present, never promotes a research claim. AUTHORITATIVE requires a live measured result bound to evidence.",
-
   "readiness_dimensions": {
     "toolchain_present": {
       "blender": "READY (4.3.0, binary hash recorded)",
@@ -63,51 +61,67 @@
       "verdict": "NOT_READY -- no research question carries an authoritative live result"
     }
   },
-
   "production_readiness_verdict": "NOT_PRODUCTION_READY",
-
   "exact_blockers": [
     {
       "id": "B1",
       "blocker": "UE426_BLOCKED_OPERATOR_INSTALL",
-      "blocks": ["RQ1B runtime legs", "import/cook", "auto-arm map identity", "RQ3 paired capture", "dataset quality", "RQ5A"],
+      "blocks": [
+        "RQ1B runtime legs",
+        "import/cook",
+        "auto-arm map identity",
+        "RQ3 paired capture",
+        "dataset quality",
+        "RQ5A"
+      ],
       "detail": "No Unreal Engine 4.26 host is installed (UE4_ROOT unset; no Epic Games install under C:\\ or E:\\ Program Files). The present CARLA 0.9.16 is a PACKAGED non-editor build (CarlaUE4-Win64-Shipping.exe only), which cannot execute UnrealEditor-Cmd, `make import`, or any cook. UE5 was not substituted and arbitrary stock UE4 was not used.",
       "unblock_procedure": "See UE426_QUALIFICATION.json -> required_operator_actions_to_unblock"
     },
     {
       "id": "B2",
       "blocker": "PLACEMENT_METRIC_INVALID",
-      "blocks": ["tile placement acceptance"],
+      "blocks": [
+        "tile placement acceptance"
+      ],
       "detail": "tools/tile_frame_consistency.py derives placement from the bbox centroid of each tile's own building geometry and compares those centroids. That measures building-distribution asymmetry between neighbouring 1000 m cells, not world displacement. The 27/31 'FAIL' seams (max 485.84 m) are not evidence of misplacement. A control-anchor metric (OSM node ids / XODR road geometry) is required. The governed 10 m threshold was NOT changed.",
       "unblock_procedure": "Regenerate the governed tile release retaining per-tile OSM XML, then match named OSM node anchors through source -> canonical -> rebase -> tile-local -> FBX -> package -> expected CARLA world."
     },
     {
       "id": "B3",
       "blocker": "RQ1B_FIVE_COLD_RUNS_NOT_EXECUTED",
-      "blocks": ["RQ1 closure"],
+      "blocks": [
+        "RQ1 closure"
+      ],
       "detail": "Five isolated cold downstream runs did not complete. Contract forbids PASS with fewer than five valid receipts.",
       "unblock_procedure": "Run tools/rq1b_five_run_driver.py --runs 5 with OSM_FILE pinned to campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and network access disabled."
     },
     {
       "id": "B4",
       "blocker": "PREEXISTING_SUITE_FAILURES",
-      "blocks": ["clean-regression gate"],
+      "blocks": [
+        "clean-regression gate"
+      ],
       "detail": "7 test failures exist at HEAD 7fbd33ff independent of this wave, including 4 dead-pipeline-signal contract failures caused by genuinely missing producers in main_pipeline.py.",
       "unblock_procedure": "Either restore the missing producers or remove the unregistered signals from the dead-signal registry; and make the OSM2World negative control tolerant of a legitimately-present local install."
     },
     {
       "id": "B5",
       "blocker": "CARLA_RUNTIME_FRAGILITY",
-      "blocks": ["long-running live capture sessions"],
+      "blocks": [
+        "long-running live capture sessions"
+      ],
       "detail": "CARLA 0.9.16 on this host (Quadro P3200, 6 GiB VRAM, -RenderOffScreen) reliably answers RPC handshake calls but reproducesably wedges or exits when asked to expand a full waypoint set on Grid0828, and dies if load_world() is attempted while synchronous_mode=True with no live tick owner. A crashed transaction owner also leaks synchronous_mode into the server, blocking subsequent RPC.",
       "unblock_procedure": "Hold experiments on one arm per server session; always load worlds while async; make the world-settings transaction crash-safe with a guaranteed restore; keep the structural fingerprint light (avoid generate_waypoints)."
     },
     {
       "id": "B6",
       "blocker": "DEFERRED_EXTERNAL_DATA",
-      "blocks": ["RQ5B"],
+      "blocks": [
+        "RQ5B"
+      ],
       "detail": "No operator-supplied external evaluation dataset exists on this host.",
       "unblock_procedure": "Supply a labeled external dataset. Until then only distribution-shift metrics are permissible, never accuracy."
     }
-  ]
+  ],
+  "root_cause_blocker": "UE426_BLOCKED_OPERATOR_INSTALL"
 }
