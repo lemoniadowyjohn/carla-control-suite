@@ -1,0 +1,66 @@
+{
+  "controls": [
+    {
+      "control": "train_eval_hash_overlap",
+      "description": "A checkpoint whose recorded eval_pair_hash_overlap is non-empty must be rejected.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "missing_exclusion_list",
+      "description": "An empty exclusion set must not pass the exclusion-covers-eval-pair check.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "wrong_checkpoint_sha",
+      "description": "Two different recorded SHA256 values for the same checkpoint path must be reported as a cross-record disagreement.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "wrong_seed",
+      "description": "A seed list containing duplicates must fail seed-identity validation.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "wrong_training_manifest",
+      "description": "Divergent training-dataset manifest hashes across seeds must be reported.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "duplicate_checkpoint_reused_for_two_seeds",
+      "description": "One checkpoint hash reused across two seeds must fail seed-identity validation even when the seeds differ.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "missing_producer_identity",
+      "description": "A per-seed record whose producer git SHA is UNKNOWN must be surfaced as a downgrade, not silently accepted.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    },
+    {
+      "control": "aggregate_inconsistent_with_per_seed_values",
+      "description": "An aggregate whose mean does not match the mean of its own per-seed values must be reported as a disagreement.",
+      "expected": "FAIL_DETECTED",
+      "observed": "FAIL_DETECTED",
+      "result": "PASS"
+    }
+  ],
+  "live_campaign_untouched": true,
+  "n_broken": 0,
+  "n_controls": 8,
+  "principle": "Each control mutates exactly one governed property of an otherwise valid record and asserts the pack REJECTS it. A control that fails to detect its own failure is reported BROKEN; none is weakened.",
+  "schema": "RQ4_NEGATIVE_CONTROLS/v1",
+  "status": "ALL_CONTROLS_DETECT_FAILURE"
+}
