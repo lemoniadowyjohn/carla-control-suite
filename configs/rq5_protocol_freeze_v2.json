@@ -45,7 +45,7 @@
       "changed_in_v2": false
     },
     "lr_schedule": {
-      "value": "constant (no scheduler)",
+      "value": "constant (trainer defines no scheduler)",
       "provenance": "repo_default",
       "source": "ultimate_pipeline/perception/min_train_segmentation.py",
       "changed_in_v2": false
@@ -69,7 +69,7 @@
       "changed_in_v2": false
     },
     "augmentations": {
-      "value": "none (no augmentation stage in trainer or dataset)",
+      "value": "none (trainer and dataset define no augmentation stage)",
       "provenance": "repo_default",
       "source": "ultimate_pipeline/perception/min_train_segmentation.py",
       "changed_in_v2": false
@@ -162,7 +162,7 @@
       "changed_in_v2": false
     },
     "transfer_comparison_matrix": {
-      "value": "rows: seeds [7, 17, 42]; columns: mIoU generated-test, mIoU manual-test, degradation, per-class IoU delta; mean +- bootstrap CI across seeds",
+      "value": "rows: seeds [7,17,42]; columns: mIoU generated-test, mIoU manual-test, degradation, per-class IoU delta; mean +- bootstrap CI across seeds",
       "provenance": "campaign_frozen",
       "source": "P12 RQ5(a) protocol",
       "changed_in_v2": false
@@ -175,7 +175,7 @@
       "amendment": "v2 adds incomplete dataset identity, leakage and quality-gate FAIL as first-class abort conditions."
     },
     "rq5b_boundary": {
-      "value": "labeled real-world evaluation reports mIoU only where ground-truth labels exist; unlabeled shift analysis reports distribution distances (FID-like/CORAL/MMD/entropy/confidence) ONLY as shift measures, never as accuracy or generalization performance",
+      "value": "labeled real-world evaluation reports mIoU only where ground-truth labels exist; unlabeled shift analysis reports distribution distances (FID-like/CORAL/MMD/entropy) ONLY as shift measures, never as accuracy or generalization performance",
       "provenance": "repo_default",
       "source": "ultimate_pipeline/perception/eval_real_unlabeled.py (no accuracy path)",
       "changed_in_v2": false

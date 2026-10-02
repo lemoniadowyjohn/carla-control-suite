@@ -709,6 +709,13 @@ def run_preflight(
     report["report_sha256"] = sha256_text(
         canonical_dumps({k: v for k, v in report.items() if k not in ("created_utc", "report_sha256")})
     )
+    if write_evidence:
+        report["evidence_sha256"] = _evidence_hashes(out_dir)
+        target = out_dir / PREFLIGHT_FILENAME
+        target.write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        report["written_to"] = str(target)
     return report
 
 
@@ -764,10 +771,13 @@ def main() -> int:
         write_evidence=write,
     )
     if write:
-        report["evidence_sha256"] = _evidence_hashes(args.out_dir)
-        args.out_dir.mkdir(parents=True, exist_ok=True)
+        if not (args.out_dir / PREFLIGHT_FILENAME).is_file():
+            args.out_dir.mkdir(parents=True, exist_ok=True)
+            args.out_json = args.out_dir / PREFLIGHT_FILENAME
+            args.out_json.write_text(
+                json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
         target = args.out_json or (args.out_dir / PREFLIGHT_FILENAME)
-        target.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(f"wrote {target}")
 
     print(json.dumps({"final_status": report["final_status"],
