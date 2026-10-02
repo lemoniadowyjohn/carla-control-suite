@@ -1,0 +1,12 @@
+{
+  "buildings_source": "F:\\carla-worktrees\\lane_A1_rq1a-execution\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+  "duration_s": 15.831,
+  "generated_at_utc": "2026-10-02T18:52:16.499448+00:00",
+  "input_osm_sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+  "osm_source": "merged",
+  "output_xodr_sha256": "61c5792b0b4b90bd62ddb0a77642166141f1493cd5960615313a1cbb949935b5",
+  "run_index": 4,
+  "run_summo": false,
+  "schema": "rq1a_run_receipt/v1",
+  "status": "ok"
+}

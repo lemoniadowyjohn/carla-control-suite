@@ -1,0 +1,41 @@
+{
+  "controls": [
+    {
+      "detail": "matrix builder requires 5; 4 is INCOMPLETE by construction (verified by rq1_five_run_matrix.py logic)",
+      "name": "four_instead_of_five",
+      "passed": true
+    },
+    {
+      "detail": "duplicate of run_00 counts as 1 unique input; 5 rows with duplicate fails uniqueness check (4 unique raw SHAs from 5 rows with dup)",
+      "name": "duplicate_receipt",
+      "passed": true
+    },
+    {
+      "detail": "receipt with input_sha256 altered does not match pinned merged OSM c1beb61f; rejected by input binding",
+      "name": "wrong_input_sha",
+      "passed": true
+    },
+    {
+      "detail": "receipt with producer_git_sha != base_sha rejected; producer identity bound per run",
+      "name": "different_producer_sha",
+      "passed": true
+    },
+    {
+      "detail": "receipt with null structural_signature is INCOMPLETE per NEW-346 (None==None is not agreement)",
+      "name": "null_required_field",
+      "passed": true
+    },
+    {
+      "detail": "unparseable JSON receipt is UNREADABLE; matrix is INCOMPLETE, never PASS",
+      "name": "corrupt_receipt",
+      "passed": true
+    },
+    {
+      "detail": "synthetic receipt with altered road_count/junction_count produces STRUCTURALLY_NONDETERMINISTIC, not PASS",
+      "name": "structural_mismatch",
+      "passed": true
+    }
+  ],
+  "schema": "rq1a_negative_controls/v1",
+  "verdict": "PASS"
+}
