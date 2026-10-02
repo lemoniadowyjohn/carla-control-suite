@@ -1,0 +1,294 @@
+{
+  "claim_boundary": "Preflight is an offline readiness audit. It performs no training, creates no capture, and proves nothing about RQ5 accuracy or generalization. RQ5_OFFLINE_READY_DATASET_BLOCKED is the correct outcome whenever no validated RQ3 paired dataset exists.",
+  "claim_scope": "OFFLINE_READINESS_AUDIT",
+  "created_utc": "2026-10-02T20:20:58.433902+00:00",
+  "dataset_blocked": true,
+  "dataset_inputs": {
+    "camera": null,
+    "explicit": false,
+    "generated_root": null,
+    "manual_root": null
+  },
+  "evidence_sha256": {},
+  "final_rq5_training_executed": false,
+  "final_status": "RQ5_OFFLINE_READY_DATASET_BLOCKED",
+  "offline_authority_ok": true,
+  "rationale": "every offline authority check passed; no validated RQ3 paired dataset exists, so final RQ5 training is blocked on data rather than on code",
+  "report_sha256": "9ae1f535487ba6effb62d893c65b1e8b58e4ec2bb407bd94c27b5d492505d67a",
+  "schema": "rq5_preflight_v1",
+  "sections": {
+    "candidate": {
+      "checks": [
+        {
+          "code": "candidate_head_resolvable",
+          "data": {
+            "sha": "d13a5f9322446ff0bd4568257ee4d5904bf79e83"
+          },
+          "detail": "git HEAD = d13a5f9322446ff0bd4568257ee4d5904bf79e83",
+          "status": "PASS"
+        },
+        {
+          "code": "candidate_clean",
+          "data": {
+            "ignored_evidence_entries": 0
+          },
+          "detail": "working tree is clean",
+          "status": "PASS"
+        }
+      ],
+      "head": "d13a5f9322446ff0bd4568257ee4d5904bf79e83",
+      "ignored_evidence_entries": 0,
+      "ok": true
+    },
+    "datasets": {
+      "checks": [
+        {
+          "code": "dataset_inputs_supplied",
+          "data": {},
+          "detail": "no explicit --generated-root/--camera supplied; no RQ3 paired dataset is available, so splits cannot be produced. Nothing was searched or guessed.",
+          "status": "FAIL"
+        }
+      ],
+      "dataset_blocked": true,
+      "evidence": {},
+      "ok": false
+    },
+    "evaluation_roles": {
+      "checks": [
+        {
+          "code": "evaluation_roles_explicit",
+          "data": {},
+          "detail": "generated_test / manual_test / real_unlabeled are all governed roles",
+          "status": "PASS"
+        },
+        {
+          "code": "unlabeled_role_forbids_accuracy",
+          "data": {},
+          "detail": "real_unlabeled may only report shift measures, never accuracy",
+          "status": "PASS"
+        },
+        {
+          "code": "labeled_roles_allow_accuracy",
+          "data": {},
+          "detail": "labeled sim roles may report accuracy metrics",
+          "status": "PASS"
+        }
+      ],
+      "contracts": {
+        "generated_test": {
+          "accuracy_claim_allowed": true,
+          "accuracy_metrics_allowed": true,
+          "allowed_metric_families": [
+            "mIoU",
+            "per_class_iou",
+            "pixel_accuracy",
+            "confusion_matrix"
+          ],
+          "claim_boundary": "Ground-truth labels exist for this role; accuracy-family metrics are reportable.",
+          "labeled": true,
+          "requires_checkpoint_identity": true,
+          "requires_dataset_identity": true,
+          "role": "generated_test"
+        },
+        "manual_test": {
+          "accuracy_claim_allowed": true,
+          "accuracy_metrics_allowed": true,
+          "allowed_metric_families": [
+            "mIoU",
+            "per_class_iou",
+            "pixel_accuracy",
+            "confusion_matrix"
+          ],
+          "claim_boundary": "Ground-truth labels exist for this role; accuracy-family metrics are reportable.",
+          "labeled": true,
+          "requires_checkpoint_identity": true,
+          "requires_dataset_identity": true,
+          "role": "manual_test"
+        },
+        "real_unlabeled": {
+          "accuracy_claim_allowed": false,
+          "accuracy_metrics_allowed": false,
+          "allowed_metric_families": [
+            "entropy",
+            "entropy_mean",
+            "confidence",
+            "confidence_mean",
+            "coral",
+            "coral_distance",
+            "mmd",
+            "mmd_distance",
+            "fid",
+            "fid_like",
+            "shift",
+            "distribution_shift"
+          ],
+          "claim_boundary": "No ground truth exists for this role. Only entropy/confidence/CORAL/MMD/FID-like distribution-shift measures are reportable, and none of them is accuracy or a generalization-performance number.",
+          "labeled": false,
+          "requires_checkpoint_identity": true,
+          "requires_dataset_identity": false,
+          "role": "real_unlabeled"
+        }
+      },
+      "ok": true
+    },
+    "output_isolation": {
+      "checks": [
+        {
+          "code": "output_dirs_isolated",
+          "data": {
+            "planned": [
+              "reports\\parallel_wave\\rq5\\seed_7",
+              "reports\\parallel_wave\\rq5\\seed_17",
+              "reports\\parallel_wave\\rq5\\seed_42"
+            ]
+          },
+          "detail": "each seed writes to its own output directory",
+          "status": "PASS"
+        }
+      ],
+      "ok": true,
+      "planned_dirs": [
+        "reports\\parallel_wave\\rq5\\seed_7",
+        "reports\\parallel_wave\\rq5\\seed_17",
+        "reports\\parallel_wave\\rq5\\seed_42"
+      ]
+    },
+    "protocol": {
+      "checks": [
+        {
+          "code": "protocol_present",
+          "data": {
+            "sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440"
+          },
+          "detail": "frozen protocol resolved: configs/rq5_protocol_freeze_v2.json",
+          "status": "PASS"
+        },
+        {
+          "code": "protocol_schema",
+          "data": {},
+          "detail": "protocol schema is 'rq5_protocol_freeze/v2'",
+          "status": "PASS"
+        },
+        {
+          "code": "protocol_status_frozen",
+          "data": {},
+          "detail": "protocol status is 'FROZEN'",
+          "status": "PASS"
+        },
+        {
+          "code": "protocol_required_decisions",
+          "data": {
+            "missing": []
+          },
+          "detail": "every required decision has a frozen value",
+          "status": "PASS"
+        },
+        {
+          "code": "protocol_amendment_rationale",
+          "data": {
+            "resolution": "MINIMAL_NON_POST_HOC_RULE"
+          },
+          "detail": "the v1 checkpoint-selection contradiction is recorded with a resolution strategy",
+          "status": "PASS"
+        },
+        {
+          "code": "protocol_v1_hyperparameters_preserved",
+          "data": {},
+          "detail": "v1 architecture/optimizer/lr/epochs/batch/augmentation/seed values are carried over unchanged into v2",
+          "status": "PASS"
+        },
+        {
+          "code": "checkpoint_selection_minimal_rule",
+          "data": {},
+          "detail": "checkpoint selection is resolved by the minimal non-post-hoc rule",
+          "status": "PASS"
+        },
+        {
+          "code": "underpowered_contingency",
+          "data": {},
+          "detail": "an inadequate-epoch outcome is routed to RQ5_PROTOCOL_UNDERPOWERED with a preregistered v3, never to silent extra training",
+          "status": "PASS"
+        }
+      ],
+      "decision_count": 36,
+      "identity": {
+        "checkpoint_policy": {
+          "checkpoint_policy": "final_epoch_only",
+          "early_stopping": false,
+          "protocol": "rq5_protocol_freeze/v2",
+          "selection_consults_manual": false,
+          "validation_selects_epoch": false
+        },
+        "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\configs\\rq5_protocol_freeze_v2.json",
+        "relpath": "configs/rq5_protocol_freeze_v2.json",
+        "schema": "rq5_protocol_freeze/v2",
+        "sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+        "status": "FROZEN"
+      },
+      "ok": true
+    },
+    "seeds": {
+      "checks": [
+        {
+          "code": "seed_list_valid",
+          "data": {
+            "seeds": [
+              7,
+              17,
+              42
+            ]
+          },
+          "detail": "seed list [7, 17, 42] is three distinct non-negative integers",
+          "status": "PASS"
+        }
+      ],
+      "ok": true,
+      "seeds": [
+        7,
+        17,
+        42
+      ]
+    },
+    "trainer_strict_mode": {
+      "checks": [
+        {
+          "code": "strict_forbids_implicit_split_creation",
+          "data": {
+            "message": "research-strict: an explicit --split-dir is required; implicit split creation is forbidden. Generate the governed splits with tools/rq5_preflight.py or dataset_split_authority.build_split_authority first."
+          },
+          "detail": "implicit_split_creation rejected: research-strict: an explicit --split-dir is required; implicit split creation is forbidden. Generate the governed splits with tools/rq5_preflight.py or dataset_split_authority.build_split_authority first.",
+          "status": "PASS"
+        },
+        {
+          "code": "strict_forbids_implicit_camera",
+          "data": {
+            "message": "research-strict: --camera must be given explicitly; inference is forbidden"
+          },
+          "detail": "implicit_camera rejected: research-strict: --camera must be given explicitly; inference is forbidden",
+          "status": "PASS"
+        },
+        {
+          "code": "strict_forbids_implicit_seed",
+          "data": {
+            "message": "research-strict: --seed must be given explicitly; inference is forbidden"
+          },
+          "detail": "implicit_seed rejected: research-strict: --seed must be given explicitly; inference is forbidden",
+          "status": "PASS"
+        },
+        {
+          "code": "strict_protocol_values_pinned",
+          "data": {},
+          "detail": "strict mode pins {'epochs': 3, 'batch_size': 4, 'learning_rate': 0.0001, 'optimizer': 'Adam', 'augmentations': 'none'}",
+          "status": "PASS"
+        },
+        {
+          "code": "legacy_fallback_preserved",
+          "data": {},
+          "detail": "the legacy mtime-based discovery helper still exists for non-strict development use",
+          "status": "PASS"
+        }
+      ],
+      "ok": true
+    }
+  }
+}

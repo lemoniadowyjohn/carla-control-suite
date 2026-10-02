@@ -1,0 +1,198 @@
+{
+  "adjacency_window": 1,
+  "audit_sha256": "5d3f5c417fe350b6d7a87f05733f67457107fc6d5907d8a334edf2fba714dfc5",
+  "claim_scope": "TEST_FIXTURE_ONLY",
+  "content_equality_checks": [
+    {
+      "disjoint": true,
+      "examples": [],
+      "pair": [
+        "generated_train",
+        "generated_validation"
+      ],
+      "shared_sample_identities": 0
+    },
+    {
+      "disjoint": true,
+      "examples": [],
+      "pair": [
+        "generated_train",
+        "generated_test"
+      ],
+      "shared_sample_identities": 0
+    },
+    {
+      "disjoint": true,
+      "examples": [],
+      "pair": [
+        "generated_validation",
+        "generated_test"
+      ],
+      "shared_sample_identities": 0
+    },
+    {
+      "disjoint": true,
+      "examples": [],
+      "pair": [
+        "generated_train",
+        "manual_test"
+      ],
+      "shared_sample_identities": 0
+    },
+    {
+      "disjoint": true,
+      "examples": [],
+      "pair": [
+        "generated_validation",
+        "manual_test"
+      ],
+      "shared_sample_identities": 0
+    },
+    {
+      "disjoint": true,
+      "examples": [],
+      "pair": [
+        "generated_test",
+        "manual_test"
+      ],
+      "shared_sample_identities": 0
+    }
+  ],
+  "created_utc": "2026-10-02T20:23:20.913180+00:00",
+  "group_identity_checks": [
+    {
+      "exclusive": true,
+      "group_key": "ing_manual|0",
+      "roles": [
+        "manual_test"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_manual|1",
+      "roles": [
+        "manual_test"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_manual|2",
+      "roles": [
+        "manual_test"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_sim|0",
+      "roles": [
+        "generated_validation"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_sim|1",
+      "roles": [
+        "generated_train"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_sim|2",
+      "roles": [
+        "generated_train"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_sim|3",
+      "roles": [
+        "generated_train"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_sim|4",
+      "roles": [
+        "generated_train"
+      ]
+    },
+    {
+      "exclusive": true,
+      "group_key": "ing_sim|5",
+      "roles": [
+        "generated_test"
+      ]
+    }
+  ],
+  "leak_free": true,
+  "required_guarantees": [
+    "generated_train \u2229 generated_validation = empty",
+    "generated_train \u2229 generated_test = empty",
+    "generated(generated_train \u222a generated_validation) \u2229 manual_test = empty"
+  ],
+  "roles_present": [
+    "generated_train",
+    "generated_validation",
+    "generated_test",
+    "manual_test"
+  ],
+  "schema": "rq5_split_leakage_audit_v1",
+  "status": "PASS",
+  "temporal_adjacency_checks": [
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_000",
+      "examples": [],
+      "frame_count": 4
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_001",
+      "examples": [],
+      "frame_count": 4
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_002",
+      "examples": [],
+      "frame_count": 4
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_003",
+      "examples": [],
+      "frame_count": 4
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_004",
+      "examples": [],
+      "frame_count": 4
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_005",
+      "examples": [],
+      "frame_count": 4
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual|cap_000",
+      "examples": [],
+      "frame_count": 3
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual|cap_001",
+      "examples": [],
+      "frame_count": 3
+    },
+    {
+      "adjacent_role_breaches": 0,
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual|cap_002",
+      "examples": [],
+      "frame_count": 3
+    }
+  ],
+  "violations": []
+}

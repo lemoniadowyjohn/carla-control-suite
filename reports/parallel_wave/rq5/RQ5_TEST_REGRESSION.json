@@ -1,0 +1,86 @@
+{
+  "schema": "rq5_batch12_test_regression_v1",
+  "batch": "OPENCODE BATCH 12 -- RQ5 offline experiment readiness",
+  "lane": "parallel-safe RQ5 perception lane",
+  "base_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "branch": "opencode/batch12-rq5-readiness-20261002",
+  "worktree": "../carla-batch12-rq5",
+  "environment": {
+    "python": "3.12.2",
+    "torch": "2.9.1+cpu",
+    "torchvision": "0.24.1+cpu",
+    "numpy": "2.5.3",
+    "cuda_available": false,
+    "platform": "win32"
+  },
+  "commands_executed": [
+    {
+      "command": "python -m pytest tests/unit -q -k \"rq5 or dataset_split or dataset_quality or training_convergence\"",
+      "scope": "targeted (new + existing RQ5/perception)",
+      "passed": 218,
+      "failed": 0,
+      "skipped": 0,
+      "deselected": 2577,
+      "warnings": 7,
+      "duration_s": 285.22
+    },
+    {
+      "command": "python -m pytest tests/unit -q",
+      "scope": "full unit suite",
+      "passed": 2790,
+      "failed": 0,
+      "skipped": 5,
+      "warnings": 119,
+      "duration_s": 1874.23
+    },
+    {
+      "command": "python -m pytest tests/quality tests/domain_gap tests/opendrive_geometry tests/topology tests/carla_tools -q",
+      "scope": "broader offline (unrelated subsystems)",
+      "passed": 2056,
+      "failed": 0,
+      "warnings": 3,
+      "duration_s": 40.72
+    },
+    {
+      "command": "python -m pytest tests/contracts tests/phase_q tests/test_crosswalk_schema.py tests/test_r13_c0r_tag_freeze.py tests/test_r13_digest_v2.py tests/test_r13_evidence.py tests/test_r13_governed_payload_guard.py tests/test_r13_mutation_allowlist.py tests/test_stage_i_integrity.py -q",
+      "scope": "broader offline (contracts/governance)",
+      "passed": 173,
+      "failed": 4,
+      "warnings": 4,
+      "duration_s": 204.06
+    }
+  ],
+  "failures_observed": [
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals",
+      "classification": "PRE_EXISTING",
+      "reason": "signal registry references ultimate_pipeline.main_pipeline._compute_final_run_verdict / _finalize_run_pack_gated, which this lane never touches"
+    },
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable",
+      "classification": "PRE_EXISTING",
+      "reason": "same unresolved producer symbols"
+    },
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer",
+      "classification": "PRE_EXISTING",
+      "reason": "same unresolved producer symbols"
+    },
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence",
+      "classification": "PRE_EXISTING",
+      "reason": "same unresolved producer symbols"
+    }
+  ],
+  "baseline_comparison": {
+    "method": "detached worktree at BASE_SHA, ran only the failing module",
+    "command": "python -m pytest tests/contracts/test_no_dead_pipeline_signals.py -q",
+    "base_result": "4 failed, 7 passed, 33.42s",
+    "conclusion": "the same 4 tests fail at BASE_SHA; they are not introduced by this lane"
+  },
+  "new_regression_count": 0,
+  "targeted_pass": 218,
+  "targeted_fail": 0,
+  "regression_classification": "NEW_REGRESSION=0 (4 pre-existing failures in tests/contracts/test_no_dead_pipeline_signals.py, confirmed failing at BASE_SHA)",
+  "note": "No CARLA runtime was started. No RQ5 final training was executed. Every dataset exercised by this lane is a synthetic fixture with claim_scope=TEST_FIXTURE_ONLY."
+}
