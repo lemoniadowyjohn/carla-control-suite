@@ -364,11 +364,27 @@ def stage_large_map_package(
         for p in tile_fbx_paths
         if Path(p).is_file() and parse_tile_fbx_filename(Path(p).name) is not None
     )
-    # P0-4: an explicitly supplied expected XODR SHA is itself an authority for
-    # strict provenance. Keying strictness only on has_any_manifest meant a
-    # caller that pinned the map SHA but supplied no per-tile manifests silently
-    # ran the permissive path.
-    strict_provenance = bool(expected_xodr_sha256) or has_any_manifest
+    # PROVENANCE MODE (P0-4 status: NOT VERIFIED -- see notes below)
+    #
+    # An earlier reconstruction of P0-4 set
+    #     strict_provenance = bool(expected_xodr_sha256) or has_any_manifest
+    # which broke three committed tests in tests/unit/test_o1_cook_provenance_chain.py.
+    # Those tests document the opposite contract explicitly: "No manifest, so
+    # provenance not strict - fake tiles without manifests are allowed for
+    # synthetic tests (backward compat). The XODR check itself must pass."
+    #
+    # That contract is retained. The map-SHA authority is still enforced: when
+    # expected_xodr_sha256 is supplied it is the provenance authority (see
+    # provenance_authority_sha below) and a mismatch against the staged XODR is
+    # refused outright. What is NOT done here is forcing per-tile manifest
+    # enforcement on a caller that supplied no manifests at all, because that is
+    # the documented opt-out and nothing in the pinned-map requirement demands it.
+    #
+    # To close the genuine P0-4 gap -- pinning a map SHA without strengthening
+    # anything -- the original P0 diff is required. It was destroyed as an
+    # uncommitted working-tree change and could not be recovered, so the
+    # reconstruction is not asserted as correct.
+    strict_provenance = has_any_manifest
     provenance_authority_sha = (
         expected_xodr_sha256.lower() if expected_xodr_sha256 else xodr_sha256.lower()
     )

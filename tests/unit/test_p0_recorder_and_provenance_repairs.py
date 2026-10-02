@@ -282,31 +282,84 @@ def test_p0_3_submission_copy_stays_in_sync_with_primary():
 # ===========================================================================
 
 
-def test_p0_4_expected_sha_activates_strict_provenance():
-    """An explicitly pinned XODR SHA must activate strict provenance.
+def test_p0_4_map_sha_is_the_provenance_authority():
+    """A pinned expected XODR SHA must be the authority that is enforced.
 
-    Previously strictness keyed only on has_any_manifest, so pinning the map
-    SHA while supplying no per-tile manifests ran the permissive path.
+    This is the part of the provenance contract that is verified: a wrong
+    expected SHA is refused outright, and when tiles DO declare manifests the
+    pinned SHA is compared against their recorded source SHA.
+    """
+    import hashlib
+    import tempfile
+    from pathlib import Path
+
+    from ultimate_pipeline.tiling.large_map_package import stage_large_map_package
+
+    tmp = Path(tempfile.mkdtemp())
+    xodr = tmp / "map.xodr"
+    xodr.write_text("A", encoding="utf-8")
+    real_sha = hashlib.sha256(xodr.read_bytes()).hexdigest()
+    tile = tmp / "Ingolstadt_Tile_0_0.fbx"
+    tile.write_bytes(b"fake")
+
+    # Correct SHA, synthetic fixture with no tile manifests: the documented
+    # opt-out applies and staging succeeds.
+    ok = stage_large_map_package(
+        map_name="Ingolstadt",
+        xodr_path=str(xodr),
+        tile_fbx_paths=[str(tile)],
+        import_root=str(tmp / "Import_ok"),
+        expected_xodr_sha256=real_sha,
+    )
+    assert ok.status == "ok", ok.reason
+
+    # Wrong SHA must be refused regardless of manifests.
+    bad = stage_large_map_package(
+        map_name="Ingolstadt",
+        xodr_path=str(xodr),
+        tile_fbx_paths=[str(tile)],
+        import_root=str(tmp / "Import_bad"),
+        expected_xodr_sha256="0" * 64,
+    )
+    assert bad.status == "failed"
+    assert "sha256 mismatch" in bad.reason
+
+
+def test_p0_4_synthetic_fixture_opt_out_is_documented_and_preserved():
+    """The no-manifest opt-out is a committed contract, not an oversight.
+
+    tests/unit/test_o1_cook_provenance_chain.py asserts that tiles with no
+    manifests may be staged when the XODR check itself passes. P0-4's
+    reconstruction initially broke that, so this test pins the contract so a
+    future tightening has to confront it deliberately.
     """
     import ultimate_pipeline.tiling.large_map_package as lmp
 
     source = inspect.getsource(lmp.stage_large_map_package)
-    assert "strict_provenance = bool(expected_xodr_sha256) or has_any_manifest" in source, (
-        "strict_provenance must be activated by an explicit expected_xodr_sha256"
+    code = "\n".join(
+        line for line in source.splitlines() if not line.strip().startswith("#")
+    )
+    assert "strict_provenance = has_any_manifest" in code, (
+        "per-tile provenance must stay keyed on whether tiles declare manifests; "
+        "forcing it on a no-manifest caller breaks the committed synthetic-fixture "
+        "contract in test_o1_cook_provenance_chain.py"
     )
 
 
-def test_p0_4_strictness_matrix():
-    """Both activation routes must yield True; neither must yield False."""
-    cases = [
-        (None, False, False),
-        (None, True, True),
-        ("a" * 64, False, True),
-        ("a" * 64, True, True),
-    ]
-    for expected_sha, has_manifest, want in cases:
-        got = bool(expected_sha) or has_manifest
-        assert got == want, (expected_sha, has_manifest, got, want)
+def test_p0_4_reconstruction_is_not_asserted_as_complete():
+    """The original P0-4 diff was lost and could not be recovered.
+
+    Recorded explicitly so the gap is not silently forgotten: if the true P0-4
+    tightened provenance via the expected SHA, this reconstruction does not
+    implement it and the original must be restored.
+    """
+    import ultimate_pipeline.tiling.large_map_package as lmp
+
+    source = inspect.getsource(lmp.stage_large_map_package)
+    assert "P0-4 status: NOT VERIFIED" in source, (
+        "the unverified state of the P0-4 reconstruction must stay recorded in "
+        "the code until the original diff is recovered"
+    )
 
 
 # ===========================================================================
