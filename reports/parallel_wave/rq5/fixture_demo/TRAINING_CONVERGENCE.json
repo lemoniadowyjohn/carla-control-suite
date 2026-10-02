@@ -1,7 +1,7 @@
 {
   "claim_scope": "TEST_FIXTURE_ONLY",
-  "created_utc": "2026-10-02T20:24:26.207285+00:00",
-  "report_sha256": "dac67fcc51be0e2e4a5bd079a652dd27812f505d5494344255a0e3eaa6a042ee",
+  "created_utc": "2026-10-02T20:38:09.120455+00:00",
+  "report_sha256": "747cd54a4a7149beff91db4cfef0cdecc40e80bfd3427b086454ad1e86c12edc",
   "schema": "rq5_training_convergence_v1",
   "scientific_performance": {
     "assessed": false,
@@ -64,7 +64,7 @@
         "code": "checkpoint_manifest_binding",
         "data": {
           "checkpoint_sha256": "dff08ef825b4bffdcbff3580b421a0616473f8661cdde3c6a85dbe483bb63dbc",
-          "protocol_sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440"
+          "protocol_sha256": "c8cdd011b37ce370f7329d8c444202746cb2b55e9583b084c49a815ede179f2a"
         },
         "detail": "checkpoint sha256 and provenance match the manifest",
         "status": "PASS"

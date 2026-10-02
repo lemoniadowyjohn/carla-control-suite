@@ -58,7 +58,7 @@
       "shared_sample_identities": 0
     }
   ],
-  "created_utc": "2026-10-02T20:23:20.913180+00:00",
+  "created_utc": "2026-10-02T20:37:26.857492+00:00",
   "group_identity_checks": [
     {
       "exclusive": true,
@@ -141,55 +141,55 @@
   "temporal_adjacency_checks": [
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_000",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated|cap_000",
       "examples": [],
       "frame_count": 4
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_001",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated|cap_001",
       "examples": [],
       "frame_count": 4
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_002",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated|cap_002",
       "examples": [],
       "frame_count": 4
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_003",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated|cap_003",
       "examples": [],
       "frame_count": 4
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_004",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated|cap_004",
       "examples": [],
       "frame_count": 4
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated|cap_005",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated|cap_005",
       "examples": [],
       "frame_count": 4
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual|cap_000",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\manual|cap_000",
       "examples": [],
       "frame_count": 3
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual|cap_001",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\manual|cap_001",
       "examples": [],
       "frame_count": 3
     },
     {
       "adjacent_role_breaches": 0,
-      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual|cap_002",
+      "capture_id": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\manual|cap_002",
       "examples": [],
       "frame_count": 3
     }

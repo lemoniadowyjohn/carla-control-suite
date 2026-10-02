@@ -1,21 +1,21 @@
 {
   "artifacts_sha256": {
     "checkpoint": "dff08ef825b4bffdcbff3580b421a0616473f8661cdde3c6a85dbe483bb63dbc",
-    "dataset_quality_generated": "c996af3ae4115ae3e44d3625b99d5a0021f1150aca7d477454211a62fd69a6f5",
-    "dataset_quality_manual": "6897f508becc2049453a3593c2c31e8c8319400afc708b45e73fcb79415ee99f",
-    "leakage_audit": "c30d6f7a494986d1e2accf041cde5c38a70b9e26765ec409df2e31d250665407",
-    "model_manifest": "0f1ec1bb3c5ed453e3f5c0e06097154b23061c612ffd53421d173d292257e45b",
-    "split_manifest::generated_test": "dd2fb4a558328af6170529c7de406e6e04ac4b67b3bc877637fea18dc27dae61",
-    "split_manifest::generated_train": "2c7a54347f9e8685ee7be1fe29082885a94b21f9766cf4e810b45c54d91e2919",
-    "split_manifest::generated_validation": "efd78d5c25f98781359f8e793d940accdcb2bddd512dc49239490b6aa2958c06",
-    "split_manifest::manual_test": "f3fe9f614c4989034b0669efe8177ae6c74ad46284d642c40970731910669b1d",
-    "training_convergence": "6e484cde2914ac9728747e7cc73f275792670fe104f0064aa49f5d1a759912af",
+    "dataset_quality_generated": "77f413b2a906260d3e5afaa26117f696fe85a8a6564897825575c602a4436aa2",
+    "dataset_quality_manual": "c7dffb3e0c7d94b4fdb33f3c8bb70b78197ada8efdbc94bb2b5ca5f7a9256232",
+    "leakage_audit": "9c96d5df54b664f42f4fe686404c757e4daa336ff80bb20b1e457e9551855cf6",
+    "model_manifest": "4e01afca15621402503d7283c5f22066a501dc011724cca3a30d4c0efbf4ba35",
+    "split_manifest::generated_test": "42acd81e1b6093cad89a994a82f22bc089cb395b56fbdcd1a62187c87cb0644e",
+    "split_manifest::generated_train": "338578c0cfcc3c8546de3e7f866847b28c9586738a5566ecf83881912dc344a1",
+    "split_manifest::generated_validation": "b6b9b58492a64968974a8dd3eff65d3047cf0b01be8c45a2ae9c1659b2027612",
+    "split_manifest::manual_test": "a319074bb26f925d0699499e24ef29ffd85e50902f24256591e1a143d42746ae",
+    "training_convergence": "d7f7abdf9fc26e39c81ccf21e7b99ca43e5d89dfab019022acb00360f9967032",
     "training_history": "72d45551f5bca9e30508f958d088f91527effefc58a63e2b3bae1f8fc8f57b92"
   },
   "checkpoint_policy": "final_epoch_only",
   "claim_boundary": "Synthetic fixture run with claim_scope=TEST_FIXTURE_ONLY. It demonstrates that the RQ5 offline chain executes and that the gates agree. It is not RQ5 evidence, it trains no governed model, and no metric produced here may be quoted as an RQ5 result. Final RQ5 training remains blocked on a validated RQ3 paired dataset.",
   "claim_scope": "TEST_FIXTURE_ONLY",
-  "created_utc": "2026-10-02T20:24:27.056338+00:00",
+  "created_utc": "2026-10-02T20:38:09.973221+00:00",
   "dataset_quality": {
     "generated": "PASS",
     "manual": "PASS"
@@ -27,8 +27,8 @@
   "is_rq5_evidence": false,
   "leakage_free": true,
   "manual_frames": 9,
-  "protocol_sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
-  "report_sha256": "d30316ae3661529da582574bd66b62125a2be892a108a68a75576e9b3f942d2c",
+  "protocol_sha256": "c8cdd011b37ce370f7329d8c444202746cb2b55e9583b084c49a815ede179f2a",
+  "report_sha256": "542cf832649d520865db7a0a739b966117dc3c333d94e908a7eaed9009a8233d",
   "role_frame_counts": {
     "generated_test": 4,
     "generated_train": 16,

@@ -59,12 +59,12 @@
   "code": {
     "available": true,
     "branch": "opencode/batch12-rq5-readiness-20261002",
-    "commit": "d13a5f9322446ff0bd4568257ee4d5904bf79e83",
+    "commit": "e5e5da4d294476ab7caf27d8c232b88133df0c1e",
     "dirty": true,
     "reason": null,
     "repo_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5"
   },
-  "created_utc": "2026-10-02T20:24:21.522132+00:00",
+  "created_utc": "2026-10-02T20:38:04.230935+00:00",
   "dataset": {
     "test_identities": {
       "generated_test": {
@@ -74,7 +74,7 @@
         "group_kind": "route_segment",
         "identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
         "role": "generated_test",
-        "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+        "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated",
         "schema": "rq5_split_entry/v1"
       },
       "manual_test": {
@@ -84,7 +84,7 @@
         "group_kind": "route_segment",
         "identity_sha256": "7f8e603647cd1ea6c42c3fbd7c5cd82275140f12043d663c33162c42fa3bed04",
         "role": "manual_test",
-        "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\manual",
+        "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\manual",
         "schema": "rq5_split_entry/v1"
       }
     },
@@ -95,14 +95,14 @@
       "group_kind": "route_segment",
       "identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
       "role": "generated_train",
-      "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+      "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated",
       "schema": "rq5_split_entry/v1"
     },
     "train_identity_complete": true,
     "train_identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
     "train_root_count": 1,
     "train_roots": [
-      "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated"
+      "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated"
     ],
     "train_strategy": "single_root",
     "validation_identity": {
@@ -112,7 +112,7 @@
       "group_kind": "route_segment",
       "identity_sha256": "a6ca3053cdaebcecb633a1c9bead0c7b8d027ce82e53f1d047463288d3c6053a",
       "role": "generated_validation",
-      "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+      "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated",
       "schema": "rq5_split_entry/v1"
     },
     "validation_identity_complete": true,
@@ -210,10 +210,12 @@
       "selection_consults_manual": false,
       "validation_selects_epoch": false
     },
+    "digest_normalizes_line_endings": true,
     "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\configs\\rq5_protocol_freeze_v2.json",
     "relpath": "configs/rq5_protocol_freeze_v2.json",
     "schema": "rq5_protocol_freeze/v2",
-    "sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+    "sha256": "c8cdd011b37ce370f7329d8c444202746cb2b55e9583b084c49a815ede179f2a",
+    "sha256_raw_bytes": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
     "status": "FROZEN"
   },
   "schema": "rq5_model_manifest_v1",
