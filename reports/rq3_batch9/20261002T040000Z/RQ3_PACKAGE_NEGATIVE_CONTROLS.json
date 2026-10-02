@@ -1,0 +1,104 @@
+{
+  "control_count": 12,
+  "controls": [
+    {
+      "control": "wrong_staged_xodr_sha",
+      "intent": "validator must FAIL when the expected XODR SHA does not match the staged file",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "missing_package_json",
+      "intent": "validator must FAIL with package.json absent",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "missing_package_name_descriptor",
+      "intent": "validator must FAIL with <PackageName>.json absent",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "missing_tile",
+      "intent": "validator must FAIL when a governed tile is absent",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "extra_tile",
+      "intent": "validator must FAIL on an undeclared tile present on disk",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "duplicate_tile_declaration",
+      "intent": "duplicate declaration must be detected as a count mismatch",
+      "observed": "REJECTED_DUPLICATE",
+      "rejected": true
+    },
+    {
+      "control": "wrong_tile_prefix",
+      "intent": "wrong map prefix in the tile filename must be rejected",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "wrong_map_name",
+      "intent": "wrong map/package name in the descriptor must be rejected",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "foreign_tile_from_another_run",
+      "intent": "a tile FBX from an unrelated campaign must be rejected",
+      "observed": "FAIL",
+      "rejected": true
+    },
+    {
+      "control": "wrong_coordinate_frame_identity",
+      "intent": "tampered frame authority in the sidecar must be rejected",
+      "observed": "REJECTED_FRAME_IDENTITY",
+      "rejected": true
+    },
+    {
+      "control": "wrong_placement_authority",
+      "intent": "absent placement authority must be rejected",
+      "observed": "REJECTED_NO_PLACEMENT",
+      "rejected": true
+    },
+    {
+      "control": "grid0821_substituted_for_grid0828",
+      "intent": "Grid0821 must not be accepted in place of the Ingolstadt package",
+      "observed": "REJECTED_GRID0821",
+      "rejected": true
+    }
+  ],
+  "generated_at_utc": "2026-10-02T10:05:46.270747+00:00",
+  "lineage_validator_on_clean_package": {
+    "exit_code": 0,
+    "overall": "PASS"
+  },
+  "manual_arm_authority": {
+    "grid0821_substituted": false,
+    "manual_grid0828_present": true,
+    "manual_grid0828_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "registry_keys": [
+      "auto_map_of_record",
+      "auto_map_of_record_c29_superseded",
+      "auto_map_of_record_deepaudit_superseded",
+      "auto_map_of_record_junctionfix_superseded",
+      "auto_map_of_record_prec29_superseded",
+      "auto_map_of_record_reproregen1_superseded",
+      "auto_map_of_record_reproregen2_superseded",
+      "auto_map_of_record_round5_hygienefix_superseded",
+      "auto_map_of_record_round6_elevationfix_superseded",
+      "manual_grid0828"
+    ]
+  },
+  "overall": "PASS",
+  "rejected_count": 12,
+  "schema": "rq3_package_negative_controls/v1",
+  "source_package": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-p1\\Import\\.staging\\20260924T100614Z_rq3batch9\\Ingolstadt",
+  "source_package_tree_sha_note": "each control starts from a fresh copy"
+}
