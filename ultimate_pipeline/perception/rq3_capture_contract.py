@@ -59,6 +59,12 @@ REQUIRED_ARM_IDENTITY_KEYS = (
     "simulation_physics_sha256",
     "runtime_sensor_rig_sha256",
     "vehicle_calibration_binding_sha256",
+    # Simulation timing is a comparability identity like any other: a pair
+    # captured at different fixed_delta / fps / sync settings is not the same
+    # experiment, so it must be bound and compared like the others. It was
+    # previously omitted while sim_timing_identity() already computed it, which
+    # let two differently-timed arms pass the pair contract.
+    "sim_timing_sha256",
 )
 
 #: Identity keys whose absence invalidates a pair claim.  These are the fields
@@ -71,6 +77,9 @@ GOVERNED_ENVIRONMENT_IDENTITY_KEYS = (
     "simulation_physics_sha256",
     "runtime_sensor_rig_sha256",
     "vehicle_calibration_binding_sha256",
+    # Existence is mandatory for sim timing too: an arm that never recorded how
+    # it was timed cannot be shown to be comparable with the other arm.
+    "sim_timing_sha256",
 )
 
 CLAIM_SENSOR_SMOKE = "SENSOR_SMOKE"
@@ -691,6 +700,7 @@ def build_pair_manifest(
     simulation_physics_sha256: str = "",
     runtime_sensor_rig_sha256: str = "",
     vehicle_calibration_binding_sha256: str = "",
+    sim_timing_sha256: str = "",
     weather_schema_version: str = "",
 ) -> Dict[str, Any]:
     manifest: Dict[str, Any] = {
@@ -714,6 +724,7 @@ def build_pair_manifest(
         "simulation_physics_sha256": str(simulation_physics_sha256),
         "runtime_sensor_rig_sha256": str(runtime_sensor_rig_sha256),
         "vehicle_calibration_binding_sha256": str(vehicle_calibration_binding_sha256),
+        "sim_timing_sha256": str(sim_timing_sha256),
         "manual_arm": dict(manual_arm),
         "auto_arm": dict(auto_arm),
         "pair_route_closure": str(pair_route_closure),
@@ -747,8 +758,13 @@ def validate_pair_manifest(
         al = auto.get(key)
         top = manifest.get(key)
 
-        if key in GOVERNED_ENVIRONMENT_IDENTITY_KEYS and require_governed_environment:
-            # Arm-level identity must EXIST on both arms.
+        if require_governed_environment:
+            # Arm-level identity must EXIST on both arms, and at pair level.
+            # This applies to every mandatory key, not only the governed
+            # environment subset: a pair whose calibration, rig, capture-config
+            # or route identity is absent from an arm is not comparable, and
+            # Batch 9 section 18 requires all eleven to be present for both
+            # arms and at pair level.
             if not ml:
                 reasons.append(f"{PAIR_ARM_IDENTITY_MISSING}:manual:{key}")
             if not al:
@@ -805,11 +821,17 @@ def validate_pair_manifest(
             reasons.append("claim_ingolstadt_requires_manual_ingolstadt_arm")
         if not is_ingolstadt_auto_arm(auto_map):
             reasons.append("claim_ingolstadt_requires_auto_ingolstadt_xodr_arm")
+    # A manifest that declares itself invalid is invalid. Previously the result
+    # was `valid = not reasons`, so `pair_valid=False` with no other detected
+    # reason surfaced as `valid=True` -- the exact inversion Batch 9 forbids.
+    if not pair_valid:
+        reasons.append("pair_valid_is_false")
     if pair_valid and reasons:
         return {"valid": False, "pair_valid": pair_valid, "claim_level": claim,
                 "invalid_reasons": reasons,
                 "pair_route_closure": manifest.get("pair_route_closure")}
-    return {"valid": not reasons, "pair_valid": pair_valid, "claim_level": claim,
+    return {"valid": (pair_valid and not reasons), "pair_valid": pair_valid,
+            "claim_level": claim,
             "invalid_reasons": reasons,
             "pair_route_closure": manifest.get("pair_route_closure"),
             "required_arm_identity_keys": list(REQUIRED_ARM_IDENTITY_KEYS),
