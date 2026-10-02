@@ -1,0 +1,94 @@
+{
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "cross_lane_file_collisions": [],
+  "cross_lane_ownership_violations": [],
+  "declared_ownership": {
+    "RQ2": [
+      "ultimate_pipeline/domain_gap/"
+    ],
+    "RQ4": [
+      "ultimate_pipeline/domain_gap_gnn/",
+      "reports/parallel_wave/rq4/"
+    ],
+    "RQ5": [
+      "ultimate_pipeline/perception/"
+    ]
+  },
+  "generated_at_utc": "2026-10-02T22:52:05.678303+00:00",
+  "per_lane": {
+    "RQ2": {
+      "files_changed_count": 17,
+      "files_outside_primary_ownership": [
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_CROSS_IMPLEMENTATION_ORACLE.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_EXISTING_IMPLEMENTATION_AUDIT.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_METRIC_PROVENANCE.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_NEGATIVE_CONTROLS.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_PROMOTION_PLAN.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.md",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_SENSITIVITY.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_UNCERTAINTY.json",
+        "tests/unit/test_rq2_metric_authority.py",
+        "tools/rq2_oracle_compare.py",
+        "tools/rq2_regenerate_candidate.py",
+        "tools/rq2_sensitivity_uncertainty.py",
+        "ultimate_pipeline/analysis/spatial_bootstrap.py"
+      ],
+      "primary_ownership": [
+        "ultimate_pipeline/domain_gap/"
+      ],
+      "unexpected_files": []
+    },
+    "RQ4": {
+      "files_changed_count": 13,
+      "files_outside_primary_ownership": [
+        "tests/unit/test_rq4_reproducibility_pack.py",
+        "tools/rq4_reproducibility_pack.py"
+      ],
+      "primary_ownership": [
+        "ultimate_pipeline/domain_gap_gnn/",
+        "reports/parallel_wave/rq4/"
+      ],
+      "unexpected_files": []
+    },
+    "RQ5": {
+      "files_changed_count": 34,
+      "files_outside_primary_ownership": [
+        "configs/rq5_protocol_freeze_v2.json",
+        "reports/parallel_wave/rq5/.gitignore",
+        "reports/parallel_wave/rq5/RQ5_EVIDENCE_INDEX.json",
+        "reports/parallel_wave/rq5/RQ5_NEGATIVE_CONTROLS.json",
+        "reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
+        "reports/parallel_wave/rq5/RQ5_TEST_REGRESSION.json",
+        "reports/parallel_wave/rq5/fixture_demo/RQ5_FIXTURE_GATE_DEMO.json",
+        "reports/parallel_wave/rq5/fixture_demo/RQ5_SPLIT_LEAKAGE_AUDIT.json",
+        "reports/parallel_wave/rq5/fixture_demo/TRAINING_CONVERGENCE.json",
+        "reports/parallel_wave/rq5/fixture_demo/generated/DATASET_QUALITY.json",
+        "reports/parallel_wave/rq5/fixture_demo/manual/DATASET_QUALITY.json",
+        "reports/parallel_wave/rq5/fixture_demo/run/seed_7/TRAINING_HISTORY.json",
+        "reports/parallel_wave/rq5/fixture_demo/run/seed_7/model_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/generated_test_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/manual_test_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/train_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/validation_manifest.json",
+        "tests/unit/test_rq5_dataset_quality_gate.py",
+        "tests/unit/test_rq5_dataset_split_authority.py",
+        "tests/unit/test_rq5_evaluation_roles.py",
+        "tests/unit/test_rq5_negative_controls.py",
+        "tests/unit/test_rq5_preflight.py",
+        "tests/unit/test_rq5_protocol_v2_contract.py",
+        "tests/unit/test_rq5_research_strict_mode.py",
+        "tests/unit/test_rq5_training_convergence_gate.py",
+        "tools/rq5_fixture_gate_demo.py",
+        "tools/rq5_negative_controls.py",
+        "tools/rq5_preflight.py"
+      ],
+      "primary_ownership": [
+        "ultimate_pipeline/perception/"
+      ],
+      "unexpected_files": []
+    }
+  },
+  "schema": "PARALLEL_LANE_SCOPE_AUDIT/v1",
+  "status": "PASS"
+}

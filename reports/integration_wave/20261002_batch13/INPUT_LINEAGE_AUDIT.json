@@ -1,0 +1,515 @@
+{
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "base_is_ancestor_of_all_lanes": false,
+  "generated_at_utc": "2026-10-02T22:51:48.529463+00:00",
+  "lane_merge_bases": {
+    "RQ2": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+    "RQ4": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+    "RQ5": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6"
+  },
+  "lanes": [
+    {
+      "commit_exists": true,
+      "file_scope": [
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_CROSS_IMPLEMENTATION_ORACLE.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_EXISTING_IMPLEMENTATION_AUDIT.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_METRIC_PROVENANCE.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_NEGATIVE_CONTROLS.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_PROMOTION_PLAN.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.md"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_SENSITIVITY.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'reports/parallel_wave/rq2/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_UNCERTAINTY.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq2_metric_authority.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'tools/rq2_'",
+          "justified": true,
+          "path": "tools/rq2_oracle_compare.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'tools/rq2_'",
+          "justified": true,
+          "path": "tools/rq2_regenerate_candidate.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'tools/rq2_'",
+          "justified": true,
+          "path": "tools/rq2_sensitivity_uncertainty.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ2 allowed supporting pattern 'ultimate_pipeline/analysis/spatial_bootstrap.py'",
+          "justified": true,
+          "path": "ultimate_pipeline/analysis/spatial_bootstrap.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ2 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/domain_gap/rq2_metric_authority.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ2 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/domain_gap/rq2_sensitivity_analysis.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ2 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/domain_gap/rq2_uncertainty_report.py"
+        }
+      ],
+      "files_changed": [
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_CROSS_IMPLEMENTATION_ORACLE.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_EXISTING_IMPLEMENTATION_AUDIT.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_METRIC_PROVENANCE.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_NEGATIVE_CONTROLS.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_PROMOTION_PLAN.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.md",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_SENSITIVITY.json",
+        "reports/parallel_wave/rq2/20261002_batch10/RQ2_UNCERTAINTY.json",
+        "tests/unit/test_rq2_metric_authority.py",
+        "tools/rq2_oracle_compare.py",
+        "tools/rq2_regenerate_candidate.py",
+        "tools/rq2_sensitivity_uncertainty.py",
+        "ultimate_pipeline/analysis/spatial_bootstrap.py",
+        "ultimate_pipeline/domain_gap/rq2_metric_authority.py",
+        "ultimate_pipeline/domain_gap/rq2_sensitivity_analysis.py",
+        "ultimate_pipeline/domain_gap/rq2_uncertainty_report.py"
+      ],
+      "files_changed_count": 17,
+      "is_descendant_of_base": false,
+      "lane": "RQ2",
+      "lane_commit_count_ahead_of_merge_base": 1,
+      "merge_base_with_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "on_remote": false,
+      "result_sha": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
+      "status": "IN_SCOPE",
+      "tree_sha": "d788900b158d6006f624304f216bec6a0e04e7fe",
+      "unexpected_files": []
+    },
+    {
+      "commit_exists": true,
+      "file_scope": [
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/FINAL_VERDICT.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_AGGREGATE_RECOMPUTATION.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_CHECKPOINT_DURABILITY.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_CLEAN_CLONE_REPRODUCIBILITY.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_LEAKAGE_REVERIFICATION.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_NEGATIVE_CONTROLS.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_REPRODUCIBILITY_MANIFEST.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/RQ4_SUPERSESSION_PLAN.json"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "reports/parallel_wave/rq4/TEST_RESULTS.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ4 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq4_reproducibility_pack.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ4 allowed supporting pattern 'tools/rq4_'",
+          "justified": true,
+          "path": "tools/rq4_reproducibility_pack.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ4 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/domain_gap_gnn/reproducibility_pack.py"
+        }
+      ],
+      "files_changed": [
+        "reports/parallel_wave/rq4/FINAL_VERDICT.json",
+        "reports/parallel_wave/rq4/RQ4_AGGREGATE_RECOMPUTATION.json",
+        "reports/parallel_wave/rq4/RQ4_CHECKPOINT_DURABILITY.json",
+        "reports/parallel_wave/rq4/RQ4_CLEAN_CLONE_REPRODUCIBILITY.json",
+        "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+        "reports/parallel_wave/rq4/RQ4_LEAKAGE_REVERIFICATION.json",
+        "reports/parallel_wave/rq4/RQ4_NEGATIVE_CONTROLS.json",
+        "reports/parallel_wave/rq4/RQ4_REPRODUCIBILITY_MANIFEST.json",
+        "reports/parallel_wave/rq4/RQ4_SUPERSESSION_PLAN.json",
+        "reports/parallel_wave/rq4/TEST_RESULTS.json",
+        "tests/unit/test_rq4_reproducibility_pack.py",
+        "tools/rq4_reproducibility_pack.py",
+        "ultimate_pipeline/domain_gap_gnn/reproducibility_pack.py"
+      ],
+      "files_changed_count": 13,
+      "is_descendant_of_base": false,
+      "lane": "RQ4",
+      "lane_commit_count_ahead_of_merge_base": 2,
+      "merge_base_with_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "on_remote": false,
+      "result_sha": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
+      "status": "IN_SCOPE",
+      "tree_sha": "4666ee97069d2f8f555a90f267beca9100932f84",
+      "unexpected_files": []
+    },
+    {
+      "commit_exists": true,
+      "file_scope": [
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'configs/rq5_'",
+          "justified": true,
+          "path": "configs/rq5_protocol_freeze_v2.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/.gitignore"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/RQ5_EVIDENCE_INDEX.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/RQ5_NEGATIVE_CONTROLS.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/RQ5_PREFLIGHT.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/RQ5_TEST_REGRESSION.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/RQ5_FIXTURE_GATE_DEMO.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/RQ5_SPLIT_LEAKAGE_AUDIT.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/TRAINING_CONVERGENCE.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/generated/DATASET_QUALITY.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/manual/DATASET_QUALITY.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/run/seed_7/TRAINING_HISTORY.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/run/seed_7/model_manifest.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/generated_test_manifest.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/manual_test_manifest.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/train_manifest.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'reports/parallel_wave/rq5/'",
+          "justified": true,
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/validation_manifest.json"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_dataset_quality_gate.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_dataset_split_authority.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_evaluation_roles.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_negative_controls.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_preflight.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_protocol_v2_contract.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_research_strict_mode.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tests/'",
+          "justified": true,
+          "path": "tests/unit/test_rq5_training_convergence_gate.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tools/rq5_'",
+          "justified": true,
+          "path": "tools/rq5_fixture_gate_demo.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tools/rq5_'",
+          "justified": true,
+          "path": "tools/rq5_negative_controls.py"
+        },
+        {
+          "area": "SUPPORTING",
+          "basis": "matches RQ5 allowed supporting pattern 'tools/rq5_'",
+          "justified": true,
+          "path": "tools/rq5_preflight.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ5 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/perception/dataset_quality_gate.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ5 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/perception/dataset_split_authority.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ5 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/perception/min_train_segmentation.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ5 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/perception/rq5_provenance.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ5 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/perception/train_launcher.py"
+        },
+        {
+          "area": "PRIMARY_OWNERSHIP",
+          "basis": "matches RQ5 primary ownership prefix",
+          "justified": true,
+          "path": "ultimate_pipeline/perception/training_convergence_gate.py"
+        }
+      ],
+      "files_changed": [
+        "configs/rq5_protocol_freeze_v2.json",
+        "reports/parallel_wave/rq5/.gitignore",
+        "reports/parallel_wave/rq5/RQ5_EVIDENCE_INDEX.json",
+        "reports/parallel_wave/rq5/RQ5_NEGATIVE_CONTROLS.json",
+        "reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
+        "reports/parallel_wave/rq5/RQ5_TEST_REGRESSION.json",
+        "reports/parallel_wave/rq5/fixture_demo/RQ5_FIXTURE_GATE_DEMO.json",
+        "reports/parallel_wave/rq5/fixture_demo/RQ5_SPLIT_LEAKAGE_AUDIT.json",
+        "reports/parallel_wave/rq5/fixture_demo/TRAINING_CONVERGENCE.json",
+        "reports/parallel_wave/rq5/fixture_demo/generated/DATASET_QUALITY.json",
+        "reports/parallel_wave/rq5/fixture_demo/manual/DATASET_QUALITY.json",
+        "reports/parallel_wave/rq5/fixture_demo/run/seed_7/TRAINING_HISTORY.json",
+        "reports/parallel_wave/rq5/fixture_demo/run/seed_7/model_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/generated_test_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/manual_test_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/train_manifest.json",
+        "reports/parallel_wave/rq5/fixture_demo/splits/validation_manifest.json",
+        "tests/unit/test_rq5_dataset_quality_gate.py",
+        "tests/unit/test_rq5_dataset_split_authority.py",
+        "tests/unit/test_rq5_evaluation_roles.py",
+        "tests/unit/test_rq5_negative_controls.py",
+        "tests/unit/test_rq5_preflight.py",
+        "tests/unit/test_rq5_protocol_v2_contract.py",
+        "tests/unit/test_rq5_research_strict_mode.py",
+        "tests/unit/test_rq5_training_convergence_gate.py",
+        "tools/rq5_fixture_gate_demo.py",
+        "tools/rq5_negative_controls.py",
+        "tools/rq5_preflight.py",
+        "ultimate_pipeline/perception/dataset_quality_gate.py",
+        "ultimate_pipeline/perception/dataset_split_authority.py",
+        "ultimate_pipeline/perception/min_train_segmentation.py",
+        "ultimate_pipeline/perception/rq5_provenance.py",
+        "ultimate_pipeline/perception/train_launcher.py",
+        "ultimate_pipeline/perception/training_convergence_gate.py"
+      ],
+      "files_changed_count": 34,
+      "is_descendant_of_base": false,
+      "lane": "RQ5",
+      "lane_commit_count_ahead_of_merge_base": 23,
+      "merge_base_with_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "on_remote": false,
+      "result_sha": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
+      "status": "IN_SCOPE",
+      "tree_sha": "80744ab5ff74c5b461b53b1f3409dab4005465c4",
+      "unexpected_files": []
+    }
+  ],
+  "lanes_branched_from_ancestor_of_base": true,
+  "schema": "INTEGRATION_INPUT_LINEAGE_AUDIT/v1",
+  "scope_violations": [],
+  "status": "PASS"
+}
