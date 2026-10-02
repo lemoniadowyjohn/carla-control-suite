@@ -1,0 +1,150 @@
+{
+  "byte_diff_explanation": "8 bytes per pair differ, all wall-clock timestamps; file size identical 83425996; road/junction counts identical",
+  "comparison_policy": "No normalization of unknown fields except documented wall-clock timestamps; structural/ counts compared exactly.",
+  "complete_receipts": [
+    "reports\\rq1a_runs\\run_00\\rq1_complete_receipt_run_00.json",
+    "reports\\rq1a_runs\\run_01\\rq1_complete_receipt_run_01.json",
+    "reports\\rq1a_runs\\run_02\\rq1_complete_receipt_run_02.json",
+    "reports\\rq1a_runs\\run_03\\rq1_complete_receipt_run_03.json",
+    "reports\\rq1a_runs\\run_04\\rq1_complete_receipt_run_04.json"
+  ],
+  "feature_counts": [
+    {
+      "lane_driving": 34953,
+      "lane_none": 32919,
+      "lane_restricted": 5,
+      "lane_sidewalk": 17614,
+      "line": 26899,
+      "paramPoly3": 55824
+    },
+    {
+      "lane_driving": 34953,
+      "lane_none": 32919,
+      "lane_restricted": 5,
+      "lane_sidewalk": 17614,
+      "line": 26899,
+      "paramPoly3": 55824
+    },
+    {
+      "lane_driving": 34953,
+      "lane_none": 32919,
+      "lane_restricted": 5,
+      "lane_sidewalk": 17614,
+      "line": 26899,
+      "paramPoly3": 55824
+    },
+    {
+      "lane_driving": 34953,
+      "lane_none": 32919,
+      "lane_restricted": 5,
+      "lane_sidewalk": 17614,
+      "line": 26899,
+      "paramPoly3": 55824
+    },
+    {
+      "lane_driving": 34953,
+      "lane_none": 32919,
+      "lane_restricted": 5,
+      "lane_sidewalk": 17614,
+      "line": 26899,
+      "paramPoly3": 55824
+    }
+  ],
+  "input_sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+  "junction_count": [
+    3717,
+    3717,
+    3717,
+    3717,
+    3717
+  ],
+  "normalization": "strip SUMO wall-clock timestamps: COMMENT generated on YYYY-MM-DD HH:MM:SS and header date attribute; SHA256 over remainder",
+  "normalized_unique": 1,
+  "normalized_xodr_sha256": [
+    "ea69a3b2123aa63897ae83f08c4dfe4d6ede75733b907529ea0018426180467b",
+    "ea69a3b2123aa63897ae83f08c4dfe4d6ede75733b907529ea0018426180467b",
+    "ea69a3b2123aa63897ae83f08c4dfe4d6ede75733b907529ea0018426180467b",
+    "ea69a3b2123aa63897ae83f08c4dfe4d6ede75733b907529ea0018426180467b",
+    "ea69a3b2123aa63897ae83f08c4dfe4d6ede75733b907529ea0018426180467b"
+  ],
+  "osm": {
+    "merged_input_sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+    "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "producer_config_sha": "c196d328a77423233aa9ba1e83610321708c693c986bbe8442e1205024bcd7b1",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "size": 11154738
+  },
+  "producer_git_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "raw_unique": 5,
+  "raw_xodr_sha256": [
+    "ea9c848f3c335635cec5b0b6673d8e2a4bdbb5c4aee4cfe89ad013aa1e52a173",
+    "9e18007ad095e5a999d5e74ed0802d28c5856313445bae1cf493745365aa69e8",
+    "9670ccc0a7718741b9bc66607eb10dd4d12b1934691c904e3dd36882d02a1238",
+    "90bcf1d6e2d46ce508b06e00d7a53bd708e76722f5b3fcdd46650c32eec3bbf9",
+    "61c5792b0b4b90bd62ddb0a77642166141f1493cd5960615313a1cbb949935b5"
+  ],
+  "road_count": [
+    32919,
+    32919,
+    32919,
+    32919,
+    32919
+  ],
+  "run_count": 5,
+  "runs": [
+    "run_00",
+    "run_01",
+    "run_02",
+    "run_03",
+    "run_04"
+  ],
+  "schema": "rq1a_five_run_matrix/v1",
+  "structural_signature": [
+    "64cac5909720d5cec037ac8de861d4569acebf02067683bf85d67c5e75d7e90f",
+    "64cac5909720d5cec037ac8de861d4569acebf02067683bf85d67c5e75d7e90f",
+    "64cac5909720d5cec037ac8de861d4569acebf02067683bf85d67c5e75d7e90f",
+    "64cac5909720d5cec037ac8de861d4569acebf02067683bf85d67c5e75d7e90f",
+    "64cac5909720d5cec037ac8de861d4569acebf02067683bf85d67c5e75d7e90f"
+  ],
+  "structural_unique": 1,
+  "topology_counts": [
+    {
+      "connections": 22892,
+      "junctions": 3717,
+      "lane_links": 32255,
+      "roads": 32919
+    },
+    {
+      "connections": 22892,
+      "junctions": 3717,
+      "lane_links": 32255,
+      "roads": 32919
+    },
+    {
+      "connections": 22892,
+      "junctions": 3717,
+      "lane_links": 32255,
+      "roads": 32919
+    },
+    {
+      "connections": 22892,
+      "junctions": 3717,
+      "lane_links": 32255,
+      "roads": 32919
+    },
+    {
+      "connections": 22892,
+      "junctions": 3717,
+      "lane_links": 32255,
+      "roads": 32919
+    }
+  ],
+  "total_road_length": [
+    1498925.1195554074,
+    1498925.1195554074,
+    1498925.1195554074,
+    1498925.1195554074,
+    1498925.1195554074
+  ],
+  "verdict": "BYTE_NONDETERMINISTIC_NORMALIZED_DETERMINISTIC"
+}
