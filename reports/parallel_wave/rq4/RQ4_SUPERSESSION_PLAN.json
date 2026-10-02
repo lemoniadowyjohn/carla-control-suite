@@ -1,0 +1,128 @@
+{
+  "candidate_git_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "contradictory_artifact_count": 2,
+  "current_authority": {
+    "leak_free_retrain_aggregate": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json",
+    "master_close_verification": "reports/production_readiness/20260924T120000Z_RQ1_RQ4_MASTER_CLOSE/RQ4_MASTER_CLOSE_VERIFICATION.json",
+    "sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba",
+    "sha256_master_close": "cad952033fa0abb6ced6268aad2942ec67f05aac110350d698d2c22921d35576",
+    "thesis_progress_doc_sha256": "a8b32da72561ab76ee2438dc0cef86c81eac87c266063773be848b01c544ae19"
+  },
+  "items": [
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json",
+      "current_classification": "SUPERSEDED",
+      "current_sha256": "e66a455284584b562cd3124dd62c057d1a348152cc1b86b3d106ce6a8ffe3bd9",
+      "reason": "Leaky five-seed generation. GAP-010 established that the eval-pair reference hash-matched content present in its training set, so this number cannot be cited as an honest train/eval split.",
+      "replacement_artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json",
+      "replacement_sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba",
+      "supersedes_relationship": "leak-free five-seed GAP-010 retrain supersedes the leaky five-seed number; both retained, leaky one not citable"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/seed_42/gnn_training_report.json",
+      "current_classification": "SUPERSEDED",
+      "current_sha256": "24658316b70c039a2d9973735f77080b532960aa057e09bd7f8e714c3d70f4c4",
+      "reason": "Per-seed report of the leaky generation; superseded as a source of an RQ4 number.",
+      "replacement_artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json",
+      "replacement_sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba",
+      "supersedes_relationship": "leak-free five-seed GAP-010 retrain supersedes the leaky five-seed number; both retained, leaky one not citable"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE_PREBUGFIX_20260826/aggregate_stats.json",
+      "current_classification": "SUPERSEDED",
+      "current_sha256": "c47286a47dc1abd777882e98f587ff78e4c10638bbcb9abbfd6354e212ad5ab4",
+      "reason": "Pre-graph-bugfix generation (2026-08-26). Superseded twice over: by the 2026-09-01 bugfix and then by the 2026-09-24 leak-free retrain.",
+      "replacement_artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json",
+      "replacement_sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba",
+      "supersedes_relationship": "leak-free five-seed GAP-010 retrain supersedes the leaky five-seed number; both retained, leaky one not citable"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "RQ4_SEED_RECOVERY.json",
+      "current_classification": "STALE",
+      "current_sha256": "9b90851bdaa3fb38e23605221641075d8e8c8907f47603f196c21123c1bb8efa",
+      "reason": "Directly contradicts the committed leak-free campaign: it reports complete_valid 0 with empty per-seed states and recommends 'Retraining required'. The retrain was executed on 2026-09-24 and its aggregates are committed. Note its expected_seeds were [1,2,3,4,5] while the executed campaign used [42,43,44,45,46], so the recovery artifact was tracking a seed set that was never run.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/production_readiness/20260923_MASTER_CLOSURE_PLAN/PLAN.md",
+      "current_classification": "STALE",
+      "current_sha256": "696b5e0f2dc9a478045b2524a1f1c027ea68e50308c54d47457f80772e808974",
+      "reason": "Lists RQ4 as blocked by GAP-010 with retraining 'not yet actionable'; both resolved on 2026-09-23/24.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/production_readiness/20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT/TEST_RESULTS.json",
+      "current_classification": "STALE",
+      "current_sha256": "df0cb7a66aa022627c0f247fb6b094211864b18fced2ab2c1162faf6a9451b57",
+      "reason": "Excludes tests/unit/test_rq4_gnn_provenance.py on an IndentationError that no longer exists, superseding itself with a false coverage claim.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/THESIS_VS_CURRENT_STATE_COMPARISON_20260827.md",
+      "current_classification": "CONTRADICTORY",
+      "current_sha256": "b2ce55519fbcad243d5a3ea943a98ebf99d098c7b2444a9c74d3e717923ffe0d",
+      "reason": "Presents cosine_distance mean 1.1537 as the current C21 result. That is the PREBUGFIX generation's number; the 2026-09-01 C21 aggregate in the same tree reads 0.6434 and the leak-free retrain reads 0.9207. Three mutually inconsistent 'current' RQ4 numbers are live in the tree.",
+      "replacement_artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json",
+      "replacement_sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba",
+      "supersedes_relationship": "leak-free five-seed GAP-010 retrain supersedes the leaky five-seed number; both retained, leaky one not citable"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/production_readiness/20260915T233000Z_DOMAIN_GAP_GNN_V2/GNN_SCHEMA_CHECKPOINT_AUDIT.json",
+      "current_classification": "CONTRADICTORY",
+      "current_sha256": "ed38226a2a1fe083a05fa9780959968c32ca5cd51a92f485344ade7e59038f8b",
+      "reason": "Marks descriptive placeholder identifiers as VERIFIED; already reclassified LEGACY_DESCRIPTIVE_PROVENANCE by HISTORICAL_PROVENANCE_CLASSIFICATION.json.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.json",
+      "current_classification": "SUPERSEDED",
+      "current_sha256": "5d7e8d735fac6b80807d0196f0ef287c49e79c8cd93821c814dc26793f2f48f2",
+      "reason": "Ranks the leaky 0.6434 as [AUTHORITATIVE] and anchors it via evidence_sha256, which is why the C21 aggregate must not be edited in place. Promotion requires re-anchoring, not overwriting.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/rq_tables.md",
+      "current_classification": "SUPERSEDED",
+      "current_sha256": "70bb4c6f5078b034e91589df6f53840e6b02fe8f76e4b7b46db0d2b5d78e31a6",
+      "reason": "Markdown twin of the above.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    },
+    {
+      "action_in_this_lane": "NONE (integration batch performs promotion)",
+      "artifact": "reports/post_audit_hardening/C19_THESIS_ASSEMBLY/THESIS_RUN_BUNDLE.md",
+      "current_classification": "SUPERSEDED",
+      "current_sha256": "74c11da8f0ae862d0c7f3ba7a07696c46a8594fcdf42f7b76d5d29a5d5194c54",
+      "reason": "Cites the leaky bootstrap CI as the RQ4 authoritative interval.",
+      "replacement_artifact": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+      "replacement_sha256": "generated_at_commit (see RQ4_REPRODUCIBILITY_MANIFEST.json candidate_git_sha)",
+      "supersedes_relationship": "classified stale/contradictory here"
+    }
+  ],
+  "policy": "This parallel lane classifies and plans only. Canonical historical artifacts are neither edited, deleted nor quarantined here. The integration batch performs promotion, and must re-anchor rq_tables.json evidence_sha256 rather than overwrite the C21 aggregate in place.",
+  "promotion_performed_in_this_lane": false,
+  "schema": "RQ4_SUPERSESSION_PLAN/v1",
+  "stale_artifact_count": 3,
+  "superseded_artifact_count": 6
+}

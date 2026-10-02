@@ -1,0 +1,132 @@
+{
+  "counts": {
+    "AVAILABLE_AND_HASH_VERIFIED": 0,
+    "AVAILABLE_HASH_MISMATCH": 0,
+    "EXTERNAL_ONLY": 5,
+    "MISSING": 0
+  },
+  "integrity_anomalies": [
+    {
+      "anomaly": "cross_record_checkpoint_sha256_disagreement",
+      "detail": "POST_HOC_LEAKAGE_AUDIT.json and RQ4_MASTER_CLOSE_VERIFICATION.json record different SHA256 values for the same five checkpoint paths while recording the SAME MD5 for each. Two different SHA256 values cannot both hash the same bytes, so the two artifacts hashed different targets. Neither can be resolved without the checkpoint files.",
+      "md5_cross_record_agreement": true,
+      "resolution": "EXTERNAL_PATH_UNAVAILABLE",
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ]
+    }
+  ],
+  "per_seed": [
+    {
+      "classification": "EXTERNAL_ONLY",
+      "committed_to_git": false,
+      "committed_to_git_basis": "RESULTS.md states per-seed checkpoints are gitignored, matching the C21 precedent; the absent files in this checkout are consistent with that.",
+      "md5": "acdb7f57bd6a10b62bac4991c45da3cc",
+      "path_under_producer_worktree": true,
+      "producer_worktree_present": false,
+      "recorded_path": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_42\\checkpoints\\map_encoder_epoch50.pt",
+      "seed": 42,
+      "sha256_cross_record_agreement": false,
+      "sha256_master_close": "f8866a652447a619e36177192f2687aa02defc08b46c876dd6ed0c37003a40ee",
+      "sha256_observed_in_this_environment": "MISSING",
+      "sha256_post_hoc_audit": "6d39198fccaff24b7291cbde54d7f0be04a7f879687696ac14373d45c54d3db6"
+    },
+    {
+      "classification": "EXTERNAL_ONLY",
+      "committed_to_git": false,
+      "committed_to_git_basis": "RESULTS.md states per-seed checkpoints are gitignored, matching the C21 precedent; the absent files in this checkout are consistent with that.",
+      "md5": "25ee5406c514a4f40e8ccc74561deb30",
+      "path_under_producer_worktree": true,
+      "producer_worktree_present": false,
+      "recorded_path": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "seed": 43,
+      "sha256_cross_record_agreement": false,
+      "sha256_master_close": "f8719df17f62a174060acd60ce39481578cc60e9e2699bc9e7ce96311a1d0342",
+      "sha256_observed_in_this_environment": "MISSING",
+      "sha256_post_hoc_audit": "79965135d12945dc9d02bd184d30367d7e87aaf0d2b69b5eacc5ead3f323c144"
+    },
+    {
+      "classification": "EXTERNAL_ONLY",
+      "committed_to_git": false,
+      "committed_to_git_basis": "RESULTS.md states per-seed checkpoints are gitignored, matching the C21 precedent; the absent files in this checkout are consistent with that.",
+      "md5": "d3d4073f9e3416468e0bc0a4b14dda6d",
+      "path_under_producer_worktree": true,
+      "producer_worktree_present": false,
+      "recorded_path": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_44\\checkpoints\\map_encoder_epoch50.pt",
+      "seed": 44,
+      "sha256_cross_record_agreement": false,
+      "sha256_master_close": "e528b5443509f4faf167ed7fa9f3987feb608ac493b05b6369f53b161e8ab1a2",
+      "sha256_observed_in_this_environment": "MISSING",
+      "sha256_post_hoc_audit": "4f935285709ec6efaa0469643dbcd23eda8f6a93ab105704998a3444d1fdec8e"
+    },
+    {
+      "classification": "EXTERNAL_ONLY",
+      "committed_to_git": false,
+      "committed_to_git_basis": "RESULTS.md states per-seed checkpoints are gitignored, matching the C21 precedent; the absent files in this checkout are consistent with that.",
+      "md5": "213af83e592095d6ff7b60590b2e46cf",
+      "path_under_producer_worktree": true,
+      "producer_worktree_present": false,
+      "recorded_path": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "seed": 45,
+      "sha256_cross_record_agreement": false,
+      "sha256_master_close": "16b9d92f64cff9b5a33c0dd22f750e943ff1ac357b79a0753c263aa9467578d0",
+      "sha256_observed_in_this_environment": "MISSING",
+      "sha256_post_hoc_audit": "1b144836334cf9d5aafca7451da42d87fe6cbcaae1b2749725e7ca5af4c79826"
+    },
+    {
+      "classification": "EXTERNAL_ONLY",
+      "committed_to_git": false,
+      "committed_to_git_basis": "RESULTS.md states per-seed checkpoints are gitignored, matching the C21 precedent; the absent files in this checkout are consistent with that.",
+      "md5": "3cb146e6a0d091f143e67e41f29957a3",
+      "path_under_producer_worktree": true,
+      "producer_worktree_present": false,
+      "recorded_path": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_46\\checkpoints\\map_encoder_epoch50.pt",
+      "seed": 46,
+      "sha256_cross_record_agreement": false,
+      "sha256_master_close": "f0447409d2c015f8e77ca723238f5c309dd205ca62379815e088120a2672a2a2",
+      "sha256_observed_in_this_environment": "MISSING",
+      "sha256_post_hoc_audit": "469eded69fa28a56a731945dc1c60b13888ccd101ca8ecc7ed42d9f7124ff207"
+    }
+  ],
+  "policy": "Large checkpoints are not required to be committed to Git. Reproducibility therefore states how each is recovered or regenerated, and downgrades honestly when neither is possible.",
+  "recovery_or_regeneration": {
+    "recovery": {
+      "available_in_this_environment": false,
+      "per_seed_path_template": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_{seed}\\checkpoints\\map_encoder_epoch50.pt",
+      "source_base_commit": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "source_branch": "fix/gap010-rq4-leakfree-retrain-20260924",
+      "source_worktree": "G:\\gap010-rq4-retrain-20260924"
+    },
+    "regeneration": {
+      "blocked_in_this_clean_clone": true,
+      "blocked_reason": "Two of the three required inputs are absent from a clean clone, so the checkpoints can be neither recovered nor bit-reproduced here.",
+      "code_paths": [
+        "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py",
+        "ultimate_pipeline/domain_gap_gnn/graph_builder.py",
+        "ultimate_pipeline/domain_gap_gnn/map_tile_dataset.py",
+        "ultimate_pipeline/domain_gap_gnn/map_encoder.py",
+        "ultimate_pipeline/domain_gap_gnn/train_map_encoder.py",
+        "ultimate_pipeline/domain_gap_gnn/run_ksweep.py",
+        "ultimate_pipeline/domain_gap_gnn/latent_gap_runner.py",
+        "ultimate_pipeline/domain_gap_gnn/reproducibility_pack.py",
+        "ultimate_pipeline/tools/run_gnn_pipeline.py",
+        "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/run_seed_ensemble_leakfree.py",
+        "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/post_hoc_leakage_audit.py",
+        "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/compute_aggregate_stats.py"
+      ],
+      "deterministic": true,
+      "entrypoint": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/run_seed_ensemble_leakfree.py",
+      "inputs_required": [
+        "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles (562 tiles, NOT committed)",
+        "cities/ingolstadt/manual_grid0821.xodr (NOT committed)",
+        "reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr (committed)"
+      ]
+    }
+  },
+  "schema": "RQ4_CHECKPOINT_DURABILITY/v1",
+  "status": "CONTRADICTORY_CROSS_RECORD_HASHES"
+}

@@ -1,0 +1,45 @@
+{
+  "aggregate_recomputation": "RECOMPUTED_MATCHES_COMMITTED",
+  "aggregate_recomputation_superseded_generations": "BOOTSTRAP_PROTOCOL_DRIFT",
+  "base_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "branch": "opencode/batch11-rq4-repro-20261002",
+  "checkpoint_durability": "CONTRADICTORY_CROSS_RECORD_HASHES",
+  "claim_boundary": {
+    "forbidden_promotion": "The GNN representation result must not be restated as an RQ5 transfer, generalization or predictive-accuracy claim.",
+    "permutation_pvalue_transfer": {
+      "n_seed_caveat": "n=5 bootstrap CIs are fragile in the tails; the per-seed values, not the CI endpoints, are the durable evidence.",
+      "reason": "The thesis permutation p-value was computed on the pre-fix lineage. The 2026-09-24 leak-free retrain is a different trained model under a different exclusion regime, and no permutation test was recomputed for it. The bootstrap CI over n=5 seeds is therefore the only statistical support carried by the leak-free number itself.",
+      "thesis_lineage": "PRE_LEAK_FIX",
+      "thesis_protocol": "K=1000 permutation test, p<0.001",
+      "transfer_to_leak_free_metric": false
+    },
+    "rq4_latent_separation_is_not": "HELD_OUT_PERCEPTION_ACCURACY",
+    "rq4_result_kind": "IN_SAMPLE_LATENT_SEPARATION_DIAGNOSTIC"
+  },
+  "claim_boundary_preserved": true,
+  "clean_clone_reproducibility": "EVIDENCE_RECOMPUTABLE_ONLY",
+  "contradictory_artifact_count": 2,
+  "emitted_artifacts_sha256": {
+    "RQ4_AGGREGATE_RECOMPUTATION.json": "53fb034f557d1c7225713e7c1b976f0d13cb9554aea55f71446b4888fbe2cc7d",
+    "RQ4_CHECKPOINT_DURABILITY.json": "4717d767bfecb634a3ccd05c7203ad255bdbb0d2ab21292e1ab512ee1985db17",
+    "RQ4_CLEAN_CLONE_REPRODUCIBILITY.json": "ef8fe16ec063a88eb408fc59c7a5e2a6c6ff873010b981d645e957cc99d9f885",
+    "RQ4_EVIDENCE_INVENTORY.json": "137bce8ce9c4c6405171eaa00794cb44bed04be28335b0d6dd062d3c6d161ec3",
+    "RQ4_LEAKAGE_REVERIFICATION.json": "9dd20b8e5bd0c1fa643c0dfa3ef4b1c70a444a08dd09cb6a95ea06ca9b1ec843",
+    "RQ4_NEGATIVE_CONTROLS.json": "28e3b4848cbb373ba87b2bdd3c0c962444a055c1f1390ac4627822cd0698c788",
+    "RQ4_REPRODUCIBILITY_MANIFEST.json": "805b82abaefaa83fee15e6675d2db56def507ed35248cda8533d317478c4717e",
+    "RQ4_SUPERSESSION_PLAN.json": "9c78ffd3a5bd33afcea2db2e90a5233415762b26b3012e2358ff0cc988fe3c5f"
+  },
+  "final_verdict": "RQ4_EVIDENCE_CONTRADICTION_FOUND",
+  "full_retrain_attempted": false,
+  "generated_at_utc": "2026-10-02T18:44:48.010512+00:00",
+  "leakage_content_overlap_zero": true,
+  "leakage_status": "PASS_WITH_INDEPENDENTLY_UNVERIFIABLE_CHECKS",
+  "negative_controls": "ALL_CONTROLS_DETECT_FAILURE",
+  "schema": "RQ4_BATCH11_FINAL_VERDICT/v1",
+  "seeds_verified": 5,
+  "stale_artifact_count": 3,
+  "superseded_artifact_count": 6,
+  "verdict_reasons": [
+    "checkpoint SHA256 disagrees between POST_HOC_LEAKAGE_AUDIT.json and RQ4_MASTER_CLOSE_VERIFICATION.json for seeds 42, 43, 44, 45, 46 (same MD5 in both, so one artifact hashed a different target); unresolvable without the checkpoint bytes"
+  ]
+}

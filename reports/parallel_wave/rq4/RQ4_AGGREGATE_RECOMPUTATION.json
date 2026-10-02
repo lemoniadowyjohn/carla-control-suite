@@ -1,0 +1,277 @@
+{
+  "cosine_distance_similarity_complementarity": {
+    "max_abs_error_from_one": 2.9802322387695312e-08,
+    "note": "the two metrics are complements up to producer float precision; max |distance + similarity - 1| observed",
+    "per_seed": [
+      {
+        "abs_error_from_one": 2.9802322387695312e-08,
+        "index": 0,
+        "seed": 42,
+        "sum": 0.9999999701976776,
+        "within_float32_rounding": true
+      },
+      {
+        "abs_error_from_one": 1.4901161193847656e-08,
+        "index": 1,
+        "seed": 43,
+        "sum": 0.9999999850988388,
+        "within_float32_rounding": true
+      },
+      {
+        "abs_error_from_one": 2.2351741790771484e-08,
+        "index": 2,
+        "seed": 44,
+        "sum": 0.9999999776482582,
+        "within_float32_rounding": true
+      },
+      {
+        "abs_error_from_one": 7.450580596923828e-09,
+        "index": 3,
+        "seed": 45,
+        "sum": 0.9999999925494194,
+        "within_float32_rounding": true
+      },
+      {
+        "abs_error_from_one": 1.4901161193847656e-08,
+        "index": 4,
+        "seed": 46,
+        "sum": 0.9999999850988388,
+        "within_float32_rounding": true
+      }
+    ],
+    "within_float32_rounding": true
+  },
+  "disagreements": [
+    "c21_leaky_20260901.cosine_distance",
+    "c21_prebugfix_20260826.cosine_distance",
+    "c21_prebugfix_20260826.cosine_similarity"
+  ],
+  "primary_input": {
+    "note": "per-seed gnn_training_report.json files are NOT committed; the per-seed values are taken from the committed aggregate and independently cross-checked against the master-close per-seed records.",
+    "per_seed_values": {
+      "cosine_distance": [
+        0.9054968357086182,
+        0.7745578289031982,
+        0.9666854739189148,
+        0.9625548124313354,
+        0.9940629601478577
+      ],
+      "cosine_similarity": [
+        0.09450313448905945,
+        0.22544215619564056,
+        0.033314503729343414,
+        0.037445180118083954,
+        0.00593702495098114
+      ]
+    },
+    "source": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json"
+  },
+  "primary_recomputation": {
+    "disagreements": [],
+    "status": "RECOMPUTED_MATCHES_COMMITTED"
+  },
+  "protocol": {
+    "bootstrap": "percentile bootstrap of the mean, random.Random(0), n_boot=2000, indices int(0.025*2000) and int(0.975*2000)",
+    "n": 5,
+    "statistic": "mean of per-seed values",
+    "std": "sample std ddof=1 (statistics.stdev)"
+  },
+  "protocol_source": "ultimate_pipeline.domain_gap_gnn.gnn_provenance.summarize_runs (committed, unmodified)",
+  "recomputed": {
+    "cosine_distance": {
+      "committed": {
+        "ci95_bootstrap": [
+          0.8446466565132141,
+          0.9759842038154602
+        ],
+        "mean": 0.9206715822219849,
+        "std": 0.08780273258329252,
+        "values": [
+          0.9054968357086182,
+          0.7745578289031982,
+          0.9666854739189148,
+          0.9625548124313354,
+          0.9940629601478577
+        ]
+      },
+      "comparison": {
+        "bootstrap_ci_bit_identical": true,
+        "mean_absolute_difference": 0.0,
+        "std_absolute_difference": 0.0,
+        "values_bit_identical": true
+      },
+      "independent_second_input": {
+        "bit_identical": true,
+        "mean_absolute_difference": 0.0,
+        "source": "reports/production_readiness/20260924T120000Z_RQ1_RQ4_MASTER_CLOSE/RQ4_MASTER_CLOSE_VERIFICATION.json"
+      },
+      "recomputed": {
+        "bootstrap_ci95_high": 0.9759842038154602,
+        "bootstrap_ci95_low": 0.8446466565132141,
+        "ci95_high": 0.9976340706592441,
+        "ci95_low": 0.8437090937847256,
+        "max": 0.9940629601478577,
+        "mean": 0.9206715822219849,
+        "median": 0.9625548124313354,
+        "min": 0.7745578289031982,
+        "n": 5,
+        "std": 0.08780273258329252
+      }
+    },
+    "cosine_similarity": {
+      "committed": {
+        "ci95_bootstrap": [
+          0.02401578277349472,
+          0.15535332560539244
+        ],
+        "mean": 0.0793283998966217,
+        "std": 0.08780273202708723,
+        "values": [
+          0.09450313448905945,
+          0.22544215619564056,
+          0.033314503729343414,
+          0.037445180118083954,
+          0.00593702495098114
+        ]
+      },
+      "comparison": {
+        "bootstrap_ci_bit_identical": true,
+        "mean_absolute_difference": 0.0,
+        "std_absolute_difference": 0.0,
+        "values_bit_identical": true
+      },
+      "independent_second_input": {
+        "bit_identical": true,
+        "mean_absolute_difference": 0.0,
+        "source": "reports/production_readiness/20260924T120000Z_RQ1_RQ4_MASTER_CLOSE/RQ4_MASTER_CLOSE_VERIFICATION.json"
+      },
+      "recomputed": {
+        "bootstrap_ci95_high": 0.15535332560539244,
+        "bootstrap_ci95_low": 0.02401578277349472,
+        "ci95_high": 0.15629088784634554,
+        "ci95_low": 0.00236591194689785,
+        "max": 0.22544215619564056,
+        "mean": 0.0793283998966217,
+        "median": 0.037445180118083954,
+        "min": 0.00593702495098114,
+        "n": 5,
+        "std": 0.08780273202708723
+      }
+    }
+  },
+  "schema": "RQ4_AGGREGATE_RECOMPUTATION/v1",
+  "status": "RECOMPUTED_MATCHES_COMMITTED",
+  "superseded_generation_recomputation": {
+    "disagreements": [
+      {
+        "committed_bootstrap_ci95": [
+          0.616146469116211,
+          0.6760465860366821
+        ],
+        "committed_mean": 0.6433733820915222,
+        "generation": "c21_leaky_20260901",
+        "kind": "BOOTSTRAP_PROTOCOL_DRIFT_ONLY",
+        "mean_bit_identical": true,
+        "metric": "cosine_distance",
+        "recomputed_bootstrap_ci95": [
+          0.6167810678482055,
+          0.6772749543190002
+        ],
+        "recomputed_mean": 0.6433733820915222
+      },
+      {
+        "committed_bootstrap_ci95": [
+          1.0803263425827025,
+          1.2475571155548095
+        ],
+        "committed_mean": 1.153711485862732,
+        "generation": "c21_prebugfix_20260826",
+        "kind": "BOOTSTRAP_PROTOCOL_DRIFT_ONLY",
+        "mean_bit_identical": true,
+        "metric": "cosine_distance",
+        "recomputed_bootstrap_ci95": [
+          1.081218671798706,
+          1.252387237548828
+        ],
+        "recomputed_mean": 1.153711485862732
+      },
+      {
+        "committed_bootstrap_ci95": [
+          -0.24446440041065215,
+          -0.08032630681991577
+        ],
+        "committed_mean": -0.1537114590406418,
+        "generation": "c21_prebugfix_20260826",
+        "kind": "BOOTSTRAP_PROTOCOL_DRIFT_ONLY",
+        "mean_bit_identical": true,
+        "metric": "cosine_similarity",
+        "recomputed_bootstrap_ci95": [
+          -0.24755712151527404,
+          -0.08032630681991577
+        ],
+        "recomputed_mean": -0.1537114590406418
+      }
+    ],
+    "interpretation": "The superseded generations' per-seed means and sample std reproduce EXACTLY under the committed protocol; only their bootstrap interval endpoints drift by ~1e-3. That is a change in the bootstrap implementation between those runs and the currently committed summarize_runs, NOT a data or numeric contradiction. It does not touch the current leak-free authority, whose CI is bit-identical.",
+    "status": "BOOTSTRAP_PROTOCOL_DRIFT"
+  },
+  "superseded_generations": {
+    "c21_leaky_20260901": {
+      "cosine_distance": {
+        "bit_identical": false,
+        "committed_bootstrap_ci95": [
+          0.616146469116211,
+          0.6760465860366821
+        ],
+        "committed_mean": 0.6433733820915222,
+        "recomputed_bootstrap_ci95": [
+          0.6167810678482055,
+          0.6772749543190002
+        ],
+        "recomputed_mean": 0.6433733820915222
+      },
+      "cosine_similarity": {
+        "bit_identical": true,
+        "committed_bootstrap_ci95": [
+          0.32272505164146426,
+          0.3838535487651825
+        ],
+        "committed_mean": 0.3566266238689423,
+        "recomputed_bootstrap_ci95": [
+          0.32272505164146426,
+          0.3838535487651825
+        ],
+        "recomputed_mean": 0.3566266238689423
+      }
+    },
+    "c21_prebugfix_20260826": {
+      "cosine_distance": {
+        "bit_identical": false,
+        "committed_bootstrap_ci95": [
+          1.0803263425827025,
+          1.2475571155548095
+        ],
+        "committed_mean": 1.153711485862732,
+        "recomputed_bootstrap_ci95": [
+          1.081218671798706,
+          1.252387237548828
+        ],
+        "recomputed_mean": 1.153711485862732
+      },
+      "cosine_similarity": {
+        "bit_identical": false,
+        "committed_bootstrap_ci95": [
+          -0.24446440041065215,
+          -0.08032630681991577
+        ],
+        "committed_mean": -0.1537114590406418,
+        "recomputed_bootstrap_ci95": [
+          -0.24755712151527404,
+          -0.08032630681991577
+        ],
+        "recomputed_mean": -0.1537114590406418
+      }
+    }
+  },
+  "tuned_toward_historical_output": false
+}

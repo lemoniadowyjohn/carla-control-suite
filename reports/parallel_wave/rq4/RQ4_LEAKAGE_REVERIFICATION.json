@@ -1,0 +1,162 @@
+{
+  "blockers": [
+    "eval_pair_byte_hashes_recomputed_in_this_checkout",
+    "training_tile_manifest_sha_recomputed_from_tile_bytes",
+    "per_seed_checkpoint_provenance_verified_against_bytes"
+  ],
+  "checks": [
+    {
+      "check": "exclusion_set_equals_eval_pair_hashes",
+      "detail": {
+        "excluded": [
+          "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+          "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+        ],
+        "post_hoc_eval_pair": [
+          "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+          "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+        ],
+        "pre_eval_pair": [
+          "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+          "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "check": "per_seed_eval_pair_hash_overlap_zero",
+      "detail": {
+        "failing_seeds": [],
+        "n_seeds": 5
+      },
+      "result": "PASS"
+    },
+    {
+      "check": "single_consistent_training_manifest_across_seeds",
+      "detail": {
+        "distinct_manifests": [
+          "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+        ],
+        "master_close_manifest": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+      },
+      "result": "PASS"
+    },
+    {
+      "check": "pre_training_audit_zero_and_tile_count_intact",
+      "detail": {
+        "manifest_entry_count": 562,
+        "pre_training_zero_overlap": true,
+        "train_tile_count_post_exclusion": 562
+      },
+      "result": "PASS"
+    },
+    {
+      "check": "eval_pair_byte_hashes_recomputed_in_this_checkout",
+      "detail": [
+        {
+          "artifact": "cities/ingolstadt/manual_grid0821.xodr",
+          "expected_sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+          "observed_sha256": "MISSING",
+          "reason": "artifact absent from this checkout",
+          "result": "MISSING"
+        },
+        {
+          "artifact": "reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr",
+          "expected_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+          "observed_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+          "result": "MATCH"
+        }
+      ],
+      "result": "PARTIAL"
+    },
+    {
+      "check": "training_tile_manifest_sha_recomputed_from_tile_bytes",
+      "detail": {
+        "reason": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles is absent from this checkout (562 tiles). The recorded manifest hash therefore cannot be independently recomputed here.",
+        "recorded_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+      },
+      "result": "MISSING"
+    },
+    {
+      "check": "per_seed_checkpoint_provenance_verified_against_bytes",
+      "detail": {
+        "reason": "Checkpoints exist only under the producer worktree G:/gap010-rq4-retrain-20260924/, which is not present. Recorded SHA256 values are accepted as recorded claims only."
+      },
+      "result": "EXTERNAL_PATH_UNAVAILABLE"
+    },
+    {
+      "check": "seed_identity_distinctness",
+      "detail": {
+        "criterion": "one distinct checkpoint hash per seed; no reuse"
+      },
+      "result": "PASS"
+    }
+  ],
+  "content_overlap_train_vs_eval_zero_for_every_seed": true,
+  "historical_leaky_lineage": {
+    "audit_artifact": "reports/production_readiness/20260919_RQ4_GNN_PROVENANCE/LEAKAGE_AUDIT.json",
+    "interpretation": "This FAIL is scoped to the 2026-09-01 C21 split, whose training tile bytes are absent from this checkout, so it cannot be recomputed here. It is the documented rationale for superseding the leaky number; it is NOT a statement about the 2026-09-24 leak-free retrain.",
+    "recomputable_here": false,
+    "recorded_coverage": "INCOMPLETE for the historical C21 union-tile train/test split (tile bytes absent from this checkout). The audit_leakage() helper is wired into run_ksweep-time reporting; re-run with the tile set present for a complete verdict.",
+    "recorded_eval_pair_content_in_training_set": [
+      "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8"
+    ],
+    "recorded_status": "FAIL"
+  },
+  "method": "Recorded PASS strings are NOT trusted. Every check below is re-derived from the recorded hash sets and from bytes present in this checkout. Checks that cannot be executed here are reported as MISSING or EXTERNAL_PATH_UNAVAILABLE, never as PASS.",
+  "n_seeds_verified": 5,
+  "overall_status": "PASS_WITH_INDEPENDENTLY_UNVERIFIABLE_CHECKS",
+  "per_seed": [
+    {
+      "intersection_with_eval_pair_hashes": [],
+      "n_source_tiles_recorded": 562,
+      "recomputed_overlap_is_empty": true,
+      "recorded_eval_pair_hash_overlap": [],
+      "seed": 42,
+      "status": "PASS",
+      "tile_count_matches_aggregate": true,
+      "training_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    {
+      "intersection_with_eval_pair_hashes": [],
+      "n_source_tiles_recorded": 562,
+      "recomputed_overlap_is_empty": true,
+      "recorded_eval_pair_hash_overlap": [],
+      "seed": 43,
+      "status": "PASS",
+      "tile_count_matches_aggregate": true,
+      "training_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    {
+      "intersection_with_eval_pair_hashes": [],
+      "n_source_tiles_recorded": 562,
+      "recomputed_overlap_is_empty": true,
+      "recorded_eval_pair_hash_overlap": [],
+      "seed": 44,
+      "status": "PASS",
+      "tile_count_matches_aggregate": true,
+      "training_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    {
+      "intersection_with_eval_pair_hashes": [],
+      "n_source_tiles_recorded": 562,
+      "recomputed_overlap_is_empty": true,
+      "recorded_eval_pair_hash_overlap": [],
+      "seed": 45,
+      "status": "PASS",
+      "tile_count_matches_aggregate": true,
+      "training_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    {
+      "intersection_with_eval_pair_hashes": [],
+      "n_source_tiles_recorded": 562,
+      "recomputed_overlap_is_empty": true,
+      "recorded_eval_pair_hash_overlap": [],
+      "seed": 46,
+      "status": "PASS",
+      "tile_count_matches_aggregate": true,
+      "training_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    }
+  ],
+  "schema": "RQ4_LEAKAGE_REVERIFICATION/v1"
+}
