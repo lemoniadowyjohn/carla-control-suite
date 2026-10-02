@@ -1,0 +1,84 @@
+{
+  "candidate_git_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "classification": "EVIDENCE_RECOMPUTABLE_ONLY",
+  "executed_lightweight_checks": [
+    {
+      "check": "summarize_runs_is_deterministic",
+      "detail": "identical inputs produced identical bootstrap CI",
+      "result": "PASS"
+    },
+    {
+      "check": "environment_matches_recorded_producer_environment",
+      "detail": {
+        "observed": {
+          "platform": "Windows-11-10.0.26300-SP0",
+          "python_implementation": "CPython",
+          "python_version": "3.12.2",
+          "torch_cuda_available": "False",
+          "torch_geometric_version": "2.7.0",
+          "torch_version": "2.9.1+cpu"
+        },
+        "recorded": {
+          "python_version": "3.12.2",
+          "torch_cuda_available": false,
+          "torch_geometric_version": "2.7.0",
+          "torch_version": "2.9.1+cpu"
+        }
+      },
+      "result": "PASS"
+    }
+  ],
+  "full_retrain_attempted": false,
+  "full_retrain_policy": "A 5x50-epoch CPU retrain was not performed: two required inputs are absent from any clean clone, so it could not have reproduced the original run even with the compute available. Per the batch rules an unavailable input is INCOMPLETE, never a pass.",
+  "inputs_present": {
+    "cities/ingolstadt/manual_grid0821.xodr": false,
+    "reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr": true,
+    "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles": false,
+    "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/compute_aggregate_stats.py": true,
+    "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/run_seed_ensemble_leakfree.py": true
+  },
+  "schema": "RQ4_CLEAN_CLONE_REPRODUCIBILITY/v1",
+  "steps": [
+    {
+      "capable": false,
+      "detail": "3/5 required inputs present in a clean clone: {'cities/ingolstadt/manual_grid0821.xodr': False, 'reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr': True, 'reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles': False, 'reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/run_seed_ensemble_leakfree.py': True, 'reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/compute_aggregate_stats.py': True}",
+      "status": "PARTIAL",
+      "step": "identify_exact_inputs"
+    },
+    {
+      "capable": false,
+      "detail": "union_tiles (562 training tiles) is not committed; the tile pool cannot be reconstructed from a clean clone.",
+      "status": "MISSING",
+      "step": "reconstruct_training_dataset"
+    },
+    {
+      "capable": true,
+      "detail": "Exclusion mechanism code is present and the exclusion hash set is committed, but it cannot be exercised without the tile pool.",
+      "status": "PASS",
+      "step": "apply_leak_exclusions"
+    },
+    {
+      "capable": false,
+      "detail": "No clean clone can execute the 5x50-epoch CPU retrain without the 562 tile pool and manual_grid0821.xodr. A 5x50-epoch retrain was NOT attempted in this batch and no PASS is claimed for it.",
+      "status": "INCOMPLETE",
+      "step": "execute_training_5x50_epochs"
+    },
+    {
+      "capable": true,
+      "detail": "All aggregates recomputed independently from committed per-seed values via the committed gnn_provenance.summarize_runs.",
+      "status": "PASS",
+      "step": "recompute_metrics"
+    },
+    {
+      "capable": true,
+      "detail": "2 deterministic checks executed in this clean clone.",
+      "status": "PASS",
+      "step": "lightweight_deterministic_checks"
+    }
+  ],
+  "unverifiable_here": [
+    "eval_pair_byte_hashes_recomputed_in_this_checkout",
+    "training_tile_manifest_sha_recomputed_from_tile_bytes",
+    "per_seed_checkpoint_provenance_verified_against_bytes"
+  ]
+}
