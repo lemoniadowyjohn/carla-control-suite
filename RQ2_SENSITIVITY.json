@@ -1,0 +1,32 @@
+{
+  "footprint_comparison": {
+    "bbox": {
+      "cropped_auto_roads": 6076,
+      "curvature_gap": 0.2248,
+      "junction_ratio": 6.05,
+      "lane_width_gap": 0.0614,
+      "road_count_ratio": 6.119,
+      "road_length_ratio": 4.488
+    },
+    "hull": {
+      "cropped_auto_roads": 3536,
+      "curvature_gap": 0.2206,
+      "junction_ratio": 3.782,
+      "lane_width_gap": 0.0597,
+      "road_count_ratio": 3.561,
+      "road_length_ratio": 2.683
+    }
+  },
+  "frechet_params": {
+    "footprint": "hull",
+    "match_threshold_m": 50.0,
+    "note": "spacing/threshold per thesis supplement for direct comparability; sensitivity sweep not rerun in this wave (fresh default-param recomputation reproduces reference exactly).",
+    "spacing_m": 5.0
+  },
+  "schema": "rq2_sensitivity/v1",
+  "scope_separation": {
+    "manual_hull_primary": true,
+    "warning": "whole-map ratios (~30x) are scope artifacts (full extraction vs patch) and must never be averaged with hull ratios (~3x).",
+    "whole_map_context_only": true
+  }
+}

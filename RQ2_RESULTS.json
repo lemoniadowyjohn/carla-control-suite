@@ -1,0 +1,289 @@
+{
+  "generated_at_utc": "2026-10-02T19:18:04.408167+00:00",
+  "pair": {
+    "auto": {
+      "bytes": 149799632,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    "manual": {
+      "bytes": 66530869,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+    }
+  },
+  "schema": "rq2_results/v1",
+  "scopes": {
+    "manual_hull": {
+      "footprint": "hull",
+      "implementations": {
+        "frechet_distance": "ultimate_pipeline.domain_gap.frechet_gap.compute_frechet_gap (footprint=hull, spacing_m=5.0)",
+        "ratios_gaps": "ultimate_pipeline.domain_gap.local_registration.compute_local_registration+local_structural_summary (footprint=hull)"
+      },
+      "metrics": {
+        "building_density_gap": 0.2308,
+        "curvature_gap": 0.2206,
+        "curvature_wasserstein_gap": 0.0752,
+        "frechet_distance": {
+          "mean_m": 58.18353368018363,
+          "median_m": 36.13256042794515,
+          "p90_m": 140.4752823467876,
+          "pairs": 894
+        },
+        "junction_ratio": 3.782,
+        "lane_width_gap": 0.0597,
+        "road_count_ratio": 3.561,
+        "road_length_ratio": 2.683
+      },
+      "scope": "manual_hull",
+      "support": {
+        "cropped_auto_junctions": 450,
+        "cropped_auto_length_m": 143606.1,
+        "cropped_auto_roads": 3536,
+        "full_auto_roads": 32267,
+        "manual_junctions": 119,
+        "manual_length_m": 53525.3,
+        "manual_roads": 993
+      }
+    },
+    "whole_map": {
+      "footprint": "none (full files, context only)",
+      "implementations": {
+        "connectivity_gap": "ultimate_pipeline.domain_gap.connectivity_gap.ConnectivityGap.compute",
+        "ratios": "ultimate_pipeline.tools.xodr_structural_summary.summarize_xodr (full files)",
+        "semantic_object_gap": "ultimate_pipeline.domain_gap.semantic_gap.SemanticGap.compute"
+      },
+      "metrics": {
+        "building_density_gap": null,
+        "connectivity_gap": {
+          "auto": {
+            "junction_degree": {
+              "total_connections_per_junction": {
+                "count": 3561,
+                "max": 23.0,
+                "mean": 6.343442853131143,
+                "median": 7.0,
+                "p95": 14.0
+              },
+              "unique_incoming_per_junction": {
+                "count": 3561,
+                "max": 5.0,
+                "mean": 2.626228587475428,
+                "median": 3.0,
+                "p95": 4.0
+              },
+              "unique_outgoing_per_junction": {
+                "count": 3561,
+                "max": 23.0,
+                "mean": 6.343442853131143,
+                "median": 7.0,
+                "p95": 14.0
+              }
+            },
+            "lane_count": {
+              "stats": {
+                "count": 32267,
+                "max": 8.0,
+                "mean": 1.6621935723804506,
+                "median": 1.0,
+                "p95": 3.0
+              }
+            },
+            "lane_link": {
+              "junction_lane_link_completeness_rate": 1.0,
+              "road_lane_link_valid_rate": 1.0
+            },
+            "road_link": {
+              "predecessor_declared_rate": 0.9898348157560356,
+              "predecessor_valid_rate": 1.0,
+              "roads_with_valid_pred_pct": 0.9898348157560356,
+              "roads_with_valid_succ_pct": 0.9898967985867915,
+              "successor_declared_rate": 0.9898967985867915,
+              "successor_valid_rate": 1.0,
+              "total_roads": 32267
+            }
+          },
+          "disabled": false,
+          "gap": {
+            "junction_degree": {
+              "mean_incoming_delta": -0.06284704277667297,
+              "mean_outgoing_delta": 0.25100587834122745,
+              "total_connections_l1_gap": 0.36328195979316164
+            },
+            "lane_count": {
+              "l1_gap": 0.28600201409870085,
+              "mean_delta": -41.632871885827,
+              "median_delta": -10.0
+            },
+            "lane_link": {
+              "junction_lane_link_completeness_delta": 0.0,
+              "road_lane_link_valid_rate_delta": 0.0
+            },
+            "road_link": {
+              "predecessor_declared_rate": 0.05428597386278289,
+              "predecessor_valid_rate": 0.0,
+              "roads_with_valid_pred_pct": 0.05428597386278289,
+              "roads_with_valid_succ_pct": 0.022122377640165114,
+              "successor_declared_rate": 0.022122377640165114,
+              "successor_valid_rate": 0.0
+            }
+          },
+          "manual": {
+            "junction_degree": {
+              "total_connections_per_junction": {
+                "count": 119,
+                "max": 24.0,
+                "mean": 6.092436974789916,
+                "median": 5.0,
+                "p95": 16.099999999999994
+              },
+              "unique_incoming_per_junction": {
+                "count": 119,
+                "max": 5.0,
+                "mean": 2.689075630252101,
+                "median": 3.0,
+                "p95": 4.0
+              },
+              "unique_outgoing_per_junction": {
+                "count": 119,
+                "max": 24.0,
+                "mean": 6.092436974789916,
+                "median": 5.0,
+                "p95": 16.099999999999994
+              }
+            },
+            "lane_count": {
+              "stats": {
+                "count": 993,
+                "max": 1739.0,
+                "mean": 43.29506545820745,
+                "median": 11.0,
+                "p95": 189.0
+              }
+            },
+            "lane_link": {
+              "junction_lane_link_completeness_rate": 1.0,
+              "road_lane_link_valid_rate": 1.0
+            },
+            "road_link": {
+              "predecessor_declared_rate": 0.9355488418932527,
+              "predecessor_valid_rate": 1.0,
+              "roads_with_valid_pred_pct": 0.9355488418932527,
+              "roads_with_valid_succ_pct": 0.9677744209466264,
+              "successor_declared_rate": 0.9677744209466264,
+              "successor_valid_rate": 1.0,
+              "total_roads": 993
+            }
+          }
+        },
+        "junction_ratio": 31.157,
+        "road_count_ratio": 32.494,
+        "road_length_ratio": 27.821,
+        "semantic_object_gap": {
+          "lane_markings": {
+            "auto_count": 0,
+            "auto_density": 0.0,
+            "delta_density": 0.0,
+            "manual_count": 0,
+            "manual_density": 0.0
+          },
+          "meta": {
+            "auto_total_road_length": 1489145.57524544,
+            "manual_total_road_length": 53525.29292972144,
+            "normalized": true,
+            "settings": {
+              "reference": "unknown"
+            }
+          },
+          "objects": {
+            "auto": {
+              "bench": 1122,
+              "building": 5682,
+              "crosswalk": 145,
+              "guard_rail": 21740,
+              "lamp_post": 24792,
+              "traffic_light": 21163,
+              "trash_bin": 2288
+            },
+            "delta": {
+              "barrier": -1547,
+              "bench": 1122,
+              "building": 4689,
+              "crosswalk": 145,
+              "gantry": -11,
+              "guard_rail": 21740,
+              "lamp_post": 24792,
+              "none": -22,
+              "obstacle": -469,
+              "pole": -3436,
+              "roadmark": -1998,
+              "traffic_light": 21163,
+              "trash_bin": 2288,
+              "tree": -4234,
+              "vegetation": -2043
+            },
+            "manual": {
+              "barrier": 1547,
+              "building": 993,
+              "gantry": 11,
+              "none": 22,
+              "obstacle": 469,
+              "pole": 3436,
+              "roadmark": 1998,
+              "tree": 4234,
+              "vegetation": 2043
+            }
+          },
+          "road_types": {
+            "auto_length": {
+              "town": 1489145.5752454493
+            },
+            "delta_length": {
+              "motorway": -7928.778760748474,
+              "rural": -869.1090732030341,
+              "town": 1444418.1701496795
+            },
+            "delta_normalized": {
+              "motorway": -0.14813144079676385,
+              "rural": -0.016237352952821235,
+              "town": 0.1643687937495919
+            },
+            "manual_length": {
+              "motorway": 7928.778760748474,
+              "rural": 869.1090732030341,
+              "town": 44727.4050957699
+            }
+          },
+          "traffic_lights": {
+            "auto_count": 21163,
+            "auto_density": 0.014211505142142955,
+            "delta_density": 0.014211505142142955,
+            "manual_count": 0,
+            "manual_density": 0.0
+          }
+        }
+      },
+      "scope": "whole_map",
+      "support": {
+        "auto_junctions": 22589,
+        "auto_length_m": 1489145.6,
+        "auto_roads": 32267,
+        "manual_junctions": 725,
+        "manual_length_m": 53525.3,
+        "manual_roads": 993
+      }
+    }
+  },
+  "valid_metrics": [
+    "lane_width_gap",
+    "curvature_gap",
+    "curvature_wasserstein_gap",
+    "road_count_ratio",
+    "road_length_ratio",
+    "junction_ratio",
+    "building_density_gap",
+    "frechet_distance",
+    "connectivity_gap",
+    "semantic_object_gap"
+  ]
+}

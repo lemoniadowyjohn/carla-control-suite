@@ -1,0 +1,12 @@
+{
+  "decision": "DO_NOT_OVERWRITE_HISTORICAL_CANONICAL_EVIDENCE_YET",
+  "fresh_results_match_reference": true,
+  "gates_for_promotion": [
+    "independent reviewer sign-off on RQ2_CROSS_IMPLEMENTATION_ORACLE.json",
+    "confirm historical canonical evidence path inventory (which files are canonical vs staging)",
+    "atomic promotion with SHA preservation receipt (as done for RQ3 batch9)",
+    "post-promotion re-validation via rq2_metric_authority --scope both"
+  ],
+  "notes": "Fresh manual_hull reproduction is exact (all deltas 0); promotion is a governance step, not a scientific correction.",
+  "schema": "rq2_promotion_plan/v1"
+}
