@@ -41,6 +41,7 @@
   "protocol_v2_sha256_normalized": "c8cdd011b37ce370f7329d8c444202746cb2b55e9583b084c49a815ede179f2a",
   "protocol_v2_sha256_raw_bytes": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
   "result_sha": "9da3039ff440c4456ae9a6c8cf8904d7bd211fd4",
+  "result_sha_note": "the commit that produced these artifacts; the commit that adds this index is its immediate child, because a file cannot record its own commit id",
   "result_tree": "4f94ddd7e1e04070afb79f907cb93947c29bc246",
   "schema": "rq5_batch12_evidence_index_v1",
   "tests": [
