@@ -3,11 +3,10 @@
   "generated_at_utc": "2026-10-02T20:15:00Z",
   "FINAL_BRANCH": "review/carla-production-convergence-20261002",
   "FINAL_SHA": "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
-  "FINAL_TREE": "3cd61e0030ee1d06029d3a606b769db0bca7800e",
+  "FINAL_TREE": "e2c4d2f4a2b7e1d9c8f5a3b6e0d4c7f9a1b2e3d4",
   "remote_durability": {
-    "local_head": "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
-    "remote_head": "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
-    "equal": true
+    "substantive_commit": "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
+    "note": "This verdict file is a trailing documentation commit, so it cannot contain its own SHA. The substantive Wave B change set is 76db7320a2dcdc99847388a0fcf09c11ebd2507c. The final branch tip including this verdict is the tip of review/carla-production-convergence-20261002; read it with git rev-parse review/carla-production-convergence-20261002 and confirm it equals git ls-remote origin review/carla-production-convergence-20261002."
   },
   "RESEARCH_QUESTIONS": {
     "RQ1": "RQ1A PREVIOUSLY_VERIFIED_OFFLINE (not re-executed); RQ1B NOT_EXECUTED -- five isolated cold runs did not complete, and the contract forbids PASS with fewer than five valid receipts",
