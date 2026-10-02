@@ -599,21 +599,24 @@ def apply_determinism_contract(
         import torch
 
         if strict:
+            # The recorded values are the settings READ BACK after the request,
+            # not the fact that the request did not raise: "we asked" and "we got"
+            # are different claims and only the second one is evidence.
             try:
                 torch.use_deterministic_algorithms(True)
-                uda = True
+                uda = bool(torch.are_deterministic_algorithms_enabled())
             except Exception as exc:  # pragma: no cover - build dependent
                 uda = False
                 blockers.append(f"use_deterministic_algorithms: {type(exc).__name__}: {exc}")
             try:
                 torch.backends.cudnn.deterministic = True
-                cudnn_det = True
+                cudnn_det = bool(torch.backends.cudnn.deterministic)
             except Exception as exc:  # pragma: no cover
                 cudnn_det = False
                 blockers.append(f"cudnn.deterministic: {type(exc).__name__}: {exc}")
             try:
                 torch.backends.cudnn.benchmark = False
-                cudnn_bench = True
+                cudnn_bench = bool(torch.backends.cudnn.benchmark)
             except Exception as exc:  # pragma: no cover
                 cudnn_bench = False
                 blockers.append(f"cudnn.benchmark: {type(exc).__name__}: {exc}")
