@@ -34,27 +34,27 @@
     "checkpoint_missing_parameters"
   ],
   "controls_missing": [],
-  "created_utc": "2026-10-02T20:22:04.831142+00:00",
+  "created_utc": "2026-10-02T20:39:38.612116+00:00",
   "fixture_note": "fixtures were written to a temporary directory and discarded; rerun with --workdir to keep them for inspection",
   "fixtures_persisted": false,
   "is_rq5_evidence": false,
   "missed": 0,
-  "protocol_sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+  "protocol_sha256": "c8cdd011b37ce370f7329d8c444202746cb2b55e9583b084c49a815ede179f2a",
   "rejected": 14,
-  "report_sha256": "f9e0ddd9054ebb121e4fd84fe7b2242e2ea19a63f5d9ad771c66cc646df54f18",
+  "report_sha256": "328b3c6d740c59ee155f1337bae92667eb7247c395e189834f6665112b355744",
   "rows": [
     {
       "control": "missing_explicit_dataset_research_strict",
-      "detail": "research-strict: --split-dir does not exist: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\absent_splits",
-      "evidence": "research-strict: --split-dir does not exist: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\absent_splits",
+      "detail": "research-strict: --split-dir does not exist: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls__rjyg492\\fixtures\\absent_splits",
+      "evidence": "research-strict: --split-dir does not exist: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls__rjyg492\\fixtures\\absent_splits",
       "expected": "REJECTED",
       "rejected": true,
       "status": "PASS"
     },
     {
       "control": "fallback_to_latest_dataset",
-      "detail": "research-strict: explicitly requested dataset root not found: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\no_such_dataset",
-      "evidence": "research-strict: explicitly requested dataset root not found: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls_tv80h1bw\\fixtures\\no_such_dataset",
+      "detail": "research-strict: explicitly requested dataset root not found: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls__rjyg492\\fixtures\\no_such_dataset",
+      "evidence": "research-strict: explicitly requested dataset root not found: C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_negative_controls__rjyg492\\fixtures\\no_such_dataset",
       "expected": "REJECTED",
       "rejected": true,
       "status": "PASS"
@@ -83,9 +83,9 @@
               "frame_index": 1000,
               "group_key": "ing_sim|1",
               "group_kind": "route_segment",
-              "label_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/semseg_raw/front_left_camera/00001000.png",
+              "label_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls__rjyg492/fixtures/generated/semseg_raw/front_left_camera/00001000.png",
               "label_sha256": "f739af0ad113eb7171ac1d64a31d226ebbe8757c3b32f0ece3c006dbb79c265e",
-              "rgb_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/rgb/front_left_camera/00001000.png",
+              "rgb_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls__rjyg492/fixtures/generated/rgb/front_left_camera/00001000.png",
               "rgb_sha256": "3e5a95b3f34ebd0f8ce133b09538e00dc2c537d38c4aa76c6a84d2e1d3387467",
               "role": "generated_train",
               "sample_identity": "9034882309c69723214bb53eea6b34c9325ddcc2b3397fdbba14a1dd3f4ee225"
@@ -99,9 +99,9 @@
               "frame_index": 1000,
               "group_key": "ing_sim|1",
               "group_kind": "route_segment",
-              "label_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/semseg_raw/front_left_camera/00001000.png",
+              "label_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls__rjyg492/fixtures/generated/semseg_raw/front_left_camera/00001000.png",
               "label_sha256": "f739af0ad113eb7171ac1d64a31d226ebbe8757c3b32f0ece3c006dbb79c265e",
-              "rgb_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls_tv80h1bw/fixtures/generated/rgb/front_left_camera/00001000.png",
+              "rgb_path": "C:/Users/admin/AppData/Local/Temp/rq5_negative_controls__rjyg492/fixtures/generated/rgb/front_left_camera/00001000.png",
               "rgb_sha256": "3e5a95b3f34ebd0f8ce133b09538e00dc2c537d38c4aa76c6a84d2e1d3387467",
               "role": "generated_train",
               "sample_identity": "9034882309c69723214bb53eea6b34c9325ddcc2b3397fdbba14a1dd3f4ee225"
@@ -190,7 +190,7 @@
       "detail": "ok=False",
       "evidence": {
         "failures": [
-          "checkpoint sha256 mismatch: manifest=534133499a5891a2c203352720fa41dff98cad2d011baec352a6453fee791f75 actual=e3911fb71182818661bc0187e746bda7ee51e74e58411c6617800fef7bfea5b3"
+          "checkpoint sha256 mismatch: manifest=a012938c4f77c3fdf5886c96b830e6bd17e8c7c3d02534f3756ca7f3f7c026d4 actual=bccd2ceae7fbc5705ddc490bc82e21d3d2876ac874f48d03902649db5bfba81e"
         ]
       },
       "expected": "REJECTED",

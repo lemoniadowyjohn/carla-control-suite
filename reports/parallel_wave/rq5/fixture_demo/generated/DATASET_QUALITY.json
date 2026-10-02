@@ -58,8 +58,8 @@
     "28"
   ],
   "constant_semantic_frame_count": 0,
-  "created_utc": "2026-10-02T20:23:20.592554+00:00",
-  "dataset_root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_cazi5s8_\\fixtures\\generated",
+  "created_utc": "2026-10-02T20:37:26.458034+00:00",
+  "dataset_root": "C:\\Users\\admin\\AppData\\Local\\Temp\\rq5_fixture_demo_jhu2m06v\\fixtures\\generated",
   "diagnostic": false,
   "duplicate_content_count": 0,
   "duplicate_frame_count": 0,
@@ -83,7 +83,7 @@
   "label_frame_count": 24,
   "paired_frame_count": 24,
   "quality_failures": [],
-  "report_sha256": "f74a3df726e7cb95d011b6c33baa57320a674a6bc8fce8d15a9a25e2f4996827",
+  "report_sha256": "1ea117e5ecd9fa42a4b11b83ccc8f6cd993f3afbeaee1503d9733a9a867147f4",
   "resolutions": {
     "32x32": 24
   },
