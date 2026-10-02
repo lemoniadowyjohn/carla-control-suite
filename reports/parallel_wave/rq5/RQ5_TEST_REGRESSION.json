@@ -17,25 +17,28 @@
     {
       "command": "python -m pytest tests/unit -q -k \"rq5 or dataset_split or dataset_quality or training_convergence\"",
       "scope": "targeted (new + existing RQ5/perception)",
-      "passed": 218,
+      "run": "final",
+      "passed": 219,
       "failed": 0,
       "skipped": 0,
       "deselected": 2577,
-      "warnings": 7,
-      "duration_s": 285.22
+      "warnings": 5,
+      "duration_s": 334.48
     },
     {
       "command": "python -m pytest tests/unit -q",
       "scope": "full unit suite",
-      "passed": 2790,
+      "run": "final",
+      "passed": 2791,
       "failed": 0,
       "skipped": 5,
-      "warnings": 119,
-      "duration_s": 1874.23
+      "warnings": 113,
+      "duration_s": 1941.70
     },
     {
       "command": "python -m pytest tests/quality tests/domain_gap tests/opendrive_geometry tests/topology tests/carla_tools -q",
       "scope": "broader offline (unrelated subsystems)",
+      "run": "pre-final",
       "passed": 2056,
       "failed": 0,
       "warnings": 3,
@@ -44,10 +47,28 @@
     {
       "command": "python -m pytest tests/contracts tests/phase_q tests/test_crosswalk_schema.py tests/test_r13_c0r_tag_freeze.py tests/test_r13_digest_v2.py tests/test_r13_evidence.py tests/test_r13_governed_payload_guard.py tests/test_r13_mutation_allowlist.py tests/test_stage_i_integrity.py -q",
       "scope": "broader offline (contracts/governance)",
+      "run": "pre-final",
       "passed": 173,
       "failed": 4,
       "warnings": 4,
-      "duration_s": 204.06
+      "duration_s": 204.06,
+      "note": "the 4 failures are all in tests/contracts/test_no_dead_pipeline_signals.py and are reproduced at BASE_SHA; see baseline_comparison"
+    },
+    {
+      "command": "python tools/rq5_preflight.py --out-dir reports/parallel_wave/rq5",
+      "scope": "RQ5 preflight (no dataset)",
+      "result": "final_status=RQ5_OFFLINE_READY_DATASET_BLOCKED",
+      "dataset_blocked": true
+    },
+    {
+      "command": "python tools/rq5_negative_controls.py --out reports/parallel_wave/rq5/RQ5_NEGATIVE_CONTROLS.json",
+      "scope": "RQ5 negative-control battery",
+      "result": "status=PASS rejected=14 missed=0"
+    },
+    {
+      "command": "python tools/rq5_fixture_gate_demo.py",
+      "scope": "RQ5 offline chain on synthetic fixtures",
+      "result": "technical_convergence=PASS scientific_performance=NOT_ASSESSED_OFFLINE leakage_free=true claim_scope=TEST_FIXTURE_ONLY"
     }
   ],
   "failures_observed": [
@@ -79,7 +100,7 @@
     "conclusion": "the same 4 tests fail at BASE_SHA; they are not introduced by this lane"
   },
   "new_regression_count": 0,
-  "targeted_pass": 218,
+  "targeted_pass": 219,
   "targeted_fail": 0,
   "regression_classification": "NEW_REGRESSION=0 (4 pre-existing failures in tests/contracts/test_no_dead_pipeline_signals.py, confirmed failing at BASE_SHA)",
   "note": "No CARLA runtime was started. No RQ5 final training was executed. Every dataset exercised by this lane is a synthetic fixture with claim_scope=TEST_FIXTURE_ONLY."
