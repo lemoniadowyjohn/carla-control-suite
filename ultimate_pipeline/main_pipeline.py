@@ -1653,6 +1653,33 @@ if str(_repo_root) not in sys.path:
             except Exception as e:
                 print(f"⚠️ Pipeline health summary skipped: {e}")
             self._write_run_status(status="ok", stage="done")
+            # The declared sole run authority (FINAL_RUN_VERDICT, HARD_GATE,
+            # required by every release profile) must actually be persisted for
+            # this run. It is computed here rather than inside _run_internal
+            # because it reads pipeline_health_summary.json and run_status.json,
+            # both of which are only complete once _run_internal has returned.
+            try:
+                from ultimate_pipeline.signals.verdict import write_final_run_verdict
+
+                verdict = write_final_run_verdict(
+                    self.out_dir,
+                    profile=getattr(self.settings, "RELEASE_PROFILE", None),
+                    settings=self.settings,
+                )
+                self.vreport.add_dict(
+                    "final_run_verdict",
+                    {
+                        "status": verdict.get("status"),
+                        "run_status_ok": verdict.get("run_status_ok"),
+                        "blocking_failures": verdict.get("blocking_failures"),
+                    },
+                )
+                print(
+                    f"[INFO] Final run verdict: {verdict.get('status')} "
+                    f"→ {os.path.join(self.out_dir, 'final_run_verdict.json')}"
+                )
+            except Exception as e:
+                print(f"⚠️ Final run verdict not written: {e}")
             return self.out_dir
         except Exception as e:
             # Keep console signal for local debugging

@@ -174,7 +174,7 @@ SIGNAL_REGISTRY: dict[str, dict[str, Any]] = {
     },
     "FINAL_RUN_VERDICT": {
         "signal_id": "FINAL_RUN_VERDICT",
-        "producer": "ultimate_pipeline.main_pipeline._compute_final_run_verdict",
+        "producer": "ultimate_pipeline.signals.verdict.write_final_run_verdict",
         "artifact": "final_run_verdict.json",
         "class": SignalClass.HARD_GATE.value,
         "enabled_by": [],
@@ -190,7 +190,7 @@ SIGNAL_REGISTRY: dict[str, dict[str, Any]] = {
     },
     "SUCCESS_MARKER": {
         "signal_id": "SUCCESS_MARKER",
-        "producer": "ultimate_pipeline.main_pipeline._finalize_run_pack_gated",
+        "producer": "ultimate_pipeline.utils.finalize_run_pack.finalize_run_pack",
         "artifact": "SUCCESS.txt",
         "class": SignalClass.HARD_GATE.value,
         "enabled_by": [],
