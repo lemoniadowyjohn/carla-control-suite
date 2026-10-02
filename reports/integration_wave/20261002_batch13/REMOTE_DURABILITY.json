@@ -1,0 +1,24 @@
+{
+  "artifacts_sha256": {
+    "INPUT_LINEAGE_AUDIT.json": "26755c5244520f31253cbf0d407a79ba83ae2520416a977d470917ccb5af325b",
+    "MERGE_DECISION.json": "c7de801b16708614ee155769e2577f27c2db457511a23f481fdc6c7cf9b89cc8",
+    "PARALLEL_LANE_SCOPE_AUDIT.json": "f171c021863d70c16add699f5bfdd97c78e73872fe214fb41d90e6b871be93d1",
+    "PATCH_DUPLICATION.json": "88dce7b1e463294c4dd370ef7e630e1dd7d49217f7e24633c3a3444be43f1711",
+    "SIGNAL_RECONCILIATION.json": "4903b28336afeffff4a1b7670a0c8473897b2c5da15789bc8c1a713837420f73",
+    "SUCCESS_MARKER_CONSISTENCY.json": "9c5004ff752c71c6e721d4b96ff258a3995bcc8ae7b26f5f889ff2a907d47fdd"
+  },
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "branch": "review/carla-research-integration-20261002",
+  "integrated_tree": "6a391ead5285aa216833c8f0b76bea95c8da7005",
+  "lane_result_shas": {
+    "RQ2": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
+    "RQ4": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
+    "RQ5": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b"
+  },
+  "local_equals_remote": true,
+  "local_head": "357795c146bc9e8dba95737f00aa2432bc085d73",
+  "note": "This branch durably stores lane integration plus the signal reconciliation. It is NOT the section 34 converged candidate: sections 9-28 and 30-32 were not executed, so no regression, evidence-graph, closure-matrix or readiness-matrix gate has been produced. Do not treat it as INTEGRATED_OFFLINE_PRODUCTION_CANDIDATE.",
+  "remote_head": "357795c146bc9e8dba95737f00aa2432bc085d73",
+  "schema": "REMOTE_DURABILITY/v1",
+  "stage": "INTERMEDIATE_CHECKPOINT_NOT_CONVERGED_CANDIDATE"
+}
