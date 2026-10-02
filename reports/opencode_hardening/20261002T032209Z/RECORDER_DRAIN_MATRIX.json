@@ -1,0 +1,27 @@
+{
+  "finding": "B",
+  "thread_kill_limitation": "A Python thread cannot be force-killed. This method does not pretend otherwise. A hard bound requires isolating strict writer execution in a separate process whose lifetime can be terminated; that is documented in the method docstring and is NOT implemented here.",
+  "timeout_is_real": "test_drain_timeout_is_real_not_indefinite asserts elapsed < 5s for a 0.5s timeout against a writer blocked 30s",
+  "defect_found": "join_writer_threads accepted timeout_s then executed 'del timeout_s' before executor.shutdown(wait=True), which blocks until every job finishes. A hanging writer hung the caller forever and the timeout was a lie.",
+  "structural_guard": "test_timeout_is_not_a_lie_in_source parses the AST and fails if timeout_s is deleted, if time.monotonic() is absent, if shutdown(wait=True) returns, or if cancel_futures=True is used",
+  "on_timeout_behaviour": [
+    "stop accepting new callbacks",
+    "report executing jobs separately from pending",
+    "never declare capture PASS",
+    "quarantine output as DRAIN_INCOMPLETE.json",
+    "emit all pending frame ids"
+  ],
+  "schema": "recorder_drain_matrix/v1",
+  "cancel_futures_deliberately_unused": "Every queued job is an already-accepted frame. Cancelling a not-yet-started one would silently discard a frame the recorder promised to write, which is exactly the silent loss this module exists to prevent.",
+  "states_are_reachable": [
+    "WRITER_DRAIN_PASS: test_drain_returns_pass_when_writer_finishes",
+    "WRITER_DRAIN_TIMEOUT: test_drain_timeout_is_real_not_indefinite",
+    "WRITER_DRAIN_FAILURE: test_drain_failure_state_is_representable"
+  ],
+  "states": [
+    "WRITER_DRAIN_PASS",
+    "WRITER_DRAIN_TIMEOUT",
+    "WRITER_DRAIN_FAILURE"
+  ],
+  "result": "PASS"
+}

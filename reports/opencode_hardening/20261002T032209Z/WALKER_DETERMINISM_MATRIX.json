@@ -1,0 +1,30 @@
+{
+  "manifest_schema": "WALKER_SCENARIO_MANIFEST/v1",
+  "defect_found": "world.get_random_location_from_navigation() is CARLA-side randomness governed by the server, NOT by the Python seed tree, yet it drove pedestrian spawns and destinations while the run was reported as seeded.",
+  "strategy": "A - pre-resolve CARLA nav locations once, materialize into a hashed scenario manifest both paired arms replay",
+  "entry_identity": [
+    "walker_index",
+    "blueprint",
+    "spawn_transform",
+    "destination_transform",
+    "max_speed",
+    "seed_tree_branch",
+    "scenario_manifest_sha256"
+  ],
+  "explosion_guard": "test_carla_nav_randomness_is_never_reached_in_governed_runs uses a world that raises if get_random_location_from_navigation is consulted",
+  "ungoverned_refused": "test_ungoverned_random_walker_position_is_refused: a CARLA-random position yields controlled=False with WALKER_POSITION_UNGOVERNED and spawns nothing",
+  "result": "PASS",
+  "ungoverned_is_labelled": "test_manifest_marks_carla_random_positions_ungoverned asserts governed=False and spawn_provenance='nav_carla_random'",
+  "finding": "G",
+  "schema": "walker_determinism_matrix/v1",
+  "provenance_values": [
+    "nav_governed_pool",
+    "nav_carla_random",
+    "rng_fallback",
+    "unresolved"
+  ],
+  "governed_provenance": [
+    "nav_governed_pool",
+    "rng_fallback"
+  ]
+}

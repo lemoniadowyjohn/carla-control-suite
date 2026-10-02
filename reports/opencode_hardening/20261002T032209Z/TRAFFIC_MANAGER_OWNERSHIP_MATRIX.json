@@ -1,0 +1,25 @@
+{
+  "release_paths_verified": [
+    "acquire -> close -> next run claims the port",
+    "acquire -> exception -> next run claims the port",
+    "failed get_trafficmanager after claim -> registry not poisoned",
+    "failed set_random_device_seed after claim -> registry not poisoned",
+    "close() twice is safe"
+  ],
+  "claim_key": "(tm_port, owner_token) cross-checked against run_uuid; process_id recorded",
+  "defect_found": "The process registry stored session_id, whose default is host:port. Two different session objects sharing host and port compared EQUAL, so the second master claim silently succeeded.",
+  "setup_failure_releases_claim": true,
+  "release_is_transactional": true,
+  "negative_control": "test_second_master_with_same_label_is_rejected: two sessions both labelled '127.0.0.1:8000' with different owner tokens; the second is rejected",
+  "context_manager": true,
+  "result": "PASS",
+  "human_label_has_no_authority": true,
+  "finding": "E",
+  "schema": "traffic_manager_ownership_matrix/v1",
+  "close_contract": [
+    "detach governed actor ownership metadata (owner_session_id -> None)",
+    "release the master claim",
+    "mark the session closed",
+    "idempotent"
+  ]
+}

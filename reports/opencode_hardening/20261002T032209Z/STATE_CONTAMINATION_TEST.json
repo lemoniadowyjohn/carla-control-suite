@@ -1,0 +1,80 @@
+{
+  "run_A": {
+    "sensor_actor_id": 11,
+    "frames": [
+      1,
+      2,
+      3
+    ],
+    "tm_port": 8000,
+    "experiment_seed": 1001,
+    "walker_pool": "POOL_A"
+  },
+  "run_B": {
+    "sensor_actor_id": 22,
+    "frames": [
+      101,
+      102,
+      103
+    ],
+    "tm_port": 8000,
+    "experiment_seed": 2002,
+    "walker_pool": "POOL_B"
+  },
+  "result": "PASS_OFFLINE",
+  "assertions": [
+    {
+      "check": "no TM master ownership from A",
+      "how": "B acquires the SAME port 8000; had A leaked, B's acquire would raise TRAFFIC_MANAGER_MULTIPLE_MASTERS before reaching the assertions",
+      "result": "PASS"
+    },
+    {
+      "check": "no scenario actors from A",
+      "how": "registry.verify_clean() clean for both runs; live_walkers and live_controllers empty",
+      "result": "PASS"
+    },
+    {
+      "check": "no callbacks from A",
+      "how": "B's recorder callback_frame_ids == [101,102,103]",
+      "result": "PASS"
+    },
+    {
+      "check": "no writer work from A",
+      "how": "B drain_state == WRITER_DRAIN_PASS with pending 0",
+      "result": "PASS"
+    },
+    {
+      "check": "no frame ids from A",
+      "how": "A and B callback frame sets are disjoint",
+      "result": "PASS"
+    },
+    {
+      "check": "no RNG state leakage",
+      "how": "process-GLOBAL random seeded to 4242 produces the identical next 5 draws after run B executes; a seed-tree-only check could not see this",
+      "result": "PASS"
+    },
+    {
+      "check": "no walker destination leakage",
+      "how": "B destinations are disjoint from A and drawn only from POOL_B",
+      "result": "PASS"
+    },
+    {
+      "check": "seed identity differs",
+      "how": "seed_tree_sha256 differs between runs",
+      "result": "PASS"
+    },
+    {
+      "check": "same inputs reproduce identical state",
+      "how": "two runs at seed 3003 produce identical seed/manifest/destinations/frames/drain",
+      "result": "PASS"
+    }
+  ],
+  "live_variant": {
+    "reason": "no CARLA server; a live back-to-back pair over real residual world state was not executed",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  "tm_ledger_detachment": "test_tm_ledger_is_detached_on_close asserts owner_session_id -> None and detached -> True after close",
+  "finding": "I",
+  "schema": "state_contamination_test/v1",
+  "execution_mode": "two runs sequentially IN ONE PROCESS, duck-typed doubles, no server contacted"
+}
