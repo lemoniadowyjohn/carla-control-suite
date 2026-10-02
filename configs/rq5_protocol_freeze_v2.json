@@ -1,0 +1,268 @@
+{
+  "schema": "rq5_protocol_freeze/v2",
+  "frozen_utc": "2026-10-02T00:00:00Z",
+  "status": "FROZEN",
+  "supersedes": {
+    "schema": "rq5_protocol_freeze/v1",
+    "file": "configs/rq5_protocol_freeze_v1.json",
+    "sha256": "35773ce46c84d806ee1f9e32a3af4fbfa3521c213fa4f85536afa95e0168996d"
+  },
+  "amendment_policy": "Any change after v2 freeze requires a new versioned contract (v3) preregistered BEFORE viewing manual-target performance. v1 and v2 are immutable once RQ5(a) training has started; neither may be edited in place.",
+  "scientific_change_policy": "MINIMUM_SCIENTIFIC_CHANGE. v2 amends v1 only where v1 was self-contradictory or operationally unimplementable. Every v1 hyperparameter value is carried over verbatim. No new hyperparameter is introduced. Where v1 could not be implemented as written, the amendment removes the ambiguity rather than choosing a better-looking value.",
+  "claim_boundary": "This contract freezes the protocol only. PASS of the protocol audit means every required decision has an explicit, implementable, frozen value; it does not mean the science has been validated. As of this freeze NO RQ5 model training has been executed under this contract: no validated RQ3 paired dataset exists. All code exercised so far used synthetic fixtures and carries claim_scope=TEST_FIXTURE_ONLY.",
+  "v1_contradiction_found": {
+    "decision": "checkpoint_selection",
+    "v1_text": "final-epoch checkpoint only (model_last.pt); selection uses generated-validation loss; manual test split is never consulted for selection",
+    "defect": "SELF_CONTRADICTORY. 'final-epoch checkpoint only' designates the final epoch as the checkpoint, while 'selection uses generated-validation loss' designates a validation-selected epoch. Both cannot be the governed rule. The pre-existing trainer (ultimate_pipeline/perception/train_launcher.py) implemented NEITHER: it saved seg_fcn_epoch<NNN>.pt every epoch, wrote no validation pass at all, and min_train_segmentation.py never computed any validation metric. So the contract described a validation-selection implementation that did not exist.",
+    "resolution_strategy": "MINIMAL_NON_POST_HOC_RULE",
+    "why_not_early_stopping": "Introducing early stopping, a patience value, a max-epoch budget, or a validation-selected epoch AFTER the protocol freeze would be a post-hoc hyperparameter decision informed by looking at outcomes. v2 therefore forbids it. The governed checkpoint is the final-epoch checkpoint of a fixed 3-epoch run; generated-validation metrics are measured for diagnostics and convergence only and never select another epoch.",
+    "manual_data_never_consulted": "manual_test frames, labels and class statistics are never read during training, validation, class weighting or checkpoint selection under any code path.",
+    "contingency": "If the convergence gate proves 3 epochs technically inadequate (loss non-finite, no learning at all, or single-class collapse), the outcome is RQ5_PROTOCOL_UNDERPOWERED and a v3 must be preregistered BEFORE viewing manual-target performance. Training is never silently extended."
+  },
+  "decisions": {
+    "model_architecture": {
+      "value": "torchvision fcn_resnet50, randomly initialized (weights=None), num_classes=29",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:101",
+      "changed_in_v2": false
+    },
+    "initialization_policy": {
+      "value": "random initialization; no pretraining; per-seed torch.manual_seed(seed)",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py --seed",
+      "changed_in_v2": false
+    },
+    "optimizer": {
+      "value": "torch.optim.Adam",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:104",
+      "changed_in_v2": false
+    },
+    "learning_rate": {
+      "value": 0.0001,
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:76",
+      "changed_in_v2": false
+    },
+    "lr_schedule": {
+      "value": "constant (no scheduler)",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py",
+      "changed_in_v2": false
+    },
+    "epochs": {
+      "value": 3,
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:74",
+      "changed_in_v2": false
+    },
+    "batch_size": {
+      "value": 4,
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:75",
+      "changed_in_v2": false
+    },
+    "image_resolution": {
+      "value": "native capture resolution; no resizing in dataset or eval default path",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:59 (TF.to_tensor only)",
+      "changed_in_v2": false
+    },
+    "augmentations": {
+      "value": "none (no augmentation stage in trainer or dataset)",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py",
+      "changed_in_v2": false
+    },
+    "class_mapping": {
+      "value": "CARLA 29-class semantic ids per carla_classes.py; Any(255) sentinel is ignore_index, never a predicted class",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/carla_classes.py + semantic_classes.CARLA_SEMANTIC_NUM_CLASSES=29",
+      "changed_in_v2": false
+    },
+    "class_weighting": {
+      "value": "median_frequency, computed from the generated training split ONLY",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:79",
+      "changed_in_v2": true,
+      "amendment": "v1 already said 'generated training split only' but the pre-existing trainer computed class counts from the whole --dataset/--datasets root passed to it, which is not provably the generated training split. v2 binds class-weight statistics to the emitted train_manifest.json entry set, and adds a negative control proving manual-test labels cannot enter the weights.",
+      "forbidden_sources": [
+        "validation split",
+        "generated test split",
+        "manual test split",
+        "any real/target-world dataset"
+      ]
+    },
+    "training_split": {
+      "value": "generated-train split emitted by ultimate_pipeline/perception/dataset_split_authority.py (train_manifest.json), derived from the RQ3 paired capture dataset (rgb/<cam> + semseg_raw/<cam> layout)",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/dataset_split_authority.py",
+      "changed_in_v2": true,
+      "amendment": "v1 said 'generated-train split from the RQ3 paired capture dataset manifest' but named no authority module and no on-disk manifest. v2 names the split authority and the manifest file, and forbids implicit/ad-hoc re-splitting."
+    },
+    "validation_split": {
+      "value": "generated-validation split emitted by the same dataset_split_authority.py run (validation_manifest.json); group-disjoint from train",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/dataset_split_authority.py",
+      "changed_in_v2": true,
+      "amendment": "Same reason as training_split: v1 named no authority module or manifest, and forbade only 'disjoint frames', not disjoint capture groups."
+    },
+    "test_split": {
+      "value": "RQ5(a): generated-test frames (generated_test_manifest.json) AND manual test frames (manual_test_manifest.json); manual frames never used for training, validation, class weighting or checkpoint selection",
+      "provenance": "campaign_frozen",
+      "source": "NEW218 no-leak rule + ultimate_pipeline/perception/dataset_split_authority.py",
+      "changed_in_v2": true,
+      "amendment": "v2 names the manifest files so the evaluated set is auditable frame-by-frame."
+    },
+    "data_budget": {
+      "value": "full governed splits (no --limit truncation in research-strict mode); manual test = all held-out manual frames; exact frame counts bound via dataset manifest hashes at execution",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/dataset_split_authority.py",
+      "changed_in_v2": true,
+      "amendment": "v1 permitted trainer limit=0 semantics; v2 additionally forbids any non-zero --limit in research-strict mode because a prefix of a split is not the split."
+    },
+    "seed_policy": {
+      "value": "explicit seed list [7, 17, 42]; each seed trains an independent model; DataLoader order seeded per seed; applied to python random, numpy, torch CPU, torch CUDA (all devices), DataLoader generator and PYTHONHASHSEED",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/rq5_provenance.py::seed_everything",
+      "changed_in_v2": true,
+      "amendment": "v1 named the seed list and the DataLoader; v2 enumerates every RNG that must be bound and requires the applied settings to be recorded, not merely the intended seed."
+    },
+    "checkpoint_selection": {
+      "value": "RESOLVED (v2): fixed 3 epochs; the final-epoch checkpoint (seg_fcn_epoch003.pt / model_last.pt) is the single governed checkpoint. Generated-validation loss is measured every epoch for diagnostics and convergence only. Validation NEVER selects a different epoch, no early stopping, no best-epoch tracking, no patience. Manual-test data is never consulted.",
+      "provenance": "amendment_v2",
+      "source": "configs/rq5_protocol_freeze_v2.json::v1_contradiction_found",
+      "changed_in_v2": true,
+      "supersedes_v1_value": "final-epoch checkpoint only (model_last.pt); selection uses generated-validation loss; manual test split is never consulted for selection",
+      "amendment": "See v1_contradiction_found. The v1 text was self-contradictory and its validation-selection half was never implemented. v2 keeps the final-epoch checkpoint and demotes validation metrics to diagnostics. This is the minimum change that makes the contract implementable without inventing a post-hoc selection rule."
+    },
+    "validation_loop": {
+      "value": "A real generated-validation pass runs after every training epoch, on the generated-validation split only, in eval mode with no gradient, recording train_loss, validation_loss and (when computationally practical) generated-validation mIoU. Emitted as TRAINING_HISTORY.json.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/train_launcher.py",
+      "changed_in_v2": true,
+      "amendment": "New in v2. v1 required validation-based selection but no validation pass existed, so nothing could validate the checkpoint at all."
+    },
+    "metrics": {
+      "value": "primary: generated->manual mIoU degradation (mIoU_generated_test minus mIoU_manual_test); secondary: per-class IoU, pixel accuracy",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/eval_sim_labeled.py",
+      "changed_in_v2": false
+    },
+    "primary_metric": {
+      "value": "generated->manual mIoU degradation",
+      "provenance": "campaign_frozen",
+      "source": "P12 RQ5(a) protocol",
+      "changed_in_v2": false
+    },
+    "confidence_interval_method": {
+      "value": "nonparametric bootstrap over test frames, 1000 resamples, 95% interval, seed 7",
+      "provenance": "campaign_frozen",
+      "source": "NEW218 freeze (no repo precedent; fixed rule)",
+      "changed_in_v2": false
+    },
+    "transfer_comparison_matrix": {
+      "value": "rows: seeds [7, 17, 42]; columns: mIoU generated-test, mIoU manual-test, degradation, per-class IoU delta; mean +- bootstrap CI across seeds",
+      "provenance": "campaign_frozen",
+      "source": "P12 RQ5(a) protocol",
+      "changed_in_v2": false
+    },
+    "failure_policy": {
+      "value": "missing split, manifest hash mismatch, incomplete dataset identity, leakage, quality-gate FAIL, or Rig/capture-policy drift aborts the experiment; no substitution, no silent re-split, no fallback dataset; manual-test result never triggers protocol re-tuning",
+      "provenance": "campaign_frozen",
+      "source": "P12 + RQ3 capture contract",
+      "changed_in_v2": true,
+      "amendment": "v2 adds incomplete dataset identity, leakage and quality-gate FAIL as first-class abort conditions."
+    },
+    "rq5b_boundary": {
+      "value": "labeled real-world evaluation reports mIoU only where ground-truth labels exist; unlabeled shift analysis reports distribution distances (FID-like/CORAL/MMD/entropy/confidence) ONLY as shift measures, never as accuracy or generalization performance",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/eval_real_unlabeled.py (no accuracy path)",
+      "changed_in_v2": false
+    },
+    "no_manual_leak_rule": {
+      "value": "no manual target image, label or pixel may appear in training inputs, validation inputs, class-weight statistics, convergence gates or checkpoint selection; proven by content-hash disjointness AND group disjointness in RQ5_SPLIT_LEAKAGE_AUDIT.json; violation fails the run",
+      "provenance": "campaign_frozen",
+      "source": "P12 RQ5(a) protocol + ultimate_pipeline/perception/dataset_split_authority.py",
+      "changed_in_v2": true,
+      "amendment": "v1 stated the rule; v2 adds the concrete proof obligation (content hash + group identity + temporal adjacency) and the evidence file."
+    },
+    "split_authority": {
+      "value": "Grouped, never frame-random. Split units are whole groups drawn from available dataset metadata with strict precedence: route_segment > capture_block > scenario_seed_block > spatial_region > filename-stem block (last resort, recorded as DEGRADED). Group-to-role assignment is deterministic: groups are ordered by sha256('<protocol>:<group_key>') and greedily filled to target ratios; no RNG, no mtime, no glob guessing.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/dataset_split_authority.py",
+      "changed_in_v2": true,
+      "amendment": "New in v2. Adjacent capture frames are highly correlated; a random per-frame split leaks neighbouring frames across train and test and inflates generalization metrics."
+    },
+    "leakage_audit": {
+      "value": "RQ5_SPLIT_LEAKAGE_AUDIT.json must show train ∩ validation = empty, train ∩ generated_test = empty, generated(train ∪ validation) ∩ manual_test = empty, each proven on three axes: per-frame content equality (a copy under a different path still overlaps), group identity, and temporal adjacency within a shared capture block.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/dataset_split_authority.py::audit_leakage",
+      "changed_in_v2": true,
+      "amendment": "New in v2."
+    },
+    "dataset_quality_gate": {
+      "value": "Every dataset entering a governed role must PASS ultimate_pipeline/perception/dataset_quality_gate.py and emit DATASET_QUALITY.json. Checks: RGB present, semantic label present, required LiDAR present when the protocol requires it, file decodes, resolution consistent, frame ids valid, frame ordering valid, sensor correspondence valid, semantic ids valid, Any(255) fraction measured, duplicate content, duplicate frame id, zero/constant semantic frames, all-black/corrupt RGB. A dataset failing the gate cannot reach training.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/dataset_quality_gate.py",
+      "changed_in_v2": true,
+      "amendment": "New in v2."
+    },
+    "dataset_identity_completeness": {
+      "value": "Authoritative RQ5 execution requires complete=true for every research dataset identity. Partial identities produced by max_files truncation, prefix hashing or sampling are diagnostic-only and MUST be rejected in research-strict mode. Checkpoint provenance verification in research mode additionally requires complete identities for training, validation, generated-test and manual-test roles wherever those roles apply.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/rq5_provenance.py::assert_complete_identity",
+      "changed_in_v2": true,
+      "amendment": "New in v2. A prefix digest identifies a prefix, not a dataset."
+    },
+    "research_strict_mode": {
+      "value": "Training orchestration exposes --research-strict. In strict mode it forbids: auto-discovery of the latest dataset, missing-explicit-dataset fallback, latest-checkpoint fallback, implicit split creation, implicit camera, implicit seed, and mtime-based selection. A missing explicitly requested dataset is a hard FAIL; another dataset is never substituted. Legacy development-convenience behaviour is preserved outside strict mode.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/train_launcher.py",
+      "changed_in_v2": true,
+      "amendment": "New in v2. Auto-discovery by mtime is exactly how a run silently trains on the wrong capture."
+    },
+    "determinism_contract": {
+      "value": "Apply the seed to python random, NumPy, torch CPU, torch CUDA, the DataLoader generator and PYTHONHASHSEED; record the ACTUAL settings applied. Where supported also set torch.use_deterministic_algorithms(True), torch.backends.cudnn.deterministic=True, torch.backends.cudnn.benchmark=False. If hardware/library operations prevent strict numerical determinism the run records SEEDED_BUT_NUMERICALLY_NONDETERMINISTIC. Bit-exactness is never claimed unless demonstrated.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/rq5_provenance.py::apply_determinism_contract",
+      "changed_in_v2": true,
+      "amendment": "New in v2. v1 recorded an intended seed but not the determinism settings actually applied."
+    },
+    "model_manifest": {
+      "value": "model_manifest.json binds: checkpoint SHA256, candidate git SHA, protocol (v2) file SHA256, training dataset SHA, validation dataset SHA, architecture, num_classes, class_mapping, optimizer, learning_rate, epochs, batch_size, seed, class-weighting policy, checkpoint policy, preprocessing, augmentation policy. Manual-test metrics are NOT model-selection provenance and must not appear in the manifest.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/rq5_provenance.py::build_model_manifest",
+      "changed_in_v2": true,
+      "amendment": "New in v2. v1's manifest had no protocol binding and no checkpoint policy."
+    },
+    "checkpoint_policy": {
+      "value": "final_epoch_only; governed_checkpoint='seg_fcn_epoch003.pt' (mirrored to model_last.pt); validation_selects_epoch=false; early_stopping=false; selection_consults_manual=false",
+      "provenance": "amendment_v2",
+      "source": "configs/rq5_protocol_freeze_v2.json::decisions.checkpoint_selection",
+      "changed_in_v2": true,
+      "amendment": "New in v2."
+    },
+    "convergence_gate": {
+      "value": "ultimate_pipeline/perception/training_convergence_gate.py emits TRAINING_CONVERGENCE.json and separates TECHNICAL CONVERGENCE SANITY (expected epoch count reached, finite train loss, finite validation loss, checkpoint exists, checkpoint manifest matches the checkpoint bytes, model loads with no missing/unexpected parameters, predictions not collapsed to a single class, dataset identities match the requested splits, seed contract applied) from SCIENTIFIC TARGET PERFORMANCE (which is never demanded by the gate and never asserted offline).",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/training_convergence_gate.py",
+      "changed_in_v2": true,
+      "amendment": "New in v2."
+    },
+    "evaluation_roles": {
+      "value": "Final evaluation roles stay explicit: generated_test (labeled sim), manual_test (labeled target-world), real_unlabeled (distribution shift only). Labeled sim evaluation requires dataset identity and checkpoint identity to match the expected values. real_unlabeled may report only entropy, confidence, CORAL/MMD/FID-like distribution shift and other explicitly labeled shift metrics; those are never accuracy.",
+      "provenance": "amendment_v2",
+      "source": "ultimate_pipeline/perception/rq5_provenance.py::EVALUATION_ROLES",
+      "changed_in_v2": true,
+      "amendment": "New in v2."
+    },
+    "execution_status": {
+      "value": "Final RQ5 training requires a validated RQ3 paired dataset. Until one exists the correct status is RQ5_OFFLINE_READY_DATASET_BLOCKED / DEFERRED_RUNTIME. Synthetic fixtures are TEST_FIXTURE_ONLY and are never RQ5 evidence. Town10HD is never the final generated/manual Ingolstadt dataset.",
+      "provenance": "amendment_v2",
+      "source": "tools/rq5_preflight.py",
+      "changed_in_v2": true,
+      "amendment": "New in v2."
+    }
+  }
+}
