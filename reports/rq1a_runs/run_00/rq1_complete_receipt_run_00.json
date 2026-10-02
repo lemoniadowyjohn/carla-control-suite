@@ -1,0 +1,31 @@
+{
+  "feature_counts": {
+    "lane_driving": 34953,
+    "lane_none": 32919,
+    "lane_restricted": 5,
+    "lane_sidewalk": 17614,
+    "line": 26899,
+    "paramPoly3": 55824
+  },
+  "input_osm_sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+  "input_sha256": "c1beb61f5aff69fcb291a80f11128273d9d050c15036508027f0f205cd5410e9",
+  "junction_count": 3717,
+  "normalized_xodr_sha256": "ea69a3b2123aa63897ae83f08c4dfe4d6ede75733b907529ea0018426180467b",
+  "osm_source": "merged",
+  "output_path": "reports\\rq1a_runs\\run_00\\rq1a_generated_run_00.xodr",
+  "producer_git_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "road_count": 32919,
+  "rq1a_receipt_path": "reports\\rq1a_runs\\run_00\\rq1a_receipt_run_00.json",
+  "run_index": 0,
+  "schema": "rq1_run_receipt/v1",
+  "status": "ok",
+  "structural_signature": "64cac5909720d5cec037ac8de861d4569acebf02067683bf85d67c5e75d7e90f",
+  "topology_counts": {
+    "connections": 22892,
+    "junctions": 3717,
+    "lane_links": 32255,
+    "roads": 32919
+  },
+  "total_road_length": 1498925.1195554074,
+  "xodr_sha256": "ea9c848f3c335635cec5b0b6673d8e2a4bdbb5c4aee4cfe89ad013aa1e52a173"
+}
