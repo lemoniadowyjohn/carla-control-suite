@@ -1,0 +1,66 @@
+{
+  "config": {
+    "batch": 16,
+    "cpu": true,
+    "epochs": 50,
+    "lr": 0.0001,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "tiles": 562
+  },
+  "external_referenced": {
+    "checkpoints": "seed_{42..46}/checkpoints/map_encoder_epoch50.pt on G:\\gap010-rq4-retrain-20260924 (NOT in repo, gitignored per precedent)",
+    "seed_reports": "seed_{42..46}/gnn_training_report.json on G: drive (values mirrored in committed aggregate_stats.json per_seed_detail)",
+    "tiles": "union_tiles/ input pile (NOT committed, regeneratable per repo convention)"
+  },
+  "schema": "rq4_evidence_inventory/v1",
+  "sources": [
+    {
+      "bytes": 6058,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\aggregate_stats.json",
+      "sha256": "0645de7da830bf7dfc04cd7b57522cb6c9c466206d0b1ea56343523f4fd7dbba"
+    },
+    {
+      "bytes": 1935,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\PRE_TRAINING_LEAKAGE_AUDIT.json",
+      "sha256": "02d7cbb71e3eb45fe9ac050b88436dcb82d8a6959ae7097f95a8b1315d465191"
+    },
+    {
+      "bytes": 4110,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\POST_HOC_LEAKAGE_AUDIT.json",
+      "sha256": "d6a72de647693ad1a492deb0cb3cb36e3dbc835406cfb3544e94a2cc77f17bfc"
+    },
+    {
+      "bytes": 6347,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\RESULTS.md",
+      "sha256": "bea5f3d2ee9bff94f34f9875f7128e06f8f858f7620aad4605f379ee3601bc7c"
+    },
+    {
+      "bytes": 5051,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\compute_aggregate_stats.py",
+      "sha256": "9676abd8f60107d5e4460ce551db47fe288b15c8492bf9042a615efddffce64b"
+    },
+    {
+      "bytes": 4778,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\post_hoc_leakage_audit.py",
+      "sha256": "83fe241d411e1ea114d71369fb0b3caa3680771af873519ce48bfdf5610be60f"
+    },
+    {
+      "bytes": 3379,
+      "committed": true,
+      "path": "reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\run_seed_ensemble_leakfree.py",
+      "sha256": "db3f9b003cfe305d4347126e466d38456d7795f5667ad695a8e23bb670795003"
+    }
+  ]
+}

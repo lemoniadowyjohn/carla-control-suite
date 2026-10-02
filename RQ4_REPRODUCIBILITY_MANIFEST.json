@@ -1,0 +1,28 @@
+{
+  "clean_clone": "STATISTICS_REPRODUCIBLE_BYTES_EXTERNAL",
+  "config": {
+    "batch": 16,
+    "epochs": 50,
+    "lr": "1e-4",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "tiles": 562
+  },
+  "durability": "HASH_RECORDED_BYTES_NOT_DURABLE_IN_CLEAN_CLONE",
+  "leakage": "PASS",
+  "recomputation": "EXACT_REPRODUCTION",
+  "result": {
+    "cosine_distance_ci95": [
+      0.8446466565132141,
+      0.9759842038154602
+    ],
+    "cosine_distance_mean": 0.9206715822219849
+  },
+  "schema": "rq4_reproducibility_manifest/v1",
+  "verdict": "RQ4_REPRODUCIBLE_STATISTICS_LEAKFREE_BYTES_EXTERNAL"
+}

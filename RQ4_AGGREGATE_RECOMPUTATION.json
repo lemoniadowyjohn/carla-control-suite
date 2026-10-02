@@ -1,0 +1,42 @@
+{
+  "method": "gnn_provenance.summarize_runs, deterministic bootstrap seed=0 n_boot=2000 percentile 2.5/97.5, sample std ddof=1",
+  "not_tuned": true,
+  "recomputed": {
+    "cosine_distance": {
+      "bootstrap_ci95": [
+        0.8446466565132141,
+        0.9759842038154602
+      ],
+      "mean": 0.9206715822219849,
+      "std": 0.08780273258329252
+    },
+    "cosine_similarity": {
+      "bootstrap_ci95": [
+        0.02401578277349472,
+        0.15535332560539244
+      ],
+      "mean": 0.0793283998966217,
+      "std": 0.08780273202708723
+    }
+  },
+  "recorded": {
+    "cosine_distance": {
+      "bootstrap_ci95": [
+        0.8446466565132141,
+        0.9759842038154602
+      ],
+      "mean": 0.9206715822219849,
+      "std": 0.08780273258329252
+    },
+    "cosine_similarity": {
+      "bootstrap_ci95": [
+        0.02401578277349472,
+        0.15535332560539244
+      ],
+      "mean": 0.0793283998966217,
+      "std": 0.08780273202708723
+    }
+  },
+  "schema": "rq4_aggregate_recomputation/v1",
+  "verdict": "EXACT_REPRODUCTION"
+}

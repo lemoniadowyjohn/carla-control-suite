@@ -1,0 +1,13 @@
+{
+  "policy": [
+    "SUPERSEDED files are marked, never deleted",
+    "old and new values preserved side by side with causal explanation (RESULTS.md)",
+    "permutation-test p-value from pre-fix lineage (thesis K=1000 p<0.001) is NOT transferred to the new statistic"
+  ],
+  "schema": "rq4_supersession_plan/v1",
+  "successor": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN (leak-free, mean 0.9207, CI [0.845,0.976])",
+  "superseded": [
+    "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE (leaky, mean 0.6434, CI [0.616,0.676])"
+  ],
+  "verdict": "SUPERSEDED_MARKED"
+}

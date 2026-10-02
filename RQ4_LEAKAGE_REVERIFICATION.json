@@ -1,0 +1,54 @@
+{
+  "checks": [
+    {
+      "check": "eval_pair_hashes_match_pre_and_post",
+      "post": {
+        "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+        "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+      },
+      "pre": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+      "status": "MATCH"
+    },
+    {
+      "check": "excluded_hashes_cover_eval_pair",
+      "eval": [
+        "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+        "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+      ],
+      "excluded": [
+        "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+        "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+      ],
+      "status": "COVER"
+    },
+    {
+      "check": "per_seed_zero_overlap_562_tiles",
+      "status": "PASS"
+    },
+    {
+      "check": "single_consistent_training_manifest",
+      "manifests": [
+        "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+      ],
+      "matches_pre": true,
+      "status": "PASS"
+    },
+    {
+      "check": "seed_identity_42_46",
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "status": "PASS"
+    },
+    {
+      "check": "normalization_train_only",
+      "status": "PASS"
+    }
+  ],
+  "schema": "rq4_leakage_reverification/v1",
+  "verdict": "PASS"
+}
