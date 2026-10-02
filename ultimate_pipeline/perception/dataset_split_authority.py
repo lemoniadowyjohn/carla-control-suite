@@ -961,7 +961,7 @@ def audit_leakage(
             canonical_dumps(
                 {
                     "content": [c["pair"] + [c["shared_sample_identities"]] for c in content_checks],
-                    "groups": [g["group_key"] + g["roles"] for g in group_checks],
+                    "groups": [[g["group_key"]] + g["roles"] for g in group_checks],
                     "violations": len(violations),
                 }
             )
