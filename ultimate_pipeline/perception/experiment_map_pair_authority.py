@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Experiment Map Pair Authority — Single authority for Ingolstadt map pair validity.
+Experiment Map Pair Authority - Single authority for Ingolstadt map pair validity.
 
 This module is the SINGLE authority that decides whether a manual/auto arm pair
 constitutes a valid Ingolstadt experiment pair. All decisions are based on
@@ -211,7 +211,6 @@ def create_experiment_manifest(
         raise ValueError(f"Invalid Ingolstadt pair: {pair_validation['errors']}")
 
     from ultimate_pipeline.perception.rq3_capture_contract import build_pair_manifest
-    from ultimate_pipeline.perception.rq3_capture_contract import git_sha_of_repo
 
     manual_arm = {
         "map_type": "cooked_manual",
@@ -228,8 +227,6 @@ def create_experiment_manifest(
     }
 
     # Use the RQ3 capture contract's manifest builder
-    from ultimate_pipeline.perception.rq3_capture_contract import build_pair_manifest
-
     return build_pair_manifest(
         pair_id=pair_id,
         software_git_sha=software_git_sha,
@@ -248,54 +245,24 @@ def create_experiment_manifest(
             "xodr_path": auto_arm_identity.get("xodr_path"),
         },
         route_manifest_path="",  # Filled by caller
-        route_manifest_sha256="",  # Filled by caller
-        calibration_sha256="",  # Filled by caller
-        sensor_rig_sha256="",  # Filled by caller
-        weather_sha256="",  # Filled by caller
-        capture_config_sha256="",  # Filled by caller
-        camera_response_sha256="",  # Filled by caller
-        traffic_manager_sha256="",  # Filled by caller
-        simulation_physics_sha256="",  # Filled by caller
-        runtime_sensor_rig_sha256="",  # Filled by caller
-        vehicle_calibration_binding_sha256="",  # Filled by caller
-        weather_schema_version="",  # Filled by caller
-        manual_map_identity={
-            "map_type": "cooked_manual",
-            "requested_map_name": "Grid0828",
-            "grid0828_source_xodr_sha256": manual_arm_identity.get("grid0828_source_xodr_sha256"),
-            "grid0828_cooked_package_sha256": manual_arm_identity.get("grid0828_cooked_package_sha256"),
-            "grid0828_runtime_identity_sha256": manual_arm_identity.get("grid0828_runtime_identity_sha256"),
-        },
-        auto_map_identity={
-            "map_type": "xodr",
-            "xodr_sha256": auto_arm_identity.get("xodr_sha256"),
-            "xodr_path": auto_arm_identity.get("xodr_path"),
-        },
-        route_manifest_path="",
-        route_manifest_sha256="",
-        calibration_sha256="",
-        sensor_rig_sha256="",
-        weather_sha256="",
-        capture_config_sha256="",
-        camera_response_sha256="",
-        traffic_manager_sha256="",
-        simulation_physics_sha256="",
-        runtime_sensor_rig_sha256="",
-        vehicle_calibration_binding_sha256="",
-        weather_schema_version="",
-        manual_arm={},
-        auto_arm={},
+        route_manifest_sha256=route_manifest_sha256,
+        calibration_sha256=calibration_sha256,
+        sensor_rig_sha256=sensor_rig_sha256,
+        weather_sha256=weather_sha256,
+        capture_config_sha256=capture_config_sha256,
+        camera_response_sha256=camera_response_sha256,
+        traffic_manager_sha256=traffic_manager_sha256,
+        simulation_physics_sha256=simulation_physics_sha256,
+        runtime_sensor_rig_sha256=runtime_sensor_rig_sha256,
+        vehicle_calibration_binding_sha256=vehicle_calibration_binding_sha256,
+        weather_schema_version=weather_schema_version,
+        manual_arm=manual_arm,
+        auto_arm=auto_arm,
         pair_valid=True,
         invalid_reasons=[],
         claim_level="PAIRED_INGOLSTADT_CAPTURE",
         route_mode="THESIS_PAIRED_STRICT",
         pair_route_closure="PAIR_ROUTE_VALID",
-        camera_response_sha256="",
-        traffic_manager_sha256="",
-        simulation_physics_sha256="",
-        runtime_sensor_rig_sha256="",
-        vehicle_calibration_binding_sha256="",
-        weather_schema_version="",
     )
 
 
