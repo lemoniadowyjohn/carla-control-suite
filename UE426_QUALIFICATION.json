@@ -1,0 +1,53 @@
+{
+  "schema": "ue426_qualification/v1",
+  "status": "UE426_BLOCKED_OPERATOR_INSTALL",
+  "generated_at_utc": "2026-10-02T19:30:00Z",
+  "required": {
+    "ue4_root": "root of an Unreal Engine 4.26 install used to build/cook CARLA 0.9.16",
+    "editor_executable": "Engine/Binaries/Win64/UnrealEditor-Cmd.exe (or UE4Editor-Cmd.exe)",
+    "carla_source": "CARLA 0.9.16 source checkout (the 0.9.16-compatible fork/branch), not the packaged binary",
+    "toolchain": "MSVC v142 (VS 2019 16.x) toolchain matching UE4.26"
+  },
+  "discovery_result": {
+    "UE4_ROOT_env": "unset",
+    "epic_games_install_dir_C": "C:\\Program Files\\Epic Games -> ABSENT",
+    "epic_games_install_dir_E": "E:\\Program Files\\Epic Games -> ABSENT",
+    "unreal_editor_cmd_found": false,
+    "carla_source_checkout_present": false,
+    "vs_toolchain_detected": false
+  },
+  "why_cook_is_impossible_with_what_is_installed": {
+    "carla_install": "E:\\CARLA\\CARLA_0.9.16",
+    "carla_binary_present": "CarlaUE4\\Binaries\\Win64\\CarlaUE4-Win64-Shipping.exe",
+    "classification": "PACKAGED / NON-EDITOR build (Shipping executable only)",
+    "consequence": "A packaged Shipping build cannot run UnrealEditor-Cmd, cannot run `make import`, and cannot cook content. CARLA import/cook of the promoted Ingolstadt package therefore cannot execute on this machine.",
+    "editor_binaries_present_in_install": false
+  },
+  "blocked_consequences": [
+    "step 8 revalidate-staged-package CAN still be done offline (XODR SHA + tile SHA manifest + descriptor) -- not a UE dependency",
+    "step 9 UE4_IMPORT_COOK_RECEIPT / COOKED_MAP_AUTHORITY: CANNOT BE PRODUCED",
+    "step 12 RUNTIME_MAP_IDENTITY_AUTO: CANNOT BE PRODUCED (Ingolstadt auto map is not in client.get_available_maps(); it only exists after import/cook)",
+    "step 13 LIVE_CALIBRATION_ACCEPTANCE on the auto arm: CANNOT BE PRODUCED",
+    "step 14 RQ3 paired capture (manual+auto): CANNOT BE PRODUCED -- requires BOTH arms",
+    "step 15 RQ5(a) mIoU on generated + manual held-out: CANNOT BE PRODUCED (depends on 14)",
+    "step 16 RQ5(b): DEFERRED_EXTERNAL_DATA (no operator-supplied external dataset present)"
+  ],
+  "manual_arm_runtime_is_live": {
+    "note": "Independent of the cook blocker, the manual reference arm IS available at runtime (Grid0828 cooked in the CARLA 0.9.16 install).",
+    "runtime_identity": "RUNTIME_MAP_IDENTITY_MANUAL.json (status RUNTIME_IDENTITY_ESTABLISHED)"
+  },
+  "required_operator_actions_to_unblock": [
+    "1) git clone --branch 0.9.16 https://github.com/carla-simulator/carla (or the project-approved 0.9.16-compatible fork) to E:\\carla_src",
+    "2) Install Epic Games Launcher + Unreal Engine 4.26.4, then set UE4_ROOT to that install",
+    "3) Install Visual Studio 2019 (v142 toolset, Desktop C++ workload) so Setup.bat / GenerateProjectFiles can run",
+    "4) From the CARLA source root on a Developer PowerShell: .\\Setup.bat  then  .\\Build.bat -Editor Win64",
+    "5) Re-run this wave; step 9 will then execute make import + UnrealEditor-Cmd cook of the promoted Import/Ingolstadt package"
+  ],
+  "operator_commands": {
+    "set_ue4_root": "$env:UE4_ROOT = 'C:\\Program Files\\Epic Games\\UE_4.26'",
+    "verify_editor": "Test-Path \"$env:UE4_ROOT\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe\"",
+    "carla_build": "cd E:\\carla_src\\Unreal; .\\Setup.bat; .\\Build.bat -Editor Win64",
+    "carla_import": "cd E:\\carla_src\\Unreal\\Carla\\Unreal; python Util\\DevTools\\Import.py -carla-root=..\\.. -map=Ingolstadt"
+  },
+  "notes": "Per instruction, UE5 was NOT substituted and arbitrary stock UE4 was NOT used. No offline validator was weakened to work around this blocker."
+}

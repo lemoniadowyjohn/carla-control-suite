@@ -1,0 +1,78 @@
+{
+  "durable_remote": {
+    "branch": "review/carla-production-convergence-20261002",
+    "sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6"
+  },
+  "known_local": {
+    "current_head": {
+      "sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "notes": "Batch 9 evidence packet and final verdict - RQ3_PACKAGE_STAGED_OFFLINE_PASS_LIVE_BLOCKED"
+    },
+    "batch9_fixes": {
+      "b074fc2b": {
+        "sha": "b074fc2b",
+        "notes": "fix(rq3): bind sim timing, harden package validator, fix pair_valid inversion; 4 real defects found; Negative controls: 12/12 rejected; Full suite: 7145 passed, 10 skipped, 0 failed"
+      },
+      "14a99c36": {
+        "sha": "14a99c36",
+        "notes": "Same as b074fc2b (duplicate in log)"
+      },
+      "542b82e9": {
+        "sha": "542b82e9",
+        "notes": "docs(rq3): Batch 9 evidence packet and final verdict (on separate lineage)"
+      }
+    },
+    "rq1_candidate": {
+      "sha": "082bc1369a77930386e008ab26ab77e9fc611106",
+      "notes": "RQ1 campaign infrastructure: RQ1A/RQ1B tools, RQ3 validation, evidence freshness gate; ancestor subset of 167b12fd"
+    }
+  },
+  "ancestry": {
+    "current_head_vs_167b12fd": {
+      "merge_base": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+      "ahead": "2 (7fbd33ff, 14a99c36)",
+      "behind": "0"
+    },
+    "current_head_vs_remote": {
+      "remote_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "local_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "match": true
+    },
+    "rq1_candidate": {
+      "merge_base_with_current": "f897e0eb747ac827941ac4883170a5181a603111",
+      "status": "ANCESTOR_SUBSET of 167b12fd, which is ancestor of current HEAD"
+    },
+    "batch9_separate_lineage": {
+      "merge_base_with_current": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "status": "SEPARATE_LINEAGE - contains optimization infra recovery (36ea3403) similar to 0ed3af4a in 167b12fd lineage"
+    }
+  },
+  "batch9_included": true,
+  "rq1_candidate_included": false,
+  "batch9_results": {
+    "tiles": 20,
+    "staging": "PASS",
+    "staged_package_validation": "PASS",
+    "rq3_map_lineage": "PASS",
+    "package_promotion": "PASS",
+    "negative_controls": "12/12 rejected",
+    "full_suite": "7145 passed, 10 skipped, 0 failed",
+    "tile_frame_consistency": "FAIL (27/31 seams > 10m, max 485.84m, mean 162.01m)",
+    "placement_authority": "NOMINAL_TILE_GRID (not independently verified)"
+  },
+  "outstanding_blockers": [
+    "P0-4 provenance reconstruction NOT VERIFIED",
+    "tile_frame_consistency FAIL - placement authority unverified",
+    "no UE4.26 toolchain (import/cook impossible)",
+    "no live CARLA server (runtime identity and soak impossible)",
+    "Blender NOT QUALIFIED",
+    "OSM2World NOT QUALIFIED",
+    "RQ1B not executed (5 cold runs required)"
+  ],
+  "directives": {
+    "do_not_blindly_merge_dirty_worktrees": true,
+    "do_not_weaken_offline_validators": true,
+    "do_not_fix_tile_positions_based_on_tile_frame_consistency_fail": true,
+    "preserve_batch9_fixes": true
+  }
+}
