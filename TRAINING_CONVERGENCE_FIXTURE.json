@@ -1,0 +1,30 @@
+{
+  "class_weights_source": "generated TRAIN only (fixture train root)",
+  "gate": {
+    "checkpoint_sha256": "90cd6b87929961c5b6e870c718c4029d641726e4ca3397fda02bcbd5eac49735",
+    "epochs": 3,
+    "losses": [
+      3.4237261613210044,
+      2.1938899755477905,
+      1.3726833264033
+    ],
+    "params": 32961117,
+    "seed": 7,
+    "val_losses": [
+      {
+        "epoch": 0,
+        "loss": 3.2055046558380127
+      },
+      {
+        "epoch": 1,
+        "loss": 2.997735023498535
+      },
+      {
+        "epoch": 2,
+        "loss": 2.6891307830810547
+      }
+    ]
+  },
+  "note": "FIXTURE code test; never RQ5 scientific evidence",
+  "schema": "training_convergence_fixture/v1"
+}

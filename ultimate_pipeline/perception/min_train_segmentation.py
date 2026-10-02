@@ -162,8 +162,15 @@ class MultiRootSegDataset(Dataset):
 
 def parse_args():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dataset", required=True, help="path to datasets/<name>")
-    ap.add_argument("--camera", default="front")
+    ap.add_argument("--dataset", required=True, help="path to datasets/<name> (generated TRAIN in research-strict)")
+    ap.add_argument("--camera", default=None,
+                    help="camera name (default front when omitted; research-strict requires explicit --camera)")
+    ap.add_argument("--val-dataset", default=None,
+                    help="generated-validation dataset root (same rgb/<cam> + semseg_raw/<cam> layout); "
+                         "enables the per-epoch diagnostics-only validation loop")
+    ap.add_argument("--research-strict", action="store_true",
+                    help="fail-closed RQ5 science mode: requires explicit camera/seed/split, "
+                         "complete dataset identity, train-only class weights, diagnostics-only validation")
     ap.add_argument("--out-dir", default="runs/seg_baseline")
     ap.add_argument("--epochs", type=int, default=3)
     ap.add_argument("--batch", type=int, default=4)
@@ -185,13 +192,30 @@ def parse_args():
 
 def main():
     args = parse_args()
+    camera_implicit = args.camera is None
+    camera = args.camera or "front"
+    if getattr(args, "research_strict", False):
+        if camera_implicit:
+            raise SystemExit("research-strict rejects implicit camera (pass --camera explicitly)")
+        if args.seed is None:
+            raise SystemExit("research-strict rejects implicit seed (pass --seed explicitly)")
+        if args.val_dataset is None:
+            raise SystemExit("research-strict requires --val-dataset (generated validation for diagnostics)")
+        if Path(args.val_dataset).resolve() == Path(args.dataset).resolve():
+            raise SystemExit("research-strict rejects val-dataset == train dataset (disjoint splits required)")
     ds_root = Path(args.dataset)
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     ckpt_dir = out_dir / "checkpoints"
     ckpt_dir.mkdir(exist_ok=True)
 
-    ds = SegDataset(ds_root, args.camera, limit=args.limit)
+    ds = SegDataset(ds_root, camera, limit=args.limit)
+    val_ds = None
+    if args.val_dataset is not None:
+        # Class weights stay TRAIN-only: val root is never scanned for weights.
+        val_ds = SegDataset(Path(args.val_dataset), camera, limit=0)
+        if len(val_ds) == 0:
+            raise SystemExit(f"validation dataset {args.val_dataset} has no paired frames")
     if args.seed is not None:
         # Frozen-protocol path (NEW-218): fully seeded order. num_workers=0
         # keeps ordering a pure function of the seed (no worker RNG split).
@@ -211,9 +235,11 @@ def main():
     class_counts = None
     class_weights = None
     if not args.no_class_weights:
+        # Research-strict: class weights use generated TRAIN only (ds_root).
+        # val_ds is never scanned here by construction.
         class_counts = scan_dataset_class_counts(
             ds_root,
-            camera=args.camera,
+            camera=camera,
             limit=args.limit,
             num_classes=num_classes,
         )
@@ -229,14 +255,25 @@ def main():
 
     metrics = {
         "loss": [],
+        "val_loss": [],
         "seed": args.seed,
+        "camera": camera,
+        "camera_implicit": bool(camera_implicit),
+        "research_strict": bool(getattr(args, "research_strict", False)),
+        "train_dataset": str(ds_root),
+        "val_dataset": str(args.val_dataset) if args.val_dataset else None,
         "class_weighting": {
             "enabled": not args.no_class_weights,
             "scheme": args.class_weight_scheme if not args.no_class_weights else None,
             "counts": class_counts.tolist() if class_counts is not None else None,
             "weights": class_weights.detach().cpu().tolist() if class_weights is not None else None,
+            "source": "generated TRAIN only (never validation, never manual target)",
         },
     }
+    val_dl = None
+    if val_ds is not None:
+        val_dl = DataLoader(val_ds, batch_size=args.batch, shuffle=False, num_workers=0,
+                            pin_memory=True)
     model.train()
     for ep in range(args.epochs):
         total = 0.0
@@ -253,7 +290,25 @@ def main():
             n += x.size(0)
         ep_loss = total / max(1, n)
         metrics["loss"].append({"epoch": ep, "loss": ep_loss})
-        print(f"epoch {ep}: loss={ep_loss:.4f}")
+        if val_dl is not None:
+            # Diagnostics-only generated-validation loop (no grad, no selection).
+            model.eval()
+            v_total, v_n = 0.0, 0
+            with torch.no_grad():
+                for x, y in val_dl:
+                    x = x.to(args.device)
+                    y = y.to(args.device)
+                    v_loss = loss_fn(model(x)["out"], y)
+                    v_total += float(v_loss.item()) * x.size(0)
+                    v_n += x.size(0)
+            v_ep = v_total / max(1, v_n)
+            metrics["val_loss"].append({"epoch": ep, "loss": v_ep})
+            model.train()
+            print(f"epoch {ep}: loss={ep_loss:.4f} val_loss={v_ep:.4f} (diagnostic only)")
+        else:
+            print(f"epoch {ep}: loss={ep_loss:.4f}")
+        # Final-epoch governs: model_last.pt overwritten each epoch; the last
+        # write is the governed checkpoint. No best-epoch picking (v2 protocol).
         torch.save(model.state_dict(), (ckpt_dir / "model_last.pt").as_posix())
 
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")

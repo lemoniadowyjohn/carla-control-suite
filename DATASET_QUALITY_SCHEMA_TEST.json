@@ -1,0 +1,26 @@
+{
+  "schema": "dataset_quality_schema_test/v1",
+  "splits": {
+    "generated_test": {
+      "camera": "front",
+      "paired_frames": 2,
+      "root": "fixtures_rq5\\generated_test"
+    },
+    "manual_test": {
+      "camera": "front",
+      "paired_frames": 2,
+      "root": "fixtures_rq5\\manual_test"
+    },
+    "train": {
+      "camera": "front",
+      "paired_frames": 3,
+      "root": "fixtures_rq5\\train"
+    },
+    "val": {
+      "camera": "front",
+      "paired_frames": 2,
+      "root": "fixtures_rq5\\val"
+    }
+  },
+  "verdict": "PASS"
+}
