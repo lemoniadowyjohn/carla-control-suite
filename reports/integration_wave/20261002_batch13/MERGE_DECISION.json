@@ -1,0 +1,41 @@
+{
+  "application_order": [
+    "RQ2",
+    "RQ4",
+    "RQ5"
+  ],
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "content_conflicts_encountered": 0,
+  "decisions": [
+    {
+      "competing_implementations": [
+        "apply lane tip commit only: git cherry-pick <lane_tip>",
+        "apply full lane commit range: git cherry-pick <lane_merge_base>..<lane_tip>"
+      ],
+      "contract": "Every file in git diff --name-only <merge_base>..<lane_tip> must exist in git ls-files after integration.",
+      "file": "(integration process, not a file conflict)",
+      "rationale": "Tip-only application silently dropped lane work: RQ4 (2 commits) and RQ5 (23 commits) lost commits, leaving 11 of 13 RQ4 files absent (including ultimate_pipeline/domain_gap_gnn/reproducibility_pack.py) while the cherry-pick reported success. Detected by re-verifying every lane file against git ls-files after integration. Remediated by git reset --hard to the pre-lane commit and re-applying all three lanes as explicit ranges.",
+      "regression_test": "tools/integration_lineage_audit.py lane file-presence verification; ALL_LANE_FILES_PRESENT=True recorded in INTEGRATION_COMPLETENESS.json",
+      "selected_behavior": "Apply the full range <merge_base>..<lane_tip> for every lane."
+    },
+    {
+      "competing_implementations": [
+        "empty commit in the RQ5 range (no tree change)"
+      ],
+      "contract": "No content loss; verified by full lane file presence check.",
+      "file": "reports/parallel_wave/rq5/RQ5_EVIDENCE_INDEX.json",
+      "rationale": "The commit had an empty tree diff, so it carried no content. Skipping preserves history order without introducing an empty commit.",
+      "regression_test": "ALL_LANE_FILES_PRESENT=True for RQ5 (34/34 files)",
+      "selected_behavior": "Skipped via git cherry-pick --skip."
+    }
+  ],
+  "integrated_head": "18ceaef67b7d34a6066f1cf6e2fed97c8abe7ee8",
+  "integrated_tree": "9a31b3c86a0443939a47c4cb8d4c085f3509090a",
+  "lane_file_presence": {
+    "RQ2": "17/17",
+    "RQ4": "13/13",
+    "RQ5": "34/34"
+  },
+  "lane_test_result_after_integration": "215 passed, 0 failed (RQ2/RQ4/RQ5 targeted suites)",
+  "schema": "INTEGRATION_MERGE_DECISION/v1"
+}
