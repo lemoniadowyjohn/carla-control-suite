@@ -1,0 +1,352 @@
+{
+  "aggregate_procedure": {
+    "implementation": "ultimate_pipeline.domain_gap_gnn.gnn_provenance.summarize_runs",
+    "n": 5,
+    "normal_approx_ci95": "mean +/- 1.96 * std / sqrt(n) (also returned)",
+    "statistic": "arithmetic mean over per-seed values",
+    "std": "sample std, ddof=1"
+  },
+  "authoritative_module_sha256_recorded": [
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/graph_builder.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "f58393277d04182b521b81fcee588e0719b127cadd4983b28dfd834b5bcacdeb"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/map_tile_dataset.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "cfe6a00fc006cb05f0de39c3363919b56de052e0259fb25882c6d4205afd9134"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/map_encoder.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "f16d4af1977523e586361029407c37f6a8aabcdd65ecc89c4116a1f42e77f0b4"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/train_map_encoder.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "3a41daee87671d02147cb08f50cf31b5f7f5455e979d12c8f937e4b9c6d7f5fe"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/run_ksweep.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "b569bab62c50c9c097d954a5e545895bf809ce9b79dfb79ffe9a86f8719b177f"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/latent_gap_runner.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "cb8d836725e3a50b2629c13dbe93912fb8696d9921cce18c0cb40140525f1d5a"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "aee95fb52aebda791a0c52c3500ed977ece02a2dc3ee39cced21fe53cc133f03"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_gnn_pipeline.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "aa62154051d105181afab2fad959b8ad09aff8a38a0be4e77c06d275d6678e15"
+    }
+  ],
+  "bootstrap_procedure": {
+    "implementation": "ultimate_pipeline.domain_gap_gnn.gnn_provenance.summarize_runs",
+    "kind": "non-parametric percentile bootstrap of the mean",
+    "n_boot": 2000,
+    "percentiles": "indices int(0.025*n_boot) and int(0.975*n_boot)",
+    "rng": "python stdlib random.Random(0) (deterministic)"
+  },
+  "candidate_git_sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "checkpoints": {
+    "42": {
+      "md5": "acdb7f57bd6a10b62bac4991c45da3cc",
+      "path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_42\\checkpoints\\map_encoder_epoch50.pt",
+      "sha256_master_close": "f8866a652447a619e36177192f2687aa02defc08b46c876dd6ed0c37003a40ee",
+      "sha256_post_hoc_audit": "6d39198fccaff24b7291cbde54d7f0be04a7f879687696ac14373d45c54d3db6"
+    },
+    "43": {
+      "md5": "25ee5406c514a4f40e8ccc74561deb30",
+      "path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "sha256_master_close": "f8719df17f62a174060acd60ce39481578cc60e9e2699bc9e7ce96311a1d0342",
+      "sha256_post_hoc_audit": "79965135d12945dc9d02bd184d30367d7e87aaf0d2b69b5eacc5ead3f323c144"
+    },
+    "44": {
+      "md5": "d3d4073f9e3416468e0bc0a4b14dda6d",
+      "path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_44\\checkpoints\\map_encoder_epoch50.pt",
+      "sha256_master_close": "e528b5443509f4faf167ed7fa9f3987feb608ac493b05b6369f53b161e8ab1a2",
+      "sha256_post_hoc_audit": "4f935285709ec6efaa0469643dbcd23eda8f6a93ab105704998a3444d1fdec8e"
+    },
+    "45": {
+      "md5": "213af83e592095d6ff7b60590b2e46cf",
+      "path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "sha256_master_close": "16b9d92f64cff9b5a33c0dd22f750e943ff1ac357b79a0753c263aa9467578d0",
+      "sha256_post_hoc_audit": "1b144836334cf9d5aafca7451da42d87fe6cbcaae1b2749725e7ca5af4c79826"
+    },
+    "46": {
+      "md5": "3cb146e6a0d091f143e67e41f29957a3",
+      "path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_46\\checkpoints\\map_encoder_epoch50.pt",
+      "sha256_master_close": "f0447409d2c015f8e77ca723238f5c309dd205ca62379815e088120a2672a2a2",
+      "sha256_post_hoc_audit": "469eded69fa28a56a731945dc1c60b13888ccd101ca8ecc7ed42d9f7124ff207"
+    }
+  },
+  "claim_boundary": {
+    "forbidden_promotion": "The GNN representation result must not be restated as an RQ5 transfer, generalization or predictive-accuracy claim.",
+    "permutation_pvalue_transfer": {
+      "n_seed_caveat": "n=5 bootstrap CIs are fragile in the tails; the per-seed values, not the CI endpoints, are the durable evidence.",
+      "reason": "The thesis permutation p-value was computed on the pre-fix lineage. The 2026-09-24 leak-free retrain is a different trained model under a different exclusion regime, and no permutation test was recomputed for it. The bootstrap CI over n=5 seeds is therefore the only statistical support carried by the leak-free number itself.",
+      "thesis_lineage": "PRE_LEAK_FIX",
+      "thesis_protocol": "K=1000 permutation test, p<0.001",
+      "transfer_to_leak_free_metric": false
+    },
+    "rq4_latent_separation_is_not": "HELD_OUT_PERCEPTION_ACCURACY",
+    "rq4_result_kind": "IN_SAMPLE_LATENT_SEPARATION_DIAGNOSTIC"
+  },
+  "code_paths_for_recomputation": [
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py",
+      "present": true,
+      "sha256": "80a4f4af3e10af56cfc623e29bca971ccd9c31096483cfccf6c14402c9fe6bdb"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/graph_builder.py",
+      "present": true,
+      "sha256": "f58393277d04182b521b81fcee588e0719b127cadd4983b28dfd834b5bcacdeb"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/map_tile_dataset.py",
+      "present": true,
+      "sha256": "b3ac0429c48976c89e2f9fdd6390114e0940d79dee9c04a804e4e4f7e75bc02f"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/map_encoder.py",
+      "present": true,
+      "sha256": "f16d4af1977523e586361029407c37f6a8aabcdd65ecc89c4116a1f42e77f0b4"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/train_map_encoder.py",
+      "present": true,
+      "sha256": "b0a8a8dd6b21f8c6c9a0cd53b2b417cdb81c1805f28bc7876b9d21d880c80efe"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/run_ksweep.py",
+      "present": true,
+      "sha256": "d73e28d1b41e9a6728ccb158222360eb3624cf7e948ac3b31e50c180e7fd9d07"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/latent_gap_runner.py",
+      "present": true,
+      "sha256": "cb8d836725e3a50b2629c13dbe93912fb8696d9921cce18c0cb40140525f1d5a"
+    },
+    {
+      "path": "ultimate_pipeline/domain_gap_gnn/reproducibility_pack.py",
+      "present": true,
+      "sha256": "8d6819dfd7095c315a2b72785b8edcffca560d8680be6174efa68ded08a663e2"
+    },
+    {
+      "path": "ultimate_pipeline/tools/run_gnn_pipeline.py",
+      "present": true,
+      "sha256": "55d1fadb495d103221d55493d8d9d090514e59b7f95655f1dc8c713a086c68c5"
+    },
+    {
+      "path": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/run_seed_ensemble_leakfree.py",
+      "present": true,
+      "sha256": "db3f9b003cfe305d4347126e466d38456d7795f5667ad695a8e23bb670795003"
+    },
+    {
+      "path": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/post_hoc_leakage_audit.py",
+      "present": true,
+      "sha256": "83fe241d411e1ea114d71369fb0b3caa3680771af873519ce48bfdf5610be60f"
+    },
+    {
+      "path": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/compute_aggregate_stats.py",
+      "present": true,
+      "sha256": "9676abd8f60107d5e4460ce551db47fe288b15c8492bf9042a615efddffce64b"
+    }
+  ],
+  "environment": {
+    "observed_in_this_clean_clone": {
+      "platform": "Windows-11-10.0.26300-SP0",
+      "python_implementation": "CPython",
+      "python_version": "3.12.2",
+      "torch_cuda_available": "False",
+      "torch_geometric_version": "2.7.0",
+      "torch_version": "2.9.1+cpu"
+    },
+    "recorded_by_producer": {
+      "python_version": "3.12.2",
+      "torch_cuda_available": false,
+      "torch_geometric_version": "2.7.0",
+      "torch_version": "2.9.1+cpu"
+    }
+  },
+  "historical_producer_git_sha": {
+    "fix_commit_present_in_main_checkout": true,
+    "fix_commit_present_in_retrain_worktree": true,
+    "gap010_fix_commit": "8f8d0c52",
+    "per_seed_overrides": {
+      "42": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "43": "UNKNOWN",
+      "44": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "45": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "46": "a4d8a973044a421743d1d9ec634618148b75018a"
+    },
+    "retrain_base_commit": "a4d8a973044a421743d1d9ec634618148b75018a",
+    "retrain_branch": "fix/gap010-rq4-leakfree-retrain-20260924"
+  },
+  "input_identity": {
+    "auto_vs_manual_input_distinction": "manual_xodr is the human-authored baseline; auto_xodr is the pipeline-generated candidate. They are the two domains whose latent representations RQ4 compares.",
+    "auto_xodr_role": "manually/auto SUBSTITUTION for the unrecoverable original auto_full_aligned.xodr (documented producer decision)",
+    "auto_xodr_sha256": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43",
+    "evaluation_pair_hash_roles": "these two hashes are simultaneously the eval pair AND the exclusion set; the eval pair is never permitted in the training set",
+    "evaluation_pair_hashes": {
+      "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+      "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+    },
+    "excluded_source_hashes": [
+      "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+      "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+    ],
+    "manual_xodr_sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8"
+  },
+  "per_seed_metrics": [
+    {
+      "checkpoint_md5": "acdb7f57bd6a10b62bac4991c45da3cc",
+      "checkpoint_path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_42\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256_master_close": "f8866a652447a619e36177192f2687aa02defc08b46c876dd6ed0c37003a40ee",
+      "checkpoint_sha256_post_hoc_audit": "6d39198fccaff24b7291cbde54d7f0be04a7f879687696ac14373d45c54d3db6",
+      "cosine_distance": 0.9054968357086182,
+      "cosine_similarity": 0.09450313448905945,
+      "cross_record_checkpoint_sha256_agreement": false,
+      "epochs_completed": 50,
+      "eval_pair_hash_overlap": [],
+      "final_loss": 2.031173,
+      "n_source_tiles_recorded": 562,
+      "producer_git_sha": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "provenance_label": "VERIFIED_CRYPTOGRAPHIC_PROVENANCE",
+      "seed": 42,
+      "status": "COMPLETE",
+      "tile_count": 562,
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+      "training_seed": 42
+    },
+    {
+      "checkpoint_md5": "25ee5406c514a4f40e8ccc74561deb30",
+      "checkpoint_path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256_master_close": "f8719df17f62a174060acd60ce39481578cc60e9e2699bc9e7ce96311a1d0342",
+      "checkpoint_sha256_post_hoc_audit": "79965135d12945dc9d02bd184d30367d7e87aaf0d2b69b5eacc5ead3f323c144",
+      "cosine_distance": 0.7745578289031982,
+      "cosine_similarity": 0.22544215619564056,
+      "cross_record_checkpoint_sha256_agreement": false,
+      "epochs_completed": 50,
+      "eval_pair_hash_overlap": [],
+      "final_loss": 2.027055,
+      "n_source_tiles_recorded": 562,
+      "producer_git_sha": "UNKNOWN",
+      "producer_git_sha_note": "manifest records UNKNOWN (dirty-worktree git describe failure in that seed subprocess); training config, tile selection, dataset manifest and exclusion contract identical to the other four seeds",
+      "provenance_label": "VERIFIED_CRYPTOGRAPHIC_PROVENANCE",
+      "seed": 43,
+      "status": "COMPLETE",
+      "tile_count": 562,
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+      "training_seed": 43
+    },
+    {
+      "checkpoint_md5": "d3d4073f9e3416468e0bc0a4b14dda6d",
+      "checkpoint_path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_44\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256_master_close": "e528b5443509f4faf167ed7fa9f3987feb608ac493b05b6369f53b161e8ab1a2",
+      "checkpoint_sha256_post_hoc_audit": "4f935285709ec6efaa0469643dbcd23eda8f6a93ab105704998a3444d1fdec8e",
+      "cosine_distance": 0.9666854739189148,
+      "cosine_similarity": 0.033314503729343414,
+      "cross_record_checkpoint_sha256_agreement": false,
+      "epochs_completed": 50,
+      "eval_pair_hash_overlap": [],
+      "final_loss": 2.022564,
+      "n_source_tiles_recorded": 562,
+      "producer_git_sha": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "provenance_label": "VERIFIED_CRYPTOGRAPHIC_PROVENANCE",
+      "seed": 44,
+      "status": "COMPLETE",
+      "tile_count": 562,
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+      "training_seed": 44
+    },
+    {
+      "checkpoint_md5": "213af83e592095d6ff7b60590b2e46cf",
+      "checkpoint_path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256_master_close": "16b9d92f64cff9b5a33c0dd22f750e943ff1ac357b79a0753c263aa9467578d0",
+      "checkpoint_sha256_post_hoc_audit": "1b144836334cf9d5aafca7451da42d87fe6cbcaae1b2749725e7ca5af4c79826",
+      "cosine_distance": 0.9625548124313354,
+      "cosine_similarity": 0.037445180118083954,
+      "cross_record_checkpoint_sha256_agreement": false,
+      "epochs_completed": 50,
+      "eval_pair_hash_overlap": [],
+      "final_loss": 2.006853,
+      "n_source_tiles_recorded": 562,
+      "producer_git_sha": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "provenance_label": "VERIFIED_CRYPTOGRAPHIC_PROVENANCE",
+      "seed": 45,
+      "status": "COMPLETE",
+      "tile_count": 562,
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+      "training_seed": 45
+    },
+    {
+      "checkpoint_md5": "3cb146e6a0d091f143e67e41f29957a3",
+      "checkpoint_path_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_46\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256_master_close": "f0447409d2c015f8e77ca723238f5c309dd205ca62379815e088120a2672a2a2",
+      "checkpoint_sha256_post_hoc_audit": "469eded69fa28a56a731945dc1c60b13888ccd101ca8ecc7ed42d9f7124ff207",
+      "cosine_distance": 0.9940629601478577,
+      "cosine_similarity": 0.00593702495098114,
+      "cross_record_checkpoint_sha256_agreement": false,
+      "epochs_completed": 50,
+      "eval_pair_hash_overlap": [],
+      "final_loss": 2.02856,
+      "n_source_tiles_recorded": 562,
+      "producer_git_sha": "a4d8a973044a421743d1d9ec634618148b75018a",
+      "provenance_label": "VERIFIED_CRYPTOGRAPHIC_PROVENANCE",
+      "seed": 46,
+      "status": "COMPLETE",
+      "tile_count": 562,
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+      "training_seed": 46
+    }
+  ],
+  "reproducibility_downgrades": [
+    "producer_worktree_absent:EXTERNAL_PATH_UNAVAILABLE",
+    "union_tiles_absent:MISSING",
+    "checkpoint_sha256_cross_record_disagreement",
+    "per_seed_producer_identity_missing"
+  ],
+  "reproducibility_level": "EVIDENCE_RECOMPUTABLE_ONLY",
+  "schema": "RQ4_REPRODUCIBILITY_MANIFEST/v1",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "training_parameters": {
+    "batch_size": 16,
+    "device": "cpu",
+    "epochs": 50,
+    "learning_rate": 0.0001,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "source": "METHODOLOGY_STRING_IN_aggregate_stats.json",
+    "tile_count": 562
+  },
+  "training_tile_manifest": {
+    "manifest_construction": "gnn_provenance.build_training_dataset_manifest (tile path, SHA256, node/edge counts, feature dim, graph digest; canonical hash over tile-sorted records)",
+    "manifest_entry_count": 562,
+    "manifest_entry_count_post_exclusion": 562,
+    "manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73",
+    "tile_count": 562,
+    "tiles_dir_recorded": "G:\\gap010-rq4-retrain-20260924\\reports\\post_audit_hardening\\C21_GNN_AUTHORITATIVE\\union_tiles",
+    "train_tile_count_post_exclusion": 562
+  }
+}
