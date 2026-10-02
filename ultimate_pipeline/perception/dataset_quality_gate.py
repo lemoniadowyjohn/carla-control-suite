@@ -169,12 +169,28 @@ def _parse_frame_id(stem: str) -> Optional[int]:
 
 
 def _find_lidar_dir(root: Path, camera: str) -> Optional[Path]:
+    """Locate the LiDAR sample directory, preferring the per-camera layout."""
+    camera_specific = root / "lidar" / camera
+    if camera_specific.is_dir():
+        return camera_specific
     for sub in _LIDAR_SUBDIRS:
         candidate = root / sub
         if candidate.is_dir():
             return candidate
-    lidar_cam = root / "lidar" / camera
-    return lidar_cam if lidar_cam.is_dir() else None
+    return None
+
+
+def _lidar_sample_ids(lidar_dir: Path) -> set:
+    """Frame ids of the LiDAR samples under ``lidar_dir`` (one level deep)."""
+    ids = {_parse_frame_id(p.stem) for p in lidar_dir.iterdir() if p.is_file()}
+    ids.discard(None)
+    for child in sorted(lidar_dir.iterdir()):
+        if child.is_dir():
+            for p in child.iterdir():
+                if p.is_file():
+                    ids.add(_parse_frame_id(p.stem))
+    ids.discard(None)
+    return ids
 
 
 # ---------------------------------------------------------------------------
@@ -296,8 +312,7 @@ def evaluate_dataset_quality(
                 )
             )
         else:
-            lidar_ids = {_parse_frame_id(p.stem) for p in lidar_dir.iterdir() if p.is_file()}
-            lidar_ids.discard(None)
+            lidar_ids = _lidar_sample_ids(lidar_dir)
             lidar_frame_count = len(lidar_ids)
             missing_lidar = sorted(rgb_ids - lidar_ids)
             if missing_lidar:
