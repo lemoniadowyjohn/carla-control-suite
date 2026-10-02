@@ -1,0 +1,15 @@
+{
+  "result": "PASS",
+  "defect_found": "Candidate B's hybrid path called a 'hybrid_physics_mode' method CARLA does not expose, then substituted distance_to_leading_vehicle for the hybrid radius. Those are different quantities: the radius is how far ahead a vehicle switches to hybrid behaviour, the follow gap is the spacing target. The governed radius therefore never took effect.",
+  "real_api": [
+    "hybrid_physics_mode(True)",
+    "hybrid_physics_radius(r)"
+  ],
+  "recorded_in_effective_config": true,
+  "hybrid_false_test": "test_hybrid_false_uses_follow_gap_not_hybrid_api",
+  "fail_closed": "hybrid_physics_radius is applied with required=True; an installed CARLA without it raises TRAFFIC_MANAGER_SETUP_FAILED instead of silently configuring the gap",
+  "non_substitution_test": "test_hybrid_radius_is_not_substituted_with_follow_gap asserts set_distance_to_leading_vehicle(5.0) is NOT called when a hybrid radius is requested",
+  "finding": "D",
+  "schema": "traffic_manager_api_matrix/v1",
+  "wrong_name_mock_test": "test_wrong_hybrid_api_name_mock_is_rejected uses a mock exposing only set_hybrid_physics_radius and asserts neither the wrong name nor the gap is called"
+}

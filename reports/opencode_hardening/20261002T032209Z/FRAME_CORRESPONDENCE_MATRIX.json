@@ -1,0 +1,39 @@
+{
+  "finding": "C",
+  "artifact": "FRAME_CORRESPONDENCE.json via write_frame_correspondence_artifact()",
+  "filename_rule": "Filename frame id MUST equal callback frame id; a mismatch records CAPTURE_FRAME_ARTIFACT_MISMATCH",
+  "equal_counts_are_not_sync": "test_cross_sensor_mismatched_frames_detected: 3 frames each over {1,2,3} and {2,3,4} intersects to {2,3}. test_camera_frame_n_with_lidar_n_plus_one: {5,6} vs {6,7} intersects to {6}.",
+  "artifact_binding_fields": [
+    "sensor_name",
+    "sensor_actor_id",
+    "sensor_type",
+    "callback_frame_id",
+    "sim_timestamp",
+    "output_path",
+    "output_sha256",
+    "write_status"
+  ],
+  "schema": "frame_correspondence_matrix/v1",
+  "required_fields": [
+    "per_sensor_frame_ids",
+    "common_frame_ids",
+    "missing_by_sensor",
+    "extra_by_sensor",
+    "duplicates_by_sensor",
+    "first_common_frame",
+    "last_common_frame",
+    "common_frame_count"
+  ],
+  "invalidating_cases": [
+    "filename rewritten to another frame",
+    "duplicate file for same sensor/frame",
+    "file present without callback receipt",
+    "callback receipt without file",
+    "camera frame N with LiDAR N+1 (no common frames)",
+    "duplicate callback frame",
+    "sensor delivered no frames"
+  ],
+  "binding_follows_actual_write": "_run_write_job binds to the Path returned by the writer when it returns one, so a substituted filename is detected rather than masked by the requested out_path",
+  "result": "PASS",
+  "authority": "actual CARLA callback data.frame; not world tick at observation time, not aggregate counts, not file-count coincidence"
+}

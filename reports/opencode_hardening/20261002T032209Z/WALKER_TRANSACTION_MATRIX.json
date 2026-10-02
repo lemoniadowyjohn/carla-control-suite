@@ -1,0 +1,27 @@
+{
+  "status_rule": "controlled=True requires: controller actually started, destination actually assigned, both actors alive, ownership registered, position governed",
+  "defect_found": "build_controlled_walker returned controlled=True and controller_started=True even when start() or the destination assignment had failed, and left a live walker behind on controller failure.",
+  "validator_hardening": "validate_walker_mode rejects an entry claiming traffic while uncontrolled, and counts a controlled walker only when neither controller_started nor destination_assigned is explicitly False (an absent key stays tolerated for legacy callers)",
+  "transaction_steps": [
+    "spawn walker",
+    "spawn controller",
+    "start controller",
+    "assign destination",
+    "verify both actors alive",
+    "register ownership",
+    "commit"
+  ],
+  "negative_controls": [
+    "test_walker_controller_spawn_failure_rolls_back_walker",
+    "test_walker_controller_start_failure_rolls_back_both",
+    "test_walker_destination_failure_rolls_back_and_is_not_controlled",
+    "test_walker_spawn_failure_reports_structured_failure",
+    "test_controller_not_alive_after_spawn_rolls_back"
+  ],
+  "rollback_on_every_failure": true,
+  "result": "PASS",
+  "structural_guard": "test_status_is_never_true_without_a_real_controller parses the AST and asserts controlled=True appears exactly once, on the committed-success path only",
+  "finding": "H",
+  "schema": "walker_transaction_matrix/v1",
+  "rollback_order": "controllers destroyed before walkers"
+}

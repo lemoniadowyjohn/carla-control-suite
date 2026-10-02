@@ -1,0 +1,70 @@
+{
+  "schema": "opencode_hardening_baseline_current/v1",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "work_branch": "opencode/p1-runtime-capture-20261001",
+  "starting_head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+  "result_head": "6cfec6fd5a9fda1c4d2fcaa6cec4d34222b36293",
+  "authoritative_base": "f897e0eb747ac827941ac4883170a5181a603111",
+  "previous_integration_anchor": "692b42391c29457fef30e19857352e3ef74be9b2",
+  "merge_base_with_authoritative_base": "f897e0eb747ac827941ac4883170a5181a603111",
+  "ancestry_checks": {
+    "authoritative_base_is_ancestor_of_starting_head": true,
+    "previous_anchor_is_ancestor_of_starting_head": true,
+    "verdict": "LINEAGE_OK"
+  },
+  "worktree": "C:/Users/admin/AppData/Local/Temp/opencode/wt-p1",
+  "worktree_isolation_note": "Work did NOT proceed in the shared checkout. A second opencode agent was actively writing there (uncommitted rq1_determinism_authority.py, rq1_trial_run.py, cache/, geometry/vectorized.py, parallel/). All work here is on a dedicated worktree branched from 233e452f.",
+  "concurrent_writer": {
+    "detected": true,
+    "owner": "another opencode agent (4 opencode processes running)",
+    "branch_in_use": "fix/p0-runtime-server-certification-authority-20261001",
+    "evidence": "ultimate_pipeline/research/rq1_determinism_authority.py (12299 bytes, untracked), tools/rq1_trial_run.py (modified), cache/tile_cache.py, cache/osm_index.py, geometry/vectorized.py, geometry/spatial_index.py, parallel/resource_aware.py, tiling/tile_fbx_generator.py, scripts/cook_full_grid_tiles.py",
+    "committed_by_it": false,
+    "action_taken": "not touched; no staging or commit performed in the shared checkout"
+  },
+  "disk_recovery": {
+    "free_before_gb": 1.38,
+    "free_after_gb": 23.92,
+    "action": "removed 6 stale .claude/worktrees entries (22.5 GB): agent-a0fee9ded2eb063a6, agent-a5ce1d29f092c24a1, agent-a9fc8e5c17bbafcaa, agent-ab8a38a344ee63277, agent-ad67575cb5606ceae, agent-af5ba6d33f63d0be3",
+    "each_contained_only": "untracked reports/production_readiness/2026091[67]TILE_BASED_FBX_GENERATION_PROBE outputs",
+    "preserved": ["agent-ad11e645667d7aa20 (35 modified campaign XODRs)", "agent-a601acc34bd5e6126", "agent-a9677fdcd7c1172ea", "agent-ad840f75a693e18c46"]
+  },
+  "p0_repairs_status": {
+    "P0-1_recorder_tick_nested_lock": "RECONSTRUCTED_AND_VERIFIED (946038bd)",
+    "P0-2_malformed_frame_counter_leak": "RECONSTRUCTED_AND_VERIFIED (946038bd)",
+    "P0-3_submission_recorder_copy": "RECONSTRUCTED_AND_VERIFIED (946038bd)",
+    "P0-4_tile_strict_provenance": "RECONSTRUCTED_BUT_INCORRECT (946038bd, corrected 6cfec6fd)",
+    "P0-5_runtime_map_qa_verdict": "RECONSTRUCTED_AND_VERIFIED (946038bd)",
+    "coordinate_frame_contract": "ABSENT_AND_UNRECOVERABLE",
+    "placement_authority": "NOT_ATTEMPTED_SOURCE_UNAVAILABLE"
+  },
+  "p0_4_detail": {
+    "problem": "The reconstruction set strict_provenance = bool(expected_xodr_sha256) or has_any_manifest. This broke 3 committed tests in tests/unit/test_o1_cook_provenance_chain.py, which document the opposite contract: tiles with no manifests may be staged when the XODR check itself passes (synthetic-fixture opt-out).",
+    "resolution": "Behaviour split. Verified part: a pinned expected_xodr_sha256 is the provenance authority and a mismatch is refused outright (exercised end to end). Unverified part: forcing per-tile manifest enforcement on a no-manifest caller. Code carries 'P0-4 status: NOT VERIFIED'.",
+    "why_not_restored": "The original P0-4 diff was destroyed as an uncommitted working-tree change by an accidental repo-wide 'git checkout -- .' and could not be recovered (no dangling blobs, no PyCharm LocalHistory entry, no filesystem copy).",
+    "blocked_on": "user restoring the original diff from backup"
+  },
+  "unrecoverable_work": {
+    "note": "Destroyed uncommitted changes that cannot be reconstructed because they were never read before loss.",
+    "files": [
+      "ultimate_pipeline/contracts/coordinate_contract.py (coordinate authority)",
+      "ultimate_pipeline/carla_tools/carla_server.py",
+      "ultimate_pipeline/carla_tools/carla_readiness.py",
+      "ultimate_pipeline/carla_tools/session.py",
+      "ultimate_pipeline/main_pipeline.py",
+      "ultimate_pipeline/quality/quality_gates.py",
+      "ultimate_pipeline/experiments/registry.py",
+      "ultimate_pipeline/contracts/release_profile.py",
+      "ultimate_pipeline/pipeline_stages/stage_10_tile_qa.py",
+      "ultimate_pipeline/pipeline_stages/stage_12_domain_gap.py",
+      "ultimate_pipeline/quality/pipeline_health_summary.py"
+    ],
+    "user_action_required": "restore from backup"
+  },
+  "map_registry_key": "auto_map_of_record",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "map_bytes": 149799632,
+  "map_frame_id": "ingolstadt_local_rebased",
+  "map_verification_status": "VERIFIED",
+  "live_carla_rpc": "unavailable (no live certification attempted)"
+}

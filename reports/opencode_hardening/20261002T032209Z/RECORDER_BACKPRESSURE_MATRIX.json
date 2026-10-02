@@ -1,0 +1,39 @@
+{
+  "finding": "A",
+  "defect_found": "Also: write jobs were accounted as pending AFTER executor.submit, so a worker that started and decremented before submit returned left pending permanently non-zero, making every later drain look like a timeout. Accounting now precedes submit and is rolled back on submit failure.",
+  "additional_fields": [
+    "write_jobs_executing",
+    "accepting_callbacks",
+    "invalid_frame_ids"
+  ],
+  "strict_rule": "ANY dropped or failed mandatory-sensor frame => CAPTURE_FRAME_DROP => capture INVALID",
+  "per_sensor_fields": [
+    "callback_frame_ids",
+    "write_attempted_frame_ids",
+    "write_accepted_frame_ids",
+    "write_completed_frame_ids",
+    "write_failed_frame_ids",
+    "write_dropped_frame_ids",
+    "duplicate_frame_ids"
+  ],
+  "schema": "recorder_backpressure_matrix/v1",
+  "verified_by": [
+    "test_backpressure_report_exposes_required_fields",
+    "test_writer_saturation_records_drop_and_fails_strict_capture",
+    "test_dropped_frame_is_not_hidden_by_file_counts",
+    "test_write_failure_is_accounted",
+    "test_mapping_like_calibration_is_not_mutated"
+  ],
+  "queue_fields": [
+    "queue_capacity",
+    "queue_high_water_mark",
+    "write_jobs_pending",
+    "write_jobs_completed",
+    "write_jobs_failed",
+    "frames_dropped"
+  ],
+  "aggregate_file_counts_used": null,
+  "result": "PASS",
+  "summary": "Writer backpressure was invisible: _queue_write_job returned False on exhausted capacity and callbacks continued, so a lost mandatory frame could still read as a successful capture.",
+  "defect_2": "_record_callback_frame initially conflated delivered frames with saved frames by writing _sensor_frame_counts; that counter means 'bytes reached disk' and is now left to _record_saved_frame alone."
+}

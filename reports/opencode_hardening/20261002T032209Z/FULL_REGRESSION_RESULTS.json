@@ -1,0 +1,40 @@
+{
+  "pre_existing_failures": [
+    "tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals",
+    "tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable",
+    "tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer",
+    "tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence"
+  ],
+  "branch": {
+    "worktree": "wt-p1",
+    "duration_s": 1142,
+    "skipped": 10,
+    "head": "6cfec6fd5a9fda1c4d2fcaa6cec4d34222b36293",
+    "failed": 4,
+    "passed": 7091
+  },
+  "methodology": "Two full runs of 'python -m pytest -q ultimate_pipeline tests tools --tb=no' in two separate worktrees: a detached baseline at unmodified 233e452f, and this branch. Failure sets compared exactly.",
+  "comparison": {
+    "branch_failures": 4,
+    "baseline_failures": 4,
+    "new_failures": 0,
+    "identical_failure_sets": true,
+    "fixed_failures": 0
+  },
+  "intermediate_regression_found_and_fixed": "The first comparison showed 131 'new' failures, but that run was invalid: it shared the machine with the concurrent agent and pytest tmpdirs. Re-running both sides in isolated worktrees with -p no:cacheprovider gave a true 0/0 split. A genuine 3-failure regression WAS found this way (test_o1_cook_provenance_chain.py, caused by the P0-4 reconstruction) and was fixed in 6cfec6fd.",
+  "compileall": {
+    "command": "python -m compileall -q ultimate_pipeline tools tests",
+    "exit_code": 0
+  },
+  "baseline": {
+    "worktree": "wt-p1-base",
+    "duration_s": 1789,
+    "skipped": 10,
+    "head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+    "failed": 4,
+    "passed": 7009
+  },
+  "result": "PASS",
+  "pre_existing_cause": "The dead-signal registry (ultimate_pipeline/signals/) and its producers are untracked in 233e452f; the contract tests require a registered production writer for each declared artifact.",
+  "schema": "full_regression_results/v1"
+}

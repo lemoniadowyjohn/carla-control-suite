@@ -1,0 +1,136 @@
+{
+  "current_branch": "opencode/p1-runtime-capture-20261001",
+  "commits": [
+    "946038bd fix(p0): reconstruct the five P0 repairs lost to an accidental repo-wide checkout",
+    "b0be2452 feat(recorder): exact frame-id authority, visible backpressure, bounded drain",
+    "a2cc080a feat(tm): correct hybrid API, single-owner identity, evidence-derived claims, transactional walkers",
+    "6cfec6fd fix(large-map): P0-4 reconstruction broke a committed provenance contract"
+  ],
+  "not_done": [
+    "coordinate authority (unrecoverable)",
+    "placement authority (unrecoverable)",
+    "any change in the shared checkout (concurrent agent active)",
+    "publication of a review head (blocked by B1-B5)"
+  ],
+  "next_actions": [
+    "B1-B4: user restores destroyed uncommitted work from backup",
+    "B5: concurrent agent commits to its own branch",
+    "then: build one immutable review head from 233e452f + restored work + 6cfec6fd and re-run the classified regression"
+  ],
+  "blockers": [
+    {
+      "severity": "P0",
+      "summary": "coordinate authority unrecoverable",
+      "detail": "ultimate_pipeline/contracts/coordinate_contract.py and coordinate_frame_contract.py were destroyed as uncommitted work and do not exist anywhere: not in git history, not in any worktree, not in PyCharm LocalHistory (full 45MB scan), not on disk. The original diff is required.",
+      "id": "B1"
+    },
+    {
+      "severity": "P0",
+      "summary": "placement authority not reconstructed",
+      "detail": "Never read before loss; cannot be synthesised.",
+      "id": "B2"
+    },
+    {
+      "severity": "P0",
+      "summary": "P0-4 reconstruction not verified",
+      "detail": "strict_provenance reconstruction broke a committed synthetic-fixture contract and was corrected back. Code records P0-4 status: NOT VERIFIED. The original diff is required to close the genuine gap.",
+      "id": "B3"
+    },
+    {
+      "severity": "P0",
+      "summary": "8+ further uncommitted files destroyed",
+      "detail": "carla_server, carla_readiness, session, main_pipeline, quality_gates, registry, release_profile, stage_10_tile_qa, stage_12_domain_gap, pipeline_health_summary. Never read; require user restore.",
+      "id": "B4"
+    },
+    {
+      "severity": "P0",
+      "summary": "concurrent agent owns the shared checkout",
+      "detail": "Another opencode agent is committing no work but writing rq1_determinism_authority.py, rq1_trial_run.py, cache/, geometry/vectorized.py, parallel/ into fix/p0-runtime-server-certification-authority-20261001. A single review head cannot be published until it commits to its own branch.",
+      "id": "B5"
+    },
+    {
+      "severity": "P1",
+      "summary": "4 pre-existing contract failures",
+      "detail": "tests/contracts/test_no_dead_pipeline_signals.py x4 fail identically at baseline 233e452f and on this branch. Cause: ultimate_pipeline/signals/ and its producers are untracked, so each declared artifact lacks a registered production writer. Not caused by this batch and not fixed by it.",
+      "id": "B6"
+    },
+    {
+      "severity": "P1",
+      "summary": "ThreadPoolExecutor cannot give a hard shutdown bound",
+      "detail": "Python threads cannot be force-killed. join_writer_threads honours its timeout and reports honestly, but a job already running in a thread cannot be interrupted. A genuinely bounded strict teardown requires isolating writer execution in a separate process; documented, not implemented.",
+      "id": "B7"
+    },
+    {
+      "severity": "P1",
+      "summary": "no live CARLA",
+      "detail": "All live items remain BLOCKED_EXTERNAL: weather apply/readback, live TM ownership/seed, ego/calibration binding, sensor attribute readback, empirical camera reprojection, empirical LiDAR-camera alignment, sensor frame health, live route execution, NEW-296 adapter, repeated capture, live cleanup, live state-contamination pair.",
+      "id": "B8"
+    }
+  ],
+  "result_head": "6cfec6fd5a9fda1c4d2fcaa6cec4d34222b36293",
+  "claim_boundary": "Offline PASS for findings A-I. No live CARLA claim. Not admissible for final research claims under UNPUSHED_RESEARCH_CODE until the branch is reviewed and published.",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "map_registry_key": "auto_map_of_record",
+  "schema": "opencode_hardening_final_verdict/v1",
+  "findings_delivered": [
+    {
+      "note": "backpressure visible per sensor; strict CAPTURE_FRAME_DROP; two extra accounting defects found and fixed",
+      "status": "PASS",
+      "id": "A"
+    },
+    {
+      "note": "timeout is real; three drain states reachable; cancel_futures deliberately unused with reason",
+      "status": "PASS",
+      "id": "B"
+    },
+    {
+      "note": "correspondence from actual callback frame ids; artifacts bound to frame; five negative controls",
+      "status": "PASS",
+      "id": "C"
+    },
+    {
+      "note": "hybrid uses real CARLA API names; no follow-gap substitution",
+      "status": "PASS",
+      "id": "D"
+    },
+    {
+      "note": "owner-token exclusivity; transactional close; all release paths verified",
+      "status": "PASS",
+      "id": "E"
+    },
+    {
+      "note": "claims derived from ledger; empty ledger yields None not True",
+      "status": "PASS",
+      "id": "F"
+    },
+    {
+      "note": "strategy A manifest; CARLA randomness labelled and refused",
+      "status": "PASS",
+      "id": "G"
+    },
+    {
+      "note": "transactional spawn with rollback; status truthful",
+      "status": "PASS",
+      "id": "H"
+    },
+    {
+      "note": "back-to-back runs; global-RNG leak explicitly checked",
+      "status": "PASS",
+      "id": "I"
+    }
+  ],
+  "starting_head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+  "verdict": "PARTIAL_WITH_EXACT_BLOCKERS",
+  "authoritative_base": "f897e0eb747ac827941ac4883170a5181a5181a603111",
+  "tests": {
+    "targeted_fail": 0,
+    "new_failures": 0,
+    "full_pass": 7091,
+    "full_fail": 4,
+    "targeted_pass": 210,
+    "full_skip": 10,
+    "fixed_failures": 0,
+    "compileall_exit": 0
+  },
+  "map_verification_status": "VERIFIED"
+}

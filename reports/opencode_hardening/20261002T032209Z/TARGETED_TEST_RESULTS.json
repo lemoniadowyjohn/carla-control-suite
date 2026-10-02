@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "failed": 0,
+  "passed": 210,
+  "p0_regression_tests": 16,
+  "files": [
+    "ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py",
+    "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py",
+    "tests/unit/test_traffic_manager_and_walker_authority.py",
+    "tests/unit/test_back_to_back_state_contamination.py",
+    "tests/unit/test_recorder_backpressure_and_frame_integrity.py",
+    "tests/unit/test_p0_recorder_and_provenance_repairs.py",
+    "tests/unit/test_o1_cook_provenance_chain.py",
+    "tests/unit/test_recorder_semseg_layout.py"
+  ],
+  "skipped": 0,
+  "new_tests_this_batch": 68,
+  "command": "python -m pytest -q <8 paths> --tb=short",
+  "schema": "targeted_test_results/v1"
+}
