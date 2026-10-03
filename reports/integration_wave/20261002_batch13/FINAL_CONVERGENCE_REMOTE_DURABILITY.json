@@ -1,0 +1,20 @@
+{
+  "schema": "FINAL_CONVERGENCE_REMOTE_DURABILITY/v1",
+  "branch": "review/carla-final-convergence-20261003",
+  "base_integration_sha": "8f02c34984090e9a54130f5c2b49728e31ee682f",
+  "unique_rq1b_source_sha": "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4",
+  "final_sha": "859b86e31f4717cc3d80d540c04c484f4f345bb0",
+  "final_tree": "fca837bf74cf29d0fa8a7f8ce6d108ee7478cf86",
+  "remote_sha": "859b86e31f4717cc3d80d540c04c484f4f345bb0",
+  "local_equals_remote": true,
+  "lane_completeness": "PASS (64/64 files present, 0 missing, 0 content mismatches)",
+  "base_skew": "BASE_SKEW_RECONCILED",
+  "rq1_aggregation": "RQ1A=5 COMPLETE, RQ1B=0 INCOMPLETE, RQ1 overall=INCOMPLETE",
+  "signal_gate": "FIXED_BY_INTEGRATION (11/11 pass)",
+  "rq3_contract_tests": "25/25 pass, both historical failures were obsolete test assumptions",
+  "release_blocking_failures": 0,
+  "sections_not_executed": ["07 OSM2World negative-control rewrite", "09 full isolated regression on this candidate", "10 regenerate central evidence for this candidate"],
+  "live_runtime": "NOT_RUN",
+  "full_production_ready": false,
+  "note": "Offline release convergence. Divergence eliminated: the unique RQ1B commit is applied as a single cherry-pick with no patch overlap. Not full_production_ready: no live CARLA evidence, and sections 7/9/10 were not executed."
+}
