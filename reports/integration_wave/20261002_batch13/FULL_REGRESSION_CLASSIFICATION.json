@@ -1,0 +1,41 @@
+{
+  "NEW_REGRESSION_COUNT": 0,
+  "UNCLASSIFIED_COUNT": 0,
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "base_duration_s": 2204.31,
+  "base_totals": {
+    "errors": 0,
+    "failed": 6,
+    "passed": 7139,
+    "skipped": 10
+  },
+  "classification": {
+    "ENVIRONMENTAL": [],
+    "FIXED": [
+      "tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence",
+      "tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer",
+      "tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable",
+      "tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals"
+    ],
+    "NEW_REGRESSION": [],
+    "PRE_EXISTING": [
+      "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py::test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture",
+      "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py::test_ingolstadt_manual_and_auto_arms"
+    ],
+    "STALE_TEST": [],
+    "TEST_INFRASTRUCTURE": []
+  },
+  "generated_at_utc": "2026-10-03T10:12:06.885092+00:00",
+  "integrated_duration_s": 34605.38,
+  "integrated_sha": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+  "integrated_totals": {
+    "errors": 0,
+    "failed": 2,
+    "passed": 7358,
+    "skipped": 10
+  },
+  "method": "Two fully isolated offline runs (own TMP/TEMP/TMPDIR, own pytest cache, own cwd, own output roots, -p no:cacheprovider). Every difference is classified; unclassified differences are a failure of this artifact.",
+  "pre_existing_note": "The two remaining failures are RQ3 paired-capture contract tests that fail identically at the base candidate and at the integrated candidate. They are outside this batch's lane ownership and are reported, not suppressed.",
+  "schema": "FULL_REGRESSION_CLASSIFICATION/v1",
+  "status": "PASS"
+}

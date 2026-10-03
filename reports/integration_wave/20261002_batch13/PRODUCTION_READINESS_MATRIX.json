@@ -1,0 +1,115 @@
+{
+  "dimensions": {
+    "CI": {
+      "evidence": "review/** and hardening/** triggers present in .github/workflows/tests.yml",
+      "status": "PASS"
+    },
+    "RQ1": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "INCOMPLETE"
+    },
+    "RQ2": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
+    },
+    "RQ3": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
+    },
+    "RQ4": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
+    },
+    "RQ5A": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
+    },
+    "RQ5B": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    "cache_integrity": {
+      "evidence": "not executed",
+      "status": "NOT_RUN"
+    },
+    "coordinate_authority": {
+      "evidence": "not executed",
+      "status": "NOT_RUN"
+    },
+    "evidence_freshness": {
+      "evidence": "EVIDENCE_FRESHNESS.json",
+      "status": "PASS"
+    },
+    "evidence_graph": {
+      "advisory_findings": 3,
+      "evidence": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json",
+      "status": "PASS"
+    },
+    "full_regression": {
+      "evidence": "FULL_REGRESSION_CLASSIFICATION.json",
+      "status": "PASS"
+    },
+    "governance_negative_controls": {
+      "evidence": "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS.json",
+      "status": "PASS"
+    },
+    "lane_scope": {
+      "evidence": "PARALLEL_LANE_SCOPE_AUDIT.json",
+      "status": "PASS"
+    },
+    "live_runtime": {
+      "evidence": "offline batch; no live CARLA executed",
+      "status": "NOT_RUN"
+    },
+    "map_authority": {
+      "evidence": "campaigns/ map-of-record",
+      "status": "PASS"
+    },
+    "optimization_equivalence": {
+      "evidence": "section 10 not executed in this batch",
+      "status": "NOT_RUN"
+    },
+    "package_integrity": {
+      "evidence": "batch 7 wheel receipts; not re-verified in this batch",
+      "status": "INCOMPLETE"
+    },
+    "parallel_execution": {
+      "evidence": "not executed",
+      "status": "NOT_RUN"
+    },
+    "placement": {
+      "evidence": "not executed",
+      "status": "NOT_RUN"
+    },
+    "repository_integrity": {
+      "evidence": "INPUT_LINEAGE_AUDIT.json",
+      "status": "PASS"
+    },
+    "signal_integrity": {
+      "evidence": "SIGNAL_RECONCILIATION.json",
+      "status": "PASS"
+    },
+    "wheel_package": {
+      "evidence": "clean-wheel install not re-run in this batch",
+      "status": "INCOMPLETE"
+    }
+  },
+  "generated_at_utc": "2026-10-03T10:15:20.077451+00:00",
+  "governed_statuses": [
+    "PASS",
+    "FAIL",
+    "INCOMPLETE",
+    "NOT_RUN",
+    "BLOCKED_ENVIRONMENT",
+    "BLOCKED_EXTERNAL"
+  ],
+  "readiness": {
+    "full_production_ready": false,
+    "live_runtime_not_run": true,
+    "note": "Dimensions left NOT_RUN or INCOMPLETE are reported individually. This matrix is deliberately not reduced to a single boolean.",
+    "offline_release_pass": false
+  },
+  "schema": "PRODUCTION_READINESS_MATRIX/v1",
+  "schema_version": 1,
+  "status": "NOT_READY"
+}
