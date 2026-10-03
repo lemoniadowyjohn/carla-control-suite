@@ -1,6 +1,6 @@
 {
   "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
-  "current_candidate_commit": "cb028ee9a483ee53145750564a26156a15f246e9",
+  "current_candidate_commit": "03af8c19341934ae6e0031869880674ca3755988",
   "evidence": {
     "auto_map_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
     "manual_grid0828_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"

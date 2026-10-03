@@ -1,7 +1,7 @@
 {
   "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
   "critical_rule_applied": "Implementation readiness is NOT scientific authority. A capability being implementable, and a tool being present, never promotes a research claim. AUTHORITATIVE requires a live measured result bound to evidence.",
-  "current_candidate_commit": "cb028ee9a483ee53145750564a26156a15f246e9",
+  "current_candidate_commit": "03af8c19341934ae6e0031869880674ca3755988",
   "exact_blockers": [
     {
       "blocker": "UE426_BLOCKED_OPERATOR_INSTALL",
