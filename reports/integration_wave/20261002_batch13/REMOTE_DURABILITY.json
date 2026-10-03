@@ -26,12 +26,14 @@
     "UNCLASSIFIED": 0,
     "status": "PASS"
   },
-  "integrated_tree": "73e42dcdd3a6ac18d99d3e9cd213ae4be6c43241",
+  "integrated_tree": "95a6a6488f9ea7d87af1599285b45773f7dc5cdf",
   "lane_result_shas": {
     "RQ2": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
     "RQ4": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
     "RQ5": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b"
   },
+  "local_equals_remote": true,
+  "local_head": "bdb4300ee78937b876b26cfe53d97d1257ade700",
   "not_executed_sections": [
     "10 optimization/cache/parallel equivalence",
     "24-25 clean wheel smoke",
@@ -40,6 +42,7 @@
   ],
   "note": "Offline integration candidate. NEW_REGRESSION=0 and the dead-signal defect is fixed and verified. NOT full_production_ready: no live CARLA evidence, RQ1 evidence absent, RQ5B blocked external, and sections 10/24-26 were not executed.",
   "readiness_status": "NOT_READY",
+  "remote_head": "bdb4300ee78937b876b26cfe53d97d1257ade700",
   "schema": "REMOTE_DURABILITY/v1",
   "stage": "OFFLINE_INTEGRATED_WITH_EXACT_REMAINING_BLOCKERS"
 }
