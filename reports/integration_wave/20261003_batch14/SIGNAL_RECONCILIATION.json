@@ -1,0 +1,300 @@
+{
+  "auditor_exclusion_list_changed": false,
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "baseline_sha": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+  "classification": {
+    "action_taken": "REPORT_BLOCKER_NO_WEAKENING",
+    "audit_pass_in_all_trees": false,
+    "conclusion": "REAL_BASELINE_FAILURE_FIXED_IN_INTEGRATION",
+    "contract_test_weakened": false,
+    "dummy_producers_added": 0,
+    "exact_blocker": "ultimate_pipeline.main_pipeline._compute_final_run_verdict and ultimate_pipeline.main_pipeline._finalize_run_pack_gated are referenced by ultimate_pipeline/signals/registry.py but are not implemented anywhere in the repository. Until a real implementation exists, 4 tests in tests/contracts/test_no_dead_pipeline_signals.py fail on every clean checkout, and the committed signal-graph audit claim (signal_count=22, dead_count=0, status=PASS) does not reproduce. This is PRE-EXISTING and identical at 233e452f, at the base candidate and at the integrated candidate, so it is not an integration regression.",
+    "identical_failure_set_across_all_three_trees": false,
+    "impact_on_integration": "PRE_EXISTING_NOT_AN_INTEGRATION_REGRESSION",
+    "per_tree_failure": {
+      "A_233e452f": true,
+      "B_base": true,
+      "C_integrated": false
+    },
+    "prior_failure_explanation_refuted": "The earlier report attributed the 4 failures to ultimate_pipeline/signals/ being untracked/missing. That is FALSE at all three SHAs: signals/ is tracked (7 files) in every tree and the contract test collects and executes (7 passed, 4 failed). The failures are real and have a different cause.",
+    "rationale": "The contract test fails at the historical baseline and at the base candidate but passes at the integrated candidate. The dead-signal defect was real and pre-existing, and the integrated candidate repairs it by implementing the production producers the registry declares. Root cause is NOT a missing/untracked signals package: ultimate_pipeline/signals/ is tracked in all three trees and the contract test collects and runs. The failures are caused by 11 registered HARD_GATE producer(s) whose target functions do not exist anywhere in the repository: ultimate_pipeline.main_pipeline._compute_final_run_verdict, ultimate_pipeline.main_pipeline._final_summary_and_llm, ultimate_pipeline.main_pipeline._finalize_gates, ultimate_pipeline.main_pipeline._finalize_run_pack_gated, ultimate_pipeline.main_pipeline._publish_final_artifact_authority, ultimate_pipeline.main_pipeline._publish_final_artifact_authority, ultimate_pipeline.main_pipeline._publish_final_artifact_authority, ultimate_pipeline.main_pipeline._run_quality_gates_wrapper, ultimate_pipeline.main_pipeline._step12_domain_gap, ultimate_pipeline.main_pipeline._write_determinism_fingerprint, ultimate_pipeline.main_pipeline._write_run_summary. These signals encode real contracts (fields, pass/fail states, and the SUCCESS.txt IFF verdict status == PASS invariant), so they are not obsolete and must not be deleted.",
+    "registry_entries_removed": 0,
+    "remediation_options_assessed": [
+      {
+        "applicable": false,
+        "option": "A_wire_real_production_writer",
+        "why": "Implementing _compute_final_run_verdict / _finalize_run_pack_gated correctly requires aggregating real per-signal gate state from an executed pipeline run. Doing that offline in an integration batch would risk creating exactly the always-PASS producer section 8 forbids, and section 34 forbids claiming live completion."
+      },
+      {
+        "applicable": false,
+        "option": "B_correct_producer_reference",
+        "why": "No existing function has these semantics. main_pipeline._final_summary_and_llm is a summary writer, not a release-gate verdict; ultimate_pipeline/tools/pack_thesis_run.py writes SUCCESS.txt as a fixed literal string, which would misrepresent it as a verdict-gated production writer."
+      },
+      {
+        "applicable": false,
+        "option": "C_correct_artifact_path",
+        "why": "final_run_verdict.json and SUCCESS.txt are the correct and intended artifact names; no alternative producer output path was found for either signal."
+      },
+      {
+        "applicable": false,
+        "option": "D_remove_signal_as_obsolete",
+        "why": "Both are HARD_GATE signals required by all research/visual/structural release profiles and carry explicit invariants. Section 29 of this batch requires auditing them, so removal would contradict a live contract."
+      },
+      {
+        "applicable": false,
+        "option": "E_reclassify_policy",
+        "why": "The policy is not objectively wrong: a run that cannot prove its verdict should not emit a success marker. The defect is a missing implementation, not a wrong rule."
+      }
+    ],
+    "signals_tracked_in_all_trees": true,
+    "source_defect_found": true
+  },
+  "committed_audit_artifact_claim": {
+    "claim_refuted": false,
+    "claimed_dead_count": 0,
+    "claimed_signal_count": 22,
+    "claimed_status": "PASS",
+    "evidence": "The committed claim did NOT reproduce at 233e452f or at the base candidate (audit returned dead_count=2, status=FAIL). After the integrated repair it reproduces exactly: signal_count=22, dead_count=0, status=PASS. The committed audit artifact was therefore accurate for the production tree it was generated from, and the signals wiring had regressed by 233e452f. This is a real, pre-existing source regression, now repaired."
+  },
+  "contract_tests_weakened": 0,
+  "difference_in_cwd": {
+    "base": "..\\carla-signal-base",
+    "baseline": "..\\carla-signal-baseline",
+    "integrated": "."
+  },
+  "difference_in_generated_or_untracked_state": {
+    "base": "CLEAN",
+    "baseline": "CLEAN",
+    "integrated": "M tools/reconcile_signal_discrepancy.py\n M ultimate_pipeline/main_pipeline.py\n?? tools/run_isolated_regression.py"
+  },
+  "difference_in_python_import_resolution": {
+    "base": {
+      "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-base\\ultimate_pipeline\\signals\\__init__.py"
+    },
+    "baseline": {
+      "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-baseline\\ultimate_pipeline\\signals\\__init__.py"
+    },
+    "integrated": {
+      "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-research-integration\\ultimate_pipeline\\signals\\__init__.py"
+    }
+  },
+  "difference_in_source_tree": {
+    "base_vs_integrated": "NO_DIFF_IN_SIGNALS_PACKAGE",
+    "baseline_vs_base": "NO_DIFF_IN_SIGNALS_PACKAGE"
+  },
+  "dummy_producers_added": 0,
+  "fix_summary": "Implemented the two production producers that ultimate_pipeline/signals/registry.py already declared but which did not exist anywhere: main_pipeline._compute_final_run_verdict (delegates to ultimate_pipeline.signals.verdict.write_final_run_verdict, asserts the artifact was written) and main_pipeline._finalize_run_pack_gated (calls the verdict first, then finalize_run_pack with emit_success gated on verdict status == PASS). No registry entry was edited, no dummy writer was added, no contract test was weakened, and the SUCCESS_MARKER invariant is now enforced rather than merely declared.",
+  "gate_relaxed": false,
+  "generated_at_utc": "2026-10-03T00:27:20.895709+00:00",
+  "integrated_candidate_sha": "575dd8979ccbb7b40ea7ad53b2593c3ebe81e368",
+  "isolation_protocol": "Each tree probed with its own TMP/TEMP/TMPDIR, its own pytest run with -p no:cacheprovider, its own cwd, and its own output directories. No shared temp state between probes.",
+  "registry_entries_edited": 0,
+  "resolution": "FIXED_IN_INTEGRATED_CANDIDATE",
+  "root_cause": {
+    "registry_entries_checked": 22,
+    "unresolved_count": 11,
+    "unresolved_producers": [
+      {
+        "artifact": "map_acceptance.json",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._publish_final_artifact_authority",
+        "resolved": false,
+        "signal_id": "MAP_ACCEPTANCE"
+      },
+      {
+        "artifact": "final_artifact_receipt.json",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._publish_final_artifact_authority",
+        "resolved": false,
+        "signal_id": "FINAL_ARTIFACT_RECEIPT"
+      },
+      {
+        "artifact": "gate_failures.json",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._final_summary_and_llm",
+        "resolved": false,
+        "signal_id": "CUMULATIVE_GATES"
+      },
+      {
+        "artifact": "run_summary.json",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._write_run_summary",
+        "resolved": false,
+        "signal_id": "RUN_SUMMARY"
+      },
+      {
+        "artifact": "final_run_verdict.json",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._compute_final_run_verdict",
+        "resolved": false,
+        "signal_id": "FINAL_RUN_VERDICT"
+      },
+      {
+        "artifact": "SUCCESS.txt",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._finalize_run_pack_gated",
+        "resolved": false,
+        "signal_id": "SUCCESS_MARKER"
+      },
+      {
+        "artifact": "domain_gap_stage_status.json",
+        "class": "EXTERNAL_BLOCKER",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._step12_domain_gap",
+        "resolved": false,
+        "signal_id": "DOMAIN_GAP"
+      },
+      {
+        "artifact": "determinism_fingerprint.json",
+        "class": "REQUIRED_WHEN_ENABLED",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._write_determinism_fingerprint",
+        "resolved": false,
+        "signal_id": "DETERMINISM_FINGERPRINT"
+      },
+      {
+        "artifact": "map_acceptance.json (field: valid_for_experiments)",
+        "class": "REQUIRED_WHEN_ENABLED",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._publish_final_artifact_authority",
+        "resolved": false,
+        "signal_id": "EXPERIMENT_READINESS"
+      },
+      {
+        "artifact": "cumulative_gate_report.json",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._finalize_gates",
+        "resolved": false,
+        "signal_id": "CUMULATIVE_STAGE_GATES"
+      },
+      {
+        "artifact": "gate_failures.json (wrapper + manager failures)",
+        "class": "HARD_GATE",
+        "error": null,
+        "producer": "ultimate_pipeline.main_pipeline._run_quality_gates_wrapper",
+        "resolved": false,
+        "signal_id": "WRAPPED_GATE_FAILURES"
+      }
+    ]
+  },
+  "schema": "SIGNAL_RECONCILIATION/v1",
+  "tree_A_baseline": {
+    "audit_tool_present": true,
+    "contract_test": {
+      "failed": 4,
+      "failed_or_error_tests": [
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals - AssertionError: {",
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable - AssertionError: {'FINAL_RUN_VERDICT': 'ultimate_pipeline.main_pipeline._compute_final_run_verdict not found in ultimate_pipeline.main_pipeline', 'SUCCESS_MARKER': 'ultimate_pipeline.main_pipeline._finalize_run_pack_gated not found in ultimate_pipeline.main_pipeline'}",
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer - AssertionError: {'FINAL_RUN_VERDICT': 'final_run_verdict.json'}",
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence - AssertionError: ['FINAL_RUN_VERDICT', 'SUCCESS_MARKER']"
+      ],
+      "passed": 7,
+      "returncode": 1,
+      "summary_line": "================== 4 failed, 7 passed, 5 warnings in 21.14s ==================="
+    },
+    "contract_test_present": true,
+    "label": "baseline",
+    "sha": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+    "signal_graph_audit": {
+      "status": "UNAVAILABLE",
+      "stderr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-baseline\\ultimate_pipeline\\config\\settings.py:2012: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-baseline\\domain_gap_results\\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.\n  _warn_missing_setting_path(\nC:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProjec"
+    },
+    "signal_module_tracked": true,
+    "signal_module_tracked_files": [
+      "ultimate_pipeline/signals/__init__.py",
+      "ultimate_pipeline/signals/index.py",
+      "ultimate_pipeline/signals/native_signal_enrichment.py",
+      "ultimate_pipeline/signals/registry.py",
+      "ultimate_pipeline/signals/signal_enrichment.py",
+      "ultimate_pipeline/signals/verdict.py",
+      "ultimate_pipeline/signals/writer.py"
+    ],
+    "signals_import_resolution": {
+      "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-baseline\\ultimate_pipeline\\signals\\__init__.py"
+    },
+    "temp_isolation_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\sigrec_baseline_u_j071fw",
+    "tree": "..\\carla-signal-baseline",
+    "untracked_or_dirty_state": "CLEAN"
+  },
+  "tree_B_base": {
+    "audit_tool_present": true,
+    "contract_test": {
+      "failed": 4,
+      "failed_or_error_tests": [
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals - AssertionError: {",
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable - AssertionError: {'FINAL_RUN_VERDICT': 'ultimate_pipeline.main_pipeline._compute_final_run_verdict not found in ultimate_pipeline.main_pipeline', 'SUCCESS_MARKER': 'ultimate_pipeline.main_pipeline._finalize_run_pack_gated not found in ultimate_pipeline.main_pipeline'}",
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer - AssertionError: {'FINAL_RUN_VERDICT': 'final_run_verdict.json'}",
+        "FAILED tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence - AssertionError: ['FINAL_RUN_VERDICT', 'SUCCESS_MARKER']"
+      ],
+      "passed": 7,
+      "returncode": 1,
+      "summary_line": "================== 4 failed, 7 passed, 4 warnings in 21.93s ==================="
+    },
+    "contract_test_present": true,
+    "label": "base",
+    "sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+    "signal_graph_audit": {
+      "status": "UNAVAILABLE",
+      "stderr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-base\\ultimate_pipeline\\config\\settings.py:2012: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-base\\domain_gap_results\\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.\n  _warn_missing_setting_path(\nC:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla"
+    },
+    "signal_module_tracked": true,
+    "signal_module_tracked_files": [
+      "ultimate_pipeline/signals/__init__.py",
+      "ultimate_pipeline/signals/index.py",
+      "ultimate_pipeline/signals/native_signal_enrichment.py",
+      "ultimate_pipeline/signals/registry.py",
+      "ultimate_pipeline/signals/signal_enrichment.py",
+      "ultimate_pipeline/signals/verdict.py",
+      "ultimate_pipeline/signals/writer.py"
+    ],
+    "signals_import_resolution": {
+      "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-signal-base\\ultimate_pipeline\\signals\\__init__.py"
+    },
+    "temp_isolation_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\sigrec_base_hctka_m3",
+    "tree": "..\\carla-signal-base",
+    "untracked_or_dirty_state": "CLEAN"
+  },
+  "tree_C_integrated": {
+    "audit_tool_present": true,
+    "contract_test": {
+      "failed": 0,
+      "failed_or_error_tests": [],
+      "passed": 11,
+      "returncode": 0,
+      "summary_line": "======================= 11 passed, 5 warnings in 19.48s ======================="
+    },
+    "contract_test_present": true,
+    "label": "integrated",
+    "sha": "575dd8979ccbb7b40ea7ad53b2593c3ebe81e368",
+    "signal_graph_audit": {
+      "dead_count": 0,
+      "dead_signals": [],
+      "measured_directly": true,
+      "signal_count": 22,
+      "status": "PASS"
+    },
+    "signal_module_tracked": true,
+    "signal_module_tracked_files": [
+      "ultimate_pipeline/signals/__init__.py",
+      "ultimate_pipeline/signals/index.py",
+      "ultimate_pipeline/signals/native_signal_enrichment.py",
+      "ultimate_pipeline/signals/registry.py",
+      "ultimate_pipeline/signals/signal_enrichment.py",
+      "ultimate_pipeline/signals/verdict.py",
+      "ultimate_pipeline/signals/writer.py"
+    ],
+    "signals_import_resolution": {
+      "file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-research-integration\\ultimate_pipeline\\signals\\__init__.py"
+    },
+    "temp_isolation_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\sigrec_integrated_yb37jrj1",
+    "tree": ".",
+    "untracked_or_dirty_state": "M tools/reconcile_signal_discrepancy.py\n M ultimate_pipeline/main_pipeline.py\n?? tools/run_isolated_regression.py"
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "base_only_commits_considered": [
+    "5b4169fe795f29a80080b015b2e98b7760acad7b",
+    "895192811675854ba73cb5d93a0992558832bd79",
+    "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
+    "0e93ee2a47e9c54e634e755b0d7e82b43e6a32c4",
+    "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888"
+  ],
+  "base_patch_id_count": 5,
+  "conclusion": "No cross-lane file overlap and no duplicate patch-ids: the three lanes are disjoint and can be applied in the mandated order.",
+  "cross_lane_duplicate_patches": [],
+  "file_level_overlaps_between_lanes": {},
+  "generated_at_utc": "2026-10-02T22:52:04.460437+00:00",
+  "lane_commits": [
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
+      "lane": "RQ2",
+      "patch_id": "ec64b287dee68d16b9e4f5ae1a63020f5932884a"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "2a0f538bbc782528c008dc7d4bbe3e370de579f2",
+      "lane": "RQ4",
+      "patch_id": "be0fcef8eeb72247e6793a6b13af00fa23f72035"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
+      "lane": "RQ4",
+      "patch_id": "f5d19f11bb91e6c901d6f21a19204c9d3ec121c0"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "3ee7db834ed7bf41c7ff24301540d643883f315c",
+      "lane": "RQ5",
+      "patch_id": "038b7f4f20200db6f84939e44c29ac6cf585a8cb"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "b1efe930a554f8959d5269e84fc6085ac43c9947",
+      "lane": "RQ5",
+      "patch_id": "77aedf525ba479e5185b3260df07f668c5c7e828"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "016dd85537b5817039b20b2a00c4307fe977b0f7",
+      "lane": "RQ5",
+      "patch_id": "a92d6b382f70a9380fb345dff97154566751f7c0"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "74e6d2e83f91fada04808bef2111a8d9116b4890",
+      "lane": "RQ5",
+      "patch_id": "eebbe7ba4367bc2aafc01e565764d76a70bf975f"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "5e8b6e05ede74b6ef7f870eed3f1ffa91fa730a1",
+      "lane": "RQ5",
+      "patch_id": "6642db52c4471864e0e8b6e71e6e8dbdd75e9042"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "6eb6cb1da721779c76069aab80e6ec1dcac9a241",
+      "lane": "RQ5",
+      "patch_id": "442a767fec98c3e6a72d9e6edf9b89067e022c46"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "ce1387a86eff0c090b66fe3f788052bc4a68b052",
+      "lane": "RQ5",
+      "patch_id": "2815198c2ff4bbd609c07054ce88ac164ee98faf"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "60144924b79bec843198e5ecaa25c63105d3c490",
+      "lane": "RQ5",
+      "patch_id": "0c8c1a4820d290d33a47c45312aefa1e8f9c6380"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "25673c5ecbef1324f50f7358a5ab4aab9780be3c",
+      "lane": "RQ5",
+      "patch_id": "518f381e4a4a6251836c699420bc098f1fe39565"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "d7ca4c32771e5813cf6124dd941379609b4d9dd0",
+      "lane": "RQ5",
+      "patch_id": "6931dc9f73fe3619b0d9dd9e88654ebafee50752"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "d22d53021fd673771b32045acf8453b17e115137",
+      "lane": "RQ5",
+      "patch_id": "ce4151098b66e1e142b51fd2bd393f025fcd79bd"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "12fc98e096da2959014ff2d70a55e20857dd5a36",
+      "lane": "RQ5",
+      "patch_id": "ff7b4adef50bc633a03be9ce621d9e1641346b2a"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "41ec795bbd44bee00fff85885c66eacb4513a1c8",
+      "lane": "RQ5",
+      "patch_id": "1ac8295da6938a1d68458afac5198fc0f10c167a"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "11a423ecf4c2d74192527afd8cc3b04208a3d430",
+      "lane": "RQ5",
+      "patch_id": "26fa25f2fcd86c38825d94f17930c731066e2327"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "8801147b85941cc1bb830766db57da57944fd2b5",
+      "lane": "RQ5",
+      "patch_id": "6a1cb2ae0ab08b1a4b0c2875be40be14dfc04d38"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "d13a5f9322446ff0bd4568257ee4d5904bf79e83",
+      "lane": "RQ5",
+      "patch_id": "UNAVAILABLE"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "e5e5da4d294476ab7caf27d8c232b88133df0c1e",
+      "lane": "RQ5",
+      "patch_id": "9e924e4ca73ed489566869bdace9e3fd8b48b460"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "dcf55d1dbb215b4c80c3948e58721b4f4465da90",
+      "lane": "RQ5",
+      "patch_id": "6e5901d2694721371cf2284ea85c1619e4eb7f68"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "bd92f31c8c56b9f4096aabc12491c19a3144520a",
+      "lane": "RQ5",
+      "patch_id": "df5ef74b2e745ae7d17888bb513c1f8c5c25b64a"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "6300bdd9ca6541da2cb7f1b55e0f538e93d42efe",
+      "lane": "RQ5",
+      "patch_id": "925bbff5116b5ff104e149f611fae82eb4f273b8"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "9da3039ff440c4456ae9a6c8cf8904d7bd211fd4",
+      "lane": "RQ5",
+      "patch_id": "0fc7736a6adf6a59bda76b27f1959cfb461d7cfb"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "30324ab24999f8a4066a5822b764d7dd2898bb18",
+      "lane": "RQ5",
+      "patch_id": "b52c4ee407dcc848ece9f2d5d2b3aa931c0ce645"
+    },
+    {
+      "already_present_as": null,
+      "classification": "UNIQUE",
+      "commit": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
+      "lane": "RQ5",
+      "patch_id": "cbdb92f00eb51aa3e911f531cadcd17b694e3c0b"
+    }
+  ],
+  "schema": "INTEGRATION_PATCH_DUPLICATION/v1",
+  "status": "PASS"
+}

@@ -1,0 +1,107 @@
+{
+  "counts": {
+    "FRESH": 6,
+    "HASH_MISMATCH": 0,
+    "MISSING": 1,
+    "MISSING_PROVENANCE": 0,
+    "STALE_INPUT": 0,
+    "STALE_PRODUCER": 0,
+    "STALE_PROTOCOL": 1,
+    "STALE_SCHEMA": 0
+  },
+  "generated_at_utc": "2026-10-03T20:21:23.317393+00:00",
+  "repo_head": "cb028ee9a483ee53145750564a26156a15f246e9",
+  "results": [
+    {
+      "artifact": "reports/parallel_wave/rq4/RQ4_AGGREGATE_RECOMPUTATION.json",
+      "checks": [
+        {
+          "detail": "producer, inputs, protocol, schema and bytes all agree",
+          "status": "FRESH"
+        }
+      ],
+      "observed_sha256": "53fb034f557d1c7225713e7c1b976f0d13cb9554aea55f71446b4888fbe2cc7d",
+      "status": "FRESH"
+    },
+    {
+      "artifact": "reports/parallel_wave/rq4/RQ4_LEAKAGE_REVERIFICATION.json",
+      "checks": [
+        {
+          "detail": "producer, inputs, protocol, schema and bytes all agree",
+          "status": "FRESH"
+        }
+      ],
+      "observed_sha256": "9dd20b8e5bd0c1fa643c0dfa3ef4b1c70a444a08dd09cb6a95ea06ca9b1ec843",
+      "status": "FRESH"
+    },
+    {
+      "artifact": "reports/parallel_wave/rq4/RQ4_SUPERSESSION_PLAN.json",
+      "checks": [
+        {
+          "detail": "producer, inputs, protocol, schema and bytes all agree",
+          "status": "FRESH"
+        }
+      ],
+      "observed_sha256": "9c78ffd3a5bd33afcea2db2e90a5233415762b26b3012e2358ff0cc988fe3c5f",
+      "status": "FRESH"
+    },
+    {
+      "artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_PROMOTION_PLAN.json",
+      "checks": [
+        {
+          "detail": "producer, inputs, protocol, schema and bytes all agree",
+          "status": "FRESH"
+        }
+      ],
+      "observed_sha256": "8153d686baea02de2d13a4644c16d33996049b3fbe6fcf8a88f3e6b8151ce3d2",
+      "status": "FRESH"
+    },
+    {
+      "artifact": "reports/rq3_batch9/20261002T040000Z/PACKAGE_PROMOTION_RECEIPT.json",
+      "checks": [
+        {
+          "detail": "producer, inputs, protocol, schema and bytes all agree",
+          "status": "FRESH"
+        }
+      ],
+      "observed_sha256": "7a63cbd2e91b4743f1e385a5683b160d38f33e497cd60d2caea901afb8e07f2b",
+      "status": "FRESH"
+    },
+    {
+      "artifact": "reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
+      "checks": [
+        {
+          "detail": "producer, inputs, protocol, schema and bytes all agree",
+          "status": "FRESH"
+        }
+      ],
+      "observed_sha256": "5f40a6b010db45d94768a6132aa47815fdb85e12ce44b0770fee6094a735240d",
+      "status": "FRESH"
+    },
+    {
+      "artifact": "RQ5B.external_dataset",
+      "detail": "no artifact exists for this claim",
+      "status": "MISSING"
+    },
+    {
+      "artifact": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json",
+      "checks": [
+        {
+          "detail": "artifact pins no protocol hash",
+          "status": "STALE_PROTOCOL"
+        }
+      ],
+      "status": "STALE_PROTOCOL"
+    }
+  ],
+  "schema": "EVIDENCE_FRESHNESS/v1",
+  "statuses": [
+    "FRESH",
+    "STALE_PRODUCER",
+    "STALE_INPUT",
+    "STALE_PROTOCOL",
+    "STALE_SCHEMA",
+    "MISSING_PROVENANCE",
+    "HASH_MISMATCH"
+  ]
+}

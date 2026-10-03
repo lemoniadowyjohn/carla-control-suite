@@ -1,0 +1,128 @@
+{
+  "audit_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-research-integration",
+  "generated_at_utc": "2026-10-02T23:31:03.872083+00:00",
+  "impossible_states_enforced": [
+    "SUCCESS.txt present while final run verdict status != PASS",
+    "SUCCESS.txt present while no final run verdict exists",
+    "closure matrix authoritative while required evidence is stale",
+    "pipeline health overall_ok with zero required gate evidence",
+    "verdict status outside the governed vocabulary"
+  ],
+  "n_broken": 0,
+  "n_controls": 5,
+  "negative_controls": [
+    {
+      "control": "fake_success_marker_with_fail_verdict",
+      "expected_finding": "SUCCESS_MARKER_WITH_NON_PASS_VERDICT",
+      "observed_findings": [
+        "SUCCESS_MARKER_WITH_NON_PASS_VERDICT"
+      ],
+      "result": "PASS",
+      "state": {
+        "closure_authoritative": false,
+        "closure_evidence_stale": false,
+        "gate_evidence_count": 1,
+        "health_overall_ok": false,
+        "success_present": true,
+        "verdict": {
+          "status": "FAIL"
+        }
+      }
+    },
+    {
+      "control": "success_marker_with_no_verdict",
+      "expected_finding": "SUCCESS_WITHOUT_VERDICT",
+      "observed_findings": [
+        "SUCCESS_WITHOUT_VERDICT"
+      ],
+      "result": "PASS",
+      "state": {
+        "closure_authoritative": false,
+        "closure_evidence_stale": false,
+        "gate_evidence_count": 1,
+        "health_overall_ok": false,
+        "success_present": true,
+        "verdict": null
+      }
+    },
+    {
+      "control": "authoritative_claim_on_stale_evidence",
+      "expected_finding": "AUTHORITATIVE_STATUS_ON_STALE_EVIDENCE",
+      "observed_findings": [
+        "AUTHORITATIVE_STATUS_ON_STALE_EVIDENCE"
+      ],
+      "result": "PASS",
+      "state": {
+        "closure_authoritative": true,
+        "closure_evidence_stale": true,
+        "gate_evidence_count": 1,
+        "health_overall_ok": false,
+        "success_present": true,
+        "verdict": {
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "control": "health_ok_with_zero_gate_evidence",
+      "expected_finding": "HEALTH_OK_WITH_ZERO_GATE_EVIDENCE",
+      "observed_findings": [
+        "HEALTH_OK_WITH_ZERO_GATE_EVIDENCE"
+      ],
+      "result": "PASS",
+      "state": {
+        "closure_authoritative": false,
+        "closure_evidence_stale": false,
+        "gate_evidence_count": 0,
+        "health_overall_ok": true,
+        "success_present": false,
+        "verdict": {
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "control": "unknown_verdict_status",
+      "expected_finding": "UNKNOWN_VERDICT_STATUS",
+      "observed_findings": [
+        "UNKNOWN_VERDICT_STATUS"
+      ],
+      "result": "PASS",
+      "state": {
+        "closure_authoritative": false,
+        "closure_evidence_stale": false,
+        "gate_evidence_count": 1,
+        "health_overall_ok": false,
+        "success_present": false,
+        "verdict": {
+          "status": "PROBABLY_FINE"
+        }
+      }
+    }
+  ],
+  "observed_repository_state": {
+    "consequence": "Neither artifact is currently produced by the pipeline, so no success marker can be emitted and no verdict can be contradicted at runtime today. The contradiction class is therefore latent, not active, and the negative controls below are what prevent it from becoming active.",
+    "contract_test_weakened_by_this_batch": false,
+    "governed_verdict_schema": "final_run_verdict/v1",
+    "governed_verdict_vocabulary": [
+      "BLOCKED_EXTERNAL",
+      "FAIL",
+      "NOT_EVALUATED",
+      "PASS"
+    ],
+    "registry_entries_removed_by_this_batch": 0,
+    "success_marker_artifacts_committed_in_tree": [
+      "reports/production_readiness/20260915T101724Z_FRESH_DOMAIN_GAP_REGEN/SUCCESS.txt"
+    ],
+    "success_signal_declared_artifact": "SUCCESS.txt",
+    "success_signal_producer": "ultimate_pipeline.main_pipeline._finalize_run_pack_gated",
+    "success_signal_producer_resolves": false,
+    "verdict_artifacts_committed_in_tree": [],
+    "verdict_pass_constant": "PASS",
+    "verdict_signal_declared_artifact": "final_run_verdict.json",
+    "verdict_signal_producer": "ultimate_pipeline.main_pipeline._compute_final_run_verdict",
+    "verdict_signal_producer_resolves": false
+  },
+  "schema": "SUCCESS_MARKER_CONSISTENCY/v1",
+  "status": "ALL_CONTRADICTIONS_REJECTED"
+}

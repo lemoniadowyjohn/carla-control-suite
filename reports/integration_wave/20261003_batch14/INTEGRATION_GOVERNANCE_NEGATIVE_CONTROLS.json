@@ -1,0 +1,76 @@
+{
+  "controls": [
+    {
+      "control": "stale_producer_sha",
+      "expected": "STALE_PRODUCER",
+      "observed": "STALE_PRODUCER",
+      "result": "PASS"
+    },
+    {
+      "control": "wrong_input_sha",
+      "expected": "STALE_INPUT",
+      "observed": "STALE_INPUT",
+      "result": "PASS"
+    },
+    {
+      "control": "bad_protocol_sha",
+      "expected": "STALE_PROTOCOL",
+      "observed": "STALE_PROTOCOL",
+      "result": "PASS"
+    },
+    {
+      "control": "missing_evidence_schema",
+      "expected": "MISSING_PROVENANCE",
+      "observed": "MISSING_PROVENANCE",
+      "result": "PASS"
+    },
+    {
+      "control": "duplicate_current_authorities",
+      "expected": "DUPLICATE_CURRENT_AUTHORITY",
+      "observed": "DUPLICATE_CURRENT_AUTHORITY",
+      "result": "PASS"
+    },
+    {
+      "control": "superseded_treated_as_current",
+      "expected": "SUPERSEDED_USED_AS_CURRENT",
+      "observed": "SUPERSEDED_USED_AS_CURRENT",
+      "result": "PASS"
+    },
+    {
+      "control": "rq5_implementation_only_promoted",
+      "expected": "NON_PASSING_STATUS_WITH_AUTHORITATIVE_NOTE",
+      "observed": "NON_PASSING_STATUS_WITH_AUTHORITATIVE_NOTE",
+      "result": "PASS"
+    },
+    {
+      "control": "signal_without_production_writer",
+      "expected": "PRODUCER_COMMIT_UNREACHABLE",
+      "observed": "ARTIFACT_HASH_MISMATCH,PRODUCER_COMMIT_UNREACHABLE,PROTOCOL_SHA_MISSING",
+      "result": "PASS"
+    },
+    {
+      "control": "fake_success_marker",
+      "expected": "ARTIFACT_HASH_MISMATCH",
+      "observed": "HASH_MISMATCH",
+      "result": "PASS"
+    },
+    {
+      "control": "closure_unsupported_status",
+      "expected": "INCOMPLETE",
+      "observed": "INCOMPLETE",
+      "result": "PASS"
+    },
+    {
+      "control": "lane_commit_based_on_wrong_base",
+      "expected": "STALE_PRODUCER",
+      "observed": "STALE_PRODUCER",
+      "result": "PASS"
+    }
+  ],
+  "generated_at_utc": "2026-10-03T20:22:58.629150+00:00",
+  "n_broken": 0,
+  "n_controls": 11,
+  "principle": "Each control constructs an invalid record and asserts the governance layer rejects it. A control that does not detect its own failure is BROKEN.",
+  "schema": "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS/v1",
+  "status": "ALL_CONTROLS_REJECT"
+}

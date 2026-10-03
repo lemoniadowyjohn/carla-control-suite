@@ -1,0 +1,80 @@
+{
+  "generated_at_utc": "2026-10-03T20:22:58.643964+00:00",
+  "malformed": [],
+  "note": "Artifacts not yet generated at validation time are ABSENT, not FAIL; re-run after generation.",
+  "results": [
+    {
+      "artifact": "RQ_CLOSURE_MATRIX.json",
+      "expected_schema": "RQ_CLOSURE_MATRIX/v1",
+      "observed_schema": "RQ_CLOSURE_MATRIX/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "EVIDENCE_FRESHNESS.json",
+      "expected_schema": "EVIDENCE_FRESHNESS/v1",
+      "observed_schema": "EVIDENCE_FRESHNESS/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "RESEARCH_EVIDENCE_GRAPH.json",
+      "expected_schema": "RESEARCH_EVIDENCE_GRAPH/v1",
+      "observed_schema": "RESEARCH_EVIDENCE_GRAPH/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json",
+      "expected_schema": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION/v1",
+      "observed_schema": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "FULL_REGRESSION_CLASSIFICATION.json",
+      "expected_schema": "FULL_REGRESSION_CLASSIFICATION/v1",
+      "observed_schema": "FULL_REGRESSION_CLASSIFICATION/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "SIGNAL_RECONCILIATION.json",
+      "expected_schema": "SIGNAL_RECONCILIATION/v1",
+      "observed_schema": "SIGNAL_RECONCILIATION/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "INPUT_LINEAGE_AUDIT.json",
+      "expected_schema": "INTEGRATION_INPUT_LINEAGE_AUDIT/v1",
+      "observed_schema": "INTEGRATION_INPUT_LINEAGE_AUDIT/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "PARALLEL_LANE_SCOPE_AUDIT.json",
+      "expected_schema": "PARALLEL_LANE_SCOPE_AUDIT/v1",
+      "observed_schema": "PARALLEL_LANE_SCOPE_AUDIT/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "PATCH_DUPLICATION.json",
+      "expected_schema": "INTEGRATION_PATCH_DUPLICATION/v1",
+      "observed_schema": "INTEGRATION_PATCH_DUPLICATION/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "REMOTE_DURABILITY.json",
+      "expected_schema": "REMOTE_DURABILITY/v1",
+      "result": "ABSENT"
+    },
+    {
+      "artifact": "PRODUCTION_READINESS_MATRIX.json",
+      "expected_schema": "PRODUCTION_READINESS_MATRIX/v1",
+      "observed_schema": "PRODUCTION_READINESS_MATRIX/v1",
+      "result": "OK"
+    },
+    {
+      "artifact": "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS.json",
+      "expected_schema": "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS/v1",
+      "observed_schema": "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS/v1",
+      "result": "OK"
+    }
+  ],
+  "schema": "SCHEMA_VALIDATION/v1",
+  "status": "PASS"
+}

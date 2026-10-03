@@ -43,6 +43,10 @@ class Component:
     evidence: List[str] = field(default_factory=list)
     required: bool = True
     blocked_by: Optional[str] = None  # BLOCKED_ENVIRONMENT / BLOCKED_EXTERNAL
+    #: Optional (evidence_path, dotted_json_path, accepted_values). When the
+    #: named evidence exists, its own verdict decides the component status.
+    #: Presence alone is never enough to call a sub-question complete.
+    verdict_source: Optional[Tuple[str, str, tuple]] = None
 
 
 #: Declarative RQ structure (batch 13 section 19). Deliberately explicit so a
@@ -50,13 +54,21 @@ class Component:
 RQ_SPEC: Dict[str, List[Component]] = {
     "RQ1": [
         Component("RQ1.generator_determinism",
-                  "Repeated OSM->XODR generation determinism",
-                  ["reports/rq1_reverify_smoke_20260923/REPORT.md"]),
+                  "Repeated OSM->XODR generation determinism (RQ1A five-run campaign)",
+                  ["reports/rq1a_runs/RQ1A_FIVE_RUN_MATRIX.json"],
+                  verdict_source=(
+                      "reports/rq1a_runs/RQ1A_FIVE_RUN_MATRIX.json", "verdict",
+                      ("BYTE_NONDETERMINISTIC_NORMALIZED_DETERMINISTIC",))),
         Component("RQ1.post_generation_determinism",
-                  "Determinism of downstream post-generation stages",
-                  ["reports/rq1_reverify_smoke_20260923/REPORT.md"]),
+                  "Determinism of downstream post-generation stages (RQ1B five-run campaign)",
+                  ["reports/rq1b_runs/RQ1B_FIVE_RUN_MATRIX.json"],
+                  verdict_source=(
+                      "reports/rq1b_runs/RQ1B_FIVE_RUN_MATRIX.json", "runs_valid",
+                      (5,))),
         Component("RQ1.overall", "RQ1 overall closure",
-                  ["reports/rq1_reverify_smoke_20260923/REPORT.md"]),
+                  ["reports/rq1b_runs/RQ1_CLOSURE.json"],
+                  verdict_source=("reports/rq1b_runs/RQ1_CLOSURE.json",
+                                  "verdict", ("PASS",))),
     ],
     "RQ2": [
         Component("RQ2.map_authority",
@@ -157,10 +169,44 @@ def assess_component(comp: Component, root: Path) -> Dict[str, Any]:
                 "reason": f"{len(absent)} of {len(comp.evidence)} declared "
                           f"evidence artifacts are absent"}
 
+    # Presence is not completion. If the evidence declares its own verdict,
+    # that verdict decides the status.
+    observed_value: Any = None
+    if comp.verdict_source:
+        rel, dotted, accepted = comp.verdict_source
+        observed: Any = None
+        try:
+            doc = json.loads((root / rel).read_text(encoding="utf-8"))
+            cur: Any = doc
+            for part in dotted.split("."):
+                cur = cur[part]
+            observed = cur
+            observed_value = cur
+        except Exception as exc:  # unreadable verdict is not a pass
+            return {"component_id": comp.component_id,
+                    "description": comp.description,
+                    "status": INCOMPLETE, "required": comp.required,
+                    "evidence_present": present, "evidence_absent": [],
+                    "observed_verdict": None,
+                    "reason": f"verdict {dotted} in {rel} could not be read: {exc}"}
+        if observed not in accepted:
+            return {"component_id": comp.component_id,
+                    "description": comp.description,
+                    "status": INCOMPLETE, "required": comp.required,
+                    "evidence_present": present, "evidence_absent": [],
+                    "observed_verdict": observed,
+                    "expected_verdict": list(accepted),
+                    "reason": f"evidence declares {dotted}={observed!r}, which "
+                              f"is not one of {list(accepted)}"}
+
     return {"component_id": comp.component_id, "description": comp.description,
             "status": PASS, "required": comp.required,
             "evidence_present": present, "evidence_absent": [],
-            "reason": "all declared evidence artifacts present"}
+            "observed_verdict": observed_value,
+            "reason": ("all declared evidence artifacts present and the "
+                       "declared verdict is one of the accepted values"
+                       if comp.verdict_source else
+                       "all declared evidence artifacts present")}
 
 
 def rollup(rq: str, rows: List[Dict[str, Any]]) -> str:

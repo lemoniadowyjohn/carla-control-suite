@@ -1,0 +1,31 @@
+{
+  "blocking_count": 0,
+  "claims_with_multiple_current_authorities": {},
+  "every_current_claim_resolves_to_one_producer": true,
+  "finding_count": 3,
+  "findings": [
+    {
+      "detail": "current claim does not pin a protocol hash",
+      "node_id": "RQ2.metric_authority",
+      "rule": "PROTOCOL_SHA_MISSING",
+      "severity": "ADVISORY"
+    },
+    {
+      "detail": "current claim does not pin a protocol hash",
+      "node_id": "RQ3.package_authority",
+      "rule": "PROTOCOL_SHA_MISSING",
+      "severity": "ADVISORY"
+    },
+    {
+      "detail": "current claim does not pin a protocol hash",
+      "node_id": "RQ5A.protocol",
+      "rule": "PROTOCOL_SHA_MISSING",
+      "severity": "ADVISORY"
+    }
+  ],
+  "generated_at_utc": "2026-10-03T20:21:21.887424+00:00",
+  "node_count": 8,
+  "repo_head": "cb028ee9a483ee53145750564a26156a15f246e9",
+  "schema": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION/v1",
+  "status": "ADVISORY"
+}

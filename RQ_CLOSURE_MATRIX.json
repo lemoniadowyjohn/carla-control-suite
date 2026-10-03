@@ -1,100 +1,100 @@
 {
-  "schema": "rq_closure_matrix/v1",
-  "generated_at_utc": "2026-10-02T19:55:00Z",
   "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
-  "remote_branch": "review/carla-production-convergence-20261002",
-  "remote_head_equals_local_head": true,
+  "current_candidate_commit": "cb028ee9a483ee53145750564a26156a15f246e9",
   "evidence": {
     "auto_map_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
     "manual_grid0828_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
   },
-
-  "rq": {
-    "RQ1A": {
-      "status": "PREVIOUSLY_VERIFIED_OFFLINE",
-      "producer": "tools/rq1a_osm_to_xodr.py",
-      "artifacts": "wave A RQ1A receipts (not re-executed this wave)",
-      "note": "Wave A RQ1A OSM->XODR determinism. This wave did not re-run it."
-    },
-    "RQ1B": {
-      "status": "NOT_EXECUTED",
-      "producer": "tools/rq1b_full_pipeline.py via tools/rq1b_five_run_driver.py (authored this wave, not run to completion)",
-      "blocker": "Full downstream pipeline run from the pinned 150 MB XODR is a multi-hour-per-run stage sequence. Five isolated cold runs did not complete within this wave. No PASS is claimed.",
-      "additional_finding": "First probe attempt showed the pipeline resolving OSM_FILE to a nonexistent city path and attempting a live Overpass download (HTTP 406/403/429 on all mirrors). The governed OSM is pinned at campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and matches INPUTS_MANIFEST.json (sha b9e07465..., 11154738 bytes). A determinism run MUST pin OSM_FILE to that governed source; it must not reach the network.",
-      "required": "Five valid receipts (run_00..run_04), no shared cache. Fewer than five receipts cannot yield PASS by contract."
-    },
-    "RQ2": {
-      "status": "OFFLINE_VERIFIED",
-      "producer": "map-of-record + manual pin verification via ultimate_pipeline.carla_tools.map_registry.verify_pinned_map",
-      "evidence": "auto_map_of_record VERIFIED (sha 370abbbb..., 149799632 bytes); manual_grid0828 VERIFIED (sha 5eaece23..., 66530869 bytes); supersession chain walks cleanly through 9 promotions to the pre-C29 tail",
-      "live_confirmed": "Grid0828 runtime identity ESTABLISHED against the live CARLA 0.9.16 server (RUNTIME_MAP_IDENTITY_MANUAL.json)"
-    },
-    "RQ3": {
-      "status": "DEFERRED_RUNTIME",
-      "producer": "ultimate_pipeline/perception/rq3_capture_contract.py",
-      "batch9_offline_facts": "20/20 governed tiles verified; package staged + validated PASS; lineage PASS; 12/12 negative controls rejected; promoted with SHA preservation",
-      "this_wave": "Promoted package independently revalidated PASS offline (STAGED_PACKAGE_REVALIDATION.json). Manual arm runtime identity established.",
-      "blocker": "Paired capture requires BOTH arms. The automatic (Ingolstadt) arm does not exist at runtime because the UE4.26 cook cannot be performed (UE426_QUALIFICATION.json). Pair contract correctly refuses to promote a single-arm pair. NOT_PAIRED_INGOLSTADT_CAPTURE."
-    },
-    "RQ4": {
-      "status": "NOT_REEXECUTED_THIS_WAVE",
-      "producer": "ultimate_pipeline/domain_gap/* (GNN provenance lane)",
-      "note": "Wave B scope was infrastructure/placement/runtime. RQ4 was not touched."
-    },
-    "RQ5A": {
-      "status": "BLOCKED_DEPENDENCY",
-      "blocker": "Requires RQ3 PAIRED_INGOLSTADT_CAPTURE PASS and dataset-quality gate PASS. Neither can be reached without the cooked automatic arm. Protocol v2 was NOT executed and NO mIoU number is reported.",
-      "enforced": "No post-hoc retuning from manual results was performed, because no evaluation was performed."
-    },
-    "RQ5B": {
-      "status": "DEFERRED_EXTERNAL_DATA",
-      "reason": "No operator-supplied external evaluation dataset exists on this host. Per protocol, accuracy is NOT reported; only distribution-shift metrics would be permissible, and there is nothing to measure against.",
-      "correctness_note": "DEFERRED_EXTERNAL_DATA is the correct terminal status here, not a failure."
-    }
-  },
-
+  "generated_at_utc": "2026-10-02T19:55:00Z",
   "infrastructure_qualifications": {
     "BLENDER": {
-      "status": "PASS",
+      "detail": "Blender 4.3.0, E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe, exe sha256 E5C09E875471AA72FC8AE7437A92BB91C150CCCCCBC4A0DFAFA6E2D29D2FB31B; --version, headless startup, minimal import/export and pipeline OBJ->FBX conversion all verified; output FBX carries a valid 'Kaydara FBX Binary' container",
       "evidence": "BLENDER_QUALIFICATION.json",
-      "detail": "Blender 4.3.0, E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe, exe sha256 E5C09E875471AA72FC8AE7437A92BB91C150CCCCCBC4A0DFAFA6E2D29D2FB31B; --version, headless startup, minimal import/export and pipeline OBJ->FBX conversion all verified; output FBX carries a valid 'Kaydara FBX Binary' container"
-    },
-    "OSM2WORLD": {
-      "status": "PASS",
-      "evidence": "OSM2WORLD_QUALIFICATION.json",
-      "detail": "Governed prebuilt distribution carla_governed/OSM2World-latest-bin/OSM2World.jar, jar sha256 F20B00E1C5DC50CE211FFAB817D874799576DACCE4F8190D83C8A7B48CB61FAC, version 0.5.0-SNAPSHOT; deterministic small fixture confirmed"
-    },
-    "UE4_26": {
-      "status": "UE426_BLOCKED_OPERATOR_INSTALL",
-      "evidence": "UE426_QUALIFICATION.json"
+      "status": "PASS"
     },
     "CARLA_RUNTIME": {
-      "status": "PASS",
+      "detail": "CARLA 0.9.16 launched, PID-owned, exe sha 0bc4b3d0..., RPC 2000 + streaming 2001 listening, client.get_server_version()=='0.9.16', world.get_map() returned, snapshot frame observed",
       "evidence": "CARLA_RUNTIME_RECEIPT.json",
-      "detail": "CARLA 0.9.16 launched, PID-owned, exe sha 0bc4b3d0..., RPC 2000 + streaming 2001 listening, client.get_server_version()=='0.9.16', world.get_map() returned, snapshot frame observed"
+      "status": "PASS"
     },
-    "WORLD_SETTINGS_TRANSACTION": {
-      "status": "PASS",
-      "evidence": "reports/carla_runtime/wstrans_20261002T190917Z_REPORT.json",
-      "detail": "snapshot->apply->verify->experiment->restore->verify all phases completed; governed fixed_delta 0.05 s reproduced with 0.0 max abs error across 5 owner ticks; frames monotonic; restore verified"
-    },
-    "STAGED_PACKAGE_REVALIDATION": {
-      "status": "PASS",
-      "evidence": "STAGED_PACKAGE_REVALIDATION.json"
-    },
-    "PLACEMENT": {
-      "status": "INVALID_PROXY_METRIC",
-      "evidence": "TRUE_WORLD_PLACEMENT_ACCEPTANCE.json",
-      "detail": "tools/tile_frame_consistency.py classified as measuring geometry centroid separation rather than world placement. 10 m governed threshold left UNCHANGED. No tile was moved."
+    "OSM2WORLD": {
+      "detail": "Governed prebuilt distribution carla_governed/OSM2World-latest-bin/OSM2World.jar, jar sha256 F20B00E1C5DC50CE211FFAB817D874799576DACCE4F8190D83C8A7B48CB61FAC, version 0.5.0-SNAPSHOT; deterministic small fixture confirmed",
+      "evidence": "OSM2WORLD_QUALIFICATION.json",
+      "status": "PASS"
     },
     "P0_4_PROVENANCE": {
-      "status": "VERIFIED_CURRENT_CONTRACT",
-      "evidence": "P0_4_PROVENANCE_CONTRACT.json"
+      "evidence": "P0_4_PROVENANCE_CONTRACT.json",
+      "status": "VERIFIED_CURRENT_CONTRACT"
+    },
+    "PLACEMENT": {
+      "detail": "tools/tile_frame_consistency.py classified as measuring geometry centroid separation rather than world placement. 10 m governed threshold left UNCHANGED. No tile was moved.",
+      "evidence": "TRUE_WORLD_PLACEMENT_ACCEPTANCE.json",
+      "status": "INVALID_PROXY_METRIC"
+    },
+    "STAGED_PACKAGE_REVALIDATION": {
+      "evidence": "STAGED_PACKAGE_REVALIDATION.json",
+      "status": "PASS"
+    },
+    "UE4_26": {
+      "evidence": "UE426_QUALIFICATION.json",
+      "status": "UE426_BLOCKED_OPERATOR_INSTALL"
+    },
+    "WORLD_SETTINGS_TRANSACTION": {
+      "detail": "snapshot->apply->verify->experiment->restore->verify all phases completed; governed fixed_delta 0.05 s reproduced with 0.0 max abs error across 5 owner ticks; frames monotonic; restore verified",
+      "evidence": "reports/carla_runtime/wstrans_20261002T190917Z_REPORT.json",
+      "status": "PASS"
     }
   },
-
+  "remote_branch": "review/carla-production-convergence-20261002",
+  "remote_head_equals_local_head": true,
+  "rq": {
+    "RQ1A": {
+      "artifacts": "wave A RQ1A receipts (not re-executed this wave)",
+      "note": "Wave A RQ1A OSM->XODR determinism. This wave did not re-run it.",
+      "producer": "tools/rq1a_osm_to_xodr.py",
+      "status": "PREVIOUSLY_VERIFIED_OFFLINE"
+    },
+    "RQ1B": {
+      "additional_finding": "First probe attempt showed the pipeline resolving OSM_FILE to a nonexistent city path and attempting a live Overpass download (HTTP 406/403/429 on all mirrors). The governed OSM is pinned at campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and matches INPUTS_MANIFEST.json (sha b9e07465..., 11154738 bytes). A determinism run MUST pin OSM_FILE to that governed source; it must not reach the network.",
+      "blocker": "Full downstream pipeline run from the pinned 150 MB XODR is a multi-hour-per-run stage sequence. Five isolated cold runs did not complete within this wave. No PASS is claimed.",
+      "producer": "tools/rq1b_full_pipeline.py via tools/rq1b_five_run_driver.py (authored this wave, not run to completion)",
+      "required": "Five valid receipts (run_00..run_04), no shared cache. Fewer than five receipts cannot yield PASS by contract.",
+      "status": "NOT_EXECUTED"
+    },
+    "RQ2": {
+      "evidence": "auto_map_of_record VERIFIED (sha 370abbbb..., 149799632 bytes); manual_grid0828 VERIFIED (sha 5eaece23..., 66530869 bytes); supersession chain walks cleanly through 9 promotions to the pre-C29 tail",
+      "live_confirmed": "Grid0828 runtime identity ESTABLISHED against the live CARLA 0.9.16 server (RUNTIME_MAP_IDENTITY_MANUAL.json)",
+      "producer": "map-of-record + manual pin verification via ultimate_pipeline.carla_tools.map_registry.verify_pinned_map",
+      "status": "OFFLINE_VERIFIED"
+    },
+    "RQ3": {
+      "batch9_offline_facts": "20/20 governed tiles verified; package staged + validated PASS; lineage PASS; 12/12 negative controls rejected; promoted with SHA preservation",
+      "blocker": "Paired capture requires BOTH arms. The automatic (Ingolstadt) arm does not exist at runtime because the UE4.26 cook cannot be performed (UE426_QUALIFICATION.json). Pair contract correctly refuses to promote a single-arm pair. NOT_PAIRED_INGOLSTADT_CAPTURE.",
+      "producer": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "status": "DEFERRED_RUNTIME",
+      "this_wave": "Promoted package independently revalidated PASS offline (STAGED_PACKAGE_REVALIDATION.json). Manual arm runtime identity established."
+    },
+    "RQ4": {
+      "note": "Wave B scope was infrastructure/placement/runtime. RQ4 was not touched.",
+      "producer": "ultimate_pipeline/domain_gap/* (GNN provenance lane)",
+      "status": "NOT_REEXECUTED_THIS_WAVE"
+    },
+    "RQ5A": {
+      "blocker": "Requires RQ3 PAIRED_INGOLSTADT_CAPTURE PASS and dataset-quality gate PASS. Neither can be reached without the cooked automatic arm. Protocol v2 was NOT executed and NO mIoU number is reported.",
+      "enforced": "No post-hoc retuning from manual results was performed, because no evaluation was performed.",
+      "status": "BLOCKED_DEPENDENCY"
+    },
+    "RQ5B": {
+      "correctness_note": "DEFERRED_EXTERNAL_DATA is the correct terminal status here, not a failure.",
+      "reason": "No operator-supplied external evaluation dataset exists on this host. Per protocol, accuracy is NOT reported; only distribution-shift metrics would be permissible, and there is nothing to measure against.",
+      "status": "DEFERRED_EXTERNAL_DATA"
+    }
+  },
+  "schema": "rq_closure_matrix/v1",
   "summary": {
     "authoritative_results": "None of the research questions RQ1B/RQ3/RQ5A reached an AUTHORITATIVE result this wave. Infrastructure reachability improved substantially (CARLA runtime, Blender, OSM2World all qualified; manual-arm live identity established), but every result that depends on the cooked automatic map remains blocked on the single UE4.26 operator-install blocker.",
     "single_root_cause_blocker": "UE426_BLOCKED_OPERATOR_INSTALL"
-  }
+  },
+  "superseded_by": "reports/integration_wave/20261003_batch14/RQ_CLOSURE_MATRIX.json",
+  "supersession_reason": "This matrix body was computed for an earlier candidate and has not been recomputed for the current one. It is retained verbatim as historical provenance and is NOT the current authority. The current authority is the superseded_by artifact, regenerated from the current candidate. No original field of this document was edited."
 }

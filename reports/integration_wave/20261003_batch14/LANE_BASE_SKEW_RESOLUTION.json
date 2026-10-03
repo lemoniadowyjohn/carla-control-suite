@@ -1,0 +1,69 @@
+{
+  "future_work_rule": "All future work MUST branch from the final convergence candidate, not from the original RQ2/RQ4/RQ5 lane branches.",
+  "generated_at_utc": "2026-10-03T20:22:56.443798+00:00",
+  "integrated_head": "cb028ee9a483ee53145750564a26156a15f246e9",
+  "integration_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+  "lane_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "lanes": {
+    "RQ2": {
+      "content_verification": {
+        "content_equal": 17,
+        "expected_files": 17,
+        "method": "exact git blob id per file",
+        "mismatched": 0,
+        "missing": 0,
+        "result": "VERIFIED"
+      },
+      "integration_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "lane": "RQ2",
+      "lane_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "lane_range": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6..ce47c1c1cdd669ea924437dafbcea429640e6da6",
+      "merge_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "range_applied_as_full_range": true,
+      "semantic_conflict_basis": "Zero because every lane file is present with byte-identical content, and the three lane file sets are disjoint, so no lane edit was reinterpreted or overwritten during integration.",
+      "semantic_conflict_count": 0,
+      "status": "BASE_SKEW_RECONCILED"
+    },
+    "RQ4": {
+      "content_verification": {
+        "content_equal": 13,
+        "expected_files": 13,
+        "method": "exact git blob id per file",
+        "mismatched": 0,
+        "missing": 0,
+        "result": "VERIFIED"
+      },
+      "integration_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "lane": "RQ4",
+      "lane_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "lane_range": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6..75f19438ad932a8c8ebcbef2f32aec9ca104418a",
+      "merge_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "range_applied_as_full_range": true,
+      "semantic_conflict_basis": "Zero because every lane file is present with byte-identical content, and the three lane file sets are disjoint, so no lane edit was reinterpreted or overwritten during integration.",
+      "semantic_conflict_count": 0,
+      "status": "BASE_SKEW_RECONCILED"
+    },
+    "RQ5": {
+      "content_verification": {
+        "content_equal": 34,
+        "expected_files": 34,
+        "method": "exact git blob id per file",
+        "mismatched": 0,
+        "missing": 0,
+        "result": "VERIFIED"
+      },
+      "integration_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "lane": "RQ5",
+      "lane_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "lane_range": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6..7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
+      "merge_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "range_applied_as_full_range": true,
+      "semantic_conflict_basis": "Zero because every lane file is present with byte-identical content, and the three lane file sets are disjoint, so no lane edit was reinterpreted or overwritten during integration.",
+      "semantic_conflict_count": 0,
+      "status": "BASE_SKEW_RECONCILED"
+    }
+  },
+  "schema": "LANE_BASE_SKEW_RESOLUTION/v1",
+  "status": "BASE_SKEW_RECONCILED",
+  "why_not_a_blocker": "The lanes branched from 7fbd33ff while integration based on a7a2a0a2. Integration applied each lane as a full commit range rather than as a tip-only cherry-pick, and every lane file is verified byte-identical in the integrated tree, so the skew changed history but not content."
+}
