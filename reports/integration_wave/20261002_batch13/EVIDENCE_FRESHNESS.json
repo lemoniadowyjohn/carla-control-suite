@@ -9,8 +9,8 @@
     "STALE_PROTOCOL": 1,
     "STALE_SCHEMA": 0
   },
-  "generated_at_utc": "2026-10-03T10:12:09.183900+00:00",
-  "repo_head": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+  "generated_at_utc": "2026-10-03T11:23:50.753552+00:00",
+  "repo_head": "ad43ff9f0d051c2def8e42dd2abb6d9e92325285",
   "results": [
     {
       "artifact": "reports/parallel_wave/rq4/RQ4_AGGREGATE_RECOMPUTATION.json",

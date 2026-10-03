@@ -1,24 +1,45 @@
 {
   "artifacts_sha256": {
+    "EVIDENCE_FRESHNESS.json": "12434364b0b304384b9230cbb6e1923ea723e81443a7e5cc1959d106b4cd8371",
+    "FULL_REGRESSION_CLASSIFICATION.json": "0aa39275a87788b9ea7a3b23f4d5a4fc1eba261706ec55cfa602e4802066fc38",
     "INPUT_LINEAGE_AUDIT.json": "26755c5244520f31253cbf0d407a79ba83ae2520416a977d470917ccb5af325b",
+    "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS.json": "eeb93fdc47780fecb9b55ef4dab0cbac0ea0286f8ea937cad5f8fb08fb9e75a9",
     "MERGE_DECISION.json": "c7de801b16708614ee155769e2577f27c2db457511a23f481fdc6c7cf9b89cc8",
     "PARALLEL_LANE_SCOPE_AUDIT.json": "f171c021863d70c16add699f5bfdd97c78e73872fe214fb41d90e6b871be93d1",
     "PATCH_DUPLICATION.json": "88dce7b1e463294c4dd370ef7e630e1dd7d49217f7e24633c3a3444be43f1711",
-    "SIGNAL_RECONCILIATION.json": "4903b28336afeffff4a1b7670a0c8473897b2c5da15789bc8c1a713837420f73",
+    "PRODUCTION_READINESS_MATRIX.json": "8030e3fbfec87ae40bb62d05f8dc20e7065cef012fb97e2c07b6ba70a12045d1",
+    "REMOTE_DURABILITY.json": "72d4fabd243e6131d4a94a5e951e5b32439ecaf2842012e707585e7e9fae306d",
+    "RESEARCH_EVIDENCE_GRAPH.json": "b221e88faf54a73435d1735beba9e4dfce5e231a511b6dba4b0f5ce6a4906991",
+    "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json": "4b2dfc92aa7072c2125bdf40bd4f1e38b3bacc1f02d16439ed5d5a7a30dd85ec",
+    "RQ_CLOSURE_MATRIX.json": "55a1349dcb5e88e87151f25db9fee1633867a782c738c01df57c12bf6e8cca58",
+    "SCHEMA_VALIDATION.json": "68f69364c23684ac1c2b3e520c7b846fb336b34d37c7f806c7fad66406eff63c",
+    "SIGNAL_RECONCILIATION.json": "c2c6577e292e474ecd509f39f462e69270f5acf7ff0138c50565932aa1f8a7e1",
     "SUCCESS_MARKER_CONSISTENCY.json": "9c5004ff752c71c6e721d4b96ff258a3995bcc8ae7b26f5f889ff2a907d47fdd"
   },
   "base_candidate_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
   "branch": "review/carla-research-integration-20261002",
-  "integrated_tree": "6a391ead5285aa216833c8f0b76bea95c8da7005",
+  "full_production_ready": false,
+  "full_regression": {
+    "FIXED": 4,
+    "NEW_REGRESSION": 0,
+    "PRE_EXISTING": 2,
+    "UNCLASSIFIED": 0,
+    "status": "PASS"
+  },
+  "integrated_tree": "73e42dcdd3a6ac18d99d3e9cd213ae4be6c43241",
   "lane_result_shas": {
     "RQ2": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
     "RQ4": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
     "RQ5": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b"
   },
-  "local_equals_remote": true,
-  "local_head": "357795c146bc9e8dba95737f00aa2432bc085d73",
-  "note": "This branch durably stores lane integration plus the signal reconciliation. It is NOT the section 34 converged candidate: sections 9-28 and 30-32 were not executed, so no regression, evidence-graph, closure-matrix or readiness-matrix gate has been produced. Do not treat it as INTEGRATED_OFFLINE_PRODUCTION_CANDIDATE.",
-  "remote_head": "357795c146bc9e8dba95737f00aa2432bc085d73",
+  "not_executed_sections": [
+    "10 optimization/cache/parallel equivalence",
+    "24-25 clean wheel smoke",
+    "26 static analysis delta",
+    "32 second final regression (superseded by final2 run)"
+  ],
+  "note": "Offline integration candidate. NEW_REGRESSION=0 and the dead-signal defect is fixed and verified. NOT full_production_ready: no live CARLA evidence, RQ1 evidence absent, RQ5B blocked external, and sections 10/24-26 were not executed.",
+  "readiness_status": "NOT_READY",
   "schema": "REMOTE_DURABILITY/v1",
-  "stage": "INTERMEDIATE_CHECKPOINT_NOT_CONVERGED_CANDIDATE"
+  "stage": "OFFLINE_INTEGRATED_WITH_EXACT_REMAINING_BLOCKERS"
 }

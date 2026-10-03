@@ -67,7 +67,7 @@
       "result": "PASS"
     }
   ],
-  "generated_at_utc": "2026-10-03T10:15:20.062607+00:00",
+  "generated_at_utc": "2026-10-03T11:23:53.662816+00:00",
   "n_broken": 0,
   "n_controls": 11,
   "principle": "Each control constructs an invalid record and asserts the governance layer rejects it. A control that does not detect its own failure is BROKEN.",

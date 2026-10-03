@@ -25,13 +25,13 @@
     "STALE_TEST": [],
     "TEST_INFRASTRUCTURE": []
   },
-  "generated_at_utc": "2026-10-03T10:12:06.885092+00:00",
-  "integrated_duration_s": 34605.38,
-  "integrated_sha": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+  "generated_at_utc": "2026-10-03T11:23:48.441389+00:00",
+  "integrated_duration_s": 1635.14,
+  "integrated_sha": "ad43ff9f0d051c2def8e42dd2abb6d9e92325285",
   "integrated_totals": {
     "errors": 0,
     "failed": 2,
-    "passed": 7358,
+    "passed": 7397,
     "skipped": 10
   },
   "method": "Two fully isolated offline runs (own TMP/TEMP/TMPDIR, own pytest cache, own cwd, own output roots, -p no:cacheprovider). Every difference is classified; unclassified differences are a failure of this artifact.",

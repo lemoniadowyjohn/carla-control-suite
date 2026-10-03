@@ -24,13 +24,13 @@
         "severity": "ADVISORY"
       }
     ],
-    "generated_at_utc": "2026-10-03T10:12:09.993603+00:00",
+    "generated_at_utc": "2026-10-03T11:23:51.528163+00:00",
     "node_count": 8,
-    "repo_head": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+    "repo_head": "ad43ff9f0d051c2def8e42dd2abb6d9e92325285",
     "schema": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION/v1",
     "status": "ADVISORY"
   },
-  "generated_at_utc": "2026-10-03T10:12:10.115358+00:00",
+  "generated_at_utc": "2026-10-03T11:23:51.646865+00:00",
   "live_runtime": {
     "reason": "This is an offline integration batch. No live CARLA execution was performed, so runtime RQ3/RQ5 evidence is NOT_RUN by construction.",
     "status": "NOT_RUN"
@@ -41,7 +41,7 @@
     "note": "An offline release gate must never imply FULL_PRODUCTION_READY.",
     "offline_release_pass": true
   },
-  "repo_head": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+  "repo_head": "ad43ff9f0d051c2def8e42dd2abb6d9e92325285",
   "rqs": {
     "RQ1": {
       "components": [
