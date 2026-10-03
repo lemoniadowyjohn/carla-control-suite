@@ -31,6 +31,7 @@ REAL_BASELINE_FAILURE = "REAL_BASELINE_FAILURE"
 NEW_INTEGRATION_FAILURE = "NEW_INTEGRATION_FAILURE"
 IMPORT_PATH_PROBLEM = "IMPORT_PATH_PROBLEM"
 GENERATED_FILE_DEPENDENCY = "GENERATED_FILE_DEPENDENCY"
+REAL_BASELINE_FAILURE_FIXED_IN_INTEGRATION = "REAL_BASELINE_FAILURE_FIXED_IN_INTEGRATION"
 
 # NOTE: tools/audit_pipeline_signal_graph.py identifies a "production writer"
 # by naive substring match on the artifact basename across all scanned *.py
@@ -231,6 +232,15 @@ def classify(a: Dict[str, Any], b: Dict[str, Any], c: Dict[str, Any],
         else:
             conclusion = IMPORT_PATH_PROBLEM
             why = "signals/ is not tracked in at least one tree."
+    elif b_f and not c_f:
+        conclusion = REAL_BASELINE_FAILURE_FIXED_IN_INTEGRATION
+        why = (
+            "The contract test fails at the historical baseline and at the base "
+            "candidate but passes at the integrated candidate. The dead-signal "
+            "defect was real and pre-existing, and the integrated candidate "
+            "repairs it by implementing the production producers the registry "
+            "declares."
+        )
     elif b_f and not a_f:
         conclusion = NEW_INTEGRATION_FAILURE
         why = "Fails at base but not at the historical baseline."
@@ -242,7 +252,8 @@ def classify(a: Dict[str, Any], b: Dict[str, Any], c: Dict[str, Any],
         why = "Mixed pass/fail across trees; inspect generated state per tree."
 
     unresolved = (rc or {}).get("unresolved_producers") or []
-    if conclusion == REAL_BASELINE_FAILURE and unresolved:
+    if conclusion in (REAL_BASELINE_FAILURE,
+                       REAL_BASELINE_FAILURE_FIXED_IN_INTEGRATION) and unresolved:
         why += (
             " Root cause is NOT a missing/untracked signals package: "
             "ultimate_pipeline/signals/ is tracked in all three trees and the "
@@ -268,6 +279,7 @@ def classify(a: Dict[str, Any], b: Dict[str, Any], c: Dict[str, Any],
         "signals_tracked_in_all_trees": tracked_everywhere,
         "audit_pass_in_all_trees": audit_pass_everywhere,
         "source_defect_found": conclusion in (REAL_BASELINE_FAILURE,
+                                              REAL_BASELINE_FAILURE_FIXED_IN_INTEGRATION,
                                               NEW_INTEGRATION_FAILURE),
         "prior_failure_explanation_refuted": (
             "The earlier report attributed the 4 failures to "
