@@ -135,7 +135,7 @@ def main() -> None:
 
     receipt = {
         "schema": "rq1_run_receipt/v1",
-        "run": 0,
+        "run": run_idx,
         "mode": "B",
         "status": status,
         "error": error if 'error' in locals() else "",
@@ -155,7 +155,7 @@ def main() -> None:
         "map_acceptance": map_acceptance,
     }
 
-    receipt_path = Path(out_base) / f"rq1b_run_{0:02d}_receipt.json"
+    receipt_path = Path(out_base) / f"rq1b_run_{run_idx:02d}_receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"status": receipt["status"], "run": receipt["run"], "mode": receipt["mode"]}, indent=2))
 
