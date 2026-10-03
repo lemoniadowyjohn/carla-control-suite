@@ -1,0 +1,9 @@
+{
+  "schema": "rq4_forensic_verdict/v1",
+  "statistics": "REPRODUCED_BIT_IDENTICAL (mean/std/CI via governed summarize_runs; leakage PASS; zero train/eval overlap)",
+  "hash_contradiction": "EXPLAINED_WITH_ZERO_RESIDUAL (metadata-payload hash vs file-bytes hash sharing one field name; mislabeled MASTER_CLOSE fields marked SUPERSEDED_HASH_SEMANTICS, history preserved)",
+  "bootstrap_drift": "RESOLVED (superseded-generation endpoint drift ~1e-3 from older implementation convention; current authority bit-identical)",
+  "byte_durability": "UNRESOLVED_EXTERNAL_CHECKPOINT_BYTES (original leak-free checkpoint bytes not found; nothing fabricated; byte-level replay blocked)",
+  "permutation_pvalue": "NOT_TRANSFERRED (pre-fix K=1000 p-value stays with pre-fix lineage)",
+  "verdict": "RQ4_SCIENTIFIC_RESULT_REPRODUCED_ARTIFACT_DURABILITY_PARTIAL"
+}

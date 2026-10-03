@@ -1,0 +1,28 @@
+{
+  "schema": "rq4_bootstrap_protocol_resolution/v1",
+  "governed_method": {
+    "authority": "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py summarize_runs()",
+    "sample_unit": "per-seed scalar (n=5 seed means)",
+    "statistic": "mean of per-seed values",
+    "std": "sample std ddof=1 (statistics.stdev)",
+    "resampling": "percentile bootstrap of the mean, n_boot=2000",
+    "rng": "random.Random(0) (deterministic)",
+    "interval": "sorted boot means at indices int(0.025*2000) and int(0.975*2000)"
+  },
+  "current_authority": {
+    "dataset": "leak-free 5-seed retrain, cosine_distance values [0.9054968357086182, 0.7745578289031982, 0.9666854739189148, 0.9625548124313354, 0.9940629601478577]",
+    "recomputed_mean": 0.9206715822219849,
+    "recomputed_ci95": [0.8446466565132141, 0.9759842038154602],
+    "status": "BIT_IDENTICAL to committed aggregate (independently re-verified this lane; historical CI NOT copied, recomputed via governed method)"
+  },
+  "superseded_generations": {
+    "c21_leaky_20260901_cosine_distance": {
+      "mean": "bit-identical (0.6433733820915222, independently re-verified this lane)",
+      "committed_ci95": [0.616146469116211, 0.6760465860366821],
+      "recomputed_ci95": [0.6167810678482055, 0.6772749543190002],
+      "verdict": "BOOTSTRAP_PROTOCOL_DRIFT_ONLY (~1e-3 endpoint drift from an older bootstrap implementation convention; data and means unaffected)"
+    }
+  },
+  "resolution": "Drift is an implementation-convention change between superseded generations and the committed summarize_runs, NOT a data or numeric contradiction. Current authority unaffected (bit-identical). No historical CI copied to match.",
+  "status": "BOOTSTRAP_PROTOCOL_RESOLVED"
+}

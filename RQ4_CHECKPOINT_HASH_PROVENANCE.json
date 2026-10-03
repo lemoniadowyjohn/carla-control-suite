@@ -1,0 +1,42 @@
+{
+  "schema": "rq4_checkpoint_hash_provenance/v1",
+  "contradiction": "checkpoint SHA256 differs across POST_HOC_LEAKAGE_AUDIT.json and RQ4_MASTER_CLOSE_VERIFICATION.json for seeds 42-46 while MD5 matches (5/5 seeds)",
+  "producer_trace": {
+    "post_hoc_sha256": {
+      "artifact": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/POST_HOC_LEAKAGE_AUDIT.json",
+      "producer": "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/post_hoc_leakage_audit.py:89",
+      "statement": "(metadata or {}).get('checkpoint_sha256')",
+      "target": "embedded checkpoint metadata payload hash, NOT file bytes (proven from committed producer code)",
+      "upstream": "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py save_checkpoint(): checkpoint_sha256 = canonical_hash(metadata minus placeholder); stored in payload + sidecar"
+    },
+    "training_report_hashes": {
+      "producer": "ultimate_pipeline/domain_gap_gnn/latent_gap_runner.py:146,224",
+      "checkpoint_md5": "_hash_file(checkpoint) = MD5 of FILE BYTES (proven: hashlib.md5 over file stream)",
+      "checkpoint_sha256": "prov.sha256_file(checkpoint) = SHA256 of FILE BYTES (proven: hashlib.sha256 over file stream)"
+    },
+    "master_close_sha256": {
+      "artifact": "reports/production_readiness/20260924T120000Z_RQ1_RQ4_MASTER_CLOSE/RQ4_MASTER_CLOSE_VERIFICATION.json /per_seed[i]/checkpoint_sha256",
+      "producer": "UNCOMMITTED - file arrived via safety-checkpoint commit a189c1e6 ('committing to prevent loss, not certifying correctness'); no generator script in git history",
+      "target": "FILE BYTES (inferred, strong single-hypothesis grade)",
+      "evidence_chain": [
+        "MASTER_CLOSE MD5s (5/5) equal training-report file-bytes MD5s",
+        "a file-bytes SHA256 naturally accompanies a file-bytes MD5 - exactly the latent_gap_runner (md5, sha256_file) pair",
+        "POST_HOC side is PROVEN metadata-hash from committed code, so the two fields named checkpoint_sha256 hash different targets by construction",
+        "no alternative hypothesis accounts for 5/5 SHA256 divergence with 5/5 MD5 agreement"
+      ]
+    }
+  },
+  "resolution": "same MD5 + different SHA256 is EXPECTED, not suspicious: MD5 both sides = file bytes; SHA256 one side = metadata-payload hash, other side = file-bytes hash. Two fields share a name but hash different targets.",
+  "field_marking": "RQ4_MASTER_CLOSE_VERIFICATION.json /per_seed[i]/checkpoint_sha256 marked SUPERSEDED_HASH_SEMANTICS (file-bytes hash mislabeled alongside metadata-hash records); history not rewritten",
+  "caveat": "MASTER_CLOSE producer script uncommitted, so file-bytes origin is inference (strong, zero-residual) rather than code-proven; byte-level replay remains UNRESOLVED_EXTERNAL_CHECKPOINT_BYTES",
+  "byte_search": {
+    "scope": "non-destructive filename search for map_encoder_epoch50.pt across surviving worktrees, G:, Temp, bundles, torch cache",
+    "findings": [
+      "G:/gap010-rq4-retrain-20260924 absent (drive present, retrain dir gone)",
+      "G:/wt-codex-thesis-parity-001/thesis_results/gnn_v1: unrelated single-seed run (72 tiles, cosine_distance 0.00106), excluded",
+      "C:/Users/admin/AppData/Local/Temp: only pytest fixture dirs, excluded",
+      "F:/carla-worktrees: no match; no *.bundle recovery archives found"
+    ],
+    "verdict": "ORIGINAL_LEAKFREE_CHECKPOINT_BYTES_NOT_FOUND; no bytes fabricated"
+  }
+}
