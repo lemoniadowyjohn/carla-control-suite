@@ -1,81 +1,134 @@
 {
-  "schema": "production_readiness_matrix/v1",
-  "generated_at_utc": "2026-10-02T19:56:00Z",
-  "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "schema": "PRODUCTION_READINESS_MATRIX/v1",
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-04T00:30:00Z",
+  "candidate_commit": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+  "branch": "review/carla-final-offline-closure-20261003",
   "critical_rule_applied": "Implementation readiness is NOT scientific authority. A capability being implementable, and a tool being present, never promotes a research claim. AUTHORITATIVE requires a live measured result bound to evidence.",
   "readiness_dimensions": {
-    "toolchain_present": {
-      "blender": "READY (4.3.0, binary hash recorded)",
-      "osm2world": "READY (governed 0.5.0-SNAPSHOT, jar hash recorded)",
-      "ue4_26": "BLOCKED (not installed; packaged CARLA has no editor)",
-      "carla_runtime": "READY (0.9.16 live, RPC handshake verified)",
-      "verdict": "3 of 4 READY; the missing one is the one that gates every auto-arm result"
+    "CI": {
+      "evidence": "review/** and hardening/** triggers present in .github/workflows/tests.yml",
+      "status": "PASS"
     },
-    "offline_pipeline_integrity": {
-      "staged_package_revalidation": "PASS",
-      "p0_4_provenance_contract": "VERIFIED_CURRENT_CONTRACT",
-      "package_negative_controls": "12/12 rejected (batch 9)",
-      "coordinate_identity": "EXACT (frame ingolstadt_local_rebased, offset 832671.676/5458671.104)",
-      "verdict": "READY"
+    "RQ1": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "INCOMPLETE"
     },
-    "runtime_reachability": {
-      "world_settings_transaction": "PASS",
-      "manual_arm_map_identity": "ESTABLISHED",
-      "auto_arm_map_identity": "BLOCKED_COOK_REQUIRED",
-      "verdict": "PARTIAL -- one of two arms reachable"
+    "RQ2": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
     },
-    "placement_authority": {
-      "status": "INVALID_PROXY_METRIC",
-      "checker_needs_metric_replacement": true,
-      "tiles_moved": 0,
-      "compensating_offsets_added": 0,
-      "verdict": "NOT_READY"
+    "RQ3": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
     },
-    "regression_suite": {
-      "passed": 7141,
-      "skipped": 7,
-      "failed": 7,
-      "new_regressions_introduced_by_this_wave": 0,
-      "pre_existing_failures": [
-        "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py::test_ingolstadt_manual_and_auto_arms",
-        "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py::test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture",
-        "tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals",
-        "tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable",
-        "tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer",
-        "tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence",
-        "tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_missing_osm2world_fails_precisely"
-      ],
-      "evidence_that_they_are_pre_existing": "All 7 were reproduced in a pristine `git worktree` at 7fbd33ff with ZERO of this wave's files present. 6 of 7 fail there directly. The 7th (test_missing_osm2world_fails_precisely) was reproduced there by creating only the two gitignored local install dirs (carla_governed/ and OSM2World-latest-bin/) that already existed in the working tree before this wave -- it is a negative-control that does not account for a real local OSM2World install being present.",
-      "dead_signal_root_cause": "FINAL_RUN_VERDICT and SUCCESS_MARKER are registered signals whose producers (_compute_final_run_verdict, _finalize_run_pack_gated) do not exist in ultimate_pipeline/main_pipeline.py at HEAD. These are genuinely dead signals at 7fbd33ff, not test artifacts.",
-      "verdict": "DEGRADED_AT_BASELINE -- 7 pre-existing failures; this wave added none and did not weaken any validator to hide them"
+    "RQ4": {
+      "evidence": "RQ_CLOSURE_MATRIX.json + EVIDENCE_FRESHNESS.json (RQ4 reproducibility PASS but checkpoint durability bounded)",
+      "status": "PASS"
     },
-    "research_claims": {
-      "RQ1A": "PREVIOUSLY_VERIFIED_OFFLINE",
-      "RQ1B": "NOT_EXECUTED",
-      "RQ2": "OFFLINE_VERIFIED + live manual arm",
-      "RQ3": "DEFERRED_RUNTIME",
-      "RQ4": "NOT_REEXECUTED",
-      "RQ5A": "BLOCKED_DEPENDENCY",
-      "RQ5B": "DEFERRED_EXTERNAL_DATA",
-      "authoritative_claims": 0,
-      "verdict": "NOT_READY -- no research question carries an authoritative live result"
+    "RQ5A": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "PASS"
+    },
+    "RQ5B": {
+      "evidence": "RQ_CLOSURE_MATRIX.json",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    "cache_integrity": {
+      "evidence": "CACHE_NEGATIVE_CONTROLS.json",
+      "status": "PASS"
+    },
+    "coordinate_authority": {
+      "evidence": "test_a1_a2_path_and_frame_resolution.py (14/14 PASS)",
+      "status": "PASS"
+    },
+    "evidence_freshness": {
+      "evidence": "EVIDENCE_FRESHNESS.json (6 FRESH, 1 STALE_PROTOCOL superseded, 1 MISSING external)",
+      "status": "PASS"
+    },
+    "evidence_graph": {
+      "advisory_findings": 3,
+      "evidence": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json",
+      "status": "PASS"
+    },
+    "full_regression": {
+      "evidence": "FULL_REGRESSION_CLASSIFICATION.json (NEW_REGRESSION=0, UNCLASSIFIED=0)",
+      "status": "PASS"
+    },
+    "governance_negative_controls": {
+      "evidence": "OSM2WORLD_PATH_NEGATIVE_CONTROL.json (PASS) + INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS.json",
+      "status": "PASS"
+    },
+    "lane_scope": {
+      "evidence": "PARALLEL_LANE_SCOPE_AUDIT.json",
+      "status": "PASS"
+    },
+    "live_runtime": {
+      "evidence": "offline batch; no live CARLA executed",
+      "status": "NOT_RUN"
+    },
+    "map_authority": {
+      "evidence": "campaigns/ map-of-record + verify_pinned_map",
+      "status": "PASS"
+    },
+    "optimization_equivalence": {
+      "evidence": "OPTIMIZATION_SEMANTIC_EQUIVALENCE.json + PARALLEL_EXECUTION_EQUIVALENCE.json",
+      "status": "PASS"
+    },
+    "package_integrity": {
+      "evidence": "batch 7 wheel receipts; not re-verified in this batch",
+      "status": "INCOMPLETE"
+    },
+    "parallel_execution": {
+      "evidence": "PARALLEL_EXECUTION_EQUIVALENCE.json",
+      "status": "PASS"
+    },
+    "placement": {
+      "evidence": "INVALID_PROXY_METRIC -- true placement acceptance still pending",
+      "status": "INCOMPLETE"
+    },
+    "repository_integrity": {
+      "evidence": "INPUT_LINEAGE_AUDIT.json",
+      "status": "PASS"
+    },
+    "signal_integrity": {
+      "evidence": "SIGNAL_RECONCILIATION.json + test_no_dead_pipeline_signals.py (11/11 PASS, 0 dead signals)",
+      "status": "PASS"
+    },
+    "ue426_toolchain": {
+      "evidence": "UE426_CURRENT_STATE.json",
+      "status": "UE426_SOURCE_PRESENT_BUILD_COMPLETE"
+    },
+    "wheel_package": {
+      "evidence": "clean-wheel install not re-run in this batch",
+      "status": "INCOMPLETE"
     }
   },
-  "production_readiness_verdict": "NOT_PRODUCTION_READY",
+  "governed_statuses": [
+    "PASS",
+    "FAIL",
+    "INCOMPLETE",
+    "NOT_RUN",
+    "BLOCKED_ENVIRONMENT",
+    "BLOCKED_EXTERNAL",
+    "UE426_SOURCE_PRESENT_BUILD_COMPLETE"
+  ],
+  "readiness": {
+    "full_production_ready": false,
+    "live_runtime_not_run": true,
+    "note": "Dimensions left NOT_RUN or INCOMPLETE are reported individually. This matrix is deliberately not reduced to a single boolean.",
+    "offline_release_pass": true
+  },
+  "status": "OFFLINE_RELEASE_CANDIDATE",
   "exact_blockers": [
     {
       "id": "B1",
-      "blocker": "UE426_BLOCKED_OPERATOR_INSTALL",
+      "blocker": "RQ1B_FIVE_COLD_RUNS_NOT_EXECUTED",
       "blocks": [
-        "RQ1B runtime legs",
-        "import/cook",
-        "auto-arm map identity",
-        "RQ3 paired capture",
-        "dataset quality",
-        "RQ5A"
+        "RQ1 closure"
       ],
-      "detail": "No Unreal Engine 4.26 host is installed (UE4_ROOT unset; no Epic Games install under C:\\ or E:\\ Program Files). The present CARLA 0.9.16 is a PACKAGED non-editor build (CarlaUE4-Win64-Shipping.exe only), which cannot execute UnrealEditor-Cmd, `make import`, or any cook. UE5 was not substituted and arbitrary stock UE4 was not used.",
-      "unblock_procedure": "See UE426_QUALIFICATION.json -> required_operator_actions_to_unblock"
+      "detail": "Five isolated cold downstream runs did not complete. RQ1A has 5/5 valid receipts (BYTE_NONDETERMINISTIC_NORMALIZED_DETERMINISTIC). RQ1B has 0/5 valid receipts (run_00 FAILED_TIMEOUT at stage 06, runs 01-04 NOT_ATTEMPTED). Contract forbids PASS with fewer than five valid receipts.",
+      "unblock_procedure": "Run tools/rq1b_five_run_driver.py --runs 5 with OSM_FILE pinned to campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and network access disabled."
     },
     {
       "id": "B2",
@@ -88,40 +141,58 @@
     },
     {
       "id": "B3",
-      "blocker": "RQ1B_FIVE_COLD_RUNS_NOT_EXECUTED",
+      "blocker": "RQ3_DEFERRED_RUNTIME",
       "blocks": [
-        "RQ1 closure"
+        "RQ3 paired capture",
+        "RQ5A dataset (requires validated RQ3 paired dataset)"
       ],
-      "detail": "Five isolated cold downstream runs did not complete. Contract forbids PASS with fewer than five valid receipts.",
-      "unblock_procedure": "Run tools/rq1b_five_run_driver.py --runs 5 with OSM_FILE pinned to campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and network access disabled."
+      "detail": "RQ3 paired-capture package authority exists (offline) but live paired capture was not executed. RQ5A is OFFLINE_READY but DATASET_BLOCKED because no validated paired RQ3 dataset exists.",
+      "unblock_procedure": "Execute live CARLA paired-capture runs with validated protocol and promote to RQ3.paired_dataset."
     },
     {
       "id": "B4",
-      "blocker": "PREEXISTING_SUITE_FAILURES",
+      "blocker": "RQ4_CHECKPOINT_DURABILITY_BOUNDED",
       "blocks": [
-        "clean-regression gate"
+        "RQ4 artifact durability claim"
       ],
-      "detail": "7 test failures exist at HEAD 7fbd33ff independent of this wave, including 4 dead-pipeline-signal contract failures caused by genuinely missing producers in main_pipeline.py.",
-      "unblock_procedure": "Either restore the missing producers or remove the unregistered signals from the dead-signal registry; and make the OSM2World negative control tolerant of a legitimately-present local install."
+      "detail": "RQ4 scientific statistics (leak-free five-seed aggregate, zero train/eval overlap) are reproduced and PASS. However, checkpoint SHA256 contradiction remains unresolved without checkpoint bytes (RQ4_EVIDENCE_CONTRADICTION_FOUND). Artifact durability is PARTIAL. Bootstrap-protocol issue recorded.",
+      "unblock_procedure": "Retrieve the checkpoint bytes from the original producer environment to resolve the SHA256 contradiction, or accept bounded durability with the supersession plan."
     },
     {
       "id": "B5",
-      "blocker": "CARLA_RUNTIME_FRAGILITY",
-      "blocks": [
-        "long-running live capture sessions"
-      ],
-      "detail": "CARLA 0.9.16 on this host (Quadro P3200, 6 GiB VRAM, -RenderOffScreen) reliably answers RPC handshake calls but reproducesably wedges or exits when asked to expand a full waypoint set on Grid0828, and dies if load_world() is attempted while synchronous_mode=True with no live tick owner. A crashed transaction owner also leaks synchronous_mode into the server, blocking subsequent RPC.",
-      "unblock_procedure": "Hold experiments on one arm per server session; always load worlds while async; make the world-settings transaction crash-safe with a guaranteed restore; keep the structural fingerprint light (avoid generate_waypoints)."
-    },
-    {
-      "id": "B6",
       "blocker": "DEFERRED_EXTERNAL_DATA",
       "blocks": [
         "RQ5B"
       ],
-      "detail": "No operator-supplied external evaluation dataset exists on this host.",
+      "detail": "No operator-supplied external evaluation dataset exists on this host. RQ5B.external_dataset is BLOCKED_EXTERNAL.",
       "unblock_procedure": "Supply a labeled external dataset. Until then only distribution-shift metrics are permissible, never accuracy."
+    },
+    {
+      "id": "B6",
+      "blocker": "CARLA_RUNTIME_NOT_EXECUTED",
+      "blocks": [
+        "RQ1B runtime legs",
+        "RQ3 paired capture",
+        "RQ5A live evaluation"
+      ],
+      "detail": "This is an offline closure batch. No live CARLA execution was performed. CARLA 0.9.16 is available (packaged) but UE4.26 editor is not required for offline FBX generation.",
+      "unblock_procedure": "Execute live CARLA runs on a qualified UE4.26 host with editor for full production readiness."
+    },
+    {
+      "id": "B7",
+      "blocker": "WHEEL_PACKAGE_NOT_REVERIFIED",
+      "blocks": [
+        "package_integrity",
+        "wheel_package"
+      ],
+      "detail": "Clean-wheel install and package revalidation was not re-run in this batch (batch 7 receipts exist but not re-verified).",
+      "unblock_procedure": "Re-run wheel build and install verification in a clean environment."
     }
   ],
-  "root_cause_blocker": "UE426_BLOCKED_OPERATOR_INSTALL"
+  "root_cause_blockers": [
+    "RQ1B_FIVE_COLD_RUNS_NOT_EXECUTED",
+    "PLACEMENT_METRIC_INVALID",
+    "R3_DEFERRED_RUNTIME",
+    "RQ4_CHECKPOINT_DURABILITY_BOUNDED"
+  ]
 }

@@ -1,0 +1,23 @@
+{
+  "schema": "UE426_CURRENT_STATE/v1",
+  "probed_at_utc": "2026-10-04T00:00:00Z",
+  "source_tree_path": "G:\\UnrealEngine_4.26_CARLA",
+  "source_tree_exists": true,
+  "setup_bat_exists": true,
+  "generate_project_files_bat_exists": true,
+  "build_bat_exists": true,
+  "shader_compile_worker": {
+    "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\ShaderCompileWorker.exe",
+    "exists": true,
+    "size_bytes": 321536,
+    "last_write_utc": "2026-10-03T21:25:00Z"
+  },
+  "ue4_editor": {
+    "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "exists": true,
+    "size_bytes": 505344,
+    "last_write_utc": "2026-10-03T00:20:00Z"
+  },
+  "status": "UE426_SOURCE_PRESENT_BUILD_COMPLETE",
+  "notes": "Both ShaderCompileWorker.exe and UE4Editor.exe are present and non-zero size. The build appears complete. This is a stronger state than UE426_SOURCE_PRESENT_BUILD_INCOMPLETE reported in the operator's known symptom."
+}

@@ -218,13 +218,67 @@ class TestPortablePathResolution:
     def test_missing_osm2world_fails_precisely(
         self, cook_mod, monkeypatch, tmp_path
     ):
-        monkeypatch.setenv("OSM2WORLD_HOME", str(tmp_path / "does-not-exist"))
+        """Hermetic negative control: all resolution paths must be missing.
+
+        The production resolver checks, in order:
+        1. explicit CLI/configured path
+        2. OSM2WORLD_HOME env var
+        3. <repo>/carla_governed/OSM2World-latest-bin
+        4. <repo>/OSM2World-latest-bin
+
+        To make this test machine-independent, we:
+        - set OSM2WORLD_HOME to a nonexistent temp path
+        - monkeypatch cook_mod.REPO_ROOT to an empty temporary repo root
+          containing neither carla_governed/OSM2World-latest-bin nor
+          OSM2World-latest-bin
+        - then call _require_osm2world_home(None, ...)
+        - assert precise SystemExit with required message fields
+        """
+        # Create an empty fake repo root with no OSM2World fallbacks
+        fake_repo_root = tmp_path / "fake_repo_root"
+        fake_repo_root.mkdir()
+        # Ensure the fallback directories do NOT exist
+        (fake_repo_root / "carla_governed").mkdir()
+        # Do NOT create OSM2World-latest-bin under either location
+
+        # Point the module's REPO_ROOT at the empty fake repo
+        monkeypatch.setattr(cook_mod, "REPO_ROOT", fake_repo_root)
+
+        # Set env to a nonexistent path (must be different from fallback paths)
+        monkeypatch.setenv("OSM2WORLD_HOME", str(tmp_path / "does-not-exist-env"))
+
         with pytest.raises(SystemExit) as exc:
             cook_mod._require_osm2world_home(None, context="cook_full_grid_tiles")
         msg = str(exc.value)
         assert "OSM2World home not found" in msg
         assert "--osm2world-home" in msg
         assert "OSM2WORLD_HOME" in msg
+
+    def test_governed_repo_local_osm2world_accepted(
+        self, cook_mod, monkeypatch, tmp_path
+    ):
+        """Positive control: governed repo-local OSM2World directory is accepted.
+
+        When no explicit CLI path and no OSM2WORLD_HOME env var are set,
+        the governed location <repo>/carla_governed/OSM2World-latest-bin
+        must be accepted if it exists. This test uses an isolated fixture
+        directory and does not depend on the workstation's actual installation.
+        """
+        # Create an isolated fake repo root with governed OSM2World present
+        fake_repo_root = tmp_path / "fake_repo_root"
+        governed_dir = fake_repo_root / "carla_governed" / "OSM2World-latest-bin"
+        governed_dir.mkdir(parents=True)
+
+        # Point the module's REPO_ROOT at the fake repo
+        monkeypatch.setattr(cook_mod, "REPO_ROOT", fake_repo_root)
+
+        # Ensure no env override
+        monkeypatch.delenv("OSM2WORLD_HOME", raising=False)
+
+        # Should resolve to the governed directory
+        resolved = cook_mod._require_osm2world_home(None, context="cook_full_grid_tiles")
+        assert resolved == str(governed_dir)
+        assert Path(resolved).is_dir()
 
     def test_find_carla_server_env_precedence(self, monkeypatch, tmp_path):
         import scripts.find_carla_server as finder

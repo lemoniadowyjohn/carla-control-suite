@@ -1,0 +1,10 @@
+{
+  "base_sha": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+  "tree_sha": "859b86e31f4717cc3d80d540c04c484f4f345bb0",
+  "branch": "review/carla-final-offline-closure-20261003",
+  "dirty": false,
+  "python_version": "3.12.2",
+  "pytest_version": "9.0.1",
+  "tmp_isolation_root": "C:\\Users\\admin\\AppData\\Local\\Temp",
+  "temp_isolation_root": "C:\\Users\\admin\\AppData\\Local\\Temp"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "OSM2WORLD_PATH_NEGATIVE_CONTROL/v1",
+  "candidate_sha": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+  "test_name": "TestPortablePathResolution.test_missing_osm2world_fails_precisely",
+  "old_failure_mode": "Test was machine-dependent because it only set OSM2WORLD_HOME to a nonexistent path, but the production resolver has fallbacks to <repo>/carla_governed/OSM2World-latest-bin and <repo>/OSM2World-latest-bin. If either existed on the test machine, the test would incorrectly pass (or fail to catch the negative control).",
+  "new_isolation_method": "Monkeypatch cook_mod.REPO_ROOT to an empty temporary repo root containing neither carla_governed/OSM2World-latest-bin nor OSM2World-latest-bin. Set OSM2WORLD_HOME to a nonexistent temp path. Call _require_osm2world_home(None, ...). Assert precise SystemExit with required message fields.",
+  "production_code_changed": false,
+  "negative_control": "PASS",
+  "positive_control": "PASS"
+}

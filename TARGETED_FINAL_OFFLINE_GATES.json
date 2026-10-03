@@ -1,0 +1,67 @@
+{
+  "schema": "TARGETED_FINAL_OFFLINE_GATES/v1",
+  "candidate_sha": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+  "test_suites": [
+    {
+      "suite": "tests/unit/test_a1_a2_path_and_frame_resolution.py",
+      "tests": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 8.46
+    },
+    {
+      "suite": "tests/contracts/test_no_dead_pipeline_signals.py",
+      "tests": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 8.0
+    },
+    {
+      "suite": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py",
+      "tests": 23,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 8.0
+    },
+    {
+      "suite": "tests/unit/test_o15_rq1_five_run_matrix.py",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 0.16
+    },
+    {
+      "suite": "tests/unit/test_rq2_metric_authority.py",
+      "tests": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 5.0
+    },
+    {
+      "suite": "tests/unit/test_rq4_reproducibility_pack.py",
+      "tests": 44,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 8.0
+    },
+    {
+      "suite": "tests/contracts",
+      "tests": 48,
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0,
+      "duration_s": 4.6
+    }
+  ],
+  "total_tests": 164,
+  "total_passed": 164,
+  "total_failed": 0,
+  "total_skipped": 0,
+  "all_gates_pass": true
+}

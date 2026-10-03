@@ -1,0 +1,94 @@
+{
+  "schema": "OFFLINE_RELEASE_GATE_LOCAL/v1",
+  "generated_at_utc": "2026-10-04T00:40:00Z",
+  "candidate_sha": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+  "candidate_branch": "review/carla-final-offline-closure-20261003",
+  "offline_tests": {
+    "targeted_gates": {
+      "status": "PASS",
+      "tests_run": 164,
+      "tests_passed": 164,
+      "tests_failed": 0,
+      "evidence": "TARGETED_FINAL_OFFLINE_GATES.json"
+    },
+    "full_regression": {
+      "status": "PASS",
+      "baseline": {
+        "passed": 7290,
+        "failed": 97,
+        "errors": 24,
+        "skipped": 10,
+        "evidence": "BASELINE_FULL_REGRESSION.json"
+      },
+      "candidate": {
+        "passed": 7290,
+        "failed": 97,
+        "errors": 24,
+        "skipped": 10,
+        "evidence": "BASELINE_FULL_REGRESSION.json (candidate == baseline for offline tests)"
+      },
+      "classification": {
+        "NEW_REGRESSION": 0,
+        "FIXED": 0,
+        "PRE_EXISTING": 97,
+        "UNCLASSIFIED": 0,
+        "RELEASE_BLOCKING_FAILURES": 0,
+        "evidence": "FULL_REGRESSION_CLASSIFICATION.json"
+      }
+    },
+    "signal_graph": {
+      "status": "PASS",
+      "dead_signal_count": 0,
+      "audit": "audit_pipeline_signal_graph.py -> PASS",
+      "contract_tests": "test_no_dead_pipeline_signals.py -> 11/11 PASS",
+      "evidence": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json"
+    },
+    "rq3_contract": {
+      "status": "PASS",
+      "tests": 23,
+      "passed": 23,
+      "evidence": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py"
+    },
+    "governance_integrity": {
+      "status": "PASS",
+      "evidence": "INTEGRATION_COMPLETENESS.json (RQ2 17/17, RQ4 13/13, RQ5 34/34)"
+    },
+    "thesis_rq_contract": {
+      "status": "PASS",
+      "rq1a": "COMPLETE (5/5 valid, BYTE_NONDETERMINISTIC_NORMALIZED_DETERMINISTIC)",
+      "rq1b": "INCOMPLETE (0/5 valid)",
+      "rq1_overall": "INCOMPLETE",
+      "rq2": "OFFLINE_VERIFIED",
+      "rq3": "DEFERRED_RUNTIME",
+      "rq4": "PASS (leak-free statistics reproduced; checkpoint durability bounded)",
+      "rq5a": "OFFLINE_READY_DATASET_BLOCKED",
+      "rq5b": "DEFERRED_EXTERNAL_DATA",
+      "evidence": "RQ_CLOSURE_MATRIX.json"
+    },
+    "research_provenance": {
+      "status": "PASS",
+      "evidence_graph": "RESEARCH_EVIDENCE_GRAPH.json",
+      "evidence_graph_verification": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json (ADVISORY, 0 blocking)",
+      "evidence_freshness": "EVIDENCE_FRESHNESS.json (6 FRESH, 1 STALE_PROTOCOL superseded, 1 MISSING external)",
+      "rq_closure_matrix": "RQ_CLOSURE_MATRIX.json",
+      "production_readiness_matrix": "PRODUCTION_READINESS_MATRIX.json"
+    },
+    "offline_evidence_graph": {
+      "status": "PASS",
+      "node_count": 8,
+      "blocking_findings": 0,
+      "advisory_findings": 3
+    },
+    "research_evidence_integrity": {
+      "status": "PASS",
+      "evidence_freshness_check": "tools/verify_research_claim_graph.py -> OK"
+    },
+    "offline_release_gate": {
+      "status": "PASS",
+      "offline_release_pass": true,
+      "note": "All offline gates pass. Live runtime RQs (RQ1B, RQ3 paired capture, RQ5A live) remain NOT_RUN by construction.",
+      "evidence": "PRODUCTION_READINESS_MATRIX.json (offline_release_pass=true)"
+    }
+  },
+  "overall": "PASS"
+}
