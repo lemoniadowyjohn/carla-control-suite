@@ -1,0 +1,27 @@
+{
+  "schema": "RELEASE_TEST_RECONCILIATION/v1",
+  "candidate": "review/carla-final-convergence-20261003",
+  "suites": [
+    {
+      "suite": "tests/contracts/test_no_dead_pipeline_signals.py",
+      "result": "11 passed, 0 failed",
+      "classification": "FIXED_BY_INTEGRATION",
+      "note": "Dead-signal defect repaired in batch 13 by implementing the two producers the registry already declared. No dummy producers were added and no contract test was weakened."
+    },
+    {
+      "suite": "tests/unit/test_a1_a2_path_and_frame_resolution.py",
+      "result": "13 passed, 0 failed",
+      "classification": "PASS"
+    },
+    {
+      "suite": "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py",
+      "result": "25 passed, 0 failed",
+      "classification": "FIXED_BY_TEST_CORRECTION",
+      "note": "Both historical failures encoded obsolete PRE-HARDENING assumptions, not production defects. (1) The manual fixture asserted Grid0821 while production INGOLSTADT_MANUAL_COOKED_TOWNS is exactly (Grid0828,); the fixture was updated to Grid0828. (2) The auto fixture asserted that a dummy xodr_sha256 was accepted via a path heuristic, while production binds the PINNED auto_map_of_record sha256 and explicitly forbids path heuristics; the test now asserts BOTH directions, dummy sha rejected and real pinned sha accepted. Production behaviour was not changed and identity enforcement is strictly stronger than before."
+    }
+  ],
+  "weakened_checks": [],
+  "production_behaviour_changed": false,
+  "release_blocking_failures": 0,
+  "status": "PASS"
+}
