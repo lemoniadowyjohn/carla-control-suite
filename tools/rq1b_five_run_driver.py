@@ -90,21 +90,37 @@ def run_one(run_idx: int, out_base: Path) -> Dict[str, Any]:
     run_dir.mkdir(parents=True, exist_ok=True)
     env = build_child_env(run_dir, run_idx)
 
-    cmd = [sys.executable, str(REPO / "tools" / "rq1b_full_pipeline.py"), str(run_idx), str(run_dir)]
+    # Pass out_base (not run_dir): the child appends run_NN itself, so the
+    # receipt lands directly in run_dir where the glob below looks for it.
+    cmd = [sys.executable, str(REPO / "tools" / "rq1b_full_pipeline.py"), str(run_idx), str(out_base)]
     t0 = time.time()
-    proc = subprocess.run(
-        cmd,
-        cwd=str(REPO),
-        env=env,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        timeout=7200,
-    )
-    dur = time.time() - t0
-    (run_dir / "child_stdout.log").write_text(proc.stdout or "", encoding="utf-8")
-    (run_dir / "child_stderr.log").write_text(proc.stderr or "", encoding="utf-8")
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(REPO),
+            env=env,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=7200,
+        )
+        dur = time.time() - t0
+        timed_out = False
+    except subprocess.TimeoutExpired as exc:
+        dur = time.time() - t0
+        timed_out = True
+        proc = None
+        timeout_exc = exc
+    if timed_out:
+        (run_dir / "child_stdout.log").write_text("", encoding="utf-8")
+        (run_dir / "child_stderr.log").write_text(
+            f"TIMEOUT after {dur:.0f}s (limit 7200s): {timeout_exc}", encoding="utf-8"
+        )
+    else:
+        assert proc is not None
+        (run_dir / "child_stdout.log").write_text(proc.stdout or "", encoding="utf-8")
+        (run_dir / "child_stderr.log").write_text(proc.stderr or "", encoding="utf-8")
 
     receipts = sorted(run_dir.glob("rq1b_run_*_receipt.json"))
     receipt: Dict[str, Any] = {
@@ -114,7 +130,9 @@ def run_one(run_idx: int, out_base: Path) -> Dict[str, Any]:
         "input_xodr_sha256": EXPECTED_XODR_SHA,
         "input_xodr_path": pinned["resolved_path"],
         "command": " ".join(cmd),
-        "return_code": proc.returncode,
+        "return_code": -1 if timed_out else proc.returncode,
+        "timed_out": timed_out,
+        "timeout_limit_s": 7200,
         "duration_s": round(dur, 1),
         "isolated": True,
         "shared_cache": False,
@@ -154,6 +172,7 @@ def main() -> int:
         "runs_completed": len(receipts),
         "all_returncode_zero": all(r["return_code"] == 0 for r in receipts),
         "all_receipts_present": all(r["receipt_found"] for r in receipts),
+        "any_timed_out": any(r.get("timed_out") for r in receipts),
         "receipts": receipts,
     }
     (out_base / "RQ1B_FIVE_RUN_MATRIX.json").write_text(

@@ -1,0 +1,7 @@
+{
+  "reason": "RQ1A requires 5 valid runs, got 1",
+  "rq1a_count": 1,
+  "rq1b_count": 0,
+  "schema": "rq1_determinism_verdict/v1",
+  "verdict": "INCOMPLETE"
+}
