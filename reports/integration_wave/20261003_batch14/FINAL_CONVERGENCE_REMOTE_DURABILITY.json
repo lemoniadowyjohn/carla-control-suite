@@ -1,0 +1,40 @@
+{
+  "artifacts_sha256": {
+    "EVIDENCE_FRESHNESS.json": "d573db384cb98c6a3eb7bb4785751cf1e3e17bade88fc0d081e79a6f4716583c",
+    "FULL_REGRESSION_CLASSIFICATION.json": "72795201786a72c1149fa1b06732f88fc07ecf0f088269976381fcb44442e600",
+    "INPUT_LINEAGE_AUDIT.json": "26755c5244520f31253cbf0d407a79ba83ae2520416a977d470917ccb5af325b",
+    "INTEGRATION_COMPLETENESS.json": "d89146ee6e12b5db56680c14b020ff4aec7007d2a9796591f7ca09bce7d0574c",
+    "INTEGRATION_GOVERNANCE_NEGATIVE_CONTROLS.json": "3006b96a048b4b1dc441299d6185a7d05c2bde9a24f64a2b9cf8a5b1fa082f68",
+    "LANE_BASE_SKEW_RESOLUTION.json": "4408574e7df6f9aa2fddcc329bd91a035fbb7db5be1fc1f73a2c18f282d9d191",
+    "PARALLEL_LANE_SCOPE_AUDIT.json": "f171c021863d70c16add699f5bfdd97c78e73872fe214fb41d90e6b871be93d1",
+    "PATCH_DUPLICATION.json": "88dce7b1e463294c4dd370ef7e630e1dd7d49217f7e24633c3a3444be43f1711",
+    "PRODUCTION_READINESS_MATRIX.json": "414c5ce26a214a0029e7529ab03e9c6c9486bc07a68c98224872df4392c66edb",
+    "RESEARCH_EVIDENCE_GRAPH.json": "d871d445471966b0b8c2ff6dc60311bfe5e69dc7ec2dfb698778a5f0feaa92f8",
+    "RESEARCH_EVIDENCE_GRAPH_VERIFICATION.json": "74363c39399f7c17c2f1f1678a7dd45d31a8aea0be54c3cb9ba94a356a486193",
+    "RQ_CLOSURE_MATRIX.json": "27125d42ea56aa85d6df34fe1ef84b224ab44bde8493fdf3fc7d383b4198a6e6",
+    "SCHEMA_VALIDATION.json": "034d4d16dca9d0161e2aa6076d84bcab8ddd068f203038e831ae8f7bec91be70",
+    "SIGNAL_RECONCILIATION.json": "c2c6577e292e474ecd509f39f462e69270f5acf7ff0138c50565932aa1f8a7e1",
+    "SUCCESS_MARKER_CONSISTENCY.json": "9c5004ff752c71c6e721d4b96ff258a3995bcc8ae7b26f5f889ff2a907d47fdd"
+  },
+  "base_integration_sha": "8f02c34984090e9a54130f5c2b49728e31ee682f",
+  "base_skew": "BASE_SKEW_RECONCILED",
+  "branch": "review/carla-final-convergence-20261003",
+  "candidate_commit_bound_in_artifacts": "03af8c193419",
+  "full_production_ready": false,
+  "full_regression": {
+    "NEW_REGRESSION": 0,
+    "RELEASE_BLOCKING_FAILURES": 0,
+    "UNCLASSIFIED": 0,
+    "failed": 0,
+    "passed": 7412
+  },
+  "lane_completeness": "PASS 64/64 (recomputed 17+13+34, 0 missing, 0 mismatched)",
+  "live_runtime": "NOT_RUN",
+  "note_binding": "Generated artifacts record 03af8c19, the commit they were generated from. The following commit only rebinds that pointer, so generated evidence always names its producing commit.",
+  "osm2world_negative_control": "HERMETIC (rewritten to inject explicit nonexistent paths; positive counterpart added)",
+  "rq1_aggregation": "RQ1A=COMPLETE, RQ1B=INCOMPLETE, RQ1 overall=INCOMPLETE",
+  "rq3_contract_tests": "25/25 PASS",
+  "schema": "FINAL_CONVERGENCE_REMOTE_DURABILITY/v1",
+  "signal_gate": "FIXED_BY_INTEGRATION 11/11",
+  "unique_rq1b_source_sha": "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4"
+}
