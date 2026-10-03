@@ -1,0 +1,453 @@
+{
+  "evidence_graph_verification": {
+    "blocking_count": 0,
+    "claims_with_multiple_current_authorities": {},
+    "every_current_claim_resolves_to_one_producer": true,
+    "finding_count": 3,
+    "findings": [
+      {
+        "detail": "current claim does not pin a protocol hash",
+        "node_id": "RQ2.metric_authority",
+        "rule": "PROTOCOL_SHA_MISSING",
+        "severity": "ADVISORY"
+      },
+      {
+        "detail": "current claim does not pin a protocol hash",
+        "node_id": "RQ3.package_authority",
+        "rule": "PROTOCOL_SHA_MISSING",
+        "severity": "ADVISORY"
+      },
+      {
+        "detail": "current claim does not pin a protocol hash",
+        "node_id": "RQ5A.protocol",
+        "rule": "PROTOCOL_SHA_MISSING",
+        "severity": "ADVISORY"
+      }
+    ],
+    "generated_at_utc": "2026-10-03T10:12:09.993603+00:00",
+    "node_count": 8,
+    "repo_head": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+    "schema": "RESEARCH_EVIDENCE_GRAPH_VERIFICATION/v1",
+    "status": "ADVISORY"
+  },
+  "generated_at_utc": "2026-10-03T10:12:10.115358+00:00",
+  "live_runtime": {
+    "reason": "This is an offline integration batch. No live CARLA execution was performed, so runtime RQ3/RQ5 evidence is NOT_RUN by construction.",
+    "status": "NOT_RUN"
+  },
+  "readiness_semantics": {
+    "full_production_ready": false,
+    "live_runtime_not_run": true,
+    "note": "An offline release gate must never imply FULL_PRODUCTION_READY.",
+    "offline_release_pass": true
+  },
+  "repo_head": "dc8070f342e25298aa7337db6274a1c7a37fa525",
+  "rqs": {
+    "RQ1": {
+      "components": [
+        {
+          "component_id": "RQ1.generator_determinism",
+          "description": "Repeated OSM->XODR generation determinism",
+          "evidence_absent": [
+            "reports/rq1_reverify_smoke_20260923/REPORT.md"
+          ],
+          "evidence_present": [],
+          "reason": "1 of 1 declared evidence artifacts are absent",
+          "required": true,
+          "status": "INCOMPLETE"
+        },
+        {
+          "component_id": "RQ1.post_generation_determinism",
+          "description": "Determinism of downstream post-generation stages",
+          "evidence_absent": [
+            "reports/rq1_reverify_smoke_20260923/REPORT.md"
+          ],
+          "evidence_present": [],
+          "reason": "1 of 1 declared evidence artifacts are absent",
+          "required": true,
+          "status": "INCOMPLETE"
+        },
+        {
+          "component_id": "RQ1.overall",
+          "description": "RQ1 overall closure",
+          "evidence_absent": [
+            "reports/rq1_reverify_smoke_20260923/REPORT.md"
+          ],
+          "evidence_present": [],
+          "reason": "1 of 1 declared evidence artifacts are absent",
+          "required": true,
+          "status": "INCOMPLETE"
+        }
+      ],
+      "passing_components": 0,
+      "required_components": 3,
+      "rq": "RQ1",
+      "status": "INCOMPLETE"
+    },
+    "RQ2": {
+      "components": [
+        {
+          "component_id": "RQ2.map_authority",
+          "description": "Current auto map and manual Grid0828 identity",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_PROMOTION_PLAN.json",
+              "sha256": "8153d686baea02de2d13a4644c16d33996049b3fbe6fcf8a88f3e6b8151ce3d2",
+              "size": 2321
+            },
+            {
+              "artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_METRIC_PROVENANCE.json",
+              "sha256": "18d46325d2b352c470b5945bd5cb755137feecebcd719681ac07982d9ce30bda",
+              "size": 5181
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ2.metric_authority",
+          "description": "Structural-gap metric authority producer",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_METRIC_PROVENANCE.json",
+              "sha256": "18d46325d2b352c470b5945bd5cb755137feecebcd719681ac07982d9ce30bda",
+              "size": 5181
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ2.current_evidence",
+          "description": "Current RQ2 metric evidence",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json",
+              "sha256": "c72a4301076f203b144b0feacbb483661dc9b44f86f4c84a23777533c0edfbc6",
+              "size": 16018
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ2.freshness",
+          "description": "RQ2 evidence freshness binding",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json",
+              "sha256": "c72a4301076f203b144b0feacbb483661dc9b44f86f4c84a23777533c0edfbc6",
+              "size": 16018
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        }
+      ],
+      "passing_components": 4,
+      "required_components": 4,
+      "rq": "RQ2",
+      "status": "PASS"
+    },
+    "RQ3": {
+      "components": [
+        {
+          "component_id": "RQ3.package_authority",
+          "description": "Paired-capture package promotion authority",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/rq3_batch9/20261002T040000Z/PACKAGE_PROMOTION_RECEIPT.json",
+              "sha256": "7a63cbd2e91b4743f1e385a5683b160d38f33e497cd60d2caea901afb8e07f2b",
+              "size": 4366
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ3.runtime_map_authority",
+          "description": "Runtime map-of-record authority",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/rq3_batch9/20261002T040000Z/RQ3_MAP_LINEAGE_VALIDATION.json",
+              "sha256": "56e407bd9f3a7a1c834990c2fc777a9e8edf6b429bbec8f71127fca1d0925f14",
+              "size": 608
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ3.pair_contract",
+          "description": "Paired capture contract",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/rq3_batch9/20261002T040000Z/FINAL_VERDICT.json",
+              "sha256": "243458e80c9c08ce7f13d3461ade3fdbf567743aa00e4246435d834b8bf30618",
+              "size": 7142
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ3.paired_dataset",
+          "description": "Paired dataset construction",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/rq3_batch9/20261002T040000Z/FINAL_VERDICT.json",
+              "sha256": "243458e80c9c08ce7f13d3461ade3fdbf567743aa00e4246435d834b8bf30618",
+              "size": 7142
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ3.paired_metrics",
+          "description": "Paired capture metrics",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/rq3_batch9/20261002T040000Z/FINAL_VERDICT.json",
+              "sha256": "243458e80c9c08ce7f13d3461ade3fdbf567743aa00e4246435d834b8bf30618",
+              "size": 7142
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        }
+      ],
+      "passing_components": 5,
+      "required_components": 5,
+      "rq": "RQ3",
+      "status": "PASS"
+    },
+    "RQ4": {
+      "components": [
+        {
+          "component_id": "RQ4.leak_free_training",
+          "description": "Five-seed leak-free GNN training with per-seed leakage audits",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq4/RQ4_LEAKAGE_REVERIFICATION.json",
+              "sha256": "9dd20b8e5bd0c1fa643c0dfa3ef4b1c70a444a08dd09cb6a95ea06ca9b1ec843",
+              "size": 6855
+            },
+            {
+              "artifact": "reports/parallel_wave/rq4/RQ4_NEGATIVE_CONTROLS.json",
+              "sha256": "28e3b4848cbb373ba87b2bdd3c0c962444a055c1f1390ac4627822cd0698c788",
+              "size": 2616
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ4.aggregate",
+          "description": "Independently recomputed five-seed aggregate",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq4/RQ4_AGGREGATE_RECOMPUTATION.json",
+              "sha256": "53fb034f557d1c7225713e7c1b976f0d13cb9554aea55f71446b4888fbe2cc7d",
+              "size": 9186
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ4.reproducibility",
+          "description": "Reproducibility, checkpoint durability and supersession",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq4/RQ4_REPRODUCIBILITY_MANIFEST.json",
+              "sha256": "805b82abaefaa83fee15e6675d2db56def507ed35248cda8533d317478c4717e",
+              "size": 17703
+            },
+            {
+              "artifact": "reports/parallel_wave/rq4/RQ4_CHECKPOINT_DURABILITY.json",
+              "sha256": "4717d767bfecb634a3ccd05c7203ad255bdbb0d2ab21292e1ab512ee1985db17",
+              "size": 7827
+            },
+            {
+              "artifact": "reports/parallel_wave/rq4/RQ4_SUPERSESSION_PLAN.json",
+              "sha256": "9c78ffd3a5bd33afcea2db2e90a5233415762b26b3012e2358ff0cc988fe3c5f",
+              "size": 10083
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        }
+      ],
+      "passing_components": 3,
+      "required_components": 3,
+      "rq": "RQ4",
+      "status": "PASS"
+    },
+    "RQ5A": {
+      "components": [
+        {
+          "component_id": "RQ5A.protocol",
+          "description": "RQ5A protocol freeze",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "configs/rq5_protocol_freeze_v2.json",
+              "sha256": "54df358562fb7be0aa8a0399e1f3a80a9baea1d41a69dde8baa523aa31ce2440",
+              "size": 21131
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ5A.dataset",
+          "description": "RQ5A dataset quality gate",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
+              "sha256": "5f40a6b010db45d94768a6132aa47815fdb85e12ce44b0770fee6094a735240d",
+              "size": 10701
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ5A.split",
+          "description": "RQ5A train/val/test split authority",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq5/fixture_demo/splits/train_manifest.json",
+              "sha256": "338578c0cfcc3c8546de3e7f866847b28c9586738a5566ecf83881912dc344a1",
+              "size": 15648
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ5A.training",
+          "description": "RQ5A training convergence",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq5/fixture_demo/TRAINING_CONVERGENCE.json",
+              "sha256": "d7f7abdf9fc26e39c81ccf21e7b99ca43e5d89dfab019022acb00360f9967032",
+              "size": 6079
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ5A.generated_test",
+          "description": "RQ5A generated-domain evaluation",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq5/fixture_demo/RQ5_FIXTURE_GATE_DEMO.json",
+              "sha256": "4ed2357020a95b1565868f2df2d1cd8880db650012afa0afad92135cddf4525c",
+              "size": 2371
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        },
+        {
+          "component_id": "RQ5A.manual_transfer",
+          "description": "RQ5A manual-domain transfer",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq5/fixture_demo/manual/DATASET_QUALITY.json",
+              "sha256": "c7dffb3e0c7d94b4fdb33f3c8bb70b78197ada8efdbc94bb2b5ca5f7a9256232",
+              "size": 2025
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        }
+      ],
+      "passing_components": 6,
+      "required_components": 6,
+      "rq": "RQ5A",
+      "status": "PASS"
+    },
+    "RQ5B": {
+      "components": [
+        {
+          "component_id": "RQ5B.external_dataset",
+          "description": "RQ5B external dataset acquisition",
+          "evidence_absent": [],
+          "evidence_present": [],
+          "reason": "no evidence artifact is declared for this component",
+          "required": true,
+          "status": "BLOCKED_EXTERNAL"
+        },
+        {
+          "component_id": "RQ5B.evaluation_boundary",
+          "description": "RQ5B evaluation boundary definition",
+          "evidence_absent": [],
+          "evidence_present": [
+            {
+              "artifact": "reports/parallel_wave/rq5/RQ5_EVIDENCE_INDEX.json",
+              "sha256": "c6a194d59f0294e007821be634e2e4c91c9c86bae05460fc51b19ffae66fe802",
+              "size": 6473
+            }
+          ],
+          "reason": "all declared evidence artifacts present",
+          "required": true,
+          "status": "PASS"
+        }
+      ],
+      "passing_components": 1,
+      "required_components": 2,
+      "rq": "RQ5B",
+      "status": "BLOCKED_EXTERNAL"
+    }
+  },
+  "schema": "RQ_CLOSURE_MATRIX/v1",
+  "schema_version": 1,
+  "status_derivation": "Every status is derived from evidence presence on disk plus the evidence-graph verification result. No status is read from report prose. An RQ status is the worst required-component status.",
+  "summary": {
+    "RQ1": "INCOMPLETE",
+    "RQ2": "PASS",
+    "RQ3": "PASS",
+    "RQ4": "PASS",
+    "RQ5A": "PASS",
+    "RQ5B": "BLOCKED_EXTERNAL"
+  }
+}

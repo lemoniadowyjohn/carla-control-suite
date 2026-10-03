@@ -112,6 +112,15 @@ jobs:
               "ultimate_pipeline.topology",
               "ultimate_pipeline.experiments",
               "ultimate_pipeline.tools",
+              # Research / infrastructure modules must be importable from a
+              # clean wheel, not only from the source checkout.
+              "ultimate_pipeline.cache",
+              "ultimate_pipeline.parallel",
+              "ultimate_pipeline.geometry.vectorized",
+              "ultimate_pipeline.research",
+              "ultimate_pipeline.research.evidence_graph",
+              "ultimate_pipeline.research.evidence_freshness",
+              "ultimate_pipeline.research.rq_closure_orchestrator",
           ]
           for mod in mods:
               importlib.import_module(mod)
@@ -293,3 +302,36 @@ jobs:
         with:
           name: repo-health
           path: reports/repo_health/ci
+
+  research-evidence-integrity:
+    # Offline research governance gate. Must never require CARLA.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package editable (no heavy extras)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
+          python -m pip install pytest
+
+      - name: Research claim graph verification
+        run: python tools/verify_research_claim_graph.py
+
+      - name: RQ closure schema validation
+        run: |
+          python - <<'PY'
+          from ultimate_pipeline.research.rq_closure_orchestrator import build
+          doc = build(__import__("pathlib").Path("."))
+          assert doc["schema"] == "RQ_CLOSURE_MATRIX/v1"
+          assert doc["live_runtime"]["status"] == "NOT_RUN"
+          assert doc["readiness_semantics"]["full_production_ready"] is False
+          print("RQ_CLOSURE_SCHEMA_OK", doc["summary"])
+          PY
+
+      - name: Offline research tests
+        run: python -m pytest tests/contracts -q
