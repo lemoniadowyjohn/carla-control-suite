@@ -1,0 +1,574 @@
+{
+  "generated_at_utc": "2026-10-03T18:16:42.347667+00:00",
+  "integrated_head": "7eb37a100b9b24da6ec4ba8cbd0f36d269c84bb3",
+  "integrated_tree": "f1f497aee425aa22e7ef484ec5cd285d7714d244",
+  "lanes": {
+    "RQ2": {
+      "content_equal_count": 17,
+      "content_mismatches": [],
+      "expected_file_count": 17,
+      "files": [
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "e585eb263502ddc3e518c279296a5370119da3a0",
+          "lane_blob_sha": "e585eb263502ddc3e518c279296a5370119da3a0",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_CROSS_IMPLEMENTATION_ORACLE.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "5fc933cd7eeac9b4072f07d56bf141ba25447f39",
+          "lane_blob_sha": "5fc933cd7eeac9b4072f07d56bf141ba25447f39",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_EXISTING_IMPLEMENTATION_AUDIT.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "eb976d12843bd69eabf2c63263dd8b7479fe4660",
+          "lane_blob_sha": "eb976d12843bd69eabf2c63263dd8b7479fe4660",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_METRIC_PROVENANCE.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "ba471239552a31cb9ea77f7d74753f4a2bc30abd",
+          "lane_blob_sha": "ba471239552a31cb9ea77f7d74753f4a2bc30abd",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_NEGATIVE_CONTROLS.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "d8e565e5d893c7cc4dedc0a17caab5ca5613c6b2",
+          "lane_blob_sha": "d8e565e5d893c7cc4dedc0a17caab5ca5613c6b2",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_PROMOTION_PLAN.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "f38c9d250a0e8278cb9cdf68ea8a7a95219ebd08",
+          "lane_blob_sha": "f38c9d250a0e8278cb9cdf68ea8a7a95219ebd08",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "e47ace3e1800e4ed582851c105597cd0d1caf374",
+          "lane_blob_sha": "e47ace3e1800e4ed582851c105597cd0d1caf374",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_RESULTS.md",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "29029fc5730c3c5d6519838d7116e5f7ef46b2c4",
+          "lane_blob_sha": "29029fc5730c3c5d6519838d7116e5f7ef46b2c4",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_SENSITIVITY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "c7d0025f93e31130eb9f3a8862519d76f36bf35c",
+          "lane_blob_sha": "c7d0025f93e31130eb9f3a8862519d76f36bf35c",
+          "path": "reports/parallel_wave/rq2/20261002_batch10/RQ2_UNCERTAINTY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "1cc3ea640f9f9207f6a9324058321ba7944375aa",
+          "lane_blob_sha": "1cc3ea640f9f9207f6a9324058321ba7944375aa",
+          "path": "tests/unit/test_rq2_metric_authority.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "4d072f95134f46a3fe1f7f49a1725586b680fe67",
+          "lane_blob_sha": "4d072f95134f46a3fe1f7f49a1725586b680fe67",
+          "path": "tools/rq2_oracle_compare.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "3364ca5d3b66f798d8886cc30bb0159064d6ee47",
+          "lane_blob_sha": "3364ca5d3b66f798d8886cc30bb0159064d6ee47",
+          "path": "tools/rq2_regenerate_candidate.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "baaf26b08e509e0ba944601898539f5e29521611",
+          "lane_blob_sha": "baaf26b08e509e0ba944601898539f5e29521611",
+          "path": "tools/rq2_sensitivity_uncertainty.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "7047b7f92b5519e8a69307c434775a0cae95bd37",
+          "lane_blob_sha": "7047b7f92b5519e8a69307c434775a0cae95bd37",
+          "path": "ultimate_pipeline/analysis/spatial_bootstrap.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "af14e37cb2a956316a90e39f3ae82ed4a6ff2855",
+          "lane_blob_sha": "af14e37cb2a956316a90e39f3ae82ed4a6ff2855",
+          "path": "ultimate_pipeline/domain_gap/rq2_metric_authority.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "f517a1e4ad5c742237c2339a98f01e79742e8a92",
+          "lane_blob_sha": "f517a1e4ad5c742237c2339a98f01e79742e8a92",
+          "path": "ultimate_pipeline/domain_gap/rq2_sensitivity_analysis.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "f794a09d7f0482e645de7241991014ce3d8ffbb2",
+          "lane_blob_sha": "f794a09d7f0482e645de7241991014ce3d8ffbb2",
+          "path": "ultimate_pipeline/domain_gap/rq2_uncertainty_report.py",
+          "present": true
+        }
+      ],
+      "lane": "RQ2",
+      "lane_commit_resolvable": true,
+      "lane_merge_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "lane_result_sha": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
+      "missing_files": [],
+      "present_count": 17,
+      "status": "PASS"
+    },
+    "RQ4": {
+      "content_equal_count": 13,
+      "content_mismatches": [],
+      "expected_file_count": 13,
+      "files": [
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "a21457f2b83e4a2d230046835b1239c4e75dc913",
+          "lane_blob_sha": "a21457f2b83e4a2d230046835b1239c4e75dc913",
+          "path": "reports/parallel_wave/rq4/FINAL_VERDICT.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "0980c8905900e40ac8f0ce4eaf48793e2f896374",
+          "lane_blob_sha": "0980c8905900e40ac8f0ce4eaf48793e2f896374",
+          "path": "reports/parallel_wave/rq4/RQ4_AGGREGATE_RECOMPUTATION.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "00709e0d3a4af5a3ae71b45b3c40d6f25aae2131",
+          "lane_blob_sha": "00709e0d3a4af5a3ae71b45b3c40d6f25aae2131",
+          "path": "reports/parallel_wave/rq4/RQ4_CHECKPOINT_DURABILITY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "b10cf741a5b35bad1e9631296728dd121e026c7c",
+          "lane_blob_sha": "b10cf741a5b35bad1e9631296728dd121e026c7c",
+          "path": "reports/parallel_wave/rq4/RQ4_CLEAN_CLONE_REPRODUCIBILITY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "cc52bb3b0e363f3a8d4a67baa6bab57f3195ec02",
+          "lane_blob_sha": "cc52bb3b0e363f3a8d4a67baa6bab57f3195ec02",
+          "path": "reports/parallel_wave/rq4/RQ4_EVIDENCE_INVENTORY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "27aa0ac7cb8a9d404890369e7c12e2a661595b5a",
+          "lane_blob_sha": "27aa0ac7cb8a9d404890369e7c12e2a661595b5a",
+          "path": "reports/parallel_wave/rq4/RQ4_LEAKAGE_REVERIFICATION.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "dc9259117e878ae49614d60003191d2ca2474342",
+          "lane_blob_sha": "dc9259117e878ae49614d60003191d2ca2474342",
+          "path": "reports/parallel_wave/rq4/RQ4_NEGATIVE_CONTROLS.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "2cdb27920eb3c4a4ad66ea182f85d01da2aa41f6",
+          "lane_blob_sha": "2cdb27920eb3c4a4ad66ea182f85d01da2aa41f6",
+          "path": "reports/parallel_wave/rq4/RQ4_REPRODUCIBILITY_MANIFEST.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "0fbf5baddb869201fffb2ebdcd77d58977346eab",
+          "lane_blob_sha": "0fbf5baddb869201fffb2ebdcd77d58977346eab",
+          "path": "reports/parallel_wave/rq4/RQ4_SUPERSESSION_PLAN.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "ad7439c36869ec5c7d3525eac60c8973a48969ca",
+          "lane_blob_sha": "ad7439c36869ec5c7d3525eac60c8973a48969ca",
+          "path": "reports/parallel_wave/rq4/TEST_RESULTS.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "790ba50e47e76480a1566b5269149cc5bc1f4b69",
+          "lane_blob_sha": "790ba50e47e76480a1566b5269149cc5bc1f4b69",
+          "path": "tests/unit/test_rq4_reproducibility_pack.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "c2202816887dc9daf4de7bde1049307026fcf4d1",
+          "lane_blob_sha": "c2202816887dc9daf4de7bde1049307026fcf4d1",
+          "path": "tools/rq4_reproducibility_pack.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "209e83167f29cbe34667968e42aa5ce16959eae9",
+          "lane_blob_sha": "209e83167f29cbe34667968e42aa5ce16959eae9",
+          "path": "ultimate_pipeline/domain_gap_gnn/reproducibility_pack.py",
+          "present": true
+        }
+      ],
+      "lane": "RQ4",
+      "lane_commit_resolvable": true,
+      "lane_merge_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "lane_result_sha": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
+      "missing_files": [],
+      "present_count": 13,
+      "status": "PASS"
+    },
+    "RQ5": {
+      "content_equal_count": 34,
+      "content_mismatches": [],
+      "expected_file_count": 34,
+      "files": [
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "26dd93967355334f4626a5ccb2038758788be681",
+          "lane_blob_sha": "26dd93967355334f4626a5ccb2038758788be681",
+          "path": "configs/rq5_protocol_freeze_v2.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "c65559b85ae92b859c4a9fece3262eff65f44c51",
+          "lane_blob_sha": "c65559b85ae92b859c4a9fece3262eff65f44c51",
+          "path": "reports/parallel_wave/rq5/.gitignore",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "29a9d619fb8adcd53c40c40e7536ec6b7835c00f",
+          "lane_blob_sha": "29a9d619fb8adcd53c40c40e7536ec6b7835c00f",
+          "path": "reports/parallel_wave/rq5/RQ5_EVIDENCE_INDEX.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "7ce91d32ee16ad368d977b5c7efcb8ddaddfa48f",
+          "lane_blob_sha": "7ce91d32ee16ad368d977b5c7efcb8ddaddfa48f",
+          "path": "reports/parallel_wave/rq5/RQ5_NEGATIVE_CONTROLS.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "a077831999e8517085dd95824cb3cff5501489a9",
+          "lane_blob_sha": "a077831999e8517085dd95824cb3cff5501489a9",
+          "path": "reports/parallel_wave/rq5/RQ5_PREFLIGHT.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "b38d8b598f19e8c10c7709be9962a95e67d0be5d",
+          "lane_blob_sha": "b38d8b598f19e8c10c7709be9962a95e67d0be5d",
+          "path": "reports/parallel_wave/rq5/RQ5_TEST_REGRESSION.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "e1d543877ba31889d85c0d7d8e37e4d3fdf63907",
+          "lane_blob_sha": "e1d543877ba31889d85c0d7d8e37e4d3fdf63907",
+          "path": "reports/parallel_wave/rq5/fixture_demo/RQ5_FIXTURE_GATE_DEMO.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "eb943a1cd3c0ed16959e1c15c6e3dc471a97715d",
+          "lane_blob_sha": "eb943a1cd3c0ed16959e1c15c6e3dc471a97715d",
+          "path": "reports/parallel_wave/rq5/fixture_demo/RQ5_SPLIT_LEAKAGE_AUDIT.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "5e6a23dcc006acaa6bfba867828d8461f0f3eacb",
+          "lane_blob_sha": "5e6a23dcc006acaa6bfba867828d8461f0f3eacb",
+          "path": "reports/parallel_wave/rq5/fixture_demo/TRAINING_CONVERGENCE.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "1cdb5aa6996d72285a69d71a59eadbb435e7014e",
+          "lane_blob_sha": "1cdb5aa6996d72285a69d71a59eadbb435e7014e",
+          "path": "reports/parallel_wave/rq5/fixture_demo/generated/DATASET_QUALITY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "f01dc64352f6cd3c99d09daaa0ffe95a2347142d",
+          "lane_blob_sha": "f01dc64352f6cd3c99d09daaa0ffe95a2347142d",
+          "path": "reports/parallel_wave/rq5/fixture_demo/manual/DATASET_QUALITY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "93840c203ad1ecc801be2d139fa7a0366d1a5d9a",
+          "lane_blob_sha": "93840c203ad1ecc801be2d139fa7a0366d1a5d9a",
+          "path": "reports/parallel_wave/rq5/fixture_demo/run/seed_7/TRAINING_HISTORY.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "0140ebf77195309808a9f52ec019b06da9f19d13",
+          "lane_blob_sha": "0140ebf77195309808a9f52ec019b06da9f19d13",
+          "path": "reports/parallel_wave/rq5/fixture_demo/run/seed_7/model_manifest.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "093dc778a765605711fe63ed8d0a4f1303852978",
+          "lane_blob_sha": "093dc778a765605711fe63ed8d0a4f1303852978",
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/generated_test_manifest.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "53188d0ba926e4e8d48efe5219a4885b7984df2a",
+          "lane_blob_sha": "53188d0ba926e4e8d48efe5219a4885b7984df2a",
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/manual_test_manifest.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "a9e1e8f18bca3284595ac51c2384a7d70627ad44",
+          "lane_blob_sha": "a9e1e8f18bca3284595ac51c2384a7d70627ad44",
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/train_manifest.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "3a34f3fb442158b909dfa7242edf292dae9223da",
+          "lane_blob_sha": "3a34f3fb442158b909dfa7242edf292dae9223da",
+          "path": "reports/parallel_wave/rq5/fixture_demo/splits/validation_manifest.json",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "cbdeb4165bc1a07005f6026fe96c88be2abd163b",
+          "lane_blob_sha": "cbdeb4165bc1a07005f6026fe96c88be2abd163b",
+          "path": "tests/unit/test_rq5_dataset_quality_gate.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "a9c5d819eb2a90d4fddfdede29b0238e21cc0f3b",
+          "lane_blob_sha": "a9c5d819eb2a90d4fddfdede29b0238e21cc0f3b",
+          "path": "tests/unit/test_rq5_dataset_split_authority.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "c7a14b0720f350c427297d8d3ae37a5ba901bf89",
+          "lane_blob_sha": "c7a14b0720f350c427297d8d3ae37a5ba901bf89",
+          "path": "tests/unit/test_rq5_evaluation_roles.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "acd9eaae7d3b612a16656e94d3dd8051f6a5e048",
+          "lane_blob_sha": "acd9eaae7d3b612a16656e94d3dd8051f6a5e048",
+          "path": "tests/unit/test_rq5_negative_controls.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "b6c7cc1b15b51e56a0ee8cde6e7e6efd1ac0f60f",
+          "lane_blob_sha": "b6c7cc1b15b51e56a0ee8cde6e7e6efd1ac0f60f",
+          "path": "tests/unit/test_rq5_preflight.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "200b0efd33d265a220aeb60dbde9375693b79ff2",
+          "lane_blob_sha": "200b0efd33d265a220aeb60dbde9375693b79ff2",
+          "path": "tests/unit/test_rq5_protocol_v2_contract.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "a424cd5fa68c38d3ad0de6ca57cb1528fc1a9211",
+          "lane_blob_sha": "a424cd5fa68c38d3ad0de6ca57cb1528fc1a9211",
+          "path": "tests/unit/test_rq5_research_strict_mode.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "b821d3ea47485f5c931d2370bde607060b1b674f",
+          "lane_blob_sha": "b821d3ea47485f5c931d2370bde607060b1b674f",
+          "path": "tests/unit/test_rq5_training_convergence_gate.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "b6a73d576544ebd2e0fa731eb38bfccb7b1657f1",
+          "lane_blob_sha": "b6a73d576544ebd2e0fa731eb38bfccb7b1657f1",
+          "path": "tools/rq5_fixture_gate_demo.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "eb0a82c09a4d8f163034768e147fab57da9d3043",
+          "lane_blob_sha": "eb0a82c09a4d8f163034768e147fab57da9d3043",
+          "path": "tools/rq5_negative_controls.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "08e6f1a0aa225eb982edbe2d2ccee56fd354a3fe",
+          "lane_blob_sha": "08e6f1a0aa225eb982edbe2d2ccee56fd354a3fe",
+          "path": "tools/rq5_preflight.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "f004007642d2c3cf56324b2aea435c56f2a5512e",
+          "lane_blob_sha": "f004007642d2c3cf56324b2aea435c56f2a5512e",
+          "path": "ultimate_pipeline/perception/dataset_quality_gate.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "b6621a6326c4c39061abdad8d16100844211ff9d",
+          "lane_blob_sha": "b6621a6326c4c39061abdad8d16100844211ff9d",
+          "path": "ultimate_pipeline/perception/dataset_split_authority.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "785afc8dc42572881c26af78d1e7882be12a2a38",
+          "lane_blob_sha": "785afc8dc42572881c26af78d1e7882be12a2a38",
+          "path": "ultimate_pipeline/perception/min_train_segmentation.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "d7f8ab196ed4a7698015075325d9e3ebf6a30ef9",
+          "lane_blob_sha": "d7f8ab196ed4a7698015075325d9e3ebf6a30ef9",
+          "path": "ultimate_pipeline/perception/rq5_provenance.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "90e651f56093ead2d1987421ab1acf989c7b1564",
+          "lane_blob_sha": "90e651f56093ead2d1987421ab1acf989c7b1564",
+          "path": "ultimate_pipeline/perception/train_launcher.py",
+          "present": true
+        },
+        {
+          "comparison_method": "git blob object id",
+          "content_equal": true,
+          "integrated_blob_sha": "ae7ff259991703d052cfc979c207e2a10aaada94",
+          "lane_blob_sha": "ae7ff259991703d052cfc979c207e2a10aaada94",
+          "path": "ultimate_pipeline/perception/training_convergence_gate.py",
+          "present": true
+        }
+      ],
+      "lane": "RQ5",
+      "lane_commit_resolvable": true,
+      "lane_merge_base": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "lane_result_sha": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
+      "missing_files": [],
+      "present_count": 34,
+      "status": "PASS"
+    }
+  },
+  "method": "Recomputed from git objects: for each lane the file set is taken from git diff --name-only <merge-base>..<lane>, and each file is compared by exact blob object id between the lane commit and the integrated HEAD. No expected count is hard-coded.",
+  "schema": "INTEGRATION_COMPLETENESS/v1",
+  "status": "PASS",
+  "totals": {
+    "content_mismatches": 0,
+    "expected_counts_observed": {
+      "RQ2": 17,
+      "RQ4": 13,
+      "RQ5": 34
+    },
+    "expected_files": 64,
+    "missing_files": 0
+  }
+}

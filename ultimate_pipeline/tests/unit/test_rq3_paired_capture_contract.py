@@ -164,15 +164,24 @@ def test_spawn_policy_allows_recovery_in_smoke_mode():
 
 def test_ingolstadt_manual_and_auto_arms():
     manual = cooked_arm_map_identity(
-        requested_map_name="Grid0821",
-        resolved_carla_map_name="Grid0821",
+        requested_map_name="Grid0828",
+        resolved_carla_map_name="Grid0828",
         registry_identity="manual_refs",
         manual_source_xodr_sha256="abc",
-        cooked_package_identity="Grid0821",
+        cooked_package_identity="Grid0828",
     )
     assert is_ingolstadt_manual_arm(manual) is True
     auto = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr", xodr_sha256="def")
-    assert is_ingolstadt_auto_arm(auto) is True
+    # The auto arm is bound to the PINNED auto_map_of_record sha256, not to a
+    # path heuristic. A dummy sha must therefore be rejected outright, and the
+    # real pinned sha accepted -- both directions are asserted so the test
+    # cannot be satisfied by a weakened identity check.
+    from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
+    pinned = verify_pinned_map("auto_map_of_record")["sha256"]
+    assert is_ingolstadt_auto_arm(auto) is False
+    real = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr",
+                                 xodr_sha256=pinned)
+    assert is_ingolstadt_auto_arm(real) is True
     town10hd = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="ghi")
     assert is_ingolstadt_auto_arm(town10hd) is False
 
@@ -244,7 +253,7 @@ class _Pair:
         )
 
 
-_MANUAL = cooked_arm_map_identity(requested_map_name="Grid0821", resolved_carla_map_name="Grid0821")
+_MANUAL = cooked_arm_map_identity(requested_map_name="Grid0828", resolved_carla_map_name="Grid0828")
 _AUTO = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_auto.xodr", xodr_sha256="x")
 _AUTOTOWN10HD = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="y")
 

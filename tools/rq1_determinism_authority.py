@@ -53,6 +53,28 @@ def _compare_field_across_runs(runs: List[Dict[str, Any]], field: str) -> Dict[s
     return {"field": field, "status": "MATCH", "value": values[0]}
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _receipts_from_matrix(matrix_path: Path) -> List[Path]:
+    """Resolve receipt paths from an explicit five-run matrix document.
+
+    Batch 14 section 5: the closure aggregator previously depended on however
+    the caller happened to glob for receipts, which silently produced
+    ``rq1a_count = 1``. The matrix path is now an explicit input, so the
+    evidence set is declared rather than discovered.
+    """
+    doc = json.loads(Path(matrix_path).read_text(encoding="utf-8"))
+    # The RQ1A matrix (wave A) and the RQ1B matrix (wave B) use different
+    # receipt list keys. Both are accepted; neither is guessed.
+    receipts = (doc.get("complete_receipts") or doc.get("receipts"))
+    if not isinstance(receipts, list) or not receipts:
+        raise ValueError(
+            f"{matrix_path} declares neither complete_receipts nor receipts; "
+            "refusing to guess an evidence set")
+    return [REPO_ROOT / str(r) for r in receipts]
+
+
 def build_verdict(rq1a_receipts: List[Path], rq1b_receipts: List[Path]) -> Dict[str, Any]:
     # Load all receipts
     rq1a_runs = [_load_receipt(p) for p in rq1a_receipts]
@@ -123,6 +145,10 @@ def build_verdict(rq1a_receipts: List[Path], rq1b_receipts: List[Path]) -> Dict[
     return {
         "schema": "rq1_determinism_verdict/v1",
         "verdict": verdict,
+        # Every branch of this document exposes the same count keys so a
+        # consumer never has to know which code path produced the verdict.
+        "rq1a_count": len(available_a),
+        "rq1b_count": len(available_b),
         "rq1a_run_count": len(available_a),
         "rq1b_run_count": len(available_b),
         "mismatches": mismatches,
@@ -132,14 +158,34 @@ def build_verdict(rq1a_receipts: List[Path], rq1b_receipts: List[Path]) -> Dict[
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--rq1a", nargs="+", type=Path, required=True, help="RQ1A receipt paths (>=5)")
-    parser.add_argument("--rq1b", nargs="+", type=Path, required=True, help="RQ1B receipt paths (>=5)")
+    parser.add_argument("--rq1a", nargs="+", type=Path, default=None, help="RQ1A receipt paths (>=5)")
+    parser.add_argument("--rq1b", nargs="+", type=Path, default=None, help="RQ1B receipt paths (>=5)")
+    parser.add_argument("--rq1a-matrix", type=Path, default=None,
+                        help="Explicit RQ1A five-run matrix; its "
+                             "complete_receipts list is used instead of any glob")
+    parser.add_argument("--rq1b-matrix", type=Path, default=None,
+                        help="Explicit RQ1B five-run matrix; its "
+                             "complete_receipts list is used instead of any glob")
     parser.add_argument("--out", type=Path, required=True, help="Output verdict JSON")
     args = parser.parse_args()
 
-    verdict = build_verdict(args.rq1a, args.rq1b)
+    if args.rq1a_matrix:
+        rq1a = _receipts_from_matrix(args.rq1a_matrix)
+    elif args.rq1a:
+        rq1a = args.rq1a
+    else:
+        parser.error("RQ1A evidence is required: pass --rq1a-matrix or --rq1a")
+
+    if args.rq1b_matrix:
+        rq1b = _receipts_from_matrix(args.rq1b_matrix)
+    elif args.rq1b:
+        rq1b = args.rq1b
+    else:
+        parser.error("RQ1B evidence is required: pass --rq1b-matrix or --rq1b")
+
+    verdict = build_verdict(rq1a, rq1b)
     args.out.write_text(json.dumps(verdict, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"verdict": verdict["verdict"], "rq1a_runs": len(args.rq1a), "rq1b_runs": len(args.rq1b), "mismatches": len(verdict.get("mismatches", []))}, indent=2))
+    print(json.dumps({"verdict": verdict["verdict"], "rq1a_runs": len(rq1a), "rq1b_runs": len(rq1b), "mismatches": len(verdict.get("mismatches", []))}, indent=2))
     return 0 if verdict["verdict"] == "PASS" else 2 if verdict["verdict"] == "FAIL" else 3
 
 

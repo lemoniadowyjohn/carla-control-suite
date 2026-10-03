@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-10-02T18:53:18Z",
+  "updated_utc": "2026-10-02T18:53:18Z",
+  "env": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+    "git_status_porcelain": "M tools/rq1a_osm_to_xodr.py\n?? reports/rq1a_runs/"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "2ab6b3efa1c4b32d23cb5e39bff2cb7b7b10b7f9842c9a70ef99d074c8012b78",
+    "snapshot_md5": "6d18034a0d61a831173a2e7843947a95",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "F:\\carla-worktrees\\lane_A1_rq1a-execution\\cities\\ingolstadt\\osm\\ingolstadt.osm",
+      "exists": false
+    },
+    "DEM_TIF": {
+      "path": "F:\\carla-worktrees\\lane_A1_rq1a-execution\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "F:\\carla-worktrees\\lane_A1_rq1a-execution\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5076,
+      "sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+      "md5": "6c4a53158d91e8e196d5a2fe5a8006db"
+    },
+    "INPUT_XODR": {
+      "path": "F:\\carla-worktrees\\lane_A1_rq1a-execution\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "exists": true,
+      "size_bytes": 149799632,
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "md5": "c389a67536f3e3e5c7bc43f15118f018"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  }
+}
