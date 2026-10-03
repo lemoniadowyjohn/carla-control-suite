@@ -218,13 +218,62 @@ class TestPortablePathResolution:
     def test_missing_osm2world_fails_precisely(
         self, cook_mod, monkeypatch, tmp_path
     ):
+        """Missing OSM2World must fail closed with a precise, actionable reason.
+
+        Batch 14 section 7: this control must NOT depend on the machine
+        actually lacking OSM2World. ``_require_osm2world_home`` resolves three
+        sources in order -- the CLI value, ``OSM2WORLD_HOME``, and portable
+        repo-relative defaults (``carla_governed/OSM2World-latest-bin`` and
+        ``OSM2World-latest-bin``). Now that OSM2World is legitimately installed
+        and governed, a governed checkout can legitimately satisfy one of
+        those fallbacks, which would silently turn this negative control into
+        a no-op.
+
+        Every resolution source is therefore redirected at a directory that
+        provably does not exist, so the control holds identically on a bare
+        CI runner and on a governed workstation.
+        """
+        # 1. CLI value -> explicit nonexistent path
+        missing_cli = tmp_path / "explicitly-absent-cli-home"
+        # 2. env var -> explicit nonexistent path
         monkeypatch.setenv("OSM2WORLD_HOME", str(tmp_path / "does-not-exist"))
+        # 3. portable repo defaults -> an empty tmp root, so neither
+        #    carla_governed/OSM2World-latest-bin nor OSM2World-latest-bin
+        #    can resolve regardless of what is installed in the real repo.
+        empty_root = tmp_path / "empty_repo_root"
+        empty_root.mkdir()
+        monkeypatch.setattr(cook_mod, "REPO_ROOT", empty_root)
+
         with pytest.raises(SystemExit) as exc:
-            cook_mod._require_osm2world_home(None, context="cook_full_grid_tiles")
+            cook_mod._require_osm2world_home(
+                str(missing_cli), context="cook_full_grid_tiles"
+            )
         msg = str(exc.value)
         assert "OSM2World home not found" in msg
         assert "--osm2world-home" in msg
         assert "OSM2WORLD_HOME" in msg
+        # The message must name what it actually checked, so an operator can
+        # see that the portable defaults were consulted too.
+        assert "all candidates missing" in msg
+        assert str(empty_root) in msg
+
+    def test_governed_osm2world_installation_is_accepted(
+        self, cook_mod, monkeypatch, tmp_path
+    ):
+        """Positive counterpart: a real, injected OSM2World home still resolves.
+
+        This exists so the negative control above cannot be satisfied by
+        simply breaking resolution. Installing OSM2World is not simulated by
+        requiring a real binary here -- only that a genuinely existing,
+        governed directory is accepted in preference order.
+        """
+        governed = tmp_path / "carla_governed" / "OSM2World-latest-bin"
+        governed.mkdir(parents=True)
+        monkeypatch.setattr(cook_mod, "REPO_ROOT", tmp_path)
+        monkeypatch.delenv("OSM2WORLD_HOME", raising=False)
+        assert cook_mod._require_osm2world_home(
+            None, context="cook_full_grid_tiles"
+        ) == str(governed)
 
     def test_find_carla_server_env_precedence(self, monkeypatch, tmp_path):
         import scripts.find_carla_server as finder
