@@ -1,0 +1,15 @@
+{
+  "schema": "scw_os_event_correlation/v1",
+  "generated_at_utc": "2026-10-05T23:35:00Z",
+  "windows_consulted_readonly": ["Application log", "System log", "WER ReportQueue", "Avast arpot.log"],
+  "findings": {
+    "scw_crash_records": "NONE (no Application Error 1000/1001 naming ShaderCompileWorker.exe or UE4Editor.exe at any death window)",
+    "wer_fault_buckets": "LiveKernelEvent 141 (GPU TDR) from 10-02/10-04 only; unrelated to 10-05 deaths",
+    "reboot": "none (boot 2026-10-02 19:49)",
+    "avast": "routine anti-rootkit driver stop/start + def updates at 12:40-12:51; NO kill/quarantine record for any UE process",
+    "disk": "C: 41.6GB free, G: 41.7GB free at last check; no NTFS/disk-reset events found",
+    "dcom_10016": "routine noise only"
+  },
+  "verdict": "No OS-level evidence identifies the killer. Absence of events does NOT prove an external kill (per batch instruction). Multi-factor stays open: cross-session activity is proven to exist (4 opencode sessions, shared tree), SCW failure modes unproven individually.",
+  "not_claimed": "No attribution to OOM/DDC/OS-kill/UE-crash for the 10-05 worker disappearance."
+}

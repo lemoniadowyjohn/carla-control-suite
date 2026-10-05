@@ -1,0 +1,2 @@
+timestamp_utc,editor_pid,editor_creation_time,editor_cpu_s,driver_pid,driver_alive,scw_count,nosig_files,nosig_umap,classification,note
+2026-10-05T23:33:50Z,12312,2026-10-05T20:38:44,134759.1,10224,dead,0,1,absent,CPU_BUSY_NO_OUTPUT,"driver dead, editor orphaned but computing; NoSig content still Config-only after ~3h (walk order processes other packages first)"

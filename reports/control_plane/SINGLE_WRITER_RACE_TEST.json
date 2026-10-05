@@ -1,0 +1,35 @@
+{
+  "schema": "single_writer_race_test/v1",
+  "generated_at_utc": "2026-10-05T23:40:00Z",
+  "suite": "tests/unit/test_single_writer_control_plane.py",
+  "result": "21 passed, 0 failed",
+  "race_10_way": {"ACQUIRED": 1, "DENIED_CONFLICT": 9, "verdict": "PASS (never 2 ACQUIRED)"},
+  "required_tests_mapping": {
+    "1_race": "test_race_1_acquired_9_denied PASS",
+    "2_stale_lease": "test_stale_lease_dead_owner PASS",
+    "3_pid_reuse": "test_pid_reuse_detection PASS (incl. real-timestamp guard)",
+    "4_live_owner": "test_live_owner_lifecycle PASS",
+    "5_duplicate": "test_duplicate_operation_denied PASS (DUPLICATE_OPERATION_ALREADY_RUNNING)",
+    "6_import_cook": "test_import_cook_conflict PASS",
+    "7_import_build": "test_import_build_conflict PASS",
+    "8_two_imports": "test_two_imports_conflict PASS",
+    "9_run_settings": "test_run_scoped_settings PASS",
+    "10_heartbeat": "test_heartbeat PASS",
+    "11_owner_crash": "test_owner_crash_recovery PASS",
+    "12_read_only": "test_read_only_denial (5 ops incl. diagnostic pretexts) PASS",
+    "13_ungoverned": "test_ungoverned_detection PASS",
+    "14_handoff": "test_handoff PASS (mismatch denied)",
+    "15_job_object": "test_job_owned_tree_kill PASS (unrelated survives)",
+    "16_exit_12": "test_exit_1_2_classification PASS",
+    "17_control_c": "test_control_c_classification PASS"
+  },
+  "machine_lease_dir_clean": true,
+  "empirical_findings_baked_in": [
+    "WAIT_ABANDONED unreliable on this host (dead owner observed as plain signaled); crash detection rests on lease heartbeat + PID/creation-time",
+    "GetProcessTimes requires PROCESS_QUERY_LIMITED_INFORMATION + real FILETIME structs (SYNCHRONIZE yields fake 1601 dates; NULL out-params AV)",
+    "Open handle keeps dead PID observable (multiprocessing handle must close before liveness reads)",
+    "spawn children reimport modules (import caching defeats monkeypatching) -> call-time env resolution implemented",
+    "ResumeThread needs a THREAD handle (process handle silently freezes the child) -> Toolhelp enumeration implemented",
+    "QueryInformationJobObject process list is class 3, not 6"
+  ]
+}

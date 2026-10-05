@@ -1,0 +1,24 @@
+{
+  "schema": "single_writer_gate/v1",
+  "generated_at_utc": "2026-10-05T23:45:00Z",
+  "components": {
+    "SINGLE_WRITER_OS_LOCK": "PASS (Global/Local named mutex; 10-way race 1/9)",
+    "LEASE_RACE_TEST": "PASS",
+    "PROCESS_IDENTITY": "PID_PLUS_CREATION_TIME (rights fix + 1601 guard + handle caveat)",
+    "DUPLICATE_OPERATION_DETECTION": "PASS (DUPLICATE_OPERATION_ALREADY_RUNNING; NoSig scenario as regression logic)",
+    "IMPORT_SETTINGS_ISOLATION": "PASS (run-scoped, immutable, SHA-bound)",
+    "READ_ONLY_MODE": "PASS (MUTATION_DENIED_READ_ONLY_SESSION; no diagnostic bypass)",
+    "MUTATION_PREFLIGHT": "PASS (acquire->snapshot->spawn->heartbeat->receipt->release; no lease = DENY)",
+    "UNGOVERNED_MUTATOR_DETECTION": "PASS (read-only scan; block-new + record, never auto-kill)",
+    "HANDOFF_CONTRACT": "PASS (offer/accept tested; no live handoff while executor active)"
+  },
+  "SINGLE_WRITER_CONTROL_PLANE": "PASS",
+  "COOK_RESUME_ALLOWED": false,
+  "NEW_MUTATING_OPERATION_ALLOWED": false,
+  "reason_operations_blocked": "Executor import (editor PID 12312, started 2026-10-05T20:38:44) legitimately active; plane qualified but lease must remain with executor until terminal receipt.",
+  "deferred_with_reason": {
+    "bounded_scw_cook_test": "would mutate shared tree / contend with executor import",
+    "config_hash_approval": "DefaultGame.ini + Import.py diffs unclassified; approval refused per instruction",
+    "live_handoff": "no handoff while executor runs"
+  }
+}

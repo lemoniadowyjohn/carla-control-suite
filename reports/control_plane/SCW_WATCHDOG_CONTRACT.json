@@ -1,0 +1,9 @@
+{
+  "schema": "scw_watchdog_contract/v1",
+  "generated_at_utc": "2026-10-05T23:35:00Z",
+  "rule": "NO_PROGRESS only if over the configured interval ALL hold: package count unchanged AND log unchanged AND (no worker alive OR no worker CPU delta) AND no meaningful UE CPU/I-O delta AND outstanding jobs remain. Package-count stasis alone never triggers (large single packages legitimately stall the counter).",
+  "on_trigger": "Record WORKER_TERMINATED_UNEXPECTEDLY with evidence bundle; EITHER restart workers and requeue (only if UE4.26 relaunch path proven safe in the bounded test) OR fail the cook explicitly as FAILED_EXPLICITLY preserving -iterate output. Indefinite wait is forbidden.",
+  "interval_seconds": 1800,
+  "applies_to": "NEW governed operations only; never retro-attached to the running executor import.",
+  "status": "CONTRACT_DEFINED_IMPLEMENTATION_PENDING_BOUNDED_TEST"
+}

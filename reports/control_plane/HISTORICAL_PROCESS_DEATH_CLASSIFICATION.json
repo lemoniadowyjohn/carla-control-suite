@@ -1,0 +1,15 @@
+{
+  "schema": "historical_process_death_classification/v1",
+  "generated_at_utc": "2026-10-05T23:40:00Z",
+  "HISTORICAL_PROCESS_DEATH_CAUSE": "MULTI_FACTOR_UNRESOLVED",
+  "events": {
+    "import_20261003T2156_death": "all processes vanished ~23:56, zero crash records; concurrent-session activity now PROVEN on this box but causal contribution to THIS event unproven",
+    "cook1_oom": "PROVEN OOM (1GB alloc fail, 9 workers) -- closed, mitigated",
+    "cook2_diskfull": "PROVEN C: temp exhaustion -- closed, mitigated (TEMP->G:)",
+    "cook3_worker_vanish": "4 workers gone, M_Fabric_Master retry storm, no OS evidence; cross-session cause possible but UNPROVEN",
+    "ingolstadt_game_wedge": "game-thread parked after TL runaway warning; distinct mechanism (content scaling), not a death",
+    "town10hd_game_crash": "render-thread fatal, crash RECORDED (RenderingThread.cpp:907); distinct mechanism, uncooked-shader-storm context"
+  },
+  "candidate_contributors": ["cross-session UE activity", "USB-heavy storage topology", "DDC pathology", "SCW process failure", "historical disk/memory incidents"],
+  "explicitly_not_claimed": "CROSS_SESSION_COLLISION_PROVEN_ROOT_CAUSE (collision tonight is proven; its contribution to OLD failures is not)"
+}

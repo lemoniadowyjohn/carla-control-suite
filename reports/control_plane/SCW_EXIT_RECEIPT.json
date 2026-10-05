@@ -1,0 +1,8 @@
+{
+  "schema": "scw_exit_receipt/v1",
+  "generated_at_utc": "2026-10-05T23:35:00Z",
+  "status": "METHOD_DEFINED_CAPTURE_PENDING",
+  "capture_method": "Next bounded cook/import shader phase will be launched under a Job Object (job_supervision.spawn_in_job) with 30s polling of member_pids + per-worker CPU delta; any disappearance with outstanding shader jobs records WORKER_TERMINATED_UNEXPECTEDLY with worker index, last PID, last CPU, queue depth, and parent state. Exit codes of (already-dead) workers are unrecoverable retroactively -- hence PENDING, not backfilled.",
+  "ue_supervision_model": "UE4.26 ShaderCompilingManager tracks workers internally and relaunches missing ones only at job-submission boundaries; a mid-batch full disappearance leaves the cooker waiting on jobs nobody owns (observed M_Fabric_Master retry storm). Engine does not record per-worker exit codes anywhere queryable.",
+  "watchdog_reference": "SCW_WATCHDOG_CONTRACT.json"
+}

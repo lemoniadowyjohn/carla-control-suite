@@ -1,0 +1,3 @@
+timestamp_utc,pid,ppid,role,cpu_s,working_set_mb,state,note
+2026-10-05T23:33:50Z,,,,,,NO_WORKERS_OBSERVED,"zero ShaderCompileWorker processes during import non-shader phase; live capture of worker birth/death requires polling during a cook/import shader phase (next bounded run)"
+2026-10-05T11:06:00Z,2404+7,cook-editor,cook-worker,1600-5100,,EXITED_CLEAN_OR_KILLED,"8 workers observed compiling (shader backlog 11467->9277) during cook session 1; all gone by stall with no WER records"
