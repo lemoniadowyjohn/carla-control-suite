@@ -44,7 +44,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Upgrade packaging tools
-        run: python -m pip install --upgrade pip
+        run: python -m pip install --upgrade pip "setuptools>=83.0.0" wheel
       - name: Install project
         run: pip install -e ".[dev]"
       - name: Lint
