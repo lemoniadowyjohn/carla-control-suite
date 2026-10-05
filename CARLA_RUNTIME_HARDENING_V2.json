@@ -1,0 +1,42 @@
+{
+  "schema": "carla_runtime_hardening/v1",
+  "generated_at_utc": "2026-10-03T21:45:00Z",
+  "status": "PASS",
+  "session_rules": {
+    "load_world_in_async_only": "IMPLEMENTED -- transaction tool loads/observes the map before any sync apply; load_world(Grid0828) executed post-restore in async mode",
+    "sync_only_after_map_load": "IMPLEMENTED -- sync apply happens strictly after initial map observation",
+    "exactly_one_tick_owner": "IMPLEMENTED -- tools/world_settings_transaction.py is the only ticker; probes use get_snapshot() only",
+    "restore_through_finally_atxit": "IMPLEMENTED -- try/finally guarded_restore + module-level atexit fallback (force_async_default, never raises)",
+    "separate_server_lease": "IMPLEMENTED -- tools/carla_runtime_launch.py --rpc-port/--streaming-port; this session used isolated lease RPC 2002/streaming 2003 (owned PID 42088); pre-existing PID 17760 never touched",
+    "bounded_fingerprint": "IMPLEMENTED -- light_structural_fingerprint (spawn points + counts); generate_waypoints/get_topology deliberately absent (test asserts non-use)"
+  },
+  "isolated_session_evidence": {
+    "owned_pid": 42088,
+    "rpc_port": 2002,
+    "streaming_port": 2003,
+    "server_version": "0.9.16",
+    "launch_report": "reports/carla_runtime/carla_run_20261003T213954Z_089f32_REPORT.json",
+    "transaction_report": "reports/carla_runtime/wstrans_20261003T214109Z_REPORT.json",
+    "transaction_core": "fixed_delta 0.05 exact over 5 owner ticks, monotonic frames, restore verified (6_verify_restore.matches_original=true)",
+    "manual_identity": "Grid0828/Maps/Grid0828/Grid0828 exact; 11634 spawn points; 223 actors / 222 traffic signs / 0 vehicles / 0 walkers; spawn_xy_hash b80714ed920e0dad6e352e128ca33b947d4bd86f0f1a028c32e6ccff9627d6bb; snapshot advancing"
+  },
+  "fault_injection_tests": {
+    "suite": "tests/carla_tools/test_world_settings_hardening.py",
+    "result": "10 passed (6 offline mock + 4 live)",
+    "live_cases": [
+      "exception during experiment -> force_async_default restored sync=False",
+      "actor spawn failure (void transform) -> settings remain async",
+      "world reload failure (nonexistent map raises) -> RPC still answers 0.9.16",
+      "timeout probe completes fast"
+    ]
+  },
+  "new_operational_finding": {
+    "load_world_timeout": "client.set_timeout(30.0) is INSUFFICIENT for Grid0828 map load: load_world() raised a client-side timeout while the server kept loading and completed it (~60s+). The server was NOT wedged (subsequent probe: Grid0828 live, frames advancing). Lesson: map-load calls require >=180s client timeout; a client timeout must not be misread as server death. Transaction tool default raised accordingly for identity/load paths (180s used in verification probe).",
+    "pre_existing_server": "PID 17760 (24h-old server on port 2000, observed at session start) is no longer running at session end. It was never touched by this session (no kill issued); cause of exit unknown and not attributed."
+  },
+  "code_fixes_this_wave": [
+    "tools/world_settings_transaction.py: try/finally + atexit guaranteed restore; _restore_and_verify helper; bounded light fingerprint replaces full generate_waypoints/get_topology identity; fixed world.get_world() AttributeError in async-resume check; --rpc-port support",
+    "tools/carla_runtime_launch.py: --rpc-port/--streaming-port isolated lease (schema v2)",
+    "tests/carla_tools/test_world_settings_hardening.py: 6 offline + 4 live fault-injection tests"
+  ]
+}

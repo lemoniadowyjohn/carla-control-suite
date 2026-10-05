@@ -81,7 +81,7 @@ def existing_carla_pids() -> List[int]:
     return pids
 
 
-def rpc_probe(timeout: float = 25.0) -> Dict[str, Any]:
+def rpc_probe(timeout: float = 25.0, port: int = 2000) -> Dict[str, Any]:
     res: Dict[str, Any] = {
         "client_import_ok": False,
         "get_server_version": None,
@@ -99,7 +99,7 @@ def rpc_probe(timeout: float = 25.0) -> Dict[str, Any]:
     res["client_import_ok"] = True
     client = None
     try:
-        client = carla.Client("127.0.0.1", 2000)
+        client = carla.Client("127.0.0.1", port)
         client.set_timeout(timeout)
         res["get_server_version"] = client.get_server_version()
         res["get_available_maps_count"] = len(client.get_available_maps())
@@ -129,6 +129,10 @@ def main() -> int:
         ],
     )
     ap.add_argument("--no-launch", action="store_true", help="probe only, do not start")
+    ap.add_argument("--rpc-port", type=int, default=2000,
+                    help="isolated server lease: CARLA -carla-rpc-port (default 2000)")
+    ap.add_argument("--streaming-port", type=int, default=2001,
+                    help="isolated server lease: CARLA -carla-streaming-port (default 2001)")
     args = ap.parse_args()
 
     run_id = f"carla_run_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}_{uuid.uuid4().hex[:6]}"
@@ -138,7 +142,7 @@ def main() -> int:
 
     pre_existing = existing_carla_pids()
     report: Dict[str, Any] = {
-        "schema": "carla_runtime_launch/v1",
+        "schema": "carla_runtime_launch/v2",
         "run_id": run_id,
         "generated_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "carla_exe": str(CARLA_EXE),
@@ -146,8 +150,8 @@ def main() -> int:
         "carla_version_target": "0.9.16",
         "pre_existing_carla_pids": pre_existing,
         "pre_existing_not_killed": True,
-        "rpc_port": 2000,
-        "streaming_port": 2001,
+        "rpc_port": args.rpc_port,
+        "streaming_port": args.streaming_port,
         "owned_pid": None,
         "owned_pid_creation_time": None,
         "stdout_log": str(stdout_log),
@@ -165,7 +169,12 @@ def main() -> int:
 
     proc: Optional[subprocess.Popen] = None
     if not args.no_launch:
-        cmd = [str(CARLA_EXE), *args.extra_args]
+        cmd = [
+            str(CARLA_EXE),
+            f"-carla-rpc-port={args.rpc_port}",
+            f"-carla-streaming-port={args.streaming_port}",
+            *args.extra_args,
+        ]
         report["launch_command"] = " ".join(cmd)
         out_fh = stdout_log.open("w", encoding="utf-8", errors="replace")
         err_fh = stderr_log.open("w", encoding="utf-8", errors="replace")
@@ -181,13 +190,13 @@ def main() -> int:
             "+00:00", "Z"
         )
 
-        listening = wait_port(2000, args.wait_port_seconds)
+        listening = wait_port(args.rpc_port, args.wait_port_seconds)
         report["rpc_port_listening"] = listening
         report["port_wait_seconds"] = round(args.wait_port_seconds, 1)
         if not listening:
             report["verdict"] = "BLOCKED_ENVIRONMENT"
             report["blocker"] = (
-                f"CARLA RPC port 2000 did not become listenable within "
+                f"CARLA RPC port {args.rpc_port} did not become listenable within "
                 f"{args.wait_port_seconds:.0f}s after launching PID {proc.pid}"
             )
             report["stdout_tail"] = stdout_log.read_text(
@@ -198,14 +207,14 @@ def main() -> int:
             )[-4000:]
             print(json.dumps(report, indent=2, sort_keys=True))
             return 2
-        report["streaming_port_listening"] = port_listening(2001)
+        report["streaming_port_listening"] = port_listening(args.streaming_port)
     else:
-        report["rpc_port_listening"] = port_listening(2000)
-        report["streaming_port_listening"] = port_listening(2001)
+        report["rpc_port_listening"] = port_listening(args.rpc_port)
+        report["streaming_port_listening"] = port_listening(args.streaming_port)
         report["launch_command"] = None
         report["probe_only"] = True
 
-    report["rpc"] = rpc_probe(args.rpc_timeout)
+    report["rpc"] = rpc_probe(args.rpc_timeout, port=args.rpc_port)
     ready = (
         report["rpc"].get("get_server_version") is not None
         and report["rpc"].get("world_get_map") is not None

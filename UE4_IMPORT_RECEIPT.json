@@ -1,0 +1,35 @@
+{
+  "schema": "ue4_import_receipt/v1",
+  "generated_at_utc": "2026-10-04T18:25:00Z",
+  "status": "IMPORT_COMPLETE",
+  "procedure": "governed CARLA 0.9.16 import: Util/BuildTools/Import.py --package Ingolstadt (official source tree, tag 0.9.16)",
+  "ue4_identity": {
+    "engine": "G:\\UnrealEngine_4.26_CARLA (4.26.2, ++UE4+Release-4.26)",
+    "editor": "Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "commandlets": ["ImportAssets", "MoveAssets", "PrepareAssetsForCooking", "LoadAssetMaterials", "BuildBinaryForTM (carla.Map.cook_in_memory_map)"]
+  },
+  "carla_source_identity": {
+    "path": "G:\\CARLA\\carla_source_probe",
+    "git_head": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+    "git_state": "detached at tag 0.9.16, origin https://github.com/carla-simulator/carla.git"
+  },
+  "input_package": {
+    "source": "E:\\CARLA\\CARLA_0.9.16\\Import\\Ingolstadt (governed 20-tile staged package, revalidated PASS)",
+    "staged_copy": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt",
+    "xodr_sha256_staged_copy": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "xodr_copy_verdict": "XODR_COPY_EXACT"
+  },
+  "import_log": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log (3.4MB; first run 20261003T215605Z progressed through tile imports with 0 errors per completed commandlet, then all processes vanished ~23:56 with no crash record; relaunched 00:16, ran to completion)",
+  "content_association": {
+    "umap": "Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt.umap",
+    "xodr": "Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\OpenDrive\\Ingolstadt.xodr",
+    "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "xodr_verdict": "EXACT (renamed Ingolstadt.xodr by governed import, content identical)",
+    "package_json": "Unreal\\CarlaUE4\\Content\\Ingolstadt\\Ingolstadt.Package.json",
+    "tm_binary": "Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\TM\\Ingolstadt.bin (41809984 bytes)",
+    "tile_meshes": "Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\*_Tile_*.uasset (genuine OSM building names observed)",
+    "total_content_files": 5724
+  },
+  "commandlet_errors": "0 errors in every completed commandlet summary (40 warnings each: duplicate Town11 asset IDs + distance-field build notices, pre-existing content, unrelated to Ingolstadt)",
+  "not_claimed": "Cook not yet executed at receipt time. No editor was substituted; no UE5 involved."
+}
