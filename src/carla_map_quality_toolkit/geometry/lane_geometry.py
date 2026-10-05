@@ -48,14 +48,14 @@ def sample_reference_line(
             distances = distances[1:]
         for ds in distances:
             if geom.kind == "line" or abs(geom.curvature) < 1e-12:
-                x = geom.x + ds * math.cos(geom.hdg)
-                y = geom.y + ds * math.sin(geom.hdg)
-                hdg = geom.hdg
+                x = float(geom.x + ds * math.cos(geom.hdg))
+                y = float(geom.y + ds * math.sin(geom.hdg))
+                hdg = float(geom.hdg)
             elif geom.kind == "arc":
                 k = geom.curvature
-                hdg = geom.hdg + k * ds
-                x = geom.x + (math.sin(hdg) - math.sin(geom.hdg)) / k
-                y = geom.y - (math.cos(hdg) - math.cos(geom.hdg)) / k
+                hdg = float(geom.hdg + k * ds)
+                x = float(geom.x + (math.sin(hdg) - math.sin(geom.hdg)) / k)
+                y = float(geom.y - (math.cos(hdg) - math.cos(geom.hdg)) / k)
             else:
                 raise ValueError(f"Unsupported geometry kind: {geom.kind}")
             s_values.append(geom.s + float(ds))

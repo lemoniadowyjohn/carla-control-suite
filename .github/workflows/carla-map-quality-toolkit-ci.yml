@@ -17,14 +17,23 @@ on:
       - "CONTRIBUTING.md"
       - "CARLA_PORTFOLIO_CV_BLOCK.md"
       - ".github/workflows/carla-map-quality-toolkit-ci.yml"
+      - ".github/dependabot.yml"
   pull_request:
     branches:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: carla-map-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       matrix:
         python-version: ["3.10", "3.12"]
@@ -33,12 +42,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install --upgrade pip
-      - run: pip install -e ".[dev]"
-      - run: ruff check .
-      - run: pytest --cov=carla_map_quality_toolkit --cov-report=term-missing
-      - run: coverage report --fail-under=90
-      - run: carla-map-quality demo --output out/pass
+          cache: pip
+      - name: Upgrade packaging tools
+        run: python -m pip install --upgrade pip "setuptools>=83.0.0" wheel
+      - name: Install project
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check .
+      - name: Static type analysis
+        if: matrix.python-version == '3.12'
+        run: mypy src/carla_map_quality_toolkit
+      - name: Unit and regression tests
+        run: pytest --cov=carla_map_quality_toolkit --cov-report=term-missing --cov-report=xml:coverage.xml
+      - name: Enforce coverage gate
+        run: coverage report --fail-under=90
+      - name: Dependency vulnerability audit
+        run: pip-audit
+      - name: Reproducible package build
+        run: python -m build
+      - name: PASS-path smoke test
+        run: carla-map-quality demo --output out/pass
       - name: Verify intentional rejection path
         shell: bash
         run: |
@@ -50,3 +73,14 @@ jobs:
             echo "Expected intentional failure exit code 2; got $code"
             exit 1
           fi
+      - name: Upload verification evidence
+        if: always() && matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: carla-map-quality-verification
+          path: |
+            coverage.xml
+            out/
+            dist/
+          if-no-files-found: warn
+          retention-days: 14
