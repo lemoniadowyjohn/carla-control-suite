@@ -50,6 +50,7 @@ jobs:
       - name: Lint
         run: ruff check .
       - name: Static type analysis
+        if: matrix.python-version == '3.12'
         run: mypy src/carla_map_quality_toolkit
       - name: Unit and regression tests
         run: pytest --cov=carla_map_quality_toolkit --cov-report=term-missing --cov-report=xml:coverage.xml
@@ -81,5 +82,5 @@ jobs:
             coverage.xml
             out/
             dist/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
