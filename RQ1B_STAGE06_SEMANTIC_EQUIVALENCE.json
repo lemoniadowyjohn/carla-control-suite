@@ -1,0 +1,10 @@
+{
+  "verdict": "PASS",
+  "checks": [
+    "identical-tree",
+    "mutated-full",
+    "capped-core",
+    "signature-self",
+    "signature-mut"
+  ]
+}

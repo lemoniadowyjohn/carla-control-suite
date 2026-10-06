@@ -1,0 +1,31 @@
+{
+  "input": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "input_bytes": 149799632,
+  "input_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "primitives": {
+    "et_parse_full": {
+      "wall_s": 10.835,
+      "cpu_s": 9.422
+    },
+    "deepcopy_full_tree": {
+      "wall_s": 24.67
+    },
+    "geom_tostring_rate": {
+      "wall_s": 0.142,
+      "n": 2000,
+      "avg_chars": 300,
+      "projected_full_s": 14.0,
+      "projected_x2_before_after_s": 28.0
+    },
+    "signature_200roads": {
+      "wall_s": 0.598,
+      "json_chars": 2255715
+    }
+  },
+  "counts": {
+    "roads": 32267,
+    "geometries": 197400,
+    "junctions": 3561
+  },
+  "cprofile_top": "         1157557 function calls (1148337 primitive calls) in 2.182 seconds\n\n   Ordered by: cumulative time\n   List reduced from 43 to 12 due to restriction <12>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.048    0.048    2.182    2.182 F:\\carla-worktrees\\b15_A_rq1b\\ultimate_pipeline\\pipeline_stages\\stage_06_links.py:108(_diagnostic_records_for_operation)\n     8420    0.079    0.000    2.103    0.000 F:\\carla-worktrees\\b15_A_rq1b\\ultimate_pipeline\\pipeline_stages\\stage_06_links.py:48(_geom_value)\n     8420    0.082    0.000    2.023    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py:1067(tostring)\n     8420    0.114    0.000    1.917    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py:679(write)\n16840/8420    0.558    0.000    0.954    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py:850(_serialize_xml)\n     8420    0.363    0.000    0.652    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py:789(_namespaces)\n   483088    0.237    0.000    0.237    0.000 {built-in method builtins.isinstance}\n   124982    0.123    0.000    0.123    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py:800(add_qname)\n   108142    0.123    0.000    0.123    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py:1024(_escape_attrib)\n   175502    0.121    0.000    0.121    0.000 {method 'write' of '_io.StringIO' objects}\n    16840    0.031    0.000    0.076    0.000 {built-in method builtins.next}\n     8420    0.021    0.000    0.073    0.000 C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\contextlib.py:299(helper)\n\n\n"
+}

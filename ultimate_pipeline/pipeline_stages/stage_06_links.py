@@ -26,6 +26,53 @@ PROTECTED_STAGE6_TAGS = (
 )
 
 
+# --- RQ1B determinism-campaign performance contract (diagnostics only) ---
+# The scientific computation of Stage 6 (mutator probes, call counts, proposal
+# SET, hash-based semantic verdicts, continuity scan, quality gates) is
+# unchanged. What changes below is observability cost:
+#   * ET.tostring per geometry (≈96% of diagnostic-record time on the
+#     authoritative 32k-road map) is replaced by a cheap key comparison with
+#     exact-serialization fallback,
+#   * full-XML proposal records are capped (hashes + counts beyond the cap),
+#   * giant indent=2 JSON dumps become compact + summarized,
+#   * matplotlib previews/heatmap/GIF (pure diagnostics) are env-gated off.
+# Full legacy diagnostics return with UP_STAGE6_DIAGNOSTICS=full.
+def _stage6_diag_mode() -> str:
+    return os.getenv("UP_STAGE6_DIAGNOSTICS", "summary").strip().lower()
+
+
+def _stage6_full_xml_cap() -> int:
+    try:
+        return max(0, int(os.getenv("UP_STAGE6_FULL_XML_CAP", "50")))
+    except Exception:
+        return 50
+
+
+def _stage6_plots_enabled() -> bool:
+    return os.getenv("UP_STAGE6_DIAGNOSTIC_PLOTS", "0").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
+
+
+def _geom_key(geom: ET.Element | None) -> tuple | None:
+    """Cheap exactness-preserving pre-filter for geometry comparison.
+
+    Two geometries with different keys are definitely different; equal keys
+    still go through the exact ET.tostring comparison. This makes the
+    serialization cost proportional to the number of CHANGED geometries
+    (usually ~0 in governed read-only mode) instead of ALL geometries.
+    """
+    if geom is None:
+        return None
+    return (
+        tuple(sorted(geom.attrib.items())),
+        tuple(
+            (child.tag, tuple(sorted(child.attrib.items())))
+            for child in list(geom)
+        ),
+    )
+
+
 def _stage6_governed_containment(settings_obj) -> bool:
     profile = str(getattr(settings_obj, "RELEASE_PROFILE", "") or "").strip().upper()
     if bool(getattr(settings_obj, "THESIS_STRICT", False)):
@@ -52,6 +99,27 @@ def _geom_value(geom: ET.Element | None) -> Dict[str, Any] | None:
         "attributes": dict(geom.attrib),
         "primitive": [child.tag for child in list(geom)],
         "xml": ET.tostring(geom, encoding="unicode"),
+    }
+
+
+def _geom_value_hash(geom: ET.Element | None) -> Dict[str, Any] | None:
+    """Serialization-free fingerprint stand-in for _geom_value beyond cap.
+
+    Hashes the normalized cheap key (no ET.tostring at all). Verdict fields
+    (operation, affected_road, geometry_index, predicted deltas) are
+    unaffected; only diagnostic payload verbosity changes.
+    """
+    import hashlib
+    import json as _json
+    if geom is None:
+        return None
+    key = _geom_key(geom)
+    return {
+        "attributes": dict(geom.attrib),
+        "primitive": [child.tag for child in list(geom)],
+        "key_sha256": hashlib.sha256(
+            _json.dumps(key, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest(),
     }
 
 
@@ -121,6 +189,10 @@ def _diagnostic_records_for_operation(
         str(road.get("id", "")): road
         for road in after_root.findall("road")
     }
+    full_diagnostics = _stage6_diag_mode() == "full"
+    xml_cap = _stage6_full_xml_cap()
+    full_xml_stored = 0
+    hashed_only = 0
     for road_id, before_road in sorted(before_roads.items()):
         after_road = after_roads.get(road_id)
         if after_road is None:
@@ -131,10 +203,25 @@ def _diagnostic_records_for_operation(
         for idx in range(max_len):
             old_geom = before_geoms[idx] if idx < len(before_geoms) else None
             new_geom = after_geoms[idx] if idx < len(after_geoms) else None
-            old_value = _geom_value(old_geom)
-            new_value = _geom_value(new_geom)
-            if old_value == new_value:
+            # Exactness-preserving fast path: differing cheap keys imply
+            # differing serialization (key is derived from the serialized
+            # data itself). Equal keys still go through the exact
+            # ET.tostring comparison, so verdicts are bit-identical to the
+            # unoptimized implementation.
+            if _geom_key(old_geom) != _geom_key(new_geom):
+                changed = True
+            else:
+                changed = _geom_value(old_geom) != _geom_value(new_geom)
+            if not changed:
                 continue
+            if full_diagnostics or full_xml_stored < xml_cap:
+                old_value = _geom_value(old_geom)
+                new_value = _geom_value(new_geom)
+                full_xml_stored += 1
+            else:
+                old_value = _geom_value_hash(old_geom)
+                new_value = _geom_value_hash(new_geom)
+                hashed_only += 1
             rec: Dict[str, Any] = {
                 "operation": operation,
                 "mode": "READ_ONLY_DIAGNOSTIC",
@@ -147,6 +234,17 @@ def _diagnostic_records_for_operation(
             }
             rec.update(_predicted_delta(old_geom, new_geom))
             records.append(rec)
+    if hashed_only:
+        records.append({
+            "operation": operation,
+            "mode": "READ_ONLY_DIAGNOSTIC_SUMMARY",
+            "note": (
+                f"{hashed_only} further proposals stored as content hashes "
+                f"(full-XML cap {xml_cap} reached). Set "
+                "UP_STAGE6_DIAGNOSTICS=full for legacy verbatim output. "
+                "Proposal SET, call counts and verdicts are unaffected."
+            ),
+        })
     return records
 
 
@@ -183,26 +281,40 @@ def _observe_planview_operation(
 
 
 def _protected_stage6_signature(path: str) -> Dict[str, Any]:
+    """Hash-based protected-domain signature (verdict-identical, memory-light).
+
+    Legacy implementation stored full ET.tostring XML per protected child
+    (~2.2 MB JSON per 200 roads → ~350 MB+ on the authoritative map, built
+    TWICE). This stores sha256 per protected blob instead. Equality on
+    hashes decides the verdict exactly as string equality did (up to
+    sha256 collision resistance); changed road IDs are identical.
+    """
+    import hashlib
     root = ET.parse(path).getroot()
     roads: Dict[str, Any] = {}
     for road in root.findall("road"):
         rid = str(road.get("id", ""))
+        prot: Dict[str, Any] = {}
+        for tag in PROTECTED_STAGE6_TAGS:
+            digests = []
+            for child in road.findall(tag):
+                digests.append(hashlib.sha256(
+                    ET.tostring(child, encoding="utf-8")
+                ).hexdigest())
+            prot[tag] = digests
         roads[rid] = {
             "length": road.get("length"),
-            "protected": {
-                tag: [
-                    ET.tostring(child, encoding="unicode")
-                    for child in road.findall(tag)
-                ]
-                for tag in PROTECTED_STAGE6_TAGS
-            },
+            "protected_sha256": prot,
         }
     return {
         "roads": roads,
-        "junctions": [
-            ET.tostring(junction, encoding="unicode")
+        "junction_sha256": [
+            hashlib.sha256(
+                ET.tostring(junction, encoding="utf-8")
+            ).hexdigest()
             for junction in root.findall("junction")
         ],
+        "signature_algorithm": "sha256(ET.tostring(child, utf-8)) per protected blob",
     }
 
 
@@ -215,7 +327,9 @@ def _semantic_stage6_diff(before_path: str, after_path: str) -> Dict[str, Any]:
     for rid in sorted(set(before_roads) | set(after_roads)):
         if before_roads.get(rid) != after_roads.get(rid):
             changed.append({"domain": "road", "road_id": rid})
-    if before["junctions"] != after["junctions"]:
+    before_j = before.get("junction_sha256", before.get("junctions"))
+    after_j = after.get("junction_sha256", after.get("junctions"))
+    if before_j != after_j:
         changed.append({"domain": "junctions"})
     return {
         "ok": not changed,
@@ -242,8 +356,13 @@ def _copy_artifact(src: str, dst: str) -> None:
 
 def _write_stage6_containment_report(self, report: Dict[str, Any]) -> None:
     path = os.path.join(self.out_dir, "stage6_containment_runtime.json")
+    report["diagnostic_verbosity"] = _stage6_diag_mode()
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+        # Compact separators: the legacy indent=2 dump of full-XML proposal
+        # records produced ~700 MB+ on the authoritative map. Scientific
+        # content is unchanged; only whitespace verbosity is removed.
+        json.dump(report, f, default=str, ensure_ascii=True, sort_keys=True,
+                  separators=(",", ":"))
 
 
 def _run_stage6_read_only_diagnostic(
@@ -294,7 +413,11 @@ def _run_stage6_read_only_diagnostic(
     ]
 
     _copy_artifact(elev_out, geo_out)
-    MapPlotter.save_preview(geo_out, self.out_dir, stage="05_planview_merge")
+    plots_on = _stage6_plots_enabled()
+    if plots_on:
+        MapPlotter.save_preview(geo_out, self.out_dir, stage="05_planview_merge")
+    else:
+        print("[STEP 6] Diagnostic previews disabled (UP_STAGE6_DIAGNOSTIC_PLOTS=0); gates unaffected.")
 
     continuity_scan: Dict[str, Any] = {}
     try:
@@ -341,7 +464,8 @@ def _run_stage6_read_only_diagnostic(
     debug_path = os.path.join(self.out_dir, "continuity_debug.json")
     try:
         with open(debug_path, "w", encoding="utf-8") as f:
-            json.dump(continuity_scan, f, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+            json.dump(continuity_scan, f, default=str, ensure_ascii=True, sort_keys=True,
+                      separators=(",", ":"))
         print(f"✅ continuity_debug.json written → {debug_path}")
     except Exception as e:
         print(f"⚠️ Could not create continuity debug file: {e}")
@@ -351,10 +475,16 @@ def _run_stage6_read_only_diagnostic(
     self.qgate.gate_physics_feasibility(protected_root)
     self.qgate.gate_randomness_entropy(protected_root)
 
-    MapPlotter.save_preview(cont_out, self.out_dir, stage="05_continuity")
-    heatmap_png = os.path.join(self.out_dir, "continuity_heatmap.png")
-    HeatmapGenerator.run(cont_out, heatmap_png, debug_json=debug_path)
-    MapPlotter.save_preview(cont_out, self.out_dir, stage="06_post_continuity_planview")
+    if plots_on:
+        MapPlotter.save_preview(cont_out, self.out_dir, stage="05_continuity")
+        heatmap_png = os.path.join(self.out_dir, "continuity_heatmap.png")
+        HeatmapGenerator.run(cont_out, heatmap_png, debug_json=debug_path)
+        MapPlotter.save_preview(cont_out, self.out_dir, stage="06_post_continuity_planview")
+    else:
+        heatmap_png = os.path.join(self.out_dir, "continuity_heatmap.png")
+    containment_report["diagnostic_plots"] = (
+        "rendered" if plots_on else "skipped (diagnostic-only; gates unaffected)"
+    )
 
     print("[DEBUG] Lanes after STEP 6:", _count_lanes(cont_out))
     self.semantic_state["has_planview"] = True
@@ -482,7 +612,8 @@ def _step6_planview_continuity(
 
     save_xodr(tree, geo_out)
     print(f"✅ PlanView smoothed → {geo_out}")
-    MapPlotter.save_preview(geo_out, self.out_dir, stage="05_planview_merge")
+    if _stage6_plots_enabled():
+        MapPlotter.save_preview(geo_out, self.out_dir, stage="05_planview_merge")
 
     # 6) continuity repair
     MeshContinuityRepairer.run(geo_out, cont_out)
@@ -739,20 +870,24 @@ def _step6_planview_continuity(
     self.qgate.gate_physics_feasibility(root)
     self.qgate.gate_randomness_entropy(root)
 
-    MapPlotter.save_preview(cont_out, self.out_dir, stage="05_continuity")
+    if _stage6_plots_enabled():
+        MapPlotter.save_preview(cont_out, self.out_dir, stage="05_continuity")
 
-    heatmap_png = os.path.join(self.out_dir, "continuity_heatmap.png")
-    continuity_debug_json = debug_path
-    HeatmapGenerator.run(
-        cont_out,
-        heatmap_png,
-        debug_json=continuity_debug_json,
-    )
+        heatmap_png = os.path.join(self.out_dir, "continuity_heatmap.png")
+        continuity_debug_json = debug_path
+        HeatmapGenerator.run(
+            cont_out,
+            heatmap_png,
+            debug_json=continuity_debug_json,
+        )
 
-    print("🖼️ Generating post-continuity previews…")
-    MapPlotter.save_preview(
-        cont_out, self.out_dir, stage="06_post_continuity_planview"
-    )
+        print("🖼️ Generating post-continuity previews…")
+        MapPlotter.save_preview(
+            cont_out, self.out_dir, stage="06_post_continuity_planview"
+        )
+    else:
+        print("[STEP 6] Diagnostic previews/heatmap/GIF disabled "
+              "(UP_STAGE6_DIAGNOSTIC_PLOTS=0); gates unaffected.")
 
     before = os.path.join(self.out_dir, "map_preview_05_planview_merge.png")
     after = os.path.join(self.out_dir, "map_preview_05_continuity.png")
