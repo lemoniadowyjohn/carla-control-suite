@@ -1,0 +1,336 @@
+{
+  "JOB_OBJECT_POLICY": {
+    "creation_order": [
+      "CreateProcessW(CREATE_SUSPENDED)",
+      "AssignProcessToJobObject",
+      "ResumeThread",
+      "close parent thread handle",
+      "retain process + job handles"
+    ],
+    "flags": "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE",
+    "on_assign_failure": "terminate the suspended test process, close handles, raise; never resume an unowned child",
+    "retroactive_attachment_attempted": false
+  },
+  "MATRIX_FAILED": 0,
+  "MATRIX_PASSED": 25,
+  "MATRIX_TEST_COUNT": 25,
+  "NATIVE_CRASHES": 0,
+  "PROCESS_TREE_SUPERVISION": "PASS",
+  "SUPERVISOR_DEATH_CONTRACT": "PASS",
+  "abi_audit": {
+    "ABI_AUDIT": "PASS",
+    "generated_utc": "2026-10-06T14:03:13.177741Z",
+    "notes": [
+      "HANDLE is declared as ctypes.wintypes.HANDLE (pointer sized).",
+      "IO_COUNTERS uses 64-bit counters; a 32-bit layout would truncate.",
+      "JOBOBJECT_EXTENDED_LIMIT_INFORMATION embeds a pointer-sized Minimum/MaximumWorkingSetSize and Peak*MemoryUsed, hence 144 bytes on x64 rather than the 32-bit 96.",
+      "The variable-length JOBOBJECT_BASIC_PROCESS_ID_LIST is no longer used by contains_pid; enumeration is confined to enumerate_member_pids with explicit bounds checks."
+    ],
+    "pointer_width_bits": 64,
+    "schema": "WINDOWS_CTYPES_ABI_AUDIT/v1",
+    "schema_version": 1,
+    "structures": [
+      {
+        "actual_bytes": 64,
+        "expected_bytes": 64,
+        "match": true,
+        "structure": "JOBOBJECT_BASIC_LIMIT_INFORMATION"
+      },
+      {
+        "actual_bytes": 48,
+        "expected_bytes": 48,
+        "match": true,
+        "structure": "IO_COUNTERS"
+      },
+      {
+        "actual_bytes": 144,
+        "expected_bytes": 144,
+        "match": true,
+        "structure": "JOBOBJECT_EXTENDED_LIMIT_INFORMATION"
+      },
+      {
+        "actual_bytes": 24,
+        "expected_bytes": 24,
+        "match": true,
+        "structure": "PROCESS_INFORMATION"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "case": "A00_ctypes_abi_audit",
+      "detail": [
+        {
+          "actual_bytes": 64,
+          "expected_bytes": 64,
+          "match": true,
+          "structure": "JOBOBJECT_BASIC_LIMIT_INFORMATION"
+        },
+        {
+          "actual_bytes": 48,
+          "expected_bytes": 48,
+          "match": true,
+          "structure": "IO_COUNTERS"
+        },
+        {
+          "actual_bytes": 144,
+          "expected_bytes": 144,
+          "match": true,
+          "structure": "JOBOBJECT_EXTENDED_LIMIT_INFORMATION"
+        },
+        {
+          "actual_bytes": 24,
+          "expected_bytes": 24,
+          "match": true,
+          "structure": "PROCESS_INFORMATION"
+        }
+      ],
+      "pass": true,
+      "stage": "A"
+    },
+    {
+      "case": "A01_create_job_object",
+      "detail": null,
+      "pass": true,
+      "stage": "A"
+    },
+    {
+      "case": "A02_spawn_assign_resume",
+      "detail": {
+        "exit": 0
+      },
+      "pass": true,
+      "stage": "A"
+    },
+    {
+      "case": "A03_membership_via_IsProcessInJob",
+      "detail": {
+        "note": "dead pid -> False"
+      },
+      "pass": true,
+      "stage": "A"
+    },
+    {
+      "case": "B01_live_member_reported",
+      "detail": {
+        "pid": 12848
+      },
+      "pass": true,
+      "stage": "B"
+    },
+    {
+      "case": "B02_terminate_kills_member",
+      "detail": {
+        "pid": 12848
+      },
+      "pass": true,
+      "stage": "B"
+    },
+    {
+      "case": "C01_child_inherited_into_job",
+      "detail": {
+        "children": [
+          21048,
+          21452
+        ],
+        "parent": 33684
+      },
+      "pass": true,
+      "stage": "C"
+    },
+    {
+      "case": "C02_terminate_kills_child",
+      "detail": {
+        "children": [
+          21048,
+          21452
+        ]
+      },
+      "pass": true,
+      "stage": "C"
+    },
+    {
+      "case": "D01_three_level_tree_attributed",
+      "detail": {
+        "in_job": [
+          24284,
+          10184,
+          33948,
+          17616
+        ],
+        "l1": [
+          24284,
+          10184
+        ],
+        "l2": [
+          33948
+        ],
+        "l3": [
+          17616
+        ]
+      },
+      "pass": true,
+      "stage": "D"
+    },
+    {
+      "case": "D02_terminate_kills_grandchildren",
+      "detail": {
+        "tree": [
+          24284,
+          10184,
+          33948,
+          17616
+        ]
+      },
+      "pass": true,
+      "stage": "D"
+    },
+    {
+      "case": "01_normal_parent_completion",
+      "detail": null,
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "02_child_completion",
+      "detail": null,
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "03_grandchild_completion",
+      "detail": {
+        "note": "covered by stage D"
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "04_child_crash_exit_code",
+      "detail": null,
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "05_grandchild_crash_contained",
+      "detail": {
+        "children": [
+          2752,
+          17708
+        ]
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "06_operator_cancel_scoped",
+      "detail": {
+        "cancelled": 37676,
+        "survivor": 8700,
+        "survivor_alive": true
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "07_timeout_enforced",
+      "detail": {
+        "exit": 1
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "08_supervisor_killed_no_survivors",
+      "detail": {
+        "alive_after": {
+          "12652": false,
+          "16532": false,
+          "31332": false
+        },
+        "alive_before": {
+          "12652": true,
+          "16532": true,
+          "31332": true
+        },
+        "children": [
+          16532
+        ],
+        "grandchildren": [
+          31332,
+          12652
+        ],
+        "killed_at": 1791295429.51857,
+        "policy": "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE",
+        "supervisor_pid": 23612,
+        "survivors": []
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "09_unrelated_same_name_survives",
+      "detail": {
+        "member": 14392,
+        "unrelated": 27768
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "10_pid_reuse_identity_protection",
+      "detail": {
+        "alive_after_kill": false,
+        "contract": "liveness, job-accounting membership and process identity are independent predicates; ownership matching uses (pid, creation_time), so a recycled PID cannot impersonate the previous owner",
+        "job_accounting_after_kill": false,
+        "pid": 21076,
+        "was_member": true
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "11_invalid_handle_raises_python",
+      "detail": null,
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "12_closed_handle_raises_python",
+      "detail": null,
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "13_repeated_open_close_stress",
+      "detail": {
+        "cycles": 40
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "14_hundred_membership_queries",
+      "detail": {
+        "hits": 100,
+        "seconds": 0.002
+      },
+      "pass": true,
+      "stage": "E"
+    },
+    {
+      "case": "15_hundred_job_create_destroy_cycles",
+      "detail": {
+        "cycles": 100,
+        "seconds": 0.007
+      },
+      "pass": true,
+      "stage": "E"
+    }
+  ],
+  "contains_implementation": "IsProcessInJob (no variable-length list parsing)",
+  "generated_utc": "2026-10-06T14:04:00.792748Z",
+  "schema": "WINDOWS_JOB_OBJECT_MATRIX/v1",
+  "schema_version": 1,
+  "unresolved": "Ownership is verified by live process membership through IsProcessInJob, which requires the target process to be openable with PROCESS_QUERY_LIMITED_INFORMATION. A member running as another user or with restricted rights would report False. The job's accounting counters are the authoritative aggregate check."
+}

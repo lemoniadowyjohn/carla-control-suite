@@ -1,7 +1,7 @@
 {
-  "after": 188,
+  "after": 184,
   "api": "GetProcessHandleCount",
-  "before": 188,
+  "before": 184,
   "classification": "NONE",
   "growth": 0,
   "measurement_valid": true,

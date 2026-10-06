@@ -221,6 +221,7 @@ class _OwnedProcess:
         self.pid = pi.dwProcessId
         self._h = pi.hProcess
         self._t = pi.hThread
+        self._exit_code = None
         self._state = "OPEN"
 
     def _require_open(self):
@@ -228,23 +229,38 @@ class _OwnedProcess:
             raise RuntimeError("process handle is %s" % self._state)
 
     def poll(self):
-        self._require_open()
+        """Exit code, or None while still running.
+
+        Once the exit code has been observed the handle is released and the
+        code is cached, so poll() keeps working afterwards. That keeps the
+        Popen-like contract while ensuring a spawn() never leaves a process
+        handle open for the lifetime of the process tree.
+        """
+        if self._state != "OPEN":
+            return self._exit_code
         code = wt.DWORD()
         if not k32.GetExitCodeProcess(self._h, ctypes.byref(code)):
             return None
         if code.value == STILL_ACTIVE:
             return None
-        return code.value
+        self._exit_code = code.value
+        self.close()
+        return self._exit_code
 
     def wait(self, timeout=None):
         """Popen-compatible: timeout in SECONDS (None means wait forever)."""
-        self._require_open()
         ms = INFINITE if timeout is None else int(timeout * 1000)
-        k32.WaitForSingleObject(self._h, ms)
+        if self._state == "OPEN":
+            k32.WaitForSingleObject(self._h, ms)
         return self.poll()
 
     def kill(self):
-        self._require_open()
+        # Killing an already-terminated process is a no-op, not an error. The
+        # handle is released as soon as the exit code is observed, so a caller
+        # that kills defensively after waiting would otherwise hit a spurious
+        # "handle is CLOSED" instead of the benign no-op it expects.
+        if self._state != "OPEN" or self._exit_code is not None:
+            return
         k32.TerminateProcess(self._h, 1)
 
     def close(self):
@@ -252,6 +268,7 @@ class _OwnedProcess:
             k32.CloseHandle(self._h)
             if self._t:
                 k32.CloseHandle(self._t)
+                self._t = None
             self._state = "CLOSED"
 
     @property
@@ -477,6 +494,21 @@ class JobSupervisor:
         if self.handle:
             k32.CloseHandle(self.handle)
             self.handle = None
+        # Do NOT blanket-close child process handles here: callers legitimately
+        # poll/wait a child after the supervisor is closed, and closing would
+        # invalidate them. Each _OwnedProcess releases its own hProcess as soon
+        # as its exit code is observed (see _OwnedProcess.poll), which is what
+        # actually bounds handle growth. Only release handles for children that
+        # have already terminated.
+        for proc in list(self.procs.values()):
+            if proc.state != "OPEN":
+                continue
+            try:
+                if proc.poll() is not None:
+                    proc.close()
+            except Exception:
+                pass
+        self.procs.clear()
 
     def receipt(self, extra=None):
         return {

@@ -1,0 +1,39 @@
+{
+  "ABI_AUDIT": "PASS",
+  "generated_utc": "2026-10-06T14:03:13.177741Z",
+  "notes": [
+    "HANDLE is declared as ctypes.wintypes.HANDLE (pointer sized).",
+    "IO_COUNTERS uses 64-bit counters; a 32-bit layout would truncate.",
+    "JOBOBJECT_EXTENDED_LIMIT_INFORMATION embeds a pointer-sized Minimum/MaximumWorkingSetSize and Peak*MemoryUsed, hence 144 bytes on x64 rather than the 32-bit 96.",
+    "The variable-length JOBOBJECT_BASIC_PROCESS_ID_LIST is no longer used by contains_pid; enumeration is confined to enumerate_member_pids with explicit bounds checks."
+  ],
+  "pointer_width_bits": 64,
+  "schema": "WINDOWS_CTYPES_ABI_AUDIT/v1",
+  "schema_version": 1,
+  "structures": [
+    {
+      "actual_bytes": 64,
+      "expected_bytes": 64,
+      "match": true,
+      "structure": "JOBOBJECT_BASIC_LIMIT_INFORMATION"
+    },
+    {
+      "actual_bytes": 48,
+      "expected_bytes": 48,
+      "match": true,
+      "structure": "IO_COUNTERS"
+    },
+    {
+      "actual_bytes": 144,
+      "expected_bytes": 144,
+      "match": true,
+      "structure": "JOBOBJECT_EXTENDED_LIMIT_INFORMATION"
+    },
+    {
+      "actual_bytes": 24,
+      "expected_bytes": 24,
+      "match": true,
+      "structure": "PROCESS_INFORMATION"
+    }
+  ]
+}

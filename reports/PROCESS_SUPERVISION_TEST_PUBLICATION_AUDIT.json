@@ -1,0 +1,56 @@
+{
+  "schema": "PROCESS_SUPERVISION_TEST_PUBLICATION_AUDIT/v1",
+  "schema_version": 1,
+  "verdict": "SAFE_TO_PUBLISH",
+  "subjects": [
+    {
+      "path": "scripts/test_job_matrix.py",
+      "lines": 329,
+      "genuine_reusable_test": true,
+      "hardcoded_local_paths": false,
+      "repo_root_derivation": "os.path.dirname(os.path.dirname(os.path.abspath(__file__)))",
+      "sys_path_bootstrap": "sys.path.insert(0, os.path.join(<derived scripts dir>))",
+      "mutates_production_control_plane": false,
+      "fixture_isolation": "tempfile.mkdtemp(prefix=\"jobmatrix2_\")",
+      "depends_on_omitted_modules": false,
+      "dependency_closure": ["job_supervision", "orch_core"],
+      "dependencies_published_in_this_pr": true,
+      "hardcoded_pids": false,
+      "secrets": false,
+      "local_only_env_assumptions": false,
+      "writes": [
+        "reports/WINDOWS_JOB_OBJECT_MATRIX.json",
+        "reports/WINDOWS_CTYPES_ABI_AUDIT.json"
+      ],
+      "writes_are_evidence_only": true
+    },
+    {
+      "path": "scripts/test_job_stress.py",
+      "lines": 163,
+      "genuine_reusable_test": true,
+      "hardcoded_local_paths": false,
+      "repo_root_derivation": "os.path.dirname(os.path.dirname(os.path.abspath(__file__)))",
+      "sys_path_bootstrap": "sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))",
+      "mutates_production_control_plane": false,
+      "fixture_isolation": "tempfile.mkdtemp(prefix=\"jobstress_\")",
+      "depends_on_omitted_modules": false,
+      "dependency_closure": ["job_supervision", "orch_core"],
+      "dependencies_published_in_this_pr": true,
+      "hardcoded_pids": false,
+      "secrets": false,
+      "local_only_env_assumptions": false,
+      "writes": ["reports/WINDOWS_JOB_OBJECT_STRESS.json"],
+      "writes_are_evidence_only": true
+    }
+  ],
+  "checks_applied": {
+    "absolute_drive_letter_paths": "NONE (regex [A-Za-z]:\\\\ and [A-Za-z]:/ over both files)",
+    "hardcoded_session_pids_12312_20808_37348": "NONE",
+    "credential_patterns": "NONE",
+    "imports_beyond_stdlib_and_published_subsystem": "NONE",
+    "production_control_plane_env_overrides": "NONE (neither script sets CARLA_CONTROL_PLANE_DIR or CARLA_MUTEX_NAME, and neither constructs SingleWriterLease)",
+    "assertion_weakening_required_for_portability": "NONE (no assertions changed; no portability edit was needed at all)"
+  },
+  "conclusion": "Both producers are genuine, already portable, dependency-closed against modules published in 66339213, and isolated from production control-plane state. They are publishable as-is with no edits. This closes the reproducibility gap: the 25/25 matrix and 270/270 stress claims become re-runnable from a clean checkout of the PR branch instead of being receipt-backed only.",
+  "residual_caveat_removed": "Previously PR_BODY.md disclosed that test_job_matrix.py and test_job_stress.py were untracked and therefore that 25/25 and 270/270 could not be re-run from the branch. That caveat no longer applies once this commit lands."
+}
