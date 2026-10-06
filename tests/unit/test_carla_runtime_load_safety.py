@@ -171,6 +171,134 @@ def test_fingerprint_mismatches_names_the_differing_component():
     assert any("road_ids" in d for d in diffs)
 
 
+# ---------------------------------------------------------------------------
+# NEW-350..374: geometry type / coefficients / junction connection topology
+# ---------------------------------------------------------------------------
+
+
+def _xodr_geometry(
+    geometry_xml: str,
+    *,
+    junction_connection: str = '<connection id="0" incomingRoad="1" connectingRoad="2" contactPoint="start"/>',
+) -> str:
+    """One-road fixture whose only variable is the planView geometry payload."""
+    return (
+        '<OpenDRIVE><header name="t"><geoReference>+proj=tmerc +lat_0=0</geoReference></header>'
+        '<road id="1" length="10.0" junction="-1"><planView>'
+        f'<geometry x="0" y="0" z="0" h="0" p="0" r="0" length="10.0">{geometry_xml}</geometry>'
+        "</planView><lanes><laneSection s=\"0\">"
+        '<left><lane id="1" type="driving"><link><successor id="1"/></link></lane></left>'
+        '<center><lane id="0" type="none"/></center>'
+        "</laneSection></lanes></road>"
+        '<junction id="1" type="default">' + junction_connection + "</junction>"
+        "</OpenDRIVE>"
+    )
+
+
+def test_fingerprint_distinguishes_geometry_type_not_just_positions():
+    """An arc and a straight line with identical poses are different roads."""
+    arc = structural_fingerprint(_xodr_geometry('<arc curvature="0.01"/>'))
+    line = structural_fingerprint(_xodr_geometry("<line/>"))
+    assert arc["fingerprint_sha256"] != line["fingerprint_sha256"]
+    assert arc["components"]["roads"][0]["planview"][0]["type"] == "arc"
+    assert line["components"]["roads"][0]["planview"][0]["type"] == "line"
+
+
+def test_fingerprint_distinguishes_arc_curvature():
+    """Same start pose, different curvature: a different curve, a different map."""
+    gentle = structural_fingerprint(_xodr_geometry('<arc curvature="0.01"/>'))
+    sharp = structural_fingerprint(_xodr_geometry('<arc curvature="0.05"/>'))
+    assert gentle["fingerprint_sha256"] != sharp["fingerprint_sha256"]
+
+    # ...but float serialization noise below the quantization threshold still matches.
+    noisy = structural_fingerprint(_xodr_geometry('<arc curvature="0.0100000001"/>'))
+    assert noisy["fingerprint_sha256"] == gentle["fingerprint_sha256"]
+
+
+def test_fingerprint_distinguishes_spiral_and_parampoly3_coefficients():
+    s1 = structural_fingerprint(_xodr_geometry('<spiral curvStart="0.01" curvEnd="0.02"/>'))
+    s2 = structural_fingerprint(_xodr_geometry('<spiral curvStart="0.05" curvEnd="0.10"/>'))
+    assert s1["fingerprint_sha256"] != s2["fingerprint_sha256"]
+
+    p1 = structural_fingerprint(_xodr_geometry('<paramPoly3 a="0" b="1" c="0" d="0"/>'))
+    p2 = structural_fingerprint(_xodr_geometry('<paramPoly3 a="0" b="2" c="0" d="0"/>'))
+    assert p1["fingerprint_sha256"] != p2["fingerprint_sha256"]
+
+
+def test_fingerprint_distinguishes_junction_connection_topology():
+    """Same junction id + connection count, different contact point: different map."""
+    start = structural_fingerprint(
+        _xodr_geometry(
+            "<line/>",
+            junction_connection=(
+                '<connection id="0" incomingRoad="1" connectingRoad="2" contactPoint="start"/>'
+            ),
+        )
+    )
+    end = structural_fingerprint(
+        _xodr_geometry(
+            "<line/>",
+            junction_connection=(
+                '<connection id="0" incomingRoad="1" connectingRoad="2" contactPoint="end"/>'
+            ),
+        )
+    )
+    assert start["fingerprint_sha256"] != end["fingerprint_sha256"]
+    assert (
+        start["components"]["junctions"][0]["connections"][0]["contactPoint"] == "start"
+    )
+    assert end["components"]["junctions"][0]["connections"][0]["contactPoint"] == "end"
+
+    # Rewiring the connection endpoints must also change the digest even though
+    # junction ids and connection_count are identical.
+    rewired = structural_fingerprint(
+        _xodr_geometry(
+            "<line/>",
+            junction_connection=(
+                '<connection id="0" incomingRoad="2" connectingRoad="1" contactPoint="start"/>'
+            ),
+        )
+    )
+    assert rewired["fingerprint_sha256"] != start["fingerprint_sha256"]
+
+    # laneLink mapping changes are part of the same contract.
+    with_links = structural_fingerprint(
+        _xodr_geometry(
+            "<line/>",
+            junction_connection=(
+                '<connection id="0" incomingRoad="1" connectingRoad="2" contactPoint="start">'
+                '<laneLink from="-1" to="-1"/></connection>'
+            ),
+        )
+    )
+    assert with_links["fingerprint_sha256"] != start["fingerprint_sha256"]
+
+
+def test_fingerprint_mismatches_explains_geometry_and_junction_diffs():
+    a = structural_fingerprint(_xodr_geometry("<line/>"))
+    b = structural_fingerprint(_xodr_geometry('<arc curvature="0.05"/>'))
+    diffs = fingerprint_mismatches(a, b)
+    assert any("road[1].planview" in d for d in diffs)
+
+    c = structural_fingerprint(
+        _xodr_geometry(
+            "<line/>",
+            junction_connection=(
+                '<connection id="0" incomingRoad="1" connectingRoad="2" contactPoint="end"/>'
+            ),
+        )
+    )
+    jdiffs = fingerprint_mismatches(a, c)
+    assert any("junction[1].connections" in d for d in jdiffs)
+
+
+def test_fingerprint_schema_is_declared_v2():
+    """The widened payload is a schema change; the version string must say so."""
+    fp = structural_fingerprint(_xodr())
+    assert fp["schema"] == "map_structural_fingerprint_v2"
+    assert fp["components"]["schema"] == "map_structural_fingerprint_v2"
+
+
 def test_runtime_map_fingerprint_uses_to_opendrive():
     world = FakeWorld("OpenDriveMap", _xodr())
     fp = runtime_map_fingerprint(world)
