@@ -1,0 +1,10 @@
+{
+  "schema": "ddc_current_authority/v1",
+  "generated_at_utc": "2026-10-06T09:00:00Z",
+  "backend_graph": "UE4.26 defaults (BaseEngine.ini DerivedDataBackendGraph): Local=FileSystem %ENGINEDIR%DerivedDataCache + EnvPathOverride UE-LocalDataCachePath; Shared/AltShared point at unreachable ?EpicDDC (effectively off); no project override in DefaultEngine.ini",
+  "physical_path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache (USB)",
+  "drive_identity": "Intenso SCSI USB",
+  "current_ddc_size_gb": 17.65,
+  "current_ddc_files": 128322,
+  "env_overrides_set": "none (UE-LocalDataCachePath / UE-SharedDataCachePath unset)"
+}

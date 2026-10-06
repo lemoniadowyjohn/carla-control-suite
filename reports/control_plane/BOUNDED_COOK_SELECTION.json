@@ -1,0 +1,13 @@
+{
+  "schema": "bounded_cook_selection/v1",
+  "generated_at_utc": "2026-10-06T09:00:00Z",
+  "method": "data-driven from canonical per-tile mesh inventory (20 tiles, min 5 / median ~314 / max 625)",
+  "selected": {
+    "A_high": {"tile": "6_8", "meshes": 625, "why": "maximum asset count: exercises spawn/save/shader paths hardest"},
+    "B_typical": {"tile": "10_9", "meshes": 303, "why": "nearest-to-median count: representative middle"},
+    "C_shell": {"package": "monolithic Ingolstadt.umap", "why": "LargeMap/base-map shell present-but-uncooked; tile packages reference canonical meshes independently, no base-map cook needed for tile cook dependency correctness"}
+  },
+  "material_coverage": "both tiles span road/terrain/building families via SSTag materials (all tiles share the same material set by construction)",
+  "not_selected_reason": "remaining 18 tiles add no new material/shader families (same FBX exporter, same SSTags); full 20-tile cook is the production step, explicitly out of this batch",
+  "output_root": "F:\\CARLA\\cook_bounded\\COOK_620e51db"
+}

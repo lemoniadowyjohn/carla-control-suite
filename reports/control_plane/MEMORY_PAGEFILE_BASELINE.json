@@ -1,0 +1,12 @@
+{
+  "schema": "memory_pagefile_baseline/v1",
+  "generated_at_utc": "2026-10-06T08:30:00Z",
+  "ue_memory_settings": "no project overrides; engine BaseEngine.ini carries no MemoryMaxUsedVirtual/MemoryMinFreeVirtual (defaults govern)",
+  "MEMORY_POLICY_CHANGE_REQUIRED": false,
+  "historical_values_status": "30.5GB/4096 recommendations NOT applied (refuted theory; no evidence for change)",
+  "pagefile": {"location": "C:\\pagefile.sys", "allocated_gb": 10.7, "in_use_gb": 0.7},
+  "commit_now_gb": 29.2,
+  "commit_limit_gb_est": 59.6,
+  "PAGEFILE_CHANGE_REQUIRED": false,
+  "reverify_at": "bounded-cook peaks (commit/limit/headroom recorded in resource timeline)"
+}

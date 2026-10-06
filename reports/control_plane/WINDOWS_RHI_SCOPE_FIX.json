@@ -1,0 +1,15 @@
+{
+  "schema": "windows_rhi_scope_fix/v1",
+  "generated_at_utc": "2026-10-06T08:30:00Z",
+  "PCD3D_ES31_REQUIRED": false,
+  "PCD3D_ES31_ENABLED_BEFORE": false,
+  "PCD3D_ES31_ENABLED_AFTER": false,
+  "evidence": {
+    "project_targets": ["PCD3D_SM5", "SF_VULKAN_SM5"],
+    "only_other_hit": "engine BaseEngine.ini:2150 bBuildForES31=true (mobile build-system flag, not a Windows cook target)",
+    "desktop_rhi": "DefaultGraphicsRHI_DX12"
+  },
+  "action": "NO-OP (nothing to remove; no diff, no promotion needed)",
+  "regression_check": "tools/check_windows_rhi_scope.py asserts effective Windows TargetedRHIs exclude ES31",
+  "shader_proof_deferred": "bounded cook log must show zero ES31 shader work (evidence-based, not config-divined)"
+}

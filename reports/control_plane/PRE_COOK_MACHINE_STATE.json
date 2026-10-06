@@ -1,0 +1,13 @@
+{
+  "schema": "pre_cook_machine_state/v1",
+  "generated_at_utc": "2026-10-06T08:00:00Z",
+  "ACTIVE_MUTATOR_COUNT": 0,
+  "dll_holders": [],
+  "cpu_load_pct": 37,
+  "memory": {"total_gb": 48.9, "available_gb": 28.6, "commit_bytes": 29157642240, "pagefile": "C:\\pagefile.sys 10.7GB allocated / 0.7GB used"},
+  "disks": {
+    "C": {"device": "INTEL SSDPEKKF512G8 NVMe", "fs": "NTFS", "free_gb": 37.9, "role": "system/TEMP/pagefile/evidence"},
+    "F": {"device": "INTENSO SSD SATA (Disk0, internal)", "fs": "NTFS", "free_gb": 41.5, "size_gb": 673.1, "role": "candidate DDC + cook hotset"},
+    "G": {"device": "Intenso SCSI USB", "fs": "NTFS", "free_gb": 32.8, "role": "engine/source/Content history (USB hot path)"}
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "ddc_storage_benchmark/v1",
+  "generated_at_utc": "2026-10-06T09:00:00Z",
+  "workload": "1500x64KB create/write/read/stat/delete + 60x1MB read (DDC-like small-file mix)",
+  "F_internal_SATA": {"write_mbps": 102.1, "files_per_s_create": 1558, "read_1MB_mbps": 1244.4, "note": "initial 64KB-read outlier 12.8MB/s not reproduced at 1MB (AV/scan artifact on fresh files)"},
+  "G_USB": {"write_mbps": 9.7, "files_per_s_create": 148, "read_1MB_mbps": 738.6},
+  "verdict": "F wins writes 10x and large reads 1.7x; selected as DDC target",
+  "capacity": {"F_free_gb": 41.5, "expected_ddc_initial_gb": "~2-6 (bounded workload cold cache)", "worktree_reserve_gb": "~5", "bounded_cook_output_reserve_gb": "~8", "safety_reserve_gb": 10, "post_migration_free_gb_est": "~18", "DDC_MIGRATION_CAPACITY": "PASS"}
+}
