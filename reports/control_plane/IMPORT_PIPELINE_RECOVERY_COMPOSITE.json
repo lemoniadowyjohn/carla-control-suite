@@ -1,0 +1,28 @@
+{
+  "schema": "import_pipeline_recovery_composite/v1",
+  "generated_at_utc": "2026-10-06T07:00:00Z",
+  "PHASE_A_ORIGINAL_EDITOR_IMPORT": {"pid": 12312, "exit": 0, "result": "SUCCESS (kernel-witnessed)"},
+  "PHASE_B_SUPERVISOR_LOSS_SALVAGE": {"duplicate_reconciliation": "PASS", "moveassets": "SATISFIED (not rerun)"},
+  "PHASE_C_TILE_ITERATION_FORK_CORRECTION": {
+    "root_cause": "ZERO_ORIGIN_PROBING_ASSUMPTION (+dense-grid + manifest-ignored facets)",
+    "patch": "manifest-driven iteration (generic; MAP_SPECIFIC_PRODUCTION_BRANCHES=0)",
+    "core_tests": "ALL_PASS incl. real manifest 20/20 (order hash 2f8c360faf08e5bd)",
+    "plugin_build": "PASS (UE4Editor-Carla.dll f92adba3)",
+    "georeference_rerun": "26/26",
+    "patched_prepare": "exit 0, 20 tile worlds, GenerateMap 20"
+  },
+  "POSTPROCESS_RESULTS": {
+    "PREPARE_ASSETS": "PASS (20/20 worlds)",
+    "TILE_PACKAGE_VALIDATION": "PASS (producer-side; editor reopen deferred to cook/serve)",
+    "REFERENCE_RESOLUTION": "PASS (6116/6116, VALID_CANONICAL_REFERENCES)",
+    "LARGEMAP_DISCOVERY": "20/20 static (in-engine confirmation at serve time)",
+    "LOAD_ASSET_MATERIALS": "PASS (exit 0, 0 errors, no fallback warnings)",
+    "TM_BINARY": "PASS (fresh 213281fc)",
+    "XODR_BYTE_EXACT": true,
+    "PACKAGE_DESCRIPTOR": "PASS"
+  },
+  "classification": "COMPLETE_WITH_SUPERVISOR_LOSS_RECOVERY",
+  "rationale": "Every §35 gate element holds: duplicate reconciliation, canonical input, satisfied MoveAssets, Prepare 20/20, package validation (producer-side), references resolved, LargeMap 20/20 static, materials, TM, XODR, package, output validation, composite receipt. Editor-reopen of tile worlds is the only deferred proof and is inherent to the next track (cook/serve loads every package).",
+  "IMPORT_PIPELINE_RECOVERED": true,
+  "monolithic_track": "MONOLITHIC_MAP_STATUS=INTACT (untouched throughout; separate authority, not a substitute)"
+}

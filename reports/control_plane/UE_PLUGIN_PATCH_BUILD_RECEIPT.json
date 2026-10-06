@@ -1,0 +1,31 @@
+{
+ "schema": "supervised_ue_run/v1",
+ "label": "UEPluginPatchBuild",
+ "run_id": "BUILD_LINK_9cec396e",
+ "command": [
+  "cmd.exe",
+  "/c",
+  "G:\\UnrealEngine_4.26_CARLA\\Engine\\Build\\BatchFiles\\Build.bat",
+  "CarlaUE4Editor",
+  "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+  "Win64",
+  "Development",
+  "-WaitMutex"
+ ],
+ "start_utc": "2026-10-06T11:13:08.008574Z",
+ "heartbeat": "lease heartbeat every 60s",
+ "launcher_pid": 656,
+ "executor_pid": 15988,
+ "end_utc": "2026-10-06T11:38:08.867959Z",
+ "exit_code_dec": 0,
+ "exit_code_hex": "0x0",
+ "termination_class": "SUCCESS",
+ "timed_out": false,
+ "drain": {
+  "drained": true,
+  "wait_s": 0.0
+ },
+ "log_sha256": "968bfbccf41724cf27d0c0be928baeac98d9b18c249c42d299b5b595b9d7fbcb",
+ "log_bytes": 21332,
+ "job_members_final": []
+}

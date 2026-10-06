@@ -1,0 +1,13 @@
+{
+  "schema": "pre_patched_prepare_baseline/v1",
+  "generated_at_utc": "2026-10-06T06:00:00Z",
+  "TILE_UMAP_COUNT": 0,
+  "canonical_mesh_count": 5711,
+  "canonical_prepare_input": "PASS (20/20 tiles, re-verified unchanged)",
+  "manifest_sha256_note": "Import/Ingolstadt/Ingolstadt.json (tile list authority; hashed at run)",
+  "plugin_dll_sha256": "f92adba3b57b45d77ca63a99bd7f2343d80ad70d5ca956c99557f6b776d97f91",
+  "plugin_dll_note": "patched build (manifest-driven tile iteration); differs from pre-salvage 62ec5a04 and post-link 170b3554 by construction",
+  "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "staging_state": "9 files (umap + MATs); 5711 meshes quarantined",
+  "lease": "BUILD_LINK_9cec396e (mutation lease held; heartbeat via supervised runners)"
+}

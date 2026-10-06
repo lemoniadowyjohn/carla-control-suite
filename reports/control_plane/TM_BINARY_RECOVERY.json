@@ -1,0 +1,12 @@
+{
+  "schema": "tm_binary_recovery/v1",
+  "generated_at_utc": "2026-10-06T07:00:00Z",
+  "method": "fresh carla.Map.cook_in_memory_map (NOT the old artifact promoted)",
+  "path": "Unreal/CarlaUE4/Content/Ingolstadt/Maps/Ingolstadt/TM/Ingolstadt.bin",
+  "size": 41809984,
+  "sha256": "213281fcfaa7634f900300011e8bf76f4148ef2194d31fe875c26c9afc225cd1",
+  "map_identity": "Ingolstadt",
+  "size_note": "byte-identical size to the prior 41.8MB artifact (deterministic output); overwritten in place with fresh bytes",
+  "georeference_note": "bare +proj=tmerc logged defaults warning, consistent with the fail-closed georeference contract (unknown origin, not invented)",
+  "TM_BINARY_RECOVERY": "PASS"
+}

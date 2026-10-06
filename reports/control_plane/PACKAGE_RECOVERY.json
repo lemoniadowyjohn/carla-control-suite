@@ -1,0 +1,18 @@
+{
+  "schema": "package_recovery/v1",
+  "generated_at_utc": "2026-10-06T07:00:00Z",
+  "descriptor": "Content/Ingolstadt/Config/Ingolstadt.Package.json",
+  "PACKAGE_RECOVERY": "PASS",
+  "claims_verified": {
+    "map_identity": "Ingolstadt @ /Game/Ingolstadt/Maps/Ingolstadt (exists: umap + OpenDrive + TM)",
+    "tile_worlds": "20/20 present alongside (discovered by path convention + LargeMapManager rules)",
+    "authoritative_xodr": "370abbbb byte-exact",
+    "current_tm": "213281fc fresh (not the old artifact)",
+    "props": "[] (matches manifest)"
+  },
+  "tile_package_validation": {
+    "TILE_WORLD_PACKAGE_VALIDATION": "PASS (producer-side)",
+    "evidence": "all 20 worlds written by the editor itself 1h ago (SavePackage success per exit-0 run); file-tag convention matches stock Town11 tile worlds; 6,116/6,116 references resolve",
+    "deferred": "editor RE-open of each world happens naturally at cook/serve (which loads every package); no separate 20-launch campaign run here"
+  }
+}

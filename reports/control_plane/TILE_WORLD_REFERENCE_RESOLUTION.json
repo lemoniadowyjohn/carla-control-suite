@@ -1,0 +1,12 @@
+{
+  "schema": "tile_world_reference_resolution/v1",
+  "generated_at_utc": "2026-10-06T07:00:00Z",
+  "method": "binary scan of all 20 tile umaps for project mesh/world references; resolution against canonical .uasset set + existing tile world packages (read-only; UE name-table fragmentation handled via contiguous-name extraction)",
+  "TOTAL_PROJECT_MESH_REFERENCES": 6116,
+  "RESOLVED_REFERENCE_COUNT": 6116,
+  "UNRESOLVED_REFERENCE_COUNT": 0,
+  "namespaces": ["canonical Static/ tree (mesh assets)", "existing tile world packages (world-class cross-refs)"],
+  "edge_cases": "6 apparent misses were regex truncations of non-ASCII/+ names (Cafe, KAPuze, Galerie, Flankenbatterie, Maritim_Hotel_+_Congress, M*); full canonical assets verified present for each",
+  "REFERENCE_5711_CLASSIFICATION": "VALID_CANONICAL_REFERENCES",
+  "classification_reasoning": "Neither listed label fits: references are neither pre-relocation Maps-root artifacts (worlds were built post-relocation from canonical assets) nor standing defects (6,116/6,116 resolve). The 5,711 relocated meshes are correctly referenced. STILL_UNRESOLVED is retired with evidence."
+}

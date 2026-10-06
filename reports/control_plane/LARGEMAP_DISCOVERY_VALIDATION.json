@@ -1,0 +1,10 @@
+{
+  "schema": "largemap_discovery_validation/v1",
+  "generated_at_utc": "2026-10-06T07:00:00Z",
+  "method": "static application of LargeMapManager discovery rules (trailing _X_Y parse, TileID packing, no density requirement) to the 20 produced worlds; in-engine discovery runs at cook/serve time",
+  "LARGEMAP_EXPECTED_TILE_COUNT": 20,
+  "LARGEMAP_DISCOVERED_TILE_COUNT": 20,
+  "LARGEMAP_DISCOVERY": "20/20 (static)",
+  "name_pattern": "all 20 match Ingolstadt_Tile_X_Y with X in 6..10, Y in 6..9; coordinates parse per LargeMapManager trailing-underscore rule",
+  "note": "In-engine LargeMapManager.GenerateMap confirmation deferred to first served load (cook/serve track)."
+}

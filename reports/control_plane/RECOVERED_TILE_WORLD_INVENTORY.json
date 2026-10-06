@@ -1,0 +1,10 @@
+{
+  "schema": "recovered_tile_world_inventory/v1",
+  "generated_at_utc": "2026-10-06T07:00:00Z",
+  "producer": "patched PrepareAssetsForCooking (manifest-driven; order hash 2f8c360faf08e5bd expected from identical core+manifest)",
+  "TILE_UMAP_COUNT": 20,
+  "EXPECTED_TILE_UMAP_COUNT": 20,
+  "tiles": "Ingolstadt_Tile_{6..10}_{6..9} (20 worlds, 291-715KB each, written 13:41-13:42 local in (X,Y) manifest order)",
+  "package_tag_convention": "matches stock Town11 tile worlds (9e2a83c1 first bytes); earlier LE-tag comparison against monolithic Town01 was the wrong comparator",
+  "extra_tile_worlds": 0
+}

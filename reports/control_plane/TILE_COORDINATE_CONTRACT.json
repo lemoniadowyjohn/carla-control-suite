@@ -1,0 +1,11 @@
+{
+  "schema": "tile_coordinate_contract/v1",
+  "generated_at_utc": "2026-10-06T06:00:00Z",
+  "derived_from": "LargeMapManager.cpp discovery parser (lines 454-480) + TileID packing (GetTileID: X<<32|Y, FIntVector signed)",
+  "negative_coordinates": {"legal": true, "basis": "FCString::Atoi parses leading '-' and TileID preserves sign bits; no nonnegativity check in discovery", "support": "required + tested (case K)"},
+  "name_parsing": {"rule": "trailing _X_Y after the LAST two underscores; X/Y parsed via Atoi", "malformed_behavior_upstream": "non-numeric tails silently yield 0 (collision risk) => patch validates fail-closed instead"},
+  "malformed_contract": {"missing_X_or_Y": "FAIL", "nonnumeric": "FAIL", "name_mismatch_vs_package": "FAIL", "duplicates": "FAIL with DUPLICATE_TILE_COORDINATE"},
+  "sparse_grids": {"verdict": "process declared tiles (option A)", "basis": "LargeMapManager discovery registers arbitrary tile sets with no contiguity requirement; density is not a runtime invariant"},
+  "dense_grids": {"verdict": "process identically (no special case); 0_0 grids behave exactly as stock loop did"},
+  "deterministic_order": {"order": "lexicographic (X,Y) ascending", "receipt": "TILE_ITERATION_ORDER_SHA256 over the ordered coordinate list", "basis": "matches TileID high-bits-X packing order; identical manifests yield identical sequences"}
+}

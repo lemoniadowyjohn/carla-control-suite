@@ -1,0 +1,12 @@
+{
+  "schema": "tile_manifest_authority/v1",
+  "generated_at_utc": "2026-10-06T06:00:00Z",
+  "TILE_AUTHORITY_SOURCE": "Import/Ingolstadt/Ingolstadt.json maps[0] (tiles[] list + tile_size + map name) — the governed package descriptor already consumed by Import.py",
+  "MANIFEST_TILE_COUNT": 20,
+  "manifest_tile_size_m": 1000.0,
+  "manifest_map_name": "Ingolstadt",
+  "why_not_asset_registry": "Registry reflects post-import state (could include stale/extra worlds); the manifest is the pre-import declaration of intent. Registry is used only as cross-check, never as the iteration driver.",
+  "why_not_importsettings": "importsetting.json carries FBX paths, not tile coordinates; coordinates live only in tile filenames + manifest list.",
+  "why_not_commandlet_params": "PrepareAssetsForCooking takes only PackageName/OnlyPrepareMaps; no coordinate input exists (that absence IS the defect).",
+  "no_second_authority_created": true
+}

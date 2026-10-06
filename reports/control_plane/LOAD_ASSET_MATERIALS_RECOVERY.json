@@ -1,0 +1,27 @@
+{
+ "schema": "supervised_ue_run/v1",
+ "label": "LoadAssetMaterials",
+ "run_id": "BUILD_LINK_9cec396e",
+ "command": [
+  "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+  "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+  "-run=LoadAssetMaterials",
+  "-PackageName=Ingolstadt"
+ ],
+ "start_utc": "2026-10-06T11:53:28.372856Z",
+ "heartbeat": "lease heartbeat every 60s",
+ "launcher_pid": 23320,
+ "executor_pid": 35860,
+ "end_utc": "2026-10-06T11:56:01.728844Z",
+ "exit_code_dec": 0,
+ "exit_code_hex": "0x0",
+ "termination_class": "SUCCESS",
+ "timed_out": false,
+ "drain": {
+  "drained": true,
+  "wait_s": 0.0
+ },
+ "log_sha256": "4edabf1f455a9439056995a6cc5fe425fa083b83e0777f69281742e2146c6e8c",
+ "log_bytes": 30013,
+ "job_members_final": []
+}

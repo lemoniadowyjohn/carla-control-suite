@@ -1,0 +1,17 @@
+{
+  "schema": "ingolstadt_tile_iteration_repro/v1",
+  "generated_at_utc": "2026-10-06T06:00:00Z",
+  "method": "offline evaluation of the traced loop against the manifest coordinate set (no UE execution; loop is pure)",
+  "actual_tile_coordinate_set": [[6, 6], [6, 7], [6, 8], [6, 9], [7, 6], [7, 7], [7, 8], [7, 9], [8, 6], [8, 7], [8, 8], [8, 9], [9, 6], [9, 7], [9, 8], [9, 9], [10, 6], [10, 7], [10, 8], [10, 9]],
+  "minimum_X": 6,
+  "maximum_X": 10,
+  "minimum_Y": 6,
+  "maximum_Y": 9,
+  "PROBED_FIRST_TILE": [0, 0],
+  "FIRST_TILE_EXISTS": false,
+  "LOOP_TERMINATED_AFTER_MISS": true,
+  "ACTUAL_FIRST_TILE": [6, 6],
+  "tiles_generated_by_stock_loop": 0,
+  "matches_observed": "GenerateMap num Tiles generated 0 (prepare log 09:17:42Z)",
+  "verdict": "Algorithmic failure reproduced exactly: dense 0-based probing against an offset grid yields zero before any asset I/O. No Content mutation was needed to prove it."
+}

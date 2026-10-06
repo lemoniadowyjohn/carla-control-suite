@@ -1,0 +1,16 @@
+{
+  "schema": "tile_iteration_source_trace/v1",
+  "generated_at_utc": "2026-10-06T06:00:00Z",
+  "file": "Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Commandlet/PrepareAssetsForCookingCommandlet.cpp (0.9.16 source, G:\\CARLA\\carla_source_probe)",
+  "function": "tile loop inside PrepareMapsForCooking path (lines 627-658)",
+  "loop_initialization": "j=0 outer; i=0 inner (line 629-634)",
+  "per_probe": "SpawnMeshesToWorld(DataPath, mats, i, j) filters assets whose name ends with `_Tile_i_j` or contains `_Tile_i_j_`; Res = spawned count > 0",
+  "on_hit": "TileName = Map.Name + `_Tile_i_j`; SaveWorld(AssetData, PackageName, Map.Path, TileName); MapPathsIds.Add(Map.Path/TileName, (i,j,0)); destroy spawned actors",
+  "termination_inner": "while (Res): first empty (i,j) ends the row",
+  "termination_outer": "while (i > 0): row ending immediately (i==0, first probe empty) ends everything",
+  "package_path_construction": "Map.Path + '/' + TileName; SaveWorld renames world + SavePackage to DestPath/WorldName",
+  "asset_lookup": "object-library scan of DataPath (Maps/<Map> + Static/<Category>/<Map> trees), name-pattern match only",
+  "saveworld_call": "SaveWorld(AssetData, PackageName, Map.Path, TileName) for hits; SaveWorld(..., Map.Name, false) for the base map after LargeMapManager.GenerateMap(MapPathsIds)",
+  "tilesinfo_role": "PositionTile0/TileSize feed ONLY LargeMapManager offsets (SetTile0Offset/SetTileSize); defaults (0,0,0)/200000cm without file. Does NOT drive iteration bounds.",
+  "dense_rectangle_assumption": "PROVEN baked in: contiguous probing from (0,0), row ends at first gap, scan ends at first empty row"
+}
