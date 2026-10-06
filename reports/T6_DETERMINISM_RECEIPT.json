@@ -1,0 +1,506 @@
+{
+  "LEASE_OWNER_DEATH_TEST": "PASS",
+  "T6_CONSECUTIVE_RUNS": 5,
+  "T6_OWNER_DEATH_PASS": "5/5",
+  "T6_REACQUIRE_AFTER_PASS": "5/5",
+  "T6_REACQUIRE_BEFORE_DENIED": "5/5",
+  "T6_RECONCILIATION_PASS": "5/5",
+  "T6_SETUP_PASS": "5/5",
+  "generated_utc": "2026-10-06T13:03:30.490848Z",
+  "isolation": "each run used a unique control-plane directory and mutex name passed through the environment; the production control plane was never read or written",
+  "runs": [
+    {
+      "OWNER_DEAD": true,
+      "child_terminated_after_owner_death": true,
+      "cleanup_race_detected": false,
+      "controller_timeline": [
+        {
+          "observed_at": 1791291709.0294766,
+          "stage": "BOOTSTRAP_STARTED"
+        },
+        {
+          "observed_at": 1791291711.8237245,
+          "stage": "CONTROL_PLANE_IMPORTED"
+        },
+        {
+          "observed_at": 1791291711.931579,
+          "stage": "LEASE_OBJECT_CREATED"
+        },
+        {
+          "observed_at": 1791291714.9158933,
+          "stage": "JOB_CONFIGURED"
+        },
+        {
+          "observed_at": 1791291717.239541,
+          "stage": "READY_FOR_OWNER_DEATH_TEST"
+        },
+        {
+          "observed_at": 1791291717.239541,
+          "stage": "CONTROLLER_SAW_READY"
+        }
+      ],
+      "gate_debug": {
+        "authority_owner_pid": 32076,
+        "authority_run_id": "c682f8453a9844699b0bb7527102b9ca",
+        "identity_authority": "authority.owner_pid (owner-published), never launcher hp.pid",
+        "launch_topology_classification": "KNOWN_INTERMEDIATE_WRAPPER",
+        "launcher_hp_creation_time": "2026-10-06T13:01:48.4972040Z",
+        "launcher_hp_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+        "launcher_hp_pid": 30184,
+        "lease_keys": [
+          "content_root",
+          "ddc_mutation_concurrency",
+          "domains",
+          "engine_root",
+          "heartbeat_utc",
+          "mutex_name",
+          "mutex_verdict",
+          "operation",
+          "operation_fingerprint",
+          "parent_pid",
+          "prior_lease_state",
+          "project_root",
+          "root_creation_time",
+          "root_pid",
+          "run_id",
+          "schema",
+          "schema_version",
+          "session_id",
+          "start_utc",
+          "status"
+        ],
+        "lease_root_creation_time": "2026-10-06T13:01:48.5121040Z",
+        "lease_root_pid": 32076,
+        "lease_run_id": "c682f8453a9844699b0bb7527102b9ca",
+        "owner_creation_time": "2026-10-06T13:01:48.5121040Z",
+        "owner_os_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "owner_os_ppid": 30184,
+        "popen_pid_equals_owner_pid": false
+      },
+      "gate_ok": true,
+      "launcher_alive_after_owner_kill": false,
+      "launcher_pid": 30184,
+      "mutex": "Local\\CARLA_T6_c517fa503c",
+      "owner_exit_before_gate": null,
+      "owner_pid": 32076,
+      "owner_pid_killed": 32076,
+      "pre_kill_gate": {
+        "CHILD_ALIVE": true,
+        "CHILD_IDENTITY_MATCH": true,
+        "CHILD_PID_KNOWN": true,
+        "LAUNCHER_ALIVE": true,
+        "LAUNCHER_EXECUTABLE": true,
+        "LEASE_EXISTS": true,
+        "LEASE_OWNER_CREATION_TIME_MATCH": true,
+        "LEASE_OWNER_PID_MATCH": true,
+        "LEASE_RUN_ID_MATCH": true,
+        "LEASE_VALID_JSON": true,
+        "OWNER_ALIVE": true,
+        "OWNER_AUTHORITY_PROCESS_BINDING": true,
+        "OWNER_EXECUTABLE": true,
+        "OWNER_READY": true
+      },
+      "reacquire_after": "ALLOWED",
+      "reacquire_before": "DENIED",
+      "reacquire_before_reason": "DUPLICATE_OPERATION_ALREADY_RUNNING",
+      "reconcile_output": "STATE STALE\nRECON {\"action\": \"RECONCILED\", \"prior_state\": \"STALE\"}",
+      "run": "t6_01_d71d6fc2",
+      "run_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-supervision-pr\\reports\\t6_runs\\t6_01_d71d6fc2",
+      "stderr": ""
+    },
+    {
+      "OWNER_DEAD": true,
+      "child_terminated_after_owner_death": true,
+      "cleanup_race_detected": false,
+      "controller_timeline": [
+        {
+          "observed_at": 1791291732.7115033,
+          "stage": "BOOTSTRAP_STARTED"
+        },
+        {
+          "observed_at": 1791291735.3117852,
+          "stage": "LEASE_OBJECT_CREATED"
+        },
+        {
+          "observed_at": 1791291736.9708407,
+          "stage": "JOB_CONFIGURED"
+        },
+        {
+          "observed_at": 1791291738.6497831,
+          "stage": "CHILD_CREATED"
+        },
+        {
+          "observed_at": 1791291738.7522452,
+          "stage": "READY_FOR_OWNER_DEATH_TEST"
+        },
+        {
+          "observed_at": 1791291738.754248,
+          "stage": "CONTROLLER_SAW_READY"
+        }
+      ],
+      "gate_debug": {
+        "authority_owner_pid": 13348,
+        "authority_run_id": "0c4a18ef7a3d4d648b21f8c6aded784f",
+        "identity_authority": "authority.owner_pid (owner-published), never launcher hp.pid",
+        "launch_topology_classification": "KNOWN_INTERMEDIATE_WRAPPER",
+        "launcher_hp_creation_time": "2026-10-06T13:02:12.1914490Z",
+        "launcher_hp_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+        "launcher_hp_pid": 17672,
+        "lease_keys": [
+          "content_root",
+          "ddc_mutation_concurrency",
+          "domains",
+          "engine_root",
+          "heartbeat_utc",
+          "mutex_name",
+          "mutex_verdict",
+          "operation",
+          "operation_fingerprint",
+          "parent_pid",
+          "prior_lease_state",
+          "project_root",
+          "root_creation_time",
+          "root_pid",
+          "run_id",
+          "schema",
+          "schema_version",
+          "session_id",
+          "start_utc",
+          "status"
+        ],
+        "lease_root_creation_time": "2026-10-06T13:02:12.2407210Z",
+        "lease_root_pid": 13348,
+        "lease_run_id": "0c4a18ef7a3d4d648b21f8c6aded784f",
+        "owner_creation_time": "2026-10-06T13:02:12.2407210Z",
+        "owner_os_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "owner_os_ppid": 17672,
+        "popen_pid_equals_owner_pid": false
+      },
+      "gate_ok": true,
+      "launcher_alive_after_owner_kill": false,
+      "launcher_pid": 17672,
+      "mutex": "Local\\CARLA_T6_23eba3a9ee",
+      "owner_exit_before_gate": null,
+      "owner_pid": 13348,
+      "owner_pid_killed": 13348,
+      "pre_kill_gate": {
+        "CHILD_ALIVE": true,
+        "CHILD_IDENTITY_MATCH": true,
+        "CHILD_PID_KNOWN": true,
+        "LAUNCHER_ALIVE": true,
+        "LAUNCHER_EXECUTABLE": true,
+        "LEASE_EXISTS": true,
+        "LEASE_OWNER_CREATION_TIME_MATCH": true,
+        "LEASE_OWNER_PID_MATCH": true,
+        "LEASE_RUN_ID_MATCH": true,
+        "LEASE_VALID_JSON": true,
+        "OWNER_ALIVE": true,
+        "OWNER_AUTHORITY_PROCESS_BINDING": true,
+        "OWNER_EXECUTABLE": true,
+        "OWNER_READY": true
+      },
+      "reacquire_after": "ALLOWED",
+      "reacquire_before": "DENIED",
+      "reacquire_before_reason": "DUPLICATE_OPERATION_ALREADY_RUNNING",
+      "reconcile_output": "STATE STALE\nRECON {\"action\": \"RECONCILED\", \"prior_state\": \"STALE\"}",
+      "run": "t6_02_71b939c6",
+      "run_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-supervision-pr\\reports\\t6_runs\\t6_02_71b939c6",
+      "stderr": ""
+    },
+    {
+      "OWNER_DEAD": true,
+      "child_terminated_after_owner_death": true,
+      "cleanup_race_detected": false,
+      "controller_timeline": [
+        {
+          "observed_at": 1791291751.9809742,
+          "stage": "BOOTSTRAP_STARTED"
+        },
+        {
+          "observed_at": 1791291754.0385904,
+          "stage": "LEASE_OBJECT_CREATED"
+        },
+        {
+          "observed_at": 1791291756.117912,
+          "stage": "JOB_CONFIGURED"
+        },
+        {
+          "observed_at": 1791291757.882343,
+          "stage": "CHILD_RESUMED"
+        },
+        {
+          "observed_at": 1791291757.9858286,
+          "stage": "READY_FOR_OWNER_DEATH_TEST"
+        },
+        {
+          "observed_at": 1791291757.9898202,
+          "stage": "CONTROLLER_SAW_READY"
+        }
+      ],
+      "gate_debug": {
+        "authority_owner_pid": 8912,
+        "authority_run_id": "9375bf22e7db40e9827e8e5624e6fee3",
+        "identity_authority": "authority.owner_pid (owner-published), never launcher hp.pid",
+        "launch_topology_classification": "KNOWN_INTERMEDIATE_WRAPPER",
+        "launcher_hp_creation_time": "2026-10-06T13:02:31.4634170Z",
+        "launcher_hp_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+        "launcher_hp_pid": 34580,
+        "lease_keys": [
+          "content_root",
+          "ddc_mutation_concurrency",
+          "domains",
+          "engine_root",
+          "heartbeat_utc",
+          "mutex_name",
+          "mutex_verdict",
+          "operation",
+          "operation_fingerprint",
+          "parent_pid",
+          "prior_lease_state",
+          "project_root",
+          "root_creation_time",
+          "root_pid",
+          "run_id",
+          "schema",
+          "schema_version",
+          "session_id",
+          "start_utc",
+          "status"
+        ],
+        "lease_root_creation_time": "2026-10-06T13:02:31.5077310Z",
+        "lease_root_pid": 8912,
+        "lease_run_id": "9375bf22e7db40e9827e8e5624e6fee3",
+        "owner_creation_time": "2026-10-06T13:02:31.5077310Z",
+        "owner_os_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "owner_os_ppid": 34580,
+        "popen_pid_equals_owner_pid": false
+      },
+      "gate_ok": true,
+      "launcher_alive_after_owner_kill": false,
+      "launcher_pid": 34580,
+      "mutex": "Local\\CARLA_T6_0a1170f08f",
+      "owner_exit_before_gate": null,
+      "owner_pid": 8912,
+      "owner_pid_killed": 8912,
+      "pre_kill_gate": {
+        "CHILD_ALIVE": true,
+        "CHILD_IDENTITY_MATCH": true,
+        "CHILD_PID_KNOWN": true,
+        "LAUNCHER_ALIVE": true,
+        "LAUNCHER_EXECUTABLE": true,
+        "LEASE_EXISTS": true,
+        "LEASE_OWNER_CREATION_TIME_MATCH": true,
+        "LEASE_OWNER_PID_MATCH": true,
+        "LEASE_RUN_ID_MATCH": true,
+        "LEASE_VALID_JSON": true,
+        "OWNER_ALIVE": true,
+        "OWNER_AUTHORITY_PROCESS_BINDING": true,
+        "OWNER_EXECUTABLE": true,
+        "OWNER_READY": true
+      },
+      "reacquire_after": "ALLOWED",
+      "reacquire_before": "DENIED",
+      "reacquire_before_reason": "DUPLICATE_OPERATION_ALREADY_RUNNING",
+      "reconcile_output": "STATE STALE\nRECON {\"action\": \"RECONCILED\", \"prior_state\": \"STALE\"}",
+      "run": "t6_03_668b360f",
+      "run_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-supervision-pr\\reports\\t6_runs\\t6_03_668b360f",
+      "stderr": ""
+    },
+    {
+      "OWNER_DEAD": true,
+      "child_terminated_after_owner_death": true,
+      "cleanup_race_detected": false,
+      "controller_timeline": [
+        {
+          "observed_at": 1791291770.2621422,
+          "stage": "BOOTSTRAP_STARTED"
+        },
+        {
+          "observed_at": 1791291773.143371,
+          "stage": "LEASE_OBJECT_CREATED"
+        },
+        {
+          "observed_at": 1791291775.8753116,
+          "stage": "JOB_CONFIGURED"
+        },
+        {
+          "observed_at": 1791291778.815399,
+          "stage": "READY_FOR_OWNER_DEATH_TEST"
+        },
+        {
+          "observed_at": 1791291778.8169305,
+          "stage": "CONTROLLER_SAW_READY"
+        }
+      ],
+      "gate_debug": {
+        "authority_owner_pid": 36672,
+        "authority_run_id": "05fd767e67ed43a2af78f3e5c0ba13da",
+        "identity_authority": "authority.owner_pid (owner-published), never launcher hp.pid",
+        "launch_topology_classification": "KNOWN_INTERMEDIATE_WRAPPER",
+        "launcher_hp_creation_time": "2026-10-06T13:02:50.0431820Z",
+        "launcher_hp_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+        "launcher_hp_pid": 16132,
+        "lease_keys": [
+          "content_root",
+          "ddc_mutation_concurrency",
+          "domains",
+          "engine_root",
+          "heartbeat_utc",
+          "mutex_name",
+          "mutex_verdict",
+          "operation",
+          "operation_fingerprint",
+          "parent_pid",
+          "prior_lease_state",
+          "project_root",
+          "root_creation_time",
+          "root_pid",
+          "run_id",
+          "schema",
+          "schema_version",
+          "session_id",
+          "start_utc",
+          "status"
+        ],
+        "lease_root_creation_time": "2026-10-06T13:02:50.0533290Z",
+        "lease_root_pid": 36672,
+        "lease_run_id": "05fd767e67ed43a2af78f3e5c0ba13da",
+        "owner_creation_time": "2026-10-06T13:02:50.0533290Z",
+        "owner_os_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "owner_os_ppid": 16132,
+        "popen_pid_equals_owner_pid": false
+      },
+      "gate_ok": true,
+      "launcher_alive_after_owner_kill": false,
+      "launcher_pid": 16132,
+      "mutex": "Local\\CARLA_T6_5295fb0d6c",
+      "owner_exit_before_gate": null,
+      "owner_pid": 36672,
+      "owner_pid_killed": 36672,
+      "pre_kill_gate": {
+        "CHILD_ALIVE": true,
+        "CHILD_IDENTITY_MATCH": true,
+        "CHILD_PID_KNOWN": true,
+        "LAUNCHER_ALIVE": true,
+        "LAUNCHER_EXECUTABLE": true,
+        "LEASE_EXISTS": true,
+        "LEASE_OWNER_CREATION_TIME_MATCH": true,
+        "LEASE_OWNER_PID_MATCH": true,
+        "LEASE_RUN_ID_MATCH": true,
+        "LEASE_VALID_JSON": true,
+        "OWNER_ALIVE": true,
+        "OWNER_AUTHORITY_PROCESS_BINDING": true,
+        "OWNER_EXECUTABLE": true,
+        "OWNER_READY": true
+      },
+      "reacquire_after": "ALLOWED",
+      "reacquire_before": "DENIED",
+      "reacquire_before_reason": "DUPLICATE_OPERATION_ALREADY_RUNNING",
+      "reconcile_output": "STATE STALE\nRECON {\"action\": \"RECONCILED\", \"prior_state\": \"STALE\"}",
+      "run": "t6_04_f398b7f6",
+      "run_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-supervision-pr\\reports\\t6_runs\\t6_04_f398b7f6",
+      "stderr": ""
+    },
+    {
+      "OWNER_DEAD": true,
+      "child_terminated_after_owner_death": true,
+      "cleanup_race_detected": false,
+      "controller_timeline": [
+        {
+          "observed_at": 1791291792.2027795,
+          "stage": "BOOTSTRAP_STARTED"
+        },
+        {
+          "observed_at": 1791291794.5686126,
+          "stage": "IMPORTS_OK"
+        },
+        {
+          "observed_at": 1791291794.6729934,
+          "stage": "LEASE_OBJECT_CREATED"
+        },
+        {
+          "observed_at": 1791291796.9335396,
+          "stage": "JOB_CONFIGURED"
+        },
+        {
+          "observed_at": 1791291798.5802488,
+          "stage": "READY_FOR_OWNER_DEATH_TEST"
+        },
+        {
+          "observed_at": 1791291798.5815082,
+          "stage": "CONTROLLER_SAW_READY"
+        }
+      ],
+      "gate_debug": {
+        "authority_owner_pid": 18588,
+        "authority_run_id": "b04186366bac4314bc78a88395a76af8",
+        "identity_authority": "authority.owner_pid (owner-published), never launcher hp.pid",
+        "launch_topology_classification": "KNOWN_INTERMEDIATE_WRAPPER",
+        "launcher_hp_creation_time": "2026-10-06T13:03:11.9971390Z",
+        "launcher_hp_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+        "launcher_hp_pid": 16692,
+        "lease_keys": [
+          "content_root",
+          "ddc_mutation_concurrency",
+          "domains",
+          "engine_root",
+          "heartbeat_utc",
+          "mutex_name",
+          "mutex_verdict",
+          "operation",
+          "operation_fingerprint",
+          "parent_pid",
+          "prior_lease_state",
+          "project_root",
+          "root_creation_time",
+          "root_pid",
+          "run_id",
+          "schema",
+          "schema_version",
+          "session_id",
+          "start_utc",
+          "status"
+        ],
+        "lease_root_creation_time": "2026-10-06T13:03:12.0111110Z",
+        "lease_root_pid": 18588,
+        "lease_run_id": "b04186366bac4314bc78a88395a76af8",
+        "owner_creation_time": "2026-10-06T13:03:12.0111110Z",
+        "owner_os_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "owner_os_ppid": 16692,
+        "popen_pid_equals_owner_pid": false
+      },
+      "gate_ok": true,
+      "launcher_alive_after_owner_kill": false,
+      "launcher_pid": 16692,
+      "mutex": "Local\\CARLA_T6_7fc0793a14",
+      "owner_exit_before_gate": null,
+      "owner_pid": 18588,
+      "owner_pid_killed": 18588,
+      "pre_kill_gate": {
+        "CHILD_ALIVE": true,
+        "CHILD_IDENTITY_MATCH": true,
+        "CHILD_PID_KNOWN": true,
+        "LAUNCHER_ALIVE": true,
+        "LAUNCHER_EXECUTABLE": true,
+        "LEASE_EXISTS": true,
+        "LEASE_OWNER_CREATION_TIME_MATCH": true,
+        "LEASE_OWNER_PID_MATCH": true,
+        "LEASE_RUN_ID_MATCH": true,
+        "LEASE_VALID_JSON": true,
+        "OWNER_ALIVE": true,
+        "OWNER_AUTHORITY_PROCESS_BINDING": true,
+        "OWNER_EXECUTABLE": true,
+        "OWNER_READY": true
+      },
+      "reacquire_after": "ALLOWED",
+      "reacquire_before": "DENIED",
+      "reacquire_before_reason": "DUPLICATE_OPERATION_ALREADY_RUNNING",
+      "reconcile_output": "STATE STALE\nRECON {\"action\": \"RECONCILED\", \"prior_state\": \"STALE\"}",
+      "run": "t6_05_89071a1b",
+      "run_dir": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-supervision-pr\\reports\\t6_runs\\t6_05_89071a1b",
+      "stderr": ""
+    }
+  ],
+  "schema": "T6_DETERMINISM_RECEIPT/v1",
+  "schema_version": 1
+}

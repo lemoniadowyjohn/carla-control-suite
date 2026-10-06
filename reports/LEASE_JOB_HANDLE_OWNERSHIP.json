@@ -1,0 +1,9 @@
+{
+  "b_inherit_handles": false,
+  "child_inherits_job_handle": false,
+  "note": "reconciliation reads the lease record and OS process state; it never opens a Job handle for observation, which would otherwise defeat KILL_ON_JOB_CLOSE",
+  "reconciler_retains_job_handle": false,
+  "schema": "LEASE_JOB_HANDLE_OWNERSHIP/v1",
+  "schema_version": 1,
+  "supervisor_owns_job_handle": true
+}
