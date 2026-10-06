@@ -1,0 +1,102 @@
+{
+  "anchors": [],
+  "double_placement": {
+    "note": "hard-clip assignment must place each building in exactly one tile",
+    "ways_matched_in_multiple_tiles": []
+  },
+  "generated_at_utc": "2026-10-03T22:16:24.469260+00:00",
+  "id_recovery": {
+    "matched": 0,
+    "unmatched": 6
+  },
+  "inputs": {
+    "authoritative_osm": {
+      "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+    },
+    "buildings_source": {
+      "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+      "sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5"
+    },
+    "clip_binding": "governed regeneration: hard centroid-assignment match (<2m) of tile-clip footprints to full-OSM buildings; full OSM SHA + tile_size 1000m + clip version recorded",
+    "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "rebase_xy": [
+      832671.676,
+      5458671.104
+    ],
+    "tile_size_m": 1000.0
+  },
+  "mesh_building_centroid_gate": {
+    "max": null,
+    "median": null,
+    "n": 0,
+    "note": "DIAGNOSTIC ONLY: greedy nearest-centroid group assignment misassigns in dense fabric (order mapping disproven: p50 232m), so per-building residuals are contaminated. Kept for forensics, never gated.",
+    "p95": null
+  },
+  "mesh_leg": {
+    "max": null,
+    "median": null,
+    "n": 0,
+    "note": "per-vertex surface residuals conflate OSM2World footprint simplification with position; diagnostic only, not gated",
+    "p95": null
+  },
+  "mesh_set_coverage_gate": {
+    "expected_covered_by_mesh": {
+      "max": 25.067694447662763,
+      "median": 25.067694447662763,
+      "n": 6,
+      "p95": 25.067694447662763
+    },
+    "mesh_covered_by_expected": {
+      "max": 140.2351355658082,
+      "median": 66.0976162239813,
+      "n": 6,
+      "p95": 135.4127373354138
+    },
+    "note": "GATED mesh leg: assignment-free set coverage per tile in the oracle-verified frame, both directions. Every source building must have mesh within tolerance and vice versa. No pairing asserted."
+  },
+  "mor_exact_coincidence": {
+    "note": "MoR outlines generalize (drop) source vertices; removed vertices cannot test placement by construction. Placement of a building is proven by >=1 exact-coincidence anchor (<=1cm) on retained outline vertices."
+  },
+  "mor_leg": {
+    "anchors_without_mor_match": 0,
+    "max": null,
+    "median": null,
+    "n": 0,
+    "p95": null
+  },
+  "mor_simplification_tail": [],
+  "n_anchors": 0,
+  "n_buildings_gated": 0,
+  "oracle": {
+    "implementation": "ultimate_pipeline.geometry.wgs84_to_local",
+    "oracle": "direct pyproj EPSG:4326->bare-tmerc",
+    "transform_agreement_max_m": 0.0
+  },
+  "schema": "true_world_placement_acceptance/v2",
+  "scope_note": "Offline legs only (source->mesh, source->MoR). FBX/package->CARLA world requires the live UE4 track; NOT claimed.",
+  "tile_placement_gate": {
+    "max_m": 11.402336136502784,
+    "note": "DIAGNOSTIC: centroid translation confounds OSM2World footprint generalization with position; superseded by the world leg below.",
+    "per_tile_translation_m": {
+      "tile_10_6": 11.402336136502784
+    }
+  },
+  "tolerance_m": 10.0,
+  "verdict": "PLACEMENT_OFFLINE_CONTROL_ANCHOR_FAIL",
+  "world_leg_gate": {
+    "mesh_covered_by_mor_corners": {
+      "max": 87.89025890723761,
+      "median": 11.1812822605752,
+      "n": 140,
+      "p95": 85.09706709460744
+    },
+    "mor_corners_covered_by_mesh": {
+      "max": 4490.986943355358,
+      "median": 2831.2127620519104,
+      "n": 808,
+      "p95": 3888.5359469034
+    },
+    "note": "GATED: mesh relocated to canonical XODR-local via the declared chain (mesh_rel + obj_origin_native - rebase) vs MoR building corners in-tile, both directions, no pairing asserted. Tests the full offline placement chain."
+  }
+}
