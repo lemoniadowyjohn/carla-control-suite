@@ -1,0 +1,586 @@
+{
+  "schema": "FULL_UNIT_SUITE_SHARDS/v1",
+  "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-harness-repair",
+  "shard_size_files": 12,
+  "shard_timeout_s": 1500,
+  "total_files": 247,
+  "shard_count": 21,
+  "shards": [
+    {
+      "index": 1,
+      "files": [
+        "test_a1_a2_path_and_frame_resolution.py",
+        "test_access_restriction_metadata.py",
+        "test_agent_sync_contract.py",
+        "test_artifact_locator.py",
+        "test_artifact_transactions.py",
+        "test_assert_supported_carla_version.py",
+        "test_audit_building_frame_alignment.py",
+        "test_audit_lane_link_turn_classification_cli.py",
+        "test_audit_osm_road_link_topology_cli.py",
+        "test_audit_thesis_topic_contract_current.py",
+        "test_back_to_back_state_contamination.py",
+        "test_blender_conversion_integrity.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 85,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 34.84
+    },
+    {
+      "index": 2,
+      "files": [
+        "test_c12_explicit_dr_wiring.py",
+        "test_c16_cook_dry_run.py",
+        "test_c9_tail_gate_controls.py",
+        "test_candidate_regression_gate.py",
+        "test_capture_config.py",
+        "test_carla_classes.py",
+        "test_carla_runtime_load_safety.py",
+        "test_carla_semantic_organizer.py",
+        "test_carla_tools_honesty.py",
+        "test_carla_utils_tier3_hardening.py",
+        "test_carla_visual_smoke_gate_evaluation.py",
+        "test_carla_visual_smoke_gate_utils.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 172,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 13.32
+    },
+    {
+      "index": 3,
+      "files": [
+        "test_cert_runtime_hardening.py",
+        "test_check_junction_connection_coverage.py",
+        "test_check_lane_geometry_continuity.py",
+        "test_check_lane_width_continuity.py",
+        "test_class_weights.py",
+        "test_cli_runtime_tile.py",
+        "test_codex_harness.py",
+        "test_component_classifier.py",
+        "test_component_reachability.py",
+        "test_compute_perception_gap.py",
+        "test_confirmed_hygiene_gaps.py",
+        "test_connector_validator_pose.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 74,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 82.41
+    },
+    {
+      "index": 4,
+      "files": [
+        "test_crash_classifier.py",
+        "test_crash_safe_length_repair.py",
+        "test_crosswalk_writer.py",
+        "test_curvature_wasserstein_gap.py",
+        "test_db_manager.py",
+        "test_db_manager_get_connection_removed.py",
+        "test_dem_identity_crs.py",
+        "test_domain_adaptation.py",
+        "test_domain_gap_gnn.py",
+        "test_domain_gap_metrics.py",
+        "test_e2_map_quality_repair.py",
+        "test_elevation_grade_clamp.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 118,
+        "fail": 0,
+        "skip": 1,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 95.33
+    },
+    {
+      "index": 5,
+      "files": [
+        "test_entrypoint_print_import_safety.py",
+        "test_eval_real_unlabeled.py",
+        "test_eval_sim_labeled_metrics.py",
+        "test_evidence_sha256_anchors.py",
+        "test_exp_osm_to_xodr_determinism_normalized.py",
+        "test_export_thesis_tables.py",
+        "test_feature_gap.py",
+        "test_file_hashing.py",
+        "test_final_map_readiness_gate.py",
+        "test_find_broken_roads_cli.py",
+        "test_frechet_gap.py",
+        "test_full_grid_tile_cook.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 131,
+        "fail": 0,
+        "skip": 1,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 70.85
+    },
+    {
+      "index": 6,
+      "files": [
+        "test_gap_analyzer_xodr_to_xodr.py",
+        "test_gate_measurement_correctness.py",
+        "test_geojson_multipolygon_buildings.py",
+        "test_geometric_continuity_contactpoint.py",
+        "test_geometric_continuity_migration.py",
+        "test_geometry_kernel.py",
+        "test_geometry_validator_kernel_migration.py",
+        "test_geometry_validator_xml_mutation.py",
+        "test_gpu_tdr_preflight.py",
+        "test_harness_governance_contract.py",
+        "test_inputs_manifest.py",
+        "test_junction_complexity_gap.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 165,
+        "fail": 0,
+        "skip": 1,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 13.98
+    },
+    {
+      "index": 7,
+      "files": [
+        "test_junction_connector_boundary_gate.py",
+        "test_junction_connector_classifier.py",
+        "test_junction_connector_rebuild.py",
+        "test_junction_integrity_consistency.py",
+        "test_label_quality.py",
+        "test_lane_count_changes.py",
+        "test_lane_generator_osm_count.py",
+        "test_lane_section_successors.py",
+        "test_lane_successor_hardening.py",
+        "test_lane_width_policy.py",
+        "test_large_map_package.py",
+        "test_local_registration.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 98,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 16.25
+    },
+    {
+      "index": 8,
+      "files": [
+        "test_map_acceptance.py",
+        "test_map_event_record.py",
+        "test_map_hygiene.py",
+        "test_map_identity_guard.py",
+        "test_map_registry_integrity.py",
+        "test_map_registry_name_normalization.py",
+        "test_map_registry_pinning.py",
+        "test_map_registry_verify_pinned_map.py",
+        "test_map_stats_curvature.py",
+        "test_measure_candidate_acceptance_drivability_gates.py",
+        "test_measure_candidate_acceptance_junction_integrity.py",
+        "test_mesh_continuity_repairer_curvature_flag.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 201,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 28.69
+    },
+    {
+      "index": 9,
+      "files": [
+        "test_mesh_continuity_repairer_parampoly3_endpoint.py",
+        "test_mesh_streamer_update.py",
+        "test_micro_stub_detection.py",
+        "test_min_train_segmentation_any_255.py",
+        "test_native_signal_enrichment.py",
+        "test_o10_gap026_severe_tail_fixtures.py",
+        "test_o11_gap026_checker_bias_matrix.py",
+        "test_o12_current_map_static_release_matrix.py",
+        "test_o13_configuration_authority_audit.py",
+        "test_o14_clean_clone_offline_audit.py",
+        "test_o15_rq1_five_run_matrix.py",
+        "test_o16_rq3_pairing_preflight.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 45,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 45.93
+    },
+    {
+      "index": 10,
+      "files": [
+        "test_o17_rq3_dataset_manifest_verifier.py",
+        "test_o18_rq5_contract_audit.py",
+        "test_o19_final_release_receipt.py",
+        "test_o1_cook_provenance_chain.py",
+        "test_o20_recovery_resume_audit.py",
+        "test_o2_large_map_package_contract.py",
+        "test_o3_tile_frame_consistency.py",
+        "test_o4_preflight_import_package.py",
+        "test_o5_unreal_cook_resource_preflight.py",
+        "test_o6_carla_source_build_receipt.py",
+        "test_o7_rpc_instrumentation_audit.py",
+        "test_o8_runtime_map_qa.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 69,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 24.56
+    },
+    {
+      "index": 11,
+      "files": [
+        "test_o9_runtime_route_generator.py",
+        "test_oc1_review_regression.py",
+        "test_oc3_adversarial_review.py",
+        "test_offline_cooking_pipeline_integration.py",
+        "test_opendrive_gen_diagnostic.py",
+        "test_opendrive_geometry_parampoly3.py",
+        "test_opendrive_rebase.py",
+        "test_osm_enrichment_writers_name_match.py",
+        "test_osm_file_selection_mtime_guard_20260924.py",
+        "test_osm_input_guard.py",
+        "test_osm_meta_index_name_matching.py",
+        "test_osm_multipolygon_buildings.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 138,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 48.52
+    },
+    {
+      "index": 12,
+      "files": [
+        "test_osm_polygon_loader_frame.py",
+        "test_osm_polygon_loader_malformed_nodes.py",
+        "test_osm_road_link_topology.py",
+        "test_osm_to_xodr_proj_string_gap021.py",
+        "test_osm_xodr_correspondence.py",
+        "test_ost_run_protocol_adapter.py",
+        "test_p09_tile_equivalence.py",
+        "test_p0_recorder_and_provenance_repairs.py",
+        "test_pack_thesis_run.py",
+        "test_package_smoke_check.py",
+        "test_parampoly3_blind_spot_sweep.py",
+        "test_patch_pinned_building_frame.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 90,
+        "fail": 0,
+        "skip": 1,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 27.23
+    },
+    {
+      "index": 13,
+      "files": [
+        "test_perception_any_255.py",
+        "test_perception_dataset_roundtrip.py",
+        "test_perception_metrics_exporter.py",
+        "test_perception_metrics_simple.py",
+        "test_phase_g3_cross_section_coverage.py",
+        "test_phase_g5_lane_classification.py",
+        "test_phase_g6_junction_lanelinks.py",
+        "test_phase_g7_roadmark_semantics.py",
+        "test_phase_h0_signal_offset.py",
+        "test_planview_internal_seams_heading_only.py",
+        "test_positioned_osm_metadata.py",
+        "test_probe_tile_fbx_densest_cli.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 67,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 113.52
+    },
+    {
+      "index": 14,
+      "files": [
+        "test_quarantine_bad_roads.py",
+        "test_realism_module_infer_speed.py",
+        "test_realism_module_rules_mode.py",
+        "test_receipt_reconciler.py",
+        "test_recompute_geometry_starts_chained_inplace.py",
+        "test_record_route_authority.py",
+        "test_record_route_timeout_camera_scaling.py",
+        "test_recorder_backpressure_and_frame_integrity.py",
+        "test_recorder_semseg_layout.py",
+        "test_regen_find_final_xodr_hygiene.py",
+        "test_regen_map_of_record_sumo_guard.py",
+        "test_regen_measure_acceptance_component_reachability.py"
+      ],
+      "n_files": 12,
+      "exit_code": 1,
+      "counts": {
+        "pass": 115,
+        "fail": 1,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 39.73
+    },
+    {
+      "index": 15,
+      "files": [
+        "test_regen_rebase_buildings.py",
+        "test_regen_strict_preconditions.py",
+        "test_regen_structural_signature.py",
+        "test_repo_health_tool.py",
+        "test_rig_verifier_reexports.py",
+        "test_rl_fuzzer.py",
+        "test_roundabout_v2_real_map_probe.py",
+        "test_roundabout_v2_regression.py",
+        "test_roundabout_v2_source_aware.py",
+        "test_rq3_batch9_pair_contract.py",
+        "test_rq4_gnn_provenance.py",
+        "test_rq5_execution_correctness.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 204,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 171.36
+    },
+    {
+      "index": 16,
+      "files": [
+        "test_rq5_protocol_freeze.py",
+        "test_rq5b_claim_boundary.py",
+        "test_run_archiver.py",
+        "test_run_c19_assembly.py",
+        "test_run_determinism_audit.py",
+        "test_run_gnn_pipeline_seed.py",
+        "test_run_perception_safe_failure_classification.py",
+        "test_run_perception_safe_rig_contract.py",
+        "test_run_perception_safe_unstable_map_mitigations.py",
+        "test_runtime_enrichments.py",
+        "test_runtime_tile_builder.py",
+        "test_runtime_tile_referential_integrity.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 213,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 70.08
+    },
+    {
+      "index": 17,
+      "files": [
+        "test_salvage_repair.py",
+        "test_semantic_class_policy.py",
+        "test_semantic_completeness.py",
+        "test_semantic_diff.py",
+        "test_semantic_overlap_wiring.py",
+        "test_semantic_tagging.py",
+        "test_sensor_calibration_semantics.py",
+        "test_sidewalk_builder.py",
+        "test_signal_digest_canonical.py",
+        "test_single_writer_control_plane.py",
+        "test_speed_limit_writer.py",
+        "test_stage05_connector_snap_wiring.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 125,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 28.73
+    },
+    {
+      "index": 18,
+      "files": [
+        "test_stage07_structural_osm_metadata.py",
+        "test_stage08_length_invariant.py",
+        "test_stage10c_respects_carla_disable.py",
+        "test_stage4_offline_buildings.py",
+        "test_stage6_containment.py",
+        "test_stage6_unsafe_flag_policy.py",
+        "test_stage8h_map_hygiene.py",
+        "test_stage_boundary_contracts.py",
+        "test_stage_context.py",
+        "test_stage_contracts_aggregate.py",
+        "test_stage_digest.py",
+        "test_stage_large_map_import_package_cli.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 122,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 37.6
+    },
+    {
+      "index": 19,
+      "files": [
+        "test_structure_elevation_plausibility.py",
+        "test_structure_elevation_remediation_probe.py",
+        "test_sumo_repair_frame_preservation.py",
+        "test_thesis_rq_contract.py",
+        "test_tile_equivalence.py",
+        "test_tile_extractor.py",
+        "test_tile_fbx_generator.py",
+        "test_tile_metadata.py",
+        "test_tile_world_runner_runtime_tile.py",
+        "test_tiling_seam_continuity.py",
+        "test_topology_certification.py",
+        "test_traffic_light_signals.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 130,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 9.51
+    },
+    {
+      "index": 20,
+      "files": [
+        "test_traffic_manager_and_walker_authority.py",
+        "test_train_launcher_any_255.py",
+        "test_train_launcher_synthetic_dry_run.py",
+        "test_turn_cycle_lane_geometry.py",
+        "test_validate_governance.py",
+        "test_validate_thesis_claim_provenance.py",
+        "test_verify_candidate_digest.py",
+        "test_verify_final_xodr.py",
+        "test_visual_mesh_elevation_warp.py",
+        "test_writer_lock.py",
+        "test_writer_lock_adversarial.py",
+        "test_writer_lock_atomic_publication.py"
+      ],
+      "n_files": 12,
+      "exit_code": 0,
+      "counts": {
+        "pass": 179,
+        "fail": 0,
+        "skip": 1,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 528.05
+    },
+    {
+      "index": 21,
+      "files": [
+        "test_writer_lock_concurrency.py",
+        "test_xodr_carla_hardener.py",
+        "test_xodr_compare_gate.py",
+        "test_xodr_junction_ref_cleanup.py",
+        "test_xodr_structural_summary.py",
+        "test_xodr_validator_convergence.py",
+        "test_zero_length_connector_repair.py"
+      ],
+      "n_files": 7,
+      "exit_code": 0,
+      "counts": {
+        "pass": 137,
+        "fail": 0,
+        "skip": 0,
+        "error": 0
+      },
+      "timeout": false,
+      "duration_s": 137.63
+    }
+  ],
+  "aggregate": {
+    "pass": 2678,
+    "fail": 1,
+    "skip": 5,
+    "error": 0
+  },
+  "timed_out_shards": [],
+  "all_shards_completed": true,
+  "FULL_UNIT_TOTAL": 2684,
+  "FULL_UNIT_PASS": 2678,
+  "FULL_UNIT_FAIL": 1,
+  "FULL_UNIT_SKIP": 5,
+  "FULL_UNIT_SUITE": "INCOMPLETE",
+  "incomplete_reason": "1 failing"
+}
