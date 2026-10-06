@@ -1,7 +1,7 @@
 {
   "claim_boundary": "Preflight is an offline readiness audit. It performs no training, creates no capture, and proves nothing about RQ5 accuracy or generalization. RQ5_OFFLINE_READY_DATASET_BLOCKED is the correct outcome whenever no validated RQ3 paired dataset exists.",
   "claim_scope": "OFFLINE_READINESS_AUDIT",
-  "created_utc": "2026-10-02T20:41:46.382350+00:00",
+  "created_utc": "2026-10-02T23:15:18.229008+00:00",
   "dataset_blocked": true,
   "dataset_inputs": {
     "camera": null,
@@ -14,7 +14,7 @@
   "final_status": "RQ5_OFFLINE_READY_DATASET_BLOCKED",
   "offline_authority_ok": true,
   "rationale": "every offline authority check passed; no validated RQ3 paired dataset exists, so final RQ5 training is blocked on data rather than on code",
-  "report_sha256": "868864e77daa362ded70cce6a12d0b14531b717acdeeb3f62027388a71bd08de",
+  "report_sha256": "8479786793931f897911f79a64e1de29f295aea6e6a9a41fac9548149ec4ba85",
   "schema": "rq5_preflight_v1",
   "sections": {
     "candidate": {
@@ -22,9 +22,9 @@
         {
           "code": "candidate_head_resolvable",
           "data": {
-            "sha": "bd92f31c8c56b9f4096aabc12491c19a3144520a"
+            "sha": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b"
           },
-          "detail": "git HEAD = bd92f31c8c56b9f4096aabc12491c19a3144520a",
+          "detail": "git HEAD = 7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
           "status": "PASS"
         },
         {
@@ -36,7 +36,7 @@
           "status": "PASS"
         }
       ],
-      "head": "bd92f31c8c56b9f4096aabc12491c19a3144520a",
+      "head": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
       "ignored_evidence_entries": 0,
       "ok": true
     },
