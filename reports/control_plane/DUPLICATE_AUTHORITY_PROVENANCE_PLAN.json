@@ -1,0 +1,24 @@
+{
+  "schema": "duplicate_authority_provenance_plan/v1",
+  "generated_at_utc": "2026-10-06T03:00:00Z",
+  "gate_section_4": {"UNKNOWN_COUNT": 0, "CONFLICTING_COUNT": 0, "verdict": "PROCEED (no STOP)"},
+  "CANONICAL_DUPLICATE_AUTHORITY": "PROVEN_EQUIVALENT",
+  "authority_evidence": [
+    "canonical set complete: 5711/5711 tile meshes, 20/20 tiles, per-tile distribution identical to staging",
+    "canonical created 2026-10-04 16:39 by governed Import.py MoveAssets from the same FBX set",
+    "no conflicting or unknown pairs; staging-only = 9 non-mesh assets (umap + 8 MAT_*)",
+    "byte differences are import-metadata level (re-import signature); no content contradiction found"
+  ],
+  "CANONICAL_MATCHES_CURRENT_IMPORT_INPUT": true,
+  "provenance_evidence": [
+    "21/21 FBX inputs match PACKAGE_SHA256.json manifest right now (0 mismatches)",
+    "authoritative XODR 370abbbb verified at lease acquisition",
+    "canonical meshes therefore derive from current inputs; no input drift"
+  ],
+  "repair_plan": {
+    "5711_SEMANTIC_DUPLICATES": "KEEP_CANONICAL_DROP_STAGING via quarantine-move (NOT delete): relocate staging triples to G:\\CARLA\\quarantine\\staging_meshes_20261006\\, validate canonical intact, delete quarantine only after postprocess acceptance",
+    "9_STAGING_ONLY": "KEEP_STAGING_TEMPORARILY (Ingolstadt.umap + 8 MAT_* referenced by it; umap is the only loadable map until tile worlds exist)",
+    "explicitly_not_done": "bulk MoveAssets replay (would collide 1:1)"
+  },
+  "totals_by_action": {"KEEP_CANONICAL_DROP_STAGING": 5711, "KEEP_STAGING_TEMPORARILY": 9, "REPLACE_CANONICAL_WITH_STAGING": 0, "MOVE_STAGING_TO_MISSING_CANONICAL": 0, "NO_ACTION": 0, "BLOCKED": 0}
+}

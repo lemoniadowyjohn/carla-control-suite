@@ -1,0 +1,12 @@
+{
+  "schema": "georeference_compiled_regression/v1",
+  "generated_at_utc": "2026-10-06T05:00:00Z",
+  "harness": "LibCarla/test/georeference_fail_closed_test.cpp (executor-authored) compiled with cl/VS2022 against rebuilt carla_server.lib + rpclib (RTTI-off matched, /MD, Win32 API level 10.0)",
+  "binary": "G:\\CARLA\\build_tmp\\georef_test\\georef_test.exe (not committed; build log G:\\CARLA\\build_logs\\georef_compile4.log)",
+  "linked_libcarla": "Build/libcarla-visualstudio/LibCarla/cmake/server/Release/carla_server.lib (2026-10-05 rebuild incl. GeoReferenceParser fix)",
+  "result": "26 checks, 0 failures, exit 0",
+  "cases": "bare +proj=tmerc ACCEPT unknown-origin; complete lat/lon ACCEPT with origin; lat-only/lon-only REJECT; nonnumeric REJECT; out-of-range REJECT; no 42/2 fabrication anywhere; stock 0/0 + Ingolstadt-area + corner controls exact; authoritative XODR loads with rebase preserved",
+  "COMPLETE_GEOREFERENCE_REGRESSION": 0,
+  "vendored_header_drift": {"road/Map.h": "SYNC", "road/MapData.h": "SYNC", "road/MapBuilder.h": "SYNC", "opendrive/parser/GeoReferenceParser.h": "SYNC", "client/Map.h": "SYNC", "VENDORED_HEADER_DRIFT": "PASS"},
+  "scope_note": "Library-level proof; the UE plugin DLL consumes the same rebuilt LibCarla. No NaN/42-2/0-0 fabrication observed."
+}

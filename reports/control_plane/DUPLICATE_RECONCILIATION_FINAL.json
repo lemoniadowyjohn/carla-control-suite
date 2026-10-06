@@ -1,0 +1,21 @@
+{
+  "schema": "duplicate_reconciliation_final/v1",
+  "generated_at_utc": "2026-10-06T03:30:00Z",
+  "lease": "IMPORT_3c14831d",
+  "DUPLICATE_RECONCILIATION": "PASS",
+  "journal": "DUPLICATE_REPAIR_JOURNAL.json (5720 entries, 5720 COMPLETE, 0 failed)",
+  "EXPECTED_CANONICAL_ASSET_COUNT": 5711,
+  "ACTUAL_CANONICAL_ASSET_COUNT": 5711,
+  "STAGING_ASSET_COUNT_AFTER": 9,
+  "staging_remainder": "Ingolstadt.umap + 8 MAT_* (KEEP_STAGING_TEMPORARILY: referenced by the only loadable map until tile worlds exist)",
+  "quarantine": "G:\\CARLA\\quarantine\\staging_meshes_IMPORT_3c14831d (5711 files; retained until postprocess acceptance, then deleted)",
+  "forensics_preserved": "quarantine retains every removed staging package; canonical untouched; journal maps every asset",
+  "MOVEASSETS_RECOVERY": "SATISFIED_BY_DUPLICATE_RECONCILIATION",
+  "moveassets_satisfied_proof": {
+    "preconditions": "canonical namespace complete per manifest inputs (5711/5711, 20/20 tiles); no unresolved staging conflicts (0 conflicting/unknown)",
+    "canonical_outputs": "all relocated meshes present with per-tile distribution identical to import output",
+    "staging_conflicts": "none remaining (duplicates quarantined, 9 intentional keeps documented)",
+    "commandlet_not_rerun": true,
+    "note": "Tree is exactly as a successful MoveAssets stage specifies; invoking the commandlet would collide, not improve."
+  }
+}

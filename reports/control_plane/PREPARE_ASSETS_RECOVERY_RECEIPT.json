@@ -1,0 +1,28 @@
+{
+ "schema": "supervised_ue_run/v1",
+ "label": "PrepareAssetsForCooking",
+ "run_id": "IMPORT_3c14831d",
+ "command": [
+  "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+  "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+  "-run=PrepareAssetsForCooking",
+  "-PackageName=Ingolstadt",
+  "-OnlyPrepareMaps=1"
+ ],
+ "start_utc": "2026-10-06T09:12:45.704863Z",
+ "heartbeat": "lease heartbeat every 60s",
+ "launcher_pid": 36124,
+ "executor_pid": 18168,
+ "end_utc": "2026-10-06T09:18:01.829050Z",
+ "exit_code_dec": 0,
+ "exit_code_hex": "0x0",
+ "termination_class": "SUCCESS",
+ "timed_out": false,
+ "drain": {
+  "drained": true,
+  "wait_s": 0.0
+ },
+ "log_sha256": "64d10e915ae27af304b9b9e205fb1bbbfc86a16614911abcf5a7e9c84b1cf2d8",
+ "log_bytes": 115117,
+ "job_members_final": []
+}

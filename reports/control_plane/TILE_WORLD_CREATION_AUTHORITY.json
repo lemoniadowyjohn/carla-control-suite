@@ -1,0 +1,13 @@
+{
+  "schema": "tile_world_creation_authority/v1",
+  "generated_at_utc": "2026-10-06T05:30:00Z",
+  "TILE_WORLD_PRODUCER": "PROVEN",
+  "function": "UPrepareAssetsForCookingCommandlet tile loop + SaveWorld (PrepareAssetsForCookingCommandlet.cpp ~620-680, SaveWorld ~331-380)",
+  "source_lines": ["tile iteration do/while from (0,0)", "SpawnMeshesToWorld(DataPath, materials, i, j) with `_Tile_i_j` name filter", "TileName = Map.Name + '_Tile_i_j'", "SaveWorld(AssetData, PackageName, Map.Path, TileName): rename + SavePackage to DestPath/WorldName", "MapPathsIds + LargeMapManager.GenerateMap + final SaveWorld(Map.Name)"],
+  "input_assets": "StaticMesh assets under post-MoveAssets canonical category trees, filtered by tile suffix",
+  "tile_coordinate_source": "loop indices (i,j), NOT manifest (manifest tile list is not consulted by the loop)",
+  "world_package_name": "Map.Path/TileName (e.g. /Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_8_8)",
+  "output_package_path": "DestPath/WorldName via SavePackage",
+  "precondition": "meshes must already sit in canonical Static/ trees (MoveAssets must have run); TilesInfo.txt supplies only LargeMapManager offsets, not iteration bounds",
+  "offset_grid_consequence": "0-based probing stops at first empty tile; offset grids (6_6..10_9) yield zero worlds (see TILE_GENERATION_BLOCKED.json)"
+}

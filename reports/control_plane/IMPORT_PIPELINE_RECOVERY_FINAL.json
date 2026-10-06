@@ -1,0 +1,21 @@
+{
+  "schema": "import_pipeline_recovery_final/v1",
+  "generated_at_utc": "2026-10-06T05:00:00Z",
+  "PHASE_A_ORIGINAL_EDITOR_IMPORT": {"pid": 12312, "creation_time": "2026-10-05T18:38:44.153836Z", "exit": 0, "exit_time": "2026-10-06T01:19:40.524957Z", "result": "SUCCESS (kernel-witnessed)"},
+  "PHASE_B_GOVERNED_POSTPROCESS_RECOVERY": {
+    "run_id": "IMPORT_3c14831d",
+    "duplicate_reconciliation": "PASS (5720 journaled, 0 failed; quarantine retained)",
+    "moveassets": "SATISFIED_BY_DUPLICATE_RECONCILIATION (commandlet not rerun)",
+    "prepare_assets": "exit 0 under supervision BUT zero tile worlds: grid-offset probe incompatibility proven (TILE_GENERATION_BLOCKED.json)",
+    "load_asset_materials": "NOT_EXECUTED (no tile worlds)",
+    "tm_binary": "prior 41.8MB artifact stands un-re-proven",
+    "xodr": "ALREADY_SATISFIED_BYTE_EXACT (370abbbb)",
+    "package_descriptor": "present from prior run; tile-world claims unverified"
+  },
+  "classification": "PARTIAL_WITH_EXACT_BLOCKERS (not COMPLETE_WITH_SUPERVISOR_LOSS_RECOVERY: tile worlds absent)",
+  "blocker": "TILE_WORLD_GENERATION_BLOCKED: PrepareAssetsForCooking probes tiles from (0,0); Ingolstadt grid is offset (6_6..10_9). Requires fork patch as separate governed change.",
+  "ue_link": {"UE_PLUGIN_LINK": "PASS", "UE_PLUGIN_BUILD": "PASS", "dll": "UE4Editor-Carla.dll 170b3554", "game_module_unchanged": "62ec5a04"},
+  "georeference": {"COMPLETE_GEOREFERENCE_REGRESSION": 0, "VENDORED_HEADER_DRIFT": "PASS"},
+  "zero_signal": "NOT_STARTED",
+  "cook": "RESUME_ALLOWED=false (unchanged)"
+}

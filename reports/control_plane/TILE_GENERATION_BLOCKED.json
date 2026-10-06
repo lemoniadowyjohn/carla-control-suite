@@ -1,0 +1,20 @@
+{
+  "schema": "tile_generation_blocked/v1",
+  "generated_at_utc": "2026-10-06T04:00:00Z",
+  "TILE_UMAP_COUNT": 0,
+  "EXPECTED_TILE_UMAP_COUNT": 20,
+  "mechanism_proven": "PrepareAssetsForCooking tile loop probes tile indices from (0,0) upward and stops at the first empty tile (PrepareAssetsForCookingCommandlet.cpp do/while Res loop). Ingolstadt tile grid is offset (6_6..10_9); probe _Tile_0_0 matches nothing, loop exits immediately. Observed: 'GenerateMap num Tiles generated 0' with exit 0.",
+  "independence": "Mechanism is name-pattern based, NOT location based: it fails identically whether meshes sit in staging or canonical namespaces. The duplicate reconciliation did NOT cause this (staging meshes carry the same 6_6 offset).",
+  "tilesinfo_role": "TilesInfo.txt (absent) supplies only LargeMapManager Tile0Offset/TileSize for streaming; it does NOT drive iteration bounds. Generating it would not unblock tile creation.",
+  "monolithic_path": "Single-map branch (SaveWorld Map.Name) was not taken because IsMapInTiles returned true on _Tile_-named meshes.",
+  "fix_shape": "Fork patch: drive tile iteration from the manifest tile list (or scan existing _Tile_* suffixes) instead of 0-based probing, keeping 0-based behavior for stock maps. Estimated scope: PrepareAssetsForCookingCommandlet tile loop + validation; requires UE rebuild + full tile-output validation as its own governed change.",
+  "consequences": {
+    "PREPARE_ASSETS": "exit 0 but produced zero tile worlds (receipt records success-with-zero-output)",
+    "LOAD_ASSET_MATERIALS": "BLOCKED_ON_TILE_WORLDS (no tile worlds to assign)",
+    "TM_BINARY": "prior 41.8MB artifact stands un-re-proven (BuildBinaryForTM needs valid map structure; monolithic path not exercised)",
+    "REFERENCE_5711_CLASSIFICATION": "STILL_UNRESOLVED (no tile worlds to inspect)",
+    "LARGEMAP_STATIC_DISCOVERY": "0/20",
+    "cook_track": "tile cook impossible without tile worlds; monolithic cook remains theoretically available"
+  },
+  "not_a_regression": "No prior run ever produced Ingolstadt tile worlds (TILE_UMAP_COUNT was 0 in every observed state)."
+}

@@ -1,0 +1,46 @@
+{
+ "schema": "supervised_ue_run/v1",
+ "label": "UEPluginLink",
+ "run_id": "IMPORT_3c14831d",
+ "command": [
+  "cmd.exe",
+  "/c",
+  "G:\\UnrealEngine_4.26_CARLA\\Engine\\Build\\BatchFiles\\Build.bat",
+  "CarlaUE4Editor",
+  "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+  "Win64",
+  "Development",
+  "-WaitMutex"
+ ],
+ "start_utc": "2026-10-06T09:33:59.187409Z",
+ "heartbeat": "lease heartbeat every 60s",
+ "launcher_pid": 9740,
+ "executor_pid": 34532,
+ "end_utc": "2026-10-06T09:35:59.843782Z",
+ "exit_code_dec": 0,
+ "exit_code_hex": "0x0",
+ "termination_class": "SUCCESS",
+ "timed_out": false,
+ "drain": {
+  "drained": true,
+  "wait_s": 0.0
+ },
+ "log_sha256": "6686c811ac374ce9bb78b562df8ad24529e543a62c0e16c4cf00c721e565cb92",
+ "log_bytes": 3034,
+ "job_members_final": [],
+ "outputs": {
+  "UE4Editor-Carla.dll": {
+   "path": "Unreal/CarlaUE4/Plugins/Carla/Binaries/Win64/UE4Editor-Carla.dll",
+   "sha256": "170b3554ca90052a57409f6e37970b53aef52a86dd5ee59b862d2383b01345f7",
+   "bytes": 10381824
+  },
+  "UE4Editor-CarlaUE4.dll": {
+   "note": "game module unchanged by this link (plugin links dynamically); sha still 62ec5a04"
+  }
+ },
+ "result": {
+  "UE_PLUGIN_LINK": "PASS",
+  "UE_PLUGIN_BUILD": "PASS",
+  "compile_link_errors": 0
+ }
+}
