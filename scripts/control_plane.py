@@ -573,19 +573,46 @@ def detect_ungoverned_mutators(inventory, session_id):
 # ---------------------------------------------------------------------------
 # configuration snapshot (batch section 19)
 # ---------------------------------------------------------------------------
+# Paths under the CARLA source-probe checkout. These were previously
+# hardcoded to one machine (G:\CARLA\carla_source_probe\...), which made the
+# published control plane unusable anywhere else and silently hashed nothing
+# useful elsewhere. They are now resolved from CARLA_SOURCE_PROBE_ROOT; when
+# that is unset the entries are reported as UNCONFIGURED instead of hashing a
+# path that does not exist.
+CARLA_SOURCE_PROBE_ROOT = os.environ.get("CARLA_SOURCE_PROBE_ROOT", "")
+
+
+def _probe_path(relative):
+    if not CARLA_SOURCE_PROBE_ROOT:
+        return None
+    return os.path.join(CARLA_SOURCE_PROBE_ROOT,
+                        *relative.split("/"))
+
+
 CONFIG_FILES = {
-    "DefaultEngine.ini": r"G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Config\DefaultEngine.ini",
-    "DefaultGame.ini": r"G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Config\DefaultGame.ini",
-    "Import.py": r"G:\CARLA\carla_source_probe\Util\BuildTools\Import.py",
+    "DefaultEngine.ini": _probe_path(
+        "Unreal/CarlaUE4/Config/DefaultEngine.ini"),
+    "DefaultGame.ini": _probe_path(
+        "Unreal/CarlaUE4/Config/DefaultGame.ini"),
+    "Import.py": _probe_path("Util/BuildTools/Import.py"),
 }
 
 
 def configuration_snapshot():
+    files = {}
+    for name, path in CONFIG_FILES.items():
+        if path is None:
+            files[name] = "UNCONFIGURED_SET_CARLA_SOURCE_PROBE_ROOT"
+        elif not os.path.isfile(path):
+            files[name] = "MISSING"
+        else:
+            files[name] = _sha(path)
     return {
         "schema": "OPERATION_CONFIGURATION_SNAPSHOT/v1",
         "schema_version": SCHEMA_VERSION,
         "generated_utc": utc_now(),
-        "files": {name: _sha(path) for name, path in CONFIG_FILES.items()},
+        "carla_source_probe_root": CARLA_SOURCE_PROBE_ROOT or "UNSET",
+        "files": files,
     }
 
 
