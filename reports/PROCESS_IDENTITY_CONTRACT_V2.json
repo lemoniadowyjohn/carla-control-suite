@@ -1,0 +1,86 @@
+{
+  "schema": "PROCESS_IDENTITY_CONTRACT_V2/v1",
+  "schema_version": 2,
+  "supersedes": "implicit ad-hoc PID usage in supervised_ue_run.py / lease_store",
+  "principle": "Every process identity that carries authority MUST be persisted as the triple (role, pid, creation_time). A naked PID is never authoritative. Windows recycles PIDs, so PID-only identity cannot be validated after the fact and is the direct cause of the historical receipt defect.",
+  "roles": {
+    "controller": {
+      "definition": "the process that decides to mutate and holds the decision context",
+      "pid": "required",
+      "creation_time": "required",
+      "authoritative": true
+    },
+    "supervisor": {
+      "definition": "the governed harness process that acquires the lease, spawns, supervises and emits the receipt",
+      "pid": "required",
+      "creation_time": "required",
+      "authoritative": true
+    },
+    "launcher": {
+      "definition": "the direct child created by Popen; may be a wrapper stub (on Windows a venv python.exe respawns the base interpreter)",
+      "pid": "required",
+      "creation_time": "required",
+      "authoritative": true
+    },
+    "logical_owner": {
+      "definition": "the process that logically owns the mutation, after wrapper resolution",
+      "pid": "required",
+      "creation_time": "required",
+      "authoritative": true,
+      "note": "on Windows the launcher PID and the logical owner PID can differ; identity authority must come from the resolved owner, never from the launcher PID alone"
+    },
+    "mutation_root": {
+      "definition": "the outermost governed process that performs the mutation and is assigned to the Job Object",
+      "pid": "required",
+      "creation_time": "required",
+      "authoritative": true
+    },
+    "executor": {
+      "definition": "a transient resolved member of the Job tree",
+      "pid": "optional",
+      "creation_time": "required IF the pid is persisted",
+      "authoritative": false,
+      "rule": "either persist pid + creation_time + explicit role, or omit the field entirely. A naked executor PID is forbidden. Because the executor may exit before the receipt is written, it must never be load-bearing for authority."
+    }
+  },
+  "assignment_of_duties": {
+    "owns_lease": {
+      "role": "mutation_root",
+      "binding": "mutation_root_pid + mutation_root_creation_time",
+      "rationale": "the lease must identify the process that actually mutates, not the harness that supervises it. A supervisor-owned lease cannot prove the mutation root was governed.",
+      "two_stage_binding_required": true,
+      "two_stage_rationale": "the mutation root does not exist until after Popen returns. Stage 1 acquires an admission lease bound to the supervisor so concurrent mutation is denied from the outset; Stage 2 rebinds root_pid and root_creation_time to the real mutation root immediately after Job assignment and before the run is treated as RUNNING."
+    },
+    "assigned_to_job": {
+      "role": "mutation_root",
+      "ordering": "spawn suspended -> assign -> verify -> resume"
+    },
+    "receipt_mutation_root": {
+      "role": "mutation_root",
+      "must_include": ["pid", "creation_time"]
+    },
+    "heartbeat_validates": {
+      "roles": ["mutation_root"],
+      "checks": [
+        "lease.run_id unchanged",
+        "authoritative PID still exists",
+        "creation_time still matches (detects PID reuse)",
+        "lease_owner_alive(lease) is true"
+      ],
+      "on_failure": "must NOT refresh RUNNING. Transition to STALE (or terminal) and stop representing the lease as valid coverage."
+    },
+    "terminal_transition": {
+      "requirement": "every terminal path must move the lease out of RUNNING and persist end_utc plus terminal_state. The existing release(lease, terminal_state) already does this; the harness simply never called it."
+    }
+  },
+  "forbidden": [
+    "persisting an authoritative PID without its creation_time",
+    "persisting executor_pid without executor_creation_time",
+    "continuing to heartbeat a lease whose owner is dead or PID-reused",
+    "adopting an unrelated pre-existing lease as authority for a new run",
+    "leaving a lease in RUNNING after the supervised operation terminates",
+    "treating codepath evidence of Job assignment as runtime membership proof",
+    "presenting a post-hoc reconciliation receipt as producer-emitted"
+  ],
+  "identity_verification_helper": "lease_store.owner_alive(root_pid, root_creation_time) already exists and correctly compares a live process creation time against the recorded one. It was defined but never consulted by heartbeat()."
+}
