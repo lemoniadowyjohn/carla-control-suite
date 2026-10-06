@@ -1,0 +1,166 @@
+{
+  "CONTROL_PLANE_OWNER_DEATH_RECONCILIATION": "PASS",
+  "JOB_HANDLE_OWNERSHIP": {
+    "b_inherit_handles": false,
+    "child_inherits_job_handle": false,
+    "note": "reconciliation reads the lease record and OS process state; it never opens a Job handle for observation, which would otherwise defeat KILL_ON_JOB_CLOSE",
+    "reconciler_retains_job_handle": false,
+    "supervisor_owns_job_handle": true
+  },
+  "LEASE_JOB_COUPLING": "PASS",
+  "LEASE_OWNER_DEATH_TEST": "PASS",
+  "LEASE_RELEASE_NEGATIVE_TEST": "PASS",
+  "PROCESS_TREE_SUPERVISION_FINAL": {
+    "CASE08": "PASS",
+    "CASE10": "PASS",
+    "LEASE_JOB_COUPLING": "PASS",
+    "MATRIX": "25/25 PASS",
+    "NATIVE_CRASHES": 0,
+    "STRESS": "PASS"
+  },
+  "generated_utc": "2026-10-06T12:17:04.462427Z",
+  "handle_metric": {
+    "after": 187,
+    "api": "GetProcessHandleCount",
+    "before": 187,
+    "classification": "NONE",
+    "growth": 0,
+    "measurement_valid": true
+  },
+  "passed": 11,
+  "schema": "LEASE_JOB_COUPLING/v1",
+  "schema_version": 1,
+  "tests": [
+    {
+      "detail": {
+        "child": {
+          "creation_time": "2026-10-06T12:16:48.7116180Z",
+          "pid": 17456
+        },
+        "job_members": {
+          "active": 0,
+          "queried": false,
+          "terminated": 0,
+          "total": 0
+        }
+      },
+      "pass": true,
+      "test": "T2_lease_release_denied_live_descendant"
+    },
+    {
+      "detail": {
+        "child_exit": 1
+      },
+      "pass": true,
+      "test": "T3_release_succeeds_after_terminal"
+    },
+    {
+      "detail": {
+        "exit": 7,
+        "released": "FAILED"
+      },
+      "pass": true,
+      "test": "T4_child_failure_recorded"
+    },
+    {
+      "detail": {
+        "classification": "TERMINATED_BY_SUPERVISOR",
+        "owned_dead": true,
+        "unrelated_alive": true
+      },
+      "pass": true,
+      "test": "T5_operator_cancel_scoped"
+    },
+    {
+      "detail": {
+        "lease_identity": {
+          "root_creation_time": "2026-10-06T12:16:57.1229800Z",
+          "root_pid": 30920,
+          "run_id": "ae88736356fc4a6eb11856a6de54abec"
+        },
+        "lease_keys": [
+          "content_root",
+          "ddc_mutation_concurrency",
+          "domains",
+          "engine_root",
+          "heartbeat_utc",
+          "mutex_name",
+          "mutex_verdict",
+          "operation",
+          "operation_fingerprint",
+          "parent_pid",
+          "prior_lease_state",
+          "project_root",
+          "root_creation_time",
+          "root_pid",
+          "run_id",
+          "schema",
+          "schema_version",
+          "session_id",
+          "start_utc",
+          "status"
+        ]
+      },
+      "pass": true,
+      "test": "T6a_lease_written_with_identity"
+    },
+    {
+      "detail": {
+        "binding": "KNOWN_INTERMEDIATE_WRAPPER",
+        "launcher_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+        "launcher_pid": 36572,
+        "owner_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "owner_pid": 30920,
+        "owner_ppid": 36572
+      },
+      "pass": true,
+      "test": "T6a1_owner_authority_bound_to_launch"
+    },
+    {
+      "detail": {
+        "kill_target": 30920,
+        "launcher_alive_after": false,
+        "owner_alive_after": false,
+        "owner_pid": 30920
+      },
+      "pass": true,
+      "test": "T6a2_logical_owner_terminated"
+    },
+    {
+      "detail": {
+        "lease_after": null,
+        "mutator_died": true,
+        "prior_state": "STALE",
+        "reconciled": "RECONCILED"
+      },
+      "pass": true,
+      "test": "T6c_owner_death_reconciliation"
+    },
+    {
+      "detail": {
+        "reacquired": true
+      },
+      "pass": true,
+      "test": "T6b_reacquire_after_reconciliation_succeeds"
+    },
+    {
+      "detail": {
+        "reason": "REFUSING_TO_RECONCILE_LIVE_LEASE"
+      },
+      "pass": true,
+      "test": "T6e_reconcile_with_live_lease_denied"
+    },
+    {
+      "detail": {
+        "after": 187,
+        "api": "GetProcessHandleCount",
+        "before": 187,
+        "classification": "NONE",
+        "growth": 0
+      },
+      "pass": true,
+      "test": "T7_handle_metric_valid"
+    }
+  ],
+  "total": 11
+}
