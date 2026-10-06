@@ -1,0 +1,35 @@
+{
+ "schema": "supervised_ue_run/v1",
+ "label": "BoundedCook_10_9",
+ "run_id": "COOK_620e51db",
+ "command": [
+  "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+  "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+  "-run=cook",
+  "-map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_10_9",
+  "-targetplatform=WindowsNoEditor",
+  "-OutputDir=F:\\CARLA\\cook_bounded\\COOK_620e51db",
+  "-iterate",
+  "-cooksinglepackage",
+  "-unattended",
+  "-NoLogTimes",
+  "-UTF8Output",
+  "-stdout"
+ ],
+ "start_utc": "2026-10-06T20:23:42.475297Z",
+ "heartbeat": "lease heartbeat every 60s",
+ "launcher_pid": 16164,
+ "executor_pid": 29788,
+ "end_utc": "2026-10-06T20:47:53.014445Z",
+ "exit_code_dec": 0,
+ "exit_code_hex": "0x0",
+ "termination_class": "SUCCESS",
+ "timed_out": false,
+ "drain": {
+  "drained": true,
+  "wait_s": 0.0
+ },
+ "log_sha256": "02d4b37743e3a6eee8aee3b393fb859bbd9980effdc79abf29966f7a7aac0f56",
+ "log_bytes": 119034,
+ "job_members_final": []
+}

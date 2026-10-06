@@ -1,0 +1,10 @@
+{
+  "schema": "bounded_cook_command/v1",
+  "lease": "COOK_620e51db",
+  "fingerprint": "6b810394b9334038b6635b784e1be5e97267f195a7064665fe72cd2d31276cfb",
+  "env": {"UE-LocalDataCachePath": "F:\\UnrealEngine_DDC"},
+  "maps_sequential": ["/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_6_8", "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_10_9"],
+  "command_template": "UE4Editor.exe <uproject> -run=cook -map=<map> -targetplatform=WindowsNoEditor -OutputDir=F:\\CARLA\\cook_bounded\\COOK_620e51db -iterate -cooksinglepackage -unattended -NoLogTimes -UTF8Output -stdout",
+  "stall_rule": "COOK_STALLED only if over 30 min: no package progress AND no log growth AND no SCW CPU delta AND no meaningful UE I/O, with jobs remaining. Package-count stasis alone never triggers.",
+  "scw_watchdog": "any full disappearance of all workers with pending jobs -> SCW_ALL_WORKERS_LOST, fail explicitly with evidence"
+}

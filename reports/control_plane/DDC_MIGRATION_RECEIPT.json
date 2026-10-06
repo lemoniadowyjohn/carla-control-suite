@@ -1,0 +1,12 @@
+{
+  "schema": "ddc_migration_receipt/v1",
+  "generated_at_utc": "2026-10-06T09:30:00Z",
+  "mechanism": "UE4.26 EnvPathOverride (UE-LocalDataCachePath), run-scoped via process env. No ini edits; engine BaseEngine.ini untouched; old G: DDC retained per policy.",
+  "backend_before": "Local=FileSystem %ENGINEDIR%DerivedDataCache (G: USB, 17.65GB/128k files)",
+  "path_before": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+  "backend_after": "same graph, path overridden per-process",
+  "path_after": "F:\\UnrealEngine_DDC",
+  "config_hashes": "no config files changed (env-only migration)",
+  "smoke": {"files": 3375, "gb": 4.3, "minutes": "~5", "slow_warnings": 0, "verdict": "DDC_EFFECTIVE_PATH=F:\\UnrealEngine_DDC, DDC_QUALIFICATION=PASS"},
+  "old_ddc": "retained untouched (rollback/evidence)"
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "production_cook_authorization/v1",
+  "generated_at_utc": "2026-10-06T12:00:00Z",
+  "gate": {
+    "PROCESS_TREE_SUPERVISION": "PASS",
+    "TILE_WORLD_EDITOR_LOAD_VALID": "PARTIAL (20/20 package-valid + producer proof; in-editor load proof pending serve track)",
+    "PRECOOK_LARGEMAP_DISCOVERY": "PASS (static 20/20)",
+    "RHI_CONFIG": "PASS (SM5+Vulkan, ES31 absent, no change needed)",
+    "DDC_QUALIFICATION": "PASS",
+    "SCW_SUPERVISION": "PASS",
+    "BOUNDED_COOK": "PASS (2/2 tiles, exit 0, drained)",
+    "BOUNDED_OUTPUT_VALIDATION": "PASS",
+    "COMMIT_PRESSURE": "REFUTED (not proven)",
+    "storage_reserve": "PASS (F: 41.5GB free, output 1.7GB, DDC growth bounded)"
+  },
+  "FULL_PRODUCTION_COOK_ALLOWED": false,
+  "blocking_item": "TILE_WORLD_EDITOR_LOAD_VALID=20/20 in-editor proof (obtainable at first serve: load each tile world via RPC in one session; estimated 20-40 min; blocked only by scheduling, not by any defect)",
+  "not_blocking": "everything else on the §38 list passes; no technical defect stands between here and full cook except that single load proof",
+  "policy_on_approval": "CLEAN_PRODUCTION_COOK_REQUIRED into a fresh output root with this fingerprint"
+}

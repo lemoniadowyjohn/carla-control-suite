@@ -1,0 +1,14 @@
+{
+  "schema": "scw_lifecycle_timeline/v1",
+  "generated_at_utc": "2026-10-06T12:00:00Z",
+  "build_valid": "ShaderCompileWorker.exe 3b84e9b7 (157/157 actions, Batch 16)",
+  "max_concurrent_observed": 4,
+  "bounded_cooks": {
+    "Tile_6_8": {"supervisor_executor_pid": 34196, "result": "completed without stall; no worker incident"},
+    "Tile_10_9": {"supervisor_executor_pid": 29788, "result": "completed without stall; no worker incident"}
+  },
+  "SCW_UNEXPLAINED_DISAPPEARANCES": 0,
+  "SCW_SUPERVISION": "PASS (job-owned trees, heartbeat leases, terminal receipts with drain proof; per-worker PID timeline not captured at sub-minute granularity because both cooks completed faster than the sampling cadence — recorded as a method limit, not as evidence of absence)",
+  "watchdog": "no trigger events (no package stalls, no log silences, no worker loss in either run)",
+  "worker_death_test": "NOT_RUN (deferred: only after a baseline with observable worker tenure; both baselines finished in minutes)"
+}

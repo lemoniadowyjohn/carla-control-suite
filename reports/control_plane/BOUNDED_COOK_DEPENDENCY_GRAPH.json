@@ -1,0 +1,8 @@
+{
+  "schema": "bounded_cook_dependency_graph/v1",
+  "requested_packages": 2,
+  "transitive_packages": 1970,
+  "dependency_expansion_ratio": "~985x (normal for UE map cook: engine + shared Carla content pulled transitively)",
+  "classification": "REQUIRED_TRANSITIVE_CONTENT (shared engine/Carla assets, not an explosion)",
+  "second_run_reuse": "10_9 run cooked only 304 new packages atop 6_8's 1666 (iterate sharing works)"
+}

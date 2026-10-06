@@ -1,0 +1,13 @@
+{
+  "schema": "bounded_cook_output_validation/v1",
+  "generated_at_utc": "2026-10-06T12:00:00Z",
+  "runs": {
+    "Tile_6_8": {"exit": 0, "class": "SUCCESS", "packages": "1666/1666", "receipt": "BOUNDED_COOK_6_8_RECEIPT.json"},
+    "Tile_10_9": {"exit": 0, "class": "SUCCESS", "packages": "1970 total (304 new + 1666 shared transitive)", "receipt": "BOUNDED_COOK_10_9_RECEIPT.json"}
+  },
+  "output_root": "F:\\CARLA\\cook_bounded\\COOK_620e51db (fresh; never touched old G: output)",
+  "output_totals": {"files": 4225, "bytes": 1705519371, "cooked_worlds": ["Ingolstadt_Tile_6_8.umap", "Ingolstadt_Tile_10_9.umap"], "tree": "CarlaUE4/Content + Engine + Metadata + Plugins (WindowsNoEditor cook layout)"},
+  "log_evidence": {"es31_shader_work": 0, "slow_ddc_flood": 0, "errors": 0, "notes": ["one cosmetic S_Light texture line (exit-0 run, no failure)", "one async-delete fallback warning (telemetry dir-walk colliding; harmless)"]},
+  "BOUNDED_COOK_OUTPUT_VALIDATION": "PASS",
+  "COOKED_TILE_VALIDATION": "PASS (fresh timestamps, valid cook layout, both worlds; full runtime load deferred to packaged runtime)"
+}

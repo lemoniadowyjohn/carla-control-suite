@@ -1,0 +1,12 @@
+{
+  "schema": "bounded_cook_acceptance/v1",
+  "generated_at_utc": "2026-10-06T12:00:00Z",
+  "ddc": {"reads_writes": "4.3GB in ~5min smoke + full cook traffic on F:, zero slow warnings", "DDC_SLOW_WARNING_COUNT": 0, "DDC_QUALIFIED_FOR_PRODUCTION_COOK": true, "note": "cold-cache misses expected and healthy; pathology is throughput, not misses"},
+  "memory": {"commit_baseline_gb": 29.2, "commit_after_gb": 38.4, "commit_limit_gb": 62.5, "min_headroom_gb": 24.1, "COMMIT_PRESSURE": "REFUTED", "MEMORY_POLICY_CHANGE_REQUIRED": false},
+  "pagefile": {"state": "C: 10.7GB allocated, healthy headroom throughout", "PAGEFILE_CHANGE_REQUIRED": false},
+  "handles": {"HANDLE_TREND": "STABLE", "caveat": "thin sampling (cooks outpaced cadence); no growth observed, both runs drained cleanly; no leak evidence of any kind"},
+  "usb": {"USB_CONTENT_STATUS": "QUALIFIED_WITH_COST (G: reads flowed at full speed during both cooks; no blocking observed)"},
+  "hotset": {"COOK_STORAGE_HOTSET_NEXT": "none required now (DDC on F:, output on F:, engine+Content performant on G:)", "decision": "no further migration without new measurements"},
+  "cook_policy": {"FRESH_COOK_POLICY": "CLEAN_PRODUCTION_COOK_REQUIRED (old 2975/3558 state stale + fingerprint changed + output root differs; no iterative resume)"},
+  "stalls": {"BOUNDED_COOK_STALLS": 0}
+}
