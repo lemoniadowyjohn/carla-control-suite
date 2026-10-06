@@ -1,0 +1,23 @@
+{
+  "schema": "salvage_decision/v1",
+  "generated_at_utc": "2026-10-06T02:30:00Z",
+  "IMPORT_SALVAGE": "REQUIRES_BOUNDED_REPAIR",
+  "FULL_REIMPORT_REQUIRED": false,
+  "criteria": {
+    "editor_import_success": true,
+    "posthoc_output_validation": "PASS",
+    "configuration_stable": "PARTIAL (DefaultEngine.ini shader cap is behavior-neutral for asset moves; plugin sources changed but DLL generation coherent with ImportAssets run)",
+    "moveassets_safety": "UNSAFE_FOR_BLIND_REPLAY (exact 1:1 duplicate namespaces; UE RenameAssets would suffix or fail, corrupting the canonical tree)",
+    "prepare_assets_safety": "REPEATABLE_BY_DESIGN (SaveWorld overwrites same package paths) but UNEXECUTED here",
+    "binary_ordering": "SALVAGE_BEFORE_UE_LINK (postprocess touches stale-DLL plugin code; cohere first, relink after)"
+  },
+  "bounded_repair_procedure": [
+    "1. Reconcile staging-vs-canonical duplicates WITHOUT moving: prove per-asset equivalence or quarantine staging set (deletion of proven re-imports requires executor approval; NOT done here)",
+    "2. Run PrepareAssetsForCooking against the complete canonical tree under lease + job supervision",
+    "3. LoadAssetMaterials -> TM binary -> XODR verify -> package file, each receipted transactionally",
+    "4. Tile-world inventory + reference resolution + AssetRegistry validation",
+    "5. Terminal receipt distinguishing ORIGINAL_EDITOR_STAGE from RECOVERED_POSTPROCESS_STAGE"
+  ],
+  "not_chosen_full_reimport_reason": "Canonical tree is complete (5711/5711, 20/20 tiles); rerunning 20-tile ImportAssets would cost ~7h to reproduce identical meshes. FULL_REIMPORT remains last resort only.",
+  "execution": "NOT STARTED (requires executor handoff + active lease; this session stays monitor)"
+}

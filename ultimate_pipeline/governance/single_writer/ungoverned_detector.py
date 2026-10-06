@@ -47,9 +47,8 @@ def _all_processes() -> List[Dict[str, Any]]:
 def scan(lease: Optional[_leases.Lease] = None) -> Dict[str, Any]:
     live = lease if lease is not None else _leases.read_current()
     owned_pid: Optional[int] = None
-    if live is not None and _leases.owner_alive(live.root_pid,
-                                                live.root_creation_time):
-        owned_pid = live.root_pid
+    if live is not None and _leases.lease_owner_alive(live):
+        owned_pid = live.executor_pid or live.root_pid
     mutators = [p for p in _all_processes()
                 if p["image"] in MUTATOR_IMAGES]
     ungoverned = [m for m in mutators if m["pid"] != owned_pid]

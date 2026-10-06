@@ -1,0 +1,69 @@
+{
+  "schema": "pre_salvage_binary_fingerprint/v1",
+  "generated_at_utc": "2026-10-06T01:00:00Z",
+  "method": "read-only SHA256 (no execution, no rebuild)",
+  "binaries": {
+    "UE4Editor-CarlaUE4.dll": {
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Binaries\\Win64\\UE4Editor-CarlaUE4.dll",
+      "sha256": "62ec5a045b07de99a1e9c07513be90f17f27644e0817e81eaef695a9c2d11b38",
+      "bytes": 93184,
+      "mtime_unix": 1791062391.917177
+    },
+    "carla_client.lib": {
+      "path": "G:\\CARLA\\carla_source_probe\\Build\\libcarla-visualstudio\\LibCarla\\cmake\\client\\Release\\carla_client.lib",
+      "sha256": "1fd432a8ec3d8c748bef58a5ead008c0b584cfdac7ffaf90113570a4c6004dd1",
+      "bytes": 152253052,
+      "mtime_unix": 1791226920.223611
+    },
+    "carla_server.lib": {
+      "path": "G:\\CARLA\\carla_source_probe\\Build\\libcarla-visualstudio\\LibCarla\\cmake\\server\\Release\\carla_server.lib",
+      "sha256": "8500ab8c83a8608fa326901b5c67590052d5b5f7664f247ffaba10d6da941578",
+      "bytes": 60638314,
+      "mtime_unix": 1791226286.8242874
+    },
+    "carla_client_debug.lib": {
+      "path": "G:\\CARLA\\carla_source_probe\\Build\\libcarla-visualstudio\\LibCarla\\cmake\\client\\Release\\carla_client_debug.lib",
+      "sha256": "e8f90dea545d5cbf696b47fbde9fa24ab290fee6c0f8e1cc1488a3c64992b196",
+      "bytes": 358342882,
+      "mtime_unix": 1790981381.7336233
+    },
+    "carla_server_debug.lib": {
+      "path": "G:\\CARLA\\carla_source_probe\\Build\\libcarla-visualstudio\\LibCarla\\cmake\\server\\Release\\carla_server_debug.lib",
+      "sha256": "cf49783924979dbbc965bb2e1d1defd6488e46af6731f773af06fa2f6a2b4c94",
+      "bytes": 140527650,
+      "mtime_unix": 1790693762.4803839
+    },
+    "UE4Editor-Cmd.exe": {
+      "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+      "sha256": "a34853eb703129570d75e9183890aa00bd38f795590e87436fc3e1b5cf656601",
+      "bytes": 505344,
+      "mtime_unix": 1790979603.209005
+    },
+    "ShaderCompileWorker.exe": {
+      "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\ShaderCompileWorker.exe",
+      "sha256": "3b84e9b7df824d67b468bb5a6cd7e2da63203efc80c3fd58b4e3d7796fac2129",
+      "bytes": 321536,
+      "mtime_unix": 1791055537.5786662
+    }
+  },
+  "source_drift_vs_dll": {
+    "libcarla_modified": [
+      "LibCarla/source/carla/client/Map.cpp",
+      "LibCarla/source/carla/client/Map.h",
+      "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp",
+      "LibCarla/source/carla/road/Map.h",
+      "LibCarla/source/carla/road/MapBuilder.h",
+      "LibCarla/source/carla/road/MapData.h",
+      "PythonAPI/carla/source/libcarla/Map.cpp"
+    ],
+    "plugin_modified": [
+      "Plugins/Carla/Source/Carla/Game/CarlaEpisode.h",
+      "Plugins/Carla/Source/Carla/Game/CarlaGameModeBase.cpp",
+      "Plugins/Carla/Source/Carla/Sensor/GnssSensor.cpp",
+      "Plugins/Carla/Source/Carla/Sensor/GnssSensor.h",
+      "Plugins/Carla/Source/Carla/Sensor/V2X/CaService.cpp",
+      "Plugins/Carla/Source/Carla/Sensor/V2X/CaService.h"
+    ],
+    "verdict": "UE4Editor-CarlaUE4.dll (2026-10-03) predates LibCarla rebuilds (2026-10-05) and plugin edits; postprocess stages touching UE plugin or LibCarla behavior run on the OLD binary until relink. Feeds ordering decision."
+  }
+}

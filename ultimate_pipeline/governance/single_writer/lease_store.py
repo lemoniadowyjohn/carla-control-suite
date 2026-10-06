@@ -148,6 +148,14 @@ def owner_alive(root_pid: int, root_creation_time: str) -> bool:
     return actual == root_creation_time
 
 
+def lease_owner_alive(lease: "Lease") -> bool:
+    """Liveness against the executor when recorded, else the root PID."""
+    if getattr(lease, "executor_pid", 0) and getattr(
+            lease, "executor_creation_time", ""):
+        return owner_alive(lease.executor_pid, lease.executor_creation_time)
+    return owner_alive(lease.root_pid, lease.root_creation_time)
+
+
 @dataclass
 class Lease:
     schema: str = SCHEMA
@@ -157,6 +165,11 @@ class Lease:
     operation: str = ""
     root_pid: int = 0
     root_creation_time: str = ""
+    # True executor when the spawn launcher re-execs (proven: venv
+    # python.exe respawns the base interpreter, so Popen.pid is a launcher
+    # stub). Liveness is evaluated against the executor when present.
+    executor_pid: int = 0
+    executor_creation_time: str = ""
     engine_root: str = ""
     project_root: str = ""
     content_root: str = ""
@@ -263,7 +276,7 @@ def is_stale(lease: Lease, ttl_s: int = HEARTBEAT_TTL_S) -> bool:
     """
     if heartbeat_age_s(lease) < ttl_s:
         return False
-    return not owner_alive(lease.root_pid, lease.root_creation_time)
+    return not lease_owner_alive(lease)
 
 
 def reconcile_stale() -> Dict[str, Any]:
@@ -275,7 +288,7 @@ def reconcile_stale() -> Dict[str, Any]:
     cur = read_current()
     if cur is None:
         return {"action": "none", "reason": "no current lease"}
-    alive = owner_alive(cur.root_pid, cur.root_creation_time)
+    alive = lease_owner_alive(cur)
     age = heartbeat_age_s(cur)
     if alive:
         return {"action": "refused",

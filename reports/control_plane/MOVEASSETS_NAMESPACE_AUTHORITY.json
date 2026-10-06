@@ -1,0 +1,20 @@
+{
+  "schema": "moveassets_namespace_authority/v1",
+  "generated_at_utc": "2026-10-06T02:00:00Z",
+  "staging_question": "meshes observed under /Game/Ingolstadt/Maps/Ingolstadt/ — final corruption or expected staging?",
+  "MAPS_NAMESPACE_DURING_IMPORT": "EXPECTED_STAGING_STATE",
+  "evidence": {
+    "importassets_writes_to": "/Game/<Package>/Maps/<MapName> (fbx import destination; observed meshes live here pre-MoveAssets)",
+    "moveassets_source": "/Game/<Package>/Maps/<MapName> (MoveAssetsCommandlet.cpp: SrcPath)",
+    "moveassets_destination": "/Game/<Package>/Static/<Category>/<MapName> per semantic category (ROAD, ROADLINE, TERRAIN, GRASS, SIDEWALK, ...); observed canonical /Game/Ingolstadt/Static/Terrain/Ingolstadt/ matches",
+    "mechanism": "AssetTools RenameAssets (reference-preserving move, not copy); check(DestPath.Len()>0)",
+    "moveassets_idempotency_note": "second run finds no meshes under Maps/<Map> (already moved); behavior on re-run = no-op for moved assets. Production replay safety still requires fixture proof (see salvage decision)."
+  },
+  "tile_worlds": {
+    "TILE_WORLD_PRODUCER": "PROVEN: PrepareAssetsForCookingCommandlet tile loop (PrepareAssetsForCookingCommandlet.cpp ~620-650) -> SpawnMeshesToWorld(DataPath, materials, i, j) filtering asset names ending with / containing `_Tile_i_j` -> SaveWorld(AssetData, PackageName, Map.Path, TileName)",
+    "naming": "TileName = Map.Name + '_Tile_i_j' (e.g. Ingolstadt_Tile_8_8); package path Map.Path/TileName",
+    "inputs": "StaticMesh assets under the post-MoveAssets canonical tree (NOT the staging namespace)",
+    "spawnpoints": "SaveWorld also spawns OpenDrive route actors + AddSpawners when the map XODR exists, then removes them after save",
+    "ordering": "tile worlds can ONLY be produced after MoveAssets (they read the relocated canonical assets)"
+  }
+}

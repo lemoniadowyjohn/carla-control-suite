@@ -1,0 +1,14 @@
+{
+  "schema": "postprocess_binary_dependency/v1",
+  "generated_at_utc": "2026-10-06T02:00:00Z",
+  "stages": {
+    "MoveAssets": {"uses_UE_plugin": false, "note": "pure editor AssetTools rename; no Carla C++ involved", "uses_LibCarla": false, "uses_engine": true},
+    "PrepareAssetsForCooking": {"uses_UE_plugin": true, "note": "Carla commandlet binary (spawns meshes, sets Carla materials by SSTags, SaveWorld, OpenDriveActor BuildRoutes/AddSpawners); behavior is plugin-code", "uses_LibCarla": true, "note_libcarla": "BuildRoutes/AddSpawners consume LibCarla map queries (rebuilt 2026-10-05)"},
+    "LoadAssetMaterials": {"uses_UE_plugin": true, "note": "Carla commandlet assigning materials incl. tagged registries", "uses_LibCarla": false},
+    "BuildBinaryForTM": {"uses_UE_plugin": false, "note": "Python carla.Map.cook_in_memory_map (client-side LibCarla python bindings)", "uses_LibCarla": true, "note_libcarla": "uses INSTALLED carla python package, not the rebuilt libs directly"}
+  },
+  "ordering_question": "UE4Editor-CarlaUE4.dll (2026-10-03) predates LibCarla rebuilds (2026-10-05) and plugin source edits (GameMode, GNSS, V2X, Map/GeoReference). PrepareAssetsForCooking + LoadAssetMaterials execute Carla plugin code whose sources changed since the DLL was built.",
+  "decision": "SALVAGE_BEFORE_UE_LINK",
+  "decision_rule_applied": "Missing postprocess commandlets depend on UE plugin code whose behavior could change when rebuilt; keep ImportAssets and postprocessing on the coherent (current-DLL) binary generation. Relink only after salvage receipts exist, then re-validate georeference behavior (sources include GeoReferenceParser/MapBuilder changes).",
+  "ordering_artifact": "POST_IMPORT_NEXT_ACTION_AUTHORITY.json (this batch: salvage-first)"
+}

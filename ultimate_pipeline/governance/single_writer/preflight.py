@@ -67,7 +67,7 @@ def acquire_operation(operation: str, roots: Dict[str, str],
                                importsettings_semantic_sha, extra)
     live = _leases.read_current()
     if live is not None:
-        if _leases.owner_alive(live.root_pid, live.root_creation_time):
+        if _leases.lease_owner_alive(live):
             # Fingerprint first: an identical live operation is a DUPLICATE
             # even under global exclusivity (this exact branch must have
             # prevented the duplicate NoSig launch).

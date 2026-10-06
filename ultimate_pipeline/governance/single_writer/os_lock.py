@@ -37,7 +37,11 @@ WAIT_ABANDONED = 0x00000080
 WAIT_TIMEOUT = 0x00000102
 WAIT_FAILED = 0xFFFFFFFF
 
-MUTEX_BASE_NAME = "CarlaGovernedOpsSingleWriter"
+# Canonical cross-session name (Batch 17 arbitration). Previous name
+# "CarlaGovernedOpsSingleWriter" remains accepted as an alias by acquiring
+# both in canonical-first order; the canonical mutex is authority.
+MUTEX_BASE_NAME = "CARLA_Mutating_Operation_Lock"
+MUTEX_ALIAS_NAME = "CarlaGovernedOpsSingleWriter"
 
 
 @dataclass

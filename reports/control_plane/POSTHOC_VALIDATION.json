@@ -1,0 +1,24 @@
+{
+  "schema": "posthoc_validation/v1",
+  "generated_at_utc": "2026-10-06T02:30:00Z",
+  "method": "read-only re-execution of the dead supervisor's validation logic against existing outputs (no ImportAssets rerun)",
+  "EDITOR_IMPORT_OUTPUT_COMPLETE": "PASS",
+  "editor_import_output_evidence": {
+    "staging_meshes": "5719 uassets under Maps/Ingolstadt (5711 tile-tagged, 20/20 tiles, per-tile 5..625, distribution identical to canonical)",
+    "manifest_tile_list": "20 tiles (Ingolstadt.json)",
+    "coverage": "20/20 tiles present in staging output"
+  },
+  "POSTHOC_IMPORT_VALIDATION": "PASS",
+  "posthoc_checks": {
+    "editor_exit_0": "PASS (kernel witness)",
+    "expected_package_count": "PASS (20/20 tiles in output)",
+    "mesh_inputs_represented": "PASS (5711/5711 tile meshes)",
+    "XODR_identity": "PASS (Content XODR 370abbbb byte-exact, predates run, untouched by it)",
+    "package_identity": "PASS (Ingolstadt.Package.json present)"
+  },
+  "caveats": [
+    "Output validation PASS covers the import STAGE only, not the lost post-editor stages",
+    "Staging set structurally duplicates the canonical set (MoveAssets replay would collide 1:1 by name)",
+    "Canonical tree completeness predates this run (2026-10-04 MoveAssets) and is taken as-is, not re-proven here"
+  ]
+}

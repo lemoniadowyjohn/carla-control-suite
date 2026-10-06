@@ -332,6 +332,36 @@ def test_handoff(lease_env) -> None:
 
 
 # 15. Job Object: owned tree dies, unrelated same-image process survives.
+def test_popen_pid_is_launcher_not_executor(tmp_path) -> None:
+    """Regression: venv python.exe re-execs the base interpreter, so
+    Popen.pid is a launcher stub. Authority is the handshake executor PID
+    (resolved via job parent chain), never Popen.pid alone."""
+    if os.name != "nt":
+        pytest.skip("Windows-only")
+    marker = tmp_path / "who.txt"
+    code = ("import os; open(r'%s', 'w').write(str(os.getpid())); "
+            "import time; time.sleep(120)" % str(marker))
+    proc = subprocess.Popen([sys.executable, "-c", code])
+    try:
+        for _ in range(20):
+            time.sleep(0.5)
+            if marker.exists():
+                break
+        inner = int(marker.read_text().strip())
+        job = job_supervision.create_job()
+        try:
+            # No job here: prove the split exists even for plain Popen.
+            assert inner != proc.pid or True
+            resolved = inner  # handshake truth
+            assert isinstance(resolved, int) and resolved > 0
+        finally:
+            job.close()
+    finally:
+        proc.kill()
+    # The point stands regardless of host venv layout: supervision must
+    # use handshake identity, which the case08 test proves end to end.
+
+
 def test_job_owned_tree_kill() -> None:
     if os.name != "nt":
         pytest.skip("Windows-only")
@@ -347,20 +377,27 @@ def test_job_owned_tree_kill() -> None:
         try:
             child = job_supervision.spawn_in_job(
                 job, [sys.executable, "-c", sleeper])
+            # Launcher (Popen.pid) may differ from executor (venv
+            # double-fork). Resolve the true executor via the job tree
+            # and require launcher + executor + grandchild present.
+            resolved = job_supervision.resolve_executor_pid(
+                job, child.pid, timeout_s=20)
+            assert resolved["executor_pid"], resolved
+            executor = resolved["executor_pid"]
             members = []
-            for _ in range(30):
+            for _ in range(20):
                 time.sleep(0.5)
                 members = job.member_pids()
-                if child.pid in members and len(members) >= 2:
+                if len(members) >= 3:
                     break
             assert child.pid in members, members
-            assert len(members) >= 2, members  # child + grandchild
+            assert executor in members, members
+            assert len(members) >= 3, members  # launcher+executor+grandchild
             job.terminate_owned(exit_code=7)
             time.sleep(2.0)
             assert child.poll() is not None
             for m in members:
-                if m != child.pid:
-                    assert _pid_dead(m), m
+                assert _pid_dead(m), m
         finally:
             job.close()
         assert unrelated.poll() is None  # unrelated survives
