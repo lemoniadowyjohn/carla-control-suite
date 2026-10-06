@@ -574,11 +574,11 @@ def detect_ungoverned_mutators(inventory, session_id):
 # configuration snapshot (batch section 19)
 # ---------------------------------------------------------------------------
 # Paths under the CARLA source-probe checkout. These were previously
-# hardcoded to one machine (G:\CARLA\carla_source_probe\...), which made the
-# published control plane unusable anywhere else and silently hashed nothing
-# useful elsewhere. They are now resolved from CARLA_SOURCE_PROBE_ROOT; when
-# that is unset the entries are reported as UNCONFIGURED instead of hashing a
-# path that does not exist.
+# hardcoded to a single machine's probe root, which made the published
+# control plane unusable anywhere else and silently hashed nothing useful
+# elsewhere. They are now resolved from CARLA_SOURCE_PROBE_ROOT; when
+# that is unset the entries are reported as UNCONFIGURED instead of hashing
+# a path that does not exist.
 CARLA_SOURCE_PROBE_ROOT = os.environ.get("CARLA_SOURCE_PROBE_ROOT", "")
 
 
