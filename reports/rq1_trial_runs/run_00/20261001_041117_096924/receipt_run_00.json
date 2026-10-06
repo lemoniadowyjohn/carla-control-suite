@@ -1,0 +1,56 @@
+{
+  "artifact_provenance": {
+    "artifacts_committed": false,
+    "measured_run_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_00\\20261001_041117_096924",
+    "reason": "XODR stage artifacts are >100 MB each and governed by the blanket *.xodr LFS rule; they are measured in place, not committed"
+  },
+  "byte_identical_stage_pairs": [],
+  "completed_stages": {
+    "01_sanitized": {
+      "artifact": "01_sanitized_20261001_041117_096924.xodr",
+      "bytes": 149799632,
+      "duplicate_of": null,
+      "metadata_preserving_copy": false,
+      "mtime": 1790820865.2481704,
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    }
+  },
+  "duration_s": null,
+  "error": null,
+  "feature_counts": null,
+  "final_receipt_digest": null,
+  "input_sha256": null,
+  "input_xodr": null,
+  "junction_metric": "roads_carrying_junction_reference",
+  "map_acceptance_digest": null,
+  "normalized_xodr_sha256": null,
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_00\\20261001_041117_096924",
+  "output_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_00\\20261001_041117_096924\\01_sanitized_20261001_041117_096924.xodr",
+  "pipeline_status": {
+    "crash_traceback": null,
+    "error": null,
+    "message": null,
+    "recorded": true,
+    "stage": "sanitize",
+    "status": "running",
+    "timestamp": "2026-10-01T04:14:00.519435"
+  },
+  "run": 0,
+  "run_dir_name": "20261001_041117_096924",
+  "schema": "rq1_run_receipt/v2",
+  "status": "INCOMPLETE",
+  "structural_signature": {
+    "num_junctions": 22589,
+    "num_roads": 32267,
+    "total_road_length": 1489145.575245
+  },
+  "structural_signature_stage": "01_sanitized",
+  "terminal_stage": "01_sanitized",
+  "tileset_digest": null,
+  "topology_counts": {
+    "junctions": 22589,
+    "roads": 32267
+  },
+  "unattributed_artifacts": [],
+  "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+}

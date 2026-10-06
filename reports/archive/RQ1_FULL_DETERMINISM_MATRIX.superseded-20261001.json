@@ -1,0 +1,390 @@
+{
+  "comparison_policy": "No normalization of unknown fields; timestamp, ordering, floating-point, and structural differences remain observable.",
+  "mismatches": [
+    {
+      "field": "xodr_sha256",
+      "values": [
+        "null",
+        "\"370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8\"",
+        "\"1c73aec0497d1bd7b0bf403ad164095bb71ba1de990d1f0fa05eda128d58fb2e\"",
+        "\"1cda44bfbc7cffeba0d9949b79c52e03b2feeea065c99165403a065e136972a5\"",
+        "\"0bc456f2c0caae3710704d4a349e7bd72c1098db59f31a6507d39df644f27df3\"",
+        "\"41248f5da97f5bd00c53baa7a410c8fd28669f67e0de11c9e682008c3605afbc\""
+      ]
+    },
+    {
+      "field": "structural_signature",
+      "values": [
+        "{\"num_junctions\":3559,\"num_roads\":32266,\"total_road_length\":1487573.6902965326}",
+        "{\"num_junctions\":22589,\"num_roads\":32267,\"total_road_length\":1489145.575245}",
+        "{\"num_junctions\":22588,\"num_roads\":32266,\"total_road_length\":1487573.690297}",
+        "{\"num_junctions\":22588,\"num_roads\":32266,\"total_road_length\":1487573.690297}",
+        "{\"num_junctions\":22588,\"num_roads\":32266,\"total_road_length\":1487573.690297}",
+        "{\"num_junctions\":22588,\"num_roads\":32266,\"total_road_length\":1487573.690297}"
+      ]
+    },
+    {
+      "field": "topology_counts",
+      "values": [
+        "{\"junctions\":3559,\"roads\":32266}",
+        "{\"junctions\":22589,\"roads\":32267}",
+        "{\"junctions\":22588,\"roads\":32266}",
+        "{\"junctions\":22588,\"roads\":32266}",
+        "{\"junctions\":22588,\"roads\":32266}",
+        "{\"junctions\":22588,\"roads\":32266}"
+      ]
+    },
+    {
+      "field": "output_path",
+      "values": [
+        "null",
+        "\"reports\\\\rq1_trial_runs\\\\run_00\\\\20261001_041117_096924\\\\01_sanitized_20261001_041117_096924.xodr\"",
+        "\"reports\\\\rq1_trial_runs\\\\run_01\\\\20261001_042523_540218\\\\06_geometry_frozen_20261001_042523_540218.xodr\"",
+        "\"reports\\\\rq1_trial_runs\\\\run_02\\\\20261001_055734_564949\\\\06_geometry_frozen_20261001_055734_564949.xodr\"",
+        "\"reports\\\\rq1_trial_runs\\\\run_03\\\\20261001_071735_324615\\\\06_geometry_frozen_20261001_071735_324615.xodr\"",
+        "\"reports\\\\rq1_trial_runs\\\\run_04\\\\20261001_081936_561197\\\\06_geometry_frozen_20261001_081936_561197.xodr\""
+      ]
+    }
+  ],
+  "run_count": 6,
+  "runs": [
+    {
+      "data": {
+        "completed_stages": {
+          "01": {
+            "bytes": 149799632,
+            "mtime": 1790778956.1114483,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          },
+          "02": {
+            "bytes": 138053323,
+            "mtime": 1790779499.6958237,
+            "sha256": "336c06deb54373ebca4c5578c8a6318dbdcdd0303a26666f27d33a0051aa3983"
+          },
+          "03": {
+            "bytes": 138932131,
+            "mtime": 1790780814.4625652,
+            "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2"
+          },
+          "05": {
+            "bytes": 138932131,
+            "mtime": 1790780814.4625652,
+            "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2"
+          },
+          "06": {
+            "bytes": 138932131,
+            "mtime": 1790780814.4625652,
+            "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2"
+          }
+        },
+        "config": {
+          "INPUT_XODR": "pinned map-of-record",
+          "QA_AUTOVIS": false,
+          "boundary": "Unreal cook/runtime excluded (offline structural claim)",
+          "code_sha": "8eb80924"
+        },
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input": {
+          "registry_key": "auto_map_of_record",
+          "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+          "verification": "VERIFIED"
+        },
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "output_path": null,
+        "reason": "run killed at 60-min session timeout during stage 06/07; stages 01-06 complete",
+        "run": 0,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 3559,
+          "num_roads": 32266,
+          "total_road_length": 1487573.6902965326
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 3559,
+          "roads": 32266
+        },
+        "xodr_sha256": null
+      },
+      "receipt_path": "reports\\final_hardening_p11\\run_00_receipt.json",
+      "receipt_sha256": "9998297f7d8be3755ef7e2118f18aa404d55d23e9671c44d561ac0721a1c32fd",
+      "status": "AVAILABLE"
+    },
+    {
+      "data": {
+        "completed_stages": {
+          "1": {
+            "bytes": 149799632,
+            "mtime": 1790820865.2481704,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          }
+        },
+        "duration_s": null,
+        "error": null,
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input_sha256": null,
+        "input_xodr": null,
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "out_dir": "reports\\rq1_trial_runs\\run_00\\20261001_041117_096924",
+        "output_path": "reports\\rq1_trial_runs\\run_00\\20261001_041117_096924\\01_sanitized_20261001_041117_096924.xodr",
+        "run": 0,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 22589,
+          "num_roads": 32267,
+          "total_road_length": 1489145.575245
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 22589,
+          "roads": 32267
+        },
+        "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+      },
+      "receipt_path": "reports\\rq1_trial_runs\\run_00\\20261001_041117_096924\\receipt_run_00.json",
+      "receipt_sha256": "781eb4e059275374b568433d240f9134f806b15eb9cec94a5b1c21c605f146db",
+      "status": "AVAILABLE"
+    },
+    {
+      "data": {
+        "completed_stages": {
+          "1": {
+            "bytes": 149799632,
+            "mtime": 1790821718.8247838,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          },
+          "2": {
+            "bytes": 138053233,
+            "mtime": 1790822597.5931282,
+            "sha256": "685f89923cdcee432ce3b41f61289f5791adfd2506bc9569dc6838a76c346756"
+          },
+          "3": {
+            "bytes": 138932131,
+            "mtime": 1790824503.3667295,
+            "sha256": "612db9bfb20afd281d5ea91c83534cb512abbb1d1628e6369782df5335a0be7f"
+          },
+          "5": {
+            "bytes": 138932131,
+            "mtime": 1790824503.3667295,
+            "sha256": "612db9bfb20afd281d5ea91c83534cb512abbb1d1628e6369782df5335a0be7f"
+          },
+          "6": {
+            "bytes": 138980537,
+            "mtime": 1790826913.1036828,
+            "sha256": "1c73aec0497d1bd7b0bf403ad164095bb71ba1de990d1f0fa05eda128d58fb2e"
+          }
+        },
+        "duration_s": null,
+        "error": null,
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input_sha256": null,
+        "input_xodr": null,
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "out_dir": "reports\\rq1_trial_runs\\run_01\\20261001_042523_540218",
+        "output_path": "reports\\rq1_trial_runs\\run_01\\20261001_042523_540218\\06_geometry_frozen_20261001_042523_540218.xodr",
+        "run": 1,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 22588,
+          "num_roads": 32266,
+          "total_road_length": 1487573.690297
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 22588,
+          "roads": 32266
+        },
+        "xodr_sha256": "1c73aec0497d1bd7b0bf403ad164095bb71ba1de990d1f0fa05eda128d58fb2e"
+      },
+      "receipt_path": "reports\\rq1_trial_runs\\run_01\\20261001_042523_540218\\receipt_run_01.json",
+      "receipt_sha256": "ac9ed3a7ae5a2cd250dfa808277c0e241ca4124c90fb032b79a023013f1f5cc6",
+      "status": "AVAILABLE"
+    },
+    {
+      "data": {
+        "completed_stages": {
+          "1": {
+            "bytes": 149799632,
+            "mtime": 1790827240.2443957,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          },
+          "2": {
+            "bytes": 138053233,
+            "mtime": 1790827931.4495647,
+            "sha256": "e1c17cc2bdef6220f658b08caba54fdb67e94db884590598b9027e2463dfb4ad"
+          },
+          "3": {
+            "bytes": 138932131,
+            "mtime": 1790829335.635283,
+            "sha256": "4fd78e041c80e105843f3b8089c275101f6f365267f107c948b6762646e38060"
+          },
+          "5": {
+            "bytes": 138932131,
+            "mtime": 1790829335.635283,
+            "sha256": "4fd78e041c80e105843f3b8089c275101f6f365267f107c948b6762646e38060"
+          },
+          "6": {
+            "bytes": 138980537,
+            "mtime": 1790831741.771764,
+            "sha256": "1cda44bfbc7cffeba0d9949b79c52e03b2feeea065c99165403a065e136972a5"
+          }
+        },
+        "duration_s": null,
+        "error": null,
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input_sha256": null,
+        "input_xodr": null,
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "out_dir": "reports\\rq1_trial_runs\\run_02\\20261001_055734_564949",
+        "output_path": "reports\\rq1_trial_runs\\run_02\\20261001_055734_564949\\06_geometry_frozen_20261001_055734_564949.xodr",
+        "run": 2,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 22588,
+          "num_roads": 32266,
+          "total_road_length": 1487573.690297
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 22588,
+          "roads": 32266
+        },
+        "xodr_sha256": "1cda44bfbc7cffeba0d9949b79c52e03b2feeea065c99165403a065e136972a5"
+      },
+      "receipt_path": "reports\\rq1_trial_runs\\run_02\\20261001_055734_564949\\receipt_run_02.json",
+      "receipt_sha256": "5555b21e045974f65c57e7ca513ad1462dc6ce970791d1a722ef235209e89d49",
+      "status": "AVAILABLE"
+    },
+    {
+      "data": {
+        "completed_stages": {
+          "1": {
+            "bytes": 149799632,
+            "mtime": 1790832029.0731757,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          },
+          "2": {
+            "bytes": 138053233,
+            "mtime": 1790832601.3082597,
+            "sha256": "c2274a7420efe2221bd4720438883efbc18c4b5f168967de2258e3a5edac8fb4"
+          },
+          "3": {
+            "bytes": 138932131,
+            "mtime": 1790833684.0767524,
+            "sha256": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8"
+          },
+          "5": {
+            "bytes": 138932131,
+            "mtime": 1790833684.0767524,
+            "sha256": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8"
+          },
+          "6": {
+            "bytes": 138980537,
+            "mtime": 1790835463.097147,
+            "sha256": "0bc456f2c0caae3710704d4a349e7bd72c1098db59f31a6507d39df644f27df3"
+          }
+        },
+        "duration_s": null,
+        "error": null,
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input_sha256": null,
+        "input_xodr": null,
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "out_dir": "reports\\rq1_trial_runs\\run_03\\20261001_071735_324615",
+        "output_path": "reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr",
+        "run": 3,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 22588,
+          "num_roads": 32266,
+          "total_road_length": 1487573.690297
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 22588,
+          "roads": 32266
+        },
+        "xodr_sha256": "0bc456f2c0caae3710704d4a349e7bd72c1098db59f31a6507d39df644f27df3"
+      },
+      "receipt_path": "reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\receipt_run_03.json",
+      "receipt_sha256": "6a16ec43066ac45a6193bf0eca7206f34e5424a5908e39af540bd79c2cdb7ec2",
+      "status": "AVAILABLE"
+    },
+    {
+      "data": {
+        "completed_stages": {
+          "1": {
+            "bytes": 149799632,
+            "mtime": 1790835752.949222,
+            "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+          },
+          "2": {
+            "bytes": 138053233,
+            "mtime": 1790836328.8959472,
+            "sha256": "4b198d53211d82876e135db1e11a0f874335250b3f128551b42da23f9a8171d0"
+          },
+          "3": {
+            "bytes": 138932131,
+            "mtime": 1790837333.3613498,
+            "sha256": "d8ed7a6379d78aa105a6823e565c7efa230fd29b14fbcf5793a57e22e205baaa"
+          },
+          "5": {
+            "bytes": 138932131,
+            "mtime": 1790837333.3613498,
+            "sha256": "d8ed7a6379d78aa105a6823e565c7efa230fd29b14fbcf5793a57e22e205baaa"
+          },
+          "6": {
+            "bytes": 138980537,
+            "mtime": 1790838782.082666,
+            "sha256": "41248f5da97f5bd00c53baa7a410c8fd28669f67e0de11c9e682008c3605afbc"
+          }
+        },
+        "duration_s": null,
+        "error": null,
+        "feature_counts": null,
+        "final_receipt_digest": null,
+        "input_sha256": null,
+        "input_xodr": null,
+        "map_acceptance_digest": null,
+        "normalized_xodr_sha256": null,
+        "out_dir": "reports\\rq1_trial_runs\\run_04\\20261001_081936_561197",
+        "output_path": "reports\\rq1_trial_runs\\run_04\\20261001_081936_561197\\06_geometry_frozen_20261001_081936_561197.xodr",
+        "run": 4,
+        "schema": "rq1_run_receipt/v1",
+        "status": "INCOMPLETE",
+        "structural_signature": {
+          "num_junctions": 22588,
+          "num_roads": 32266,
+          "total_road_length": 1487573.690297
+        },
+        "tileset_digest": null,
+        "topology_counts": {
+          "junctions": 22588,
+          "roads": 32266
+        },
+        "xodr_sha256": "41248f5da97f5bd00c53baa7a410c8fd28669f67e0de11c9e682008c3605afbc"
+      },
+      "receipt_path": "reports\\rq1_trial_runs\\run_04\\20261001_081936_561197\\receipt_run_04.json",
+      "receipt_sha256": "63a6b290c768e29f07eca0e3342124a220f563b908a70d1fcbe1ace1401f508b",
+      "status": "AVAILABLE"
+    }
+  ],
+  "schema": "rq1_full_determinism_matrix/v1",
+  "status": "FAIL",
+  "verdict": "FAIL"
+}

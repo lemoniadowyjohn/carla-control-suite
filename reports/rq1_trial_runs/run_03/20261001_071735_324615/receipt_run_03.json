@@ -1,0 +1,104 @@
+{
+  "artifact_provenance": {
+    "artifacts_committed": false,
+    "measured_run_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615",
+    "reason": "XODR stage artifacts are >100 MB each and governed by the blanket *.xodr LFS rule; they are measured in place, not committed"
+  },
+  "byte_identical_stage_pairs": [
+    {
+      "identical_sha256": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8",
+      "stages": [
+        "03_topology",
+        "05_planview"
+      ]
+    }
+  ],
+  "completed_stages": {
+    "01_sanitized": {
+      "artifact": "01_sanitized_20261001_071735_324615.xodr",
+      "bytes": 149799632,
+      "duplicate_of": null,
+      "metadata_preserving_copy": false,
+      "mtime": 1790832029.0731757,
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    "02_sumo_fixed": {
+      "artifact": "02_sumo_fixed_20261001_071735_324615.xodr",
+      "bytes": 138053233,
+      "duplicate_of": null,
+      "metadata_preserving_copy": false,
+      "mtime": 1790832601.3082597,
+      "sha256": "c2274a7420efe2221bd4720438883efbc18c4b5f168967de2258e3a5edac8fb4"
+    },
+    "03_topology": {
+      "artifact": "03_topology_20261001_071735_324615.xodr",
+      "bytes": 138932131,
+      "duplicate_of": null,
+      "metadata_preserving_copy": false,
+      "mtime": 1790833684.0767524,
+      "sha256": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8"
+    },
+    "05_planview": {
+      "artifact": "05_planview_20261001_071735_324615.xodr",
+      "bytes": 138932131,
+      "duplicate_of": "03_topology",
+      "metadata_preserving_copy": true,
+      "mtime": 1790833684.0767524,
+      "sha256": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8"
+    },
+    "06_continuity": {
+      "artifact": "06_continuity_20261001_071735_324615.xodr",
+      "bytes": 138980429,
+      "duplicate_of": null,
+      "metadata_preserving_copy": false,
+      "mtime": 1790835429.6979792,
+      "sha256": "225d230a09c271aa49da90f2455b0ff3f3c5806e301f8ea332c106d9b4ac085e"
+    },
+    "06_geometry_frozen": {
+      "artifact": "06_geometry_frozen_20261001_071735_324615.xodr",
+      "bytes": 138980537,
+      "duplicate_of": null,
+      "metadata_preserving_copy": false,
+      "mtime": 1790835463.097147,
+      "sha256": "0bc456f2c0caae3710704d4a349e7bd72c1098db59f31a6507d39df644f27df3"
+    }
+  },
+  "duration_s": null,
+  "error": "\u274c Failed to load DEM sampler in strict mode: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.",
+  "feature_counts": null,
+  "final_receipt_digest": null,
+  "input_sha256": null,
+  "input_xodr": null,
+  "junction_metric": "roads_carrying_junction_reference",
+  "map_acceptance_digest": null,
+  "normalized_xodr_sha256": null,
+  "out_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615",
+  "output_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr",
+  "pipeline_status": {
+    "crash_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\enrichment\\elevation_importer.py\", line 1388, in make_raster_sampler\n    _resolve_f1_sampling_crs(\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\enrichment\\elevation_importer.py\", line 697, in _resolve_f1_sampling_crs\n    return resolve_sampling_crs(\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\dem\\dem_crs_contract.py\", line 606, in resolve_sampling_crs\n    raise RuntimeError(\nRuntimeError: F1 CRS contract unresolved: cannot establish the geographic frame of reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\pipeline_stages\\stage_05_geometry.py\", line 436, in _step5_dem_and_geometry\n    sampler = ElevationImporter.make_raster_sampler(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\enrichment\\elevation_importer.py\", line 1394, in make_raster_sampler\n    raise RuntimeError(\nRuntimeError: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\main_pipeline.py\", line 1646, in run\n    self._run_internal()\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\main_pipeline.py\", line 2187, in _run_internal\n    geo_final = self._step5_geometry_elevation_continuity(topo_fixed)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\main_pipeline.py\", line 3489, in _step5_geometry_elevation_continuity\n    return _impl(self, topo_fixed)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\pipeline_stages\\stage_05_geometry.py\", line 301, in _step5_geometry_elevation_continuity\n    elev_out = self._step5_dem_and_geometry(frozen_before_elev, elev_out)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\main_pipeline.py\", line 3492, in _step5_dem_and_geometry\n    return _impl(self, topo_fixed, elev_out)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\pipeline_stages\\stage_05_geometry.py\", line 444, in _step5_dem_and_geometry\n    raise RuntimeError(\nRuntimeError: \u274c Failed to load DEM sampler in strict mode: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.",
+    "error": "\u274c Failed to load DEM sampler in strict mode: [F1] DEM sampling CRS contract failed: F1 CRS contract unresolved: cannot establish the geographic frame of reports\\rq1_trial_runs\\run_03\\20261001_071735_324615\\06_geometry_frozen_20261001_071735_324615.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference.",
+    "message": null,
+    "recorded": true,
+    "stage": "geometry",
+    "status": "failed",
+    "timestamp": "2026-10-01T08:19:12.497165"
+  },
+  "run": 3,
+  "run_dir_name": "20261001_071735_324615",
+  "schema": "rq1_run_receipt/v2",
+  "status": "INCOMPLETE",
+  "structural_signature": {
+    "num_junctions": 22588,
+    "num_roads": 32266,
+    "total_road_length": 1487573.690297
+  },
+  "structural_signature_stage": "06_geometry_frozen",
+  "terminal_stage": "06_geometry_frozen",
+  "tileset_digest": null,
+  "topology_counts": {
+    "junctions": 22588,
+    "roads": 32266
+  },
+  "unattributed_artifacts": [],
+  "xodr_sha256": "0bc456f2c0caae3710704d4a349e7bd72c1098db59f31a6507d39df644f27df3"
+}

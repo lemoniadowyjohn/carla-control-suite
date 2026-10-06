@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-10-01T02:11:33Z",
+  "updated_utc": "2026-10-01T02:11:33Z",
+  "env": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "717ea543e8c8989da68aeb8b71397f3ca221c124",
+    "git_status_porcelain": "A  tools/rq1_trial_run.py\n?? reports/rq1_trial_runs/"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "8c1c69bd54ca083b7d2bd7f4d3ba7c889a18bd00148a0c9fb1336b71e992df02",
+    "snapshot_md5": "4c772b0fefdc9d664f59f7f23f9670e4",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\cities\\ingolstadt\\osm\\ingolstadt.osm",
+      "exists": false
+    },
+    "DEM_TIF": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5076,
+      "sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+      "md5": "6c4a53158d91e8e196d5a2fe5a8006db"
+    },
+    "INPUT_XODR": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "exists": true,
+      "size_bytes": 149799632,
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "md5": "c389a67536f3e3e5c7bc43f15118f018"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  }
+}
