@@ -1,0 +1,26 @@
+{
+  "schema": "dead_supervisor_postprocess_audit/v1",
+  "generated_at_utc": "2026-10-06T00:20:00Z",
+  "driver": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py (executor-hardened: supervision receipts + manifest dedup)",
+  "driver_state": "dead (PID 10224 gone); editor child ImportAssets_003 (PID 12312) orphaned-but-running",
+  "POST_EDITOR_STEPS_EXIST": true,
+  "POST_EDITOR_STEPS_REQUIRED": [
+    "return-code validation of ImportAssets_003 (ChildProcessError on nonzero/vanish/timeout)",
+    "output validation record (output_validation verdict)",
+    "move_assets_commandlet (MoveAssets: meshes to semantic-segmentation tagged folders)",
+    "prepare_maps_commandlet_for_cooking (PrepareAssetsForCooking, OnlyPrepareMaps=true)",
+    "load_asset_materials_commandlet (LoadAssetMaterials)",
+    "build_binary_for_tm (carla.Map.cook_in_memory_map -> TM .bin)",
+    "nav-thread join (build_binary_for_navigation; no-op for tile maps by upstream design)",
+    "XODR copy to Content/<pkg>/Maps/<map>/OpenDrive/<map>.xodr",
+    "generate_package_file (<Package>.Package.json)",
+    "supervision receipt terminalization for ImportAssets_003 (currently RUNNING)"
+  ],
+  "POST_EDITOR_STEPS_EXECUTED": "none observed (driver died before ImportAssets_003 returned)",
+  "POST_EDITOR_STEPS_LOST_DUE_TO_DEAD_DRIVER": "all ten above for the in-flight package; earlier packages in walk order completed theirs (ImportAssets_001 OK + MoveAssets_002 OK evidenced)",
+  "consequence": "Even if PID 12312 exits 0, the import pipeline for its package is INCOMPLETE without the post-editor stages (no MoveAssets semantic tagging, no cook-prep, no TM binary, no package file, no terminal receipt). Editor success != pipeline completion.",
+  "run_purpose_evidence": {
+    "PID12312_RUN_PURPOSE": "B (import prerequisite for the zero-signal discriminator): ImportAssets_003 runs under driver package IngolstadtNoSig (driver cmdline --package IngolstadtNoSig); the shared importsetting.json contains the multi-package batch; _003 is the third ImportAssets invocation of that batch",
+    "caveat": "exact package-to-commandlet mapping (which manifest _003 serves) requires the driver's manifest-dedup receipt + importsetting content, both readable post-termination"
+  }
+}

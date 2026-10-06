@@ -1,0 +1,11 @@
+{
+  "pid": 12312,
+  "creation_time": "2026-10-05T18:38:44.153836Z",
+  "handle_acquired": true,
+  "rights": "SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION",
+  "rights_note": "observation only; no TERMINATE/VM_WRITE/CREATE_THREAD",
+  "watch_start_utc": "2026-10-05T23:53:52.357983Z",
+  "expected_operation": "executor ImportAssets (NoSig discriminator import)",
+  "expected_command_substr": "ImportAssets",
+  "wait_mechanism": "WaitForSingleObject(INFINITE) on process handle"
+}

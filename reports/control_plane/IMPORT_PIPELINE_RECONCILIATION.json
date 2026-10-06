@@ -1,0 +1,48 @@
+{
+  "schema": "import_pipeline_reconciliation/v1",
+  "generated_at_utc": "2026-10-06T01:45:00Z",
+  "editor_process_result": "SUCCESS (exit 0 / 0x0, kernel GetProcessTimes exit 2026-10-06T01:19:40.524957Z; 51 CPU-hours; 3.4GB read / 3.3GB written)",
+  "import_pipeline_result": "INCOMPLETE_SUPERVISOR_LOST",
+  "run_identity": {
+    "PID12312_RUN_PURPOSE": "C (different full Ingolstadt import, NOT the zero-signal discriminator)",
+    "evidence": "driver cmdline --package IngolstadtNoSig, but manifest_dedup (18:35:33Z) discovered only 7 manifests, all under Import/Ingolstadt/; IngolstadtNoSig.json landed seconds after the scan (driver launched 18:35:32Z) and was never seen. ImportAssets_003 stdout (214KB, sha 06f759e0) contains zero NoSig mentions; it served the main 20-tile re-import with -replaceexisting.",
+    "commandlet": "ImportAssets_003, 23983s wall, shaders 0 remaining at end, clean commandlet shutdown",
+    "supervision_receipt": "ImportAssets_003.supervision.json stuck RUNNING (dead driver never terminalized it); kernel witness record supersedes it — executor audit must NOT misclassify as CHILD_TERMINATED_UNEXPECTEDLY"
+  },
+  "post_editor_steps": {
+    "required": ["return-code validation", "output validation", "MoveAssets", "PrepareAssetsForCooking", "LoadAssetMaterials", "BuildBinaryForTM", "XODR copy", "generate_package_file", "receipt terminalization"],
+    "executed": "none for _003's package (prior packages in walk order completed: ImportAssets_001 OK, MoveAssets_002 OK)",
+    "lost_due_to_dead_driver": "all nine for the _003 package"
+  },
+  "tile_world_evidence": {
+    "STATICMESH_COUNT": "not authoritatively counted (suffix heuristic only)",
+    "TILE_UMAP_COUNT": 0,
+    "TILE_WORLD_GENERATION_BLOCKED": true,
+    "monolithic_ingolstadt_umap": "present (25,828 bytes; predates this run)",
+    "reference_note": "Town11 tile umaps exist as the standing pattern for completed tiled worlds; no Ingolstadt/NoSig tile umap was produced by this run. No new import authorized on this evidence alone."
+  },
+  "REFERENCE_5711_CLASSIFICATION": "NOT_YET_PROVEN (token referent absent from this session's evidence; active-import warning inventory: 60x duplicate TestMaps asset IDs (pre-existing), 21x FBX smoothing-group notes (benign), degenerate-tangent notes on tile buildings (mesh-quality, non-blocking))",
+  "zero_signal": {
+    "ZERO_SIGNAL_IMPORT_COMPLETED": false,
+    "ZERO_SIGNAL_MAP_PACKAGE_CREATED": false,
+    "ZERO_SIGNAL_TILE_UMAP_COUNT": 0,
+    "ZERO_SIGNAL_RUNTIME_WAS_LAUNCHED": false,
+    "BP_TLOPENDRIVE_RESULT_AVAILABLE": false,
+    "ZERO_SIGNAL_DISCRIMINATOR": "NOT_STARTED (manifest missed by dedup race; neither session ran it)"
+  },
+  "dll_readiness": {
+    "DLL_LOCK_HOLDERS": [],
+    "UE_PLUGIN_LINK_READY": true,
+    "note": "readiness only; link requires executor handoff and is NOT performed here"
+  },
+  "process_tree_supervision": "PARTIAL (per-commandlet supervision receipts exist and worked; supervisor-death containment — job object over driver+children — does not exist yet; this incident is the canonical regression case, covered by committed job_supervision tests for FUTURE runs)",
+  "handoff": {
+    "ACTIVE_MUTATOR_COUNT": 0,
+    "FOREIGN_MUTATOR_BLOCK_CLEARED": true,
+    "EXECUTOR_HANDOFF_READY": true,
+    "NEW_MUTATING_OPERATION_ALLOWED": false,
+    "note": "stays false until explicit executor designation (anti-race rule)"
+  },
+  "cook_resume": false,
+  "next_recommended_mutation": "1. UE plugin minimal link/build (DLLs free), pending executor handoff; 2. config promotion triage; 3. single-tile import validation; 4. DDC/SCW; 5. bounded cook. Cook NOT first."
+}

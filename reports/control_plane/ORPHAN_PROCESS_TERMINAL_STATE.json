@@ -1,0 +1,20 @@
+{
+  "pid": 12312,
+  "creation_time": "2026-10-05T18:38:44.153836Z",
+  "witness_detection_utc": "2026-10-06T01:19:40.721600Z",
+  "process_exit_time_utc": "2026-10-06T01:19:40.524957Z",
+  "exit_time_source": "GetProcessTimes (kernel) \u2014 not log mtime",
+  "exit_code_dec": 0,
+  "exit_code_hex": "0x0",
+  "termination_class": "SUCCESS",
+  "kernel_cpu_us": 3180968750,
+  "user_cpu_us": 185049562500,
+  "io_counters": {
+    "ReadOperationCount": 2197626,
+    "WriteOperationCount": 1355302,
+    "OtherOperationCount": 2484276,
+    "ReadTransferCount": 3386600566,
+    "WriteTransferCount": 3265883338,
+    "OtherTransferCount": 88313458
+  }
+}
