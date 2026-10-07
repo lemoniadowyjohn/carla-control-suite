@@ -12,15 +12,16 @@ Pending work is labeled PENDING/UNMERGED.
   self-referential branch claim; verify placement with
   `git branch --contains 67da84bc`.
 - Source checkout HEAD at time of writing: `462f816d`
-  (`review/carla-production-convergence-20261002`).
+  (`fix(process-control): bind lease owner identity to owner-published
+  authority`). That commit is on the review lineage, not production; see
+  `git branch --contains 462f816d` to re-check where it now sits.
 - Authoritative production branch per `AGENTS.md`:
-  `integration/production-large-map-20260918`, tip `65eb0f14`
-  (`docs(gap-register): record production-tip verification result + GAP-016`).
-- `review/carla-production-convergence-20261002` is a review/convergence
-  branch, not the production branch. `git diff --stat
-  integration/production-large-map-20260918...HEAD` reports ~960 files
-  changed — i.e. this review line has diverged massively from production;
-  do not treat review-branch commits as production state.
+  `integration/production-large-map-20260918`. This document does not pin a tip
+  SHA, because any tip it names goes stale on the next merge. Read the current
+  tip with `git rev-parse origin/integration/production-large-map-20260918`.
+- The review lineage diverges massively from production. Do not treat
+  review-branch commits as production state; compare explicitly with
+  `git diff --stat origin/integration/production-large-map-20260918...HEAD`.
 
 ## MERGED (committed on this review branch, not production)
 
