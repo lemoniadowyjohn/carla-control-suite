@@ -9,7 +9,7 @@
 # loud, actionable warning.
 from __future__ import annotations
 
-from ultimate_pipeline.governance.proj_env_guard import (
+from ultimate_pipeline.governance.reproducibility.proj_env_guard import (
     ProjEnvironmentError,
     ProjEnvironmentReport,
     check_proj_environment,
@@ -101,7 +101,7 @@ def test_main_pipeline_startup_proj_guard_fail_closed_opt_in(monkeypatch) -> Non
     """UP_PROJ_ENV_FAIL_CLOSED=1 must make a not-ok PROJ environment raise
     from _validate_global_safety_settings (only meaningful when this venv's
     proj.db is actually below the minimum; skip otherwise)."""
-    from ultimate_pipeline.governance.proj_env_guard import check_proj_environment
+    from ultimate_pipeline.governance.reproducibility.proj_env_guard import check_proj_environment
     from ultimate_pipeline.main_pipeline import _validate_global_safety_settings
 
     baseline = check_proj_environment(min_layout_minor=6, fail_closed=False)

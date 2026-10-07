@@ -18,7 +18,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, FrozenSet, List, Optional, Set, Tuple
 
-from ultimate_pipeline.governance.inputs_manifest import sha256_file as _sha256_file
+from ultimate_pipeline.governance.reproducibility.inputs_manifest import sha256_file as _sha256_file
 
 
 # =============================================================================

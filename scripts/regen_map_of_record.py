@@ -88,7 +88,7 @@ def _git_dirty() -> List[str]:
 
 
 def _check_proj_env() -> None:
-    from ultimate_pipeline.governance.proj_env_guard import check_proj_environment
+    from ultimate_pipeline.governance.reproducibility.proj_env_guard import check_proj_environment
 
     # OC-37: canonical generation is fail-closed. Older layouts, an
     # undeterminable proj.db layout, or a foreign PROJ_LIB/PROJ_DATA env var
@@ -105,7 +105,7 @@ def _check_proj_env() -> None:
 
 
 def _verify_manifest(profile: str = DEFAULT_PROFILE) -> Dict[str, Any]:
-    from ultimate_pipeline.governance.inputs_manifest import (
+    from ultimate_pipeline.governance.reproducibility.inputs_manifest import (
         InputsManifestError,
         verify_inputs_manifest,
     )

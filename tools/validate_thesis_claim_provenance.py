@@ -4,7 +4,7 @@
 Reuses the existing digest-verification machinery rather than reinventing
 it: pinned maps go through carla_tools.map_registry.verify_pinned_map
 (C13's drift guard), pinned generation inputs go through
-governance.inputs_manifest.verify_inputs_manifest (C11's fail-closed
+governance.reproducibility.inputs_manifest.verify_inputs_manifest (C11's fail-closed
 guard). Every row of tools/export_thesis_tables.py's output that cites a
 hash is independently re-verified against the actual file on disk here --
 this must NOT just re-read the same claim and agree with itself.
@@ -30,7 +30,7 @@ from ultimate_pipeline.carla_tools.map_registry import (  # noqa: E402
     PINNED_MAP_REGISTRY,
     verify_pinned_map,
 )
-from ultimate_pipeline.governance.inputs_manifest import (  # noqa: E402
+from ultimate_pipeline.governance.reproducibility.inputs_manifest import (  # noqa: E402
     InputsManifestError,
     sha256_file,
 )

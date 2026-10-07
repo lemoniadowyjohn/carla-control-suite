@@ -172,7 +172,7 @@ def _check_proj_environment_startup() -> None:
     reports/post_audit_hardening/C11_REPRODUCIBILITY.md has been applied).
     """
     try:
-        from ultimate_pipeline.governance.proj_env_guard import (
+        from ultimate_pipeline.governance.reproducibility.proj_env_guard import (
             ProjEnvironmentError,
             check_proj_environment,
         )
@@ -1714,7 +1714,7 @@ if str(_repo_root) not in sys.path:
                 f"not found: {manifest_path}"
             )
 
-        from ultimate_pipeline.governance.inputs_manifest import (
+        from ultimate_pipeline.governance.reproducibility.inputs_manifest import (
             InputsManifestError,
             InputsManifestMismatchError,
             verify_inputs_manifest,
