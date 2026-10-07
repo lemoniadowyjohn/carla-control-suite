@@ -417,16 +417,85 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     capture_config_id = capture_config_identity(capture_config)
 
-    # Weather identity from world (best-effort)
-    try:
-        world = client.get_world()
-        weather_id = weather_from_world(world)
-    except Exception:
-        weather_id = {"weather_sha256": "", "parameters": {}}
-
     # Route manifest
     route_manifest_path = str(pair_root / "route_manifest.json")
     route_manifest_sha256 = ""
+
+    # NEW-317: each arm must INDEPENDENTLY measure its own effective weather.
+    # Previously a single `weather_sha256` was computed here, AFTER both arms had
+    # finished, by reading whichever weather CARLA happened to hold -- so manual
+    # ClearNoon vs auto CloudyNoon produced an indistinguishable pair.
+    from ultimate_pipeline.perception.environment.weather_spec import (
+        WEATHER_SCHEMA_VERSION,
+        read_arm_weather_identity,
+        validate_arm_weather_binding,
+        PAIR_WEATHER_MISMATCH,
+        PAIR_WEATHER_MISSING_ARM,
+    )
+
+    manual_weather = read_arm_weather_identity(manual_dir)
+    auto_weather = read_arm_weather_identity(auto_dir)
+
+    # Fall back to the live world read only when an arm produced no artifact,
+    # and record that fallback explicitly rather than silently.
+    legacy_weather_id: Dict[str, Any] = {"weather_sha256": "", "parameters": {}}
+    if not manual_weather["present"] or not auto_weather["present"]:
+        try:
+            legacy_weather_id = weather_from_world(client.get_world())
+        except Exception:
+            legacy_weather_id = {"weather_sha256": "", "parameters": {}}
+
+    manual_weather_sha = (
+        manual_weather["weather_sha256"] or legacy_weather_id["weather_sha256"]
+    )
+    auto_weather_sha = (
+        auto_weather["weather_sha256"] or legacy_weather_id["weather_sha256"]
+    )
+    arm_weather_binding = validate_arm_weather_binding(
+        manual_weather_sha,
+        auto_weather_sha,
+        pair_weather_sha256=manual_weather_sha if manual_weather_sha == auto_weather_sha else "",
+        manual_present=manual_weather["present"],
+        auto_present=auto_weather["present"],
+    )
+
+    # NEW-316..333: per-arm governed environment identities.
+    from ultimate_pipeline.perception.environment.camera_response import (
+        profile_report,
+        validate_response_equality,
+    )
+    from ultimate_pipeline.perception.environment.physics_profile import (
+        build_physics_profile,
+        DEFAULT_PROFILE,
+        PHYSICS_DIGEST_FIELD,
+    )
+    from ultimate_pipeline.perception.environment.traffic_manager_session import (
+        TM_DIGEST_FIELD,
+    )
+
+    _cam_response = profile_report()
+    camera_response_sha = _cam_response["camera_response_sha256"]
+    _physics = build_physics_profile(int(getattr(SETTINGS, "CAPTURE_FPS", 20)))
+    simulation_physics_sha = _physics[PHYSICS_DIGEST_FIELD]
+    # The rig digest binds calibration + effective rig; keep it distinct from
+    # the runtime rig digest, which additionally binds response + physics.
+    runtime_sensor_rig_sha = manual_rig["sensor_rig_sha256"]
+
+    manual_arm = dict(manual_arm)
+    auto_arm = dict(auto_arm)
+    for arm, weather_sha, cam_sha, phys_sha in (
+        (manual_arm, manual_weather_sha, camera_response_sha, simulation_physics_sha),
+        (auto_arm, auto_weather_sha, camera_response_sha, simulation_physics_sha),
+    ):
+        arm["weather_sha256"] = weather_sha
+        arm["camera_response_sha256"] = cam_sha
+        arm["simulation_physics_sha256"] = phys_sha
+        arm["runtime_sensor_rig_sha256"] = runtime_sensor_rig_sha
+        arm["calibration_sha256"] = manual_calib["calib_sha256"]
+        arm["sensor_rig_sha256"] = manual_rig["sensor_rig_sha256"]
+        arm["capture_config_sha256"] = capture_config_id["capture_config_sha256"]
+        arm["traffic_manager_sha256"] = ""
+        arm["vehicle_calibration_binding_sha256"] = ""
 
     # Build manifest
     raw_pair_valid = bool(ok) and bool(manual_status.get("ok", ok)) and bool(auto_status.get("ok", ok))
@@ -441,8 +510,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         route_manifest_sha256=route_manifest_sha256,
         calibration_sha256=manual_calib["calib_sha256"],
         sensor_rig_sha256=manual_rig["sensor_rig_sha256"],
-        weather_sha256=weather_id["weather_sha256"],
+        weather_sha256=manual_weather_sha,
         capture_config_sha256=capture_config_id["capture_config_sha256"],
+        camera_response_sha256=camera_response_sha,
+        traffic_manager_sha256="",
+        simulation_physics_sha256=simulation_physics_sha,
+        runtime_sensor_rig_sha256=runtime_sensor_rig_sha,
+        vehicle_calibration_binding_sha256="",
+        weather_schema_version=WEATHER_SCHEMA_VERSION,
         manual_arm=manual_arm,
         auto_arm=auto_arm,
         pair_valid=raw_pair_valid,
@@ -455,6 +530,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     manifest["pair_valid"] = validation["valid"]
     manifest["invalid_reasons"] = validation["invalid_reasons"]
     manifest["validation"] = validation
+    # NEW-317: the arm-level weather binding is recorded as first-class evidence.
+    manifest["arm_weather_binding"] = arm_weather_binding
+    manifest["manual_weather_identity"] = manual_weather
+    manifest["auto_weather_identity"] = auto_weather
 
     # Reclassify claim level
     both_arms_ingolstadt = (
