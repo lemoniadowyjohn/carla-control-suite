@@ -247,13 +247,55 @@ def new_lease(operation: str, mutation_domains: List[str],
     )
 
 
+def rebind_mutation_root(lease: Lease, pid: int) -> Lease:
+    """Bind the lease to the real mutation root.
+
+    The mutation root does not exist until after Popen returns, so a lease
+    acquired earlier can only be an admission lease owned by the supervisor.
+    This rebinds ownership to the process that actually mutates, capturing
+    its creation time so PID reuse is detectable.
+
+    Contract V2: lease ownership binds to mutation_root_pid +
+    mutation_root_creation_time, never to a bare PID and never to a
+    previous run's identity.
+    """
+    lease.root_pid = int(pid)
+    lease.root_creation_time = process_creation_time(int(pid)) or ""
+    lease.executor_pid = 0
+    lease.executor_creation_time = ""
+    if not lease.root_creation_time:
+        raise RuntimeError(
+            "cannot bind lease: creation time unavailable for pid %s" % pid)
+    return lease
+
+
 def heartbeat(lease: Lease) -> Lease:
+    """Refresh the heartbeat ONLY while the recorded owner is still valid.
+
+    Historical defect: this only checked run_id equality and refreshed the
+    timestamp, so a lease whose owner PID had died kept receiving fresh
+    heartbeats and stayed RUNNING indefinitely. lease_owner_alive() already
+    existed and would have caught exactly that, but was never called.
+
+    It now fails closed: if the owner process is gone, or its creation time
+    no longer matches (PID reuse), the lease is marked STALE and the
+    timestamp is NOT advanced, so it stops representing valid coverage.
+    """
+    cur = read_current()
+    if cur is None or cur.run_id != lease.run_id:
+        return lease
+    if lease.state in ("RELEASED", "RECONCILED"):
+        return lease
+    if not lease_owner_alive(lease):
+        lease.state = "STALE"
+        lease.terminal_state = lease.terminal_state or "OWNER_IDENTITY_LOST"
+        _write_current(lease)
+        _archive(lease)
+        return lease
     lease.heartbeat_utc = _utcnow()
     if lease.state == "ACQUIRED":
         lease.state = "RUNNING"
-    cur = read_current()
-    if cur is not None and cur.run_id == lease.run_id:
-        _write_current(lease)
+    _write_current(lease)
     return lease
 
 
