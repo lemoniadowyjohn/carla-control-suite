@@ -1,7 +1,7 @@
 {
   "run_id": "20260918T000000Z_PRODUCTION_CLOSURE",
   "schema_version": 1,
-  "last_updated_utc": "2026-09-30T11:38:03Z",
+  "last_updated_utc": "2026-10-07T23:59:00Z",
   "issues": [
     {
       "id": "GAP-001",
@@ -727,45 +727,82 @@
       "severity": "P1",
       "subsystem": "repo-governance",
       "description": "production branch (origin/integration/production-large-map-20260918, tip a82e0201) and working branch (rq1-determinism-matrix-20261007) diverged by 14 vs 33 commits from merge-base 278968f9, with at least 3 independently-duplicated fixes (structural_fingerprint, lease-identity-binding, repo-state-sync docs)",
-      "proof": "git merge-base and commit-count analysis: merge-base 278968f9; production branch has 14 commits since merge-base; working branch has 33 commits since merge-base; three independently duplicated fixes identified across both lineages",
+      "proof": "git merge-tree conflict enumeration + isolated worktree merge. Ground truth frozen in reports/BRANCH_FORK_RECEIPT_20261007.json (commit 2524ab56): merge-base 278968f9, production tip a82e0201 (14 commits), working tip 647c0ad5 (33+2 commits). Merge commit edf9be09 has both expected parents. All 5 conflicted files blob-verified equal to a82e0201 after resolution. NOTE: git checkout --theirs would have taken the WRONG side -- production is stage :2: (ours) when merging 647c0ad5 into a82e0201. The 3 originally-suspected collisions were all non-collisions: structural_fingerprint and the repo-state-sync doc were byte-identical blobs (f6d138d4 / 1ae717c1) on both sides, and the lease-identity pair touched disjoint file sets.",
       "affected_files": [
         "reports/BRANCH_FORK_RECEIPT_20261007.json"
       ],
       "scientific_runtime_consequence": "Diverged branches risk fix loss or silent inconsistency -- a fix applied on one lineage may not propagate to the other, and independently duplicated fixes may drift apart over time, undermining the single-source-of-truth discipline this program requires for production artifacts.",
       "owner_subagent": "direct (coordinator)",
-      "status": "open -- reconciliation in progress, see reports/BRANCH_FORK_RECEIPT_20261007.json",
-      "fixing_commit": null,
-      "regression_test": null,
+      "status": "open -- reconciliation merged on branch integration/fork-reconciliation-20261007 (merge commit edf9be09, parents a82e0201 + 647c0ad5, merge-base 278968f9); 208 files auto-merged, 5 conflicts resolved to production and verified by blob-hash. Bare pytest 2180.67s: 5 failed, 7337 passed, 15 skipped, the 5 failures pre-existing on HEAD. Remaining open because merging into origin/integration/production-large-map-20260918 is the repo owner decision after diff review.",
+      "fixing_commit": "edf9be09 (branch integration/fork-reconciliation-20261007; NOT yet merged into production)",
+      "regression_test": "bare pytest in isolated worktree: 5 failed, 7337 passed, 15 skipped, 182 warnings in 2180.67s. The 5 failures reproduce identically on 647c0ad5 alone, so they are not merge-introduced.",
       "evidence_artifact": "reports/BRANCH_FORK_RECEIPT_20261007.json",
-      "residual_risk": "MEDIUM -- duplicated fixes may diverge further if not reconciled; production branch may miss critical fixes present only on working branch"
+      "residual_risk": "MEDIUM -> LOW once merged. 30 worktrees remain (6CLEAN_MERGED_SAFE_TO_REMOVE, 3CLEAN_UNMERGED_HAS_REAL_WORK, 21DIRTY_UNCOMMITTED_WORK). The merge carries 5 pre-existing test failures from HEAD that must be fixed separately: HEAD signals/registry.py:177,193 declare producers main_pipeline._compute_final_run_verdict and _finalize_run_pack_gated, neither of which exists on either side."
     },
     {
       "id": "GAP-041",
       "severity": "P1",
       "subsystem": "map-quality / tile-verification",
       "description": "a 2026-10-07 critique claims VerifyTileWorldsCommandlet.cpp still only iterates TActorIterator<AStaticMeshActor> and never proves building/road/terrain geometry presence, directly contradicting an earlier accepted finding that a TObjectIterator fix found real per-tile mesh counts cross-validated against OSM data",
-      "proof": "2026-10-07 critique: \"VerifyTileWorldsCommandlet.cpp still only iterates TActorIterator<AStaticMeshActor> and never proves building/road/terrain geometry presence\"; earlier accepted finding: TObjectIterator fix found real per-tile mesh counts cross-validated against OSM data",
+      "proof": "Direct re-inspection of the live file 2026-10-07 at G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Carla\\Source\\Carla\\Commandlet\\VerifyTileWorldsCommandlet.cpp (439 lines): the tile/mesh-actor counting loop at line 174 uses 'for (TObjectIterator<UObject> It; It; ++It)' filtered by 'Obj->GetOutermost() == Pkg && Obj->IsA(AActor::StaticClass())'. The file's own comment at lines 160-162 documents the switch away from TActorIterator as deliberate. It DOES filter ASplineMeshActor (line 224, Actor->IsA(ASplineMeshActor::StaticClass())), ALandscapeProxy (line 228), and instanced meshes (line 208, ClassName.Contains(\"InstancedStaticMeshActor\"), plus UHierarchicalInstancedStaticMeshComponent/UInstancedStaticMeshComponent instance counting at lines 211-222). TActorIterator appears only in the separate main-world section (lines 335, 346, 363, 394, 402), not in the tile counting loop. The 2026-10-07 critique was therefore inaccurate about the live code. Separately confirmed: the file is UNTRACKED ('??') in the carla_source_probe repo -- it has never been committed, so it carries no git provenance.",
       "affected_files": [
         "VerifyTileWorldsCommandlet.cpp"
       ],
       "scientific_runtime_consequence": "If the critique is correct, tile verification passes without actually verifying road/terrain/building geometry presence -- a false-green gate. If the earlier finding is correct, the critique may be based on stale code. Either way, trust in tile verification evidence is compromised until the live file is directly re-inspected.",
       "owner_subagent": "unassigned -- needs direct re-inspection of live VerifyTileWorldsCommandlet.cpp",
-      "status": "open -- contradictory reports, needs direct re-inspection of the live file before either claim is trusted",
+      "status": "closed -- re-inspection confirmed VerifyTileWorldsCommandlet.cpp genuinely uses TObjectIterator<UObject> (not TActorIterator) and filters ASplineMeshActor/ALandscapeProxy/InstancedStaticMeshComponent; the contradictory report describing TActorIterator-only was itself inaccurate. See GAP-042 for the real substantive finding this investigation surfaced.",
       "fixing_commit": null,
       "regression_test": null,
-      "evidence_artifact": "2026-10-07 critique of VerifyTileWorldsCommandlet.cpp; earlier TObjectIterator fix report (not separately filed)",
-      "residual_risk": "HIGH -- if the critique is correct, tile verification is fundamentally incomplete; if the earlier finding is correct, the critique may be based on stale code. Cannot be resolved without direct live-file inspection."
+      "evidence_artifact": "T6 direct live-file re-inspection, 2026-10-07 (439-line file, line-numbered quotes above); corroborated by ROAD_TERRAIN_CROSSCHECK_20261007.json provenance.commandlet_source (sha256 32be2327545a7183ec0c9cad6f3d8113c96849a6772279ade2676809ad1aa992, 27992 bytes) and by the live UE4Editor-Cmd run recorded in TILE_EDITOR_LOAD_RESULTS_ROADTERRAIN_20261007.json",
+      "residual_risk": "LOW for the question GAP-041 asked. Two facts remain open and are NOT closed by this resolution: (1) the commandlet source is untracked in carla_source_probe, so the fix that made this file correct is not under version control; (2) the substantive finding that re-inspection actually surfaced -- roads and terrain are entirely absent from all 20 tile packages -- is filed separately as GAP-042."
+    },
+    {
+      "id": "GAP-042",
+      "severity": "CRITICAL",
+      "subsystem": "map-generation / asset-placement",
+      "description": "Roads and terrain are confirmed totally absent from all 20 Ingolstadt editor-source tile packages, independently verified 3 ways: (1) TObjectIterator package census via a live rebuilt-DLL UE4Editor-Cmd run (exit_code 0, 709.5s) with a full 17,632-object census matching the FINAL2 baseline exactly; (2) raw-byte string-table name census over the .umap files at Content/Ingolstadt/Maps/Ingolstadt; (3) per-tile cross-check of both against the source data. Result: total_road_actors 0, total_roadline_actors 0, total_sidewalk_actors 0, total_terrain_mesh_actors 0 across 20/20 tiles, while buildings total 5711. The source data is present and non-trivial: 6278 OSM highway ways fall in-grid, 9317 XODR roads fall in-grid, and DEM coverage is 20/20 tiles at ratio 1.0. So this is not an upstream data absence -- the geometries were generated but never placed. Root cause: SpawnMeshesToWorld() (PrepareAssetsForCookingCommandlet.cpp:166, 210, 213, 642-648) reads from /Game/Carla/Static/{Road,RoadLine,Terrain,SideWalk}/Ingolstadt/, and no Ingolstadt subdirectory exists under any of those 4 folders -- the generation pipeline never produced or placed these assets for this map. The 17,632-object census additionally confirms the forbidden classes Landscape, LandscapeComponent, LandscapeStreamingProxy, SplineMeshComponent, ProceduralMeshComponent and InstancedStaticMeshComponent are absent entirely.",
+      "proof": "carla-control-plane/reports/control_plane/ROAD_TERRAIN_CROSSCHECK_20261007.json (sha256 c7d8e35201112dfaefbf8bf513da28e90942c591d5fd26dd5737373db8089a33, 29574 bytes) and carla-control-plane/reports/control_plane/TILE_EDITOR_LOAD_RESULTS_ROADTERRAIN_20261007.json (sha256 a2cad30ad7ac8631aab8cb9a26013afbd90fb37c2be678be196694a379a394e5, 43371 bytes). Both SHA-256 values re-verified by direct hash of the on-disk files on 2026-10-07. Commandlet run recorded as UE4Editor-Cmd.exe -run=VerifyTileWorlds -PackageName=Ingolstadt -MainMap=Ingolstadt, exit_code 0, elapsed 709.5s; supporting log tile_load_editor_ROADTERRAIN_20261007.log (sha256 c13a58c0c4c39a981154a3384242af963ab871ca57e090235ed90e889d6753bd). Baseline comparison: new sum_package_object_count equals baseline (17632 = 17632) and new_mesh_actors equals baseline for 20/20 tiles.",
+      "affected_files": [
+        "G:/CARLA/carla_source_probe/Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Commandlet/PrepareAssetsForCookingCommandlet.cpp",
+        "G:/CARLA/carla_source_probe/Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Commandlet/VerifyTileWorldsCommandlet.cpp"
+      ],
+      "scientific_runtime_consequence": "No full production cook can be claimed functionally complete; any cooked Ingolstadt tile would be buildings-only with no drivable road surface or terrain.",
+      "owner_subagent": "road/terrain independent-verification track (carla-control-plane), 2026-10-07; coordinator logged as GAP-042 after verifying both evidence hashes",
+      "status": "open -- root cause identified, fix not yet attempted, needs investigation into why the OSM2World/Blender/FBX generation stage never emits road/terrain geometry under the expected asset path for a custom (non-Town) map",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "carla-control-plane/reports/control_plane/ROAD_TERRAIN_CROSSCHECK_20261007.json (sha256 c7d8e352...) and TILE_EDITOR_LOAD_RESULTS_ROADTERRAIN_20261007.json (sha256 a2cad30a...) -- both outside this repo, in the carla-control-plane worktree",
+      "residual_risk": "CRITICAL. Blocks any production-cook completeness claim. Also note the evidence receipt's own caveat: G:\\CARLA\\cook_out contains 0 .umap (cook stalled at package 2975 with tile_count 0), so all UE4 figures are on editor-source packages only -- the cooked dimension is itself incomplete and unverified. affected_files lists only the two commandlets; the generation-stage script in ultimate_pipeline/ responsible for emitting the /Game/Carla/Static/{Road,RoadLine,Terrain,SideWalk}/Ingolstadt/ asset paths has NOT yet been located and is a required next step."
+    },
+    {
+      "id": "GAP-043",
+      "severity": "MEDIUM",
+      "subsystem": "cooking / asset-filtering",
+      "description": "ValidateStaticMesh() in PrepareAssetsForCookingCommandlet.cpp (lines 26-52) only excludes \"light\" and \"sign\" substring matches, applied at two sites (asset name lines 30-31, material name lines 44-45). Confirmed by direct file read that no hair/groom/pedestrian/walker exclusion exists anywhere in the 888-line file. Consequently a groom/hair pedestrian asset (head_centrado_AfroJT_head7_2) is incorrectly admitted as a null-mesh StaticMeshActor in every tile: 20/20 tiles, exactly 1 per tile, which is precisely the total_null_static_mesh_actors 20 figure reported in the GAP-042 evidence (per-tile null_static_mesh_actors = 1 in all 20 tiles). The tile class histogram also shows GroomActor 3 and GroomComponent 3 per tile, corroborating that groom assets are present in the packages and are not being filtered out.",
+      "proof": "Direct read of G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Carla\\Source\\Carla\\Commandlet\\PrepareAssetsForCookingCommandlet.cpp on 2026-10-07: ValidateStaticMesh() spans lines 26-52 and its complete exclusion set is { \"light\", \"sign\" } at lines 30-31 and 44-45. Zero occurrences of hair/groom/pedestrian/walker anywhere in the file. Callers are line 202 (SpawnMeshesToWorld) and line 382 (IsMapInTiles). Corroborating UE4 census: TILE_EDITOR_LOAD_RESULTS_ROADTERRAIN_20261007.json reports null_static_mesh_actors = 1 for each of the 20 tiles and GroomActor/GroomComponent = 3 each per tile.",
+      "affected_files": [
+        "G:/CARLA/carla_source_probe/Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Commandlet/PrepareAssetsForCookingCommandlet.cpp"
+      ],
+      "scientific_runtime_consequence": "20 stray null-mesh StaticMeshActors across the map inflate the StaticMeshActor census and are counted as non-building geometry by any presence metric; they also indicate the cooking asset filter is not admitting/excluding by semantic class, so other out-of-scope character assets are likely admitted too.",
+      "owner_subagent": "direct (coordinator), from T9 direct file inspection 2026-10-07",
+      "status": "open -- root cause confirmed, fix not yet applied, file is tracked and currently modified (M) but the fix itself is not in the diff yet per direct inspection",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "T9 direct inspection of PrepareAssetsForCookingCommandlet.cpp (line-level filter list quoted above); null-mesh and GroomActor counts from TILE_EDITOR_LOAD_RESULTS_ROADTERRAIN_20261007.json",
+      "residual_risk": "MEDIUM. Cosmetic-to-moderate census pollution rather than a functional blocker, but it is a symptom of a broader question: whether the asset filter is semantically complete for character/prop assets beyond buildings, which has not been audited."
     }
   ],
   "counts": {
-    "total": 41,
+    "total": 43,
     "fixed": 28,
+    "closed": 1,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 7,
-    "counts_reconciliation_note": "Recomputed directly from a scan of all 41 individual gap 'status' fields at 2026-10-07: 28 fixed (GAP-001..007, 009..012, 016, 019..025, 027..035, 031 counts as fixed per the partial-fix convention used for GAP-019/020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 in_progress (018), 1 blocked_external (017), 7 open (026, 036, 037, 038, 039, 040, 041). GAP-040 and GAP-041 added 2026-10-07 as new open items. No estimation -- direct field scan only.",
-    "blocked_external": 1
+    "open": 8,
+    "blocked_external": 1,
+    "unclassified": 0,
+    "counts_reconciliation_note": "Recomputed directly from a scan of all 43 individual gap 'status' fields at 2026-10-07. No estimation -- direct field scan only. Categorisation is by status-prefix: fixed=['GAP-001', 'GAP-002', 'GAP-003', 'GAP-004', 'GAP-005', 'GAP-006', 'GAP-007', 'GAP-009', 'GAP-010', 'GAP-011', 'GAP-012', 'GAP-016', 'GAP-019', 'GAP-020', 'GAP-021', 'GAP-022', 'GAP-023', 'GAP-024', 'GAP-025', 'GAP-027', 'GAP-028', 'GAP-029', 'GAP-030', 'GAP-031', 'GAP-032', 'GAP-033', 'GAP-034', 'GAP-035']; closed (GAP-041, closed by direct re-inspection)=['GAP-041']; closed_non_reproducible=['GAP-013', 'GAP-014', 'GAP-015']; deferred=['GAP-008']; in_progress (GAP-018, editor build blocked by Avast per-path quarantine)=['GAP-018']; blocked_external (GAP-017)=['GAP-017']; open=['GAP-026', 'GAP-036', 'GAP-037', 'GAP-038', 'GAP-039', 'GAP-040', 'GAP-042', 'GAP-043']. GAP-042 (CRITICAL, roads/terrain absent from all 20 tiles) and GAP-043 (MEDIUM, pedestrian/groom asset admitted by ValidateStaticMesh) added 2026-10-07 as new open items. GAP-041 moved out of open on direct live-file evidence."
   },
   "completed_non_gap_work_2026_09_22": {
     "xodr_validated_capability": "New xodr_validator pipeline stage (delegating to StrictXodrValidator) inserted between topology_repair and enrichment in main_pipeline.py, with a matching XODR_VALIDATED capability hard-required by the enrichment stage in stage_capabilities.py -- originally requested as ad-hoc structural hardening, not a tracked gap. Landed clean in commit f51db269, merged 1c8caa2c into origin/integration/production-large-map-20260918. Mirror-drift test confirmed passing."
