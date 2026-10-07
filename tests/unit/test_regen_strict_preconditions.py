@@ -24,12 +24,12 @@ from types import SimpleNamespace
 import pytest
 
 import scripts.regen_map_of_record as regen
-from ultimate_pipeline.governance.inputs_manifest import (
+from ultimate_pipeline.governance.reproducibility.inputs_manifest import (
     InputsManifestError,
     load_manifest,
     verify_inputs_manifest,
 )
-from ultimate_pipeline.governance.proj_env_guard import (
+from ultimate_pipeline.governance.reproducibility.proj_env_guard import (
     ProjEnvironmentError,
     check_proj_environment,
 )
@@ -196,7 +196,7 @@ def test_f_required_keys_by_profile():
 
 
 def test_g_regen_check_proj_env_uses_fail_closed_probe(monkeypatch):
-    from ultimate_pipeline.governance import proj_env_guard
+    from ultimate_pipeline.governance.reproducibility import proj_env_guard
 
     captured = {}
 
@@ -205,7 +205,7 @@ def test_g_regen_check_proj_env_uses_fail_closed_probe(monkeypatch):
         return SimpleNamespace(ok=True, proj_db_layout_version=6.0)
 
     monkeypatch.setattr(
-        "ultimate_pipeline.governance.proj_env_guard.check_proj_environment",
+        "ultimate_pipeline.governance.reproducibility.proj_env_guard.check_proj_environment",
         _fake_check,
     )
     regen._check_proj_env()  # must not raise
@@ -223,7 +223,7 @@ def test_g_regen_check_proj_env_propagates_fail_closed_raise(monkeypatch, tmp_pa
         raise _BadReject("PROJ environment check failed")
 
     monkeypatch.setattr(
-        "ultimate_pipeline.governance.proj_env_guard.check_proj_environment",
+        "ultimate_pipeline.governance.reproducibility.proj_env_guard.check_proj_environment",
         _fake_check,
     )
     with pytest.raises(ProjEnvironmentError, match="PROJ environment check failed"):
@@ -254,7 +254,7 @@ def test_h_reject_foreign_proj_flips_ok(monkeypatch, tmp_path):
 
 
 def test_i_require_layout_known_flips_ok_on_unknown(monkeypatch):
-    from ultimate_pipeline.governance import proj_env_guard
+    from ultimate_pipeline.governance.reproducibility import proj_env_guard
 
     monkeypatch.setattr(proj_env_guard, "_read_proj_db_layout_version", lambda _p: None)
 
@@ -269,7 +269,7 @@ def test_i_require_layout_known_flips_ok_on_unknown(monkeypatch):
 
 
 def test_j_require_layout_known_fail_closed_raises(monkeypatch):
-    from ultimate_pipeline.governance import proj_env_guard
+    from ultimate_pipeline.governance.reproducibility import proj_env_guard
 
     monkeypatch.setattr(proj_env_guard, "_read_proj_db_layout_version", lambda _p: None)
     with pytest.raises(ProjEnvironmentError, match="fail_closed=True"):

@@ -1134,7 +1134,7 @@ class Settings:
         "y",
     )
     # C11: optional fail-closed digest guard for pinned generation inputs
-    # (governance/inputs_manifest.py). Empty = guard inactive. Set to the
+    # (governance/reproducibility/inputs_manifest.py). Empty = guard inactive. Set to the
     # campaign's INPUTS_MANIFEST.json path (e.g.
     # campaigns/<name>/source/INPUTS_MANIFEST.json, repo-root relative or
     # absolute) to make every run abort on drifted inputs.
