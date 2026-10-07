@@ -72,6 +72,7 @@ from ultimate_pipeline.perception.rq5_provenance import (
     seed_everything,
     write_model_manifest,
 )
+from ultimate_pipeline.perception.semantic_classes import validate_num_classes
 
 DEFAULT_SEED = 1337
 
@@ -219,6 +220,12 @@ def main() -> int:
 
     dataset_roots = _resolve_dataset_roots(args)
     multi_root = len(dataset_roots) > 1
+
+    # Validate num_classes against CARLA semantic class policy (same as
+    # min_train_segmentation.py does) so a too-small --num-classes fails
+    # fast with a clear message instead of a confusing "out of bounds" error
+    # deep in the loss function.
+    args.num_classes = validate_num_classes(args.num_classes)
 
     out_dir = _resolve_out_dir(args.out_dir)
 
