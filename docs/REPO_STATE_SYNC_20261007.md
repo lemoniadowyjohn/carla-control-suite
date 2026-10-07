@@ -6,8 +6,11 @@ Pending work is labeled PENDING/UNMERGED.
 
 ## Baseline (verified `git log` / `git status`, 2026-10-07)
 
-- This doc lives on branch `docs/repo-state-sync-20261007`. NOT merged to
-  production. No production merge was performed.
+- This document is committed directly on
+  `origin/integration/production-large-map-20260918`, introduced by commit
+  `67da84bc`. It is not a review-branch document and carries no
+  self-referential branch claim; verify placement with
+  `git branch --contains 67da84bc`.
 - Source checkout HEAD at time of writing: `462f816d`
   (`review/carla-production-convergence-20261002`).
 - Authoritative production branch per `AGENTS.md`:
@@ -140,13 +143,13 @@ That verdict stands; this sync doc does not override it.
    mtime/glob. Frozen `submission/` material is never edited.
 7. Every state claim cites its verification command (`git log`,
    `git status --porcelain=v1`, `git diff HEAD --stat`, registry verify).
-   This doc was verified against HEAD `462f816d` before push.
+   This doc's own provenance is commit `67da84bc` on production; do not cite a
+   moving HEAD for it.
 
 ## What this sync deliberately did NOT do
 
 - No code changes committed; the 9 modified files stay uncommitted.
 - No untracked evidence files added to git.
 - No README/RQ4/map-pin content fix (recorded as PENDING above instead).
-- No merge to `integration/production-large-map-20260918` or any other
-  branch; pushed `docs/repo-state-sync-20261007` only.
+- No merge to any branch other than production, where this document lives.
 - No claim about the in-flight fingerprint+OSM pytest run outcome.
