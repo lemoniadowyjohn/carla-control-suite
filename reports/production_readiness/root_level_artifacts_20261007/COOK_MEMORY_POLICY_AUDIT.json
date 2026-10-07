@@ -1,0 +1,45 @@
+{
+  "OBSERVED_SETTINGS": {
+    "MemoryMaxUsedPhysical": "16384 MiB (16 GiB)",
+    "MemoryMinFreePhysical": "1024 MiB (1 GiB)",
+    "MemoryMaxUsedVirtual": "0 (unlimited)",
+    "MemoryMinFreeVirtual": "0 (unlimited)"
+  },
+  "SOURCE": "LogCook: Display: CookSettings for Memory: MemoryMaxUsedVirtual 0MiB, MemoryMaxUsedPhysical 16384MiB, MemoryMinFreeVirtual 0MiB, MemoryMinFreePhysical 1024MiB (line 656)",
+  "UE426_MEANING": {
+    "MemoryMaxUsedPhysical": "Target maximum physical memory (working set) for the cook process. Cooker attempts to throttle memory usage to stay below this. NOT a hard limit - cook can exceed.",
+    "MemoryMinFreePhysical": "Minimum free physical memory to maintain system-wide. Cooker will throttle if system free memory drops below this.",
+    "MemoryMaxUsedVirtual": "Maximum virtual memory (commit) for cook process. 0 = unlimited (no virtual memory throttling).",
+    "MemoryMinFreeVirtual": "Minimum free virtual memory (commit) system-wide. 0 = no limit."
+  },
+  "CURRENT_PROCESS_METRICS": {
+    "UE4Editor_PID": 5344,
+    "Working_Set_GB": 4.31,
+    "Private_Bytes_GB": 6.63,
+    "Virtual_Size_GB": 11.63,
+    "Handles": 4897,
+    "CPU_Time": "00:21:44",
+    "Start_Time": "05/10/2026 12:54:59"
+  },
+  "SYSTEM_MEMORY": {
+    "Total_Physical_GB": 47.7,
+    "Free_Physical_GB": 19.76,
+    "Total_Virtual_GB": 56.76,
+    "Free_Virtual_GB": 18.64,
+    "Pagefile_GB": 9.0,
+    "Pagefile_Free_GB": 8.83
+  },
+  "THROTTLING_ANALYSIS": {
+    "cook_throttles_at_16GiB": "PARTIAL - UE4 cooker monitors working set and may delay package processing, but ShaderCompileWorkers (separate processes) are NOT accounted in cook process memory.",
+    "SCWs_excluded_from_accounting": "YES - ShaderCompileWorker processes are spawned separately and their memory is NOT included in the cook process memory accounting. Each SCW can use 1-4+ GB.",
+    "commit_can_exceed_policy": "YES - MemoryMaxUsedVirtual=0 means no virtual memory limit. Current UE4Editor commit is 11.6 GB, SCWs add more. System commit limit is 56.7 GB.",
+    "worker_processes_bypass_accounting": "YES - SCW memory is invisible to cook memory policy. With 4 workers at ~2-4 GB each, total SCW memory = 8-16 GB additional."
+  },
+  "OOM_RISK_ASSESSMENT": {
+    "prior_oom_cause": "Likely SCW memory + UE4Editor commit exceeding system commit limit or physical memory pressure",
+    "current_risk": "MODERATE - 19.7 GB free physical, but SCWs + UE4Editor + OS + other processes could pressure. Pagefile only 9 GB.",
+    "mitigation_in_place": "DevOptions.Shaders.NumUnusedShaderCompilingThreads=8 (limits SCW count to 4 active per log)",
+    "recommendation": "Set MemoryMaxUsedVirtual to non-zero (e.g., 48000 MiB) to enable commit throttling. Monitor SCW memory separately."
+  },
+  "MEMORY_POLICY_STATUS": "INCOMPLETE - Physical limit set but virtual unlimited; SCWs bypass accounting; no OOM prevention for commit exhaustion"
+}

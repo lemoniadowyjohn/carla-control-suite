@@ -1,0 +1,29 @@
+{
+  "schema": "signal_scale_comparison/v1",
+  "generated_at_utc": "2026-10-05T18:00:00Z",
+  "method": "direct <signal> element counts from authoritative XODRs (xml.etree), no sampling",
+  "INGOLSTADT_SIGNAL_COUNT": 21163,
+  "TOWN10HD_SIGNAL_COUNT": 21,
+  "RATIO": 1007.8,
+  "UNIQUE_SIGNAL_IDS": 21163,
+  "DUPLICATE_SIGNAL_IDS": 0,
+  "INVALID_SIGNAL_RECORDS": 0,
+  "ingolstadt_detail": {
+    "xodr": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "all_types": {"1000001": 21163},
+    "all_dynamic_yes": true,
+    "signalReference_count": 0,
+    "controllers": 2726,
+    "roads": 32267,
+    "is_traffic_light_type": true,
+    "is_traffic_light_basis": "LibCarla SignalType::IsTrafficLight lists 1000001 (SignalType.cpp:121)"
+  },
+  "reference_maps": {
+    "Town01": 36, "Town02": 24, "Town03": 38, "Town04": 43,
+    "Town05": 59, "Town06": 19, "Town07": 56, "Town10HD": 21,
+    "stock_controllers_range": "32-106",
+    "Grid0828_manual": {"signals": 5000, "types_mixed_top": {"297": 799, "-1": 764, "294": 261, "1000001": 250, "283": 244, "1000003": 181}, "controllers": 0}
+  },
+  "verdict": "Scale alone is a proven 1000x outlier versus every stock map; topology (ids unique, zero invalid records) is clean. 14k was an underestimate: true count is 21,163, all traffic-light type, all dynamic. Scale is not ASSUMED pathological: paired with the O(SxA) construction path (see TRAFFIC_LIGHT_COMPLEXITY_AUDIT.json), 21k signals imply billions of game-thread operations at load, which is the proven pathology."
+}

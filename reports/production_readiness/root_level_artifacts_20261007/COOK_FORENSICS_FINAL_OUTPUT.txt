@@ -1,0 +1,52 @@
+LIVE_COOK_STATUS=COOK_PROGRESSING_ANALYSIS_PENDING
+
+COOKED_PACKAGES_CURRENT=2975
+PACKAGES_REMAIN=583
+TOTAL_PACKAGES=3558
+
+SHADER_QUEUE_CURRENT=15034
+SHADER_QUEUE_PEAK=15034
+
+PCD3D_ES31_REQUIRED=FALSE
+ES31_FAILURE_COUNT=35+
+REQUIRED_RUNTIME_SHADER_FAILURES=0
+
+PACKAGE_EXPANSION_CAUSE=Recursive dependency discovery from Ingolstadt map; -cooksinglepackage does not limit scope
+COOK_SINGLE_PACKAGE_EFFECTIVE=FALSE
+
+DDC_PATH=G:\UnrealEngine_4.26_CARLA\Engine\DerivedDataCache
+DDC_READ_MBPS=0.00-0.08
+DDC_STATUS=SEVERE_DEGRADATION
+
+UE4EDITOR_MEMORY_PEAK=6.8 GB (Private) / 11.9 GB (Virtual)
+SCW_MEMORY_PEAK=Not currently running (spawned on-demand)
+SYSTEM_COMMIT_PEAK=59.5 GB / 59.5 GB limit
+SYSTEM_COMMIT_LIMIT=59.5 GB
+
+MEMORY_POLICY_STATUS=INCOMPLETE - Physical limit set (16 GB) but virtual unlimited (0); SCWs bypass accounting
+
+COOK_FINAL_STATUS=IN_PROGRESS (83% packages cooked)
+
+NEXT_COOK_CONFIG_CHANGE_REQUIRED=Remove '+TargetedRHIs=PCD3D_ES31' from DefaultEngine.ini:[/Script/WindowsTargetPlatform.WindowsTargetSettings]; Configure fast local DDC on NVMe; Set MemoryMaxUsedVirtual to non-zero
+
+FINAL_VERDICT=COOK_PASS_WITH_TARGET_SCOPE_FIX_REQUIRED
+
+DECISION_GATES_STATUS:
+  SHADER_TARGET_SCOPE = UNDERSTOOD (PCD3D_ES31 erroneously included via DefaultEngine.ini)
+  PCD3D_ES31_REQUIRED = FALSE
+  REQUIRED_RUNTIME_SHADER_FAILURES = 0 (all 35+ failures on unnecessary ES3.1 target)
+  DDC_PERFORMANCE = NOT_QUALIFIED (0.00-0.08 MB/s on G: drive with 4.5% free space)
+  PACKAGE_SCOPE = UNDERSTOOD (full transitive dependency cook, -cooksinglepackage is misnomer)
+  MEMORY_POLICY = NOT_QUALIFIED (virtual unlimited, SCWs unaccounted)
+  INGOLSTADT_RUNTIME_MATERIALS = VALID (no REQUIRED_RUNTIME failures; road/lane materials only fail on ES3.1)
+
+EVIDENCE_FILES_PRODUCED:
+  - SHADER_PLATFORM_SCOPE_AUDIT.json
+  - MATERIAL_SHADER_FAILURE_MATRIX.json
+  - COOK_PACKAGE_EXPANSION_AUDIT.json
+  - COOK_FLAG_SEMANTICS_AUDIT.json
+  - DDC_PERFORMANCE_AUDIT.json
+  - DDC_COLD_WARM_PLAN.json
+  - SHADER_QUEUE_GROWTH_ANALYSIS.json
+  - COOK_MEMORY_POLICY_AUDIT.json
+  - COOK_RESOURCE_TIMELINE.csv

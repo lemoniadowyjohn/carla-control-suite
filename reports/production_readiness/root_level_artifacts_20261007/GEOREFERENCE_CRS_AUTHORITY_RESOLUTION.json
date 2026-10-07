@@ -1,0 +1,158 @@
+{
+  "schema": "georeference_crs_authority_resolution/v1",
+  "generated_at_utc": "2026-10-05T13:10:00Z",
+  "supersedes_blocker_in": "GEOREFERENCE_CPP_FIX_AUDIT.json (new_blocker_discovered)",
+
+  "GEOREFERENCE_ROOT_CAUSE": "CONFIRMED AND EXTENDED - OSM2ODR.h:21 emits a hardcoded bare '+proj=tmerc'; GeoReferenceParser.cpp silently defaulted to 42/2; that fallback is now removed and fail-closed",
+
+  "new_finding": {
+    "id": "STAGED_MAP_OF_RECORD_IS_NOT_THE_CRS_CERTIFIED_ARTIFACT",
+    "severity": "blocking",
+    "statement": "The XODR staged for import is a DIFFERENT artifact from the one the project's own CRS recertification covers. The CRS contract therefore does not apply to the map actually being cooked, and the staged artifact carries a header offset that the CRS contract explicitly forbids.",
+    "evidence": {
+      "staged_map_of_record": {
+        "path": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+        "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "sha256_verified_by_recomputation": true,
+        "matches_task_and_cook_log_authority": true,
+        "geoReference_verbatim": "+proj=tmerc",
+        "header_offset_verbatim": "<offset hdg=\"0.0\" z=\"0.0\" x=\"832671.676000\" y=\"5458671.104000\" />",
+        "size_bytes": 149799632
+      },
+      "crs_certified_artifact": {
+        "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+        "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+        "sha256_prefix_confirmed_present": true,
+        "geoReference_verbatim": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+        "header_offset": null,
+        "road_count": 32710,
+        "size_bytes": 82318919,
+        "certified_by": [
+          "reports/new_campaign/C55V01a_crs_recert.json (verdict CRS_CONTRACT_READY)",
+          "reports/visual_structural_reconciliation/C44V01_coordinate_contract.json (verdict CRS_CONTRACT_READY)"
+        ]
+      },
+      "hashes_differ": true,
+      "conclusion": "370abbbb != ff2a05e7. The staged artifact is a later, larger (149.8 MB vs 82.3 MB), separately-derived map of record that was never covered by C55V01a/C44V01."
+    }
+  },
+
+  "contract_violations_by_the_staged_artifact": [
+    {
+      "rule": "the certified candidate must carry NO header offset",
+      "contract_text": "negative control 'wrong_header_offset' expected REJECT, reason: 'the candidate has no header offset; adding one changes the CRS contract'",
+      "staged_artifact": "carries <offset x=832671.676 y=5458671.104>",
+      "verdict": "VIOLATION - the staged artifact would be REJECTED by its own project's negative control"
+    },
+    {
+      "rule": "geoReference must be the pinned EPSG:32632 definition",
+      "staged_artifact": "'+proj=tmerc' with no parameters at all",
+      "verdict": "VIOLATION - parameters were destroyed relative to the certified artifact"
+    },
+    {
+      "rule": "crs_reprojection.applied was false because 'candidate XODR header is already pinned to EPSG:32632'",
+      "staged_artifact": "header is NOT pinned",
+      "verdict": "VIOLATION - the precondition for skipping reprojection does not hold for the staged artifact"
+    }
+  ],
+
+  "critical_numerical_finding": {
+    "id": "STAGED_OFFSET_DOES_NOT_RESOLVE_TO_INGOLSTADT",
+    "statement": "Inverting the staged artifact's header offset through the project's OWN certified CRS does not yield Ingolstadt. It yields a location ~164 km away. The staged frame and the certified CRS are mutually inconsistent.",
+    "computation": {
+      "tool": "pyproj 3.7.2",
+      "crs_used": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "crs_source": "C44V01_coordinate_contract.projected_map.crs_definition (the project's own authority)",
+      "offset_inverted": {"easting": 832671.676, "northing": 5458671.104},
+      "result": {"lat": 49.1904, "lon": 13.5664},
+      "authoritative_ingolstadt": {"lat": 48.766, "lon": 11.425},
+      "delta_km": {"lat": 47.1, "lon": 156.9, "combined": 163.8},
+      "result_location_appears_to_be": "Bavaria/Czech border area near 49.19N 13.57E, not Ingolstadt (48.77N 11.43E)"
+    },
+    "forward_check": {
+      "description": "Projecting true Ingolstadt (48.766, 11.425) through the same certified CRS",
+      "produces": {"easting": 678193.1, "northing": 5404280.3},
+      "staged_offset": {"easting": 832671.676, "northing": 5458671.104},
+      "delta_m": {"dE": -154478.6, "dN": -54390.8}
+    },
+    "extent_cross_check": {
+      "osm_source_bounds_deg": {"lon_span": 0.2115, "lat_span": 0.1300},
+      "osm_source_bounds_m_approx": {"lon": 15537, "lat": 14448},
+      "xodr_header_bounds_m": {"E": 13267, "N": 14073},
+      "ratio_xodr_over_osm": {"E": 0.854, "N": 0.974},
+      "interpretation": "The N extent nearly matches the OSM north-south span (ratio 0.974) and the E extent is in the same ballpark (0.854), so the staged XODR plausibly covers the right physical area. That means the AREA is right while the absolute PROJECTED FRAME is wrong - consistent with a frame/CRS offset rather than wrong content."
+    }
+  },
+
+  "why_no_crs_can_be_supplied": {
+    "statement": "Every candidate CRS was tested and none reconciles the staged offset with Ingolstadt. Supplying any of them would move the error rather than fix it.",
+    "tested": [
+      {"crs": "EPSG:32632 / tmerc lon0=9 k=0.9996 (certified)", "error_km": 163.77},
+      {"crs": "EPSG:31468 DHDN/GK3-4", "error_km": 3625.47},
+      {"crs": "EPSG:31467 DHDN/GK3-7", "error_km": 2846.07},
+      {"crs": "tmerc lon0=12 k=1 x0=500000", "error_km": 378.94},
+      {"crs": "tmerc lon0=10.5 k=1 x0=500000", "error_km": 270.26},
+      {"crs": "tmerc lat0=49 lon0=12", "error_km": 5497.34},
+      {"crs": "tmerc lat0=48.766 lon0=11.425", "error_km": 5468.80}
+    ],
+    "conclusion": "The staged frame is offset by roughly (-154 km E, -54 km N) relative to true Ingolstadt under the certified CRS. No tested projection closes a gap of that shape. Reverse-engineering a projection to fit would be curve-fitting to a single point and is explicitly out of bounds.",
+    "hardcoding_ingolstadt_constants": "NOT DONE."
+  },
+
+  "lat0_convention_defect_confirmed": {
+    "finding": "Even a perfectly emitted projection string does not give CARLA the right answer, because CARLA reads +lat_0 as if it were the map's geographic latitude.",
+    "evidence": {
+      "certified_string_reads_as": {"lat_0": 0, "lon_0": 9},
+      "true_values": {"lat": 48.766, "lon": 11.425},
+      "consequence": "CARLA would place the map at latitude 0 (the equator) instead of 48.766N. Gauss-Krueger and UTM strings universally carry +lat_0=0 because the projection's latitude of origin is the equator, not the map's location.",
+      "implication": "The preferred-fix hierarchy item 'make OSM2ODR emit the complete authoritative tmerc definition' is NECESSARY BUT NOT SUFFICIENT. A CARLA-consumable georeference must carry the map's true geographic origin, which no standard proj4 string expresses as lat_0/lon_0 in the way CARLA reads them."
+    },
+    "consequence_for_the_emitter_fix": "OSM2ODR must additionally emit the true geographic origin in a form CARLA reads. CARLA's parser reads +lat_0/+lon_0, so those two keys must carry the MAP's geolocation, which conflicts with their proj4 meaning. This is a CARLA-side convention bug, not an OSM2ODR bug, and the fix must be coordinated rather than applied blindly to one side."
+  },
+
+  "completed_and_verified_this_wave": {
+    "silent_fallback_removed": true,
+    "file": "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp",
+    "was": "if (std::isnan(latitude) || std::isnan(longitude)) { log_warning(...); latitude = 42.0; longitude = 2.0; }",
+    "now": "throws std::runtime_error for incomplete, non-finite, and out-of-range geoReference",
+    "additional_hardening": "range validation: latitude in [-90,90], longitude in [-180,180]",
+    "build_evidence": {
+      "single_tu_compile": "msbuild /t:ClCompile /p:SelectedFiles=... exit 0",
+      "object_rebuilt": "GeoReferenceParser.obj 504564 bytes, mtime 2026-10-05 11:22:30",
+      "lib_relink": "carla_server.vcxproj /t:Build Release x64 exit 0, 6.5 s incremental, carla_server.lib 60583972 bytes",
+      "full_rebuild": "exit 0, only pre-existing C4244 warnings in MapBuilder.cpp",
+      "test_harness": "LibCarla/test/georeference_fail_closed_test.cpp linked against the rebuilt carla_server.lib",
+      "test_result": "13 checks, 0 failures, exit 0",
+      "cases_covered": [
+        "bare +proj=tmerc (the actual staged map) -> REJECTED",
+        "complete DHDN tmerc -> accepted, values round-trip",
+        "missing +lat_0 -> REJECTED",
+        "missing +lon_0 -> REJECTED",
+        "empty geoReference -> REJECTED",
+        "UTM32N -> REJECTED (documents the CARLA convention defect)",
+        "malformed +lat_0 -> REJECTED",
+        "empty +lon_0 value -> REJECTED",
+        "lat out of range -> REJECTED",
+        "lon out of range -> REJECTED",
+        "SW/NE corners -> accepted"
+      ],
+      "test_support_change": "Added a const MapBuilder::GetGeoReference() accessor so parsed values are observable without loading a full Map."
+    }
+  },
+
+  "required_next_step": {
+    "owner_decision_needed": "Which artifact is authoritative for production: the staged 370abbbb map of record, or the CRS-certified ff2a05e7 candidate?",
+    "why_it_blocks": "If 370abbbb is authoritative, its projected frame must be re-derived from the source OSM under a recorded CRS, and the CRS contract must be re-issued for it. If ff2a05e7 is authoritative, the staged package is the wrong input and import should not proceed on it.",
+    "additional_unknown": "The absolute projected frame of the staged artifact matches no recorded CRS. Its origin (832671.676, 5458671.104) must be traced to whatever projection step produced it; that step is not present in the campaign directory (which contains only the OSM source and derived XODRs).",
+    "not_done": [
+      "No CRS constant was invented or hardcoded.",
+      "No XODR was regenerated or mutated.",
+      "No projection was fitted to force agreement.",
+      "The emitter-side OSM2ODR change was NOT made: emitting the complete string alone would leave CARLA reading lat_0=0, so it would convert a 42/2 error into an equator error. That is not a fix."
+    ]
+  },
+
+  "SILENT_FALLBACK_REMOVED": true,
+  "GEOREFERENCE_CPP_FIX": "PARSER_SIDE_COMPLETE_BUILT_AND_TESTED; EMITTER_SIDE_BLOCKED_BY_CRS_AUTHORITY",
+  "CRS_NUMERICAL_VALIDATION": "FAILED_BY_DESIGN - performed and it falsified the assumption that a correct CRS exists for the staged frame"
+}

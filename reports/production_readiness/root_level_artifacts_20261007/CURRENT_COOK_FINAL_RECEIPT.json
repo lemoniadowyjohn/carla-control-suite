@@ -1,0 +1,93 @@
+{
+  "COOK_SESSION": {
+    "start_time": "2026-10-05T12:54:59Z",
+    "observation_end_time": "2026-10-05T15:30:00Z",
+    "duration_hours": 2.6,
+    "process_id": 5344,
+    "process_name": "UE4Editor",
+    "command_line": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt -targetplatform=WindowsNoEditor -OutputDir=G:\\CARLA\\cook_out\\Ingolstadt -iterate -cooksinglepackage -unattended -NoLogTimes -UTF8Output -stdout"
+  },
+  "EXIT_STATE": "STALLED_NOT_TERMINATED",
+  "TERMINAL_LOG_STATE": "FROZEN_AT_PACKAGE_2975_OF_3558",
+  "COOKED_PACKAGE_COUNT": 2975,
+  "PACKAGES_REMAINING": 583,
+  "TOTAL_PACKAGES_DISCOVERED": 3558,
+  "INITIAL_PACKAGE_ESTIMATE": 1778,
+  "PACKAGE_EXPANSION_FACTOR": 2.0,
+  "SHADER_FAILURES": {
+    "PCD3D_ES31": 35,
+    "PCD3D_SM5": 0,
+    "SF_VULKAN_SM5": 0,
+    "total_observed": 35,
+    "all_on_es31": true,
+    "required_runtime_failures": 0
+  },
+  "SHADER_QUEUE": {
+    "peak": 15034,
+    "final_observed": 15034,
+    "workers_active": 0,
+    "workers_configured": 4
+  },
+  "DDC_WARNINGS": {
+    "slow_access_count": 15,
+    "observed_read_mbps": "0.00-0.08",
+    "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+    "size_gb": 9.3,
+    "file_count": 82834,
+    "drive_free_percent": 4.5,
+    "drive_free_gb": 41.7
+  },
+  "MEMORY_WARNINGS": {
+    "system_commit_saturated": true,
+    "system_commit_mb": 59506256,
+    "system_commit_limit_mb": 59506256,
+    "commit_pressure": "CRITICAL",
+    "ue4editor_peak_working_set_mb": 4599,
+    "ue4editor_peak_private_mb": 7123,
+    "ue4editor_peak_virtual_mb": 12487,
+    "ue4editor_final_working_set_mb": 210,
+    "ue4editor_final_private_mb": 6793,
+    "ue4editor_final_virtual_mb": 11909,
+    "scw_peak_aggregate_mb": 0,
+    "scw_final_count": 0,
+    "pagefile_used_mb": 184
+  },
+  "OUTPUT_INVENTORY": {
+    "cook_out_path": "G:\\CARLA\\cook_out\\Ingolstadt",
+    "total_files": 7802,
+    "carlaue4_files": 7318,
+    "engine_files": 484,
+    "map_packages_produced": 0,
+    "ingolstadt_tile_umaps": 0,
+    "ingolstadt_map_package": false
+  },
+  "MAP_PACKAGE_PRESENCE": {
+    "requested_map": "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt",
+    "cooked_map_package": false,
+    "tile_umaps_created": 0,
+    "streaming_tiles": 0
+  },
+  "CLASSIFICATION": {
+    "MECHANICAL_RESULT": "COOK_STALLED",
+    "CONFIGURATION_QUALIFICATION": "DDC_NOT_QUALIFIED, MEMORY_POLICY_NOT_QUALIFIED, SHADER_TARGET_SCOPE_NOT_QUALIFIED",
+    "root_causes": [
+      "DDC read throughput 0.00-0.08 MB/s causing shader/texture derivation starvation",
+      "System commit saturated at 59.5/59.5 GB preventing shader worker spawn",
+      "PCD3D_ES31 erroneously enabled adding ~33% wasted shader permutations",
+      "MemoryMaxUsedVirtual=0 allowing unbounded commit growth"
+    ]
+  },
+  "EVIDENCE_SOURCES": {
+    "log_file": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log",
+    "telemetry_csv": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\COOK_RESOURCE_TIMELINE.csv",
+    "forensics_reports": [
+      "SHADER_PLATFORM_SCOPE_AUDIT.json",
+      "MATERIAL_SHADER_FAILURE_MATRIX.json",
+      "COOK_PACKAGE_EXPANSION_AUDIT.json",
+      "COOK_FLAG_SEMANTICS_AUDIT.json",
+      "DDC_PERFORMANCE_AUDIT.json",
+      "SHADER_QUEUE_GROWTH_ANALYSIS.json",
+      "COOK_MEMORY_POLICY_AUDIT.json"
+    ]
+  }
+}

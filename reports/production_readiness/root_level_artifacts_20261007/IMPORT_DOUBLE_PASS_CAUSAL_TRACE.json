@@ -1,0 +1,60 @@
+{
+  "schema": "import_double_pass_causal_trace/v1",
+  "generated_at_utc": "2026-10-05T15:50:00Z",
+  "phase": "STATIC_TRACE_NO_CODE_CHANGE",
+
+  "DOUBLE_PASS_CAUSE": "ACCIDENTAL_DUPLICATE_PACKAGE_JSON",
+  "SECOND_PASS_REQUIRED": false,
+  "DOUBLE_PASS_INTENTIONAL": false,
+  "mechanism_proven": true,
+
+  "call_graph": [
+    {"line": 914, "step": "import_folder = CARLA_ROOT_PATH + '/Import'"},
+    {"line": 915, "step": "json_list = get_packages_json_list(import_folder)"},
+    {"line": 319, "fn": "get_packages_json_list", "detail": "os.walk over the whole Import tree; fnmatch '*.json'; skips only 'roadpainter_decals.json'; appends EVERY other json as a package. There is NO validation that a json is an import package, NO dedup, and NO check for a 'maps' key."},
+    {"line": 918, "step": "if len(json_list) < 1: json_list = generate_json_package(...)  -- NOT taken, because 7 json files already exist"},
+    {"line": 717, "fn": "import_assets_from_json_list", "detail": "for dirname, filename in json_list:  -> one FULL import pass per json file"},
+    {"line": 740, "step": "if maps non-empty and 'tiles' in maps[0]: import_assets(..., do_tiles=1, ...) -> runs the 20-tile ImportAssets commandlet loop"}
+  ],
+
+  "root_cause_evidence": {
+    "import_folder_json_files_found": 7,
+    "excluded_by_hardcoded_filter": ["roadpainter_decals.json"],
+    "remaining_packages": [
+      {"name": "Ingolstadt.json", "sha256": "DA5EB6EA9598DFC5005C283181E99C0EC605D477DA1502401C434AA317F01024", "has_maps": true, "maps": 1, "tiles": 20, "package_name": "Ingolstadt", "triggers_full_import": true},
+      {"name": "package.json", "sha256": "DA5EB6EA9598DFC5005C283181E99C0EC605D477DA1502401C434AA317F01024", "has_maps": true, "maps": 1, "tiles": 20, "package_name": "Ingolstadt", "triggers_full_import": true},
+      {"name": "AUTO_COOK_RECEIPT.json", "has_maps": false, "triggers_full_import": false},
+      {"name": "IMPORT_MANIFEST.json", "has_maps": false, "triggers_full_import": false},
+      {"name": "Ingolstadt.large_map_package.json", "has_maps": false, "triggers_full_import": false},
+      {"name": "Ingolstadt.stage_and_validate.json", "has_maps": false, "triggers_full_import": false},
+      {"name": "PACKAGE_SHA256.json", "has_maps": false, "triggers_full_import": false}
+    ],
+    "decisive_finding": "Ingolstadt.json and package.json are BYTE-IDENTICAL (same SHA256 DA5EB0EA...). Both carry maps[0] with 20 tiles and name='Ingolstadt'. get_packages_json_list therefore returns BOTH, and import_assets_from_json_list executes the complete 20-tile ImportAssets sequence TWICE, writing into the SAME package name 'Ingolstadt'.",
+    "why_the_second_pass_is_wasteful_not_correct": "The second pass re-imports identical FBX tiles into the same DestinationPath with bReplaceExisting=true. It repeats every StaticMesh build and distance-field generation for 5711 assets for no new information, which is the strongest available explanation for the 27 distance-field stalls and the ~10.5 percent second-pass improvement (the DDC is warm, but the Build() work is genuinely repeated).",
+    "confirms_ddc_warmth_refutation": "Warm DDC alone would predict a near-total second-pass speedup. An observed ~10.5 percent aggregate improvement is consistent with DDC warmth helping slightly while the expensive StaticMesh rebuild path is re-executed regardless. This corroborates the EXCESSIVE_REBUILD_PLUS_IMPORT_ORDER classification."
+  },
+
+  "why_the_other_five_jsons_do_not_trigger_a_pass": {
+    "explanation": "For a json with no 'maps' key, maps=[] and props=[], so import_assets(package, dirname, [], [], 0, 0, 0) runs with do_tiles=0 and an empty maps/props list. generate_import_setting_file then emits ImportGroups=[] and a single empty ImportAssets commandlet is invoked. Cheap, but still 5 pointless editor startups. The MoveAssets/prepare/LoadAssetMaterials stages are additionally gated by 'if len(maps) > 0', so they are skipped for these.",
+    "side_effect_worth_noting": "package_name is set from the filename with .json stripped, so the receipts/manifests are treated as packages named AUTO_COOK_RECEIPT, IMPORT_MANIFEST, PACKAGE_SHA256, etc. Harmless today, but it means governance receipts sitting in the Import folder are structurally indistinguishable from import packages to the importer."
+  },
+
+  "recommended_fix_not_yet_applied": {
+    "change": "Make get_packages_json_list validate that a candidate json is actually an import package rather than trusting the filename. Minimal correct predicate: require a top-level 'maps' or 'props' key.",
+    "preferred": "Also add content-level dedup keyed on the serialized package content, so a byte-identical duplicate cannot cause a second pass even under a different filename.",
+    "why_not_applied_now": "Editing Import.py while the live cook (PID 5344) is running is excluded by the batch rules for this phase. The change is small, offline, and testable, and is queued for the post-cook phase.",
+    "expected_effect": "Removes one of two full 20-tile passes. Directly targets the repeated Build()/distance-field work implicated in the 52.3 percent wall-clock stall cost.",
+    "risk": "LOW. Skipping maps-less jsons removes only empty ImportAssets invocations. Dedup is safe because the two files are byte-identical."
+  },
+
+  "relation_to_distance_field_finding": {
+    "consistency": "A duplicated 20-tile import doubles StaticMesh Build() and distance-field work. The 6 meshes that stalled in BOTH passes are exactly the meshes whose per-mesh cost is dominated by that work rather than by FBX size, which fits the observation that mesh complexity alone does not explain the stalls.",
+    "not_claimed": "This makes DOUBLE_PASS the leading contributor to the stalls but does not by itself prove the per-asset Build() count. That still requires the instrumentation in STATIC_MESH_REBUILD_CAUSAL_TRACE.json, which is gated on the cook finishing."
+  },
+
+  "not_claimed": [
+    "No Import.py code was changed.",
+    "STATIC_MESH_BUILD_COUNT_BEFORE/AFTER are not established.",
+    "No distance-field timing was measured in this wave."
+  ]
+}

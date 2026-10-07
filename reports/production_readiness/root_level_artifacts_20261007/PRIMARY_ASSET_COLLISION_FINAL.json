@@ -1,0 +1,62 @@
+{
+  "schema": "primary_asset_collision_final/v1",
+  "generated_at_utc": "2026-10-05T16:00:00Z",
+
+  "PRIMARY_ASSET_COLLISION_FAMILIES_AFTER": "UNCHANGED - 2 families still present; NOT closed in this wave",
+
+  "families": [
+    {
+      "family": "Map:/Game/Carla/Maps/TestMaps/EmptyMap",
+      "warning_count": 30,
+      "distinct_paths_involved": 29,
+      "colliding_paths": ["/Game/Maps/Town11/Town11_Tile_0_0", "/Game/Maps/Town11/Town11_Tile_0_1", "/Game/Maps/Town11/Town11_Tile_0_10", "/Game/Maps/Town11/Town11_Tile_0_11", "/Game/Maps/Town11/Town11_Tile_0_7"],
+      "cause": "A cascade within stock CARLA Town11 world-partition content: Town11_Tile_* sublevels each register the SAME PrimaryAssetID 'Map:/Game/Carla/Maps/TestMaps/EmptyMap', so each new registration displaces the previous one. It is a registration-identity collision among sibling tiles, not a filename collision.",
+      "ingolstadt_involvement": "NONE"
+    },
+    {
+      "family": "Map:/Game/Carla/Maps/BaseLargeMap/LargeMap",
+      "warning_count": 1,
+      "distinct_paths_involved": 1,
+      "colliding_paths": ["/Game/Maps/BaseLargeMap/LargeMap", "/Game/Maps/Town11/Town11"],
+      "cause": "Town11's own map registers the BaseLargeMap PrimaryAssetID, colliding with the standalone /Game/Maps/BaseLargeMap/LargeMap asset.",
+      "ingolstadt_involvement": "NONE"
+    }
+  ],
+
+  "evidence": {
+    "source_log": "G:\\CARLA\\build_logs\\ingolstadt_cook_20261004T182534Z.log",
+    "total_duplicate_primaryassetid_warnings": 31,
+    "warnings_mentioning_Ingolstadt": 0,
+    "unique_colliding_paths": 31,
+    "unique_colliding_paths_under_Game_Ingolstadt": 0,
+    "path_grouping_by_third_segment": {"BaseLargeMap": 1, "TestMaps": 1, "Town11": 29},
+    "conclusion": "Every one of the 31 collisions is in stock CARLA Town11 / BaseLargeMap / TestMaps content. Zero involve /Game/Ingolstadt."
+  },
+
+  "classification": {
+    "family": "PRE_EXISTING_STOCK_CARLA_CONTENT",
+    "introduced_by_this_pipeline": false,
+    "relation_to_the_5711_building_issue": "NONE - kept strictly separate as instructed. The building issue is a wrong-subpath serialized reference under /Game/Ingolstadt; these are PrimaryAssetID registration collisions under /Game/Maps. Different namespace, different mechanism, different fix.",
+    "note_on_the_refuted_junction_hypothesis": "The earlier junction hypothesis was already refuted for the building namespace and is NOT revived here. The Content/Carla junctions created in an earlier wave are a separate environment adaptation and are not implicated in these Town11 collisions."
+  },
+
+  "why_not_closed_now": [
+    "Both families live in CARLA's own stock content (Town11, BaseLargeMap, TestMaps). Changing them means either editing CARLA upstream assets or excluding Town11 from the cook, both of which alter engine/content state.",
+    "A UE workload is required to enumerate the full PrimaryAssetID registry and confirm closure, and launching UE4Editor-Cmd.exe while UE4Editor PID 5344 is running a cook is prohibited by the batch rules for this phase.",
+    "No evidence was found that these collisions affect the Ingolstadt map. They are logged warnings, not errors, and the cook proceeded past them to 82.7 percent completion."
+  ],
+
+  "recommended_closure_path_after_cook": [
+    "Run a minimal AssetManager/AssetRegistry dump to enumerate every PrimaryAssetID and its registered paths, rather than relying on cook-time warnings which only surface collisions encountered in load order.",
+    "Confirm whether Town11 is required by the Ingolstadt cook at all. If Town11 is pulled in only as engine-default content, excluding it removes 30 of 31 warnings with no effect on Ingolstadt.",
+    "Treat BaseLargeMap/LargeMap separately: it is a single collision between two distinct assets and likely needs either an ID rename or an exclusion.",
+    "Do not silence the warnings. The requirement is a unique-ID state, not absence of logging."
+  ],
+
+  "not_claimed": [
+    "PRIMARY_ASSET_COLLISIONS_AFTER is NOT 0.",
+    "No CARLA content was modified.",
+    "No UE process was launched to enumerate the registry.",
+    "The judgement that these do not affect Ingolstadt is based on the absence of any /Game/Ingolstadt path in the collision set, not on a full registry dump."
+  ]
+}

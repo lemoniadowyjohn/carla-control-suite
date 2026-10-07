@@ -1,0 +1,109 @@
+{
+  "schema": "import_truncation_root_cause/v1",
+  "generated_at_utc": "2026-10-04T19:05:00Z",
+  "question": "Was the SyntaxWarning at Import.py:343 the root cause of the truncated 16.76-hour import?",
+
+  "answer": "NO",
+  "verdict": "Ruled out on execution evidence. The truncation was caused by external termination of the process group. The SyntaxWarning is causally inert for import correctness and is a pre-existing code-hygiene defect, not the failure mechanism.",
+
+  "identified_actual_root_cause": {
+    "mechanism": "External termination signal delivered to the whole process group, which killed the UE4Editor child and the Import.py wrapper together.",
+    "evidence_run_2": {
+      "log": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log",
+      "log_bytes": 3489530,
+      "first_ue_timestamp": "[2026.10.04-00.18.06:237][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'AllDesktop'",
+      "last_ue_timestamp": "[2026.10.04-17.03.54:710][  0]LogStaticMesh: Warning: Ingolstadt_Tile_6_8_Building412 has some nearly zero bi-normals ...",
+      "elapsed": "16h 45m 48s = 16.763 h (this is the '16.76-hour' run)",
+      "stderr_path": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log.err",
+      "stderr_bytes": 1493,
+      "stderr_markers": [
+        "Import.py:343: SyntaxWarning: \"is not\" with 'str' literal. Did you mean \"!=\"?",
+        "^C",
+        "Traceback (most recent call last):",
+        "  File \"...Import.py\", line 627, in <module> main()",
+        "  File \"...Import.py\", line 624, in main -> import_assets_from_json_list(json_list, args.batch_size)",
+        "  File \"...Import.py\", line 442, in import_assets_from_json_list -> import_assets(package_name, dirname, props, maps, 1, tile_size, batch_size)",
+        "  File \"...Import.py\", line 374, in import_assets -> invoke_commandlet(commandlet_name, commandlet_arguments)",
+        "  File \"...Import.py\", line 201, in invoke_commandlet -> subprocess.check_call(command, shell=True)",
+        "subprocess.CalledProcessError: ... returned non-zero exit status 3221225786"
+      ],
+      "child_exit_code_decimal": 3221225786,
+      "child_exit_code_hex": "0xC000013A",
+      "child_exit_code_meaning": "STATUS_CONTROL_C_EXIT - the child was terminated by a Ctrl+C / console control event, not by its own fault.",
+      "interpretation": "The '^C' marker immediately preceding the traceback, together with STATUS_CONTROL_C_EXIT, is direct evidence of a console control event delivered to the process group. The child was killed, not crashed."
+    },
+    "evidence_run_1": {
+      "log": "G:\\CARLA\\build_logs\\ingolstadt_import_20261003T215605Z.log",
+      "log_bytes": 471002,
+      "stderr_path": "G:\\CARLA\\build_logs\\ingolstadt_import_20261003T215605Z.log.err",
+      "stderr_bytes": 149,
+      "stderr_contents": "Import.py:343: SyntaxWarning ... (and nothing else)",
+      "interpretation": "No traceback and no exit code were recorded. This is the signature of the entire process tree being killed externally, including the Python wrapper, so the wrapper could neither raise CalledProcessError nor write any termination record. This is exactly the failure class previously indistinguishable from success."
+    }
+  },
+
+  "why_syntaxwarning_is_not_the_cause": [
+    {
+      "argument": "Temporal impossibility",
+      "detail": "The SyntaxWarning is emitted at interpreter compile time, i.e. the instant Import.py is loaded at t=0. The run was truncated 16.76 h later. A message present at t=0 cannot explain an event at t=16.76h, and it appeared identically in run 1 (which failed differently) and run 2."
+    },
+    {
+      "argument": "Empirical inertness",
+      "detail": "The comparison result is discarded by the very next statement. `map_template['tiles'] = []` overwrites whatever the loop wrote for the 'tiles' key. Therefore the identity form and the value form yield a byte-identical final template.",
+      "pinned_by_test": "tests/test_import_supervision.py::test_syntaxwarning_is_not_a_correctness_defect"
+    },
+    {
+      "argument": "Observed progress contradicts breakage",
+      "detail": "Run 2 advanced through many successive ImportAssets/MoveAssets batches over 16.76 h with 0 errors in every completed commandlet, and produced 5724 content files plus the TM binary. Broken tile batching could not have sustained that progress."
+    },
+    {
+      "argument": "The real defect class was supervision, not comparison",
+      "detail": "What actually lost information was invoke_commandlet's use of subprocess.check_call(..., shell=True): it captured only an exit code, reported cmd.exe's PID rather than the editor's, and recorded no command line, start/end UTC or stdout/stderr paths. It also had no explicit state for a child that vanished without an exit code, which is precisely why run 1 left no crash record."
+    }
+  ],
+
+  "contributing_defects_now_fixed": [
+    {
+      "id": "TILE_KEY_IDENTITY_COMPARISON",
+      "location": "Util/BuildTools/Import.py, former line 343",
+      "was": "if key is not 'tiles':",
+      "now": "if key != 'tiles':",
+      "severity": "correctness-hygiene",
+      "was_fatal_to_import": false,
+      "note": "Fixed because identity comparison against a string literal is unreliable (CPython interning is an implementation detail and json returns keys from its own memo dict). Empirically harmless at this call site only because of the immediate overwrite on the following line."
+    },
+    {
+      "id": "CHILD_EXIT_NOT_CAPTURED_OR_PROPAGATED",
+      "location": "Util/BuildTools/Import.py, invoke_commandlet",
+      "was": "subprocess.check_call(command, shell=True) on nt; subprocess.call([full_command], shell=True) on posix",
+      "now": "supervise_child(...) with shell=False, full receipt, and nonzero propagation on both platforms",
+      "severity": "high",
+      "note": "The posix branch discarded the return code entirely, so a failed commandlet could not fail the import."
+    },
+    {
+      "id": "RECAST_AND_BUILD_STEP_EXITS_DISCARDED",
+      "location": "Util/BuildTools/Import.py, build_binary_for_navigation",
+      "was": "subprocess.call([...], shell=True) for build.bat / chmod / build.sh",
+      "now": "supervise_child(...)",
+      "severity": "medium",
+      "note": "A failed Recast conversion silently produced a missing navigation .bin, so navigation meshes were never generated without any error surfacing."
+    },
+    {
+      "id": "NO_VANISHED_CHILD_STATE",
+      "location": "Util/BuildTools/Import.py",
+      "was": "no representation existed",
+      "now": "STATE_CHILD_TERMINATED_UNEXPECTEDLY plus audit_supervision_records() for receipts left RUNNING",
+      "severity": "high",
+      "note": "Closes the exact gap that made run 1 unattributable."
+    }
+  ],
+
+  "residual_limit_stated_honestly": "If the Python wrapper itself is killed together with its child (run 1's mode), the wrapper cannot write a terminal record. Mitigation is two-stage: a RUNNING receipt is persisted immediately after spawn (recording child PID, command line and start UTC), and audit_supervision_records() converts any receipt still RUNNING at audit time into CHILD_TERMINATED_UNEXPECTEDLY. A receipt that was never created at all remains indistinguishable from a run that was never started; that residual is inherent to in-process supervision and is not claimed as solved.",
+
+  "not_claimed": [
+    "The specific actor or tool that delivered the Ctrl+C in run 2 is not identified; only the mechanism (STATUS_CONTROL_C_EXIT) is evidenced.",
+    "The cause of run 1's tree kill is not identified.",
+    "No import or cook was executed as part of this investigation.",
+    "The live cook in progress at the time of writing was not touched."
+  ]
+}

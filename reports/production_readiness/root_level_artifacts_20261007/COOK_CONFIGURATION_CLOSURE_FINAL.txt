@@ -1,0 +1,52 @@
+CURRENT_COOK_RESULT=STALLED_NOT_TERMINATED
+
+PCD3D_ES31_BEFORE=true
+PCD3D_ES31_AFTER=PENDING_CONFIG_CHANGE
+
+REQUIRED_SHADER_FAILURES_BEFORE=0
+REQUIRED_SHADER_FAILURES_AFTER=PENDING_VALIDATION
+
+OLD_DDC_PATH=G:\UnrealEngine_4.26_CARLA\Engine\DerivedDataCache
+NEW_DDC_PATH=F:\UnrealEngine_DDC
+DDC_READ_BEFORE_MBPS=0.00-0.08
+DDC_READ_AFTER_MBPS=TARGET_500+
+DDC_SLOW_WARNINGS_AFTER=TARGET_0
+
+MEMORY_MAX_PHYSICAL=16384
+MEMORY_MAX_VIRTUAL=30500
+MEMORY_VIRTUAL_LIMIT_JUSTIFICATION=Derived from 59.5GB commit limit - 7GB OS reserve = 52.5GB available; UE4Editor 12.5GB + SCW 8GB = 20.5GB peak + 10GB margin = 30.5GB limit
+
+SCW_COUNT=4
+SCW_AGGREGATE_PEAK_GB=NOT_MEASURED (commit pressure prevented spawn)
+
+SYSTEM_COMMIT_LIMIT_GB=59.5
+SYSTEM_COMMIT_PEAK_BEFORE_GB=59.5
+SYSTEM_COMMIT_PEAK_AFTER_GB=TARGET_<50
+SYSTEM_COMMIT_HEADROOM_GB=TARGET_>20
+
+PACKAGE_COUNT=3558 (discovered), 2975 (cooked before stall)
+PACKAGE_SCOPE_CLASSIFICATION=REQUIRED_TRANSITIVE_CONTENT
+
+BOUNDED_COOK=PENDING
+FULL_PRODUCTION_COOK_ALLOWED=false
+
+FINAL_VERDICT=PARTIAL_WITH_EXACT_BLOCKERS
+
+BLOCKERS:
+  - DDC_NOT_QUALIFIED (0.00-0.08 MB/s on G: external HDD, 4.5% free)
+  - MEMORY_POLICY_NOT_QUALIFIED (commit saturated at 59.5/59.5 GB, MemoryMaxUsedVirtual=0)
+  - SHADER_TARGET_SCOPE_NOT_QUALIFIED (PCD3D_ES31 erroneously enabled)
+  - PAGEFILE_ON_SYSTEM_DRIVE (C: at 3.3% free, cannot expand)
+  - COOK_STALLED (no progress for 1+ hour, 2975/3558 packages)
+
+REQUIRED_ACTIONS_BEFORE_BOUNDED_COOK:
+  1. Remove +TargetedRHIs=PCD3D_ES31 from DefaultEngine.ini
+  2. Relocate DDC to F:\UnrealEngine_DDC (Intenso SSD, 170/479 MB/s small-file)
+  3. Set MemoryMaxUsedVirtual=30500, MemoryMinFreeVirtual=4096
+  4. Relocate pagefile to F: (24 GB fixed), reboot
+  5. Verify commit limit > 70 GB, free space > 15% on all drives
+
+NEXT_STEPS:
+  - Apply config fixes after current cook terminates (or force-terminate if permanent deadlock)
+  - Run bounded cook validation on minimal Ingolstadt subset
+  - Only then authorize full production cook

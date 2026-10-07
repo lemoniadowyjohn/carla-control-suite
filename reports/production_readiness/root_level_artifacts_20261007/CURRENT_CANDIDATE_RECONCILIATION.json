@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-10-02T14:30:00Z",
+  "authoritative_remote": {
+    "branch": "review/carla-production-convergence-20261002",
+    "sha": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+    "tree": "b2d140c24ba4327972650d4c8edbdf15f7f3db1e"
+  },
+  "reference_sha_from_task": {
+    "sha": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+    "tree": "ee74886abd9237eae7dc9764d4acc650118a745e",
+    "note": "Task mentions this as known remote SHA, but remote has advanced to 7fbd33ff"
+  },
+  "candidate_shas": {
+    "rq1_candidate": {
+      "sha": "082bc1369a77930386e008ab26ab77e9fc611106",
+      "branch": "rq1-integration",
+      "tree": "88b5187cf5316160445149aeefca6b694f199f47",
+      "description": "RQ1 campaign infrastructure: RQ1A/RQ1B tools, RQ3 validation, evidence freshness gate, perception environment hardening",
+      "merge_base_with_7fbd33ff": "f897e0eb747ac827941ac4883170a5181a603111",
+      "unique_commits_vs_7fbd33ff": [
+        "082bc136 RQ1 campaign infrastructure",
+        "01b6d2a0 Add RQ1 complete receipt generator",
+        "bbb89ee2 Add optimization infrastructure",
+        "40fb2767 feat(tm): correct hybrid API",
+        "58e9bfc3 fix(p0): reconstruct five P0 repairs"
+      ],
+      "status": "PARALLEL_LINEAGE - contains same logical changes as 97cb2e7e..167b12fd but different commit SHAs; 7fbd33ff already has these tools via 97cb2e7e"
+    },
+    "rq3_package_lineage_fix": {
+      "sha": "b074fc2bc2edb8a27c6af185a410f518675c718c",
+      "branch": "batch9-integration / opencode/p1-runtime-capture-20261001",
+      "tree": "b753376d3c28c8ecfb8aae8840d7faa626ca7341",
+      "description": "fix(rq3): bind sim timing, harden package validator, fix pair_valid inversion",
+      "equivalent_in_7fbd33ff": "14a99c36a83e11fe935ddb99a437c8eab10ee304 (same commit message, different SHA)"
+    },
+    "rq3_package_lineage_docs": {
+      "sha": "542b82e93b6bb866dc05e085480eecb3ceffbcc1",
+      "branch": "batch9-integration / opencode/p1-runtime-capture-20261001 (HEAD)",
+      "tree": "c29a6aa9b30cdc515b489f65c92ba8585f3b6f88",
+      "description": "docs(rq3): Batch 9 evidence packet and final verdict",
+      "equivalent_in_7fbd33ff": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6 (same commit message, different SHA)"
+    }
+  },
+  "analysis": {
+    "7fbd33ff_contains": [
+      "RQ1/RQ3 offline tools (rq1a_osm_to_xodr, rq1b_post_generation, rq3_map_lineage_validation, evidence_freshness_gate) via 97cb2e7e",
+      "Perception environment hardening (NEW-316..333) via cee72f42/97cb2e7e",
+      "P0 fixes (recorder, provenance, runtime QA) via cafd3d7a/7e744811",
+      "TM authority fixes (hybrid API, single-owner, walker lifecycle) via 78eff7d7/40fb2767",
+      "Optimization infrastructure (cache, parallel, geometry, coordinate authority) via 0ed3af4a/bbb89ee2",
+      "RQ1 receipt schema split (RQ1A/RQ1B), determinism authority via f4a2f4a8/5fd75aac",
+      "RQ3 map pair authority with SHA-based identity via 0e92f053",
+      "Placement verification (true_placement_verification.py) via 41c872c6/9a9fa764",
+      "Signal hardening (NEW-334..349) via cbc15caa",
+      "Runtime rig/environment integration via 233e452f merge",
+      "RQ3 package validator fixes (bind sim timing, pair_valid inversion) via 14a99c36",
+      "RQ3 Batch 9 evidence packet and final verdict via 7fbd33ff"
+    ],
+    "082bc136_adds_vs_7fbd33ff": "No unique scientific changes - parallel implementation of same features already in 7fbd33ff via 97cb2e7e",
+    "b074fc2b_adds_vs_7fbd33ff": "No unique changes - 14a99c36 in 7fbd33ff is equivalent fix",
+    "542b82e9_adds_vs_7fbd33ff": "No unique changes - 7fbd33ff is equivalent docs commit"
+  },
+  "decision": {
+    "BASE_SHA": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+    "BASE_TREE": "b2d140c24ba4327972650d4c8edbdf15f7f3db1e",
+    "BASE_CLEAN": true,
+    "reason": "7fbd33ff is the current HEAD of the authoritative remote branch review/carla-production-convergence-20261002. It contains all offline fixes: RQ1/RQ3 tools, perception hardening, P0 fixes, TM authority, optimization infra, RQ3 package validator fixes, and Batch 9 evidence. The other candidate SHAs (082bc136, b074fc2b, 542b82e9) are parallel lineages with equivalent changes but different commit SHAs. Using 7fbd33ff ensures consistency with remote and includes the complete RQ3 evidence package."
+  },
+  "notes": [
+    "082bc136 is NOT an ancestor of 7fbd33ff - separate branch with parallel commits",
+    "97cb2e7e in 7fbd33ff history already contains the RQ1/RQ3 tools and perception env hardening",
+    "14a99c36 in 7fbd33ff is equivalent to b074fc2b (RQ3 package validator fix)",
+    "7fbd33ff is equivalent to 542b82e9 (RQ3 Batch 9 evidence docs)",
+    "All four lanes will start from BASE_SHA = 7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+    "Configuration drift fix needed: reports/new_campaign/C55V01a_osm.json references obsolete cities/ingolstadt/osm/ingolstadt.osm path"
+  ]
+}

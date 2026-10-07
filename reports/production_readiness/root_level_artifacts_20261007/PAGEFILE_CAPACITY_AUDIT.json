@@ -1,0 +1,46 @@
+{
+  "PAGEFILE_CAPACITY_AUDIT": {
+    "CURRENT_PAGEFILE": {
+      "path": "C:\\pagefile.sys",
+      "initial_size_mb": 9437,
+      "maximum_size_mb": 9437,
+      "system_managed": true,
+      "drive": "C:",
+      "drive_free_gb": 15.6,
+      "drive_free_percent": 3.3
+    },
+    "COMMIT_LIMIT_ANALYSIS": {
+      "physical_ram_mb": 50069,
+      "pagefile_mb": 9437,
+      "theoretical_commit_limit_mb": 59506,
+      "observed_commit_limit_mb": 59506,
+      "current_commit_usage_mb": 59506,
+      "commit_saturation": "100%"
+    },
+    "CONSTRAINTS": {
+      "c_drive_free_gb": 15.6,
+      "c_drive_free_percent": 3.3,
+      "pagefile_expansion_possible": false,
+      "reason": "C: drive at 3.3% free space - NTFS performance degrades severely below 15% free. Pagefile cannot safely expand on C:."
+    },
+    "RECOMMENDATION": {
+      "action": "RELOCATE_PAGEFILE_TO_F_DRIVE",
+      "target_drive": "F:",
+      "target_free_gb": 41.5,
+      "target_free_percent": 6.2,
+      "recommended_pagefile_size_mb": 24576,
+      "rationale": "Move pagefile from C: (system SSD, 3.3% free) to F: (data SSD, 6.2% free, better small-file performance). Increase pagefile to 24 GB to raise commit limit from 59.5 GB to ~74 GB, providing headroom for UE4Editor + 4 SCW workers.",
+      "steps": [
+        "Disable system-managed pagefile on C:",
+        "Create fixed-size pagefile on F: (24576 MB initial/max)",
+        "Reboot to apply",
+        "Verify new commit limit >= 70 GB"
+      ],
+      "risk": "Requires reboot. Monitor F: free space after relocation."
+    },
+    "ALTERNATIVE": {
+      "action": "INCREASE_PHYSICAL_RAM",
+      "rationale": "Adding 32 GB RAM would raise commit limit to ~91 GB without pagefile dependency. Preferred long-term solution."
+    }
+  }
+}

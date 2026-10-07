@@ -1,0 +1,41 @@
+{
+  "schema": "traffic_light_complexity_audit/v1",
+  "generated_at_utc": "2026-10-05T18:00:00Z",
+  "scope": "load-time traffic-light construction path only (Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Traffic/TrafficLightManager.cpp vs 0.9.16 source G:\\CARLA\\carla_source_probe)",
+  "hotspots": [
+    {
+      "site": "SpawnTrafficLights loop 1 (lines 516-538)",
+      "pattern": "per controller-signal: GetClosestTrafficSignActor -> full-world GetAllActorsOfClass scan (line 496)",
+      "complexity": "O(C_signals x A_world)"
+    },
+    {
+      "site": "SpawnTrafficLights loop 2 (lines 540-561)",
+      "pattern": "per signal (<=21,163): full-world scan each",
+      "complexity": "O(S x A_world)"
+    },
+    {
+      "site": "SpawnSignals line 665 (inside per-signal loop 660-815)",
+      "pattern": "per signal (21,163): full-world scan each; world actor count GROWS as spawns proceed",
+      "complexity": "O(S x A_growing)"
+    },
+    {
+      "site": "per-spawn tail (lines 602-635)",
+      "pattern": "SpawnActor + blueprint construction + InitializeSign + GetClosestWaypointOnRoad per signal",
+      "complexity": "O(S) spawns with per-spawn cost rising in A"
+    }
+  ],
+  "operation_scale_at_S21163": {
+    "full_world_scans": "~60,000+ (3 passes over the signal set)",
+    "world_actor_order": "tens of thousands and growing (5,724 imported assets + spawned TL actors)",
+    "actor_visits_order": "billions (60k scans x ~50-200k actors), each with Cast + virtual GetActorLocation + string match",
+    "spawns": "~21,163 blueprint actor spawns on the game thread",
+    "classification": "O(S x A) with S=21163 — effectively O(N^2) in map signal scale; stock maps (S<=59) never expose it"
+  },
+  "clean_paths": [
+    "GetController / GetTrafficSign: TMap O(1) (lines 854-870)",
+    "MapBuilder signal solving: O(N) unordered_map lookups",
+    "Signal ids unique; no duplicate expansion anywhere"
+  ],
+  "fix_direction": "Replace repeated global world scans with indexed lookup (e.g., collect candidate actors ONCE per spawn phase into a spatial index keyed by location; match by proximity without re-scanning). Any change must be result-identical (same closest-actor outcomes) and is a governed fork patch, not a loop-limit raise.",
+  "verdict": "BLUEPRINT_ALGORITHM_COMPLEXITY confirmed at the C++ matching layer (the blueprint runaway warning is its downstream symptom at scale)."
+}

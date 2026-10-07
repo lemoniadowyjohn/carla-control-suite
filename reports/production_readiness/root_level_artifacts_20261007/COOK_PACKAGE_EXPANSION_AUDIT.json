@@ -1,0 +1,29 @@
+{
+  "INITIAL_TOTAL": 1778,
+  "FINAL_DISCOVERED_TOTAL": 3553,
+  "NEW_PACKAGES_DISCOVERED": 1775,
+  "CAUSE_OF_EXPANSION": "Dependency discovery phase triggered by recursive cooking of Ingolstadt map references. The -cooksinglepackage flag does NOT limit scope to only the specified map package; it recursively discovers and cooks all referenced assets (materials, meshes, textures, blueprints, MDL assets, pedestrian assets, foliage, props, vehicles). The expansion from 1778 to 3553 occurred at log line 789-790 when the cooker finished initial map package discovery and began processing referenced content.",
+  "PACKAGE_CATEGORY_COUNTS": {
+    "Ingolstadt_map": "~1 (map package + level instances)",
+    "Ingolstadt_meshes": "~200-300 (buildings, roads, terrain tiles from OSM2World/FBX import)",
+    "CARLA_generic_assets": "~500-800 (core CARLA content: vehicles, pedestrians, props, traffic signs)",
+    "vehicles": "~150-200 (vehicle blueprints, materials, skeletal meshes)",
+    "pedestrians": "~300-400 (pedestrian blueprints, skeletal meshes, hair materials, animations)",
+    "props": "~200-300 (traffic cones, barriers, benches, trash cans, street furniture)",
+    "foliage": "~100-150 (tree meshes, leaf materials, grass)",
+    "materials": "~400-600 (master materials, instances, MDL materials, post-process materials)",
+    "MDL": "~50-100 (MDL materials, distiller outputs, glTF materials)",
+    "engine_content": "~200-300 (engine materials, shaders, primitives, gizmos)",
+    "other": "~200-400 (misc: UI, particles, decals, sounds, AI)"
+  },
+  "EVIDENCE_FROM_LOG": {
+    "initial_discovery": "LogCook: Display: Iterative cooking summary for WindowsNoEditor, Considered: 1753, Missing Cooked Info(expected 0): 1753",
+    "initial_total": "LogCook: Display: Cooked packages 0 Packages Remain 1754 Total 1754 (line 667)",
+    "early_progress": "LogCook: Display: Cooked packages 50 Packages Remain 1728 Total 1778 (line 699)",
+    "expansion_event": "LogCook: Display: Cooked packages 866 Packages Remain 2687 Total 3553 (lines 789-790)",
+    "post_expansion": "LogCook: Display: Cooked packages 1028 Packages Remain 2525 Total 3553 (line 876)"
+  },
+  "COOKSINGLEPACKAGE_EFFECTIVE": false,
+  "COOKSINGLEPACKAGE_BEHAVIOR": "In UE4.26, -cooksinglepackage does not restrict cooking to a single package. It still performs full dependency discovery and cooks all transitive dependencies of the specified map. The flag primarily affects the output packaging (single .pak vs multiple) and iterative cooking behavior, not the dependency graph traversal.",
+  "RECOMMENDATION": "If true single-package cooking is required, use -cookonlymap or manually specify the exact package list. For production Ingolstadt cooking, the full dependency expansion is correct and expected behavior."
+}

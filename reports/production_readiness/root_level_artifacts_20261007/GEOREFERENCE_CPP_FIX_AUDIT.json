@@ -1,0 +1,116 @@
+{
+  "schema": "georeference_cpp_fix_audit/v1",
+  "generated_at_utc": "2026-10-05T09:15:00Z",
+  "gate_status": "BLOCKED_BY_ACTIVE_COOK - no C++ edit, no rebuild, no binary exercised",
+  "fix_applied": false,
+  "SILENT_FALLBACK_REMOVED": false,
+
+  "root_cause": {
+    "classification": "OSM2ODR_DEFAULTS_TO_TRUNCATED_PROJ_STRING__CARLA_PARSER_SILENTLY_DEFAULTS_TO_42_2",
+    "confirmed_by": "direct source read plus the generated artifact",
+    "layer_1_emitter": {
+      "file": "Build/osm2odr-source/src/OSM2ODR.h",
+      "line": 21,
+      "code": "std::string proj_string = \"+proj=tmerc\";",
+      "note": "A hardcoded, parameterless projection string is the DEFAULT member of OSM2ODRSettings. It is a literal, not a computed value, and carries no +lat_0, +lon_0, +ellps, +datum or +units."
+    },
+    "layer_2_writer": {
+      "file": "Build/osm2odr-source/src/netwrite/NWWriter_OpenDrive.cpp",
+      "lines": "117-135",
+      "code": "const GeoConvHelper& gch = GeoConvHelper::getFinal(); if (gch.usingGeoProjection()) { device.openTag(\"geoReference\"); device.writePreformattedTag(\" <![CDATA[\\n \" + gch.getProjString() + \"\\n]]>\\n\"); ... }",
+      "note": "The <geoReference> element is written verbatim from GeoConvHelper::getProjString(). No normalization, validation or completion occurs at write time."
+    },
+    "layer_3_getter": {
+      "file": "Build/osm2odr-source/src/utils/geom/GeoConvHelper.cpp",
+      "lines": "543-545",
+      "code": "GeoConvHelper::getProjString() const { return myProjString; }",
+      "note": "Returns myProjString verbatim."
+    },
+    "layer_4_why_myprojstring_is_never_completed": {
+      "file": "Build/osm2odr-source/src/utils/geom/GeoConvHelper.cpp",
+      "function": "GeoConvHelper::x2cartesian(Position&, bool)",
+      "lines": "360-422",
+      "finding": "The complete parameterized tmerc definition IS present in this function, but it is assigned to myProjString ONLY inside 'case DHDN_UTM:' (lines 376-378) and 'case DHDN:' (lines 408-410). 'case UTM:' assigns a UTM string (line 392). The 'default: break;' at line 419-420 leaves myProjString untouched.",
+      "consequence": "When OSM2ODR is driven with the default OSM2ODRSettings::proj_string rather than a DHDN/UTM projection method, myProjString is never recomputed, so getProjString() returns the bare \"+proj=tmerc\" literal from OSM2ODR.h:21.",
+      "the_complete_form_that_exists_but_is_not_reached": "+proj=tmerc +lat_0=0 +lon_0=(3*zone) +k=1 +x_0=(zone*1000000+500000) +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"
+    },
+    "layer_5_consumer": {
+      "file": "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp",
+      "function": "carla::opendrive::parser::ParseGeoReference",
+      "lines": "28-60",
+      "recognised_keys": ["+lat_0", "+lon_0"],
+      "silent_fallback": {
+        "lines": "51-55",
+        "code": "if (std::isnan(result.latitude) || std::isnan(result.longitude)) { log_warning(\"cannot parse georeference: '\" + geo_reference_string + \"'. Using default values.\"); result.latitude = 42.0; result.longitude = 2.0; }",
+        "severity": "unacceptable for production map import",
+        "observed_at_runtime": "WARNING: cannot parse georeference: '+proj=tmerc'. Using default values."
+      }
+    }
+  },
+
+  "artifact_proof": {
+    "file": "Import/Ingolstadt/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "header_geoReference_verbatim": "+proj=tmerc",
+    "header_offset_verbatim": "<offset hdg=\"0.0\" z=\"0.0\" x=\"832671.676000\" y=\"5458671.104000\" />",
+    "header_bounds_verbatim": "north=\"5472743.72\" south=\"5458670.93\" east=\"845938.74\" west=\"832671.61\"",
+    "conclusion": "The serialized geoReference is byte-identical to the OSM2ODR.h:21 default literal. The causal chain emitter->writer->getter->XODR is proven end to end from artifacts, not inferred.",
+    "information_loss": "Because the writer emitted the literal default, the ORIGINAL source CRS parameters (central meridian, false easting, ellipsoid, datum) were never serialized. They are therefore NOT RECOVERABLE from this XODR."
+  },
+
+  "new_blocker_discovered": {
+    "id": "CRS_FRAME_INCONSISTENT_WITH_STATED_AUTHORITY",
+    "severity": "blocking for sections 4, 5 and 7",
+    "statement": "The XODR's own coordinate frame does not inverse-project to the stated authoritative Ingolstadt location under any standard projection tested. The authoritative CRS parameters are therefore NOT derivable from the available artifacts, so a correct fail-closed parser cannot yet be given correct source-derived values.",
+    "method": "pyproj 3.7.2. Projected the stated authoritative point (lat=48.766, lon=11.425) forward into candidate CRSs and compared against the XODR <offset> (E=832671.676, N=5458671.104).",
+    "results": [
+      {"crs": "EPSG:31466 DHDN/GK3-2", "easting": 2898779.7, "northing": 5417384.9, "error_km": 2066.52},
+      {"crs": "EPSG:31467 DHDN/GK3-7", "easting": 3678340.3, "northing": 5406004.3, "error_km": 2846.16},
+      {"crs": "EPSG:31468 DHDN/GK3-4", "easting": 4457836.7, "northing": 5403322.4, "error_km": 3625.59},
+      {"crs": "EPSG:31469 DHDN/GK3-5", "easting": 5237348.1, "northing": 5409327.3, "error_km": 4404.95},
+      {"crs": "EPSG:25832 / EPSG:32632 UTM32N", "easting": 678193.1, "northing": 5404280.3, "error_km": 163.77},
+      {"crs": "EPSG:32631 UTM31N", "easting": 1118810.0, "northing": 5435774.0, "error_km": 287.05},
+      {"crs": "EPSG:32630 UTM30N", "easting": 1558446.6, "northing": 5502645.9, "error_km": 727.11},
+      {"crs": "EPSG:21781 CH1903/LV03", "easting": 893082.1, "northing": 409282.6, "error_km": 5049.75}
+    ],
+    "observations": [
+      "No candidate reproduces the offset. The closest by easting, UTM32N, is still 154 km off in easting and 54 km off in northing.",
+      "The XODR northing (5458671.104) is ~55 km north of the northing that lat=48.766 implies in EPSG:31468 (5403322.4). German Gauss-Kruger northing advances ~111 km per degree, so the frame's northing corresponds to approximately lat 49.26, not 48.766.",
+      "Inverse-transforming the offset through tmerc/UTM variants yields lon approximately 49.19E, which is not 11.425E.",
+      "The 42/2 fallback is geospatially meaningless for this map: lat 42.0/lon 2.0 is southern France (Gironde), roughly 800 km from Ingolstadt."
+    ],
+    "implication": "Either the stated authoritative lat/lon is not established, or the map's origin was generated from a wrong or unknown CRS. This must be resolved from the upstream OSM/projection configuration before GeoReferenceParser can be given correct source-derived +lat_0/+lon_0. Guessing constants is explicitly forbidden and was not done."
+  },
+
+  "critical_design_constraint_for_the_fix": {
+    "finding": "Emitting a CORRECT projection string is NOT sufficient to stop the 42/2 fallback.",
+    "reason": "GeoReferenceParser recognises only +lat_0 and +lon_0. Neither the UTM string (+proj=utm +zone=N ...) nor the DHDN Gauss-Kruger string (+proj=tmerc +lat_0=0 +lon_0=... +ellps=bessel +datum=potsdam ...) is guaranteed to be what CARLA reads: the DHDN form does carry +lat_0/+lon_0 but with +lat_0=0 (the equator), not the map's true latitude. Feeding +lat_0=0 to CARLA would place the map at the equator - a different and equally wrong silent failure.",
+    "required_fix_shape": [
+      "1. OSM2ODR must serialize a geoReference that explicitly carries the map's true +lat_0 and +lon_0 (not merely +lon_0 of a Gauss-Kruger zone with +lat_0=0).",
+      "2. GeoReferenceParser must fail closed: reject any geoReference lacking +lat_0 or +lon_0, and reject malformed numerics, instead of defaulting to 42/2.",
+      "3. The +lat_0/+lon_0 values must come from source-derived CRS parameters recorded at generation time, not from constants."
+    ],
+    "preferred_hierarchy_followed": "Layer 1 (emit complete authoritative definition) is the correct primary fix; layer 2 (parser rejects incomplete) is the required defence in depth; layer 3 (remove the 42/2 production fallback) is mandatory.",
+    "hardcoding_ingolstadt_constants": "NOT DONE, and blocked: source parameters are unavailable (see new_blocker_discovered)."
+  },
+
+  "required_tests_not_yet_written": {
+    "note": "Deliberately not written yet. Fail-closed behaviour cannot be validated against correct expected values until the authoritative CRS is resolved, and writing tests that encode guessed constants would manufacture false assurance.",
+    "blocked_cases": [
+      "+proj=tmerc only -> must fail closed",
+      "complete valid tmerc with true lat_0/lon_0 -> must parse",
+      "missing lat_0 -> must fail closed",
+      "missing lon_0 -> must fail closed",
+      "malformed numeric values -> must fail closed",
+      "known Ingolstadt authoritative CRS -> BLOCKED, source parameters unresolved",
+      "known control map CRS -> BLOCKED, source parameters unresolved"
+    ]
+  },
+
+  "not_claimed": [
+    "No C++ source was modified.",
+    "No LibCarla or osm2odr target was rebuilt.",
+    "No compiled parser code was exercised.",
+    "GEOREFERENCE_CPP_FIX is NOT complete and is NOT built-and-tested.",
+    "CRS_NUMERICAL_VALIDATION did not pass; it is blocked by the frame inconsistency above."
+  ]
+}

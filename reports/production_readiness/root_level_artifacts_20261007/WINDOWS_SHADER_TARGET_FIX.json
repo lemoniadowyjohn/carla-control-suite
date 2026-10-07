@@ -1,0 +1,27 @@
+{
+  "WINDOWS_SHADER_TARGET_FIX": {
+    "action": "REMOVE_PCD3D_ES31_FROM_WINDOWS_TARGETS",
+    "config_file": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Config\\DefaultEngine.ini",
+    "section": "[/Script/WindowsTargetPlatform.WindowsTargetSettings]",
+    "before": {
+      "targeted_rhis": [
+        "PCD3D_SM5",
+        "SF_VULKAN_SM5",
+        "PCD3D_ES31"
+      ],
+      "config_sha256": "PENDING"
+    },
+    "after": {
+      "targeted_rhis": [
+        "PCD3D_SM5",
+        "SF_VULKAN_SM5"
+      ],
+      "config_sha256": "PENDING"
+    },
+    "diff": "- +TargetedRHIs=PCD3D_ES31",
+    "rationale": "PCD3D_ES31 (OpenGL ES 3.1) is a mobile/embedded shader platform. WindowsNoEditor desktop runtime only requires PCD3D_SM5 (DirectX 11/12 SM5) and SF_VULKAN_SM5 (Vulkan SM5). ES3.1 compilation wastes ~33% shader permutations and causes 35+ material failures that are IRRELEVANT_TARGET_ONLY or EXPECTED_FEATURE_LEVEL_EXCLUSION.",
+    "static_test": "grep '+TargetedRHIs=PCD3D_ES31' DefaultEngine.ini && echo 'FAIL: ES31 still present' || echo 'PASS: ES31 removed'",
+    "verification_command": "UE4Editor -run=cook -targetplatform=WindowsNoEditor -iterate -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt 2>&1 | grep -E 'TargetedRHIs|PCD3D_ES31|PCD3D_SM5|SF_VULKAN_SM5'",
+    "WINDOWS_ES31_ENABLED_AFTER": false
+  }
+}
