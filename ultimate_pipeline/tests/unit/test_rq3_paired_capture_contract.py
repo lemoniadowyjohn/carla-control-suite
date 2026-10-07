@@ -163,15 +163,33 @@ def test_spawn_policy_allows_recovery_in_smoke_mode():
 
 
 def test_ingolstadt_manual_and_auto_arms():
-    manual = cooked_arm_map_identity(
+    # Grid0828 is the only valid governed manual reference (NEW-317).
+    manual_0828 = cooked_arm_map_identity(
+        requested_map_name="Grid0828",
+        resolved_carla_map_name="Grid0828",
+        registry_identity="manual_refs",
+        manual_source_xodr_sha256="abc",
+        cooked_package_identity="Grid0828",
+    )
+    assert is_ingolstadt_manual_arm(manual_0828) is True
+
+    # Grid0821 is NOT a valid governed manual town — correctly rejected.
+    manual_0821 = cooked_arm_map_identity(
         requested_map_name="Grid0821",
         resolved_carla_map_name="Grid0821",
         registry_identity="manual_refs",
         manual_source_xodr_sha256="abc",
         cooked_package_identity="Grid0821",
     )
-    assert is_ingolstadt_manual_arm(manual) is True
-    auto = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr", xodr_sha256="def")
+    assert is_ingolstadt_manual_arm(manual_0821) is False
+
+    # Use the pinned auto_map_of_record SHA for the Ingolstadt auto arm.
+    from ultimate_pipeline.perception.rq3_capture_contract import (
+        CLAIM_PAIRED_PROTOCOL_VALID,
+        CLAIM_PAIRED_INGOLSTADT_CAPTURE,
+    )
+    pinned_auto_sha = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    auto = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr", xodr_sha256=pinned_auto_sha)
     assert is_ingolstadt_auto_arm(auto) is True
     town10hd = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="ghi")
     assert is_ingolstadt_auto_arm(town10hd) is False
@@ -359,7 +377,16 @@ def test_case09_all_contracts_identical_protocol_valid():
 
 
 def test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture():
-    pair = _ok_pair(auto_map=_AUTOTOWN10HD)
+    # Grid0828 is the only valid governed manual reference (NEW-317).
+    manual = cooked_arm_map_identity(
+        requested_map_name="Grid0828",
+        resolved_carla_map_name="Grid0828",
+        registry_identity="manual_refs",
+        manual_source_xodr_sha256="abc",
+        cooked_package_identity="Grid0828",
+    )
+    auto = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="y")
+    pair = _ok_pair(manual_map=manual, auto_map=auto)
     manifest = pair.build()
     manual_ok = is_ingolstadt_manual_arm(manifest["manual_map_identity"])
     auto_ok = is_ingolstadt_auto_arm(manifest["auto_map_identity"])
