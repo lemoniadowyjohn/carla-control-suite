@@ -1,4 +1,4 @@
-"""Deterministic sharded runner for the full tests/unit suite.
+"""Deterministic sharded runner for a pytest path set.
 
 A monolithic run exceeds the execution budget, which is an orchestration
 limit, not a test failure. This partitions the collected test FILES into
@@ -6,6 +6,15 @@ contiguous deterministic shards and runs each with its own timeout, so a
 slow shard is isolated and can be split further without losing the rest.
 
 Nothing is skipped for speed: every test file lands in exactly one shard.
+
+Usage:
+    python scripts/run_unit_shards.py                 # default: tests/unit
+    python scripts/run_unit_shards.py tests ultimate_pipeline
+
+Paths are resolved against ROOT (derived from this file's location, so the
+runner works from any worktree) and are either directories (recursed for
+test_*.py) or single test files. Shards are written to reports/ so every
+run leaves an evidence trail.
 """
 from __future__ import annotations
 
@@ -16,7 +25,7 @@ import subprocess
 import sys
 import time
 
-ROOT = r"C:\Users\admin\AppData\Local\Temp\opencode\wt-harness-repair"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "reports", "FULL_UNIT_SUITE_SHARDS.json")
 SHARD_TIMEOUT_S = 1500          # per-shard wall budget
 SHARD_SIZE = 12                 # files per shard
@@ -25,13 +34,32 @@ env = dict(os.environ)
 env["PYTHONDONTWRITEBYTECODE"] = "1"
 
 
-def collect():
+def _scan(base_rel):
+    """Every test_*.py under base_rel, returned as repo-relative paths."""
+    found = []
+    base = os.path.join(ROOT, base_rel)
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = [d for d in dirnames
+                       if d not in (".git", "__pycache__", ".pytest_cache")]
+        for name in sorted(filenames):
+            if name.startswith("test_") and name.endswith(".py"):
+                full = os.path.join(dirpath, name)
+                found.append(os.path.relpath(full, ROOT))
+    return found
+
+
+def collect(paths):
+    if not paths:
+        return _scan(os.path.join("tests", "unit"))
     files = []
-    base = os.path.join(ROOT, "tests", "unit")
-    for name in sorted(os.listdir(base)):
-        if name.startswith("test_") and name.endswith(".py"):
-            files.append(os.path.join("tests", "unit", name))
-    return files
+    for p in paths:
+        p = p.rstrip("/\\")
+        abs_p = p if os.path.isabs(p) else os.path.join(ROOT, p)
+        if os.path.isdir(abs_p):
+            files.extend(_scan(os.path.relpath(abs_p, ROOT)))
+        else:
+            files.append(os.path.relpath(abs_p, ROOT))
+    return sorted(set(files))
 
 
 def parse_counts(text):
@@ -53,12 +81,14 @@ def parse_counts(text):
 
 
 def main():
-    files = collect()
+    paths = [p for p in sys.argv[1:] if not p.startswith("-")]
+    files = collect(paths)
     shards = [files[i:i + SHARD_SIZE]
               for i in range(0, len(files), SHARD_SIZE)]
     result = {
         "schema": "FULL_UNIT_SUITE_SHARDS/v1",
         "root": ROOT,
+        "requested_paths": paths or [os.path.join("tests", "unit")],
         "shard_size_files": SHARD_SIZE,
         "shard_timeout_s": SHARD_TIMEOUT_S,
         "total_files": len(files),
@@ -74,7 +104,7 @@ def main():
     flush()
     for i, shard in enumerate(shards, 1):
         t0 = time.time()
-        rec = {"index": i, "files": [os.path.basename(f) for f in shard],
+        rec = {"index": i, "files": list(shard),
                "n_files": len(shard)}
         try:
             p = subprocess.run(
