@@ -45,7 +45,25 @@ def _file(path: Path) -> dict[str, Any]:
         return _value("unknown", None, str(exc))
 
 
-def build_receipt(ue_root: Path | None, carla_root: Path | None) -> dict[str, Any]:
+_UNSET = object()
+"""Sentinel: argument not supplied at all.
+
+``build_receipt`` falls back to the ``UE4_ROOT``/``CARLA_ROOT`` environment
+variables when a root is not supplied. Passing ``None`` explicitly means "I
+have no root to inspect" and must NOT trigger that fallback, otherwise a caller
+asserting an unevidenced state silently inherits whatever the ambient
+environment claims -- which is how an ``unknown`` was upgraded to ``verified``.
+"""
+
+
+def _resolve_root(explicit: Any, env_var: str) -> Path | None:
+    if explicit is not _UNSET:
+        return explicit
+    value = os.environ.get(env_var)
+    return Path(value) if value else None
+
+
+def build_receipt(ue_root: Any = _UNSET, carla_root: Any = _UNSET) -> dict[str, Any]:
     receipt: dict[str, Any] = {
         "schema": "carla_source_build_receipt/v1",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -59,8 +77,8 @@ def build_receipt(ue_root: Path | None, carla_root: Path | None) -> dict[str, An
     repo = Path(__file__).resolve().parents[1]
     status, sha = _git(repo, "rev-parse", "HEAD")
     receipt["repository"] = {"commit": _value(status, sha if status == "verified" else None, "git rev-parse HEAD"), "branch": _value(*_git(repo, "branch", "--show-current"), evidence="git branch --show-current")}
-    ue = ue_root or (Path(os.environ["UE4_ROOT"]) if os.environ.get("UE4_ROOT") else None)
-    carla = carla_root or (Path(os.environ["CARLA_ROOT"]) if os.environ.get("CARLA_ROOT") else None)
+    ue = _resolve_root(ue_root, "UE4_ROOT")
+    carla = _resolve_root(carla_root, "CARLA_ROOT")
     if ue is None:
         receipt["ue4"] = {"path": _value("unknown", None, "UE4_ROOT not set"), "branch": _value("unknown"), "commit": _value("unknown"), "editor_executable": _value("unknown"), "editor_hash": _value("unknown")}
     else:
@@ -136,8 +154,10 @@ def _sh_cmake() -> tuple[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--ue4-root", type=Path, default=None)
-    parser.add_argument("--carla-root", type=Path, default=None)
+    # default=_UNSET so the env fallback still applies from the CLI, where the
+    # flag genuinely was not supplied.
+    parser.add_argument("--ue4-root", type=Path, default=_UNSET)
+    parser.add_argument("--carla-root", type=Path, default=_UNSET)
     parser.add_argument("--out", type=Path, default=Path("carla_source_build_receipt.json"))
     args = parser.parse_args()
     receipt = build_receipt(args.ue4_root, args.carla_root)

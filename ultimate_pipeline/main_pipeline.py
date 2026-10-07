@@ -3787,6 +3787,63 @@ if str(_repo_root) not in sys.path:
                 f"[geometric_continuity] Gate failed ({context}); continuing (non-strict mode)."
             )
 
+    def _compute_final_run_verdict(self, final_xodr: str | None = None) -> dict:
+        """Produce ``final_run_verdict.json`` for this run.
+
+        This is the production producer declared by
+        ``ultimate_pipeline/signals/registry.py`` for the ``FINAL_RUN_VERDICT``
+        hard-gate signal. The verdict logic itself is owned by
+        ``ultimate_pipeline.signals.verdict``; this method is the pipeline's
+        production call site into it, so the artifact is written by the
+        pipeline rather than only being computable in tests.
+
+        The returned payload's ``status`` is authoritative: a non-PASS verdict
+        must block the success marker (see ``_finalize_run_pack_gated``).
+        """
+        from ultimate_pipeline.signals.verdict import write_final_run_verdict
+
+        verdict = write_final_run_verdict(
+            self.out_dir,
+            final_xodr=final_xodr,
+        )
+        artifact = os.path.join(self.out_dir, "final_run_verdict.json")
+        if not os.path.isfile(artifact):
+            raise RuntimeError(
+                "FINAL_RUN_VERDICT producer returned without writing its "
+                "artifact: " + artifact
+            )
+        return verdict
+
+    def _finalize_run_pack_gated(self, key_paths, *, mandatory=None,
+                                 summary: str = "") -> dict:
+        """Finalize the run pack, emitting the success marker only on PASS.
+
+        This is the production producer declared by
+        ``ultimate_pipeline/signals/registry.py`` for the ``SUCCESS_MARKER``
+        hard-gate signal. It enforces the registry invariant: the success
+        marker may only be published when the final run verdict is PASS. The
+        verdict is produced first, so a failing or unwritable verdict fails
+        closed and no success marker can appear.
+        """
+        from ultimate_pipeline.signals.verdict import VERDICT_PASS
+        from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
+
+        verdict = self._compute_final_run_verdict()
+        emit_success = verdict.get("status") == VERDICT_PASS
+        if not emit_success:
+            print(
+                "[WARN] final run verdict is "
+                f"{verdict.get('status')!r}; the success marker will NOT be "
+                "emitted (SUCCESS_MARKER invariant)"
+            )
+        return finalize_run_pack(
+            self.out_dir,
+            key_paths,
+            mandatory=mandatory,
+            summary=summary,
+            emit_success=emit_success,
+        )
+
     def _final_summary_and_llm(self, final_out: str) -> None:
         s = self.settings
         vreport_path = os.path.join(s.logs_dir(), "validation_report_full.json")
@@ -3888,8 +3945,6 @@ if str(_repo_root) not in sys.path:
             pass
 
         try:
-            from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
-
             # V5/NEW-202 (D16): the final map itself is mandatory. The supporting
             # reports are only produced when their stage ran, so they are
             # conditional: hashed into the manifest when present, but their
@@ -3902,8 +3957,7 @@ if str(_repo_root) not in sys.path:
                 os.path.join(self.out_dir, "domain_gap", "summary.csv"),
                 os.path.join(self.out_dir, "perception_status.json"),
             ]
-            receipt = finalize_run_pack(
-                self.out_dir,
+            receipt = self._finalize_run_pack_gated(
                 mandatory_artifacts + conditional_artifacts,
                 mandatory=mandatory_artifacts,
                 summary="main_pipeline",
