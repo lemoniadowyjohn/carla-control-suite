@@ -1,0 +1,24 @@
+{
+  "adversarial_tests": {
+    "test_new297_route_movement_failures_fatal": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Route movement failures are fatal",
+  "finding_id": "NEW-297",
+  "implementation": {
+    "fatal_conditions": [
+      "set_transform_raises",
+      "observed_transform_unavailable",
+      "position_error_exceeds_threshold",
+      "orientation_error_exceeds_threshold",
+      "world_tick_fails",
+      "route_correspondence_invalid",
+      "vehicle_actor_dies"
+    ],
+    "file": "ultimate_pipeline/perception/route_execution.py",
+    "receipt_status": "ROUTE_EXECUTION_FAILED"
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

@@ -12,6 +12,42 @@ from pathlib import Path
 from typing import Any
 
 
+# P0-5: every check that must be PASS for an overall PASS verdict. A check the
+# harness never reaches is NOT_RUN, which is INCOMPLETE, not a pass.
+REQUIRED_CHECKS = (
+    "connect",
+    "list_maps",
+    "load_map",
+    "stable_world",
+    "spawn_points",
+    "vehicle_spawn",
+    "waypoints",
+    "topology_sample",
+    "route_drive",
+    "collisions",
+    "lane_invasion",
+    "transform_continuity",
+    "tile_transitions",
+    "rgb_capture",
+    "semantic_capture",
+)
+
+
+def _compute_verdict(checks: dict[str, str]) -> str:
+    """Derive the overall verdict from the required-check results.
+
+    Returns PASS only when every required check is explicitly PASS. A check that
+    never ran yields INCOMPLETE; a check that ran and failed yields FAIL. This
+    replaces an unconditional ``status = "PASS"`` that ignored which checks had
+    actually been exercised.
+    """
+    for check in REQUIRED_CHECKS:
+        result = checks.get(check, "NOT_RUN")
+        if result != "PASS":
+            return "INCOMPLETE" if result == "NOT_RUN" else "FAIL"
+    return "PASS"
+
+
 def run_runtime_qa(host: str = "127.0.0.1", port: int = 2000, map_name: str | None = None, frame_count: int = 10) -> dict[str, Any]:
     report: dict[str, Any] = {
         "schema": "runtime_map_qa/v1",
@@ -54,7 +90,12 @@ def run_runtime_qa(host: str = "127.0.0.1", port: int = 2000, map_name: str | No
         report["spawn_point_count"] = len(world.get_map().get_spawn_points())
         report["checks"]["waypoints"] = "PASS"
         report["waypoint_count"] = len(world.get_map().generate_waypoints(2.0))
-        report["status"] = "PASS"
+        # P0-5: verdict derived from the checks actually observed, never assumed.
+        report["status"] = _compute_verdict(report["checks"])
+        report["required_checks"] = list(REQUIRED_CHECKS)
+        report["checks_not_passed"] = [
+            name for name in REQUIRED_CHECKS if report["checks"].get(name) != "PASS"
+        ]
         return report
     except Exception as exc:
         report["blocked_reason"] = f"CARLA runtime unavailable or rejected request: {exc}"

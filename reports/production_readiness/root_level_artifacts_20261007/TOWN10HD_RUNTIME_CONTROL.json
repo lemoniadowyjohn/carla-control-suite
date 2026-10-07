@@ -1,0 +1,24 @@
+{
+  "schema": "town10hd_runtime_control/v1",
+  "generated_at_utc": "2026-10-05T18:00:00Z",
+  "purpose": "Discriminator: same source-built game path, stock map with 21 signals, versus Ingolstadt uncooked load hang.",
+  "server": {
+    "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "project": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+    "map_arg": "/Game/Carla/Maps/Town10HD_Opt",
+    "mode": "-game -carla-server -carla-rpc-port=2004 -carla-streaming-port=2005 -RenderOffScreen -quality-level=Low -nosound",
+    "pid": 32764,
+    "log": "G:\\CARLA\\build_logs\\town10hd_game_20261005T155803Z.log (stdout redirect) + Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log (engine)"
+  },
+  "observations": {
+    "rpc_bind": "port 2004 listening; server version answered 294096eb1-dirty; 52 maps listed",
+    "map_load": "NOT completed (get_world 60s timeout)",
+    "terminal_state": "process dead; engine log ends RenderThread crash -> RequestExit(1)",
+    "crash_signature": "Fatal error RenderingThread.cpp:907, inner 'Fatal error!' with empty detail, while ~19.4k shaders still compiling",
+    "runaway_traffic_light_warning": "absent (no BP_TLOpenDrive runaway on Town10HD)"
+  },
+  "classification": "CONTROL_RUNTIME_FAIL",
+  "failure_mechanism": "render-thread fatal during uncooked first-load shader storm (~19k shaders pending). DISTINCT from Ingolstadt's game-thread traffic-light construction stall: different thread, different subsystem, different signature. Per decision tree: classify both independently; Ingolstadt failure is NOT attributed to the server path, and the server path is NOT validated by this control either.",
+  "common_factor_hypothesis": "Both failures involve serving UNCOOKED content with 10-20k pending shaders. Uncooked serving is not a supported stable path on this host; the cook is required for stable runtime, not optional packaging.",
+  "not_claimed": "No claim that Town10HD cannot run cooked; no claim about packaged-server behavior (packaged 0.9.16 serves Town10HD_Opt fine)."
+}

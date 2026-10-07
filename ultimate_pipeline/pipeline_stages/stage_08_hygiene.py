@@ -198,8 +198,10 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
                 applied = False
 
             g6_report = {
-                "ok": True,  # advisory -- never fails this stage
+                "ok": True,
+                "status": "PASS",
                 "applied": applied,
+                "blocks_release": False,  # advisory: recorded, never gates a run
                 "added_lanelinks_count": len(repair["added_lanelinks"]),
                 "repair_issues_count": len(repair["repair_issues"]),
                 "post_repair_audit_clean": clean,
@@ -235,10 +237,15 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
             )
         except Exception as e:
             print(f"[STEP 8H] G6 lane-coverage repair failed (continuing, advisory-only): {e}")
+            # NEW-344: an exception means the G6 evidence was never produced.
+            # ``ok`` must say so; the previous ``ok=True`` + ``status=INCOMPLETE``
+            # pair contradicted itself (and the top-level hygiene ``ok`` silently
+            # claimed success while a sub-stage had not run).
             g6_report = {
-                "ok": True,
+                "ok": False,
                 "status": "INCOMPLETE",
                 "applied": False,
+                "blocks_release": False,  # advisory: recorded, never gates a run
                 "reason": "repair_exception",
                 "error": str(e),
             }
@@ -249,6 +256,19 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
             )
     else:
         print("[STEP 8H] G6 lane-coverage repair disabled.")
+        # skip_policy RECORD_IF_DISABLED: leave an explicit skip record so a
+        # human reading the output directory can tell "off" from "never ran".
+        disabled_report = {
+            "ok": True,
+            "status": "DISABLED",
+            "applied": False,
+            "blocks_release": False,
+            "reason": "disabled_by_env",
+        }
+        reports["g6_lane_coverage_repair"] = disabled_report
+        (out_dir / "08h5_g6_lane_coverage_repair_report.json").write_text(
+            json.dumps(disabled_report, indent=2, sort_keys=True), encoding="utf-8"
+        )
 
     combined = {
         "ok": all(bool(r.get("ok", True)) for r in reports.values()),

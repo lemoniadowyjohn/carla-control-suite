@@ -1,0 +1,32 @@
+{
+  "adversarial_tests": {
+    "test_new301_no_hard_coded_lidar_drift": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Remove hard-coded LiDAR drift, use single canonical spec builder",
+  "finding_id": "NEW-301",
+  "implementation": {
+    "consumed_by": [
+      "ThesisSensorRig.spawn_rig",
+      "DominikSensorSetup._make_specs",
+      "attach_sensors_safe",
+      "RQ3 runtime rig identity hashing"
+    ],
+    "file": "ultimate_pipeline/sensors/canonical_lidar_spec.py",
+    "functions": [
+      "resolve_active_lidars",
+      "canonical_lidar_hash"
+    ],
+    "removes_hardcoded": [
+      "range=80",
+      "rotation_frequency=20",
+      "channels=64",
+      "points_per_second=200000",
+      "upper_fov=10",
+      "lower_fov=-30"
+    ]
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

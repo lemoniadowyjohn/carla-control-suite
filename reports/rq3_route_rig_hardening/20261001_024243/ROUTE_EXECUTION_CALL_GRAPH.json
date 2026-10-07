@@ -1,0 +1,25 @@
+{
+  "entry_points": {
+    "capture_perception_pair_safe._capture_arm": {
+      "calls": [
+        "route_manifest.validate_route_manifest_bytes",
+        "route_manifest.get_capture_poses_after_validation",
+        "route_execution.execute_route_strict",
+        "route_frame_binding.build_route_frame_binding",
+        "attach_sensors_safe.attach_sensors_safe",
+        "canonical_lidar_spec.canonical_lidar_hash"
+      ],
+      "returns": "arm_report with route_execution_verified"
+    },
+    "route_execution.execute_route_strict": {
+      "calls": [
+        "carla.Transform.set_transform",
+        "world.tick",
+        "actor.get_transform"
+      ],
+      "returns": "(pose_evidence_list, failure_reason)"
+    }
+  },
+  "schema_version": "rq3_call_graph_v1",
+  "timestamp_utc": "2026-10-01T03:13:09.440546Z"
+}

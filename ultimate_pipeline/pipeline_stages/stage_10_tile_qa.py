@@ -17,6 +17,180 @@ def _inject_main_pipeline_globals():
         g.setdefault(k, v)
 
 
+# ---------------------------------------------------------------------------
+# Governed step-10 signal writers (NEW-338)
+#
+# Every signal artifact this stage owns must be written from every code path
+# that can end it -- including the early returns.  A required signal whose
+# producer simply returned without writing reads MISSING to the verdict, which
+# is indistinguishable from "producer never existed".
+# ---------------------------------------------------------------------------
+
+#: signal_id -> artifact filename for the step10c/10d family.
+STEP10C_SIGNAL_ARTIFACTS = {
+    "ROAD_DEFECTS": "step10c_road_defects_status.json",
+    "LOCAL_PERCEPTION": "step10c_local_perception_status.json",
+    "THESIS_PERCEPTION": "step10d2_thesis_perception_status.json",
+    "SCENARIORUNNER": "step10d3_scenariorunner_status.json",
+}
+
+
+def _write_step10_signal(out_dir: str, filename: str, payload: dict) -> str | None:
+    """Atomically write a step-10 signal artifact with its schema stamped."""
+    import json as _json
+    import os as _os
+
+    body = dict(payload)
+    body.setdefault("schema", filename[: -len(".json")] + "/v1")
+    # ``ok`` is derived, never asserted separately from ``status``: an artifact
+    # that says ``ok=True`` while its status is FAIL/INCOMPLETE is a lie (the
+    # G6 report used to do exactly that, NEW-344).
+    body["ok"] = str(body.get("status", "")).strip().upper() == "PASS"
+    path = _os.path.join(out_dir, filename)
+    try:
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            _json.dump(body, f, indent=2, default=str, ensure_ascii=True)
+            f.flush()
+            _os.fsync(f.fileno())
+        _os.replace(tmp, path)
+        return path
+    except Exception as e:  # noqa: BLE001 - reporting must never crash the stage
+        print(f"[STEP10] signal status write failed ({filename}): {e}")
+        return None
+
+
+def _write_step10c_family_records(self, *, status: str, reason: str) -> None:
+    """Record ``status``/``reason`` for every *enabled* step10c/10d signal.
+
+    Signals whose own enablement predicate is false are left untouched: the
+    signal index already marks them NOT_APPLICABLE from the predicate, so an
+    artifact for them would never be read.
+    """
+    import os as _os
+
+    from ultimate_pipeline.signals.registry import is_signal_enabled
+
+    env = dict(_os.environ)
+    for sid, filename in STEP10C_SIGNAL_ARTIFACTS.items():
+        if not is_signal_enabled(sid, settings=self.settings, env=env):
+            continue
+        _write_step10_signal(
+            self.out_dir,
+            filename,
+            {"status": status, "reason": reason},
+        )
+
+
+def _road_defect_count(out_path: str) -> int | None:
+    """Best-effort defect count from the road-defect artifact."""
+    import json as _json
+    import os as _os
+
+    try:
+        with open(out_path, "r", encoding="utf-8") as f:
+            data = _json.load(f)
+    except Exception:
+        return None
+    return len(data) if isinstance(data, list) else None
+
+
+def _tile_qa_evidence(qa_out_dir: str, supervisor_rc: int, expected_tiles: int) -> dict:
+    """Derive tile-QA pass/fail from produced evidence, not the exit code.
+
+    ``step10_tile_qa_supervisor.main`` returns 0 on most non-crash paths and
+    used to write ``{"status": "OK"}`` even when ``fail > 0``, so ``rc`` alone
+    cannot decide this signal (NEW-338).  Counts come from the per-tile jsonl
+    when it exists, otherwise from the summary (both known shapes:
+    supervisor ``{"total","ok","fail"}`` and batch ``{"total","passed","failed","ok":bool}``).
+    """
+    import json as _json
+    import os as _os
+
+    jsonl_path = _os.path.join(qa_out_dir, "tile_results.jsonl")
+    rows = []
+    try:
+        with open(jsonl_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = _json.loads(line)
+                except Exception:
+                    continue
+                if isinstance(row, dict):
+                    rows.append(row)
+    except OSError:
+        rows = []
+
+    summary = None
+    summary_path = _os.path.join(qa_out_dir, "tile_results.summary.json")
+    try:
+        with open(summary_path, "r", encoding="utf-8") as f:
+            summary = _json.load(f)
+    except Exception:
+        summary = None
+
+    tile_count = len(rows)
+    failed = sum(1 for r in rows if not r.get("ok", False))
+    passed = tile_count - failed
+    counts_source = "tile_results.jsonl"
+
+    if isinstance(summary, dict):
+        s_total = summary.get("total")
+        if isinstance(s_total, int) and not rows:
+            tile_count = s_total
+        s_failed = summary.get("failed")
+        if not isinstance(s_failed, int):
+            s_failed = summary.get("fail")
+        if isinstance(s_failed, int) and not rows:
+            failed = s_failed
+        s_passed = summary.get("passed")
+        if isinstance(s_passed, int) and not rows:
+            passed = s_passed
+        elif isinstance(summary.get("ok"), int) and not rows:
+            # supervisor shape: ``ok`` is the passed-tile count, not a bool
+            passed = summary["ok"]
+        if not rows:
+            counts_source = "tile_results.summary.json"
+
+    if not rows and not isinstance(summary, dict):
+        return {
+            "ok": False,
+            "reason": "no_tile_results",
+            "tile_count": 0,
+            "failed": 0,
+            "supervisor_return_code": supervisor_rc,
+            "counts_source": None,
+            "expected_tiles": expected_tiles,
+        }
+
+    if failed == 0 and passed == 0:
+        # summary/rows exist but nothing actually ran
+        ok = False
+        reason = "no_tiles_executed"
+    elif failed > 0:
+        ok = False
+        reason = "tile_failures"
+    elif supervisor_rc != 0:
+        ok = False
+        reason = "supervisor_returncode"
+    else:
+        ok = True
+        reason = None
+    return {
+        "ok": ok,
+        "reason": reason,
+        "tile_count": tile_count,
+        "passed": passed,
+        "failed": failed,
+        "supervisor_return_code": supervisor_rc,
+        "counts_source": counts_source,
+        "expected_tiles": expected_tiles,
+    }
+
+
 def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
     """
     Crash-proof STEP 10 Unified Tile QA with progress output.
@@ -44,7 +218,9 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
     if not bool(getattr(self.settings, "ENABLE_SIMULATION_GATE", False)):
         status_path = os.path.join(self.out_dir, "step10_tile_qa_status.json")
         status = {
+            "schema": "step10_tile_qa_status/v1",
             "status": "SKIP",
+            "ok": False,
             "reason": "simulation_gate_disabled",
             "ENABLE_SIMULATION_GATE": False,
         }
@@ -123,8 +299,19 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
         ).strip().lower() in ("1", "true", "yes", "on"):
             status_path = _Path(self.out_dir) / "step10_tile_qa_status.json"
 
+            # ``carla_disabled_env`` is a deliberate configuration choice (the
+            # run is knowingly offline), while ``carla_not_tick_ready`` means
+            # CARLA was expected and could not be reached.  NEW-338: the second
+            # must read BLOCKED_EXTERNAL -- reporting SKIP here made a
+            # runtime-unverified run indistinguishable from a configured skip,
+            # and skip_policy=RECORD_IF_DISABLED then let it pass silently.
+            honest_status = (
+                "SKIP" if _reason == "carla_disabled_env" else "BLOCKED_EXTERNAL"
+            )
             status = {
-                "status": "SKIP",
+                "schema": "step10_tile_qa_status/v1",
+                "status": honest_status,
+                "ok": False,
                 "reason": _reason,
                 "carla_reachability": reach,
             }
@@ -149,7 +336,16 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
         print("⏭️ Tiling disabled — skipping STEP 10 tile QA.")
         try:
             with open(os.path.join(self.out_dir, "step10_tile_qa_status.json"), "w", encoding="utf-8") as f:
-                json.dump({"status": "SKIP", "reason": "tiling_disabled"}, f, indent=2)
+                json.dump(
+                    {
+                        "schema": "step10_tile_qa_status/v1",
+                        "status": "SKIP",
+                        "ok": False,
+                        "reason": "tiling_disabled",
+                    },
+                    f,
+                    indent=2,
+                )
         except Exception:
             pass
         return
@@ -157,9 +353,22 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
     tiles_dir = os.path.join(self.out_dir, "tiles")
     if not os.path.isdir(tiles_dir):
         print(f"⚠️ STEP 10: tiles_dir missing: {tiles_dir} — skipping.")
+        # Tiling is ON and no tiles exist: this is a failed precondition, not a
+        # configured skip.  Reporting SKIP here (NEW-338) hid a broken run from
+        # a signal whose missing_policy is FAIL.
         try:
             with open(os.path.join(self.out_dir, "step10_tile_qa_status.json"), "w", encoding="utf-8") as f:
-                json.dump({"status": "SKIP", "reason": "tiles_dir_missing", "tiles_dir": tiles_dir}, f, indent=2)
+                json.dump(
+                    {
+                        "schema": "step10_tile_qa_status/v1",
+                        "status": "FAIL",
+                        "ok": False,
+                        "reason": "tiles_dir_missing",
+                        "tiles_dir": tiles_dir,
+                    },
+                    f,
+                    indent=2,
+                )
         except Exception:
             pass
         return
@@ -175,7 +384,12 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
             status_path = os.path.join(self.out_dir, "step10_tile_qa_status.json")
             with open(status_path, "w", encoding="utf-8") as f:
                 json.dump(
-                    {"status": "SKIP", "reason": "UP_SKIP_STEP10_TILE_QA"},
+                    {
+                        "schema": "step10_tile_qa_status/v1",
+                        "status": "SKIP",
+                        "ok": False,
+                        "reason": "UP_SKIP_STEP10_TILE_QA",
+                    },
                     f,
                     indent=2,
                 )
@@ -408,13 +622,20 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
             pass
 
     status_path = os.path.join(self.out_dir, "step10_tile_qa_status.json")
+    evidence = _tile_qa_evidence(qa_out_dir, rc, total_tiles)
     status = {
-        "status": "OK" if rc == 0 else "FAIL",
+        "schema": "step10_tile_qa_status/v1",
+        "status": "PASS" if evidence["ok"] else "FAIL",
+        "ok": bool(evidence["ok"]),
+        "reason": evidence["reason"],
         "return_code": rc,
         "qa_out_dir": qa_out_dir,
         "qa_log": qa_log,
         "carla_exe": carla_exe or None,
         "strict": bool(strict),
+        "tile_count": evidence["tile_count"],
+        "tiles_failed": evidence["failed"],
+        "counts_source": evidence["counts_source"],
     }
 
     summary_path = os.path.join(qa_out_dir, "tile_results.summary.json")
@@ -432,9 +653,10 @@ def _step10_tile_qa(self, graph_path: Optional[str], final_out: str) -> None:
     except Exception:
         pass
 
-    if strict and rc != 0:
+    if strict and not evidence["ok"]:
         raise RuntimeError(
-            f"❌ STEP 10 tile QA supervisor failed (rc={rc}). See: {qa_log}"
+            f"❌ STEP 10 tile QA failed (rc={rc}, reason={evidence['reason']}, "
+            f"failed={evidence['failed']}/{evidence['tile_count']}). See: {qa_log}"
         )
 
     print(f"[STEP10] Crash-proof tile QA finished (rc={rc}) -> {qa_out_dir}")
@@ -447,6 +669,12 @@ def _step10c_road_perception_screenshots(self, final_out: str) -> None:
 
     if not getattr(s, "ENABLE_STEP10C", True):
         print("⏭️ Skipping STEP 10C (disabled via settings).")
+        # The family signals gate on their OWN flags (e.g.
+        # ENABLE_ROAD_DEFECT_SCAN), not on ENABLE_STEP10C.  Returning here
+        # without writing left them MISSING -> FAIL for an invisible reason;
+        # record SKIP (parent stage deliberately off, taxonomy: config
+        # disabled -> SKIP) so the skip is visible instead of dead.
+        _write_step10c_family_records(self, status="SKIP", reason="step10c_disabled")
         return
 
     # If CARLA is intentionally disabled, do not attempt any 10C/10D/10E work.
@@ -474,6 +702,9 @@ def _step10c_road_perception_screenshots(self, final_out: str) -> None:
             )
         except Exception as e:
             print(f"[STEP10C] CARLA disabled; status write failed: {e}")
+        # Deliberate config switch: record SKIP for the enabled family signals
+        # instead of leaving them MISSING (NEW-338).
+        _write_step10c_family_records(self, status="SKIP", reason="carla_disabled")
         return
 
     if os.getenv(
@@ -499,6 +730,9 @@ def _step10c_road_perception_screenshots(self, final_out: str) -> None:
                 )
             except Exception as e:
                 print(f"[STEP10C] perception skip report write failed: {e}")
+            _write_step10c_family_records(
+                self, status="SKIP", reason="map_acceptance_failed"
+            )
             return
 
     world = None
@@ -545,6 +779,10 @@ def _step10c_road_perception_screenshots(self, final_out: str) -> None:
                 )
             except Exception as write_exc:
                 print(f"[STEP10C] status write failed: {write_exc}")
+            # CARLA was expected and did not load: external blocker, not a skip.
+            _write_step10c_family_records(
+                self, status="BLOCKED_EXTERNAL", reason="carla_load_final_failed"
+            )
             return
         spawn_n = (
             int(payload.get("spawn_points_count", 0))
@@ -574,6 +812,9 @@ def _step10c_road_perception_screenshots(self, final_out: str) -> None:
                 print(
                     f"[STEP10C] CARLA unavailable; status write failed: {write_exc}"
                 )
+            _write_step10c_family_records(
+                self, status="BLOCKED_EXTERNAL", reason="carla_unavailable"
+            )
             return
         try:
             map_name = (
@@ -620,20 +861,17 @@ print(f"OK road_defects={{len(events)}} -> {{out_path}}")
                 code=worker,
                 timeout_s=int(max(60, duration_sec + 120)),
             )
-            try:
-                st = {
+            _write_step10_signal(
+                self.out_dir,
+                "step10c_road_defects_status.json",
+                {
                     "status": "PASS" if res.get("ok") else "FAIL",
-                    "run": res,
+                    "reason": None if res.get("ok") else "worker_failed",
+                    "defect_count": _road_defect_count(out_path),
                     "out_path": out_path,
-                }
-                with open(
-                    os.path.join(self.out_dir, "step10c_road_defects_status.json"),
-                    "w",
-                    encoding="utf-8",
-                ) as f:
-                    json.dump(st, f, indent=2, default=str, ensure_ascii=True)
-            except Exception:
-                pass
+                    "run": res,
+                },
+            )
             if not res.get("ok"):
                 print(
                     f"⚠️ Road defect subprocess failed; continuing. See: {res.get('log_path')}"
@@ -648,6 +886,19 @@ print(f"OK road_defects={{len(events)}} -> {{out_path}}")
             with open(out_path, "w", encoding="utf-8") as f:
                 json.dump([e.__dict__ for e in events], f, indent=2, default=str)
             print(f"📊 Road defects written -> {out_path}")
+            # Non-isolation path used to write only road_defects.json, leaving
+            # the governed artifact MISSING -> FAIL for enabled runs (NEW-338).
+            _write_step10_signal(
+                self.out_dir,
+                "step10c_road_defects_status.json",
+                {
+                    "status": "PASS",
+                    "reason": None,
+                    "defect_count": len(events),
+                    "out_path": out_path,
+                    "mode": "in_process",
+                },
+            )
     else:
         print("⏭️ Road defect scan disabled.")
     if getattr(s, "ENABLE_LOCAL_PERCEPTION", False):
@@ -682,18 +933,15 @@ print("OK local_perception")
                 code=worker,
                 timeout_s=int(getattr(s, "LOCAL_PERCEPTION_TIMEOUT_S", 600)),
             )
-            try:
-                st = {"status": "PASS" if res.get("ok") else "FAIL", "run": res}
-                with open(
-                    os.path.join(
-                        self.out_dir, "step10c_local_perception_status.json"
-                    ),
-                    "w",
-                    encoding="utf-8",
-                ) as f:
-                    json.dump(st, f, indent=2, default=str, ensure_ascii=True)
-            except Exception:
-                pass
+            _write_step10_signal(
+                self.out_dir,
+                "step10c_local_perception_status.json",
+                {
+                    "status": "PASS" if res.get("ok") else "FAIL",
+                    "reason": None if res.get("ok") else "worker_failed",
+                    "run": res,
+                },
+            )
             if not res.get("ok"):
                 print(
                     f"⚠️ Local perception subprocess failed; continuing. See: {res.get('log_path')}"
@@ -710,10 +958,24 @@ print("OK local_perception")
                 runner = LocalPerceptionRunner(self.client, map_name=map_arg)
             else:
                 runner = LocalPerceptionRunner(self.client)
+            lp_error = None
             try:
                 runner.run()
             except Exception as e:
+                lp_error = str(e)
                 print(f"❌ Local perception runner failed: {e}")
+            # In-process path wrote no status at all (NEW-338): enabled runs
+            # recorded MISSING instead of the real outcome.
+            _write_step10_signal(
+                self.out_dir,
+                "step10c_local_perception_status.json",
+                {
+                    "status": "FAIL" if lp_error else "PASS",
+                    "reason": "runner_exception" if lp_error else None,
+                    "error": lp_error,
+                    "mode": "in_process",
+                },
+            )
     else:
         print("⏭️ Local perception QA disabled.")
 
@@ -795,6 +1057,7 @@ print("OK local_perception")
         )
         status = {
             "status": "PASS" if res.get("ok") else "FAIL",
+            "reason": None if res.get("ok") else "capture_failed",
             "run": res,
             "out_dir": out_dir,
             "log_path": log_path,
@@ -807,12 +1070,13 @@ print("OK local_perception")
                     status["recording_summary"] = json.load(f)
         except Exception:
             pass
-        try:
-            with open(status_path, "w", encoding="utf-8") as f:
-                json.dump(status, f, indent=2, ensure_ascii=True, default=str)
-            print(f"[STEP10D2] thesis perception status -> {status_path}")
-        except Exception as e:
-            print(f"[STEP10D2] status write failed: {e}")
+        written = _write_step10_signal(
+            self.out_dir, "step10d2_thesis_perception_status.json", status
+        )
+        if written:
+            print(f"[STEP10D2] thesis perception status -> {written}")
+        else:
+            print("[STEP10D2] status write failed")
         if not res.get("ok"):
             print(
                 f"⚠️ Thesis perception subprocess failed; continuing. See: {log_path}"
@@ -836,6 +1100,17 @@ print("OK local_perception")
         if not xosc:
             print(
                 "[STEP10D3] UP_ENABLE_SCENARIORUNNER=1 but UP_SCENARIO_XOSC not set; skipping."
+            )
+            # Enabled but not configured: the signal is live, so record the
+            # failure instead of leaving the artifact MISSING (NEW-338).
+            _write_step10_signal(
+                self.out_dir,
+                "step10d3_scenariorunner_status.json",
+                {
+                    "status": "FAIL",
+                    "reason": "UP_SCENARIO_XOSC_not_set",
+                    "xosc": None,
+                },
             )
         else:
             try:
@@ -870,23 +1145,31 @@ print("OK local_perception")
                     log_path=_os.path.join(out_s, "scenariorunner_driver.log"),
                     timeout_s=timeout_s + 60,
                 )
-                try:
-                    import json as _json
-
-                    with open(
-                        _os.path.join(
-                            self.out_dir, "step10d3_scenariorunner_status.json"
-                        ),
-                        "w",
-                        encoding="utf-8",
-                    ) as f:
-                        _json.dump(res, f, indent=2, ensure_ascii=True, default=str)
-                except Exception:
-                    pass
+                payload = dict(res) if isinstance(res, dict) else {"run": res}
+                payload.setdefault("status", "PASS" if res.get("ok") else "FAIL")
+                if not res.get("ok"):
+                    payload["reason"] = "scenariorunner_failed"
+                payload.setdefault("out_dir", out_s)
+                payload.setdefault("xosc", xosc)
+                _write_step10_signal(
+                    self.out_dir, "step10d3_scenariorunner_status.json", payload
+                )
                 if not res.get("ok", False):
                     print(f"[STEP10D3] ScenarioRunner failed (see {out_s}).")
             except Exception as _e:
                 print(f"[STEP10D3] ScenarioRunner integration error: {_e}")
+                # An integration exception after the signal was enabled must
+                # not leave the artifact absent (NEW-338).
+                _write_step10_signal(
+                    self.out_dir,
+                    "step10d3_scenariorunner_status.json",
+                    {
+                        "status": "FAIL",
+                        "reason": "integration_error",
+                        "error": str(_e),
+                        "xosc": xosc,
+                    },
+                )
 
     if getattr(s, "ENABLE_SCREENSHOTS", True):
         print("\n============== 📸 STEP 10E: Screenshot Generation ==============")

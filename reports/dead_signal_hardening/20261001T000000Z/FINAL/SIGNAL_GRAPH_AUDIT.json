@@ -1,0 +1,704 @@
+{
+  "dead_count": 0,
+  "dead_signals": [],
+  "enabled_signals_now": [
+    "CUMULATIVE_GATES",
+    "CUMULATIVE_STAGE_GATES",
+    "DETERMINISM_FINGERPRINT",
+    "ENVIRONMENT_SNAPSHOT",
+    "EXPERIMENT_READINESS",
+    "FINAL_ARTIFACT_RECEIPT",
+    "FINAL_RUN_VERDICT",
+    "G6_HYGIENE",
+    "MAP_ACCEPTANCE",
+    "PIPELINE_HEALTH",
+    "RUN_SUMMARY",
+    "SUCCESS_MARKER",
+    "VALIDATION_REPORT"
+  ],
+  "findings": [
+    {
+      "artifact": "carla_loadability_status.json (written only when UP_RUN_PREFLIGHT)",
+      "artifact_relpath": "carla_loadability_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "UP_RUN_PREFLIGHT"
+      ],
+      "predicates": [
+        {
+          "detail": "referenced in production source",
+          "known": true,
+          "name": "UP_RUN_PREFLIGHT"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_08_integrity._step8d_preflight_validation",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "CARLA_PREFLIGHT",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\pipeline_stages\\stage_08_integrity.py"
+      ]
+    },
+    {
+      "artifact": "gate_failures.json",
+      "artifact_relpath": "gate_failures.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._final_summary_and_llm",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "CUMULATIVE_GATES",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py",
+        "ultimate_pipeline\\quality\\quality_gates.py"
+      ]
+    },
+    {
+      "artifact": "cumulative_gate_report.json",
+      "artifact_relpath": "cumulative_gate_report.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._finalize_gates",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "CUMULATIVE_STAGE_GATES",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py"
+      ]
+    },
+    {
+      "artifact": "determinism_fingerprint.json",
+      "artifact_relpath": "determinism_fingerprint.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._write_determinism_fingerprint",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "perception_research",
+        "structural_release"
+      ],
+      "runtime_problems": [],
+      "signal_id": "DETERMINISM_FINGERPRINT",
+      "writer_sites": [
+        "ultimate_pipeline\\experiments\\thesis\\run_thesis_experiments.py",
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\run_determinism_audit.py",
+        "ultimate_pipeline\\tools\\export_thesis_tables.py",
+        "ultimate_pipeline\\tools\\ost_run_protocol_adapter.py",
+        "ultimate_pipeline\\tools\\run_perception_pair.py",
+        "ultimate_pipeline\\tools\\thesis_protocol_postprocess.py",
+        "ultimate_pipeline\\tools\\thesis_qa_bundle.py"
+      ]
+    },
+    {
+      "artifact": "domain_gap_stage_status.json",
+      "artifact_relpath": "domain_gap_stage_status.json",
+      "class": "EXTERNAL_BLOCKER",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_DOMAIN_GAP",
+        "UP_ENABLE_DOMAIN_GAP"
+      ],
+      "predicates": [
+        {
+          "detail": "settings attribute",
+          "known": true,
+          "name": "ENABLE_DOMAIN_GAP"
+        },
+        {
+          "detail": "referenced in production source",
+          "known": true,
+          "name": "UP_ENABLE_DOMAIN_GAP"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._step12_domain_gap",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "DOMAIN_GAP",
+      "writer_sites": [
+        "ultimate_pipeline\\pipeline_stages\\stage_12_domain_gap.py"
+      ]
+    },
+    {
+      "artifact": "environment_snapshot.json",
+      "artifact_relpath": "environment_snapshot.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.utils.environment_snapshot.write_environment_snapshot",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "ENVIRONMENT_SNAPSHOT",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\tools\\validate_thesis_run.py"
+      ]
+    },
+    {
+      "artifact": "map_acceptance.json (field: valid_for_experiments)",
+      "artifact_relpath": "map_acceptance.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._publish_final_artifact_authority",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "EXPERIMENT_READINESS",
+      "writer_sites": [
+        "ultimate_pipeline\\contracts\\artifact_authority.py",
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\quality\\map_acceptance.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_artifact_authority.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_artifact_receipt_resolution.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_evidence_ordering.py",
+        "ultimate_pipeline\\tools\\export_thesis_tables.py"
+      ]
+    },
+    {
+      "artifact": "final_artifact_receipt.json",
+      "artifact_relpath": "final_artifact_receipt.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._publish_final_artifact_authority",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "FINAL_ARTIFACT_RECEIPT",
+      "writer_sites": [
+        "ultimate_pipeline\\contracts\\artifact_authority.py",
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_evidence_ordering.py"
+      ]
+    },
+    {
+      "artifact": "final_run_verdict.json",
+      "artifact_relpath": "final_run_verdict.json",
+      "class": "HARD_GATE",
+      "consumer": "run_status_and_success_marker",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._compute_final_run_verdict",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "FINAL_RUN_VERDICT",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py"
+      ]
+    },
+    {
+      "artifact": "08h5_g6_lane_coverage_repair_report.json",
+      "artifact_relpath": "08h5_g6_lane_coverage_repair_report.json",
+      "class": "ADVISORY",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "not UP_ENABLE_G6_LANE_COVERAGE_REPAIR=0"
+      ],
+      "predicates": [
+        {
+          "detail": "referenced in production source",
+          "known": true,
+          "name": "UP_ENABLE_G6_LANE_COVERAGE_REPAIR"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_08_hygiene._step8h_map_hygiene",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "G6_HYGIENE",
+      "writer_sites": [
+        "ultimate_pipeline\\pipeline_stages\\stage_08_hygiene.py"
+      ]
+    },
+    {
+      "artifact": "step10c_local_perception_status.json",
+      "artifact_relpath": "step10c_local_perception_status.json",
+      "class": "ADVISORY",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_LOCAL_PERCEPTION"
+      ],
+      "predicates": [
+        {
+          "detail": "settings attribute",
+          "known": true,
+          "name": "ENABLE_LOCAL_PERCEPTION"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "debug",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "LOCAL_PERCEPTION",
+      "writer_sites": [
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py"
+      ]
+    },
+    {
+      "artifact": "map_acceptance.json",
+      "artifact_relpath": "map_acceptance.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._publish_final_artifact_authority",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "MAP_ACCEPTANCE",
+      "writer_sites": [
+        "ultimate_pipeline\\contracts\\artifact_authority.py",
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\quality\\map_acceptance.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_artifact_authority.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_artifact_receipt_resolution.py",
+        "ultimate_pipeline\\tests\\unit\\test_final_evidence_ordering.py",
+        "ultimate_pipeline\\tools\\export_thesis_tables.py"
+      ]
+    },
+    {
+      "artifact": "pipeline_health_summary.json",
+      "artifact_relpath": "pipeline_health_summary.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.quality.pipeline_health_summary.write_pipeline_health_summary",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "PIPELINE_HEALTH",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\quality\\pipeline_health_summary.py",
+        "ultimate_pipeline\\tools\\ost_run_protocol_adapter.py",
+        "ultimate_pipeline\\tools\\thesis_qa_bundle.py"
+      ]
+    },
+    {
+      "artifact": "step10c_road_defects_status.json",
+      "artifact_relpath": "step10c_road_defects_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_ROAD_DEFECT_SCAN"
+      ],
+      "predicates": [
+        {
+          "detail": "settings attribute",
+          "known": true,
+          "name": "ENABLE_ROAD_DEFECT_SCAN"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "ROAD_DEFECTS",
+      "writer_sites": [
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py"
+      ]
+    },
+    {
+      "artifact": "rq1_run_receipt/v1 (receipt_run_XX.json)",
+      "artifact_relpath": "receipt_run_00.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "rq1_five_run_matrix",
+      "enabled_by": [
+        "UP_ENABLE_RQ1_DETERMINISM"
+      ],
+      "predicates": [
+        {
+          "detail": "UP_* environment contract",
+          "known": true,
+          "name": "UP_ENABLE_RQ1_DETERMINISM"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "tools.rq1_trial_run.main",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "RQ1_DETERMINISM",
+      "writer_sites": [
+        "tools\\audit_pipeline_signal_graph.py",
+        "tools\\rq1_trial_run.py"
+      ]
+    },
+    {
+      "artifact": "run_summary.json",
+      "artifact_relpath": "run_summary.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._write_run_summary",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "RUN_SUMMARY",
+      "writer_sites": [
+        "ultimate_pipeline\\contracts\\artifacts.py",
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\tools\\smoke_load_xodr.py",
+        "ultimate_pipeline\\tools\\thesis_orchestrator.py",
+        "ultimate_pipeline\\tools\\validate_thesis_run.py"
+      ]
+    },
+    {
+      "artifact": "step10d3_scenariorunner_status.json",
+      "artifact_relpath": "step10d3_scenariorunner_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "UP_ENABLE_SCENARIORUNNER"
+      ],
+      "predicates": [
+        {
+          "detail": "referenced in production source",
+          "known": true,
+          "name": "UP_ENABLE_SCENARIORUNNER"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "SCENARIORUNNER",
+      "writer_sites": [
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py"
+      ]
+    },
+    {
+      "artifact": "SUCCESS.txt",
+      "artifact_relpath": "SUCCESS.txt",
+      "class": "HARD_GATE",
+      "consumer": "external_callers",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._finalize_run_pack_gated",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "SUCCESS_MARKER",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\run_full_domain_gap.py",
+        "ultimate_pipeline\\tests\\adversarial\\test_v5_adversarial_matrix.py",
+        "ultimate_pipeline\\tests\\unit\\test_finalize_run_pack.py",
+        "ultimate_pipeline\\tools\\pack_thesis_run.py",
+        "ultimate_pipeline\\utils\\finalize_run_pack.py"
+      ]
+    },
+    {
+      "artifact": "step10d2_thesis_perception_status.json",
+      "artifact_relpath": "step10d2_thesis_perception_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_THESIS_PERCEPTION_CAPTURE",
+        "UP_ENABLE_THESIS_PERCEPTION_CAPTURE"
+      ],
+      "predicates": [
+        {
+          "detail": "settings attribute",
+          "known": true,
+          "name": "ENABLE_THESIS_PERCEPTION_CAPTURE"
+        },
+        {
+          "detail": "referenced in production source",
+          "known": true,
+          "name": "UP_ENABLE_THESIS_PERCEPTION_CAPTURE"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "THESIS_PERCEPTION",
+      "writer_sites": [
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py"
+      ]
+    },
+    {
+      "artifact": "step10_tile_qa_status.json",
+      "artifact_relpath": "step10_tile_qa_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_SIMULATION_GATE"
+      ],
+      "predicates": [
+        {
+          "detail": "settings attribute",
+          "known": true,
+          "name": "ENABLE_SIMULATION_GATE"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10_tile_qa",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "TILE_QA",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py"
+      ]
+    },
+    {
+      "artifact": "validation_report_full.json",
+      "artifact_relpath": "logs/validation_report_full.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "predicates": [],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.quality.quality_gates.run_quality_gates",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "runtime_problems": [],
+      "signal_id": "VALIDATION_REPORT",
+      "writer_sites": [
+        "ultimate_pipeline\\llm\\llm_check.py",
+        "ultimate_pipeline\\llm\\llm_quality_gate.py",
+        "ultimate_pipeline\\llm\\llm_xodr_checker.py",
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\quality\\pipeline_health_summary.py",
+        "ultimate_pipeline\\quality\\quality_gates.py",
+        "ultimate_pipeline\\tools\\validate_thesis_run.py"
+      ]
+    },
+    {
+      "artifact": "gate_failures.json (wrapper + manager failures)",
+      "artifact_relpath": "gate_failures.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_QUALITY_GATES_WRAPPER"
+      ],
+      "predicates": [
+        {
+          "detail": "settings attribute",
+          "known": true,
+          "name": "ENABLE_QUALITY_GATES_WRAPPER"
+        }
+      ],
+      "problems": [],
+      "producer_detail": "ultimate_pipeline.main_pipeline.MainPipeline._run_quality_gates_wrapper",
+      "producer_status": "callable",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "runtime_problems": [],
+      "signal_id": "WRAPPED_GATE_FAILURES",
+      "writer_sites": [
+        "ultimate_pipeline\\main_pipeline.py",
+        "ultimate_pipeline\\pipeline_stages\\stage_10_tile_qa.py",
+        "ultimate_pipeline\\quality\\quality_gates.py"
+      ]
+    }
+  ],
+  "out_dir": null,
+  "required_by_profile": {
+    "debug": [
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "LOCAL_PERCEPTION",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "RUN_SUMMARY",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "perception_research": [
+      "CARLA_PREFLIGHT",
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "DETERMINISM_FINGERPRINT",
+      "DOMAIN_GAP",
+      "ENVIRONMENT_SNAPSHOT",
+      "EXPERIMENT_READINESS",
+      "FINAL_ARTIFACT_RECEIPT",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "LOCAL_PERCEPTION",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "ROAD_DEFECTS",
+      "RQ1_DETERMINISM",
+      "RUN_SUMMARY",
+      "SCENARIORUNNER",
+      "SUCCESS_MARKER",
+      "THESIS_PERCEPTION",
+      "TILE_QA",
+      "VALIDATION_REPORT",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "structural_release": [
+      "CARLA_PREFLIGHT",
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "DETERMINISM_FINGERPRINT",
+      "ENVIRONMENT_SNAPSHOT",
+      "FINAL_ARTIFACT_RECEIPT",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "ROAD_DEFECTS",
+      "RUN_SUMMARY",
+      "SUCCESS_MARKER",
+      "TILE_QA",
+      "VALIDATION_REPORT",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "visual_build": [
+      "CARLA_PREFLIGHT",
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "ENVIRONMENT_SNAPSHOT",
+      "FINAL_ARTIFACT_RECEIPT",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "RUN_SUMMARY",
+      "SUCCESS_MARKER",
+      "TILE_QA",
+      "VALIDATION_REPORT",
+      "WRAPPED_GATE_FAILURES"
+    ]
+  },
+  "runtime_missing_signals": [],
+  "scanned_sources": 902,
+  "schema": "pipeline_signal_graph_audit/v1",
+  "shared_artifacts": {
+    "gate_failures.json": [
+      "CUMULATIVE_GATES",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "map_acceptance.json": [
+      "EXPERIMENT_READINESS",
+      "MAP_ACCEPTANCE"
+    ]
+  },
+  "signal_count": 22,
+  "status": "PASS"
+}

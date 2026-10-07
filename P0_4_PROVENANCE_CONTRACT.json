@@ -1,0 +1,51 @@
+{
+  "p0_4_status": "VERIFIED_CURRENT_CONTRACT",
+  "verification_date": "2026-10-02T00:00:00Z",
+  "original_p0_4_diff": "DESTROYED - was an uncommitted working-tree change lost to accidental repo-wide checkout",
+  "reconstruction_commit": "5a5e12145269193a1dd71dcd766861f125bf51d6 (fix(large-map): P0-4 reconstruction broke a committed provenance contract)",
+  "current_contract": {
+    "map_sha_authority": {
+      "description": "A pinned/configured expected_xodr_sha256 is the authoritative provenance check. When supplied, a mismatch against the staged XODR fails staging outright with 'sha256 mismatch' refusal.",
+      "enforced_in": "ultimate_pipeline/tiling/large_map_package.py:stage_large_map_package (lines 327-332)",
+      "test_evidence": "tests/unit/test_o1_cook_provenance_chain.py::TestRegistryAuthority::test_stage_rejects_wrong_xodr_sha"
+    },
+    "synthetic_fixture_opt_out": {
+      "description": "When NO tile manifests are present in the input (synthetic test fixtures), strict per-tile provenance is NOT enforced. The XODR check itself must pass, but tiles without manifests are allowed. This is a documented backward-compatibility contract.",
+      "enforced_in": "ultimate_pipeline/tiling/large_map_package.py:stage_large_map_package (line 387: strict_provenance = has_any_manifest)",
+      "test_evidence": [
+        "tests/unit/test_o1_cook_provenance_chain.py::TestRegistryAuthority::test_stage_accepts_correct_xodr_sha",
+        "tests/unit/test_p0_recorder_and_provenance_repairs.py::test_p0_4_synthetic_fixture_opt_out_is_documented_and_preserved"
+      ]
+    },
+    "strict_provenance_trigger": {
+      "description": "Strict per-tile provenance enforcement activates ONLY when at least one input tile carries a manifest sidecar (.tile_fbx.json with source_provenance.map_of_record_sha256). In strict mode: missing manifest = FAIL, manifest SHA mismatch = FAIL, mixed generations = FAIL.",
+      "enforced_in": "ultimate_pipeline/tiling/large_map_package.py:stage_large_map_package (lines 362-390, 405-416, 424-447)",
+      "test_evidence": [
+        "tests/unit/test_o1_cook_provenance_chain.py::TestMissingProvenanceFailsClosed::test_tile_without_manifest_fails_when_strict",
+        "tests/unit/test_o1_cook_provenance_chain.py::TestMixedGenerationsFail::test_mixed_shas_fail"
+      ]
+    },
+    "package_validation_provenance": {
+      "description": "validate_staged_package enforces tile provenance when any staged tile has a manifest (has_any_tile_manifest). It also verifies per-tile content hashes against the sidecar manifest (tiles_fbx_sha256) to detect post-staging FBX substitution.",
+      "enforced_in": "ultimate_pipeline/tiling/large_map_package.py:validate_staged_package (lines 797-840, 853-882)",
+      "test_evidence": "tests/unit/test_o1_cook_provenance_chain.py::TestStaleFbxRejectedAtStaging"
+    },
+    "descriptor_provenance_binding": {
+      "description": "package.json carries xodr_sha256; the sidecar manifest (<PackageName>.large_map_package.json) carries canonical_source.xodr_sha256, xodr.sha256, and tiles_provenance. All must agree.",
+      "enforced_in": "ultimate_pipeline/tiling/large_map_package.py:stage_large_map_package (lines 167-168, 480, 541-546, 556-562, 588-598)",
+      "test_evidence": "tests/unit/test_o1_cook_provenance_chain.py::TestPackageDescriptorCarriesSourceIdentity"
+    }
+  },
+  "not_verified": {
+    "original_p0_4_intent": "The original P0-4 diff (destroyed) may have tightened provenance further, e.g., by making expected_xodr_sha256 activate strict mode even without tile manifests. This was NOT recovered and the current code explicitly records 'P0-4 status: NOT VERIFIED'.",
+    "code_marker": "ultimate_pipeline/tiling/large_map_package.py line 367-390: comment block recording 'P0-4 status: NOT VERIFIED'",
+    "test_assertion": "tests/unit/test_p0_recorder_and_provenance_repairs.py::test_p0_4_reconstruction_is_not_asserted_as_complete"
+  },
+  "governed_contract_files": [
+    "ultimate_pipeline/tiling/large_map_package.py",
+    "tests/unit/test_o1_cook_provenance_chain.py",
+    "tests/unit/test_p0_recorder_and_provenance_repairs.py"
+  ],
+  "verification_method": "Source code inspection + test execution (test_p0_4_* and test_o1_cook_provenance_chain.py all PASS)",
+  "outcome": "VERIFIED_CURRENT_CONTRACT - The current committed contract is verified and pinned by tests. The gap is explicitly recorded: original P0-4 diff was lost; reconstruction is NOT asserted as complete."
+}

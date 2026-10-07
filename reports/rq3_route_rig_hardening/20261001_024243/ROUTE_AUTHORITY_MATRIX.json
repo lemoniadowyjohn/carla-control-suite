@@ -1,0 +1,48 @@
+{
+  "authorities": {
+    "route_execution": {
+      "fails_on": [
+        "set_transform_raises",
+        "observed_transform_unavailable",
+        "position_error_exceeds",
+        "orientation_error_exceeds",
+        "world_tick_fails",
+        "vehicle_actor_dies"
+      ],
+      "file": "ultimate_pipeline/perception/route_execution.py",
+      "validates": [
+        "set_transform",
+        "observed_transform",
+        "position_error",
+        "yaw_error",
+        "thresholds"
+      ]
+    },
+    "route_frame_binding": {
+      "file": "ultimate_pipeline/perception/route_frame_binding.py",
+      "validates": [
+        "coordinate_frame",
+        "crs",
+        "geo_reference",
+        "transform_sha256"
+      ]
+    },
+    "route_manifest": {
+      "fails_before": [
+        "ego_spawn",
+        "sensor_spawn",
+        "map_capture"
+      ],
+      "file": "ultimate_pipeline/perception/route_manifest.py",
+      "validates": [
+        "schema",
+        "digest",
+        "sequence_index",
+        "finite_coordinates",
+        "coordinate_frame"
+      ]
+    }
+  },
+  "schema_version": "rq3_authority_matrix_v1",
+  "timestamp_utc": "2026-10-01T03:13:09.440546Z"
+}

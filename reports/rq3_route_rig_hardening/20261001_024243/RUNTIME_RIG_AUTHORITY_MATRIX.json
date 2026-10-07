@@ -1,0 +1,34 @@
+{
+  "authorities": {
+    "active_lidar_policy": {
+      "active_lidars": [
+        "middle_lidar"
+      ],
+      "inactive_calibration_entries": [
+        "middle_lidar_old"
+      ]
+    },
+    "canonical_lidar_spec": {
+      "consumed_by": [
+        "ThesisSensorRig",
+        "DominikSensorSetup",
+        "attach_sensors_safe",
+        "RQ3 identity hashing"
+      ],
+      "file": "ultimate_pipeline/sensors/canonical_lidar_spec.py",
+      "resolves": [
+        "active_lidars",
+        "inactive_entries",
+        "range",
+        "rotation_frequency",
+        "channels",
+        "points_per_second",
+        "upper_fov",
+        "lower_fov",
+        "sensor_tick"
+      ]
+    }
+  },
+  "schema_version": "rq3_runtime_rig_authority_v1",
+  "timestamp_utc": "2026-10-01T03:13:09.440546Z"
+}

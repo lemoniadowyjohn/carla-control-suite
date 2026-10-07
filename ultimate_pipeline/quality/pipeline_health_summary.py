@@ -175,16 +175,34 @@ def _extract_bbox(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     return None
 
 
-def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = None) -> Dict[str, Any]:
+def build_pipeline_health_summary(
+    out_dir: str,
+    stage_reports_dir: str | None = None,
+    expected_gates: Iterable[str] | None = None,
+) -> Dict[str, Any]:
+    """Aggregate gate evidence for one run.
+
+    ``expected_gates`` is the registry-derived list of gates a complete run is
+    contractually supposed to have produced evidence for (NEW-335).  When it is
+    provided, an expected gate with *no* evidence is reported as missing/skipped
+    and makes the summary fail: "the gate never ran" must never be silently
+    equivalent to "the gate passed".  When it is ``None`` (legacy callers and
+    the module's own CLI) behaviour is unchanged: only observed evidence is
+    scored, and ``not_run_gates`` stays empty.
+    """
     summary: Dict[str, Any] = {
         "generated_at_utc": _utc_now(),
         "out_dir": out_dir,
         "overall_ok": False,
         "status": "NOT_RUN",
         "evidence_complete": False,
+        "expected_gates": [],
         "required_gates": [],
         "passed_gates": [],
         "not_run_gates": [],
+        "missing_required_gates": [],
+        "skipped_required_gates": [],
+        "malformed_gates": [],
         "gates": {},
         "per_stage_failures": {},
         "malformed_gate_reports": [],
@@ -196,6 +214,8 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
             "junctions": None,
         },
     }
+    expected: list[str] = sorted({str(g).strip() for g in (expected_gates or []) if str(g).strip()})
+    summary["expected_gates"] = list(expected)
 
     try:
         stage_dir = stage_reports_dir or os.path.join(out_dir, "qa_stage_reports")
@@ -228,7 +248,9 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
 
     try:
         artifact_files = [
-            "geometric_continuity.json",
+            # main_pipeline writes this one at the release root (via
+            # _run_geometric_continuity_gate); there is no geometric_continuity.json.
+            "geometric_continuity_gate.json",
             "elevation_continuity.json",
             "post_tiling_integrity.json",
             "lane_width_continuity.json",
@@ -264,12 +286,28 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
         summary["passed_gates"] = sorted(
             name for name, data in summary["gates"].items() if data.get("ok", True)
         )
-        # No external "expected gates" registry exists in this codebase, so
-        # there is no independent list of gate names to diff against what
-        # was actually observed -- always empty, kept as an explicit field
-        # (rather than omitted) so a future registry-backed implementation
-        # has a stable place to report into without a schema change.
-        summary["not_run_gates"] = []
+        summary["malformed_gates"] = sorted(summary["malformed_gate_reports"])
+
+        # NEW-335: diff what was EXPECTED against what was OBSERVED, so an
+        # expected gate that never produced evidence is a reported failure
+        # rather than an invisible absence.
+        missing: list[str] = []
+        skipped: list[str] = []
+        not_run: list[str] = []
+        for name in expected:
+            observed = summary["gates"].get(name)
+            if observed is None:
+                missing.append(name)
+                not_run.append(name)
+                continue
+            status = str(observed.get("status", "")).strip().lower()
+            if observed.get("ok", True) and status in {"skip", "skipped", "skipped_by_env"}:
+                skipped.append(name)
+        summary["missing_required_gates"] = missing
+        summary["skipped_required_gates"] = skipped
+        # Without an expected list there is nothing to diff against; keep the
+        # field explicit (rather than omitted) for schema stability.
+        summary["not_run_gates"] = not_run if expected else []
 
         if not evidence_complete:
             summary["overall_ok"] = False
@@ -280,6 +318,10 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
                 if not gate_data.get("ok", True):
                     overall_ok = False
                     break
+            if expected and (missing or skipped):
+                # An expected gate that did not run (or reported a skip) makes
+                # the run incomplete, not merely "not observed".
+                overall_ok = False
             summary["overall_ok"] = overall_ok
             summary["status"] = "PASS" if overall_ok else "FAIL"
     except Exception:
@@ -360,18 +402,29 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
     return summary
 
 
-def write_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = None) -> str:
-    summary = build_pipeline_health_summary(out_dir, stage_reports_dir=stage_reports_dir)
+def write_pipeline_health_summary(
+    out_dir: str,
+    stage_reports_dir: str | None = None,
+    expected_gates: Iterable[str] | None = None,
+) -> str:
+    """Durably write ``pipeline_health_summary.json``.
+
+    Fail-closed (NEW-335): this artifact is a HARD_GATE signal consumed by the
+    final run verdict, so a write failure must abort the run rather than leave
+    the signal silently absent.
+    """
+    summary = build_pipeline_health_summary(
+        out_dir, stage_reports_dir=stage_reports_dir, expected_gates=expected_gates
+    )
     output_path = os.path.join(out_dir, "pipeline_health_summary.json")
-    try:
-        os.makedirs(out_dir, exist_ok=True)
-        text = json.dumps(summary, indent=2, sort_keys=True, ensure_ascii=True)
-        if not text.endswith("\n"):
-            text += "\n"
-        with open(output_path, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text)
-    except Exception:
-        pass
+    os.makedirs(out_dir, exist_ok=True)
+    text = json.dumps(summary, indent=2, sort_keys=True, ensure_ascii=True)
+    if not text.endswith("\n"):
+        text += "\n"
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
+        f.flush()
+        os.fsync(f.fileno())
     return output_path
 
 

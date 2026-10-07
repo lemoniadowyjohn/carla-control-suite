@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import hashlib
 import json
 import logging
 import math
@@ -8,7 +9,7 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 
@@ -22,6 +23,10 @@ from ultimate_pipeline.sensors.transform_conventions import (
     rotation_matrix_to_unreal_rpy_deg,
     vehicle_to_camera_from_cTv,
     vehicle_to_lidar_from_vTl,
+)
+from ultimate_pipeline.sensors.canonical_lidar_spec import (
+    resolve_active_lidars,
+    canonical_lidar_hash,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -967,6 +972,16 @@ class ThesisSensorRig:
         # LiDARs
         for lidar_name, lidar_data in lidar_items:
             try:
+                # NEW-301: Consume canonical LiDAR runtime spec
+                lidar_specs = resolve_active_lidars(self.calib_data, low_memory_profile=False)
+                lidar_spec = None
+                for spec in lidar_specs:
+                    if spec.name == lidar_name:
+                        lidar_spec = spec
+                        break
+                if lidar_spec is None:
+                    raise RuntimeError(f"LiDAR '{lidar_name}' not in canonical active spec")
+
                 # Thesis contract: vTl is LiDAR→Vehicle and MUST be inverted for attachment.
                 vtl_inverted = True
                 T_used = vehicle_to_lidar_from_vTl(lidar_data["vTl"], flip_vehicle_y=False)
@@ -979,39 +994,39 @@ class ThesisSensorRig:
                 )
 
                 bp = bp_lib.find("sensor.lidar.ray_cast")
-                # Conservative defaults that are known to work across versions.
+                # NEW-301: Use canonical LiDAR spec values
                 try:
                     if hasattr(bp, "has_attribute") and bp.has_attribute("range"):
-                        bp.set_attribute("range", str(float(lidar_data.get("range", 80.0))))
+                        bp.set_attribute("range", str(lidar_spec.range))
                     if hasattr(bp, "has_attribute") and bp.has_attribute(
                         "rotation_frequency"
                     ):
                         bp.set_attribute(
                             "rotation_frequency",
-                            str(float(lidar_data.get("rotation_frequency", 10.0))),
+                            str(int(lidar_spec.rotation_frequency)),
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute(
                         "points_per_second"
                     ):
                         bp.set_attribute(
                             "points_per_second",
-                            str(int(lidar_data.get("points_per_second", 200000))),
+                            str(int(lidar_spec.points_per_second)),
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("channels"):
                         bp.set_attribute(
-                            "channels", str(int(lidar_data.get("channels", 32)))
+                            "channels", str(int(lidar_spec.channels))
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("upper_fov"):
                         bp.set_attribute(
-                            "upper_fov", str(float(lidar_data.get("upper_fov", 10.0)))
+                            "upper_fov", str(float(lidar_spec.upper_fov))
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("lower_fov"):
                         bp.set_attribute(
-                            "lower_fov", str(float(lidar_data.get("lower_fov", -30.0)))
+                            "lower_fov", str(float(lidar_spec.lower_fov))
                         )
                     if hasattr(bp, "has_attribute") and bp.has_attribute("sensor_tick"):
                         bp.set_attribute(
-                            "sensor_tick", str(float(lidar_data.get("sensor_tick", 0.0)))
+                            "sensor_tick", str(float(lidar_spec.sensor_tick))
                         )
                 except Exception:
                     pass
@@ -1097,7 +1112,56 @@ class ThesisSensorRig:
                 log.warning("Sensor healthcheck failed: %s", e)
 
         self._sensors = [sp.actor for sp in spawned.values() if sp.actor is not None]
+        # NEW-299: record the identity of the rig that was ACTUALLY spawned, so
+        # capture evidence can prove which sensors and attributes existed rather
+        # than only what calibration requested.
+        self._runtime_rig_identity = self.runtime_rig_identity(spawned)
         return spawned
+
+    def runtime_rig_identity(
+        self, spawned: Optional[Dict[str, "SpawnedSensor"]] = None
+    ) -> Dict[str, Any]:
+        """NEW-299: hashable identity of the effective spawned rig.
+
+        The identity is built from what was spawned (sensor names, kinds and the
+        attributes actually applied), not from the calibration request alone, and
+        it includes the canonical active-LiDAR spec hash so inactive calibration
+        entries cannot silently change or preserve it.
+        """
+        if spawned is None:
+            spawned = getattr(self, "_spawned", {}) or {}
+
+        sensors_payload: List[Dict[str, Any]] = []
+        for name in sorted(spawned):
+            entry = spawned[name]
+            report = getattr(entry, "report", None) or {}
+            attributes = report.get("attributes")
+            sensors_payload.append(
+                {
+                    "name": str(name),
+                    "type": str(report.get("type", "")),
+                    "actor_spawned": getattr(entry, "actor", None) is not None,
+                    "attributes": {
+                        str(k): str(v) for k, v in sorted((attributes or {}).items())
+                    },
+                }
+            )
+
+        lidar_identity = canonical_lidar_hash(self.calib_data)
+
+        payload = {
+            "schema": "RUNTIME_RIG_IDENTITY/v1",
+            "sensors": sensors_payload,
+            "active_lidar_names": list(lidar_identity["active_lidar_names"]),
+            "inactive_lidar_names": list(lidar_identity["inactive_lidar_names"]),
+            "lidar_spec_sha256": lidar_identity["lidar_spec_sha256"],
+        }
+        blob = json.dumps(payload, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+        return {
+            **payload,
+            "rig_identity_sha256": hashlib.sha256(blob.encode("utf-8")).hexdigest(),
+            "sensor_count": len(sensors_payload),
+        }
 
     def get_front_rgb_camera(self) -> Any:
         return self._sensors[0] if self._sensors else None
@@ -1542,19 +1606,32 @@ class ThesisSensorRig:
             for name, data in (self.calib_data.get("cameras", {}) or {}).items()
             if isinstance(data, dict)
         ]
+        # NEW-300/301: only the canonical ACTIVE LiDAR set may be spawned.
+        # Inactive calibration entries (e.g. `middle_lidar_old`) must be
+        # explicitly excluded here. Leaving them in the spawn set would make
+        # NEW-301's canonical-spec check raise for every inactive entry and
+        # abort the whole rig, i.e. a historical calibration leftover would
+        # prevent the governed rig from existing at all.
+        active_lidar_names = [
+            spec.name
+            for spec in resolve_active_lidars(self.calib_data, low_memory_profile=False)
+        ]
         lidar_items = [
             (str(name), data)
             for name, data in (self.calib_data.get("lidars", {}) or {}).items()
-            if isinstance(data, dict)
+            if isinstance(data, dict) and str(name) in set(active_lidar_names)
         ]
+        if not lidar_items:
+            raise RuntimeError(
+                "sensor_spawn_missing_required_modalities:lidar:"
+                f"canonical_active={active_lidar_names}"
+            )
         front_only_strict = _env_bool("UP_FRONT_ONLY_STRICT", False)
         if not bool(front_only_strict):
             return camera_items, lidar_items, False
 
         if not camera_items:
             raise RuntimeError("sensor_spawn_missing_required_modalities:camera")
-        if not lidar_items:
-            raise RuntimeError("sensor_spawn_missing_required_modalities:lidar")
 
         camera_items = sorted(camera_items, key=lambda item: item[0])
         lidar_items = sorted(lidar_items, key=lambda item: item[0])

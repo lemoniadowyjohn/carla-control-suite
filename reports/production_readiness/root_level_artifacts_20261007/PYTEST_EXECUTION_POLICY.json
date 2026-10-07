@@ -1,0 +1,78 @@
+{
+  "schema": "pytest_execution_policy/v1",
+  "generated_at_utc": "2026-10-05T15:10:00Z",
+
+  "purpose": "Make CI modes explicit so that marking tests @pytest.mark.slow does not silently remove coverage from release assurance.",
+
+  "critical_current_state": {
+    "pytest_ini_addopts": "-v --tb=short --strict-markers",
+    "marker_filter_in_addopts": "NONE",
+    "bare_run_includes_slow_tests": true,
+    "verified": "Both baseline arms ran with deselected=0 and passed=5213, which includes the 7 slow tests. Coverage is NOT currently being lost.",
+    "registered_markers": ["slow", "integration", "unit", "performance", "regression", "carla", "quality"]
+  },
+
+  "modes": {
+    "FAST": {
+      "command": ".venv\\Scripts\\python.exe -m pytest tests/ -m \"not slow\"",
+      "selected": 5206,
+      "skipped": 6,
+      "measured_duration_sec": 348.39,
+      "purpose": "Inner-loop gate. Excludes real-multiprocess stress tests.",
+      "use_for": "pre-commit, per-change verification"
+    },
+    "STRESS": {
+      "command": ".venv\\Scripts\\python.exe -m pytest tests/ -m \"slow\"",
+      "selected": 7,
+      "skipped": 0,
+      "measured_duration_sec": 558.37,
+      "purpose": "Race/TOCTOU stress: real spawned OS processes, 8-16 workers x 50 rounds.",
+      "use_for": "pre-release and after any writer-lock or concurrency change"
+    },
+    "FULL": {
+      "command": ".venv\\Scripts\\python.exe -m pytest tests/",
+      "selected": 5213,
+      "skipped": 6,
+      "measured_duration_sec": "1157.59 - 1607.46 across two runs on a loaded host",
+      "purpose": "Authoritative release gate. Includes stress tests. This is the DEFAULT and must be what release assurance relies on.",
+      "use_for": "release candidate validation"
+    }
+  },
+
+  "required_cadence": {
+    "FAST": "every change, every pre-commit",
+    "STRESS": "every release candidate, and mandatory whenever writer_lock, subprocess supervision, atomic publication, or concurrency code changes",
+    "FULL": "every release candidate, before any evidence regeneration or push",
+    "rationale_for_STRESS_frequency": "These tests exist to catch TOCTOU and spawn races (GAP-024, GAP-028). Their value is entirely in being run; a fast-only gate would leave those defects undetectable."
+  },
+
+  "anti_silencing_guarantees": [
+    "No test was deleted, skipped by default, or had its assertion weakened.",
+    "The 7 slow tests are counted in the FULL mode total (5213) - they are partitioned, not removed.",
+    "addopts deliberately contains NO -m filter, so a bare pytest run is always the complete suite.",
+    "Any future change that introduces an -m filter into pytest.ini addopts must be accompanied by an update to this document and to PYTEST_BASELINE_COMPARISON.json."
+  ],
+
+  "slow_test_inventory": [
+    {"test": "tests/unit/test_writer_lock_adversarial.py::test_scenario_1_2_8_16_simultaneous_processes_and_50_rounds", "seconds": 349.60, "kind": "real multiprocess"},
+    {"test": "tests/unit/test_writer_lock_concurrency.py::test_concurrent_acquire_exactly_one_winner_real_processes", "seconds": 145.21, "kind": "real multiprocess (spawn)"},
+    {"test": "tests/unit/test_writer_lock_adversarial.py::test_scenario_12_concurrent_release_acquire_no_clobber", "seconds": 28.14, "kind": "real multiprocess"},
+    {"test": "tests/unit/test_writer_lock_atomic_publication.py::test_widened_fresh_publication_contender_never_sees_partial_json", "seconds": 23.91, "kind": "timing-widened race"},
+    {"test": "tests/unit/test_writer_lock_atomic_publication.py::test_contender_fails_closed_on_persistent_empty_fresh_lock_without_deleting", "seconds": 0.59, "kind": "fail-closed"},
+    {"test": "tests/unit/test_writer_lock_concurrency.py::test_stale_owner_release_does_not_clobber_reclaimed_lock", "seconds": 0.01, "kind": "lease race"},
+    {"test": "tests/unit/test_writer_lock_concurrency.py::test_stale_owner_heartbeat_does_not_clobber_reclaimed_lock", "seconds": 0.01, "kind": "lease race"}
+  ],
+
+  "marker_annotations_restored_this_wave": {
+    "note": "The @pytest.mark.slow annotations were corrupted by C# source injected into the function-def lines. Restored from HEAD and correctly re-applied to these 5 tests.",
+    "tests_marked": [
+      "test_widened_fresh_publication_contender_never_sees_partial_json",
+      "test_contender_fails_closed_on_persistent_empty_fresh_lock_without_deleting",
+      "test_concurrent_acquire_exactly_one_winner_real_processes",
+      "test_stale_owner_heartbeat_does_not_clobber_reclaimed_lock",
+      "test_stale_owner_release_does_not_clobber_reclaimed_lock"
+    ]
+  },
+
+  "host_caveat": "Stress-suite duration is highly sensitive to CPU contention. On this host a live cook plus its shader workers inflated the FULL suite from 1158 s to 1607 s with identical outcomes. Stress-mode results should be taken on an otherwise idle machine."
+}

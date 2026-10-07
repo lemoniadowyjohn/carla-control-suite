@@ -1,0 +1,23 @@
+{
+  "schema": "traffic_light_runaway_causal_trace/v1",
+  "generated_at_utc": "2026-10-05T18:00:00Z",
+  "observed_symptom": "LogScript runaway-loop warning (>1,000,000 iterations) in BP_TLOpenDrive_RHT_C:UserConstructionScript at actor index ~14281 during uncooked Ingolstadt load; game thread subsequently parked (near-zero CPU, silent log, RPC dead).",
+  "chain": {
+    "opendrive_signals": "21,163 type-1000001 dynamic signals in authoritative XODR (all unique ids)",
+    "parser": "LibCarla OpenDriveParser + MapBuilder::SolveSignalReferencesAndTransforms (O(N) map lookups; not the bottleneck)",
+    "traffic_light_generation": "GameMode BeginPlay -> ATrafficLightManager::InitializeTrafficLights -> GenerateSignalsAndTrafficLights (TrafficLightManager.cpp:276)",
+    "matching": "SpawnTrafficLights loops 1+2 + SpawnSignals line 665: ~60k full-world GetAllActorsOfClass scans (see complexity audit)",
+    "actor_construction": "SpawnActor BP_TLOpenDrive_RHT per unmatched signal (~21k spawns) -> Blueprint UserConstructionScript per actor",
+    "beginplay_construction": "per-spawn TrafficLightComponent->InitializeSign (C++, per-signal references; linear in refs, not the driver)",
+    "signal_traversal": "controller association via TMap lookups (GetController/GetTrafficSign O(1)); clean",
+    "controller_association": "2726 controllers; no cyclic reference evidence in XODR (unique ids, resolvable refs)"
+  },
+  "LOOP_FUNCTION": "BP_TLOpenDrive_RHT_C:UserConstructionScript (blueprint graph; exact node NOT extracted from .uasset)",
+  "INPUT_COUNT": 21163,
+  "ITERATIONS_BEFORE_GUARD": 1000000,
+  "MUTATING_COLLECTION": "UNKNOWN (graph not extracted; no claim)",
+  "TERMINATION_CONDITION": "UNKNOWN (graph not extracted; engine guard tripped, execution continued with warning)",
+  "ROOT_CAUSE": "UNBOUNDED_SIGNAL_SCALE",
+  "root_cause_reasoning": "The only proven anomaly at this layer is scale: 21,163 spawn+construct cycles where stock maps do 19-59. Per-actor construction cost grows with world actor count (world scans inside matching + construction), so late actors (index 14281+) cross the 1M-iteration guard that early actors pass. No evidence of cyclic references, duplicate expansion, or collection mutation was found (ids unique, refs resolvable).",
+  "loop_limit_policy": "MaximumLoopIterationCount NOT raised (batch section 5). No diagnostic raise performed; the guard firing is treated as a symptom, not the defect."
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "evidence_freshness/v1",
+  "generated_at_utc": "2026-10-02T19:57:00Z",
+  "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "remote_branch": "review/carla-production-convergence-20261002",
+  "local_head_equals_remote_head": true,
+  "policy": "A claim may only be AUTHORITATIVE if its artifact was produced by the commit being released AND is bound to the pinned map-of-record AND is not superseded. Implementation readiness never substitutes for a measured result.",
+
+  "bindings": [
+    {
+      "rq": "P0-4 provenance",
+      "metric": "provenance_contract_conformance",
+      "producer": "tests/unit/test_o1_cook_provenance_chain.py + tests/unit/test_p0_recorder_and_provenance_repairs.py",
+      "producer_commit": "5a5e12145269193a1dd71dcd766861f125bf51d6",
+      "protocol": "ultimate_pipeline/tiling/large_map_package.py:stage_large_map_package + validate_staged_package",
+      "input_sha": "N/A (contract tests use synthetic fixtures)",
+      "artifact_sha": "n/a",
+      "status": "VERIFIED_CURRENT_CONTRACT",
+      "supersedes": "the earlier 'NOT VERIFIED' marker in commit 5a5e1214's code comment -- retained in code as an explicit unverified-state assertion",
+      "note": "The lost original diff remains unrecoverable; the CURRENT committed contract is verified and test-pinned. No rediscovered reconstruction was accepted."
+    },
+    {
+      "rq": "RQ2 map identity",
+      "metric": "pinned_map_content_identity",
+      "producer": "ultimate_pipeline/carla_tools/map_registry.py:verify_pinned_map",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "content-addressed pin registry, fail-closed on bytes+SHA",
+      "input_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "artifact_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "VERIFIED",
+      "supersedes": "supersession chain of 9 promotions, tail = 69b1f520 (pre-C29)"
+    },
+    {
+      "rq": "Staged package",
+      "metric": "package_integrity",
+      "producer": "tools/revalidate_promoted_package.py (this wave) over ultimate_pipeline.tiling.large_map_package.validate_staged_package",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "governed validator + explicit PACKAGE_SHA256.json per-file manifest verification",
+      "input_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "artifact_sha": "PACKAGE_SHA256.json status=verified, 21 files bound, 20/20 tiles, 0 mismatch, 0 unbound",
+      "status": "PASS",
+      "supersedes": "none",
+      "freshness_note": "Verified against the promoted artifact on disk at E:\\CARLA\\CARLA_0.9.16\\Import\\Ingolstadt, which was promoted from governed release run 20260924T100614Z."
+    },
+    {
+      "rq": "CARLA runtime",
+      "metric": "rpc_handshake_and_world_tick",
+      "producer": "tools/carla_runtime_launch.py (this wave)",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "PID-owned launch; actual client.get_server_version() + world.get_map() + snapshot",
+      "input_sha": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+      "artifact_sha": "reports/carla_runtime/carla_run_*_REPORT.json",
+      "status": "PASS",
+      "supersedes": "the prior 'RPC blocked' claim in the Batch 9 verdict packet",
+      "supersession_note": "This wave DEMOTES no prior claim incorrectly: the Batch 9 packet recorded 'BLOCKED_EXTERNAL (127.0.0.1:2000 timeout; no CarlaUE4 process)'. That was accurate for a state where no server was running. This wave STARTED a server and reached RUNTIME_READY. Installation presence was not treated as readiness -- an actual RPC response was required and obtained."
+    },
+    {
+      "rq": "World settings transaction",
+      "metric": "governed_sim_timing",
+      "producer": "tools/world_settings_transaction.py (this wave)",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "snapshot -> apply -> verify -> experiment -> restore -> verify, single tick owner",
+      "input_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "artifact_sha": "reports/carla_runtime/wstrans_20261002T190917Z_REPORT.json",
+      "status": "PASS",
+      "fixed_delta_observed_max_abs_error": 0.0
+    },
+    {
+      "rq": "Manual arm map identity",
+      "metric": "runtime_map_identity",
+      "producer": "tools/live_map_identity.py (this wave)",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "client.load_world(requested) -> world.get_map().name verbatim + exact-name equality + structural fingerprint",
+      "input_sha": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "artifact_sha": "RUNTIME_MAP_IDENTITY_MANUAL.json",
+      "status": "RUNTIME_IDENTITY_ESTABLISHED",
+      "supersedes": "none"
+    },
+    {
+      "rq": "Toolchain: Blender",
+      "metric": "binary_identity_and_conversion_fidelity",
+      "producer": "manual qualification + pipeline OBJ->FBX fixture (this wave)",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "--version; headless startup; minimal import/export; pipeline-specific conversion",
+      "input_sha": "E5C09E875471AA72FC8AE7437A92BB91C150CCCCCBC4A0DFAFA6E2D29D2FB31B",
+      "artifact_sha": "BLENDER_QUALIFICATION.json",
+      "status": "PASS"
+    },
+    {
+      "rq": "Toolchain: OSM2World",
+      "metric": "binary_identity_and_determinism",
+      "producer": "governed distribution + 2-run deterministic fixture (this wave)",
+      "producer_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "protocol": "2 independent convert runs on one minimal OSM fixture, mtllib-normalized byte comparison",
+      "input_sha": "F20B00E1C5DC50CE211FFAB817D874799576DACCE4F8190D83C8A7B48CB61FAC",
+      "artifact_sha": "OSM2WORLD_QUALIFICATION.json",
+      "status": "PASS",
+      "supersession_note": "Qualifies the pipeline's OWN governed distribution. The earlier out-of-tree source build performed in this wave was discarded and is NOT the qualified artifact."
+    }
+  ],
+
+  "claims_that_are_NOT_authoritative": [
+    {"claim": "Ingolstadt auto map is importable/cookable", "reason": "COOK_LOG.txt and AUTO_COOK_RECEIPT.json in the promoted package are OFFLINE FBX GENERATION records. Both files state verbatim: 'No UE4/UE5 Editor was invoked. Import/cook success is UNCONFIRMED.' Their filenames are misleading and must not be read as a cook receipt."},
+    {"claim": "Tiles are correctly placed in the world", "reason": "The only placement checker measures geometry centroid separation, which is a confounded proxy. Classified INVALID_PROXY_METRIC. No control-anchor verdict exists."},
+    {"claim": "RQ3 paired capture", "reason": "DEFERRED_RUNTIME. Requires both arms; the auto arm does not exist at runtime."},
+    {"claim": "RQ5(a) mIoU / degradation / per-class delta", "reason": "BLOCKED_DEPENDENCY on RQ3. Protocol v2 was not executed. No numbers reported."},
+    {"claim": "RQ1B determinism", "reason": "NOT_EXECUTED. Fewer than five valid receipts cannot yield PASS."},
+    {"claim": "Full suite green", "reason": "7 failures exist at HEAD 7fbd33ff, independent of this wave."}
+  ],
+
+  "stale_claim_scan": {
+    "batch9_final_verdict_claims_carried_forward": [
+      "20/20 governed tiles verified",
+      "package staged + validated PASS",
+      "RQ3 lineage PASS",
+      "12/12 negative controls rejected",
+      "promotion with SHA preservation",
+      "7145 passed / 10 skipped / 0 failed at candidate b074fc2b"
+    ],
+    "batch9_claims_now_OVERTURNED": [
+      "carla_rpc_live = BLOCKED_EXTERNAL (superseded: runtime is reachable; see CARLA_RUNTIME_RECEIPT.json)"
+    ],
+    "batch9_claims_now_CONFIRMED": [
+      "P0-4 provenance NOT VERIFIED -> this wave resolved the CURRENT contract to VERIFIED_CURRENT_CONTRACT while still refusing to accept the lost original diff",
+      "tile_frame_consistency FAIL -> this wave classified the failure as an invalid proxy metric rather than a placement defect"
+    ],
+    "regression_count_discrepancy": "Batch 9 reported 7145 passed / 10 skipped / 0 failed at candidate b074fc2b. This wave observed 7141 passed / 7 skipped / 7 failed at 7fbd33ff. The delta is fully accounted for by the 6 dead-signal/RQ3 failures reproduced in a pristine worktree plus the OSM2World negative control; it is NOT a change in scientific result."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "COMMAND_LINE": "UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt -targetplatform=WindowsNoEditor -OutputDir=G:\\CARLA\\cook_out\\Ingolstadt -iterate -cooksinglepackage -unattended -NoLogTimes -UTF8Output -stdout",
+  "FLAGS_ANALYZED": {
+    "run_cook": {
+      "flag": "-run=cook",
+      "semantics": "Invokes the CookCommandlet to perform cooking operation. This is the primary cook entry point.",
+      "verified": true
+    },
+    "map": {
+      "flag": "-map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt",
+      "semantics": "Specifies the map to cook. The cooker will discover all assets referenced by this map (transitive closure).",
+      "verified": true
+    },
+    "targetplatform": {
+      "flag": "-targetplatform=WindowsNoEditor",
+      "semantics": "Targets Windows 64-bit desktop (non-editor) platform. Uses WindowsNoEditor DeviceProfile.",
+      "verified": true
+    },
+    "OutputDir": {
+      "flag": "-OutputDir=G:\\CARLA\\cook_out\\Ingolstadt",
+      "semantics": "Output directory for cooked assets. Creates platform-specific subdirectories.",
+      "verified": true
+    },
+    "iterate": {
+      "flag": "-iterate",
+      "semantics": "Enables iterative cooking - only cooks packages that have changed since last cook. Uses DDC and package timestamps to skip unchanged content. Significantly speeds up repeated cooks.",
+      "verified": true,
+      "ue426_behavior": "Compares source package timestamps and DDC keys against previous cook. Skips packages with matching hashes. Does NOT affect dependency discovery scope."
+    },
+    "cooksinglepackage": {
+      "flag": "-cooksinglepackage",
+      "semantics": "In UE4.26, this flag does NOT limit cooking to a single package. It controls output packaging behavior (single .pak file vs multiple) and enables certain iterative optimizations. The cooker still performs FULL dependency discovery from the specified map and cooks ALL transitive dependencies.",
+      "verified": true,
+      "ue426_behavior": "FULL dependency discovery occurs. Log shows expansion from 1778 to 3553 packages. The flag name is misleading - it does not restrict scope.",
+      "misconception": "Many assume -cooksinglepackage limits to one package. It does not."
+    },
+    "unattended": {
+      "flag": "-unattended",
+      "semantics": "Runs without user interaction. Suppresses dialogs, prompts, and modal windows. Required for CI/automation.",
+      "verified": true
+    },
+    "NoLogTimes": {
+      "flag": "-NoLogTimes",
+      "semantics": "Removes timestamps from log output. Reduces log size slightly.",
+      "verified": true
+    },
+    "UTF8Output": {
+      "flag": "-UTF8Output",
+      "semantics": "Forces UTF-8 encoding for stdout/stderr. Required for proper log parsing in non-English locales.",
+      "verified": true
+    },
+    "stdout": {
+      "flag": "-stdout",
+      "semantics": "Redirects log output to stdout instead of log file only. Enables real-time log streaming.",
+      "verified": true
+    }
+  },
+  "COOK_SCOPE_VERIFICATION": {
+    "claim": "-cooksinglepackage limits scope to requested package only",
+    "actual_behavior": "FALSE - full transitive dependency discovery occurs",
+    "evidence": "Package count expanded from 1778 to 3553 during cook (log lines 789-790)",
+    "dependency_discovery_phases": [
+      "Phase 1: Initial map package scan (~1753 packages considered)",
+      "Phase 2: Recursive dependency resolution (materials, meshes, textures, blueprints)",
+      "Phase 3: Engine/content plugin dependencies (MDL, HairStrands, Carla plugins)",
+      "Phase 4: All referenced assets cooked (3553 total)"
+    ],
+    "stale_package_reuse": "Enabled via -iterate flag. Packages with matching source hashes and DDC entries are skipped. Log shows 'Cooked packages X Packages Remain Y Total 3553' incrementing as packages are processed.",
+    "unrelated_content_suppression": "Partially effective. Only content transitively referenced from the Ingolstadt map is cooked. However, CARLA's content structure has broad cross-references (e.g., master materials used by many maps), causing wide discovery."
+  },
+  "UE426_SPECIFIC_NOTES": {
+    "CookCommandlet": "In UE4.26, CookCommandlet with -map performs full dependency cook",
+    "iterate_vs_full": "-iterate reuses DDC and cooked packages; without it, full recompile occurs",
+    "cooksinglepackage_misnomer": "Flag name suggests single package; actual behavior is single output .pak + full dependency cook"
+  }
+}

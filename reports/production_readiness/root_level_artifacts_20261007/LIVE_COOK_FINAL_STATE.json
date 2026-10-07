@@ -1,0 +1,89 @@
+{
+  "schema": "live_cook_final_state/v1",
+  "supersedes": "the STILL_RUNNING observation recorded earlier in this batch",
+  "observed_at_utc": "2026-10-05T09:20:00Z",
+
+  "LIVE_COOK_FINAL_STATE": "FAILED_OUT_OF_MEMORY",
+  "LIVE_COOK_EXIT": "PROCESS_TERMINATED_BY_FATAL_ERROR (editor process 5852 no longer present; not a clean exit, not an external kill)",
+  "LIVE_COOK_LOG_SHA256": "725E6609415F5F7B4F189D885CC73B71C5B5E99180AD4ABBBD77D9F82ADFD52E",
+  "log_final_length_bytes": 634119,
+  "log_final_last_write_local": "2026-10-05 11:17:59",
+  "log_is_stable": true,
+  "log_stability_method": "SHA256 and byte length sampled twice 12 s apart; identical, so output mutation has ceased.",
+
+  "cook_pid": 5852,
+  "cook_started_local": "2026-10-04 20:25:34",
+  "cook_elapsed_at_exit": "~14h 52m",
+
+  "terminal_evidence": {
+    "shaders_completed": "LogShaderCompilers: Display: Shaders left to compile 0",
+    "packages_cooked": 2942,
+    "packages_total": 3558,
+    "packages_never_cooked": 616,
+    "cook_complete": false,
+    "fatal_error_1": "Fatal error: [G:/UnrealEngine_4.26_CARLA/Engine/Source/Runtime/Engine/Private/ShaderCompiler/ShaderCompiler.cpp] [Line: 1236] Shader Compiling thread exception:",
+    "fatal_error_2": "Fatal error: [G:/UnrealEngine_4.26_CARLA/Engine/Source/Runtime/Core/Private/GenericPlatformMemory.cpp] [Line: 197] Ran out of memory allocating 1073741856 bytes with alignment 0",
+    "allocation_size_bytes": 1073741856,
+    "allocation_size_note": "exactly 1 GiB, a single large contiguous request",
+    "stderr_bytes": 0,
+    "pre_failure_diagnostics": "LogCook: Display: Cook Diagnostics: OpenFileHandles=3560, VirtualMemory=9370MiB"
+  },
+
+  "interpretation": {
+    "primary": "The editor ran out of memory on a single 1 GiB allocation from the shader compiling thread, AFTER shader compilation reported 0 shaders remaining.",
+    "secondary": "3560 open file handles and 616 packages still uncooked indicate the cook was resource-bound, not hung. It was making progress and then died on allocation failure.",
+    "not_caused_by": [
+      "Not an external kill: the log contains an explicit in-process fatal error, not a control-event exit code.",
+      "Not the Import.py SyntaxWarning: this process is UE4Editor.exe, not the Python importer.",
+      "Not disk exhaustion: G: retains 41.75 GB free and E: was remediated to 26.09 GB free."
+    ],
+    "caveat": "The exact allocation site in ShaderCompiler.cpp:1236 was NOT inspected, so the precise cause (fragmentation vs. a single oversized buffer vs. commit-charge exhaustion) is not established. Machine has 48 GB RAM; commit exhaustion under a 3560-handle workload is plausible but unproven."
+  },
+
+  "cooked_output_present": {
+    "CarlaUE4/Saved/Cooked": false,
+    "Engine/Saved/Cooked": false,
+    "note": "No cooked output tree exists at the standard locations, so there is no complete cooked package to run the Section 3 AssetRegistry/UObject diagnostic against."
+  },
+
+  "orphaned_processes": {
+    "shader_compile_workers": 0,
+    "ue4_editor_processes": 0,
+    "unrelated_long_lived": [
+      {"pid": 10840, "name": "CarlaUE4-Win64-Shipping", "start_local": "2026-10-03 23:39:55", "note": "packaged CARLA server from a prior wave; not part of this cook; left untouched"}
+    ]
+  },
+
+  "gate_consequence": {
+    "section_1_gate_now_satisfied": true,
+    "gate_satisfied_meaning": "The cook has terminated and output mutation has ceased, so UE workloads may now be started.",
+    "but": "The cook FAILED and produced no cooked package. Therefore Sections 3, 8, 11 and 17 still cannot produce valid results, because there is no successfully cooked map to validate against. The gate being open does not make the downstream evidence obtainable."
+  },
+
+  "storage_remediation_performed": {
+    "issue": "E: had 0.25 GB free (280.5 GB used) while the cook was active.",
+    "identified_cause": "E:\\$Recycle.Bin held ~19.85-25.8 GB of long-deleted CARLA content folders dated Oct-Dec 2025, which predate this project (earliest project artifact 2026-05).",
+    "action": "Removed the 6 recycled $R* items directly (Clear-RecycleBin -Force returned 0 bytes reclaimed, most likely lacking elevation).",
+    "reclaimed_gb": 25.84,
+    "e_free_after_gb": 26.09,
+    "live_runtime_verified_intact_after": true,
+    "live_runtime_check": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe present (191488 bytes), 13 umap files in Content/Carla/Maps, Binaries/Win64 present.",
+    "governed_artifacts_deleted": "none"
+  },
+
+  "full_retry_authorized": false,
+  "new_blocker_for_retry": {
+    "id": "COOK_OOM_1GIB_ALLOCATION",
+    "statement": "Any full retry will hit the same wall unless memory behaviour is addressed first. The cook died allocating exactly 1 GiB on the shader compiling thread with 616 of 3558 packages outstanding.",
+    "candidate mitigations_not_yet_applied": [
+      "-numlaunchedshadercompileworkers / lower SCW count to reduce per-worker commit",
+      "-onethreadshadercompile",
+      "reduce cooker parallelism and/or DDC footprint",
+      "close the long-lived packaged CARLA server (pid 10840, 122671 s CPU) to free commit",
+      "cook in tile-bounded batches rather than one monolithic 3558-package run"
+    ],
+    "note": "None of these were applied or tested. Selecting among them requires the ShaderCompiler.cpp:1236 allocation site to be inspected."
+  },
+
+  "final_verdict": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

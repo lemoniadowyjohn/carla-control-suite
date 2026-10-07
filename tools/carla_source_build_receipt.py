@@ -12,6 +12,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from tools.ue_executable_discovery import (
+    UE4_EDITOR_CANDIDATES,
+    UE5_EDITOR_CANDIDATES,
+    carla_project_compiled,
+    engine_family_from_editor,
+    find_carla_server_executable,
+    find_editor_executable,
+    map_package_cooked,
+)
+
 
 def _value(status: str, value: Any = None, evidence: str | None = None) -> dict[str, Any]:
     return {"status": status, "value": value, "evidence": evidence}
@@ -56,21 +66,57 @@ def build_receipt(ue_root: Path | None, carla_root: Path | None) -> dict[str, An
     else:
         branch_status, branch = _git(ue, "branch", "--show-current") if (ue / ".git").exists() else ("unknown", "not a git worktree")
         commit_status, commit = _git(ue, "rev-parse", "HEAD") if (ue / ".git").exists() else ("unknown", "not a git worktree")
-        editor = next(iter((ue / "Engine/Binaries/Win64/UnrealEditor.exe", ue / "Engine/Binaries/Linux/UnrealEditor")), None)
-        receipt["ue4"] = {"path": _value("verified" if ue.exists() else "unknown", str(ue) if ue.exists() else None), "branch": _value(branch_status, branch), "commit": _value(commit_status, commit), "editor_executable": _file(editor) if editor else _value("unknown", None, "editor executable not found"), "editor_hash": _file(editor) if editor else _value("unknown")}
+        editor = find_editor_executable(ue, family="ue4", platform_name="windows")
+        editor_family = engine_family_from_editor(ue, platform_name="windows")
+        receipt["ue4"] = {"path": _value("verified" if ue.exists() else "unknown", str(ue) if ue.exists() else None), "branch": _value(branch_status, branch), "commit": _value(commit_status, commit), "engine_family": _value("verified" if editor_family != "unknown" else "unknown", None if editor_family == "unknown" else editor_family, f"searched {list(UE4_EDITOR_CANDIDATES['windows']) + list(UE5_EDITOR_CANDIDATES['windows'])} under Engine/Binaries/Win64"), "editor_executable": _file(editor) if editor else _value("unknown", None, "no UE4Editor.exe / UnrealEditor.exe found under Engine/Binaries/Win64"), "editor_hash": _file(editor) if editor else _value("unknown")}
     if carla is None:
         receipt["carla"] = {"path": _value("unknown", None, "CARLA_ROOT not set"), "branch": _value("unknown"), "tag": _value("unknown"), "commit": _value("unknown"), "target_version": _value("unknown")}
     else:
         branch_status, branch = _git(carla, "branch", "--show-current") if (carla / ".git").exists() else ("unknown", "not a git worktree")
         commit_status, commit = _git(carla, "rev-parse", "HEAD") if (carla / ".git").exists() else ("unknown", "not a git worktree")
         tag_status, tag = _git(carla, "describe", "--tags", "--exact-match")
-        exe = next(iter((carla / "CarlaUE4.exe", carla / "CarlaUE4.sh")), None)
-        receipt["carla"] = {"path": _value("verified" if carla.exists() else "unknown", str(carla) if carla.exists() else None), "branch": _value(branch_status, branch), "tag": _value(tag_status, tag if tag_status == "verified" else None), "commit": _value(commit_status, commit), "target_version": _value("unknown", None, "not inferred from executable existence"), "executable": _file(exe) if exe else _value("unknown", None, "CarlaUE4 executable not found")}
+        exe = find_carla_server_executable(carla, platform_name="windows") or find_carla_server_executable(carla, platform_name="linux")
+        receipt["carla"] = {"path": _value("verified" if carla.exists() else "unknown", str(carla) if carla.exists() else None), "branch": _value(branch_status, branch), "tag": _value(tag_status, tag if tag_status == "verified" else None), "commit": _value(commit_status, commit), "target_version": _value("unknown", None, "not inferred from executable existence"), "executable": _file(exe) if exe else _value("unknown", None, "no CarlaUE4 server binary found"), "project_compiled": carla_project_compiled(carla), "cooked_content": map_package_cooked(carla)}
     receipt["build"] = {
         "compiler_toolset": _value("unknown", None, "no compiler toolchain queried"),
         "build_configuration": _value("unknown"),
         "python_api_build_status": _value("unknown"),
         "carlaue4_build_status": _value("unknown"),
+    }
+    # Separate, independently-evidenced build/runtime states. A file existing
+    # proves only that the file exists; none of these states is derived from
+    # another. Unknown remains unknown.
+    editor_path = None
+    if ue is not None:
+        editor_path = find_editor_executable(ue, family="ue4", platform_name="windows")
+    server_path = None
+    if carla is not None:
+        server_path = find_carla_server_executable(carla, platform_name="windows") or find_carla_server_executable(carla, platform_name="linux")
+    receipt["build_states"] = {
+        "UE_ENGINE_EDITOR_PRESENT": _value(
+            "verified" if editor_path else "unknown",
+            str(editor_path) if editor_path else None,
+            "UE4Editor.exe (UE4.26) or UnrealEditor.exe (UE5) under Engine/Binaries/Win64"
+            if editor_path
+            else "no editor binary located; no build conclusion drawn",
+        ),
+        "CARLA_PROJECT_COMPILED": _value(
+            carla_project_compiled(carla)["state"] if carla else "unknown",
+            None,
+            "compiled CARLA project artifacts" if carla else "CARLA_ROOT not set",
+        ),
+        "CARLA_SERVER_BINARY_PRESENT": _value(
+            "verified" if server_path else "unknown",
+            str(server_path) if server_path else None,
+            "CarlaUE4 server binary" if server_path else "no server binary located; no build conclusion drawn",
+        ),
+        "CARLA_RPC_RESPONSIVE": _value("unknown", None, "no server was contacted; port listening is not a CARLA RPC response"),
+        "MAP_PACKAGE_COOKED": _value(
+            map_package_cooked(carla)["state"] if carla else "unknown",
+            map_package_cooked(carla)["evidence"] if carla else None,
+            "cooked content directories" if carla else "CARLA_ROOT not set",
+        ),
+        "MAP_RUNTIME_LOADABLE": _value("unknown", None, "no server was started, so no map was loaded at runtime"),
     }
     receipt["environment"] = {
         "UE4_ROOT": _value("verified" if ue else "unknown", str(ue) if ue else None),

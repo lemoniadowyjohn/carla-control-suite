@@ -1,0 +1,65 @@
+{
+  "schema": "wave_b_final_verdict/v1",
+  "generated_at_utc": "2026-10-02T20:15:00Z",
+  "FINAL_BRANCH": "review/carla-production-convergence-20261002",
+  "FINAL_SHA": "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
+  "FINAL_TREE": "e2c4d2f4a2b7e1d9c8f5a3b6e0d4c7f9a1b2e3d4",
+  "remote_durability": {
+    "substantive_commit": "76db7320a2dcdc99847388a0fcf09c11ebd2507c",
+    "note": "This verdict file is a trailing documentation commit, so it cannot contain its own SHA. The substantive Wave B change set is 76db7320a2dcdc99847388a0fcf09c11ebd2507c. The final branch tip including this verdict is the tip of review/carla-production-convergence-20261002; read it with git rev-parse review/carla-production-convergence-20261002 and confirm it equals git ls-remote origin review/carla-production-convergence-20261002."
+  },
+  "RESEARCH_QUESTIONS": {
+    "RQ1": "RQ1A PREVIOUSLY_VERIFIED_OFFLINE (not re-executed); RQ1B NOT_EXECUTED -- five isolated cold runs did not complete, and the contract forbids PASS with fewer than five valid receipts",
+    "RQ2": "OFFLINE_VERIFIED, and now also live-verified on the manual arm (Grid0828 runtime identity ESTABLISHED against a real CARLA 0.9.16 server)",
+    "RQ3": "DEFERRED_RUNTIME -- requires BOTH arms; the automatic arm does not exist at runtime because the cook cannot be performed",
+    "RQ4": "NOT_REEXECUTED_THIS_WAVE",
+    "RQ5A": "BLOCKED_DEPENDENCY on RQ3. Protocol v2 NOT executed. No mIoU, degradation or per-class delta is reported, and no post-hoc retuning from manual results occurred.",
+    "RQ5B": "DEFERRED_EXTERNAL_DATA -- no operator-supplied external dataset exists; accuracy is correctly NOT reported"
+  },
+  "PIPELINE_STEPS": {
+    "PLACEMENT": "INVALID_PROXY_METRIC -- tile_frame_consistency.py measures geometry-centroid separation, not world placement. Governed 10 m threshold UNCHANGED. ZERO tiles moved; ZERO compensating offsets added.",
+    "COOK": "NOT_EXECUTED -- UE426_BLOCKED_OPERATOR_INSTALL. The package's COOK_LOG.txt / AUTO_COOK_RECEIPT.json are OFFLINE FBX GENERATION records that state verbatim that no editor was invoked; they are NOT a cook receipt and were not treated as one.",
+    "CARLA_RUNTIME": "PASS -- CARLA 0.9.16 launched under PID ownership with no global taskkill; real RPC handshake (get_server_version='0.9.16', get_map() returned, snapshot frame observed); RPC 2000 + streaming 2001 listening",
+    "CALIBRATION": "NOT_EXECUTED on the automatic arm (no cooked map). Offline calibration config is explicitly NOT treated as sufficient.",
+    "DATASET_QUALITY": "NOT_RUN -- no paired capture, therefore no dataset"
+  },
+  "TOOLCHAIN_QUALIFICATIONS": {
+    "BLENDER": "PASS -- Blender 4.3.0, exe sha256 E5C09E87..., version/headless/minimal-import/pipeline-OBJ->FBX all verified",
+    "OSM2WORLD": "PASS -- qualified against the pipeline's OWN governed distribution (jar sha256 F20B00E1..., 0.5.0-SNAPSHOT); deterministic 2-run fixture. The earlier out-of-tree source build was discarded.",
+    "UE426": "UE426_BLOCKED_OPERATOR_INSTALL",
+    "WORLD_SETTINGS_TRANSACTION": "PASS -- governed fixed_delta 0.05 reproduced with 0.0 max abs error across 5 owner ticks; frames monotonic; restore verified"
+  },
+  "REGRESSION": {
+    "FULL_TEST_PASS": 7141,
+    "FULL_TEST_FAIL": 7,
+    "FULL_TEST_SKIP": 7,
+    "NEW_REGRESSION": 0,
+    "UNCLASSIFIED": 0,
+    "baseline_comparison": "Batch 9 reported 7145 passed / 10 skipped / 0 failed at candidate b074fc2b. This wave observes 7141 / 7 / 7 at 7fbd33ff. All 7 failures were REPRODUCED in a pristine git worktree at 7fbd33ff with none of this wave's files present, so none is new.",
+    "failure_provenance": {
+      "6_of_7": "fail directly in the pristine 7fbd33ff worktree",
+      "7th": "test_missing_osm2world_fails_precisely -- reproduced in the pristine worktree by creating only the two gitignored local install dirs (carla_governed/, OSM2World-latest-bin/) that already existed in the working tree before this wave. It is a negative control that does not account for a legitimately-present local OSM2World install.",
+      "root_cause_of_the_6": "FINAL_RUN_VERDICT and SUCCESS_MARKER are registered signals whose producers (_compute_final_run_verdict, _finalize_run_pack_gated) do not exist in ultimate_pipeline/main_pipeline.py at HEAD -- genuinely dead signals, plus 2 RQ3 paired-capture contract failures."
+    }
+  },
+  "BLOCKERS": {
+    "B1_UE426_BLOCKED_OPERATOR_INSTALL": "No UE4.26 host (UE4_ROOT unset; no Epic Games install). CARLA 0.9.16 is a PACKAGED non-editor build and cannot cook. Gates import/cook, auto-arm map identity, RQ3 paired capture, dataset quality and RQ5(a).",
+    "B2_PLACEMENT_METRIC_INVALID": "The only placement checker measures a confounded proxy. A control-anchor metric (OSM node ids / XODR road geometry) is required before any placement verdict.",
+    "B3_RQ1B_FIVE_COLD_RUNS_NOT_EXECUTED": "Contract forbids PASS with fewer than five valid receipts.",
+    "B4_PREEXISTING_SUITE_FAILURES": "7 failures at HEAD independent of this wave, including 4 dead-signal contract failures.",
+    "B5_CARLA_RUNTIME_FRAGILITY": "CARLA 0.9.16 on this host reliably answers RPC handshake calls but reproducibly wedges or exits on full waypoint expansion of Grid0828, and dies if load_world() is attempted while synchronous_mode=True with no live tick owner. A crashed transaction owner leaks synchronous_mode and blocks subsequent RPC.",
+    "B6_DEFERRED_EXTERNAL_DATA": "No operator-supplied external evaluation dataset exists."
+  },
+  "OVERTAKEN_PRIOR_CLAIMS": [
+    "Batch 9's 'carla_rpc_live = BLOCKED_EXTERNAL' is OVERTURNED: the runtime is reachable. That claim was accurate only for a state in which no server had been started, which is itself the finding -- installation presence had never been treated as readiness.",
+    "Batch 9's 'P0-4 provenance NOT VERIFIED' is RESOLVED to VERIFIED_CURRENT_CONTRACT for the committed contract, while the lost original diff remains unrecovered and was deliberately not rediscovered.",
+    "Batch 9's 'tile_frame_consistency FAIL' is RECLASSIFIED as an invalid proxy metric rather than a placement defect."
+  ],
+  "FINAL_VERDICT": "NOT_PRODUCTION_READY",
+  "verdict_rationale": "This wave converted three previously-unreachable infrastructure dependencies into verified reality (CARLA 0.9.16 runtime, Blender 4.3.0, OSM2World on the pipeline's own governed distribution) and established the manual arm's live runtime identity for the first time. It resolved the P0-4 provenance contract and correctly reclassified the placement FAIL as a defective metric rather than moving tiles. However NO research question reached an authoritative result: every result that depends on the cooked automatic map remains blocked on the single UE4.26 operator-install blocker, and the placement question remains open pending a control-anchor metric. Infrastructure readiness is not scientific authority, and FULL_PRODUCTION_READY is therefore not emitted.",
+  "release_gate": {
+    "offline_evidence_graph_gate": "PASS (tools/verify_offline_evidence_matrix.py)",
+    "ci_triggers_extended": "review/** and hardening/** now trigger the offline gates; the entire review lane previously shipped with no CI signal",
+    "offline_release_gate": "would be BLOCKED by the 4 pre-existing dead-signal contract failures in tests/contracts/test_no_dead_pipeline_signals.py, which are not caused by this wave"
+  }
+}

@@ -47,7 +47,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
+import os
+import time
+import uuid
+from threading import Lock
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 # ---------------------------------------------------------------------------
 # Failure codes
@@ -63,8 +67,14 @@ TRAFFIC_MANAGER_UNBOUND_AUTOPILOT = "TRAFFIC_MANAGER_UNBOUND_AUTOPILOT"
 
 WALKER_UNCONTROLLED = "WALKER_UNCONTROLLED"
 WALKER_CONTROLLER_MISMATCH = "WALKER_CONTROLLER_MISMATCH"
+WALKER_TRANSACTION_FAILED = "WALKER_TRANSACTION_FAILED"
+WALKER_POSITION_UNGOVERNED = "WALKER_POSITION_UNGOVERNED"
 
 SCENARIO_ACTOR_LEAK = "SCENARIO_ACTOR_LEAK"
+
+TM_ACTOR_LEDGER_SCHEMA = "TRAFFIC_MANAGER_ACTOR_LEDGER/v1"
+TM_OWNERSHIP_SCHEMA = "TRAFFIC_MANAGER_OWNERSHIP/v1"
+WALKER_SCENARIO_MANIFEST_SCHEMA = "WALKER_SCENARIO_MANIFEST/v1"
 
 TM_SCHEMA = "TRAFFIC_MANAGER_EFFECTIVE_CONFIG/v1"
 TM_DIGEST_FIELD = "traffic_manager_sha256"
@@ -104,7 +114,13 @@ class TrafficManagerSession:
     #: Process-level registry of claimed master sessions, for the multi-master
     #: guard (NEW-328).  A module-level registry is required: the hazard is
     #: two *different* objects each believing they are master.
-    _masters: Dict[int, str] = {}
+    #:
+    #: The value is an owner TOKEN, not the human-readable session label. The
+    #: previous registry stored ``session_id``, whose default is
+    #: ``f"{host}:{tm_port}"`` -- so two different session objects that merely
+    #: shared host and port compared EQUAL and the second claim silently
+    #: succeeded. Reusing a human-readable label must never bypass exclusivity.
+    _masters: Dict[int, Dict[str, Any]] = {}
 
     def __init__(
         self,
@@ -125,6 +141,8 @@ class TrafficManagerSession:
         respawn_policy: str = "disabled_for_governed_capture",
         strict: bool = True,
         session_id: str = "",
+        run_uuid: str = "",
+        owner_token: str = "",
     ) -> None:
         self.host = str(host)
         self.tm_port = int(tm_port)
@@ -141,7 +159,15 @@ class TrafficManagerSession:
         self.keep_right_rule_percentage = float(keep_right_rule_percentage)
         self.respawn_policy = str(respawn_policy)
         self.strict = bool(strict)
+        # A reused human-readable label is metadata only; it carries no
+        # ownership authority.
         self.session_id = str(session_id or f"{self.host}:{self.tm_port}")
+        self.run_uuid = str(run_uuid or uuid.uuid4().hex)
+        self.owner_token = str(owner_token or f"{self.run_uuid}:{uuid.uuid4().hex}")
+        self.process_id = int(os.getpid())
+        self.created_at = time.time()
+        self.closed: bool = False
+        self.closed_at: Optional[float] = None
 
         self._tm: Any = None
         self._claimed_master: bool = False
@@ -149,35 +175,188 @@ class TrafficManagerSession:
         self._skipped: Dict[str, str] = {}
         self._seeded: bool = False
         self._reseed_required: bool = False
+        #: Governed actor ledger (NEW-326 evidence). Claims are derived from it.
+        self._actor_ledger: List[Dict[str, Any]] = []
+        self._ledger_lock_obj: Optional[Lock] = None
 
     # -- master guard --------------------------------------------------------
 
     @classmethod
-    def claim_master(cls, tm_port: int, session_id: str) -> None:
+    def claim_master(
+        cls,
+        tm_port: int,
+        session_id: str,
+        *,
+        owner_token: str = "",
+        run_uuid: str = "",
+        process_id: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """Register this session as the sole master of ``tm_port``.
 
-        Raises when another session already owns it -- two synchronous TM
-        masters on one port is exactly the condition CARLA warns breaks
-        synchrony.
+        Exclusivity is keyed on ``owner_token`` (cross-checked against
+        ``run_uuid``), never on the human-readable ``session_id``. Two distinct
+        session objects sharing host:port therefore still conflict, and a reused
+        label cannot defeat the guard.
         """
         port = int(tm_port)
-        owner = cls._masters.get(port)
-        if owner is not None and owner != str(session_id):
-            raise RuntimeError(
-                f"{TRAFFIC_MANAGER_MULTIPLE_MASTERS}:port={port}:"
-                f"already_owned_by={owner}:requested_by={session_id}"
+        token = str(owner_token or session_id)
+        record = {
+            "owner_token": token,
+            "run_uuid": str(run_uuid or ""),
+            "session_id": str(session_id),
+            "process_id": int(process_id if process_id is not None else os.getpid()),
+            "claimed_at": time.time(),
+        }
+        existing = cls._masters.get(port)
+        if existing is not None:
+            same_owner = (
+                str(existing.get("owner_token")) == token
+                and str(existing.get("run_uuid")) == record["run_uuid"]
             )
-        cls._masters[port] = str(session_id)
+            if not same_owner:
+                raise RuntimeError(
+                    f"{TRAFFIC_MANAGER_MULTIPLE_MASTERS}:port={port}:"
+                    f"already_owned_by_token={existing.get('owner_token')}:"
+                    f"already_owned_by_run={existing.get('run_uuid')}:"
+                    f"requested_by_token={token}:requested_by_run={record['run_uuid']}"
+                )
+        cls._masters[port] = record
+        return dict(record)
 
     @classmethod
-    def release_master(cls, tm_port: int, session_id: str) -> None:
-        if cls._masters.get(int(tm_port)) == str(session_id):
-            cls._masters.pop(int(tm_port), None)
+    def release_master(cls, tm_port: int, owner_token: str = "", session_id: str = "") -> bool:
+        """Release the master claim. True when a claim was actually removed."""
+        port = int(tm_port)
+        record = cls._masters.get(port)
+        if record is None:
+            return False
+        token = str(owner_token or session_id)
+        if str(record.get("owner_token")) != token:
+            return False
+        cls._masters.pop(port, None)
+        return True
+
+    @classmethod
+    def master_registry_snapshot(cls) -> Dict[str, Any]:
+        return {str(port): dict(record) for port, record in sorted(cls._masters.items())}
 
     @classmethod
     def reset_master_registry(cls) -> None:
         """Test/utility hook -- clears the process master registry."""
         cls._masters.clear()
+
+    # -- transactional lifecycle -------------------------------------------
+
+    def _ledger_lock(self) -> Lock:
+        if self._ledger_lock_obj is None:
+            self._ledger_lock_obj = Lock()
+        return self._ledger_lock_obj
+
+    def close(self, *, detach_autopilot: bool = True) -> Dict[str, Any]:
+        """Release every resource this session claimed. Safe to call twice.
+
+        Every acquired master claim must be released on *every* exit path:
+        normal completion, setup failure, capture failure, sensor failure, route
+        failure, exception and cleanup. Callers should use ``with`` so an
+        exception cannot leak the claim; this method is the non-context-manager
+        equivalent and is also invoked by ``__exit__``.
+        """
+        if self.closed:
+            return {
+                "schema": TM_OWNERSHIP_SCHEMA,
+                "already_closed": True,
+                "owner_token": self.owner_token,
+                "run_uuid": self.run_uuid,
+                "master_released": False,
+            }
+
+        detached: List[str] = []
+        detach_errors: Dict[str, str] = {}
+        if detach_autopilot:
+            for entry in list(self._actor_ledger):
+                actor = entry.get("_actor_ref")
+                if actor is None:
+                    continue
+                try:
+                    actor.set_autopilot(False, int(entry.get("tm_port", self.tm_port)))
+                    detached.append(str(entry.get("actor_id")))
+                except Exception as exc:
+                    detach_errors[str(entry.get("actor_id"))] = (
+                        f"{type(exc).__name__}:{exc}"
+                    )
+
+        released = False
+        if self._claimed_master:
+            released = self.release_master(self.tm_port, owner_token=self.owner_token)
+            self._claimed_master = False
+
+        self._tm = None
+        self._seeded = False
+        self._reseed_required = False
+        # Governed ownership metadata is detached, not merely flagged.
+        for entry in self._actor_ledger:
+            entry["owner_session_id"] = None
+            entry["detached"] = True
+        self.closed = True
+        self.closed_at = time.time()
+
+        return {
+            "schema": TM_OWNERSHIP_SCHEMA,
+            "already_closed": False,
+            "owner_token": self.owner_token,
+            "run_uuid": self.run_uuid,
+            "session_id": self.session_id,
+            "tm_port": self.tm_port,
+            "master_released": released,
+            "autopilot_detached": detached,
+            "autopilot_detach_errors": detach_errors,
+            "actors_detached": len(detached),
+            "closed": True,
+        }
+
+    def __enter__(self) -> "TrafficManagerSession":
+        return self
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> bool:
+        self.close()
+        return False
+
+    # -- TM actor ledger (evidence-derived claims) --------------------------
+
+    def record_actor(
+        self,
+        actor: Any,
+        *,
+        actor_type: str = "vehicle",
+        autopilot_enabled: bool = True,
+        policies: Optional[Mapping[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Record a governed actor in the TM ledger.
+
+        The ledger is the only source for TM evidence claims. A claim such as
+        "all governed actors use one port" must be computed from these rows, not
+        asserted.
+        """
+        entry: Dict[str, Any] = {
+            "actor_id": str(getattr(actor, "id", id(actor))),
+            "actor_type": str(actor_type),
+            "autopilot_enabled": bool(autopilot_enabled),
+            "tm_port": int(self.tm_port),
+            "owner_session_id": self.session_id,
+            "owner_token": self.owner_token,
+            "policy_digest": _sha(dict(policies or {})),
+            "_actor_ref": actor,
+        }
+        with self._ledger_lock():
+            self._actor_ledger.append(entry)
+        return {k: v for k, v in entry.items() if k != "_actor_ref"}
+
+    def actor_ledger(self) -> List[Dict[str, Any]]:
+        with self._ledger_lock():
+            return [
+                {k: v for k, v in entry.items() if k != "_actor_ref"}
+                for entry in self._actor_ledger
+            ]
 
     # -- acquisition ---------------------------------------------------------
 
@@ -193,29 +372,74 @@ class TrafficManagerSession:
                 f"{TRAFFIC_MANAGER_SEED_MISSING}:{self.session_id}"
             )
         if self.is_master:
-            self.claim_master(self.tm_port, self.session_id)
+            # A claim that is not followed by a successful setup must not poison
+            # the registry for the next run.
+            try:
+                self.claim_master(
+                    self.tm_port,
+                    self.session_id,
+                    owner_token=self.owner_token,
+                    run_uuid=self.run_uuid,
+                    process_id=self.process_id,
+                )
+                self._claimed_master = True
+            except Exception:
+                self._claimed_master = False
+                raise
 
         try:
             self._tm = client.get_trafficmanager(self.tm_port)
         except Exception as exc:
+            # Setup failed after the claim: release it transactionally so the
+            # next run can take the port.
+            self._release_claim_after_failed_setup()
             raise RuntimeError(
                 f"{TRAFFIC_MANAGER_SETUP_FAILED}:get_trafficmanager:"
                 f"port={self.tm_port}:{type(exc).__name__}:{exc}"
             ) from exc
 
         if self._tm is None:
+            self._release_claim_after_failed_setup()
             raise RuntimeError(
                 f"{TRAFFIC_MANAGER_UNAVAILABLE}:port={self.tm_port}"
             )
 
         sync = self.synchronous_mode if world_sync_mode is None else bool(world_sync_mode)
+        try:
+            self._configure_tm(sync=sync)
+        except Exception:
+            self._release_claim_after_failed_setup()
+            self._tm = None
+            raise
+        return self._tm
+
+    def _release_claim_after_failed_setup(self) -> None:
+        if self._claimed_master:
+            self.release_master(self.tm_port, owner_token=self.owner_token)
+            self._claimed_master = False
+
+    def _configure_tm(self, *, sync: bool) -> None:
+        """Apply the governed TM configuration.
+
+        Hybrid physics uses the real CARLA traffic-manager API:
+        ``hybrid_physics_mode(True)`` and ``hybrid_physics_radius(r)``.
+
+        The previous implementation called a ``hybrid_physics_mode`` method that
+        CARLA does not expose, then substituted ``distance_to_leading_vehicle``
+        for the hybrid radius. Those are different quantities: the radius is how
+        far ahead a vehicle switches to hybrid behaviour, while the follow gap is
+        the spacing target. Configuring the gap while claiming a radius means the
+        governed hybrid radius never took effect, and on a real TM the missing
+        method raised TRAFFIC_MANAGER_SETUP_FAILED.
+        """
         self._apply("set_synchronous_mode", sync, required=True)
 
         if self.hybrid_physics:
             self._apply("hybrid_physics_mode", True, required=True)
             if self.hybrid_radius is not None:
-                self._apply("distance_to_leading_vehicle", self.global_distance,
-                            required=False)
+                # required=True: if the installed CARLA does not expose the
+                # radius API, a governed hybrid radius cannot be claimed.
+                self._apply("hybrid_physics_radius", self.hybrid_radius, required=True)
         else:
             self._apply("set_distance_to_leading_vehicle", self.global_distance,
                         required=False)
@@ -234,7 +458,9 @@ class TrafficManagerSession:
                     required=False)
         self._apply("ignore_signs_percentage", self.ignore_lights_percentage,
                     required=False)
-        return self._tm
+
+    def _tm_api_surface(self) -> List[str]:
+        return _tm_api_surface(self._tm)
 
     def reseed_after_world_reload(self) -> None:
         """NEW-328: a world reload destroys TM state; the seed must be re-applied.
@@ -362,13 +588,131 @@ class TrafficManagerSession:
             "configured_calls": list(self._configured),
             "skipped_calls": dict(self._skipped),
             "api_exposes": _tm_api_surface(self._tm),
-            "all_governed_actors_use_single_port": True,
-            "single_tm_master": True,
+            "owner_token": self.owner_token,
+            "run_uuid": self.run_uuid,
+            "closed": self.closed,
+            "actor_ledger_row_count": len(self.actor_ledger()),
         }
+        # The two ownership claims are DERIVED from the actor ledger, never
+        # asserted. With no governed actors recorded they are None (no
+        # evidence), not True.
+        evidence = tm_actor_ledger_evidence(
+            self.actor_ledger(),
+            expected_tm_port=self.tm_port,
+            expected_owner_session_id=self.session_id,
+        )
+        config["all_governed_actors_use_single_port"] = evidence[
+            "all_governed_actors_use_single_port"
+        ]
+        config["single_tm_master"] = evidence["single_tm_master"]
+        config["ownership_claims_are_derived"] = True
+        config["ownership_insufficient_evidence"] = evidence["insufficient_evidence"]
         config[TM_DIGEST_FIELD] = _sha(
             {k: v for k, v in config.items() if k != TM_DIGEST_FIELD}
         )
         return config
+
+
+def tm_actor_ledger_evidence(
+    ledger: Sequence[Mapping[str, Any]],
+    *,
+    expected_tm_port: Optional[int] = None,
+    expected_owner_session_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Derive TM claims from an actual actor ledger.
+
+    No boolean in the result is asserted: each is computed from the ledger rows.
+    When the ledger is empty the claims are ``None`` with an explicit
+    ``insufficient_evidence`` reason, never a hardcoded ``true``.
+    """
+    rows = [dict(r) for r in ledger]
+    active = [r for r in rows if bool(r.get("autopilot_enabled"))]
+
+    master_ports = sorted(
+        {int(r["tm_port"]) for r in rows if r.get("tm_port") is not None}
+    )
+    active_ports = sorted(
+        {int(r["tm_port"]) for r in active if r.get("tm_port") is not None}
+    )
+    active_masters = TrafficManagerSession.master_registry_snapshot()
+    active_master_ports = sorted(int(p) for p in active_masters)
+
+    actors_without_governed_tm = [
+        {
+            "actor_id": r.get("actor_id"),
+            "actor_type": r.get("actor_type"),
+            "tm_port": r.get("tm_port"),
+            "owner_session_id": r.get("owner_session_id"),
+            "reason": (
+                "autopilot_disabled"
+                if not bool(r.get("autopilot_enabled"))
+                else "no_owner_session"
+                if not r.get("owner_session_id")
+                else "no_tm_port"
+            ),
+        }
+        for r in active
+        if not r.get("owner_session_id") or r.get("tm_port") is None
+    ]
+
+    wrong_port = [
+        {
+            "actor_id": r.get("actor_id"),
+            "actor_type": r.get("actor_type"),
+            "actor_tm_port": r.get("tm_port"),
+            "expected_tm_port": expected_tm_port,
+        }
+        for r in active
+        if expected_tm_port is not None
+        and r.get("tm_port") is not None
+        and int(r["tm_port"]) != int(expected_tm_port)
+    ]
+
+    wrong_owner = [
+        {
+            "actor_id": r.get("actor_id"),
+            "actor_type": r.get("actor_type"),
+            "actor_owner_session_id": r.get("owner_session_id"),
+            "expected_owner_session_id": expected_owner_session_id,
+        }
+        for r in active
+        if expected_owner_session_id is not None
+        and r.get("owner_session_id") is not None
+        and str(r["owner_session_id"]) != str(expected_owner_session_id)
+    ]
+
+    insufficient = not rows
+    return {
+        "schema": TM_ACTOR_LEDGER_SCHEMA,
+        "ledger_row_count": len(rows),
+        "active_actor_count": len(active),
+        "unique_active_master_count": len(active_master_ports),
+        "unique_active_master_ports": active_master_ports,
+        "unique_tm_ports_for_governed_actors": active_ports,
+        "unique_tm_ports_all_ledger_rows": master_ports,
+        "actors_without_governed_tm": actors_without_governed_tm,
+        "actors_using_wrong_port": wrong_port,
+        "actors_using_wrong_owner": wrong_owner,
+        "master_registry": active_masters,
+        # Derived claims. None (not True) when there is nothing to derive from.
+        "single_tm_master": (
+            None
+            if insufficient
+            else bool(len(active_master_ports) <= 1 and len(active_ports) <= 1)
+        ),
+        "all_governed_actors_use_single_port": (
+            None if insufficient else bool(len(active_ports) <= 1)
+        ),
+        "all_governed_actors_owned": (
+            None if insufficient else not actors_without_governed_tm
+        ),
+        "all_governed_actors_on_expected_port": (
+            None if insufficient or expected_tm_port is None else not wrong_port
+        ),
+        "claims_are_derived": True,
+        "insufficient_evidence": insufficient,
+        "insufficient_evidence_reason": "empty_actor_ledger" if insufficient else "",
+    }
 
 
 def _tm_api_surface(tm: Any) -> List[str]:
@@ -438,6 +782,170 @@ def validate_tm_config(
 # ---------------------------------------------------------------------------
 
 
+def _xyz(location: Any) -> Optional[Dict[str, float]]:
+    if location is None:
+        return None
+    if isinstance(location, Mapping):
+        try:
+            return {
+                "x": float(location["x"]),
+                "y": float(location["y"]),
+                "z": float(location.get("z", 0.0)),
+            }
+        except (KeyError, TypeError, ValueError):
+            return None
+    if isinstance(location, (tuple, list)) and len(location) >= 3:
+        try:
+            return {
+                "x": float(location[0]),
+                "y": float(location[1]),
+                "z": float(location[2]),
+            }
+        except (TypeError, ValueError):
+            return None
+    try:
+        return {
+            "x": float(location.x),
+            "y": float(location.y),
+            "z": float(getattr(location, "z", 0.0)),
+        }
+    except (AttributeError, TypeError, ValueError):
+        return None
+
+
+def resolve_navigation_location(world: Any, rng: Any) -> Tuple[Optional[Any], str]:
+    """Resolve one navigation location and report how it was obtained.
+
+    ``world.get_random_location_from_navigation()`` is CARLA-side randomness
+    governed by the server, NOT by the Python seed tree. Calling it in strict
+    mode produced unreplayable pedestrian spawns while the run was reported as
+    seeded. This reports the provenance so a caller can refuse an ungoverned
+    position instead of describing it as deterministic.
+
+    Returns ``(location, provenance)`` where provenance is one of
+    ``nav_governed_pool``, ``nav_carla_random``, ``rng_fallback`` or
+    ``unresolved``.
+    """
+    pool = getattr(world, "_governed_nav_pool", None)
+    if isinstance(pool, (list, tuple)) and pool:
+        try:
+            return pool[int(rng.randrange(len(pool)))], "nav_governed_pool"
+        except Exception:
+            pass
+
+    nav = getattr(world, "get_random_location_from_navigation", None)
+    if callable(nav):
+        try:
+            loc = nav()
+        except Exception:
+            loc = None
+        if loc is not None:
+            return loc, "nav_carla_random"
+
+    loc = _carla_location(
+        world, rng.uniform(-50.0, 50.0), rng.uniform(-50.0, 50.0), 1.0
+    )
+    if loc is None:
+        return None, "unresolved"
+    return loc, "rng_fallback"
+
+
+#: Provenance values that the Python seed tree actually governs.
+GOVERNED_POSITION_PROVENANCE = ("nav_governed_pool", "rng_fallback")
+
+
+def build_walker_scenario_manifest(
+    world: Any,
+    *,
+    rng: Any,
+    seed_tree_branch: str,
+    count: int,
+    max_speed: float = 1.4,
+    experiment_seed: Optional[int] = None,
+    walker_blueprint: str = "walker.pedestrian.*",
+    controller_blueprint: str = WALKER_CONTROLLER_BLUEPRINT,
+) -> Dict[str, Any]:
+    """Strategy A: pre-resolve nav locations once, bind them by hash.
+
+    Both paired arms replay this manifest instead of each asking CARLA for a
+    random nav location, which is server-side randomness outside the Python seed
+    tree. The manifest is hashed so a replay can prove it used the same plan.
+
+    Each entry carries walker_index, blueprint, spawn transform, destination
+    transform, max speed, seed-tree branch and a ``governed`` flag that is False
+    whenever a position came from CARLA-side randomness.
+    """
+    entries: List[Dict[str, Any]] = []
+    for index in range(max(0, int(count))):
+        spawn, spawn_prov = resolve_navigation_location(world, rng)
+        dest, dest_prov = resolve_navigation_location(world, rng)
+        entries.append(
+            {
+                "walker_index": int(index),
+                "blueprint": str(walker_blueprint),
+                "controller_blueprint": str(controller_blueprint),
+                "spawn_transform": _xyz(spawn),
+                "destination_transform": _xyz(dest),
+                "max_speed": float(max_speed),
+                "seed_tree_branch": str(seed_tree_branch),
+                "spawn_provenance": spawn_prov,
+                "destination_provenance": dest_prov,
+                "governed": (
+                    spawn_prov in GOVERNED_POSITION_PROVENANCE
+                    and dest_prov in GOVERNED_POSITION_PROVENANCE
+                ),
+            }
+        )
+
+    payload: Dict[str, Any] = {
+        "schema": WALKER_SCENARIO_MANIFEST_SCHEMA,
+        "seed_tree_branch": str(seed_tree_branch),
+        "experiment_seed": experiment_seed,
+        "walker_count": len(entries),
+        "entries": entries,
+        "ungoverned_entry_count": sum(1 for e in entries if not e["governed"]),
+    }
+    payload["scenario_manifest_sha256"] = _sha(
+        {k: v for k, v in payload.items() if k != "scenario_manifest_sha256"}
+    )
+    return payload
+
+
+def _destroy_actor(actor: Any) -> Optional[str]:
+    if actor is None:
+        return None
+    stop = getattr(actor, "stop", None)
+    if callable(stop):
+        try:
+            stop()
+        except Exception:
+            pass
+    try:
+        actor.destroy()
+    except Exception as exc:
+        return f"{type(exc).__name__}:{exc}"
+    return None
+
+
+def _actor_alive(actor: Any) -> bool:
+    alive = getattr(actor, "is_alive", None)
+    if callable(alive):
+        try:
+            return bool(alive())
+        except Exception:
+            return False
+    return actor is not None
+
+
+def _rollback_walker_transaction(actors: Sequence[Any]) -> List[Any]:
+    """Destroy every provisional actor, controllers first."""
+    out: List[Any] = []
+    for item in reversed(list(actors)):
+        if _destroy_actor(item) is None:
+            out.append(getattr(item, "id", None))
+    return out
+
+
 def build_controlled_walker(
     world: Any,
     blueprint_library: Any,
@@ -446,70 +954,190 @@ def build_controlled_walker(
     controller_bp: Any,
     rng: Any,
     attempt: int = 0,
+    walker_index: Optional[int] = None,
+    spawn_location: Any = None,
+    destination_location: Any = None,
+    max_speed: float = 1.4,
+    spawn_provenance: str = "",
+    destination_provenance: str = "",
+    seed_tree_branch: str = "",
+    scenario_manifest_sha256: str = "",
+    ownership_registry: Any = None,
+    strict_governed_position: bool = True,
 ) -> Dict[str, Any]:
-    """Spawn a genuinely **controlled** pedestrian.
+    """Spawn a genuinely **controlled** pedestrian, transactionally.
 
-    A walker without a started ``controller.ai.walker`` is a static prop, not
-    pedestrian traffic.  The controller/actor relationship and the deterministic
-    destination are recorded so cleanup can pair them.
+    Transaction: spawn walker -> spawn controller -> start controller -> assign
+    destination -> verify both actors alive -> register ownership -> commit.
+
+    On any failure the controller is stopped and destroyed, the walker is
+    destroyed, provisional ownership is not registered, and a structured failure
+    is returned. A walker is never left alive after a controller failure.
+
+    ``controlled`` is True only when the controller actually started, the
+    destination was actually assigned, both actors are alive, and the position
+    was governed rather than CARLA-side random. The previous implementation
+    reported ``controlled=True`` and ``controller_started=True`` even when
+    ``start()`` or the destination assignment had failed.
     """
-    spawn = None
+    failure: Dict[str, Any] = {
+        "mode": WALKER_MODE_CONTROLLED,
+        "controlled": False,
+        "controller_started": False,
+        "destination_assigned": False,
+        "attempt": int(attempt),
+        "transaction_committed": False,
+        "failure_code": "",
+        "rollback": {},
+    }
+
+    if spawn_location is None:
+        spawn_location, spawn_provenance = resolve_navigation_location(world, rng)
+    if destination_location is None:
+        destination_location, destination_provenance = resolve_navigation_location(world, rng)
+
+    if spawn_location is None or destination_location is None:
+        failure["failure_code"] = f"{WALKER_TRANSACTION_FAILED}:navigation_unresolved"
+        return failure
+
+    governed = (
+        spawn_provenance in GOVERNED_POSITION_PROVENANCE
+        and destination_provenance in GOVERNED_POSITION_PROVENANCE
+    )
+    if strict_governed_position and not governed:
+        failure["failure_code"] = (
+            f"{WALKER_POSITION_UNGOVERNED}:"
+            f"spawn={spawn_provenance}:destination={destination_provenance}"
+        )
+        return failure
+
+    actor = None
+    controller = None
+    provisional: List[Any] = []
+
+    # 1. spawn walker
     try:
-        spawn = world.get_random_location_from_navigation()
-    except Exception:
-        spawn = None
-    if spawn is None:
-        # Deterministic fallback driven by the owned RNG -- never the global one.
-        spawn = _carla_location(world, rng.uniform(-50.0, 50.0), rng.uniform(-50.0, 50.0), 1.0)
-
-    actor = world.try_spawn_actor(walker_bp, _carla_transform(world, spawn))
+        actor = world.try_spawn_actor(walker_bp, _carla_transform(world, spawn_location))
+    except Exception as exc:
+        failure["failure_code"] = (
+            f"{WALKER_TRANSACTION_FAILED}:walker_spawn:{type(exc).__name__}:{exc}"
+        )
+        return failure
     if actor is None:
-        return {
-            "mode": WALKER_MODE_CONTROLLED,
-            "controlled": False,
-            "error": "walker_spawn_failed",
-            "attempt": int(attempt),
-        }
+        failure["failure_code"] = f"{WALKER_TRANSACTION_FAILED}:walker_spawn:returned_none"
+        return failure
+    provisional.append(actor)
 
-    controller = world.try_spawn_actor(controller_bp, _carla_transform(world, spawn), attach_to=actor)
+    # 2. spawn controller
+    try:
+        controller = world.try_spawn_actor(
+            controller_bp, _carla_transform(world, spawn_location), attach_to=actor
+        )
+    except Exception as exc:
+        failure["failure_code"] = (
+            f"{WALKER_TRANSACTION_FAILED}:controller_spawn:{type(exc).__name__}:{exc}"
+        )
+        failure["rollback"] = {"destroyed": _rollback_walker_transaction(provisional)}
+        return failure
     if controller is None:
-        return {
-            "mode": WALKER_MODE_CONTROLLED,
-            "controlled": False,
-            "error": "walker_controller_spawn_failed",
-            "attempt": int(attempt),
-        }
+        failure["failure_code"] = (
+            f"{WALKER_TRANSACTION_FAILED}:controller_spawn:returned_none"
+        )
+        failure["rollback"] = {"destroyed": _rollback_walker_transaction(provisional)}
+        return failure
+    provisional.append(controller)
 
+    # 3. start controller
     try:
         controller.start()
-        controller.go_to_location(world.get_random_location_from_navigation())
-        controller.set_max_speed(1.4)
+        controller_started = True
+    except Exception as exc:
+        failure["failure_code"] = (
+            f"{WALKER_TRANSACTION_FAILED}:controller_start:{type(exc).__name__}:{exc}"
+        )
+        failure["rollback"] = {"destroyed": _rollback_walker_transaction(provisional)}
+        return failure
+
+    # 4. assign destination
+    try:
+        controller.go_to_location(destination_location)
+        controller.set_max_speed(float(max_speed))
         destination_assigned = True
     except Exception as exc:
-        destination_assigned = False
-        controller_error = f"{type(exc).__name__}:{exc}"
+        failure["failure_code"] = (
+            f"{WALKER_TRANSACTION_FAILED}:destination:{type(exc).__name__}:{exc}"
+        )
+        failure["rollback"] = {"destroyed": _rollback_walker_transaction(provisional)}
+        return failure
+
+    # 5. verify both actors alive
+    if not _actor_alive(actor) or not _actor_alive(controller):
+        failure["failure_code"] = (
+            f"{WALKER_TRANSACTION_FAILED}:actor_not_alive_after_spawn"
+        )
+        failure["rollback"] = {"destroyed": _rollback_walker_transaction(provisional)}
+        return failure
+
+    # 6./7. register ownership, then commit
+    if ownership_registry is not None:
+        try:
+            ownership_registry.register("walker", actor)
+            ownership_registry.register("walker_controller", controller)
+        except Exception as exc:
+            failure["failure_code"] = (
+                f"{WALKER_TRANSACTION_FAILED}:ownership_register:"
+                f"{type(exc).__name__}:{exc}"
+            )
+            failure["rollback"] = {"destroyed": _rollback_walker_transaction(provisional)}
+            return failure
 
     return {
         "mode": WALKER_MODE_CONTROLLED,
         "controlled": True,
+        "counts_as_pedestrian_traffic": True,
         "walker_actor_id": getattr(actor, "id", None),
         "controller_actor_id": getattr(controller, "id", None),
-        "controller_started": True,
+        "controller_started": bool(controller_started),
         "destination_assigned": bool(destination_assigned),
         "relationship": "controller_attached_to_walker",
+        "transaction_committed": True,
         "attempt": int(attempt),
+        "walker_index": walker_index,
+        "spawn_transform": _xyz(spawn_location),
+        "destination_transform": _xyz(destination_location),
+        "max_speed": float(max_speed),
+        "seed_tree_branch": str(seed_tree_branch),
+        "scenario_manifest_sha256": str(scenario_manifest_sha256),
+        "spawn_provenance": spawn_provenance,
+        "destination_provenance": destination_provenance,
+        "position_governed": governed,
+        "failure_code": "",
     }
 
 
-def build_static_walker(world: Any, walker_bp: Any, *, rng: Any) -> Dict[str, Any]:
+def build_static_walker(
+    world: Any,
+    walker_bp: Any,
+    *,
+    rng: Any,
+    spawn_location: Any = None,
+    spawn_provenance: str = "",
+    walker_index: Optional[int] = None,
+    seed_tree_branch: str = "",
+    scenario_manifest_sha256: str = "",
+) -> Dict[str, Any]:
     """Spawn a walker explicitly declared as a static prop (not traffic)."""
-    try:
-        spawn = world.get_random_location_from_navigation()
-    except Exception:
-        spawn = None
-    if spawn is None:
-        spawn = _carla_location(world, rng.uniform(-50.0, 50.0), rng.uniform(-50.0, 50.0), 1.0)
-    actor = world.try_spawn_actor(walker_bp, _carla_transform(world, spawn))
+    if spawn_location is None:
+        spawn_location, spawn_provenance = resolve_navigation_location(world, rng)
+    if spawn_location is None:
+        return {
+            "mode": WALKER_MODE_STATIC_PROP,
+            "controlled": False,
+            "counts_as_pedestrian_traffic": False,
+            "error": "navigation_unresolved",
+            "failure_code": f"{WALKER_TRANSACTION_FAILED}:navigation_unresolved",
+        }
+    actor = world.try_spawn_actor(walker_bp, _carla_transform(world, spawn_location))
     if actor is None:
         return {
             "mode": WALKER_MODE_STATIC_PROP,
@@ -537,11 +1165,30 @@ def validate_walker_mode(entries: Sequence[Mapping[str, Any]],
     reasons: List[str] = []
     counted = 0
     for entry in entries:
-        if not bool(entry.get("counts_as_pedestrian_traffic", False)) and \
-                bool(entry.get("controlled", False)):
-            counted += 1
-        elif bool(entry.get("counts_as_pedestrian_traffic", False)) and \
-                not bool(entry.get("controlled", False)):
+        controlled = bool(entry.get("controlled", False))
+        claims_traffic = bool(entry.get("counts_as_pedestrian_traffic", False))
+        if controlled:
+            # A controlled walker only counts once its controller genuinely
+            # started and a destination was actually assigned; an explicit False
+            # on either is a contradiction with controlled=True.
+            #
+            # An ABSENT key is not treated as a contradiction, because legacy
+            # callers construct entries without those fields. Every builder in
+            # this module sets them explicitly, so a real spawn is always
+            # checked on its merits.
+            if entry.get("controller_started") is False:
+                reasons.append(
+                    f"{WALKER_UNCONTROLLED}:controller_not_started:"
+                    f"{entry.get('walker_actor_id')}"
+                )
+            elif entry.get("destination_assigned") is False:
+                reasons.append(
+                    f"{WALKER_UNCONTROLLED}:destination_not_assigned:"
+                    f"{entry.get('walker_actor_id')}"
+                )
+            else:
+                counted += 1
+        elif claims_traffic:
             reasons.append(
                 f"{WALKER_UNCONTROLLED}:{entry.get('walker_actor_id')}"
             )
@@ -642,7 +1289,14 @@ class ScenarioActorRegistry:
             "owned_count_after": len(survivors),
         }
 
-    def verify_clean(self) -> Dict[str, Any]:
+    def verify_clean(self, *, expect_empty: Optional[bool] = None) -> Dict[str, Any]:
+        """Report whether any owned actor is still alive.
+
+        Default behaviour is unchanged: ``clean`` means no owned actor is still
+        alive. ``expect_empty=True`` additionally requires the registry itself to
+        be empty, for callers that treat a non-empty registry as a leak even when
+        every tracked actor is already dead.
+        """
         remaining: List[str] = []
         for kind, actors in self._actors.items():
             for actor in actors:
@@ -655,8 +1309,14 @@ class ScenarioActorRegistry:
                             )
                     except Exception:
                         remaining.append(f"{kind}:{getattr(actor, 'id', id(actor))}")
+        clean = not remaining
+        if expect_empty is True:
+            clean = clean and self.owned_count() == 0
         return {
-            "clean": not remaining,
+            "clean": clean,
+            "expect_empty": bool(expect_empty),
+            "owned_actors_still_alive": remaining,
             "owned_actors_remaining": remaining,
-            "failure_code": None if not remaining else SCENARIO_ACTOR_LEAK,
+            "owned_count": self.owned_count(),
+            "failure_code": None if clean else SCENARIO_ACTOR_LEAK,
         }

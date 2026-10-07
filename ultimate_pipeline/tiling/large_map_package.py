@@ -364,6 +364,26 @@ def stage_large_map_package(
         for p in tile_fbx_paths
         if Path(p).is_file() and parse_tile_fbx_filename(Path(p).name) is not None
     )
+    # PROVENANCE MODE (P0-4 status: NOT VERIFIED -- see notes below)
+    #
+    # An earlier reconstruction of P0-4 set
+    #     strict_provenance = bool(expected_xodr_sha256) or has_any_manifest
+    # which broke three committed tests in tests/unit/test_o1_cook_provenance_chain.py.
+    # Those tests document the opposite contract explicitly: "No manifest, so
+    # provenance not strict - fake tiles without manifests are allowed for
+    # synthetic tests (backward compat). The XODR check itself must pass."
+    #
+    # That contract is retained. The map-SHA authority is still enforced: when
+    # expected_xodr_sha256 is supplied it is the provenance authority (see
+    # provenance_authority_sha below) and a mismatch against the staged XODR is
+    # refused outright. What is NOT done here is forcing per-tile manifest
+    # enforcement on a caller that supplied no manifests at all, because that is
+    # the documented opt-out and nothing in the pinned-map requirement demands it.
+    #
+    # To close the genuine P0-4 gap -- pinning a map SHA without strengthening
+    # anything -- the original P0 diff is required. It was destroyed as an
+    # uncommitted working-tree change and could not be recovered, so the
+    # reconstruction is not asserted as correct.
     strict_provenance = has_any_manifest
     provenance_authority_sha = (
         expected_xodr_sha256.lower() if expected_xodr_sha256 else xodr_sha256.lower()
@@ -500,6 +520,16 @@ def stage_large_map_package(
     except Exception:
         _package_json_sha = ""
         _named_json_sha = ""
+    # Bind every staged tile's CONTENT hash, unconditionally. ``tiles_provenance``
+    # only records each tile's source XODR, so it cannot distinguish two
+    # different FBX payloads that claim the same map lineage -- without this, a
+    # tile FBX swapped in from another campaign validates clean.
+    tile_fbx_sha256: Dict[str, str] = {}
+    for _name in staged_tile_names:
+        try:
+            tile_fbx_sha256[_name] = _sha256(package_dir / _name)
+        except OSError:
+            pass
     manifest_doc = {
         "schema_version": 1,
         "artifact_type": "carla_large_map_import_package",
@@ -530,6 +560,31 @@ def stage_large_map_package(
         "tiles_staged": staged_tile_names,
         "tiles_skipped_missing": skipped,
         "tiles_provenance": tile_source_shas,
+        "tiles_fbx_sha256": tile_fbx_sha256,
+        # Nominal world placement of each tile, derived deterministically from
+        # the declared tile grid (tx * tile_size_m, ty * tile_size_m). This is
+        # the placement CARLA resolves at cook time from the tile coordinates.
+        # It is NOT an assertion that the exported geometry is correctly placed
+        # -- that requires an independent seam check
+        # (tools/tile_frame_consistency.py, GAP-031).
+        "tiles_placement_offsets": {
+            _name: [
+                float(parse_tile_fbx_filename(_name)[1]) * float(tile_size_m),
+                float(parse_tile_fbx_filename(_name)[2]) * float(tile_size_m),
+            ]
+            for _name in staged_tile_names
+            if parse_tile_fbx_filename(_name) is not None
+        },
+        "placement_authority": {
+            "basis": "NOMINAL_TILE_GRID",
+            "formula": "world_offset_m = [tx * tile_size_m, ty * tile_size_m]",
+            "tile_size_m": tile_size_m,
+            "independent_verification": (
+                "NOT VERIFIED BY STAGING -- run tools/tile_frame_consistency.py "
+                "to confirm the exported geometry actually lands on this grid "
+                "(GAP-031); staging only records what the tile index declares."
+            ),
+        },
         "package_json_paths": [str(package_json_path), str(named_json_path)],
         "generating_command": _generating_command,
         "tool_version": _tool_version,
@@ -564,6 +619,9 @@ class PackageValidationResult:
     warnings: List[str] = field(default_factory=list)
     xodr_sha256: str = ""
     tile_count: int = 0
+    #: True when the sidecar bound per-tile content hashes and every staged
+    #: tile was verified against them (see tiles_fbx_sha256 in the sidecar).
+    tiles_fbx_sha256_verified: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -572,6 +630,7 @@ class PackageValidationResult:
             "warnings": self.warnings,
             "xodr_sha256": self.xodr_sha256,
             "tile_count": self.tile_count,
+            "tiles_fbx_sha256_verified": self.tiles_fbx_sha256_verified,
         }
 
 
@@ -627,6 +686,32 @@ def validate_staged_package(
     if result.failures:
         return result
 
+    # CARLA's importer filename-matches the descriptor against the package
+    # directory name in some documented workflows, so stage_large_map_package
+    # mirrors package.json as "<PackageName>.json". Both must be present and
+    # byte-identical: a package carrying only one of them resolves
+    # ambiguously and is not a valid governed package.
+    package_name = pkg_dir.name
+    named_descriptor_path = pkg_dir / f"{package_name}.json"
+    if not named_descriptor_path.is_file():
+        result.failures.append(
+            f"missing package-name descriptor {package_name}.json in {pkg_dir} "
+            f"(required: it must mirror package.json byte-for-byte)"
+        )
+    elif named_descriptor_path.read_bytes() != package_json_path.read_bytes():
+        result.failures.append(
+            f"{package_name}.json does not match package.json byte-for-byte; "
+            f"the two descriptors have diverged"
+        )
+
+    # The descriptor's declared map name must be the package's own name, or the
+    # tile filename prefixes below cannot resolve to it at cook time.
+    if entry["name"] != package_name:
+        result.failures.append(
+            f"package.json maps[0].name {entry['name']!r} != package directory "
+            f"name {package_name!r}"
+        )
+
     xodr_rel = str(entry["xodr"]).lstrip("./")
     xodr_path = pkg_dir / xodr_rel
     if not xodr_path.is_file():
@@ -662,6 +747,14 @@ def validate_staged_package(
                         result.failures.append(
                             f"sidecar manifest {manifest_path.name} xodr sha256 {m_xodr_sha!r} != staged XODR sha {xodr_sha256}"
                         )
+                # Frame authority in the sidecar must agree with the staged XODR.
+                m_canon_sha = (mdoc.get("canonical_source") or {}).get("xodr_sha256")
+                if isinstance(m_canon_sha, str) and m_canon_sha.strip():
+                    if m_canon_sha.strip().lower() != xodr_sha256.lower():
+                        result.failures.append(
+                            f"sidecar manifest {manifest_path.name} canonical_source.xodr_sha256 "
+                            f"{m_canon_sha!r} != staged XODR sha {xodr_sha256}"
+                        )
             except (json.JSONDecodeError, OSError):
                 result.failures.append(f"sidecar manifest {manifest_path.name} is not valid JSON")
 
@@ -687,7 +780,10 @@ def validate_staged_package(
             continue
         parsed_map_name, _tx, _ty = parsed
         if parsed_map_name != entry["name"]:
-            result.warnings.append(
+            # Hard failure, not a warning: the tile prefix is what makes the
+            # FBX resolve to this map at cook time, so a mismatch means the
+            # package would stage geometry CARLA never binds to maps[0].name.
+            result.failures.append(
                 f"tile filename map-name prefix {parsed_map_name!r} != "
                 f"package map name {entry['name']!r} for {name!r}"
             )
@@ -753,6 +849,37 @@ def validate_staged_package(
             f"stray tile FBX present on disk but not declared in package.json "
             f"(staging/descriptor drift): {stray}"
         )
+
+    # Per-tile CONTENT binding. stage_large_map_package records
+    # tiles_fbx_sha256 in the sidecar at staging time. Verifying it here is
+    # what makes a foreign tile -- one from a different campaign that carries
+    # no local manifest -- detectable: the descriptor and the sidecar's
+    # tiles_provenance would both still look correct for it.
+    staged_tile_sha = None
+    for manifest_path in manifest_candidates:
+        try:
+            mdoc = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        bound = mdoc.get("tiles_fbx_sha256")
+        if not isinstance(bound, dict) or not bound:
+            continue
+        staged_tile_sha = bound
+        for name in sorted(bound):
+            tile_path = pkg_dir / name
+            if not tile_path.is_file():
+                result.failures.append(
+                    f"sidecar binds tile {name} but it is absent from the package"
+                )
+                continue
+            actual_tile_sha = _sha256(tile_path)
+            if actual_tile_sha.lower() != str(bound[name]).strip().lower():
+                result.failures.append(
+                    f"tile {name} sha256 {actual_tile_sha} != sidecar-bound "
+                    f"{bound[name]} (tile content does not match what was staged; "
+                    f"the FBX was substituted after staging)"
+                )
+    result.tiles_fbx_sha256_verified = bool(staged_tile_sha)
 
     result.tile_count = len(declared_tiles)
     result.status = "PASS" if not result.failures else "FAIL"

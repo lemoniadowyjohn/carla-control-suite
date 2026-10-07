@@ -11,6 +11,13 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from tools.ue_executable_discovery import (
+    CARLA_SERVER_CANDIDATES,
+    editor_candidates,
+    engine_family_from_editor,
+    find_editor_executable,
+)
+
 GIB = 1024 ** 3
 
 
@@ -65,6 +72,48 @@ def executable_check(label: str, value: str | None, candidates: list[str]) -> di
     return {"check": label, "status": "BLOCKED", "required_candidates": candidates, "reason": "no configured path or executable found", "remediation": f"Set {label} or install one of {candidates}; no files were changed."}
 
 
+def ue_editor_check(unreal_root: Path | None) -> dict[str, Any]:
+    """UE_ENGINE_EDITOR_PRESENT: locate the editor for the installed engine family.
+
+    CARLA 0.9.x targets UE4.26, whose Windows editor is ``UE4Editor.exe``.
+    ``UnrealEditor.exe`` is the UE5 name. Searching only for the UE5 name reports
+    a complete UE4.26 install as missing, so both real names are searched and
+    the detected family is reported as evidence.
+
+    This state means only that an editor binary exists. It says nothing about
+    whether the CARLA project compiled or a map was cooked.
+    """
+    if unreal_root is None:
+        return {
+            "check": "ue_editor_binary",
+            "state": "UNKNOWN",
+            "reason": "no Unreal root configured (pass --unreal-root or set UE4_ROOT)",
+            "evidence": None,
+        }
+    family = engine_family_from_editor(unreal_root, platform_name="windows")
+    if family == "unknown":
+        return {
+            "check": "ue_editor_binary",
+            "state": "ABSENT",
+            "engine_family": "unknown",
+            "searched_names": editor_candidates("ue4", "windows")
+            + editor_candidates("ue5", "windows"),
+            "evidence": None,
+            "note": "no editor binary found; this is not a build or cook verdict",
+        }
+    editor = find_editor_executable(
+        unreal_root, family=family, platform_name="windows"
+    )
+    return {
+        "check": "ue_editor_binary",
+        "state": "UE_ENGINE_EDITOR_PRESENT",
+        "engine_family": family,
+        "path": str(editor) if editor else None,
+        "evidence": str(editor) if editor else None,
+        "note": "editor binary located; CARLA project build and map cook remain unverified",
+    }
+
+
 def preflight(repo_root: Path, unreal_root: Path | None, temp_root: Path | None, min_repo_gib: float, min_unreal_gib: float, min_temp_gib: float, min_ram_gib: float, required_vram_gib: float | None) -> dict[str, Any]:
     checks = [
         disk_check("repository_disk", repo_root, min_repo_gib),
@@ -72,13 +121,32 @@ def preflight(repo_root: Path, unreal_root: Path | None, temp_root: Path | None,
         disk_check("temporary_cache_disk", temp_root or Path(tempfile.gettempdir()), min_temp_gib),
         ram_check(min_ram_gib),
         vram_check(required_vram_gib),
-        executable_check("carla_root", os.environ.get("CARLA_ROOT"), ["CarlaUE4.exe", "CarlaUE4.sh"]),
-        executable_check("ue4_root", os.environ.get("UE4_ROOT"), ["UnrealEditor.exe", "UnrealEditor"]),
+        executable_check("carla_root", os.environ.get("CARLA_ROOT"), list(CARLA_SERVER_CANDIDATES["windows"]) + list(CARLA_SERVER_CANDIDATES["linux"])),
+        executable_check("ue4_root", os.environ.get("UE4_ROOT"), editor_candidates("ue4", "windows") + editor_candidates("ue5", "windows")),
+        ue_editor_check(unreal_root or (Path(os.environ["UE4_ROOT"]) if os.environ.get("UE4_ROOT") else None)),
     ]
     hard = [c for c in checks if c.get("status") == "BLOCKED"]
     incomplete = [c for c in checks if c.get("status") == "INCOMPLETE"]
     status = "BLOCKED" if hard else ("INCOMPLETE" if incomplete else "PASS")
-    return {"schema": "unreal_cook_resource_preflight/v1", "status": status, "claim": "READY_FOR_COOK_PLANNING" if status == "PASS" else "NOT_READY_FOR_COOK_PLANNING", "checks": checks, "remediation_policy": "Report-only; no files are deleted, processes terminated, or thresholds silently changed."}
+    return {
+        "schema": "unreal_cook_resource_preflight/v2",
+        "status": status,
+        "claim": "READY_FOR_COOK_PLANNING" if status == "PASS" else "NOT_READY_FOR_COOK_PLANNING",
+        "checks": checks,
+        "build_state_separation": {
+            "note": "Resource preflight readiness is not a build or runtime claim. Each state below stays independent and unknown unless directly evidenced.",
+            "UE_ENGINE_EDITOR_PRESENT": next(
+                (c.get("state") for c in checks if c.get("check") == "ue_editor_binary"),
+                "UNKNOWN",
+            ),
+            "CARLA_PROJECT_COMPILED": "UNKNOWN",
+            "CARLA_SERVER_BINARY_PRESENT": "UNKNOWN",
+            "CARLA_RPC_RESPONSIVE": "UNKNOWN",
+            "MAP_PACKAGE_COOKED": "UNKNOWN",
+            "MAP_RUNTIME_LOADABLE": "UNKNOWN",
+        },
+        "remediation_policy": "Report-only; no files are deleted, processes terminated, or thresholds silently changed.",
+    }
 
 
 def main() -> int:

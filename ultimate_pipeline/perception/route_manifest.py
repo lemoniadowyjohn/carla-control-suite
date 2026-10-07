@@ -169,6 +169,10 @@ def validate_route_manifest(manifest: Dict[str, Any]) -> List[str]:
         reasons.append("route_manifest_missing_route_id")
     if not manifest.get("coordinate_frame"):
         reasons.append("route_manifest_missing_coordinate_frame")
+    if not manifest.get("crs"):
+        reasons.append("route_manifest_missing_crs")
+    if not manifest.get("geo_reference"):
+        reasons.append("route_manifest_missing_geo_reference")
     poses = manifest.get("capture_poses")
     if not poses:
         reasons.append("route_manifest_empty_capture_poses")
@@ -191,6 +195,77 @@ def validate_route_manifest(manifest: Dict[str, Any]) -> List[str]:
     if manifest.get("sha256") != route_digest(manifest):
         reasons.append("route_manifest_digest_mismatch")
     return reasons
+
+
+def validate_route_manifest_bytes(raw: bytes) -> List[str]:
+    """
+    Full validation pipeline:
+    read bytes ↓ parse JSON ↓ schema validation ↓ self-digest validation
+    ↓ sequence-index validation ↓ finite coordinate validation
+    ↓ coordinate-frame validation ↓ expose capture_poses
+    """
+    try:
+        manifest = json.loads(raw.decode("utf-8"))
+    except Exception as exc:
+        return [f"route_manifest_json_parse_failed:{type(exc).__name__}:{exc}"]
+
+    reasons = validate_route_manifest(manifest)
+    if reasons:
+        return reasons
+
+    # Coordinate-frame binding validation (check frame existence in bound maps)
+    # This will be implemented by the caller with map adapters
+    return []
+
+
+def get_capture_poses_after_validation(
+    raw: bytes, *, validate_digest: bool = True
+) -> Tuple[Optional[Dict[str, Any]], List[str]]:
+    """
+    Tampered manifests must fail before ego spawn, sensor spawn, map capture.
+    """
+    # read bytes
+    try:
+        manifest = json.loads(raw.decode("utf-8"))
+    except Exception as exc:
+        return None, [f"route_manifest_json_parse_failed:{type(exc).__name__}:{exc}"]
+
+    # parse JSON
+    if not isinstance(manifest, dict):
+        return None, ["route_manifest_not_dict"]
+
+    # schema validation
+    if manifest.get("schema_version") != ROUTE_SCHEMA_VERSION:
+        return None, [f"route_manifest_bad_schema_version:{manifest.get('schema_version')}"]
+
+    # self-digest validation
+    if validate_digest and manifest.get("sha256") != route_digest(manifest):
+        return None, ["route_manifest_digest_mismatch"]
+
+    # sequence-index validation
+    poses = manifest.get("capture_poses", [])
+    seqs = [int(p.get("sequence_index", 0)) for p in poses]
+    if len(set(seqs)) != len(seqs):
+        return None, ["route_manifest_duplicate_sequence_index"]
+    if seqs != sorted(seqs):
+        return None, ["route_manifest_sequence_index_not_sorted"]
+
+    # finite coordinate validation
+    for idx, pose in enumerate(poses):
+        reason = _check_finite(pose, POSE_FIELDS, f"capture_pose[{idx}]")
+        if reason:
+            return None, [reason]
+
+    # coordinate-frame validation
+    if not manifest.get("coordinate_frame"):
+        return None, ["route_manifest_missing_coordinate_frame"]
+    if not manifest.get("crs"):
+        return None, ["route_manifest_missing_crs"]
+    if not manifest.get("geo_reference"):
+        return None, ["route_manifest_missing_geo_reference"]
+
+    # Only after all validation succeed
+    return manifest, []
 
 
 def _check_finite(entry: Dict[str, Any], fields: Iterable[str], label: str) -> Optional[str]:

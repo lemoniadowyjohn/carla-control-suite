@@ -17,11 +17,103 @@ def _inject_main_pipeline_globals():
         g.setdefault(k, v)
 
 
+DOMAIN_GAP_STATUS_SCHEMA = "domain_gap_stage_status/v1"
+
+
+def _domain_gap_enabled(settings) -> bool:
+    """Mirror the registry's ``DOMAIN_GAP.enabled_by`` predicate (NEW-339).
+
+    ``enabled_by: ["ENABLE_DOMAIN_GAP", "UP_ENABLE_DOMAIN_GAP"]`` is OR-ed, so a
+    run with only the env var set must still produce the status artifact --
+    otherwise the signal reads MISSING instead of its real state.
+    """
+    if bool(getattr(settings, "ENABLE_DOMAIN_GAP", False)):
+        return True
+    return os.getenv("UP_ENABLE_DOMAIN_GAP", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+
+
+def _write_domain_gap_stage_status(self, payload: dict) -> str:
+    """Persist the DOMAIN_GAP signal artifact (atomic, fail-closed)."""
+    body = {"schema": DOMAIN_GAP_STATUS_SCHEMA}
+    body.update(payload)
+    path = os.path.join(self.out_dir, "domain_gap_stage_status.json")
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(body, f, indent=2, default=str)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+    print(f"[STEP 12] domain_gap_stage_status.json -> {path}")
+    return path
+
+
+def _coord_report_status(label: str, xodr_path: str, out_path: str) -> dict:
+    """Run one coordinate-report subprocess and record its real outcome.
+
+    Both ``returncode`` and the produced file are checked: previously the
+    subprocess ran with ``check=False`` and the outcome was discarded, so a
+    crashed report still printed as if the artifact had been written.
+    """
+    import subprocess as _subprocess
+    import sys as _sys
+
+    cmd = [
+        _sys.executable,
+        "-m",
+        "ultimate_pipeline.tools.xodr_coordinate_report",
+        "--xodr",
+        str(xodr_path),
+        "--out",
+        str(out_path),
+    ]
+    entry = {
+        "label": label,
+        "command": cmd,
+        "returncode": None,
+        "output_path": str(out_path),
+        "output_exists": bool(os.path.isfile(out_path)),
+        "ok": False,
+        "error": None,
+    }
+    try:
+        proc = _subprocess.run(cmd, check=False)
+        entry["returncode"] = int(proc.returncode)
+    except Exception as e:  # noqa: BLE001
+        entry["error"] = str(e)
+    entry["output_exists"] = bool(os.path.isfile(out_path))
+    entry["ok"] = entry["returncode"] == 0 and entry["output_exists"]
+    if not entry["ok"] and entry["error"] is None:
+        if entry["returncode"] not in (0, None):
+            entry["error"] = f"exit code {entry['returncode']}"
+        elif entry["returncode"] == 0:
+            entry["error"] = "report process exited 0 but produced no output file"
+    return entry
+
+
+def _domain_gap_score(summary: dict) -> float | None:
+    """Best-effort aggregate of the whole-map geometry gap, or None."""
+    try:
+        geo = summary.get("whole_geometry_gap") or {}
+        for key in ("mean", "avg", "mean_gap", "p95", "max"):
+            if key in geo and isinstance(geo[key], (int, float)):
+                return float(geo[key])
+        return None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _step12_domain_gap(self, final_out: str) -> None:
     _inject_main_pipeline_globals()
     s = self.settings
-    if not getattr(s, "ENABLE_DOMAIN_GAP", False):
+    if not _domain_gap_enabled(s):
         print("\n⏭️ Domain-gap analysis disabled in settings.")
+        # Registry skip_policy RECORD_IF_DISABLED: index marks the signal
+        # NOT_APPLICABLE from the predicate, so no artifact is written here.
         return
 
     print("\n============== 📊 STEP 12: Domain Gap Analysis ==============")
@@ -41,11 +133,32 @@ def _step12_domain_gap(self, final_out: str) -> None:
         print("⚠️ Domain gap ENABLED but MANUAL_MAP_XODR is not configured.")
         print("   → Skipping STEP 12. Set MANUAL_MAP_XODR in settings.py.")
         self.vreport.add("domain_gap", "skipped", "manual_xodr_not_configured")
+        _write_domain_gap_stage_status(
+            self,
+            {
+                "ok": False,
+                "status": "BLOCKED_EXTERNAL",
+                "reason": "manual_xodr_not_configured",
+                "manual_xodr_present": False,
+                "domain_gap_score": None,
+            },
+        )
         return
 
     if not os.path.exists(manual_xodr):
         print(f"⚠️ Manual reference XODR not found: {manual_xodr}")
         self.vreport.add("domain_gap", "skipped", "manual_xodr_missing")
+        _write_domain_gap_stage_status(
+            self,
+            {
+                "ok": False,
+                "status": "BLOCKED_EXTERNAL",
+                "reason": "manual_xodr_missing",
+                "manual_xodr": str(manual_xodr),
+                "manual_xodr_present": False,
+                "domain_gap_score": None,
+            },
+        )
         return
 
     # Tiles are optional: whole-map gaps work without per-tile comparisons.
@@ -94,40 +207,28 @@ def _step12_domain_gap(self, final_out: str) -> None:
     os.makedirs(gap_out_dir, exist_ok=True)
 
     # Thesis evidence: coordinate reports (manual vs auto)
+    coord_reports: dict = {}
     try:
-        import subprocess as _subprocess
-        import sys as _sys
-
         coord_manual = os.path.join(gap_out_dir, "coord_manual.json")
         coord_auto = os.path.join(gap_out_dir, "coord_auto.json")
-        _subprocess.run(
-            [
-                _sys.executable,
-                "-m",
-                "ultimate_pipeline.tools.xodr_coordinate_report",
-                "--xodr",
-                str(manual_xodr),
-                "--out",
-                coord_manual,
-            ],
-            check=False,
+        coord_reports["coord_manual"] = _coord_report_status(
+            "coord_manual", manual_xodr, coord_manual
         )
-        _subprocess.run(
-            [
-                _sys.executable,
-                "-m",
-                "ultimate_pipeline.tools.xodr_coordinate_report",
-                "--xodr",
-                str(auto_xodr),
-                "--out",
-                coord_auto,
-            ],
-            check=False,
+        coord_reports["coord_auto"] = _coord_report_status(
+            "coord_auto", auto_xodr, coord_auto
         )
-        print(f"[STEP 12] coord_manual.json -> {coord_manual}")
-        print(f"[STEP 12] coord_auto.json -> {coord_auto}")
+        for name, entry in coord_reports.items():
+            if entry["ok"]:
+                print(f"[STEP 12] {name}.json -> {entry['output_path']}")
+            else:
+                print(
+                    f"⚠️ [STEP 12] {name} report failed: {entry['error']} "
+                    f"(returncode={entry['returncode']}, "
+                    f"exists={entry['output_exists']})"
+                )
     except Exception as _e:
         print(f"[STEP 12] coordinate report skipped: {_e}")
+        coord_reports["error"] = str(_e)
 
     try:
         if auto_tiles_meta:
@@ -190,11 +291,46 @@ def _step12_domain_gap(self, final_out: str) -> None:
         # Also keep it inside ValidationReport (for final summary & LLM)
         self.vreport.add_dict("domain_gap_summary", summary)
 
-        print(f"✅ Domain-gap analysis complete → {gap_summary_path}")
+        coord_entries = [v for v in coord_reports.values() if isinstance(v, dict)]
+        coords_ok = bool(coord_entries) and all(
+            bool(e.get("ok")) for e in coord_entries
+        )
+        payload = {
+            "ok": coords_ok,
+            "status": "PASS" if coords_ok else "INCOMPLETE",
+            "manual_xodr_present": True,
+            "domain_gap_score": _domain_gap_score(summary),
+            "summary_path": gap_summary_path,
+            "summary_written": os.path.isfile(gap_summary_path),
+            "manual_tiles_present": bool(manual_tiles),
+            "auto_tiles_present": bool(auto_tiles),
+            "coordinate_reports": coord_reports,
+            "error": None if coords_ok else "one or more coordinate reports failed",
+        }
+        _write_domain_gap_stage_status(self, payload)
+
+        if coords_ok:
+            print(f"✅ Domain-gap analysis complete → {gap_summary_path}")
+        else:
+            print(
+                "⚠️ Domain-gap summary written but coordinate evidence is "
+                "incomplete → domain_gap_stage_status.json marked INCOMPLETE"
+            )
 
     except Exception as e:
         print(f"⚠️ Domain-gap analysis failed: {e}")
         self.vreport.add("domain_gap", "error", str(e))
+        _write_domain_gap_stage_status(
+            self,
+            {
+                "ok": False,
+                "status": "INCOMPLETE",
+                "manual_xodr_present": bool(manual_xodr),
+                "domain_gap_score": None,
+                "coordinate_reports": coord_reports,
+                "error": str(e),
+            },
+        )
 
 # ---------------- 🚦 QUALITY GATES WRAPPER + 🤖 LLM ----------------
 

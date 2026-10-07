@@ -129,17 +129,64 @@ class TestPortablePathResolution:
     def test_no_hardcoded_username_in_production_defaults(
         self, cook_mod, probe_mod
     ):
+        """A1: production defaults must not embed a developer-machine path.
+
+        The defect being guarded against is a *hardcoded* absolute path baked
+        into source or configuration. It is not the resolved runtime value:
+        the portable default is repo-relative, so on a checkout that happens
+        to live under ``C:\\Users\\<name>`` the resolved value legitimately
+        contains that prefix. Asserting on the resolved value therefore
+        rejected a portable checkout instead of detecting a real hardcoding.
+
+        So this checks two distinct things:
+
+        1. the *source text* of each default definition contains no absolute
+           developer path literal, and
+        2. the resolved default is repo-relative (not an absolute machine path).
+        """
         from ultimate_pipeline.enrichment import osm2world_runner as runner
 
+        # (1) No hardcoded absolute dev path in the source that defines them.
+        sources = {
+            "cook_full_grid_tiles.py": REPO_ROOT / "scripts" / "cook_full_grid_tiles.py",
+            "probe_tile_fbx_densest.py": REPO_ROOT / "tools" / "probe_tile_fbx_densest.py",
+            "osm2world_runner.py": REPO_ROOT
+            / "ultimate_pipeline"
+            / "enrichment"
+            / "osm2world_runner.py",
+        }
+        dev_path_pattern = re.compile(
+            r"[A-Za-z]:[\\/]Users[\\/][^\\'\"\s]+", re.IGNORECASE
+        )
+        for label, path in sources.items():
+            text = path.read_text(encoding="utf-8", errors="replace")
+            hits = dev_path_pattern.findall(text)
+            assert not hits, f"{label} hardcodes a developer path literal(s): {hits}"
+
+        # The repo/project directory name must never appear as a path literal
+        # either (that is how a machine-specific checkout leaks into defaults).
+        for label, path in sources.items():
+            text = path.read_text(encoding="utf-8", errors="replace").lower()
+            assert "pycharmprojects" not in text, (
+                f"{label} hardcodes a project-directory path literal"
+            )
+
+        # (2) The defaults must be *derived from* the repo root, not from a
+        # machine location. The resolved value is absolute because REPO_ROOT is
+        # absolute; portability is proven by the value being anchored at the
+        # repo root, so that a checkout in any directory resolves correctly.
         for label, value in [
             ("cook DEFAULT_OSM2WORLD_HOME", cook_mod.DEFAULT_OSM2WORLD_HOME),
             ("probe DEFAULT_OSM2WORLD_HOME", probe_mod.DEFAULT_OSM2WORLD_HOME),
             ("runner DEFAULT_OSM2WORLD_HOME", str(runner.DEFAULT_OSM2WORLD_HOME)),
-            ("runner DEFAULT_BLENDER_EXE", str(runner.DEFAULT_BLENDER_EXE)),
         ]:
-            lowered = str(value).lower()
-            assert "c:\\users\\admin" not in lowered, f"{label} embeds dev path: {value}"
-            assert "pycharmprojects" not in lowered, f"{label} embeds dev path: {value}"
+            assert Path(str(value)).is_relative_to(REPO_ROOT), (
+                f"{label} must be anchored at the repo root, got: {value}"
+            )
+
+        # A hardcoded machine path would NOT be anchored at the repo root when
+        # the checkout lives elsewhere, which is exactly what (1) catches in
+        # source and this catches in the resolved value.
 
     def test_osm2world_default_is_env_or_repo_relative(self, cook_mod, monkeypatch):
         monkeypatch.delenv("OSM2WORLD_HOME", raising=False)

@@ -1,0 +1,56 @@
+{
+  "schema": "ue426_source_authority/v1",
+  "generated_at_utc": "2026-10-03T00:00:00Z",
+  "status": "SOURCE_AUTHORITY_ESTABLISHED",
+  "engine": {
+    "path": "G:\\UnrealEngine_4.26_CARLA",
+    "build_version": {"MajorVersion": 4, "MinorVersion": 26, "PatchVersion": 2, "BranchName": "++UE4+Release-4.26"},
+    "setup_bat": true,
+    "generate_project_files_bat": true,
+    "editor_binaries_prebuilt": true,
+    "ue4editor_exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "ue4editor_cmd_exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+    "ue4editor_cmd_version_probe": "exit 0 (2026-10-03)",
+    "shader_compile_worker": {
+      "previously_present": false,
+      "built_this_wave": true,
+      "build_command": "Engine\\Build\\BatchFiles\\Build.bat ShaderCompileWorker Win64 Development -WaitMutex -NoHotReload",
+      "actions": "157/157, post-build SCW->XGEControlWorker copy done, 1565s wall",
+      "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\ShaderCompileWorker.exe",
+      "exe_bytes": 321536,
+      "exe_sha256": "3B84E9B7DF824D67B468BB5A6CD7E2DA63203EFC80C3FD58B4E3D7796FAC2129"
+    }
+  },
+  "carla_source": {
+    "path": "G:\\CARLA\\carla_source_probe",
+    "git_remote": "https://github.com/carla-simulator/carla.git",
+    "git_head": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+    "git_state": "detached at tag 0.9.16",
+    "local_modifications": [
+      "Util/BuildTools/BuildLibCarla.bat",
+      "Util/BuildTools/BuildOSM2ODR.bat",
+      "Util/InstallersWin/install_fastDDS.bat",
+      "Util/InstallersWin/install_gtest.bat",
+      "Util/InstallersWin/install_recast.bat"
+    ],
+    "local_modifications_note": "Environment-adaptation edits to installer/build scripts only; no engine or CARLA C++ source modified. Recorded, not endorsed.",
+    "libcarla_release_built": true,
+    "libcarla_client_lib": "Build\\libcarla-visualstudio\\LibCarla\\cmake\\client\\Release\\carla_client.lib",
+    "libcarla_server_lib": "Build\\libcarla-visualstudio\\LibCarla\\cmake\\server\\Release\\carla_server.lib",
+    "uproject": "Unreal\\CarlaUE4\\CarlaUE4.uproject (EngineAssociation 4.26)",
+    "project_editor_module_built": true,
+    "project_editor_dll": "Unreal\\CarlaUE4\\Binaries\\Win64\\UE4Editor-CarlaUE4.dll",
+    "import_tooling": "Util\\BuildTools\\Import.py present"
+  },
+  "compatibility": {
+    "ue5_substituted": false,
+    "stock_ue4_used": false,
+    "engine_matches_carla_requirement": true,
+    "note": "CARLA 0.9.16 requires UE 4.26; engine is 4.26.2 release branch; CARLA source is the official 0.9.16 tag."
+  },
+  "toolchain": {
+    "compiler": "VS BuildTools 2022 17.12, MSVC 14.42.34433 (v143); no v142/VS2019 toolset installed",
+    "note": "UE4.26 UBT accepted the installed toolchain for the ShaderCompileWorker target (157/157 actions OK). Full editor rebuild not required (prebuilt) and not attempted."
+  },
+  "not_claimed": "Cook not yet executed. No map association (Content/Ingolstadt) exists yet in the source tree."
+}

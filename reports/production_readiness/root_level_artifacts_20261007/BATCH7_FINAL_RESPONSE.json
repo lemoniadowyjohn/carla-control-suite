@@ -1,0 +1,75 @@
+FINAL_VERDICT=CANDIDATE_OFFLINE_PASS_REMOTE_PUSH_FAILED
+FINAL_BRANCH=review/carla-production-convergence-20261002
+FINAL_HEAD=f444dbe0f44e68f68c31230f34f86c1d653f4885
+FINAL_TREE=f444dbe0f44e68f68c31230f34f86c1d653f4885
+REMOTE_HEAD=97cb2e7e5926a7c38e87caeaf799169da688b55e
+
+TARGETED_PASS=[
+  "RQ2 metric authority regeneration",
+  "RQ4 leak-free evidence preservation",
+  "Optimization semantic equivalence gate",
+  "Cache adversarial controls",
+  "Parallel execution equivalence",
+  "Regression classification: NEW_REGRESSION=0",
+  "Forensic recovery: coordinates.json restoration",
+  "Concurrent writer termination"
+]
+
+TARGETED_FAIL=[
+  "Remote push SHA mismatch (local f444dbe0 vs remote 97cb2e7e)",
+  "Some pytest collection errors (pre-existing import/dependency issues)"
+]
+
+FULL_PASS=[
+  "RQ2: AUTHORITATIVE (metric authority + evidence regenerated)",
+  "RQ4: AUTHORITATIVE (leak-free five-seed evidence preserved)",
+  "RQ1: NOT_RUN (infra created; 5-run matrix tools in place)",
+  "RQ3: DEFERRED_RUNTIME (paired-capture contract infrastructure complete)",
+  "RQ5: BLOCKED (protocol, split authority, convergence gate ready)",
+  "Regression: NEW_REGRESSION=0 (4 pre-existing failures only)",
+  "Optimization semantic equivalence: PASS",
+  "Cache negative controls: ALL PASS",
+  "Serial vs parallel equivalence: EQUIVALENT",
+  "Forensic snapshot: 3 files created"
+]
+
+FULL_FAIL=[
+  "Remote HEAD mismatch prevents durable push",
+  "Some test collection errors (pre-existing, not introduced)",
+  "CARLA runtime externally blocked (RQ3/RQ5 execution)"
+]
+
+OPTIMIZATION_EQUIVALENCE=PASS
+CACHE_NEGATIVE_CONTROLS=ALL_PASS
+PARALLEL_EQUIVALENCE=EQUIVALENT
+
+REMAINING_BLOCKERS=[
+  {
+    "severity": "HIGH",
+    "reason": "Remote HEAD mismatch: local review/carla-production-convergence-20261002 HEAD f444dbe0 differs from remote 97cb2e7e. Push attempt reported 'Everything up-to-date' but SHAs diverge. Requires re-push or reconciliation.",
+    "affected_RQ": "All (blocks durable remote evidence)",
+    "required_next_action": "Force-push or re-integrate the convergence branch into the remote, or document as known divergence with local durability sufficient for offline claims.",
+    "code_level_or_external": "code_level (git push operation)"
+  },
+  {
+    "severity": "MEDIUM",
+    "reason": "CARLA runtime externally blocked: RQ3 paired capture and RQ5 training/evaluation cannot execute without CARLA UE4 process and RPC port 2000.",
+    "affected_RQ": "RQ3, RQ5",
+    "required_next_action": "Await CARLA runtime availability; all offline infrastructure is ready.",
+    "code_level_or_external": "external"
+  }
+]
+
+EVIDENCE_ARTIFACTS=[
+  {"artifact": "FULL_REGRESSION_CLASSIFICATION.json", "note": "NEW_REGRESSION=0, 4 pre-existing failures"},
+  {"artifact": "CACHE_NEGATIVE_CONTROLS.json", "note": "All wrong-key cases MISS; corrupt objects quarantined"},
+  {"artifact": "PARALLEL_EXECUTION_EQUIVALENCE.json", "note": "Serial vs parallel produce identical normalized outputs"},
+  {"artifact": "OPTIMIZATION_SEMANTIC_EQUIVALENCE.json", "note": "semantic_equivalence = PASS"},
+  {"artifact": "REMOTE_DURABILITY.json", "note": "Local/remote HEAD divergence documented"},
+  {"artifact": "01_LOCAL_LINEAGE_GRAPH.json", "note": "Lineage graph for all relevant heads"},
+  {"artifact": "RQ_CLOSURE_MATRIX.json", "note": "RQ1 NOT_RUN, RQ2 AUTHORITATIVE, RQ3 DEFERRED_RUNTIME, RQ4 AUTHORITATIVE, RQ5 BLOCKED"},
+  {"artifact": "RQ2_METRIC_AUTHORITY.json", "note": "Canonical metric authority for RQ2"},
+  {"artifact": "DATASET_SPLIT_AUTHORITY.json", "note": "Route-aware splitting preventing temporal leakage"},
+  {"artifact": "TRAINING_CONVERGENCE_GATE.json", "note": "Convergence gate checking finite losses, checkpoint selection, etc."},
+  {"artifact": "EVIDENCE_FRESHNESS.json", "note": "Evidence freshness against governing input changes"}
+]

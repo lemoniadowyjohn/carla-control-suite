@@ -234,6 +234,9 @@ def _pair_manifest(*, manual_arm=None, auto_arm=None, top_overrides=None,
         "simulation_physics_sha256": "ph1",
         "runtime_sensor_rig_sha256": "rr1",
         "vehicle_calibration_binding_sha256": "vb1",
+        # sim_timing_sha256 is a mandatory arm identity: an arm that never
+        # recorded how it was timed cannot be shown to be comparable.
+        "sim_timing_sha256": "st1",
     }
     manual = dict(arm_base, completion_status=rq3.COMPLETION_PASS,
                   pair_frame_index=[0, 1, 2])
@@ -252,6 +255,7 @@ def _pair_manifest(*, manual_arm=None, auto_arm=None, top_overrides=None,
         "simulation_physics_sha256": "ph1",
         "runtime_sensor_rig_sha256": "rr1",
         "vehicle_calibration_binding_sha256": "vb1",
+        "sim_timing_sha256": "st1",
     }
     top.update(top_overrides or {})
     return rq3.build_pair_manifest(
@@ -274,6 +278,7 @@ def _pair_manifest(*, manual_arm=None, auto_arm=None, top_overrides=None,
         simulation_physics_sha256=top["simulation_physics_sha256"],
         runtime_sensor_rig_sha256=top["runtime_sensor_rig_sha256"],
         vehicle_calibration_binding_sha256=top["vehicle_calibration_binding_sha256"],
+        sim_timing_sha256=top["sim_timing_sha256"],
         manual_arm=manual,
         auto_arm=auto,
         pair_valid=True,

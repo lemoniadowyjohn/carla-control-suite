@@ -1,0 +1,18 @@
+{
+  "COOKED_MAP_AUTHORITY": {
+    "requested_map": "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt",
+    "resolved_map_package": null,
+    "source_umap_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt.umap",
+    "source_umap_exists": true,
+    "source_xodr": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt.xodr",
+    "xodr_sha256": "PENDING_VERIFICATION",
+    "cook_output_files": [],
+    "streaming_tile_packages_present": 0,
+    "tile_count": 0,
+    "map_package_cooked": false,
+    "cook_completed": false,
+    "cook_stalled_at_package": 2975,
+    "total_packages_discovered": 3558,
+    "note": "Cook stalled before map package generation. No tile .umap files produced. No Ingolstadt map assets in cook output."
+  }
+}

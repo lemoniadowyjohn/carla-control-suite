@@ -291,10 +291,21 @@ def main() -> int:
         "carla_exe": args.carla_exe.strip() or None,
     }
     _atomic_write_json(summary_path, summary)
-    _atomic_write_json(status_path, {"status": "OK", "summary_path": str(summary_path), "summary": summary})
+    # NEW-338: this used to unconditionally claim {"status": "OK"} even when
+    # ``fail > 0``; a run_summary consumer reading it saw a healthy gate.
+    # The status now reflects the tile evidence, and the process exits 2 when
+    # any tile failed so the supervisor's own return code cannot disagree.
+    all_ok = summary["fail"] == 0 and summary["ok"] > 0
+    _atomic_write_json(status_path, {
+        "schema": "step10_tile_qa_supervisor_status/v1",
+        "status": "OK" if all_ok else "FAIL",
+        "ok": all_ok,
+        "summary_path": str(summary_path),
+        "summary": summary,
+    })
 
     print(f"[STEP10_SUP] done: ok={summary['ok']} fail={summary['fail']} -> {summary_path}", flush=True)
-    return 0
+    return 0 if all_ok else 2
 
 if __name__ == "__main__":
     raise SystemExit(main())

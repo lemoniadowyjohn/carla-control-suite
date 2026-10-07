@@ -1,0 +1,62 @@
+{
+  "schema": "weather_authority_matrix/v1",
+  "scope": "post-integration weather authority (NEW-316..NEW-319, NEW-333)",
+  "authorities": {
+    "weather_spec": "ultimate_pipeline/perception/environment/weather_spec.py (Candidate B) - resolve, normalize, v2 identity, apply+verify, per-arm binding",
+    "deterministic_weather": "ultimate_pipeline/perception/environment/deterministic_weather.py (Candidate B) - frame-driven seeded schedule",
+    "camera_response": "ultimate_pipeline/perception/environment/camera_response.py (Candidate B) - photometric profile, separate from weather"
+  },
+  "duplicate_weather_specs": 0,
+  "frame_driven_deterministic_weather": {
+    "verified": true,
+    "mechanism": "DeterministicWeatherController.step_for_frame(frame_id) is a pure function of (seed, preset list, ticks_per_step, frame_id); tick() applies the entry governing that frame",
+    "verified_by_tests": [
+      "test_deterministic_weather_is_frame_driven_not_wallclock",
+      "test_run_b_starts_from_b_state_not_run_a_residue"
+    ]
+  },
+  "no_unseeded_wallclock_background_random_thread": {
+    "verified": true,
+    "mechanism": "the controller owns random.Random(self.seed); build_schedule draws only from that instance and its output is a function of (seed, presets) only. Verified that a full schedule walk plus step_for_frame leaves the process-global RNG bit-identical.",
+    "verified_by_test": "test_deterministic_weather_does_not_mutate_process_global_rng"
+  },
+  "weather_spec_id": {
+    "verified": true,
+    "mechanism": "resolve_weather_spec returns a spec whose parameters are hashed by weather_identity_v2 (schema weather_effective_v2)",
+    "verified_by_test": "test_weather_not_applied_is_fail_closed"
+  },
+  "weather_seed": {
+    "verified": true,
+    "mechanism": "controller seed is explicit; schedule_sha256 payload includes weather_seed and mode",
+    "verified_by_test": "test_deterministic_weather_is_frame_driven_not_wallclock"
+  },
+  "frame_index_schedule": {
+    "verified": true,
+    "mechanism": "scheduled mode yields start_frame/end_frame per step with ticks_per_step boundaries; fixed mode yields a single governing entry",
+    "verified_by_test": "test_deterministic_weather_is_frame_driven_not_wallclock"
+  },
+  "requested_state": {
+    "verified": true,
+    "mechanism": "apply_weather_and_verify compares requested to effective and raises WeatherApplicationError on mismatch",
+    "verified_by_test": "test_weather_not_applied_is_fail_closed (a world that silently ignores set_weather must not read as applied)"
+  },
+  "live_readback_state": {
+    "status": "BLOCKED_EXTERNAL",
+    "reason": "requires a running CARLA server; none available",
+    "offline_analogue": "the readback path is exercised with a duck-typed world that honours and one that ignores set_weather"
+  },
+  "identity_in_paired_run_evidence": {
+    "verified": true,
+    "mechanism": "validate_arm_weather_binding(manual_sha, auto_sha, pair_sha, manual_present, auto_present) requires both arm identities and equality with the pair digest; a missing or empty arm identity cannot be rescued by a hand-edited top-level digest",
+    "verified_by_test": "test_weather_requested_but_not_bound_to_arm_is_rejected"
+  },
+  "camera_response_not_confused_with_weather": {
+    "verified": true,
+    "detail": "camera_response.py owns photometric sensor attributes; weather_spec.py owns world weather. Candidate B added both and they do not overlap; NEW-333 defaults to the strict pinhole/postprocess-disabled baseline rather than implicit CARLA defaults."
+  },
+  "requested_weather_application": {
+    "status": "BLOCKED_EXTERNAL",
+    "not_upgraded_to_pass": true
+  },
+  "verdict": "WEATHER_AUTHORITY_OFFLINE_PASS_LIVE_BLOCKED"
+}

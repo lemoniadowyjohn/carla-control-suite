@@ -1,0 +1,113 @@
+{
+  "schema": "map_artifact_authority_resolution/v1",
+  "generated_at_utc": "2026-10-05T13:30:00Z",
+
+  "AUTHORITATIVE_MAP": "STAGED_370ABBBB",
+  "MAP_AUTHORITY_RESOLVED": true,
+  "resolution_basis": "PROVENANCE_AND_CAMPAIGN_INTENT_NOT_RECENCY",
+
+  "resolution_statement": "370abbbb IS the authoritative automatic map of record. It is not a recency or convenience choice. It is pinned by the project's own map registry under registry key 'auto_map_of_record', promoted by a reviewed commit with an explicit promotion gate, and documented in docs/runtime/MAP_OF_RECORD.md as the current map of record. ff2a05e7 is RETIRED by the campaign manifest and is NOT the production artifact.",
+
+  "candidates": [
+    {
+      "role": "STAGED_MAP_OF_RECORD",
+      "path_campaign": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "path_staged_import": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "sha256_independently_recomputed": true,
+      "bytes": 149799632,
+      "geoReference_verbatim": "+proj=tmerc",
+      "offset_verbatim": "<offset hdg=\"0.0\" z=\"0.0\" x=\"832671.676000\" y=\"5458671.104000\" />",
+      "road_count": 32267,
+      "junction_count": 3561,
+      "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "generation_provenance": {
+        "promotion_commit": "3ac77b3716a6f91749ce44a2b4f81febe607cacb",
+        "promotion_author": "Michal <lemoniadowyjohn@gmail.com>",
+        "promotion_date": "2026-09-17T11:29:41+02:00",
+        "commit_subject": "feat(map): promote 2026-09-16 planView/connectivity-fix regen to auto_map_of_record",
+        "trigger": "regeneration after two real pipeline bug fixes: 946228f9 (hardener stripped road-level <link> from junction-connector roads) and a13efd91 (GeometryValidator deleted entire <planView> on degenerate geometry)",
+        "promotion_gate": "regen_map_of_record.py -> measure_candidate_acceptance.run_gates() -> build_map_acceptance(); the only promotion gate this repo runs",
+        "promotion_gate_result": "valid_for_experiments=True, hard_fail_reasons=[]",
+        "soft_warnings_recorded": [
+          "lane_count_changes unexplained=3007 (root-caused: OSM lane_count_source tags cover 0.4% of lanes, so the 'explained' bucket is structurally near-unreachable; open advisory)",
+          "component_reachability 3 isolated lane components, largest_fraction=0.99793 (above 0.95 floor; within accepted precedent)"
+        ],
+        "regression_check_at_promotion": "full bare pytest: 6215 passed, 83 skipped, 0 failed - identical to pre-promotion baseline",
+        "supersedes_chain": "69b1f520 -> 744757f3 -> a5bd01be -> e281367e -> 60a36325 -> cb85fc14 -> 847d41bd -> 2ca342d8 -> 370abbbb (current pin)"
+      },
+      "registry_binding": {
+        "registry_module": "ultimate_pipeline/carla_tools/map_registry.py",
+        "registry_key": "auto_map_of_record",
+        "registry_line": 703,
+        "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
+        "verify_pinned_map_result": "PASS - returns sha256 370abbbb..., bytes 149799632, frame 'rebased-to-local (dx=832671.676 dy=5458671.104)', frame_kind rebased_local, crs_authority 'local Cartesian via fixed offset from UTM-32N (EPSG:32632)'",
+        "registry_declares_role": "auto"
+      },
+      "documentation_binding": {
+        "path": "docs/runtime/MAP_OF_RECORD.md",
+        "states": "The current automatic map of record is ... 370abbbb... Verify the registry before use with verify_pinned_map('auto_map_of_record')."
+      },
+      "consuming_workflows": [
+        "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt (staged 20-tile import package)",
+        "live UE cook PID 5344 (-map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt)",
+        "UE4_IMPORT_RECEIPT.json (input_package.xodr_sha256_staged_copy)"
+      ],
+      "git_tracking": "tracked via Git LFS (*.xodr filter=lfs); committed in 3ac77b37"
+    },
+    {
+      "role": "CRS_CERTIFIED_CANDIDATE_RETIRED",
+      "path_campaign": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+      "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "bytes": 82318919,
+      "geoReference_verbatim": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "offset": null,
+      "road_count": 32710,
+      "junction_count": 3646,
+      "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "campaign_manifest_disposition": {
+        "field": "retired_candidate_xodr",
+        "retired": true,
+        "retired_by": "C2 Step A promotion (CLAUDE_SEMANTIC_CANDIDATE_ACCEPTED); replaced by governed perception candidate"
+      },
+      "crs_evidence": [
+        "reports/new_campaign/C55V01a_crs_recert.json (CRS_CONTRACT_READY)",
+        "reports/visual_structural_reconciliation/C44V01_coordinate_contract.json (CRS_CONTRACT_READY)"
+      ],
+      "generation_provenance": {
+        "generation_head_sha": "c264e0c8791f1533fc00e385032582d680b425ca",
+        "mutations": "header_metadata_pin ONLY - 'Only the raw run-1 header geoReference was pinned to EPSG:32632; semantic hash matches raw run 1'",
+        "converter_profile": "osm_to_xodr_wrapper.py sha256 2678373C3AC9AB688D6B7CDFB30D326345605FF9162CC3901F1A51323DFE4973",
+        "carla_osm2odr_version": "UNKNOWN_UNSOURCED (Osm2Odr via CARLA PythonAPI; no version string found)"
+      },
+      "verdict": "RETIRED - not the production artifact. Its CRS certification was issued against a header-pin-only mutation of raw run 1, and the campaign manifest explicitly retired it. It is NOT a valid alternative input.",
+      "is_production_authority": false
+    }
+  ],
+
+  "why_the_staged_offset_violates_the_old_crs_contract_and_why_that_is_expected": {
+    "apparent_conflict": "C44V01/C55V01a negative controls require header_offset=null, yet 370abbbb carries an offset.",
+    "resolution": "The two artifacts are not the same lineage and the contract does not transfer. C44V01/C55V01a certify ff2a05e7, a header-pin-only mutation of raw run 1 with NO offset. 370abbbb is a later regeneration with a different structural pipeline (rebased-to-local frame) and a different road/junction count (32267/3561 vs 32710/3646).",
+    "key_evidence_that_370abbbb_intends_the_offset": "map_registry.py line 744 declares frame='rebased-to-local (dx=832671.676 dy=5458671.104)', frame_kind='rebased_local', rebase_dx/rebase_dy matching the offset exactly, and crs_authority='local Cartesian via fixed offset from UTM-32N (EPSG:32632)'. The offset is therefore an INTENTIONAL, REGISTERED part of the artifact's frame contract, not a contract violation.",
+    "conclusion": "STAGED_370ABBBB = NOT WRONG_INPUT. It is correctly staged. The earlier classification 'violates CRS contract' was WRONG because it compared across lineages.",
+    "reframed_issue": "The real, correctly-scoped issue is narrower: the geoReference element serializes as bare '+proj=tmerc' while the registered frame authority is 'local Cartesian via fixed offset from UTM-32N'. The header therefore under-describes its own registered frame. That is an emission-completeness defect, not an authority conflict."
+  },
+
+  "STAGED_XODR_SHA": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "CERTIFIED_XODR_SHA": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "EXPECTED_XODR_SHA_EQUALS_ACTUAL_STAGED_XODR_SHA": true,
+  "EXPECTED_XODR_SHA_SOURCE": "map_registry.PINNED_MAP_REGISTRY['auto_map_of_record']['sha256'], independently confirmed by recomputing the staged file hash and by docs/runtime/MAP_OF_RECORD.md",
+
+  "consequences_for_downstream_gates": {
+    "placement_runtime": "still BLOCKED, but for a narrower reason than previously stated: not because authority is unresolved (it is resolved), but because the header geoReference under-describes the registered frame, so the fail-closed CARLA parser cannot yet consume a correct value",
+    "section_3_map_selection_contract": "SATISFIED for the staged artifact - no selector fix is required; staging selected the correct file",
+    "full_retry": "remains BLOCKED on CRS emission completeness, building-reference fix, StaticMesh/DF mechanism, and storage gates"
+  },
+
+  "not_claimed": [
+    "No XODR was regenerated, mutated, or moved.",
+    "No CRS constant was invented.",
+    "Authority was NOT decided by recency: ff2a05e7 is older AND is retired; 370abbbb is newer AND is registered, but the deciding evidence is the registry binding plus the retirement record plus the promotion gate.",
+    "The scientific correctness of the rebase (i.e. whether dx/dy truly correspond to UTM-32N Ingolstadt) is NOT asserted here; see STAGED_FRAME_FORENSICS.json."
+  ]
+}
