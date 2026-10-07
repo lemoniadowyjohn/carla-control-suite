@@ -721,16 +721,50 @@
       "regression_test": "none -- there is nothing to regression-test for code that doesn't exist yet",
       "evidence_artifact": "independent verification subagent's 2026-10-01 report (blob-SHA comparisons, grep evidence above)",
       "residual_risk": "LOW -- no active harm, but real technical debt and a documentation-accuracy risk if the original branch's claims are ever cited without this correction. Recommend scheduling these 6 items as ordinary follow-up work, not urgent."
+    },
+    {
+      "id": "GAP-040",
+      "severity": "P1",
+      "subsystem": "repo-governance",
+      "description": "production branch (origin/integration/production-large-map-20260918, tip a82e0201) and working branch (rq1-determinism-matrix-20261007) diverged by 14 vs 33 commits from merge-base 278968f9, with at least 3 independently-duplicated fixes (structural_fingerprint, lease-identity-binding, repo-state-sync docs)",
+      "proof": "git merge-base and commit-count analysis: merge-base 278968f9; production branch has 14 commits since merge-base; working branch has 33 commits since merge-base; three independently duplicated fixes identified across both lineages",
+      "affected_files": [
+        "reports/BRANCH_FORK_RECEIPT_20261007.json"
+      ],
+      "scientific_runtime_consequence": "Diverged branches risk fix loss or silent inconsistency -- a fix applied on one lineage may not propagate to the other, and independently duplicated fixes may drift apart over time, undermining the single-source-of-truth discipline this program requires for production artifacts.",
+      "owner_subagent": "direct (coordinator)",
+      "status": "open -- reconciliation in progress, see reports/BRANCH_FORK_RECEIPT_20261007.json",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/BRANCH_FORK_RECEIPT_20261007.json",
+      "residual_risk": "MEDIUM -- duplicated fixes may diverge further if not reconciled; production branch may miss critical fixes present only on working branch"
+    },
+    {
+      "id": "GAP-041",
+      "severity": "P1",
+      "subsystem": "map-quality / tile-verification",
+      "description": "a 2026-10-07 critique claims VerifyTileWorldsCommandlet.cpp still only iterates TActorIterator<AStaticMeshActor> and never proves building/road/terrain geometry presence, directly contradicting an earlier accepted finding that a TObjectIterator fix found real per-tile mesh counts cross-validated against OSM data",
+      "proof": "2026-10-07 critique: \"VerifyTileWorldsCommandlet.cpp still only iterates TActorIterator<AStaticMeshActor> and never proves building/road/terrain geometry presence\"; earlier accepted finding: TObjectIterator fix found real per-tile mesh counts cross-validated against OSM data",
+      "affected_files": [
+        "VerifyTileWorldsCommandlet.cpp"
+      ],
+      "scientific_runtime_consequence": "If the critique is correct, tile verification passes without actually verifying road/terrain/building geometry presence -- a false-green gate. If the earlier finding is correct, the critique may be based on stale code. Either way, trust in tile verification evidence is compromised until the live file is directly re-inspected.",
+      "owner_subagent": "unassigned -- needs direct re-inspection of live VerifyTileWorldsCommandlet.cpp",
+      "status": "open -- contradictory reports, needs direct re-inspection of the live file before either claim is trusted",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": "2026-10-07 critique of VerifyTileWorldsCommandlet.cpp; earlier TObjectIterator fix report (not separately filed)",
+      "residual_risk": "HIGH -- if the critique is correct, tile verification is fundamentally incomplete; if the earlier finding is correct, the critique may be based on stale code. Cannot be resolved without direct live-file inspection."
     }
   ],
   "counts": {
-    "total": 39,
+    "total": 41,
     "fixed": 28,
     "closed_non_reproducible": 3,
     "in_progress": 1,
     "deferred": 1,
-    "open": 5,
-    "counts_reconciliation_note": "Both GAP-032/033's branch (fixed 24->26) and GAP-034's branch (fixed 24->25) computed their own delta against a stale 24-fixed/5-open baseline, each unaware of the other's fix and of GAP-031's checker fix (merged earlier the same day, commit fa3214fc) -- neither number is wrong for what each branch could see, but neither is correct once all three merge together. Recomputed directly from a scan of all 35 individual gap 'status' fields at merge time (2026-09-29): 28 fixed (includes GAP-031, whose status leads with 'fixed' per the same partial-fix convention already used for GAP-019/GAP-020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 open (026 only -- the only item left with zero real fix and a genuine pending human policy decision), 1 blocked_external (017), 1 in_progress (018). Total was 35 at that point in the day. SUPERSEDED same day by the V5 hardening merge (commit 38bb7c79), which added GAP-036 and GAP-037 (both open, needing a policy decision) -- total became 37, open 3 (026/036/037). SUPERSEDED AGAIN 2026-09-30 by the hardening/final-gap-closure-20260930 merge, which added GAP-038 (NEW-196/197-199's modules exist but are unwired -- open, needs a wire-in-or-defer decision) -- current total is 38, open is 4 (026/036/037/038), all other buckets unchanged from this note's figures. SUPERSEDED AGAIN 2026-10-01 by the NEW-271..292 merge, which added GAP-039 (5 perception fixes never implemented + 1 permanently-dead validation gate, open, low-priority follow-up) -- current total is 39, open is 5 (026/036/037/038/039), all other buckets unchanged.",
+    "open": 7,
+    "counts_reconciliation_note": "Recomputed directly from a scan of all 41 individual gap 'status' fields at 2026-10-07: 28 fixed (GAP-001..007, 009..012, 016, 019..025, 027..035, 031 counts as fixed per the partial-fix convention used for GAP-019/020), 3 closed_non_reproducible (013/014/015), 1 deferred (008), 1 in_progress (018), 1 blocked_external (017), 7 open (026, 036, 037, 038, 039, 040, 041). GAP-040 and GAP-041 added 2026-10-07 as new open items. No estimation -- direct field scan only.",
     "blocked_external": 1
   },
   "completed_non_gap_work_2026_09_22": {

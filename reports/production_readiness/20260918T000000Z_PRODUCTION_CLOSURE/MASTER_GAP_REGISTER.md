@@ -2,7 +2,7 @@
 
 Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync at each update.
 
-Last updated: `2026-09-29T22:00:00Z`
+Last updated: `2026-10-07T00:00:00Z`
 
 | ID | Severity | Subsystem | Status | Fixing commit / owner |
 |---|---|---|---|---|
@@ -43,19 +43,27 @@ Last updated: `2026-09-29T22:00:00Z`
 | GAP-035 | P1 | ultimate_pipeline/contracts/writer_lock.py -- load() leaked raw JSONDecodeError/TypeError instead of failing closed | **fixed** | 655671fd (branch integration/o1-o20-rebased-20260929; load() now wraps json.loads/from_dict in try/except -> RuntimeError; acquire() except clauses updated to match) |
 | GAP-036 | P2 | PRODUCTION_MAP_QUALITY_CONTRACT.yaml -- no executing consumer | open (needs policy) | raised as NEW-209 by hardening/v5-incremental-20260929, independently re-verified (zero .py references on either ref) and logged 2026-09-29 |
 | GAP-037 | P2 | waiver model cannot separate quality deviations from integrity defects | open (needs policy) | raised as NEW-210 by hardening/v5-incremental-20260929, independently re-verified (V5's new gates never reference "waiver") and logged 2026-09-29 |
+| GAP-038 | P1 | ultimate_pipeline/tiling/carla_0916_import_process_contract.py + carla_0916_large_map_contract.py -- real, tested, but completely unwired closure modules (NEW-196/197-199) | open | hardening/final-gap-closure-20260930 (OpenCode, wrote the modules); independent verification subagent (2026-09-30, found the non-wiring, this coordinator logged it as a new tracked gap rather than accept the branch's own 'PASS' framing) |
+| GAP-039 | P2 | Perception pipeline (5 files) -- NEW-274/275/276/277/288 claimed fixed but never implemented; NEW-291 implemented but permanently dead (no SHA pins set) | open | hardening/perception-new271-292-real-20260930 (OpenCode, wrote the original claims); independent verification subagent (2026-10-01, found the gaps via blob-SHA diffing, not just grep); this coordinator logged them as a tracked gap rather than accept the 'all fixed' framing |
+| GAP-040 | P1 | repo-governance | open -- reconciliation in progress, see reports/BRANCH_FORK_RECEIPT_20261007.json | direct (coordinator) |
+| GAP-041 | P1 | map-quality / tile-verification | open -- contradictory reports, needs direct re-inspection of the live file before either claim is trusted | unassigned -- needs direct re-inspection of live VerifyTileWorldsCommandlet.cpp |
 
-Totals: 37 tracked, 28 fixed, 3 closed (non-reproducible), 1 deferred, 3 open, 1 blocked_external, 1 in_progress.
+Totals: 41 tracked, 28 fixed, 3 closed (non-reproducible), 1 deferred, 7 open, 1 blocked_external, 1 in_progress.
 
-## Active open / blocked items (2026-09-29, updated post-V5-merge)
+## Active open / blocked items (2026-10-07, updated post-GAP-040/041)
 
 - **GAP-026 (P1, open)**: lane-link pose-continuity is a dead signal in `lanelink_builder.py`; needs a human policy decision before any fix is dispatched.
 - **GAP-031 (P1, checker fixed + merged 2026-09-29, underlying defect still open)**: tile_frame_consistency.py's dead-code status field is fixed and now genuinely gates FAIL (27/31 pairs, confirmed on the real full-grid cook); the ~170-270m north-south tile-seam misplacement itself is still unfixed in tile_fbx_generator.py -- needs a real placement-correction design, not attempted per this program's discipline. Merge independently pytest-verified on production tip: 6402 passed, 6 skipped, 0 failed.
-- **GAP-032/GAP-033/GAP-034 (fixed, 2026-09-29)**: RQ3 pairing-preflight/dataset-manifest-verifier fail-open bugs and the RQ5(b) claim-boundary rule are now fixed and merged (078b2f40 + 462ddeb3, via 4d8c64b8/bd1eb569). This table and this active-items list had drifted from `MASTER_GAP_REGISTER.json` (the JSON was updated by the fixing merges but this `.md` twin was not) -- found and corrected during the V5 merge below; a real, if minor, instance of the sync gap this file's own header warns against.
+- **GAP-032/GAP-033/GAP-034 (fixed, 2026-09-29)**: RQ3 pairing-preflight/dataset-manifest-verifier fail-open bugs and the RQ5(b) claim-boundary rule are now fixed and merged (078b2f40 + 462ddeb3, via 4d8c64b8/bd1eb569).
 - **GAP-017 (P1, blocked_external)**: live CARLA RPC handshake still fails after audio-mixer-disable probe — blocks RQ3/RQ5a capture.
 - **GAP-018 (P1, in_progress)**: Epic/GitHub access resolved; UE4.26 compile running (`G:\UnrealEngine_4.26_CARLA`), `UE4Editor.exe` not yet present; cook not yet attempted.
 - **GAP-008 (P1, deferred)**: two geometry-authority packages; consolidation plan only (no RQ blocked directly).
 - **GAP-036 (P2, open)**: `PRODUCTION_MAP_QUALITY_CONTRACT.yaml` declares quality gates/profiles but nothing in the codebase executes it (zero `.py` references, confirmed independently on both the production tip and the V5 branch); raised as NEW-209 by the V5 hardening closure.
 - **GAP-037 (P2, open)**: the waiver model (single `allows_waived` boolean + process-only required fields) has no gate-class taxonomy, so it cannot structurally distinguish a waivable quality deviation from a non-waivable identity/integrity defect; V5's own new gates are unaffected today only because they never consult the waiver system at all (confirmed independently). Raised as NEW-210 by the V5 hardening closure.
+- **GAP-038 (P1, open)**: real, tested CARLA 0.9.16 import process and large map contract modules exist but are completely unwired — zero callers in the codebase.
+- **GAP-039 (P2, open)**: 5 perception fixes (NEW-274/275/276/277/288) never implemented; NEW-291 implemented but inert (no SHA pins set).
+- **GAP-040 (P1, open)**: production branch (origin/integration/production-large-map-20260918, tip a82e0201) and working branch (rq1-determinism-matrix-20261007) diverged by 14 vs 33 commits from merge-base 278968f9, with at least 3 independently-duplicated fixes. Reconciliation in progress, see reports/BRANCH_FORK_RECEIPT_20261007.json.
+- **GAP-041 (P1, open)**: contradictory reports on VerifyTileWorldsCommandlet.cpp — a 2026-10-07 critique claims it only iterates TActorIterator<AStaticMeshActor> and never proves building/road/terrain geometry presence, directly contradicting an earlier accepted finding that a TObjectIterator fix found real per-tile mesh counts cross-validated against OSM data. Needs direct re-inspection of the live file.
 
 See `MASTER_GAP_REGISTER.json` for full detail per issue (proof, affected files, consequence,
 fixing commit, regression test, evidence artifact, residual risk). Updated after every subagent
