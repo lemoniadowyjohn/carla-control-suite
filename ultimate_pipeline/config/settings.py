@@ -1850,6 +1850,7 @@ class Settings:
 
         self.OSM_FILE = _pick_existing(
             self.OSM_FILE,
+            str(PROJECT_ROOT / "campaigns" / "ingolstadt_cooked_perception_v1" / "source" / "ingolstadt_authoritative.osm"),
             str(city_dir(CITY_NAME) / "osm" / f"{CITY_NAME}.osm"),
         )
 

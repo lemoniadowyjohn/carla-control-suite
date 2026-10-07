@@ -142,26 +142,49 @@ def _quantize(value: float, places: int = 3) -> float:
     return round(float(value) + 0.0, places)
 
 
-def _planview_signature(road: ET.Element) -> List[str]:
+def _planview_signature(road: ET.Element) -> List[Dict[str, Any]]:
     """
-    Ordered planView geometry type + s-span signature for one road.
+    Ordered planView geometry type + s-span + parameters signature for one road.
 
-    Included because it distinguishes maps that share road *ids* but differ in
-    geometry, and it is stable under CARLA re-serialization (which changes
-    numeric precision but not geometry ordering).
+    Includes geometry type (line/arc/spiral/paramPoly3) and all relevant
+    parameters (curvature, curvStart/curvEnd, a/b/c/d coefficients) to
+    distinguish maps that share road *ids* but differ in geometry.
+
+    Stable under CARLA re-serialization (which changes numeric precision but
+    not geometry ordering or type).
     """
-    signature: List[str] = []
+    signature: List[Dict[str, Any]] = []
     for geometry in road.findall("planView/geometry"):
+        # Detect geometry type and extract parameters
+        geom_type = "line"  # default if no child element
+        params: Dict[str, float] = {}
+        for child in geometry:
+            if child.tag in ("line", "arc", "spiral", "paramPoly3"):
+                geom_type = child.tag
+                if geom_type == "arc":
+                    params["curvature"] = _quantize(_attr_num(child, "curvature", 0.0), 6)
+                elif geom_type == "spiral":
+                    params["curvStart"] = _quantize(_attr_num(child, "curvStart", 0.0), 6)
+                    params["curvEnd"] = _quantize(_attr_num(child, "curvEnd", 0.0), 6)
+                elif geom_type == "paramPoly3":
+                    params["a"] = _quantize(_attr_num(child, "a", 0.0), 6)
+                    params["b"] = _quantize(_attr_num(child, "b", 0.0), 6)
+                    params["c"] = _quantize(_attr_num(child, "c", 0.0), 6)
+                    params["d"] = _quantize(_attr_num(child, "d", 0.0), 6)
+                break
+
         signature.append(
-            "{x},{y},{z},{h},{p},{r},{length}".format(
-                x=_quantize(_attr_num(geometry, "x", 0.0), 2),
-                y=_quantize(_attr_num(geometry, "y", 0.0), 2),
-                z=_quantize(_attr_num(geometry, "z", 0.0), 2),
-                h=_quantize(_attr_num(geometry, "h", 0.0), 4),
-                p=_quantize(_attr_num(geometry, "p", 0.0), 4),
-                r=_quantize(_attr_num(geometry, "r", 0.0), 4),
-                length=_quantize(_attr_num(geometry, "length", 0.0), 3),
-            )
+            {
+                "type": geom_type,
+                "x": _quantize(_attr_num(geometry, "x", 0.0), 2),
+                "y": _quantize(_attr_num(geometry, "y", 0.0), 2),
+                "z": _quantize(_attr_num(geometry, "z", 0.0), 2),
+                "h": _quantize(_attr_num(geometry, "h", 0.0), 4),
+                "p": _quantize(_attr_num(geometry, "p", 0.0), 4),
+                "r": _quantize(_attr_num(geometry, "r", 0.0), 4),
+                "length": _quantize(_attr_num(geometry, "length", 0.0), 3),
+                "params": params,
+            }
         )
     return signature
 
@@ -246,11 +269,36 @@ def structural_fingerprint(xodr_text: str) -> Dict[str, Any]:
 
     junctions: List[Dict[str, Any]] = []
     for junction in root.findall("junction"):
+        connections: List[Dict[str, Any]] = []
+        for conn in junction.findall("connection"):
+            conn_data: Dict[str, Any] = {
+                "id": str(conn.get("id", "")),
+                "incomingRoad": str(conn.get("incomingRoad", "")),
+                "connectingRoad": str(conn.get("connectingRoad", "")),
+                "contactPoint": str(conn.get("contactPoint", "")),
+            }
+            # Capture laneLinks for this connection
+            lane_links: List[Dict[str, str]] = []
+            for ll in conn.findall("laneLink"):
+                lane_links.append(
+                    {
+                        "from": str(ll.get("from", "")),
+                        "to": str(ll.get("to", "")),
+                    }
+                )
+            if lane_links:
+                conn_data["laneLinks"] = lane_links
+            connections.append(conn_data)
+
+        # Sort connections for deterministic ordering
+        connections.sort(key=lambda c: (c.get("id", ""), c.get("incomingRoad", ""), c.get("connectingRoad", "")))
+
         junctions.append(
             {
                 "id": str(junction.get("id", "")),
                 "type": str(junction.get("type", "")),
-                "connection_count": len(junction.findall("connection")),
+                "connection_count": len(connections),
+                "connections": connections,
             }
         )
     junctions.sort(key=lambda item: str(item["id"]))
@@ -265,7 +313,7 @@ def structural_fingerprint(xodr_text: str) -> Dict[str, Any]:
     }
 
     components = {
-        "schema": "map_structural_fingerprint_v1",
+        "schema": "map_structural_fingerprint_v2",
         "road_count": len(roads),
         "junction_count": len(junctions),
         "road_ids": [str(item["id"]) for item in roads],
@@ -277,7 +325,7 @@ def structural_fingerprint(xodr_text: str) -> Dict[str, Any]:
     }
 
     return {
-        "schema": "map_structural_fingerprint_v1",
+        "schema": "map_structural_fingerprint_v2",
         "fingerprint_sha256": sha256_text(canonical_dumps(components)),
         "components": components,
     }
@@ -349,6 +397,14 @@ def fingerprint_mismatches(
         for field in ("length", "lane_count", "planview", "lane_sections"):
             if expected_roads[road_id].get(field) != actual_roads[road_id].get(field):
                 differences.append(f"road[{road_id}].{field} differs")
+
+    # Compare junction topology (connections, laneLinks)
+    expected_juncs = {str(j.get("id")): j for j in expected_components.get("junctions") or []}
+    actual_juncs = {str(j.get("id")): j for j in actual_components.get("junctions") or []}
+    for junc_id in sorted(set(expected_juncs) & set(actual_juncs)):
+        if expected_juncs[junc_id].get("connections") != actual_juncs[junc_id].get("connections"):
+            differences.append(f"junction[{junc_id}].connections differs")
+
     return differences
 
 
