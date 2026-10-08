@@ -1,95 +1,140 @@
-# PACKAGED CARLA CONFIG MODIFICATIONS — PCD3D_ES31 Fix
+# PACKAGED CARLA CONFIG MODIFICATIONS
 
-## Summary
+Durability record for configuration changes made to the **packaged** CARLA tree,
+which is **not** under git. If that tree is regenerated or re-downloaded, the
+changes below are silently lost with nothing to restore them from. This document
+is the restoration source.
 
-A fix for the `PCD3D_ES31` error (unrecognized argument `-Qunused-arguments` passed to clang) was applied to the packaged CARLA 0.9.16 engine config. This change lives in a non-git-tracked packaged tree and would be silently lost if the tree is ever regenerated or redownloaded. This document records the exact change for reproducibility.
-
----
-
-## Affected File
-
-**Path:** `E:\CARLA\CARLA_0.9.16\CarlaUE4\Config\DefaultEngine.ini`  
-**Section:** `[/Script/WindowsTargetPlatform.WindowsTargetSettings]`
+Follows the V7 pattern of `docs/runtime/CARLA_SOURCE_TREE_MODIFICATIONS.md`, which
+records a different change to a different CARLA tree (the full UE4 *source* build
+on `G:`, which IS a git repo). This file covers the *packaged* tree on `E:`.
 
 ---
 
-## Change Details
+## Modification 1 — remove `+TargetedRHIs=PCD3D_ES31` (2026-10-08)
 
-**Line removed:**  
+**Applies to**: GAP-049 (cook stall contributing factor). AA4 applied this;
+this section makes it reproducible.
+
+### Affected file
+
+| | |
+|---|---|
+| Path | `E:\CARLA\CARLA_0.9.16\CarlaUE4\Config\DefaultEngine.ini` |
+| Section | `[/Script/WindowsTargetPlatform.WindowsTargetSettings]` |
+| Git-tracked | **No.** `E:\CARLA\CARLA_0.9.16` is not a git repository. |
+| Backup | `E:\CARLA\CARLA_0.9.16\CarlaUE4\Config\DefaultEngine.ini.bak_20261008_PCD3D` |
+
+### Exact line removed
+
 ```ini
-AdditionalCompilerArguments="-Qunused-arguments"
++TargetedRHIs=PCD3D_ES31
 ```
 
-**Before (153 lines):** The file contained the line `AdditionalCompilerArguments="-Qunused-arguments"` inside the `[/Script/WindowsTargetPlatform.WindowsTargetSettings]` block.
+One line. Verified by `Compare-Object` against the backup — the *only*
+difference between before and after is this single line.
 
-**After (152 lines):** That line was removed. The section now contains only the remaining settings.
+### Line counts and SHA256 (computed from the physical files, not placeholders)
 
----
+| Version | Lines | SHA256 |
+|---|---|---|
+| **Before** (the `.bak_20261008_PCD3D` backup) | 153 | `7531c573494d0c4639f23ba98efdb0e17b35752996cd31fda117fc1e7142e4b0` |
+| **After** (current file) | 152 | `dcd2ccf1e146dc5f5c10ce368ff624bab03c76556a2a244730f8a35e98f56a05` |
 
-## SHA256 Hashes
+Both hashes were produced with `Get-FileHash -Algorithm SHA256` against the real
+files and are reproducible by re-running that command.
 
-| Version | SHA256 |
-|---------|--------|
-| **Before (with PCD3D_ES31 line)** | `a1f3c8e9d4b2f6e7c8d9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1` |
-| **After (fixed, line removed)** | `b2f3c8e9d4b2f6e7c8d9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d2` |
-
-*Note: SHA256 values are placeholders — compute actual hashes from the physical files when available.*
-
----
-
-## Backup
-
-A backup of the original file was created at:  
-`E:\CARLA\CARLA_0.9.16\CarlaUE4\Config\DefaultEngine.ini.bak_20261008_PCD3D`
-
----
-
-## Fixed File Section (Reproducible Reference)
-
-The relevant `[/Script/WindowsTargetPlatform.WindowsTargetSettings]` block **after the fix**:
+### The section after the fix (verbatim, lines 104–120)
 
 ```ini
 [/Script/WindowsTargetPlatform.WindowsTargetSettings]
-TargetedRHIs=DX11
-TargetedRHIs=DX12
-bCompileForSize=False
-bUseUnityBuild=True
-bForceEnableExceptions=True
-bUsePCHFiles=True
-MinFilesUsingPCH=2
-bEnableCppModules=True
-bCompileWithStatsWithoutEngine=False
-bAllowNonUFSIniWhenUFSIniPresent=True
+Compiler=Default
+-TargetedRHIs=PCD3D_SM5
++TargetedRHIs=PCD3D_SM5
++TargetedRHIs=SF_VULKAN_SM5
+DefaultGraphicsRHI=DefaultGraphicsRHI_DX12
+MinimumOSVersion=MSOS_Vista
+bTarget32Bit=False
+AudioSampleRate=48000
+AudioCallbackBufferFrameSize=1024
+AudioNumBuffersToEnqueue=1
+AudioNumChannels=0
+AudioNumSourceWorkers=4
+SpatializationPlugin=
+ReverbPlugin=
+OcclusionPlugin=
+CompressionOverrides=(bOverrideCompressionTimes=False,DurationThreshold=5.000000,MaxNumRandomBranches=0,SoundCueQualityIndex=0)
 ```
 
+The effective `+TargetedRHIs` set after the change is exactly
+`[PCD3D_SM5, SF_VULKAN_SM5]`, which is what
+`reports/production_readiness/root_level_artifacts_20261007/SHADER_PLATFORM_SCOPE_AUDIT.json`
+declares as the expected platform set (`PCD3D_ES31_REQUIRED: false`).
+
+### Why
+
+`PCD3D_ES31` is the OpenGL ES 3.1 shader platform — mobile/embedded. The
+WindowsNoEditor desktop target requires only `PCD3D_SM5` and `SF_VULKAN_SM5`.
+Its presence added roughly a third more shader permutations per material and is
+implicated in the package-2975 cook stall: 49 of 49 `for platform …` mentions in
+the stalled session were `PCD3D_ES31`, and all 38 `MSM_Hair not supported in
+feature level ES3_1` material failures are ES3.1-only.
+
+### Where this is NOT
+
+`G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Config\DefaultEngine.ini` (the UE4
+**source** tree, which IS a git repo) never contained this line and was **not**
+modified. A machine-wide scan of all five `DefaultEngine.ini` files found the
+line in exactly one place — the packaged tree above. Note that
+`G:\UnrealEngine_4.26_CARLA\Unreal\CarlaUE4\Config\DefaultEngine.ini`, the path
+named in GAP-049's original description, does not exist on this machine; that
+register entry was corrected separately.
+
+### Deliberately not modified
+
+`G:\CARLA\cook_out\Ingolstadt\CarlaUE4\Metadata\CookedIniVersion.txt` also
+references `PCD3D_ES31`. It is a **cooked output artifact** recording the config
+as consumed by the previous cook, so it is the historical record of the failing
+run and must not be rewritten. It will change only when a new cook is
+deliberately launched.
+
+### Status: applied, NOT validated by a cook
+
+No cook was run to validate this. Its effect on the stall is a hypothesis
+consistent with the shader-scope evidence, **not** a measured outcome. Cook
+attempts have previously taken up to 14+ hours and hung, OOM'd or stalled, so
+re-cooking remains a separate deliberate decision.
+
+### Receipt
+
+`carla-control-plane/reports/control_plane/PCD3D_ES31_CONFIG_FIX_20261008.json`
+records the before/after, the confirmation that no build or cook process was
+started, and the `PCD3D_ES31` reference inventory.
+
 ---
 
-## Root Cause
+## Restoration procedure
 
-The `-Qunused-arguments` flag is a **Clang driver option** that suppresses warnings about unused command-line arguments. It is **not recognized by MSVC/clang-cl** (the Windows toolchain used by CARLA 0.9.16 on Windows). When the Unreal Build Tool passes this flag to the Windows compiler, it produces the `PCD3D_ES31` error and fails the build.
+If `E:\CARLA\CARLA_0.9.16` is regenerated or re-downloaded:
 
-The flag was likely added for Linux/macOS cross-compilation compatibility but breaks the Windows build.
+1. Locate `CarlaUE4\Config\DefaultEngine.ini` in the new packaged tree.
+2. Confirm `[/Script/WindowsTargetPlatform.WindowsTargetSettings]` contains
+   `+TargetedRHIs=PCD3D_ES31` (i.e. the modification was lost).
+3. Delete that one line. Do not alter any other entry.
+4. Verify the resulting file has **152** lines and SHA256
+   `dcd2ccf1e146dc5f5c10ce368ff624bab03c76556a2a244730f8a35e98f56a05`.
+   A mismatch means the packaged tree differs from the one this was applied to;
+   re-derive rather than force the hash.
+5. If the backup `.bak_20261008_PCD3D` still exists, it is the authoritative
+   153-line "before" (SHA256 `7531c573…`); copy it over the file and redo step 3.
 
----
+## Verification commands
 
-## Reproduction
-
-To re-apply this fix if the packaged tree is lost:
-
-1. Locate `CarlaUE4/Config/DefaultEngine.ini` in the CARLA 0.9.16 installation.
-2. Find the `[/Script/WindowsTargetPlatform.WindowsTargetSettings]` section.
-3. Remove the line: `AdditionalCompilerArguments="-Qunused-arguments"`
-4. Save the file.
-
----
-
-## Related Documentation
-
-- **V7 Pattern Reference:** `docs/runtime/CARLA_SOURCE_TREE_MODIFICATIONS.md` (documents a different change to a different CARLA source tree — the full UE4 source build, not the packaged binary distribution)
-- **Thesis Impact:** This fix enables the CARLA 0.9.16 packaged build to compile on Windows, which is required for the RQ1/RQ2/RQ3 perception capture pipeline.
-
----
-
-## Commit Reference
-
-This disclosure was committed on branch `docs/pcd3d-es31-fix-disclosure-20261008` as part of the AA4 config fix durability requirement.
+```powershell
+$p = "E:\CARLA\CARLA_0.9.16\CarlaUE4\Config\DefaultEngine.ini"
+Get-FileHash $p -Algorithm SHA256
+(Get-Content $p).Count                                  # expect 152
+Select-String -Path $p -Pattern "PCD3D_ES31"            # expect no matches
+Select-String -Path $p -Pattern "TargetedRHIs"          # expect SM5 + SF_VULKAN_SM5 only
+Compare-Object (Get-Content "$p.bak_20261008_PCD3D") (Get-Content $p)
+```
