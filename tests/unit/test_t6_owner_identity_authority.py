@@ -46,8 +46,24 @@ pytestmark = pytest.mark.skipif(
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "scripts"))
 
-import control_plane as cp  # noqa: E402
-import t6_determinism as t6  # noqa: E402
+# GAP-047: these MUST NOT be plain module-level imports.
+#
+# pytest executes module-level imports during COLLECTION, before any skipif
+# marker is evaluated -- pytestmark above suppresses test ITEMS, not collection.
+# So `import control_plane` at module scope raised ModuleNotFoundError on CI,
+# where scripts/control_plane.py is absent (it is untracked, never committed),
+# aborting the whole run with "Interrupted: 1 error during collection" / exit 2
+# and failing the offline-tests job in ~16s. That was the real cause of the
+# 100%-red CI streak, not the GAP-044 signal registry and not anything
+# platform-specific: it would fail identically on a Windows runner.
+#
+# importorskip skips the whole module at collection time when the dependency is
+# genuinely unavailable, and resolves normally when it is present, so local
+# Windows runs keep executing these tests unchanged. t6_determinism is listed too
+# because it imports control_plane internally, so it would fail for the same
+# reason one line later.
+cp = pytest.importorskip("control_plane", reason="scripts/control_plane.py not present")
+t6 = pytest.importorskip("t6_determinism", reason="scripts/t6_determinism.py not importable")
 
 
 # ---------------------------------------------------------------- identity
