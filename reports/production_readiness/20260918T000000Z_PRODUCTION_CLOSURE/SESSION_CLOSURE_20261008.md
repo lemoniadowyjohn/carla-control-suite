@@ -148,5 +148,8 @@ X2 trial consumed.
 
 ## 8. PR
 
-Intended: `docs/session-closure-20261008` → 
-...[truncated 447 chars]
+Branch docs/session-closure-20261008 targets
+origin/integration/production-large-map-20260918; docs-only, **not
+merged by the author**. Created PR **#10**:
+https://github.com/lemoniadowyjohn/carla-control-suite/pull/10
+(state open at doc time). Merge is the repo owner’s decision.
