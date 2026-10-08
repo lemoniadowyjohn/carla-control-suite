@@ -176,6 +176,22 @@ NON_WAIVABLE_CLASSES = frozenset(
 # Canonical classification of known gates. Identity/integrity and structural
 # gates are never waivable; quality deviations (e.g. component_reachability)
 # may be WAIVED (never PASS) through a governed waiver.
+#
+# GAP-051: this registry had drifted from reality. It carried 24 keys while the
+# pipeline emits 38 distinct gate names, so only 4 keys ever matched an emitted
+# name and 20 were dead. The drift was mostly RENAMING, not omission -- the
+# registry held plausible-but-wrong spellings of gates the code does emit:
+#
+#     registry key                 emitted name (was unregistered)
+#     ---------------------------  ----------------------------------------
+#     xodr_xml_integrity           xml_integrity
+#     lane_link_targets_exist      lane_link_targets
+#     carla_structural_compatibility carla_opendrive_compat
+#     geometry_continuity          geometric_continuity   <- named in GAP-051
+#     lane_width                   lane_width_continuity
+#
+# Every emitted name is now registered explicitly. classify_gate still fails
+# closed on anything unknown, so this only removes reliance on that default.
 GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
     # Identity / integrity (non-waivable)
     "map_registry_identity": GateClass.IDENTITY_INTEGRITY,
@@ -186,7 +202,6 @@ GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
     "package_identity": GateClass.IDENTITY_INTEGRITY,
     "deterministic_provenance": GateClass.IDENTITY_INTEGRITY,
     "xodr_sha": GateClass.IDENTITY_INTEGRITY,
-    "cook_manifest_identity": GateClass.IDENTITY_INTEGRITY,
     # Structural integrity (non-waivable)
     "xodr_xml_integrity": GateClass.STRUCTURAL_INTEGRITY,
     "junction_integrity": GateClass.STRUCTURAL_INTEGRITY,
@@ -194,7 +209,6 @@ GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
     "lane_section_successors": GateClass.STRUCTURAL_INTEGRITY,
     "carla_structural_compatibility": GateClass.STRUCTURAL_INTEGRITY,
     "lane_connectivity": GateClass.STRUCTURAL_INTEGRITY,
-    "topology_spec": GateClass.STRUCTURAL_INTEGRITY,
     "required_artifact_presence": GateClass.STRUCTURAL_INTEGRITY,
     # Runtime-dependent (non-waivable)
     "runtime_map_identity": GateClass.RUNTIME_DEPENDENT,
@@ -205,6 +219,89 @@ GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
     "lane_width": GateClass.QUALITY_DEVIATION,
     "geometry_continuity": GateClass.QUALITY_DEVIATION,
     "elevation_quality": GateClass.QUALITY_DEVIATION,
+
+    # ---------------------------------------------------------------------
+    # GAP-051: names the pipeline ACTUALLY emits (verified by scanning
+    # quality_gates.DRIVABILITY_GATES/TRANSPORT_GATES, quality_gates._try
+    # call sites, QualityGateManager._finalize_gate keys, MainPipeline
+    # _stage_gate call sites, and map_acceptance report keys).
+    # ---------------------------------------------------------------------
+
+    # Transport / parse gates. NEW-341: failures by construction, blocking.
+    "xml_integrity": GateClass.STRUCTURAL_INTEGRITY,
+    "xml_parse": GateClass.STRUCTURAL_INTEGRITY,
+    "xodr_minimum_size": GateClass.STRUCTURAL_INTEGRITY,
+    "quality_gate_manager_import": GateClass.STRUCTURAL_INTEGRITY,
+    # Drivability / topology structure
+    "lane_link_targets": GateClass.STRUCTURAL_INTEGRITY,
+    "carla_opendrive_compat": GateClass.STRUCTURAL_INTEGRITY,
+    "xodr_strict_carla": GateClass.STRUCTURAL_INTEGRITY,
+    "external_libopendrive": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_count_changes": GateClass.STRUCTURAL_INTEGRITY,
+    "geometric_continuity": GateClass.QUALITY_DEVIATION,
+    "lane_geometry_continuity": GateClass.QUALITY_DEVIATION,
+    "lane_width_continuity": GateClass.QUALITY_DEVIATION,
+    "planview_internal_seams": GateClass.STRUCTURAL_INTEGRITY,
+    "planview_internal_seams_tiles": GateClass.STRUCTURAL_INTEGRITY,
+    "junction_connector_boundary_alignment": GateClass.STRUCTURAL_INTEGRITY,
+    "drivable_surface": GateClass.STRUCTURAL_INTEGRITY,
+    "length_invariant": GateClass.STRUCTURAL_INTEGRITY,
+    "origin_sanity": GateClass.STRUCTURAL_INTEGRITY,
+    # Elevation / DEM structure
+    "elevation_continuity": GateClass.QUALITY_DEVIATION,
+    "elevation_smoothness": GateClass.QUALITY_DEVIATION,
+    "elevation_seams": GateClass.STRUCTURAL_INTEGRITY,
+    "elevation_missing_and_cliffs": GateClass.STRUCTURAL_INTEGRITY,
+    "structure_elevation_plausibility": GateClass.STRUCTURAL_INTEGRITY,
+    "dem_coverage": GateClass.STRUCTURAL_INTEGRITY,
+    # Physics / scene feasibility
+    "physics_feasibility": GateClass.STRUCTURAL_INTEGRITY,
+    "collision_mesh": GateClass.QUALITY_DEVIATION,
+    # Reachability (waivable, never PASS)
+    "component_reachability_literal": GateClass.QUALITY_DEVIATION,
+    # Semantic / statistical advisories
+    "semantic_overlap": GateClass.QUALITY_DEVIATION,
+    "randomness_entropy": GateClass.HEURISTIC_ADVISORY,
+    "full_map_metrics": GateClass.HEURISTIC_ADVISORY,
+}
+
+#: Names that the quality-gate sweep does not EMIT but which are still part of
+#: the governed taxonomy and must stay classified. These are referenced by waiver
+#: payloads, manifest/run-pack provenance contracts and the NEW-210 taxonomy
+#: documentation, so they are consumers of the classification rather than
+#: producers of gate names. GAP-051 removed the two keys that were referenced by
+#: nothing at all -- `topology_spec` and `cook_manifest_identity` -- i.e. not the
+#: sweep, not any waiver payload, and not the NEW-210 taxonomy doc. Their absence
+#: was found by asserting every reserved name still has an external consumer.
+GATE_TAXONOMY_RESERVED_NAMES = frozenset(
+    {
+        "map_registry_identity",
+        "artifact_fingerprint",
+        "repository_sha",
+        "manifest_digest",
+        "candidate_identity",
+        "package_identity",
+        "deterministic_provenance",
+        "xodr_sha",
+        "runtime_map_identity",
+        "carla_runtime_identity",
+        "runtime_map",
+        "required_artifact_presence",
+    }
+)
+
+#: Gate names that are ALIASES retained only for backward compatibility with
+#: callers/tests written before GAP-051. Each maps to the name the pipeline
+#: actually emits today. These are never emitted themselves.
+GATE_CLASS_REGISTRY_ALIASES: Dict[str, str] = {
+    # The specific near-miss called out by GAP-051: the registry spelled this
+    # "geometry_continuity" while the code emits "geometric_continuity".
+    "geometry_continuity": "geometric_continuity",
+    "xodr_xml_integrity": "xml_integrity",
+    "lane_link_targets_exist": "lane_link_targets",
+    "carla_structural_compatibility": "carla_opendrive_compat",
+    "lane_width": "lane_width_continuity",
+    "elevation_quality": "elevation_continuity",
 }
 
 
@@ -213,10 +310,22 @@ def classify_gate(name: str) -> Optional[GateClass]:
 
     Unknown gate classes fail closed: callers must treat None as
     non-waivable, never default to QUALITY_DEVIATION.
+
+    GAP-051: pre-rename spellings are resolved through
+    :data:`GATE_CLASS_REGISTRY_ALIASES` so a caller using the old name gets the
+    same answer as one using the name the pipeline actually emits, instead of
+    silently falling through to the fail-closed default.
     """
     if not isinstance(name, str):
         return None
-    return GATE_CLASS_REGISTRY.get(name.strip())
+    key = name.strip()
+    resolved = GATE_CLASS_REGISTRY.get(key)
+    if resolved is not None:
+        return resolved
+    alias = GATE_CLASS_REGISTRY_ALIASES.get(key)
+    if alias is not None:
+        return GATE_CLASS_REGISTRY.get(alias)
+    return None
 
 
 def _coerce_gate_class(value: object) -> Optional[GateClass]:
