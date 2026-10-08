@@ -14,6 +14,24 @@ A) Old / strict style:
 B) New / config-driven style (what your run_training.py was trying to do):
     run_local_perception(config_path="configs/perception.json")
 
+Call-style precedence (NEW-275 clarification): explicit arguments ALWAYS win.
+`config_path` only fills in arguments left as None -- it never overrides an
+explicitly passed client/map_name/out_dir, and a client is only constructed
+from the config when no client was passed. Passing both styles at once is
+therefore safe and unambiguous: explicit first, config as fallback.
+
+Metrics-path fallback (NEW-275 clarification): when neither the runner's
+return value nor the runner object exposes a metrics path, this module falls
+back to `_pick_latest_json`, which prefers well-known filenames but
+ultimately picks by FILE MTIME. That fallback is best-effort, not
+authoritative -- a stale metrics.json from an older run in the same out_dir
+can be returned. Prefer a distinct out_dir per run, or read the explicit
+path from the runner result.
+
+Import requirement (NEW-275 clarification): this module imports `carla` at
+top level, so importing it requires the CARLA PythonAPI package. Only the
+`LocalPerceptionRunner` import is lazy (deferred to call time).
+
 This module:
 ✅ accepts either style (and errors clearly if neither is provided)
 ✅ creates CARLA client from config when needed
@@ -86,6 +104,12 @@ def _pick_latest_json(out_dir: str) -> Optional[str]:
     """
     Best-effort: find the most recent JSON file under out_dir that *looks* like metrics.
     This is a fallback when the runner doesn't explicitly return a path.
+
+    NEW-275 clarification: the final tiebreak is FILE MTIME (newest wins),
+    so this is NOT an authoritative provenance lookup. A stale metrics file
+    from a previous run sharing the same out_dir will be returned without
+    warning. Callers that need a trustworthy path must use a fresh out_dir
+    per run or take the explicit path from the runner's return value.
     """
     if not out_dir or not os.path.isdir(out_dir):
         return None
@@ -142,8 +166,16 @@ def run_local_perception(
       - run_local_perception(client, map_name, out_dir)
       - run_local_perception(config_path="...")
 
+    Precedence (NEW-275): explicit arguments win; config_path only fills
+    arguments left as None. `seed` comes from the config only (default None,
+    meaning runner-dependent behavior -- pass an explicit seed in the config
+    for reproducible runs).
+
     Returns:
       PerceptionRunResult(metrics_json_path=..., summary={...})
+    Note: metrics_json_path may come from the mtime-based fallback (see
+    _pick_latest_json) -- check summary["metrics_found"] and prefer a fresh
+    out_dir per run when the path matters.
     """
     # 1) Load config if provided (and override missing args)
     cfg: Dict[str, Any] = {}
@@ -176,7 +208,9 @@ def run_local_perception(
 
     seed = cfg.get("seed", None)
 
-    # 2) Import runner lazily (so importing this module doesn't drag CARLA-dependent stuff too early)
+    # 2) Import runner lazily (NEW-275: only LocalPerceptionRunner is lazy;
+    # this module already imports `carla` at top level, so importing this
+    # module itself requires the CARLA PythonAPI package)
     from ultimate_pipeline.carla_tools.local_perception_runner import LocalPerceptionRunner
 
     # 3) Construct runner in a signature-safe way
