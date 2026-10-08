@@ -1,6 +1,6 @@
 # Policy Decisions Pending — 2026-10-07
 
-Five gaps are blocked on human policy decisions, not code fixes. This document records the exact decision needed, concrete options with evidence-based effort estimates, and the consequence of no decision.
+Six gaps are blocked on human policy decisions, not code fixes. This document records the exact decision needed, concrete options with evidence-based effort estimates, and the consequence of no decision. (GAP-042 added 2026-10-08, bringing this document from five gaps to six.)
 
 ---
 
@@ -227,6 +227,61 @@ None of these currently do anything. NEW-291 is the only one with implemented-bu
 
 ---
 
+## GAP-042: Road/Terrain Generation Disabled by Design (CRITICAL)
+
+**Decision needed**: How to produce road-surface and terrain geometry for custom maps — re-enable OSM2World's road/terrain output, or install and wire RoadRunner end-to-end. V5 (2026-10-07) established that generation is never invoked **by design, not by accident**: all four generation paths are closed simultaneously (verified 2026-10-08 against live code, not taken on the report's word).
+
+### The four closed paths (independently re-verified)
+
+| # | Path | State in code |
+|---|------|---------------|
+| 1 | OSM2World enabled? | **Off.** `ultimate_pipeline/config/settings.py:1019` — `ENABLE_OSM2WORLD: bool = False`. The stage only runs when explicitly enabled. |
+| 2 | OSM2World roads/terrain emitted? | **Excluded even when enabled.** `ultimate_pipeline/enrichment/osm2world_runner.py:10` — "used for perceptual clutter (buildings/vegetation), NOT for road truth. Roads are owned by CARLA/OpenDRIVE." `DEFAULT_CONFIG` at `:159` sets `createTerrain=false`; `:168` sets `excludeWorldModule=RoadModule;RailwayModule;AerowayModule;ParkingModule`. Buildings/vegetation only, by construction. |
+| 3 | RoadRunner (the alternative generator)? | **Opt-in and uninstalled.** `ultimate_pipeline/cli.py:654,669` — RoadRunner commands live in a hidden CLI group, gated on `UP_ENABLE_ROADRUNNER=1` ("disabled by default", "Missing installation returns NOT_APPLICABLE"). Live probe 2026-10-08 via `ultimate_pipeline/roadrunner/installation.py`: `roadrunner_executable=None`, `matlab_executable=None`, API unavailable; `ROADRUNNER_EXECUTABLE`/`ROADRUNNER_ROOT` unset. The repo holds only profiles (`roadrunner_profiles/`, 5 YAMLs) and probe/contract code — no generator binary, no wired call path. |
+| 4 | Package contract admits road FBX? | **Forbids it.** `ultimate_pipeline/tiling/large_map_package.py:1042` — "No duplicate road authority — visual FBX must not contain roads"; `:1068` — `road_authority = "XODR only (FBX is buildings/clutter …)"`. The contract mechanically verifies Buildings-only FBX. Any road-bearing FBX trips the duplicate-authority guard by design. |
+
+A fifth leg is **UNPROVEN, not verified**: the one MoveAssets run on record reportedly had an empty `-Maps=` (`reports/RUN003_MOVEASSETS_LINEAGE.json` exists on disk — confirmed present — but its content was not independently re-checked here; the register itself marks this leg UNPROVEN). It is cited for completeness, not relied on.
+
+### Why it was turned off — blame/history (checked before estimating)
+
+- `ENABLE_OSM2WORLD=False` was **never turned off — it was born off**. `git log -S ENABLE_OSM2WORLD` on `settings.py` returns exactly one commit, `0ea5a1d8` (2026-07-28), which created the setting already `False` under the header "OSM2World (optional 3D scene artifacts)". There is no disabling commit to revert; the "off" is the original design ("strictly optional stage that does NOT affect OpenDRIVE generation").
+- Road exclusion likewise predates any incident: `git log -S excludeWorldModule` on `osm2world_runner.py` traces to the file's introduction. The stated reason is architectural, not empirical: **"Roads are owned by CARLA/OpenDRIVE"** (duplicate-authority avoidance — the same rule the package contract enforces).
+- The empirical reason surfaced later: phase-j evidence (`a386ba90`, 2026-08-04) ran OSM2World output against XODR roads and found them **MISALIGNED by ~165.9 km** (J5: OSM scene at 11.43E/48.75N vs XODR roads at 13.6E/49.2N — the same defect family as GAP-021's CRS/projection bug). So even a config flip could not have produced *usable* roads without first resolving a coordinate-frame reconciliation in the J5/GAP-021 class.
+- Net: option (a) is not "flip two config lines". It requires (i) re-deriving alignment between OSM2World scene output and XODR corridors, and (ii) redesigning the package contract's road-authority check, which currently *asserts the absence* of what option (a) would produce.
+
+### Option A: Re-enable OSM2World Road/Terrain Output
+
+| Step | Scope (files) | Effort |
+|------|---------------|--------|
+| A1. Config flip | `osm2world_runner.py:159,168` (`createTerrain=true`, drop `RoadModule` from `excludeWorldModule`); enablement path for `ENABLE_OSM2WORLD` (`settings.py:1019`, `cli.py`/`entrypoints.py` probe) | ~0.5 day (mechanical) |
+| A2. Alignment root-cause | Reproduce the J5-class misalignment on current code; reconcile OSM2World scene frame vs XODR corridor frame (GAP-021 defect family: `osm_to_xodr_wrapper.py` proj handling, `osm_polygon_loader.PROJ_STRING`, `dem_crs_contract.py`). Unknown until reproduced — J5 took a full investigation phase for the measurement alone | **~1–3 weeks, high variance** (the dominant cost; cannot be estimated tighter without a reproduction run) |
+| A3. Package-contract redesign | `large_map_package.py:1042,1068` — the road-authority check must admit road meshes *with provenance* instead of asserting Buildings-only; new tests for admitted-vs-leaked road geometry | ~2–3 days + tests |
+| A4. MoveAssets lineage | Re-verify `reports/RUN003_MOVEASSETS_LINEAGE.json`; establish a non-empty `-Maps=` run with receipt | ~0.5 day |
+| A5. End-to-end validation | Road-surface/terrain output validated against XODR corridors (the check A2's fix claims); cooked-tile census re-run | ~1 week |
+
+**Subtotal**: ~0.5d (certain) + ~2–3d (contract) + ~1–3wk (alignment, uncertain) + ~1wk (validation) ≈ **3–5 weeks**, dominated by A2.
+
+### Option B: Install and Wire RoadRunner End-to-End
+
+| Step | Scope | Effort |
+|------|-------|--------|
+| B1. Procurement/installation | RoadRunner + MATLAB + Automated Driving Toolbox licenses; install on build/cook hosts. **External procurement — not engineerable days; blocking dependency with unknown lead time.** Live probe 2026-10-08: none present. | Unknown (procurement, not engineering) |
+| B2. Enablement + wiring | `UP_ENABLE_ROADRUNNER=1` (`cli.py:669`); today RoadRunner code is probe/contract/profile only — **no generation call path exists**. Requires discovering the intended backend interface (`ultimate_pipeline/roadrunner/`: `gate_matrix.py`, `manifest.py`, `installation.py`, `capability_probe.py`) and wiring it into the generation/packaging path with receipts | ~1–2 weeks (greenfield wiring against a third-party API; variance high) |
+| B3. Package-contract redesign | Same as A3 — road-bearing output trips the Buildings-only guard regardless of which generator produced it (`large_map_package.py:1042,1068`) | ~2–3 days + tests |
+| B4. End-to-end validation | Same class as A5, against RoadRunner output | ~1 week |
+
+**Subtotal**: procurement (unknown) + ~2–3 weeks engineering. **No engineering estimate can cover B1.**
+
+### If Neither Is Done
+
+**No production cook can ever be claimed complete for roads/terrain.** GAP-042 stays CRITICAL/open: every cooked Ingolstadt tile is buildings-only with no drivable road surface or terrain (0 road/roadline/sidewalk/terrain actors across 20/20 tiles vs 5,711 buildings — the measured census, not a projection). Downstream consequences: RQ3/RQ5a live-capture stays blocked on substance even if GAP-017 (RPC handshake) is resolved — there is no road surface to spawn on or drive. The repo is otherwise safe: the contract correctly *prevents* silent road duplication today; the failure mode of inaction is incompleteness, not corruption.
+
+### No recommendation
+
+Both options are real and both carry a dominant unknown (A2 alignment reproduction; B1 procurement + B2 greenfield wiring). The contract redesign (A3/B3) is the only firmly costed shared item (~2–3 days). **No option is picked here** — this is a resourcing decision (weeks of frame-reconciliation work vs an external license procurement + third-party integration), not a technical judgment this document can make unilaterally.
+
+---
+
 ## Summary Table
 
 | Gap | Decision Type | Recommended Path (Evidence-Based) | Cost If Deferred |
@@ -236,9 +291,10 @@ None of these currently do anything. NEW-291 is the only one with implemented-bu
 | GAP-037 | **Design**: taxonomy location | **Option B (actual consumers)** — 3d standalone; works regardless of GAP-036; taxonomy belongs where waivers are applied | Latent risk if GAP-036 Option A chosen without taxonomy |
 | GAP-038 | **Integration**: wire vs defer | **Option A (wire)** — 5–6d bounded task; modules are real and tested; underlying gaps remain open in pipeline | False confidence; real subprocess/identity gaps stay open |
 | GAP-039 | **Scheduling**: priority | **Option B (NEW-291 only)** — 0.5d for real gate activation; other 5 are quality improvements, not safety | Technical debt; no active harm |
+| GAP-042 | **Generation**: OSM2World re-enable vs RoadRunner install+wire | **No recommendation** — A ≈ 3–5wk (dominated by uncertain alignment A2); B ≈ 2–3wk eng + unknown procurement. Shared firm item: contract redesign ~2–3d | No cook claimable complete for roads/terrain; GAP-042 stays CRITICAL; RQ3/RQ5a blocked on substance even if GAP-017 clears |
 
 ---
 
 **Prepared**: 2026-10-07  
 **Scope**: Synthesis only — no code changes, no gap register edits, no decisions made.  
-**Sources**: `GAP026_ROOT_CAUSE.md`, `GAP026_POLICY_PROPOSAL.md`, `GAP026_METHOD_VALIDATION.json`, `MASTER_GAP_REGISTER.json` (GAP-026, GAP-038, GAP-039 entries), `GAP036_POLICY_PROPOSAL.md`, `GAP037_POLICY_PROPOSAL.md`, `AUDIT_REPORT.md` (2026-10-07), independent grep/blob-SHA verification of call sites and implementation status.
+**Sources**: `GAP026_ROOT_CAUSE.md`, `GAP026_POLICY_PROPOSAL.md`, `GAP026_METHOD_VALIDATION.json`, `MASTER_GAP_REGISTER.json` (GAP-026, GAP-038, GAP-039 entries), `GAP036_POLICY_PROPOSAL.md`, `GAP037_POLICY_PROPOSAL.md`, `AUDIT_REPORT.md` (2026-10-07), independent grep/blob-SHA verification of call sites and implementation status. GAP-042 section (2026-10-08): live reads of `ultimate_pipeline/config/settings.py:1019`, `ultimate_pipeline/enrichment/osm2world_runner.py:10,159,168`, `ultimate_pipeline/tiling/large_map_package.py:1042,1068`, `ultimate_pipeline/cli.py:654,669`, `ultimate_pipeline/roadrunner/installation.py` + live `probe_installation()` (all-None), blame via `git log -S` on both settings and runner, phase-j evidence commit `a386ba90` (J5 misalignment).
