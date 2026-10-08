@@ -30,8 +30,18 @@ NEW-234: multi-root training (RQ5 K-sweep):
 NEW-244: every run is seed-governed via ``--seed`` (see rq5_provenance.seed_everything).
 
 NEW-243: on success a ``model_manifest.json`` is written next to the
-checkpoints, binding the checkpoint SHA-256 to the dataset identities, git SHA,
-architecture, optimizer, learning rate and seed.
+    checkpoints, binding the checkpoint SHA-256 to the dataset identities, git SHA,
+    architecture, optimizer, learning rate and seed.
+
+NEW-277: DATASET_ACCEPTANCE is enforced fail-closed before any model is built.
+    Every root must contain ``rgb/<camera>`` and ``semseg_raw/<camera>`` and must
+    contribute at least one *paired* frame; the union must be non-empty after
+    ``--limit``. Previously ``SegDataset`` (``SemanticSegDataset``) yielded zero
+    items for an empty or half-populated ``rgb/<camera>``, so the epoch loop ran
+    zero batches and the launcher still emitted a checkpoint and a NEW-243
+    ``model_manifest.json`` -- authoritative-looking provenance for a model
+    trained on nothing. There is no override flag by design. The verdict is
+    recorded in the manifest under ``extra.dataset_acceptance``.
 
 Typical HPC (single node, multi-GPU) with torchrun:
     torchrun --standalone --nproc_per_node=4 -m ultimate_pipeline.perception.train_launcher \\
@@ -74,6 +84,130 @@ from ultimate_pipeline.perception.rq5_provenance import (
 )
 
 DEFAULT_SEED = 1337
+
+
+class DatasetAcceptanceError(RuntimeError):
+    """Raised when a dataset root fails DATASET_ACCEPTANCE (NEW-277).
+
+    This is deliberately a distinct exception type so a caller can tell an
+    acceptance rejection apart from an incidental I/O or decoding failure.
+    """
+
+
+def evaluate_dataset_acceptance(
+    roots: List[Path], camera: str, limit: Optional[int] = None
+) -> dict:
+    """DATASET_ACCEPTANCE (NEW-277): decide whether these roots may be trained on.
+
+    Returns a machine-readable report with ``accepted`` plus the evidence that
+    produced the verdict. Never raises for a merely-unacceptable dataset; the
+    caller decides whether to enforce.
+
+    Criteria (all must hold):
+
+    1. every root contains both ``rgb/<camera>`` and ``semseg_raw/<camera>``;
+    2. every root contributes at least one rgb/semseg frame *pair* -- a frame
+       name present in one directory but not the other is unusable, because
+       the label is resolved by name at ``__getitem__`` time;
+    3. the union across roots is non-empty after ``limit`` is applied.
+
+    Rationale: without this, ``SegDataset`` (``SemanticSegDataset``) happily
+    yields zero items for an empty or half-populated ``rgb/<camera>``, the
+    epoch loop executes zero batches, and the launcher still writes a
+    checkpoint plus a NEW-243 ``model_manifest.json``. That produces
+    authoritative-looking provenance for a model trained on nothing, which is
+    precisely the false-confidence failure this gate exists to prevent.
+    """
+    per_root: List[dict] = []
+    reasons: List[str] = []
+
+    for root in roots:
+        rgb_dir = Path(root) / "rgb" / camera
+        lab_dir = Path(root) / "semseg_raw" / camera
+        entry: dict = {
+            "root": Path(root).as_posix(),
+            "camera": camera,
+            "rgb_dir": rgb_dir.as_posix(),
+            "label_dir": lab_dir.as_posix(),
+            "rgb_dir_present": rgb_dir.is_dir(),
+            "label_dir_present": lab_dir.is_dir(),
+            "rgb_frames": 0,
+            "label_frames": 0,
+            "paired_frames": 0,
+            "unpaired_rgb": [],
+            "unpaired_labels": [],
+        }
+
+        if not entry["rgb_dir_present"] or not entry["label_dir_present"]:
+            missing = []
+            if not entry["rgb_dir_present"]:
+                missing.append(f"rgb/{camera}")
+            if not entry["label_dir_present"]:
+                missing.append(f"semseg_raw/{camera}")
+            entry["error"] = "missing required dataset directory: " + ", ".join(missing)
+            reasons.append(f"{entry['root']}: {entry['error']}")
+            per_root.append(entry)
+            continue
+
+        rgb_names = {p.name for p in rgb_dir.glob("*.png")}
+        lab_names = {p.name for p in lab_dir.glob("*.png")}
+        paired = rgb_names & lab_names
+        entry["rgb_frames"] = len(rgb_names)
+        entry["label_frames"] = len(lab_names)
+        entry["paired_frames"] = len(paired)
+        entry["unpaired_rgb"] = sorted(rgb_names - lab_names)
+        entry["unpaired_labels"] = sorted(lab_names - rgb_names)
+
+        if not paired:
+            entry["error"] = (
+                "no paired rgb/semseg_raw frames "
+                f"(rgb={len(rgb_names)}, semseg_raw={len(lab_names)})"
+            )
+            reasons.append(f"{entry['root']}: {entry['error']}")
+        per_root.append(entry)
+
+    total_paired = sum(int(e["paired_frames"]) for e in per_root)
+    effective = total_paired if not (limit and limit > 0) else min(total_paired, int(limit))
+
+    if not reasons and effective <= 0:
+        reasons.append(
+            "no trainable frames remain after applying --limit "
+            f"(paired={total_paired}, limit={limit})"
+        )
+
+    return {
+        "accepted": not reasons,
+        "camera": camera,
+        "limit": limit,
+        "total_paired_frames": total_paired,
+        "effective_frames": effective,
+        "per_root": per_root,
+        "reasons": reasons,
+        "criteria": [
+            "every root has rgb/<camera> and semseg_raw/<camera>",
+            "every root has >=1 paired rgb/semseg frame",
+            "union is non-empty after --limit",
+        ],
+    }
+
+
+def enforce_dataset_acceptance(
+    roots: List[Path], camera: str, limit: Optional[int] = None
+) -> dict:
+    """DATASET_ACCEPTANCE (NEW-277): fail closed unless every root is acceptable.
+
+    Raises ``DatasetAcceptanceError`` with the full rejection evidence. There is
+    deliberately no override flag: an escape hatch would restore the exact
+    false-confidence hole this gate closes.
+    """
+    report = evaluate_dataset_acceptance(roots, camera, limit=limit)
+    if report["accepted"]:
+        return report
+    raise DatasetAcceptanceError(
+        "DATASET_ACCEPTANCE rejected this training set; refusing to train and "
+        "refusing to write a checkpoint or model_manifest.json.\n"
+        + "\n".join(f"  - {r}" for r in report["reasons"])
+    )
 
 
 def _resolve_out_dir(out_dir: str) -> Path:
@@ -219,6 +353,23 @@ def main() -> int:
 
     dataset_roots = _resolve_dataset_roots(args)
     multi_root = len(dataset_roots) > 1
+
+    # NEW-277 (DATASET_ACCEPTANCE): fail closed BEFORE any model construction,
+    # checkpoint or manifest is produced. This must precede the dataset build so
+    # an unacceptable set cannot yield a signed manifest for an untrained model.
+    acceptance = enforce_dataset_acceptance(
+        dataset_roots, args.camera, limit=(args.limit if args.limit > 0 else None)
+    )
+    print(
+        f"✅ DATASET_ACCEPTANCE: {acceptance['total_paired_frames']} paired frame(s) "
+        f"across {len(dataset_roots)} root(s) for camera={args.camera}"
+    )
+
+    # Validate num_classes against CARLA semantic class policy (same as
+    # min_train_segmentation.py does) so a too-small --num-classes fails
+    # fast with a clear message instead of a confusing "out of bounds" error
+    # deep in the loss function.
+    args.num_classes = validate_num_classes(args.num_classes)
 
     out_dir = _resolve_out_dir(args.out_dir)
 
@@ -382,6 +533,10 @@ def main() -> int:
                 "seed_applied": seed_record,
                 "ddp": bool(ddp_enabled),
                 "world_size": int(world_size),
+                # NEW-277: bind the acceptance verdict into the manifest so a
+                # consumer can see the training set was admitted by an explicit
+                # gate rather than merely discovered.
+                "dataset_acceptance": acceptance,
             },
         )
         manifest_path = write_model_manifest(out_dir, manifest)
