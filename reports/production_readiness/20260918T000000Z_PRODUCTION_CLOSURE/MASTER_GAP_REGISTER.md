@@ -2,7 +2,7 @@
 
 Machine-readable version: `MASTER_GAP_REGISTER.json`. This file is kept in sync at each update.
 
-Last updated: `2026-10-07T23:59:00Z`
+Last updated: `2026-10-08T08:56:37Z`
 
 | ID | Severity | Subsystem | Status | Fixing commit / owner |
 |---|---|---|---|---|
@@ -51,10 +51,10 @@ Last updated: `2026-10-07T23:59:00Z`
 | GAP-043 | MEDIUM | cooking / asset-filtering | **fixed -- V4 added hair/groom/pedestrian/walker exclusion tokens to ValidateStaticMesh() following the existing light/...** | dbd58244 (PrepareAssetsForCookingCommandlet.cpp, outside this git repo in carla_source_probe; original backed up, sha256 096d4116... -> dbd58244..., no build/cook/commandlet run) |
 | GAP-044 | P1 | signals/registry.py -- dead producer references | **fixed** | 68868f76 (cherry-picked dc8070f3's main_pipeline.py hunk verbatim; merged into origin/integration/production-large-map-20260918 2026-10-08) |
 | GAP-045 | P2 | ultimate_pipeline/tests/unit/test_ue4_executable_discovery.py -- receipt evidence-upgrade bug | **fixed** | 68868f76 (added an _UNSET sentinel distinguishing 'flag not supplied, fall back to env' from 'explicitly asserted unknown'; CLI still passes _UNSET so the env fallback keeps working where the flag... |
-| GAP-046 | P1 | RQ1 determinism -- tools/rq1_trial_run.py driver robustness | open -- both root causes diagnosed, fix not yet attempted | direct-dispatched (RQ1 trial report, 2026-10-07); fix dispatched as X2, not yet started per explicit gating (T7 attempt 4 unauthorized until both root causes are fixed) |
+| GAP-046 | P1 | RQ1 determinism -- tools/rq1_trial_run.py driver robustness | open -- X2 driver hardening landed and verified (aed29d05): ONE live trial died LOUDLY at final_integrity, never sile... | aed29d05 (tools/rq1_trial_run.py: faulthandler dump + 1h hang watchdog, SIGTERM/SIGINT/SIGBREAK handlers, atexit interrupted-marker, BaseException catch, driver running/ok status writes, PROJ_LIB s... |
 | GAP-047 | P1 | CI (tests.yml) -- process integrity | open -- underlying bug (GAP-044) fixed in 68868f76 and pushed to production 2026-10-08, but CI has not yet been re-ch... | direct-dispatched (X5), 2026-10-07 |
 
-Totals: 47 tracked, 33 fixed, 1 closed, 3 closed (non-reproducible), 1 deferred, 8 open, 1 blocked_external. Recomputed 2026-10-07 by direct scan of all 47 `status` fields; 33+1+3+1+8+1 = 47, 0 unclassified.
+Totals: 47 tracked, 33 fixed, 1 closed, 3 closed (non-reproducible), 1 deferred, 8 open, 1 blocked_external. Recomputed 2026-10-08 by direct scan of all 47 `status` fields; 33+1+3+1+8+1 = 47, 0 unclassified.
 
 ## Active open / blocked items (10 items, from live .json scan)
 
@@ -91,9 +91,9 @@ Totals: 47 tracked, 33 fixed, 1 closed, 3 closed (non-reproducible), 1 deferred,
   - Fix/owner: road/terrain independent-verification track (carla-control-plane), 2026-10-07; coordinator logged as GAP-042 after verifying both evidence hashes
   - Evidence: carla-control-plane/reports/control_plane/ROAD_TERRAIN_CROSSCHECK_20261007.json (sha256 c7d8e352...) and TILE_EDITOR_LOAD_RESULTS_ROADTERRAIN_20261007.json (sha256 a2cad30a...) -- both outside this repo, in the carla-control-plane worktree
 - **GAP-046 (P1, open)**: RQ1 determinism -- tools/rq1_trial_run.py driver robustness
-  - Status: open -- both root causes diagnosed, fix not yet attempted
-  - Fix/owner: direct-dispatched (RQ1 trial report, 2026-10-07); fix dispatched as X2, not yet started per explicit gating (T7 attempt 4 unauthorized until both root causes are fixed)
-  - Evidence: trial/rq1-determinism-20261007 branch; reports/rq1_trial_runs/run_01/20261007_214826_524342/run_status.json
+  - Status: open -- X2 driver hardening landed and verified (aed29d05): ONE live trial died LOUDLY at final_integrity, never silently. PROJ mismatch fixed (pyproj 3.8.0/PROJ 9.8.1/layout-6, shadowing PROJ_LIB removed in-driver). The trial exposed the next real blocker: 10,556 driving lanes missing <successor> on the pinned map-of-record. RQ1 still 0 clean runs.
+  - Fix/owner: aed29d05 (tools/rq1_trial_run.py: faulthandler dump + 1h hang watchdog, SIGTERM/SIGINT/SIGBREAK handlers, atexit interrupted-marker, BaseException catch, driver running/ok status writes, PROJ_LIB sanitizer; on docs/sync-gap-register-md-20261008)
+  - Evidence: reports/rq1_trial_runs_x2_verify/run_01/rq1_run_01_receipt.json (duration_s 28587.4, input sha 370abbbb, mode B), run_status.json (failed/final_integrity), crash_summary.json, pipeline out subdir 20261008_024449_086823 (stages 01-08 xodr artifacts + failed run_status); Event Viewer 2026-10-07 death windows: no kill/OOM/shutdown signal (only disk-154 IO warnings on Disk 2)
 - **GAP-047 (P1, open)**: CI (tests.yml) -- process integrity
   - Status: open -- underlying bug (GAP-044) fixed in 68868f76 and pushed to production 2026-10-08, but CI has not yet been re-checked against this new tip to confirm it actually goes green
   - Fix/owner: direct-dispatched (X5), 2026-10-07
