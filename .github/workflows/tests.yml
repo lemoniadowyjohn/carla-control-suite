@@ -64,6 +64,19 @@ jobs:
       - name: Install package editable for tests
         run: pip install -e .
 
+      - name: Collect-only dry run (artifact capture for GAP-047)
+        run: |
+          python -m pytest --collect-only -q 2>&1 | tee pytest-collect.log
+        continue-on-error: true
+
+      - name: Upload pytest collection log (pre-test artifact)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pytest-collection-log
+          path: pytest-collect.log
+          retention-days: 7
+
       - name: Run offline pytest
         run: python -m pytest -q
 
