@@ -1,0 +1,112 @@
+{
+  "checks": [
+    {
+      "a": 32.494,
+      "b": 32.494,
+      "check": "whole_road_count_ratio",
+      "detail": "authority whole_map ratios are summarize_xodr full-file counts; recomputed independently",
+      "status": "AGREE",
+      "tol": 1e-09
+    },
+    {
+      "a": 27.821,
+      "b": 27.821,
+      "check": "whole_length_ratio",
+      "detail": "same",
+      "status": "AGREE",
+      "tol": 1e-09
+    },
+    {
+      "a": 31.157,
+      "b": 31.157,
+      "check": "whole_junction_ratio",
+      "detail": "same",
+      "status": "AGREE",
+      "tol": 1e-09
+    },
+    {
+      "authority_hull_manual_junctions": 119,
+      "check": "junction_count_methodology",
+      "detail": "local_registration counts in-footprint comparable junctions; summarize_xodr counts all <junction> elements full-file. Different scopes/methods, not drift. Ratios within each method are self-consistent.",
+      "status": "DOCUMENTED_DIFFERENCE",
+      "summarize_full_manual_junctions": 725
+    },
+    {
+      "check": "frechet_mean_vs_reference",
+      "delta": 0.0035336801836294285,
+      "detail": "fresh recomputation vs previously observed current-map values; tolerance 0.01 m",
+      "fresh": 58.18353368018363,
+      "reference": 58.18,
+      "status": "AGREE"
+    },
+    {
+      "check": "frechet_median_vs_reference",
+      "delta": 0.0025604279451485468,
+      "detail": "fresh recomputation vs previously observed current-map values; tolerance 0.01 m",
+      "fresh": 36.13256042794515,
+      "reference": 36.13,
+      "status": "AGREE"
+    },
+    {
+      "check": "frechet_p90_vs_reference",
+      "delta": 0.0047176532123955894,
+      "detail": "fresh recomputation vs previously observed current-map values; tolerance 0.01 m",
+      "fresh": 140.4752823467876,
+      "reference": 140.48,
+      "status": "AGREE"
+    },
+    {
+      "check": "frechet_pairs_vs_reference",
+      "detail": "matched pair count",
+      "fresh": 894,
+      "reference": 894,
+      "status": "AGREE"
+    },
+    {
+      "check": "road_length_ratio_vs_reference",
+      "delta": 0.0,
+      "detail": "exact reproduction expected; any delta investigated",
+      "fresh": 2.683,
+      "reference": 2.683,
+      "status": "AGREE"
+    },
+    {
+      "check": "junction_ratio_vs_reference",
+      "delta": 0.0,
+      "detail": "exact reproduction expected; any delta investigated",
+      "fresh": 3.782,
+      "reference": 3.782,
+      "status": "AGREE"
+    },
+    {
+      "check": "road_count_ratio_vs_reference",
+      "delta": 0.0,
+      "detail": "exact reproduction expected; any delta investigated",
+      "fresh": 3.561,
+      "reference": 3.561,
+      "status": "AGREE"
+    },
+    {
+      "check": "curvature_gap_vs_reference",
+      "delta": 0.0,
+      "detail": "exact reproduction expected; any delta investigated",
+      "fresh": 0.2206,
+      "reference": 0.2206,
+      "status": "AGREE"
+    },
+    {
+      "check": "lane_width_gap_vs_reference",
+      "delta": 0.0,
+      "detail": "exact reproduction expected; any delta investigated",
+      "fresh": 0.0597,
+      "reference": 0.0597,
+      "status": "AGREE"
+    }
+  ],
+  "pair": {
+    "auto_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "manual_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+  },
+  "schema": "rq2_cross_implementation_oracle/v1",
+  "verdict": "PASS"
+}

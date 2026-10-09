@@ -1,0 +1,21 @@
+{
+  "contract": "research/thesis_rq_contract.yaml RQ2.valid_metrics",
+  "generated_at_utc": "2026-10-02T19:18:04.408167+00:00",
+  "metric_implementation": {
+    "manual_hull": {
+      "frechet_distance": "ultimate_pipeline.domain_gap.frechet_gap.compute_frechet_gap (footprint=hull, spacing_m=5.0)",
+      "ratios_gaps": "ultimate_pipeline.domain_gap.local_registration.compute_local_registration+local_structural_summary (footprint=hull)"
+    },
+    "whole_map": {
+      "connectivity_gap": "ultimate_pipeline.domain_gap.connectivity_gap.ConnectivityGap.compute",
+      "ratios": "ultimate_pipeline.tools.xodr_structural_summary.summarize_xodr (full files)",
+      "semantic_object_gap": "ultimate_pipeline.domain_gap.semantic_gap.SemanticGap.compute"
+    }
+  },
+  "pair_sha256": {
+    "auto": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "manual": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+  },
+  "schema": "rq2_metric_provenance/v1",
+  "scope_policy": "manual_hull and whole_map metrics are computed independently and never averaged or mixed."
+}

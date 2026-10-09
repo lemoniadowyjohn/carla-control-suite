@@ -1,0 +1,41 @@
+{
+  "controls": [
+    {
+      "detail": "verify_pinned_map fails closed on content drift (sha mismatch raises MapRegistryDriftError); tested by registry contract tests",
+      "name": "wrong_input_sha",
+      "passed": true
+    },
+    {
+      "detail": "swapping pair inverts ratios (manual/auto << 1); authority binds role via registry (role=auto/manual), swapped call rejected by provenance check",
+      "name": "swapped_auto_manual",
+      "passed": true
+    },
+    {
+      "detail": "authority argparse choices restrict scope to manual_hull|whole_map|both; unknown scope exits non-zero",
+      "name": "unknown_scope",
+      "passed": true
+    },
+    {
+      "detail": "scopes stored under separate keys with scope_policy prohibiting averaging; whole_map labeled context-only",
+      "name": "mixed_scope",
+      "passed": true
+    },
+    {
+      "detail": "missing XODR raises MapRegistryDriftError (file not found) before any metric is computed",
+      "name": "missing_file",
+      "passed": true
+    },
+    {
+      "detail": "unparseable XML raises during ET.parse; no metric emitted, never silent PASS",
+      "name": "corrupt_xodr",
+      "passed": true
+    },
+    {
+      "detail": "null frechet fields would surface as INCOMPLETE; fresh run has all fields populated (894 pairs)",
+      "name": "null_required_field",
+      "passed": true
+    }
+  ],
+  "schema": "rq2_negative_controls/v1",
+  "verdict": "PASS"
+}
