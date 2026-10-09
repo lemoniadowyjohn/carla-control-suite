@@ -164,6 +164,8 @@ by this number"** caveat as the hull-footprint re-verification applies: `frechet
 `local_registration.py`, does not import `GeoAligner` or `CurvatureGap`, so this confirms
 stability under the regenerated **map**, not anything about those two modules' bug fixes.
 
+**2026-10-08 scope note — curvature KL, alignment quality, and per-tile metrics are OUT of RQ2's contracted scope, not stale values awaiting re-verification.** `research/thesis_rq_contract.yaml` (`research_questions.RQ2.valid_metrics`) lists exactly ten metrics (`lane_width_gap`, `curvature_gap`, `curvature_wasserstein_gap`, `road_count_ratio`, `road_length_ratio`, `junction_ratio`, `building_density_gap`, `frechet_distance`, `connectivity_gap`, `semantic_object_gap`); curvature KL (a different statistic from the contracted Wasserstein gap), alignment quality, and any per-tile metric have no entry or alias there. Full determination: `reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/RQ2_METRIC_SCOPE_DETERMINATION_20261008.md` (commit `4ac356ea`). No cited number in this doc changes — this is a scope clarification, not a data correction.
+
 `THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md` itself is marked superseded at its top (see
 `docs/research/STALE_ARTIFACT_POINTERS.md` for the full pointer); its methodology description
 remains accurate, only its headline numbers are stale.
