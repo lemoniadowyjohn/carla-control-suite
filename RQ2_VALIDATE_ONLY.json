@@ -1,0 +1,170 @@
+{
+  "checks": [
+    {
+      "actual": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "criterion": "actual.endswith('ingolstadt_perception_map_of_record_20260916_232831.xodr')",
+      "expected": "ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "name": "pair.auto.pin_filename",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 (pin filename)",
+      "status": "PASS"
+    },
+    {
+      "actual": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "criterion": "actual.startswith('370abbbbb3')",
+      "expected": "370abbbbb3",
+      "name": "pair.auto.sha256_prefix",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 (sha256 370abbbbb3...)",
+      "status": "PASS"
+    },
+    {
+      "actual": 2.683,
+      "criterion": "round(actual, 3) == 2.683",
+      "expected": 2.683,
+      "name": "hull.road_length_ratio",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 hull re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 3.782,
+      "criterion": "round(actual, 3) == 3.782",
+      "expected": 3.782,
+      "name": "hull.junction_ratio",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 hull re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 3.561,
+      "criterion": "round(actual, 3) == 3.561",
+      "expected": 3.561,
+      "name": "hull.road_count_ratio",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 hull re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 0.2206,
+      "criterion": "round(actual, 4) == 0.2206",
+      "expected": 0.2206,
+      "name": "hull.curvature_gap",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 hull re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 0.0597,
+      "criterion": "round(actual, 4) == 0.0597",
+      "expected": 0.0597,
+      "name": "hull.lane_width_gap",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 hull re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 0.2308,
+      "criterion": "round(actual, 4) == 0.2308",
+      "expected": 0.2308,
+      "name": "hull.building_density_gap",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 hull re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 58.18353368018374,
+      "criterion": "round(actual, 2) == 58.18",
+      "expected": 58.18,
+      "name": "frechet.mean_m",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 Frechet re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 36.13256042794515,
+      "criterion": "round(actual, 2) == 36.13",
+      "expected": 36.13,
+      "name": "frechet.median_m",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 Frechet re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 140.4752823467876,
+      "criterion": "round(actual, 2) == 140.48",
+      "expected": 140.48,
+      "name": "frechet.p90_m",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 Frechet re-verification",
+      "status": "PASS"
+    },
+    {
+      "actual": 894,
+      "criterion": "actual == 894",
+      "expected": 894,
+      "name": "frechet.pairs",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 Frechet re-verification (894 matched pairs)",
+      "status": "PASS"
+    },
+    {
+      "actual": 3536,
+      "criterion": "actual == 3536",
+      "expected": 3536,
+      "name": "hull.support.cropped_auto_roads",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 (3,536 / 993 cross-check)",
+      "status": "PASS"
+    },
+    {
+      "actual": 993,
+      "criterion": "actual == 993",
+      "expected": 993,
+      "name": "hull.support.manual_roads",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-17 (3,536 / 993 cross-check)",
+      "status": "PASS"
+    },
+    {
+      "actual": 27.821,
+      "criterion": "round(actual, 1) == 27.8",
+      "expected": 27.8,
+      "name": "whole_map.road_length_ratio",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-15 note (~27.8x uncropped)",
+      "status": "PASS"
+    },
+    {
+      "actual": 1489145.6,
+      "criterion": "round(actual, 0) == 1489146",
+      "expected": 1489146,
+      "name": "whole_map.support.auto_length_m",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-15 note (1,489,146 m auto)",
+      "status": "PASS"
+    },
+    {
+      "actual": 53525.3,
+      "criterion": "round(actual, 0) == 53525",
+      "expected": 53525,
+      "name": "whole_map.support.manual_length_m",
+      "source": "THESIS_TO_CURRENT_PROGRESS.md 2026-09-15 note (53,525 m manual)",
+      "status": "PASS"
+    },
+    {
+      "actual": "0 mismatches",
+      "criterion": "recomputed values equal frozen values within atol=1e-09",
+      "expected": "0 mismatches",
+      "name": "frozen_results.metrics_and_pair",
+      "source": "RQ2_RESULTS.json (committed at 56a82a35, value subtrees only: pair/metrics/support)",
+      "status": "PASS"
+    }
+  ],
+  "gate": "merge rq2-authority into production only if verdict == PASS",
+  "generated_at_utc": "2026-10-08T19:10:43.101873+00:00",
+  "mode": "validate-only",
+  "pair": {
+    "auto": {
+      "bytes": 149799632,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    "manual": {
+      "bytes": 66530869,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+    }
+  },
+  "schema": "rq2_validate_only/v1",
+  "summary": {
+    "failed": 0,
+    "passed": 18,
+    "total": 18
+  },
+  "verdict": "PASS"
+}
