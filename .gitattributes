@@ -44,3 +44,5 @@ campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.j
 # captured from a CRLF-converted Windows checkout (788 bytes) instead of the actual LF
 # git blob (749 bytes) -- zero real content difference, confirmed byte-for-byte.
 reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json -text
+
+*.pt filter=lfs diff=lfs merge=lfs -text

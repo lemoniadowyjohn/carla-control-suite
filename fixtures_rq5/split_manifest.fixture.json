@@ -1,0 +1,76 @@
+{
+  "dataset_identity": {
+    "complete": true,
+    "name": "FIXTURE_rq5_splits",
+    "note": "FIXTURE ONLY \u2014 never scientific evidence",
+    "selection": "explicit-manifest"
+  },
+  "splits": {
+    "generated_test": {
+      "camera": "front",
+      "complete": true,
+      "frame_hashes": {
+        "gt_0000.png": "6c19e0dbe822d85281e40b1eb4afa7ad69480e108de51787c831c4cfdccd83bd",
+        "gt_0001.png": "cfe599152832895e9cb8e86a6f88b487eb1e177369743dc91d55b74c75fa1d44"
+      },
+      "frames": [
+        "gt_0000.png",
+        "gt_0001.png"
+      ],
+      "group_unit": "capture_block",
+      "units": [
+        "block_C"
+      ]
+    },
+    "manual_test": {
+      "camera": "front",
+      "complete": true,
+      "frame_hashes": {
+        "mt_0000.png": "9efa7b5d8f28db0b5fa3342c75f665907443265a2a205914735da82e4b114925",
+        "mt_0001.png": "8625a9331a5e96dc2285c43c2f4403f670208b7447dc7b4f99beeb80cf35775c"
+      },
+      "frames": [
+        "mt_0000.png",
+        "mt_0001.png"
+      ],
+      "group_unit": "spatial_region",
+      "units": [
+        "region_D"
+      ]
+    },
+    "train": {
+      "camera": "front",
+      "complete": true,
+      "frame_hashes": {
+        "tr_0000.png": "cce1dbb3b23377d76020c5bb3e0ec5dc43a9bdaceb4ae079a502a0b1ca6d483a",
+        "tr_0001.png": "f2146de13f27eff6f4e655411959841e04d22d4b8af87118a8a5abf4390b2607",
+        "tr_0002.png": "e2e70b46e06a2555f921023ed882f42137f4cee841452f592bed479a7d64c0c0"
+      },
+      "frames": [
+        "tr_0000.png",
+        "tr_0001.png",
+        "tr_0002.png"
+      ],
+      "group_unit": "route_segment",
+      "units": [
+        "seg_A"
+      ]
+    },
+    "val": {
+      "camera": "front",
+      "complete": true,
+      "frame_hashes": {
+        "va_0000.png": "2f74509fa7dd7ea4dfc5ca38e755680cfc39e771759ad1bd01d43e3b9674fc61",
+        "va_0001.png": "79bb6eac309c47fcffba897b22ae59d848ef6f165631ae05f78bee32e4f6cc72"
+      },
+      "frames": [
+        "va_0000.png",
+        "va_0001.png"
+      ],
+      "group_unit": "route_segment",
+      "units": [
+        "seg_B"
+      ]
+    }
+  }
+}

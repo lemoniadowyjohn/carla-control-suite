@@ -1,0 +1,103 @@
+{
+  "loss": [
+    {
+      "epoch": 0,
+      "loss": 3.4237261613210044
+    },
+    {
+      "epoch": 1,
+      "loss": 2.1938899755477905
+    },
+    {
+      "epoch": 2,
+      "loss": 1.3726833264033
+    }
+  ],
+  "val_loss": [
+    {
+      "epoch": 0,
+      "loss": 3.2055046558380127
+    },
+    {
+      "epoch": 1,
+      "loss": 2.997735023498535
+    },
+    {
+      "epoch": 2,
+      "loss": 2.6891307830810547
+    }
+  ],
+  "seed": 7,
+  "camera": "front",
+  "camera_implicit": false,
+  "research_strict": true,
+  "train_dataset": "fixtures_rq5\\train",
+  "val_dataset": "fixtures_rq5\\val",
+  "class_weighting": {
+    "enabled": true,
+    "scheme": "median_frequency",
+    "counts": [
+      0,
+      5856,
+      0,
+      0,
+      3072,
+      0,
+      0,
+      3072,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      96,
+      96,
+      96,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "weights": [
+      0.0,
+      0.2704918086528778,
+      0.0,
+      0.0,
+      0.515625,
+      0.0,
+      0.0,
+      0.515625,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      16.5,
+      16.5,
+      16.5,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "source": "generated TRAIN only (never validation, never manual target)"
+  }
+}
