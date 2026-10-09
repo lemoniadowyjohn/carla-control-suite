@@ -965,12 +965,32 @@
       "regression_test": null,
       "evidence_artifact": "investigation report, 2026-10-09 (also documents the retraction of the GAP-046/048 subprocess-correlation claim, and separately confirms TIL-PERF-001/line-661 perf fixes already landed in current tile_extractor.py, no action needed there)",
       "residual_risk": "LOW. Narrow, well-understood, no behavior change needed to fix the reporting distinction (only the timeout VALUE being configurable would be a behavior change, and that's not required to close this)."
+    },
+    {
+      "id": "GAP-054",
+      "severity": "P2",
+      "subsystem": "RQ2 metric authority -- curvature KL / alignment quality / per-tile metrics confirmed out of validate-only scope",
+      "description": "U4's metric-staleness audit (2026-10-08) flagged three metrics as 'potentially stale': whole-map curvature KL, alignment quality, and per-tile metrics. Dispatched determination (RQ2_METRIC_SCOPE_DETERMINATION_20261008.md, commit 4ac356ea on docs/rq2-metric-scope-determination-20261008) settles this definitively from research/thesis_rq_contract.yaml: RQ2.valid_metrics lists exactly 10 metrics, and rq2_metric_authority.VALID_METRICS matches 1:1. Curvature KL and alignment quality are in NEITHER, and no alias maps to them. The contract's sanctioned curvature metrics are curvature_gap and curvature_wasserstein_gap -- Wasserstein, not KL, so KL is not a permitted substitute. They are also structurally unreachable by rq2_metric_authority's --validate-only: THESIS_TO_CURRENT_PROGRESS.md states (lines 124-136, 162-165) that local_registration.py does not import or call GeoAligner or CurvatureGap -- those live only in the whole-map pipeline (run_full_domain_gap.py and friends), a disjoint code path. Per-tile metrics specifically were never computed even once (UP_SKIP_TILE_ALIGNMENT=1 was set; per_tile_status=skipped; num_tile_pairs/tile_count_auto/tile_count_manual all N/A) -- 'stale' was the wrong word for something with no prior value to go stale. Last whole-map context figures on record (2026-09-15, pin since superseded): curvature KL 0.0030586158645774116, RMSE 85.32m, Hausdorff 6968.60m -- historical reference only, not current RQ2 scope. VERDICT: these 3 metrics require no further action; they are out of RQ2's contracted scope, not unresolved staleness.",
+      "proof": "Direct read of research/thesis_rq_contract.yaml RQ2.valid_metrics (10 metrics, 1:1 match with rq2_metric_authority.VALID_METRICS); direct read of ultimate_pipeline/domain_gap/rq2_metric_authority.py validate-only path; THESIS_TO_CURRENT_PROGRESS.md lines 124-136 and 162-165 confirm disjoint code path for local_registration.py vs whole-map pipeline.",
+      "affected_files": [
+        "research/thesis_rq_contract.yaml",
+        "ultimate_pipeline/config/thesis_rq_contract.py",
+        "ultimate_pipeline/domain_gap/rq2_metric_authority.py",
+        "ultimate_pipeline/domain_gap/local_registration.py"
+      ],
+      "scientific_runtime_consequence": "None -- these metrics were never in scope for RQ2's validate-only authority. The audit flag was a false positive from a broader metric-staleness scan that didn't filter by the contracted scope list. No code change required; the determination itself is the resolution.",
+      "owner_subagent": "determination dispatched 2026-10-08 (RQ2_METRIC_SCOPE_DETERMINATION_20261008.md, commit 4ac356ea on docs/rq2-metric-scope-determination-20261008, pushed)",
+      "status": "closed -- out of contracted scope, not a defect. Evidence: RQ2_METRIC_SCOPE_DETERMINATION_20261008.md (148 lines).",
+      "fixing_commit": "none needed (determination only); docs/rq2-metric-scope-determination-20261008 commit 4ac356ea pushed",
+      "regression_test": "none needed -- no code changed; the contract validation (rq2_metric_authority --validate-only) already enforces the 10-metric scope",
+      "evidence_artifact": "RQ2_METRIC_SCOPE_DETERMINATION_20261008.md (148 lines); docs/rq2-metric-scope-determination-20261008 commit 4ac356ea; research/thesis_rq_contract.yaml RQ2.valid_metrics list",
+      "residual_risk": "NONE. The three metrics were never in scope; the contract validation already enforces this at runtime. No silent-staleness risk remains."
     }
   ],
   "counts": {
-    "total": 53,
+    "total": 54,
     "fixed": 33,
-    "closed": 6,
+    "closed": 7,
     "closed_non_reproducible": 0,
     "in_progress": 0,
     "deferred": 1,
@@ -979,7 +999,7 @@
     "checker_fixed_underlying_open": 1,
     "root_cause_proven": 1,
     "unclassified": 0,
-    "counts_reconciliation_note": "RECOMPUTED 2026-10-09 (SESSION_CLOSURE_20261009.md verification sweep, then GAP-053 added same day) by direct scan of all live status fields -- this replaces the 2026-10-08 version of this block, which was never updated after GAP-037/041/050 closed that same session and undercounted 'closed' as 5 (3+3) when the live count was 6. fixed (33) = GAP-001..007,009..012,016,018,019..025,027..035 (GAP-031 included as checker-fixed-but-underlying-open, counted here per its net effect),040,043,044,045,051 (051 fixed 2026-10-08, cherry-picked onto integration/consolidate-fixes-20261008, not yet merged to production). closed (6) = GAP-013,014,015,037,041,050. deferred (1) = GAP-008. blocked_external (1) = GAP-017. checker_fixed_underlying_open (1) = GAP-031. root_cause_proven (1) = GAP-047 (fix cherry-picked onto integration/consolidate-fixes-20261008, not yet merged). open (10) = GAP-026,036,038,039,042,046,048,049,052,053 (GAP-053 added 2026-10-09: a narrow fail-silent in run_full_domain_gap.py's per-tile tiling timeout handling, found while retracting an unrelated mis-correlation with GAP-046/048's mystery subprocess). 33+6+1+1+1+1+10=53, matches total. NONE of fixed-but-unmerged work (GAP-047, GAP-051, GAP-039's NEW-274/275/276/277) has landed on production as of this count -- production tip is still 68868f76. See SESSION_CLOSURE_20261009.md for the full branch merge-base audit."
+    "counts_reconciliation_note": "RECOMPUTED 2026-10-09 (SESSION_CLOSURE_20261009.md verification sweep, then GAP-053/054 added same day) by direct scan of all live status fields -- this replaces the 2026-10-08 version of this block, which was never updated after GAP-037/041/050 closed that same session and undercounted 'closed' as 5 (3+3) when the live count was 6. fixed (33) = GAP-001..007,009..012,016,018,019..025,027..035 (GAP-031 included as checker-fixed-but-underlying-open, counted here per its net effect),040,043,044,045,051 (051 fixed 2026-10-08, cherry-picked onto integration/consolidate-fixes-20261008, not yet merged to production). closed (7) = GAP-013,014,015,037,041,050,054 (GAP-054 added 2026-10-09: RQ2 metric scope determination -- curvature KL, alignment quality, per-tile metrics confirmed out of validate-only scope via thesis_rq_contract.yaml). deferred (1) = GAP-008. blocked_external (1) = GAP-017. checker_fixed_underlying_open (1) = GAP-031. root_cause_proven (1) = GAP-047 (fix cherry-picked onto integration/consolidate-fixes-20261008, not yet merged). open (10) = GAP-026,036,038,039,042,046,048,049,052,053 (GAP-053 added 2026-10-09: a narrow fail-silent in run_full_domain_gap.py's per-tile tiling timeout handling, found while retracting an unrelated mis-correlation with GAP-046/048's mystery subprocess). 33+7+1+1+1+1+10=54, matches total. NONE of fixed-but-unmerged work (GAP-047, GAP-051, GAP-039's NEW-274/275/276/277) has landed on production as of this count -- production tip is still 68868f76. See SESSION_CLOSURE_20261009.md for the full branch merge-base audit."
   },
   "completed_non_gap_work_2026_09_22": {
     "xodr_validated_capability": "New xodr_validator pipeline stage (delegating to StrictXodrValidator) inserted between topology_repair and enrichment in main_pipeline.py, with a matching XODR_VALIDATED capability hard-required by the enrichment stage in stage_capabilities.py -- originally requested as ad-hoc structural hardening, not a tracked gap. Landed clean in commit f51db269, merged 1c8caa2c into origin/integration/production-large-map-20260918. Mirror-drift test confirmed passing."
