@@ -74,6 +74,7 @@ from ultimate_pipeline.perception.min_train_segmentation import (
     MultiRootSegDataset,
     SemanticSegDataset,
 )
+from ultimate_pipeline.perception.semantic_classes import validate_num_classes
 from ultimate_pipeline.perception.rq5_provenance import (
     MULTI_ROOT_TRAIN,
     build_model_manifest,
