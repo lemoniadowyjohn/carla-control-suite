@@ -11,11 +11,28 @@ from __future__ import annotations
 
 import ctypes
 import subprocess
+import sys
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+
+def _get_kernel32():
+    """Lazily initialize kernel32 DLL on Windows; returns None on non-Windows."""
+    if sys.platform != "win32":
+        return None
+    try:
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        return kernel32
+    except Exception:
+        return None
+
+
+def _require_windows():
+    """Raise if not on Windows."""
+    if sys.platform != "win32":
+        raise RuntimeError("Windows-only operation attempted on non-Windows platform")
+
 
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 _JOB_OBJECT_LIMIT_JOB_TIME = 0x00000004
@@ -62,6 +79,7 @@ class _JOBOBJECT_BASIC_PROCESS_ID_LIST(ctypes.Structure):
 
 def _check(result: bool, what: str) -> None:
     if not result:
+        _require_windows()
         raise ctypes.WinError(ctypes.get_last_error(), what)
 
 
@@ -76,7 +94,9 @@ class OwnedJob:
         size = ctypes.sizeof(buf)
         ret_len = ctypes.c_uint32()
         # JobObjectBasicProcessIdList = 3 (6 is BasicAccountingInformation).
-        ok = _kernel32.QueryInformationJobObject(
+        kernel32 = _get_kernel32()
+        _require_windows()
+        ok = kernel32.QueryInformationJobObject(
             self.handle, 3, ctypes.byref(buf), size,
             ctypes.byref(ret_len))
         if not ok:
@@ -85,16 +105,18 @@ class OwnedJob:
                 for i in range(buf.NumberOfProcessIdsInList)]
 
     def terminate_owned(self, exit_code: int = 1) -> None:
-        _check(bool(_kernel32.TerminateJobObject(self.handle, exit_code)),
+        _check(bool(_get_kernel32().TerminateJobObject(self.handle, exit_code)),
                "TerminateJobObject")
 
     def close(self) -> None:
-        _kernel32.CloseHandle(self.handle)
+        _get_kernel32().CloseHandle(self.handle)
 
 
 def create_job(time_limit_100ns: int = 0,
                kill_on_close: bool = True) -> OwnedJob:
-    handle = _kernel32.CreateJobObjectW(None, None)
+    kernel32 = _get_kernel32()
+    _require_windows()
+    handle = kernel32.CreateJobObjectW(None, None)
     if not handle:
         raise ctypes.WinError(ctypes.get_last_error(), "CreateJobObjectW")
     if time_limit_100ns or kill_on_close:
@@ -105,7 +127,7 @@ def create_job(time_limit_100ns: int = 0,
         if time_limit_100ns:
             info.BasicLimitInformation.LimitFlags |= _JOB_OBJECT_LIMIT_JOB_TIME
             info.BasicLimitInformation.PerJobUserTimeLimit = time_limit_100ns
-        _check(bool(_kernel32.SetInformationJobObject(
+        _check(bool(kernel32.SetInformationJobObject(
             handle, _JobObjectExtendedLimitInformation,
             ctypes.byref(info), ctypes.sizeof(info))),
             "SetInformationJobObject")
@@ -135,30 +157,32 @@ def _resume_primary_thread(pid: int) -> None:
     TH32CS_SNAPTHREAD = 0x00000004
     THREAD_SUSPEND_RESUME = 0x0002
     INVALID = ctypes.c_void_p(-1).value
-    snap = _kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0)
+    kernel32 = _get_kernel32()
+    _require_windows()
+    snap = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0)
     if snap == INVALID:
         raise ctypes.WinError(ctypes.get_last_error(), "ToolhelpSnapshot")
     try:
         entry = _THREADENTRY32()
         entry.dwSize = ctypes.sizeof(entry)
-        ok = _kernel32.Thread32First(snap, ctypes.byref(entry))
+        ok = kernel32.Thread32First(snap, ctypes.byref(entry))
         while ok:
             if entry.th32OwnerProcessID == pid:
-                th = _kernel32.OpenThread(THREAD_SUSPEND_RESUME, False,
+                th = kernel32.OpenThread(THREAD_SUSPEND_RESUME, False,
                                           entry.th32ThreadID)
                 if th:
                     try:
-                        if _kernel32.ResumeThread(th) != 0xFFFFFFFF:
+                        if kernel32.ResumeThread(th) != 0xFFFFFFFF:
                             return
                     finally:
-                        _kernel32.CloseHandle(th)
+                        kernel32.CloseHandle(th)
                     raise ctypes.WinError(ctypes.get_last_error(),
                                           "ResumeThread")
                 raise ctypes.WinError(ctypes.get_last_error(), "OpenThread")
-            ok = _kernel32.Thread32Next(snap, ctypes.byref(entry))
+            ok = kernel32.Thread32Next(snap, ctypes.byref(entry))
         raise RuntimeError(f"no thread found for pid {pid}")
     finally:
-        _kernel32.CloseHandle(snap)
+        kernel32.CloseHandle(snap)
 
 
 def wait_for_drain(job: OwnedJob, timeout_s: float = 120.0,
@@ -213,39 +237,62 @@ class _PROCESSENTRY32(ctypes.Structure):
     ]
 
 
-_kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
-                                                     ctypes.c_uint32]
-_kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
-_kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
-                                      ctypes.POINTER(_PROCESSENTRY32)]
-_kernel32.Process32FirstW.restype = ctypes.c_bool
-_kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
-                                     ctypes.POINTER(_PROCESSENTRY32)]
-_kernel32.Process32NextW.restype = ctypes.c_bool
-_kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
-                                 ctypes.c_uint32]
-_kernel32.OpenThread.restype = ctypes.c_void_p
-_kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
-_kernel32.ResumeThread.restype = ctypes.c_uint32
+def _configure_kernel32_types(kernel32) -> None:
+    """Configure argtypes/restype for kernel32 functions used in this module."""
+    kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
+                                                      ctypes.c_uint32]
+    kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
+    kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
+                                          ctypes.POINTER(_PROCESSENTRY32)]
+    kernel32.Process32FirstW.restype = ctypes.c_bool
+    kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
+                                        ctypes.POINTER(_PROCESSENTRY32)]
+    kernel32.Process32NextW.restype = ctypes.c_bool
+    kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
+                                    ctypes.c_uint32]
+    kernel32.OpenThread.restype = ctypes.c_void_p
+    kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
+    kernel32.ResumeThread.restype = ctypes.c_uint32
+    kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
+                                                      ctypes.c_uint32]
+    kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
+    kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
+                                         ctypes.POINTER(_PROCESSENTRY32)]
+    kernel32.Process32FirstW.restype = ctypes.c_bool
+    kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
+                                        ctypes.POINTER(_PROCESSENTRY32)]
+    kernel32.Process32NextW.restype = ctypes.c_bool
+    kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
+                                    ctypes.c_uint32]
+    kernel32.OpenThread.restype = ctypes.c_void_p
+    kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
+    kernel32.ResumeThread.restype = ctypes.c_uint32
+
+
+# Configure kernel32 types on module import (only on Windows)
+if sys.platform == "win32":
+    _configure_kernel32_types(_get_kernel32())
 
 
 def process_parent_map() -> Dict[int, int]:
     """PID -> parent PID for all current processes (Toolhelp snapshot)."""
     TH32CS_SNAPPROCESS = 0x00000002
     INVALID = ctypes.c_void_p(-1).value
-    snap = _kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
+    kernel32 = _get_kernel32()
+    _require_windows()
+    snap = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
     if snap == INVALID:
         raise ctypes.WinError(ctypes.get_last_error(), "ToolhelpSnapshot")
     out: Dict[int, int] = {}
     try:
         entry = _PROCESSENTRY32()
         entry.dwSize = ctypes.sizeof(entry)
-        ok = _kernel32.Process32FirstW(snap, ctypes.byref(entry))
+        ok = kernel32.Process32FirstW(snap, ctypes.byref(entry))
         while ok:
             out[int(entry.th32ProcessID)] = int(entry.th32ParentProcessID)
-            ok = _kernel32.Process32NextW(snap, ctypes.byref(entry))
+            ok = kernel32.Process32NextW(snap, ctypes.byref(entry))
     finally:
-        _kernel32.CloseHandle(snap)
+        kernel32.CloseHandle(snap)
     return out
 
 
@@ -296,7 +343,9 @@ def spawn_in_job(job: OwnedJob, cmd: List[str],
         cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         text=True, creationflags=CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB)
     try:
-        _check(bool(_kernel32.AssignProcessToJobObject(
+        kernel32 = _get_kernel32()
+        _require_windows()
+        _check(bool(kernel32.AssignProcessToJobObject(
             job.handle, proc._handle)), "AssignProcessToJobObject")
     except Exception:
         proc.kill()

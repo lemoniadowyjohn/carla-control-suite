@@ -17,6 +17,7 @@ import hashlib
 import json
 import os
 import socket
+import sys
 import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -78,16 +79,40 @@ class _FILETIME(ctypes.Structure):
                 ("dwHighDateTime", ctypes.c_uint32)]
 
 
-_ct_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-_ct_kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_bool,
-                                     ctypes.c_uint32]
-_ct_kernel32.OpenProcess.restype = ctypes.c_void_p
-_ct_kernel32.GetProcessTimes.argtypes = [ctypes.c_void_p,
-                                         ctypes.POINTER(_FILETIME),
-                                         ctypes.POINTER(_FILETIME),
-                                         ctypes.POINTER(_FILETIME),
-                                         ctypes.POINTER(_FILETIME)]
-_ct_kernel32.GetProcessTimes.restype = ctypes.c_bool
+_PROCESS_QUERY_LIMITED_INFORMATION = 0x00001000
+
+
+def _get_kernel32():
+    """Lazily initialize kernel32 DLL on Windows; returns None on non-Windows."""
+    if sys.platform != "win32":
+        return None
+    try:
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = [
+            ctypes.c_uint32, ctypes.c_bool, ctypes.c_uint32]
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.GetProcessTimes.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_FILETIME),
+            ctypes.POINTER(_FILETIME),
+            ctypes.POINTER(_FILETIME),
+            ctypes.POINTER(_FILETIME)]
+        kernel32.GetProcessTimes.restype = ctypes.c_bool
+        return kernel32
+    except Exception:
+        return None
+
+
+def _require_windows():
+    """Raise if not on Windows."""
+    if sys.platform != "win32":
+        raise RuntimeError("Windows-only operation attempted on non-Windows platform")
+
+
+class _FILETIME(ctypes.Structure):
+    _fields_ = [("dwLowDateTime", ctypes.c_uint32),
+                ("dwHighDateTime", ctypes.c_uint32)]
+
 
 _PROCESS_QUERY_LIMITED_INFORMATION = 0x00001000
 
@@ -108,17 +133,19 @@ def process_creation_time(pid: int) -> Optional[str]:
     is never accepted. All four FILETIME out-params are real structs:
     NULL out-params crash this call on some hosts.
     """
+    _require_windows()
+    kernel32 = _get_kernel32()
     if not pid or pid < 0:
         return None
     try:
-        h = _ct_kernel32.OpenProcess(
+        h = kernel32.OpenProcess(
             _PROCESS_QUERY_LIMITED_INFORMATION, False, int(pid))
         if not h:
             return None
         try:
             ft_create, ft_exit, ft_kernel, ft_user = (
                 _FILETIME(), _FILETIME(), _FILETIME(), _FILETIME())
-            ok = _ct_kernel32.GetProcessTimes(
+            ok = kernel32.GetProcessTimes(
                 h, ctypes.byref(ft_create), ctypes.byref(ft_exit),
                 ctypes.byref(ft_kernel), ctypes.byref(ft_user))
             if not ok:
@@ -129,7 +156,7 @@ def process_creation_time(pid: int) -> Optional[str]:
             return dt.replace(tzinfo=datetime.timezone.utc).isoformat().replace(
                 "+00:00", "Z")
         finally:
-            _ct_kernel32.CloseHandle(h)
+            kernel32.CloseHandle(h)
     except Exception:
         return None
 
@@ -224,9 +251,8 @@ def new_lease(operation: str, mutation_domains: List[str],
               engine_root: str = "", project_root: str = "",
               content_root: str = "", session_id: str = "") -> Lease:
     now = _utcnow()
-    import ctypes
 
-    pid = int(ctypes.windll.kernel32.GetCurrentProcessId())
+    pid = int(_get_current_pid())
     return Lease(
         run_id=f"{operation}_{uuid.uuid4().hex[:8]}",
         session_id=session_id or os.environ.get("CARLA_OPS_SESSION_ID", ""),
@@ -245,6 +271,13 @@ def new_lease(operation: str, mutation_domains: List[str],
         user=getpass.getuser(),
         host=socket.gethostname(),
     )
+
+
+def _get_current_pid() -> int:
+    """Get current process ID, Windows-only."""
+    _require_windows()
+    import ctypes
+    return int(ctypes.windll.kernel32.GetCurrentProcessId())
 
 
 def rebind_mutation_root(lease: Lease, pid: int) -> Lease:

@@ -1,0 +1,101 @@
+[
+  {
+    "tracked_file": "ultimate_pipeline/governance/single_writer/lease_store.py",
+    "line": 81,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": true,
+    "intended_platform": "win32",
+    "repair_needed": true,
+    "details": "_ct_kernel32 = ctypes.WinDLL(...) at module level; argtypes/restype configured at module level"
+  },
+  {
+    "tracked_file": "ultimate_pipeline/governance/single_writer/job_supervision.py",
+    "line": 18,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": true,
+    "intended_platform": "win32",
+    "repair_needed": true,
+    "details": "_kernel32 = ctypes.WinDLL(...) at module level; argtypes/restype configured at module level"
+  },
+  {
+    "tracked_file": "ultimate_pipeline/governance/single_writer/os_lock.py",
+    "line": 17,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": true,
+    "intended_platform": "win32",
+    "repair_needed": true,
+    "details": "_kernel32 = ctypes.WinDLL(...) at module level; argtypes/restype configured at module level"
+  },
+  {
+    "tracked_file": "ultimate_pipeline/utils/console_encoding.py",
+    "line": 125,
+    "import_time_execution": false,
+    "reachable_from_pytest_collection": true,
+    "intended_platform": "win32",
+    "repair_needed": false,
+    "details": "ctypes.windll.kernel32.SetConsoleOutputCP(65001) inside 'if sys.platform == \"win32\":' block, guarded by platform check"
+  },
+  {
+    "tracked_file": "scripts/control_plane.py",
+    "line": 130,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": false,
+    "intended_platform": "win32",
+    "repair_needed": "not_tracked",
+    "details": "Untracked file, imported by test_t6_owner_identity_authority.py at module level; _kernel32 = ctypes.WinDLL(...) at module level"
+  },
+  {
+    "tracked_file": "scripts/job_supervision.py",
+    "line": 130,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": false,
+    "intended_platform": "win32",
+    "repair_needed": "not_tracked",
+    "details": "Untracked file; _kernel32 = ctypes.WinDLL(...) at module level"
+  },
+  {
+    "tracked_file": "scripts/cook_stall_sampler.py",
+    "line": "inside functions",
+    "import_time_execution": false,
+    "reachable_from_pytest_collection": false,
+    "intended_platform": "win32",
+    "repair_needed": false,
+    "details": "ctypes.windll.kernel32 used inside functions, not at import time"
+  },
+  {
+    "tracked_file": "scripts/c_emergency_pytest_cleanup.py",
+    "line": 1,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": false,
+    "intended_platform": "win32",
+    "repair_needed": "not_tracked",
+    "details": "Untracked file; ctypes.WinDLL(\"kernel32\").GetDiskFreeSpaceExW(...) at module level"
+  },
+  {
+    "tracked_file": "scripts/job_supervision.py",
+    "line": 1,
+    "import_time_execution": true,
+    "reachable_from_pytest_collection": false,
+    "intended_platform": "win32",
+    "repair_needed": "not_tracked",
+    "details": "Untracked file; similar to governance version"
+  },
+  {
+    "tracked_file": "scripts/cook_stall_sampler.py",
+    "line": "inside functions",
+    "import_time_execution": false,
+    "reachable_from_pytest_collection": false,
+    "intended_platform": "win32",
+    "repair_needed": false,
+    "details": "ctypes.windll.kernel32 used inside functions, not at import time"
+  },
+  {
+    "tracked_file": "ultimate_pipeline/utils/console_encoding.py",
+    "line": 125,
+    "import_time_execution": false,
+    "reachable_from_pytest_collection": true,
+    "intended_platform": "win32",
+    "repair_needed": false,
+    "details": "Already guarded by 'if sys.platform == \"win32\":' check"
+  }
+]

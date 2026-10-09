@@ -11,26 +11,51 @@ from __future__ import annotations
 
 import ctypes
 import os
+import sys
 from dataclasses import dataclass
 from typing import Optional
 
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
 
-_CreateMutexW = _kernel32.CreateMutexW
-_CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
-_CreateMutexW.restype = ctypes.c_void_p
+def _get_kernel32():
+    """Lazily initialize kernel32 DLL on Windows; returns None on non-Windows."""
+    if sys.platform != "win32":
+        return None
+    try:
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        return kernel32
+    except Exception:
+        return None
 
-_WaitForSingleObject = _kernel32.WaitForSingleObject
-_WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
-_WaitForSingleObject.restype = ctypes.c_uint32
 
-_ReleaseMutex = _kernel32.ReleaseMutex
-_ReleaseMutex.argtypes = [ctypes.c_void_p]
-_ReleaseMutex.restype = ctypes.c_bool
+def _require_windows():
+    """Raise if not on Windows."""
+    if sys.platform != "win32":
+        raise RuntimeError("Windows-only operation attempted on non-Windows platform")
 
-_CloseHandle = _kernel32.CloseHandle
-_CloseHandle.argtypes = [ctypes.c_void_p]
-_CloseHandle.restype = ctypes.c_bool
+
+if sys.platform == "win32":
+    _kernel32 = _get_kernel32()
+    _CreateMutexW = _kernel32.CreateMutexW
+    _CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
+    _CreateMutexW.restype = ctypes.c_void_p
+
+    _WaitForSingleObject = _kernel32.WaitForSingleObject
+    _WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+    _WaitForSingleObject.restype = ctypes.c_uint32
+
+    _ReleaseMutex = _kernel32.ReleaseMutex
+    _ReleaseMutex.argtypes = [ctypes.c_void_p]
+    _ReleaseMutex.restype = ctypes.c_bool
+
+    _CloseHandle = _kernel32.CloseHandle
+    _CloseHandle.argtypes = [ctypes.c_void_p]
+    _CloseHandle.restype = ctypes.c_bool
+else:
+    # Non-Windows stubs
+    _CreateMutexW = None
+    _WaitForSingleObject = None
+    _ReleaseMutex = None
+    _CloseHandle = None
 
 WAIT_OBJECT_0 = 0x00000000
 WAIT_ABANDONED = 0x00000080
@@ -63,6 +88,7 @@ class NamedMutex:
         self._abandoned = False
 
     def acquire(self, timeout_ms: int = 0) -> MutexAcquisition:
+        _require_windows()
         for ns in ("Global", "Local"):
             handle = _CreateMutexW(None, False, f"{ns}\\{self._base}")
             if not handle:
@@ -93,6 +119,7 @@ class NamedMutex:
         return self._abandoned
 
     def release(self) -> None:
+        _require_windows()
         if self._handle:
             _ReleaseMutex(self._handle)
             _CloseHandle(self._handle)
