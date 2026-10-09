@@ -9,11 +9,17 @@ import argparse
 import hashlib
 import json
 import os
+import socket
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
+
+# Cap for the pre-harden reachability probe. On localhost a refused
+# connection returns immediately; the cap only matters for remote hosts
+# that drop packets instead of refusing.
+_REACHABILITY_PROBE_TIMEOUT_S = 2.0
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
@@ -140,6 +146,20 @@ def _get_carla():
     return get_carla()
 
 
+def _carla_reachable(host: str, port: int, probe_timeout: float = _REACHABILITY_PROBE_TIMEOUT_S) -> bool:
+    """Cheap TCP probe of the CARLA RPC port (no CARLA RPC, no file I/O).
+
+    Returns True when something accepts a connection at host:port. Used to
+    avoid paying the full-file harden_xodr XML rewrite when the subsequent
+    map load cannot possibly succeed because no server is listening.
+    """
+    try:
+        with socket.create_connection((host, port), timeout=probe_timeout):
+            return True
+    except OSError:
+        return False
+
+
 def _load_world(client, xodr_path: Path, timeout: float):
     from ultimate_pipeline.core.carla_opendrive_loader import load_opendrive_world_from_file
 
@@ -163,6 +183,7 @@ def run_smoke_suite(
         "error": "",
         "xodr_used": None,
         "xodr_hardener": None,
+        "carla_reachable": None,
         "spawn_points_count": 0,
         "waypoints_count": 0,
         "map_bounds": None,
@@ -175,7 +196,13 @@ def run_smoke_suite(
         client = carla.Client(host, port)
         client.set_timeout(timeout)
 
-        # Optional: harden XODR before CARLA import (reduces known crash patterns).
+        # Optional: harden XODR before the map load (reduces known crash
+        # patterns). The hardener is a pure-XML full-file rewrite with no
+        # CARLA dependency -- the only real ordering constraint is that it
+        # must finish before _load_world below. So probe the RPC port first:
+        # when nothing is listening, the load cannot succeed and paying the
+        # full parse+rewrite unconditionally is pure waste (ENABLE_CARLA_
+        # TEST_EARLY runs this before the server may even be up).
         used_xodr = xodr_path
         hardener_info: Dict[str, Any] = {
             "enabled": _env_bool("UP_ENABLE_XODR_HARDENER", True),
@@ -183,8 +210,15 @@ def run_smoke_suite(
             "repair_parampoly3_to_line": _env_bool("UP_REPAIR_PARAMPOLY3_TO_LINE", False),
             "report_path": None,
             "error": None,
+            "skipped_reason": None,
         }
+        carla_reachable: Optional[bool] = None
         if hardener_info["enabled"]:
+            carla_reachable = _carla_reachable(host, port)
+            if not carla_reachable:
+                hardener_info["skipped_reason"] = "carla_unreachable"
+        payload["carla_reachable"] = carla_reachable
+        if hardener_info["enabled"] and carla_reachable:
             try:
                 from ultimate_pipeline.tools.xodr_carla_hardener import harden_xodr
 
