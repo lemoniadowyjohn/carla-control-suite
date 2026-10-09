@@ -11,26 +11,39 @@ from __future__ import annotations
 
 import ctypes
 import os
+import sys
 from dataclasses import dataclass
 from typing import Optional
 
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+# GAP-055: ctypes.WinDLL exists only on Windows. This module is imported (via
+# the single_writer package) by collected tests, and pytest runs module-level
+# code during COLLECTION -- before any skipif marker -- so unconditional WinDLL
+# calls aborted CI's offline-pytest job on Linux (exit 2). Bind only on win32;
+# elsewhere every handle stays None and real use fails loudly at call time.
+if sys.platform == "win32":
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
 
-_CreateMutexW = _kernel32.CreateMutexW
-_CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
-_CreateMutexW.restype = ctypes.c_void_p
+    _CreateMutexW = _kernel32.CreateMutexW
+    _CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_wchar_p]
+    _CreateMutexW.restype = ctypes.c_void_p
 
-_WaitForSingleObject = _kernel32.WaitForSingleObject
-_WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
-_WaitForSingleObject.restype = ctypes.c_uint32
+    _WaitForSingleObject = _kernel32.WaitForSingleObject
+    _WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+    _WaitForSingleObject.restype = ctypes.c_uint32
 
-_ReleaseMutex = _kernel32.ReleaseMutex
-_ReleaseMutex.argtypes = [ctypes.c_void_p]
-_ReleaseMutex.restype = ctypes.c_bool
+    _ReleaseMutex = _kernel32.ReleaseMutex
+    _ReleaseMutex.argtypes = [ctypes.c_void_p]
+    _ReleaseMutex.restype = ctypes.c_bool
 
-_CloseHandle = _kernel32.CloseHandle
-_CloseHandle.argtypes = [ctypes.c_void_p]
-_CloseHandle.restype = ctypes.c_bool
+    _CloseHandle = _kernel32.CloseHandle
+    _CloseHandle.argtypes = [ctypes.c_void_p]
+    _CloseHandle.restype = ctypes.c_bool
+else:
+    _kernel32 = None
+    _CreateMutexW = None
+    _WaitForSingleObject = None
+    _ReleaseMutex = None
+    _CloseHandle = None
 
 WAIT_OBJECT_0 = 0x00000000
 WAIT_ABANDONED = 0x00000080
