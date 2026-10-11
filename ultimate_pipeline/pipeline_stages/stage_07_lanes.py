@@ -219,6 +219,25 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     CrossSectionRepair.enforce(root)
     LaneWidthClamp.clamp(root)
 
+    # --- GAP-026: harmonize junction connector lane widths (source stage) ---
+    # Inherits each linked connector lane's width from its matched incoming
+    # lane. Geometry, contactPoint, from/to mapping, and thresholds untouched.
+    try:
+        from ultimate_pipeline.lanes.junction_lane_width_harmonizer import (
+            harmonize_junction_lane_widths,
+        )
+
+        gap026_width_report = harmonize_junction_lane_widths(root)
+        self.vreport.add_dict("gap026_width_harmonization", gap026_width_report)
+        print(
+            "[STEP 7] GAP-026 width harmonization: "
+            f"checked={gap026_width_report.get('checked_lane_links', 0)} "
+            f"harmonized={gap026_width_report.get('harmonized_widths', 0)} "
+            f"skipped={gap026_width_report.get('skipped_missing', 0)}"
+        )
+    except Exception as e:
+        print(f"⚠️ GAP-026 width harmonization failed (non-fatal): {e}")
+
     save_xodr(tree, lanes_out)
     print(f"✅ Lane & cross-section repaired → {lanes_out}")
     if s.QA_AUTOVIS and not s.ENABLE_CARLA_TEST_EARLY:

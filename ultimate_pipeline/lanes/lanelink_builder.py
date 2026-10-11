@@ -196,6 +196,111 @@ class LaneLinkBuilder:
         LaneLinkBuilder.regenerate_lane_links(root, verbose=verbose)
 
     @staticmethod
+    def prune_outer_to_inner_mispaired_lane_links(
+        root: ET.Element, verbose: bool = False
+    ) -> dict:
+        """GAP-026 Stage-8 guard: remove severe outer->inner mispairings.
+
+        For each connection, recompute the canonical inner-first pairing
+        (same logic as ``match_by_direction``) and remove existing
+        ``laneLink`` entries where ``abs(from) != abs(to)`` that disagree
+        with it.  Removed outer lanes become explicit residuals (unlinked),
+        never re-guessed.  Equal-order links are always kept (width repair
+        in Stage 7 handles those).  No threshold is modified.
+        """
+        roads = {r.get("id"): r for r in root.findall("road") if r.get("id")}
+
+        def _safe_float(x, default: float = 0.0) -> float:
+            try:
+                return float(str(x).strip())
+            except Exception:
+                return default
+
+        lane_sections: dict = {}
+        for rid, road in roads.items():
+            sections = list(road.findall("./lanes/laneSection"))
+            sections.sort(key=lambda s: _safe_float(s.get("s"), 0.0))
+            lane_sections[rid] = sections
+
+        def edge_section(road_id: str, at_start: bool):
+            secs = lane_sections.get(road_id)
+            if not secs:
+                return None
+            return secs[0] if at_start else secs[-1]
+
+        def driving_ids(section, side: str) -> list[int]:
+            side_elem = section.find(side)
+            if side_elem is None:
+                return []
+            out: list[int] = []
+            for lane in side_elem.findall("lane"):
+                try:
+                    lid = int(str(lane.get("id")))
+                except (TypeError, ValueError):
+                    continue
+                if str(lane.get("type", "driving")).lower() != "driving":
+                    continue
+                out.append(lid)
+            return out
+
+        pruned = 0
+        kept = 0
+        residuals: list[dict] = []
+        for junc in root.findall("junction"):
+            for conn in junc.findall("connection"):
+                incoming = conn.get("incomingRoad")
+                connecting = conn.get("connectingRoad")
+                if incoming not in roads or connecting not in roads:
+                    continue
+                at_start = conn.get("contactPoint", "start") != "end"
+                inc_sec = edge_section(incoming, False)
+                con_sec = edge_section(connecting, at_start)
+                if inc_sec is None or con_sec is None:
+                    continue
+                canonical: set[tuple[int, int]] = set()
+                for side in ("left", "right"):
+                    inc_ids = sorted(driving_ids(inc_sec, side), key=abs)
+                    con_ids = sorted(driving_ids(con_sec, side), key=abs)
+                    # inner-first truncation: zip pairs only equal-order ids
+                    for i_id, c_id in zip(inc_ids, con_ids):
+                        if (i_id > 0) == (c_id > 0) and abs(i_id) == abs(c_id):
+                            canonical.add((i_id, c_id))
+                        elif (i_id > 0) == (c_id > 0):
+                            # count-mismatch inner pairing (e.g. -1->-1 kept
+                            # even when incoming has extra outer lanes)
+                            if abs(i_id) == abs(c_id):
+                                canonical.add((i_id, c_id))
+                            else:
+                                canonical.add((i_id, c_id))
+                for ll in list(conn.findall("laneLink")):
+                    try:
+                        pair = (int(str(ll.get("from"))), int(str(ll.get("to"))))
+                    except (TypeError, ValueError):
+                        continue
+                    if pair in canonical:
+                        kept += 1
+                        continue
+                    # Mispair signature: different |id| (outer->inner).
+                    if abs(pair[0]) != abs(pair[1]):
+                        conn.remove(ll)
+                        pruned += 1
+                        residuals.append(
+                            {
+                                "junction_id": junc.get("id"),
+                                "connection_id": conn.get("id"),
+                                "from": str(pair[0]),
+                                "to": str(pair[1]),
+                            }
+                        )
+                    else:
+                        kept += 1
+        if verbose:
+            print(
+                f"[LaneLinkBuilder] pruned {pruned} outer->inner mispairs, kept {kept}."
+            )
+        return {"pruned": pruned, "kept": kept, "residuals": residuals}
+
+    @staticmethod
     def sanitize_junction_lane_links(root: ET.Element, label: str = "unlabeled", *args, **kwargs) -> dict:
         """Validate lane-link existence and endpoint pose continuity."""
         position_tolerance = float(kwargs.get("position_tolerance_m", 0.25))
