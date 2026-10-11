@@ -40,8 +40,9 @@ import sys
 
 import pytest
 
-pytestmark = pytest.mark.skipif(
-    not sys.platform.startswith("win"), reason="Windows venv launcher only")
+# GAP-055: Windows-only governance machinery (named mutexes, Job Objects, kernel32 identity)
+if sys.platform != "win32":
+    pytest.skip("Windows-only governance machinery (named mutexes, Job Objects, kernel32 identity)", allow_module_level=True)
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "scripts"))

@@ -17,6 +17,7 @@ import hashlib
 import json
 import os
 import socket
+import sys
 import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -78,18 +79,33 @@ class _FILETIME(ctypes.Structure):
                 ("dwHighDateTime", ctypes.c_uint32)]
 
 
-_ct_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-_ct_kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_bool,
-                                     ctypes.c_uint32]
-_ct_kernel32.OpenProcess.restype = ctypes.c_void_p
-_ct_kernel32.GetProcessTimes.argtypes = [ctypes.c_void_p,
-                                         ctypes.POINTER(_FILETIME),
-                                         ctypes.POINTER(_FILETIME),
-                                         ctypes.POINTER(_FILETIME),
-                                         ctypes.POINTER(_FILETIME)]
-_ct_kernel32.GetProcessTimes.restype = ctypes.c_bool
+def _require_kernel32() -> None:
+    """Raise if the kernel32 handle is unavailable (non-Windows or stripped ctypes)."""
+    if _ct_kernel32 is None:
+        raise OSError(
+            f"_require_kernel32 requires Windows: ctypes.WinDLL unavailable on {sys.platform}")
 
-_PROCESS_QUERY_LIMITED_INFORMATION = 0x00001000
+
+# GAP-055: ctypes.WinDLL exists only on Windows. This module is imported (via
+# the single_writer package) by collected tests, and pytest runs module-level
+# code during COLLECTION -- before any skipif marker -- so an unconditional
+# WinDLL call aborted CI's offline-pytest job on Linux (exit 2). Bind only on
+# win32; elsewhere the handle stays None and process-time queries fail loudly
+# at call time (Windows-only tests skip on non-Windows; collection stays green).
+if sys.platform == "win32":
+    _ct_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    _ct_kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_bool,
+                                         ctypes.c_uint32]
+    _ct_kernel32.OpenProcess.restype = ctypes.c_void_p
+    _ct_kernel32.GetProcessTimes.argtypes = [ctypes.c_void_p,
+                                             ctypes.POINTER(_FILETIME),
+                                             ctypes.POINTER(_FILETIME),
+                                             ctypes.POINTER(_FILETIME),
+                                             ctypes.POINTER(_FILETIME)]
+    _ct_kernel32.GetProcessTimes.restype = ctypes.c_bool
+else:
+    _ct_kernel32 = None
+    _PROCESS_QUERY_LIMITED_INFORMATION = 0x00001000
 
 
 def _filetime_to_us(ft: _FILETIME) -> int:
@@ -110,6 +126,7 @@ def process_creation_time(pid: int) -> Optional[str]:
     """
     if not pid or pid < 0:
         return None
+    _require_kernel32()
     try:
         h = _ct_kernel32.OpenProcess(
             _PROCESS_QUERY_LIMITED_INFORMATION, False, int(pid))
@@ -223,6 +240,8 @@ def new_lease(operation: str, mutation_domains: List[str],
               fingerprint: str, mutex_namespace: str,
               engine_root: str = "", project_root: str = "",
               content_root: str = "", session_id: str = "") -> Lease:
+    if _ct_kernel32 is None:
+        raise OSError(f"new_lease requires Windows: kernel32 process identity API unavailable on {sys.platform}")
     now = _utcnow()
     import ctypes
 

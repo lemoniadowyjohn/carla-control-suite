@@ -11,6 +11,10 @@ from pathlib import Path
 
 import pytest
 
+# GAP-055: Windows-only governance machinery (named mutexes, Job Objects, kernel32 identity)
+if sys.platform != "win32":
+    pytest.skip("Windows-only governance machinery (named mutexes, Job Objects, kernel32 identity)", allow_module_level=True)
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "ultimate_pipeline" / "governance" / "single_writer"))

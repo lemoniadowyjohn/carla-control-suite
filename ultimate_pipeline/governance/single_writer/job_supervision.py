@@ -11,11 +11,21 @@ from __future__ import annotations
 
 import ctypes
 import subprocess
+import sys
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+# GAP-055: ctypes.WinDLL exists only on Windows. This module is imported (via
+# the single_writer package) by collected tests, and pytest runs module-level
+# code during COLLECTION -- before any skipif marker -- so an unconditional
+# WinDLL call aborted CI's offline-pytest job on Linux (exit 2). Bind only on
+# win32; elsewhere the handle stays None and real use fails loudly at call
+# time (Windows-only tests skip on non-Windows; collection stays green).
+if sys.platform == "win32":
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+else:
+    _kernel32 = None
 
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 _JOB_OBJECT_LIMIT_JOB_TIME = 0x00000004
@@ -94,6 +104,8 @@ class OwnedJob:
 
 def create_job(time_limit_100ns: int = 0,
                kill_on_close: bool = True) -> OwnedJob:
+    if _kernel32 is None:
+        raise OSError(f"create_job requires Windows: kernel32 Job Objects API unavailable on {sys.platform}")
     handle = _kernel32.CreateJobObjectW(None, None)
     if not handle:
         raise ctypes.WinError(ctypes.get_last_error(), "CreateJobObjectW")
@@ -213,24 +225,28 @@ class _PROCESSENTRY32(ctypes.Structure):
     ]
 
 
-_kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
-                                                     ctypes.c_uint32]
-_kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
-_kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
-                                      ctypes.POINTER(_PROCESSENTRY32)]
-_kernel32.Process32FirstW.restype = ctypes.c_bool
-_kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
-                                     ctypes.POINTER(_PROCESSENTRY32)]
-_kernel32.Process32NextW.restype = ctypes.c_bool
-_kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
-                                 ctypes.c_uint32]
-_kernel32.OpenThread.restype = ctypes.c_void_p
-_kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
-_kernel32.ResumeThread.restype = ctypes.c_uint32
+# GAP-055: prototype bindings gated on win32 like the handle itself.
+if sys.platform == "win32":
+    _kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
+                                                         ctypes.c_uint32]
+    _kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
+    _kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
+                                          ctypes.POINTER(_PROCESSENTRY32)]
+    _kernel32.Process32FirstW.restype = ctypes.c_bool
+    _kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
+                                         ctypes.POINTER(_PROCESSENTRY32)]
+    _kernel32.Process32NextW.restype = ctypes.c_bool
+    _kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
+                                     ctypes.c_uint32]
+    _kernel32.OpenThread.restype = ctypes.c_void_p
+    _kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
+    _kernel32.ResumeThread.restype = ctypes.c_uint32
 
 
 def process_parent_map() -> Dict[int, int]:
     """PID -> parent PID for all current processes (Toolhelp snapshot)."""
+    if _kernel32 is None:
+        raise OSError(f"process_parent_map requires Windows: kernel32 Toolhelp API unavailable on {sys.platform}")
     TH32CS_SNAPPROCESS = 0x00000002
     INVALID = ctypes.c_void_p(-1).value
     snap = _kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
@@ -290,6 +306,8 @@ def spawn_in_job(job: OwnedJob, cmd: List[str],
     dance the assign would fail when the supervisor itself runs inside a
     job; without the proper resume the child stays frozen.
     """
+    if _kernel32 is None:
+        raise OSError(f"spawn_in_job requires Windows: kernel32 Job Objects API unavailable on {sys.platform}")
     CREATE_SUSPENDED = 0x00000004
     CREATE_BREAKAWAY_FROM_JOB = 0x01000000
     proc = subprocess.Popen(

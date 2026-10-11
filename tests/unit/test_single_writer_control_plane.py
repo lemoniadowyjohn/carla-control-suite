@@ -17,6 +17,10 @@ from pathlib import Path
 
 import pytest
 
+# GAP-055: Windows-only governance machinery (named mutexes, Job Objects, kernel32 identity)
+if sys.platform != "win32":
+    pytest.skip("Windows-only governance machinery (named mutexes, Job Objects, kernel32 identity)", allow_module_level=True)
+
 from ultimate_pipeline.governance.single_writer import (
     domains,
     exit_codes,

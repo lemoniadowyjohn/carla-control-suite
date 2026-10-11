@@ -127,15 +127,26 @@ DDC_POLICY_REASON = ("UE4.26 DerivedDataBackendGraph write concurrency has not "
 # ---------------------------------------------------------------------------
 # OS primitive
 # ---------------------------------------------------------------------------
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-_kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, wt.BOOL, wt.LPCWSTR]
-_kernel32.CreateMutexW.restype = wt.HANDLE
-_kernel32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
-_kernel32.WaitForSingleObject.restype = wt.DWORD
-_kernel32.ReleaseMutex.argtypes = [wt.HANDLE]
-_kernel32.ReleaseMutex.restype = wt.BOOL
-_kernel32.CloseHandle.argtypes = [wt.HANDLE]
-_kernel32.CloseHandle.restype = wt.BOOL
+
+
+def _require_kernel32() -> None:
+    """Raise if kernel32 is unavailable (non-Windows or stripped ctypes)."""
+    if _kernel32 is None:
+        raise OSError(f"_kernel32 requires Windows: ctypes.WinDLL unavailable on {sys.platform}")
+
+
+if sys.platform == "win32":
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    _kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, wt.BOOL, wt.LPCWSTR]
+    _kernel32.CreateMutexW.restype = wt.HANDLE
+    _kernel32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
+    _kernel32.WaitForSingleObject.restype = wt.DWORD
+    _kernel32.ReleaseMutex.argtypes = [wt.HANDLE]
+    _kernel32.ReleaseMutex.restype = wt.BOOL
+    _kernel32.CloseHandle.argtypes = [wt.HANDLE]
+    _kernel32.CloseHandle.restype = wt.BOOL
+else:
+    _kernel32 = None
 
 
 class MutexHandle:
@@ -146,6 +157,8 @@ class MutexHandle:
         self.abandoned = False
 
     def try_acquire(self, name=MUTEX_NAME, timeout_ms=0):
+        if _kernel32 is None:
+            raise OSError(f"try_acquire requires Windows: kernel32 named mutex API unavailable on {sys.platform}")
         self.handle = _kernel32.CreateMutexW(None, False, name)
         if not self.handle:
             raise OSError("CreateMutexW failed: %d" % ctypes.get_last_error())

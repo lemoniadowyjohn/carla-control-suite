@@ -39,7 +39,50 @@ from orch_core import atomic_write_json, utc_now  # noqa: E402
 
 SCHEMA_VERSION = 1
 
-k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+
+def _require_kernel32() -> None:
+    """Raise if kernel32 handle is unavailable (non-Windows or stripped ctypes)."""
+    if k32 is None:
+        raise OSError(f"k32 requires Windows: ctypes.WinDLL unavailable on {sys.platform}")
+
+
+if sys.platform == "win32":
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    k32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wt.LPCWSTR]
+    k32.CreateJobObjectW.restype = wt.HANDLE
+    k32.SetInformationJobObject.argtypes = [wt.HANDLE, ctypes.c_int,
+                                            ctypes.c_void_p, wt.DWORD]
+    k32.SetInformationJobObject.restype = wt.BOOL
+    k32.QueryInformationJobObject.argtypes = [wt.HANDLE, ctypes.c_int,
+                                              ctypes.c_void_p, wt.DWORD,
+                                              ctypes.POINTER(wt.DWORD)]
+    k32.QueryInformationJobObject.restype = wt.BOOL
+    k32.AssignProcessToJobObject.argtypes = [wt.HANDLE, wt.HANDLE]
+    k32.AssignProcessToJobObject.restype = wt.BOOL
+    k32.TerminateJobObject.argtypes = [wt.HANDLE, wt.UINT]
+    k32.TerminateJobObject.restype = wt.BOOL
+    k32.OpenProcess.argtypes = [wt.DWORD, wt.BOOL, wt.DWORD]
+    k32.OpenProcess.restype = wt.HANDLE
+    k32.IsProcessInJob.argtypes = [wt.HANDLE, wt.HANDLE, ctypes.POINTER(wt.BOOL)]
+    k32.IsProcessInJob.restype = wt.BOOL
+    k32.ResumeThread.argtypes = [wt.HANDLE]
+    k32.ResumeThread.restype = wt.DWORD
+    k32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
+    k32.WaitForSingleObject.restype = wt.DWORD
+    k32.CloseHandle.argtypes = [wt.HANDLE]
+    k32.CloseHandle.restype = wt.BOOL
+    k32.CreateProcessW.argtypes = [wt.LPCWSTR, wt.LPWSTR, ctypes.c_void_p,
+                                   ctypes.c_void_p, wt.BOOL, wt.DWORD,
+                                   ctypes.c_void_p, wt.LPCWSTR,
+                                   ctypes.POINTER(STARTUPINFOW),
+                                   ctypes.POINTER(PROCESS_INFORMATION)]
+    k32.CreateProcessW.restype = wt.BOOL
+    k32.GetExitCodeProcess.argtypes = [wt.HANDLE, ctypes.POINTER(wt.DWORD)]
+    k32.GetExitCodeProcess.restype = wt.BOOL
+    k32.TerminateProcess.argtypes = [wt.HANDLE, wt.UINT]
+    k32.TerminateProcess.restype = wt.BOOL
+else:
+    k32 = None
 
 # --- constants -------------------------------------------------------------
 JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
@@ -105,29 +148,31 @@ class JOBOBJECT_BASIC_PROCESS_ID_LIST(ctypes.Structure):
     ]
 
 
-k32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wt.LPCWSTR]
-k32.CreateJobObjectW.restype = wt.HANDLE
-k32.SetInformationJobObject.argtypes = [wt.HANDLE, ctypes.c_int,
-                                        ctypes.c_void_p, wt.DWORD]
-k32.SetInformationJobObject.restype = wt.BOOL
-k32.QueryInformationJobObject.argtypes = [wt.HANDLE, ctypes.c_int,
-                                          ctypes.c_void_p, wt.DWORD,
-                                          ctypes.POINTER(wt.DWORD)]
-k32.QueryInformationJobObject.restype = wt.BOOL
-k32.AssignProcessToJobObject.argtypes = [wt.HANDLE, wt.HANDLE]
-k32.AssignProcessToJobObject.restype = wt.BOOL
-k32.TerminateJobObject.argtypes = [wt.HANDLE, wt.UINT]
-k32.TerminateJobObject.restype = wt.BOOL
-k32.OpenProcess.argtypes = [wt.DWORD, wt.BOOL, wt.DWORD]
-k32.OpenProcess.restype = wt.HANDLE
-k32.IsProcessInJob.argtypes = [wt.HANDLE, wt.HANDLE, ctypes.POINTER(wt.BOOL)]
-k32.IsProcessInJob.restype = wt.BOOL
-k32.ResumeThread.argtypes = [wt.HANDLE]
-k32.ResumeThread.restype = wt.DWORD
-k32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
-k32.WaitForSingleObject.restype = wt.DWORD
-k32.CloseHandle.argtypes = [wt.HANDLE]
-k32.CloseHandle.restype = wt.BOOL
+# GAP-055: prototype bindings gated on win32 like the handle itself.
+if sys.platform == "win32":
+    k32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wt.LPCWSTR]
+    k32.CreateJobObjectW.restype = wt.HANDLE
+    k32.SetInformationJobObject.argtypes = [wt.HANDLE, ctypes.c_int,
+                                            ctypes.c_void_p, wt.DWORD]
+    k32.SetInformationJobObject.restype = wt.BOOL
+    k32.QueryInformationJobObject.argtypes = [wt.HANDLE, ctypes.c_int,
+                                              ctypes.c_void_p, wt.DWORD,
+                                              ctypes.POINTER(wt.DWORD)]
+    k32.QueryInformationJobObject.restype = wt.BOOL
+    k32.AssignProcessToJobObject.argtypes = [wt.HANDLE, wt.HANDLE]
+    k32.AssignProcessToJobObject.restype = wt.BOOL
+    k32.TerminateJobObject.argtypes = [wt.HANDLE, wt.UINT]
+    k32.TerminateJobObject.restype = wt.BOOL
+    k32.OpenProcess.argtypes = [wt.DWORD, wt.BOOL, wt.DWORD]
+    k32.OpenProcess.restype = wt.HANDLE
+    k32.IsProcessInJob.argtypes = [wt.HANDLE, wt.HANDLE, ctypes.POINTER(wt.BOOL)]
+    k32.IsProcessInJob.restype = wt.BOOL
+    k32.ResumeThread.argtypes = [wt.HANDLE]
+    k32.ResumeThread.restype = wt.DWORD
+    k32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
+    k32.WaitForSingleObject.restype = wt.DWORD
+    k32.CloseHandle.argtypes = [wt.HANDLE]
+    k32.CloseHandle.restype = wt.BOOL
 
 CREATE_NO_WINDOW = 0x08000000
 
@@ -150,16 +195,7 @@ class PROCESS_INFORMATION(ctypes.Structure):
                 ("dwProcessId", wt.DWORD), ("dwThreadId", wt.DWORD)]
 
 
-k32.CreateProcessW.argtypes = [wt.LPCWSTR, wt.LPWSTR, ctypes.c_void_p,
-                               ctypes.c_void_p, wt.BOOL, wt.DWORD,
-                               ctypes.c_void_p, wt.LPCWSTR,
-                               ctypes.POINTER(STARTUPINFOW),
-                               ctypes.POINTER(PROCESS_INFORMATION)]
-k32.CreateProcessW.restype = wt.BOOL
-k32.GetExitCodeProcess.argtypes = [wt.HANDLE, ctypes.POINTER(wt.DWORD)]
-k32.GetExitCodeProcess.restype = wt.BOOL
-k32.TerminateProcess.argtypes = [wt.HANDLE, wt.UINT]
-k32.TerminateProcess.restype = wt.BOOL
+# Constants used by the Windows-only path.
 STILL_ACTIVE = 259
 
 # Win32 structures whose layout must match the SDK exactly. Sizes are asserted
@@ -171,7 +207,6 @@ _EXPECTED_SIZES = {
         (JOBOBJECT_EXTENDED_LIMIT_INFORMATION, 144),
     "PROCESS_INFORMATION": (PROCESS_INFORMATION, 24),
 }
-
 
 def abi_audit():
     """Compare declared struct sizes against the 64-bit SDK layout."""
@@ -294,16 +329,6 @@ class PROCESS_INFORMATION(ctypes.Structure):
                 ("dwProcessId", wt.DWORD), ("dwThreadId", wt.DWORD)]
 
 
-k32.CreateProcessW.argtypes = [wt.LPCWSTR, wt.LPWSTR, ctypes.c_void_p,
-                               ctypes.c_void_p, wt.BOOL, wt.DWORD,
-                               ctypes.c_void_p, wt.LPCWSTR,
-                               ctypes.POINTER(STARTUPINFOW),
-                               ctypes.POINTER(PROCESS_INFORMATION)]
-k32.CreateProcessW.restype = wt.BOOL
-k32.GetExitCodeProcess.argtypes = [wt.HANDLE, ctypes.POINTER(wt.DWORD)]
-k32.GetExitCodeProcess.restype = wt.BOOL
-k32.TerminateProcess.argtypes = [wt.HANDLE, wt.UINT]
-k32.TerminateProcess.restype = wt.BOOL
 STILL_ACTIVE = 259
 
 
@@ -323,6 +348,7 @@ class JobSupervisor:
             raise RuntimeError("job handle state is %s" % self._job_state)
 
     def create(self):
+        _require_kernel32()
         self.handle = k32.CreateJobObjectW(None, self.name)
         if not self.handle:
             self._job_state = "CLOSED"
@@ -346,6 +372,7 @@ class JobSupervisor:
         Create-then-assign would race with the child's own spawns, so the child
         must not be allowed to run until it is already inside the job.
         """
+        _require_kernel32()
         if self.handle is None:
             self.create()
         if isinstance(command, (list, tuple)):
