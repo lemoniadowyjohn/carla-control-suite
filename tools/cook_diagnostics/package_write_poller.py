@@ -139,7 +139,6 @@ class PackageWritePoller:
                 record.sha256,
                 record.status,
             ])
-            self._csv_handle.flush()
 
     def poll_once(self) -> Dict[str, FileRecord]:
         """Perform one polling cycle. Returns current file states."""
@@ -149,11 +148,35 @@ class PackageWritePoller:
         
         self._cycle += 1
         current = self._scan_directory()
-        
-        # Write all current records to CSV
+
+        # NEW-2026-10-11: write DELTAS ONLY.
+        #
+        # Previously every file was re-emitted on every cycle, including
+        # status="unchanged". Over the 2026-10-11 city-scale run that produced
+        # ~1,430,000 rows of which only 7,874 carried signal (99.4% noise) and
+        # 273 MB of CSV -- written to C:, which was simultaneously the volume
+        # UE used for its scratch/DDC. The poller itself then died with
+        # OSError ENOSPC while the cook crashed on
+        # "Could not write to ...T_Fabric_15_R.ubulk!". A diagnostic must not
+        # be able to exhaust the disk it is measuring.
+        #
+        # A row is now emitted only when the file is genuinely new or changed.
+        # The in-memory snapshot still tracks every file, so change detection is
+        # unaffected.
+        wrote_any = False
         for record in current.values():
-            self._write_csv_row(record)
-        
+            if record.status != "unchanged":
+                self._write_csv_row(record)
+                wrote_any = True
+
+        # Flush once per cycle rather than once per row: a per-row flush is one
+        # syscall per file per cycle and was a large part of the overhead.
+        if wrote_any and self._csv_handle:
+            try:
+                self._csv_handle.flush()
+            except OSError:
+                pass
+
         # Update known files
         self._known_files = current
         return current

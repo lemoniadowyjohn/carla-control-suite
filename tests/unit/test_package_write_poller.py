@@ -103,7 +103,18 @@ class TestPackageWritePoller:
         poller.stop()
 
     def test_poll_once_unchanged_files(self):
-        """Test that unchanged files are logged as 'unchanged'."""
+        """Unchanged files are NOT re-emitted.
+
+        CONTRACT CHANGED 2026-10-11. This test previously asserted that an
+        unchanged file is written again on every cycle (len(rows) == 2). That
+        behaviour was the defect: over a city-scale cook it produced ~1,430,000
+        rows of which only 7,874 carried signal -- a 273 MB CSV written to C:,
+        the same volume UE uses for scratch/DDC. The poller then died with
+        OSError ENOSPC while the cook crashed on a write failure.
+
+        The poller now emits deltas only. The in-memory snapshot still tracks
+        every file, so change detection is unchanged; only the CSV is filtered.
+        """
         poller = PackageWritePoller(
             package_dir=self.package_dir,
             output_csv=self.output_csv,
@@ -119,13 +130,14 @@ class TestPackageWritePoller:
         # Second poll without changes
         poller.poll_once()
         
-        # Check CSV
+        # Check CSV: exactly ONE row (the initial "new"). The second poll sees
+        # no change and therefore emits nothing.
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 2
+        assert len(rows) == 1
         assert rows[0]["status"] == "new"
-        assert rows[1]["status"] == "unchanged"
+
         
         poller.stop()
 
@@ -343,24 +355,25 @@ class TestPackageWritePollerIntegration:
         
         poller.stop()
         
-        # Check all cycles recorded - each cycle writes ALL current files
-        # Cycle 1: a(new) = 1 row
-        # Cycle 2: a(unchanged), b(new) = 2 rows
-        # Cycle 3: a(changed), b(unchanged) = 2 rows
-        # Total: 5 rows
+        # DELTAS ONLY (changed 2026-10-11; previously "each cycle writes ALL
+        # current files ... Total: 5 rows", which was the runaway-CSV defect).
+        # Cycle 1: a(new)     = 1 row
+        # Cycle 2: b(new)     = 1 row
+        # Cycle 3: a(changed) = 1 row
+        # Total: 3 rows
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
         
-        assert len(rows) == 5  # a(new), a(unchanged), b(new), a(changed), b(unchanged)
+        assert len(rows) == 3  # a(new), b(new), a(changed) -- deltas only
         
         # Verify cycle numbers
         cycles = [int(r["cycle"]) for r in rows]
-        assert cycles == [1, 2, 2, 3, 3]
+        assert cycles == [1, 2, 3]
         
         # Verify statuses
         statuses = [r["status"] for r in rows]
-        assert statuses == ["new", "unchanged", "new", "changed", "unchanged"]
+        assert statuses == ["new", "new", "changed"]
 
 
 if __name__ == "__main__":
