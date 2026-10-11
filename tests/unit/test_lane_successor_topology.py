@@ -254,3 +254,53 @@ def test_deterministic_ordering_repeated_runs_agree():
         lane = _lanes_by_id(root, "R1")[1]
         return _successor_of(lane), rep["through_junction_count"]
     assert run_once() == run_once() == ("-2", 1)
+
+
+# --- regression fixtures for Stage-8 invalid links (M3) ---------------------
+# These are cases where Stage-8 autofix created invalid lane successors by
+# blindly copying lane IDs without validating target existence on successor road.
+# The source-stage repair (strategy 3) must NOT infer successors in these cases.
+
+def test_stage8_invalid_link_49289_lane_neg2_no_target():
+    """Road 49289 lane -2 -> -2: target lane -2 does not exist on successor road."""
+    root = ET.Element("OpenDRIVE")
+    # Incoming road with lane -2 at terminal section
+    root.append(_road("49289", [-2], successor=("junction", "J1", "start")))
+    # Connecting road has NO lane -2 (only -1)
+    root.append(_road("50001", [-1], junction="J1"))
+    # Junction has laneLink from -2 to -2, but target doesn't exist
+    root.append(_junction("J1", [("49289", "50001", "start", [(-2, -2)])]))
+    report = infer_lane_successors_from_topology(root)
+    lanes = _lanes_by_id(root, "49289")
+    # Must NOT infer successor because target lane -2 doesn't exist on connecting road
+    assert _successor_of(lanes[-2]) is None
+    assert report["through_junction_count"] == 0
+    assert report["lanes_without_topology"] >= 1
+
+
+def test_stage8_invalid_link_51702_lane_2_to_1_no_target():
+    """Road 51702 lane 2 -> 1: target lane 1 does not exist on successor road."""
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("51702", [1, 2], successor=("junction", "J2", "start")))
+    # Connecting road has NO lane 1 (only -1, -2)
+    root.append(_road("52001", [-1, -2], junction="J2"))
+    # Junction has laneLink from 2 to 1, but target doesn't exist
+    root.append(_junction("J2", [("51702", "52001", "start", [(2, 1)])]))
+    report = infer_lane_successors_from_topology(root)
+    lanes = _lanes_by_id(root, "51702")
+    assert _successor_of(lanes[2]) is None
+    assert report["through_junction_count"] == 0
+    assert report["lanes_without_topology"] >= 1
+
+
+def test_stage8_invalid_link_51702_lane_1_to_1_no_target():
+    """Road 51702 lane 1 -> 1: target lane 1 does not exist on successor road."""
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("51702", [1, 2], successor=("junction", "J3", "start")))
+    root.append(_road("52002", [-1, -2], junction="J3"))
+    root.append(_junction("J3", [("51702", "52002", "start", [(1, 1)])]))
+    report = infer_lane_successors_from_topology(root)
+    lanes = _lanes_by_id(root, "51702")
+    assert _successor_of(lanes[1]) is None
+    assert report["through_junction_count"] == 0
+    assert report["lanes_without_topology"] >= 1
