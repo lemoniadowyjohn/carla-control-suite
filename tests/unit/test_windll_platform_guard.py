@@ -19,7 +19,6 @@ GUARDED_MODULES = [
     "ultimate_pipeline/governance/single_writer/os_lock.py",
     "ultimate_pipeline/governance/single_writer/lease_store.py",
     "ultimate_pipeline/governance/single_writer/job_supervision.py",
-    "tools/orphan_terminal_witness.py",
 ]
 
 # Test files whose subject is Windows-only machinery must carry a

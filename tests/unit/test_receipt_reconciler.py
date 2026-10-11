@@ -16,6 +16,10 @@ import uuid
 
 import pytest
 
+# GAP-055: Windows-only governance machinery (see test_single_writer_control_plane.py).
+pytestmark = pytest.mark.skipif(
+    not sys.platform.startswith("win"), reason="Windows-only governance machinery")
+
 from ultimate_pipeline.governance.single_writer import (
     job_supervision,
     lease_store as leases,

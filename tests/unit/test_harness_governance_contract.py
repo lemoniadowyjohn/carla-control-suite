@@ -11,6 +11,10 @@ from pathlib import Path
 
 import pytest
 
+# GAP-055: Windows-only governance machinery (see test_single_writer_control_plane.py).
+pytestmark = pytest.mark.skipif(
+    not sys.platform.startswith("win"), reason="Windows-only governance machinery")
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "ultimate_pipeline" / "governance" / "single_writer"))

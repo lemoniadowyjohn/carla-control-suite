@@ -17,6 +17,13 @@ from pathlib import Path
 
 import pytest
 
+# GAP-055: Windows-only governance machinery (named mutexes, Job Objects).
+# Import-time safety comes from the sys.platform guards in the single_writer
+# modules; this marker skips the items themselves on non-Windows (skipif
+# cannot help at collection time, which is why the source guards exist).
+pytestmark = pytest.mark.skipif(
+    not sys.platform.startswith("win"), reason="Windows-only governance machinery")
+
 from ultimate_pipeline.governance.single_writer import (
     domains,
     exit_codes,

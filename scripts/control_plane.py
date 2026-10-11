@@ -127,15 +127,26 @@ DDC_POLICY_REASON = ("UE4.26 DerivedDataBackendGraph write concurrency has not "
 # ---------------------------------------------------------------------------
 # OS primitive
 # ---------------------------------------------------------------------------
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-_kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, wt.BOOL, wt.LPCWSTR]
-_kernel32.CreateMutexW.restype = wt.HANDLE
-_kernel32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
-_kernel32.WaitForSingleObject.restype = wt.DWORD
-_kernel32.ReleaseMutex.argtypes = [wt.HANDLE]
-_kernel32.ReleaseMutex.restype = wt.BOOL
-_kernel32.CloseHandle.argtypes = [wt.HANDLE]
-_kernel32.CloseHandle.restype = wt.BOOL
+# GAP-055: ctypes.WinDLL exists only on Windows. This module is imported by
+# collected tests (test_t6_owner_identity_authority.py), and pytest executes
+# module-level code during COLLECTION -- before any skipif marker is
+# evaluated -- so an unconditional WinDLL call aborted CI's entire
+# offline-pytest job on Linux (AttributeError at collection, exit 2) on every
+# commit. The handle is therefore bound only on win32; elsewhere it stays
+# None and any actual use fails loudly at call time (the Windows-only tests
+# skip on non-Windows, so collection -- the CI gate -- stays green).
+if sys.platform == "win32":
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    _kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, wt.BOOL, wt.LPCWSTR]
+    _kernel32.CreateMutexW.restype = wt.HANDLE
+    _kernel32.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
+    _kernel32.WaitForSingleObject.restype = wt.DWORD
+    _kernel32.ReleaseMutex.argtypes = [wt.HANDLE]
+    _kernel32.ReleaseMutex.restype = wt.BOOL
+    _kernel32.CloseHandle.argtypes = [wt.HANDLE]
+    _kernel32.CloseHandle.restype = wt.BOOL
+else:
+    _kernel32 = None
 
 
 class MutexHandle:
