@@ -117,6 +117,19 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     else:
         print("[STEP 7] All roads already had driving lanes.")
 
+    # --- Infer lane-level successors from road topology (generator stage) ---
+    # This replaces the Stage 8 autofix that patched final XODR with synthetic fallback.
+    # Runs HERE at source stage using only real topology: road-level successors + junction laneLinks.
+    from ultimate_pipeline.enrichment.lane_successor_topology import infer_lane_successors_from_topology
+    successor_report = infer_lane_successors_from_topology(root)
+    print(
+        f"[STEP 7] Lane successors from topology: inferred={successor_report['inferred_count']} "
+        f"through_junction={successor_report['through_junction_count']} "
+        f"junction_mapped={successor_report['junction_mapped_count']} "
+        f"no_topology={successor_report['lanes_without_topology']}"
+    )
+    self.vreport.add_dict("lane_successor_topology", successor_report)
+
     # --- Optional ML-based lane refinement (non-destructive) ---
     if getattr(SETTINGS, "ENABLE_LANE_GNN_REFINER", False):
         print("🧠 LaneGNNRefiner: running ML-based lane sanity pass...")
