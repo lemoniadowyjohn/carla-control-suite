@@ -32,6 +32,11 @@ def _rows(csv_path: Path):
         return list(csv.DictReader(fh))
 
 
+def _signal_rows(csv_path: Path):
+    """Rows that carry file signal (everything except the per-cycle heartbeat)."""
+    return [r for r in _rows(csv_path) if r["status"] != "heartbeat"]
+
+
 def test_unchanged_files_are_not_re_emitted(tmp_path: Path) -> None:
     """The core defect: a stable directory must produce no new rows per cycle."""
     p = _poller(tmp_path)
@@ -39,17 +44,22 @@ def test_unchanged_files_are_not_re_emitted(tmp_path: Path) -> None:
     (tmp_path / "pkg" / "b.uasset").write_bytes(b"bbbb")
 
     p.poll_once()
-    first = len(_rows(tmp_path / "writes.csv"))
+    first = len(_signal_rows(tmp_path / "writes.csv"))
     assert first == 2, "first cycle should emit one row per file"
 
     for _ in range(20):
         p.poll_once()
 
-    after = len(_rows(tmp_path / "writes.csv"))
-    assert after == first, (
-        f"20 further polls over an unchanged directory added {after - first} rows; "
+    rows = _rows(tmp_path / "writes.csv")
+    assert len(_signal_rows(tmp_path / "writes.csv")) == first, (
+        "20 further polls over an unchanged directory added signal rows; "
         "unchanged files must not be re-emitted"
     )
+    assert not [r for r in rows if r["status"] == "unchanged"], (
+        "status=unchanged must never appear in the CSV"
+    )
+    # One heartbeat row per cycle (21 cycles) proves the poller was alive.
+    assert len([r for r in rows if r["status"] == "heartbeat"]) == 21
     p.stop()
 
 
@@ -60,7 +70,7 @@ def test_growth_is_bounded_by_signal_not_file_count(tmp_path: Path) -> None:
         (tmp_path / "pkg" / f"f{i}.uasset").write_bytes(b"seed")
 
     p.poll_once()
-    baseline = len(_rows(tmp_path / "writes.csv"))
+    baseline = len(_signal_rows(tmp_path / "writes.csv"))
 
     # 50 cycles, one genuine change in the middle
     for i in range(50):
@@ -68,7 +78,7 @@ def test_growth_is_bounded_by_signal_not_file_count(tmp_path: Path) -> None:
             (tmp_path / "pkg" / "f3.uasset").write_bytes(b"CHANGED")
         p.poll_once()
 
-    total = len(_rows(tmp_path / "writes.csv"))
+    total = len(_signal_rows(tmp_path / "writes.csv"))
     # 10 initial + exactly 1 for the one changed file
     assert total == baseline + 1, (
         f"expected exactly 1 signal row for 1 change across 50 cycles, got "
@@ -95,6 +105,7 @@ def test_new_and_changed_are_still_emitted(tmp_path: Path) -> None:
     statuses = [r["status"] for r in rows]
     assert "new" in statuses, "a first-seen file must be reported as new"
     assert "changed" in statuses, "a modified file must be reported as changed"
+    assert "deleted" in statuses, "a removed file must be reported once as deleted"
     p.stop()
 
 
@@ -110,5 +121,7 @@ def test_csv_size_stays_small_over_many_idle_cycles(tmp_path: Path) -> None:
     p.stop()
 
     size = (tmp_path / "writes.csv").stat().st_size
-    # 100 idle cycles over 20 files previously produced 2000 extra rows
-    assert size < 4096, f"CSV grew to {size} bytes over 100 idle cycles"
+    # 100 idle cycles previously produced 2000 extra file rows (~200 KB).
+    # The mandatory heartbeat adds exactly 1 small row per cycle (~9 KB
+    # total here), which is the liveness signal, not the defect.
+    assert size < 16384, f"CSV grew to {size} bytes over 100 idle cycles"

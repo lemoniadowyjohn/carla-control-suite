@@ -59,7 +59,8 @@ class TestPackageWritePoller:
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 1
+        # new file row + one heartbeat row per cycle
+        assert len(rows) == 2
         assert rows[0]["file_path"] == "test.uasset"
         assert rows[0]["status"] == "new"
         assert rows[0]["cycle"] == "1"
@@ -91,14 +92,13 @@ class TestPackageWritePoller:
         assert results2["test.uasset"].status == "changed"
         assert results2["test.uasset"].sha256 != results1["test.uasset"].sha256
         
-        # Check CSV has both entries
+        # Check CSV has both entries (plus one heartbeat row per cycle)
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 2
-        assert rows[0]["status"] == "new"
-        assert rows[1]["status"] == "changed"
-        assert rows[1]["cycle"] == "2"
+        assert len(rows) == 4
+        assert [r["status"] for r in rows] == ["new", "heartbeat", "changed", "heartbeat"]
+        assert rows[2]["cycle"] == "2"
         
         poller.stop()
 
@@ -135,8 +135,9 @@ class TestPackageWritePoller:
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 1
-        assert rows[0]["status"] == "new"
+        assert len(rows) == 3
+        assert [r["status"] for r in rows] == ["new", "heartbeat", "heartbeat"]
+        assert not [r for r in rows if r["status"] == "unchanged"]
 
         
         poller.stop()
@@ -176,11 +177,12 @@ class TestPackageWritePoller:
         assert len(results) == 0
         assert poller.get_cycle_count() == 1
         
-        # CSV should only have header
+        # CSV holds the header plus one heartbeat row (liveness, not signal)
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 0
+        assert len(rows) == 1
+        assert rows[0]["status"] == "heartbeat"
         
         poller.stop()
 
@@ -303,7 +305,7 @@ class TestPackageWritePoller:
             reader = csv.DictReader(f)
             rows = list(reader)
         
-        assert len(rows) == 1
+        assert len(rows) == 2  # new file row + one heartbeat row
         row = rows[0]
         
         # Check all required columns
@@ -316,7 +318,8 @@ class TestPackageWritePoller:
         assert row["size_bytes"].isdigit()
         assert float(row["mtime"]) > 0
         assert len(row["sha256"]) == 64  # SHA256 hex
-        assert row["status"] in ("new", "changed", "unchanged")
+        assert row["status"] in ("new", "changed", "deleted", "error",
+                                   "heartbeat")
 
 
 class TestPackageWritePollerIntegration:
@@ -357,23 +360,24 @@ class TestPackageWritePollerIntegration:
         
         # DELTAS ONLY (changed 2026-10-11; previously "each cycle writes ALL
         # current files ... Total: 5 rows", which was the runaway-CSV defect).
-        # Cycle 1: a(new)     = 1 row
-        # Cycle 2: b(new)     = 1 row
-        # Cycle 3: a(changed) = 1 row
-        # Total: 3 rows
+        # Cycle 1: a(new) + heartbeat     = 2 rows
+        # Cycle 2: b(new) + heartbeat     = 2 rows
+        # Cycle 3: a(changed) + heartbeat = 2 rows
+        # Total: 6 rows
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
         
-        assert len(rows) == 3  # a(new), b(new), a(changed) -- deltas only
+        assert len(rows) == 6  # deltas + one heartbeat per cycle
         
         # Verify cycle numbers
         cycles = [int(r["cycle"]) for r in rows]
-        assert cycles == [1, 2, 3]
+        assert cycles == [1, 1, 2, 2, 3, 3]
         
         # Verify statuses
         statuses = [r["status"] for r in rows]
-        assert statuses == ["new", "new", "changed"]
+        assert statuses == ["new", "heartbeat", "new", "heartbeat",
+                            "changed", "heartbeat"]
 
 
 if __name__ == "__main__":
