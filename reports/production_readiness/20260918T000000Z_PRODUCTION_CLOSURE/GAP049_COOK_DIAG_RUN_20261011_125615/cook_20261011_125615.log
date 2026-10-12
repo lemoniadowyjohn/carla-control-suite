@@ -1,0 +1,632 @@
+LogInit: Display: Running engine for game: CarlaUE4
+RenderDocPlugin: Display: Unable to initialize the plugin because no RenderDoc libray has been located.
+LogConsoleManager: Warning: Setting the console variable 'r.Streaming.PoolSize' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '4000'
+LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector'  - 0 instances of that module name found.
+LogHAL: Display: Platform has ~ 48 GB [51270729728 / 68719476736 / 48], which maps to Largest [LargestMinGB=32, LargerMinGB=12, DefaultMinGB=8, SmallerMinGB=6, SmallestMinGB=0)
+LogConsoleManager: Warning: Setting the console variable 'r.Streaming.PoolSize' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '4000'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'AllDesktop'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ASTC'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_DXT'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ETC2'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'AndroidClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ASTCClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_DXTClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ETC2Client'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_Multi'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_MultiClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'IOSClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'IOS'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Lumin'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'LuminClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'MacNoEditor'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Mac'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'MacClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'MacServer'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'TVOSClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'TVOS'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsNoEditor'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'Windows'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsClient'
+LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsServer'
+LogTargetPlatformManager: Display: Building Assets For WindowsNoEditor
+LogAudioDebug: Display: Lib vorbis DLL was dynamically loaded.
+LogShaderCompilers: Display: Using Local Shader Compiler.
+LogDerivedDataCache: Display: Max Cache Size: 512 MB
+LogDerivedDataCache: Display: Loaded Boot cache: ../../../../CARLA/carla_source_probe/Unreal/CarlaUE4/DerivedDataCache/Boot.ddc
+LogDerivedDataCache: Display: Performance to ../../../Engine/DerivedDataCache: Latency=11.07ms. RandomReadSpeed=2.65MBs, RandomWriteSpeed=6.75MBs. Assigned SpeedClass 'Ok'
+LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector'  - 0 instances of that module name found.
+LogScript: Warning: Script Msg: A null object was passed as a world context object to UEngine::GetWorldFromContextObject().
+LogScript: Warning: Script Msg: A null object was passed as a world context object to UEngine::GetWorldFromContextObject().
+LogScript: Warning: Script Msg: A null object was passed as a world context object to UEngine::GetWorldFromContextObject().
+LogScript: Warning: Script Msg: A null object was passed as a world context object to UEngine::GetWorldFromContextObject().
+LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/BaseLargeMap/LargeMap, this must be resolved before saving. Path /Game/Maps/BaseLargeMap/LargeMap.LargeMap is replacing path /Game/Maps/Town11/Town11.Town11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/TestMaps/EmptyMap.EmptyMap is replacing path /Game/Maps/Town11/Town11_Tile_0_0.Town11_Tile_0_0
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_0.Town11_Tile_0_0 is replacing path /Game/Maps/Town11/Town11_Tile_0_1.Town11_Tile_0_1
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_1.Town11_Tile_0_1 is replacing path /Game/Maps/Town11/Town11_Tile_0_10.Town11_Tile_0_10
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_10.Town11_Tile_0_10 is replacing path /Game/Maps/Town11/Town11_Tile_0_11.Town11_Tile_0_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_11.Town11_Tile_0_11 is replacing path /Game/Maps/Town11/Town11_Tile_0_7.Town11_Tile_0_7
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_7.Town11_Tile_0_7 is replacing path /Game/Maps/Town11/Town11_Tile_0_8.Town11_Tile_0_8
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_8.Town11_Tile_0_8 is replacing path /Game/Maps/Town11/Town11_Tile_0_9.Town11_Tile_0_9
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_0_9.Town11_Tile_0_9 is replacing path /Game/Maps/Town11/Town11_Tile_10_11.Town11_Tile_10_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_10_11.Town11_Tile_10_11 is replacing path /Game/Maps/Town11/Town11_Tile_1_11.Town11_Tile_1_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_1_11.Town11_Tile_1_11 is replacing path /Game/Maps/Town11/Town11_Tile_2_11.Town11_Tile_2_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_2_11.Town11_Tile_2_11 is replacing path /Game/Maps/Town11/Town11_Tile_2_3.Town11_Tile_2_3
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_2_3.Town11_Tile_2_3 is replacing path /Game/Maps/Town11/Town11_Tile_2_4.Town11_Tile_2_4
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_2_4.Town11_Tile_2_4 is replacing path /Game/Maps/Town11/Town11_Tile_2_8.Town11_Tile_2_8
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_2_8.Town11_Tile_2_8 is replacing path /Game/Maps/Town11/Town11_Tile_2_9.Town11_Tile_2_9
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_2_9.Town11_Tile_2_9 is replacing path /Game/Maps/Town11/Town11_Tile_3_0.Town11_Tile_3_0
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_3_0.Town11_Tile_3_0 is replacing path /Game/Maps/Town11/Town11_Tile_3_3.Town11_Tile_3_3
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_3_3.Town11_Tile_3_3 is replacing path /Game/Maps/Town11/Town11_Tile_4_0.Town11_Tile_4_0
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_4_0.Town11_Tile_4_0 is replacing path /Game/Maps/Town11/Town11_Tile_4_11.Town11_Tile_4_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_4_11.Town11_Tile_4_11 is replacing path /Game/Maps/Town11/Town11_Tile_5_0.Town11_Tile_5_0
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_5_0.Town11_Tile_5_0 is replacing path /Game/Maps/Town11/Town11_Tile_5_10.Town11_Tile_5_10
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_5_10.Town11_Tile_5_10 is replacing path /Game/Maps/Town11/Town11_Tile_5_11.Town11_Tile_5_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_5_11.Town11_Tile_5_11 is replacing path /Game/Maps/Town11/Town11_Tile_5_3.Town11_Tile_5_3
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_5_3.Town11_Tile_5_3 is replacing path /Game/Maps/Town11/Town11_Tile_6_0.Town11_Tile_6_0
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_6_0.Town11_Tile_6_0 is replacing path /Game/Maps/Town11/Town11_Tile_6_11.Town11_Tile_6_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_6_11.Town11_Tile_6_11 is replacing path /Game/Maps/Town11/Town11_Tile_6_6.Town11_Tile_6_6
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_6_6.Town11_Tile_6_6 is replacing path /Game/Maps/Town11/Town11_Tile_7_0.Town11_Tile_7_0
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_7_0.Town11_Tile_7_0 is replacing path /Game/Maps/Town11/Town11_Tile_7_1.Town11_Tile_7_1
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_7_1.Town11_Tile_7_1 is replacing path /Game/Maps/Town11/Town11_Tile_9_1.Town11_Tile_9_1
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_9_1.Town11_Tile_9_1 is replacing path /Game/Maps/Town11/Town11_Tile_9_11.Town11_Tile_9_11
+LogAssetManager: Warning: Found Duplicate PrimaryAssetID Map:/Game/Carla/Maps/TestMaps/EmptyMap, this must be resolved before saving. Path /Game/Maps/Town11/Town11_Tile_9_11.Town11_Tile_9_11 is replacing path /Game/Maps/Town11/Town11_Tile_9_8.Town11_Tile_9_8
+LogMDLOutput: Display: [API:DATABASE] info : Loaded "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\libmdl_sdk.dll"
+LogMDLOutput: Display: [API:MISC] info : MDL SDK 2024.1.1, build 381500.4681, 31 Mar 2025, nt-x86-64
+LogMDLOutput: Display: [PLUG:PLUGIN] info : Loaded library "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\mdl_distiller.dll".
+LogMDLOutput: Display: [DISTILLER:COMPILER] info : Plugin "mdl_distiller" (build 381500.4681, 31 Mar 2025) initialized
+LogMDLOutput: Display: [DISTILLER:COMPILER] info : Plugin "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\mdl_distiller.dll" registered distiller target "_dbg_simple"
+LogMDLOutput: Display: [DISTILLER:COMPILER] info : Plugin "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\mdl_distiller.dll" registered distiller target "diffuse"
+LogMDLOutput: Display: [DISTILLER:COMPILER] info : Plugin "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\mdl_distiller.dll" registered distiller target "specular_glossy"
+LogMDLOutput: Display: [DISTILLER:COMPILER] info : Plugin "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\mdl_distiller.dll" registered distiller target "ue4"
+LogMDLOutput: Display: [DISTILLER:COMPILER] info : Plugin "G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Plugins\Converters\MDL\Source\ThirdParty\mdl_sdk\bin\mdl_distiller.dll" registered distiller target "transmissive_pbr"
+LogAnalytics: Warning: EventCache either took too long to flush (22.729 ms) or had a very large payload (0.154 KB, 1 events). Listing events in the payload for investigation:
+LogAnalytics: Warning:     BasicStrings,145
+LogAutomationTest: Warning: Smoke tests took >2s to run (6.05s). 'FAutomationTestAttemptToFindUninitializedScriptStructMembers' took 5119ms. SmokeFilter tier tests should take less than 1ms. Please optimize or move 'FAutomationTestAttemptToFindUninitializedScriptStructMembers' to a slower tier than SmokeFilter.
+LogAutomationTest: Warning: EventCache either took too long to flush (22.729 ms) or had a very large payload (0.154 KB, 1 events). Listing events in the payload for investigation:
+LogAutomationTest: Warning:     BasicStrings,145
+LogCook: Display: CookSettings for Memory: MemoryMaxUsedVirtual 0MiB, MemoryMaxUsedPhysical 16384MiB, MemoryMinFreeVirtual 0MiB, MemoryMinFreePhysical 1024MiB
+LogCook: Display: Mobile HDR setting 1
+LogCook: Display: Creating asset registry
+LogCook: Display: Discovering localized assets for cultures: en
+LogCook: Display: Iterative cooking summary for WindowsNoEditor, 
+Considered: 3101, 
+File Hash missmatch: 0, 
+Packages Kept: 0, 
+Packages failed save kept: 0, 
+Missing Cooked Info(expected 0): 3101
+LogCook: Display: Sandbox cleanup took 8.686 seconds for platforms WindowsNoEditor
+LogCook: Display: Cooked packages 0 Packages Remain 3102 Total 3102
+LogCook: Display: Cook Diagnostics: OpenFileHandles=891, VirtualMemory=1509MiB
+LogCook: Display: Cooked packages 50 Packages Remain 3067 Total 3117
+LogCook: Display: Cooked packages 100 Packages Remain 3017 Total 3117
+LogCook: Display: Cooked packages 150 Packages Remain 2967 Total 3117
+LogCook: Display: Cooked packages 200 Packages Remain 2917 Total 3117
+LogCook: Display: Cooked packages 250 Packages Remain 2867 Total 3117
+LogCook: Display: Cook Diagnostics: OpenFileHandles=893, VirtualMemory=1624MiB
+LogCook: Display: Cooked packages 300 Packages Remain 2817 Total 3117
+LogCook: Display: Cooked packages 350 Packages Remain 2767 Total 3117
+LogCook: Display: Cook Diagnostics: OpenFileHandles=892, VirtualMemory=2125MiB
+LogCook: Display: Cooked packages 400 Packages Remain 2717 Total 3117
+LogCook: Display: Cooked packages 450 Packages Remain 2667 Total 3117
+LogCook: Display: Cooked packages 500 Packages Remain 2617 Total 3117
+LogCook: Display: Cook Diagnostics: OpenFileHandles=896, VirtualMemory=2372MiB
+LogMaterial: Display: Missing cached shader map for material HairMeshesDefaultMaterial, compiling. 
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 65
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 55
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 45
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 35
+LogMaterial: Display: Missing cached shader map for material HairMeshesDefaultMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material HairCardsDefaultMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material HairCardsDefaultMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material HairDefaultMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material HairDefaultMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material HairDebugMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material HairDebugMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_SimpleUnlitTranslucent, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_SimpleUnlitTranslucent, compiling. 
+LogCook: Display: Cooked packages 550 Packages Remain 2567 Total 3117
+LogMaterial: Display: Missing cached shader map for material CineMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material CineMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material TranslucentTransformGizmoMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material TranslucentTransformGizmoMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material TransformGizmoMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material TransformGizmoMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material Xray, compiling. 
+LogMaterial: Display: Missing cached shader map for material Xray, compiling. 
+LogMaterial: Display: Missing cached shader map for material Main, compiling. 
+LogMaterial: Display: Missing cached shader map for material Main, compiling. 
+LogMaterial: Display: Missing cached shader map for material BaseFlattenMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material BaseFlattenMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material m_SimpleVolumetricCloud, compiling. 
+LogMaterial: Display: Missing cached shader map for material m_SimpleVolumetricCloud, compiling. 
+LogMaterial: Display: Missing cached shader map for material DefaultTextMaterialOpaque, compiling. 
+LogMaterial: Display: Missing cached shader map for material DefaultTextMaterialOpaque, compiling. 
+LogCook: Display: Cooked packages 600 Packages Remain 2517 Total 3117
+LogCook: Display: Cooked packages 873 Packages Remain 2244 Total 3117
+LogCook: Display: Cooked packages 877 Packages Remain 2681 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=896, VirtualMemory=3209MiB
+LogCook: Display: Cooked packages 877 Packages Remain 2681 Total 3558
+LogCook: Display: Cooked packages 877 Packages Remain 2681 Total 3558
+LogCook: Display: Cooked packages 877 Packages Remain 2681 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_CarWindows_Master, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1016
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 1006
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 996
+LogMaterial: Display: Missing cached shader map for material M_Impostor, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Impostor, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 1158
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1148
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 1138
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 1128
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 1118
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 1108
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1098
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 1088
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1078
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 1068
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 1058
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 1048
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1038
+LogCook: Display: Cooked packages 877 Packages Remain 2681 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=1555, VirtualMemory=1869MiB
+LogMaterial: Display: Missing cached shader map for material plastiCbLACK, compiling. 
+LogMaterial: Display: Missing cached shader map for material plastiCbLACK, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TrafficCones_02, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TrafficCones_02, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_SimpleMaster, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_SimpleMaster, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 1236
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 1226
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 1216
+LogMaterial: Display: Missing cached shader map for material M_Briefcase, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Briefcase, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GuitarCase, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GuitarCase, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Mobile, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Mobile, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_MotorHelmet, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_MotorHelmet, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlasticBag, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlasticBag, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1326
+LogMaterial: Display: Missing cached shader map for material M_ShoppingBag, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_ShoppingBag, compiling. 
+LogMaterial: Display: Missing cached shader map for material ShoppingTrolley, compiling. 
+LogMaterial: Display: Missing cached shader map for material ShoppingTrolley, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TravelCase, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TravelCase, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Building_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Building_Master, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 1532
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 1522
+LogMaterial: Display: Missing cached shader map for material M_Billboard_Chasis, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Billboard_Chasis, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Calibrator, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Calibrator, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarWindows_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarWindows_Master, compiling. 
+LogCook: Display: Cooked packages 927 Packages Remain 2631 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_HayBale, compiling. 
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 1728
+LogMaterial: Display: Missing cached shader map for material M_HayBale, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_WaterMaster, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_WaterMaster, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_waterAnimated, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 1814
+LogMaterial: Display: Missing cached shader map for material M_waterAnimated, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Impostor, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Impostor, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_treeLeaves_master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_treeLeaves_master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlatanusTrunk, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 2208
+LogMaterial: Display: Missing cached shader map for material M_PlatanusTrunk, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Bench, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Bench, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 2342
+LogMaterial: Display: Missing cached shader map for material M_TrafficCones_04, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TrafficCones_04, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TrafficCones_03, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TrafficCones_03, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarlaCola, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarlaCola, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TileTextureMaster, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TileTextureMaster, compiling. 
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 2488
+LogCook: Display: Cooked packages 977 Packages Remain 2581 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_PlantPot03, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlantPot03, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 2538
+LogMaterial: Display: Missing cached shader map for material M_ShoppingCart, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_ShoppingCart, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 2588
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 2578
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 2568
+LogCook: Display: Cooked packages 1027 Packages Remain 2531 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=1558, VirtualMemory=2110MiB
+LogMaterial: Display: Missing cached shader map for material M_Foliage, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 2558
+LogMaterial: Display: Missing cached shader map for material M_Foliage, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Cypress_Bark, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Cypress_Bark, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 2832
+LogMaterial: Display: Missing cached shader map for material Palm_Stem, compiling. 
+LogMaterial: Display: Missing cached shader map for material Palm_Stem, compiling. 
+LogMaterial: Display: Missing cached shader map for material Palm_Bark, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 2894
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 2884
+LogMaterial: Display: Missing cached shader map for material Palm_Bark, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassContainer, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassContainer, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 2940
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 2930
+LogMaterial: Display: Missing cached shader map for material M_ContainerWheels, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_ContainerWheels, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_ContainerTop, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_ContainerTop, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Container, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Container, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 3046
+LogMaterial: Display: Missing cached shader map for material M_TableUmbrella, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_TableUmbrella, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlasticTable, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlasticTable, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlasticChair, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_PlasticChair, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_BuildingMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_BuildingMaterial, compiling. 
+LogCook: Display: Cooked packages 1077 Packages Remain 2481 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_ConstructionCone, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 3258
+LogMaterial: Display: Missing cached shader map for material M_ConstructionCone, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Aluminium, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Aluminium, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_LacrimalFluid, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_LacrimalFluid, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 3642
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 4252
+LogMaterial: Display: Missing cached shader map for material M_EyeOcclusion, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_EyeOcclusion, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 4290
+LogMaterial: Display: Missing cached shader map for material M_Skin_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Skin_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_EyeRefractive, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_EyeRefractive, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_EyeRefractive, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_EyeRefractive, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 4954
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogCook: Display: Cooked packages 1127 Packages Remain 2431 Total 3558
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 5190
+LogCook: Display: Cooked packages 1177 Packages Remain 2381 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=1558, VirtualMemory=2601MiB
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 5180
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 5170
+LogCook: Display: Cooked packages 1477 Packages Remain 2081 Total 3558
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 5160
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 5150
+LogCook: Display: Cooked packages 1485 Packages Remain 2073 Total 3558
+LogCook: Display: Cooked packages 1491 Packages Remain 2067 Total 3558
+LogCook: Display: Cooked packages 1493 Packages Remain 2065 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 5140
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 5130
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 5120
+LogCook: Display: Cooked packages 1494 Packages Remain 2064 Total 3558
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 5110
+LogCook: Display: Cooked packages 1494 Packages Remain 2064 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 5100
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 5090
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 5080
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 5070
+LogCook: Display: Cooked packages 1494 Packages Remain 2064 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=1713, VirtualMemory=2731MiB
+LogMaterial: Display: Missing cached shader map for material M_VehicleLights_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_VehicleLights_Master, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 5172
+LogMaterial: Display: Missing cached shader map for material M_HairBaseMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_HairBaseMaterial, compiling. 
+LogMaterial: Display: Missing cached shader map for material TransparentEyes, compiling. 
+LogMaterial: Display: Missing cached shader map for material TransparentEyes, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 5398
+LogMaterial: Display: Missing cached shader map for material M_Generic_Skin_SSS, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Generic_Skin_SSS, compiling. 
+LogMaterial: Display: Missing cached shader map for material MF_Indicator, compiling. 
+LogMaterial: Display: Missing cached shader map for material MF_Indicator, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarDetails_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarDetails_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarLightsGlass_Master, compiling. 
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 5714
+LogMaterial: Display: Missing cached shader map for material M_CarLightsGlass_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarExterior_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarExterior_Master, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 6066
+LogMaterial: Display: Missing cached shader map for material BodyWorkMaster_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material BodyWorkMaster_Mat, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 6140
+LogCook: Display: Cooked packages 1544 Packages Remain 2014 Total 3558
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 6130
+LogCook: Display: Cooked packages 1594 Packages Remain 1964 Total 3558
+LogCook: Display: Cooked packages 1623 Packages Remain 1935 Total 3558
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 6120
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 6110
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 6100
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 6090
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 6080
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 6070
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 6060
+LogCook: Display: Cooked packages 1623 Packages Remain 1935 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=1951, VirtualMemory=3073MiB
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 6050
+LogMaterial: Display: Missing cached shader map for material M_LicensePlate_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_LicensePlate_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassInt_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassInt_Master, compiling. 
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 6144
+LogMaterial: Display: Missing cached shader map for material MF_Blue_Siren, compiling. 
+LogMaterial: Display: Missing cached shader map for material MF_Blue_Siren, compiling. 
+LogMaterial: Display: Missing cached shader map for material MF_Red_Siren, compiling. 
+LogMaterial: Display: Missing cached shader map for material MF_Red_Siren, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_VehicleLightsMaster, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_VehicleLightsMaster, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_VehicleLights_Sirens_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_VehicleLights_Sirens_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarPaint_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarPaint_Master, compiling. 
+LogCook: Display: Cooked packages 1694 Packages Remain 1864 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 6608
+LogMaterial: Display: Missing cached shader map for material M_GlassExt_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassExt_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material Glass, compiling. 
+LogMaterial: Display: Missing cached shader map for material Glass, compiling. 
+LogMaterial: Display: Missing cached shader map for material plasticgrey, compiling. 
+LogMaterial: Display: Missing cached shader map for material plasticgrey, compiling. 
+LogMaterial: Display: Missing cached shader map for material Rubber, compiling. 
+LogMaterial: Display: Missing cached shader map for material Rubber, compiling. 
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 6974
+LogMaterial: Display: Missing cached shader map for material PolishedAluminiumWhite, compiling. 
+LogMaterial: Display: Missing cached shader map for material PolishedAluminiumWhite, compiling. 
+LogMaterial: Display: Missing cached shader map for material BrushedAluminiumBlack, compiling. 
+LogMaterial: Display: Missing cached shader map for material BrushedAluminiumBlack, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_AudiA2_LightBackMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_AudiA2_LightBackMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_AudiA2_CoverWheelMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_AudiA2_CoverWheelMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material AudiA2_LightFrontMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material AudiA2_LightFrontMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassExt_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassExt_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassInt_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_GlassInt_Master, compiling. 
+LogCook: Display: Cooked packages 1744 Packages Remain 1814 Total 3558
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwGranTourer_TyreMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwGranTourer_TyreMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwGranTourer_GrillMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwGranTourer_GrillMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwGrandTourier_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwGrandTourier_Mat, compiling. 
+LogCook: Display: Cooked packages 1794 Packages Remain 1764 Total 3558
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 7508
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 7498
+LogCook: Display: Cooked packages 1855 Packages Remain 1703 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=1960, VirtualMemory=3363MiB
+LogMaterial: Display: Missing cached shader map for material BMWLogo, compiling. 
+LogMaterial: Display: Missing cached shader map for material BMWLogo, compiling. 
+LogMaterial: Display: Missing cached shader map for material PolishedAluminiumBlack, compiling. 
+LogMaterial: Display: Missing cached shader map for material PolishedAluminiumBlack, compiling. 
+LogCook: Display: Cooked packages 1868 Packages Remain 1690 Total 3558
+LogCook: Display: Cooked packages 1870 Packages Remain 1688 Total 3558
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwIsetta2016_MicrolinoMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_BmwIsetta2016_MicrolinoMat, compiling. 
+LogMaterial: Display: Missing cached shader map for material BrushedAluminiumWhite, compiling. 
+LogMaterial: Display: Missing cached shader map for material BrushedAluminiumWhite, compiling. 
+LogCook: Display: Cooked packages 1881 Packages Remain 1677 Total 3558
+LogCook: Display: Cooked packages 1883 Packages Remain 1675 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 7680
+LogCook: Display: Cooked packages 1884 Packages Remain 1674 Total 3558
+LogMaterial: Display: Missing cached shader map for material Vh_Truck_CarlaCola_LightMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Truck_CarlaCola_LightMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_CitroenC3_LightsFrontMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_CitroenC3_LightsFrontMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Citroen_LightsBack, compiling. 
+LogMaterial: Display: Missing cached shader map for material Citroen_LightsBack, compiling. 
+LogMaterial: Display: Missing cached shader map for material Citroen_CoverWheel, compiling. 
+LogMaterial: Display: Missing cached shader map for material Citroen_CoverWheel, compiling. 
+LogCook: Display: Cooked packages 1916 Packages Remain 1642 Total 3558
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 7862
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 7852
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 7842
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 7832
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 7822
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 7812
+LogCook: Display: Cooked packages 1928 Packages Remain 1630 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=2338, VirtualMemory=3601MiB
+LogMaterial: Display: Missing cached shader map for material M_Bodywork_Cybertruck, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Bodywork_Cybertruck, compiling. 
+LogCook: Display: Cooked packages 1966 Packages Remain 1592 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 7850
+LogMaterial: Display: Missing cached shader map for material M_CarInteriorAlpha_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_CarInteriorAlpha_Master, compiling. 
+LogCook: Display: Cooked packages 2016 Packages Remain 1542 Total 3558
+LogCook: Display: Cooked packages 2066 Packages Remain 1492 Total 3558
+LogCook: Display: Cooked packages 2116 Packages Remain 1442 Total 3558
+LogCook: Display: Cooked packages 2166 Packages Remain 1392 Total 3558
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_Wheels_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_Wheels_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_HubCap_mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_HubCap_mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_Bumper_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_Bumper_Mat, compiling. 
+LogCook: Display: Cooked packages 2216 Packages Remain 1342 Total 3558
+LogCook: Display: Cooked packages 2224 Packages Remain 1334 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=2340, VirtualMemory=4070MiB
+LogCook: Display: Cooked packages 2234 Packages Remain 1324 Total 3558
+LogCook: Display: Cooked packages 2239 Packages Remain 1319 Total 3558
+LogCook: Display: Cooked packages 2239 Packages Remain 1319 Total 3558
+LogCook: Display: Cooked packages 2239 Packages Remain 1319 Total 3558
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 8160
+LogCook: Display: Cooked packages 2239 Packages Remain 1319 Total 3558
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_bodyside_mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material JeepWranglerRubicon_bodyside_mat, compiling. 
+LogCook: Display: Cooked packages 2289 Packages Remain 1269 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=2440, VirtualMemory=3930MiB
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 8206
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 8196
+LogCook: Display: Cooked packages 2298 Packages Remain 1260 Total 3558
+LogCook: Display: Cooked packages 2339 Packages Remain 1219 Total 3558
+LogCook: Display: Cooked packages 2345 Packages Remain 1213 Total 3558
+LogCook: Display: Cooked packages 2345 Packages Remain 1213 Total 3558
+LogCook: Display: Cooked packages 2389 Packages Remain 1169 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=2632, VirtualMemory=4115MiB
+LogCook: Display: Cooked packages 2429 Packages Remain 1129 Total 3558
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 8186
+LogCook: Display: Cooked packages 2429 Packages Remain 1129 Total 3558
+LogCook: Display: Cooked packages 2489 Packages Remain 1069 Total 3558
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 8176
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 8166
+LogCook: Display: Cooked packages 2508 Packages Remain 1050 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 8156
+LogCook: Display: Cooked packages 2508 Packages Remain 1050 Total 3558
+LogMaterial: Display: Missing cached shader map for material Vh_Car_SeatLeon_LightFrontMat_BaseColor_Mat, compiling. 
+LogMaterial: Display: Missing cached shader map for material Vh_Car_SeatLeon_LightFrontMat_BaseColor_Mat, compiling. 
+LogCook: Display: Cooked packages 2539 Packages Remain 1019 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=2795, VirtualMemory=4270MiB
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 8194
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 8184
+LogCook: Display: Cooked packages 2571 Packages Remain 987 Total 3558
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 8174
+LogShaderCompilers: Display: Worker (3/4): shaders left to compile 8164
+LogShaderCompilers: Display: Worker (1/4): shaders left to compile 8154
+LogShaderCompilers: Display: Worker (2/4): shaders left to compile 8144
+LogCook: Display: Cooked packages 2571 Packages Remain 987 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_aluminium_2, compiling. 
+LogShaderCompilers: Display: Worker (4/4): shaders left to compile 8170
+LogMaterial: Display: Missing cached shader map for material M_aluminium_2, compiling. 
+LogCook: Display: Cooked packages 2639 Packages Remain 919 Total 3558
+LogCook: Display: Cooked packages 2675 Packages Remain 883 Total 3558
+LogCook: Display: Cooked packages 2675 Packages Remain 883 Total 3558
+LogCook: Display: Cooked packages 2705 Packages Remain 853 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3031, VirtualMemory=4343MiB
+LogCook: Display: Cooked packages 2781 Packages Remain 777 Total 3558
+LogCook: Display: Cooked packages 2804 Packages Remain 754 Total 3558
+LogCook: Display: Cooked packages 2810 Packages Remain 748 Total 3558
+LogCook: Display: Cooked packages 2811 Packages Remain 747 Total 3558
+LogCook: Display: Cooked packages 2813 Packages Remain 745 Total 3558
+LogCook: Display: Cooked packages 2826 Packages Remain 732 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3126, VirtualMemory=5061MiB
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AB001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AB001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AB001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AB001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogCook: Display: Cooked packages 2836 Packages Remain 722 Total 3558
+LogCook: Display: Cooked packages 2845 Packages Remain 713 Total 3558
+LogCook: Display: Cooked packages 2855 Packages Remain 703 Total 3558
+LogCook: Display: Cooked packages 2855 Packages Remain 703 Total 3558
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AG001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AG001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogUObjectGlobals: Warning: [AssetLog] G:\CARLA\carla_source_probe\Unreal\CarlaUE4\Content\Carla\Blueprints\Walkers\BP_Walker_AG001_G3.uasset: Failed to load '/Game/Carla/Static/Pedestrian/Animations/GEN3/Nos_/AS_walkingG3': Can't find file.
+LogCook: Display: Cooked packages 2855 Packages Remain 703 Total 3558
+LogCook: Display: Cooked packages 2868 Packages Remain 690 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3175, VirtualMemory=5767MiB
+LogCook: Display: Cooked packages 2893 Packages Remain 665 Total 3558
+LogCook: Display: Cooked packages 2897 Packages Remain 661 Total 3558
+LogCook: Display: Cooked packages 2902 Packages Remain 656 Total 3558
+LogCook: Display: Cooked packages 2906 Packages Remain 652 Total 3558
+LogCook: Display: Cooked packages 2907 Packages Remain 651 Total 3558
+LogCook: Display: Cooked packages 2912 Packages Remain 646 Total 3558
+LogCook: Display: Cooked packages 2926 Packages Remain 632 Total 3558
+LogCook: Display: Cooked packages 2945 Packages Remain 613 Total 3558
+LogCook: Display: Cooked packages 2962 Packages Remain 596 Total 3558
+LogCook: Display: Cooked packages 2963 Packages Remain 595 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3277, VirtualMemory=5906MiB
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogCook: Display: Cooked packages 2963 Packages Remain 595 Total 3558
+LogCook: Display: Cooked packages 2967 Packages Remain 591 Total 3558
+LogCook: Display: Cooked packages 2976 Packages Remain 582 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogCook: Display: Cooked packages 2978 Packages Remain 580 Total 3558
+LogCook: Display: Cooked packages 2989 Packages Remain 569 Total 3558
+LogCook: Display: Cooked packages 3003 Packages Remain 555 Total 3558
+LogCook: Display: Cooked packages 3013 Packages Remain 545 Total 3558
+LogCook: Display: Cooked packages 3019 Packages Remain 539 Total 3558
+LogCook: Display: Cooked packages 3029 Packages Remain 529 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3379, VirtualMemory=5847MiB
+LogCook: Display: Cooked packages 3030 Packages Remain 528 Total 3558
+LogCook: Display: Cooked packages 3031 Packages Remain 527 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogCook: Display: Cooked packages 3032 Packages Remain 526 Total 3558
+LogCook: Display: Cooked packages 3039 Packages Remain 519 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_DHair_MASTER, compiling. 
+LogCook: Display: Cooked packages 3048 Packages Remain 510 Total 3558
+LogCook: Display: Cooked packages 3055 Packages Remain 503 Total 3558
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogMaterial: Display: Missing cached shader map for material M_Fabric_Master, compiling. 
+LogCook: Display: Cooked packages 3055 Packages Remain 503 Total 3558
+LogCook: Display: Cooked packages 3103 Packages Remain 455 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3560, VirtualMemory=6462MiB
+LogCook: Display: Cooked packages 3105 Packages Remain 453 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3560, VirtualMemory=6559MiB
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogCook: Display: Cook Diagnostics: OpenFileHandles=3559, VirtualMemory=6474MiB
+LogCook: Display: Cooked packages 3159 Packages Remain 399 Total 3558
+LogThreadingWindows: Error: Runnable thread TaskGraphThreadNP 2 crashed.
+LogWindows: Error: === Critical error: ===
+LogWindows: Error: 
+LogWindows: Error: Fatal error: [File:G:/UnrealEngine_4.26_CARLA/Engine/Source/Runtime/CoreUObject/Private/UObject/SavePackage/SavePackageUtilities.cpp] [Line: 527] 
+LogWindows: Error: Could not write to G:/CARLA/cook_out/Ingolstadt/CarlaUE4/Content/Carla/Static/Pedestrian/Materials/MH_microdetail/T_Fabric_15_R.ubulk!
+LogWindows: Error: 
+LogWindows: Error: 
+LogWindows: Error: 
+LogWindows: Error: Crash in runnable thread TaskGraphThreadNP 2
