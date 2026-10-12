@@ -1,0 +1,350 @@
+{
+  "report": "EVENTUAL_WORKTREE_REMOVAL_PLAN",
+  "captured_at": "2026-10-12T17:27:11Z",
+  "mode": "RECOMMENDATION_ONLY_NOT_EXECUTED",
+  "counts": {
+    "total": 33,
+    "clean_stable": 8,
+    "preserve_dirty": 21,
+    "missing_path": 4,
+    "changed_during_audit": 0
+  },
+  "prior_candidates_recheck": {
+    "wt_topology_convergence": "DIRECTORY_ABSENT - already removed by another agent during this session; HEAD 3a6f3225 still on origin/fix/topology-convergence-gap026-gap048-20261011",
+    "wt_consolidate_20261008": "DIRECTORY_ABSENT - already removed; HEAD 75371cd9 present on 6 remote refs",
+    "lane_A1_rq1a_execution": "STILL PRESENT but classification=PRESERVE_DIRTY (untracked files) - NOT a removal candidate"
+  },
+  "critical_warning": "4 registered worktrees have no directory on disk (stale registrations). Additionally HEAD af90dd91 (integration/rq2-authority-merge-20261009) is contained in ZERO remote refs - it survives only in a local branch.",
+  "plan": [
+    {
+      "worktree": "b15_B_placement",
+      "path": "F:/carla-worktrees/b15_B_placement",
+      "HEAD": "6e4f56e81cc86a05291415f0bea1d7246be4dee8",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "b15_C_rq4",
+      "path": "F:/carla-worktrees/b15_C_rq4",
+      "HEAD": "41e2b7cd9389a0da069f9e3caec5bf583eafc824",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "lane_A2_rq2-authority",
+      "path": "F:/carla-worktrees/lane_A2_rq2-authority",
+      "HEAD": "2159a358feff585be5646a7757b96257dd935d82",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "lane_A4_rq5-readiness",
+      "path": "F:/carla-worktrees/lane_A4_rq5-readiness",
+      "HEAD": "7a2310c217800e6b4b68c67957b9a253c8c76b2a",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "wt-base-9fa11e1",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-base-9fa11e1",
+      "HEAD": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "wt-gap026-fix",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-gap026-fix",
+      "HEAD": "0f3c360133eeed959dcc8a871a15e7b1f366dbf6",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "wt-gap049-ev",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-gap049-ev",
+      "HEAD": "9a4bd44f9ba619ae4fd53336674c7abb257666a4",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "wt-gap049-fix",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-gap049-fix",
+      "HEAD": "bb14b036acb2604c71803311eb49e47ed852cbcc",
+      "dirty_lines": 0,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "REMOVE_AFTER_QUIESCENCE",
+      "executed": false
+    },
+    {
+      "worktree": "wt-consolidate-20261008",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-consolidate-20261008",
+      "HEAD": null,
+      "dirty_lines": null,
+      "untracked": null,
+      "stable_during_audit": true,
+      "recommendation": "REGISTRATION_STALE__PRUNE_METADATA_ONLY_AFTER_REVIEW",
+      "executed": false
+    },
+    {
+      "worktree": "wt-gap048-m3",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap048-m3",
+      "HEAD": null,
+      "dirty_lines": null,
+      "untracked": null,
+      "stable_during_audit": true,
+      "recommendation": "REGISTRATION_STALE__PRUNE_METADATA_ONLY_AFTER_REVIEW",
+      "executed": false
+    },
+    {
+      "worktree": "wt-rq2-merge-verify-20261009",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-rq2-merge-verify-20261009",
+      "HEAD": null,
+      "dirty_lines": null,
+      "untracked": null,
+      "stable_during_audit": true,
+      "recommendation": "REGISTRATION_STALE__PRUNE_METADATA_ONLY_AFTER_REVIEW",
+      "executed": false
+    },
+    {
+      "worktree": "wt-topology-convergence",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-topology-convergence",
+      "HEAD": null,
+      "dirty_lines": null,
+      "untracked": null,
+      "stable_during_audit": true,
+      "recommendation": "REGISTRATION_STALE__PRUNE_METADATA_ONLY_AFTER_REVIEW",
+      "executed": false
+    },
+    {
+      "worktree": "agent-a601acc34bd5e6126",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a601acc34bd5e6126",
+      "HEAD": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+      "dirty_lines": 29,
+      "untracked": 27,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "agent-a9677fdcd7c1172ea",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a9677fdcd7c1172ea",
+      "HEAD": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+      "dirty_lines": 18,
+      "untracked": 16,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "b15_A_rq1b",
+      "path": "F:/carla-worktrees/b15_A_rq1b",
+      "HEAD": "4d78561c9a516192d53c54ef2f7c3146ace1eb22",
+      "dirty_lines": 3,
+      "untracked": 3,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "carla_-main",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "HEAD": "8015df6a876217cebea85af31002fb6090d2abb9",
+      "dirty_lines": 280,
+      "untracked": 279,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "carla_final_offline_closure",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_final_offline_closure",
+      "HEAD": "f6b983efd972ef47b2bff233711c17dfa2ea656d",
+      "dirty_lines": 2,
+      "untracked": 2,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "carla-control-plane",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-control-plane",
+      "HEAD": "fdc8c16600db1c7de4892ef2ad868ea49baffece",
+      "dirty_lines": 43,
+      "untracked": 42,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "lane_A1_rq1a-execution",
+      "path": "F:/carla-worktrees/lane_A1_rq1a-execution",
+      "HEAD": "7437ee53c74231a0c5a358849218e0cd279d599b",
+      "dirty_lines": 11,
+      "untracked": 11,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "new316-333-perception-hardening",
+      "path": "E:/CARLA/worktrees/new316-333-perception-hardening",
+      "HEAD": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "dirty_lines": 34,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "p0-coord-frame-tile-placement-20261001",
+      "path": "F:/p0-coord-frame-tile-placement-20261001",
+      "HEAD": "fb6c5e1899a844ba1d38444fc82e6d04e98db468",
+      "dirty_lines": 1,
+      "untracked": 1,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "rq1-matrix-fix",
+      "path": "E:/CARLA/worktrees/rq1-matrix-fix",
+      "HEAD": "d12a03145793ae89d03a40f9ebf500ec59f3c761",
+      "dirty_lines": 23,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "rq2-validate-20261008",
+      "path": "F:/carla-worktrees/rq2-validate-20261008",
+      "HEAD": "2159a358feff585be5646a7757b96257dd935d82",
+      "dirty_lines": 1,
+      "untracked": 1,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "rq5-isolation-20261009",
+      "path": "F:/carla-worktrees/rq5-isolation-20261009",
+      "HEAD": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "dirty_lines": 2,
+      "untracked": 2,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "rq5-sightb-20261009",
+      "path": "F:/carla-worktrees/rq5-sightb-20261009",
+      "HEAD": "cfc0cd9c6ef3ad51d4fcf799e0d2fadf3af9fcc5",
+      "dirty_lines": 100,
+      "untracked": 100,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "session-batch1-full-verify-20260913",
+      "path": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913",
+      "HEAD": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+      "dirty_lines": 1,
+      "untracked": 1,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "smoke-harden-20261009",
+      "path": "F:/carla-worktrees/smoke-harden-20261009",
+      "HEAD": "62f0d28859ec1dc21964cc74ec84f449d6c3a030",
+      "dirty_lines": 1,
+      "untracked": 1,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "wt-admission",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-admission",
+      "HEAD": "3a6f32255916b9783e41981ba284d68401294a92",
+      "dirty_lines": 2,
+      "untracked": 2,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "wt-p1",
+      "path": "E:/CARLA/worktrees/wt-p1",
+      "HEAD": "542b82e93b6bb866dc05e085480eecb3ceffbcc1",
+      "dirty_lines": 1,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "wt-p1-base",
+      "path": "E:/CARLA/worktrees/wt-p1-base",
+      "HEAD": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "dirty_lines": 18,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "wt-rq2-final",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-rq2-final",
+      "HEAD": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+      "dirty_lines": 4,
+      "untracked": 4,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "wt-runtime-rig",
+      "path": "E:/CARLA/worktrees/wt-runtime-rig",
+      "HEAD": "692b42391c29457fef30e19857352e3ef74be9b2",
+      "dirty_lines": 33,
+      "untracked": 0,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    },
+    {
+      "worktree": "wt-topo-conv",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-topo-conv",
+      "HEAD": "3a6f32255916b9783e41981ba284d68401294a92",
+      "dirty_lines": 1,
+      "untracked": 1,
+      "stable_during_audit": true,
+      "recommendation": "PRESERVE_DIRTY",
+      "executed": false
+    }
+  ]
+}
