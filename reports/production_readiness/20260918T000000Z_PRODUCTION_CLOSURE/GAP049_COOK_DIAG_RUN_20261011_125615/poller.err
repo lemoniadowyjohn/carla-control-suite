@@ -1,0 +1,30 @@
+<frozen runpy>:128: RuntimeWarning: 'tools.cook_diagnostics.package_write_poller' found in sys.modules after import of package 'tools.cook_diagnostics', but prior to execution of 'tools.cook_diagnostics.package_write_poller'; this may result in unpredictable behaviour
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py:76: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow().isoformat() + "Z"
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py:134: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  datetime.utcnow().isoformat() + "Z",
+Traceback (most recent call last):
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py", line 175, in run
+    self.poll_once()
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py", line 155, in poll_once
+    self._write_csv_row(record)
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py", line 142, in _write_csv_row
+    self._csv_handle.flush()
+OSError: [Errno 28] No space left on device
+
+During handling of the above exception, another exception occurred:
+
+OSError: [Errno 28] No space left on device
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py", line 218, in <module>
+    poller.run(max_cycles=args.max_cycles)
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py", line 178, in run
+    self.stop()
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py", line 184, in stop
+    self._csv_handle.close()
+OSError: [Errno 28] No space left on device

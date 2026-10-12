@@ -1,0 +1,10 @@
+{
+  "procdump_available": false,
+  "census_pid": 41640,
+  "cook_pid": 40084,
+  "stamp": "20261011_125615",
+  "evidence_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260918T000000Z_PRODUCTION_CLOSURE\\GAP049_COOK_DIAG_RUN_20261011_125615",
+  "out_dir": "G:\\CARLA\\cook_out\\Ingolstadt",
+  "watchdog_pid": 6600,
+  "poller_pid": 43012
+}

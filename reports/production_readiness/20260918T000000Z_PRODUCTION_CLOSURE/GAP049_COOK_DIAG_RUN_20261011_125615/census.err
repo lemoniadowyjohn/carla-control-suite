@@ -1,0 +1,3 @@
+<frozen runpy>:128: RuntimeWarning: 'tools.cook_diagnostics.cook_resource_census' found in sys.modules after import of package 'tools.cook_diagnostics', but prior to execution of 'tools.cook_diagnostics.cook_resource_census'; this may result in unpredictable behaviour
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\cook_resource_census.py:122: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  timestamp=datetime.utcnow().isoformat() + "Z",
