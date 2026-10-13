@@ -172,7 +172,7 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     # junction connector positions. Rebuild displaced connectors before freeze.
     # Structural/release runs must not mutate connectors unless explicitly opted in.
     connector_rebuild_enabled = os.getenv(
-        "UP_ENABLE_JUNCTION_CONNECTOR_REBUILD", "1"
+        "UP_ENABLE_JUNCTION_CONNECTOR_REBUILD", "0"
     ).strip().lower() in ("1", "true", "yes", "on")
     if connector_rebuild_enabled:
         try:
