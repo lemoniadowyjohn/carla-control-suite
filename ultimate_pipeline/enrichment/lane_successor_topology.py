@@ -232,8 +232,29 @@ def infer_lane_successors_from_topology(root: ET.Element) -> Dict:
         if lanes_elem is None:
             continue
 
+        # Terminal section only for junction-through repair: a lane-level
+        # successor on a non-terminal lane must point intra-road (next
+        # section), never through a junction. This mirrors the population
+        # classifier funnel (terminal_section) so the resolver and the
+        # classifier cannot diverge on section position.
+        lane_sections = list(lanes_elem.findall("laneSection"))
+
+        def _section_s(sec: ET.Element) -> float:
+            try:
+                return float(sec.get("s", "0") or 0.0)
+            except Exception:
+                return 0.0
+
+        terminal_section = None
+        if lane_sections:
+            max_s = max(_section_s(sec) for sec in lane_sections)
+            for sec in lane_sections:
+                if _section_s(sec) == max_s:
+                    terminal_section = sec
+
         # Process each laneSection - successors are per-lane, not per-section
         for lane_section in lanes_elem.findall("laneSection"):
+            is_terminal_section = terminal_section is not None and lane_section is terminal_section
             for side_name in ("left", "center", "right"):
                 side_elem = lane_section.find(side_name)
                 if side_elem is None:
@@ -278,8 +299,9 @@ def infer_lane_successors_from_topology(root: ET.Element) -> Dict:
 
                     # Strategy 3: road successor is a junction -- resolve the
                     # unique through-junction target. Ambiguous or unproven
-                    # cases stay unresolved (never guess).
-                    elif road_succ and road_succ[0] == "junction":
+                    # cases stay unresolved (never guess). Terminal sections
+                    # only: non-terminal lanes need intra-road successors.
+                    elif road_succ and road_succ[0] == "junction" and is_terminal_section:
                         _bucket, target = resolve_through_junction(
                             roads, junctions, road_id, lane_id)
                         if target is not None:

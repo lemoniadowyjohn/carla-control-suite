@@ -152,6 +152,27 @@ def test_ambiguous_multiple_targets_stays_unresolved():
     assert report["lanes_without_topology"] >= 1
 
 
+def test_non_terminal_junction_lane_stays_unresolved():
+    # Strategy 3 is terminal-only: a non-terminal lane on a junction-successor
+    # road needs an intra-road successor, never a junction target -- even when
+    # a valid laneLink exists. Mirrors the classifier terminal_section funnel.
+    root = ET.Element("OpenDRIVE")
+    road = _road("R1", [1], successor=("junction", "10", "start"))
+    lanes = road.find("lanes")
+    lanes.append(_section([1], s="10.0"))
+    root.append(road)
+    root.append(_road("C1", [-2], junction="10"))
+    root.append(_junction("10", [("R1", "C1", "start", [(1, -2)])]))
+    report = infer_lane_successors_from_topology(root)
+    road = next(r for r in root.findall("road") if r.get("id") == "R1")
+    secs = road.findall("lanes/laneSection")
+    nonterm_lane = [l for l in secs[0].findall(".//lane") if l.get("id") == "1"][0]
+    term_lane = [l for l in secs[1].findall(".//lane") if l.get("id") == "1"][0]
+    assert _successor_of(nonterm_lane) is None
+    assert _successor_of(term_lane) == "-2"
+    assert report["through_junction_count"] == 1
+
+
 def test_missing_junction_stays_unresolved():
     root = ET.Element("OpenDRIVE")
     root.append(_road("R1", [1], successor=("junction", "99", "start")))

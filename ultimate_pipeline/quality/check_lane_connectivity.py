@@ -9,6 +9,22 @@ CARLA can crash/ASSERT if a *driving* lane has no successor. This module:
 - optionally mitigates by downgrading only the broken driving lanes to type=none
   (opt-in; avoids deleting roads)
 
+A driving lane on a road whose successor is a junction is NOT broken when
+the lane is routed through that junction by at least one VALID laneLink
+(``connection/@incomingRoad`` matches, ``laneLink/@from`` matches, connecting
+road exists, target lane exists at the contact section). Rationale
+(GAP-048 closure): cross-junction lane connectivity is authoritatively
+defined by junction connections + laneLinks -- the repository lane graph
+(``map_acceptance.component_reachability_summary``) builds cross-junction
+edges exclusively from laneLinks, and the CARLA compat gate
+(``check_carla_opendrive_compat``) lists junction laneLinks (not lane-level
+successors) as the routing authority. A lane-level ``<successor id>`` on a
+terminal junction-boundary lane carries only a lane id (no road reference);
+it cannot express road choice and is treated as a road-end marker by the
+reachability analysis. Flagging explicitly-routed lanes while exempting
+unconnected dead ends would invert strictness, so junction-routed lanes are
+excluded from the broken set (independent of ``allow_dead_ends``).
+
 Input: path to .xodr or XML root element.
 """
 
@@ -35,6 +51,78 @@ def _load_tree_and_root(xodr_or_root: Union[str, os.PathLike, ET.Element]) -> Tu
     return tree, tree.getroot()
 
 
+def _contact_section_driving_ids(road: ET.Element, at_start: bool) -> set:
+    """Driving lane ids at a road boundary section (contact-point aware)."""
+    sections = list(road.findall("./lanes/laneSection"))
+
+    def _s(sec: ET.Element) -> float:
+        try:
+            return float(sec.get("s", "0") or 0.0)
+        except Exception:
+            return 0.0
+
+    if not sections:
+        return set()
+    section = min(sections, key=_s) if at_start else max(sections, key=_s)
+    out: set = set()
+    for side in ("left", "right"):
+        side_elem = section.find(side)
+        if side_elem is None:
+            continue
+        for lane in side_elem.findall("lane"):
+            if lane.get("type") == "driving":
+                out.add(lane.get("id"))
+    return out
+
+
+def _lane_has_valid_junction_lanelink(
+    roads_by_id: Dict[str, ET.Element],
+    junctions_by_id: Dict[str, ET.Element],
+    road_id: str,
+    lane_id_str: str,
+) -> bool:
+    """True iff the lane is explicitly routed through its successor junction.
+
+    Requires: parent road successor elementType == junction, and at least one
+    laneLink with from == lane id on a connection with
+    incomingRoad == road_id whose contactPoint is valid, whose connecting
+    road exists, and whose to-lane exists at that road's contact section.
+    Mirrors the GAP-048 population classifier funnel (same boundary
+    semantics as the GAP-026 checker); does NOT consider road identity
+    beyond existence -- road choice stays with the laneLinks themselves.
+    """
+    road = roads_by_id.get(road_id)
+    if road is None:
+        return False
+    link = road.find("link")
+    succ = link.find("successor") if link is not None else None
+    if succ is None or succ.get("elementType") != "junction":
+        return False
+    junction = junctions_by_id.get(succ.get("elementId"))
+    if junction is None:
+        return False
+    for conn in junction.findall("connection"):
+        if conn.get("incomingRoad") != road_id:
+            continue
+        contact = conn.get("contactPoint", "start")
+        if contact not in ("start", "end"):
+            continue
+        connecting = conn.get("connectingRoad")
+        if not connecting:
+            continue
+        target_road = roads_by_id.get(connecting)
+        if target_road is None:
+            continue
+        at_start = contact != "end"
+        valid_ids = _contact_section_driving_ids(target_road, at_start)
+        for lane_link in conn.findall("laneLink"):
+            if lane_link.get("from") != lane_id_str:
+                continue
+            if lane_link.get("to") in valid_ids:
+                return True
+    return False
+
+
 def find_broken_lanes_detailed(
     xodr_or_root: Union[str, os.PathLike, ET.Element],
     *,
@@ -43,6 +131,8 @@ def find_broken_lanes_detailed(
     """Return structured records for driving lanes that violate successor requirements."""
     _tree, root = _load_tree_and_root(xodr_or_root)
     broken: List[Dict[str, Any]] = []
+    roads_by_id = {r.get("id"): r for r in root.findall("./road") if r.get("id")}
+    junctions_by_id = {j.get("id"): j for j in root.findall("./junction")}
 
     for road in root.findall("./road"):
         road_id = road.get("id", "?")
@@ -53,34 +143,63 @@ def find_broken_lanes_detailed(
         # lane-level <link>/<successor> elements (common at map boundaries).
         road_successor = road.find("./link/successor")
 
-        for lane in road.findall(".//lane[@type='driving']"):
-            lane_id = lane.get("id", "?")
-            link = lane.find("link")
-            if link is None:
-                if allow_dead_ends and junction == "-1" and road_successor is None:
-                    continue
-                broken.append({
-                    "road_id": road_id,
-                    "lane_id": lane_id,
-                    "junction": junction,
-                    "reason": "missing_link",
-                })
-                continue
+        # Terminal-section membership per lane (document order preserved).
+        sections = list(road.findall("./lanes/laneSection"))
 
-            successor = link.find("successor")
-            if successor is None:
-                # Allow (some) dead ends: keep behaviour compatible with existing code.
-                # NOTE: this is intentionally conservative; dead-end policy is thesis-dependent.
-                if allow_dead_ends and junction == "-1" and road_successor is None:
-                    # Non-junction roads without successors are likely boundary dead-ends.
+        def _s(sec: ET.Element) -> float:
+            try:
+                return float(sec.get("s", "0") or 0.0)
+            except Exception:
+                return 0.0
+
+        terminal_sec = None
+        if sections:
+            max_s = max(_s(sec) for sec in sections)
+            for sec in sections:
+                if _s(sec) == max_s:
+                    terminal_sec = sec
+
+        for lane_section in sections:
+            is_terminal = terminal_sec is not None and lane_section is terminal_sec
+            for lane in lane_section.findall(".//lane[@type='driving']"):
+                lane_id = lane.get("id", "?")
+                link = lane.find("link")
+                if link is None:
+                    if allow_dead_ends and junction == "-1" and road_successor is None:
+                        continue
+                    if is_terminal and _lane_has_valid_junction_lanelink(
+                        roads_by_id, junctions_by_id, road_id, lane_id
+                    ):
+                        # Junction-routed (GAP-048 closure): explicit laneLink
+                        # connectivity exists; no lane-level successor required.
+                        continue
+                    broken.append({
+                        "road_id": road_id,
+                        "lane_id": lane_id,
+                        "junction": junction,
+                        "reason": "missing_link",
+                    })
                     continue
 
-                broken.append({
-                    "road_id": road_id,
-                    "lane_id": lane_id,
-                    "junction": junction,
-                    "reason": "missing_successor",
-                })
+                successor = link.find("successor")
+                if successor is None:
+                    # Allow (some) dead ends: keep behaviour compatible with existing code.
+                    # NOTE: this is intentionally conservative; dead-end policy is thesis-dependent.
+                    if allow_dead_ends and junction == "-1" and road_successor is None:
+                        # Non-junction roads without successors are likely boundary dead-ends.
+                        continue
+                    if is_terminal and _lane_has_valid_junction_lanelink(
+                        roads_by_id, junctions_by_id, road_id, lane_id
+                    ):
+                        # Junction-routed (GAP-048 closure): see above.
+                        continue
+
+                    broken.append({
+                        "road_id": road_id,
+                        "lane_id": lane_id,
+                        "junction": junction,
+                        "reason": "missing_successor",
+                    })
 
     return broken
 

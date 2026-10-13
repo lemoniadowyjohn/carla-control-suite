@@ -430,11 +430,6 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
 # ---------------- 8) 🔗 MARKINGS + INTEGRITY ----------------
 
 
-def _unsafe_lanelink_regen_enabled(settings_obj) -> bool:
-    from ultimate_pipeline.contracts.release_profile import unsafe_lanelink_regen_enabled
-    return unsafe_lanelink_regen_enabled(settings_obj)
-
-
 def _enforce_final_length_invariant(final_out: str, out_dir: str) -> None:
     _inject_main_pipeline_globals()
     from ultimate_pipeline.tools.crash_safe_length_repair import (
@@ -522,41 +517,14 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     self._assert_geometry_frozen(root, "STEP 8")
 
     # ---------------------------------------------------------
-    # 🛠️ HARD NORMALIZATION (pre-LaneLinkBuilder)
+    # Lane-topology normalization moved to Stage 7 (source stage):
+    # id=0 driving-lane removal, missing-<link> creation, intra-road
+    # laneSection successor repair, and LaneLinkBuilder regeneration all run
+    # in Stage 7 now. Stage 8 is VALIDATION_ONLY for lane topology --
+    # it must never add/change/delete lane predecessor/successor links.
+    # (GAP-048 closure: Stage-8 lane-topology mutation removed.)
     # ---------------------------------------------------------
-    # Build parent lookup once (ElementTree has no getparent()).
-    # NOTE: This map is valid for the current tree snapshot; we only use it for removals below.
-    parent_map = {child: parent for parent in root.iter() for child in list(parent)}
-
-    # 1) Driving lanes with id=0 are illegal for CARLA (and can break link logic)
-    removed_zero = 0
-    for lane in root.findall(".//lane[@type='driving'][@id='0']"):
-        parent = parent_map.get(lane)
-        if parent is not None:
-            parent.remove(lane)
-            removed_zero += 1
-
-    if removed_zero:
-        print(f"⚠️ Removed {removed_zero} illegal driving lane(s) with id=0")
-
-    # 2) Ensure every driving lane has a <link> node (LaneLinkBuilder expects it)
-    created_links = 0
-    for lane in root.findall(".//lane[@type='driving']"):
-        if lane.find("link") is None:
-            ET.SubElement(lane, "link")
-            created_links += 1
-
-    if created_links:
-        print(f"⚠️ Added missing <link> nodes to {created_links} driving lanes")
-
-    # ---------------------------------------------------------
-    # Build LaneLinks + Markings (final topology/semantics here)
-    # ---------------------------------------------------------
-    if _unsafe_lanelink_regen_enabled(s):
-        LaneLinkBuilder.regenerate(root)
-    else:
-        print("⏭️ LaneLinkBuilder.regenerate disabled (ENABLE_LANELINK_REGEN=0). "
-              "Existing lane links preserved.")
+    # Junction laneLink sanity below is read-only validation (no mutation).
     junction_lanelink_sanity = LaneLinkBuilder.sanitize_junction_lane_links(
         root, verbose=True
     )
@@ -584,21 +552,9 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     shutil.copyfile(final_out, semantic_out)
     print(f"🧠 Semantic final saved → {semantic_out}")
 
-    # ---------------------------------------------------------
-    # 🔧 NEW: Repair + assert laneSection successor resolvability
-    # (prevents CARLA MapBuilder.cpp asserts)
-    # ---------------------------------------------------------
-    fixed_out = final_out.replace(".xodr", "_laneSectionFixed.xodr")
-    rep = repair_and_assert_lane_section_successors(
-        xodr_path=final_out,
-        out_path=fixed_out,
-        lane_types=("driving",),  # strict CARLA-relevant lanes
-        strict=True,  # fail if non-repairable discontinuities exist
-    )
-    print(
-        f"✅ LaneSection successor repair: repairs={rep.get('repairs', 0)} "
-        f"failures={len(rep.get('failures', []))}"
-    )
+    # NOTE: intra-road laneSection successor repair moved to Stage 7
+    # (source stage). Stage 8 must not mutate lane topology.
+    # (GAP-048 closure: Stage-8 lane-topology mutation removed.)
 
     # Advisory-only first: direct road-to-road lane targets are not covered
     # by the intra-road laneSection repair above.  elementType=junction links
@@ -634,13 +590,9 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     except Exception as e:
         print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
 
-    # 🎯 AUTHORITATIVE MAP SWITCH
-    final_out = fixed_out
-    try:
-        shutil.copyfile(final_out, semantic_out)
-        print(f"Semantic final refreshed -> {semantic_out}")
-    except Exception as e:
-        print(f"⚠️ WARNING: Failed to refresh semantic XODR: {e}")
+    # NOTE: no AUTHORITATIVE MAP SWITCH here anymore: with lane-topology
+    # repair moved to Stage 7 there is no _laneSectionFixed variant to
+    # switch to. final_out (and its semantic copy above) stay authoritative.
     # ---------------------------------------------------------
     # 🛡️ HARD CARLA INVARIANT ENFORCEMENT (SINGLE AUTHORITY PASS)
     # - No driving lane may exist without a valid driving successor

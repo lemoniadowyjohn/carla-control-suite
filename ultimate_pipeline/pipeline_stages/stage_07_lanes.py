@@ -117,18 +117,41 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     else:
         print("[STEP 7] All roads already had driving lanes.")
 
-    # --- Infer lane-level successors from road topology (generator stage) ---
-    # This replaces the Stage 8 autofix that patched final XODR with synthetic fallback.
-    # Runs HERE at source stage using only real topology: road-level successors + junction laneLinks.
-    from ultimate_pipeline.enrichment.lane_successor_topology import infer_lane_successors_from_topology
-    successor_report = infer_lane_successors_from_topology(root)
-    print(
-        f"[STEP 7] Lane successors from topology: inferred={successor_report['inferred_count']} "
-        f"through_junction={successor_report['through_junction_count']} "
-        f"junction_mapped={successor_report['junction_mapped_count']} "
-        f"no_topology={successor_report['lanes_without_topology']}"
+    # --- Source-stage lane structure normalization (moved from Stage 8) ---
+    # Driving lanes with id=0 are illegal for CARLA; every driving lane needs
+    # a <link> node for the topology repairs below. Both are structural
+    # prerequisites repaired HERE so Stage 8 stays validation-only.
+    import xml.etree.ElementTree as _ET
+
+    _parent_map = {child: parent for parent in root.iter() for child in list(parent)}
+    _removed_zero = 0
+    for _lane in root.findall(".//lane[@type='driving'][@id='0']"):
+        _parent = _parent_map.get(_lane)
+        if _parent is not None:
+            _parent.remove(_lane)
+            _removed_zero += 1
+    if _removed_zero:
+        print(f"[STEP 7] Removed {_removed_zero} illegal driving lane(s) with id=0")
+    _created_links = 0
+    for _lane in root.findall(".//lane[@type='driving']"):
+        if _lane.find("link") is None:
+            _ET.SubElement(_lane, "link")
+            _created_links += 1
+    if _created_links:
+        print(f"[STEP 7] Added missing <link> nodes to {_created_links} driving lanes")
+    self.vreport.add_dict(
+        "lane_structure_normalization",
+        {"removed_id_zero_driving_lanes": _removed_zero, "created_link_nodes": _created_links},
     )
-    self.vreport.add_dict("lane_successor_topology", successor_report)
+
+    # NOTE (GAP-048 closure): lane-successor inference moved LATE in Stage 7
+    # (after lane-width invariants, just before the semantic overlap gate).
+    # An early inference here validated against lane sets that later stages
+    # still mutate (LaneRepair.standardize, sidewalks, width invariants),
+    # leaving lanes added/changed afterwards without successors (e.g. fresh
+    # regen roads 74521/74526/74531/74536 lane -1: road successor existed but
+    # the target lane post-dated the inference). See the topology-finalization
+    # segment below.
 
     # --- Optional ML-based lane refinement (non-destructive) ---
     if getattr(SETTINGS, "ENABLE_LANE_GNN_REFINER", False):
@@ -323,6 +346,53 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
             "❌ Lane width invariant enforcement failed (missing widths found but not fixed). "
             f"See report: {lw_report_path}"
         )
+
+    # --- Topology finalization: intra-road repair, then lane-successor
+    # inference (both moved here from early-Stage-7 / Stage-8) ---
+    # Order matters and is load-bearing:
+    #   1. intra-road repair first: fixes non-terminal section successors
+    #      AND reclassifies linked none/restricted lanes to driving (which
+    #      may create new driving lanes needing successors below);
+    #   2. lane-successor inference second: validates against the FINAL lane
+    #      sets (an early inference validated stale sets and missed lanes
+    #      added by LaneRepair/sidewalks/invariants, e.g. fresh-regen roads
+    #      74521/74526/74531/74536 lane -1).
+    # Both run HERE at source stage so Stage 8 stays validation-only.
+    from ultimate_pipeline.quality.check_lane_section_successors import (
+        repair_and_assert_lane_section_successors,
+    )
+
+    intraroad_report = repair_and_assert_lane_section_successors(
+        xodr_path=lanes_out,
+        out_path=lanes_out,
+        lane_types=("driving",),
+        strict=True,
+    )
+    self.vreport.add_dict("lane_section_successor_repair", intraroad_report)
+    print(
+        "[STEP 7] Intra-road laneSection successor repair: "
+        f"repairs={intraroad_report.get('repairs', 0)} "
+        f"failures={len(intraroad_report.get('failures', []))} "
+        f"reclassified={intraroad_report.get('reclassified_none_or_restricted_lanes', 0)}"
+    )
+
+    # --- Infer lane-level successors from road topology (generator stage) ---
+    # This replaces the Stage 8 autofix that patched final XODR with synthetic
+    # fallback. Runs HERE at source stage using only real topology:
+    # road-level successors + junction laneLinks. Unique-proof only
+    # (terminal sections for junction targets); ambiguous or unproven cases
+    # stay unresolved and are reported (never guessed).
+    tree, root = load_xodr(lanes_out)
+    from ultimate_pipeline.enrichment.lane_successor_topology import infer_lane_successors_from_topology
+    successor_report = infer_lane_successors_from_topology(root)
+    print(
+        f"[STEP 7] Lane successors from topology: inferred={successor_report['inferred_count']} "
+        f"through_junction={successor_report['through_junction_count']} "
+        f"junction_mapped={successor_report['junction_mapped_count']} "
+        f"no_topology={successor_report['lanes_without_topology']}"
+    )
+    self.vreport.add_dict("lane_successor_topology", successor_report)
+    save_xodr(tree, lanes_out)
 
     # semantic overlap gate
     tree, root = load_xodr(lanes_out)
