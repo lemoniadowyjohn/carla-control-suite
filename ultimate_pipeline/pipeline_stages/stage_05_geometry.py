@@ -149,6 +149,68 @@ def _run_junction_connector_snap(self, xodr_path: str) -> dict | None:
         return None
 
 
+def _run_junction_connector_tangent_fit(self, xodr_path: str) -> dict | None:
+    """Run the source-stage GAP026 severe-angle tangent fit (CARLA-CLOSURE-17).
+
+    Fits only connectors whose gap026 contact-point angle exceeds the 12-degree
+    geometry-authority threshold (never raised); previously passing controls are
+    left untouched. Only planView is rewritten -- laneLinks/road links are never
+    mutated -- so connection identity and lane-count reduction connectors keep
+    their targets. Default ON; set UP_JUNCTION_TANGENT_FIT=0 to disable.
+    """
+    from ultimate_pipeline.topology.junction_connector_tangent_fit import (
+        DEFAULT_ANGLE_THRESHOLD_DEG,
+        tangent_fit_enabled,
+    )
+
+    if not tangent_fit_enabled(default=True):
+        print("[STEP 6] Junction connector tangent fit disabled.")
+        return None
+
+    try:
+        import json
+
+        from ultimate_pipeline.topology.junction_connector_tangent_fit import (
+            fit_junction_connector_tangents,
+        )
+
+        tree, root = load_xodr(xodr_path)
+        report = fit_junction_connector_tangents(
+            root,
+            angle_threshold_deg=float(
+                os.getenv(
+                    "UP_JUNCTION_TANGENT_FIT_ANGLE_DEG",
+                    str(DEFAULT_ANGLE_THRESHOLD_DEG),
+                )
+            ),
+        )
+        if report.get("connectors_fitted", 0) > 0:
+            save_xodr(tree, xodr_path)
+
+        report_path = os.path.join(self.out_dir, "junction_connector_tangent_fit_report.json")
+        with open(report_path, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2)
+        self.vreport.add_dict("junction_connector_tangent_fit", report)
+        print(
+            "[STEP 6] Junction connector tangent fit: "
+            f"examined={report.get('connectors_examined', 0)} "
+            f"fitted={report.get('connectors_fitted', 0)} "
+            f"skipped_within_threshold={report.get('skipped_within_threshold', 0)} "
+            f"-> {report_path}"
+        )
+        return report
+    except Exception as exc:
+        print(f"[STEP 6] Junction connector tangent fit failed (continuing): {exc}")
+        if os.getenv("UP_STRICT_QUALITY_GATES", "0").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        ):
+            raise
+        return None
+
+
 def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     """
     📐 GEOMETRY AUTHORITY (merged STEP 5 + STEP 6, hardened order)
@@ -251,6 +313,16 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     # (unlike junction_connector_rebuild above) -- see
     # _run_junction_connector_snap's own docstring for the evidence.
     _run_junction_connector_snap(self, cont_out)
+
+    # CARLA-CLOSURE-17: source-stage GAP026 severe-angle connector closure.
+    # Narrow, oracle-equivalent repair: re-aims a connector's contact-point pose
+    # (position + tangent) to the incoming road's s=length source pose while
+    # preserving the far endpoint, by rewriting planView as one paramPoly3
+    # Hermite. Runs after snap (positional criterion cannot reach the
+    # heading-wrong, positionally-aligned residual) and after curvature
+    # smoothing, BEFORE freeze, so no later pass re-smooths it. Does not mutate
+    # laneLinks (connection identity / road-link authority preserved).
+    _run_junction_connector_tangent_fit(self, cont_out)
 
     # 🧊 Freeze horizontal geometry BEFORE elevation is applied.
     # This ensures DEM samples z at the final XY positions.
