@@ -252,6 +252,44 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     # _run_junction_connector_snap's own docstring for the evidence.
     _run_junction_connector_snap(self, cont_out)
 
+    # --- GAP-026 severe-angle: per-connector Hermite tangent fit ---
+    # Repairs junction connectors whose reference-line interface heading
+    # violates the 12-degree criterion via a single normalized-paramPoly3
+    # Hermite segment. Runs after snap (position gaps) and before freeze
+    # (geometry must be final). Opt-in via
+    # UP_ENABLE_JUNCTION_CONNECTOR_TANGENT_FIT (default OFF: brand-new
+    # geometry mutation requires explicit enablement; per-connector strict
+    # validation still applies when enabled).
+    if os.getenv("UP_ENABLE_JUNCTION_CONNECTOR_TANGENT_FIT", "0").strip().lower() in (
+        "1", "true", "yes", "on",
+    ):
+        try:
+            from ultimate_pipeline.topology.junction_connector_tangent_fit import (
+                apply_junction_connector_tangent_fit,
+            )
+
+            tree_tf, root_tf = load_xodr(cont_out)
+            tangent_report = apply_junction_connector_tangent_fit(root_tf)
+            if int(tangent_report.get("rebuilt", 0) or 0) > 0:
+                save_xodr(tree_tf, cont_out)
+            tangent_report_path = os.path.join(
+                self.out_dir, "junction_connector_tangent_fit_report.json"
+            )
+            with open(tangent_report_path, "w", encoding="utf-8") as handle:
+                json.dump(tangent_report, handle, indent=2)
+            self.vreport.add_dict("junction_connector_tangent_fit", tangent_report)
+            print(
+                "[STEP 6] Junction connector tangent fit: "
+                f"examined={tangent_report.get('connectors_examined', 0)} "
+                f"rebuilt={tangent_report.get('rebuilt', 0)} "
+                f"rejected={tangent_report.get('rejected', 0)} "
+                f"-> {tangent_report_path}"
+            )
+        except Exception as exc:
+            print(f"[STEP 6] Junction connector tangent fit failed (continuing): {exc}")
+    else:
+        print("[STEP 6] Junction connector tangent fit disabled (opt-in).")
+
     # 🧊 Freeze horizontal geometry BEFORE elevation is applied.
     # This ensures DEM samples z at the final XY positions.
     frozen_before_elev = s.stage_path("06_geometry_frozen")
