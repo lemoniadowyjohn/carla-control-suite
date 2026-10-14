@@ -59,7 +59,8 @@ class TestPackageWritePoller:
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 1
+        # new file row + one heartbeat row per cycle
+        assert len(rows) == 2
         assert rows[0]["file_path"] == "test.uasset"
         assert rows[0]["status"] == "new"
         assert rows[0]["cycle"] == "1"
@@ -91,19 +92,29 @@ class TestPackageWritePoller:
         assert results2["test.uasset"].status == "changed"
         assert results2["test.uasset"].sha256 != results1["test.uasset"].sha256
         
-        # Check CSV has both entries
+        # Check CSV has both entries (plus one heartbeat row per cycle)
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 2
-        assert rows[0]["status"] == "new"
-        assert rows[1]["status"] == "changed"
-        assert rows[1]["cycle"] == "2"
+        assert len(rows) == 4
+        assert [r["status"] for r in rows] == ["new", "heartbeat", "changed", "heartbeat"]
+        assert rows[2]["cycle"] == "2"
         
         poller.stop()
 
     def test_poll_once_unchanged_files(self):
-        """Test that unchanged files are logged as 'unchanged'."""
+        """Unchanged files are NOT re-emitted.
+
+        CONTRACT CHANGED 2026-10-11. This test previously asserted that an
+        unchanged file is written again on every cycle (len(rows) == 2). That
+        behaviour was the defect: over a city-scale cook it produced ~1,430,000
+        rows of which only 7,874 carried signal -- a 273 MB CSV written to C:,
+        the same volume UE uses for scratch/DDC. The poller then died with
+        OSError ENOSPC while the cook crashed on a write failure.
+
+        The poller now emits deltas only. The in-memory snapshot still tracks
+        every file, so change detection is unchanged; only the CSV is filtered.
+        """
         poller = PackageWritePoller(
             package_dir=self.package_dir,
             output_csv=self.output_csv,
@@ -119,13 +130,15 @@ class TestPackageWritePoller:
         # Second poll without changes
         poller.poll_once()
         
-        # Check CSV
+        # Check CSV: exactly ONE row (the initial "new"). The second poll sees
+        # no change and therefore emits nothing.
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 2
-        assert rows[0]["status"] == "new"
-        assert rows[1]["status"] == "unchanged"
+        assert len(rows) == 3
+        assert [r["status"] for r in rows] == ["new", "heartbeat", "heartbeat"]
+        assert not [r for r in rows if r["status"] == "unchanged"]
+
         
         poller.stop()
 
@@ -164,11 +177,12 @@ class TestPackageWritePoller:
         assert len(results) == 0
         assert poller.get_cycle_count() == 1
         
-        # CSV should only have header
+        # CSV holds the header plus one heartbeat row (liveness, not signal)
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) == 0
+        assert len(rows) == 1
+        assert rows[0]["status"] == "heartbeat"
         
         poller.stop()
 
@@ -291,7 +305,7 @@ class TestPackageWritePoller:
             reader = csv.DictReader(f)
             rows = list(reader)
         
-        assert len(rows) == 1
+        assert len(rows) == 2  # new file row + one heartbeat row
         row = rows[0]
         
         # Check all required columns
@@ -304,7 +318,8 @@ class TestPackageWritePoller:
         assert row["size_bytes"].isdigit()
         assert float(row["mtime"]) > 0
         assert len(row["sha256"]) == 64  # SHA256 hex
-        assert row["status"] in ("new", "changed", "unchanged")
+        assert row["status"] in ("new", "changed", "deleted", "error",
+                                   "heartbeat")
 
 
 class TestPackageWritePollerIntegration:
@@ -343,24 +358,26 @@ class TestPackageWritePollerIntegration:
         
         poller.stop()
         
-        # Check all cycles recorded - each cycle writes ALL current files
-        # Cycle 1: a(new) = 1 row
-        # Cycle 2: a(unchanged), b(new) = 2 rows
-        # Cycle 3: a(changed), b(unchanged) = 2 rows
-        # Total: 5 rows
+        # DELTAS ONLY (changed 2026-10-11; previously "each cycle writes ALL
+        # current files ... Total: 5 rows", which was the runaway-CSV defect).
+        # Cycle 1: a(new) + heartbeat     = 2 rows
+        # Cycle 2: b(new) + heartbeat     = 2 rows
+        # Cycle 3: a(changed) + heartbeat = 2 rows
+        # Total: 6 rows
         with open(self.output_csv, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
         
-        assert len(rows) == 5  # a(new), a(unchanged), b(new), a(changed), b(unchanged)
+        assert len(rows) == 6  # deltas + one heartbeat per cycle
         
         # Verify cycle numbers
         cycles = [int(r["cycle"]) for r in rows]
-        assert cycles == [1, 2, 2, 3, 3]
+        assert cycles == [1, 1, 2, 2, 3, 3]
         
         # Verify statuses
         statuses = [r["status"] for r in rows]
-        assert statuses == ["new", "unchanged", "new", "changed", "unchanged"]
+        assert statuses == ["new", "heartbeat", "new", "heartbeat",
+                            "changed", "heartbeat"]
 
 
 if __name__ == "__main__":
