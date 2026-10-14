@@ -1,0 +1,8 @@
+{
+  "NEW-221": "no extraction met the all-conditions bar; see ORCHESTRATION_TECH_DEBT_MATRIX.json",
+  "NEW-222": "13 boundary tests 04->10; missing blocks or SKIP receipt",
+  "NEW-223": "record_route legacy (DeprecationWarning); run_auto_xodr_record migrated (latent CLI crash fixed); lint test + allowlist",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "status": "PASS"
+}

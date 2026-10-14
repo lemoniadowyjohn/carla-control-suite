@@ -1,0 +1,82 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "consistency_guarantee": "payload gate status, CLI exit status and workflow interpretation are produced from the same resolve_gate() function, so they cannot disagree.",
+  "principle": "Only a resolved gate with status PASS exits 0. Offline CI and runtime certification are separate verdicts; neither can impersonate the other.",
+  "required_check_recommendation": {
+    "do_not_require_by_default": [
+      "live CARLA runtime certification"
+    ],
+    "reason": "Requiring the runtime gate on the branch would require a self-hosted CARLA runner for every PR and would make the check unattainable for ordinary contributions; GitHub-hosted CI cannot execute a live CARLA server.",
+    "require_on_branch": [
+      "offline release gate"
+    ]
+  },
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "schema": "V5_CI_SEMANTICS_MATRIX/v1",
+  "truth_table": [
+    {
+      "offline_exit": 0,
+      "offline_release_gate": "PASS",
+      "offline_sections": "all PASS",
+      "runtime": "NOT_RUN",
+      "runtime_certification_gate": "INCOMPLETE",
+      "runtime_exit": 1
+    },
+    {
+      "offline_exit": 1,
+      "offline_release_gate": "FAIL",
+      "offline_sections": "any FAIL",
+      "runtime": "any",
+      "runtime_certification_gate": "depends",
+      "runtime_exit": 1
+    },
+    {
+      "offline_exit": 1,
+      "offline_release_gate": "INCOMPLETE",
+      "offline_sections": "any INCOMPLETE",
+      "runtime": "any",
+      "runtime_certification_gate": "depends",
+      "runtime_exit": 1
+    },
+    {
+      "offline_exit": 1,
+      "offline_release_gate": "INCOMPLETE",
+      "offline_sections": "any NOT_RUN",
+      "runtime": "any",
+      "runtime_certification_gate": "depends",
+      "runtime_exit": 1
+    },
+    {
+      "offline_exit": 1,
+      "offline_release_gate": "INCOMPLETE",
+      "offline_sections": "any BLOCKED_EXTERNAL",
+      "runtime": "any",
+      "runtime_certification_gate": "depends",
+      "runtime_exit": 1
+    },
+    {
+      "offline_exit": 1,
+      "offline_release_gate": "INCOMPLETE",
+      "offline_sections": "any WAIVED",
+      "runtime": "any",
+      "runtime_certification_gate": "depends",
+      "runtime_exit": 1
+    },
+    {
+      "offline_exit": 0,
+      "offline_release_gate": "PASS",
+      "offline_sections": "all PASS",
+      "runtime": "PASS",
+      "runtime_certification_gate": "PASS",
+      "runtime_exit": 0
+    },
+    {
+      "offline_exit": 0,
+      "offline_release_gate": "PASS",
+      "offline_sections": "all PASS",
+      "runtime": "BLOCKED_EXTERNAL",
+      "runtime_certification_gate": "INCOMPLETE",
+      "runtime_exit": 1
+    }
+  ]
+}

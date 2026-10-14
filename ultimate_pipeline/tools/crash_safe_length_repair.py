@@ -298,13 +298,22 @@ def _offline_validation(path: Path, root: ET.Element) -> Dict[str, Any]:
     try:
         from ultimate_pipeline.quality.check_xodr_schema import (
             check_xml_uniqueness,
-            validate_xodr_schema,
+            validate_xodr_schema_structured,
         )
 
         uniqueness_issues = check_xml_uniqueness(root)
-        schema_ok, schema_error = validate_xodr_schema(str(path), None)
+        # OC-59 §14: structured XSD status. NOT_CONFIGURED / INCOMPLETE are
+        # recorded visibly and never read as PASS (see _evaluate_acceptance:
+        # only an actually-executed PASS/FAIL participates in the gate).
+        xsd_result = validate_xodr_schema_structured(str(path), None)
+        schema_ok, schema_error = (
+            (xsd_result["status"] == "PASS"),
+            ("PASS" if xsd_result["status"] == "PASS"
+             else xsd_result["status"]),
+        )
         validation["check_xodr_schema"] = {
             "schema_ok": bool(schema_ok),
+            "schema_status": xsd_result["status"],
             "schema_error": schema_error,
             "uniqueness_issue_count": len(uniqueness_issues),
             "uniqueness_examples": uniqueness_issues[:20],
@@ -410,8 +419,15 @@ def _evaluate_acceptance(
         "xml_parse_ok": validation.get("xml_parse") == "ok",
     }
     schema = validation.get("check_xodr_schema", {})
-    if "schema_ok" in schema:
+    # OC-59 §14: only an actually-executed schema check (PASS/FAIL)
+    # participates in the acceptance gate. NOT_CONFIGURED / INCOMPLETE are
+    # recorded visibly (schema_check_status_recorded) without vetoing a
+    # length repair -- and without ever reading as PASS.
+    if schema.get("schema_status") in ("PASS", "FAIL"):
         checks["schema_ok_or_skipped"] = bool(schema.get("schema_ok"))
+        checks["xml_uniqueness_clean"] = int(schema.get("uniqueness_issue_count", 0)) == 0
+    elif "schema_status" in schema:
+        checks["schema_check_status_recorded"] = bool(schema.get("schema_status"))
         checks["xml_uniqueness_clean"] = int(schema.get("uniqueness_issue_count", 0)) == 0
     carla_s = validation.get("check_carla_import_s", {})
     if "issue_count" in carla_s:

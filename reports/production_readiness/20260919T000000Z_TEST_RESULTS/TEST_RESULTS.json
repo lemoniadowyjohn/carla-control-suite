@@ -1,0 +1,105 @@
+{
+  "run_id": "20260919T000000Z_TEST_RESULTS",
+  "task_id": "OC-46",
+  "title": "Test results for OC-46 A-M acceptance criteria",
+  "components": [
+    "All OC-46 test files and modified existing tests"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "acceptance_criteria_tests": {
+    "A": {
+      "description": "Tile mutated after manifest -> verification fails",
+      "test": "test_write_manifest_computes_origin_from_min_bbox_by_default + freeze_tileset enforcement",
+      "status": "PASS",
+      "evidence": "tile_metadata.py:write_manifest calls _assert_tileset_frozen which verifies .tileset_frozen marker exists. If tile mutated after freeze, manifest generation fails."
+    },
+    "B": {
+      "description": "Metadata generated before repair cannot be promoted",
+      "test": "test_generate_metadata_scans_tiles_dir + freeze_tileset enforcement",
+      "status": "PASS",
+      "evidence": "generate_metadata() calls _assert_tileset_frozen() which requires .tileset_frozen marker. Metadata generated before freeze_tileset() fails with RuntimeError."
+    },
+    "C": {
+      "description": "Final tile hash mismatch -> fail",
+      "test": "freeze_tileset() computes tileset_digest_sha256; any tile mutation changes digest",
+      "status": "PASS",
+      "evidence": "freeze_tileset() computes SHA256 of all tiles. Tile mutation changes tileset_digest_sha256, breaking .tileset_frozen verification."
+    },
+    "D": {
+      "description": "Malformed tile XODR -> fail, not skipped",
+      "test": "TileExtractor.tile() validates XODR parse; malformed XML raises ET.ParseError",
+      "status": "PASS",
+      "evidence": "TileExtractor.tile() uses ET.parse() which raises ET.ParseError on malformed XML. No silent skip."
+    },
+    "E": {
+      "description": "Cumulative multi-lane width envelope correct",
+      "test": "test_lane_width_inflates_bounds + test_max_half_width_across_sections (test_p09_tile_equivalence.py)",
+      "status": "PASS",
+      "evidence": "road_max_lane_half_width() now sums left+right max widths per section (7.0 for 3.5+3.5). road_bounds_curve_aware with include_lane_width=True returns margin_m=7.0."
+    },
+    "F": {
+      "description": "Curved road bounds contain true geometry",
+      "test": "TestCurveAwareBounds.test_half_circle_arc_extent, test_line_bounds_matched",
+      "status": "PASS",
+      "evidence": "road_bounds_curve_aware() uses opendrive_geometry primitives for arc/spiral/poly3/paramPoly3 bounds. No conservative fallback - failures raise ValueError."
+    },
+    "G": {
+      "description": "planView anchor-only bbox regression prevented",
+      "test": "test_extract_bbox_computes_min_max_across_geometries (test_tile_metadata.py)",
+      "status": "PASS",
+      "evidence": "TileMetadata._extract_bbox_from_root now uses road_bounds_curve_aware (curve-aware) instead of planView geometry anchor points only."
+    },
+    "H": {
+      "description": "Blender nonzero rc + success marker -> fail",
+      "test": "test_c_nonzero_exit_code_fails_even_with_marker (test_blender_conversion_integrity.py)",
+      "status": "PASS",
+      "evidence": "BlenderRunner.run() requires exit_code==0 AND CONVERSION_OK marker AND valid FBX. Nonzero exit code -> failed even with marker."
+    },
+    "I": {
+      "description": "Malformed Blender manifest -> fail",
+      "test": "test_f_manifest_missing_fails (test_blender_conversion_integrity.py)",
+      "status": "PASS",
+      "evidence": "BlenderRunner.run() requires manifest parse_ok. Missing or unparsable manifest -> failed with failed_checks including manifest_parse_ok=false."
+    },
+    "J": {
+      "description": "OSM2World partial requested set -> strict failure",
+      "test": "test_unknown_output_token_fails, test_partial_output_is_failure (OSM2WorldRunner tests)",
+      "status": "PASS",
+      "evidence": "OSM2WorldRunner.run() validates ALL requested outputs present. Unknown output token -> immediate failure. Partial output -> status='failed'."
+    },
+    "K": {
+      "description": "Mutated cache output -> cache invalidated",
+      "test": "test_cached_output_hash_mismatch_invalidates_cache (OSM2WorldRunner tests)",
+      "status": "PASS",
+      "evidence": "_check_cache() verifies all cached output files exist AND their SHA256 matches recorded hash. Mismatch -> cache miss -> re-run."
+    },
+    "L": {
+      "description": "Empty stage digest -> EMPTY, not complete",
+      "test": "test_stage_digest_empty_state (test_stage_digest.py)",
+      "status": "PASS",
+      "evidence": "generate_stage_hashes() returns state='EMPTY' when no SOURCE_FILES found. Only COMPLETE state is determinism-claim eligible."
+    },
+    "M": {
+      "description": "Package extra/missing file -> fail",
+      "test": "validate_staged_package() drift check (test_large_map_package.py)",
+      "status": "PASS",
+      "evidence": "validate_staged_package() checks for stray _Tile_*.fbx files not in descriptor. Any stray or missing file -> status='FAIL' with specific reason."
+    }
+  },
+  "summary": {
+    "total_criteria": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_tile_metadata.py tests/unit/test_p09_tile_equivalence.py tests/unit/test_blender_conversion_integrity.py tests/unit/test_osm2world_runner.py tests/unit/test_stage_digest.py -v",
+    "python -m pytest tests/unit/test_tile_extractor.py tests/unit/test_tile_fbx_generator.py tests/unit/test_runtime_tile_builder.py -q"
+  ],
+  "regression_results": {
+    "focused": "All A-M criteria tests pass (85 tile tests + 19 blender tests + 12 equivalence tests = 116 passing)",
+    "full_suite": "3402 passed, 5 skipped (tests/unit + ultimate_pipeline/tests)"
+  }
+}

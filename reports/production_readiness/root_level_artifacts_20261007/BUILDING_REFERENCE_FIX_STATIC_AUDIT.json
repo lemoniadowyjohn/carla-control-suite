@@ -1,0 +1,65 @@
+{
+  "schema": "building_reference_fix_static_audit/v1",
+  "generated_at_utc": "2026-10-05T15:35:00Z",
+  "phase": "PRE_COOK_STATIC_AUDIT_ONLY",
+  "reference_fix_applied": false,
+  "reason_not_applied": "Batch rule: do not apply the 5711-reference namespace fix to live Content while a UE4Editor/cook process is active. UE4Editor PID 5344 (-run=cook) is running. Applying the fix now would modify assets the live process is consuming.",
+
+  "REFERENCE_ROOT_CAUSE": "WRONG_SUBPATH_IN_SERIALIZED_REFERENCE - confirmed, not reopened",
+
+  "on_disk_truth_measured_read_only": {
+    "content_package_root": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt",
+    "top_level_dirs_present": ["Config", "Maps", "Static"],
+    "actual_asset_root": "/Game/Ingolstadt/Static/Terrain/Ingolstadt",
+    "actual_asset_root_on_disk": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt",
+    "uasset_count": 5711,
+    "expected_count": 5711,
+    "count_matches": true,
+    "tile_prefixes_present": 20,
+    "tile_prefix_list": ["Tile_10_6","Tile_10_7","Tile_10_8","Tile_10_9","Tile_6_6","Tile_6_7","Tile_6_8","Tile_6_9","Tile_7_6","Tile_7_7","Tile_7_8","Tile_7_9","Tile_8_6","Tile_8_7","Tile_8_8","Tile_8_9","Tile_9_6","Tile_9_7","Tile_9_8","Tile_9_9"],
+    "tile_prefixes_match_fbx_inputs_exactly": true,
+    "per_tile_counts": {
+      "Tile_10_6": 6, "Tile_10_7": 74, "Tile_10_8": 5, "Tile_10_9": 303,
+      "Tile_6_6": 263, "Tile_6_7": 395, "Tile_6_8": 625, "Tile_6_9": 159,
+      "Tile_7_6": 326, "Tile_7_7": 411, "Tile_7_8": 573, "Tile_7_9": 429,
+      "Tile_8_6": 263, "Tile_8_7": 409, "Tile_8_8": 493, "Tile_8_9": 353,
+      "Tile_9_6": 8, "Tile_9_7": 28, "Tile_9_8": 193, "Tile_9_9": 395
+    },
+    "sum_of_per_tile": 5711,
+    "name_shape_classes": {
+      "pure_numeric_BuildingN": 5438,
+      "named_with_letters": 236,
+      "Mmax_suffixed": 1,
+      "total": 5675,
+      "note": "5675 classified by these three mutually exclusive patterns; the remaining 36 use other suffix forms (for example 'Building_tedox', 'Building_Mmax' style variants). A precise classifier is required before writing the path-class test matrix, so the classes are recorded as measured rather than as a closed enumeration."
+    }
+  },
+
+  "map_asset_present": {
+    "path": "Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt.umap",
+    "bytes": 25828,
+    "siblings": ["OpenDrive/", "TM/", "MAT_0_0.uasset", "MAT_1_0.uasset", "MAT_2_0.uasset", "MAT_3_0.uasset", "MAT_4_0.uasset", "MAT_5_0.uasset", "MAT_6_0.uasset"]
+  },
+
+  "fbx_side_check": {
+    "file_examined": "Import\\Ingolstadt\\Ingolstadt_Tile_6_6.fbx",
+    "bytes": 772028,
+    "contains_literal_Static_Terrain": false,
+    "contains_literal_Ingolstadt": false,
+    "interpretation": "The asset-path prefix is NOT embedded in the FBX. It is injected downstream by the CARLA import/MoveAssets commandlet stage, which writes DestinationPath as /Game/<package>/Static/<tag>/<name> (Import.py generate_import_setting_file, and move_assets_commandlet). Therefore the serialized reference producer is in the CARLA commandlet path, not in the offline FBX generator. This is consistent with the offline COOK_LOG claiming boundary 'Offline FBX generation only'."
+  },
+
+  "what_remains_after_cook_exits": {
+    "step_1": "Identify the exact commandlet that serializes the building reference into the map/level-design assets, and confirm the DestinationPath construction that yields /Game/Ingolstadt/Maps/Ingolstadt/... instead of /Game/Ingolstadt/Static/Terrain/Ingolstadt/...",
+    "step_2": "Change the producer so the serialized reference matches the authoritative StaticMesh package location. Do NOT move 5711 assets.",
+    "step_3": "AssetRegistry/UObject probe over the representative set then the full 5711: ON_DISK, REGISTERED, LOADABLE, REFERENCE_RESOLVES. Required UNRESOLVED_REFERENCE_COUNT = 0.",
+    "step_4": "Path-class test matrix covering: pure numeric BuildingN (5438), named/letters (236), Mmax-style suffix, all 20 tile prefixes, and repeated local object names across tiles (e.g. Building0 recurs per tile)."
+  },
+
+  "not_claimed": [
+    "UNRESOLVED_REFS_BEFORE was not re-measured in this wave; the established value of 5711 is carried forward from the brief and NOT independently re-verified, because verifying it requires an AssetRegistry probe that is prohibited while the cook is active.",
+    "UNRESOLVED_REFS_AFTER = 5711, because the fix was not applied.",
+    "No Content file was read for modification, moved, renamed, or written.",
+    "No UE process was launched."
+  ]
+}

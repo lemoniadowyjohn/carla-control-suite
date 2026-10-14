@@ -1,0 +1,51 @@
+{
+  "run_id": "20260919T000000Z_TILESET_FREEZE_VERIFICATION",
+  "task_id": "OC-46",
+  "title": "Tile set freeze verification - immutable tile set enforcement",
+  "components": [
+    "ultimate_pipeline/tiling/tile_extractor.py::freeze_tileset / _assert_tileset_frozen / _assert_tileset_not_frozen",
+    "ultimate_pipeline/tiling/tile_metadata.py::generate_metadata / write_manifest (enforced frozen preconditions)"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "metadata_before_freeze": "Tile metadata and manifest generation ran BEFORE all tile repairs (S-invariant, seam repair, link scrubbing) were complete. This meant metadata/manifest could reflect stale/incomplete tiles.",
+    "no_freeze_enforcement": "No mechanism prevented tile mutations after metadata/manifest generation. Ad-hoc scripts could mutate tiles after manifest creation, invalidating the manifest.",
+    "no_tileset_digest": "No tileset digest (SHA256 of all tile files) was recorded, making it impossible to verify that the tile set hasn't been tampered with after freeze."
+  },
+  "corrected_semantics": {
+    "TILESET_FROZEN marker": "A .tileset_frozen marker file is written after all tile repairs complete. Contains tileset_digest_sha256 (SHA256 of all tiles), tile_count, frozen_at_utc, and references to metadata/manifest paths.",
+    "freeze_tileset()": "Computes SHA256 of all tile files, writes .tileset_frozen marker, returns freeze metadata including tileset_digest_sha256.",
+    "_assert_tileset_frozen()": "Called by generate_metadata() and write_manifest() to enforce that metadata/manifest can ONLY be generated from a frozen tileset.",
+    "_assert_tileset_not_frozen()": "Called by TileExtractor.tile() to prevent tile generation into an already-frozen directory (prevents accidental overwrite)."
+  },
+  "tests": {
+    "new_functions": [
+      "freeze_tileset()",
+      "_assert_tileset_frozen()",
+      "_assert_tileset_not_frozen()",
+      "is_tileset_frozen()",
+      "get_freeze_info()"
+    ],
+    "modified_tests": [
+      "test_generate_metadata_scans_tiles_dir - now calls freeze_tileset before generate_metadata",
+      "test_generate_metadata_ignores_non_xodr_files - now calls freeze_tileset",
+      "test_write_manifest_computes_origin_from_min_bbox_by_default - creates tile file + freeze_tileset before write_manifest",
+      "test_write_manifest_skips_settings_snapshot_key - creates tile file + freeze_tileset before write_manifest",
+      "test_write_manifest_explicit_origin_overrides_computed - creates tile file + freeze_tileset before write_manifest"
+    ]
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_tile_metadata.py tests/unit/test_tile_extractor.py -v"
+  ],
+  "regression_results": {
+    "focused": "18 tests passed (tile_metadata + tile_extractor)",
+    "tiles_suite": "85 passed, 1 skipped (tile_extractor + tile_metadata + tile_fbx_generator + tile_equivalence + runtime_tile_builder)"
+  },
+  "residual_risks": [
+    "TileExtractor.tile() still allows re-running tile extraction on an unfrozen directory. If called twice, the second run will overwrite the first tileset. A production workflow should call freeze_tileset() immediately after the first TileExtractor.tile() call.",
+    "The .tileset_frozen marker is a plain JSON file. A malicious actor could delete it and re-mutate tiles. For production, consider writing the freeze marker atomically and verifying its integrity on read.",
+    "freeze_tileset() computes SHA256 of all tile files sequentially. For very large tilesets (thousands of tiles), this could take seconds. Consider parallel hashing for large tilesets."
+  ]
+}

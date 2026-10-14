@@ -34,6 +34,29 @@ def _sample_arc(x0: float, y0: float, hdg: float, length: float, curvature: floa
     return pts
 
 
+def _sample_geometry_canonical(geom, step: float) -> List[Tuple[float, float]]:
+    """Sample points along any OpenDRIVE geometry primitive using canonical evaluator."""
+    import xml.etree.ElementTree as ET
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s
+
+    length = float(geom.get("length", 0.0))
+    if length <= 0:
+        return []
+
+    pts: List[Tuple[float, float]] = []
+    n = max(1, int(length / step))
+    for i in range(n + 1):
+        s = min(length, i * step)
+        try:
+            pose = pose_at_s(geom, s)
+            pts.append((pose.x, pose.y))
+        except Exception:
+            # Fallback: use geometry start point
+            pts.append((float(geom.get("x", 0.0)), float(geom.get("y", 0.0))))
+            break
+    return pts
+
+
 def check_dem_full_coverage(
     xodr_path: str,
     dem_tif_path: str,
@@ -103,11 +126,18 @@ def check_dem_full_coverage(
                             prim = "arc"
                             curvature = float(child.attrib.get("curvature", "0.0"))
                             break
+                        # spiral, poly3, paramPoly3 are now handled by canonical evaluator
+                        if cname in ("spiral", "poly3", "paramPoly3"):
+                            prim = cname
+                            break
 
                     if prim == "line":
                         pts = _sample_line(x0, y0, hdg, length, step_m)
                     elif prim == "arc":
                         pts = _sample_arc(x0, y0, hdg, length, curvature, step_m)
+                    elif prim in ("spiral", "poly3", "paramPoly3"):
+                        # Use canonical evaluator for complex primitives
+                        pts = _sample_geometry_canonical(el, step_m)
                     else:
                         pts = []
 
@@ -148,7 +178,15 @@ def check_dem_full_coverage(
                     if total >= max_samples:
                         break
 
-            el.clear()
+            # Do NOT clear planView primitive children (<line>/<arc>/<spiral>/
+            # <poly3>/<paramPoly3>) here: their own "end" event fires BEFORE
+            # their parent <geometry>'s "end" event, so clearing them here
+            # would wipe their attributes (e.g. arc's curvature, or every
+            # coefficient a canonical-kernel primitive needs) before the
+            # <geometry> handler above gets a chance to read them. They are
+            # freed anyway once the parent <geometry> element is cleared.
+            if name not in ("line", "arc", "spiral", "poly3", "paramPoly3"):
+                el.clear()
 
     report = {
         "xodr_path": xodr_path,

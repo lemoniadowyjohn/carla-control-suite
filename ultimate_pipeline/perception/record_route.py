@@ -8,6 +8,16 @@
 Record a short CARLA run on an OpenDRIVE (.xodr) map using Dominik-calibrated sensors,
 synchronized capture, and per-frame metadata.
 
+.. deprecated::
+    NEW-223: legacy capture path. New production callers must use
+    ``ultimate_pipeline.perception.record_route_fixed`` (Windows-stable,
+    correct CARLA 0.9.16 sync-tick semantics, thesis rig constraints).
+    This module remains for submission preservation and for the shared tick /
+    teardown helper primitives it exports (``_safe_tick``,
+    ``_soft_teardown``, ``build_spawn_candidate_indices``); extracting those
+    primitives into a common module is tracked as AFTER_RESEARCH_CLOSURE
+    tech debt. Calling ``main()`` emits a DeprecationWarning.
+
 Key properties:
 - Import-safe (no CARLA import at module import time)
 - Strict CLI validation (placeholder paths rejected; calib/xodr existence checked)
@@ -1260,6 +1270,14 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
+    import warnings
+
+    warnings.warn(
+        "ultimate_pipeline.perception.record_route.main is legacy (NEW-223); "
+        "use ultimate_pipeline.perception.record_route_fixed for production capture.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     args = parse_args(argv)
 
     out_dir = Path(args.out_dir)

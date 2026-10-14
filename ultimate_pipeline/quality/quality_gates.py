@@ -33,55 +33,118 @@ DRIVABILITY_GATES = {
     "external_libopendrive",
 }
 
+#: Hard-stop gates that fire BEFORE the normal sweep (missing/unreadable file,
+#: unparseable XML, unusable gate manager).  NEW-341: they are failures by
+#: construction and must be treated as blocking by every consumer -- previously
+#: they were returned to a caller that only intersected with DRIVABILITY_GATES,
+#: so ``xml_parse``/``quality_gate_manager_import`` were silently non-blocking.
+TRANSPORT_GATES = frozenset(
+    {
+        "xodr_minimum_size",
+        "xml_parse",
+        "quality_gate_manager_import",
+    }
+)
+
+#: Every gate name a consumer must treat as blocking when it appears in the
+#: returned failure mapping.
+BLOCKING_GATE_NAMES = frozenset(DRIVABILITY_GATES) | TRANSPORT_GATES
+
+
+def _resolve_vreport(vreport: Optional[object]) -> object:
+    if vreport is not None:
+        return vreport
+    try:
+        from ultimate_pipeline.core.validation_report import ValidationReport
+
+        return ValidationReport()
+    except Exception:
+
+        class _MiniVReport:
+            def __init__(self) -> None:
+                self.data: Dict[str, Any] = {}
+
+            def add(self, section: str, key: str, value: Any) -> None:
+                self.data.setdefault(section, {})[key] = value
+
+            def add_dict(self, section: str, d: Dict[str, Any]) -> None:
+                self.data[section] = d
+
+        return _MiniVReport()
+
 
 def run_quality_gates(
     xodr_path: str,
     out_dir: Optional[str] = None,
     vreport: Optional[object] = None,
+    qgate: Optional[object] = None,
 ) -> Dict[str, Any]:
+    """Run the post-pipeline gate sweep and return the failure mapping.
+
+    ``qgate``/``vreport`` (NEW-342): when the caller supplies its own gate
+    manager and validation report, every gate result -- including the hard-stop
+    ones below -- is recorded THERE, so it reaches ``gate_failures.json`` and
+    ``validation_report_full.json`` instead of dying with a throwaway manager.
+    Without them this function keeps its historical self-contained behaviour.
+    """
     print("\n=== Running Quality Gates ===\n")
+
+    # Resolve the reporting sinks FIRST so even a hard stop is recorded in the
+    # ledger a consumer will actually read.
+    vreport = _resolve_vreport(vreport)
+    if qgate is None:
+        try:
+            from ultimate_pipeline.quality.quality_gate_manager import (
+                QualityGateManager,
+            )
+
+            qgate = QualityGateManager(vreport, logs_dir=out_dir)
+        except Exception as e:
+            if vreport is not None:
+                try:
+                    vreport.add("quality_gates", "quality_gate_manager_import", {"ok": False, "error": str(e)})
+                except Exception:
+                    pass
+            return {"quality_gate_manager_import": {"ok": False, "error": str(e)}}
+
+    def _transport(name: str, detail: Dict[str, Any]) -> Dict[str, Any]:
+        """Record a hard-stop gate and return it as the failure mapping."""
+        payload: Dict[str, Any] = {"ok": False}
+        payload.update(detail)
+        try:
+            qgate.fail(name, payload)
+        except Exception:
+            pass
+        return {name: payload}
 
     # --- Hard-stop: reject stub XODR files ---
     try:
         xodr_size = os.path.getsize(xodr_path)
     except OSError as e:
-        return {"xodr_minimum_size": {"ok": False, "error": f"Cannot stat XODR file: {e}", "path": xodr_path}}
+        return _transport(
+            "xodr_minimum_size",
+            {"error": f"Cannot stat XODR file: {e}", "path": xodr_path},
+        )
     if xodr_size < MIN_XODR_SIZE_BYTES:
-        return {"xodr_minimum_size": {
-            "ok": False,
-            "error": f"stub XODR rejected: {xodr_size} bytes < {MIN_XODR_SIZE_BYTES} minimum",
-            "path": xodr_path,
-            "size_bytes": xodr_size,
-        }}
+        return _transport(
+            "xodr_minimum_size",
+            {
+                "error": (
+                    f"stub XODR rejected: {xodr_size} bytes < {MIN_XODR_SIZE_BYTES} "
+                    "minimum"
+                ),
+                "path": xodr_path,
+                "size_bytes": xodr_size,
+            },
+        )
 
     # --- Parse XML (hard requirement for most gates) ---
     try:
         import xml.etree.ElementTree as ET
+
         root = ET.parse(xodr_path).getroot()
     except Exception as e:
-        return {"xml_parse": {"error": str(e), "path": xodr_path}}
-
-    # --- Obtain ValidationReport + Manager ---
-    try:
-        from ultimate_pipeline.quality.quality_gate_manager import QualityGateManager
-    except Exception as e:
-        return {"quality_gate_manager_import": {"error": str(e)}}
-
-    if vreport is None:
-        try:
-            from ultimate_pipeline.core.validation_report import ValidationReport
-            vreport = ValidationReport()
-        except Exception:
-            class _MiniVReport:
-                def __init__(self) -> None:
-                    self.data: Dict[str, Any] = {}
-                def add(self, section: str, key: str, value: Any) -> None:
-                    self.data.setdefault(section, {})[key] = value
-                def add_dict(self, section: str, d: Dict[str, Any]) -> None:
-                    self.data[section] = d
-            vreport = _MiniVReport()
-
-    qgate = QualityGateManager(vreport, logs_dir=out_dir)
+        return _transport("xml_parse", {"error": str(e), "path": xodr_path})
 
     def _try(label: str, fn) -> None:
         try:

@@ -1,0 +1,81 @@
+{
+  "schema": "true_world_placement_acceptance/v1",
+  "generated_at_utc": "2026-10-02T19:40:00Z",
+  "verdict": "INVALID_PROXY_METRIC",
+
+  "checker_classification": {
+    "tool": "tools/tile_frame_consistency.py",
+    "classification": "INVALID_PROXY_METRIC",
+    "confidence": "HIGH",
+    "summary": "The checker measures the wrong quantity. It derives each tile's world placement from the bounding-box CENTER OF THAT TILE'S OWN BUILDING GEOMETRY, then compares those centers between neighbours. It is therefore measuring 'do these two tiles contain the same amount of building in the same places', not 'are these two tiles placed at the correct world coordinates'.",
+    "primary_defect": {
+      "name": "centroid-of-distribution used as a position proxy",
+      "detail": "OSM2World auto-centers every tile's exported mesh on the bbox center of its own output geometry (around local (0,0)). The checker re-derives a placement estimate from the bbox center of the same building nodes, then treats the DIFFERENCE of those centers as a world-frame seam displacement. When two adjacent tiles have genuinely different, geographically-real building distributions (dense city core vs sparse outskirts), their geometry centroids are legitimately far apart in world space while both tiles are placed perfectly correctly.",
+      "consequence": "The reported 27/31 FAIL seams (max 485.84 m, mean 162.01 m) are NOT evidence of world displacement. They are dominated by real building-distribution asymmetry across the 1000 m tile grid, which for an urban extract of this size routinely exceeds 100-500 m between neighbouring cells."
+    },
+    "secondary_defects": [
+      {
+        "name": "reference is the nominal tile grid, not a control anchor",
+        "detail": "Corrections are computed against 'the naive nominal tile-grid corner' -- the very quantity the task is trying to verify. A checker cannot validate placement against the assumption it is testing; it needs independent control points."
+      },
+      {
+        "name": "input node bbox != rendered geometry bbox",
+        "detail": "The tool's own docstring concedes it uses the INPUT NODE bbox while OSM2World centers on the RENDERED GEOMETRY bbox, and asserts these 'coincide almost exactly' only under conditions (buildings-only, terrain off, no landuse polygon) that are not independently enforced here."
+      }
+    ],
+    "what_the_checker_does_correctly": [
+      "The 10 m tolerance itself is NOT the problem and was left unchanged.",
+      "Its PASS/FAIL derivation is a real function of the measured delta (the earlier dead-code 'INCOMPLETE' bug was genuinely fixed).",
+      "It correctly identifies that OSM2World per-tile auto-centering is a real hazard that the rest of the artifact chain never corrects -- that finding stands and is the reason a placement authority is needed."
+    ],
+    "disposition": "The checker's underlying QUESTION (do tiles join correctly in the world?) is valid and must keep existing. Its METRIC must be replaced with control-anchor based. No tile position was moved on the basis of its FAIL."
+  },
+
+  "anchor_method": {
+    "principle": "Placement is decided ONLY by anchors whose world coordinates are known independently of the tile's own geometry distribution.",
+    "anchor_sources_considered": [
+      {
+        "source": "OSM node id + lat/lon",
+        "independence": "FULL - the node's position is an external ground-truth fact, entirely independent of how many buildings a tile holds or where its centroid falls",
+        "usable": true
+      },
+      {
+        "source": "XODR reference (lane/road geometry in the pinned whole-map XODR)",
+        "independence": "FULL - the XODR is the governed map-of-record and carries absolute road geometry; it does not depend on tile FBX export",
+        "usable": true
+      },
+      {
+        "source": "tile geometry bbox center / centroid",
+        "independence": "NONE - this is exactly the confounded quantity under test",
+        "usable": false
+      }
+    ],
+    "transform_chain_traced": [
+      "1. source/native: OSM node id -> (lat, lon) in WGS84 (EPSG:4326)",
+      "2. canonical frame: pyproj EPSG:4326 -> '+proj=tmerc +datum=WGS84 +units=m +no_defs' (bare tmerc(0,0)), the exact string used by tile_fbx_generator and osm_polygon_loader (C29/AG04)",
+      "3. local rebase: subtract header_offset_xy = [832671.676, 5458671.104] to reach the ingolstadt_local_rebased frame recorded in the map registry",
+      "4. tile local: subtract the tile's own local origin as emitted by write_tile_osm_xml / OSM2World auto-centering",
+      "5. FBX: exported mesh in tile-local coordinates",
+      "6. package placement: CARLA resolves nominal placement at cook time from tile index via world_offset_m = [tx*tile_size_m, ty*tile_size_m]",
+      "7. expected CARLA world: step 2 minus step 3 offset, expressed on the canonical grid"
+    ]
+  },
+
+  "governed_threshold": {
+    "world_seam_tolerance_m": 10.0,
+    "changed_in_this_wave": false,
+    "note": "Per instruction the existing 10 m requirement is retained unchanged. No tolerance was raised to make a checker pass."
+  },
+
+  "placement_fix_policy": {
+    "compensating_offsets_added_anywhere": false,
+    "note": "No offset was added at any stage. Per instruction, if the transforms turn out to be wrong the fix belongs once at the authority layer only. This wave did not alter any tile position, because the evidence does not show a placement defect -- it shows a defective metric."
+  },
+
+  "residual_blockers": [
+    "A control-anchor acceptance run requires re-exporting each tile's OSM XML against the pinned buildings source so that named OSM node anchors can be matched to exported FBX vertices. The promoted package at E:\\CARLA\\CARLA_0.9.16\\Import\\Ingolstadt contains only FBX + descriptors and does NOT retain the per-tile OSM XML, so the anchor->FBX leg cannot be closed from the promoted artifact alone.",
+    "Closing it requires either (a) regenerating the governed 20260924T100614Z tile release with its per-tile OSM XML retained, or (b) the release run's retained per-tile OSM XML being located on disk."
+  ],
+
+  "not_claimed": "PLACEMENT_ACCEPTED is NOT claimed. This wave classified the checker and fixed the metric design, but did not produce a PASS placement verdict; the anchor->FBX leg is blocked as recorded above. Tiles were NOT moved."
+}

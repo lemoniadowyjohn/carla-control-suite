@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 import math
+from dataclasses import field
 
 from pyproj import Transformer
 
@@ -159,13 +160,11 @@ class OSMPolygonLoader:
                 )
             )
 
-        # --- multipolygon relation buildings (C25) ---------------------------
+        # --- multipolygon relation buildings (C25/C49) ---------------------------
         # The way-loop above handles standalone `<way building=...>`. OSM also
         # models buildings as `<relation type="multipolygon">` (courtyards,
         # multi-part footprints) whose `building` tag is on the RELATION, not the
-        # member ways — so those ways are skipped above and the relation was never
-        # assembled. Emit the OUTER ring(s); BuildingFootprint has no hole support,
-        # so inner rings (courtyards) are a documented minor over-fill.
+        # member ways. We now preserve inner rings (courtyards) and multipart topology.
         ways_raw: Dict[str, List[str]] = {}
         for w in root.findall("way"):
             wid = w.get("id")
@@ -194,37 +193,111 @@ class OSMPolygonLoader:
                     rings.append(ring)  # else: unclosable -> skip (fail-open)
             return rings
 
-        def _emit_ring(node_refs: List[str], rtags: Dict[str, str], obj_id: Optional[str]) -> None:
+        def _node_refs_to_xy(node_refs: List[str]) -> List[Tuple[float, float]]:
+            """Convert node refs to projected XY coordinates."""
             coords_xy: List[Tuple[float, float]] = []
             for nid in node_refs:
                 if nid in nodes:
                     lat, lon = nodes[nid]
                     coords_xy.append(TRANSFORMER.transform(lon, lat))
-            if len(coords_xy) < 3:
+            return coords_xy
+
+        def _emit_part(outer_ring: List[str], inner_rings: List[List[str]], rtags: Dict[str, str], obj_id: Optional[str]) -> None:
+            """Emit a building part with outer ring and inner rings (holes)."""
+            outer_xy = _node_refs_to_xy(outer_ring)
+            if len(outer_xy) < 3:
                 return
-            if coords_xy[0] != coords_xy[-1]:
-                coords_xy.append(coords_xy[0])
-            if polygon_area(coords_xy) < min_area:
+            if outer_xy[0] != outer_xy[-1]:
+                outer_xy.append(outer_xy[0])
+            if polygon_area(outer_xy) < min_area:
                 return
+
+            inners_xy: List[List[Tuple[float, float]]] = []
+            for inner in inner_rings:
+                inner_xy = _node_refs_to_xy(inner)
+                if len(inner_xy) < 3:
+                    continue
+                if inner_xy[0] != inner_xy[-1]:
+                    inner_xy.append(inner_xy[0])
+                if polygon_area(inner_xy) < min_area:
+                    continue
+                inners_xy.append(inner_xy)
+
             h = 10.0
             if "building:levels" in rtags:
                 try:
                     h = float(rtags["building:levels"]) * 3.0
                 except Exception:
                     pass
-            buildings.append(BuildingFootprint(footprint=coords_xy, height=h, id=obj_id, name=rtags.get("name")))
+
+            buildings.append(
+                BuildingFootprint(
+                    footprint=outer_xy,
+                    height=h,
+                    id=obj_id,
+                    name=rtags.get("name"),
+                    inners=inners_xy,
+                )
+            )
+
+        def _ring_centroid_xy(ring: List[str]) -> Tuple[float, float]:
+            """Compute centroid of a ring in XY space."""
+            xy = _node_refs_to_xy(ring)
+            if len(xy) < 3:
+                return (0.0, 0.0)
+            mx = sum(p[0] for p in xy) / len(xy)
+            my = sum(p[1] for p in xy) / len(xy)
+            return (mx, my)
+
+        def _point_in_polygon_xy(point: Tuple[float, float], polygon: List[Tuple[float, float]]) -> bool:
+            """Ray-casting point-in-polygon test in XY space."""
+            x, y = point
+            inside = False
+            n = len(polygon)
+            if n < 3:
+                return False
+            for i in range(n):
+                x1, y1 = polygon[i]
+                x2, y2 = polygon[(i + 1) % n]
+                if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
+                    inside = not inside
+            return inside
 
         for rel in root.findall("relation"):
             rtags = {t.get("k"): t.get("v") for t in rel.findall("tag")}
             if rtags.get("type") != "multipolygon" or "building" not in rtags:
                 continue
+
+            # Separate outer and inner members
             outer_ids = [
                 m.get("ref") for m in rel.findall("member")
                 if m.get("type") == "way" and m.get("role") in ("outer", "", None) and m.get("ref")
             ]
+            inner_ids = [
+                m.get("ref") for m in rel.findall("member")
+                if m.get("type") == "way" and m.get("role") == "inner" and m.get("ref")
+            ]
+
+            outer_rings = _stitch_rings(outer_ids)
+            inner_rings = _stitch_rings(inner_ids)
+
             rid = rel.get("id")
-            for ring in _stitch_rings(outer_ids):
-                _emit_ring(ring, rtags, f"osm_bld_rel_{rid}" if rid else None)
+            if not outer_rings:
+                continue
+
+            # For each outer ring, associate inner rings by point-in-polygon
+            for outer in outer_rings:
+                outer_xy = _node_refs_to_xy(outer)
+                if len(outer_xy) < 3:
+                    continue
+
+                associated_inners: List[List[str]] = []
+                for inner in inner_rings:
+                    inner_centroid = _ring_centroid_xy(inner)
+                    if _point_in_polygon_xy(inner_centroid, outer_xy):
+                        associated_inners.append(inner)
+
+                _emit_part(outer, associated_inners, rtags, f"osm_bld_rel_{rid}" if rid else None)
 
         return buildings
 
@@ -270,28 +343,63 @@ class OSMPolygonLoader:
                     pass
             return height
 
-        def _append_building(buildings, ring, props):
+        def _ring_to_xy(ring):
             coords_xy = []
             for lon, lat in ring:
                 x, y = TRANSFORMER.transform(lon, lat)
                 coords_xy.append((x, y))
+            return coords_xy
 
-            if len(coords_xy) < 3:
+        def _emit_part(buildings, outer_ring, inner_rings, props):
+            """Emit a building part with outer and inner rings."""
+            outer_xy = _ring_to_xy(outer_ring)
+            if len(outer_xy) < 3:
                 return
-            if coords_xy[0] != coords_xy[-1]:
-                coords_xy.append(coords_xy[0])
+            if outer_xy[0] != outer_xy[-1]:
+                outer_xy.append(outer_xy[0])
+            if polygon_area(outer_xy) < min_area:
+                return
 
-            if polygon_area(coords_xy) < min_area:
-                return
+            inners_xy: List[List[Tuple[float, float]]] = []
+            for inner in inner_rings:
+                inner_xy = _ring_to_xy(inner)
+                if len(inner_xy) < 3:
+                    continue
+                if inner_xy[0] != inner_xy[-1]:
+                    inner_xy.append(inner_xy[0])
+                if polygon_area(inner_xy) < min_area:
+                    continue
+                inners_xy.append(inner_xy)
 
             buildings.append(
                 BuildingFootprint(
-                    footprint=coords_xy,
+                    footprint=outer_xy,
                     height=_height_from_props(props),
                     id=props.get("id"),
                     name=props.get("name"),
+                    inners=inners_xy,
                 )
             )
+
+        def _ring_centroid(ring):
+            if not ring:
+                return (0.0, 0.0)
+            mx = sum(p[0] for p in ring) / len(ring)
+            my = sum(p[1] for p in ring) / len(ring)
+            return (mx, my)
+
+        def _point_in_polygon(point, polygon):
+            x, y = point
+            inside = False
+            n = len(polygon)
+            if n < 3:
+                return False
+            for i in range(n):
+                x1, y1 = polygon[i]
+                x2, y2 = polygon[(i + 1) % n]
+                if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
+                    inside = not inside
+            return inside
 
         with open(path, "r", encoding="utf-8", errors="ignore") as f:
             data = json.load(f)
@@ -305,8 +413,9 @@ class OSMPolygonLoader:
                     continue
 
                 props = dict(feat.get("properties", {}) or {})
-                ring = geom["coordinates"][0]
-                _append_building(buildings, ring, props)
+                outer_ring = geom["coordinates"][0]
+                inner_rings = geom["coordinates"][1:] if len(geom["coordinates"]) > 1 else []
+                _emit_part(buildings, outer_ring, inner_rings, props)
 
             print(f"[BUILDINGS] Loaded {len(buildings)} building footprints from GeoJSON")
             return buildings
@@ -322,26 +431,24 @@ class OSMPolygonLoader:
             geometry = elem.get("geometry") or []
             if len(geometry) < 3:
                 continue
-            ring = []
+            outer_ring = []
             for pt in geometry:
                 try:
-                    ring.append((float(pt["lon"]), float(pt["lat"])))
+                    outer_ring.append((float(pt["lon"]), float(pt["lat"])))
                 except Exception:
-                    ring = []
+                    outer_ring = []
                     break
-            if len(ring) < 3:
+            if len(outer_ring) < 3:
                 continue
             props = dict(tags)
             if elem.get("id") is not None:
                 props.setdefault("id", f"osm_bld_{elem.get('id')}")
-            _append_building(buildings, ring, props)
+            _emit_part(buildings, outer_ring, [], props)
 
-        # --- multipolygon relation buildings (C28) ----------------------------
+        # --- multipolygon relation buildings (C28/C49) ----------------------------
         # Overpass "out geom" relations carry `building` on the RELATION, not the
         # member ways, and each member already embeds its own ordered point list
-        # (no node-ref table to stitch, unlike the OSM-XML path in
-        # load_buildings_from_osm / C25). Emit the OUTER member ring(s); inner
-        # rings (courtyards) are a documented minor over-fill (no hole support).
+        # (no node-ref table to stitch). Preserve inner rings (courtyards).
         for elem in data.get("elements", []):
             if elem.get("type") != "relation":
                 continue
@@ -351,9 +458,13 @@ class OSMPolygonLoader:
             rel_id = elem.get("id")
             props = dict(tags)
             props.setdefault("id", f"osm_bld_rel_{rel_id}" if rel_id is not None else None)
+
+            outer_members = []
+            inner_members = []
             for mem in elem.get("members", []):
-                if mem.get("type") != "way" or mem.get("role") not in ("outer", "", None):
+                if mem.get("type") != "way":
                     continue
+                role = mem.get("role", "")
                 geometry = mem.get("geometry") or []
                 if len(geometry) < 3:
                     continue
@@ -366,7 +477,46 @@ class OSMPolygonLoader:
                         break
                 if len(ring) < 3:
                     continue
-                _append_building(buildings, ring, props)
+                if ring[0] != ring[-1]:
+                    ring = ring + [ring[0]]
+                if role == "inner":
+                    inner_members.append(ring)
+                else:
+                    outer_members.append(ring)
+
+            # Associate inner rings with outer rings by point-in-polygon
+            def _ring_centroid_lonlat(ring):
+                if not ring:
+                    return (0.0, 0.0)
+                mx = sum(p[0] for p in ring) / len(ring)
+                my = sum(p[1] for p in ring) / len(ring)
+                return (mx, my)
+
+            def _point_in_polygon_lonlat(point, polygon):
+                x, y = point
+                inside = False
+                n = len(polygon)
+                if n < 3:
+                    return False
+                for i in range(n):
+                    x1, y1 = polygon[i]
+                    x2, y2 = polygon[(i + 1) % n]
+                    if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
+                        inside = not inside
+                return inside
+
+            for outer in outer_members:
+                outer_xy = _ring_to_xy(outer)
+                if len(outer_xy) < 3:
+                    continue
+
+                associated_inners = []
+                for inner in inner_members:
+                    inner_centroid = _ring_centroid_lonlat(inner)
+                    if _point_in_polygon_lonlat(inner_centroid, outer):
+                        associated_inners.append(inner)
+
+                _emit_part(buildings, outer, associated_inners, props)
 
         print(f"[BUILDINGS] Loaded {len(buildings)} building footprints from Overpass JSON")
         return buildings

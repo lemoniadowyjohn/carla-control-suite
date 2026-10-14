@@ -1,0 +1,16 @@
+{
+  "schema": "signal_provenance_trace/v1",
+  "generated_at_utc": "2026-10-05T18:30:00Z",
+  "OSM_SIGNAL_SOURCE_COUNT": 0,
+  "POST_CONVERSION_SIGNAL_COUNT": 21163,
+  "POST_ENRICHMENT_SIGNAL_COUNT": 21163,
+  "FINAL_XODR_SIGNAL_COUNT": 21163,
+  "evidence": {
+    "osm": "ingolstadt_authoritative.osm (sha b9e07465, 74,874 nodes streamed): zero traffic-signal-tagged nodes",
+    "conversion": "osm2odr (external binary) synthesizes ~2.6 signals/road (max 5) on 8,132 non-junction roads; zero signals on junction roads. No retained post-conversion/pre-enrichment intermediate exists to split further; building enrichment (osm_polygon_loader path) emits buildings only.",
+    "multiplication_stage": "single synthesis at OSM->OpenDRIVE conversion; NO duplication, NO tile-merge expansion, NO reference expansion (ids unique 21,163/21,163; signalReference count 0)",
+    "distribution": "2,726 controllers reference the signals (~7.8 each); all type 1000001 dynamic=yes"
+  },
+  "interpretation": "The 21k signals are converter-synthesized intersection furniture (one per lane/approach on non-junction roads), valid OpenDRIVE, unique and resolvable. The defect is not in the DATA (clean) but in the RUNTIME consumer: CARLA's O(SxA) per-signal world-scan construction path (see complexity audit) was designed against maps with S<=59 and collapses at S=21163.",
+  "not_claimed": "No claim that osm2odr synthesis is wrong per se; real Ingolstadt intersections do have signals. The claim is strictly about runtime construction scaling."
+}

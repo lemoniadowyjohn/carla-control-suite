@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -48,12 +49,23 @@ HEADER_OFFSET_XY = (832671.676, 5458671.104)
 MAP_NAME = "Ingolstadt"
 TILE_SIZE_M = 1000.0
 
-# OSM2World jar is an untracked/gitignored binary; default to the canonical
-# install in the primary checkout so a git-worktree run still finds it.
-DEFAULT_OSM2WORLD_HOME = str(
-    Path(r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main")
-    / "carla_governed" / "OSM2World-latest-bin"
-)
+# OSM2World jar is an untracked/gitignored binary (A1: portable resolution,
+# no developer-machine absolute path). Precedence: OSM2WORLD_HOME env var >
+# <repo>/carla_governed/OSM2World-latest-bin > <repo>/OSM2World-latest-bin,
+# mirroring scripts/cook_full_grid_tiles.py's
+# _resolve_default_osm2world_home(). Returns the first candidate even if
+# missing; existence is validated at execution time via --osm2world-home.
+def _resolve_default_osm2world_home() -> str:
+    env_home = os.environ.get("OSM2WORLD_HOME", "").strip()
+    if env_home:
+        return env_home
+    governed = REPO_ROOT / "carla_governed" / "OSM2World-latest-bin"
+    if governed.is_dir():
+        return str(governed)
+    return str(REPO_ROOT / "OSM2World-latest-bin")
+
+
+DEFAULT_OSM2WORLD_HOME = _resolve_default_osm2world_home()
 
 
 def _sha256(path: Path) -> str:
@@ -71,15 +83,22 @@ def main() -> int:
     parser.add_argument("--blender-exe", default=None)
     parser.add_argument("--out-dir", default=None,
                         help="tile artifact dir (default: reports/.../artifacts)")
+    parser.add_argument("--report-dir", default=None,
+                        help="top-level dir for PROBE_RESULT.json (default: "
+                             "reports/production_readiness/<run_id>_TILE_BASED_FBX_GENERATION_PROBE "
+                             "under the repo root); pass this to keep test/CI "
+                             "runs from writing into the live repo tree")
     parser.add_argument("--tile", default=None,
                         help="force a specific tile 'tx,ty' (default: densest)")
     parser.add_argument("--no-roundtrip", action="store_true")
     args = parser.parse_args()
 
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    report_dir = (REPO_ROOT / "reports" / "production_readiness"
+    report_dir = (Path(args.report_dir) if args.report_dir else
+                  REPO_ROOT / "reports" / "production_readiness"
                   / f"{run_id}_TILE_BASED_FBX_GENERATION_PROBE")
     artifacts_dir = Path(args.out_dir) if args.out_dir else report_dir / "artifacts"
+    report_dir.mkdir(parents=True, exist_ok=True)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"[probe] run_id={run_id}")

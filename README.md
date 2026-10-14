@@ -19,7 +19,7 @@ domain-gap experiments. It is not a claim that every thesis question is complete
 - Health: offline gates are executable; live CARLA verification is `NOT_RUN` unless a self-hosted runtime workflow is executed.
 - Thesis relationship: `submission/` is frozen evidence; current work is measured against the immutable RQ contract.
 
-RQ1 is authoritative for structural determinism and bounded for timestamp-normalized bytes. RQ2 is bounded. RQ4 is authoritative with explicit thesis-baseline caveats. RQ3 and RQ5 remain deferred and are not inferred from Town10HD or unlabeled shift metrics.
+RQ1 is authoritative for structural determinism and bounded for timestamp-normalized bytes. RQ2 is bounded. RQ4 is **not currently citable as authoritative** pending a leak-free retrain (GAP-010; see `docs/research/THESIS_TO_CURRENT_PROGRESS.md`). RQ3 and RQ5 remain deferred and are not inferred from Town10HD or unlabeled shift metrics.
 
 ## Canonical entrypoints
 
@@ -78,7 +78,7 @@ This repo's evidence-export tooling (`tools/export_thesis_tables.py`, cross-chec
 | RQ1 | Determinism (byte-level vs. structural) | AUTHORITATIVE |
 | RQ2 | Structural domain gap (auto vs. manual map) | BOUNDED |
 | RQ3 | Perceptual domain gap (paired CARLA capture) | DEFERRED — blocked on a live CARLA server |
-| RQ4 | Structural variability / latent representation (GNN) | AUTHORITATIVE (with caveats) |
+| RQ4 | Structural variability / latent representation (GNN) | NOT_CURRENTLY_CITABLE — GAP-010 train/eval leak fixed; leak-free retrain not yet run (`BLOCKED_EXTERNAL`) |
 | RQ5 | Generalization and transfer (sim + real-world) | DEFERRED — blocked on RQ3's capture pipeline, plus (5b) no real-world dataset |
 
 Regenerate this table directly against current evidence:

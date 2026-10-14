@@ -1,0 +1,7 @@
+{
+  "schema": "rq1b_run_receipt/v1",
+  "run_index": 1,
+  "run_id": "rq1b_run01",
+  "status": "NOT_ATTEMPTED",
+  "reason": "driver died on run_00 timeout before fix; five sequential runs at >2h each exceed this wave session budget (estimated 12-20h total)"
+}

@@ -1,0 +1,40 @@
+{
+  "COOK_MEMORY_BUDGET_DERIVATION": {
+    "SYSTEM_CONSTRAINTS": {
+      "physical_ram_gb": 47.7,
+      "commit_limit_gb": 59.5,
+      "pagefile_gb": 9.0,
+      "os_reserve_gb": 4.0,
+      "background_processes_gb": 3.0
+    },
+    "OBSERVED_PEAK_USAGE": {
+      "ue4editor_peak_private_gb": 7.1,
+      "ue4editor_peak_virtual_gb": 12.5,
+      "ue4editor_peak_working_set_gb": 4.6,
+      "scw_peak_aggregate_gb": "NOT_MEASURED (workers not spawned due to commit pressure)",
+      "scw_estimated_per_worker_gb": 2.0,
+      "scw_configured_count": 4,
+      "scw_estimated_max_aggregate_gb": 8.0
+    },
+    "DERIVATION": {
+      "step1_system_commit_limit_gb": 59.5,
+      "step2_os_background_reserve_gb": 7.0,
+      "step3_available_for_cook_gb": 52.5,
+      "step4_ue4editor_virtual_peak_gb": 12.5,
+      "step5_scw_estimated_max_gb": 8.0,
+      "step6_total_estimated_peak_gb": 20.5,
+      "step7_safety_margin_gb": 10.0,
+      "step8_recommended_max_virtual_mb": 30500,
+      "step9_memorymaxusedvirtual_setting_mb": 30500
+    },
+    "MEMORY_MAX_VIRTUAL_JUSTIFICATION": "Derived from system commit limit (59.5 GB) minus OS/background reserve (7 GB) = 52.5 GB available. UE4Editor peak virtual 12.5 GB + SCW estimated max 8.0 GB = 20.5 GB peak. With 10 GB safety margin = 30.5 GB limit. Setting MemoryMaxUsedVirtual=30500 MiB provides commit throttling while allowing headroom for peak usage. This is well below the 48000 MiB previously proposed.",
+    "MEMORY_MAX_PHYSICAL_JUSTIFICATION": "UE4Editor peak working set 4.6 GB. SCW workers typically use 1-2 GB working set each. With 4 workers: 4.6 + 8 = 12.6 GB. Current MemoryMaxUsedPhysical=16384 MiB (16 GB) provides adequate headroom. No change needed.",
+    "RECOMMENDED_SETTINGS": {
+      "MemoryMaxUsedPhysical": 16384,
+      "MemoryMaxUsedVirtual": 30500,
+      "MemoryMinFreePhysical": 2048,
+      "MemoryMinFreeVirtual": 4096
+    },
+    "NOTE": "MemoryMaxUsedVirtual=30500 enables commit throttling. If cook still hits limit, reduce SCW count via DevOptions.Shaders.NumUnusedShaderCompilingThreads before lowering this threshold."
+  }
+}

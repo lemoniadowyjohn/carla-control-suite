@@ -22,12 +22,16 @@ from ultimate_pipeline.carla_tools.map_registry import (
 
 
 def _registry_for(path: Path, content: bytes, *, aliases=("test_map",)):
+    # OC-58 hardened contract: schema-valid entry (role vocabulary, frame
+    # text, exact byte count) so the test exercises verification, not schema
+    # rejection.
     return {
         "test_key": {
             "path": str(path),
             "sha256": hashlib.sha256(content).hexdigest(),
             "bytes": len(content),
             "role": "auto",
+            "frame": "test frame",
             "aliases": list(aliases),
         }
     }
@@ -68,6 +72,8 @@ def test_verify_pinned_map_resolves_by_canonical_key_when_no_aliases_declared(tm
             "path": str(p),
             "sha256": hashlib.sha256(content).hexdigest(),
             "bytes": len(content),
+            "role": "auto",
+            "frame": "test frame",
             # no "aliases" key at all
         }
     }
@@ -87,6 +93,7 @@ def test_verify_pinned_map_missing_file_raises_drift_error(tmp_path: Path):
     registry = {
         "test_key": {
             "path": str(missing), "sha256": "a" * 64, "bytes": 100,
+            "role": "auto", "frame": "test frame",
             "aliases": ["test_map"],
         }
     }
@@ -96,12 +103,15 @@ def test_verify_pinned_map_missing_file_raises_drift_error(tmp_path: Path):
 
 def test_verify_pinned_map_sha256_drift_raises_drift_error(tmp_path: Path):
     p = tmp_path / "map.xodr"
-    p.write_bytes(b"content that was pinned originally")
+    content = b"content that was pinned originally"
+    p.write_bytes(content)
     registry = {
         "test_key": {
             "path": str(p),
             "sha256": hashlib.sha256(b"different content entirely").hexdigest(),
-            "bytes": 100,
+            # exact byte count: reaches the SHA check (byte-size gate first)
+            "bytes": len(content),
+            "role": "auto", "frame": "test frame",
             "aliases": ["test_map"],
         }
     }
@@ -119,6 +129,7 @@ def test_verify_pinned_map_lfs_pointer_stub_raises_actionable_drift_error(tmp_pa
     registry = {
         "test_key": {
             "path": str(p), "sha256": "a" * 64, "bytes": 100,
+            "role": "auto", "frame": "test frame",
             "aliases": ["test_map"],
         }
     }
@@ -136,6 +147,7 @@ def test_verify_pinned_map_relative_path_resolved_against_base_dir(tmp_path: Pat
             "path": "sub/map.xodr",
             "sha256": hashlib.sha256(content).hexdigest(),
             "bytes": len(content),
+            "role": "auto", "frame": "test frame",
             "aliases": ["test_map"],
         }
     }

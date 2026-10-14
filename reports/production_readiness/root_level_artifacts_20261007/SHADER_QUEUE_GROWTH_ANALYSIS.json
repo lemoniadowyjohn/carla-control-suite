@@ -1,0 +1,63 @@
+{
+  "QUEUE_GROWTH_TIMELINE": [
+    {
+      "log_line": 704,
+      "timestamp_approx": "Early cook (packages 450-500)",
+      "shader_queue": 428,
+      "workers": 4,
+      "phase": "Initial road/material compilation"
+    },
+    {
+      "log_line": 785,
+      "timestamp_approx": "Mid cook (packages 858, expansion event)",
+      "shader_queue": 3315,
+      "workers": 4,
+      "phase": "Package expansion triggered massive shader discovery"
+    },
+    {
+      "log_line": 855,
+      "timestamp_approx": "Post-expansion (packages 969)",
+      "shader_queue": 5091,
+      "workers": 4,
+      "phase": "MDL materials, pedestrian hair materials discovered"
+    },
+    {
+      "log_line": 957,
+      "timestamp_approx": "Late cook (packages 1219)",
+      "shader_queue": 8227,
+      "workers": 4,
+      "phase": "Full pedestrian/vehicle/prop material permutations"
+    },
+    {
+      "log_line": 1013,
+      "timestamp_approx": "Later cook (packages 2336)",
+      "shader_queue": 8628,
+      "workers": 4,
+      "phase": "Peak shader permutations across all feature levels/platforms"
+    }
+  ],
+  "QUEUE_GROWTH_CAUSE": "Recursive dependency discovery during cook expands the material set exponentially. Each new package (mesh, blueprint, material instance) adds shader permutations for ALL targeted shader platforms (PCD3D_SM5, SF_VULKAN_SM5, PCD3D_ES31) and feature levels. The -cooksinglepackage flag does not limit shader scope.",
+  "CORRELATION_FACTORS": {
+    "package_discovery": "Direct correlation: package count 1778->3553 correlates with shader queue 428->8227",
+    "new_materials": "Each new master material (M_RoadMasterTiled, M_DHair_MASTER, gltf_material, M_Building_Master, etc.) adds 10-50+ permutations",
+    "feature_levels": "3 feature levels (SM5, Vulkan SM5, ES3_1) multiply permutations 3x",
+    "shader_platforms": "3 shader platforms targeted for WindowsNoEditor",
+    "material_permutations": "Quality levels, lighting modes, vertex factories multiply base shaders",
+    "MDL_assets": "MDL distiller generates additional shader variants (late discovery, line 857)",
+    "pedestrian_hair_assets": "Hair materials (M_DHair_MASTER) have high permutation count due to hair shading model variants"
+  },
+  "UNEXPECTED_SHADER_SCOPE": true,
+  "UNEXPECTED_SHADER_SCOPE_DETAIL": "PCD3D_ES31 shader platform adds ~33% more shader permutations (1 of 3 platforms) for materials that will NEVER run on ES3.1 in WindowsNoEditor runtime. This is pure waste.",
+  "REDUNDANT_PERMUTATIONS": {
+    "ES31_PERMUTATIONS_ESTIMATED": "~2700-3000 (33% of 8227 peak)",
+    "HAIR_ON_ES31_PERMUTATIONS": "~500+ (MSM_Hair unsupported on ES3_1 - guaranteed failures)",
+    "SCENETEXTURE_ON_ES31_PERMUTATIONS": "~50+ (Post-process materials guaranteed failures)",
+    "TOTAL_WASTED_COMPILE_ATTEMPTS": "~3250+ shader compile jobs that will fail or produce unused binaries"
+  },
+  "PER_WORKER_IMPACT": {
+    "peak_queue_per_worker": 2156,
+    "compile_time_per_shader_est_sec": 2-10,
+    "estimated_worker_hours_at_peak": "1.2-6 hours per worker at peak queue",
+    "note": "4 workers x 2156 shaders = 8624 total at peak (matches log line 1013)"
+  }
+}

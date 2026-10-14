@@ -1,0 +1,7 @@
+{
+  "schema": "rq1b_run_receipt/v1",
+  "run_index": 2,
+  "run_id": "rq1b_run02",
+  "status": "NOT_ATTEMPTED",
+  "reason": "same as run_01"
+}

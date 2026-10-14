@@ -1,0 +1,29 @@
+{
+  "artifacts_written": [
+    "weather_requested.json",
+    "weather_effective.json"
+  ],
+  "clear_noon_field_count": 14,
+  "clear_noon_resolves": true,
+  "defect_before": "UP_WEATHER_PRESET was constructed by the orchestrator and consumed by nothing; record_route_fixed.py contained zero occurrences of 'weather'",
+  "failure_codes": [
+    "WEATHER_PRESET_UNSUPPORTED",
+    "WEATHER_APPLICATION_FAILED",
+    "WEATHER_READBACK_FAILED",
+    "WEATHER_SETTLE_FAILED"
+  ],
+  "failure_is_warning_only": false,
+  "finding": "NEW-316",
+  "live_readback_verified": "BLOCKED_EXTERNAL",
+  "resolver": "ultimate_pipeline.perception.environment.weather_spec.resolve_weather_spec",
+  "schema": "NEW316_WEATHER_HANDOFF/v1",
+  "single_resolver": true,
+  "status": "PASS",
+  "strict_sequence_enforced": true,
+  "unsupported_preset_fails_closed": {
+    "failure_code": "WEATHER_PRESET_UNSUPPORTED",
+    "requested": "NoSuchWeather"
+  },
+  "weather_preset_drift_detectable": true,
+  "wired_into_production": "ultimate_pipeline/perception/record_route_fixed.py"
+}

@@ -4,15 +4,35 @@ import builtins
 import json
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from ultimate_pipeline.cli import cli
 from ultimate_pipeline.entrypoints import ENTRYPOINTS
+from ultimate_pipeline.tools import repo_health as repo_health_mod
 from ultimate_pipeline.tools.repo_health import build_repo_health, write_repo_health
 
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+@pytest.fixture(autouse=True)
+def _no_local_dependency_conflict(monkeypatch):
+    """These tests assert on *runtime* status semantics.
+
+    The V5 dependency-conflict gate (NEW-205) inspects the ambient environment,
+    and a developer machine may legitimately have both mutually exclusive OpenCV
+    providers installed. Isolating that section here keeps these tests focused on
+    the runtime-roll-up behaviour they were written for; the conflict gate has
+    its own dedicated coverage in
+    ``ultimate_pipeline/tests/unit/test_dependency_profiles.py``.
+    """
+    monkeypatch.setattr(
+        repo_health_mod,
+        "dependency_conflicts",
+        lambda: {"status": "PASS", "conflicts": [], "groups": {}},
+    )
 
 
 def test_repo_health_marks_missing_runtime_as_incomplete_not_pass() -> None:

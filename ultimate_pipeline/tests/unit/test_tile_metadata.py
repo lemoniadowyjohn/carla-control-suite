@@ -18,6 +18,7 @@ import json
 import xml.etree.ElementTree as ET
 
 from ultimate_pipeline.tiling.tile_metadata import TileMetadata
+from ultimate_pipeline.tiling.tile_extractor import freeze_tileset
 
 
 def _write_tile(tmp_path, name: str, roads_xml: str = "") -> None:
@@ -51,7 +52,9 @@ def test_extract_bbox_computes_min_max_across_geometries():
         + "</OpenDRIVE>"
     )
     bbox = TileMetadata._extract_bbox_from_root(root)
-    assert bbox == (0.0, 0.0, 10.0, 20.0)
+    # Road 1: x=0 to 10 (length=10, hdg=0), Road 2: x=10 to 20 (length=10, hdg=0)
+    # Overall bbox: x in [0, 20], y in [0, 20]
+    assert bbox == (0.0, 0.0, 20.0, 20.0)
 
 
 def test_extract_bbox_empty_root_returns_zero_box():
@@ -123,6 +126,7 @@ def test_generate_metadata_scans_tiles_dir(tmp_path):
     _write_tile(tmp_path, "tile_0_0.xodr", _driving_road_xml("1", 0, 0))
     _write_tile(tmp_path, "tile_0_1.xodr", "")  # no roads -> not drivable
     out_json = tmp_path / "meta" / "tile_metadata.json"
+    freeze_tileset(str(tmp_path))
 
     meta = TileMetadata.generate_metadata(str(tmp_path), str(out_json))
 
@@ -147,6 +151,7 @@ def test_generate_metadata_raises_for_missing_directory(tmp_path):
 def test_generate_metadata_ignores_non_xodr_files(tmp_path):
     _write_tile(tmp_path, "tile_0_0.xodr", "")
     (tmp_path / "readme.txt").write_text("not a tile", encoding="utf-8")
+    freeze_tileset(str(tmp_path))
     meta = TileMetadata.generate_metadata(str(tmp_path), str(tmp_path / "out.json"))
     assert "readme.txt" not in meta
 
@@ -202,6 +207,9 @@ def test_write_manifest_computes_origin_from_min_bbox_by_default(tmp_path):
         ),
         encoding="utf-8",
     )
+    # Create a dummy tile file for freeze_tileset
+    (tmp_path / "tile_0_0.xodr").write_text('<?xml version="1.0"?><OpenDRIVE></OpenDRIVE>', encoding="utf-8")
+    freeze_tileset(str(tmp_path))
     manifest = TileMetadata.write_manifest(
         str(tmp_path),
         str(meta_path),
@@ -229,6 +237,8 @@ def test_write_manifest_skips_settings_snapshot_key(tmp_path):
         ),
         encoding="utf-8",
     )
+    (tmp_path / "tile_0_0.xodr").write_text('<?xml version="1.0"?><OpenDRIVE></OpenDRIVE>', encoding="utf-8")
+    freeze_tileset(str(tmp_path))
     manifest = TileMetadata.write_manifest(
         str(tmp_path),
         str(meta_path),
@@ -253,6 +263,8 @@ def test_write_manifest_explicit_origin_overrides_computed(tmp_path):
         ),
         encoding="utf-8",
     )
+    (tmp_path / "tile_0_0.xodr").write_text('<?xml version="1.0"?><OpenDRIVE></OpenDRIVE>', encoding="utf-8")
+    freeze_tileset(str(tmp_path))
     manifest = TileMetadata.write_manifest(
         str(tmp_path),
         str(meta_path),

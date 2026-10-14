@@ -78,6 +78,14 @@ def _env_int(name: str, default: int) -> int:
         return int(default)
 
 
+def _env_str(name: str, default: str = "") -> str:
+    """Read a governed environment string (NEW-316/331/333 environment owner)."""
+    v = os.environ.get(name)
+    if v is None:
+        return str(default)
+    return str(v).strip()
+
+
 def _tcp_port_open(host: str, port: int, timeout_s: float = 1.0) -> bool:
     try:
         with socket.create_connection((str(host), int(port)), timeout=float(timeout_s)):
@@ -360,7 +368,45 @@ def _maybe_reload_world_for_stream_flush(
     client: Any,
     world: Any,
     fps: float,
+    load_mode: Optional[Any] = None,
 ) -> Any:
+    """
+    NEW-248 / NEW-249: conditionally reload the world to clear a stale stream registry.
+
+    This function used to run unconditionally with ``UP_FORCE_WORLD_RELOAD``
+    defaulting to true, which silently defeated ``--use-current-world``: the
+    operator loaded Grid0821, the safety check confirmed the right map, and then
+    this function called ``client.load_world("Grid0821")`` -- exactly the map
+    travel the mode exists to avoid.
+
+    For a generated OpenDRIVE world it was worse: ``load_world("OpenDriveMap")``
+    is not the generated world, so the capture could run against a different map
+    than the one that was generated.
+
+    Under ``GENERATED_XODR`` and ``MANUAL_COOKED_UNSTABLE`` this is now a hard
+    error rather than a silent reload. Streaming recovery for those modes is the
+    sensor canary's job (NEW-255), which proves the capability perception actually
+    needs instead of trusting a TCP port.
+    """
+    if load_mode is not None:
+        try:
+            from ultimate_pipeline.carla_tools.map_runtime_identity import assert_no_map_travel
+
+            current_name = ""
+            try:
+                current_name = str(world.get_map().name or "")
+            except Exception:
+                current_name = ""
+            assert_no_map_travel(
+                mode=load_mode,
+                operation="stream_flush_world_reload",
+                current_map_name=current_name,
+            )
+        except Exception as exc:
+            # Re-raise: this is a fail-closed guard, not a diagnostic.
+            print(f"[STREAM-FLUSH] FATAL: {exc}", flush=True)
+            raise
+
     if not _env_bool("UP_FORCE_WORLD_RELOAD", True):
         print(
             "[STREAM-FLUSH] WARNING: world reload disabled via UP_FORCE_WORLD_RELOAD=0",
@@ -469,11 +515,120 @@ def _is_first_frame_timeout_error_text(error_text: str) -> bool:
 
 
 def _map_name_contains(actual_map: Any, expected_map: str) -> bool:
-    expected = str(expected_map or "").strip().lower()
-    if not expected:
-        return True
-    actual = str(actual_map or "").strip().lower()
-    return expected in actual
+    """Deprecated map-name predicate. Retained only for import compatibility.
+
+    NEW-253: this was ``expected.lower() in actual.lower()``, a substring test
+    that accepted ``Broken_Grid0821_Test``, ``OldGrid0821Backup`` and
+    ``Foo/Grid0821_copy`` as Grid0821. All call sites now use
+    ``map_registry.map_names_match()``; no independent map-name semantics remain
+    in this module.
+    """
+    from ultimate_pipeline.carla_tools.map_registry import map_names_match
+
+    return map_names_match(str(actual_map or ""), str(expected_map or ""))
+
+
+def _load_expected_structural_fingerprint(
+    *,
+    expected_map_name: str,
+    xodr_path: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    """
+    NEW-250/NEW-252: resolve the approved structural fingerprint for this map.
+
+    For a generated XODR the fingerprint is computed from the source ``.xodr``,
+    which is the authority for what was requested. For a manually cooked Grid map
+    it is computed from the approved manual reference XODR recorded in the map
+    registry, so a stale same-named cooked package is detected.
+
+    Returns None when no approved reference can be resolved, which makes the
+    identity gate fail closed rather than silently degrading to a name check.
+    """
+    from ultimate_pipeline.carla_tools.map_runtime_identity import structural_fingerprint
+
+    if xodr_path:
+        candidate = Path(xodr_path)
+        if candidate.is_file():
+            try:
+                return structural_fingerprint(
+                    candidate.read_text(encoding="utf-8", errors="replace")
+                )
+            except Exception as exc:
+                print(
+                    f"[map_identity] WARNING: could not fingerprint source XODR {candidate}: {exc}",
+                    flush=True,
+                )
+        return None
+
+    normalized = str(expected_map_name or "").strip().lower()
+    if normalized not in ("grid0821", "grid0828", "carla/maps/grid0821", "carla/maps/grid0828"):
+        return None
+
+    # The map registry records the approved manual reference content.
+    reference = _approved_manual_reference_xodr()
+    if reference is None:
+        print(
+            "[map_identity] WARNING: no approved manual Grid reference XODR found; "
+            "the structural gate will fail closed",
+            flush=True,
+        )
+        return None
+    try:
+        return structural_fingerprint(
+            reference.read_text(encoding="utf-8", errors="replace")
+        )
+    except Exception as exc:
+        print(f"[map_identity] WARNING: manual reference fingerprint failed: {exc}", flush=True)
+        return None
+
+
+def _approved_manual_reference_xodr() -> Optional[Path]:
+    """
+    Locate the approved manual Grid reference XODR, verifying its SHA-256.
+
+    NEW-252: the registry already records an approved manual content digest for
+    Grid0828/Grid0821. Using it as the *content* authority (rather than only its
+    name) is what makes a stale cooked package detectable.
+    """
+    from ultimate_pipeline.carla_tools.map_registry import PINNED_MAP_REGISTRY
+
+    entry = PINNED_MAP_REGISTRY.get("manual_grid0828") or {}
+    expected_sha = str(entry.get("sha256") or "").strip().lower()
+    repo_root = Path(__file__).resolve().parents[2]
+    candidates: List[Path] = []
+    for key in ("path", "xodr_path", "file"):
+        value = str(entry.get(key) or "").strip()
+        if not value:
+            continue
+        path = Path(value)
+        # Registry paths are repository-relative.
+        candidates.append(path if path.is_absolute() else repo_root / path)
+    for value in entry.get("candidates") or []:
+        text = str(value or "").strip()
+        if not text:
+            continue
+        path = Path(text)
+        candidates.append(path if path.is_absolute() else repo_root / path)
+
+    for candidate in candidates:
+        if not candidate.is_file():
+            continue
+        if expected_sha:
+            try:
+                from ultimate_pipeline.utils.file_hashing import sha256_file
+
+                actual = sha256_file(candidate).lower()
+            except Exception:
+                continue
+            if actual != expected_sha:
+                print(
+                    f"[map_identity] WARNING: manual reference {candidate} sha256={actual} "
+                    f"does not match approved {expected_sha}; skipping",
+                    flush=True,
+                )
+                continue
+        return candidate
+    return None
 
 
 def _tick_snapshot(world, *, timeout_s: float = 2.0) -> Dict[str, Any]:
@@ -1335,8 +1490,32 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     ap.add_argument(
         "--use-current-world",
         action="store_true",
-        help="Do not call client.load_world. Use client.get_world and verify map name. "
-        "Recommended for Grid0821 to avoid CARLA map-travel crash.",
+        help=(
+            "NEW-248: do not call client.load_world or client.reload_world for the entire "
+            "capture lifetime. Use client.get_world and verify map identity. This now "
+            "genuinely means what it says: the stream-flush reload is prohibited too, and "
+            "the same rule applies to Grid0821 AND Grid0828 (NEW-254). Recommended for "
+            "both Grid maps to avoid the CARLA map-travel crash."
+        ),
+    )
+    ap.add_argument(
+        "--post-load-soak-ticks",
+        type=int,
+        default=int(os.environ.get("UP_POST_LOAD_SOAK_TICKS", "30")),
+        help=(
+            "NEW-260: advancing ticks required after map load, before any sensor is "
+            "attached, to distinguish MAP_LOAD_SUCCESS from MAP_STABLE. A single "
+            "successful tick cannot observe a delayed crash."
+        ),
+    )
+    ap.add_argument(
+        "--skip-structural-identity",
+        action="store_true",
+        help=(
+            "NEW-250/252: diagnostic escape hatch that downgrades the runtime map identity "
+            "gate to a name-only match. Never use for a governed capture: it re-admits "
+            "any same-named stale cooked package."
+        ),
     )
     ap.add_argument(
         "--expected-map-name",
@@ -1606,6 +1785,24 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     client = carla.Client(args.host, int(args.port))
     client.set_timeout(float(args.load_timeout_s))
 
+    # NEW-248/249/254: resolve the governed load mode BEFORE any map-changing
+    # call, so the safety policy is a single decision rather than a scattering of
+    # per-entrypoint special cases. Grid0821 and Grid0828 now get the same rule.
+    from ultimate_pipeline.carla_tools.map_runtime_identity import (
+        LoadMode,
+        resolve_load_mode,
+        verify_runtime_map_identity,
+    )
+
+    expected_map_name = str(args.expected_map_name or args.town or "").strip()
+    load_mode = resolve_load_mode(
+        use_current_world=bool(args.use_current_world),
+        requested_map_name=expected_map_name or str(args.town or ""),
+        xodr_path=args.xodr if not args.use_current_world and not args.town else None,
+    )
+    run_info["load_mode"] = load_mode.value
+    print(f"[record_route_fixed] load_mode={load_mode.value}", flush=True)
+
     # Load world
     if args.use_current_world:
         world = client.get_world()
@@ -1614,20 +1811,27 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
             current = world.get_map().name
         except Exception:
             current = None
-        expected_map_name = str(args.expected_map_name or args.town or "").strip()
         if expected_map_name:
-            # CARLA may return '/Game/Carla/Maps/Grid0821' or just 'Grid0821'
-            if current is None or (not _map_name_contains(current, expected_map_name)):
+            # NEW-253: canonical registry matching, never a substring test.
+            # "Broken_Grid0821_Test" or "OldGrid0821Backup" must not satisfy a
+            # Grid0821 request.
+            from ultimate_pipeline.carla_tools.map_registry import map_names_match
+
+            if current is None or (not map_names_match(str(current), expected_map_name)):
                 raise RuntimeError(
                     "wrong_map_loaded:"
                     f"expected={expected_map_name}:actual={current!r}"
                 )
     else:
         if args.town:
-            if str(args.town).strip().lower() == "grid0821":
+            # NEW-254: both Grid maps share one rule. Previously only Grid0821 was
+            # blocked here, so `--town Grid0828` could still trigger the risky
+            # load_world that this code is meant to prevent.
+            if load_mode is LoadMode.MANUAL_COOKED_UNSTABLE:
                 raise RuntimeError(
-                    "map_travel_risk_grid0821: risky load_world on Grid0821 is blocked by default. "
-                    "Load Grid0821 manually in CARLA and rerun with --use-current-world."
+                    f"map_travel_risk_{str(args.town).strip().lower()}: risky load_world on "
+                    f"{args.town} is blocked by default. "
+                    f"Load {args.town} manually in CARLA and rerun with --use-current-world."
                 )
             world = client.load_world(args.town)
         else:
@@ -1636,7 +1840,10 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 load_opendrive_world,
             )
 
-            world = load_opendrive_world(
+            # NEW-250/256: the loader now returns the source/payload identity it
+            # actually used, so the report can bind metrics to the exact payload
+            # rather than only to the file on disk.
+            load_outcome = load_opendrive_world(
                 client,
                 xodr_text,
                 timeout_s=float(args.load_timeout_s),
@@ -1644,18 +1851,76 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 retries=1,
                 do_reload=True,
             )
-    expected_map_name = str(args.expected_map_name or args.town or "").strip()
+            if isinstance(load_outcome, tuple):
+                world, load_identity = load_outcome
+                run_info["opendrive_identity"] = load_identity
+            else:
+                world = load_outcome
     if expected_map_name:
         loaded_map_name = ""
         try:
             loaded_map_name = str(world.get_map().name)
         except Exception:
             loaded_map_name = ""
-        if not _map_name_contains(loaded_map_name, expected_map_name):
+        from ultimate_pipeline.carla_tools.map_registry import map_names_match
+
+        if not map_names_match(loaded_map_name, expected_map_name):
             raise RuntimeError(
                 "wrong_map_loaded:"
                 f"expected={expected_map_name}:actual={loaded_map_name!r}"
             )
+
+    # NEW-250/252: prove the running world is the approved map. The structural
+    # fingerprint is required for the two governed modes; a same-named stale
+    # cooked Grid package must not pass on name alone.
+    if load_mode in (LoadMode.GENERATED_XODR, LoadMode.MANUAL_COOKED_UNSTABLE):
+        expected_fingerprint = _load_expected_structural_fingerprint(
+            expected_map_name=expected_map_name,
+            xodr_path=(args.xodr if load_mode is LoadMode.GENERATED_XODR else None),
+        )
+        identity = verify_runtime_map_identity(
+            world=world,
+            expected_map_name=expected_map_name or loaded_map_name,
+            mode=load_mode,
+            expected_fingerprint=expected_fingerprint,
+            source_xodr_sha256=(run_info.get("opendrive_identity") or {}).get(
+                "source_xodr_sha256"
+            ),
+            runtime_payload_sha256=(run_info.get("opendrive_identity") or {}).get(
+                "runtime_payload_sha256"
+            ),
+            require_structural=not bool(getattr(args, "skip_structural_identity", False)),
+        )
+        run_info["runtime_map_identity"] = identity.to_dict()
+        if not identity.ok:
+            raise RuntimeError(
+                "RUNTIME_MAP_IDENTITY_MISMATCH:" + "; ".join(identity.failures)
+            )
+        print(
+            f"[record_route_fixed] RUNTIME_MAP_IDENTITY_PASS "
+            f"structural={identity.runtime_map_structural_sha256}",
+            flush=True,
+        )
+
+        # NEW-260: MAP_LOAD_SUCCESS is not MAP_STABLE. Soak the map before any
+        # sensor is attached; the historical Grid failure was a delayed crash.
+        from ultimate_pipeline.carla_tools.map_runtime_identity import post_load_soak
+
+        soak = post_load_soak(
+            world,
+            min_ticks=int(getattr(args, "post_load_soak_ticks", 30) or 30),
+        )
+        run_info["post_load_soak"] = soak
+        _write_json(out_dir / "run_info.json", run_info)
+        if not soak["ok"]:
+            raise RuntimeError(
+                "MAP_STABILITY_FAILURE:post_load_soak:" + "; ".join(soak["errors"])
+            )
+        print(
+            f"[record_route_fixed] MAP_STABLE soak_ticks={soak['observed_ticks']}",
+            flush=True,
+        )
+
     try:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(world.get_map().name)
     except Exception:
@@ -1664,6 +1929,7 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
         client=client,
         world=world,
         fps=float(args.fps),
+        load_mode=load_mode,
     )
     try:
         _LAST_CAPTURE_CONTEXT["carla_map_name"] = str(world.get_map().name)
@@ -1716,6 +1982,137 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     )
     run_info["settings_applied_before_tick"] = bool(settings_applied_before_tick)
     _write_json(out_dir / "run_info.json", run_info)
+
+    # =======================================================================
+    # NEW-316 .. NEW-333: governed experiment environment.
+    #
+    # Everything below establishes the governed runtime state BEFORE any
+    # experimental actor (ego, sensors, NPCs) is materialised.  Previously
+    # synchronous mode was switched on only after the whole rig had been built,
+    # so the world advanced asynchronously during rig construction, weather was
+    # never applied at all, the traffic manager was hardcoded to port 8000 with
+    # an unseeded ``ego.set_autopilot(True)`` fallback, substepping was silently
+    # disabled, and NPC blueprints were chosen with a hardcoded global
+    # ``random.seed(42)``.
+    # =======================================================================
+    from ultimate_pipeline.perception.environment import (
+        physics_profile as _phys,
+        seed_tree as _seeds,
+        weather_spec as _weather,
+    )
+    from ultimate_pipeline.perception.environment.deterministic_weather import (
+        controller_from_environment as _weather_controller,
+    )
+
+    start_state = _phys.ExperimentStartState(
+        claim_boundary=_phys.claim_boundary_for(
+            "xodr" if args.xodr else "builtin"
+        )
+    )
+    start_state.complete("LOAD_OR_GENERATE_INTENDED_WORLD", {"map": str(getattr(world.get_map(), "name", ""))})
+    start_state.complete("ESTABLISH_FINAL_WORLD_IDENTITY", {"carla_map_name": _LAST_CAPTURE_CONTEXT.get("carla_map_name")})
+
+    # --- NEW-331: governed physics profile ---------------------------------
+    physics_profile = _phys.build_physics_profile(
+        int(args.fps),
+        profile=_env_str("UP_PHYSICS_PROFILE", _phys.DEFAULT_PROFILE),
+    )
+    physics_verdict = _phys.validate_physics_profile(physics_profile, strict=True)
+    if not physics_verdict["valid"]:
+        raise RuntimeError(
+            "physics_profile_invalid:" + ",".join(physics_verdict["invalid_reasons"])
+        )
+    _write_json(out_dir / "SIMULATION_PHYSICS_PROFILE.json", physics_profile)
+    apply_report = _phys.apply_physics_profile(world.get_settings(), physics_profile)
+    governed_settings = world.get_settings()
+    apply_report = _phys.apply_physics_profile(governed_settings, physics_profile)
+    world.apply_settings(governed_settings)
+    world.apply_settings(governed_settings)
+    verify_report = _phys.verify_physics_settings(world, physics_profile)
+    if not verify_report["verified"]:
+        raise RuntimeError(
+            "simulation_settings_verify_failed:"
+            + ",".join(verify_report["invalid_reasons"])
+        )
+    applied_world_settings = {
+        "synchronous_mode": True,
+        "fixed_delta_seconds": float(physics_profile["fixed_delta_seconds"]),
+        "substepping": bool(physics_profile.get("substepping")),
+    }
+    settings_applied_before_tick = True
+    start_state.complete("APPLY_GOVERNED_SIMULATION_SETTINGS", apply_report)
+    start_state.complete("VERIFY_SIMULATION_SETTINGS", verify_report["readback"])
+    run_info["applied_world_settings"] = dict(applied_world_settings)
+    run_info["settings_applied_before_tick"] = True
+    run_info["simulation_physics_sha256"] = physics_profile[
+        _phys.PHYSICS_DIGEST_FIELD
+    ]
+    _write_json(out_dir / "run_info.json", run_info)
+
+    # --- NEW-316 / NEW-317 / NEW-319: governed weather ---------------------
+    requested_weather = _env_str("UP_WEATHER_PRESET", "ClearNoon")
+    weather_spec = _weather.resolve_weather_spec(requested_weather, strict=True)
+    if not weather_spec["ok"]:
+        raise RuntimeError(
+            f"weather_spec_unresolved:{weather_spec['failure_code']}:{requested_weather}"
+        )
+    _write_json(
+        out_dir / "weather_requested.json",
+        _weather.weather_requested_artifact(requested_weather, weather_spec),
+    )
+    weather_evidence: Dict[str, Any] = {}
+    try:
+        weather_evidence = _weather.apply_weather_and_verify(
+            world, requested_weather, settle_ticks=2, strict=True
+        )
+    except _weather.WeatherApplicationError as exc:
+        _write_json(
+            out_dir / "weather_effective.json",
+            _weather.weather_effective_artifact(exc.payload),
+        )
+        raise RuntimeError(
+            f"{exc.failure_code}:weather_application_failed:{exc}"
+        ) from exc
+    _write_json(
+        out_dir / "weather_effective.json",
+        _weather.weather_effective_artifact(weather_evidence),
+    )
+    weather_sha256 = str(weather_evidence.get("weather_sha256") or "")
+
+    # --- NEW-319: deterministic weather controller ------------------------
+    weather_controller = _weather_controller()
+    weather_determinism_proof = {
+        "schema": "WEATHER_DETERMINISM/v1",
+        "mode": weather_controller.mode,
+        "governed": weather_controller.mode in ("GOVERNED_FIXED_WEATHER", "GOVERNED_SCHEDULED_WEATHER"),
+        "weather_seed": weather_controller.seed,
+        "schedule": [],
+        "schedule_sha256": "",
+        "transition_frame_ids": [],
+        "ticks_per_step": weather_controller.ticks_per_step,
+        "requested_preset": requested_weather,
+        "weather_sha256": weather_sha256,
+    }
+    run_info["weather_preset"] = requested_weather
+    run_info["weather_sha256"] = weather_sha256
+
+    # --- NEW-327: owned seed tree -----------------------------------------
+    seed_env = dict(os.environ)
+    seed_env["UP_EXPERIMENT_SEED"] = str(
+        _env_str("UP_EXPERIMENT_SEED", "") or _env_str("UP_TM_SEED", "0") or "0"
+    )
+    try:
+        seed_tree = _seeds.seed_tree_from_environment(seed_env)
+    except ValueError as exc:
+        raise RuntimeError(f"seed_tree_invalid:{exc}") from exc
+    _write_json(out_dir / "seed_tree.json", seed_tree)
+    run_info["seed_tree_sha256"] = seed_tree.get("seed_tree_sha256")
+    run_info["experiment_seed"] = seed_tree["experiment_seed"]
+    governed_rng = _seeds.owned_rng(seed_tree["experiment_seed"], "npc_blueprint")
+
+    # =======================================================================
+    # EGO / NPC / SENSOR SPAWN (governed actors)
+    # =======================================================================
 
     # Spawn ego
     bp_lib = world.get_blueprint_library()
@@ -1848,13 +2245,15 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                 "vehicle_blueprints_available": int(len(vehicle_bps)),
             }
         else:
-            import random as _random
-
-            _random.seed(42)
+            # NEW-327: blueprint choice is driven by an OWNED RNG derived from
+            # the governed experiment seed.  The previous code called
+            # ``_random.seed(42)`` on the process-global ``random`` module,
+            # mutating randomness for every unrelated module, and bound the NPC
+            # mix to the literal 42 instead of the experiment seed.
             npc_count = min(int(args.num_npcs), usable_spawn_points)
             batch_cmds = []
             for i in range(1, npc_count + 1):
-                bp = _random.choice(vehicle_bps)
+                bp = governed_rng.choice(vehicle_bps)
                 sp = spawn_points[i % len(spawn_points)]
                 batch_cmds.append(carla.command.SpawnActor(bp, sp))
 
@@ -2520,30 +2919,27 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     ):
         raise RuntimeError("Rig validation failed; see rig_validation.json")
 
-    # Switch to synchronous mode only after ego + sensors are fully materialized.
-    settings = world.get_settings()
-    settings.synchronous_mode = True
-    settings.fixed_delta_seconds = 1.0 / float(args.fps)
-    if hasattr(settings, "substepping"):
-        settings.substepping = False
-    apply_error: Optional[Exception] = None
-    settings_applied = False
-    for _ in range(2):
-        try:
-            world.apply_settings(settings)
-            time.sleep(0.2)
-            if _world_settings_match(world, fps=int(args.fps)):
-                settings_applied = True
-                break
-        except Exception as exc:
-            apply_error = exc
-        time.sleep(0.2)
-    if not settings_applied:
-        if apply_error is not None:
-            raise RuntimeError(
-                f"streaming_unavailable:world_settings_apply_failed:{apply_error}"
-            ) from apply_error
-        raise RuntimeError("streaming_unavailable:world_settings_apply_failed")
+    # NEW-332: simulation settings are NO LONGER (re)applied here.  They were
+    # already applied and verified *before* the ego, sensors and NPCs were
+    # materialised (see the governed environment block earlier in this
+    # function), and this late block additionally forced
+    # ``settings.substepping = False`` with no profile and no budget check
+    # (NEW-331).  Here we only RE-VERIFY the governed profile, so a mid-capture
+    # settings drift is still caught rather than silently accepted.
+    verify_report = _phys.verify_physics_settings(world, physics_profile)
+    if not verify_report["verified"]:
+        apply_error = None
+        raise RuntimeError(
+            "streaming_unavailable:governed_simulation_settings_drift:"
+            + ",".join(verify_report["invalid_reasons"])
+        )
+    settings_applied = True
+
+    start_state.complete("DETERMINISTIC_WARMUP", {"post_attach_ticks": 5})
+    start_state.complete("SPAWN_GOVERNED_ACTORS", {"ego": int(getattr(ego, "id", 0) or 0)})
+    start_state.complete("ATTACH_SENSORS", {"sensor_count": len(sensors)})
+    start_state.require_capture_ready()
+    _write_json(out_dir / "experiment_start_state.json", start_state.proof())
 
     initial_tick_timeout_s = max(float(args.tick_timeout_s), float(runtime_timeout_s))
     try:
@@ -2612,46 +3008,96 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
     run_info["settings_applied_before_tick"] = bool(settings_applied_before_tick)
     _write_json(out_dir / "run_info.json", run_info)
 
-    # Autopilot via TM if possible
+    # =======================================================================
+    # NEW-326 / NEW-328: one governed traffic-manager session, fail closed.
+    #
+    # The previous block obtained a hardcoded ``client.get_trafficmanager(8000)``
+    # and, on ANY exception, fell back to ``ego.set_autopilot(True)`` with no
+    # port.  CARLA then binds the actor to the *default* traffic manager, which
+    # was never seeded, never configured and never made synchronous -- so the
+    # capture silently changed traffic-manager ownership semantics.  Strict
+    # perception now fails closed with TRAFFIC_MANAGER_SETUP_FAILED.
+    # =======================================================================
+    from ultimate_pipeline.perception.environment.traffic_manager_session import (
+        TRAFFIC_MANAGER_SETUP_FAILED,
+        TrafficManagerSession,
+        validate_tm_config,
+        validate_world_tm_sync,
+    )
+
     tm = None
     world_sync_mode = False
     try:
-        world_settings = world.get_settings()
-        world_sync_mode = bool(getattr(world_settings, "synchronous_mode", False))
+        world_sync_mode = bool(
+            getattr(world.get_settings(), "synchronous_mode", False)
+        )
     except Exception:
         world_sync_mode = False
+
+    tm_strict = not _env_bool("UP_ALLOW_DIAGNOSTIC_TM_FALLBACK", False)
+    tm_session = TrafficManagerSession(
+        host=str(args.host),
+        tm_port=_env_int("UP_TM_PORT", 8000),
+        is_master=True,
+        synchronous_mode=bool(world_sync_mode),
+        seed=int(seed_tree["seeds"]["tm"]),
+        global_distance=5.0,
+        auto_lane_change=False,
+        ignore_lights_percentage=0.0,
+        keep_right_rule_percentage=0.0,
+        strict=tm_strict,
+        session_id=f"{args.host}:{_env_int('UP_TM_PORT', 8000)}",
+    )
     try:
-        tm_seed_raw = str(os.environ.get("UP_TM_SEED", "42") or "42").strip()
-        try:
-            tm_seed = int(tm_seed_raw)
-        except (TypeError, ValueError):
-            tm_seed = 42
-        tm = client.get_trafficmanager(8000)
-        tm.set_synchronous_mode(bool(world_sync_mode))
-        try:
-            tm.set_global_distance_to_leading_vehicle(5.0)
-        except Exception:
-            pass
-        try:
-            tm.keep_right_rule_percentage(ego, 0.0)
-        except Exception:
-            pass
-        tm.set_random_device_seed(int(tm_seed))
-        ego.set_autopilot(True, tm.get_port())
-    except Exception:
-        try:
-            ego.set_autopilot(True)
-        except Exception:
-            pass
+        tm = tm_session.acquire(client, world_sync_mode=bool(world_sync_mode))
+        sync_verdict = validate_world_tm_sync(world, tm_session)
+        if not sync_verdict["valid"]:
+            raise RuntimeError(
+                TRAFFIC_MANAGER_SETUP_FAILED + ":" + ",".join(sync_verdict["invalid_reasons"])
+            )
+        tm_session.configure_actor(ego)
+        ego_autopilot = tm_session.enable_autopilot(ego)
+        if not bool(ego_autopilot.get("attached")):
+            raise RuntimeError(
+                TRAFFIC_MANAGER_SETUP_FAILED + ":ego_autopilot_not_attached"
+            )
+        start_state.complete(
+            "INITIALIZE_AND_SEED_TRAFFIC_MANAGER",
+            {"tm_port": tm_session.tm_port, "seed": tm_session.seed},
+        )
+    except RuntimeError:
+        if tm_strict:
+            raise
+        tm = None
+        start_state.complete("INITIALIZE_AND_SEED_TRAFFIC_MANAGER",
+                             {"diagnostic_fallback": True})
+
+    tm_config = tm_session.effective_config()
+    tm_verdict = validate_tm_config(tm_config, strict=tm_strict)
+    _write_json(out_dir / "TRAFFIC_MANAGER_EFFECTIVE_CONFIG.json", tm_config)
+    run_info["traffic_manager_sha256"] = tm_config["traffic_manager_sha256"]
+    run_info["tm_port"] = tm_session.tm_port
+    run_info["tm_seed"] = tm_session.seed
+    run_info["tm_strict"] = tm_strict
+    _write_json(out_dir / "run_info.json", run_info)
 
     if npc_actors:
         npc_autopilot_errors = []
         npc_autopilot_enabled = 0
-        tm_port = tm.get_port() if tm is not None else 8000
         for actor in npc_actors:
             try:
-                actor.set_autopilot(True, tm_port)
-                npc_autopilot_enabled += 1
+                # NEW-328: every governed autopilot actor uses the SAME explicit
+                # TM port.  No default-TM fallback per actor.
+                result = tm_session.enable_autopilot(actor)
+                if result.get("attached"):
+                    npc_autopilot_enabled += 1
+                else:
+                    npc_autopilot_errors.append(
+                        {
+                            "actor_id": int(getattr(actor, "id", -1) or -1),
+                            "error": str(result.get("reason")),
+                        }
+                    )
             except Exception as exc:
                 npc_autopilot_errors.append(
                     {
@@ -2660,6 +3106,7 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                     }
                 )
         npc_spawn_report["autopilot_enabled"] = int(npc_autopilot_enabled)
+        npc_spawn_report["tm_port"] = tm_session.tm_port
         if npc_autopilot_errors:
             npc_spawn_report["autopilot_errors"] = npc_autopilot_errors
         _write_json(out_dir / "npc_spawn_report.json", npc_spawn_report)

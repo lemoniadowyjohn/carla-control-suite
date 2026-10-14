@@ -1,0 +1,21 @@
+{
+  "P08_NEW-196": "PASS",
+  "P09_NEW-197": "PASS",
+  "P09_NEW-198": "PASS",
+  "P09_NEW-199": "PASS",
+  "P10_NEW-210": "PASS",
+  "P11_NEW-215": "INCOMPLETE",
+  "P12_NEW-218": "PASS",
+  "P13_NEW-221": "PASS (matrix; no extraction met bar)",
+  "P13_NEW-222": "PASS (13 tests)",
+  "P13_NEW-223": "PASS (authority + migration + lint)",
+  "P14A_github": "BLOCKED_EXTERNAL",
+  "P14B_gap017_018": "BLOCKED_EXTERNAL",
+  "P14C_runtime": "BLOCKED_EXTERNAL",
+  "P14D_rq3": "BLOCKED_EXTERNAL (needs server)",
+  "P14E_rq5a": "BLOCKED_EXTERNAL (needs RQ3 data)",
+  "P14F_rq5b": "DEFERRED_EXTERNAL_DATA",
+  "P14G_suite": "PASS_WITH_1_PREEXISTING_ENV_FAILURE",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}

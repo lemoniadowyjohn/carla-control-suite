@@ -1,0 +1,15 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "contract": "ultimate_pipeline/tools/repo_health.py candidate manifest gate (E24) + carla-runtime.yml",
+  "live_probe": "carla.Client('127.0.0.1',2000).get_server_version() -> RuntimeError: time-out of 3000ms (no simulator)",
+  "missing_for_pass": [
+    "CARLA server 0.9.16 reachable",
+    "UE4.26-CARLA0916 build (blocked by GAP-017/018)",
+    "exact candidate manifest + cook hashes",
+    "map load + spawn + waypoint + navigation checks"
+  ],
+  "preflight_tests": "test_runtime_identity_gate.py green (pre-runtime rejection logic verified offline)",
+  "result": "BLOCKED_EXTERNAL, never PASS without RPC response",
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "BLOCKED_EXTERNAL"
+}

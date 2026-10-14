@@ -1,0 +1,14 @@
+{
+  "defect_before": "the recorder's TM block fell back to ego.set_autopilot(True) with no port on any exception, binding the DEFAULT traffic manager that was never seeded, never configured and never made synchronous",
+  "diagnostic_fallback_is_labelled": "UP_ALLOW_DIAGNOSTIC_TM_FALLBACK",
+  "diagnostic_mode_may_permit_fallback": true,
+  "failure_code": "TRAFFIC_MANAGER_SETUP_FAILED",
+  "finding": "NEW-326",
+  "no_default_tm_fallback": true,
+  "schema": "NEW326_TM_FAIL_CLOSED/v1",
+  "status": "PASS",
+  "tm_unavailable_strict_raises": "TRAFFIC_MANAGER_SETUP_FAILED:get_trafficmanager:port=8000:RuntimeError:no traffic manager in this world",
+  "unbound_autopilot_calls_recorded": [],
+  "unbound_autopilot_refused": "TRAFFIC_MANAGER_SETUP_FAILED:autopilot_without_acquired_tm:127.0.0.1:8000",
+  "wired_into": "ultimate_pipeline/perception/record_route_fixed.py"
+}

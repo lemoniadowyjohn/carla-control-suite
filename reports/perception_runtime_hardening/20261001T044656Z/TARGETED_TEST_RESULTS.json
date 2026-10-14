@@ -1,0 +1,63 @@
+{
+  "compileall": {
+    "command": "python -m compileall -q ultimate_pipeline tools tests",
+    "note": "one pre-existing SyntaxWarning (invalid escape sequence) in ultimate_pipeline/tools/calib_sanity_check.py, untouched by this work",
+    "status": "PASS"
+  },
+  "external_runtime_blockers": [
+    {
+      "affected": [
+        "weather application + readback on a live world",
+        "empirical camera reprojection assay (NEW-321)",
+        "empirical LiDAR-camera alignment from captured points",
+        "TM ownership/seed/readback evidence",
+        "ego/calibration vehicle binding from a spawned actor",
+        "effective sensor attributes read back from a live blueprint",
+        "short deterministic repeated capture",
+        "actor/TM/world cleanup against a live RPC",
+        "repeat-run governed identity comparison"
+      ],
+      "blocker": "CARLA/UE4 server not reachable",
+      "evidence": {
+        "host": "127.0.0.1",
+        "ports": {
+          "2000": "CLOSED:TimeoutError",
+          "8000": "CLOSED:TimeoutError"
+        },
+        "reachable": false
+      },
+      "offline_contract_tests_pass_independently": true
+    }
+  ],
+  "new_adversarial_suite": {
+    "cases": 57,
+    "file": "ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py",
+    "note": "each case mutation-checked; no vacuous assertion"
+  },
+  "new_regression_failures": [],
+  "pre_existing_failures": [
+    {
+      "caused_by_this_work": false,
+      "reason": "environmental false positive: the test asserts the literal 'c:\\\\users\\\\admin' is absent from DEFAULT_OSM2WORLD_HOME, which is derived from the repository root. Every checkout on this machine lives under C:\\\\Users\\\\admin.",
+      "test": "tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_no_hardcoded_username_in_production_defaults",
+      "verification": "reproduces identically on the pristine audited baseline worktree at f897e0eb",
+      "verified_pre_existing": true
+    }
+  ],
+  "raw": {
+    "executed": false
+  },
+  "regression_run": {
+    "command": "python -m pytest -q ultimate_pipeline tests tools",
+    "failed": 1,
+    "passed": 6883,
+    "runtime_s": 1363.97,
+    "skipped": 10
+  },
+  "schema": "TARGETED_TEST_RESULTS/v1",
+  "targeted_run": {
+    "command": "python -m pytest -q ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py tests/unit/test_sensor_calibration_semantics.py ultimate_pipeline/tests/unit/test_calibration_ece.py ultimate_pipeline/tools/tests/test_calib_path.py",
+    "failed": 0,
+    "passed": 92
+  }
+}

@@ -172,7 +172,7 @@ def _check_proj_environment_startup() -> None:
     reports/post_audit_hardening/C11_REPRODUCIBILITY.md has been applied).
     """
     try:
-        from ultimate_pipeline.governance.proj_env_guard import (
+        from ultimate_pipeline.governance.reproducibility.proj_env_guard import (
             ProjEnvironmentError,
             check_proj_environment,
         )
@@ -1714,7 +1714,7 @@ if str(_repo_root) not in sys.path:
                 f"not found: {manifest_path}"
             )
 
-        from ultimate_pipeline.governance.inputs_manifest import (
+        from ultimate_pipeline.governance.reproducibility.inputs_manifest import (
             InputsManifestError,
             InputsManifestMismatchError,
             verify_inputs_manifest,
@@ -2170,9 +2170,17 @@ if str(_repo_root) not in sys.path:
         self._mark_stage("topology_repair")
         topo_fixed = self._step3_topology_repair(working_topology, topo_fixed)
 
-        # 4) 🏗️ Enrichment
-        self._mark_stage("enrichment")
-        topo_fixed = self._step4_enrichment(topo_fixed)
+        # 3b) 🛡️ XODR Validator
+        self._mark_stage("xodr_validator")
+        topo_fixed = self._step3b_xodr_validator(topo_fixed)
+
+        # 4) 🏗️ Semantic Source Preparation (non-structural)
+        # Extracts OSM metadata, resolves building sources, builds associations.
+        # Does NOT apply position-dependent semantics (traffic lights, crosswalks,
+        # speed limits, signs, buildings) -- those are deferred to after
+        # STRUCTURE_FROZEN/LANES_FINAL/HYGIENE_COMPLETE.
+        self._mark_stage("semantic_source_preparation")
+        topo_fixed = self._step4_semantic_source_preparation(topo_fixed)
 
         # 5+6) 📐 Geometry authority (DEM + planView + continuity) + freeze
         self._mark_stage("geometry")
@@ -2368,11 +2376,17 @@ if str(_repo_root) not in sys.path:
         except Exception as e:
             print(f"[STEP 8H] elevation_seam_report.json write skipped: {e}")
 
+        # 8J) P0-L: POSITIONAL SEMANTIC MATERIALIZATION (post-freeze).
+        # Apply traffic lights, crosswalks, speed limits, signs, buildings to
+        # the FROZEN structure. Requires STRUCTURE_FROZEN, LANES_FINAL, HYGIENE_COMPLETE.
+        self._mark_stage("positional_semantics")
+        final_out = self._step9_positional_semantics(final_out)
+
         # 8I) P0-C: STRUCTURAL FREEZE + final artifact authority.
-        # Every permitted road/lane/topology/hygiene mutation is complete at
-        # this point (junction_link_integrity and map_hygiene have both run and
-        # final_out has its final value), so this is the first point at which
-        # acceptance/fingerprint/preflight/determinism evidence can honestly
+        # Every permitted road/lane/topology/hygiene/semantic mutation is complete at
+        # this point (junction_link_integrity, map_hygiene, positional_semantics
+        # have all run and final_out has its final value), so this is the first point
+        # at which acceptance/fingerprint/preflight/determinism evidence can honestly
         # describe the published artifact.
         self._mark_stage("final_artifact_authority")
         self._publish_final_artifact_authority(
@@ -3053,6 +3067,7 @@ if str(_repo_root) not in sys.path:
             GEOMETRY_FROZEN,
             HYGIENE_COMPLETE,
             LANES_FINAL,
+            SEMANTICS_FINAL,
             STRUCTURE_FROZEN,
         )
 
@@ -3063,7 +3078,7 @@ if str(_repo_root) not in sys.path:
         )
 
         ledger = self.authority_ledger
-        for capability in (GEOMETRY_FROZEN, LANES_FINAL, HYGIENE_COMPLETE):
+        for capability in (GEOMETRY_FROZEN, LANES_FINAL, HYGIENE_COMPLETE, SEMANTICS_FINAL):
             ledger.require(capability, stage)
 
         fingerprint = ledger.freeze_structure(final_out, stage=stage)
@@ -3099,19 +3114,46 @@ if str(_repo_root) not in sys.path:
             else origin_report
         )
 
-        for report_key, report_name in (
-            ("geometric_continuity", "geometric_continuity_gate.json"),
-            ("lane_section_successors", "lane_successor_autofix_report.json"),
-        ):
-            report_path = os.path.join(self.out_dir, report_name)
-            if os.path.exists(report_path):
-                try:
-                    with open(report_path, "r", encoding="utf-8") as f:
-                        acceptance_reports[report_key] = json.load(f)
-                except Exception as load_exc:
-                    print(
-                        f"[AUTHORITY] map_acceptance skipped {report_name}: {load_exc}"
-                    )
+        # Recompute geometric_continuity directly on the final artifact
+        try:
+            from ultimate_pipeline.quality.check_geometric_continuity import check_geometric_continuity
+            acceptance_reports["geometric_continuity"] = check_geometric_continuity(final_out)
+        except Exception as exc:
+            print(f"[AUTHORITY] geometric_continuity recompute skipped: {exc}")
+
+        # Recompute lane_section_successors directly on the final artifact (post-hygiene).
+        # The G6 hygiene step can add lane links, so pre-hygiene evidence is stale.
+        try:
+            from ultimate_pipeline.quality.check_lane_connectivity import write_lane_connectivity_report
+            lane_conn_report = write_lane_connectivity_report(
+                xodr_path=final_out,
+                out_json=os.path.join(self.out_dir, "lane_successor_autofix_report.json"),
+                allow_dead_ends=True,
+            )
+            acceptance_reports["lane_section_successors"] = lane_conn_report
+        except Exception as exc:
+            print(f"[AUTHORITY] lane_section_successors recompute skipped: {exc}")
+
+        # Recompute ALL mandatory structural gates on the final artifact (P0-L/P0-C).
+        # These gates must run on the EXACT frozen artifact, not on pre-hygiene evidence.
+        mandatory_gates = [
+            ("junction_integrity", "gate_junction_integrity"),
+            ("lane_width_continuity", "gate_lane_width_continuity"),
+            ("lane_geometry_continuity", "gate_lane_geometry_continuity"),
+            ("elevation_missing_and_cliffs", "gate_elevation_missing_and_cliffs"),
+            ("elevation_smoothness", "gate_elevation_smoothness"),
+            ("physics_feasibility", "gate_physics_feasibility"),
+            ("post_tiling_integrity", "gate_post_tiling_integrity"),
+            ("carla_import_s", "gate_carla_import_s"),
+            ("carla_opendrive_compat", "gate_carla_opendrive_compat"),
+        ]
+        for gate_key, gate_method in mandatory_gates:
+            try:
+                gate_fn = getattr(self.qgate, gate_method)
+                acceptance_reports[gate_key] = gate_fn(final_out)
+                print(f"[AUTHORITY] {gate_key} recomputed on final artifact")
+            except Exception as exc:
+                print(f"[AUTHORITY] {gate_key} recompute skipped: {exc}")
 
         # CODEX C7 (policy unchanged, code relocated): only require enrichment
         # completeness (buildings + functional signals) when this run was
@@ -3422,6 +3464,16 @@ if str(_repo_root) not in sys.path:
     ) -> str:
         from ultimate_pipeline.pipeline_stages.stage_03_topology_repair import _step3_topology_repair as _impl
         return _impl(self, working_topology_input, topo_fixed)
+
+    def _step3b_xodr_validator(self, xodr_path: str) -> str:
+        from ultimate_pipeline.quality.xodr_strict_validator import StrictXodrValidator
+        print(f"\n============== 🛡️ XODR Validator Convergence ({xodr_path}) ==============")
+        validator = StrictXodrValidator()
+        report = validator.validate_path(xodr_path)
+        if not report.get("ok", False):
+            raise RuntimeError(f"❌ XODR Validator convergence failed: {report}")
+        print("✅ XODR Validator convergence: PASS")
+        return xodr_path
     def _step4_enrichment(self, topo_fixed: str) -> str:
         from ultimate_pipeline.pipeline_stages.stage_04_enrichment import _step4_enrichment as _impl
         return _impl(self, topo_fixed)
@@ -3735,6 +3787,63 @@ if str(_repo_root) not in sys.path:
                 f"[geometric_continuity] Gate failed ({context}); continuing (non-strict mode)."
             )
 
+    def _compute_final_run_verdict(self, final_xodr: str | None = None) -> dict:
+        """Produce ``final_run_verdict.json`` for this run.
+
+        This is the production producer declared by
+        ``ultimate_pipeline/signals/registry.py`` for the ``FINAL_RUN_VERDICT``
+        hard-gate signal. The verdict logic itself is owned by
+        ``ultimate_pipeline.signals.verdict``; this method is the pipeline's
+        production call site into it, so the artifact is written by the
+        pipeline rather than only being computable in tests.
+
+        The returned payload's ``status`` is authoritative: a non-PASS verdict
+        must block the success marker (see ``_finalize_run_pack_gated``).
+        """
+        from ultimate_pipeline.signals.verdict import write_final_run_verdict
+
+        verdict = write_final_run_verdict(
+            self.out_dir,
+            final_xodr=final_xodr,
+        )
+        artifact = os.path.join(self.out_dir, "final_run_verdict.json")
+        if not os.path.isfile(artifact):
+            raise RuntimeError(
+                "FINAL_RUN_VERDICT producer returned without writing its "
+                "artifact: " + artifact
+            )
+        return verdict
+
+    def _finalize_run_pack_gated(self, key_paths, *, mandatory=None,
+                                 summary: str = "") -> dict:
+        """Finalize the run pack, emitting the success marker only on PASS.
+
+        This is the production producer declared by
+        ``ultimate_pipeline/signals/registry.py`` for the ``SUCCESS_MARKER``
+        hard-gate signal. It enforces the registry invariant: the success
+        marker may only be published when the final run verdict is PASS. The
+        verdict is produced first, so a failing or unwritable verdict fails
+        closed and no success marker can appear.
+        """
+        from ultimate_pipeline.signals.verdict import VERDICT_PASS
+        from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
+
+        verdict = self._compute_final_run_verdict()
+        emit_success = verdict.get("status") == VERDICT_PASS
+        if not emit_success:
+            print(
+                "[WARN] final run verdict is "
+                f"{verdict.get('status')!r}; the success marker will NOT be "
+                "emitted (SUCCESS_MARKER invariant)"
+            )
+        return finalize_run_pack(
+            self.out_dir,
+            key_paths,
+            mandatory=mandatory,
+            summary=summary,
+            emit_success=emit_success,
+        )
+
     def _final_summary_and_llm(self, final_out: str) -> None:
         s = self.settings
         vreport_path = os.path.join(s.logs_dir(), "validation_report_full.json")
@@ -3836,21 +3945,31 @@ if str(_repo_root) not in sys.path:
             pass
 
         try:
-            from ultimate_pipeline.utils.finalize_run_pack import (
-                write_signature_json,
-                write_success_txt,
-            )
-
-            key_paths = [
-                final_out,
+            # V5/NEW-202 (D16): the final map itself is mandatory. The supporting
+            # reports are only produced when their stage ran, so they are
+            # conditional: hashed into the manifest when present, but their
+            # absence does not by itself block SUCCESS.txt.
+            mandatory_artifacts = [final_out]
+            conditional_artifacts = [
                 os.path.join(self.out_dir, "tile_metadata.json"),
                 vreport_path,
                 os.path.join(self.out_dir, "domain_gap", "full_report.json"),
                 os.path.join(self.out_dir, "domain_gap", "summary.csv"),
                 os.path.join(self.out_dir, "perception_status.json"),
             ]
-            write_signature_json(self.out_dir, key_paths)
-            write_success_txt(self.out_dir, summary="main_pipeline")
+            receipt = self._finalize_run_pack_gated(
+                mandatory_artifacts + conditional_artifacts,
+                mandatory=mandatory_artifacts,
+                summary="main_pipeline",
+            )
+            if receipt["status"] != "PASS":
+                raise RuntimeError(
+                    "mandatory run-pack finalization failed: "
+                    + "; ".join(
+                        f"{f['key'] or f['requested']} ({f['category']})"
+                        for f in receipt["failures"]
+                    )
+                )
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to write mandatory finalization artifacts (signature/success marker): {exc}"
@@ -4324,6 +4443,215 @@ if str(_repo_root) not in sys.path:
             rep["status"] = "native_crash_or_nonzero"
 
         return rep
+
+
+    # ---------------------------------------------------------------------
+    # P0-L: Semantic Source Preparation (early, non-structural)
+    # ---------------------------------------------------------------------
+    def _step4_semantic_source_preparation(self, topo_fixed: str) -> str:
+        """Stage 4a: SOURCE_METADATA_PREPARATION.
+
+        Extracts OSM metadata, resolves building sources, builds spatial
+        associations. Does NOT apply position-dependent semantics (traffic lights,
+        crosswalks, speed limits, signs, buildings) -- those are deferred to
+        _step9_positional_semantics after STRUCTURE_FROZEN/LANES_FINAL/HYGIENE_COMPLETE.
+
+        Returns the same topo_fixed path (mutations are only semantic source prep).
+        """
+        from ultimate_pipeline.pipeline_stages.stage_04_enrichment import (
+            _inject_main_pipeline_globals,
+            _env_flag,
+            _offline_only_enabled,
+            _pinned_buildings_fallback,
+            resolve_buildings_geojson_for_stage4,
+            enforce_buildings_fail_closed,
+            _mark_geometry_only_stage_contract,
+        )
+        import os
+
+        _inject_main_pipeline_globals()
+        s = self.settings
+        print(
+            "\n============== 🏗️ STEP 4a: Semantic Source Preparation (non-structural) =============="
+        )
+
+        tree, root = load_xodr(topo_fixed)
+        gps = s.load_gps_bounds()
+
+        # Roundabout reconstruction (structural topology change - OK early)
+        if getattr(s, "ENABLE_ROUNDABOUT_RECONSTRUCTION", False):
+            print("🔄 Reconstructing roundabouts…")
+            rb_meta = RoundaboutReconstructor.reconstruct(root, out_dir=self.out_dir)
+            self.vreport.add_dict("roundabout_reconstruction", rb_meta)
+            save_xodr(tree, topo_fixed)
+        else:
+            print("⏭️ Roundabout reconstruction disabled.")
+
+        # Tag roundabouts (visual only)
+        try:
+            print("🧪 Tagging roundabouts for visualization…")
+            rb_tags = RoundaboutRebuilder.tag_roundabouts(root)
+            self.vreport.add_dict("roundabout_tags", rb_tags)
+            save_xodr(tree, topo_fixed)
+            print("   → Roundabouts tagged for preview.")
+        except Exception as e:
+            print(f"⚠️ Roundabout tagging skipped: {e}")
+            self.vreport.add("roundabouts", "tagging_failed", str(e))
+
+        # Buildings: ensure buildings.geojson exists (source resolution only)
+        buildings_path = resolve_buildings_geojson_for_stage4(
+            settings=s,
+            gps_bounds=gps,
+            buildings_path=s.OSM_BUILDINGS_GEOJSON,
+        )
+
+        # Building extrusion DEFERRED to positional_semantics (needs final geometry)
+        if getattr(s, "ENABLE_BUILDINGS", True):
+            print("🏙️ Building source resolved; insertion deferred to post-freeze stage.")
+        else:
+            print("⏭️ Building extrusion disabled.")
+
+        # Realism DEFERRED to positional_semantics
+        if getattr(s, "ENABLE_REALISM", True):
+            print("✨ Realism objects deferred to post-freeze stage.")
+        else:
+            print("⏭️ Realism module disabled.")
+
+        # Position-sensitive OSM metadata: EXTRACT and PROJECT only (don't apply)
+        # The associations are cached for later materialization in positional_semantics
+        try:
+            from ultimate_pipeline.enrichment.osm_meta_index import (
+                extract_positioned_osm_metadata_ways,
+                project_positioned_osm_metadata_ways,
+            )
+            from ultimate_pipeline.enrichment.osm_xodr_correspondence import build_metadata_associations
+
+            source_ways = extract_positioned_osm_metadata_ways(s.OSM_FILE)
+            positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
+            if positioned_ways:
+                associations, correspondence_report = build_metadata_associations(
+                    positioned_ways, root
+                )
+                print(
+                    "📋 Spatial OSM metadata (source prep): "
+                    f"{len(positioned_ways)} source ways, "
+                    f"{correspondence_report['eligible_road_count']} HIGH/EXACT road matches"
+                )
+                # Cache associations for later materialization
+                self._cached_osm_metadata_associations = associations
+                self._cached_osm_metadata_report = correspondence_report
+                self.vreport.add_dict("osm_spatial_metadata_source_prep", {
+                    "source_ways": len(positioned_ways),
+                    "correspondence": correspondence_report,
+                    "cached_for_materialization": True,
+                })
+            else:
+                print("⏭️ Spatial OSM metadata skipped (no usable source way geometry)")
+                self.vreport.add_dict(
+                    "osm_spatial_metadata_source_prep",
+                    {"source_ways": 0, "eligible_road_count": 0, "cached_for_materialization": False},
+                )
+        except Exception as e:
+            print(f"⚠️ OSM meta source prep failed: {e}")
+            self.vreport.add("osm_meta_source_prep", "error", str(e))
+
+        # Access restrictions: EXTRACT only (apply in positional_semantics)
+        try:
+            from ultimate_pipeline.enrichment.access_restriction_metadata import (
+                extract_access_restriction_metadata,
+            )
+            access_metadata = extract_access_restriction_metadata(s.OSM_FILE)
+            self._cached_access_metadata = access_metadata
+            self.vreport.add_dict("osm_access_restriction_metadata_source_prep", access_metadata)
+            print(
+                "   → Access metadata extracted: "
+                f"{access_metadata.get('roads_with_access_metadata', 0)} road(s), "
+                f"{access_metadata.get('metadata_records_written', 0)} record(s) (cached)"
+            )
+        except Exception as e:
+            print(f"⚠️ OSM access metadata extraction failed: {e}")
+            self.vreport.add("osm_access_restriction_source_prep", "error", str(e))
+
+        # Crosswalks: EXTRACT only (apply in positional_semantics)
+        try:
+            from ultimate_pipeline.enrichment.crosswalk_writer import extract_osm_crossings
+            osm_crossings = extract_osm_crossings(s.OSM_FILE)
+            self._cached_osm_crossings = osm_crossings
+            if osm_crossings:
+                print(f"🚸 Crosswalks: {len(osm_crossings)} OSM crossings extracted (cached for post-freeze)")
+                self.vreport.add_dict("crosswalk_source_prep", {
+                    "osm_crossings_found": len(osm_crossings),
+                    "cached_for_materialization": True,
+                })
+            else:
+                print("⏭️ Crosswalk extraction skipped (no OSM crossings)")
+                self.vreport.add_dict("crosswalk_source_prep", {"osm_crossings_found": 0, "cached_for_materialization": False})
+        except Exception as e:
+            print(f"⚠️ Crosswalk extraction failed: {e}")
+            self.vreport.add("crosswalk_source_prep", "error", str(e))
+
+        # XODR statistics after source preparation
+        stats = XODRStatistics.compute(topo_fixed)
+        if isinstance(stats, dict):
+            stats["semantic_completeness"] = {
+                "geometry": True,
+                "lanes": False,
+                "positional_semantics": False,
+                "reason": "Source prep only; positional semantics materialized in STEP 9",
+            }
+        self.vreport.add_dict("xodr_statistics", stats)
+        print("[INFO] XODR statistics:")
+        print(json.dumps(stats, indent=2))
+        try:
+            header = root.find("header")
+            geo_node = header.find("geoReference") if header is not None else None
+            geo_text = (geo_node.text or "").strip() if geo_node is not None else ""
+            proj_text = str(getattr(OSMPolygonLoader, "PROJ_STRING", "")).strip()
+            georef_proj_match = (
+                bool(geo_text) and bool(proj_text) and (geo_text == proj_text)
+            )
+            self.vreport.add_dict(
+                "georef_proj_consistency",
+                {
+                    "xodr_geoReference": geo_text,
+                    "osm_polygon_loader_proj_string": proj_text,
+                    "match": georef_proj_match,
+                },
+            )
+            if (geo_text and proj_text) and (not georef_proj_match):
+                self.vreport.add(
+                    "warning",
+                    "georef_proj_consistency",
+                    "XODR geoReference does not match OSMPolygonLoader.PROJ_STRING",
+                )
+        except Exception as e:
+            self.vreport.add("warning", "georef_proj_consistency", f"check_failed:{e}")
+
+        # Record semantic source readiness
+        from ultimate_pipeline.contracts.stage_capabilities import SEMANTIC_SOURCE_READY
+        self.authority_ledger.provide(SEMANTIC_SOURCE_READY, "semantic_source_preparation", evidence=topo_fixed)
+
+        print(
+            "✅ STEP 4a complete — semantic sources prepared (positional semantics deferred)"
+        )
+        return topo_fixed
+
+
+    # ---------------------------------------------------------------------
+    # P0-L: Positional Semantic Materialization (late, post-freeze)
+    # ---------------------------------------------------------------------
+    def _step9_positional_semantics(self, final_out: str) -> str:
+        """Stage 9: POSITIONAL_SEMANTIC_MATERIALIZATION.
+
+        Applies traffic lights, crosswalks, speed limits, signs, buildings to the
+        FROZEN structure. Requires STRUCTURE_FROZEN, LANES_FINAL, HYGIENE_COMPLETE.
+
+        Returns the same final_out path (mutations are in-place on the frozen artifact).
+        """
+        from ultimate_pipeline.pipeline_stages.stage_09_positional_semantics import (
+            _step9_positional_semantics as _impl,
+        )
+        return _impl(self, final_out)
 
 
 def main(argv: Optional[List[str]] = None) -> int:

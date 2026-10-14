@@ -1,0 +1,22 @@
+{
+  "adversarial_tests": {
+    "test_new293_actor_missing_set_transform": "PASS",
+    "test_new293_set_transform_with_verification": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Route movement uses set_transform with verification pipeline",
+  "finding_id": "NEW-293",
+  "implementation": {
+    "evidence": "Per-pose PoseEvidence records written to route_execution_evidence.json",
+    "file": "ultimate_pipeline/perception/route_execution.py",
+    "function": "execute_route_strict",
+    "method": "set_transform",
+    "verification": {
+      "position_threshold_m": 0.1,
+      "yaw_threshold_deg": 1.0
+    }
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

@@ -1,0 +1,8 @@
+{
+  "module": "ultimate_pipeline/enrichment/carla_semantic_organizer.py",
+  "deterministic": true,
+  "case_normalization": "keys and values stripped and converted to lowercase",
+  "whitespace_handling": "trimmed from edges",
+  "empty_values": "ignored if empty keys/values are provided",
+  "legacy_compatibility": "classify_object continues to return (folder, rule) to satisfy callers, delegating to classify_object_detailed"
+}

@@ -1,0 +1,39 @@
+{
+  "run_id": "20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT",
+  "claim_levels": {
+    "SENSOR_SMOKE": {
+      "means": "capture machinery works; no comparability guarantee",
+      "allowed_evidence": "diagnostics and smoke tests only"
+    },
+    "UNPAIRED_CAPTURE": {
+      "means": "not a valid paired route claim: no route manifest, or any mandatory equality failed, or route not fully representable on both arms, or arm exception",
+      "reasons_recorded": "route_manifest_absent, pair_invalid_mandatory_equalities, PAIR_ROUTE_INVALID, manual/auto_arm_incomplete, spawn_shuffle/recovery_used, weather/rig/timing/config sha mismatch"
+    },
+    "PAIRED_PROTOCOL_VALID": {
+      "means": "all mandatory equalities hold and route is representable on both arms; identity of the two maps is not asserted as Ingolstadt",
+      "claim_about_maps": "only protocol-level comparability"
+    },
+    "PAIRED_INGOLSTADT_CAPTURE": {
+      "means": "PAIRED_PROTOCOL_VALID and manual arm has Grid0821/Grid0828 manual-map identity AND auto arm XODR sha/path matches the Ingolstadt map-of-record",
+      "decision_functions": "is_ingolstadt_manual_arm, is_ingolstadt_auto_arm"
+    }
+  },
+  "boundary_rules": [
+    "a non-pair is always UNPAIRED_CAPTURE",
+    "Town10HD or any control arm can never be PAIRED_INGOLSTADT_CAPTURE",
+    "hidden spawn recovery in THESIS_PAIRED_STRICT fails the pair before any frame is compared",
+    "pair_valid is only ever true when ALL mandatory equalities hold AND route is valid",
+    "equalities are content digests: same spawn index, same preset name or same wall-clock are not identities"
+  ],
+  "gate_artifacts": {
+    "paired_capture_manifest.json": "built by build_pair_manifest and re-validated by validate_pair_manifest before exit",
+    "route_correspondence.json": "per-arm pose projection record (live only)",
+    "arm completeness": "completion_status from each arm's perception_status.json in strict mode"
+  },
+  "model_of_record_binding": {
+    "manual": "ultimate_pipeline/experiments/thesis/manual_refs.py -> MANUAL_INGOLSTADT_REFS (Grid0821, Grid0828) XODR sha256 + cooked town",
+    "auto": "xodr_arm_map_identity with optional --auto-artifact-sha256 (final_artifact_authority) and --auto-ingolstadt-xodr-sha256 (map-of-record pin)",
+    "campaign_pin": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr (sha256 370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8)"
+  },
+  "live_validation_status": "BLOCKED_EXTERNAL - claim-level end-to-end award requires a reachable simulator; offline tests pin the boundary logic"
+}

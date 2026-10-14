@@ -1,0 +1,25 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "behaviors": [
+    "exit 0 -> continue",
+    "exit 1/255 -> stop",
+    "timeout -> stop",
+    "missing executable -> stop",
+    "spawn exception -> stop",
+    "missing expected output -> stop",
+    "hash-mismatched output -> stop",
+    "sequence halts before downstream stages"
+  ],
+  "files": [
+    "ultimate_pipeline/tiling/carla_0916_import_process_contract.py",
+    "ultimate_pipeline/tests/unit/test_v4_import_contracts.py"
+  ],
+  "platforms": [
+    "windows branch enforced",
+    "posix branch enforced",
+    "auto"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "PASS",
+  "tests": "21 passed"
+}

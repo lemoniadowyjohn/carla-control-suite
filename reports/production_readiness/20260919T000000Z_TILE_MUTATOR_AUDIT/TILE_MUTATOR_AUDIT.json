@@ -1,0 +1,316 @@
+{
+  "audit_date": "2026-09-19",
+  "task_id": "OC-46",
+  "title": "Tile Mutator Audit - Classification of XODR Tile Mutation Operations",
+  "scope": "All mutating operations on XODR tiles in the ultimate_pipeline tiling subsystem",
+  "classification_criteria": {
+    "PRE_FREEZE_REPAIR": "Must run BEFORE TILESET_FROZEN. Mutates tile XODRs. Safe to run multiple times during tile production. Examples: S-invariant repair, planView seam repair, laneSection successor repair, negative-s repair, lane link scrubbing, negative-s repair.",
+    "READ_ONLY_VALIDATOR": "Never mutates tiles. Runs anytime (before or after freeze). Pure validation/read-only. Examples: tile_validator, tile_equivalence assertions, tile_metadata generation, tile_manifest generation.",
+    "FORBIDDEN_POST_FREEZE_MUTATOR": "Must NEVER run after TILESET_FROZEN. If run post-freeze, invalidates tileset integrity. Examples: any ad-hoc script that writes XODR after manifest publication."
+  },
+  "mutators": [
+    {
+      "name": "S-invariant repair (negative-s repair)",
+      "file": "ultimate_pipeline/core/s_invariants.py",
+      "function": "repair_negative_s / apply_s_repair",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Repairs negative s-values in planView geometry. Mutates planView geometry s/length attributes.",
+      "runs_in": ["TileExtractor.tile() via pipeline", "stage_08_integrity.py"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["planView/geometry@s", "planView/geometry@length"]
+    },
+    {
+      "name": "PlanView seam repair",
+      "file": "ultimate_pipeline/elevation/elevation_seam_fixer.py",
+      "function": "fix_seams / fix_elevation_seams",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Repairs elevation discontinuities at planView geometry boundaries. Mutates planView geometry and elevationProfile.",
+      "runs_in": ["main_pipeline stage 08", "elevation_seam_fixer.py CLI"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["planView/geometry@hdg/length", "elevationProfile"]
+    },
+    {
+      "name": "Lane section successor/predecessor repair",
+      "file": "ultimate_pipeline/fixes/fix_missing_lane_successors.py",
+      "function": "repair_missing_lane_successors",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Repairs missing lane successor/predecessor links in lane/link. Adds missing link elements.",
+      "runs_in": ["stage_08_integrity", "fix_missing_lane_successors.py CLI"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["lane/link/successor", "lane/link/predecessor"]
+    },
+    {
+      "name": "Negative-s geometry repair",
+      "file": "ultimate_pipeline/fixes/fix_negative_s_geometry.py",
+      "function": "fix_negative_s_geometry",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Fixes negative s coordinates in planView geometry by applying offset.",
+      "runs_in": ["pipeline stage 08", "fix_negative_s_geometry.py CLI"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["planView/geometry@s", "planView/geometry@length"]
+    },
+    {
+      "name": "Lane link scrubbing (_drop_links_outside_tile)",
+      "file": "ultimate_pipeline/tiling/tile_extractor.py",
+      "function": "_drop_links_outside_tile",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Removes lane links pointing to roads outside the tile boundary. Only runs when allow_successor_outside_tile=False.",
+      "runs_in": ["TileExtractor.tile() when allow_outside=False"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["lane/link/successor", "lane/link/predecessor"]
+    },
+    {
+      "name": "External link scrubbing (_scrub_external_links)",
+      "file": "ultimate_pipeline/tiling/runtime_tile_builder.py",
+      "function": "_scrub_external_links / _remove_boundary_lane_links",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Removes road/lane links pointing to roads/junctions not included in the runtime tile. Runs during runtime tile construction.",
+      "runs_in": ["runtime_tile_builder.build_runtime_tile()"],
+      "safe_for_multiple_runs": false,
+      "mutates": ["road/link", "lane/link"]
+    },
+    {
+      "name": "Global driving lane marking (_mark_global_driving_lanes)",
+      "file": "ultimate_pipeline/tiling/tile_extractor.py",
+      "function": "_mark_global_driving_lanes",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Sets was_driving=true on all driving lanes in the SOURCE root (not tile). Used for semantic preservation.",
+      "runs_in": ["TileExtractor.tile()"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["lane@was_driving"]
+    },
+    {
+      "name": "Tile extraction (_build_tile_root + _finalize_tile)",
+      "file": "ultimate_pipeline/tiling/tile_extractor.py",
+      "function": "TileExtractor.tile() -> _build_tile_root, _finalize_tile",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Creates tile XODRs by deep-cloning roads from source. Applies buffer, drops external links if configured. This IS the tile creation step.",
+      "runs_in": ["TileExtractor.tile()"],
+      "safe_for_multiple_runs": false,
+      "mutates": ["Creates new tile XODR files"]
+    },
+    {
+      "name": "Runtime tile builder (_build_tile_root + _scrub_external_links)",
+      "file": "ultimate_pipeline/tiling/runtime_tile_builder.py",
+      "function": "build_runtime_tile",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Builds standalone runtime tiles with local rebasing, junction closure, and link scrubbing. Creates runtime XODR tiles.",
+      "runs_in": ["runtime_tile_builder.build_runtime_tile()"],
+      "safe_for_multiple_runs": false,
+      "mutates": ["Creates new runtime tile XODR files"]
+    },
+    {
+      "name": "S-invariant repair (pipeline stage 08)",
+      "file": "ultimate_pipeline/pipeline_stages/stage_08_integrity.py",
+      "function": "various repair functions",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Pipeline stage 08 runs multiple repairs: s-invariant, lane successor, degenerate lane, z-seam, island quarantine.",
+      "runs_in": ["main_pipeline stage 08"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["planView/geometry", "lane/link", "laneSection"]
+    },
+    {
+      "name": "XODR sanitizer (_fix_links)",
+      "file": "ultimate_pipeline/core/xodr_sanitizer.py",
+      "function": "XODRSanitizer._fix_links",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Removes redundant/self lane links and junction connections.",
+      "runs_in": ["XODRSanitizer.sanitize()"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["lane/link", "junction/connection"]
+    },
+    {
+      "name": "Elevation link offset solver",
+      "file": "ultimate_pipeline/enrichment/elevation_link_offset_solver.py",
+      "function": "solve_elevation_link_offsets",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Solves and applies elevation link offsets for lane continuity.",
+      "runs_in": ["main_pipeline enrichment"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["lane/link@offset"]
+    },
+    {
+      "name": "Elevation profile builder",
+      "file": "ultimate_pipeline/enrichment/elevation_profile_builder.py",
+      "function": "build_elevation_profiles",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Builds elevation profiles for lanes.",
+      "runs_in": ["main_pipeline enrichment"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["elevationProfile"]
+    },
+    {
+      "name": "Mesh continuity repairer",
+      "file": "ultimate_pipeline/geometry/mesh_continuity_repairer.py",
+      "function": "repair",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Repairs mesh continuity in XODR.",
+      "runs_in": ["main_pipeline geometry stage"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["planView/geometry", "lanes"]
+    },
+    {
+      "name": "Road net converter (osm_to_xodr)",
+      "file": "ultimate_pipeline/osm/osm_to_xodr.py",
+      "function": "convert_osm_to_xodr",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Converts OSM to initial XODR (before any tiling). This is the SOURCE generation, not tile mutation.",
+      "runs_in": ["main_pipeline OSM->XODR stage"],
+      "safe_for_multiple_runs": false,
+      "mutates": ["Creates initial XODR from OSM"]
+    },
+    {
+      "name": "Deterministic alignment",
+      "file": "ultimate_pipeline/domain_gap/deterministic_alignment.py",
+      "function": "deterministic_promote_and_align",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Aligns XODR to target CRS/projection. Mutates header offset and potentially planView.",
+      "runs_in": ["domain_gap pipeline"],
+      "safe_for_multiple_runs": false,
+      "mutates": ["header/offset", "planView/geometry"]
+    },
+    {
+      "name": "Geo alignment",
+      "file": "ultimate_pipeline/domain_gap/geo_alignment.py",
+      "function": "align_xodr_to_proj",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Aligns XODR to geographic projection. Mutates header and planView.",
+      "runs_in": ["domain_gap pipeline"],
+      "safe_for_multiple_runs": false,
+      "mutates": ["header/offset", "header/geoReference", "planView/geometry"]
+    },
+    {
+      "name": "Autofix post-prune elevation",
+      "file": "ultimate_pipeline/quality/autofix_postprune_elevation.py",
+      "function": "autofix_elevation",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "Auto-fixes elevation after pruning.",
+      "runs_in": ["quality pipeline"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["elevationProfile"]
+    },
+    {
+      "name": "Tile validator (CARLA load)",
+      "file": "ultimate_pipeline/tiling/tile_validator.py",
+      "function": "TileValidator.validate",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Loads tile in CARLA and checks waypoints/spawn. Does NOT mutate tiles. Diagnostic only.",
+      "runs_in": ["manual QA", "CI diagnostics"],
+      "mutates": []
+    },
+    {
+      "name": "Tile equivalence / assertions",
+      "file": "ultimate_pipeline/tiling/tile_equivalence.py",
+      "function": "tile_road_ownership, assert_duplicated_roads_identical, verify_tile_adjacency",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Read-only assertions on tile sets. Computes ownership, checks duplicates, verifies adjacency. Never mutates.",
+      "runs_in": ["CI", "validation pipeline"],
+      "mutates": []
+    },
+    {
+      "name": "Tile metadata generation",
+      "file": "ultimate_pipeline/tiling/tile_metadata.py",
+      "function": "TileMetadata.generate_metadata / write_manifest",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Generates tile_metadata.json and tile_manifest.json from existing tiles. Read-only.",
+      "runs_in": ["TileMetadata.generate_metadata()", "TileMetadata.write_manifest()"],
+      "mutates": []
+    },
+    {
+      "name": "Tile forensics / diagnostics",
+      "file": "ultimate_pipeline/diagnostics/tile_forensics.py",
+      "function": "analyze_tiles",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Diagnostic analysis of tile set. Does not mutate (optionally writes reports).",
+      "runs_in": ["diagnostics"],
+      "mutates": ["Writes report files only"]
+    },
+    {
+      "name": "Tile auto forensics",
+      "file": "ultimate_pipeline/tiling/tile_auto_forensics.py",
+      "function": "auto_forensics",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Auto-diagnostics for tile set. Explicitly documents 'NO automatic repair'.",
+      "runs_in": ["diagnostics"],
+      "mutates": []
+    },
+    {
+      "name": "Tile matcher / duplicate assertion",
+      "file": "ultimate_pipeline/tiling/tile_matcher.py",
+      "function": "match_tiles",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Matches tiles across runs for equivalence checking. Read-only.",
+      "runs_in": ["validation"],
+      "mutates": []
+    },
+    {
+      "name": "Tile adjacency verification",
+      "file": "ultimate_pipeline/tiling/tile_adjacency.py",
+      "function": "verify_adjacency",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Verifies tile adjacency graph. Read-only.",
+      "runs_in": ["validation"],
+      "mutates": []
+    },
+    {
+      "name": "Stage digest generator",
+      "file": "ultimate_pipeline/determinism/stage_digest.py",
+      "function": "generate_stage_hashes",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Generates SHA256 hashes of stage artifacts. Read-only.",
+      "runs_in": ["determinism pipeline"],
+      "mutates": ["Writes stage_hashes.json"]
+    },
+    {
+      "name": "Collision/LOD policy check",
+      "file": "ultimate_pipeline/enrichment/collision_lod_policy.py",
+      "function": "collision_check / lod_check",
+      "classification": "READ_ONLY_VALIDATOR",
+      "description": "Checks OBJ objects against XODR road corridors. Read-only.",
+      "runs_in": ["Phase J7"],
+      "mutates": []
+    },
+    {
+      "name": "Blender runner (FBX conversion)",
+      "file": "ultimate_pipeline/enrichment/blender_runner.py",
+      "function": "BlenderRunner.run",
+      "classification": "PRE_FREEZE_REPAIR (for FBX artifacts, not XODR tiles)",
+      "description": "Converts OBJ to FBX via Blender. Produces FBX artifacts, not XODR tiles.",
+      "runs_in": ["tile_fbx_generator", "phase_j"],
+      "mutates": ["Produces FBX/manifest, not XODR"]
+    },
+    {
+      "name": "OSM2World runner",
+      "file": "ultimate_pipeline/enrichment/osm2world_runner.py",
+      "function": "OSM2WorldRunner.run",
+      "classification": "PRE_FREEZE_REPAIR (for OBJ/GLB artifacts)",
+      "description": "Runs OSM2World to generate OBJ/GLB from OSM. Produces visual artifacts, not XODR tiles.",
+      "runs_in": ["tile_fbx_generator", "phase_j"],
+      "mutates": ["Produces OBJ/GLB/manifest, not XODR"]
+    },
+    {
+      "name": "S-invariant repair (worker --fix-s)",
+      "file": "ultimate_pipeline/core/s_invariants.py",
+      "function": "CLI --fix-s flag",
+      "classification": "PRE_FREEZE_REPAIR",
+      "description": "CLI tool to repair negative-s geometry. Can be run standalone.",
+      "runs_in": ["CLI", "manual"],
+      "safe_for_multiple_runs": true,
+      "mutates": ["planView/geometry@s", "planView/geometry@length"]
+    }
+  ],
+  "tileset_freeze_implications": {
+    "freeze_point": "After ALL PRE_FREEZE_REPAIR operations complete, BEFORE any READ_ONLY_VALIDATOR generates metadata/manifest",
+    "forbidden_after_freeze": [
+      "Any operation that writes .xodr files to the tiles directory",
+      "Any operation that modifies planView/geometry, lane/link, elevationProfile, header/offset",
+      "Any ad-hoc script that rewrites tile XODRs"
+    ],
+    "allowed_after_freeze": [
+      "READ_ONLY_VALIDATOR operations (metadata, manifest, validation, equivalence checks)",
+      "Generating manifests/metadata from frozen tiles",
+      "Reading tiles for downstream processing (FBX generation, collision check, etc.)"
+    ],
+    "invalidation_trigger": "If any FORBIDDEN_POST_FREEZE_MUTATOR runs after freeze, the tileset MUST be invalidated, rebuilt from source, and re-frozen."
+  }
+}

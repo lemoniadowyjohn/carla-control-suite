@@ -261,3 +261,177 @@ def test_assert_does_not_raise_when_clean(tmp_path):
         encoding="utf-8",
     )
     assert_all_lanes_have_successors(xodr, allow_dead_ends=True)  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# GAP-048 closure: junction-routed exemption.
+#
+# A terminal driving lane on a road whose successor is a junction is NOT
+# broken when a valid laneLink routes it (connection incomingRoad matches,
+# contactPoint valid, connecting road exists, target lane exists at the
+# contact section). Cross-junction connectivity is authoritatively defined
+# by laneLinks; the lane-level successor element cannot express road choice.
+# ---------------------------------------------------------------------------
+
+
+def _junction_routed_xodr(tmp_path, lane_link_pairs, contact="start", lane_link_state="missing_successor"):
+    """Incoming road R1 (successor=junction J1) + connecting road C1.
+
+    lane_link_pairs: list of (from, to) laneLink entries on the connection.
+    lane_link_state: "missing_successor" (empty <link>) or "missing_link" (no <link>).
+    """
+    links = "".join(
+        f'<laneLink from="{frm}" to="{to}"/>' for frm, to in lane_link_pairs
+    )
+    if lane_link_state == "missing_successor":
+        lane_inner = "<link/>" + '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+    else:
+        lane_inner = '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+    xodr = tmp_path / "junction_routed.xodr"
+    xodr.write_text(
+        '<?xml version="1.0"?><OpenDRIVE>'
+        '<road name="r1" length="10" id="R1" junction="-1">'
+        '<link><successor elementType="junction" elementId="J1" contactPoint="start"/></link>'
+        '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        f"{lane_inner}"
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        '<road name="c1" length="10" id="C1" junction="J1">'
+        '<planView><geometry s="0" x="10" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<link><successor id="-1"/></link>'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        '<junction id="J1" type="default">'
+        f'<connection id="0" incomingRoad="R1" connectingRoad="C1" contactPoint="{contact}">'
+        f"{links}"
+        "</connection>"
+        "</junction>"
+        "</OpenDRIVE>",
+        encoding="utf-8",
+    )
+    return xodr
+
+
+def test_junction_routed_lane_missing_successor_is_exempt(tmp_path):
+    # R1 lane -1 has NO successor element but IS routed via laneLink.
+    xodr = _junction_routed_xodr(tmp_path, [(-1, -1)])
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    assert broken == []
+
+
+def test_junction_routed_lane_missing_link_is_exempt(tmp_path):
+    # Same but the lane has no <link> at all: routing still exists.
+    xodr = _junction_routed_xodr(tmp_path, [(-1, -1)], lane_link_state="missing_link")
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    assert broken == []
+
+
+def test_junction_routed_exemption_ignores_allow_dead_ends_flag(tmp_path):
+    # Routing exemption is independent of the dead-end policy.
+    xodr = _junction_routed_xodr(tmp_path, [(-1, -1)])
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=False)
+    assert broken == []
+
+
+def test_junction_lane_without_lanelink_still_flagged(tmp_path):
+    # Same topology but the connection carries NO laneLink for this lane.
+    xodr = _junction_routed_xodr(tmp_path, [(7, -1)])
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    assert len(broken) == 1
+    assert broken[0]["road_id"] == "R1"
+
+
+def test_junction_routed_invalid_target_still_flagged(tmp_path):
+    # laneLink points at a target lane that does not exist on C1.
+    xodr = _junction_routed_xodr(tmp_path, [(-1, -9)])
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    assert len(broken) == 1
+
+
+def test_junction_routed_bad_contact_point_still_flagged(tmp_path):
+    xodr = _junction_routed_xodr(tmp_path, [(-1, -1)], contact="middle")
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    assert len(broken) == 1
+
+
+def test_junction_routed_missing_junction_still_flagged(tmp_path):
+    xodr = _junction_routed_xodr(tmp_path, [(-1, -1)])
+    root = ET.parse(str(xodr)).getroot()
+    root.remove(root.find("junction"))
+    broken = find_broken_lanes_detailed(root, allow_dead_ends=True)
+    assert len(broken) == 1
+
+
+def test_junction_routed_non_terminal_lane_still_flagged(tmp_path):
+    # laneLink-backed but in a NON-terminal section: needs intra-road successor.
+    xodr = tmp_path / "nonterm.xodr"
+    xodr.write_text(
+        '<?xml version="1.0"?><OpenDRIVE>'
+        '<road name="r1" length="20" id="R1" junction="-1">'
+        '<link><successor elementType="junction" elementId="J1" contactPoint="start"/></link>'
+        '<planView><geometry s="0" x="0" y="0" hdg="0" length="20"><line/></geometry></planView>'
+        "<lanes>"
+        '<laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection>"
+        '<laneSection s="10"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<link><successor id="-1"/></link>'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection>"
+        "</lanes>"
+        "</road>"
+        '<road name="c1" length="10" id="C1" junction="J1">'
+        '<planView><geometry s="0" x="20" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<link><successor id="-1"/></link>'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        '<junction id="J1" type="default">'
+        '<connection id="0" incomingRoad="R1" connectingRoad="C1" contactPoint="start">'
+        '<laneLink from="-1" to="-1"/>'
+        "</connection>"
+        "</junction>"
+        "</OpenDRIVE>",
+        encoding="utf-8",
+    )
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    # Only the non-terminal section-0 lane is broken; terminal has successor.
+    assert len(broken) == 1
+
+
+def test_junction_routed_road_successor_lane_still_flagged(tmp_path):
+    # Road-level successor is a ROAD (not junction): exemption does not apply.
+    xodr = tmp_path / "roadsucc.xodr"
+    xodr.write_text(
+        '<?xml version="1.0"?><OpenDRIVE>'
+        '<road name="r1" length="10" id="R1" junction="-1">'
+        '<link><successor elementType="road" elementId="R2" contactPoint="start"/></link>'
+        '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        '<road name="r2" length="10" id="R2" junction="-1">'
+        '<planView><geometry s="0" x="10" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<link><successor id="-1"/></link>'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        "</OpenDRIVE>",
+        encoding="utf-8",
+    )
+    broken = find_broken_lanes_detailed(xodr, allow_dead_ends=True)
+    assert len(broken) == 1
+    assert broken[0]["road_id"] == "R1"

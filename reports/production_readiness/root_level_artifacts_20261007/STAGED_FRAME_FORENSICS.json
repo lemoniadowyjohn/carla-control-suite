@@ -1,0 +1,72 @@
+{
+  "schema": "staged_frame_forensics/v1",
+  "generated_at_utc": "2026-10-05T13:45:00Z",
+  "subject": "rebase_dx/rebase_dy = (832671.676, 5458671.104) of map of record 370abbbb",
+
+  "OFFSET_FRAME": "UNKNOWN_LITERAL_LOCAL_CARTESIAN_ORIGIN",
+  "PROJECTION": "UNDETERMINED - no tested projection reproduces the offset",
+  "SOURCE": "map_registry.py PINNED_MAP_REGISTRY['auto_map_of_record'] declares frame='rebased-to-local (dx=832671.676 dy=5458671.104)', frame_kind='rebased_local', crs_authority='local Cartesian via fixed offset from UTM-32N (EPSG:32632)'. The declared EPSG does NOT reproduce the offset.",
+  "CONFIDENCE": "HIGH that the offset is an intentional registered local origin; LOW/UNPROVEN that the declared UTM-32N provenance is correct",
+  "INGOLSTADT_RESIDUAL_M": "NOT_APPLICABLE - no valid source-backed transform exists, so a residual against Ingolstadt cannot be honestly computed",
+  "FRAME_AUTHORITY": "INVALID_OR_UNKNOWN",
+
+  "measured_facts": {
+    "offset": {"x": 832671.676, "y": 5458671.104},
+    "xodr_header_bounds": {"west": 832671.61, "east": 845938.74, "south": 5458670.93, "north": 5472743.72},
+    "xodr_extent_m": {"E": 13267, "N": 14073},
+    "source_osm_sha256_verified": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f (recomputed, matches manifest)",
+    "source_osm_bounds_wgs84": {"lat_min": 48.6843318, "lat_max": 48.8143429, "lon_min": 11.3266919, "lon_max": 11.5382271},
+    "osm_extent_m_approx": {"lon": 15537, "lat": 14448},
+    "extent_ratio_xodr_over_osm": {"E": 0.854, "N": 0.974},
+    "tool": "pyproj 3.7.2"
+  },
+
+  "hypotheses_tested_and_refuted": [
+    {"hypothesis": "offset is the UTM-32N easting/northing of the map origin", "test": "inverse UTM32N of offset", "result": "lat 49.19045, lon 13.56640", "verdict": "REFUTED - 163.8 km from Ingolstadt"},
+    {"hypothesis": "offset is the UTM-32N coordinate of any OSM corner or the study centre", "test": "projected SW/NW/SE/NE/study-SW/study-centre under UTM32N", "result": "closest (OSM NE corner) still 154.24 km away", "verdict": "REFUTED"},
+    {"hypothesis": "offset is the UTM-32N SW corner", "test": "true SW = (671246.985, 5394977.631)", "result": "offset exceeds it by (+161424.691, +63693.473)", "verdict": "REFUTED - offset easting alone exceeds every UTM32N corner by >145 km"},
+    {"hypothesis": "wrong UTM zone was used", "test": "EPSG:32631, 32632, 32633, 25832 SW corners", "result": "none within 145 km of the offset", "verdict": "REFUTED"},
+    {"hypothesis": "axis-order error (lat,lon) instead of (lon,lat)", "test": "UTM32N forward with always_xy=False", "result": "identical output (671246.985, 5394977.631)", "verdict": "REFUTED - no effect"},
+    {"hypothesis": "Gauss-Krueger DHDN variants (EPSG:31466/31467/31468/31469, tmerc lon0=9/10.5/12 x0=500000)", "test": "inverse of offset under each", "result": "all land near 49.17N with longitude 13.56/16.56, never 11.425", "verdict": "REFUTED"},
+    {"hypothesis": "offset is the raw lon/lat passed through tmerc with lon_0=0 (origin at 0,0)", "test": "forward SW lon/lat through lon_0=0 tmerc", "result": "(0.0, 0.0); distance to offset 5521814 m", "verdict": "REFUTED"},
+    {"hypothesis": "constant double-applied translation explains it", "test": "residual structure of (offset - trueSW)", "result": "constant = (+161424.691, +63693.473); ratio 0.394571; no degree or false-easting structure found", "verdict": "UNEXPLAINED - arithmetic identity holds trivially but identifies no generator"}
+  ],
+
+  "strongest_supported_conclusion": {
+    "statement": "The map CONTENT is correct; the map's ABSOLUTE PROJECTED FRAME does not correspond to Ingolstadt under any standard CRS.",
+    "evidence_for_content_correctness": [
+      "xodr N extent 14073 m vs OSM lat extent 14448 m (ratio 0.974)",
+      "xodr E extent 13267 m vs OSM lon extent 15537 m (ratio 0.854)",
+      "the offset equals the XODR header west/south to sub-metre agreement, so it is the map's own lower-left origin, not an unrelated constant"
+    ],
+    "evidence_for_frame_invalidity": [
+      "under the registry's own declared authority (UTM-32N / EPSG:32632) the origin resolves 163.8 km from Ingolstadt",
+      "the offset easting 832671 exceeds the true UTM32N easting of the entire OSM bbox (max 686333) by >146 km",
+      "no standard CRS reproduces it"
+    ],
+    "consequence": "The absolute position of this map is UNKNOWN. Local geometry (relative shape, topology, lane structure) is unaffected and remains valid. Any absolute geolocation claim - including RQ placement acceptance and the CARLA georeference value - cannot be supported from this artifact as it stands."
+  },
+
+  "prior_art_agreement": {
+    "note": "An earlier wave reached the same conclusion independently, which increases confidence that this is a real and not a toolchain artifact.",
+    "evidence": "_final_verify/proj_audit.py contains the comment: 'The 840138 ctrl point is true UTM of ~49.3N, 13.7E (Czech), NOT Ingolstadt.' and _final_verify/proj3.py records a predicted defaults-run offset of x=-832672.90 y=-5458671.57, confirming the same magnitude appears as a SHIFT applied to local planView coordinates."
+  },
+
+  "critical_scope_note": {
+    "statement": "The offset behaves as a shift applied to LOCAL planView coordinates, not as an absolute projected easting/northing.",
+    "consequence": "This means the 163.8 km figure must NOT be reported as 'the map is placed 163.8 km away from Ingolstadt' in a runtime sense. It means the ABSOLUTE ORIGIN of the local frame is unproven. The two readings differ and the distinction is material for placement acceptance.",
+    "still_unresolved": "Which absolute georeference, if any, should be attached to the local frame is not determinable from the available artifacts. The campaign directory contains the OSM and derived XODRs but no projection configuration recording how rebase_dx/rebase_dy were computed."
+  },
+
+  "required_to_resolve": [
+    "The generation-time projection configuration for rebase_dx/rebase_dy (the regen pipeline step that computed them), which is not present in the campaign directory.",
+    "Confirmation from the map owner whether 370abbbb is intended to be absolutely georeferenced at all, given frame_kind='rebased_local' suggests a deliberately local frame."
+  ],
+
+  "not_claimed": [
+    "No projection was force-fitted.",
+    "No offset was modified.",
+    "No georeference constant was invented.",
+    "FRAME_AUTHORITY is NOT resolved and placement must not be closed on this artifact."
+  ]
+}

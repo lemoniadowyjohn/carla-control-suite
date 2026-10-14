@@ -1,0 +1,29 @@
+{
+  "precedence_order": [
+    {
+      "tier": 1,
+      "level": "osm_exact",
+      "description": "Exact key=value OSM tag rule matches, prioritized by explicit priority rankings."
+    },
+    {
+      "tier": 2,
+      "level": "osm_key",
+      "description": "Recognized key-only OSM tag rules, prioritized by explicit priority rankings."
+    },
+    {
+      "tier": 3,
+      "level": "object_name",
+      "description": "Regex word-boundary keyword matches against the normalized logical asset/object name."
+    },
+    {
+      "tier": 4,
+      "level": "material_name",
+      "description": "Regex word-boundary keyword matches against the object's materials."
+    },
+    {
+      "tier": 5,
+      "level": "fallback",
+      "description": "Defaults to CARLA folder 'Other' and rule 'fallback:unclassified' if no prior tiers match."
+    }
+  ]
+}

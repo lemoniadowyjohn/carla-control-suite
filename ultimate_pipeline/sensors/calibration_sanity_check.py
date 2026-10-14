@@ -15,7 +15,7 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from ultimate_pipeline.carla_tools.safe_spawn_ego import safe_spawn_ego
 from ultimate_pipeline.sensors.attach_sensors_safe import load_calib
@@ -132,32 +132,78 @@ def run_calibration_sanity_check(
     client.set_timeout(timeout)
     world = client.get_world()
 
-    ego, ego_report = safe_spawn_ego(
-        world,
-        spawn_index=spawn_index,
-        z_offset=z_offset,
-        report_path=str(out_path / "ego_spawn_report.json"),
+    # NEW-322: the previous implementation spawned ego + sensors in
+    # straight-line code with NO try/finally, so every early `return report`
+    # and every raised exception leaked the ego actor, the sensor actors and
+    # their listeners into the next perception run's world.  The lifecycle guard
+    # guarantees cleanup on all paths and writes
+    # ``calibration_cleanup_receipt.json``.
+    from ultimate_pipeline.perception.environment.calibration_lifecycle import (
+        CalibrationCleanupGuard,
     )
-    if ego is None:
-        report["errors"].append("ego spawn failed")
-        return report
 
-    from ultimate_pipeline.sensors.attach_sensors_safe import attach_sensors_safe
+    guard = CalibrationCleanupGuard(world, out_dir=out_path)
+    with guard:
+        ego, ego_report = safe_spawn_ego(
+            world,
+            spawn_index=spawn_index,
+            z_offset=z_offset,
+            report_path=str(out_path / "ego_spawn_report.json"),
+        )
+        guard.track_ego(ego)
+        if ego is None:
+            report["errors"].append("ego spawn failed")
+            guard.failure_reason = "ego_spawn_failed"
+            report["cleanup"] = guard.cleanup()
+            guard.write_receipt()
+            report["cleanup_receipt"] = guard.receipt()
+            return report
 
-    sensors, attach_report = attach_sensors_safe(
-        world,
-        ego,
-        calib_path,
-        out_dir=str(out_path),
-        camera_optical_frame=camera_optical_frame,
+        from ultimate_pipeline.sensors.attach_sensors_safe import attach_sensors_safe
+
+        sensors, attach_report = attach_sensors_safe(
+            world,
+            ego,
+            calib_path,
+            out_dir=str(out_path),
+            camera_optical_frame=camera_optical_frame,
+        )
+        for _name, _actor in dict(sensors or {}).items():
+            guard.track_sensor(_actor)
+        if not sensors:
+            report["errors"].append("sensor attach failed")
+            guard.failure_reason = "sensor_attach_failed"
+            report["cleanup"] = guard.cleanup()
+            guard.write_receipt()
+            report["cleanup_receipt"] = guard.receipt()
+            return report
+
+        screenshot_report = _capture_first_frames(world, sensors, out_path / "screenshots")
+        report["screenshots"] = screenshot_report
+
+        report["checks"] = _evaluate_geometry_checks(cams, lids, guard=guard)
+
+    checks_ok = _checks_ok(report["checks"])
+    report["ok"] = checks_ok
+    # NEW-322: a failed calibration assay must never contaminate the next run.
+    report["cleanup_receipt"] = guard.receipt()
+    guard.write_receipt()
+    report["cleanup"] = guard.receipt()["cleanup_results"]
+    if not report["cleanup_receipt"]["cleanup_complete"]:
+        report["ok"] = False
+        report["errors"].append("calibration_cleanup_incomplete")
+    return report
+
+
+def _evaluate_geometry_checks(
+    cams: Any, lids: Any, *, guard: Any = None
+) -> Dict[str, Any]:
+    """Per-camera geometry + NEW-323 quantitative LiDAR/camera gate."""
+    from ultimate_pipeline.perception.environment.lidar_camera_gate import (
+        lidar_camera_gate,
     )
-    if not sensors:
-        report["errors"].append("sensor attach failed")
-        return report
 
-    screenshot_report = _capture_first_frames(world, sensors, out_path / "screenshots")
-    report["screenshots"] = screenshot_report
-
+    checks: Dict[str, Any] = {}
     for name, cam in cams.items():
         K = cam.K_undist
         width = cam.width
@@ -178,35 +224,57 @@ def run_calibration_sanity_check(
                 ground_hits += 1
         ground_ok = ground_hits >= 1
 
-        lidar_checks = {}
+        # NEW-323: the old check was `{"ok": pxl is not None}`, which accepted
+        # a projection to [-5000, 20000] purely because the depth was positive.
+        # The strengthened gate additionally requires finite coordinates,
+        # in-image pixels, correct target correspondence and an explicit
+        # residual threshold.
+        lidar_gates: Dict[str, Any] = {}
         for lname, lid in lids.items():
-            vTl = lid.vTl
-            p_vehicle = _apply_transform(vTl, (5.0, 0.0, 0.0))
-            p_cam_l = _apply_transform(cTv, p_vehicle)
-            pxl = _project_point(K, p_cam_l)
-            lidar_checks[lname] = {
-                "ok": pxl is not None,
-                "pixel": [pxl[0], pxl[1]] if pxl else None,
-            }
+            gate = lidar_camera_gate(
+                k_matrix=K,
+                width_px=width,
+                height_px=height,
+                vTl=lid.vTl,
+                cTv=cTv,
+            )
+            lidar_gates[lname] = gate
+        lidar_ok = all(g["ok"] for g in lidar_gates.values()) if lidar_gates else True
 
-        report["checks"][name] = {
+        checks[name] = {
             "forward_alignment": {"ok": forward_ok, "pixel": [px[0], px[1]] if px else None},
             "ground_plane": {"ok": ground_ok, "hits": ground_hits},
-            "lidar_camera_consistency": lidar_checks,
+            "lidar_camera_consistency": {
+                lname: {
+                    "ok": gate["ok"],
+                    "pixel": (gate["checks"][0]["pixel"] if gate["checks"] else None),
+                    "invalid_reasons": gate["invalid_reasons"],
+                    "targets_expected": gate["targets_expected"],
+                    "targets_passed": gate["targets_passed"],
+                    "correspondence_rate": gate["correspondence_rate"],
+                }
+                for lname, gate in lidar_gates.items()
+            },
+            "lidar_camera_gate_ok": lidar_ok,
         }
+    return checks
 
-    checks_ok = True
-    for cam_name, cam_checks in report["checks"].items():
+
+def _checks_ok(checks: Mapping[str, Any]) -> bool:
+    ok = True
+    for cam_checks in checks.values():
         if not cam_checks.get("forward_alignment", {}).get("ok", False):
-            checks_ok = False
+            ok = False
         if not cam_checks.get("ground_plane", {}).get("ok", False):
-            checks_ok = False
+            ok = False
+        if not cam_checks.get("lidar_camera_gate_ok", True):
+            ok = False
         lidar_checks = cam_checks.get("lidar_camera_consistency", {})
-        if lidar_checks and not all(item.get("ok", False) for item in lidar_checks.values()):
-            checks_ok = False
-
-    report["ok"] = checks_ok
-    return report
+        if lidar_checks and not all(
+            item.get("ok", False) for item in lidar_checks.values()
+        ):
+            ok = False
+    return ok
 
 
 def main() -> None:

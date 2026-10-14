@@ -31,6 +31,70 @@ def test_diverse_mask_is_not_degenerate():
     assert is_degenerate_label(m) is False
 
 
+def test_label_stats_splits_unlabeled_learnable_any():
+    # NEW-276: any/unlabeled/learnable split. id 0 = Unlabeled background,
+    # ids 1..CARLA_SEMANTIC_MAX_CLASS_ID = learnable named classes,
+    # id 255 = carla.CityObjectLabel.Any sentinel (loss-ignored).
+    m = np.array([[0, 0, 255], [7, 255, 28]], dtype=np.uint8)
+    s = label_stats(m)
+    assert abs(s["unlabeled_fraction"] - 2 / 6) < 1e-9  # two id-0 pixels
+    assert abs(s["learnable_fraction"] - 2 / 6) < 1e-9  # ids 7 and 28
+    assert abs(s["any_fraction"] - 2 / 6) < 1e-9  # two id-255 pixels
+    total = s["unlabeled_fraction"] + s["learnable_fraction"] + s["any_fraction"]
+    assert abs(total - 1.0) < 1e-9  # exhaustive partition of the label space
+
+
+def test_label_stats_split_boundaries():
+    # 1 and CARLA_SEMANTIC_MAX_CLASS_ID are learnable; 0 and 255 are not;
+    # an out-of-range id contributes to no bucket.
+    m = np.array([0, 1, 28, 255, 100], dtype=np.uint8)
+    s = label_stats(m)
+    assert abs(s["unlabeled_fraction"] - 1 / 5) < 1e-9
+    assert abs(s["learnable_fraction"] - 2 / 5) < 1e-9  # 1 and 28
+    assert abs(s["any_fraction"] - 1 / 5) < 1e-9
+    assert s["n_classes"] == 5  # n_classes still counts every distinct id
+
+
+def test_nonbackground_fraction_conflates_any_but_split_does_not():
+    # Legacy nonbackground_fraction counts Any(255) pixels as labeled content;
+    # the split exposes that only half this frame carries learnable labels.
+    m = np.array([[255, 255, 255, 255], [7, 7, 7, 7]], dtype=np.uint8)
+    s = label_stats(m)
+    assert abs(s["nonbackground_fraction"] - 1.0) < 1e-9
+    assert abs(s["learnable_fraction"] - 0.5) < 1e-9
+    assert abs(s["any_fraction"] - 0.5) < 1e-9
+    assert s["unlabeled_fraction"] == 0.0
+
+
+def test_label_stats_empty_mask_has_split_keys():
+    s = label_stats(np.zeros((0, 0), dtype=np.uint8))
+    assert s["unlabeled_fraction"] == 0.0
+    assert s["learnable_fraction"] == 0.0
+    assert s["any_fraction"] == 0.0
+
+
+def test_all_any_sentinel_mask_is_degenerate():
+    m = np.full((8, 8), 255, dtype=np.uint8)
+    s = label_stats(m)
+    assert s["any_fraction"] == 1.0
+    assert s["learnable_fraction"] == 0.0
+    assert is_degenerate_label(m) is True  # n_classes == 1
+
+
+def test_min_learnable_fraction_guard_flags_any_padded_frame():
+    # 97% Any(255) + 3% diverse learnable classes: passes the class-count and
+    # dominance checks (n_classes=4, dominant 0.97 <= 0.98) but carries almost
+    # no learnable content -- caught only by the learnable-fraction guard.
+    m = np.full((100, 100), 255, dtype=np.uint8)
+    m[0, :100] = 7
+    m[1, :100] = 10
+    m[2, :100] = 13
+    s = label_stats(m)
+    assert abs(s["learnable_fraction"] - 0.03) < 1e-9
+    assert is_degenerate_label(m) is False  # original default behavior unchanged
+    assert is_degenerate_label(m, min_learnable_fraction=0.05) is True
+
+
 def test_write_png_raw_ids_extracts_r_channel_class_ids(tmp_path):
     # Characterization: the seg generator's label extraction must equal the R
     # channel (BGRA) of the semantic image, exactly (locks R8's label pipeline).

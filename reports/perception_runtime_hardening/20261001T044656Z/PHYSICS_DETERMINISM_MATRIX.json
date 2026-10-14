@@ -1,0 +1,13 @@
+{
+  "SIMULATION_STATE_READY_gate": true,
+  "budget_enforced": true,
+  "digest": "e66aef0a49503a221a98227e8551631141e55fbd06c6ce652403d3077ee90538",
+  "implicit_substepping_disable_removed": true,
+  "live_verification": "BLOCKED_EXTERNAL",
+  "out_of_order_detected": true,
+  "pair_arms_must_share_digest": true,
+  "profile_name": "carla_0_9_16_high_fidelity_substepped",
+  "schema": "PHYSICS_DETERMINISM_MATRIX/v1",
+  "settings_precede_actors": true,
+  "substepping_governed": true
+}

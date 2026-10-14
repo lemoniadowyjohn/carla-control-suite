@@ -1,0 +1,277 @@
+{
+  "schema": "WRITE_LOCK_SUPERVISION_RECONCILIATION/v1",
+  "date_utc": "2026-10-07",
+  "task": "Prompt 2 - execute the write-lock/supervision-plane reconciliation",
+  "branch": "control/write-lock-supervision-reconcile-20261007",
+  "disposition": "PUSHED FOR REVIEW - NOT merged to production by this change",
+
+  "base": {
+    "fetched_tip_at_start": "f7274207",
+    "fetched_tip_ref": "origin/integration/production-large-map-20260918",
+    "stale_tip_avoided": "ce53e339",
+    "production_advanced_during_execution_to": "e4f7a45a",
+    "production_advanced_by_commits": [
+      "278968f9",
+      "67da84bc",
+      "73d6d668",
+      "e4f7a45a"
+    ],
+    "path_overlap_with_this_branch": "NONE (verified with git diff --name-only, set difference empty)",
+    "action": "rebase onto e4f7a45a before push",
+    "rebase_verification": "git range-diff f7274207..5948d1f3 e4f7a45a..5727acaf -> all 5 patches '=' (byte-identical); git diff 5727acaf <post-message-rewrite tip> -> empty"
+  },
+
+  "adopted_sources": {
+    "step1_write_lock_layer": {
+      "ref": "fdc8c166",
+      "ref_name": "origin/control/writer-lock-semantic-diff-20261006",
+      "paths": [
+        "ultimate_pipeline/governance/single_writer/ (11 files)",
+        "tools/supervised_ue_run.py",
+        "tools/orphan_terminal_witness.py",
+        "tools/salvage_repair.py",
+        "tools/check_windows_rhi_scope.py",
+        "tests/unit/test_single_writer_control_plane.py",
+        "tests/unit/test_receipt_reconciler.py",
+        "tests/unit/test_salvage_repair.py"
+      ],
+      "verified": "every blob byte-identical to fdc8c166 except lease_store.py and tools/supervised_ue_run.py, which come from b768e008"
+    },
+    "step4_harness_identity_fix": {
+      "ref": "b768e008",
+      "ref_name": "origin/fix/harness-identity-contract-20261006",
+      "descendant_of": "fdc8c166",
+      "commits_carried": ["4e1841f6", "b768e008"],
+      "paths": [
+        "ultimate_pipeline/governance/single_writer/lease_store.py",
+        "tools/supervised_ue_run.py",
+        "tests/unit/test_harness_governance_contract.py",
+        "scripts/run_unit_shards.py",
+        "reports/PROCESS_IDENTITY_CONTRACT_V2.json"
+      ],
+      "not_carried": [
+        "reports/GOVERNANCE_REPAIR_FINAL_VALIDATION.txt (receipt for a different tree)",
+        "reports/FULL_UNIT_SUITE_SHARDS.json (receipt for a different tree)"
+      ],
+      "wiring_verified": [
+        "tools/supervised_ue_run.py calls _ls.lease_owner_alive() (lines 100, 108)",
+        "tools/supervised_ue_run.py calls _ls.release(lease, term) on every terminal path (line 134)"
+      ],
+      "local_deviation": "scripts/run_unit_shards.py only: ROOT now __file__-derived, collect(paths) accepts explicit paths, shard records store repo-relative paths (see commit 'chore(tests): make run_unit_shards.py worktree-relative')"
+    },
+    "step3_t6_harness": {
+      "ref": "32fbde8e",
+      "ref_name": "origin/integration/process-supervision-closure-20261006",
+      "chosen_over": ["462f816d (branch #1)", "main checkout untracked copies"],
+      "requested_paths": [
+        "scripts/lease_job_coupling.py",
+        "scripts/t6_determinism.py",
+        "tests/unit/test_t6_owner_identity_authority.py"
+      ],
+      "dependency_paths_added_so_the_harness_actually_imports": [
+        "scripts/control_plane.py",
+        "scripts/job_supervision.py",
+        "scripts/orch_core.py"
+      ],
+      "scope_decision_note": "The three requested harness files import control_plane / job_supervision / orch_core at module scope; without them pytest fails at collection. Their only tracked source anywhere is 32fbde8e, so they were taken from there as a self-consistent set. No production module imports them. FLAGGED FOR REVIEWER.",
+      "discarded": [
+        "main checkout untracked scripts/control_plane.py (blob 0980a924 != 32fbde8e's d5bcb1ec)",
+        "main checkout untracked scripts/job_supervision.py (blob 0bb6bd61 != 32fbde8e's 424bca68)",
+        "scripts/t6_debug_control.py (out of scope)"
+      ],
+      "verified": "all 6 blobs byte-identical to 32fbde8e; REPO is __file__-derived in both harness scripts; exactly one copy of each basename in the tree (except job_supervision.py, which also exists as governance/single_writer/job_supervision.py - distinct module, not a duplicate)"
+    },
+    "step2_c11_guards": {
+      "requested_ref": "32fbde8e",
+      "cherry_pick_result": "NO-OP - governance/inputs_manifest.py and governance/proj_env_guard.py are already byte-identical at f7274207, fdc8c166 and 32fbde8e (git diff --stat f7274207 32fbde8e -- ultimate_pipeline/governance/ is empty)",
+      "actual_change": "rename only (git mv, R100)"
+    }
+  },
+
+  "rename": {
+    "from": [
+      "ultimate_pipeline/governance/inputs_manifest.py",
+      "ultimate_pipeline/governance/proj_env_guard.py"
+    ],
+    "to": [
+      "ultimate_pipeline/governance/reproducibility/inputs_manifest.py",
+      "ultimate_pipeline/governance/reproducibility/proj_env_guard.py"
+    ],
+    "content_change": "NONE - both blobs unchanged from f7274207 (81b98fb8, 504fee50)",
+    "new_package_init": "ultimate_pipeline/governance/reproducibility/__init__.py (no eager submodule import: proj_env_guard imports pyproj)",
+    "governance_init": "rewritten as a two-subpackage map (single_writer vs reproducibility)"
+  },
+
+  "callers_updated": [
+    "ultimate_pipeline/main_pipeline.py (2 imports, lines 175 and 1717)",
+    "scripts/regen_map_of_record.py (2 imports)",
+    "tools/pack_thesis_run.py (1 import)",
+    "tools/validate_thesis_claim_provenance.py (1 import + 1 docstring)",
+    "ultimate_pipeline/carla_tools/map_registry.py (1 import)",
+    "tests/unit/test_inputs_manifest.py (1 import + 1 docstring)",
+    "tests/unit/test_regen_strict_preconditions.py (2 imports, 3 'from ultimate_pipeline.governance import proj_env_guard', 2 monkeypatch.setattr string targets)",
+    "ultimate_pipeline/tests/unit/test_c11_inputs_manifest_guard.py (1 import)",
+    "ultimate_pipeline/tests/unit/test_c11_proj_env_guard.py (2 imports)",
+    "ultimate_pipeline/governance/__init__.py (docstring)",
+    "ultimate_pipeline/config/settings.py (comment)",
+    ".gitattributes (comment)"
+  ],
+  "callers_deliberately_untouched": {
+    "reason": "frozen/historical evidence still names the old path and is immutable; rewriting it would falsify provenance, and two of them are digest-pinned",
+    "paths": [
+      "reports/post_audit_hardening/C11_REPRODUCIBILITY.md",
+      "reports/post_audit_hardening/ARTIFACT_AUTHORITY_AUDIT.md",
+      "reports/post_audit_hardening/C13_manual_map_and_registry.md",
+      "reports/production_readiness/20260918T000000Z_CANONICAL_REGEN_PRECONDITIONS/RESULTS.json",
+      "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json"
+    ],
+    "data_key_only_no_change_needed": [
+      "ultimate_pipeline/contracts/artifact_authority.py",
+      "tests/unit/test_regen_find_final_xodr_hygiene.py",
+      "tests/unit/test_validate_thesis_claim_provenance.py",
+      "ultimate_pipeline/tests/unit/test_final_artifact_authority.py",
+      "ultimate_pipeline/tests/unit/test_final_artifact_receipt_resolution.py",
+      "ultimate_pipeline/tests/unit/test_final_evidence_ordering.py",
+      "ultimate_pipeline/tests/unit/test_inputs_manifest_default.py"
+    ]
+  },
+
+  "final_module_layout": {
+    "ultimate_pipeline/governance/": [
+      "__init__.py (package map, no eager imports)",
+      "reproducibility/__init__.py",
+      "reproducibility/inputs_manifest.py",
+      "reproducibility/proj_env_guard.py",
+      "single_writer/__init__.py",
+      "single_writer/domains.py",
+      "single_writer/exit_codes.py",
+      "single_writer/handoff.py",
+      "single_writer/job_supervision.py",
+      "single_writer/lease_store.py",
+      "single_writer/os_lock.py",
+      "single_writer/preflight.py",
+      "single_writer/receipt_reconciler.py",
+      "single_writer/run_settings.py",
+      "single_writer/ungoverned_detector.py"
+    ],
+    "tools/": [
+      "supervised_ue_run.py",
+      "orphan_terminal_witness.py",
+      "salvage_repair.py",
+      "check_windows_rhi_scope.py"
+    ],
+    "scripts/": [
+      "run_unit_shards.py",
+      "control_plane.py (T6 harness dependency, harness-local)",
+      "job_supervision.py (T6 harness dependency, harness-local)",
+      "orch_core.py (T6 harness dependency, harness-local)",
+      "lease_job_coupling.py",
+      "t6_determinism.py"
+    ],
+    "tests/unit/": [
+      "test_single_writer_control_plane.py",
+      "test_receipt_reconciler.py",
+      "test_salvage_repair.py",
+      "test_harness_governance_contract.py",
+      "test_t6_owner_identity_authority.py"
+    ],
+    "reports/": [
+      "PROCESS_IDENTITY_CONTRACT_V2.json"
+    ]
+  },
+
+  "diff_stat_f7274207_to_measured_tip": {
+    "paths": 44,
+    "insertions": 6195,
+    "deletions": 25
+  },
+
+  "test_evidence": {
+    "command": "python -m pytest   (bare, pytest.ini testpaths, no hand-typed path list)",
+    "runner": "background process, stdout/stderr redirected to log files",
+    "baseline_f7274207": {
+      "log": "pytest_full_baseline.log",
+      "collected": 6857,
+      "passed": 6846,
+      "failed": 1,
+      "skipped": 10,
+      "errors": 0,
+      "duration_s": 1774.33
+    },
+    "baseline_e4f7a45a": {
+      "collect_only": 6914,
+      "production_new_test_files_run": {
+        "files": [
+          "ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py",
+          "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py"
+        ],
+        "passed": 82,
+        "failed": 0
+      }
+    },
+    "branch_measured_tip": {
+      "log": "pytest_full_final.log",
+      "commit": "5727acaf (content byte-identical to 5370ff07; only the report file in this commit differs)",
+      "collected": 6978,
+      "passed": 6967,
+      "failed": 1,
+      "skipped": 10,
+      "errors": 0,
+      "duration_s": 2241.66
+    },
+    "delta_vs_e4f7a45a": {
+      "collected": 64,
+      "passed": 64,
+      "failed": 0,
+      "note": "64 = 60 'def test_' across the 5 new files, with test_single_writer_control_plane.py's single @pytest.mark.parametrize expanding one function to 5 cases (+4)"
+    },
+    "sole_failure": {
+      "nodeid": "tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_no_hardcoded_username_in_production_defaults",
+      "classification": "PRE-EXISTING - fails identically on the untouched baseline at f7274207",
+      "cause": "asserts 'c:\\users\\admin' not in resolved defaults, but DEFAULT_OSM2WORLD_HOME resolves relative to the repo root, and every worktree on this machine lives under C:\\Users\\admin",
+      "introduced_by_this_branch": false
+    },
+    "new_test_files": {
+      "tests/unit/test_single_writer_control_plane.py": {"defs": 18, "collected": 22},
+      "tests/unit/test_receipt_reconciler.py": {"defs": 9, "collected": 9},
+      "tests/unit/test_salvage_repair.py": {"defs": 3, "collected": 3},
+      "tests/unit/test_harness_governance_contract.py": {"defs": 15, "collected": 15},
+      "tests/unit/test_t6_owner_identity_authority.py": {"defs": 15, "collected": 15},
+      "total_collected": 64
+    },
+    "discarded_run": {
+      "log": "pytest_full_merged.log",
+      "result": "3 failed, 6845 passed, 10 skipped, 63 errors",
+      "reason_discarded": "INVALID - the worktree running it was deleted underneath it mid-run (only .pytest_cache survived; git worktree registration gone). The 63 errors are pytest raising ImportError(path) because ultimate_pipeline/__init__.py had been removed from disk, and 2 of the 3 failures are multiprocessing-spawn children failing to import modules that exist in a healthy checkout. Superseded by the clean re-run above."
+    },
+    "prior_session_focus_runs": {
+      "note": "lease-dependent suites, re-run during this reconciliation",
+      "test_harness_governance_contract.py": "15 passed",
+      "test_single_writer_control_plane.py": "18 passed",
+      "test_receipt_reconciler.py": "9 passed"
+    }
+  },
+
+  "review": {
+    "type": "independent read-only reviewer subagent",
+    "scope": "provenance byte-identity of all 44 paths, rename completeness, scope containment, main_pipeline/writer_lock isolation, commit-message factual accuracy",
+    "result": "NO DEFECTS FOUND",
+    "flags_raised": [
+      "commit message baseline sentence was stale after production advanced - fixed by amending commit 1 and cherry-picking 2-5 (content verified identical)",
+      "scripts/run_unit_shards.py is the only file not byte-identical to its source ref - disclosed in its own commit"
+    ]
+  },
+
+  "environment_incidents": [
+    "origin/integration/production-large-map-20260918 advanced twice during execution (f7274207 -> e4f7a45a); handled by rebasing",
+    "the first working worktree (wt-writer-lock-reconcile) was deleted by a concurrent session while its pytest run was in progress, invalidating that run; re-run in a fresh worktree",
+    "the main checkout was switched across branches by a concurrent session (review/... -> docs/repo-state-sync-20261007 -> rq3-Grid0828-governance-fix) during this task; the main checkout was never modified by this task"
+  ],
+
+  "open_items": [
+    "scripts/control_plane.py + scripts/job_supervision.py + scripts/orch_core.py were added as T6 harness dependencies (step 3's 3-file list was insufficient to make the harness importable). Confirm this scope call.",
+    "frozen reports/campaigns/docs/submission files still reference the pre-rename module paths by design",
+    "test_no_hardcoded_username_in_production_defaults fails on any worktree under C:\\Users\\admin - pre-existing, not addressed here",
+    "branch is pushed for review only; merging to integration/production-large-map-20260918 is a separate decision"
+  ]
+}

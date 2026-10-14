@@ -1,0 +1,89 @@
+{
+  "candidate_commit": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+  "checks": {
+    "coordinate_identity": {
+      "exact": true,
+      "expected": {
+        "frame_id": "ingolstadt_local_rebased",
+        "frame_kind": "rebased_local",
+        "rebase_dx": 832671.676,
+        "rebase_dy": 5458671.104
+      },
+      "observed": {
+        "frame_id": "ingolstadt_local_rebased",
+        "frame_kind": "rebased_local",
+        "header_offset_xy": [
+          832671.676,
+          5458671.104
+        ],
+        "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "placement_authority_basis": null,
+        "placement_independently_verified": null,
+        "rebase_dx": 832671.676,
+        "rebase_dy": 5458671.104,
+        "run_id": "20260924T100614Z",
+        "source": "AUTO_COOK_RECEIPT.json",
+        "tile_size_m": 1000.0,
+        "tile_size_m_sidecar": 1000.0
+      }
+    },
+    "descriptor": {
+      "declared_map_name": "Ingolstadt",
+      "declared_tile_size": 1000.0,
+      "declared_xodr": "./ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "declared_xodr_sha256": null,
+      "map_name_matches_dir": true,
+      "mirror_byte_identical": true,
+      "mirror_present": true,
+      "package_json_sha256": "da5eb6ea9598dfc5005c283181e99c0ec605d477da1502401c434aa317f01024"
+    },
+    "tile_content_hashes": {
+      "bound_but_absent": [],
+      "files_bound": 21,
+      "manifest_artifact_type": "carla_large_map_package_sha256",
+      "manifest_file": "PACKAGE_SHA256.json",
+      "manifest_status": "verified",
+      "mismatches": [],
+      "tiles_bound": 20,
+      "unbound_present": []
+    },
+    "tile_set": {
+      "declared_count": 20,
+      "declared_missing_on_disk": [],
+      "expected_count": 20,
+      "extra": [],
+      "missing": [],
+      "on_disk_count": 20,
+      "undeclared_on_disk": []
+    },
+    "xodr_identity": {
+      "byte_exact": true,
+      "bytes": 149799632,
+      "count": 1,
+      "filename": "ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "sha256_actual": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "sha256_expected": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    }
+  },
+  "failures": [],
+  "generated_at_utc": "2026-10-02T19:34:54.610524Z",
+  "governed_validator": {
+    "failures": [],
+    "status": "PASS",
+    "tile_count": 20,
+    "tiles_fbx_sha256_verified": false,
+    "warnings": [],
+    "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+  },
+  "no_substitution": true,
+  "not_claimed": "Offline validation only. No UE4 editor, no `make import`, no cook, no runtime load of the Ingolstadt auto map was performed or is implied. COOK_LOG.txt / AUTO_COOK_RECEIPT.json in this package are OFFLINE FBX GENERATION records and explicitly say no editor was invoked.",
+  "package_dir": "E:\\CARLA\\CARLA_0.9.16\\Import\\Ingolstadt",
+  "registry_pin": {
+    "bytes": 149799632,
+    "registry_key": "auto_map_of_record",
+    "resolved_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+  },
+  "schema": "staged_package_revalidation/v1",
+  "status": "PASS"
+}

@@ -1,0 +1,29 @@
+{
+  "authoritative_training_tile_set": {
+    "expected_location": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/union_tiles",
+    "status": "INCOMPLETE \u2014 training tile bytes absent; no manifest claimed for them. Per-run manifests are produced by train_map_encoder / run_ksweep at training time.",
+    "tiles_present_in_this_checkout": 562
+  },
+  "git_sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8-dirty",
+  "manifest_construction": "gnn_provenance.build_training_dataset_manifest (tile path, SHA256, node/edge counts, feature dim, graph digest; canonical hash over tile-sorted records)",
+  "reference_artifact_manifest": [
+    {
+      "artifact": "cities/ingolstadt/manual_grid0821.xodr",
+      "edge_count": 76948,
+      "feature_dim": 12,
+      "graph_digest": "6f614542423b3bb8ca51d3bfb18cdfd357f810e9eb8e3110cd369696838b184b",
+      "node_count": 49189,
+      "sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+      "width_mode": "legacy"
+    },
+    {
+      "artifact": "cities/ingolstadt/manual_grid0821.xodr",
+      "edge_count": 76948,
+      "feature_dim": 12,
+      "graph_digest": "fe05c200702c1116a3001da6fe79987a77f0958e546a5634dc3cdabe9e352629",
+      "node_count": 49189,
+      "sha256": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+      "width_mode": "polynomial"
+    }
+  ]
+}

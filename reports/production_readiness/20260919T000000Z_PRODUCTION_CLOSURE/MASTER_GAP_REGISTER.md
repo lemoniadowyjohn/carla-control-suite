@@ -1,5 +1,9 @@
 # Master Gap Register - Production Closure 20260919
 
+**Superseded snapshot.** The live register is
+`../20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.md` (updated through 2026-09-24).
+This 20260919 copy is kept only as point-in-time baseline evidence and is not maintained.
+
 Machine-readable version: `MASTER_GAP_REGISTER.json`.
 
 | ID | Severity | Subsystem | Status | Fixing commit |

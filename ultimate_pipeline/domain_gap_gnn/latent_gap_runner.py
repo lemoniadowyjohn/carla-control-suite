@@ -39,12 +39,68 @@ def _set_determinism(seed: Optional[int]):
 
 
 def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
+    """Load an encoder checkpoint, verifying identity fail-closed (§10).
+
+    Metadata-bearing checkpoints verify node dimension, graph-schema hash,
+    architecture and model config against the current code. Historical raw
+    checkpoints (``model_state``/``cfg`` without ``metadata``) still load
+    for backward compatibility but are labelled LEGACY_UNBOUND_CHECKPOINT
+    downstream — never silently upgraded to authoritative evidence.
+    """
+    from . import gnn_provenance as prov
+    from .graph_builder import graph_schema_hash
+
     ckpt = torch.load(checkpoint_path, map_location="cpu")
-    cfg = MapEncoderConfig(**ckpt["cfg"])
+    state, meta, _label = prov._normalise_loaded_checkpoint(ckpt)
+    if meta is None:
+        cfg = MapEncoderConfig(**ckpt["cfg"])
+        model = MapEncoder(cfg)
+        model.load_state_dict(ckpt["model_state"])
+        model.eval()
+        return model.to(device)
+    # Cross-check the stored schema hash against the CURRENT code's schema
+    # for the width mode recorded at train time: a code change that alters
+    # features must fail closed here instead of silently reusing weights.
+    width_mode = str(
+        meta.get("training_config", {}).get("width_mode", "legacy")
+    )
+    current_schema = graph_schema_hash(width_mode=width_mode)
+    if str(meta.get("graph_schema_sha256", "")) != current_schema:
+        raise ValueError(
+            f"checkpoint schema hash does not match current code "
+            f"(checkpoint={meta.get('graph_schema_sha256')} "
+            f"current={current_schema} width_mode={width_mode})"
+        )
+    model_cfg = meta.get("model_config", {})
+    cfg = MapEncoderConfig(
+        node_dim=int(model_cfg["node_dim"]),
+        hidden_dim=int(model_cfg.get("hidden_dim", 128)),
+        num_layers=int(model_cfg.get("num_layers", 3)),
+        dropout=float(model_cfg.get("dropout", 0.1)),
+        out_dim=int(model_cfg.get("out_dim", 128)),
+        normalize_embedding=bool(model_cfg.get("normalize_embedding", True)),
+    )
+    if str(model_cfg.get("architecture", "")) != (
+        "MapEncoder/GCNConv+global_mean_pool+proj"
+    ):
+        raise ValueError(
+            "checkpoint architecture mismatch: "
+            f"{model_cfg.get('architecture')!r}"
+        )
     model = MapEncoder(cfg)
-    model.load_state_dict(ckpt["model_state"])
+    model.load_state_dict(state)
     model.eval()
     return model.to(device)
+
+
+def checkpoint_provenance_label(checkpoint_path: str) -> str:
+    """Return VERIFIED_CRYPTOGRAPHIC_PROVENANCE for metadata-bearing
+    checkpoints, else LEGACY_UNBOUND_CHECKPOINT."""
+    from . import gnn_provenance as prov
+
+    ckpt = torch.load(str(checkpoint_path), map_location="cpu")
+    _, _, label = prov._normalise_loaded_checkpoint(ckpt)
+    return label
 
 
 # ============================================================
@@ -80,12 +136,16 @@ def compute_whole_map_latent_gap(
 
     metrics = combine_latent_gaps(z_m, z_a)
 
+    from . import gnn_provenance as prov
+
     return {
         "enabled": True,
         "metrics": metrics,
         "encoder": {
             "checkpoint": checkpoint,
             "checkpoint_md5": _hash_file(checkpoint),
+            "checkpoint_sha256": prov.sha256_file(checkpoint),
+            "checkpoint_provenance": checkpoint_provenance_label(checkpoint),
             "device": str(device),
         },
         "determinism": {
@@ -151,6 +211,8 @@ def compute_per_tile_latent_gap(
 
         per_tile[m_name] = combine_latent_gaps(z_m, z_a)
 
+    from . import gnn_provenance as prov
+
     out = {
         "enabled": True,
         "pairing_method": pairing_method,
@@ -160,6 +222,8 @@ def compute_per_tile_latent_gap(
         "encoder": {
             "checkpoint": checkpoint,
             "checkpoint_md5": _hash_file(checkpoint),
+            "checkpoint_sha256": prov.sha256_file(checkpoint),
+            "checkpoint_provenance": checkpoint_provenance_label(checkpoint),
             "device": str(device),
         },
         "determinism": {

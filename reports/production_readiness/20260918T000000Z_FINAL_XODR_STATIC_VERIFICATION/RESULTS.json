@@ -1,0 +1,41 @@
+{
+  "run_id": "20260918T000000Z_FINAL_XODR_STATIC_VERIFICATION",
+  "task_id": "OC-42",
+  "title": "Strict static XODR verification with evidence binding",
+  "components": [
+    "ultimate_pipeline/tools/verify_final_xodr.py::verify_final_xodr",
+    "ultimate_pipeline/tools/preflight_xodr_loadability.py::run_preflight"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/final-xodr-static-verification-v1",
+  "final_head": "cd8aa47255d3789396d17d05e4ef1ce4ff85f630",
+  "defect_summary": {
+    "no_xodr_hash_in_report": "Both verify_final_xodr.py and preflight_xodr_loadability.py produced reports without recording the SHA256 of the XODR file they verified, making it impossible to detect if a report was swapped for a different XODR file.",
+    "no_report_self_hash": "Reports had no self-referential SHA256, so a tampered report could not be detected.",
+    "no_provenance": "Reports contained no tool version, git commit, or environment metadata, preventing forensic traceability.",
+    "no_evidence_schema": "Reports lacked a versioned schema identifier, making forward/backward compatibility fragile."
+  },
+  "corrected_semantics": {
+    "verify_final_xodr": "Adds xodr_sha256 (SHA256 of the verified XODR), provenance block (tool name, git SHA, Python version). Schema bumped to v1.",
+    "preflight_xodr_loadability": "Adds xodr_sha256 (SHA256 of input XODR), report_sha256 (SHA256 of the written report for tamper detection), provenance block (tool name, git SHA, Python version). Schema bumped to v1.",
+    "both_tools": "Reports now self-identify with schema version and include full provenance for forensic traceability. Report consumers can verify the report matches the XODR it claims to verify."
+  },
+  "tests": {
+    "existing_tests": 29,
+    "passed": 29,
+    "coverage": "All existing tests for verify_final_xodr (lane width scanning, junction/connector counting, parse error handling, dry-run invariant) and preflight_xodr_loadability (module integration, error aggregation, status determination) pass without modification."
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit -k \"verify_final_xodr or preflight\" -v",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "29 passed (verify_final_xodr + preflight_xodr_loadability suites)",
+    "tests_unit_and_pipeline": "3402 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "Report consumers (e.g., final_map_readiness_gate) must opt-in to verify xodr_sha256; this was addressed in OC-41 but requires coordinated deployment.",
+    "preflight_xodr_loadability module results (strict_validator, carla_compat_gate, lane_section_successor_scan) don't individually include xodr_sha256; only the top-level report does. Sub-module results could be swapped independently.",
+    "Git SHA capture depends on git being available in the execution environment; falls back to empty string if unavailable."
+  ]
+}

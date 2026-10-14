@@ -58,10 +58,10 @@ def _find_tile_fbx(glob_pattern: str) -> List[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--xodr", default=str(PINNED_XODR), help="whole-map XODR to stage")
-    parser.add_argument("--expected-xodr-sha256", default=PINNED_XODR_SHA256,
+    parser.add_argument("--xodr", default=None, help="whole-map XODR to stage (default: authoritative XODR via verify_pinned_map)")
+    parser.add_argument("--expected-xodr-sha256", default=None,
                         help="refuse to stage if the xodr's sha256 does not match "
-                             "(pass '' to skip the check)")
+                             "(default: authoritative XODR SHA via verify_pinned_map; pass '' to skip the check)")
     parser.add_argument("--map-name", default=MAP_NAME)
     parser.add_argument("--package-name", default=None,
                         help="Import/<PackageName>/ directory name (default: --map-name)")
@@ -75,10 +75,33 @@ def main() -> int:
     parser.add_argument("--no-carla-materials", action="store_true")
     args = parser.parse_args()
 
+    # O1: Re-resolve authoritative XODR at execution time (not import-time
+    # PINNED_XODR) so a stale import-time pin cannot survive a re-promotion.
+    try:
+        _fresh = verify_pinned_map("auto_map_of_record")
+        _fresh_path = Path(_fresh["resolved_path"])
+        _fresh_sha = _fresh["sha256"]
+    except Exception as exc:
+        print(f"[ERROR] failed to resolve authoritative XODR via verify_pinned_map: {exc}", file=sys.stderr)
+        return 1
+
+    # Determine XODR to stage: explicit --xodr overrides, otherwise authoritative
+    xodr_to_stage = args.xodr if args.xodr is not None else str(_fresh_path)
+    # Determine expected SHA: explicit --expected-xodr-sha256 overrides,
+    # None means use authoritative (fresh), '' means skip check
+    if args.expected_xodr_sha256 is None:
+        expected_sha = _fresh_sha
+    elif args.expected_xodr_sha256 == "":
+        expected_sha = None
+    else:
+        expected_sha = args.expected_xodr_sha256
+
     tile_paths: List[str] = list(args.tile_fbx)
     for pattern in args.tile_fbx_glob:
         tile_paths.extend(_find_tile_fbx(pattern))
-    # de-dupe, preserve order
+    # de-dupe, preserve order — O1 protection 2/8: never by mtime, only by
+    # deterministic sort later in stage_large_map_package (tx,ty), stale
+    # presence never influences selection except via fail-closed provenance.
     seen = set()
     deduped = []
     for p in tile_paths:
@@ -87,16 +110,17 @@ def main() -> int:
             deduped.append(p)
     tile_paths = deduped
 
-    expected_sha = args.expected_xodr_sha256 or None
+    print(f"[stage] authoritative XODR: {_fresh_path} sha256={_fresh_sha[:16]}... (registry {_fresh.get('registry_sha256','')[:16]}...)")
+    print(f"[stage] using xodr={xodr_to_stage} expected_sha={expected_sha[:16]+'...' if expected_sha else 'None (skip)'}")
 
-    print(f"[stage] map_name={args.map_name!r} xodr={args.xodr}")
+    print(f"[stage] map_name={args.map_name!r} xodr={xodr_to_stage!r}")
     print(f"[stage] {len(tile_paths)} tile FBX candidate(s) found")
     for p in tile_paths:
         print(f"[stage]   - {p}")
 
     result = stage_large_map_package(
         map_name=args.map_name,
-        xodr_path=args.xodr,
+        xodr_path=xodr_to_stage,
         tile_fbx_paths=tile_paths,
         import_root=args.import_root,
         package_name=args.package_name,

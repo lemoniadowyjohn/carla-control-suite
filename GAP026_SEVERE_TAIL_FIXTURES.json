@@ -1,0 +1,132 @@
+{
+  "fixtures": [
+    {
+      "connecting_road": "54435",
+      "connection_id": "3",
+      "failures": [
+        {
+          "connection_id": "3",
+          "from": "-1",
+          "junction_id": "12",
+          "to": "-1"
+        }
+      ],
+      "fixture_id": "gap026_0_25_0_5",
+      "from": "-1",
+      "incoming_road": "47383",
+      "junction_id": "12",
+      "path": "tests\\data\\gap026_fixtures\\gap026_0_25_0_5.xodr",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "summary_metrics": {
+        "checked": 1,
+        "failed": 1,
+        "passed": 0
+      },
+      "to": "-1"
+    },
+    {
+      "connecting_road": "70937",
+      "connection_id": "1",
+      "failures": [
+        {
+          "connection_id": "1",
+          "from": "-1",
+          "junction_id": "5",
+          "to": "-1"
+        }
+      ],
+      "fixture_id": "gap026_1_3",
+      "from": "-1",
+      "incoming_road": "50230",
+      "junction_id": "5",
+      "path": "tests\\data\\gap026_fixtures\\gap026_1_3.xodr",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "summary_metrics": {
+        "checked": 1,
+        "failed": 1,
+        "passed": 0
+      },
+      "to": "-1"
+    },
+    {
+      "connecting_road": "52027",
+      "connection_id": "3",
+      "failures": [
+        {
+          "connection_id": "3",
+          "from": "-2",
+          "junction_id": "1",
+          "to": "-1"
+        }
+      ],
+      "fixture_id": "gap026_3_5",
+      "from": "-2",
+      "incoming_road": "42486",
+      "junction_id": "1",
+      "path": "tests\\data\\gap026_fixtures\\gap026_3_5.xodr",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "summary_metrics": {
+        "checked": 1,
+        "failed": 1,
+        "passed": 0
+      },
+      "to": "-1"
+    },
+    {
+      "connecting_road": "73103",
+      "connection_id": "2",
+      "failures": [
+        {
+          "connection_id": "2",
+          "from": "-3",
+          "junction_id": "8",
+          "to": "-1"
+        }
+      ],
+      "fixture_id": "gap026_5_10",
+      "from": "-3",
+      "incoming_road": "51971",
+      "junction_id": "8",
+      "path": "tests\\data\\gap026_fixtures\\gap026_5_10.xodr",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "summary_metrics": {
+        "checked": 1,
+        "failed": 1,
+        "passed": 0
+      },
+      "to": "-1"
+    },
+    {
+      "connecting_road": "69337",
+      "connection_id": "15",
+      "failures": [
+        {
+          "connection_id": "15",
+          "from": "-4",
+          "junction_id": "411",
+          "to": "-1"
+        }
+      ],
+      "fixture_id": "gap026_over_10",
+      "from": "-4",
+      "incoming_road": "47036",
+      "junction_id": "411",
+      "path": "tests\\data\\gap026_fixtures\\gap026_over_10.xodr",
+      "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "status": "PASS",
+      "summary_metrics": {
+        "checked": 1,
+        "failed": 1,
+        "passed": 0
+      },
+      "to": "-1"
+    }
+  ],
+  "schema": "gap026_severe_tail_fixtures/v1",
+  "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "status": "PASS"
+}

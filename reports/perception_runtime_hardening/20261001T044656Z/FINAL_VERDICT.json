@@ -1,0 +1,57 @@
+{
+  "blocked_external_count": 3,
+  "full_pass_requires": {
+    "all_scenario_actors_cleaned_up": "PASS",
+    "arm_specific_weather_identities_equal": "PASS",
+    "camera_photometric_profile_frozen_equal_both_arms": "PASS",
+    "complete_weather_state_captured": "PASS",
+    "controlled_pedestrian_traffic_genuinely_controlled": "PASS",
+    "deterministic_weather_scheduling": "PASS",
+    "empirical_calibration_assay_PASS": "BLOCKED_EXTERNAL",
+    "experiment_start_state_before_governed_capture": "PASS",
+    "governed_randomness_has_explicit_seed_ownership": "PASS",
+    "heuristic_calibration_cannot_override_canonical": "PASS",
+    "live_carla_evidence_for_runtime_dependent_claims": "BLOCKED_EXTERNAL",
+    "native_vs_target_intrinsic_discrepancy_accounted_for": "PASS",
+    "no_calibration_actor_leaks": "PASS",
+    "one_tm_authority_master": "PASS",
+    "physics_profile_validated": "PASS",
+    "quantitative_lidar_camera_gate": "PASS",
+    "requested_weather_actually_applied": "BLOCKED_EXTERNAL",
+    "strict_tm_cannot_silently_fall_back": "PASS",
+    "targeted_and_regression_tests_PASS": "PASS",
+    "vehicle_calibration_binding_established": "PASS"
+  },
+  "live_verification_sequence_when_carla_becomes_available": [
+    "exact server/client version verification",
+    "correct map identity",
+    "simulation state profile",
+    "weather application/readback",
+    "TM ownership/seed/readback evidence where API permits",
+    "ego/calibration vehicle binding",
+    "effective sensor attributes",
+    "empirical camera reprojection assay",
+    "empirical LiDAR-camera alignment",
+    "full sensor health",
+    "short deterministic repeated capture",
+    "actor/TM/world cleanup",
+    "repeat run and compare governed identities"
+  ],
+  "never_claim": "The sensor calibration is NOT fully operational. The live reprojection acceptance assay is BLOCKED_EXTERNAL and the intrinsic realization is a QUANTIFIED BOUNDED APPROXIMATION, not exact calibration. Matrix/unit tests alone do not establish calibration.",
+  "schema": "PERCEPTION_ENVIRONMENT_FINAL_VERDICT/v1",
+  "scientific_closure": {
+    "DETERMINISTIC_ENVIRONMENT": "PASS",
+    "EMPIRICAL_REPROJECTION_ACCEPTANCE": "BLOCKED_EXTERNAL",
+    "LIVE_CAPTURE_EVIDENCE": "BLOCKED_EXTERNAL",
+    "PAIRWISE_IDENTITY_EQUALITY": "CONTRACT_ENFORCED_RUNTIME_PENDING",
+    "RUNTIME_SENSOR_REALIZATION": "BOUNDED_APPROXIMATION_QUANTIFIED",
+    "STATIC_CALIBRATION_CONTRACT": true
+  },
+  "verdict": "PERCEPTION_ENVIRONMENT_OFFLINE_PASS_LIVE_BLOCKED",
+  "verdict_vocabulary": [
+    "PERCEPTION_ENVIRONMENT_HARDENING_PASS",
+    "PERCEPTION_ENVIRONMENT_OFFLINE_PASS_LIVE_BLOCKED",
+    "PERCEPTION_ENVIRONMENT_PARTIAL",
+    "PERCEPTION_ENVIRONMENT_REGRESSION"
+  ]
+}

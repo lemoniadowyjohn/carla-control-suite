@@ -1,0 +1,50 @@
+{
+  "authoritative_module": "ultimate_pipeline.sensors.calibration_contract",
+  "authoritative_verdict": "PASS",
+  "calib_sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+  "calibration_semantics": {
+    "cTv": "vehicle_to_camera_used_directly_not_inverted",
+    "camera_model": "CARLA ideal pinhole",
+    "distortion_in_carla": "none",
+    "effective_intrinsics_source": "K_undistortion_ideal_pinhole",
+    "ignored_sources": [
+      "K",
+      "D"
+    ],
+    "use_K_undistortion": "legacy flag meaning: use the rectified K_undistortion matrix as the pinhole FOV source",
+    "vTl": "lidar_to_vehicle_inverted_to_vehicle_to_lidar"
+  },
+  "cleanup_transactional": [
+    "listeners stopped",
+    "sensors destroyed",
+    "temporary props destroyed",
+    "ego destroyed",
+    "world settings restored",
+    "actor cleanup verified"
+  ],
+  "diagnostic_tool": {
+    "authoritative": false,
+    "export_schema": "carla_export_v1_DIAGNOSTIC_NON_AUTHORITATIVE",
+    "module": "ultimate_pipeline.tools.calibrate_sensors_in_carla",
+    "rejected_by_loader": true,
+    "status": "LEGACY_DIAGNOSTIC_CONVENTION_EXPLORER"
+  },
+  "intrinsic_realization": {
+    "exact_full_frame": false,
+    "legacy_claim_withdrawn": "native CARLA frames are NOT K_undistortion; see per-camera delta_fy / delta_cx / delta_cy",
+    "strategy_counts": {
+      "INTRINSICS_APPROXIMATION_BOUNDED": 6
+    }
+  },
+  "lidar_camera_gate": {
+    "ok": false,
+    "targets_expected": 4,
+    "targets_passed": 3
+  },
+  "live_acceptance": "BLOCKED_EXTERNAL",
+  "schema": "CALIBRATION_AUTHORITY_MATRIX/v1",
+  "vehicle_binding": {
+    "pairwise_sim_claimable": true,
+    "rig_replica_claimable_for_tesla": true
+  }
+}

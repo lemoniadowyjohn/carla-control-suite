@@ -116,6 +116,11 @@ def _run_perception_safe(
 
 
 def _recover_carla(*, town: str, host: str, port: int, wait_ready_s: float) -> bool:
+    # NEW-285: Never call load_world() for Grid0828/Grid0821 inside a running session.
+    # The original code called client.load_world(town) for Grid0828, which reintroduced
+    # known unsafe map travel that caused crashes.
+    # Recovery on unstable maps should use a fresh CARLA process + operator/preconfigured
+    # target map, not map travel inside a running session.
     if not restart_carla(host=host, port=port):
         return False
     client = autostart_carla_if_needed(host=host, port=port, timeout_s=float(wait_ready_s))
@@ -123,12 +128,7 @@ def _recover_carla(*, town: str, host: str, port: int, wait_ready_s: float) -> b
         client, retries=max(1, int(wait_ready_s)), delay_s=1.0, require_map=True
     ):
         return False
-    if str(town or "").strip().lower() == "grid0828":
-        client.load_world(str(town))
-        if not ensure_carla_ready(
-            client, retries=max(1, int(wait_ready_s)), delay_s=1.0, require_map=True
-        ):
-            return False
+    # Removed: client.load_world(str(town)) for Grid0828
     return True
 
 
@@ -164,15 +164,23 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     for attempt in range(1, max_attempts + 1):
         started = time.perf_counter()
+        # NEW-284: Use attempt-specific output directory to prevent contamination
+        attempt_out = str(Path(str(args.out)) / f"attempt_{attempt:03d}")
+        Path(attempt_out).mkdir(parents=True, exist_ok=True)
+        attempt_status_path = Path(attempt_out) / "carla_status.json"
+        # NEW-286: Use per-attempt status path so stale attempt state cannot influence later attempts
+        # Forward --out to the attempt-specific directory
+        attempt_passthrough = [t for t in passthrough if t != "--out" and not t.startswith("--out=")]
+        
         result = _run_perception_safe(
             town=str(args.town),
             calib=str(args.calib),
-            out=str(args.out),
+            out=attempt_out,
             seg=bool(args.seg),
-            passthrough=passthrough,
+            passthrough=attempt_passthrough,
         )
         elapsed_s = float(time.perf_counter() - started)
-        carla_status = _read_json_if_dict(status_path)
+        carla_status = _read_json_if_dict(attempt_status_path)
         carla_failed = bool(carla_status.get("carla_failed", False))
         success = int(result.returncode) == 0 and not carla_failed
 
@@ -184,6 +192,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "failure_reason": None,
                     "duration_s": round(elapsed_s, 3),
                     "carla_restarted": False,
+                    "out_dir": attempt_out,
                 }
             )
             final_status = "success"
@@ -201,6 +210,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "failure_reason": MAP_TRAVEL_RISK_GRID0821,
                     "duration_s": round(elapsed_s, 3),
                     "carla_restarted": False,
+                    "out_dir": attempt_out,
                 }
             )
             print(
@@ -231,6 +241,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "failure_reason": str(failure_reason),
                 "duration_s": round(elapsed_s, 3),
                 "carla_restarted": bool(carla_restarted),
+                "out_dir": attempt_out,
             }
         )
 

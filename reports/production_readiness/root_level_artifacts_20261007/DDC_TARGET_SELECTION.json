@@ -1,0 +1,89 @@
+{
+  "DDC_TARGET_SELECTION": {
+    "CANDIDATES": [
+      {
+        "drive": "F:",
+        "physical_drive": "PHYSICALDRIVE0 (INTENSO SSD)",
+        "filesystem": "NTFS",
+        "total_gb": 673.1,
+        "free_gb": 41.5,
+        "free_percent": 6.2,
+        "media_type": "Fixed SSD",
+        "sequential_read_mbps": 1805,
+        "sequential_write_mbps": 314,
+        "small_file_read_mbps_1000x64kb": 479,
+        "small_file_write_mbps_1000x64kb": 170,
+        "junction_symlink": false,
+        "available_capacity": "ADEQUATE",
+        "recommendation": "PRIMARY_CANDIDATE"
+      },
+      {
+        "drive": "E:",
+        "physical_drive": "PHYSICALDRIVE0 (INTENSO SSD)",
+        "filesystem": "NTFS",
+        "total_gb": 280.7,
+        "free_gb": 31.4,
+        "free_percent": 11.2,
+        "media_type": "Fixed SSD",
+        "sequential_read_mbps": 1805,
+        "sequential_write_mbps": 314,
+        "small_file_read_mbps_1000x64kb": 193,
+        "small_file_write_mbps_1000x64kb": 80,
+        "junction_symlink": false,
+        "available_capacity": "ADEQUATE",
+        "recommendation": "SECONDARY_CANDIDATE"
+      },
+      {
+        "drive": "C:",
+        "physical_drive": "PHYSICALDRIVE1 (INTEL SSDPEKKF512G8L)",
+        "filesystem": "NTFS",
+        "total_gb": 475.9,
+        "free_gb": 15.6,
+        "free_percent": 3.3,
+        "media_type": "Fixed SSD",
+        "sequential_read_mbps": "UNTESTED",
+        "sequential_write_mbps": "UNTESTED",
+        "small_file_read_mbps_1000x64kb": 214,
+        "small_file_write_mbps_1000x64kb": 55,
+        "junction_symlink": false,
+        "available_capacity": "INSUFFICIENT (system drive, <15% free)",
+        "recommendation": "REJECTED"
+      },
+      {
+        "drive": "G:",
+        "physical_drive": "PHYSICALDRIVE3/4 (Intenso SCSI External HDD)",
+        "filesystem": "NTFS",
+        "total_gb": 931.5,
+        "free_gb": 41.7,
+        "free_percent": 4.5,
+        "media_type": "External HDD",
+        "sequential_read_mbps": 1758,
+        "sequential_write_mbps": 56,
+        "small_file_read_mbps_1000x64kb": 315,
+        "small_file_write_mbps_1000x64kb": 13,
+        "junction_symlink": false,
+        "available_capacity": "MARGINAL (external, low free %, poor small-file perf)",
+        "recommendation": "REJECTED (current DDC location)"
+      },
+      {
+        "drive": "H:",
+        "physical_drive": "PHYSICALDRIVE3/4 (Intenso SCSI External HDD)",
+        "filesystem": "NTFS",
+        "total_gb": 931.5,
+        "free_gb": 16.6,
+        "free_percent": 1.8,
+        "media_type": "External HDD",
+        "sequential_read_mbps": "UNTESTED",
+        "sequential_write_mbps": "UNTESTED",
+        "small_file_read_mbps_1000x64kb": "UNTESTED",
+        "small_file_write_mbps_1000x64kb": "UNTESTED",
+        "junction_symlink": false,
+        "available_capacity": "INSUFFICIENT (<5% free)",
+        "recommendation": "REJECTED"
+      }
+    ],
+    "SELECTED_TARGET": "F:",
+    "SELECTED_PATH": "F:\\UnrealEngine_DDC",
+    "JUSTIFICATION": "Best small-file performance (170 MB/s write, 479 MB/s read), local fixed SSD, adequate free space (41.5 GB), not system drive, no junction/symlink layer"
+  }
+}

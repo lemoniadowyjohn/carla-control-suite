@@ -1,0 +1,23 @@
+{
+  "gate": "lane_topology",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "code_sha": "197b574ce8e5dff69100b495205872363007f9ad",
+  "report": {
+    "ok": true,
+    "num_issues": 0,
+    "issues": [],
+    "totals": {
+      "roads_scanned": 32267,
+      "lane_types": [
+        "driving"
+      ],
+      "allow_dead_ends": true,
+      "max_issues": 2000,
+      "cross_road_boundaries_scanned": 45178,
+      "cross_road_lane_links_checked": 46806,
+      "cross_road_lane_link_issues": 0
+    },
+    "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-final-hardening\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr"
+  },
+  "duration_s": 11.1
+}

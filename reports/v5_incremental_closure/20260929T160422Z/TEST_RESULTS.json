@@ -1,0 +1,112 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "ruff": {
+    "reason": "no lint invocation was requested or required by the repository's documented test entrypoint; compileall and pytest are the canonical checks.",
+    "status": "NOT_RUN"
+  },
+  "schema": "V5_TEST_RESULTS/v1",
+  "stage_a_static": {
+    "command": "python -m compileall -q ultimate_pipeline",
+    "result": "PASS"
+  },
+  "stage_a_yaml": {
+    "command": "python -c \"import yaml; yaml.safe_load(...) for each workflow\"",
+    "note": "Both workflows parse; job graphs validated by ultimate_pipeline/tests/unit/test_workflow_hardening.py",
+    "result": "PASS"
+  },
+  "stage_b_task_specific": [
+    {
+      "failed": 0,
+      "passed": 29,
+      "skipped": 1,
+      "suite": "ultimate_pipeline/tests/unit/test_finalize_run_pack.py",
+      "task": "D16"
+    },
+    {
+      "failed": 0,
+      "passed": 37,
+      "skipped": 1,
+      "suite": "ultimate_pipeline/tests/unit/test_run_provenance_strict.py",
+      "task": "D17"
+    },
+    {
+      "failed": 0,
+      "passed": 35,
+      "skipped": 0,
+      "suite": "ultimate_pipeline/tests/unit/test_repo_health_gate_semantics.py",
+      "task": "D19"
+    },
+    {
+      "failed": 0,
+      "passed": 30,
+      "skipped": 0,
+      "suite": "ultimate_pipeline/tests/unit/test_workflow_hardening.py",
+      "task": "D18"
+    },
+    {
+      "failed": 0,
+      "passed": 21,
+      "skipped": 0,
+      "suite": "ultimate_pipeline/tests/unit/test_dependency_profiles.py",
+      "task": "J09/J10"
+    },
+    {
+      "failed": 0,
+      "passed": 42,
+      "skipped": 0,
+      "suite": "ultimate_pipeline/tests/unit/test_runtime_identity_gate.py",
+      "task": "E24"
+    },
+    {
+      "failed": 0,
+      "passed": 19,
+      "skipped": 0,
+      "suite": "ultimate_pipeline/tests/unit/test_pack_lint.py",
+      "task": "packaging"
+    },
+    {
+      "failed": 0,
+      "passed": 33,
+      "skipped": 1,
+      "suite": "ultimate_pipeline/tests/adversarial/test_v5_adversarial_matrix.py",
+      "task": "adversarial"
+    }
+  ],
+  "stage_c_subsystem": {
+    "command": "python -m pytest tests/unit/test_repo_health_tool.py ultimate_pipeline/domain_gap/tests/test_run_metadata.py ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py -q",
+    "failed": 0,
+    "passed": 36,
+    "skipped": 1
+  },
+  "stage_d_full_offline_regression": {
+    "after_v5": {
+      "failed": 0,
+      "passed": 6497,
+      "skipped": 9
+    },
+    "baseline_at_canonical_sha": {
+      "failed": 0,
+      "passed": 6264,
+      "skipped": 6
+    },
+    "command": "python -m pytest -q",
+    "delta": {
+      "failed": 0,
+      "passed": 233,
+      "skipped": 3
+    },
+    "delta_explanation": "233 net-new tests from the D16/D17/D19/D18/E24/J09/J10/packaging/adversarial closures. 3 extra skips are POSIX-only path/symlink cases skipped on the Windows host.",
+    "regression_note": "An intermediate run produced 4 failures, all triaged and fixed: 1 was a genuine D16 contract change (callers flattened mandatory and conditional artifacts) and 3 were the new dependency-conflict section reflecting a real environment conflict in the developer venv. None were papered over by weakening a gate.",
+    "regressions_introduced": 0
+  },
+  "stage_e_package": {
+    "command": "python -m build --wheel",
+    "note": "Wheel built; METADATA verified to declare all 9 extras with correct markers. Clean-venv install + pip check + extras installability run in CI (Stage E is executed by .github/workflows/tests.yml package-wheel-smoke).",
+    "result": "PASS"
+  },
+  "stage_f_carla_runtime": {
+    "detail": "No live CARLA 0.9.16 server or self-hosted runner available in this environment. No runtime PASS is claimed.",
+    "status": "BLOCKED_EXTERNAL"
+  }
+}

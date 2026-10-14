@@ -39,10 +39,31 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
-# Default path on Windows - can be overridden via OSM2WORLD_HOME env var
-DEFAULT_OSM2WORLD_HOME = Path(
-    r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\OSM2World-latest-bin"
-)
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _resolve_default_osm2world_home() -> Path:
+    """Portable OSM2World default (A1: no developer-machine absolute path).
+
+    Precedence: OSM2WORLD_HOME env (checked again, explicitly, at
+    OSM2WorldRunner construction time) > <repo>/carla_governed/
+    OSM2World-latest-bin (canonical layout, see scripts/cook_full_grid_tiles.py)
+    > <repo>/OSM2World-latest-bin (legacy layout, this module's prior
+    default). Returns the first candidate even if missing; existence is
+    validated at execution time by the runner itself.
+    """
+    env_home = os.environ.get("OSM2WORLD_HOME", "").strip()
+    if env_home:
+        return Path(env_home)
+    governed = _REPO_ROOT / "carla_governed" / "OSM2World-latest-bin"
+    if governed.is_dir():
+        return governed
+    return _REPO_ROOT / "OSM2World-latest-bin"
+
+
+# Default path -- can be overridden via OSM2WORLD_HOME env var (module-load
+# time snapshot; OSM2WorldRunner.__init__ also re-reads the env var itself).
+DEFAULT_OSM2WORLD_HOME = _resolve_default_osm2world_home()
 
 # Default Blender path for GLB validation
 DEFAULT_BLENDER_EXE = Path(r"E:\Program Files\Blender Foundation\Blender 4.3\blender.exe")

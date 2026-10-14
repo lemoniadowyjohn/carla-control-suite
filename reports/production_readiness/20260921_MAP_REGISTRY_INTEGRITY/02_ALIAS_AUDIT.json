@@ -1,0 +1,29 @@
+{
+  "alias_collisions": [],
+  "alias_count": 17,
+  "authority": {
+    "auto": "auto_map_of_record",
+    "auto_map_of_record": "auto_map_of_record",
+    "auto_map_of_record_c29_superseded": "auto_map_of_record_c29_superseded",
+    "auto_map_of_record_deepaudit_superseded": "auto_map_of_record_deepaudit_superseded",
+    "auto_map_of_record_junctionfix_superseded": "auto_map_of_record_junctionfix_superseded",
+    "auto_map_of_record_prec29_superseded": "auto_map_of_record_prec29_superseded",
+    "auto_map_of_record_reproregen1_superseded": "auto_map_of_record_reproregen1_superseded",
+    "auto_map_of_record_reproregen2_superseded": "auto_map_of_record_reproregen2_superseded",
+    "auto_map_of_record_round5_hygienefix_superseded": "auto_map_of_record_round5_hygienefix_superseded",
+    "auto_map_of_record_round6_elevationfix_superseded": "auto_map_of_record_round6_elevationfix_superseded",
+    "grid0821": "manual_grid0828",
+    "grid0828": "manual_grid0828",
+    "ingolstadt_auto": "auto_map_of_record",
+    "manual": "manual_grid0828",
+    "manual_grid0828": "manual_grid0828",
+    "manual_reference": "manual_grid0828",
+    "map_of_record": "auto_map_of_record"
+  },
+  "canonical_key_resolution": "every canonical key resolves via build_alias_authority even when omitted from its own aliases (covered by test)",
+  "collision_domain_probe": [
+    "manual",
+    "MANUAL",
+    "Manual"
+  ]
+}

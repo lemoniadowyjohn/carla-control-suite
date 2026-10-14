@@ -1,0 +1,71 @@
+{
+  "all_governed_autopilot_actors_use_one_port": true,
+  "artifact": "TRAFFIC_MANAGER_EFFECTIVE_CONFIG.json",
+  "authority": "ultimate_pipeline.perception.environment.traffic_manager_session.TrafficManagerSession",
+  "defect_before": "at least eight independent TM access paths: hardcoded get_trafficmanager(8000) in the recorder, FixedTrafficManager, two near-duplicate vehicle_manager modules, bare actor.set_autopilot(True) in ActorStreamManager, and several runners calling get_trafficmanager() with NO port at all; CARLA documents that multiple synchronous TM servers can break synchrony",
+  "effective_config": {
+    "all_governed_actors_use_single_port": true,
+    "api_exposes": [],
+    "auto_lane_change": false,
+    "configured_calls": [],
+    "dormant_vehicle_behavior": "remove",
+    "global_distance": 5.0,
+    "host": "127.0.0.1",
+    "hybrid_physics": false,
+    "hybrid_radius": null,
+    "ignore_lights_percentage": 0.0,
+    "is_master": true,
+    "keep_right_rule_percentage": 0.0,
+    "reseed_required": false,
+    "respawn_policy": "disabled_for_governed_capture",
+    "schema": "TRAFFIC_MANAGER_EFFECTIVE_CONFIG/v1",
+    "seed": 5,
+    "seeded": false,
+    "session_id": "127.0.0.1:8000",
+    "single_tm_master": true,
+    "skipped_calls": {},
+    "speed_policy": "governed_constant_multiplier_1_0",
+    "synchronous_mode": true,
+    "tm_port": 8000,
+    "traffic_manager_sha256": "7148b18b72d44faa35fa37a37dfbe7311c53d976024214d70448b510f58328fb"
+  },
+  "finding": "NEW-328",
+  "owns": [
+    "host/session ID",
+    "TM port",
+    "is_master",
+    "synchronous state",
+    "random seed",
+    "global distance",
+    "hybrid physics state",
+    "hybrid radius",
+    "dormant vehicle behavior",
+    "speed policy",
+    "lane-change policy defaults",
+    "respawn policy"
+  ],
+  "schema": "NEW328_TM_SESSION_AUTHORITY/v1",
+  "status": "PASS",
+  "tm_seed_missing_fails": "TRAFFIC_MANAGER_SEED_MISSING:127.0.0.1:8000",
+  "traffic_manager_sha256": "7148b18b72d44faa35fa37a37dfbe7311c53d976024214d70448b510f58328fb",
+  "two_masters_requested_fails": {
+    "failure_code": "TRAFFIC_MANAGER_MULTIPLE_MASTERS",
+    "raised": "TRAFFIC_MANAGER_MULTIPLE_MASTERS:port=8000:already_owned_by=sessionA:requested_by=sessionB"
+  },
+  "unseeded_config_invalid": [
+    "TRAFFIC_MANAGER_SEED_MISSING",
+    "TRAFFIC_MANAGER_SEED_MISSING"
+  ],
+  "wired_into": [
+    "ultimate_pipeline/perception/record_route_fixed.py",
+    "ultimate_pipeline/carla_tools/fixed_traffic_manager.py",
+    "ultimate_pipeline/carla_tools/actor_stream_manager.py"
+  ],
+  "world_reload_without_reseed_fails": "TRAFFIC_MANAGER_RESEED_REQUIRED:world_reload_without_traffic_manager_reseed:127.0.0.1:8000",
+  "world_sync_true_tm_sync_false_fails": {
+    "invalid_reasons": [
+      "TRAFFIC_MANAGER_SYNC_MISMATCH:world_sync=True:tm_sync=False"
+    ],
+    "valid": false
+  }
+}

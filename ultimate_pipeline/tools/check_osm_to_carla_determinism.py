@@ -125,7 +125,46 @@ def _resolve_source_osm_hint(run_dir: Path) -> str:
     return ""
 
 
-def _find_source_osm_file(run_dir: Path, hint: str) -> Path | None:
+def _select_fallback_osm_candidate(
+    osm_files: List[Path], run_dir: Path
+) -> Tuple[Path, bool]:
+    """Pick a fallback OSM candidate when no conventional/hinted path exists.
+
+    Coordinate/OSM consistency audit (20260924): a bare
+    ``.sort(key=lambda p: p.stat().st_mtime, reverse=True)`` across every
+    ``*.osm``/``*.osm.pbf`` found anywhere under ``run_dir`` (via ``rglob``)
+    is the same unguarded mtime-as-authority anti-pattern already fixed
+    elsewhere for XODR candidates (GAP-012/GAP-023) -- this determinism
+    checker's whole job is to attest which OSM source a run actually used,
+    so silently picking the wrong one (e.g. a nested tile/probe artifact
+    under ``artifacts/tile_*/`` with a newer mtime) would corrupt a
+    reproducibility claim with no content-identity check at all.
+
+    This applies a structural guard first -- preferring the candidate
+    closest to ``run_dir`` (fewest path parts), since a nested probe
+    artifact is by construction deeper than a top-level extract -- and uses
+    mtime only as a tiebreaker among equally-shallow candidates. Returns
+    ``(chosen, ambiguous)`` where ``ambiguous`` is True
+    iff more than one candidate remained after the depth filter, i.e. mtime
+    alone had to decide.
+    """
+
+    def _depth(p: Path) -> int:
+        try:
+            return len(p.relative_to(run_dir).parts)
+        except ValueError:
+            return len(p.parts)
+
+    min_depth = min(_depth(p) for p in osm_files)
+    shallowest = [p for p in osm_files if _depth(p) == min_depth]
+    shallowest.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return shallowest[0], len(shallowest) > 1
+
+
+def _find_source_osm_file(run_dir: Path, hint: str) -> Tuple[Path | None, bool]:
+    """Return (chosen_path, ambiguous). ``ambiguous`` is True only when the
+    result came from the unguarded glob+mtime fallback with more than one
+    equally-shallow candidate (see ``_select_fallback_osm_candidate``)."""
     candidates: List[Path] = [
         run_dir / "osm" / "extract.osm",
         run_dir / "osm" / "extract.osm.pbf",
@@ -144,24 +183,24 @@ def _find_source_osm_file(run_dir: Path, hint: str) -> Path | None:
 
     for c in candidates:
         if c.is_file():
-            return c
+            return c, False
 
     osm_files = sorted(run_dir.rglob("*.osm")) + sorted(run_dir.rglob("*.osm.pbf"))
     if not osm_files:
-        return None
-    osm_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    return osm_files[0]
+        return None, False
+    chosen, ambiguous = _select_fallback_osm_candidate(osm_files, run_dir)
+    return chosen, ambiguous
 
 
 def _capture_source_osm_provenance(run_dir: Path) -> Dict[str, Any]:
     hint = _resolve_source_osm_hint(run_dir)
-    source_file = _find_source_osm_file(run_dir, hint=hint)
+    source_file, ambiguous = _find_source_osm_file(run_dir, hint=hint)
     if source_file and source_file.is_file():
         _md5, sha = _file_hashes(source_file)
         return {
             "source_osm_identity": _safe_relpath(source_file, run_dir),
             "source_osm_sha256": sha,
-            "source_osm_origin": "artifact",
+            "source_osm_origin": "artifact_ambiguous_mtime_fallback" if ambiguous else "artifact",
         }
     if hint:
         return {

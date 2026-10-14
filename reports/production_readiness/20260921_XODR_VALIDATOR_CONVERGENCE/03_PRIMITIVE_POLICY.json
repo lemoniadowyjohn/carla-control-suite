@@ -1,0 +1,68 @@
+{
+  "exactly_one_rule": "zero, two-or-more, or unknown primitive children are errors (both validators).",
+  "paramPoly3_pRange": [
+    "arcLength",
+    "normalized"
+  ],
+  "primitive_support": {
+    "CARLA_0_9_16_COMPAT": [
+      "arc",
+      "line",
+      "paramPoly3",
+      "poly3",
+      "spiral"
+    ],
+    "LEGACY_CONSERVATIVE": [
+      "arc",
+      "line",
+      "paramPoly3",
+      "poly3"
+    ],
+    "OPEN_DRIVE_STRUCTURAL": [
+      "arc",
+      "line",
+      "paramPoly3",
+      "poly3",
+      "spiral"
+    ]
+  },
+  "profiles": [
+    "OPEN_DRIVE_STRUCTURAL",
+    "CARLA_0_9_16_COMPAT",
+    "LEGACY_CONSERVATIVE"
+  ],
+  "required_coefficients": {
+    "arc": [
+      "curvature"
+    ],
+    "line": [],
+    "paramPoly3": [
+      "aU",
+      "bU",
+      "cU",
+      "dU",
+      "aV",
+      "bV",
+      "cV",
+      "dV"
+    ],
+    "poly3": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "spiral": [
+      "curvStart",
+      "curvEnd"
+    ]
+  },
+  "spiral_resolution": "spiral is VALID (coefficient-checked) under the default CARLA_0_9_16_COMPAT profile: the production geometry kernel evaluates all five primitives, so the old validator comment blocking spiral was stale. LEGACY_CONSERVATIVE preserves the historical posture for comparison.",
+  "tolerances": {
+    "geom_s_boundary_m": 0.001,
+    "lanesection_first_s_m": 0.001,
+    "max_plausible_lane_width_m": 15.0,
+    "road_length_abs_m": 5.0,
+    "road_length_rel": 0.25
+  }
+}

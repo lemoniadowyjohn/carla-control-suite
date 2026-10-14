@@ -1,0 +1,59 @@
+{
+  "schema": "live_runtime_status/v1",
+  "probed_at_local": "integration run, worktree C:/Users/admin/AppData/Local/Temp/opencode/wt-runtime-rig",
+  "carla_python_api": {
+    "importable": true,
+    "module_path": "site-packages/carla/__init__.py",
+    "note": "the Python client library is installed; this says nothing about a running simulator"
+  },
+  "rpc_probe": {
+    "host": "127.0.0.1",
+    "rpc_port": 2000,
+    "tcp_connect": "TIMEOUT (closed)",
+    "get_server_version": "RuntimeError: time-out of 3000ms while waiting for the simulator, make sure the simulator is ready and connected to 127.0.0.1:2000",
+    "carla_rpc_available": false
+  },
+  "traffic_manager_probe": {
+    "host": "127.0.0.1",
+    "tm_port": 8000,
+    "tcp_connect": "TIMEOUT (closed)",
+    "traffic_manager_available": false
+  },
+  "build_environment": {
+    "ue4_root_configured": false,
+    "carla_root_configured": false,
+    "engine_family_detected": "unknown",
+    "ue_engine_editor_present": "UNKNOWN",
+    "carla_project_compiled": "UNKNOWN",
+    "carla_server_binary_present": "UNKNOWN",
+    "map_package_cooked": "UNKNOWN"
+  },
+  "blocked_items": [
+    {"item": "server/client version agreement", "status": "BLOCKED_EXTERNAL"},
+    {"item": "exact map identity at runtime", "status": "BLOCKED_EXTERNAL"},
+    {"item": "simulation profile verification on a live server", "status": "BLOCKED_EXTERNAL"},
+    {"item": "weather application + live readback", "status": "BLOCKED_EXTERNAL"},
+    {"item": "TM ownership/seed on a live TM port", "status": "BLOCKED_EXTERNAL"},
+    {"item": "ego/calibration binding on a live rig", "status": "BLOCKED_EXTERNAL"},
+    {"item": "effective sensor attributes readback from live blueprints", "status": "BLOCKED_EXTERNAL"},
+    {"item": "empirical camera reprojection acceptance", "status": "BLOCKED_EXTERNAL"},
+    {"item": "empirical LiDAR-camera alignment", "status": "BLOCKED_EXTERNAL"},
+    {"item": "sensor frame health / callback evidence", "status": "BLOCKED_EXTERNAL"},
+    {"item": "route execution against a live map", "status": "BLOCKED_EXTERNAL"},
+    {"item": "NEW-296 live route adapter", "status": "BLOCKED_EXTERNAL"},
+    {"item": "short deterministic repeated capture", "status": "BLOCKED_EXTERNAL"},
+    {"item": "actor/TM/world cleanup on a live world", "status": "BLOCKED_EXTERNAL"},
+    {"item": "repeat capture comparison", "status": "BLOCKED_EXTERNAL"},
+    {"item": "empirical calibration assay", "status": "BLOCKED_EXTERNAL"},
+    {"item": "live paired-run back-to-back state contamination", "status": "BLOCKED_EXTERNAL"}
+  ],
+  "claim_boundary_preserved": {
+    "carla_rpc_2000": "unavailable",
+    "tm_port_8000": "unavailable",
+    "offline_integration": "PASS",
+    "live_runtime": "cannot PASS without new live evidence",
+    "no_live_item_upgraded_to_pass": true,
+    "port_listening_treated_as_carla_success": false
+  },
+  "verdict": "BLOCKED_EXTERNAL"
+}

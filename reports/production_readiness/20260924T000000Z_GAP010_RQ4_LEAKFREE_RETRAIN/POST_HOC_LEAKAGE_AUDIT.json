@@ -1,0 +1,70 @@
+{
+  "eval_pair_sha256": {
+    "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+    "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+  },
+  "overall_status": "PASS",
+  "per_seed_checkpoint_source_hash_check": {
+    "42": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_42\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256": "6d39198fccaff24b7291cbde54d7f0be04a7f879687696ac14373d45c54d3db6",
+      "eval_pair_hash_overlap": [],
+      "n_source_tiles_recorded": 562,
+      "status": "OK",
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    "43": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_43\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256": "79965135d12945dc9d02bd184d30367d7e87aaf0d2b69b5eacc5ead3f323c144",
+      "eval_pair_hash_overlap": [],
+      "n_source_tiles_recorded": 562,
+      "status": "OK",
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    "44": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_44\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256": "4f935285709ec6efaa0469643dbcd23eda8f6a93ab105704998a3444d1fdec8e",
+      "eval_pair_hash_overlap": [],
+      "n_source_tiles_recorded": 562,
+      "status": "OK",
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    "45": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_45\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256": "1b144836334cf9d5aafca7451da42d87fe6cbcaae1b2749725e7ca5af4c79826",
+      "eval_pair_hash_overlap": [],
+      "n_source_tiles_recorded": 562,
+      "status": "OK",
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    },
+    "46": {
+      "checkpoint": "G:\\gap010-rq4-retrain-20260924\\reports\\production_readiness\\20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN\\seed_46\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_sha256": "469eded69fa28a56a731945dc1c60b13888ccd101ca8ecc7ed42d9f7124ff207",
+      "eval_pair_hash_overlap": [],
+      "n_source_tiles_recorded": 562,
+      "status": "OK",
+      "training_dataset_manifest_sha256": "cb071f54b2415a37a422ddb20d36c5453a673b21b0962d66140556941b74ee73"
+    }
+  },
+  "phase": "POST_HOC_RETRAIN_LEAKAGE_AUDIT",
+  "tiles_dir_audit_leakage_result": {
+    "duplicate_tile_hashes": [],
+    "neighbouring_frame_leakage": "N/A - not frame-based",
+    "normalization_fitted_on": "train_only",
+    "normalization_leakage": false,
+    "same_content_in_train_and_test_by_hash": [],
+    "same_road_ids_in_train_and_test": [],
+    "same_spatial_tile_in_train_and_test_by_filename": [],
+    "source_map_identity_overlap": {
+      "eval_pair_content_in_training_set": [],
+      "eval_pair_sha256": {
+        "G:\\gap010-rq4-retrain-20260924\\cities\\ingolstadt\\manual_grid0821.xodr": "69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8",
+        "G:\\gap010-rq4-retrain-20260924\\reports\\ingolstadt_map_quality_v2\\work_package_02_connectivity\\candidate_connectivity_repaired.xodr": "c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43"
+      }
+    },
+    "status": "PASS",
+    "test_metrics_feeding_training_or_selection": false,
+    "test_metrics_used_for_selection": false
+  },
+  "tiles_dir_manifest_entry_count_post_exclusion": 562
+}

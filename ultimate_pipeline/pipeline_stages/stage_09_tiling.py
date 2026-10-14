@@ -219,9 +219,16 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
         # ------------------------------------------------------------------------
 
         from ultimate_pipeline.tiling.tile_metadata import TileMetadata
+        from ultimate_pipeline.tiling.tile_extractor import freeze_tileset
 
         metadata_path = os.path.join(self.out_dir, "tile_metadata.json")
         manifest_path = os.path.join(self.out_dir, "tile_manifest.json")
+
+        # Freeze the tileset now that all repairs (S-invariant fix, etc.) are
+        # complete -- generate_metadata()/write_manifest() below require a
+        # frozen tileset (TILESET_FROZEN pattern, OC-46) to guarantee metadata
+        # and manifest are never generated from stale/incomplete tiles.
+        freeze_tileset(tiles_dir, metadata_path=metadata_path, manifest_path=manifest_path)
 
     # --- Windows crash-safety: run tile QA as subprocess batch (no libcarla in main process) ---
     # NOTE: tile_qa_batch.py exposes a CLI (main), not a Python function that accepts keywords.

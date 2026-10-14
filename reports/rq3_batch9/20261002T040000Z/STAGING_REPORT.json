@@ -1,0 +1,63 @@
+{
+  "candidate_sha": "36ea3403811de21c288ef18108f8f2cb3d98cf58",
+  "copy_independence": {
+    "any_alias_to_source": false,
+    "checked": 24
+  },
+  "exactly_one_xodr": true,
+  "generated_at_utc": "2026-10-02T10:06:38.240151+00:00",
+  "import_root": "Import",
+  "overall": "PACKAGE_STAGING_PASS",
+  "package_name": "Ingolstadt",
+  "promotion": "PASS",
+  "run_id": "20260924T100614Z_rq3batch9",
+  "schema": "rq3_package_staging/v1",
+  "staging": {
+    "duration_sec": 0.855,
+    "governed_interface": "ultimate_pipeline.tiling.large_map_package.stage_large_map_package",
+    "governed_status_literal": "ok",
+    "manifest_path": "Import/.staging/20260924T100614Z_rq3batch9/Ingolstadt/Ingolstadt.large_map_package.json",
+    "package_dir": "Import/.staging/20260924T100614Z_rq3batch9/Ingolstadt",
+    "package_json_path": "Import/.staging/20260924T100614Z_rq3batch9/Ingolstadt/package.json",
+    "package_name": "Ingolstadt",
+    "reason": "",
+    "status": "PASS",
+    "tiles_skipped_missing": [],
+    "tiles_staged": [
+      "Ingolstadt_Tile_6_6.fbx",
+      "Ingolstadt_Tile_6_7.fbx",
+      "Ingolstadt_Tile_6_8.fbx",
+      "Ingolstadt_Tile_6_9.fbx",
+      "Ingolstadt_Tile_7_6.fbx",
+      "Ingolstadt_Tile_7_7.fbx",
+      "Ingolstadt_Tile_7_8.fbx",
+      "Ingolstadt_Tile_7_9.fbx",
+      "Ingolstadt_Tile_8_6.fbx",
+      "Ingolstadt_Tile_8_7.fbx",
+      "Ingolstadt_Tile_8_8.fbx",
+      "Ingolstadt_Tile_8_9.fbx",
+      "Ingolstadt_Tile_9_6.fbx",
+      "Ingolstadt_Tile_9_7.fbx",
+      "Ingolstadt_Tile_9_8.fbx",
+      "Ingolstadt_Tile_9_9.fbx",
+      "Ingolstadt_Tile_10_6.fbx",
+      "Ingolstadt_Tile_10_7.fbx",
+      "Ingolstadt_Tile_10_8.fbx",
+      "Ingolstadt_Tile_10_9.fbx"
+    ],
+    "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "xodr_staged_path": "Import/.staging/20260924T100614Z_rq3batch9/Ingolstadt/ingolstadt_perception_map_of_record_20260916_232831.xodr"
+  },
+  "staging_root": "Import/.staging/20260924T100614Z_rq3batch9",
+  "xodr_authority": {
+    "bytes": 149799632,
+    "registry_bytes": 149799632,
+    "registry_key": "auto_map_of_record",
+    "sha256_actual": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "sha256_expected": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr"
+  },
+  "xodr_members": [
+    "ingolstadt_perception_map_of_record_20260916_232831.xodr"
+  ]
+}

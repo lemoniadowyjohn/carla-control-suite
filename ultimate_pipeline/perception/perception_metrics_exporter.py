@@ -35,39 +35,73 @@ IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".bmp"}
 def _discover_images(run_out: str, max_images: int = 4000) -> List[Path]:
     root = Path(run_out)
 
-    # Common places your pipeline tends to write images
-    candidates = [
-        root / "perception",
-        root / "perception" / "images",
-        root / "screenshots",
-        root / "road_perception",
-        root / "qa",
-        root / "viz",
-    ]
+    # NEW-283: Restrict to dataset root only
+    # Only analyze images from the canonical dataset root (rgb/<camera> directories)
+    # This prevents screenshots, QA overlays, and semantic visualizations from being
+    # mixed with sensor RGB training data
+    dataset_dirs = []
+    
+    # First, check for the standard dataset structure
+    rgb_dir = root / "rgb"
+    if rgb_dir.is_dir():
+        # Found rgb/ directory, use all subdirectories as camera folders
+        for camera_dir in rgb_dir.iterdir():
+            if camera_dir.is_dir():
+                dataset_dirs.append(camera_dir)
+    
+    # If no standard dataset structure found, fallback to legacy behavior
+    # but warn the user
+    if not dataset_dirs:
+        # Common places your pipeline tends to write images
+        candidates = [
+            root / "perception",
+            root / "perception" / "images",
+            root / "screenshots",
+            root / "road_perception",
+            root / "qa",
+            root / "viz",
+        ]
+        
+        files: List[Path] = []
+        seen = set()
 
+        def add_from_dir(d: Path):
+            if not d.is_dir():
+                return
+            for p in d.rglob("*"):
+                if p.is_file() and p.suffix.lower() in IMAGE_EXTS:
+                    s = str(p.resolve())
+                    if s not in seen:
+                        seen.add(s)
+                        files.append(p)
+                        if len(files) >= max_images:
+                            return
+
+        for d in candidates:
+            add_from_dir(d)
+            if len(files) >= max_images:
+                break
+
+        # Fallback: scan shallowly under run_out
+        if not files:
+            add_from_dir(root)
+
+        return files[:max_images]
+
+    # NEW-283: Only scan the dataset camera directories
+    # This ensures we only get sensor RGB images from the governed capture pipeline
     files: List[Path] = []
     seen = set()
 
-    def add_from_dir(d: Path):
-        if not d.is_dir():
-            return
-        for p in d.rglob("*"):
+    for camera_dir in dataset_dirs:
+        for p in camera_dir.rglob("*"):
             if p.is_file() and p.suffix.lower() in IMAGE_EXTS:
                 s = str(p.resolve())
                 if s not in seen:
                     seen.add(s)
                     files.append(p)
                     if len(files) >= max_images:
-                        return
-
-    for d in candidates:
-        add_from_dir(d)
-        if len(files) >= max_images:
-            break
-
-    # Fallback: scan shallowly under run_out
-    if not files:
-        add_from_dir(root)
+                        return files[:max_images]
 
     return files[:max_images]
 

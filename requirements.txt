@@ -1,3 +1,20 @@
+# Shared base profile: the frozen operational dependency set for
+# `ultimate-pipeline`, minus the mutually exclusive provider choices.
+#
+# PROFILE LAYERS (V5 / NEW-204, NEW-205)
+# ------------------------------------
+# This file is the `base` layer. Environment-specific provider choices are NOT
+# baked in here -- they live in the sibling profiles below so a single
+# environment can never install two packages that own the same import namespace:
+#
+#   base              -> requirements.txt           (this file)
+#   headless / CI     -> requirements-ci.txt        (base + opencv-python-headless)
+#   desktop GUI       -> requirements-desktop.txt   (base + opencv-python)
+#
+# The base layer therefore contains NO OpenCV provider at all. That is what makes
+# the conflict structurally impossible rather than merely discouraged.
+#
+# Original header (kept for provenance):
 # Frozen from the working local dev venv (WS3, CI/CD hardening plan, 2026-09-02).
 # torch/torchvision are pinned here to the CPU build already in use locally;
 # install them from the PyTorch CPU wheel index BEFORE this file (see
@@ -83,8 +100,6 @@ narwhals==2.25.0
 networkx==3.6.1
 numpy==2.2.6
 openapi-pydantic==0.5.1
-opencv-python==4.12.0.88
-opencv-python-headless==4.13.0.92
 opentelemetry-api==1.39.1
 opentelemetry-exporter-prometheus==0.60b1
 opentelemetry-instrumentation==0.60b1

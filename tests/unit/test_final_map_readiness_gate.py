@@ -228,6 +228,55 @@ def test_perception_status_not_ok_uses_failure_reason():
     assert result["reason"] == "streaming_timeout"
 
 
+def test_perception_status_wrong_xodr_binding_currently_not_cross_checked_without_path():
+    # GAP-022 (perception half): with no xodr_path supplied (the historical call
+    # signature), the evaluator has no way to catch a perception_status.json that
+    # is structurally fine but was captured against a COMPLETELY DIFFERENT XODR
+    # than the one this gate run is evaluating. This documents that omitted-path
+    # behavior is a deliberate "can't verify" tolerance, not a bug -- the real
+    # fail-closed check below requires xodr_path to be supplied.
+    report = {"ok": True, "frames_recorded": 10, "xodr_sha256": "0" * 64}
+    result = evaluate_perception_status(report, visual_ok=True)
+    assert result["ok"] is True
+
+
+def test_perception_status_xodr_sha256_mismatch_fails_closed(tmp_path: Path):
+    # This is the real GAP-022 regression test: a perception_status.json that
+    # reports ok=True with plenty of frames, but whose xodr_sha256 was recorded
+    # against a DIFFERENT XODR than the one being gated here, must fail closed --
+    # exactly like evaluate_connector_report's output_sha256 check.
+    xodr = tmp_path / "final.xodr"
+    xodr.write_bytes(b"real map content")
+    wrong_sha = hashlib.sha256(b"a completely different map").hexdigest()
+    report = {"ok": True, "frames_recorded": 10, "xodr_sha256": wrong_sha}
+    result = evaluate_perception_status(report, visual_ok=True, xodr_path=xodr)
+    assert result["ok"] is False
+    assert "xodr_sha256_mismatch" in result["reason"]
+    assert result["sha_issue"] == "xodr_sha256_mismatch"
+
+
+def test_perception_status_xodr_sha256_match_passes(tmp_path: Path):
+    xodr = tmp_path / "final.xodr"
+    xodr.write_bytes(b"real map content")
+    correct_sha = hashlib.sha256(b"real map content").hexdigest()
+    report = {"ok": True, "frames_recorded": 10, "xodr_sha256": correct_sha}
+    result = evaluate_perception_status(report, visual_ok=True, xodr_path=xodr)
+    assert result["ok"] is True
+    assert result["sha_issue"] == ""
+
+
+def test_perception_status_missing_xodr_sha256_tolerated_for_backward_compat(tmp_path: Path):
+    # Matches the sibling evaluators' convention (evaluate_connector_report's
+    # output_sha256, and _verify_xodr_binding generally): a report with NO hash
+    # field at all is tolerated (can't verify => assume compatible), not rejected
+    # outright -- only a present-and-wrong hash is a hard failure.
+    xodr = tmp_path / "final.xodr"
+    xodr.write_bytes(b"real map content")
+    report = {"ok": True, "frames_recorded": 10}
+    result = evaluate_perception_status(report, visual_ok=True, xodr_path=xodr)
+    assert result["ok"] is True
+
+
 # ---------------------------------------------------------------------------
 # _signal_object_counts
 # ---------------------------------------------------------------------------
@@ -334,3 +383,77 @@ def test_build_report_perception_blocked_without_visual(tmp_path: Path):
     report = build_final_map_readiness_report(xodr_path=xodr, require_perception=True)
     assert report["perception_gate"]["status"] == "blocked"
     assert report["PERCEPTION_READY"] == "no"
+
+
+def _write_passing_visual_report(path: Path) -> None:
+    path.write_text(json.dumps({
+        "ok": True, "load_ok": True,
+        "screenshots": {
+            "top_down": {"ok": True}, "street": {"ok": True}, "junction": {"ok": True},
+        },
+    }), encoding="utf-8")
+
+
+def test_build_report_perception_wrong_xodr_binding_fails_end_to_end(tmp_path: Path):
+    # GAP-022 (perception half), end-to-end: a perception_status.json that is
+    # otherwise perfect (ok=True, plenty of frames) but was captured against a
+    # DIFFERENT XODR than the one under evaluation here must fail the overall
+    # readiness verdict when perception is required, not be silently accepted.
+    xodr = tmp_path / "final.xodr"
+    _write_xodr(xodr)  # must be well-formed so the ONLY failure is perception binding
+
+    connector_report_path = tmp_path / "rebuild_report.json"
+    connector_report_path.write_text(json.dumps({
+        "connector_start_mismatch_after": 5, "connector_end_mismatch_after": 10,
+    }), encoding="utf-8")
+
+    visual_report_path = tmp_path / "carla_visual_smoke_gate.json"
+    _write_passing_visual_report(visual_report_path)
+
+    wrong_sha = hashlib.sha256(b"a totally different map's bytes").hexdigest()
+    perception_status_path = tmp_path / "perception_status.json"
+    perception_status_path.write_text(json.dumps({
+        "ok": True, "frames_recorded": 50, "xodr_sha256": wrong_sha,
+    }), encoding="utf-8")
+
+    report = build_final_map_readiness_report(
+        xodr_path=xodr,
+        connector_report_path=connector_report_path,
+        visual_gate_report_path=visual_report_path,
+        perception_status_path=perception_status_path,
+        require_perception=True,
+    )
+    assert report["perception_gate"]["ok"] is False
+    assert "xodr_sha256_mismatch" in report["perception_gate"]["reason"]
+    assert report["PERCEPTION_READY"] == "no"
+    assert report["ok"] is False
+
+
+def test_build_report_perception_matching_xodr_binding_passes_end_to_end(tmp_path: Path):
+    xodr = tmp_path / "final.xodr"
+    _write_xodr(xodr)  # must be well-formed for the static XODR gate to pass
+
+    connector_report_path = tmp_path / "rebuild_report.json"
+    connector_report_path.write_text(json.dumps({
+        "connector_start_mismatch_after": 5, "connector_end_mismatch_after": 10,
+    }), encoding="utf-8")
+
+    visual_report_path = tmp_path / "carla_visual_smoke_gate.json"
+    _write_passing_visual_report(visual_report_path)
+
+    correct_sha = hashlib.sha256(xodr.read_bytes()).hexdigest()
+    perception_status_path = tmp_path / "perception_status.json"
+    perception_status_path.write_text(json.dumps({
+        "ok": True, "frames_recorded": 50, "xodr_sha256": correct_sha,
+    }), encoding="utf-8")
+
+    report = build_final_map_readiness_report(
+        xodr_path=xodr,
+        connector_report_path=connector_report_path,
+        visual_gate_report_path=visual_report_path,
+        perception_status_path=perception_status_path,
+        require_perception=True,
+    )
+    assert report["perception_gate"]["ok"] is True
+    assert report["PERCEPTION_READY"] == "yes"
+    assert report["ok"] is True

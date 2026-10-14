@@ -1,0 +1,18 @@
+{
+  "AFTER_RESEARCH_CLOSURE": [
+    "consolidate 67 inline env-flag parses + ~10 local helpers (inconsistent y truthy sets) into one shared helper with tests",
+    "extract smoke_check_spawn tick/teardown primitives from legacy record_route into common module"
+  ],
+  "DO_NOT_TOUCH": [
+    "MainPipeline orchestration core",
+    "run_full_domain_gap metric core",
+    "run_perception_safe launch flow",
+    "GAP-026-adjacent geometry code"
+  ],
+  "NOW_done": [
+    "record_route authority + migration",
+    "step-10 SKIP receipts"
+  ],
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0"
+}

@@ -1,0 +1,48 @@
+{
+  "run_id": "20260919T000000Z_DETERMINISM_SCOPE",
+  "task_id": "OC-46",
+  "title": "Determinism scope clarification - profile claims must distinguish determinism levels",
+  "components": [
+    "ultimate_pipeline/determinism/stage_digest.py",
+    "ultimate_pipeline/determinism/determinism_compare.py",
+    "ultimate_pipeline/tools/verify_final_xodr.py",
+    "ultimate_pipeline/tools/preflight_xodr_loadability.py"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "conflated_claims": "Determinism claims were not qualified by scope. A 'deterministic' result from a CARLA-disabled run (UP_DISABLE_CARLA=1) was treated identically to a full live-CARLA validated run, even though the latter includes runtime validation the former cannot provide.",
+    "stage_digest_incomplete": "stage_digest.py returned a digest even when SOURCE_FILES list was empty (no files found). This was treated as a valid deterministic result rather than EMPTY/INCOMPLETE.",
+    "profile_claim_conflation": "No distinction between CORE_OFFLINE_DETERMINISM (pipeline stages deterministic given same inputs), THESIS_STRICT_DETERMINISM (includes FBX roundtrip + perceptual metrics), FULL_VISUAL_DETERMINISM (includes UE4 cook + CARLA runtime), and RUNTIME_DETERMINISM (includes live CARLA streaming). A 'deterministic' claim without profile qualification was meaningless.",
+    "carla_disabled_claims": "Runs with UP_DISABLE_CARLA=1 or missing Blender/OSM2World could still claim 'deterministic' for stages that require those tools, because missing tools returned 'skipped' rather than 'blocked'."
+  },
+  "corrected_semantics": {
+    "stage_digest_states": "generate_stage_hashes() now returns state in {COMPLETE, INCOMPLETE, EMPTY}. COMPLETE = all SOURCE_FILES present and hashed. INCOMPLETE = some expected files missing. EMPTY = no source files found (directory empty or missing). Only COMPLETE is determinism-claim eligible.",
+    "determinism_profiles": {
+      "CORE_OFFLINE_DETERMINISM": "Pipeline stages (OSM->XODR, enrichment, tiling, XODR verification) are deterministic given same inputs. No CARLA, no Blender, no UE4. This is the baseline determinism claim.",
+      "THESIS_STRICT_DETERMINISM": "CORE_OFFLINE + FBX roundtrip integrity (J6) + perceptual metrics (collision, LOD, semantic overlap) all pass. Requires Blender but not CARLA/UE4.",
+      "FULL_VISUAL_DETERMINISM": "THESIS_STRICT + UE4 cook determinism + CARLA visual smoke gate pass. Requires UE4 + CARLA.",
+      "RUNTIME_DETERMINISM": "FULL_VISUAL + live CARLA streaming determinism (spawn points, traffic, sensor determinism). Requires live CARLA server."
+    },
+    "profile_claims_required": "Any determinism claim MUST be qualified with one of the above profiles. Unqualified 'deterministic' is invalid.",
+    "tool_availability_enforcement": "Blender/OSM2World/CARLA unavailable -> status='blocked' (not 'skipped') for stages requiring them. This prevents silent degradation of determinism claims."
+  },
+  "tests": {
+    "stage_digest": "stage_digest.py tests updated to expect EMPTY state when directory has no source files, INCOMPLETE when some expected files missing",
+    "determinism_profiles": "New test file test_determinism_profiles.py verifies profile claims and tool availability enforcement"
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_stage_digest.py -v",
+    "python -m pytest tests/unit/test_determinism_profiles.py -v"
+  ],
+  "regression_results": {
+    "stage_digest": "Existing tests pass (updated for EMPTY/INCOMPLETE states)",
+    "full_pipeline": "All determinism-related tests pass"
+  },
+  "residual_risks": [
+    "Profile claims are self-declared by pipeline stages. No central registry enforces that a stage claiming THESIS_STRICT actually ran all required checks. Convention over enforcement.",
+    "UE4 cook determinism is not yet implemented (blocked on UE4 build track). FULL_VISUAL_DETERMINISM is currently theoretical.",
+    "RUNTIME_DETERMINISM requires live CARLA server and is not testable in CI. Marked as BLOCKED_EXTERNAL in practice."
+  ]
+}

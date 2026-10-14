@@ -151,8 +151,192 @@ def lookup_warning(code: str) -> Optional[WarningDefinition]:
 
 
 # ---------------------------------------------------------------------------
-# Governed waiver semantics
+# Governed waiver semantics + gate taxonomy (NEW-210 / GAP-037)
 # ---------------------------------------------------------------------------
+
+
+class GateClass(StrEnum):
+    """Waiver taxonomy: what kind of claim a gate certifies (NEW-210)."""
+
+    IDENTITY_INTEGRITY = "identity_integrity"
+    STRUCTURAL_INTEGRITY = "structural_integrity"
+    QUALITY_DEVIATION = "quality_deviation"
+    HEURISTIC_ADVISORY = "heuristic_advisory"
+    RUNTIME_DEPENDENT = "runtime_dependent"
+
+
+NON_WAIVABLE_CLASSES = frozenset(
+    {
+        GateClass.IDENTITY_INTEGRITY,
+        GateClass.STRUCTURAL_INTEGRITY,
+        GateClass.RUNTIME_DEPENDENT,
+    }
+)
+
+# Canonical classification of known gates. Identity/integrity and structural
+# gates are never waivable; quality deviations (e.g. component_reachability)
+# may be WAIVED (never PASS) through a governed waiver.
+#
+# GAP-051: this registry had drifted from reality. It carried 24 keys while the
+# pipeline emits 38 distinct gate names, so only 4 keys ever matched an emitted
+# name and 20 were dead. The drift was mostly RENAMING, not omission -- the
+# registry held plausible-but-wrong spellings of gates the code does emit:
+#
+#     registry key                 emitted name (was unregistered)
+#     ---------------------------  ----------------------------------------
+#     xodr_xml_integrity           xml_integrity
+#     lane_link_targets_exist      lane_link_targets
+#     carla_structural_compatibility carla_opendrive_compat
+#     geometry_continuity          geometric_continuity   <- named in GAP-051
+#     lane_width                   lane_width_continuity
+#
+# Every emitted name is now registered explicitly. classify_gate still fails
+# closed on anything unknown, so this only removes reliance on that default.
+GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
+    # Identity / integrity (non-waivable)
+    "map_registry_identity": GateClass.IDENTITY_INTEGRITY,
+    "artifact_fingerprint": GateClass.IDENTITY_INTEGRITY,
+    "repository_sha": GateClass.IDENTITY_INTEGRITY,
+    "manifest_digest": GateClass.IDENTITY_INTEGRITY,
+    "candidate_identity": GateClass.IDENTITY_INTEGRITY,
+    "package_identity": GateClass.IDENTITY_INTEGRITY,
+    "deterministic_provenance": GateClass.IDENTITY_INTEGRITY,
+    "xodr_sha": GateClass.IDENTITY_INTEGRITY,
+    # Structural integrity (non-waivable)
+    "xodr_xml_integrity": GateClass.STRUCTURAL_INTEGRITY,
+    "junction_integrity": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_link_targets_exist": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_section_successors": GateClass.STRUCTURAL_INTEGRITY,
+    "carla_structural_compatibility": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_connectivity": GateClass.STRUCTURAL_INTEGRITY,
+    "required_artifact_presence": GateClass.STRUCTURAL_INTEGRITY,
+    # Runtime-dependent (non-waivable)
+    "runtime_map_identity": GateClass.RUNTIME_DEPENDENT,
+    "carla_runtime_identity": GateClass.RUNTIME_DEPENDENT,
+    "runtime_map": GateClass.RUNTIME_DEPENDENT,
+    # Quality deviations (waivable with governed justification)
+    "component_reachability": GateClass.QUALITY_DEVIATION,
+    "lane_width": GateClass.QUALITY_DEVIATION,
+    "geometry_continuity": GateClass.QUALITY_DEVIATION,
+    "elevation_quality": GateClass.QUALITY_DEVIATION,
+
+    # ---------------------------------------------------------------------
+    # GAP-051: names the pipeline ACTUALLY emits (verified by scanning
+    # quality_gates.DRIVABILITY_GATES/TRANSPORT_GATES, quality_gates._try
+    # call sites, QualityGateManager._finalize_gate keys, MainPipeline
+    # _stage_gate call sites, and map_acceptance report keys).
+    # ---------------------------------------------------------------------
+
+    # Transport / parse gates. NEW-341: failures by construction, blocking.
+    "xml_integrity": GateClass.STRUCTURAL_INTEGRITY,
+    "xml_parse": GateClass.STRUCTURAL_INTEGRITY,
+    "xodr_minimum_size": GateClass.STRUCTURAL_INTEGRITY,
+    "quality_gate_manager_import": GateClass.STRUCTURAL_INTEGRITY,
+    # Drivability / topology structure
+    "lane_link_targets": GateClass.STRUCTURAL_INTEGRITY,
+    "carla_opendrive_compat": GateClass.STRUCTURAL_INTEGRITY,
+    "xodr_strict_carla": GateClass.STRUCTURAL_INTEGRITY,
+    "external_libopendrive": GateClass.STRUCTURAL_INTEGRITY,
+    "lane_count_changes": GateClass.STRUCTURAL_INTEGRITY,
+    "geometric_continuity": GateClass.QUALITY_DEVIATION,
+    "lane_geometry_continuity": GateClass.QUALITY_DEVIATION,
+    "lane_width_continuity": GateClass.QUALITY_DEVIATION,
+    "planview_internal_seams": GateClass.STRUCTURAL_INTEGRITY,
+    "planview_internal_seams_tiles": GateClass.STRUCTURAL_INTEGRITY,
+    "junction_connector_boundary_alignment": GateClass.STRUCTURAL_INTEGRITY,
+    "drivable_surface": GateClass.STRUCTURAL_INTEGRITY,
+    "length_invariant": GateClass.STRUCTURAL_INTEGRITY,
+    "origin_sanity": GateClass.STRUCTURAL_INTEGRITY,
+    # Elevation / DEM structure
+    "elevation_continuity": GateClass.QUALITY_DEVIATION,
+    "elevation_smoothness": GateClass.QUALITY_DEVIATION,
+    "elevation_seams": GateClass.STRUCTURAL_INTEGRITY,
+    "elevation_missing_and_cliffs": GateClass.STRUCTURAL_INTEGRITY,
+    "structure_elevation_plausibility": GateClass.STRUCTURAL_INTEGRITY,
+    "dem_coverage": GateClass.STRUCTURAL_INTEGRITY,
+    # Physics / scene feasibility
+    "physics_feasibility": GateClass.STRUCTURAL_INTEGRITY,
+    "collision_mesh": GateClass.QUALITY_DEVIATION,
+    # Reachability (waivable, never PASS)
+    "component_reachability_literal": GateClass.QUALITY_DEVIATION,
+    # Semantic / statistical advisories
+    "semantic_overlap": GateClass.QUALITY_DEVIATION,
+    "randomness_entropy": GateClass.HEURISTIC_ADVISORY,
+    "full_map_metrics": GateClass.HEURISTIC_ADVISORY,
+}
+
+#: Names that the quality-gate sweep does not EMIT but which are still part of
+#: the governed taxonomy and must stay classified. These are referenced by waiver
+#: payloads, manifest/run-pack provenance contracts and the NEW-210 taxonomy
+#: documentation, so they are consumers of the classification rather than
+#: producers of gate names. GAP-051 removed the two keys that were referenced by
+#: nothing at all -- `topology_spec` and `cook_manifest_identity` -- i.e. not the
+#: sweep, not any waiver payload, and not the NEW-210 taxonomy doc. Their absence
+#: was found by asserting every reserved name still has an external consumer.
+GATE_TAXONOMY_RESERVED_NAMES = frozenset(
+    {
+        "map_registry_identity",
+        "artifact_fingerprint",
+        "repository_sha",
+        "manifest_digest",
+        "candidate_identity",
+        "package_identity",
+        "deterministic_provenance",
+        "xodr_sha",
+        "runtime_map_identity",
+        "carla_runtime_identity",
+        "runtime_map",
+        "required_artifact_presence",
+    }
+)
+
+#: Gate names that are ALIASES retained only for backward compatibility with
+#: callers/tests written before GAP-051. Each maps to the name the pipeline
+#: actually emits today. These are never emitted themselves.
+GATE_CLASS_REGISTRY_ALIASES: Dict[str, str] = {
+    # The specific near-miss called out by GAP-051: the registry spelled this
+    # "geometry_continuity" while the code emits "geometric_continuity".
+    "geometry_continuity": "geometric_continuity",
+    "xodr_xml_integrity": "xml_integrity",
+    "lane_link_targets_exist": "lane_link_targets",
+    "carla_structural_compatibility": "carla_opendrive_compat",
+    "lane_width": "lane_width_continuity",
+    "elevation_quality": "elevation_continuity",
+}
+
+
+def classify_gate(name: str) -> Optional[GateClass]:
+    """Return the registered class for `name`, or None when unknown.
+
+    Unknown gate classes fail closed: callers must treat None as
+    non-waivable, never default to QUALITY_DEVIATION.
+
+    GAP-051: pre-rename spellings are resolved through
+    :data:`GATE_CLASS_REGISTRY_ALIASES` so a caller using the old name gets the
+    same answer as one using the name the pipeline actually emits, instead of
+    silently falling through to the fail-closed default.
+    """
+    if not isinstance(name, str):
+        return None
+    key = name.strip()
+    resolved = GATE_CLASS_REGISTRY.get(key)
+    if resolved is not None:
+        return resolved
+    alias = GATE_CLASS_REGISTRY_ALIASES.get(key)
+    if alias is not None:
+        return GATE_CLASS_REGISTRY.get(alias)
+    return None
+
+
+def _coerce_gate_class(value: object) -> Optional[GateClass]:
+    if isinstance(value, GateClass):
+        return value
+    if isinstance(value, str):
+        try:
+            return GateClass(value.strip().lower())
+        except ValueError:
+            return None
+    return None
 
 
 def _worst_of(statuses: List[QualityStatus]) -> QualityStatus:
@@ -187,7 +371,11 @@ def _worst_of(statuses: List[QualityStatus]) -> QualityStatus:
     return sorted(reduced, key=lambda s: severity.get(s, 4), reverse=True)[0]
 
 
-def governed_waiver_allowed(waivers: Optional[Dict[str, str]], child: str) -> bool:
+def governed_waiver_allowed(
+    waivers: Optional[Dict[str, str]],
+    child: str,
+    gate_class: Optional[object] = None,
+) -> bool:
     """True only when an explicit governed waiver covers `child`.
 
     A governed waiver is a mapping of a gate/check key to a free-text
@@ -195,73 +383,402 @@ def governed_waiver_allowed(waivers: Optional[Dict[str, str]], child: str) -> bo
     waiver must name this exact child key. This is what prevents the
     historical fail-open `not rep.get("ok", True)` default from silently
     promoting a never-evaluated gate to PASS.
+
+    This is the GENERIC utility (OC-35 contract): with `gate_class` omitted
+    it preserves the long-standing semantic that any exact-name, non-blank
+    justification waives the named child (subject to the caller's own
+    allow-list in `promote_aggregate_detailed`).
+
+    NEW-210 taxonomy: when `gate_class` is EXPLICITLY provided, gates in
+    NON_WAIVABLE_CLASSES (identity integrity, structural integrity,
+    runtime dependent) can NEVER be waived -- this returns False for them
+    regardless of justification -- and an unknown class fails closed
+    (returns False, never defaulted to QUALITY_DEVIATION). Production
+    quality gates should use :func:`production_gate_waiver_allowed`, which
+    resolves the class from the registry and fails closed on unknown names.
     """
+    if gate_class is not None:
+        resolved = _coerce_gate_class(gate_class)
+        if resolved is None or resolved in NON_WAIVABLE_CLASSES:
+            return False
     if not waivers:
         return False
     justification = waivers.get(child)
     return isinstance(justification, str) and bool(justification.strip())
 
 
-def promote_aggregate(
-    children: List[QualityStatus],
+def production_gate_waiver_allowed(
+    waivers: Optional[Dict[str, str]], child: str
+) -> bool:
+    """Strict waiver check for PRODUCTION quality gates (NEW-210).
+
+    Resolves `child` through :func:`classify_gate` and fails closed:
+
+    - unknown gate name (not in :data:`GATE_CLASS_REGISTRY`) -> False;
+    - gate in NON_WAIVABLE_CLASSES -> False, regardless of justification;
+    - waivable class (QUALITY_DEVIATION / HEURISTIC_ADVISORY) -> True only
+      with an exact-name, non-blank justification.
+
+    Production callers (map acceptance, candidate regression, runtime
+    identity) must use this instead of the generic
+    :func:`governed_waiver_allowed` so integrity gates are structurally
+    non-waivable.
+    """
+    resolved = classify_gate(child)
+    if resolved is None:
+        return False
+    if resolved in NON_WAIVABLE_CLASSES:
+        return False
+    if not waivers:
+        return False
+    justification = waivers.get(child)
+    return isinstance(justification, str) and bool(justification.strip())
+
+
+def _coerce_status(value: object) -> QualityStatus:
+    """Coerce a single child input onto the status vocabulary, fail-closed.
+
+    - `QualityStatus` instances pass through unchanged.
+    - True -> PASS; False -> FAIL.
+    - Recognized status strings map to their literal status.
+    - Anything else (unknown object / unknown string) -> INCOMPLETE so that an
+      ungoverned value can never be mistaken for PASS.
+    """
+    if isinstance(value, QualityStatus):
+        return value
+    if value is True:
+        return QualityStatus.PASS
+    if value is False:
+        return QualityStatus.FAIL
+    if isinstance(value, str):
+        try:
+            return QualityStatus(value)
+        except ValueError:
+            return QualityStatus.INCOMPLETE
+    return QualityStatus.INCOMPLETE
+
+
+def promote_aggregate_detailed(
+    children: List[object],
     *,
     mandatory_children: Optional[List[str]] = None,
     waivers: Optional[Dict[str, str]] = None,
     waivable_fail: bool = True,
+    child_names: Optional[List[str]] = None,
+    enforce_taxonomy: bool = False,
+) -> Dict[str, object]:
+    """Aggregate child gate statuses per-child, with waiver-governed rules.
+
+    Conversion happens **per child** before any reduction:
+
+    - PASS stays PASS.
+    - FAIL stays FAIL unless BOTH the child is on the `mandatory_children`
+      allow-list AND an explicit governed waiver names that exact child, in
+      which case it becomes WAIVED (never PASS). This applies when
+      `waivable_fail` is True.
+    - INCOMPLETE / NOT_RUN / BLOCKED_EXTERNAL are never convertible to WAIVED
+      or PASS by a waiver: there is no evidence to waive.
+    - Unknown values coerce to INCOMPLETE (fail-closed).
+
+    After conversion the aggregate is the worst remaining status under
+    FAIL > INCOMPLETE > BLOCKED_EXTERNAL > WAIVED > NOT_RUN > PASS. A waiver
+    is single-use: it covers only the exact failing child it names, so
+    multiple failing children each need their own governed waiver.
+
+    `child_names` explicitly binds per-child labels to positions (strict,
+    raises on length mismatch or duplicate). When omitted, names fall back to
+    the positional `mandatory_children` alignment (legacy) with ``str(index)``
+    fill for overflow. A waiver can never waive a child it does not name, so a
+    positional/label mismatch isolates rather than silently waives.
+
+    When `enforce_taxonomy` is True (NEW-210 production mode), waiver
+    conversion additionally requires
+    :func:`production_gate_waiver_allowed`: non-waivable classes and unknown
+    gate names stay FAIL even with a justification. The default False
+    preserves the generic OC-35 utility semantic.
+
+    Returns a structured report: `aggregate`, per-child conversion rows, the
+    positional/label audit and unused waiver keys.
+    """
+    mandatory_children = list(mandatory_children) if mandatory_children else []
+    waivers = dict(waivers) if waivers else {}
+
+    if not children:
+        return {
+            "aggregate": QualityStatus.INCOMPLETE,
+            "children": [],
+            "mandatory_children": mandatory_children,
+            "waivable_count": 0,
+            "waived_count": 0,
+            "positional_audit": {
+                "children_count": 0,
+                "mandatory_children_count": len(mandatory_children),
+                "explicit_child_names": child_names is not None,
+                "overflow_names": list(mandatory_children),
+                "collisions": [],
+                "ambiguous": bool(mandatory_children) or child_names is not None,
+            },
+            "unused_waiver_keys": sorted(waivers),
+        }
+
+    if child_names is not None:
+        if len(child_names) != len(children):
+            raise ValueError(
+                f"child_names length {len(child_names)} does not match "
+                f"children length {len(children)}."
+            )
+        seen: Dict[str, int] = {}
+        for idx, name in enumerate(child_names):
+            if not isinstance(name, str) or not name.strip():
+                raise ValueError(f"child_names[{idx}] is not a non-empty string.")
+            if name in seen:
+                raise ValueError(
+                    f"Duplicate child name {name!r} at positions "
+                    f"{seen[name]} and {idx}; waiver resolution would be "
+                    f"ambiguous."
+                )
+            seen[name] = idx
+
+    overflow_names = list(mandatory_children[len(children):]) if len(mandatory_children) > len(children) else []
+
+    converted: List[QualityStatus] = []
+    rows: List[Dict[str, object]] = []
+    names_by_index: List[str] = []
+    waived_count = 0
+
+    for idx, child in enumerate(children):
+        raw_status = _coerce_status(child)
+        if child_names is not None:
+            name = child_names[idx]
+        else:
+            name = mandatory_children[idx] if idx < len(mandatory_children) else str(idx)
+        names_by_index.append(name)
+
+        waiver: Optional[str] = None
+        if enforce_taxonomy:
+            waivable_here = (
+                waivable_fail
+                and raw_status == QualityStatus.FAIL
+                and name in mandatory_children
+                and production_gate_waiver_allowed(waivers, name)
+            )
+        else:
+            waivable_here = (
+                waivable_fail
+                and raw_status == QualityStatus.FAIL
+                and name in mandatory_children
+                and governed_waiver_allowed(waivers, name)
+            )
+        if waivable_here:
+            status = QualityStatus.WAIVED
+            waiver = waivers.get(name)
+            waived_count += 1
+        else:
+            status = raw_status
+
+        converted.append(status)
+        rows.append(
+            {
+                "index": idx,
+                "name": name,
+                "input": child,
+                "status": status,
+                "waived": status == QualityStatus.WAIVED,
+                "waiver": waiver,
+                "coerced_from": raw_status if not (status == QualityStatus.WAIVED) else QualityStatus.FAIL,
+            }
+        )
+
+    aggregate = _worst_of(converted)
+
+    used_waiver_names = {
+        row["name"] for row in rows if row["waived"] and row["waiver"] is not None
+    }
+    unused_waiver_keys = sorted(
+        key for key in waivers if key not in {row["name"] for row in rows} or key not in used_waiver_names
+    )
+
+    collisions: List[str] = []
+    if child_names is None:
+        seen_positional: Dict[str, int] = {}
+        for idx, name in enumerate(names_by_index):
+            if name in seen_positional:
+                collisions.append(name)
+            seen_positional[name] = idx
+
+    return {
+        "aggregate": aggregate,
+        "children": rows,
+        "mandatory_children": mandatory_children,
+        "waivable_count": sum(
+            1 for row in rows if row["status"] == QualityStatus.FAIL and row["name"] in mandatory_children
+        ),
+        "waived_count": waived_count,
+        "positional_audit": {
+            "children_count": len(children),
+            "mandatory_children_count": len(mandatory_children),
+            "explicit_child_names": child_names is not None,
+            "overflow_names": overflow_names,
+            "collisions": sorted(set(collisions)),
+            "ambiguous": bool(overflow_names) or bool(collisions),
+        },
+        "unused_waiver_keys": unused_waiver_keys,
+    }
+
+
+def promote_aggregate(
+    children: List[object],
+    *,
+    mandatory_children: Optional[List[str]] = None,
+    waivers: Optional[Dict[str, str]] = None,
+    waivable_fail: bool = True,
+    child_names: Optional[List[str]] = None,
+    enforce_taxonomy: bool = False,
 ) -> QualityStatus:
     """Aggregate child gate statuses with fail-closed, waiver-governed rules.
 
+    Convenience wrapper around `promote_aggregate_detailed` that returns only
+    the aggregate status. Per-child conversion happens first, then severity
+    reduction:
+
     - Aggregate is PASS only if EVERY child is PASS.
-    - A child FAIL without a governed waiver keeps the aggregate FAIL.
+    - A child FAIL without a governed waiver for that exact child keeps the
+      aggregate FAIL (unwaivable FAIL, including FAILs off the allow-list).
     - A child FAIL WITH a governed waiver for that exact child becomes WAIVED
       (never PASS) when `waivable_fail` is True.
-    - A skipped/missing mandatory child with no evidence is INCOMPLETE and
-      can never be promoted to PASS, even with a waiver (there is evidence of
-      nothing, so there is nothing to waive).
-    - The aggregate is never PASS while any child is non-PASS; the worst
-      non-PASS child governs the result instead.
+    - INCOMPLETE / NOT_RUN / BLOCKED_EXTERNAL children are never convertible
+      by a waiver and always keep the aggregate from being WAIVED when they
+      are more severe (INCOMPLETE and BLOCKED_EXTERNAL are worse than WAIVED).
+    - The aggregate is the worst remaining status under
+      FAIL > INCOMPLETE > BLOCKED_EXTERNAL > WAIVED > NOT_RUN > PASS.
 
     `mandatory_children` restricts which named children may be waived;
-    children outside that list are unwaivable.
+    children outside that list are unwaivable. `child_names` explicitly binds
+    per-child labels to positions and is validated for length/duplicates.
+    `enforce_taxonomy=True` enables NEW-210 production mode (registry-backed,
+    unknown/non-waivable gates stay FAIL).
     """
-    if not children:
-        return QualityStatus.INCOMPLETE
+    return promote_aggregate_detailed(
+        children,
+        mandatory_children=mandatory_children,
+        waivers=waivers,
+        waivable_fail=waivable_fail,
+        child_names=child_names,
+        enforce_taxonomy=enforce_taxonomy,
+    )["aggregate"]
 
-    mandatory_children = mandatory_children or []
-    converted: List[QualityStatus] = []
-    names: List[str] = []
 
-    for idx, child in enumerate(children):
-        if isinstance(child, QualityStatus):
-            status = child
-        elif child is True:
-            status = QualityStatus.PASS
-        elif child is False:
-            status = QualityStatus.FAIL
-        else:
-            status = QualityStatus.INCOMPLETE
-        converted.append(status)
-        label = mandatory_children[idx] if idx < len(mandatory_children) else str(idx)
-        names.append(label)
+# ---------------------------------------------------------------------------
+# Gate-report normalization (single decision authority)
+# ---------------------------------------------------------------------------
 
-    if all(s == QualityStatus.PASS for s in converted):
-        return QualityStatus.PASS
-    if not any(s != QualityStatus.PASS for s in converted):
-        return QualityStatus.PASS
+GATE_STATUS_SYNONYMS: Dict[str, QualityStatus] = {
+    "pass": QualityStatus.PASS,
+    "passed": QualityStatus.PASS,
+    "ok": QualityStatus.PASS,
+    "success": QualityStatus.PASS,
+    "fail": QualityStatus.FAIL,
+    "failed": QualityStatus.FAIL,
+    "error": QualityStatus.FAIL,
+    "abort": QualityStatus.FAIL,
+    "gate_timed_out": QualityStatus.FAIL,
+    "incomplete": QualityStatus.INCOMPLETE,
+    "pending": QualityStatus.INCOMPLETE,
+    "no_evidence": QualityStatus.INCOMPLETE,
+    "not_run": QualityStatus.NOT_RUN,
+    "skipped": QualityStatus.NOT_RUN,
+    "skip": QualityStatus.NOT_RUN,
+    "blocked_external": QualityStatus.BLOCKED_EXTERNAL,
+    "blocked": QualityStatus.BLOCKED_EXTERNAL,
+    "unavailable": QualityStatus.BLOCKED_EXTERNAL,
+    "waived": QualityStatus.WAIVED,
+}
 
-    waivable = [
-        (s, n)
-        for s, n in zip(converted, names)
-        if s == QualityStatus.FAIL and n in mandatory_children
-    ]
-    if waivable_fail and waivable:
-        if all(governed_waiver_allowed(waivers, n) for s, n in waivable):
-            return QualityStatus.WAIVED
-        return QualityStatus.FAIL
 
-    if any(s == QualityStatus.FAIL for s in converted):
-        return QualityStatus.FAIL
-    return _worst_of(converted)
+def _map_gate_status_string(value: object) -> Optional[QualityStatus]:
+    """Map a producer's status string onto the QualityStatus vocabulary.
+
+    Foreign producer vocabularies (``PASS`` / ``FAIL`` / ``INCOMPLETE``,
+    ``pass`` / ``fail`` / ``skipped`` / ``error``, ``PENDING``,
+    ``GATE_TIMED_OUT``) are normalized case-insensitively. Unrecognized
+    values return None so callers can fail closed instead of guessing.
+    """
+    if isinstance(value, QualityStatus):
+        return value
+    if not isinstance(value, str):
+        return None
+    return GATE_STATUS_SYNONYMS.get(value.strip().lower())
+
+
+def normalize_gate_result(report: object) -> Dict[str, object]:
+    """Normalize an arbitrary gate report into one fail-closed verdict.
+
+    This is the single normalization authority for gate decisions and MUST
+    produce the same verdict wherever it is used (QualityGateManager
+    ``_finalize_gate`` and CumulativeGateRunner). Precedence:
+
+    1. Not a dict (None, a list, a bare status) -> FAIL (never crash).
+    2. Explicit ``ok`` key -> authoritative. The ``status`` value, when also
+       present (e.g. ``structure_elevation_plausibility`` carries BOTH), is
+       preserved for provenance but never overrides ``ok``.
+    3. ``status`` key only -> mapped onto the vocabulary; only PASS maps to a
+       pass verdict. ``PENDING`` -> INCOMPLETE, ``GATE_TIMED_OUT`` -> FAIL,
+       unknown status strings -> FAIL (fail-closed, never a silent pass).
+    4. No verdict key at all -> FAIL; an empty report is an unverified report
+       and can never represent an unambiguous pass.
+
+    Returns a dict with ``decision`` ("pass"|"fail"), ``ok``, normalized
+    ``status``, ``reason`` and the inspected verdict keys.
+    """
+    if not isinstance(report, dict):
+        return {
+            "ok": False,
+            "status": QualityStatus.FAIL,
+            "decision": "fail",
+            "reason": "not_dict",
+            "inspected_keys": [],
+        }
+
+    inspected = [k for k in ("ok", "status", "error") if k in report]
+
+    if "ok" in report:
+        ok = bool(report["ok"])
+        status = _map_gate_status_string(report.get("status")) if "status" in report else None
+        if status is None:
+            status = QualityStatus.PASS if ok else QualityStatus.FAIL
+        return {
+            "ok": ok,
+            "status": status,
+            "decision": "pass" if ok else "fail",
+            "reason": "ok_key",
+            "inspected_keys": inspected,
+        }
+
+    if "status" in report:
+        mapped = _map_gate_status_string(report.get("status"))
+        if mapped is None:
+            return {
+                "ok": False,
+                "status": QualityStatus.FAIL,
+                "decision": "fail",
+                "reason": "unrecognized_status",
+                "inspected_keys": inspected,
+            }
+        return {
+            "ok": mapped == QualityStatus.PASS,
+            "status": mapped,
+            "decision": "pass" if mapped == QualityStatus.PASS else "fail",
+            "reason": "status_key",
+            "inspected_keys": inspected,
+        }
+
+    return {
+        "ok": False,
+        "status": QualityStatus.FAIL,
+        "decision": "fail",
+        "reason": "no_verdict_key",
+        "inspected_keys": inspected,
+    }
 
 
 # ---------------------------------------------------------------------------

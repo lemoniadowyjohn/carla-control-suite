@@ -1,0 +1,47 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": "ultimate_pipeline/tools/repo_health.py, .github/workflows/tests.yml",
+  "defect_confirmed": "overall_status could be INCOMPLETE while the process exited 0 and the workflow omitted --strict-release, so a green check was not release PASS.",
+  "evidence_paths": [
+    "D19_NEW_208.json",
+    "CI_SEMANTICS_MATRIX.json"
+  ],
+  "files_changed": [
+    "ultimate_pipeline/tools/repo_health.py",
+    "ultimate_pipeline/tests/unit/test_repo_health_gate_semantics.py",
+    "tests/unit/test_repo_health_tool.py"
+  ],
+  "finding_id": "NEW-208",
+  "implementation": [
+    "three named gates: diagnostic, offline-release-gate, runtime-certification-gate",
+    "a gate is PASS only when every required section is PASS",
+    "FAIL/INCOMPLETE/NOT_RUN/BLOCKED_EXTERNAL/WAIVED are all non-passes; blocking sections are named",
+    "only PASS exits 0 (gate_exit_code)",
+    "offline CI does not require runtime certification; the runtime gate cannot pass on NOT_RUN",
+    "--gate authoritative; legacy exit contract preserved when omitted"
+  ],
+  "new_production_modules": 0,
+  "priority": "P0",
+  "remaining_blockers": [],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "status": "PASS",
+  "status_truth_table": {
+    "all_required_PASS": "gate PASS, exit 0",
+    "offline_PASS + runtime_NOT_RUN": "offline gate PASS/exit 0; runtime gate INCOMPLETE/exit 1",
+    "required_BLOCKED_EXTERNAL": "gate INCOMPLETE, exit 1",
+    "required_FAIL": "gate FAIL, exit 1",
+    "required_INCOMPLETE": "gate INCOMPLETE, exit 1",
+    "required_NOT_RUN": "gate INCOMPLETE, exit 1",
+    "required_WAIVED": "gate INCOMPLETE, exit 1"
+  },
+  "task_id": "D19",
+  "test_results": {
+    "failed": 0,
+    "passed": 35,
+    "skipped": 0
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_repo_health_gate_semantics.py tests/unit/test_repo_health_tool.py -q"
+  ],
+  "title": "Correct CI status semantics"
+}

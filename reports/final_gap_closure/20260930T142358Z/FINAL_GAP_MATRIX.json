@@ -1,0 +1,20 @@
+{
+  "GAP-017/018": "BLOCKED_EXTERNAL",
+  "GAP-026": "untouched (tolerance unchanged)",
+  "NEW-196": "PASS",
+  "NEW-197": "PASS",
+  "NEW-198": "PASS",
+  "NEW-199": "PASS",
+  "NEW-199-note": "float schema chosen; Atoi-style truncation rejected by tests",
+  "NEW-205-env": "PASS",
+  "NEW-206-repo": "ALREADY_RESOLVED",
+  "NEW-206-server": "BLOCKED_EXTERNAL",
+  "NEW-207-live": "BLOCKED_EXTERNAL",
+  "NEW-207-repo": "ALREADY_RESOLVED",
+  "NEW-209": "ALREADY_RESOLVED (no new interpreter built)",
+  "NEW-210": "PASS",
+  "NEW-211": "FOUND_AND_FIXED_IN_CAMPAIGN",
+  "XODR-cosmetics": "none applied",
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09"
+}

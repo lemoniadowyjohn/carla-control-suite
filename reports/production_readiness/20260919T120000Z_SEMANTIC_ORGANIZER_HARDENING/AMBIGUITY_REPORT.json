@@ -1,0 +1,8 @@
+{
+  "description": "Report on how conflicting, equal-authority OSM tags are handled.",
+  "status_definitions": {
+    "OFFLINE_CLASSIFICATION_VERIFIED": "The classifier successfully resolved a unique semantic class.",
+    "AMBIGUOUS": "Multiple incompatible semantic classes were matched in the same precedence tier."
+  },
+  "behavior_on_ambiguity": "Do NOT arbitrarily pick. Return status=AMBIGUOUS along with the list of candidate semantic classes, and matched rules for further manual audit."
+}

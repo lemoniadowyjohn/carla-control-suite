@@ -1,0 +1,69 @@
+{
+  "active_map_roles": [
+    "auto",
+    "manual"
+  ],
+  "frames": {
+    "auto_map_of_record": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "STRUCTURED",
+      "frame_structured": {
+        "crs_authority": "local Cartesian via fixed offset from UTM-32N (EPSG:32632)",
+        "frame_id": "ingolstadt_local_rebased",
+        "frame_kind": "rebased_local",
+        "rebase_dx": 832671.676,
+        "rebase_dy": 5458671.104
+      }
+    },
+    "auto_map_of_record_c29_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_deepaudit_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_junctionfix_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_prec29_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_reproregen1_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_reproregen2_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_round5_hygienefix_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "auto_map_of_record_round6_elevationfix_superseded": {
+      "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "frame_structured": {}
+    },
+    "manual_grid0828": {
+      "frame": "UTM-32N (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+      "frame_status": "STRUCTURED",
+      "frame_structured": {
+        "crs_authority": "EPSG:32632 (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+        "frame_id": "UTM-32N",
+        "frame_kind": "projected_crs"
+      }
+    }
+  },
+  "policy": "active pins carry proven structured frames; historical entries stay LEGACY_TEXT_ONLY"
+}

@@ -1,0 +1,48 @@
+{
+  "default_selection_seed": 1234,
+  "default_training_seeds": [
+    42,
+    43,
+    44
+  ],
+  "design": "nested_subsets",
+  "evaluation_pair_reuse_warning": "The manual-vs-auto whole-map pair is reused across every (K, seed): it is NOT an untouched test set.",
+  "git_sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8-dirty",
+  "historical_confounding_fixed": "pre-fix run_ksweep used seed=42+k with independent random.sample per K (subset AND seed changed with K); post-fix design isolates incremental sample-size effects.",
+  "k_values": [
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    72
+  ],
+  "metrics": [
+    "latent cosine_similarity",
+    "l2",
+    "final training loss"
+  ],
+  "nesting_verified_in_this_bundle": true,
+  "per_k_reporting": [
+    "n_seeds",
+    "mean",
+    "std",
+    "median",
+    "min/max",
+    "ci95",
+    "bootstrap_ci95",
+    "raw per-run rows kept"
+  ],
+  "seed_separation": {
+    "selection_seed": "WHICH tiles per K (subset composition only)",
+    "torch_seed": "defaults to training_seed; separately overridable",
+    "training_seed": "per-run shuffling / init / noise (never changes tiles)"
+  },
+  "stages": {
+    "DESCRIPTIVE_K_SWEEP": "This sweep: describes metric-vs-K on the fixed manual-vs-auto pair. No independent generalization claim.",
+    "FINAL_EVALUATION": "Requires a held-out map/pair never used for sweeps or selection.",
+    "MODEL_SELECTION": "Choosing any K/checkpoint on the whole-map pair must be recorded as selection, with criterion."
+  },
+  "subset_rule": "subset(K) = P[:K]; P = deterministic permutation of sorted eligible tiles from selection_seed (random.Random.shuffle; input sorted first, so enumeration order cannot leak in)"
+}

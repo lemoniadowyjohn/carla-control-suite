@@ -86,7 +86,7 @@ Two concrete, evidence-backed changes to the live order are worth making:
                                            not wired into main_pipeline.py at all -- see
                                            GAP-013)
 13 offline production acceptance          (unify existing quality-gate system, see
-                                           PRODUCTION_MAP_QUALITY_CONTRACT.yaml)
+                                            PRODUCTION_MAP_QUALITY_CONTRACT.yaml) # Note: Non-normative historical reference
 14 runtime certification                  (live CARLA, NOT_RUN until authorized)
 ```
 

@@ -73,9 +73,27 @@ class ScenarioManager:
     No direct calls to world.get_trafficmanager() → no crash.
     """
 
-    def __init__(self, world: "carla.World", client: "carla.Client"):
+    def __init__(
+        self,
+        world: "carla.World",
+        client: "carla.Client",
+        *,
+        traffic_manager_port: int = 8000,
+        seed: int | None = None,
+    ):
         self.world = world
         self.client = client
+        # NEW-330: registry of every scenario-owned actor, so cleanup can prove
+        # zero remain (anomaly vehicles used to be invisible to cleanup).
+        from ultimate_pipeline.perception.environment.traffic_manager_session import (
+            ScenarioActorRegistry,
+        )
+
+        self.owned_scenario_actors = ScenarioActorRegistry()
+        self.last_cleanup_report: dict = {}
+        self.traffic_manager_port = int(traffic_manager_port)
+        self._rng = random.Random(seed if seed is not None else 0)
+
         # Lazy import (CARLA-dependent).
         from ultimate_pipeline.carla_tools.fixed_traffic_manager import (
             create_traffic_manager,
@@ -83,7 +101,7 @@ class ScenarioManager:
 
         self.tm_wrapper = create_traffic_manager()
         # Safe: will just disable TM features if not available
-        self.tm_wrapper.initialize(client, world)
+        self.tm_wrapper.initialize(client, world, port=self.traffic_manager_port)
 
     def create_busy_scenario(self) -> None:
         """Spawn a busy scenario with vehicles + pedestrians."""
@@ -117,15 +135,21 @@ class ScenarioManager:
             spawn_points = self.world.get_map().get_spawn_points()
 
             if veh_bps and spawn_points:
-                sp = random.choice(spawn_points)
-                bp = random.choice(veh_bps)
+                # NEW-327: owned RNG instead of the process-global `random`.
+                sp = self._rng.choice(list(spawn_points))
+                bp = self._rng.choice(list(veh_bps))
                 bp.set_attribute("role_name", "anomaly")
 
                 v = self.world.try_spawn_actor(bp, sp)
                 if v:
                     v.set_autopilot(False)
                     v.apply_control(carla.VehicleControl(throttle=0.0, brake=1.0))
-                    print("[Scenario] Spawned stopped vehicle anomaly")
+                    # NEW-330: the anomaly vehicle was spawned directly on the
+                    # world and never registered with FixedTrafficManager, so
+                    # cleanup() could not destroy it and it survived into the
+                    # next scenario.  Track it as a scenario-owned actor.
+                    self.owned_scenario_actors.register("anomaly_vehicles", v)
+                    print("[Scenario] Spawned stopped vehicle anomaly (registered)")
         except Exception as e:
             print(f"[Scenario] Failed to spawn anomaly vehicle: {e}")
 
@@ -133,11 +157,21 @@ class ScenarioManager:
         print(f"[Scenario] Anomaly scenario ready: {status}")
 
     def cleanup(self) -> None:
-        """Clear all traffic and pedestrians spawned via FixedTrafficManager."""
+        """Clear all traffic, pedestrians and owned scenario actors.
+
+        NEW-330: also destroys walker controllers, walker actors, anomaly
+        vehicles and temporary props, and verifies zero owned actors remain.
+        """
         print("[Scenario] Cleaning up scenario actors...")
         self.tm_wrapper.clear_vehicles()
         self.tm_wrapper.clear_pedestrians()
-        print("[Scenario] Cleanup done.")
+        report = self.owned_scenario_actors.destroy_all()
+        verify = self.owned_scenario_actors.verify_clean()
+        print(
+            f"[Scenario] Cleanup done. destroyed={len(report['destroyed'])} "
+            f"survivors={verify['owned_actors_remaining']}"
+        )
+        self.last_cleanup_report = {"destroy": report, "verify": verify}
 
 
 # =====================================================================

@@ -1,0 +1,55 @@
+{
+  "calib_sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+  "calibration_authority": {
+    "canonical_verdict": "PASS",
+    "heuristic_cannot_override_canonical": true,
+    "heuristic_export_rejected_by_loader": true
+  },
+  "calibration_cleanup_transactional": {
+    "exception_during_image_callback_clean": true,
+    "exception_during_sensor_spawn_clean": true,
+    "survivor_detected": true
+  },
+  "empirical_reprojection_acceptance": {
+    "predicted_vs_predicted_refused": true,
+    "reason": "no CARLA RPC; rendered observations unavailable",
+    "thresholds_declared_before_run": true,
+    "verdict": "BLOCKED_EXTERNAL"
+  },
+  "lidar_camera_gate": {
+    "ok": false,
+    "out_of_image_rejected": true,
+    "targets_expected": 4,
+    "targets_passed": 3,
+    "wild_pixel_rejected": true
+  },
+  "runtime_sensor_realization": {
+    "bounded_approximations": [
+      "back_left_camera",
+      "back_right_camera",
+      "front_left_camera",
+      "front_right_camera",
+      "left_camera",
+      "right_camera"
+    ],
+    "exact_full_frame": false,
+    "legacy_native_equals_K_undistortion_claim": "WITHDRAWN",
+    "strategy_counts": {
+      "INTRINSICS_APPROXIMATION_BOUNDED": 6
+    }
+  },
+  "schema": "CALIBRATION_ACCEPTANCE_MATRIX/v1",
+  "scientific_closure": {
+    "EMPIRICAL_REPROJECTION_ACCEPTANCE": false,
+    "EMPIRICAL_REPROJECTION_ACCEPTANCE_BLOCKED_BY": "BLOCKED_EXTERNAL",
+    "RUNTIME_SENSOR_REALIZATION": false,
+    "STATIC_CALIBRATION_CONTRACT": true,
+    "never_claim_fully_operational_from_matrix_tests": true
+  },
+  "static_calibration_contract": "PASS",
+  "vehicle_calibration_binding": {
+    "pairwise_sim_comparability": true,
+    "physical_rig_fidelity_never_silently_claimed": true,
+    "real_sensor_rig_geometry_replica_for_tesla": true
+  }
+}

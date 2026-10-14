@@ -1,0 +1,881 @@
+{
+  "candidate_sha": "36ea3403811de21c288ef18108f8f2cb3d98cf58",
+  "checks": {
+    "distinct_blender_versions": [
+      "Blender 4.3.0"
+    ],
+    "distinct_buildings_sources": [
+      "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5"
+    ],
+    "distinct_conversion_scripts": [
+      "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2"
+    ],
+    "distinct_frame_offsets": [
+      [
+        832671.676,
+        5458671.104
+      ]
+    ],
+    "distinct_map_shas": [
+      "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    ],
+    "distinct_osm2world_toolchains": [
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin"
+    ],
+    "distinct_tile_sizes_m": [
+      1000.0
+    ],
+    "no_duplicate_coordinates": true,
+    "no_missing_tiles": true,
+    "no_stray_tiles": true,
+    "single_blender_version": true,
+    "single_buildings_source": true,
+    "single_conversion_script": true,
+    "single_frame_offset": true,
+    "single_map_sha256": true,
+    "single_osm2world_toolchain": true,
+    "single_tile_size_m": true,
+    "tile_count_matches_contract": true
+  },
+  "duplicate_coordinates": [],
+  "frame_authority": {
+    "frame_id": "ingolstadt_local_rebased",
+    "rebase_offset_xy": [
+      832671.676,
+      5458671.104
+    ]
+  },
+  "generated_at_utc": "2026-10-02T09:50:41.589679+00:00",
+  "map_authority": {
+    "bytes": 149799632,
+    "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+    "frame_id": "ingolstadt_local_rebased",
+    "rebase_dx": 832671.676,
+    "rebase_dy": 5458671.104,
+    "registry_key": "auto_map_of_record",
+    "resolved_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-p1\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256_actual": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "sha256_expected": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+  },
+  "missing_tiles": [],
+  "overall": "PASS",
+  "placement_authority": {
+    "note": "Placement authority is produced by stage_large_map_package and is checked downstream by RQ3 lineage validation (tiles_placement_offsets in the package sidecar). No placement record exists in the tile release itself.",
+    "status": "PENDING"
+  },
+  "release_contract": {
+    "checkpoint": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/CHECKPOINT.json",
+    "checkpoint_sha256": "2564d67e77fcc63fe75764bb768b069c7f46a4cfb2a660e0bd1dbe4911cb3470",
+    "declared_tile_count": 20,
+    "declared_tiles": [
+      [
+        6,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        10,
+        6
+      ],
+      [
+        10,
+        7
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        10,
+        9
+      ]
+    ],
+    "run_id": "20260924T100614Z",
+    "tiles_remaining": 0
+  },
+  "schema": "rq3_pre_stage_tileset_authority/v1",
+  "source_output_directory": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK",
+  "stray_tiles": [],
+  "tile_count": 20,
+  "tiles": [
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 772028,
+      "conversion_run_id": "ca27bfac21c0",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "d64d23b9f70802fdec365294be286675b783b9a7842721df1d83faaab340d40c",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_6/Ingolstadt_Tile_6_6.fbx",
+      "fbx_sha256": "395a989f8f8818af5af1b5b27f26cb3a9462606dfac7e5e18d691307e9c2fa85",
+      "parsed": [
+        "Ingolstadt",
+        6,
+        6
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_6/Ingolstadt_Tile_6_6.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        6,
+        6
+      ],
+      "tile_manifest_fbx_sha256": "395a989f8f8818af5af1b5b27f26cb3a9462606dfac7e5e18d691307e9c2fa85",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_6/Ingolstadt_Tile_6_6.tile_fbx.json",
+      "tile_manifest_sha256": "0b898906d647e0bda700a1dff53a676918d3165c6494b3e756bd211afdfd1911",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1008284,
+      "conversion_run_id": "eb916713053c",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "abc3f52c42fc68f9b6fd67e5061f5d81e9f492e0e4e0eff7a6a886bb093e644c",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_7/Ingolstadt_Tile_6_7.fbx",
+      "fbx_sha256": "e934ec95be05b9f2fb6fc1dad838e839e2790851d64701882a9d4219fe7dfc2b",
+      "parsed": [
+        "Ingolstadt",
+        6,
+        7
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_7/Ingolstadt_Tile_6_7.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        6,
+        7
+      ],
+      "tile_manifest_fbx_sha256": "e934ec95be05b9f2fb6fc1dad838e839e2790851d64701882a9d4219fe7dfc2b",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_7/Ingolstadt_Tile_6_7.tile_fbx.json",
+      "tile_manifest_sha256": "a51d35c4f21b7d23feb5774cd51a5577a7b08eb9cba9e6093bb51856faf7485e",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1603244,
+      "conversion_run_id": "a2e0757ecbfe",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "c2423cf61e55ef834cc5939a8ad07392d508e0281442db94df495f7852543e7a",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_8/Ingolstadt_Tile_6_8.fbx",
+      "fbx_sha256": "c2d1315dbfc88568920a52d6fad50a6c208492eda548b05631fecc400107a7bf",
+      "parsed": [
+        "Ingolstadt",
+        6,
+        8
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_8/Ingolstadt_Tile_6_8.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        6,
+        8
+      ],
+      "tile_manifest_fbx_sha256": "c2d1315dbfc88568920a52d6fad50a6c208492eda548b05631fecc400107a7bf",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_8/Ingolstadt_Tile_6_8.tile_fbx.json",
+      "tile_manifest_sha256": "9dc34418a71e5b428df87a90a2c2f86ac83db50a10a5c956dd4ac4672697861e",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 448636,
+      "conversion_run_id": "15c24102758a",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "14a39c2a5c222f52282441c5fec92b9b42ee5e07393dbdf52c1da13dcef7a5bb",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_9/Ingolstadt_Tile_6_9.fbx",
+      "fbx_sha256": "a76d743181906ca581f2ed047b9b91e5fb03af26ce1fc4ddb03642be2d8e22fe",
+      "parsed": [
+        "Ingolstadt",
+        6,
+        9
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_9/Ingolstadt_Tile_6_9.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        6,
+        9
+      ],
+      "tile_manifest_fbx_sha256": "a76d743181906ca581f2ed047b9b91e5fb03af26ce1fc4ddb03642be2d8e22fe",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_9/Ingolstadt_Tile_6_9.tile_fbx.json",
+      "tile_manifest_sha256": "5da25ed52ea5798c1b7920491bc48a91c924b8093c0f1b31cfb370955e120a09",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 878124,
+      "conversion_run_id": "29b0c5dd6f06",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "ed71fcffb12555e5fb6bbcfe604bed643d40c76e408a7f3a4f61a4681938b221",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_6/Ingolstadt_Tile_7_6.fbx",
+      "fbx_sha256": "f106baf8ccaf0b41f44f019360e5b77b664464903db4b19da215caa35875f1db",
+      "parsed": [
+        "Ingolstadt",
+        7,
+        6
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_6/Ingolstadt_Tile_7_6.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        7,
+        6
+      ],
+      "tile_manifest_fbx_sha256": "f106baf8ccaf0b41f44f019360e5b77b664464903db4b19da215caa35875f1db",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_6/Ingolstadt_Tile_7_6.tile_fbx.json",
+      "tile_manifest_sha256": "fd5ed10d6d2183a85dfb1ec84b22e4ea7de8520abfe94a18c16c12faab93ca4b",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1177164,
+      "conversion_run_id": "8870fca31187",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "802562b5a163940c1bfe423e51fa7eb834dcdf290c7e1313bbaff770d998bcd2",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_7/Ingolstadt_Tile_7_7.fbx",
+      "fbx_sha256": "0b51b4e2fe9efad2e45f3624ac03180bfb76e3a0492f5b0635458a7651c4879a",
+      "parsed": [
+        "Ingolstadt",
+        7,
+        7
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_7/Ingolstadt_Tile_7_7.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        7,
+        7
+      ],
+      "tile_manifest_fbx_sha256": "0b51b4e2fe9efad2e45f3624ac03180bfb76e3a0492f5b0635458a7651c4879a",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_7/Ingolstadt_Tile_7_7.tile_fbx.json",
+      "tile_manifest_sha256": "2ccf97ba4f6eb81957aa146645d51b67b592906e43dab4ff2034186e64c7848b",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1580412,
+      "conversion_run_id": "d885de257e59",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "7da43dd5c055b0e5a6fb64926425be3fb6d4afc46147ca4e9d8e3b5943975852",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_8/Ingolstadt_Tile_7_8.fbx",
+      "fbx_sha256": "f151a52e8ff2a7967f13890ca8954c74eb748f7643bcf3354b79a60e14749d02",
+      "parsed": [
+        "Ingolstadt",
+        7,
+        8
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_8/Ingolstadt_Tile_7_8.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        7,
+        8
+      ],
+      "tile_manifest_fbx_sha256": "f151a52e8ff2a7967f13890ca8954c74eb748f7643bcf3354b79a60e14749d02",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_8/Ingolstadt_Tile_7_8.tile_fbx.json",
+      "tile_manifest_sha256": "05f9182fe14ad6da4b9ac42e3706ecc381e466bc96560239f1d2ec8712ffb903",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1199484,
+      "conversion_run_id": "d906d4726ffa",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "46875a3e3b94e23c2926850373392981d156c045e319b0fe16f55d79d2a235cb",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_9/Ingolstadt_Tile_7_9.fbx",
+      "fbx_sha256": "d31f9931025e07b930fb913bcb1e042a61a99b92b246171851c92de10df79510",
+      "parsed": [
+        "Ingolstadt",
+        7,
+        9
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_9/Ingolstadt_Tile_7_9.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        7,
+        9
+      ],
+      "tile_manifest_fbx_sha256": "d31f9931025e07b930fb913bcb1e042a61a99b92b246171851c92de10df79510",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_7_9/Ingolstadt_Tile_7_9.tile_fbx.json",
+      "tile_manifest_sha256": "8426815005502cdeda7eb8da0709a1bbcc8c01b7b584a667264ecf512895ba9d",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 661724,
+      "conversion_run_id": "e4daeb8810c9",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "d424764862f97e008e2137e883dc29f4a8404c185af0e11ddfe91cb777fce50a",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_6/Ingolstadt_Tile_8_6.fbx",
+      "fbx_sha256": "051b3443abc0b6d3e6a963182ab9ce3110b8ac937a2c42550f9d0b30902f2389",
+      "parsed": [
+        "Ingolstadt",
+        8,
+        6
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_6/Ingolstadt_Tile_8_6.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        8,
+        6
+      ],
+      "tile_manifest_fbx_sha256": "051b3443abc0b6d3e6a963182ab9ce3110b8ac937a2c42550f9d0b30902f2389",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_6/Ingolstadt_Tile_8_6.tile_fbx.json",
+      "tile_manifest_sha256": "fc91d33a40935c826d7f43ff411832c68c3c442b4ffac1265a8db3065f767c6a",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1063260,
+      "conversion_run_id": "5af45c01f7a4",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "908e76e19e3f5b9c8e3aaf09f1de2c712988309791211450f5ed70626263f88d",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_7/Ingolstadt_Tile_8_7.fbx",
+      "fbx_sha256": "6d99826a26320dbaec0da0d5fec13a4a9a3ad41023b35db939844fdb765f4ec6",
+      "parsed": [
+        "Ingolstadt",
+        8,
+        7
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_7/Ingolstadt_Tile_8_7.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        8,
+        7
+      ],
+      "tile_manifest_fbx_sha256": "6d99826a26320dbaec0da0d5fec13a4a9a3ad41023b35db939844fdb765f4ec6",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_7/Ingolstadt_Tile_8_7.tile_fbx.json",
+      "tile_manifest_sha256": "61901c56300e58349c3ea572e24662ee13d999b0e6f7698e30c830a438a389a1",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1279436,
+      "conversion_run_id": "a795650c5697",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "701947597234f418f68123145e85ec5609e7d4a5b886070ba728b8af1fabc3b9",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_8/Ingolstadt_Tile_8_8.fbx",
+      "fbx_sha256": "6dfff61055d269e9a50fcb51cb1e7155bb36ff3e7cb498b68cc407f09eb4d7b4",
+      "parsed": [
+        "Ingolstadt",
+        8,
+        8
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_8/Ingolstadt_Tile_8_8.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        8,
+        8
+      ],
+      "tile_manifest_fbx_sha256": "6dfff61055d269e9a50fcb51cb1e7155bb36ff3e7cb498b68cc407f09eb4d7b4",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_8/Ingolstadt_Tile_8_8.tile_fbx.json",
+      "tile_manifest_sha256": "a727f44924f0aacadb374bf63fdb3b2f44fa73be868282684d61321d6cf63c84",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1028220,
+      "conversion_run_id": "b72e91916a56",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "4ced8869cf0af95a0ee0287709375a49afc49ec265b3f227d7e6f62d44eaf588",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_9/Ingolstadt_Tile_8_9.fbx",
+      "fbx_sha256": "c7977e4142a9447fc68d3bbcfd6e14d7a5664d1b301b4814a39a7c94f324c2a1",
+      "parsed": [
+        "Ingolstadt",
+        8,
+        9
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_9/Ingolstadt_Tile_8_9.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        8,
+        9
+      ],
+      "tile_manifest_fbx_sha256": "c7977e4142a9447fc68d3bbcfd6e14d7a5664d1b301b4814a39a7c94f324c2a1",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_8_9/Ingolstadt_Tile_8_9.tile_fbx.json",
+      "tile_manifest_sha256": "6d7480d4364e23132ef55ee997875566c19c47c4a33fcd868f56bdf341aac471",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 32428,
+      "conversion_run_id": "607447941046",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "aed6663cd8f3f6c95cdbe93b46275e85c9e97f676c881ce42eaae10c87e404a2",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_6/Ingolstadt_Tile_9_6.fbx",
+      "fbx_sha256": "2de2ec767047b88e7d19bbbdb6219be4686fcfbad4ca0ca5578d5a9f99174264",
+      "parsed": [
+        "Ingolstadt",
+        9,
+        6
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_6/Ingolstadt_Tile_9_6.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        9,
+        6
+      ],
+      "tile_manifest_fbx_sha256": "2de2ec767047b88e7d19bbbdb6219be4686fcfbad4ca0ca5578d5a9f99174264",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_6/Ingolstadt_Tile_9_6.tile_fbx.json",
+      "tile_manifest_sha256": "1b4830fe2851a9a2bcefa3f557ee895c57045082866ab36b959c26d892d6ebf9",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 79292,
+      "conversion_run_id": "b71c7205c2b2",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "efdc9a98f00839e77892a6c698ab51415f8d1fc175dd9bbd01ff317cdcf703ea",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_7/Ingolstadt_Tile_9_7.fbx",
+      "fbx_sha256": "3b85ab2d600e7406653fc7794e38737ca97abe9a46b46ecb80f1c2da5e87f12e",
+      "parsed": [
+        "Ingolstadt",
+        9,
+        7
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_7/Ingolstadt_Tile_9_7.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        9,
+        7
+      ],
+      "tile_manifest_fbx_sha256": "3b85ab2d600e7406653fc7794e38737ca97abe9a46b46ecb80f1c2da5e87f12e",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_7/Ingolstadt_Tile_9_7.tile_fbx.json",
+      "tile_manifest_sha256": "3e19632cce6b14b0ee0326406406e88a7476fdc73f38a25c2d75b0cacd753971",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 499388,
+      "conversion_run_id": "ec96c79ebd71",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "843ec50b2d4e7fe43b87ccfdd3cd628c9a211891314cda3c1ee002d707c5f16f",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_8/Ingolstadt_Tile_9_8.fbx",
+      "fbx_sha256": "d40f7f916a5465fd6b349489a92fe0403fdd6504b7a8ebd0bb537168f6a1c033",
+      "parsed": [
+        "Ingolstadt",
+        9,
+        8
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_8/Ingolstadt_Tile_9_8.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        9,
+        8
+      ],
+      "tile_manifest_fbx_sha256": "d40f7f916a5465fd6b349489a92fe0403fdd6504b7a8ebd0bb537168f6a1c033",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_8/Ingolstadt_Tile_9_8.tile_fbx.json",
+      "tile_manifest_sha256": "a06b3e2221b212e507b4ee7c2fea27a4a5bad7e56089ecbf63709313db5c5441",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 1121788,
+      "conversion_run_id": "3cee9ac4dc9d",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "955b00d55b7b99f5482e2dd715e7b4c047681fd9b2d26ca79577d7d4a5417d93",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_9/Ingolstadt_Tile_9_9.fbx",
+      "fbx_sha256": "0d5f5594e242589eeb078ea1958d9da37bb9963ef1533236e72a6a0f31bb446d",
+      "parsed": [
+        "Ingolstadt",
+        9,
+        9
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_9/Ingolstadt_Tile_9_9.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        9,
+        9
+      ],
+      "tile_manifest_fbx_sha256": "0d5f5594e242589eeb078ea1958d9da37bb9963ef1533236e72a6a0f31bb446d",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_9_9/Ingolstadt_Tile_9_9.tile_fbx.json",
+      "tile_manifest_sha256": "cd9b4f2df4f55945859378ff46bee7048025f217d2653eb9b2f93512b7072a2a",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 27900,
+      "conversion_run_id": "57daec051a79",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "adcdfe5eeef09b9aade06e14c2b2c2549aabef29046866be23c7b51da03dcb7a",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_6/Ingolstadt_Tile_10_6.fbx",
+      "fbx_sha256": "2eec3857c6046616411c9c9628b01b3757c03aba9b42d939cdaf648126e8249c",
+      "parsed": [
+        "Ingolstadt",
+        10,
+        6
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_6/Ingolstadt_Tile_10_6.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        10,
+        6
+      ],
+      "tile_manifest_fbx_sha256": "2eec3857c6046616411c9c9628b01b3757c03aba9b42d939cdaf648126e8249c",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_6/Ingolstadt_Tile_10_6.tile_fbx.json",
+      "tile_manifest_sha256": "e25266a3e109568395a21e5b110239c1cb76c4eef239e2f7ad5597a6c9b0cec6",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 195036,
+      "conversion_run_id": "f3d95abc38b2",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "dec9f381ae1cab79b2b3edec77648366f047e25ebd9bb8883d49d688799d11e8",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_7/Ingolstadt_Tile_10_7.fbx",
+      "fbx_sha256": "7b7d2cb278fe74e02c2aa30810de9f75b64e12249d17da859b1a5aa26e235dff",
+      "parsed": [
+        "Ingolstadt",
+        10,
+        7
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_7/Ingolstadt_Tile_10_7.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        10,
+        7
+      ],
+      "tile_manifest_fbx_sha256": "7b7d2cb278fe74e02c2aa30810de9f75b64e12249d17da859b1a5aa26e235dff",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_7/Ingolstadt_Tile_10_7.tile_fbx.json",
+      "tile_manifest_sha256": "e6e8a8111567fff2c5b064ea039f2fc061f4e16343a5445589f0b175d1f5b9c0",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 25516,
+      "conversion_run_id": "4e652fec4220",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "251b8ca940ce3bbbb45d132c5f7a2ca668b74c7768a180880a7d17d45c22c844",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_8/Ingolstadt_Tile_10_8.fbx",
+      "fbx_sha256": "006df1f61753c7ae20a761b162cd93bdc5f8122bc2fe34223249373bf143e922",
+      "parsed": [
+        "Ingolstadt",
+        10,
+        8
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_8/Ingolstadt_Tile_10_8.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        10,
+        8
+      ],
+      "tile_manifest_fbx_sha256": "006df1f61753c7ae20a761b162cd93bdc5f8122bc2fe34223249373bf143e922",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_8/Ingolstadt_Tile_10_8.tile_fbx.json",
+      "tile_manifest_sha256": "53d898fa344fcc84aa833df370571b31147a81ff84f43853bd3c89f9021d5f45",
+      "tile_manifest_status": "ok"
+    },
+    {
+      "blender_exe_sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+      "blender_version": "Blender 4.3.0",
+      "bytes": 818284,
+      "conversion_run_id": "54aef6922952",
+      "conversion_script_sha256": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+      "declared_buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+      "declared_header_offset_xy": [
+        832671.676,
+        5458671.104
+      ],
+      "declared_map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "declared_osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+      "declared_tile_size_m": 1000.0,
+      "exists": true,
+      "fbx_conversion_provenance_sha256": "84f68d9774f229974dfa5ccea03c60bc6f13de20038cf3b460712d7f5dc64766",
+      "fbx_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_9/Ingolstadt_Tile_10_9.fbx",
+      "fbx_sha256": "da16cdbe45bd5ef98f80c8b32614913a668dffa5190119105b18feedac9e6b02",
+      "parsed": [
+        "Ingolstadt",
+        10,
+        9
+      ],
+      "problems": [],
+      "provenance_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_9/Ingolstadt_Tile_10_9.fbx.provenance.json",
+      "roundtrip_verdict": "ROUNDTRIP_PASS",
+      "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+      "tile_index": [
+        10,
+        9
+      ],
+      "tile_manifest_fbx_sha256": "da16cdbe45bd5ef98f80c8b32614913a668dffa5190119105b18feedac9e6b02",
+      "tile_manifest_path": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_9/Ingolstadt_Tile_10_9.tile_fbx.json",
+      "tile_manifest_sha256": "9bbc739c872c6e52a34110f951cc468fb61b7651efe64b00777b35b4d0c0434c",
+      "tile_manifest_status": "ok"
+    }
+  ]
+}

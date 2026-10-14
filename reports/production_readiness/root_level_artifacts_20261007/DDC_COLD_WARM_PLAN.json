@@ -1,0 +1,63 @@
+{
+  "PLAN": "Post-cook DDC benchmark to quantify current vs optimized DDC performance",
+  "PREREQUISITE": "Current cook must complete naturally. Do NOT purge existing DDC until evidence preserved.",
+  "BENCHMARK_SCENARIOS": {
+    "A_CURRENT_DDC": {
+      "description": "Re-run cook with identical flags against current DDC (warm)",
+      "ddc_path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+      "expected": "High DDC hit rate, but slow read throughput (0.00-0.08 MB/s)",
+      "measurements": [
+        "shader_compile_count",
+        "texture_derivation_count",
+        "ddc_hit_count",
+        "ddc_miss_count",
+        "wall_clock_seconds",
+        "ddc_read_throughput_mbps"
+      ]
+    },
+    "B_WARM_RERUN": {
+      "description": "Immediate second cook run (fully warm DDC + cooked packages)",
+      "ddc_path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+      "expected": "Maximum DDC hit rate, minimal shader compiles, wall clock dominated by package I/O",
+      "measurements": [
+        "shader_compile_count",
+        "texture_derivation_count",
+        "ddc_hit_count",
+        "ddc_miss_count",
+        "wall_clock_seconds",
+        "ddc_read_throughput_mbps"
+      ]
+    },
+    "C_ALTERNATE_FAST_LOCAL_DDC": {
+      "description": "Configure alternate DDC on fast local NVMe (if available)",
+      "ddc_path": "TARGET: Fast NVMe drive (e.g., C: or dedicated D:)",
+      "setup": [
+        "Add to Engine.ini: [/Script/Engine.DerivedDataCacheSettings]",
+        "  +Root=(Type=KeyLength, Length=120, Inner=Pak)",
+        "  +Root=(Type=FileSystem, ReadOnly=false, Clean=false, Flush=false, DeleteUnused=false, UnusedFileAge=30, MaxSizeMB=51200, Path=\"<FAST_NVME_PATH>\\DDC\", EnvPathOverride=\"UE4_DDC\")",
+        "  +Root=(Type=FileSystem, ReadOnly=true, Clean=false, Flush=false, Path=\"G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache\")"
+      ],
+      "expected": "Read throughput >500 MB/s on NVMe, DDC latency <0.5ms",
+      "measurements": [
+        "shader_compile_count",
+        "texture_derivation_count",
+        "ddc_hit_count",
+        "ddc_miss_count",
+        "wall_clock_seconds",
+        "ddc_read_throughput_mbps"
+      ]
+    }
+  },
+  "MEASUREMENT_METHOD": {
+    "shader_compile_count": "Count 'LogShaderCompilers: Display: Worker' lines in log",
+    "texture_derivation_count": "Count 'LogTexture: Display: Building texture' or DDC texture keys",
+    "ddc_hit_miss": "Enable 'LogDerivedDataCache: Verbose' or parse 'Speed test' and access logs",
+    "wall_clock": "LogCook: Display: Cook total time or process lifetime",
+    "ddc_read_throughput": "Sample via Windows Performance Monitor (PhysicalDisk\\Disk Read Bytes/sec) on DDC drive during cook"
+  },
+  "SUCCESS_CRITERIA": {
+    "ddc_read_throughput_target_mbps": 500,
+    "shader_compile_reduction_vs_cold_percent": 90,
+    "wall_clock_reduction_vs_current_percent": 50
+  }
+}

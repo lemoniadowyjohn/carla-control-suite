@@ -1,0 +1,146 @@
+{
+  "schema": "rq3_batch9_final_verdict/v1",
+  "generated_at_utc_note": "Batch 9 execution, candidate b074fc2b",
+  "batch": 9,
+  "verdict": "RQ3_PACKAGE_STAGED_OFFLINE_PASS_LIVE_BLOCKED",
+  "claim_boundary": {
+    "rq3_status": "DEFERRED_RUNTIME",
+    "promoted_to_paired_ingolstadt_capture": false,
+    "reason_not_promoted": "No UE4.26 toolchain and no live CARLA server on this machine, so no import/cook, no runtime identity and no paired capture was executed. Package staging and validation are offline facts only.",
+    "rq3_stays_deferred_runtime": true
+  },
+  "evidence_chain": {
+    "candidate_sha": "b074fc2b",
+    "map_registry_key": "auto_map_of_record",
+    "map_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "map_xodr_bytes": 149799632,
+    "frame_id": "ingolstadt_local_rebased",
+    "rebase_offset_xy_m": [832671.676, 5458671.104],
+    "manual_arm_reference": "manual_grid0828",
+    "manual_grid0828_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+    "grid0821_substituted": false
+  },
+  "tile_release": {
+    "release_contract": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/CHECKPOINT.json",
+    "release_run_id": "20260924T100614Z",
+    "declared_tile_count": 20,
+    "verified_tile_count": 20,
+    "tile_grid": {"x": [6, 7, 8, 9, 10], "y": [6, 7, 8, 9], "product": 20},
+    "missing_tiles": 0,
+    "stray_tiles": 0,
+    "duplicate_coordinates": 0,
+    "single_map_sha256": true,
+    "single_frame_offset": true,
+    "single_tile_size_m": true,
+    "single_osm2world_toolchain": true,
+    "single_blender_version": true,
+    "single_conversion_script": true,
+    "single_buildings_source": true,
+    "resolved_by": "governed release contract, never a recursive FBX glob"
+  },
+  "staging": {
+    "governed_interface": "ultimate_pipeline.tiling.large_map_package.stage_large_map_package",
+    "staging_root": "Import/.staging/20260924T100614Z_rq3batch9",
+    "status": "PASS",
+    "tiles_staged": 20,
+    "tiles_skipped_missing": 0,
+    "exactly_one_whole_map_xodr": true,
+    "xodr_members": ["ingolstadt_perception_map_of_record_20260916_232831.xodr"],
+    "copied_members_independent_of_source": true,
+    "xodr_authority_checked_before_staging": true,
+    "manifest_override_of_failed_xodr_sha": "never applied; a mismatch aborts with MAP_AUTHORITY_DRIFT"
+  },
+  "staged_package_validation": {
+    "governed_interface": "ultimate_pipeline.tiling.large_map_package.validate_staged_package",
+    "validated_dir_was_temporary_staging": true,
+    "status": "PASS",
+    "tile_count": 20,
+    "failures": [],
+    "warnings": [],
+    "member_count": 24
+  },
+  "rq3_map_lineage": {
+    "tool": "tools/rq3_map_lineage_validation.py",
+    "target": "staged package (not the loose artifact directory)",
+    "overall": "PASS",
+    "structure": "PASS",
+    "tile_set": "PASS (expected 20, staged 20, 0 missing, 0 extra)",
+    "placement_authority": "PASS (20 tiles bound)"
+  },
+  "negative_controls": {
+    "controls": 12,
+    "rejected": 12,
+    "before_hardening": "9/12",
+    "cases": [
+      "wrong staged XODR SHA",
+      "missing package.json",
+      "missing package-name descriptor",
+      "missing tile",
+      "extra tile",
+      "duplicate tile declaration",
+      "wrong tile prefix",
+      "wrong map name",
+      "foreign tile from another run",
+      "wrong coordinate-frame identity",
+      "wrong placement authority",
+      "Grid0821 substituted for Grid0828"
+    ],
+    "validator_weakened": false
+  },
+  "promotion": {
+    "strategy": "same-volume os.replace atomic rename",
+    "status": "PASS",
+    "from": "Import/.staging/20260924T100614Z_rq3batch9/Ingolstadt",
+    "to": "Import/Ingolstadt",
+    "sha256_preserved_across_promotion": true,
+    "post_promotion_validation": "PASS",
+    "partially_promoted_package": false,
+    "staging_tree_removed": true
+  },
+  "ue426_car_0916_preflight": {
+    "carla_0916_install_present": "PASS (E:/CARLA/CARLA_0.9.16, CarlaUE4.exe sha256 0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320)",
+    "ue426_toolchain_available": "BLOCKED_ENVIRONMENT (no Unreal Engine host installed; UE4_ROOT unset)",
+    "carla_rpc_live": "BLOCKED_EXTERNAL (127.0.0.1:2000 timeout; no CarlaUE4 process; nothing started or killed)",
+    "disk": "C: 20.2 GiB free, E: 11.3 GiB free -- tight for a UE4.26 build plus DDC",
+    "ram": "47.7 GiB total, 16.7 GiB free",
+    "vram": "Quadro P3200, 6144 MiB total / 5206 MiB free, driver 573.22 -- matches the 6 GiB laptop target",
+    "cook_executed": false,
+    "cooked_package_identity": "NOT_ESTABLISHED",
+    "runtime_map_identity": "NOT_ESTABLISHED",
+    "runtime_stability": "NOT_RUN"
+  },
+  "pair_contract": {
+    "module": "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "eleven_identities_enforced": true,
+    "sim_timing_sha256_added": true,
+    "arm_absence_invalidates_pair": true,
+    "pair_level_absence_invalidates_pair": true,
+    "pair_valid_false_never_valid_true": true,
+    "regression_tests": "tests/unit/test_rq3_batch9_pair_contract.py (50 passed)",
+    "pair_frame_correspondence": "NOT_RUN (no capture)",
+    "dataset_quality": "NOT_RUN (no capture)"
+  },
+  "regression": {
+    "full_suite": "7145 passed, 10 skipped, 0 failed",
+    "compileall": "exit 0",
+    "previous_full_suite": "7095 passed, 10 skipped, 0 failed",
+    "new_tests": 50
+  },
+  "defects_fixed_in_this_batch": [
+    "pair_valid=False surfaced as valid=True",
+    "mandatory arm identities only existence-checked for the governed environment subset",
+    "sim_timing_sha256 computed but not enforced, allowing differently-timed arms to pass",
+    "validate_staged_package accepted a missing package-name descriptor",
+    "validate_staged_package accepted a descriptor map name differing from the package directory",
+    "validate_staged_package treated a tile prefix mismatch as a warning rather than a failure",
+    "validate_staged_package accepted a tile FBX substituted after staging",
+    "tools/rq3_map_lineage_validation.py imported a nonexistent PackageProfile",
+    "tools/rq3_map_lineage_validation.py passed the raw --expected-tiles string where a set was expected"
+  ],
+  "outstanding_blockers": [
+    "no UE4.26 toolchain on this machine (import/cook impossible)",
+    "no live CARLA server (runtime identity and soak impossible)",
+    "P0-4 provenance reconstruction still NOT VERIFIED; the original diff was destroyed and was not recovered in this batch",
+    "placement authority in the package sidecar is the NOMINAL_TILE_GRID and is explicitly labelled as not independently verified by staging; tools/tile_frame_consistency.py run against the tile release reports status=FAIL with 27 seams exceeding the 10 m world-frame tolerance (max 485.84 m, mean 162.01 m). This is a finding about the 20260924T100614Z tile release, not about the staged package, and it means the tiles are not yet proven to join correctly in the world even though the package itself validates."
+  ]
+}

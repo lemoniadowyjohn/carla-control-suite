@@ -1,0 +1,39 @@
+{
+  "schema": "RQ4_SEED_RECOVERY/v1",
+  "generated_at_utc": "2026-09-24T16:00:00+00:00",
+  "expected_seeds": [1, 2, 3, 4, 5],
+  "states": {},
+  "summary": {
+    "complete_valid": 0,
+    "complete_invalid": 0,
+    "partial": 0,
+    "missing": 0,
+    "ambiguous": 0
+  },
+  "evidence_note": "Five-seed leak-free RQ4 extension not found in local workspace. Evidence references external worktree at G:/gap010-rq4-retrain-20260924/. Local search of thesis_runs/, thesis_out/, thesis_results/ found only deterministic seed=42 runs, not five distinct seeds.",
+  "local_search_summary": {
+    "thesis_out_final_20260218_235759": {
+      "datasets_found": ["manual_train_821"],
+      "seed_usage": "deterministic seed=42 only",
+      "distinct_seeds_found": 1
+    },
+    "thesis_out_generalization_logs": {
+      "k_sweep_found": ["k000", "k001", "k003", "k005"],
+      "distinct_seeds_found": 1,
+      "note": "k-sweep uses different dataset counts but same seed=42"
+    }
+  },
+  "external_references": {
+    "master_close_verification": "production_readiness/20260924T120000Z_RQ1_RQ4_MASTER_CLOSE/RQ4_MASTER_CLOSE_VERIFICATION.json",
+    "retrain_worktree": "G:/gap010-rq4-retrain-20260924/",
+    "note": "Five-seed training evidence located on external worktree; not accessible in current environment"
+  },
+  "recommendation": "Retraining required to obtain five-seed leak-free RQ4 extension. Do not reuse pre-leakage-fix results.",
+  "possible_states": {
+    "COMPLETE_VALID": "All 5 seeds completed, leak-free, metrics valid",
+    "COMPLETE_INVALID": "All 5 seeds completed but leakage detected",
+    "PARTIAL": "Some seeds complete, others missing or invalid",
+    "MISSING": "No seed outputs found locally (CURRENT STATE)",
+    "AMBIGUOUS": "Cannot determine state due to mixed/incomplete evidence"
+  }
+}

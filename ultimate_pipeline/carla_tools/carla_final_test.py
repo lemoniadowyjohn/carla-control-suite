@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from typing import Dict, Any, Optional
 
 try:  # pragma: no cover
@@ -37,9 +38,25 @@ class CarlaFinalTest:
         retries: int = 0,
         spawn_vehicle: bool = True,
         do_reload: bool = True,
-        auto_fix_s: bool = True,
+        auto_fix_s: bool = False,
         client: Optional[carla.Client] = None,
+        certified_artifact_sha256: Optional[str] = None,
     ) -> Dict[str, Any]:
+        """
+        Final CARLA validation for one XODR candidate.
+
+        NEW-257: ``auto_fix_s`` used to default to True, so the OpenDRIVE XML could
+        be modified *in memory* (via ``CarlaImportSChecker.auto_fix_in_place``)
+        before being handed to CARLA. A candidate that is broken as stored could
+        then load, and the report would claim ``map_loaded = true`` for content
+        that is not the candidate. Exact-candidate certification must load the
+        exact bytes being certified, so in-memory repair is now off by default and
+        an attempted repair is *recorded* rather than silently applied.
+
+        When ``auto_fix_s`` is explicitly requested, the repaired XML is written
+        to a NEW artifact with its own SHA-256 and the report says so; the
+        repaired document is never presented as the certified candidate.
+        """
         global vehicle, vehicle
         if not _CARLA_AVAILABLE:
             raise RuntimeError(
@@ -47,12 +64,36 @@ class CarlaFinalTest:
                 "Install/activate CARLA PythonAPI before running CarlaFinalTest."
             )
         print("\n🚦 Running final CARLA validation...")
+        import hashlib
+
+        source_bytes = Path(xodr_path).read_bytes()
+        source_sha256 = hashlib.sha256(source_bytes).hexdigest()
         report: Dict[str, Any] = {
             "map_loaded": False,
             "waypoints": 0,
             "vehicle_spawned": False,
             "spawn_reason": None,
+            # NEW-257: the report states which bytes were actually loaded.
+            "certified": False,
+            "xodr_path": str(xodr_path),
+            "source_xodr_sha256": source_sha256,
+            "loaded_xodr_sha256": None,
+            "exact_candidate_loaded": True,
+            "in_memory_repair_applied": False,
+            "repaired_artifact_path": None,
+            "repaired_artifact_sha256": None,
         }
+        if certified_artifact_sha256:
+            report["expected_artifact_sha256"] = str(certified_artifact_sha256)
+            if str(certified_artifact_sha256).lower() != source_sha256.lower():
+                report["certified"] = False
+                report["spawn_reason"] = "artifact_sha256_mismatch"
+                report["exact_candidate_loaded"] = False
+                print(
+                    f"❌ Refusing to certify: artifact sha256 "
+                    f"{source_sha256} != expected {certified_artifact_sha256}"
+                )
+                return report
 
         # ---------------- Ensure CARLA is up, then connect ----------------
         try:
@@ -75,7 +116,10 @@ class CarlaFinalTest:
             with open(xodr_path, encoding="utf-8") as f:
                 data = f.read()
 
-            # QA-only preflight: reduce known CARLA importer crash patterns.
+            # NEW-257: an in-memory repair must not be passed off as the
+            # candidate. When explicitly requested it is materialized as a NEW
+            # artifact with its own SHA-256, and the report marks the run as
+            # certifying that repaired artifact instead.
             if auto_fix_s:
                 try:
                     import xml.etree.ElementTree as ET
@@ -85,12 +129,40 @@ class CarlaFinalTest:
                     issues = CarlaImportSChecker.validate(root)
                     if issues:
                         fixes, after = CarlaImportSChecker.auto_fix_in_place(root)
-                        data = ET.tostring(root, encoding="unicode")
-                        print(
-                            f"⚠ CARLA import s-preflight: issues_before={len(issues)} fixes={fixes} issues_after={len(after)}"
-                        )
+                        repaired_text = ET.tostring(root, encoding="unicode")
+                        if repaired_text != data:
+                            data = repaired_text
+                            report["in_memory_repair_applied"] = True
+                            report["exact_candidate_loaded"] = False
+                            repaired_sha = hashlib.sha256(data.encode("utf-8")).hexdigest()
+                            repaired_path = Path(xodr_path).with_name(
+                                Path(xodr_path).stem + ".repaired.xodr"
+                            )
+                            try:
+                                repaired_path.write_text(data, encoding="utf-8")
+                                report["repaired_artifact_path"] = str(repaired_path)
+                                report["repaired_artifact_sha256"] = repaired_sha
+                            except OSError:
+                                pass
+                            print(
+                                f"⚠ CARLA import s-preflight repaired the document in memory: "
+                                f"issues_before={len(issues)} fixes={fixes} issues_after={len(after)}. "
+                                f"repaired_sha256={repaired_sha}. This run does NOT certify the "
+                                f"original candidate; re-run against the repaired artifact."
+                            )
+                        else:
+                            print(
+                                f"⚠ CARLA import s-preflight: issues_before={len(issues)} "
+                                f"fixes={fixes} (no textual change)"
+                            )
+                    else:
+                        print(f"✓ CARLA import s-preflight: no issues (issues=0)")
                 except Exception:
                     pass
+
+            report["loaded_xodr_sha256"] = hashlib.sha256(
+                data.encode("utf-8")
+            ).hexdigest()
 
             params = carla.OpendriveGenerationParameters()
             params.map_layers = carla.MapLayer.NONE  # stable for CARLA 0.9.16
@@ -108,6 +180,9 @@ class CarlaFinalTest:
             time.sleep(1.0)  # cooldown after load
             time.sleep(0.5)
             report["map_loaded"] = True
+            # NEW-257: a map load only certifies the candidate when the exact
+            # candidate bytes were what CARLA received.
+            report["certified"] = bool(report["exact_candidate_loaded"])
             print("✓ Map loaded successfully!")
 
         except Exception as e:
@@ -195,6 +270,12 @@ class CarlaFinalTest:
         if not spawn_vehicle:
             report["vehicle_spawned"] = False
             report["spawn_reason"] = "spawn_skipped"
+            # NEW-258: teardown is deliberately non-destructive. ASensor::EndPlay
+            # is a known crash source on the Grid maps, and a single explicit
+            # destroy() is exactly the operation that triggers it. Leaving the
+            # actor to world teardown is safer than an individual destroy; the
+            # session is expected to be discarded rather than reused.
+            report["teardown_policy"] = "non_destructive_session_discard"
             return report
 
         try:
@@ -275,12 +356,11 @@ class CarlaFinalTest:
             report["vehicle_spawned"] = False
             report["spawn_reason"] = str(e)
         finally:
-            # Clean up vehicle
-            try:
-                if "vehicle" in locals() and vehicle is not None:
-                    vehicle.destroy()
-            except Exception:
-                pass
+            # NEW-258: no individual destroy(). The Grid teardown crash comes from
+            # destroying actors (and especially sensors) one at a time, so this
+            # session is marked single-capture and left to be discarded.
+            report["teardown_policy"] = "non_destructive_session_discard"
+            report["session_reusable"] = False
 
         return report
 
@@ -300,7 +380,21 @@ def _cli() -> None:
     ap.add_argument("--retries", type=int, default=2)
     ap.add_argument("--no_spawn", action="store_true", help="Skip vehicle spawn test")
     ap.add_argument("--no_reload", action="store_true", help="Do not reload base world before generation")
-    ap.add_argument("--no_fix_s", action="store_true", help="Disable s-preflight auto-fix")
+    ap.add_argument(
+        "--fix_s",
+        action="store_true",
+        help=(
+            "NEW-257: explicitly allow the s-preflight in-memory repair. The run then "
+            "reports the repaired artifact's own SHA-256 and does NOT certify the "
+            "original candidate. Off by default so acceptance always loads the exact "
+            "artifact being certified."
+        ),
+    )
+    ap.add_argument(
+        "--expect-sha256",
+        default=None,
+        help="NEW-257: refuse to run unless the candidate file's sha256 matches this value",
+    )
     ap.add_argument("--json_out", default=None, help="Write report JSON to this path")
     args = ap.parse_args()
     from pathlib import Path
@@ -349,7 +443,8 @@ def _cli() -> None:
         retries=args.retries,
         spawn_vehicle=(not args.no_spawn),
         do_reload=(not args.no_reload),
-        auto_fix_s=(not args.no_fix_s),
+        auto_fix_s=bool(args.fix_s),
+        certified_artifact_sha256=args.expect_sha256,
     )
 
     if args.json_out:

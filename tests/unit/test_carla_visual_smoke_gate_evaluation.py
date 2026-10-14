@@ -112,13 +112,14 @@ def test_run_gate_missing_xodr_fails_closed_without_touching_carla(tmp_path: Pat
 
 def test_run_gate_disabled_by_env_skips_cleanly(tmp_path: Path, monkeypatch):
     # This is the actual standing state on this machine (UP_DISABLE_CARLA=1, GPU TDR
-    # blocker) -- confirms the gate reports a clean, honest "skipped" rather than
+    # blocker) -- confirms the gate reports a clean, honest "blocked_external" rather than
     # silently claiming readiness or crashing.
     xodr = tmp_path / "final.xodr"
     xodr.write_text("<OpenDRIVE/>", encoding="utf-8")
     monkeypatch.setenv("UP_DISABLE_CARLA", "1")
     result = run_visual_smoke_gate(xodr_path=xodr, out_dir=tmp_path / "out")
     assert result["ok"] is False
-    assert result["CARLA_VISUAL_READY"] == "skipped"
+    assert result["CARLA_VISUAL_READY"] == "blocked_external"
+    assert result["status"] == "blocked_external"
     assert "carla_disabled_by_env" in result["errors"]
     assert result["xodr_sha256"]  # still computed even though CARLA is skipped

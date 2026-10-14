@@ -1,0 +1,8 @@
+{
+  "gate": "xml_validity",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "code_sha": "197b574ce8e5dff69100b495205872363007f9ad",
+  "issues": [],
+  "ok": true,
+  "duration_s": 8.6
+}

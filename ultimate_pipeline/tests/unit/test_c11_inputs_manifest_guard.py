@@ -16,7 +16,7 @@ import json
 
 import pytest
 
-from ultimate_pipeline.governance.inputs_manifest import (
+from ultimate_pipeline.governance.reproducibility.inputs_manifest import (
     InputsManifestMismatchError,
     compute_manifest_entry,
     load_manifest,

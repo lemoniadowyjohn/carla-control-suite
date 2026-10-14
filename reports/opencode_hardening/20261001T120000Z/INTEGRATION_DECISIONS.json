@@ -1,0 +1,120 @@
+{
+  "schema": "opencode_hardening_integration_decisions/v1",
+  "work_branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+  "integration_order_followed": [
+    "1. Candidate A route/rig authority (merge commit 08f7bfa1)",
+    "2. Candidate B environment/TM/weather/calibration authority (merge commit cee72f42)",
+    "3. manual semantic resolution of shared files and cross-candidate defects (commit 7b09cfbc)",
+    "4. Candidate C audited, not merged"
+  ],
+  "authority_preservation": {
+    "canonical_active_lidar_spec": "ultimate_pipeline/sensors/canonical_lidar_spec.py (Candidate A) - retained as sole authority",
+    "route_execution": "ultimate_pipeline/perception/route_execution.py (Candidate A) - retained",
+    "route_frame_binding": "ultimate_pipeline/perception/route_frame_binding.py (Candidate A) - retained and repaired",
+    "route_manifest": "ultimate_pipeline/perception/route_manifest.py (Candidate A, strengthened) - retained",
+    "seed_tree": "ultimate_pipeline/perception/environment/seed_tree.py (Candidate B) - retained",
+    "deterministic_weather": "ultimate_pipeline/perception/environment/deterministic_weather.py (Candidate B) - retained",
+    "weather_spec": "ultimate_pipeline/perception/environment/weather_spec.py (Candidate B) - retained",
+    "traffic_manager_session": "ultimate_pipeline/perception/environment/traffic_manager_session.py (Candidate B) - retained as sole TM authority",
+    "calibration_authority": "ultimate_pipeline/perception/environment/calibration_authority.py (Candidate B) - retained",
+    "calibration_lifecycle": "ultimate_pipeline/perception/environment/calibration_lifecycle.py (Candidate B) - retained",
+    "lidar_camera_gate": "ultimate_pipeline/perception/environment/lidar_camera_gate.py (Candidate B) - retained",
+    "physics_profile": "ultimate_pipeline/perception/environment/physics_profile.py (Candidate B) - retained",
+    "vehicle_binding": "ultimate_pipeline/perception/environment/vehicle_binding.py (Candidate B) - retained",
+    "camera_response": "ultimate_pipeline/perception/environment/camera_response.py (Candidate B) - retained"
+  },
+  "no_duplicate_authority_created": true,
+  "production_changes_made": [
+    {
+      "id": "FIX-1",
+      "file": "ultimate_pipeline/perception/route_frame_binding.py",
+      "problem": "both_maps_share_exact_frame compared the manifest's declared CRS string against the map's normalized PROJ.4 string. An EPSG code never equals a PROJ string, so the check was structurally incapable of returning True, and it also never checked the manifest against itself.",
+      "evidence": "test_new295_coordinate_frame_binding failed with both_maps_share_exact_frame False for two identical '+proj=utm +zone=32 ...' georeferences and a manifest declaring EPSG:25832. test_new295_wrong_crs_fails passed 'valid' for a manifest declaring EPSG:32633 while carrying zone-32 PROJ parameters.",
+      "fix": "Added canonical_crs_identity() resolving EPSG codes and PROJ strings to a canonical EPSG (lazy pyproj, None = fail-closed). Frame sharing and both transform digests now compare resolved identity. validate_frame_binding rejects unresolvable CRS, manifest crs/geo_reference disagreement, and per-arm georeference/CRS mismatch.",
+      "classification": "PRODUCTION_DEFECT_FIX (pre-existing on Candidate A, not introduced by integration)"
+    },
+    {
+      "id": "FIX-2",
+      "file": "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+      "problem": "_select_capture_profile_items returned every calibration LiDAR entry, so an inactive entry (middle_lidar_old) reached spawn_rig's LiDAR loop and hit NEW-301's own 'not in canonical active spec' RuntimeError, aborting the entire rig. A historical calibration leftover therefore prevented the governed rig from existing.",
+      "fix": "Spawn set is filtered to the canonical active LiDAR set. If no active LiDAR resolves, raise sensor_spawn_missing_required_modalities:lidar (fail-closed).",
+      "classification": "PRODUCTION_DEFECT_FIX (pre-existing on Candidate A)"
+    },
+    {
+      "id": "FIX-3",
+      "file": "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+      "problem": "NEW-299 required a hashable runtime rig identity, but canonical_lidar_hash was imported and unused; spawn_rig produced no identity, so capture evidence could not prove which sensors/attributes actually existed.",
+      "fix": "Added runtime_rig_identity(spawned) building a content hash over spawned sensor names, kinds and effective attributes plus the canonical LiDAR spec hash; recorded at the end of spawn_rig. Inactive calibration entries provably cannot affect it (test asserts identity is unchanged when an inactive entry is mutated).",
+      "classification": "PRODUCTION_COMPLETION (unmet NEW-299 contract)"
+    },
+    {
+      "id": "FIX-4",
+      "file": "ultimate_pipeline/sensors/attach_sensors_safe.py",
+      "problem": "resolve_active_lidars(data, ...) referenced an undefined name; load_calib returns (cams, lids). The NEW-301 canonical path would raise NameError at runtime.",
+      "fix": "Read the calibration document explicitly as calib_data and pass it to resolve_active_lidars.",
+      "classification": "PRODUCTION_DEFECT_FIX (pre-existing on Candidate A)"
+    },
+    {
+      "id": "FIX-5",
+      "file": "ultimate_pipeline/sensors/attach_sensors_safe.py",
+      "problem": "A missing required active LiDAR produced a warning at most, so a rig could be reported ok with zero LiDARs attached, invalidating every downstream perception claim.",
+      "fix": "required_active_lidar_missing_from_calibration is appended to report['errors'], which drives ok=False.",
+      "classification": "PRODUCTION_COMPLETION (fail-closed invariant)"
+    },
+    {
+      "id": "FIX-6",
+      "file": "ultimate_pipeline/sensors/rig_transforms.py -> ultimate_pipeline/tools/rig_transforms_check.py",
+      "problem": "The module was a script masquerading as library code: it read calib_data.json from the current working directory and executed comparisons at import time, and it self-imported (import ultimate_pipeline.sensors.rig_transforms as rt). It also reimplemented attachment-pose math, competing with transform_conventions. This violated the requirement that importing a supported sensor module have no cwd-dependent execution side effects.",
+      "callers_audited": "git grep for imports: zero production importers. Only the file's own self-import and one historical report mention (tools/calib_sanity_check.py:12 refers to it in prose only).",
+      "fix": "Relocated out of the sensors package into ultimate_pipeline/tools/, rewritten to delegate to transform_conventions (the real pose authority), with a main() guard and an explicit CLI argument instead of a cwd-relative read.",
+      "classification": "DEAD_BROKEN_CODE_RELOCATED (no compatibility shim needed: no importers)"
+    },
+    {
+      "id": "FIX-7",
+      "file": "tools/ue_executable_discovery.py (new), tools/unreal_cook_resource_preflight.py, tools/carla_source_build_receipt.py",
+      "problem": "Discovery looked only for UnrealEditor.exe, the UE5 name. CARLA 0.9.x targets UE4.26, whose Windows editor is Engine/Binaries/Win64/UE4Editor.exe, so a complete UE4.26 install was reported missing. Both tools also used next(iter((a, b)), None), which yields only the first element, so one absent candidate silently masked all later ones.",
+      "fix": "New discovery module searches real UE4 and UE5 names across binary subdirectories for both editor and CARLA server binaries. The build receipt now carries six independent states (UE_ENGINE_EDITOR_PRESENT, CARLA_PROJECT_COMPILED, CARLA_SERVER_BINARY_PRESENT, CARLA_RPC_RESPONSIVE, MAP_PACKAGE_COOKED, MAP_RUNTIME_LOADABLE); each is evidenced on its own and none is inferred from another, and unknown stays unknown. Preflight resource readiness is explicitly decoupled from build state.",
+      "classification": "TOOLING_DEFECT_FIX"
+    }
+  ],
+  "test_changes_made": [
+    {
+      "id": "TEST-1",
+      "file": "tests/unit/test_a1_a2_path_and_frame_resolution.py",
+      "reported_symptom": "test_no_hardcoded_username_in_production_defaults failed; reported as pre-existing.",
+      "independent_audit": "Confirmed as a false positive in the TEST, not in production. The test asserted the *resolved runtime value* of DEFAULT_OSM2WORLD_HOME does not contain 'c:\\\\users\\\\admin'. That default is correctly repo-relative; the checkout merely lives under C:\\Users\\admin, so the resolved path legitimately contains that prefix. Production path resolution was inspected and left unchanged (_resolve_default_osm2world_home precedence: env > carla_governed/ > repo-relative).",
+      "fix": "The test now (a) scans the source text of the three defining modules for hardcoded absolute developer-path literals and for a literal project-directory name, and (b) asserts each resolved default is anchored at the repo root (is_relative_to(REPO_ROOT)), which is what portability actually means. No xfail, no skip, no tolerance.",
+      "verified": "13/13 pass in this file."
+    },
+    {
+      "id": "TEST-2",
+      "file": "ultimate_pipeline/tests/unit/test_rq3_route_rig_hardening.py",
+      "issue": "MockActor exposed neither set_transform nor apply_transform, so the module's own positive route-execution test could not exercise the governed API it was written to test (3 red tests admitted in Candidate A's commit subject).",
+      "fix": "MockActor now models a real CARLA actor (get_transform + set_transform). A separate MockActorNoSetTransform exposes only apply_transform, so the 'actor missing set_transform' fail-closed case still fails for the right reason. Additionally the wrong-CRS assertion was corrected to the reasons the repaired production code actually emits (manual/auto georeference CRS mismatch, manifest self-inconsistency, both_maps_share_exact_frame False), instead of a reason string that the original code could never produce.",
+      "verified": "13/13 pass."
+    },
+    {
+      "id": "TEST-3",
+      "file": "ultimate_pipeline/tests/unit/test_route_manifest.py",
+      "issue": "The shared _manifest helper omitted crs/geo_reference. Candidate A's NEW-294 strengthening made those mandatory, so two pre-existing production tests regressed after the merge.",
+      "fix": "Helper supplies the canonical frame fields by default, with crs=None/geo_reference=None escapes. Added test_validate_route_manifest_requires_declared_frame asserting the NEW-294/295 requirement explicitly, so the strengthening is covered rather than bypassed.",
+      "verified": "11/11 pass."
+    },
+    {
+      "id": "TEST-4",
+      "file": "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py (new, 40 tests)",
+      "purpose": "Section 15/16 cross-cutting negative controls and back-to-back state contamination. Covers wrong LiDAR identity, inactive LiDAR activation, wrong rig hash, rig identity invariant under inactive-entry mutation, wrong calibration hash, calibration authority vs heuristic override, missing required LiDAR, wrong route frame, unresolvable CRS fail-closed, matching-frame positive case, tampered route manifest, route set_transform verification fatality, different-seed-falsely-equal-identity, same-seed determinism, unknown seed domain, missing seed domain, TM strict fallback refusal, TM unseeded refusal, TM seed-failure fail-closed, double TM ownership, explicit TM port/seed, TM world-sync mismatch, double tick ownership, weather requested-but-unbound, weather not-applied fail-closed, frame-driven weather determinism + no global RNG mutation, actor cleanup miss, sensor cleanup miss, walker mode violations, physics profile mismatch, experiment start out-of-order and in-order, run B not inheriting run A residue (seed/weather/physics/TM), TM state non-leak across runs, repeat-run reproducibility, LiDAR spec reproducibility, calibration non-mutation."
+    },
+    {
+      "id": "TEST-5",
+      "file": "ultimate_pipeline/tests/unit/test_ue4_executable_discovery.py (new, 20 tests)",
+      "purpose": "Section 17. UE4.26 UE4Editor.exe discovery, UE5 UnrealEditor.exe retained deliberately, absent-first-candidate no longer masking later candidates, CARLA server discovery, compiled-project vs server-binary independence, cooked-content != runtime-loadable, and receipt states staying UNKNOWN without evidence (including CARLA_RPC_RESPONSIVE never inferred from a port). All trees built under tmp_path."
+    }
+  ],
+  "not_done_deliberately": [
+    "Candidate C was not merged: zero shared files with A or B, and its diff is entirely GAP-040..048 register + domain-gap test suites with no runtime/capture authority code.",
+    "No live CARLA claim was upgraded: CARLA RPC 2000 and TM port 8000 are both unreachable, so all empirical/live items remain BLOCKED_EXTERNAL.",
+    "No tolerance was raised and no xfail/skip was added anywhere.",
+    "No merge into the authoritative branch."
+  ]
+}

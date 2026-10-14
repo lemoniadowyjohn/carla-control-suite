@@ -382,38 +382,8 @@ class PerceptionRunnerLocalAug:
             while saved < num_frames:
                 frame_id = self.world.tick()
 
-                # collect each camera image for this frame (best effort)
-                for cn in cams_to_record:
-                    img: Optional[carla.Image] = None
-                    deadline = time.time() + 1.5  # seconds
-                    while time.time() < deadline:
-                        try:
-                            f, cand = cam_queues[cn].get(timeout=0.05)
-                        except Exception:
-                            continue
-                        if f == frame_id:
-                            img = cand
-                            break
-
-                    if img is None:
-                        # skip this frame if any camera missing (keeps dataset aligned)
-                        if self.verbose:
-                            print(f"⚠ missing {cn} at frame {frame_id}, skipping this frame")
-                        break
-
-                # If any missing, try next tick (don’t increment saved)
-                # Re-check quickly: did all have an image?
-                all_have = True
+                # Improved approach: single collection pass that stores images
                 imgs_for_frame: Dict[str, carla.Image] = {}
-                for cn in cams_to_record:
-                    # we might have already pulled it, but we stored none above;
-                    # easiest: pull again with very short deadline from queue (often it’s already there).
-                    # Instead, store when found:
-                    pass
-
-                # Better approach: store during collection
-                # (Redo collection properly)
-                imgs_for_frame.clear()
                 for cn in cams_to_record:
                     img = None
                     deadline = time.time() + 1.5
@@ -487,6 +457,7 @@ class PerceptionRunnerLocalAug:
                     with open(frames_jsonl, "a", encoding="utf-8") as f:
                         f.write(json.dumps(meta) + "\n")
 
+                # NEW-281: Only increment saved after successfully saving all cameras for this frame
                 saved += 1
                 if self.verbose and (saved % 50 == 0):
                     print(f"   saved {saved}/{num_frames}")

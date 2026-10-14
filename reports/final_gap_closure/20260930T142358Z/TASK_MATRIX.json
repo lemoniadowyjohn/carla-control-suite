@@ -1,0 +1,19 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "tasks": {
+    "GAP-017/018": "BLOCKED_EXTERNAL",
+    "NEW-196": "PASS",
+    "NEW-197": "PASS",
+    "NEW-198": "PASS",
+    "NEW-199": "PASS",
+    "NEW-205-env": "PASS",
+    "NEW-206-server": "BLOCKED_EXTERNAL",
+    "NEW-207-live": "BLOCKED_EXTERNAL",
+    "NEW-209": "ALREADY_RESOLVED",
+    "NEW-210": "PASS",
+    "V5-regression": "PASS",
+    "full-offline-suite": "PASS-with-1-preexisting-env-failure",
+    "packaging": "PASS"
+  }
+}

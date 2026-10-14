@@ -1,0 +1,19 @@
+{
+  "duration_s": 775.39,
+  "failed": 7,
+  "failure_attribution": "PRE-EXISTING, unrelated to OC-51: all 7 fail identically with OC-51 changes stashed (verified via git stash on 20260919); they live in tile_grid_meta / carla_semantic_organizer / run_alignment_and_matching, touched only by the in-progress OC-26 work dirty at base.",
+  "failures": [
+    "ultimate_pipeline/tests/unit/test_mtime_audit.py::TestMtimeAuthorityRegression::test_no_unprotected_mtime_authority[run_alignment_and_matching.py]",
+    "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py::TestTileGridMetaBoundsFromXodr::test_nan_coordinate_excluded_from_bbox",
+    "tests/unit/test_carla_semantic_organizer.py (5 tests)"
+  ],
+  "git_sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8-dirty",
+  "gnn_focused": "tests/unit/test_rq4_gnn_provenance.py (31) + tests/unit/test_domain_gap_gnn.py + tests/unit/test_run_gnn_pipeline_seed.py + ultimate_pipeline/tests/unit/test_gnn_checkpoint_epoch_selection.py + test_map_tile_dataset.py + test_latent_gap_runner.py: 79 passed, 0 failed",
+  "note": "Filled by the pytest step after the bundle skeleton is generated.",
+  "passed": 5793,
+  "skipped": 2,
+  "status": "COMPLETE_WITH_PREEXISTING_FAILURES",
+  "suite": "full pytest (pytest.ini testpaths)",
+  "torch_geometric_version": "2.7.0",
+  "torch_version": "2.9.1+cpu"
+}

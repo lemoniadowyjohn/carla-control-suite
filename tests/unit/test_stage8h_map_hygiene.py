@@ -276,12 +276,16 @@ def test_g6_advisory_exception_is_persisted_without_mutating_current_artifact(
     assert out.endswith("08h4_lane_width_discontinuities_repaired.xodr")
     report = mp.map_hygiene_report["stages"]["g6_lane_coverage_repair"]
     assert report == {
-        "ok": True,
+        "ok": False,
         "status": "INCOMPLETE",
         "applied": False,
+        "blocks_release": False,
         "reason": "repair_exception",
         "error": "synthetic G6 failure",
     }
+    # NEW-344: the sub-stage did not run, so the combined hygiene verdict must
+    # not claim success either.
+    assert mp.map_hygiene_report["ok"] is False
     assert not (tmp_path / "out" / "08h5_g6_lane_coverage_repaired.xodr").exists()
     persisted = tmp_path / "out" / "08h5_g6_lane_coverage_repair_report.json"
     assert persisted.is_file()

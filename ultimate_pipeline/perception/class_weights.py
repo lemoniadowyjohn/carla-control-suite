@@ -79,3 +79,35 @@ def scan_dataset_class_counts(
     if limit is not None and int(limit) > 0:
         paths = paths[: int(limit)]
     return scan_label_class_counts(paths, num_classes=num_classes)
+
+
+def scan_multi_root_class_counts(
+    dataset_roots: Sequence[str | Path],
+    *,
+    camera: str,
+    limit: int | None = None,
+    num_classes: int = CARLA_SEMANTIC_NUM_CLASSES,
+) -> np.ndarray:
+    """
+    NEW-234: class-id pixel counts over a true union of K dataset roots.
+
+    Class weights for a K-sweep condition must reflect every root that condition
+    actually trains on. Summing only the first root's counts would weight a
+    K=5 model using K=1 statistics.
+
+    ``limit`` applies per root, matching :class:`MultiRootSegDataset`, where
+    ``limit`` also slices the concatenated member list.
+    """
+    roots = [Path(r) for r in (dataset_roots or [])]
+    if not roots:
+        raise ValueError("scan_multi_root_class_counts requires at least one dataset root")
+
+    total = np.zeros(int(num_classes), dtype=np.int64)
+    for root in roots:
+        total += scan_dataset_class_counts(
+            root,
+            camera=camera,
+            limit=limit,
+            num_classes=num_classes,
+        )
+    return total

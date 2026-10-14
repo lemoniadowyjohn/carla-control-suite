@@ -1,0 +1,39 @@
+{
+  "schema": "runtime_map_identity/v1",
+  "arm": "auto",
+  "requested_package": "Ingolstadt",
+  "registry_key": "auto_map_of_record",
+  "source_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "status": "BLOCKED_COOK_REQUIRED",
+  "error": "Ingolstadt is absent from the live CARLA 0.9.16 runtime's cook registry.",
+  "observed_availability": {
+    "probe": "client.get_available_maps() on the live server (run carla_run_20261002T191526Z_c9cc54 / relaunch, server_version 0.9.16)",
+    "available_maps": [
+      "AnnotationColorLandscape",
+      "Grid0821",
+      "Grid0828",
+      "Town01",
+      "Town01_Opt",
+      "Town02",
+      "Town02_Opt",
+      "Town03",
+      "Town03_Opt",
+      "Town04",
+      "Town04_Opt",
+      "Town05",
+      "Town05_Opt",
+      "Town10HD",
+      "Town10HD_Opt"
+    ],
+    "ingolstadt_present": false
+  },
+  "root_cause": "Ingolstadt is a custom Large-Map package. It only appears in the runtime's cook registry after `make import` + an UnrealEditor-Cmd cook. The installed CARLA 0.9.16 is a PACKAGED non-editor build (CarlaUE4-Win64-Shipping.exe only), which cannot run UnrealEditor-Cmd, so the cook cannot be performed on this host. See UE426_QUALIFICATION.json.",
+  "identity_cannot_be_derived_offline": "Proving the auto arm's runtime identity requires the cooked artifact to exist in the running server. No offline descriptor inspection, package.json read, or tile SHA can substitute: the task requires observed world map name + runtime structural fingerprint, and explicitly forbids substring/path heuristics.",
+  "package_state_for_the_record": {
+    "promoted_package": "E:\\CARLA\\CARLA_0.9.16\\Import\\Ingolstadt",
+    "revalidation": "STAGED_PACKAGE_REVALIDATION.json -> PASS (20 governed tiles, XODR byte-exact, tile SHA manifest 20/20, coordinate identity exact, no substitution)",
+    "cooked": false,
+    "note": "COOK_LOG.txt / AUTO_COOK_RECEIPT.json in that package are OFFLINE FBX GENERATION records. Both files state verbatim: 'No UE4/UE5 Editor was invoked. Import/cook success is UNCONFIRMED.' They are not a cook receipt."
+  },
+  "not_claimed": "RUNTIME_MAP_IDENTITY_ESTABLISHED is NOT claimed for the auto arm."
+}

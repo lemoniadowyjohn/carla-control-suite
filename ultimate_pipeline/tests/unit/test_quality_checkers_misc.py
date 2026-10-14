@@ -24,9 +24,18 @@ from ultimate_pipeline.quality.collision_mesh import CollisionMeshValidator
 # ---------------------------------------------------------------------------
 
 
+def _has_issue(issues, **fields):
+    """Subset match: issue dicts now also carry the honest validator name
+    (OC-59 §16 XML_BASIC_INTEGRITY), so exact-dict equality is wrong."""
+    return any(all(i.get(k) == v for k, v in fields.items()) for i in issues)
+
+
 def test_xml_integrity_missing_file_reports_missing_file(tmp_path):
     issues = XMLIntegrityChecker.validate(str(tmp_path / "does_not_exist.xodr"))
-    assert issues == [{"type": "missing_file", "path": str(tmp_path / "does_not_exist.xodr")}]
+    assert len(issues) == 1
+    assert _has_issue(issues, type="missing_file",
+                      path=str(tmp_path / "does_not_exist.xodr"))
+    assert issues[0]["validator"] == XMLIntegrityChecker.VALIDATOR_NAME
 
 
 def test_xml_integrity_unparseable_xml_reports_parse_error(tmp_path):
@@ -40,7 +49,7 @@ def test_xml_integrity_wrong_root_tag_is_flagged(tmp_path):
     f = tmp_path / "wrong.xodr"
     f.write_text('<?xml version="1.0"?><NotOpenDRIVE/>', encoding="utf-8")
     issues = XMLIntegrityChecker.validate(str(f))
-    assert {"type": "root_tag_mismatch", "tag": "NotOpenDRIVE"} in issues
+    assert _has_issue(issues, type="root_tag_mismatch", tag="NotOpenDRIVE")
 
 
 def test_xml_integrity_no_roads_is_flagged(tmp_path):
@@ -50,7 +59,7 @@ def test_xml_integrity_no_roads_is_flagged(tmp_path):
         encoding="utf-8",
     )
     issues = XMLIntegrityChecker.validate(str(f))
-    assert {"type": "no_roads"} in issues
+    assert _has_issue(issues, type="no_roads")
 
 
 def test_xml_integrity_missing_header_is_flagged(tmp_path):
@@ -60,7 +69,7 @@ def test_xml_integrity_missing_header_is_flagged(tmp_path):
         encoding="utf-8",
     )
     issues = XMLIntegrityChecker.validate(str(f))
-    assert {"type": "missing_header"} in issues
+    assert _has_issue(issues, type="missing_header")
 
 
 def test_xml_integrity_header_missing_bounds_attr_is_flagged(tmp_path):
@@ -73,7 +82,7 @@ def test_xml_integrity_header_missing_bounds_attr_is_flagged(tmp_path):
         encoding="utf-8",
     )
     issues = XMLIntegrityChecker.validate(str(f))
-    assert {"type": "header_missing_attr", "attr": "west"} in issues
+    assert _has_issue(issues, type="header_missing_attr", attr="west")
 
 
 def test_xml_integrity_valid_file_reports_no_issues(tmp_path):

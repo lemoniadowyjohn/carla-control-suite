@@ -197,6 +197,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
                 start_gap_threshold_m=float(
                     os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_START_GAP_M", "2.0")
                 ),
+                heading_threshold_deg=float(
+                    os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_HEADING_DEG", "10.0")
+                ),
                 max_after_gap_m=float(
                     os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_MAX_AFTER_GAP_M", "0.5")
                 ),

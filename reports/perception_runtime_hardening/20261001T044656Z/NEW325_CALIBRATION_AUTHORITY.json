@@ -1,0 +1,34 @@
+{
+  "canonical_authority_module": "ultimate_pipeline.sensors.calibration_contract",
+  "canonical_calibration_validated": {
+    "calib_sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+    "errors": [],
+    "verdict": "PASS"
+  },
+  "canonical_rule": "cTv = vehicle->camera used DIRECTLY (not inverted); vTl = lidar->vehicle INVERTED",
+  "cli_flags_added": [
+    "--strict",
+    "--canonical-thesis-mode"
+  ],
+  "defect_before": "calibrate_sensors_in_carla.py chose the extrinsic convention heuristically from marker visibility, contradicting the authoritative cTv/vTl thesis rule",
+  "export_schema_renamed": "carla_export_v1_DIAGNOSTIC_NON_AUTHORITATIVE",
+  "finding": "NEW-325",
+  "heuristic_cannot_override_canonical": true,
+  "heuristic_export_rejected_by_perception_loader": {
+    "invalid_reasons": [
+      "HEURISTIC_EXPORT_REJECTED:heuristic_convention_export:calib_carla_export.json"
+    ],
+    "loadable": false
+  },
+  "legacy_export_format": "carla_export_v1",
+  "prominent_non_authoritative_status": "LEGACY_DIAGNOSTIC_CONVENTION_EXPLORER",
+  "schema": "NEW325_CALIBRATION_AUTHORITY/v1",
+  "status": "PASS",
+  "strict_mode_refuses_heuristic_selection": {
+    "allowed": false,
+    "invalid_reasons": [
+      "HEURISTIC_CONVENTION_FORBIDDEN:strict_mode_refuses_heuristic_convention_selection:selected=stored as vehicle->sensor (no invert):source=unknown_source"
+    ]
+  },
+  "tool_status": "LEGACY_DIAGNOSTIC_CONVENTION_EXPLORER"
+}

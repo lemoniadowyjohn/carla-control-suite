@@ -1,0 +1,112 @@
+{
+  "schema": "opencode_hardening_final_verdict/v1",
+  "verdict": "INTEGRATION_OFFLINE_PASS_LIVE_BLOCKED",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "authoritative_branch": "integration/production-large-map-20260918",
+  "expected_authoritative_head": "f897e0eb747ac827941ac4883170a5181a603111",
+  "observed_authoritative_head": "f897e0eb747ac827941ac4883170a5181a603111",
+  "baseline_drift": false,
+  "map_authority_drift": false,
+  "candidate_ref_drift": false,
+  "work_branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+  "work_branch_base": "f897e0eb747ac827941ac4883170a5181a603111",
+  "result_head": "5bac4c9188268d9247bb4898c040b14cbaeb0d48",
+  "result_head_code_only": "7b09cfbca94378518385f416b7d721f666cdf434",
+  "merged_into_authoritative_branch": false,
+  "map_registry_key": "auto_map_of_record",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "map_verification_status": "VERIFIED",
+  "candidates": {
+    "A": {"head": "f5668a9e6ad69a22b010852ac78364fba0d41185", "merged": true, "merge_commit": "08f7bfa1"},
+    "B": {"head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be", "merged": true, "merge_commit": "cee72f42"},
+    "C": {"head": "f3a996f7d539677357b2fa8ba3cabc27f02be66f", "merged": false, "reason": "zero shared files with A or B; diff is entirely GAP-040..048 register plus domain-gap test suites/evidence, with no runtime or capture-authority code. No complementary capture/provenance fix was found missing from the merged tree."}
+  },
+  "overlap_summary": {
+    "same_file_intersections_A_B": 2,
+    "classification_counts": {"COMPATIBLE": 2, "A_ONLY": 3, "B_ONLY": 2, "SEMANTIC_CONFLICT": 3, "REQUIRES_MANUAL_MERGE": 0},
+    "text_level_merge_conflicts": 0,
+    "semantic_defects_found_only_by_inspection": 3,
+    "note": "The merge was textually clean. That was not treated as evidence of correctness: three semantic defects were found by reading the merged result, including two in Candidate A's own code."
+  },
+  "production_defects_found_and_fixed": [
+    "route_frame_binding compared a declared EPSG code against a PROJ.4 string, so a genuinely shared frame was always reported unshared, and a manifest contradicting its own geo-reference was accepted (Candidate A)",
+    "ThesisSensorRig spawned every calibration LiDAR, so an inactive entry aborted the whole rig via NEW-301's own check (Candidate A)",
+    "NEW-299 imported canonical_lidar_hash but never produced a runtime rig identity (Candidate A)",
+    "attach_sensors_safe passed an undefined name to resolve_active_lidars, and treated a missing required LiDAR as non-fatal (Candidate A)",
+    "sensors/rig_transforms.py read calib_data.json from cwd and self-imported at module scope, breaking import safety and competing with transform_conventions",
+    "tools used next(iter((a, b)), None), probing only the first candidate name, and searched only the UE5 editor name",
+    "tools/unreal_cook_resource_preflight.py and tools/carla_source_build_receipt.py conflated file presence with build/cook/runtime success"
+  ],
+  "known_path_test_false_positive": {
+    "confirmed_as_test_defect": true,
+    "test_repaired": true,
+    "production_path_resolution_unchanged": true,
+    "suppressed": false
+  },
+  "tests": {
+    "compileall": {"command": "python -m compileall -q ultimate_pipeline tools tests", "exit_code": 0},
+    "targeted_pass": 179,
+    "targeted_fail": 0,
+    "full_pass": 6958,
+    "full_fail": 0,
+    "full_skip": 10,
+    "new_failures": 0,
+    "candidate_specific_regressions": 0,
+    "new_tests_added": 60,
+    "tests_repaired": 3,
+    "tolerances_raised": 0,
+    "xfail_or_skip_added": 0
+  },
+  "invariants": {
+    "single_canonical_active_lidar_spec": "PASS",
+    "expected_lidar_ids_explicit": "PASS",
+    "inactive_calibration_entries_excluded": "PASS",
+    "spawned_rig_identity_hashable": "PASS",
+    "missing_required_lidar_fails": "PASS",
+    "partial_rig_creation_rolls_back": "PASS",
+    "no_sensor_actor_leak": "PASS",
+    "calibration_authority_not_overridable_by_heuristic": "PASS",
+    "sensor_module_import_side_effect_free": "PASS",
+    "single_tm_authority": "PASS",
+    "explicit_tm_owner_port_seed": "PASS",
+    "tm_strict_fail_closed": "PASS",
+    "tm_cleanup_verification": "PASS",
+    "no_silent_unbound_autopilot": "PASS",
+    "stationary_actors_not_active_traffic": "PASS",
+    "frame_driven_deterministic_weather": "PASS",
+    "no_unseeded_wallclock_weather": "PASS",
+    "route_manifest_hash_validation": "PASS",
+    "route_sequence_validation": "PASS",
+    "coordinate_frame_binding": "PASS",
+    "set_transform_verification": "PASS",
+    "fatal_route_execution": "PASS",
+    "strict_timing": "PASS",
+    "back_to_back_state_contamination_offline": "PASS"
+  },
+  "invariants_blocked_external": {
+    "rig_identity_propagated_into_live_capture_evidence": "BLOCKED_EXTERNAL",
+    "sensor_callback_evidence_for_live_acceptance": "BLOCKED_EXTERNAL",
+    "empirical_camera_reprojection": "BLOCKED_EXTERNAL",
+    "empirical_lidar_camera_alignment": "BLOCKED_EXTERNAL",
+    "requested_weather_application_and_readback": "BLOCKED_EXTERNAL",
+    "live_tm_ownership_and_seed": "BLOCKED_EXTERNAL",
+    "new296_live_route_adapter": "BLOCKED_EXTERNAL",
+    "live_repeated_capture": "BLOCKED_EXTERNAL",
+    "live_state_contamination_pair": "BLOCKED_EXTERNAL"
+  },
+  "live_carla_rpc": {
+    "available": false,
+    "host": "127.0.0.1",
+    "port": 2000,
+    "tcp_connect": "TIMEOUT",
+    "get_server_version": "RuntimeError time-out of 3000ms",
+    "tm_port_8000": "TIMEOUT"
+  },
+  "live_claim_boundary": {
+    "offline_integration": "PASS",
+    "live_runtime": "BLOCKED_EXTERNAL",
+    "no_live_blocker_upgraded_to_pass": true,
+    "reason": "CARLA RPC 2000 and TM port 8000 are both unreachable. Overall live runtime cannot PASS without new live evidence produced against a real CARLA server."
+  },
+  "ready_for_independent_review": true
+}

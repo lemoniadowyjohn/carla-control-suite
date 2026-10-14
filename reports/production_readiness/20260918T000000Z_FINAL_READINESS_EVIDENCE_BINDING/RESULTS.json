@@ -1,0 +1,52 @@
+{
+  "run_id": "20260918T000000Z_FINAL_READINESS_EVIDENCE_BINDING",
+  "task_id": "OC-41",
+  "title": "Final-readiness evidence binding with cross-report hash verification",
+  "components": [
+    "ultimate_pipeline/tools/final_map_readiness_gate.py::build_final_map_readiness_report",
+    "ultimate_pipeline/tools/carla_visual_smoke_gate.py::run_visual_smoke_gate / evaluate_visual_smoke_report",
+    "tests/unit/test_carla_visual_smoke_gate_evaluation.py (updated)"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/final-readiness-evidence-binding-v1",
+  "final_head": "eae5727e49c9d1b74d61214c50e66dca4d7b002d",
+  "defect_summary": {
+    "no_cross_report_binding": "final_map_readiness_gate aggregated sub-reports (static XODR, connector, visual, perception) but never verified they were all evaluated against the SAME XODR artifact. A stale or mismatched sub-report could be silently included.",
+    "no_evidence_manifest": "No manifest of sub-report files and their SHA256 hashes was included in the final readiness report, making it impossible to audit which exact reports were consumed.",
+    "carla_unavailable_masked": "carla_visual_smoke_gate returned CARLA_VISUAL_READY='skipped' when CARLA was disabled by env, conflating 'optional not run' with 'external dependency unavailable' - no way for downstream consumers to distinguish.",
+    "no_screenshot_binding": "Visual gate captured screenshots but didn't record their SHA256 or bind them to the XODR they were generated from, so screenshot substitution was undetectable.",
+    "perception_visual_decoupled": "Perception status report could reference a different visual gate report than the one actually evaluated."
+  },
+  "corrected_semantics": {
+    "cross_report_xodr_binding": "All sub-reports loaded by final_map_readiness_gate are verified to have xodr_sha256 matching the target XODR. Mismatch -> sub-report marked with binding_error, gate fails. Missing xodr_sha256 is tolerated (backwards compatible) but logged.",
+    "evidence_manifest": "Final report includes evidence_manifest array listing every sub-report with path and SHA256 hash, enabling full audit trail.",
+    "xodr_binding_verification": "Final report includes xodr_binding_verification object with per-sub-report ok/reason status.",
+    "carla_blocked_external": "Visual gate returns CARLA_VISUAL_READY='blocked_external' and status='blocked_external' when CARLA is disabled/unavailable (fail-closed external dependency), distinct from 'skipped' (optional not-run). evaluate_visual_smoke_report propagates this as a distinct gate state.",
+    "screenshot_hash_binding": "Each captured screenshot now includes its SHA256 and the XODR SHA256 it was generated from in the visual gate report.",
+    "perception_gate_includes_visual_hash": "Perception gate evaluation now has access to visual gate report for binding verification (though current perception_status schema doesn't include visual_report_sha, the infrastructure is in place)."
+  },
+  "tests": {
+    "existing_tests": 52,
+    "updated_tests": 3,
+    "passed": 52,
+    "coverage": {
+      "test_run_gate_disabled_by_env_skips_cleanly": "Updated to expect CARLA_VISUAL_READY='blocked_external' and status='blocked_external'",
+      "test_build_report_happy_path_all_gates_pass": "Updated to include evidence_manifest and xodr_binding_verification in assertions",
+      "test_build_report_missing_visual_gate_can_be_allowed": "Updated for new binding fields"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit -k \"final_map_readiness or carla_visual\" -v",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "52 passed (final_map_readiness + carla_visual suites)",
+    "tests_unit_and_pipeline": "3402 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "Perception status schema doesn't yet include visual_gate_report_sha256 field; binding is enforced by final_map_readiness_gate at load time but not embedded in perception report itself.",
+    "Connector report and static XODR report schemas don't mandate xodr_sha256 field; missing field is tolerated (backwards compatible) but doesn't guarantee binding.",
+    "CARLA unavailable distinction (blocked_external vs skipped) is new - downstream consumers (e.g. cook scripts) may need updates to handle the new status.",
+    "Screenshot SHA256 is recorded but not yet verified by any downstream consumer (evidence-only for now)."
+  ]
+}

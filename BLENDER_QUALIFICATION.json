@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "qualification_date": "2026-10-02T00:00:00Z",
+  "blender": {
+    "executable": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "version": "Blender 4.3.0",
+    "build_date": "2024-11-19",
+    "build_time": "11:04:29",
+    "build_hash": "2b18cad88b13",
+    "build_branch": "blender-v4.3-release",
+    "build_platform": "Windows",
+    "build_type": "Release",
+    "binary_sha256": "E5C09E875471AA72FC8AE7437A92BB91C150CCCCCBC4A0DFAFA6E2D29D2FB31B"
+  },
+  "headless_invocation": {
+    "command": "blender.exe --background --python-exit-code 1 --python <script>",
+    "version_check": "PASS",
+    "startup_test": "PASS",
+    "minimal_import_export_fixture": "PASS",
+    "pipeline_conversion_fixture": "PASS"
+  },
+  "test_details": {
+    "version_check_output": "Blender 4.3.0 (hash 2b18cad88b13 built 2024-11-19 11:04:29)",
+    "startup_test": "import bpy; print('OK') - SUCCESS",
+    "conversion_test": "OBJ (triangle) -> FBX - SUCCESS",
+    "output_fbx_sha256": "6A031402B770C1658C2A941F995AF4CFD3BB8DB9D4D194E6518210DAAA742AD3",
+    "fbx_format": "binary (Kaydara FBX Binary)",
+    "fbx_version_int": 7500
+  },
+  "notes": "Blender 4.3.0 found at expected candidate path. Headless invocation works. OBJ->FBX conversion produces valid binary FBX with Kaydara header. All qualification checks pass."
+}

@@ -1,0 +1,114 @@
+{
+  "purpose": "RQ1 re-verification 2026-09-23: per-stage byte comparison of 2 fresh, independent, non-mocked run_determinism_audit.py pipeline executions on current code (origin/integration/production-large-map-20260918 @ a5a2a5da), fixed input, offline, seed=42.",
+  "fixed_input_xodr": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+  "run_dirs": [
+    "ultimate_pipeline_out/audit_run_000",
+    "ultimate_pipeline_out/audit_run_001"
+  ],
+  "normalization_contract": {
+    "timestamp_normalized_identical": "strips header date=\"...\" attrs, 'generated on ... by' XML comments, and the audit_run_000/audit_run_001 run-tag path strings (harness directory-naming artifact, not pipeline output) -- matches the established contract in ultimate_pipeline/experiments/thesis/exp_osm_to_xodr_determinism.py's _normalize_timestamps.",
+    "timestamp_and_freezehash_normalized_identical": "additionally strips geometryFreezeHash=\"...\" -- a NEW finding this pass: stage_05_geometry.py's freeze_hex is a sha256 of the frozen file's own still-timestamped bytes, so it inherits run-to-run divergence purely from the same timestamp root cause, one level removed. Not a new/independent nondeterminism source -- confirmed by full byte-identity once both the timestamp AND this derived hash are normalized."
+  },
+  "stages": [
+    {
+      "stage_file": "01_sanitized_GPS_QA_CROP.xodr",
+      "size_bytes_run000": 658153,
+      "size_bytes_run001": 658153,
+      "raw_sha256_run000": "7c6f5c9bec6b9db35b2f2d44cef912adef11bd220c4734c6c701739074c85fdc",
+      "raw_sha256_run001": "7c6f5c9bec6b9db35b2f2d44cef912adef11bd220c4734c6c701739074c85fdc",
+      "raw_identical": true,
+      "timestamp_normalized_identical": true,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "01_sanitized_audit_run_000.xodr",
+      "size_bytes_run000": 657315,
+      "size_bytes_run001": 657315,
+      "raw_sha256_run000": "ffdba03329010705eaa08d122549b58f67b44d21a31800f19d12988afb8b9d26",
+      "raw_sha256_run001": "ffdba03329010705eaa08d122549b58f67b44d21a31800f19d12988afb8b9d26",
+      "raw_identical": true,
+      "timestamp_normalized_identical": true,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "02_sumo_fixed_audit_run_000.xodr",
+      "size_bytes_run000": 1437030,
+      "size_bytes_run001": 1437030,
+      "raw_sha256_run000": "afaab2a399c156bea816c41df7b8e146cf9b80265933760df32db796bdf0cfac",
+      "raw_sha256_run001": "3e32f4716d9e92608759dada1412a60b91c550ca946fa13d6580ee2ac24493a9",
+      "raw_identical": false,
+      "timestamp_normalized_identical": true,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "03_topology_audit_run_000.xodr",
+      "size_bytes_run000": 4850159,
+      "size_bytes_run001": 4850159,
+      "raw_sha256_run000": "e789496ab51b50f6e8e72d4ef5b0a26c549b0ba1f820613b42907ace2cdcb510",
+      "raw_sha256_run001": "0847439e6ff95b73317dd792c62e0f270d1faedde4c1441b7bccc18fc6f11083",
+      "raw_identical": false,
+      "timestamp_normalized_identical": true,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "04_elevation_audit_run_000.xodr",
+      "size_bytes_run000": 4557878,
+      "size_bytes_run001": 4557878,
+      "raw_sha256_run000": "cd94bbb5d2394ada90d113dc07141155bad9cdf09bb62fff189b4c54efa6cfbc",
+      "raw_sha256_run001": "0aab14588ad4463935e5f17bdb926594910704eb5c249f9c319be9b6fc1a79ef",
+      "raw_identical": false,
+      "timestamp_normalized_identical": false,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "05_planview_audit_run_000.xodr",
+      "size_bytes_run000": 4846775,
+      "size_bytes_run001": 4846775,
+      "raw_sha256_run000": "6b8ea5abad2a2426b3cd1738052e53df94b37a4738cc7aad8d7c24ef33036532",
+      "raw_sha256_run001": "73e84049d5d764892df6d01bacd0ed8774d284d862c8a766818489687d3e9156",
+      "raw_identical": false,
+      "timestamp_normalized_identical": true,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "06_continuity_audit_run_000.xodr",
+      "size_bytes_run000": 4848282,
+      "size_bytes_run001": 4848282,
+      "raw_sha256_run000": "01cbf9eab5af4def6c386dfa2f1b983fb0a90a50eedb697595e025387247e401",
+      "raw_sha256_run001": "54f5c432a6ecb6b80add547d12403b784a4b0f3f9a9ac65b7dffb24f923d0585",
+      "raw_identical": false,
+      "timestamp_normalized_identical": true,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "06_geometry_frozen_audit_run_000.xodr",
+      "size_bytes_run000": 4548148,
+      "size_bytes_run001": 4548148,
+      "raw_sha256_run000": "66e42fd2c6169a3baf03024430945fd3f9182b30c3c9b37fce55762fc7f13dc6",
+      "raw_sha256_run001": "9b93fe24525fc699f7c690b3df80c789cd3c32e23d42e38ba2e127e62ce7462d",
+      "raw_identical": false,
+      "timestamp_normalized_identical": false,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "07_lanes_audit_run_000.xodr",
+      "size_bytes_run000": 4583743,
+      "size_bytes_run001": 4583743,
+      "raw_sha256_run000": "326eddabbdda20d226f346a5ac8f2397786f121ff416c205d2896adf51692ef5",
+      "raw_sha256_run001": "f1a1515b73cb97aabe4646eee5c0af1e926027667b15ec9596cc13b0eb2f64e2",
+      "raw_identical": false,
+      "timestamp_normalized_identical": false,
+      "timestamp_and_freezehash_normalized_identical": true
+    },
+    {
+      "stage_file": "08_final_audit_run_000.xodr",
+      "size_bytes_run000": 4610727,
+      "size_bytes_run001": 4610727,
+      "raw_sha256_run000": "e3c173317b70be376fef14adaf7aa45731282210abea100e9539efae09560140",
+      "raw_sha256_run001": "881fd6da6a2d8f81530e35ca6cd7dd488792427b2215d9c09dd486c44e225df1",
+      "raw_identical": false,
+      "timestamp_normalized_identical": false,
+      "timestamp_and_freezehash_normalized_identical": true
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "run_id": "20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT",
+  "audited_on": "2026-09-19T00:00:00Z",
+  "scope": "paired RQ3 perception capture authority. Classifications are claims about what a file is ALLOWED to establish for paired evidence, not about its other uses.",
+  "classification": {
+    "ultimate_pipeline/experiments/thesis/run_perception_capture_pair.py": {
+      "authority": "AUTHORITATIVE",
+      "role": "SINGLE governed paired-capture runner; wires route_manifest, strict mode, expected frame counts, identity digests, paired_capture_manifest.json + pair_manifest.json; returns 0 only when both arms ok and pair_valid",
+      "flags_added": ["--mode", "--route-manifest", "--fps", "--front-only", "--auto-artifact-sha256", "--auto-ingolstadt-xodr-sha256"]
+    },
+    "ultimate_pipeline/perception/capture_config.py": {
+      "authority": "AUTHORITATIVE",
+      "role": "frozen shared capture-parameter source (PairedCaptureConfig); both arms derive capture_config_sha256 from it so frame count and rig can never drift between sides"
+    },
+    "ultimate_pipeline/perception/rq3_capture_contract.py": {
+      "authority": "AUTHORITATIVE",
+      "role": "governed contract engine: identities, frame completeness, strict completion, spawn policy, map identity binding, claim classification, pair manifest builder/validator"
+    },
+    "ultimate_pipeline/perception/route_manifest.py": {
+      "authority": "AUTHORITATIVE",
+      "role": "immutable geographic route authority (paired_route_manifest_v1) replacing spawn-index as route identity"
+    },
+    "ultimate_pipeline/carla_tools/local_perception_runner.py": {
+      "authority": "SUPPORTING",
+      "role": "diagnostic runner now with THESIS_PAIRED_STRICT support; receives route_manifest/route_mode/expected_cameras, forbids spawn recovery/NPC/shuffle in strict mode, writes completion_status into perception_status.json; ok is strict-PASS in strict mode",
+      "note": "does not reload the map itself; map identity is established by the runner that reloads (thesis pair runner)"
+    },
+    "ultimate_pipeline/carla_tools/safe_spawn_ego.py": {
+      "authority": "SUPPORTING",
+      "role": "adds spawn_ego_strict_exact: exact-pose spawn with no recovery/projection/shuffle; THESIS_PAIRED_STRICT uses only this"
+    },
+    "ultimate_pipeline/tools/capture_perception_pair_safe.py": {
+      "authority": "DIAGNOSTIC_ONLY",
+      "role": "smoke/diagnostic capture; NOT an evidence authority. False-success fixed (ok == completeness PASS). Spawn recovery allowed only in SMOKE_RECOVERY",
+      "unsafe_for_rq3_as_pair_authority": true
+    },
+    "ultimate_pipeline/tools/run_perception_pair.py": {
+      "authority": "LEGACY",
+      "role": "legacy paired runner; does not bind world/xodr/route/weather/calib-hash/manifest identities; UNSAFE_FOR_RQ3 as governed pair authority",
+      "unsafe_for_rq3_as_pair_authority": true
+    },
+    "ultimate_pipeline/tools/run_perception_safe.py": {
+      "authority": "LEGACY",
+      "role": "legacy safe-capture governor with spawn fallback; not RQ3 paired authority",
+      "unsafe_for_rq3_as_pair_authority": true
+    },
+    "ultimate_pipeline/perception/record_route.py": {
+      "authority": "LEGACY",
+      "role": "arm primitive only; alone UNSAFE_FOR_RQ3 as pair authority"
+    },
+    "ultimate_pipeline/perception/record_route_fixed.py": {
+      "authority": "LEGACY",
+      "role": "arm primitive only; alone UNSAFE_FOR_RQ3 as pair authority"
+    }
+  },
+  "governed_path_summary": "thesis runner (AUTHORITATIVE) + contract engine + route manifest + strict-mode LocalPerceptionRunner/safe_spawn_ego; capture_config.py stays as the frozen shared config; capture_perception_pair_safe.py explicitly marked diagnostic; legacy run_perception_pair/safe and record_route* alone are not allowed to establish a paired RQ3 claim.",
+  "mirror_sync": {
+    "destination": "submission/infrastructure/ultimate_pipeline/...",
+    "copied": [
+      "carla_tools/local_perception_runner.py",
+      "carla_tools/safe_spawn_ego.py",
+      "tools/capture_perception_pair_safe.py",
+      "experiments/thesis/run_perception_capture_pair.py",
+      "perception/rq3_capture_contract.py",
+      "perception/route_manifest.py"
+    ],
+    "note": "perception/rq3_capture_contract.py and perception/route_manifest.py did not previously exist in the mirror; added so the mirror remains importable"
+  },
+  "live_validation_status": "BLOCKED_EXTERNAL - CARLA simulator unreachable at 127.0.0.1:2000; audit is static; live governance (route_correspondence.json, end-to-end pair award) must be flagged INCOMPLETE until a live assay"
+}

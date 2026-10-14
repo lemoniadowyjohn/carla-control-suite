@@ -1,0 +1,32 @@
+{
+  "legacy_policy": "LEGACY_UNBOUND_CHECKPOINT payloads must not be presented as authoritative evidence.",
+  "load_verification": "metadata-bearing checkpoints verify node dim, schema hash vs current code, architecture and model config; mismatch fails closed. Historical raw checkpoints load as LEGACY_UNBOUND_CHECKPOINT.",
+  "manifest_fields": [
+    "checkpoint_sha256",
+    "graph_schema_sha256",
+    "training_dataset_manifest_sha256",
+    "tile_selection_sha256",
+    "source_tile_hashes",
+    "selection_seed",
+    "training_seed",
+    "model_config",
+    "training_config",
+    "git_sha",
+    "torch_version",
+    "torch_geometric_version"
+  ],
+  "reuse_policy": "exact compatible identity on graph_schema_sha256, training_dataset_manifest_sha256, tile_selection_sha256, selection_seed, training_seed, model_config, training_config (git_sha drift also forces retrain under the default policy). Otherwise retrain or fail (--on_checkpoint_mismatch). Legacy checkpoints without sidecars are NEVER silently reused.",
+  "save_format": {
+    "canonical": [
+      "state_dict",
+      "metadata"
+    ],
+    "legacy_compat": [
+      "model_state",
+      "cfg",
+      "seed",
+      "noise_std"
+    ],
+    "sidecar": "<checkpoint>.pt.manifest.json"
+  }
+}

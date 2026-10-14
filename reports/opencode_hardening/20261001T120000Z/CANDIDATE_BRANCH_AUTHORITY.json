@@ -1,0 +1,97 @@
+{
+  "schema": "opencode_hardening_candidate_branch_authority/v1",
+  "authoritative_head": "f897e0eb747ac827941ac4883170a5181a603111",
+  "all_candidate_heads_match_expected": true,
+  "all_merge_bases_match_authoritative": true,
+  "verdict": "CANDIDATE_REFS_VERIFIED",
+  "candidates": [
+    {
+      "label": "A",
+      "branch": "hardening/new293-301-route-rig-20261001",
+      "remote_ref": "refs/remotes/origin/hardening/new293-301-route-rig-20261001",
+      "expected_head": "f5668a9e6ad69a22b010852ac78364fba0d41185",
+      "observed_head": "f5668a9e6ad69a22b010852ac78364fba0d41185",
+      "head_matches_expected": true,
+      "merge_base_with_authoritative": "f897e0eb747ac827941ac4883170a5181a603111",
+      "merge_base_matches": true,
+      "ahead_of_authoritative": 1,
+      "behind_authoritative": 0,
+      "relationship_matches_expected": true,
+      "files_changed": 24,
+      "integration_method": "git merge --no-ff (no conflicts; manual semantic review of both shared files)",
+      "merge_commit": "08f7bfa1",
+      "introduced_authorities": [
+        "ultimate_pipeline/perception/route_execution.py",
+        "ultimate_pipeline/perception/route_frame_binding.py",
+        "ultimate_pipeline/perception/route_manifest.py (strengthened)",
+        "ultimate_pipeline/sensors/canonical_lidar_spec.py"
+      ],
+      "modified_shared_files": [
+        "ultimate_pipeline/carla_tools/thesis_sensor_rig.py",
+        "ultimate_pipeline/sensors/attach_sensors_safe.py",
+        "ultimate_pipeline/sensors/dominik_sensor_setup.py"
+      ],
+      "self_reported_known_defect": "commit subject states '3 tests red'; verified independently as 3 real pre-existing defects, see INTEGRATION_DECISIONS.json"
+    },
+    {
+      "label": "B",
+      "branch": "hardening/new316-333-perception-environment-real-20261001",
+      "remote_ref": "refs/remotes/origin/hardening/new316-333-perception-environment-real-20261001",
+      "expected_head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "observed_head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "head_matches_expected": true,
+      "merge_base_with_authoritative": "f897e0eb747ac827941ac4883170a5181a603111",
+      "merge_base_matches": true,
+      "ahead_of_authoritative": 1,
+      "behind_authoritative": 0,
+      "relationship_matches_expected": true,
+      "files_changed": 58,
+      "integration_method": "git merge --no-ff (auto-merged both shared files; each side's hunks preserved, no conflict resolution forced)",
+      "merge_commit": "cee72f42",
+      "introduced_authorities": [
+        "ultimate_pipeline/perception/environment/seed_tree.py",
+        "ultimate_pipeline/perception/environment/deterministic_weather.py",
+        "ultimate_pipeline/perception/environment/weather_spec.py",
+        "ultimate_pipeline/perception/environment/traffic_manager_session.py",
+        "ultimate_pipeline/perception/environment/calibration_authority.py",
+        "ultimate_pipeline/perception/environment/calibration_lifecycle.py",
+        "ultimate_pipeline/perception/environment/lidar_camera_gate.py",
+        "ultimate_pipeline/perception/environment/physics_profile.py",
+        "ultimate_pipeline/perception/environment/vehicle_binding.py",
+        "ultimate_pipeline/perception/environment/camera_response.py",
+        "ultimate_pipeline/perception/environment/camera_intrinsics.py",
+        "ultimate_pipeline/perception/environment/live_calibration_assay.py"
+      ],
+      "sealed_verdict_carried_forward": {
+        "deterministic_environment": "PASS_OFFLINE",
+        "empirical_reprojection_acceptance": "BLOCKED_EXTERNAL",
+        "live_capture_evidence": "BLOCKED_EXTERNAL"
+      }
+    },
+    {
+      "label": "C",
+      "branch": "hardening/new225-233-gap040-048-20261001",
+      "remote_ref": "refs/remotes/origin/hardening/new225-233-gap040-048-20261001",
+      "expected_head": "f3a996f7d539677357b2fa8ba3cabc27f02be66f",
+      "observed_head": "f3a996f7d539677357b2fa8ba3cabc27f02be66f",
+      "head_matches_expected": true,
+      "merge_base_with_authoritative": "f897e0eb747ac827941ac4883170a5181a603111",
+      "merge_base_matches": true,
+      "ahead_of_authoritative": 1,
+      "behind_authoritative": 0,
+      "relationship_matches_expected": true,
+      "files_changed": 24,
+      "files_changed_are": "GAP-040..048 register entries plus NEW-200..NEW-233 domain-gap test suites and evidence JSON",
+      "overlap_with_A": "none (zero shared files)",
+      "overlap_with_B": "none (zero shared files)",
+      "integration_decision": "NOT_MERGED",
+      "integration_rationale": "Audited for complementary runtime/capture authority per instruction. Candidate C contains no runtime, capture-authority, rig, weather, TM, calibration or provenance *code*: its entire diff is the master gap register and domain-gap test suites/evidence. Merging it would import unrelated GAP-040..048 domain-gap policy without relevance to runtime-rig/environment closure, and would add 7 new test modules outside this task's scope. No capture/provenance fix in it is missing from the merged tree.",
+      "no_relevant_complementary_fix_found": true
+    }
+  ],
+  "drift_markers": {
+    "BASELINE_DRIFT": false,
+    "CANDIDATE_REF_DRIFT": false,
+    "MAP_AUTHORITY_DRIFT": false
+  }
+}

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from ultimate_pipeline.contracts.stage_contracts import normalize_gate_result
+
 
 class QualityGateManager:
     """Central registry for quality gates.
@@ -54,7 +56,10 @@ class QualityGateManager:
             pass
 
     def _finalize_gate(self, name: str, rep: Dict[str, Any]) -> None:
-        if not isinstance(rep, dict) or not rep.get("ok", True):
+        # Single normalization authority: never read `rep.get("ok", True)`
+        # directly. A report without an explicit pass verdict is not a pass.
+        normalized = normalize_gate_result(rep)
+        if not isinstance(normalized, dict) or normalized.get("decision") != "pass":
             self.fail(name, rep)
         else:
             self.passed(name)

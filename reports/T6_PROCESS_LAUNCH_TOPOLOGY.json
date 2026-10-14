@@ -1,0 +1,94 @@
+{
+  "CONTROLLER_HP_CREATION_TIME": "2026-10-06T11:47:29.4592050Z",
+  "CONTROLLER_HP_EXECUTABLE": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+  "CONTROLLER_HP_PID": 21980,
+  "CONTROLLER_PID": 16948,
+  "DEBUG_T6_OWNER_DEATH": "PASS",
+  "DEBUG_T6_PRE_KILL": "PASS",
+  "HOLDER_PROCESS_CHAIN": [
+    {
+      "cmd": "\"C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\t6_runs\\t6d",
+      "ct": "2026-10-06T11:47:29.4739740Z",
+      "exe": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "pid": 37056,
+      "ppid": 21980
+    },
+    {
+      "cmd": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+      "ct": "2026-10-06T11:47:29.4592050Z",
+      "exe": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+      "pid": 21980,
+      "ppid": 16948
+    },
+    {
+      "cmd": "\"C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" scripts\\t6_debug_control.py",
+      "ct": "2026-10-06T11:47:28.2170900Z",
+      "exe": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "pid": 16948,
+      "ppid": 29828
+    },
+    {
+      "cmd": "\"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe\" scripts\\t6_debug_control.py",
+      "ct": "2026-10-06T11:47:28.2012020Z",
+      "exe": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+      "pid": 29828,
+      "ppid": 10948
+    },
+    {
+      "cmd": "\"C:\\Program Files\\PowerShell\\7\\pwsh.EXE\" -NoLogo -NoProfile -NonInteractive -Command \"python scripts\\t6_debug_control.py 2>&1 | Select-Object -Last 75",
+      "ct": "2026-10-06T11:47:27.4838370Z",
+      "exe": "C:\\Program Files\\PowerShell\\7\\pwsh.EXE",
+      "pid": 10948,
+      "ppid": 12404
+    },
+    {
+      "cmd": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\" -s ses_ef3aa654bffe6QLsXAyaQ6Iuet",
+      "ct": "2026-10-05T15:40:43.1016480Z",
+      "exe": "C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+      "pid": 12404,
+      "ppid": 4316
+    },
+    {
+      "cmd": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "ct": "2026-10-05T10:46:31.9599500Z",
+      "exe": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "pid": 4316,
+      "ppid": 25840
+    },
+    {
+      "cmd": "wt.exe ",
+      "ct": "2026-10-05T10:46:31.4278090Z",
+      "exe": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminal_1.24.12741.0_x64__8wekyb3d8bbwe\\WindowsTerminal.exe",
+      "pid": 25840,
+      "ppid": 3328
+    }
+  ],
+  "OWNER_AUTHORITY_CREATION_TIME": "2026-10-06T11:47:29.4739740Z",
+  "OWNER_AUTHORITY_PID": 37056,
+  "OWNER_AUTHORITY_PROCESS_BINDING": "PASS",
+  "OWNER_DEAD": true,
+  "OWNER_OS_EXECUTABLE": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "OWNER_OS_PPID": 21980,
+  "POPEN_PID_EQUALS_OWNER_PID": false,
+  "T6_CHILD_TERMINATED_AFTER_OWNER_DEATH": true,
+  "T6_WRAPPER_PROCESS_EXPLANATION": "KNOWN_INTERMEDIATE_WRAPPER",
+  "VENV_LAUNCHER_PID": 21980,
+  "VENV_LAUNCHER_PRESENT": true,
+  "authority_stage": "READY_FOR_OWNER_DEATH_TEST",
+  "generated_utc": "2026-10-06T11:47:41.487990Z",
+  "pre_kill_checks": {
+    "AUTHORITY_RUN_TOKEN_MATCH": true,
+    "CHILD_ALIVE": true,
+    "CHILD_PID_KNOWN": true,
+    "LEASE_EXISTS": true,
+    "LEASE_OWNER_CREATION_TIME_MATCH": true,
+    "LEASE_OWNER_PID_MATCH": true,
+    "LEASE_RUN_ID_MATCH": true,
+    "OWNER_ALIVE": true
+  },
+  "reconciliation": "STATE STALE\nRECON {\"action\": \"RECONCILED\", \"prior_state\": \"STALE\"}",
+  "schema": "T6_PROCESS_LAUNCH_TOPOLOGY.json",
+  "schema_version": 1,
+  "stderr": "",
+  "sys_executable_used_for_launch": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe"
+}

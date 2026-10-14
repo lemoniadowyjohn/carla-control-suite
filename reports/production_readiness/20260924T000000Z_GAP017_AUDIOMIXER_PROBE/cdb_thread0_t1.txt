@@ -1,0 +1,160 @@
+
+************* Preparing the environment for Debugger Extensions Gallery repositories **************
+   ExtensionRepository : Implicit
+   UseExperimentalFeatureForNugetShare : true
+   AllowNugetExeUpdate : true
+   NonInteractiveNuget : true
+   AllowNugetMSCredentialProviderInstall : true
+   AllowParallelInitializationOfLocalRepositories : true
+
+   EnableRedirectToV8JsProvider : false
+
+   -- Configuring repositories
+      ----> Repository : LocalInstalled, Enabled: true
+      ----> Repository : UserExtensions, Enabled: true
+
+>>>>>>>>>>>>> Preparing the environment for Debugger Extensions Gallery repositories completed, duration 0.000 seconds
+
+************* Waiting for Debugger Extensions Gallery to Initialize **************
+
+>>>>>>>>>>>>> Waiting for Debugger Extensions Gallery to Initialize completed, duration 0.032 seconds
+   ----> Repository : UserExtensions, Enabled: true, Packages count: 0
+   ----> Repository : LocalInstalled, Enabled: true, Packages count: 30
+
+Microsoft (R) Windows Debugger Version 10.0.26100.7705 AMD64
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+*** wait with pending attach
+
+************* Path validation summary **************
+Response                         Time (ms)     Location
+Deferred                                       srv*
+Symbol search path is: srv*
+Executable search path is: 
+ModLoad: 00007ff6`c2410000 00007ff6`c7dcc000   E:\CARLA\CARLA_0.9.16\CarlaUE4\Binaries\Win64\CarlaUE4-Win64-Shipping.exe
+ModLoad: 00007ffe`4ef60000 00007ffe`4f1c7000   C:\Windows\SYSTEM32\ntdll.dll
+ModLoad: 00007ffe`4d580000 00007ffe`4d64b000   C:\Windows\System32\KERNEL32.DLL
+ModLoad: 00007ffe`4c870000 00007ffe`4cc71000   C:\Windows\System32\KERNELBASE.dll
+ModLoad: 00007ffe`4ee40000 00007ffe`4eec1000   C:\Windows\System32\WS2_32.dll
+ModLoad: 00007ffe`4c710000 00007ffe`4c85c000   C:\Windows\System32\ucrtbase.dll
+ModLoad: 00007ffd`0c8c0000 00007ffd`0cf5f000   E:\CARLA\CARLA_0.9.16\CarlaUE4\Binaries\Win64\ChronoEngine.dll
+ModLoad: 00007ffd`3ff80000 00007ffd`40295000   E:\CARLA\CARLA_0.9.16\CarlaUE4\Binaries\Win64\ChronoEngine_vehicle.dll
+ModLoad: 00000000`5e450000 00000000`5e459000   C:\Windows\SYSTEM32\X3DAudio1_7.dll
+ModLoad: 00007ffe`4d0b0000 00007ffe`4d1c8000   C:\Windows\System32\RPCRT4.dll
+ModLoad: 00007ffe`4cc80000 00007ffe`4cd29000   C:\Windows\System32\msvcrt.dll
+ModLoad: 00007ffe`4d4c0000 00007ffe`4d57b000   C:\Windows\System32\ADVAPI32.dll
+ModLoad: 00007ffe`4e340000 00007ffe`4e3e8000   C:\Windows\System32\sechost.dll
+ModLoad: 00007ffe`22960000 00007ffe`22975000   C:\Windows\SYSTEM32\XAPOFX1_5.dll
+ModLoad: 00007ffe`4d1d0000 00007ffe`4d36a000   C:\Windows\System32\ole32.dll
+ModLoad: 00007ffe`4d9c0000 00007ffe`4d9eb000   C:\Windows\System32\GDI32.dll
+ModLoad: 00007ffe`4c220000 00007ffe`4c247000   C:\Windows\System32\win32u.dll
+ModLoad: 00007ffe`4c250000 00007ffe`4c378000   C:\Windows\System32\gdi32full.dll
+ModLoad: 00007ffe`4c510000 00007ffe`4c5b3000   C:\Windows\System32\msvcp_win.dll
+ModLoad: 00000000`00400000 00000000`0041e000   C:\Windows\SYSTEM32\XINPUT1_3.dll
+ModLoad: 00007ffe`48d90000 00007ffe`48ecb000   C:\Windows\SYSTEM32\dxgi.dll
+ModLoad: 00007ffe`4d9f0000 00007ffe`4de77000   C:\Windows\System32\SETUPAPI.dll
+ModLoad: 00007ffe`4d650000 00007ffe`4d827000   C:\Windows\System32\USER32.dll
+ModLoad: 00007ffe`4de80000 00007ffe`4e20a000   C:\Windows\System32\combase.dll
+ModLoad: 00007ffe`48b20000 00007ffe`48d7f000   C:\Windows\SYSTEM32\d3d11.dll
+ModLoad: 00007ffd`81130000 00007ffd`812e2000   C:\Windows\SYSTEM32\d3d9.dll
+ModLoad: 00007ffe`4c380000 00007ffe`4c4ff000   C:\Windows\System32\CRYPT32.dll
+ModLoad: 00007ffd`3a2d0000 00007ffd`3a53f000   C:\Windows\SYSTEM32\D3DCOMPILER_43.dll
+ModLoad: 00007ffe`4ecc0000 00007ffe`4ed34000   C:\Windows\System32\WLDAP32.dll
+ModLoad: 00007ffe`4e210000 00007ffe`4e218000   C:\Windows\System32\Normaliz.dll
+ModLoad: 00007ffe`24c60000 00007ffe`24ce8000   C:\Windows\SYSTEM32\MSVCP140.dll
+ModLoad: 00007ffd`f2ea0000 00007ffd`f2ed6000   C:\Windows\SYSTEM32\VCOMP140.DLL
+ModLoad: 00007ffe`29e30000 00007ffe`29e4e000   C:\Windows\SYSTEM32\VCRUNTIME140.dll
+ModLoad: 00007ffe`4e3f0000 00007ffe`4eb8c000   C:\Windows\System32\SHELL32.dll
+ModLoad: 00007ffe`38490000 00007ffe`3849b000   C:\Windows\SYSTEM32\VCRUNTIME140_1.dll
+ModLoad: 00007ffe`4d370000 00007ffe`4d449000   C:\Windows\System32\OLEAUT32.dll
+ModLoad: 00007ffe`4cd30000 00007ffe`4cd61000   C:\Windows\System32\IMM32.dll
+ModLoad: 00007ffe`4bfb0000 00007ffe`4c00e000   C:\Windows\SYSTEM32\powrprof.dll
+ModLoad: 00007ffe`4c5c0000 00007ffe`4c642000   C:\Windows\System32\WINTRUST.dll
+ModLoad: 00007ffe`3b070000 00007ffe`3b07b000   C:\Windows\SYSTEM32\VERSION.dll
+ModLoad: 00007ffe`48320000 00007ffe`4834e000   C:\Windows\SYSTEM32\dwmapi.dll
+ModLoad: 00007ffd`a87d0000 00007ffd`a8864000   C:\Windows\SYSTEM32\DSOUND.dll
+ModLoad: 00007ffe`37920000 00007ffe`37957000   C:\Windows\SYSTEM32\WINMM.dll
+ModLoad: 00007ffe`4a7c0000 00007ffe`4a7f3000   C:\Windows\SYSTEM32\IPHLPAPI.DLL
+ModLoad: 00007ffd`f0630000 00007ffd`f0a50000   C:\Windows\SYSTEM32\UIAutomationCore.DLL
+ModLoad: 00007ffd`e5800000 00007ffd`e590c000   C:\Windows\SYSTEM32\OPENGL32.dll
+ModLoad: 00007ffe`4c040000 00007ffe`4c06a000   C:\Windows\SYSTEM32\bcrypt.dll
+ModLoad: 00007ffe`44450000 00007ffe`4457a000   C:\Windows\SYSTEM32\WINHTTP.dll
+ModLoad: 00007ffe`4b360000 00007ffe`4b3cc000   C:\Windows\SYSTEM32\MSWSOCK.dll
+ModLoad: 00007ffd`3fec0000 00007ffd`3ff77000   C:\Windows\SYSTEM32\ResampleDmo.DLL
+ModLoad: 00007ffe`194b0000 00007ffe`194e6000   C:\Windows\SYSTEM32\winmmbase.dll
+ModLoad: 00007ffd`e5a70000 00007ffd`e5aa9000   C:\Windows\SYSTEM32\GLU32.dll
+ModLoad: 00007ffe`48830000 00007ffe`48874000   C:\Windows\SYSTEM32\dxcore.dll
+ModLoad: 00007ffe`4ebc0000 00007ffe`4ecb9000   C:\Windows\System32\shcore.dll
+ModLoad: 00007ffe`4bcb0000 00007ffe`4bd02000   C:\Windows\SYSTEM32\cfgmgr32.dll
+ModLoad: 00007ffd`960b0000 00007ffd`960be000   C:\Windows\SYSTEM32\msdmo.dll
+ModLoad: 00007ffe`4bf90000 00007ffe`4bfa5000   C:\Windows\SYSTEM32\UMPDC.dll
+ModLoad: 00007ffe`4b810000 00007ffe`4b823000   C:\Windows\SYSTEM32\MSASN1.dll
+ModLoad: 00007ffe`4c160000 00007ffe`4c20c000   C:\Windows\System32\bcryptPrimitives.dll
+ModLoad: 00007ffe`49b80000 00007ffe`4a42d000   C:\Windows\SYSTEM32\windows.storage.dll
+ModLoad: 00007ffe`4cd70000 00007ffe`4cdd6000   C:\Windows\System32\shlwapi.dll
+ModLoad: 00007ffe`4c070000 00007ffe`4c099000   C:\Windows\SYSTEM32\profapi.dll
+ModLoad: 00007ffe`02a00000 00007ffe`02a26000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\NVIDIA\NVaftermath\Win64\GFSDK_Aftermath_Lib.x64.dll
+ModLoad: 00007ffe`4b080000 00007ffe`4b0c9000   C:\Windows\SYSTEM32\SspiCli.dll
+ModLoad: 00007ffd`3a0e0000 00007ffd`3a2c3000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\DbgHelp\dbghelp.dll
+ModLoad: 00007ffe`477d0000 00007ffe`47877000   C:\Windows\system32\uxtheme.dll
+ModLoad: 00007ffe`44270000 00007ffe`44308000   C:\Windows\SYSTEM32\mf.dll
+ModLoad: 00007ffe`43670000 00007ffe`43896000   C:\Windows\SYSTEM32\mfplat.dll
+ModLoad: 00007ffe`42f70000 00007ffe`42fab000   C:\Windows\SYSTEM32\RTWorkQ.DLL
+ModLoad: 00007ffd`5afa0000 00007ffd`5b02a000   C:\Windows\SYSTEM32\mfplay.dll
+ModLoad: 00007ffe`4adc0000 00007ffe`4addb000   C:\Windows\SYSTEM32\kernel.appcore.dll
+ModLoad: 00007ffe`4d9b0000 00007ffe`4d9ba000   C:\Windows\System32\NSI.dll
+ModLoad: 00007ffe`47590000 00007ffe`475ae000   C:\Windows\SYSTEM32\dhcpcsvc6.DLL
+ModLoad: 00007ffe`47560000 00007ffe`47585000   C:\Windows\SYSTEM32\dhcpcsvc.DLL
+ModLoad: 00007ffe`1b3b0000 00007ffe`1b3c8000   C:\Windows\system32\napinsp.dll
+ModLoad: 00007ffe`4a860000 00007ffe`4a9b8000   C:\Windows\SYSTEM32\DNSAPI.dll
+ModLoad: 00007ffe`4b160000 00007ffe`4b16d000   C:\Windows\SYSTEM32\DSPARSE.dll
+ModLoad: 00007ffe`1b3d0000 00007ffe`1b3e3000   C:\Windows\System32\winrnr.dll
+ModLoad: 00007ffe`1b530000 00007ffe`1b557000   C:\Windows\system32\nlansp_c.dll
+ModLoad: 00007ffe`41bc0000 00007ffe`41bd6000   C:\Windows\system32\wshbth.dll
+ModLoad: 00007ffe`4bc70000 00007ffe`4bc9f000   C:\Windows\SYSTEM32\DEVOBJ.dll
+ModLoad: 00007ffe`4cde0000 00007ffe`4ce8e000   C:\Windows\System32\clbcatq.dll
+ModLoad: 00007ffe`1f5b0000 00007ffe`1f5bc000   C:\Windows\System32\gameux.dll
+ModLoad: 00007ffe`06640000 00007ffe`06653000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PxFoundation_x64.dll
+ModLoad: 00007ffd`3c470000 00007ffd`3c5fc000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PhysX3Common_x64.dll
+ModLoad: 00007ffd`efaf0000 00007ffd`efb22000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PxPvdSDK_x64.dll
+ModLoad: 00007ffd`39180000 00007ffd`3938b000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PhysX3_x64.dll
+ModLoad: 00007ffd`3d100000 00007ffd`3d208000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\APEXFramework_x64.dll
+ModLoad: 00007ffd`38e10000 00007ffd`39177000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\APEX_Legacy_x64.dll
+ModLoad: 00007ffd`30930000 00007ffd`30a67000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\APEX_Clothing_x64.dll
+ModLoad: 00007ffd`dcbc0000 00007ffd`dcc00000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\PhysX3Cooking_x64.dll
+ModLoad: 00007ffe`4d830000 00007ffe`4d98c000   C:\Windows\System32\msctf.dll
+ModLoad: 00007ffe`190b0000 00007ffe`191f6000   C:\Windows\SYSTEM32\textinputframework.dll
+ModLoad: 00007ffe`4b5c0000 00007ffe`4b5cc000   C:\Windows\SYSTEM32\CRYPTBASE.DLL
+ModLoad: 00007ffd`63db0000 00007ffd`63df7000   E:\CARLA\CARLA_0.9.16\Engine\Binaries\ThirdParty\PhysX3\Win64\VS2015\NvCloth_x64.dll
+(7bc0.6f64): Break instruction exception - code 80000003 (first chance)
+ntdll!DbgBreakPoint:
+00007ffe`4f083f00 cc              int     3
+0:056> cdb: Reading initial command '~0kb; qd'
+RetAddr               : Args to Child                                                           : Call Site
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!TSparseArray<TSetElement<FTickFunction *>,TSparseArrayAllocator<TSizedDefaultAllocator<32>,FDefaultBitArrayAllocator> >::begin+0x4
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!TSet<FTickFunction *,DefaultKeyFuncs<FTickFunction *,0>,FDefaultSetAllocator>::TIterator::{ctor}+0x4
+00007ff6`c53aabd4     : 00007ff6`c78e86e0 00000000`00000048 00000000`00000001 00000000`00000009 : CarlaUE4_Win64_Shipping!FTickTaskLevel::QueueNewlySpawned+0x41
+00007ff6`c4fdbecf     : 00000000`00000000 00000000`00000000 0000025d`18ba8100 00000000`0000000c : CarlaUE4_Win64_Shipping!FTickTaskManager::RunTickGroup+0x204
+00007ff6`c4ed00b2     : 00000000`00270400 0000025d`00000001 000000ac`f8f7e300 00000000`00000000 : CarlaUE4_Win64_Shipping!UWorld::Tick+0x1aff
+00007ff6`c2bd0fc4     : 0000025d`1ab2b050 00000000`00076700 000000ac`f8f7e500 00000000`00000000 : CarlaUE4_Win64_Shipping!UGameEngine::Tick+0x882
+00007ff6`c2bdc330     : 00007ff6`c723c020 00000000`00000000 00000000`00000000 0000025d`10e65000 : CarlaUE4_Win64_Shipping!FEngineLoop::Tick+0x3c94
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!EngineTick+0xc
+00007ff6`c2bdc39a     : 0000025d`1299b72c 0000025d`1299b680 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!GuardedMain+0x340
+00007ff6`c2be7230     : 0000025d`1299b680 00000000`00000000 00000000`00000000 00000000`00000070 : CarlaUE4_Win64_Shipping!GuardedMainWrapper+0x1a
+00007ff6`c5d9d55e     : 00000000`0000000a 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!WinMain+0x190
+(Inline Function)     : --------`-------- --------`-------- --------`-------- --------`-------- : CarlaUE4_Win64_Shipping!invoke_main+0x21
+00007ffe`4d5acdf7     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : CarlaUE4_Win64_Shipping!__scrt_common_main_seh+0x106
+00007ffe`4efdee4c     : 00000000`00000000 00000000`00000000 000004f0`fffffb30 000004d0`fffffb30 : KERNEL32!BaseThreadInitThunk+0x17
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2c
+quit:
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\atlmfc.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\ObjectiveC.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\concurrency.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\cpp_rest.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\stl.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Data.Json.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Geolocation.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Sensors.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Media.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\windows.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\winrt.natvis'

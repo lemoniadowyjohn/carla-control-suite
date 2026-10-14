@@ -78,3 +78,93 @@ def test_gate_run_record_is_a_plain_dataclass():
     rec = GateRunRecord(stage="s", gate="g", ok=True, detail={}, elapsed_s=0.1)
     assert rec.stage == "s"
     assert rec.ok is True
+
+
+# ---------------------------------------------------------------------------
+# OC-36: CumulativeGateRunner and QualityGateManager._finalize_gate share a
+# single normalization authority (`normalize_gate_result`) and MUST always
+# agree on the same report -- including malformed / status-only / empty ones.
+# ---------------------------------------------------------------------------
+
+from ultimate_pipeline.core.validation_report import ValidationReport  # noqa: E402
+from ultimate_pipeline.quality.quality_gate_manager import QualityGateManager  # noqa: E402
+
+
+def _runner_verdict(report):
+    runner = CumulativeGateRunner()
+    returned = runner.run("stage", "gate_x", lambda: report)
+    return returned, runner.results[0].ok
+
+
+def _manager_verdict(report):
+    qgate = QualityGateManager(ValidationReport())
+    qgate._finalize_gate("gate_x", report)
+    return "gate_x" not in qgate.get_failures()
+
+
+def test_runner_and_manager_agree_on_status_only_skipped_report():
+    report = {"status": "skipped", "reason": "disabled"}
+    returned, runner_ok = _runner_verdict(report)
+    assert runner_ok is False
+    assert returned is report  # the report is preserved verbatim
+    assert _manager_verdict(report) is False
+
+
+def test_runner_and_manager_agree_on_empty_dict_report():
+    report = {}
+    _, runner_ok = _runner_verdict(report)
+    assert runner_ok is False
+    assert _manager_verdict(report) is False
+
+
+def test_runner_and_manager_agree_on_missing_ok_key():
+    report = {"issues": [], "detail": "no verdict expressed"}
+    _, runner_ok = _runner_verdict(report)
+    assert runner_ok is False
+    assert _manager_verdict(report) is False
+
+
+def test_runner_normalizes_status_pass_to_ok():
+    _, runner_ok = _runner_verdict({"status": "pass"})
+    assert runner_ok is True
+
+
+def test_runner_status_error_is_failed():
+    _, runner_ok = _runner_verdict({"status": "error", "error": "boom"})
+    assert runner_ok is False
+
+
+def test_runner_status_pending_is_failed():
+    # Example: PENDING must map to INCOMPLETE (fail-closed), never OK.
+    _, runner_ok = _runner_verdict({"status": "PENDING"})
+    assert runner_ok is False
+
+
+def test_runner_status_gate_timed_out_is_failed():
+    _, runner_ok = _runner_verdict({"status": "GATE_TIMED_OUT"})
+    assert runner_ok is False
+
+
+def test_runner_ok_key_wins_over_conflicting_status():
+    # structure_elevation_plausibility carries BOTH ok and status.
+    ok_report = {"ok": True, "status": "INCOMPLETE"}
+    _, runner_ok = _runner_verdict(ok_report)
+    assert runner_ok is True
+    assert _manager_verdict(ok_report) is True
+
+    failed_report = {"ok": False, "status": "PASS"}
+    _, runner_ok = _runner_verdict(failed_report)
+    assert runner_ok is False
+    assert _manager_verdict(failed_report) is False
+
+
+def test_runner_unrecognized_status_is_fail_closed():
+    _, runner_ok = _runner_verdict({"status": "some_future_status"})
+    assert runner_ok is False
+
+
+def test_runner_strict_finalize_raises_on_status_only_gap():
+    runner = CumulativeGateRunner(strict=True)
+    runner.run("stage", "gate_x", lambda: {"status": "skipped"})
+    with pytest.raises(RuntimeError, match="gate_x"):
+        runner.finalize()

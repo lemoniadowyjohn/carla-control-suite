@@ -1,0 +1,24 @@
+{
+  "adversarial_tests": {
+    "test_new300_active_lidar_policy": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Remove ambiguous legacy LiDAR from governed rig",
+  "finding_id": "NEW-300",
+  "implementation": {
+    "file": "ultimate_pipeline/sensors/canonical_lidar_spec.py",
+    "function": "active_lidar_policy",
+    "policy": {
+      "active_lidars": [
+        "middle_lidar"
+      ],
+      "inactive_calibration_entries": [
+        "middle_lidar_old"
+      ]
+    },
+    "resolution": "All rig constructors resolve via resolve_active_lidars"
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

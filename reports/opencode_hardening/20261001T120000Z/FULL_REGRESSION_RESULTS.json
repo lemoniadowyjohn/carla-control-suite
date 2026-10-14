@@ -1,0 +1,40 @@
+{
+  "schema": "full_regression_results/v1",
+  "work_branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+  "result_head": "7b09cfbca94378518385f416b7d721f666cdf434",
+  "compileall": {
+    "command": "python -m compileall -q ultimate_pipeline tools tests",
+    "exit_code": 0,
+    "result": "PASS",
+    "notes": "one pre-existing SyntaxWarning (invalid escape sequence in ultimate_pipeline/tools/calib_sanity_check.py docstring) does not fail the build and is unrelated to this integration"
+  },
+  "full_suite": {
+    "command": "python -m pytest -q ultimate_pipeline tests tools",
+    "passed": 6958,
+    "failed": 0,
+    "skipped": 10,
+    "errors": 0,
+    "warnings": 180,
+    "duration_s": 1634.87,
+    "result": "PASS"
+  },
+  "comparison_to_candidate_B_reported_baseline": {
+    "candidate_b_reported": {"passed": 6883, "skipped": 10, "failed": 1},
+    "this_run": {"passed": 6958, "skipped": 10, "failed": 0},
+    "delta_explained_by": "60 new offline tests (40 integration negative controls + 20 UE4 discovery) and 3 repaired tests, plus the single reported failure now genuinely fixed"
+  },
+  "known_path_test_false_positive": {
+    "test": "tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_no_hardcoded_username_in_production_defaults",
+    "reported_as": "pre-existing failure on Candidate B",
+    "independent_audit": "confirmed a false positive in the TEST",
+    "root_cause": "the test asserted the resolved runtime value of DEFAULT_OSM2WORLD_HOME does not contain 'c:\\users\\admin'. The default is correctly repo-relative; the checkout lives under C:\\Users\\admin, so the resolved path legitimately contains that prefix. The test conflated a resolved runtime path with a source-code hardcoded username.",
+    "production_path_resolution_changed": false,
+    "repair": "the test now scans the source text of the three modules that define these defaults for hardcoded absolute developer-path literals and for a literal project-directory name, and separately asserts each resolved default is anchored at the repo root (is_relative_to(REPO_ROOT)), which is what portability actually requires",
+    "suppressed_with_xfail_or_skip": false,
+    "tolerance_raised": false,
+    "now_passing": true
+  },
+  "new_failures": 0,
+  "candidate_specific_regressions": 0,
+  "result": "PASS"
+}

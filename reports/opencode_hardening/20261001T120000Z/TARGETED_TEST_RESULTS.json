@@ -1,0 +1,62 @@
+{
+  "schema": "targeted_test_results/v1",
+  "work_branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+  "result_head": "7b09cfbca94378518385f416b7d721f666cdf434",
+  "command_form": "python -m pytest -q <paths>",
+  "groups": [
+    {
+      "name": "candidate_A_targeted",
+      "paths": ["ultimate_pipeline/tests/unit/test_rq3_route_rig_hardening.py"],
+      "collected": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "result": "PASS",
+      "note": "Candidate A's commit subject admitted '3 tests red'. All three were independently audited as real defects and fixed (two in production route_frame_binding.py, one in the test's own mock which modelled a CARLA actor with neither set_transform nor apply_transform). No xfail or skip was used."
+    },
+    {
+      "name": "candidate_B_targeted",
+      "paths": ["ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py"],
+      "collected": 57,
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "candidate_B_paired_capture_contract",
+      "paths": ["ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py"],
+      "collected": 25,
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "integration_specific",
+      "paths": [
+        "ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py",
+        "ultimate_pipeline/tests/unit/test_ue4_executable_discovery.py",
+        "ultimate_pipeline/tests/unit/test_route_manifest.py",
+        "tests/unit/test_a1_a2_path_and_frame_resolution.py"
+      ],
+      "collected": 84,
+      "passed": 84,
+      "failed": 0,
+      "skipped": 0,
+      "result": "PASS",
+      "new_tests_added": 60,
+      "repaired_tests": 3
+    }
+  ],
+  "totals": {
+    "collected": 179,
+    "passed": 179,
+    "failed": 0,
+    "skipped": 0
+  },
+  "candidate_specific_regressions": 0,
+  "tolerances_raised": 0,
+  "xfail_or_skip_added": 0,
+  "result": "PASS"
+}

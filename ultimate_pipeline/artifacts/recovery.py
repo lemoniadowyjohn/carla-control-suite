@@ -8,7 +8,7 @@ class RecoveryEngine:
     """Recovery helpers for immutable artifact stores."""
 
     def verify_integrity(self, store) -> tuple[str, ...]:
-        return tuple(store.verify_integrity())
+        return tuple(store.verify_integrity()) + tuple(store.recover_transactions())
 
     def require_integrity(self, store) -> None:
         issues = self.verify_integrity(store)

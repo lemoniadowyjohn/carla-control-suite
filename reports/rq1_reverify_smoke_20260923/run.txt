@@ -1,0 +1,1031 @@
+[2026-09-22 22:38:36] 
+==============================================
+[2026-09-22 22:38:36]       DETERMINISM AUDIT (2 runs)
+[2026-09-22 22:38:36] ==============================================
+[2026-09-22 22:38:36] Output directory: reports\rq1_reverify_smoke_20260923\out
+
+[2026-09-22 22:38:36] 
+--- Running pipeline (run 1/2) ---
+[2026-09-22 22:39:29] [2026-09-22 22:38:45] ⚠️ [PROJ-ENV] proj.db DATABASE.LAYOUT.VERSION.MINOR=4 at C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db is older than the required minimum (6). This is a silent-reprojection risk: CRS transforms may use a stale/incomplete database instead of raising. Remediation: reinstall pyproj so its bundled proj.db is refreshed (e.g. `pip install --force-reinstall --no-cache-dir pyproj` in this venv), or align GDAL's PROJ data with pyproj's via a consistent conda/pip environment (do not mix a system PROJ install with pyproj's bundled one).
+[2026-09-22 22:38:45] ⚠️ [PROJ-ENV] PROJ_LIB='C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj' does not match pyproj's own resolved data dir ('C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj'). This is the 'from another PROJ installation' risk: any PROJ-consuming component that honors this env var (GDAL, a raw libproj binding, etc.) may load a different, unvetted proj.db than pyproj itself uses. Remediation: unset PROJ_LIB, or point it at pyproj's own data dir.
+[2026-09-22 22:38:45] ✅ [STAGE-CONTRACT] Declared stage capability sequence (24 stages) validated clean.
+[2026-09-22 22:38:45] 🔥 Ultimate OSM→OpenDRIVE→CARLA pipeline (consolidated)
+[2026-09-22 22:38:45] ✅ [INPUTS-MANIFEST] verified G:\carla-rq1-reverify-20260923\campaigns\ingolstadt_cooked_perception_v1\source\INPUTS_MANIFEST.json: ['buildings', 'dem', 'roads_osm'] pinned (sha256+bytes match), [] pending
+[2026-09-22 22:38:45] 📥 Input XODR: G:/carla-rq1-reverify-20260923/reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr
+[2026-09-22 22:38:45] 📤 Output dir: G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000
+[2026-09-22 22:38:45] 📂 Verifying pipeline database...
+[2026-09-22 22:38:45] ✅ Database schema OK
+[2026-09-22 22:38:45] 📥 Input XODR: G:/carla-rq1-reverify-20260923/reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr
+[2026-09-22 22:38:45] 📤 Output dir: G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000
+[2026-09-22 22:38:45] 📝 [INFO] Settings snapshot written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\settings_snapshot.json
+[2026-09-22 22:38:45] 🔐 Settings hash (SHA-256): aa067df0d4b2cf477795020da380da4b35048e71f1a85800ef108e1111bd84eb
+[2026-09-22 22:38:45] 🔐 Settings schema version: 1.0
+[2026-09-22 22:38:46] [INFO] [PROBE] settings snapshot done → entering determinism/OSM stage
+[2026-09-22 22:38:46] [INFO] [PROBE] enforce_determinism() start
+[2026-09-22 22:38:46] ✅ [INFO] Deterministic mode enabled (seed=42)
+[2026-09-22 22:38:46] [INFO] [PROBE] enforce_determinism() done in 0.00s
+[2026-09-22 22:38:46] [INFO] [PROBE] ensure_osm_exists() start
+[2026-09-22 22:38:46] ✔ OSM XML already exists → G:\carla-rq1-reverify-20260923\reports\rq1_reverify_smoke_20260923\fixture.osm
+[2026-09-22 22:38:46] [INFO] [PROBE] ensure_osm_exists() done in 0.00s
+[2026-09-22 22:38:46] 📍 GPS bounds: lat 48.74935649548228–48.77444431571603, lon 11.422268084715878–11.47882091528412
+[2026-09-22 22:38:46] 🏔️ DEM summary (initial): GEOGCS["WGS 84",DATUM["World Geodetic System 1984",SPHEROID["WGS 84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]] {'left': 11.312083322222236, 'bottom': 48.67430556666666, 'right': 11.537361100000014, 'top': 48.836250011111105}
+[2026-09-22 22:38:46] [PREFLIGHT] CARLA explicitly disabled; CARLA stages will be skipped.
+[2026-09-22 22:38:46] [PREFLIGHT] carla_reachability.json -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\carla_reachability.json
+[2026-09-22 22:38:46] [PREFLIGHT] Skipping _connect_carla() due to unreachable CARLA
+[2026-09-22 22:38:46] 
+============== 🧼 STEP 1: Sanitize ==============
+[2026-09-22 22:38:46] ✅ Sanitized → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\01_sanitized_audit_run_000.xodr
+[2026-09-22 22:38:48] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_01_sanitize.png
+[2026-09-22 22:38:48] ⏭️ CARLA QA preview skipped (pre-lane stage).
+[2026-09-22 22:38:48] [GPS_QA_CROP] map_crs_source=xodr_geoReference map_crs_proj4=+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs
+[2026-09-22 22:38:48] [GPS_QA_CROP] header_offset_policy=gps_anchor_override effective_offset_used={'x': -160155.1460747542, 'y': -57071.32570819929, 'z': 0.0, 'hdg': 0.0}
+[2026-09-22 22:38:48] [GPS_QA_CROP] crop_center_wgs84={'lat': 48.76190040559916, 'lon': 11.4505445} crop_center_map_crs={'x': 680084.6856952258, 'y': 5403884.708357111} radius_m=800.0
+[2026-09-22 22:38:48] [GPS_QA_CROP] map_bbox_in_map_crs={'minx': 679144.5314103658, 'miny': 5403239.227285291, 'maxx': 681024.8399800858, 'maxy': 5404530.189428931} crop_bbox_in_map_crs={'minx': 679284.6856952258, 'miny': 5403084.708357111, 'maxx': 680884.6856952258, 'maxy': 5404684.708357111} intersection_ratio=0.806851
+[2026-09-22 22:38:48] [GPS_QA_CROP] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\01_sanitized_GPS_QA_CROP.xodr (roads kept: 156)
+[2026-09-22 22:38:48] [GPS_QA_CROP] QA report -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\01_sanitized_GPS_QA_CROP.qa.json
+[2026-09-22 22:38:48] 📍 GPS QA crop ready → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\01_sanitized_GPS_QA_CROP.xodr (lanes: 398)
+[2026-09-22 22:38:48] 
+============== 🕸️ STEP 2: Topology Lint & SUMO Repair ==============
+[2026-09-22 22:38:48] [OK] Preserved existing geoReference (reason=already_valid)
+[2026-09-22 22:38:48] 📝 geoReference provenance → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\georeference_provenance.json
+[2026-09-22 22:38:48] 📐 CRS comparability report → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\crs_comparability.json
+[2026-09-22 22:38:48] 🔧 Removed 104 invalid junction refs from 52 roads (missing IDs: ['1166', '1168', '1169', '1170', '133']...)
+[2026-09-22 22:38:48] [ValidationReport] saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\logs\topology_lint.json
+[2026-09-22 22:38:48] 📊 Topology lint report saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\logs\topology_lint.json
+[2026-09-22 22:38:48] ? Running SUMO netconvert for topology repair...
+[2026-09-22 22:38:49] ? SUMORepair: repaired XODR -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\02_sumo_fixed_audit_run_000.xodr
+[2026-09-22 22:38:49] ✅ SUMO repaired map → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\02_sumo_fixed_audit_run_000.xodr
+[2026-09-22 22:38:49] ⏭️ CARLA QA preview skipped (isolation mode).
+[2026-09-22 22:38:49] 📝 SUMO repair metadata → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\sumo_repair.json
+[2026-09-22 22:38:49] 🧪 Post-SUMO topology validation…
+[2026-09-22 22:38:49] 
+============== 🏗️ STEP 2C: Structural Scan ==============
+[2026-09-22 22:38:50] 
+🧠 Structure Scanner v2 Report:
+[2026-09-22 22:38:50]   ✓ multi_successor:          0 roads flagged
+[2026-09-22 22:38:50]   ✓ multi_predecessor:        0 roads flagged
+[2026-09-22 22:38:50]   ✓ self_links:               0 roads flagged
+[2026-09-22 22:38:50]   ✓ broken_junction_refs:     0 issues
+[2026-09-22 22:38:50]   ✓ zero_geometry_roads:      0 roads
+[2026-09-22 22:38:50]   🌀 Curvature:
+[2026-09-22 22:38:50]      roads analyzed:          141
+[2026-09-22 22:38:50]      max curvature:           5.0199
+[2026-09-22 22:38:50]      p99 curvature:           1.2630
+[2026-09-22 22:38:50]      anomaly threshold:       1.2630283760818517
+[2026-09-22 22:38:50]      anomalous roads:         3
+[2026-09-22 22:38:50]   🚧 Lane sections:
+[2026-09-22 22:38:50]      non-monotonic roads:     0
+[2026-09-22 22:38:50]      width jumps:             0 (threshold=3.0 m)
+[2026-09-22 22:38:50]   ⚓ Junctions:
+[2026-09-22 22:38:50]      total junctions:         14
+[2026-09-22 22:38:50]      roads with junctions:    133
+[2026-09-22 22:38:50]      avg junctions/road:      1.429
+[2026-09-22 22:38:50]      max junctions for a road:4
+[2026-09-22 22:38:50]   🏔 Elevation:
+[2026-09-22 22:38:50]      slope segments:          2809
+[2026-09-22 22:38:50]      mean |dz/ds|:            0.018
+[2026-09-22 22:38:50]      max  |dz/ds|:            0.456
+[2026-09-22 22:38:50]   🕸 Graph connectivity:
+[2026-09-22 22:38:50]      components:              5
+[2026-09-22 22:38:50]      largest component size:  133
+[2026-09-22 22:38:50]      islands (<20 roads): 4
+[2026-09-22 22:38:50]   (All checks are diagnostic-only; no roads were harmed.)
+[2026-09-22 22:38:50] ⏭️ Aggressive prune disabled.
+[2026-09-22 22:38:51] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_02_structure_clean.png
+[2026-09-22 22:38:51] 
+============== 🚨 STEP 2D: Semantic Risk Scan ==============
+[2026-09-22 22:38:51] 🧠 Semantic risk analysis complete:
+[2026-09-22 22:38:51]    Total roads analyzed: 141
+[2026-09-22 22:38:51]    Average risk score:   5.50
+[2026-09-22 22:38:51]    High-risk roads:      11 (7.8%)
+[2026-09-22 22:38:51]    ⚠️  Example high-risk IDs: 300, 302, 309, 314, 316, 320, 330, 332, 338, 340
+[2026-09-22 22:38:51] ⚠️ High-risk roads saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\semantic_high_risk_roads.json
+[2026-09-22 22:38:51] ⚠️ High-risk roads detected: 11
+[2026-09-22 22:38:51] 
+============== 🔧 STEP 3: Topology Repair ==============
+[2026-09-22 22:38:52] ✓ TopologyRepair: basic link/junction cleanup applied.
+[2026-09-22 22:38:52] ✅ TopologyRepair → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\03_topology_audit_run_000.xodr
+[2026-09-22 22:38:52] ⏭️ Skipped CARLA test: topology_repair
+[2026-09-22 22:38:53] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_03_topology_repair.png
+[2026-09-22 22:38:53] 
+[QA][03_topology_repair] junction_integrity ...
+[2026-09-22 22:38:53] [QA][03_topology_repair] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\03_topology_repair__junction_integrity.json
+[2026-09-22 22:38:53] 
+============== 🛡️ XODR Validator Convergence (G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\03_topology_audit_run_000.xodr) ==============
+[2026-09-22 22:38:53] ✅ XODR Validator convergence: PASS
+[2026-09-22 22:38:53] 
+============== 🏗️ STEP 4: Enrichment (Roundabouts, TL, Buildings, Realism) ==============
+[2026-09-22 22:38:53] ⏭️ Roundabout reconstruction disabled.
+[2026-09-22 22:38:53] 🧪 Tagging roundabouts for visualization…
+[2026-09-22 22:38:53]    → Roundabouts tagged for preview.
+[2026-09-22 22:38:53] 🚦 Inferring traffic lights…
+[2026-09-22 22:38:54]    → Inserted 91 traffic lights.
+[2026-09-22 22:38:54]    → Junction signal coverage: 11/11 eligible junctions (100.0%), 100% topology-heuristic, no real-world source.
+[2026-09-22 22:38:54] 🧪 Validating traffic light → lane references…
+[2026-09-22 22:38:54] 🏙️ buildings.geojson already present → G:\carla-rq1-reverify-20260923\cities\ingolstadt\osm\buildings.geojson
+[2026-09-22 22:38:54] 🏙️ Inserting buildings with automatic fallback…
+[2026-09-22 22:38:54] [BUILDINGS] Loaded 5704 building footprints from Overpass JSON
+[2026-09-22 22:38:54] 🏙️ [BUILDINGS] Building JSON loader returned 5704 footprints
+[2026-09-22 22:38:55] 🏙️ [BUILDINGS] Inserted 5704 buildings from GeoJSON
+[2026-09-22 22:38:55] ✨ Adding realism objects…
+[2026-09-22 22:38:56]    → Inserted 376 realism objects.
+[2026-09-22 22:38:56] ⏭️ Spatial OSM metadata skipped (no usable source way geometry)
+[2026-09-22 22:38:56]    → Access metadata: 0 road(s), 0 record(s)
+[2026-09-22 22:38:56] ⏭️ Crosswalk enrichment skipped (no OSM file or no footway=crossing ways found)
+[2026-09-22 22:38:56] [INFO] XODR statistics:
+[2026-09-22 22:38:56] {
+  "roads": {
+    "count": 141,
+    "total_length_m": 12678.51320361,
+    "avg_length_m": 89.91853335893617,
+    "min_length_m": 6.24427237,
+    "max_length_m": 1228.7967835,
+    "length_histogram": {
+      "0-10": 3,
+      "10-30": 88,
+      "30-60": 12,
+      "60-120": 18,
+      "120-250": 8,
+      "250-500": 6,
+      ">500": 6
+    }
+  },
+  "lanes": {
+    "total_lanes": 142,
+    "avg_lanes_per_road": 1.0070921985815602,
+    "width_min": 6.0,
+    "width_avg": 6.0,
+    "width_max": 6.0
+  },
+  "geometry": {
+    "geometry_counts": {
+      "line": 269,
+      "spiral": 0,
+      "arc": 0,
+      "poly3": 0,
+      "paramPoly3": 2681
+    },
+    "curvature_min": 0.0,
+    "curvature_avg": 0.0,
+    "curvature_max": 0.0
+  },
+  "junctions": {
+    "count": 14
+  },
+  "traffic": {
+    "traffic_lights": 0,
+    "traffic_lights_objects": 0,
+    "traffic_lights_signals": 0,
+    "signals_total": 91,
+    "speed_limit_distribution": {
+      "13": 74,
+      "10": 5,
+      "5": 21,
+      "7": 16,
+      "9": 16,
+      "8": 3,
+      "11": 4,
+      "12": 3
+    }
+  },
+  "elevation": {
+    "min_z": 366.17280899445853,
+    "max_z": 373.64110385062804,
+    "z_range": 7.468294856169507
+  },
+  "success": true,
+  "semantic_completeness": {
+    "geometry": true,
+    "lanes": false,
+    "reason": "Lane generation occurs in STEP 7"
+  }
+}
+[2026-09-22 22:38:56] ⏭️ OSM2World deferred until final structural freeze.
+[2026-09-22 22:38:56] ✅ STEP 4 complete — geometry-only semantics (lanes are generated in STEP 7)
+[2026-09-22 22:38:56] 
+============== 📐 STEP 6: PlanView & Continuity ==============
+[2026-09-22 22:38:56] ⏭️ Heading-only smoothing disabled (ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING=0).
+[2026-09-22 22:38:56] ⏭️ Small geometry merge disabled (ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE=0).
+[2026-09-22 22:38:56] ⏭️ Short segment merge disabled (ENABLE_UNSAFE_SHORT_SEGMENT_MERGE=0).
+[2026-09-22 22:38:56] ⏭️ Curvature-only clamp disabled (ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP=0).
+[2026-09-22 22:38:56] ⏭️ Geometry start recompute disabled (safe default).
+[2026-09-22 22:38:57] ✅ PlanView smoothed → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\05_planview_audit_run_000.xodr
+[2026-09-22 22:38:58] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_05_planview_merge.png
+[2026-09-22 22:38:59] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_debug.json
+[2026-09-22 22:38:59] ⚙ Roads selected for repair: 8
+[2026-09-22 22:38:59] 🔧 Applying moderate continuity smoothing…
+[2026-09-22 22:38:59] ✓ Continuity output saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\06_continuity_audit_run_000.xodr
+[2026-09-22 22:38:59] 
+[QA][06_continuity] geometric_continuity ...
+[2026-09-22 22:38:59] [QA][06_continuity] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\06_continuity__geometric_continuity.json
+[2026-09-22 22:38:59] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_debug.json
+[2026-09-22 22:39:00] ✅ continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_debug.json
+[2026-09-22 22:39:00] ⏭️ Micro-Pruning disabled (no unsafe mutations).
+[2026-09-22 22:39:00] 
+[QA][06_continuity] planview_internal_seams ...
+[2026-09-22 22:39:00] [QA][06_continuity] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\06_continuity__planview_internal_seams.json
+[2026-09-22 22:39:00] 
+🕸 MeshChecker: coarse geometry sanity...
+[2026-09-22 22:39:00]    Span X: 1880.3 m, Span Y: 1291.0 m
+[2026-09-22 22:39:00]    ✔ Geometry span looks reasonable.
+[2026-09-22 22:39:01] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_05_continuity.png
+[2026-09-22 22:39:02] 🔥 Heatmap written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_heatmap.png
+[2026-09-22 22:39:02] 🖼️ Generating post-continuity previews…
+[2026-09-22 22:39:03] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_06_post_continuity_planview.png
+[2026-09-22 22:39:06] 🎞 Animated diff GIF written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\planview_continuity_diff.gif
+[2026-09-22 22:39:06] [DEBUG] Lanes after STEP 6: 283
+[2026-09-22 22:39:06] [STEP 6] Junction connector rebuild disabled.
+[2026-09-22 22:39:07] [STEP 6] Junction connector snap: examined=95 snapped=20 skipped_end_contact_point=0 -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\junction_connector_snap_report.json
+[2026-09-22 22:39:08] 🧊 Horizontal geometry frozen before elevation → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\06_geometry_frozen_audit_run_000.xodr
+[2026-09-22 22:39:08] 🔒 Freeze hash: dab476efe557b46e7442c649e8be0c751b8234ba710958dcdcd66439f024996b
+[2026-09-22 22:39:08] [FREEZE] geometry_freeze_hash.json -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\geometry_freeze_hash.json
+[2026-09-22 22:39:08] 
+============== 🔄 CONTINUITY STABILITY CHECK (3 runs) ==============
+[2026-09-22 22:39:08] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_debug.json
+[2026-09-22 22:39:08]    ✅ continuity scan run 1/3 ok (roads: 141)
+[2026-09-22 22:39:08] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_debug.json
+[2026-09-22 22:39:08]    ✅ continuity scan run 2/3 ok (roads: 141)
+[2026-09-22 22:39:09] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_debug.json
+[2026-09-22 22:39:09]    ✅ continuity scan run 3/3 ok (roads: 141)
+[2026-09-22 22:39:09] ✅ Continuity stats stable across 3 runs → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\continuity_stability.json
+[2026-09-22 22:39:09] 
+============== 🏔️ STEP 5: Elevation Smoothing ==============
+[2026-09-22 22:39:09] [FREEZE-HASH] Verified: dab476efe557b46e7442c649e8be0c751b8234ba710958dcdcd66439f024996b
+[2026-09-22 22:39:09] [DEM] Expanded DEM not found at G:\carla-rq1-reverify-20260923\cities\ingolstadt\dem\dem_ing_expanded.tif, falling back to original DEM coverage path.
+[2026-09-22 22:39:09]    ✔ DEM already present: G:\carla-rq1-reverify-20260923\cities\ingolstadt\dem\dem_ing.tif
+[2026-09-22 22:39:09] 🏔️ DEM summary:
+[2026-09-22 22:39:09]    CRS:    GEOGCS["WGS 84",DATUM["World Geodetic System 1984",SPHEROID["WGS 84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]]
+[2026-09-22 22:39:09]    Bounds: {'left': 11.312083322222236, 'bottom': 48.67430556666666, 'right': 11.537361100000014, 'top': 48.836250011111105}
+[2026-09-22 22:39:11] [DEM] Header offset differs from GPS anchor by 5851.050m > 2000.0m; preserving original header offset (Option A).
+[2026-09-22 22:39:11] [DEM] CRS mismatch detected; applying coordinate transform for sampling.
+[2026-09-22 22:39:11] [DEM] Smoothing using Gaussian filter (sigma=1.0)...
+[2026-09-22 22:39:11] [DEM] local_raw_bbox={'minx': 839299.677485, 'miny': 5460310.552993, 'maxx': 841179.986055, 'maxy': 5461601.515137}
+[2026-09-22 22:39:11] [DEM] header_offset_original={'x': 0.0, 'y': 0.0, 'z': 0.0, 'hdg': 0.0}
+[2026-09-22 22:39:11] [DEM] effective_offset_used={'x': 0.0, 'y': 0.0, 'z': 0.0, 'hdg': 0.0}
+[2026-09-22 22:39:11] [DEM] projected_bbox_utm={'minx': 839299.677485, 'miny': 5460310.552993, 'maxx': 841179.986055, 'maxy': 5461601.515137}
+[2026-09-22 22:39:11] [DEM] projected_bbox_wgs84={'minx': 11.413777448402566, 'miny': 48.705046103713876, 'maxx': 11.441432114308975, 'maxy': 48.71894194915092}
+[2026-09-22 22:39:11] [DEM] dem_bounds_wgs84={'minx': 11.312083322222236, 'miny': 48.67430556666666, 'maxx': 11.537361100000014, 'maxy': 48.836250011111105}
+[2026-09-22 22:39:11] [DEM] projected_bbox_wgs84_overlaps_dem_bounds=True
+[2026-09-22 22:39:11] [DEM] Sampler active: G:\carla-rq1-reverify-20260923\cities\ingolstadt\dem\dem_ing.tif
+[2026-09-22 22:39:12] 
+[QA][05_elevation] dem_full_coverage ...
+[2026-09-22 22:39:12] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\05_elevation__dem_full_coverage.json
+[2026-09-22 22:39:12] ⚠️ Structure classification failed (continuing, no deck_linear override): [F3] OSM contains no bridge/tunnel/covered/embankment/cutting ways
+[2026-09-22 22:39:12] ✅ DEM elevation applied to map.
+[2026-09-22 22:39:13] 
+[QA][05_elevation] dem_coverage ...
+[2026-09-22 22:39:13] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\05_elevation__dem_coverage.json
+[2026-09-22 22:39:13] ✓ ElevationSmoother: processed 141 elevation entries.
+[2026-09-22 22:39:13] 
+[QA][05_elevation] elevation_variance ...
+[2026-09-22 22:39:13] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\05_elevation__elevation_variance.json
+[2026-09-22 22:39:13] [STEP 5] Elevation stddev threshold effective: 0.0 (source=settings.DEM_MIN_ELEVATION_STD, strict_dem=False, enforce_strict_default=False)
+[2026-09-22 22:39:13] 
+[QA][05_elevation] elevation_stddev ...
+[2026-09-22 22:39:13] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\05_elevation__elevation_stddev.json
+[2026-09-22 22:39:13] ✅ Elevation smoothed → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\04_elevation_audit_run_000.xodr
+[2026-09-22 22:39:13] 
+[QA][05_elevation] structure_elevation_plausibility ...
+[2026-09-22 22:39:14] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\05_elevation__structure_elevation_plausibility.json
+[2026-09-22 22:39:14] ⏭️ CARLA QA preview skipped (isolation mode).
+[2026-09-22 22:39:14] 
+🏔 Elevation Diagnostics: after elevation smoothing
+[2026-09-22 22:39:14]    ⚠ 141 suspicious elevation entries.
+[2026-09-22 22:39:14] 
+[QA][05_elevation] elevation_continuity ...
+[2026-09-22 22:39:14] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\05_elevation__elevation_continuity.json
+[2026-09-22 22:39:14] 
+============== 📐 STEP 5B: Geometry Validator ==============
+[2026-09-22 22:39:14] [STEP 5B] Curvature clamp applied: 0 geometries clamped to |k| <= 1.0
+[2026-09-22 22:39:14] ✅ Geometry validator complete → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\04_elevation_audit_run_000.xodr
+[2026-09-22 22:39:14] 
+============== 🛣️ STEP 7: Lane, Offset, Cross-section ==============
+[2026-09-22 22:39:15] [STEP 7] Lane-width OSM metadata: 0 indexed ways.
+[2026-09-22 22:39:15] [STEP 7] Structural OSM lane correspondence: PASS, eligible_roads=0
+[2026-09-22 22:39:15] [LaneGenerator] Total new lane assignments: 0
+[2026-09-22 22:39:15] [LaneGenerator] Structural lane features: turn=0, cycle=0, existing_provenanced=0
+[2026-09-22 22:39:15] [STEP 7] All roads already had driving lanes.
+[2026-09-22 22:39:15] ⏭️ LaneGNNRefiner disabled by settings.
+[2026-09-22 22:39:15] [STEP 7] Driving lane count after generation: 142
+[2026-09-22 22:39:15] Starting LaneRepair...
+[2026-09-22 22:39:15] LaneRepair complete.
+[2026-09-22 22:39:15] [STEP 7] Lane-width policy: updated=142 six_meter=142 -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\lane_width_policy_report.json
+[2026-09-22 22:39:15] 
+LaneOffsetSmoother: smoothing laneOffsets...
+[2026-09-22 22:39:15] ✓ LaneOffsetSmoother: clamped 0 entries.
+[2026-09-22 22:39:15] [STEP 7] Junction laneOffset QC: checked=95 fixed=20 remaining=0 → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\junction_laneoffset_qc.json
+[2026-09-22 22:39:15] 
+CrossSectionRepair: enforcing continuity...
+[2026-09-22 22:39:15] ✓ CrossSectionRepair: adjusted 0 lane width jumps.
+[2026-09-22 22:39:15] ✅ Lane & cross-section repaired → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\07_lanes_audit_run_000.xodr
+[2026-09-22 22:39:15] ⏭️ CARLA load skipped (QA): map not semantically complete
+[2026-09-22 22:39:15] 
+🚗 Lane Width Diagnostics: after_lane_crosssection_repair
+[2026-09-22 22:39:16]    ✔ All lane widths positive.
+[2026-09-22 22:39:17] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_06_lanes.png
+[2026-09-22 22:39:17] 🖼️ Generating lane-geometry preview…
+[2026-09-22 22:39:19] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_07_lanes_full.png
+[2026-09-22 22:39:19] Adding sidewalks...
+[2026-09-22 22:39:21] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_06_sidewalks.png
+[2026-09-22 22:39:21] Generating post-sidewalk preview...
+[2026-09-22 22:39:22] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\map_preview_07_sidewalks_final.png
+[2026-09-22 22:39:22] 🛣️ Lane width invariants: found 0, fixed 0 → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\lane_width_invariants_report.json
+[2026-09-22 22:39:25] 🛣 Lane overlay written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\lane_overlay.png
+[2026-09-22 22:39:25] 📊 Cross-section visualizer written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\cross_sections.png
+[2026-09-22 22:39:25] ✅ STEP 7 complete — lane semantics established (CARLA-drivable semantics now exist)
+[2026-09-22 22:39:25] 
+[QA][07_lanes] lane_width_continuity ...
+[2026-09-22 22:39:25] [QA][07_lanes] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\07_lanes__lane_width_continuity.json
+[2026-09-22 22:39:25] 
+[QA][07_lanes] lane_geometry_continuity ...
+[2026-09-22 22:39:25] [QA][07_lanes] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\qa_stage_reports\07_lanes__lane_geometry_continuity.json
+[2026-09-22 22:39:26] 
+============== 🔗 STEP 8: LaneLinks & Markings ==============
+[2026-09-22 22:39:26] ⏭️ LaneLinkBuilder.regenerate disabled (ENABLE_LANELINK_REGEN=0). Existing lane links preserved.
+[2026-09-22 22:39:26] [STEP 8] junction_lanelink_sanity.json -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\junction_lanelink_sanity.json
+[2026-09-22 22:39:26] ✅ Final map XML written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\08_final_audit_run_000.xodr
+[2026-09-22 22:39:26] 🧠 Semantic final saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\08_final_audit_run_000_semantic.xodr
+[2026-09-22 22:39:27] ✅ LaneSection successor repair: repairs=0 failures=0
+[2026-09-22 22:39:27] ✅ Ordinary road lane-link targets: 190 checked
+[2026-09-22 22:39:27] Semantic final refreshed -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\08_final_audit_run_000_semantic.xodr
+[2026-09-22 22:39:28] ✅ Driving lanes without explicit lane-level successor: 47 (allowed)
+[2026-09-22 22:39:28] Enforcing CARLA successor invariant (laneSection-level)...
+[2026-09-22 22:39:28] ❌ PIPELINE CRASHED: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 300 lane -1: missing <successor>
+Road 301 lane -1: missing <successor>
+Road 303 lane -1: missing <successor>
+Road 304 lane -1: missing <successor>
+Road 305 lane -1: missing <successor>
+Road 307 lane -1: missing <successor>
+Road 308 lane -1: missing <successor>
+Road 309 lane -1: missing <successor>
+Road 310 lane -1: missing <successor>
+Road 311 lane -1: missing <successor>
+Road 313 lane -1: missing <successor>
+Road 314 lane -1: missing <successor>
+Road 316 lane -1: missing <successor>
+Road 316 lane -2: missing <successor>
+Road 317 lane -1: missing <successor>
+Road 318 lane -1: missing <successor>
+Road 319 lane -1: missing <successor>
+Road 320 lane -1: missing <successor>
+Road 321 lane -1: missing <successor>
+Road 322 lane -1: missing <successor>
+
+Total broken lanes: 39
+
+Fix lane links BEFORE CARLA load.
+
+
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1981: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'G:\carla-rq1-reverify-20260923\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+  _warn_missing_setting_path(
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1987: RuntimeWarning: BASE_OUTPUT_DIR resolved to missing dir: 'G:\carla-rq1-reverify-20260923\ultimate_pipeline_out'. Set UP_BASE_OUTPUT_DIR to a valid dir.
+  _warn_missing_setting_path(
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1993: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+  _warn_missing_setting_path(
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1999: RuntimeWarning: HPC_DIR resolved to missing dir: 'G:\carla-rq1-reverify-20260923\hpc'. Set UP_HPC_DIR to a valid dir.
+  _warn_missing_setting_path(
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:2005: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'G:\carla-rq1-reverify-20260923\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.
+  _warn_missing_setting_path(
+2026-09-22 22:38:46,383 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:38:46,383 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:38:46,418 [INFO] GDAL signalled an error: err_no=1, msg='PROJ: proj_identify: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj\\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.'
+2026-09-22 22:38:46,526 [INFO] 🧹 [SAFE] Sanitizing tile_1_0.xodr
+2026-09-22 22:38:46,545 [INFO] Created missing <offset> with zeros.
+2026-09-22 22:38:46,547 [INFO] Lane width fixes: 0, geometry fixes: 0, laneSection s clamps: 0
+2026-09-22 22:38:46,548 [INFO] Links removed: 0, junction connections removed: 0
+2026-09-22 22:38:46,612 [INFO] ✅ [SAFE] Sanitized file saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_000\01_sanitized_audit_run_000.xodr
+2026-09-22 22:38:46,887 [INFO] SUMO validation passed.
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\pyproj\crs\crs.py:1295: UserWarning: You will likely lose important projection information when converting to a PROJ string from another format. See: https://proj.org/faq.html#what-is-the-best-format-for-describing-coordinate-reference-systems
+  proj = self._crs.to_proj4(version=version)
+2026-09-22 22:39:09,769 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:09,769 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:09,785 [INFO] GDAL signalled an error: err_no=1, msg='PROJ: proj_identify: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj\\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.'
+2026-09-22 22:39:09,981 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:09,981 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:11,592 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:11,593 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:11,676 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:11,676 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:13,380 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:13,381 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:13,418 [INFO] GDAL signalled an error: err_no=1, msg='PROJ: proj_identify: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj\\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.'
+[2026-09-22 22:39:28] Traceback (most recent call last):
+[2026-09-22 22:39:28]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 1646, in run
+    self._run_internal()
+[2026-09-22 22:39:28]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 2218, in _run_internal
+    final_out = self._step8_markings_and_integrity(lanes_out, final_out)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-09-22 22:39:28]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 3474, in _step8_markings_and_integrity
+    return _impl(self, lanes_out, final_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-09-22 22:39:28]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 864, in _step8_markings_and_integrity
+    raise e
+[2026-09-22 22:39:28]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 698, in _step8_markings_and_integrity
+    assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
+[2026-09-22 22:39:28]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\quality\check_lane_connectivity.py", line 390, in assert_all_lanes_have_successors
+    raise RuntimeError(
+[2026-09-22 22:39:28] RuntimeError: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 300 lane -1: missing <successor>
+Road 301 lane -1: missing <successor>
+Road 303 lane -1: missing <successor>
+Road 304 lane -1: missing <successor>
+Road 305 lane -1: missing <successor>
+Road 307 lane -1: missing <successor>
+Road 308 lane -1: missing <successor>
+Road 309 lane -1: missing <successor>
+Road 310 lane -1: missing <successor>
+Road 311 lane -1: missing <successor>
+Road 313 lane -1: missing <successor>
+Road 314 lane -1: missing <successor>
+Road 316 lane -1: missing <successor>
+Road 316 lane -2: missing <successor>
+Road 317 lane -1: missing <successor>
+Road 318 lane -1: missing <successor>
+Road 319 lane -1: missing <successor>
+Road 320 lane -1: missing <successor>
+Road 321 lane -1: missing <successor>
+Road 322 lane -1: missing <successor>
+
+Total broken lanes: 39
+
+Fix lane links BEFORE CARLA load.
+
+Traceback (most recent call last):
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\run_pipeline.py", line 21, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\run_pipeline.py", line 17, in main
+    return int(pipeline_main(argv))
+               ^^^^^^^^^^^^^^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 4354, in main
+    MainPipeline().run()
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 1646, in run
+    self._run_internal()
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 2218, in _run_internal
+    final_out = self._step8_markings_and_integrity(lanes_out, final_out)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 3474, in _step8_markings_and_integrity
+    return _impl(self, lanes_out, final_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 864, in _step8_markings_and_integrity
+    raise e
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 698, in _step8_markings_and_integrity
+    assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\quality\check_lane_connectivity.py", line 390, in assert_all_lanes_have_successors
+    raise RuntimeError(
+RuntimeError: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 300 lane -1: missing <successor>
+Road 301 lane -1: missing <successor>
+Road 303 lane -1: missing <successor>
+Road 304 lane -1: missing <successor>
+Road 305 lane -1: missing <successor>
+Road 307 lane -1: missing <successor>
+Road 308 lane -1: missing <successor>
+Road 309 lane -1: missing <successor>
+Road 310 lane -1: missing <successor>
+Road 311 lane -1: missing <successor>
+Road 313 lane -1: missing <successor>
+Road 314 lane -1: missing <successor>
+Road 316 lane -1: missing <successor>
+Road 316 lane -2: missing <successor>
+Road 317 lane -1: missing <successor>
+Road 318 lane -1: missing <successor>
+Road 319 lane -1: missing <successor>
+Road 320 lane -1: missing <successor>
+Road 321 lane -1: missing <successor>
+Road 322 lane -1: missing <successor>
+
+Total broken lanes: 39
+
+Fix lane links BEFORE CARLA load.
+
+
+[2026-09-22 22:39:29] Run 1 failed or output dir not detected.
+[2026-09-22 22:39:29] 
+--- Running pipeline (run 2/2) ---
+[2026-09-22 22:40:20] [2026-09-22 22:39:38] ⚠️ [PROJ-ENV] proj.db DATABASE.LAYOUT.VERSION.MINOR=4 at C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db is older than the required minimum (6). This is a silent-reprojection risk: CRS transforms may use a stale/incomplete database instead of raising. Remediation: reinstall pyproj so its bundled proj.db is refreshed (e.g. `pip install --force-reinstall --no-cache-dir pyproj` in this venv), or align GDAL's PROJ data with pyproj's via a consistent conda/pip environment (do not mix a system PROJ install with pyproj's bundled one).
+[2026-09-22 22:39:38] ⚠️ [PROJ-ENV] PROJ_LIB='C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj' does not match pyproj's own resolved data dir ('C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj'). This is the 'from another PROJ installation' risk: any PROJ-consuming component that honors this env var (GDAL, a raw libproj binding, etc.) may load a different, unvetted proj.db than pyproj itself uses. Remediation: unset PROJ_LIB, or point it at pyproj's own data dir.
+[2026-09-22 22:39:38] ✅ [STAGE-CONTRACT] Declared stage capability sequence (24 stages) validated clean.
+[2026-09-22 22:39:38] 🔥 Ultimate OSM→OpenDRIVE→CARLA pipeline (consolidated)
+[2026-09-22 22:39:38] ✅ [INPUTS-MANIFEST] verified G:\carla-rq1-reverify-20260923\campaigns\ingolstadt_cooked_perception_v1\source\INPUTS_MANIFEST.json: ['buildings', 'dem', 'roads_osm'] pinned (sha256+bytes match), [] pending
+[2026-09-22 22:39:38] 📥 Input XODR: G:/carla-rq1-reverify-20260923/reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr
+[2026-09-22 22:39:38] 📤 Output dir: G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001
+[2026-09-22 22:39:38] 📂 Verifying pipeline database...
+[2026-09-22 22:39:38] ✅ Database schema OK
+[2026-09-22 22:39:38] 📥 Input XODR: G:/carla-rq1-reverify-20260923/reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr
+[2026-09-22 22:39:38] 📤 Output dir: G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001
+[2026-09-22 22:39:38] 📝 [INFO] Settings snapshot written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\settings_snapshot.json
+[2026-09-22 22:39:38] 🔐 Settings hash (SHA-256): 5afce4edcd82b1fe638182b5dd9813217a8642a8bf238e4bcadfa30f2778a0d6
+[2026-09-22 22:39:38] 🔐 Settings schema version: 1.0
+[2026-09-22 22:39:38] [INFO] [PROBE] settings snapshot done → entering determinism/OSM stage
+[2026-09-22 22:39:38] [INFO] [PROBE] enforce_determinism() start
+[2026-09-22 22:39:38] ✅ [INFO] Deterministic mode enabled (seed=42)
+[2026-09-22 22:39:38] [INFO] [PROBE] enforce_determinism() done in 0.00s
+[2026-09-22 22:39:38] [INFO] [PROBE] ensure_osm_exists() start
+[2026-09-22 22:39:38] ✔ OSM XML already exists → G:\carla-rq1-reverify-20260923\reports\rq1_reverify_smoke_20260923\fixture.osm
+[2026-09-22 22:39:38] [INFO] [PROBE] ensure_osm_exists() done in 0.00s
+[2026-09-22 22:39:38] 📍 GPS bounds: lat 48.74935649548228–48.77444431571603, lon 11.422268084715878–11.47882091528412
+[2026-09-22 22:39:39] 🏔️ DEM summary (initial): GEOGCS["WGS 84",DATUM["World Geodetic System 1984",SPHEROID["WGS 84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]] {'left': 11.312083322222236, 'bottom': 48.67430556666666, 'right': 11.537361100000014, 'top': 48.836250011111105}
+[2026-09-22 22:39:39] [PREFLIGHT] CARLA explicitly disabled; CARLA stages will be skipped.
+[2026-09-22 22:39:39] [PREFLIGHT] carla_reachability.json -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\carla_reachability.json
+[2026-09-22 22:39:39] [PREFLIGHT] Skipping _connect_carla() due to unreachable CARLA
+[2026-09-22 22:39:39] 
+============== 🧼 STEP 1: Sanitize ==============
+[2026-09-22 22:39:39] ✅ Sanitized → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\01_sanitized_audit_run_001.xodr
+[2026-09-22 22:39:40] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_01_sanitize.png
+[2026-09-22 22:39:40] ⏭️ CARLA QA preview skipped (pre-lane stage).
+[2026-09-22 22:39:41] [GPS_QA_CROP] map_crs_source=xodr_geoReference map_crs_proj4=+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs
+[2026-09-22 22:39:41] [GPS_QA_CROP] header_offset_policy=gps_anchor_override effective_offset_used={'x': -160155.1460747542, 'y': -57071.32570819929, 'z': 0.0, 'hdg': 0.0}
+[2026-09-22 22:39:41] [GPS_QA_CROP] crop_center_wgs84={'lat': 48.76190040559916, 'lon': 11.4505445} crop_center_map_crs={'x': 680084.6856952258, 'y': 5403884.708357111} radius_m=800.0
+[2026-09-22 22:39:41] [GPS_QA_CROP] map_bbox_in_map_crs={'minx': 679144.5314103658, 'miny': 5403239.227285291, 'maxx': 681024.8399800858, 'maxy': 5404530.189428931} crop_bbox_in_map_crs={'minx': 679284.6856952258, 'miny': 5403084.708357111, 'maxx': 680884.6856952258, 'maxy': 5404684.708357111} intersection_ratio=0.806851
+[2026-09-22 22:39:41] [GPS_QA_CROP] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\01_sanitized_GPS_QA_CROP.xodr (roads kept: 156)
+[2026-09-22 22:39:41] [GPS_QA_CROP] QA report -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\01_sanitized_GPS_QA_CROP.qa.json
+[2026-09-22 22:39:41] 📍 GPS QA crop ready → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\01_sanitized_GPS_QA_CROP.xodr (lanes: 398)
+[2026-09-22 22:39:41] 
+============== 🕸️ STEP 2: Topology Lint & SUMO Repair ==============
+[2026-09-22 22:39:41] [OK] Preserved existing geoReference (reason=already_valid)
+[2026-09-22 22:39:41] 📝 geoReference provenance → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\georeference_provenance.json
+[2026-09-22 22:39:41] 📐 CRS comparability report → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\crs_comparability.json
+[2026-09-22 22:39:41] 🔧 Removed 104 invalid junction refs from 52 roads (missing IDs: ['1166', '1168', '1169', '1170', '133']...)
+[2026-09-22 22:39:41] [ValidationReport] saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\logs\topology_lint.json
+[2026-09-22 22:39:41] 📊 Topology lint report saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\logs\topology_lint.json
+[2026-09-22 22:39:41] ? Running SUMO netconvert for topology repair...
+[2026-09-22 22:39:41] ? SUMORepair: repaired XODR -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\02_sumo_fixed_audit_run_001.xodr
+[2026-09-22 22:39:42] ✅ SUMO repaired map → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\02_sumo_fixed_audit_run_001.xodr
+[2026-09-22 22:39:42] ⏭️ CARLA QA preview skipped (isolation mode).
+[2026-09-22 22:39:42] 📝 SUMO repair metadata → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\sumo_repair.json
+[2026-09-22 22:39:42] 🧪 Post-SUMO topology validation…
+[2026-09-22 22:39:42] 
+============== 🏗️ STEP 2C: Structural Scan ==============
+[2026-09-22 22:39:43] 
+🧠 Structure Scanner v2 Report:
+[2026-09-22 22:39:43]   ✓ multi_successor:          0 roads flagged
+[2026-09-22 22:39:43]   ✓ multi_predecessor:        0 roads flagged
+[2026-09-22 22:39:43]   ✓ self_links:               0 roads flagged
+[2026-09-22 22:39:43]   ✓ broken_junction_refs:     0 issues
+[2026-09-22 22:39:43]   ✓ zero_geometry_roads:      0 roads
+[2026-09-22 22:39:43]   🌀 Curvature:
+[2026-09-22 22:39:43]      roads analyzed:          141
+[2026-09-22 22:39:43]      max curvature:           5.0199
+[2026-09-22 22:39:43]      p99 curvature:           1.2630
+[2026-09-22 22:39:43]      anomaly threshold:       1.2630283760818517
+[2026-09-22 22:39:43]      anomalous roads:         3
+[2026-09-22 22:39:43]   🚧 Lane sections:
+[2026-09-22 22:39:43]      non-monotonic roads:     0
+[2026-09-22 22:39:43]      width jumps:             0 (threshold=3.0 m)
+[2026-09-22 22:39:43]   ⚓ Junctions:
+[2026-09-22 22:39:43]      total junctions:         14
+[2026-09-22 22:39:43]      roads with junctions:    133
+[2026-09-22 22:39:43]      avg junctions/road:      1.429
+[2026-09-22 22:39:43]      max junctions for a road:4
+[2026-09-22 22:39:43]   🏔 Elevation:
+[2026-09-22 22:39:43]      slope segments:          2809
+[2026-09-22 22:39:43]      mean |dz/ds|:            0.018
+[2026-09-22 22:39:43]      max  |dz/ds|:            0.456
+[2026-09-22 22:39:43]   🕸 Graph connectivity:
+[2026-09-22 22:39:43]      components:              5
+[2026-09-22 22:39:43]      largest component size:  133
+[2026-09-22 22:39:43]      islands (<20 roads): 4
+[2026-09-22 22:39:43]   (All checks are diagnostic-only; no roads were harmed.)
+[2026-09-22 22:39:43] ⏭️ Aggressive prune disabled.
+[2026-09-22 22:39:44] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_02_structure_clean.png
+[2026-09-22 22:39:44] 
+============== 🚨 STEP 2D: Semantic Risk Scan ==============
+[2026-09-22 22:39:44] 🧠 Semantic risk analysis complete:
+[2026-09-22 22:39:44]    Total roads analyzed: 141
+[2026-09-22 22:39:44]    Average risk score:   5.50
+[2026-09-22 22:39:44]    High-risk roads:      11 (7.8%)
+[2026-09-22 22:39:44]    ⚠️  Example high-risk IDs: 300, 302, 309, 314, 316, 320, 330, 332, 338, 340
+[2026-09-22 22:39:44] ⚠️ High-risk roads saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\semantic_high_risk_roads.json
+[2026-09-22 22:39:44] ⚠️ High-risk roads detected: 11
+[2026-09-22 22:39:44] 
+============== 🔧 STEP 3: Topology Repair ==============
+[2026-09-22 22:39:44] ✓ TopologyRepair: basic link/junction cleanup applied.
+[2026-09-22 22:39:44] ✅ TopologyRepair → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\03_topology_audit_run_001.xodr
+[2026-09-22 22:39:44] ⏭️ Skipped CARLA test: topology_repair
+[2026-09-22 22:39:45] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_03_topology_repair.png
+[2026-09-22 22:39:45] 
+[QA][03_topology_repair] junction_integrity ...
+[2026-09-22 22:39:45] [QA][03_topology_repair] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\03_topology_repair__junction_integrity.json
+[2026-09-22 22:39:45] 
+============== 🛡️ XODR Validator Convergence (G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\03_topology_audit_run_001.xodr) ==============
+[2026-09-22 22:39:45] ✅ XODR Validator convergence: PASS
+[2026-09-22 22:39:46] 
+============== 🏗️ STEP 4: Enrichment (Roundabouts, TL, Buildings, Realism) ==============
+[2026-09-22 22:39:46] ⏭️ Roundabout reconstruction disabled.
+[2026-09-22 22:39:46] 🧪 Tagging roundabouts for visualization…
+[2026-09-22 22:39:46]    → Roundabouts tagged for preview.
+[2026-09-22 22:39:46] 🚦 Inferring traffic lights…
+[2026-09-22 22:39:46]    → Inserted 91 traffic lights.
+[2026-09-22 22:39:46]    → Junction signal coverage: 11/11 eligible junctions (100.0%), 100% topology-heuristic, no real-world source.
+[2026-09-22 22:39:46] 🧪 Validating traffic light → lane references…
+[2026-09-22 22:39:46] 🏙️ buildings.geojson already present → G:\carla-rq1-reverify-20260923\cities\ingolstadt\osm\buildings.geojson
+[2026-09-22 22:39:46] 🏙️ Inserting buildings with automatic fallback…
+[2026-09-22 22:39:46] [BUILDINGS] Loaded 5704 building footprints from Overpass JSON
+[2026-09-22 22:39:46] 🏙️ [BUILDINGS] Building JSON loader returned 5704 footprints
+[2026-09-22 22:39:47] 🏙️ [BUILDINGS] Inserted 5704 buildings from GeoJSON
+[2026-09-22 22:39:47] ✨ Adding realism objects…
+[2026-09-22 22:39:48]    → Inserted 376 realism objects.
+[2026-09-22 22:39:48] ⏭️ Spatial OSM metadata skipped (no usable source way geometry)
+[2026-09-22 22:39:48]    → Access metadata: 0 road(s), 0 record(s)
+[2026-09-22 22:39:48] ⏭️ Crosswalk enrichment skipped (no OSM file or no footway=crossing ways found)
+[2026-09-22 22:39:48] [INFO] XODR statistics:
+[2026-09-22 22:39:48] {
+  "roads": {
+    "count": 141,
+    "total_length_m": 12678.51320361,
+    "avg_length_m": 89.91853335893617,
+    "min_length_m": 6.24427237,
+    "max_length_m": 1228.7967835,
+    "length_histogram": {
+      "0-10": 3,
+      "10-30": 88,
+      "30-60": 12,
+      "60-120": 18,
+      "120-250": 8,
+      "250-500": 6,
+      ">500": 6
+    }
+  },
+  "lanes": {
+    "total_lanes": 142,
+    "avg_lanes_per_road": 1.0070921985815602,
+    "width_min": 6.0,
+    "width_avg": 6.0,
+    "width_max": 6.0
+  },
+  "geometry": {
+    "geometry_counts": {
+      "line": 269,
+      "spiral": 0,
+      "arc": 0,
+      "poly3": 0,
+      "paramPoly3": 2681
+    },
+    "curvature_min": 0.0,
+    "curvature_avg": 0.0,
+    "curvature_max": 0.0
+  },
+  "junctions": {
+    "count": 14
+  },
+  "traffic": {
+    "traffic_lights": 0,
+    "traffic_lights_objects": 0,
+    "traffic_lights_signals": 0,
+    "signals_total": 91,
+    "speed_limit_distribution": {
+      "13": 74,
+      "10": 5,
+      "5": 21,
+      "7": 16,
+      "9": 16,
+      "8": 3,
+      "11": 4,
+      "12": 3
+    }
+  },
+  "elevation": {
+    "min_z": 366.17280899445853,
+    "max_z": 373.64110385062804,
+    "z_range": 7.468294856169507
+  },
+  "success": true,
+  "semantic_completeness": {
+    "geometry": true,
+    "lanes": false,
+    "reason": "Lane generation occurs in STEP 7"
+  }
+}
+[2026-09-22 22:39:48] ⏭️ OSM2World deferred until final structural freeze.
+[2026-09-22 22:39:48] ✅ STEP 4 complete — geometry-only semantics (lanes are generated in STEP 7)
+[2026-09-22 22:39:48] 
+============== 📐 STEP 6: PlanView & Continuity ==============
+[2026-09-22 22:39:48] ⏭️ Heading-only smoothing disabled (ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING=0).
+[2026-09-22 22:39:48] ⏭️ Small geometry merge disabled (ENABLE_UNSAFE_SMALL_GEOMETRY_MERGE=0).
+[2026-09-22 22:39:48] ⏭️ Short segment merge disabled (ENABLE_UNSAFE_SHORT_SEGMENT_MERGE=0).
+[2026-09-22 22:39:48] ⏭️ Curvature-only clamp disabled (ENABLE_UNSAFE_CURVATURE_ONLY_CLAMP=0).
+[2026-09-22 22:39:48] ⏭️ Geometry start recompute disabled (safe default).
+[2026-09-22 22:39:49] ✅ PlanView smoothed → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\05_planview_audit_run_001.xodr
+[2026-09-22 22:39:50] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_05_planview_merge.png
+[2026-09-22 22:39:51] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_debug.json
+[2026-09-22 22:39:51] ⚙ Roads selected for repair: 8
+[2026-09-22 22:39:51] 🔧 Applying moderate continuity smoothing…
+[2026-09-22 22:39:51] ✓ Continuity output saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\06_continuity_audit_run_001.xodr
+[2026-09-22 22:39:51] 
+[QA][06_continuity] geometric_continuity ...
+[2026-09-22 22:39:51] [QA][06_continuity] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\06_continuity__geometric_continuity.json
+[2026-09-22 22:39:51] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_debug.json
+[2026-09-22 22:39:52] ✅ continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_debug.json
+[2026-09-22 22:39:52] ⏭️ Micro-Pruning disabled (no unsafe mutations).
+[2026-09-22 22:39:52] 
+[QA][06_continuity] planview_internal_seams ...
+[2026-09-22 22:39:52] [QA][06_continuity] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\06_continuity__planview_internal_seams.json
+[2026-09-22 22:39:52] 
+🕸 MeshChecker: coarse geometry sanity...
+[2026-09-22 22:39:52]    Span X: 1880.3 m, Span Y: 1291.0 m
+[2026-09-22 22:39:52]    ✔ Geometry span looks reasonable.
+[2026-09-22 22:39:54] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_05_continuity.png
+[2026-09-22 22:39:54] 🔥 Heatmap written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_heatmap.png
+[2026-09-22 22:39:54] 🖼️ Generating post-continuity previews…
+[2026-09-22 22:39:55] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_06_post_continuity_planview.png
+[2026-09-22 22:39:58] 🎞 Animated diff GIF written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\planview_continuity_diff.gif
+[2026-09-22 22:39:58] [DEBUG] Lanes after STEP 6: 283
+[2026-09-22 22:39:58] [STEP 6] Junction connector rebuild disabled.
+[2026-09-22 22:39:59] [STEP 6] Junction connector snap: examined=95 snapped=20 skipped_end_contact_point=0 -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\junction_connector_snap_report.json
+[2026-09-22 22:40:00] 🧊 Horizontal geometry frozen before elevation → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\06_geometry_frozen_audit_run_001.xodr
+[2026-09-22 22:40:00] 🔒 Freeze hash: 7c42d8049a8ea38a532af6e398931c875c5eb4dc897be706b893264a934195e2
+[2026-09-22 22:40:00] [FREEZE] geometry_freeze_hash.json -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\geometry_freeze_hash.json
+[2026-09-22 22:40:00] 
+============== 🔄 CONTINUITY STABILITY CHECK (3 runs) ==============
+[2026-09-22 22:40:00] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_debug.json
+[2026-09-22 22:40:00]    ✅ continuity scan run 1/3 ok (roads: 141)
+[2026-09-22 22:40:00] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_debug.json
+[2026-09-22 22:40:00]    ✅ continuity scan run 2/3 ok (roads: 141)
+[2026-09-22 22:40:01] 📄 continuity_debug.json written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_debug.json
+[2026-09-22 22:40:01]    ✅ continuity scan run 3/3 ok (roads: 141)
+[2026-09-22 22:40:01] ✅ Continuity stats stable across 3 runs → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\continuity_stability.json
+[2026-09-22 22:40:01] 
+============== 🏔️ STEP 5: Elevation Smoothing ==============
+[2026-09-22 22:40:01] [FREEZE-HASH] Verified: 7c42d8049a8ea38a532af6e398931c875c5eb4dc897be706b893264a934195e2
+[2026-09-22 22:40:01] [DEM] Expanded DEM not found at G:\carla-rq1-reverify-20260923\cities\ingolstadt\dem\dem_ing_expanded.tif, falling back to original DEM coverage path.
+[2026-09-22 22:40:01]    ✔ DEM already present: G:\carla-rq1-reverify-20260923\cities\ingolstadt\dem\dem_ing.tif
+[2026-09-22 22:40:01] 🏔️ DEM summary:
+[2026-09-22 22:40:01]    CRS:    GEOGCS["WGS 84",DATUM["World Geodetic System 1984",SPHEROID["WGS 84",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]]
+[2026-09-22 22:40:01]    Bounds: {'left': 11.312083322222236, 'bottom': 48.67430556666666, 'right': 11.537361100000014, 'top': 48.836250011111105}
+[2026-09-22 22:40:03] [DEM] Header offset differs from GPS anchor by 5851.050m > 2000.0m; preserving original header offset (Option A).
+[2026-09-22 22:40:03] [DEM] CRS mismatch detected; applying coordinate transform for sampling.
+[2026-09-22 22:40:03] [DEM] Smoothing using Gaussian filter (sigma=1.0)...
+[2026-09-22 22:40:03] [DEM] local_raw_bbox={'minx': 839299.677485, 'miny': 5460310.552993, 'maxx': 841179.986055, 'maxy': 5461601.515137}
+[2026-09-22 22:40:03] [DEM] header_offset_original={'x': 0.0, 'y': 0.0, 'z': 0.0, 'hdg': 0.0}
+[2026-09-22 22:40:03] [DEM] effective_offset_used={'x': 0.0, 'y': 0.0, 'z': 0.0, 'hdg': 0.0}
+[2026-09-22 22:40:03] [DEM] projected_bbox_utm={'minx': 839299.677485, 'miny': 5460310.552993, 'maxx': 841179.986055, 'maxy': 5461601.515137}
+[2026-09-22 22:40:03] [DEM] projected_bbox_wgs84={'minx': 11.413777448402566, 'miny': 48.705046103713876, 'maxx': 11.441432114308975, 'maxy': 48.71894194915092}
+[2026-09-22 22:40:03] [DEM] dem_bounds_wgs84={'minx': 11.312083322222236, 'miny': 48.67430556666666, 'maxx': 11.537361100000014, 'maxy': 48.836250011111105}
+[2026-09-22 22:40:03] [DEM] projected_bbox_wgs84_overlaps_dem_bounds=True
+[2026-09-22 22:40:03] [DEM] Sampler active: G:\carla-rq1-reverify-20260923\cities\ingolstadt\dem\dem_ing.tif
+[2026-09-22 22:40:04] 
+[QA][05_elevation] dem_full_coverage ...
+[2026-09-22 22:40:04] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\05_elevation__dem_full_coverage.json
+[2026-09-22 22:40:04] ⚠️ Structure classification failed (continuing, no deck_linear override): [F3] OSM contains no bridge/tunnel/covered/embankment/cutting ways
+[2026-09-22 22:40:04] ✅ DEM elevation applied to map.
+[2026-09-22 22:40:05] 
+[QA][05_elevation] dem_coverage ...
+[2026-09-22 22:40:05] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\05_elevation__dem_coverage.json
+[2026-09-22 22:40:05] ✓ ElevationSmoother: processed 141 elevation entries.
+[2026-09-22 22:40:05] 
+[QA][05_elevation] elevation_variance ...
+[2026-09-22 22:40:05] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\05_elevation__elevation_variance.json
+[2026-09-22 22:40:05] [STEP 5] Elevation stddev threshold effective: 0.0 (source=settings.DEM_MIN_ELEVATION_STD, strict_dem=False, enforce_strict_default=False)
+[2026-09-22 22:40:05] 
+[QA][05_elevation] elevation_stddev ...
+[2026-09-22 22:40:05] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\05_elevation__elevation_stddev.json
+[2026-09-22 22:40:05] ✅ Elevation smoothed → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\04_elevation_audit_run_001.xodr
+[2026-09-22 22:40:05] 
+[QA][05_elevation] structure_elevation_plausibility ...
+[2026-09-22 22:40:06] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\05_elevation__structure_elevation_plausibility.json
+[2026-09-22 22:40:06] ⏭️ CARLA QA preview skipped (isolation mode).
+[2026-09-22 22:40:06] 
+🏔 Elevation Diagnostics: after elevation smoothing
+[2026-09-22 22:40:06]    ⚠ 141 suspicious elevation entries.
+[2026-09-22 22:40:06] 
+[QA][05_elevation] elevation_continuity ...
+[2026-09-22 22:40:06] [QA][05_elevation] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\05_elevation__elevation_continuity.json
+[2026-09-22 22:40:06] 
+============== 📐 STEP 5B: Geometry Validator ==============
+[2026-09-22 22:40:06] [STEP 5B] Curvature clamp applied: 0 geometries clamped to |k| <= 1.0
+[2026-09-22 22:40:06] ✅ Geometry validator complete → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\04_elevation_audit_run_001.xodr
+[2026-09-22 22:40:06] 
+============== 🛣️ STEP 7: Lane, Offset, Cross-section ==============
+[2026-09-22 22:40:07] [STEP 7] Lane-width OSM metadata: 0 indexed ways.
+[2026-09-22 22:40:07] [STEP 7] Structural OSM lane correspondence: PASS, eligible_roads=0
+[2026-09-22 22:40:07] [LaneGenerator] Total new lane assignments: 0
+[2026-09-22 22:40:07] [LaneGenerator] Structural lane features: turn=0, cycle=0, existing_provenanced=0
+[2026-09-22 22:40:07] [STEP 7] All roads already had driving lanes.
+[2026-09-22 22:40:07] ⏭️ LaneGNNRefiner disabled by settings.
+[2026-09-22 22:40:07] [STEP 7] Driving lane count after generation: 142
+[2026-09-22 22:40:07] Starting LaneRepair...
+[2026-09-22 22:40:07] LaneRepair complete.
+[2026-09-22 22:40:07] [STEP 7] Lane-width policy: updated=142 six_meter=142 -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\lane_width_policy_report.json
+[2026-09-22 22:40:07] 
+LaneOffsetSmoother: smoothing laneOffsets...
+[2026-09-22 22:40:07] ✓ LaneOffsetSmoother: clamped 0 entries.
+[2026-09-22 22:40:07] [STEP 7] Junction laneOffset QC: checked=95 fixed=20 remaining=0 → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\junction_laneoffset_qc.json
+[2026-09-22 22:40:07] 
+CrossSectionRepair: enforcing continuity...
+[2026-09-22 22:40:07] ✓ CrossSectionRepair: adjusted 0 lane width jumps.
+[2026-09-22 22:40:07] ✅ Lane & cross-section repaired → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\07_lanes_audit_run_001.xodr
+[2026-09-22 22:40:07] ⏭️ CARLA load skipped (QA): map not semantically complete
+[2026-09-22 22:40:07] 
+🚗 Lane Width Diagnostics: after_lane_crosssection_repair
+[2026-09-22 22:40:07]    ✔ All lane widths positive.
+[2026-09-22 22:40:09] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_06_lanes.png
+[2026-09-22 22:40:09] 🖼️ Generating lane-geometry preview…
+[2026-09-22 22:40:10] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_07_lanes_full.png
+[2026-09-22 22:40:10] Adding sidewalks...
+[2026-09-22 22:40:12] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_06_sidewalks.png
+[2026-09-22 22:40:12] Generating post-sidewalk preview...
+[2026-09-22 22:40:14] 🖼 Saved map preview (enhanced) → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\map_preview_07_sidewalks_final.png
+[2026-09-22 22:40:14] 🛣️ Lane width invariants: found 0, fixed 0 → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\lane_width_invariants_report.json
+[2026-09-22 22:40:16] 🛣 Lane overlay written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\lane_overlay.png
+[2026-09-22 22:40:16] 📊 Cross-section visualizer written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\cross_sections.png
+[2026-09-22 22:40:16] ✅ STEP 7 complete — lane semantics established (CARLA-drivable semantics now exist)
+[2026-09-22 22:40:17] 
+[QA][07_lanes] lane_width_continuity ...
+[2026-09-22 22:40:17] [QA][07_lanes] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\07_lanes__lane_width_continuity.json
+[2026-09-22 22:40:17] 
+[QA][07_lanes] lane_geometry_continuity ...
+[2026-09-22 22:40:17] [QA][07_lanes] wrote G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\qa_stage_reports\07_lanes__lane_geometry_continuity.json
+[2026-09-22 22:40:17] 
+============== 🔗 STEP 8: LaneLinks & Markings ==============
+[2026-09-22 22:40:17] ⏭️ LaneLinkBuilder.regenerate disabled (ENABLE_LANELINK_REGEN=0). Existing lane links preserved.
+[2026-09-22 22:40:17] [STEP 8] junction_lanelink_sanity.json -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\junction_lanelink_sanity.json
+[2026-09-22 22:40:18] ✅ Final map XML written → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\08_final_audit_run_001.xodr
+[2026-09-22 22:40:18] 🧠 Semantic final saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\08_final_audit_run_001_semantic.xodr
+[2026-09-22 22:40:18] ✅ LaneSection successor repair: repairs=0 failures=0
+[2026-09-22 22:40:18] ✅ Ordinary road lane-link targets: 190 checked
+[2026-09-22 22:40:18] Semantic final refreshed -> G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\08_final_audit_run_001_semantic.xodr
+[2026-09-22 22:40:19] ✅ Driving lanes without explicit lane-level successor: 47 (allowed)
+[2026-09-22 22:40:19] Enforcing CARLA successor invariant (laneSection-level)...
+[2026-09-22 22:40:19] ❌ PIPELINE CRASHED: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 300 lane -1: missing <successor>
+Road 301 lane -1: missing <successor>
+Road 303 lane -1: missing <successor>
+Road 304 lane -1: missing <successor>
+Road 305 lane -1: missing <successor>
+Road 307 lane -1: missing <successor>
+Road 308 lane -1: missing <successor>
+Road 309 lane -1: missing <successor>
+Road 310 lane -1: missing <successor>
+Road 311 lane -1: missing <successor>
+Road 313 lane -1: missing <successor>
+Road 314 lane -1: missing <successor>
+Road 316 lane -1: missing <successor>
+Road 316 lane -2: missing <successor>
+Road 317 lane -1: missing <successor>
+Road 318 lane -1: missing <successor>
+Road 319 lane -1: missing <successor>
+Road 320 lane -1: missing <successor>
+Road 321 lane -1: missing <successor>
+Road 322 lane -1: missing <successor>
+
+Total broken lanes: 39
+
+Fix lane links BEFORE CARLA load.
+
+
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1981: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'G:\carla-rq1-reverify-20260923\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+  _warn_missing_setting_path(
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1993: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+  _warn_missing_setting_path(
+G:\carla-rq1-reverify-20260923\ultimate_pipeline\config\settings.py:1999: RuntimeWarning: HPC_DIR resolved to missing dir: 'G:\carla-rq1-reverify-20260923\hpc'. Set UP_HPC_DIR to a valid dir.
+  _warn_missing_setting_path(
+2026-09-22 22:39:39,040 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:39,040 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:39:39,087 [INFO] GDAL signalled an error: err_no=1, msg='PROJ: proj_identify: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj\\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.'
+2026-09-22 22:39:39,162 [INFO] 🧹 [SAFE] Sanitizing tile_1_0.xodr
+2026-09-22 22:39:39,189 [INFO] Created missing <offset> with zeros.
+2026-09-22 22:39:39,194 [INFO] Lane width fixes: 0, geometry fixes: 0, laneSection s clamps: 0
+2026-09-22 22:39:39,195 [INFO] Links removed: 0, junction connections removed: 0
+2026-09-22 22:39:39,266 [INFO] ✅ [SAFE] Sanitized file saved → G:\carla-rq1-reverify-20260923\ultimate_pipeline_out\audit_run_001\01_sanitized_audit_run_001.xodr
+2026-09-22 22:39:39,506 [INFO] SUMO validation passed.
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\pyproj\crs\crs.py:1295: UserWarning: You will likely lose important projection information when converting to a PROJ string from another format. See: https://proj.org/faq.html#what-is-the-best-format-for-describing-coordinate-reference-systems
+  proj = self._crs.to_proj4(version=version)
+2026-09-22 22:40:01,917 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:01,917 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:01,940 [INFO] GDAL signalled an error: err_no=1, msg='PROJ: proj_identify: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj\\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.'
+2026-09-22 22:40:02,139 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:02,139 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:03,754 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:03,754 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:03,833 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:03,833 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:05,413 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_database: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:05,413 [WARNING] CPLE_AppDefined in PROJ: proj_create_from_name: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\.venv\Lib\site-packages\pyproj\proj_dir\share\proj\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.
+2026-09-22 22:40:05,446 [INFO] GDAL signalled an error: err_no=1, msg='PROJ: proj_identify: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\.venv\\Lib\\site-packages\\pyproj\\proj_dir\\share\\proj\\proj.db contains DATABASE.LAYOUT.VERSION.MINOR = 4 whereas a number >= 6 is expected. It comes from another PROJ installation.'
+[2026-09-22 22:40:19] Traceback (most recent call last):
+[2026-09-22 22:40:19]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 1646, in run
+    self._run_internal()
+[2026-09-22 22:40:19]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 2218, in _run_internal
+    final_out = self._step8_markings_and_integrity(lanes_out, final_out)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-09-22 22:40:19]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 3474, in _step8_markings_and_integrity
+    return _impl(self, lanes_out, final_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-09-22 22:40:19]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 864, in _step8_markings_and_integrity
+    raise e
+[2026-09-22 22:40:19]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 698, in _step8_markings_and_integrity
+    assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
+[2026-09-22 22:40:19]   File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\quality\check_lane_connectivity.py", line 390, in assert_all_lanes_have_successors
+    raise RuntimeError(
+[2026-09-22 22:40:19] RuntimeError: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 300 lane -1: missing <successor>
+Road 301 lane -1: missing <successor>
+Road 303 lane -1: missing <successor>
+Road 304 lane -1: missing <successor>
+Road 305 lane -1: missing <successor>
+Road 307 lane -1: missing <successor>
+Road 308 lane -1: missing <successor>
+Road 309 lane -1: missing <successor>
+Road 310 lane -1: missing <successor>
+Road 311 lane -1: missing <successor>
+Road 313 lane -1: missing <successor>
+Road 314 lane -1: missing <successor>
+Road 316 lane -1: missing <successor>
+Road 316 lane -2: missing <successor>
+Road 317 lane -1: missing <successor>
+Road 318 lane -1: missing <successor>
+Road 319 lane -1: missing <successor>
+Road 320 lane -1: missing <successor>
+Road 321 lane -1: missing <successor>
+Road 322 lane -1: missing <successor>
+
+Total broken lanes: 39
+
+Fix lane links BEFORE CARLA load.
+
+Traceback (most recent call last):
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\run_pipeline.py", line 21, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\run_pipeline.py", line 17, in main
+    return int(pipeline_main(argv))
+               ^^^^^^^^^^^^^^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 4354, in main
+    MainPipeline().run()
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 1646, in run
+    self._run_internal()
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 2218, in _run_internal
+    final_out = self._step8_markings_and_integrity(lanes_out, final_out)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\main_pipeline.py", line 3474, in _step8_markings_and_integrity
+    return _impl(self, lanes_out, final_out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 864, in _step8_markings_and_integrity
+    raise e
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\pipeline_stages\stage_08_integrity.py", line 698, in _step8_markings_and_integrity
+    assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
+  File "G:\carla-rq1-reverify-20260923\ultimate_pipeline\quality\check_lane_connectivity.py", line 390, in assert_all_lanes_have_successors
+    raise RuntimeError(
+RuntimeError: 
+❌ CARLA-FATAL: lane connectivity invariant violated
+
+CARLA requires every driving lane to have a successor.
+The following lanes are invalid:
+
+Road 300 lane -1: missing <successor>
+Road 301 lane -1: missing <successor>
+Road 303 lane -1: missing <successor>
+Road 304 lane -1: missing <successor>
+Road 305 lane -1: missing <successor>
+Road 307 lane -1: missing <successor>
+Road 308 lane -1: missing <successor>
+Road 309 lane -1: missing <successor>
+Road 310 lane -1: missing <successor>
+Road 311 lane -1: missing <successor>
+Road 313 lane -1: missing <successor>
+Road 314 lane -1: missing <successor>
+Road 316 lane -1: missing <successor>
+Road 316 lane -2: missing <successor>
+Road 317 lane -1: missing <successor>
+Road 318 lane -1: missing <successor>
+Road 319 lane -1: missing <successor>
+Road 320 lane -1: missing <successor>
+Road 321 lane -1: missing <successor>
+Road 322 lane -1: missing <successor>
+
+Total broken lanes: 39
+
+Fix lane links BEFORE CARLA load.
+
+
+[2026-09-22 22:40:20] Run 2 failed or output dir not detected.
+[2026-09-22 22:40:20] 
+Only 0 successful runs.
+[2026-09-22 22:40:20] No runs available to export determinism_thesis_table.csv

@@ -1,7 +1,20 @@
 ﻿import argparse
+import os
 import traceback
+from pathlib import Path
 
 import carla
+
+#: NEW-259: the phase receipt path. Overridable so a caller can direct it into a
+#: crash bundle rather than the process CWD.
+_RECEIPT_ENV = "UP_DIAGNOSTIC_PROBE_RECEIPT"
+
+
+def _phase_receipt_path():
+    raw = os.environ.get(_RECEIPT_ENV, "").strip()
+    if raw:
+        return Path(raw)
+    return Path.cwd() / "diagnostic_probe_phases.json"
 
 
 def run_probe(
@@ -50,6 +63,44 @@ def run_probe(
     settings = world.get_settings()
     original_settings = world.get_settings()
 
+    # NEW-259: the phase receipt is written BEFORE any teardown. If cleanup is what
+    # crashes the engine -- which it can be, via ASensor::EndPlay -- the receipt on
+    # disk still says which phase actually succeeded, so the diagnosis is
+    # unambiguous instead of "everything failed".
+    phase_receipt: dict = {
+        "schema": "diagnostic_probe_phases_v1",
+        "map_name": map_name,
+        "spawn_count": spawn_count,
+        "phases": {
+            "world": "PASS",
+            "ego": "PASS" if ego else "FAIL",
+            "camera": "PENDING",
+            "ticks": "PENDING",
+            "frames": "PENDING",
+        },
+        "frames_captured": 0,
+        "tick_count": 0,
+        "teardown": "NOT_STARTED",
+        "teardown_errors": [],
+    }
+    receipt_path = _phase_receipt_path()
+
+    def _persist() -> None:
+        if receipt_path is None:
+            return
+        try:
+            import json
+
+            receipt_path.parent.mkdir(parents=True, exist_ok=True)
+            # Atomic replace so a crash mid-write cannot leave a truncated receipt.
+            tmp = receipt_path.with_suffix(receipt_path.suffix + ".tmp")
+            tmp.write_text(json.dumps(phase_receipt, indent=2), encoding="utf-8")
+            tmp.replace(receipt_path)
+        except Exception:
+            pass
+
+    _persist()
+
     try:
         # Phase 3: attach RGB camera
         cam_bp = world.get_blueprint_library().find("sensor.camera.rgb")
@@ -58,6 +109,8 @@ def run_probe(
         cam_bp.set_attribute("fov", "90")
         cam_transform = carla.Transform(carla.Location(x=1.5, z=2.4))
         cam = world.spawn_actor(cam_bp, cam_transform, attach_to=ego)
+        phase_receipt["phases"]["camera"] = "PASS" if cam else "FAIL"
+        _persist()
         print(f"[3] Camera spawned: {cam}  id={cam.id if cam else None}")
 
         def on_frame(img):
@@ -71,39 +124,57 @@ def run_probe(
         world.apply_settings(settings)
         print("[4] Sync mode ON")
 
+        tick_failure = None
         for i in range(int(ticks)):
             try:
                 world.tick(float(tick_timeout_s))
+                phase_receipt["tick_count"] = i + 1
+                phase_receipt["frames_captured"] = len(frames)
+                _persist()
                 print(f"[4] Tick {i + 1}: frames_captured={len(frames)}")
             except Exception as e:
+                tick_failure = f"{type(e).__name__}: {e}"
                 print(f"[4] Tick {i + 1} FAILED: {e}")
                 traceback.print_exc()
                 break
+
+        phase_receipt["phases"]["ticks"] = "FAIL" if tick_failure else "PASS"
+        phase_receipt["phases"]["frames"] = "PASS" if frames else "FAIL"
+        phase_receipt["frames_captured"] = len(frames)
+        phase_receipt["tick_error"] = tick_failure
     finally:
-        # Phase 5: cleanup
+        # NEW-259: the outcome is now durably recorded BEFORE teardown begins, so a
+        # crash during cleanup cannot erase the fact that the map, ego, camera and
+        # ticks all succeeded.
+        _persist()
+        # Phase 5: cleanup.
+        #
+        # NEW-259: NO individual actor teardown. On the exact maps where
+        # ASensor::EndPlay is unstable, destroying the camera or the ego one at a
+        # time can crash the engine, which makes the diagnosis ambiguous: did the
+        # map fail, the sensor fail, or only the cleanup? The listener is stopped
+        # (safe, it does not destroy the actor) and the session is left for the
+        # process to discard.
         try:
             original_settings.synchronous_mode = False
             original_settings.fixed_delta_seconds = None
             world.apply_settings(original_settings)
-        except Exception:
-            pass
+        except Exception as exc:
+            phase_receipt["teardown_errors"].append(f"apply_settings: {exc}")
         try:
             if cam is not None:
                 cam.stop()
-        except Exception:
-            pass
-        try:
-            if cam is not None:
-                cam.destroy()
-        except Exception:
-            pass
-        try:
-            ego.destroy()
-        except Exception:
-            pass
+        except Exception as exc:
+            phase_receipt["teardown_errors"].append(f"cam.stop: {exc}")
+        phase_receipt["teardown"] = "NON_DESTRUCTIVE"
+        phase_receipt["teardown_policy"] = "actors_left_for_process_teardown"
+        _persist()
 
-    print(f"[5] CLEANUP OK. Total frames: {len(frames)}")
-    print(f"[5] RESULT: {'PASS' if len(frames) > 0 else 'FAIL_NO_FRAMES'}")
+    print(f"[5] CLEANUP (non-destructive). Total frames: {len(frames)}")
+    print(
+        f"[5] RESULT: {'PASS' if len(frames) > 0 else 'FAIL_NO_FRAMES'}"
+        f" (receipt={receipt_path})"
+    )
     return 0 if len(frames) > 0 else 3
 
 

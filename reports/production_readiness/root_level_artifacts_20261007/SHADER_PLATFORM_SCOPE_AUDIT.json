@@ -1,0 +1,26 @@
+{
+  "WINDOWS_TARGET_EXPECTED_SHADER_PLATFORMS": [
+    "PCD3D_SM5",
+    "SF_VULKAN_SM5"
+  ],
+  "ACTUAL_SHADER_PLATFORMS": [
+    "PCD3D_SM5",
+    "SF_VULKAN_SM5",
+    "PCD3D_ES31"
+  ],
+  "PCD3D_ES31_REQUIRED": false,
+  "PCD3D_ES31_SOURCE": "DefaultEngine.ini:[/Script/WindowsTargetPlatform.WindowsTargetSettings] +TargetedRHIs=PCD3D_ES31 (line 109)",
+  "EVIDENCE": {
+    "config_file": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Config\\DefaultEngine.ini",
+    "section": "[/Script/WindowsTargetPlatform.WindowsTargetSettings]",
+    "lines": [
+      "-TargetedRHIs=PCD3D_SM5",
+      "+TargetedRHIs=PCD3D_SM5",
+      "+TargetedRHIs=SF_VULKAN_SM5",
+      "+TargetedRHIs=PCD3D_ES31"
+    ],
+    "rationale": "PCD3D_ES31 (OpenGL ES 3.1) is a mobile/embedded shader platform. WindowsNoEditor desktop runtime does not require ES3.1 shaders. The +TargetedRHIs=PCD3D_ES31 line explicitly adds ES3.1 to the Windows target platform shader compilation list, causing the cook to compile all materials for ES3.1 feature level in addition to SM5 and Vulkan SM5."
+  },
+  "MINIMAL_CONFIG_CHANGE": "Remove '+TargetedRHIs=PCD3D_ES31' from [/Script/WindowsTargetPlatform.WindowsTargetSettings] in DefaultEngine.ini. This will exclude ES3.1 shader compilation for WindowsNoEditor target platform while preserving SM5 and Vulkan SM5.",
+  "VERIFICATION": "After change, re-run cook with -targetplatform=WindowsNoEditor and verify ACTUAL_SHADER_PLATFORMS matches WINDOWS_TARGET_EXPECTED_SHADER_PLATFORMS (PCD3D_SM5, SF_VULKAN_SM5 only)."
+}

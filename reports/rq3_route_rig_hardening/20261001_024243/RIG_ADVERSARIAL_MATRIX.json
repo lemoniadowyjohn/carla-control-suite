@@ -1,0 +1,34 @@
+{
+  "adversarial_conditions": [
+    {
+      "actual": "COVERED_BY_RUNTIME_RIG_HASHING",
+      "condition": "Calibration rig says 1920x1080 but runtime cap produces 640x480",
+      "expected": "FAIL",
+      "severity": "high",
+      "test": "runtime_rig_resolution_mismatch"
+    },
+    {
+      "actual": "PASS",
+      "condition": "middle_lidar_old exists in calibration",
+      "expected": "PASS",
+      "severity": "high",
+      "test": "test_new300_active_lidar_policy"
+    },
+    {
+      "actual": "PASS",
+      "condition": "One arm uses one LiDAR and other arm uses two",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_adversarial_mixed_lidar_counts"
+    },
+    {
+      "actual": "PASS",
+      "condition": "attach_sensors_safe LiDAR attributes differ from canonical spec",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new301_no_hard_coded_lidar_drift"
+    }
+  ],
+  "schema_version": "rq3_adversarial_v1",
+  "timestamp_utc": "2026-10-01T03:12:46.278792Z"
+}

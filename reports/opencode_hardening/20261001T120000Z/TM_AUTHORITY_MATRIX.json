@@ -1,0 +1,73 @@
+{
+  "schema": "traffic_manager_authority_matrix/v1",
+  "scope": "post-integration traffic-manager authority (NEW-326/328/329/330)",
+  "single_authority": {
+    "module": "ultimate_pipeline/perception/environment/traffic_manager_session.py",
+    "class": "TrafficManagerSession",
+    "introduced_by": "Candidate B",
+    "retained": true
+  },
+  "second_wrapper_audit": {
+    "candidate": "ultimate_pipeline/carla_tools/fixed_traffic_manager.py (Candidate B)",
+    "classification": "COMPATIBILITY_FACADE_DELEGATING_TO_AUTHORITY",
+    "evidence": "initialize() constructs exactly one TrafficManagerSession (explicit port, explicit seed from the governed seed tree, strict from UP_THESIS_STRICT) and calls session.acquire(client); it does not call client.get_trafficmanager itself, does not set synchronous_mode itself, and does not seed itself",
+    "competing_authority": false
+  },
+  "explicit_tm_owner": {
+    "verified": true,
+    "mechanism": "class-level _masters registry keyed by tm_port with claim_master/release_master; a second session on the same port raises",
+    "verified_by_test": "test_double_tm_ownership_is_rejected"
+  },
+  "explicit_tm_port": {
+    "verified": true,
+    "mechanism": "tm_port is a required constructor argument; client.get_trafficmanager(self.tm_port) is the only acquisition call",
+    "verified_by_test": "test_tm_uses_explicit_port_and_seed"
+  },
+  "explicit_seed": {
+    "verified": true,
+    "mechanism": "seed=None causes acquire() to raise TRAFFIC_MANAGER_SEED_MISSING before touching the server; set_random_device_seed failure raises TRAFFIC_MANAGER_SETUP_FAILED",
+    "seed_source": "seed_tree_from_environment()['seeds']['tm'] in fixed_traffic_manager",
+    "verified_by_tests": ["test_tm_unseeded_session_refuses_to_acquire", "test_tm_seed_failure_is_fail_closed"]
+  },
+  "strict_mode_fail_closed": {
+    "verified": true,
+    "mechanism": "acquire() has no unbound fallback; it raises on get_trafficmanager failure, None handle, or seed failure. enable_autopilot in strict mode raises TRAFFIC_MANAGER_SETUP_FAILED when no TM is acquired, instead of silently returning attached=False",
+    "verified_by_test": "test_tm_fallback_in_strict_mode_is_refused"
+  },
+  "no_silent_unbound_autopilot": {
+    "verified": true,
+    "mechanism": "autopilot is only ever attached via actor.set_autopilot(True, self.tm_port) after an acquired TM; non-strict callers get an explicit diagnostic reason TRAFFIC_MANAGER_UNAVAILABLE",
+    "verified_by_test": "test_tm_fallback_in_strict_mode_is_refused"
+  },
+  "owned_vehicles_and_controllers": {
+    "verified": true,
+    "mechanism": "ScenarioActorRegistry.register(kind, actor) for every owned actor; NEW-330 exists because ScenarioManager.create_anomalies spawned a stopped vehicle directly via world.try_spawn_actor without registering it",
+    "verified_by_tests": ["test_actor_cleanup_missing_owned_actor_is_reported"]
+  },
+  "cleanup_verification": {
+    "verified": true,
+    "mechanism": "destroy_all() reports destroyed/survivors/errors; verify_clean() returns clean=False with a failure code listing any actor whose is_alive() is still true",
+    "verified_by_test": "test_sensor_cleanup_misses_actor_is_detected"
+  },
+  "stationary_actors_not_reported_as_active_traffic": {
+    "verified": true,
+    "mechanism": "validate_walker_mode(entries, mode=...) rejects WALKER_UNCONTROLLED for a static walker claiming counts_as_pedestrian_traffic, for an unknown mode, for a controlled walker without a controller_actor_id, and for controlled mode with zero controlled walkers",
+    "verified_by_test": "test_walker_mode_validation_rejects_governed_violation"
+  },
+  "world_tm_sync_consistency": {
+    "verified": true,
+    "mechanism": "validate_world_tm_sync rejects a synchronous world driven by an asynchronous TM",
+    "verified_by_test": "test_tm_world_sync_mismatch_is_reported"
+  },
+  "double_tick_ownership": {
+    "verified": true,
+    "mechanism": "verified via an exclusive ticker in the negative controls (test_double_tick_ownership_is_rejected). Note: this is demonstrated against an explicit single-owner ticker contract rather than a production class; the per-frame controller is single-instance by construction (one DeterministicWeatherController owns its frame index).",
+    "verified_by_test": "test_double_tick_ownership_is_rejected"
+  },
+  "live_tm_verification": {
+    "status": "BLOCKED_EXTERNAL",
+    "reason": "TM port 8000 unreachable; no server contacted",
+    "not_upgraded_to_pass": true
+  },
+  "verdict": "TM_AUTHORITY_OFFLINE_PASS_LIVE_BLOCKED"
+}

@@ -1,0 +1,8 @@
+{
+  "test_suite": "tests/unit/test_carla_semantic_organizer.py",
+  "status": "PASSED",
+  "total_collected": 13,
+  "passed": 13,
+  "failed": 0,
+  "execution_time": "1.0s"
+}

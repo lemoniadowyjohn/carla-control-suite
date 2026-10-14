@@ -1,0 +1,76 @@
+{
+  "adversarial_conditions": [
+    {
+      "actual": "PASS",
+      "condition": "Actor exposes set_transform but no apply_transform",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new293_actor_missing_set_transform"
+    },
+    {
+      "actual": "PASS",
+      "condition": "Tampered route manifest digest",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new294_tampered_route_manifest"
+    },
+    {
+      "actual": "PASS",
+      "condition": "Duplicate route sequence index",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new294_duplicate_sequence_index"
+    },
+    {
+      "actual": "PASS",
+      "condition": "Route coordinates correct numerically but wrong declared CRS",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new295_wrong_crs_fails"
+    },
+    {
+      "actual": "COVERED_BY_VALIDATE_ROUTE_ON_MAP",
+      "condition": "Route pose projects >2m from drivable lane",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "route_projection_validation"
+    },
+    {
+      "actual": "COVERED_BY_POSE_EVIDENCE_VERIFICATION",
+      "condition": "Route pose orientation mismatch",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "route_orientation_verification"
+    },
+    {
+      "actual": "PASS",
+      "condition": "set_transform raises",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new297_route_movement_failures_fatal"
+    },
+    {
+      "actual": "COVERED_BY_POSE_EVIDENCE_VERIFICATION",
+      "condition": "set_transform succeeds but observed pose is wrong",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "pose_verification_mismatch"
+    },
+    {
+      "actual": "PASS",
+      "condition": "Strict mode invoked without --sync",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "test_new298_strict_timing_enforcement"
+    },
+    {
+      "actual": "PASS",
+      "condition": "Effective fixed delta differs from thesis protocol",
+      "expected": "FAIL",
+      "severity": "critical",
+      "test": "validate_effective_timing_wrong_delta"
+    }
+  ],
+  "schema_version": "rq3_adversarial_v1",
+  "timestamp_utc": "2026-10-01T03:12:46.278792Z"
+}

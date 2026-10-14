@@ -1,0 +1,59 @@
+{
+  "schema": "carla_georeference_semantics_audit/v1",
+  "generated_at_utc": "2026-10-05T14:20:00Z",
+
+  "LAT_0_MEANING_IN_PROJ": "Latitude of the projection's ORIGIN - the latitude at which the map projection is anchored. For UTM and Gauss-Krueger this is 0 (the equator) by definition, NOT the map's location.",
+  "LAT_0_MEANING_IN_CARLA": "Latitude of the projection's ORIGIN - identical meaning to PROJ. Verified from the implementation, not assumed.",
+  "SEMANTIC_COMPATIBILITY": "COMPATIBLE",
+
+  "correction_of_my_own_prior_claim": {
+    "what_i_said_earlier": "I claimed CARLA reads +lat_0 as 'the map's geographic latitude', that this conflicts with PROJ semantics, that emitting a standards-compliant UTM string would place the map at the equator, and that this was a CARLA-side convention bug requiring explicit new fields.",
+    "verdict": "MY CLAIM WAS WRONG ON THE MECHANISM. CARLA's +lat_0 IS the projection origin, exactly as in PROJ.",
+    "how_resolved": "Read LibCarla/source/carla/geom/GeoLocation.cpp rather than inferring from field names.",
+    "decisive_evidence": [
+      "GeoLocation::GetTransversemercProjection (line 75) uses its own latitude/longitude members as phi0 and lambda0: 'double phi0 = DegreesToRadians(latitude); double lambda0 = DegreesToRadians(longitude);'",
+      "GeoLocation::InverseTransversemercProjection (line 94) does the same in reverse.",
+      "So the GeoLocation that GeoReferenceParser produces is consumed as the TRANSVERSE MERCATOR ORIGIN, and is combined with the map's local metres via those two functions."
+    ],
+    "consequence": "No semantic conflict exists. The earlier statement that emitting a compliant UTM string would put the map at the equator was incorrect: lat_0=0 combined with lon_0=9 correctly describes a UTM-32N-style anchor, and CARLA's own spherical TM then reproduces UTM-like local metres from that anchor.",
+    "implication_for_the_fix": "The preferred fix hierarchy item 1 ('make OSM2ODR emit the complete authoritative definition') is SUFFICIENT on the semantic axis. No new fields are required to express intent; the existing keys carry it correctly."
+  },
+
+  "traced_usage_chain": [
+    {"step": 1, "component": "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp", "action": "ParseGeoReference splits the geoReference string and reads +lat_0 and +lon_0 into a geom::GeoLocation"},
+    {"step": 2, "component": "carla::road::MapBuilder::SetGeoReference (MapBuilder.h:381)", "action": "stores it into MapData::_geo_reference"},
+    {"step": 3, "component": "carla::road::MapData::GetGeoReference (MapData.h:33) / carla::road::Map::GetGeoReference (Map.h:46)", "action": "read back by the client-facing map API"},
+    {"step": 4, "component": "carla::client::Map::GetGeoReference (client/Map.cpp:111)", "action": "exposed to callers, including the Python API"},
+    {"step": 5, "component": "carla::geom::GeoLocation::GetTransversemercProjection / InverseTransversemercProjection / Transform / GeoLocationToTransform (geom/GeoLocation.cpp:75,94,115,121)", "action": "the stored origin is used as phi0/lambda0 of a spherical transverse Mercator with R=6378137 and k0=0.9996, combined with local map metres"},
+    {"step": 6, "component": "runtime GNSS / get_location", "action": "local metres <-> geodetic lat/lon via step 5 using the stored origin"}
+  ],
+
+  "critical_limitation_found": {
+    "id": "CARLA_IMPLEMENTS_ONLY_SPHERICAL_TM",
+    "detail": "CARLA hardcodes EARTH_RADIUS_EQUA = 6378137.0 (WGS84 equatorial radius) and k0 = 0.9996, and applies a spherical transverse Mercator. It does NOT implement ellipsoidal tmerc, does NOT read +ellps, +datum, +k, +x_0, +y_0, or +units from the geoReference string.",
+    "consequence": "CARLA can only consume the ORIGIN parameters of a projection. Every other parameter in the geoReference string is discarded. Emitting a fully parameterized string is still correct and still necessary for other consumers (PROJ-based tools, GIS, and the OSM2ODR writer), but CARLA itself reads only +lat_0 and +lon_0.",
+    "practical_note": "For the staged map this matters because a UTM-32N anchor (lat_0=0, lon_0=9) plus CARLA's spherical TM yields lat 48.4995 / lon 20.3023 for the staged offset - which is neither Ingolstadt nor a clean reading of the UTM frame, because CARLA's spherical approximation ignores the ellipsoid, the scale factor of the zone, and the 500000 m false easting."
+  },
+
+  "numerical_check_of_carla_semantics": {
+    "tool": "reimplementation of CARLA's own formulas from GeoLocation.cpp (R=6378137, k0=0.9996)",
+    "sanity_check": "forward TM of a point 1 degree east / 1 degree north of the chosen origin returns (0, 0) m, confirming the origin semantics",
+    "inverse_of_staged_offset_with_certified_utm_anchor": {"lat_0": 0.0, "lon_0": 9.0, "result": {"lat": 48.4995, "lon": 20.3023}, "vs_true_ingolstadt": {"lat": 48.766, "lon": 11.425}},
+    "inverse_of_staged_offset_with_true_ingolstadt_anchor": {"lat_0": 48.766, "lon_0": 11.425, "result": {"lat": 79.206, "lon": 147.522}, "comment": "far outside valid ranges, confirming the staged offset is NOT expressed in CARLA's spherical-TM metre frame at all"},
+    "interpretation": "The staged offset (832671.676, 5458671.104) is not a spherical-TM easting/northing in any anchor frame. It behaves as an opaque local-frame shift, which corroborates frame_kind='rebased_local' in the registry."
+  },
+
+  "conclusion_for_the_blockers": {
+    "PARSER_FAIL_CLOSED": "COMPLETE - the silent 42/2 fallback is removed, built, and validated against compiled code (13/13).",
+    "CARLA_GEOREFERENCE_SEMANTICS": "RESOLVED - +lat_0/+lon_0 mean projection origin in both PROJ and CARLA. No semantic conflict. No new fields required.",
+    "remaining_crs_issue": "NARROWED. It is no longer a semantics problem. It is that the staged map's registered origin is an unproven local-frame shift (see STAGED_FRAME_FORENSICS.json), so there is no verified value to emit for +lat_0/+lon_0. The emitter fix is still correct and still pending, but it cannot be completed with a verified constant until frame authority is settled.",
+    "explicit_fields_still_worthwhile": "Not required for correctness. CARLA silently ignoring +ellps/+datum/+k/+x_0/+y_0 is a latent hazard for any future consumer that assumes those were honoured; a warning when a geoReference carries parameters CARLA cannot apply would be a defensible hardening, but it is NOT a fix for this blocker and was not implemented."
+  },
+
+  "not_claimed": [
+    "No emitter-side change was made.",
+    "No lat_0/lon_0 value was chosen or invented.",
+    "CARLA's spherical-TM approximation was not modified.",
+    "The frame of the staged map remains unresolved; see STAGED_FRAME_FORENSICS.json."
+  ]
+}

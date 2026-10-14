@@ -1,0 +1,23 @@
+{
+  "schema": "rq1b_run_receipt/v1",
+  "run_index": 0,
+  "run_id": "rq1b_run00",
+  "input_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "command": "tools/rq1b_full_pipeline.py 0 reports/rq1b_runs/run_00 (via tools/rq1b_five_run_driver.py)",
+  "return_code": -1,
+  "timed_out": true,
+  "timeout_limit_s": 7200,
+  "duration_s": 7200,
+  "isolated": true,
+  "shared_cache": false,
+  "receipt_found": false,
+  "status": "FAILED_TIMEOUT",
+  "evidence": {
+    "partial_out_dir": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00",
+    "partial_bytes_mb": 1544,
+    "stages_complete": "01 sanitize, 02 sumo, 03 topology, 05 planview, 06 continuity (partial)",
+    "stage_evidence": "01_sanitized (142.9MB), 02_sumo_fixed (131.7MB), 03/05/06 planview+continuity (132.5MB each), stage6_containment_runtime.json (732MB), continuity_debug.json (25MB)",
+    "killed_during": "stage 06 geometry/containment (run_status.json: status=running, stage=geometry)",
+    "driver_defect_observed": "driver raised uncaught subprocess.TimeoutExpired and died before runs 01-04; fixed in this wave (timeout recorded as FAILED receipt, runs continue)"
+  }
+}

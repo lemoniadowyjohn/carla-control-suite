@@ -1,0 +1,32 @@
+{
+  "controlled_pedestrian_valid": false,
+  "controlled_without_controller_fails": {
+    "invalid_reasons": [
+      "WALKER_CONTROLLER_MISMATCH:8",
+      "WALKER_UNCONTROLLED:no_controlled_walkers"
+    ],
+    "valid": false
+  },
+  "controller_actor_relationship_recorded": true,
+  "controller_and_actor_cleaned_up_together": true,
+  "controller_blueprint": "controller.ai.walker",
+  "defect_before": "ActorStreamManager spawned walker.pedestrian.* actors with NO controller.ai.walker and no start()/go_to_location(), so they stood still while still being counted as pedestrian traffic",
+  "deterministic_destination": true,
+  "explicit_static_prop_allowed": true,
+  "finding": "NEW-329",
+  "modes": [
+    "STATIC_WALKER_PROP",
+    "CONTROLLED_PEDESTRIAN"
+  ],
+  "schema": "NEW329_WALKER_CONTROL/v1",
+  "status": "PASS",
+  "uncontrolled_counted_as_traffic_fails": {
+    "invalid_reasons": [
+      "WALKER_UNCONTROLLED:7",
+      "WALKER_CONTROLLER_MISMATCH:7",
+      "WALKER_UNCONTROLLED:no_controlled_walkers"
+    ],
+    "valid": false
+  },
+  "wired_into": "ultimate_pipeline/carla_tools/actor_stream_manager.py"
+}

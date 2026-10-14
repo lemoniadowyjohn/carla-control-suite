@@ -1,0 +1,30 @@
+{
+  "claim_boundary": "at most VERIFIED_OFFLINE_STATIC; CARLA_LOAD_VERIFIED requires the CARLA runtime (\u00a719)",
+  "default_profile": "CARLA_0_9_16_COMPAT",
+  "envelope": {
+    "fields": [
+      "validator",
+      "schema_version",
+      "input_xodr_sha256",
+      "status",
+      "errors",
+      "warnings",
+      "statistics",
+      "attestation",
+      "claim_boundary",
+      "profile"
+    ],
+    "schema_version": "xodr_validation_envelope_v1",
+    "status": "PASS|FAIL|INCOMPLETE|NOT_RUN",
+    "validator": "FINAL_XODR_STATIC"
+  },
+  "facade": "ultimate_pipeline.tools.verify_final_xodr.validate_final_xodr_static",
+  "orchestration": [
+    "XML structure (XML_BASIC_INTEGRITY)",
+    "numeric/structural + primitive contract + geometry sequence + lanes + widths + junction refs (XODR_STRUCTURAL, profile-parameterized)",
+    "CARLA static compatibility (CARLA_STATIC_COMPAT)",
+    "optional XSD (XSD_SCHEMA, honest statuses)"
+  ],
+  "overall_rule": "FAIL if any executed check failed; INCOMPLETE if any check could not run; NOT_RUN sub-results (e.g. unconfigured XSD) are explicit per-validator but non-blocking -- overall PASS means 'all executed checks passed', never 'XSD passed'",
+  "repairs": "none -- validation only; road-length is reported, never mutated"
+}

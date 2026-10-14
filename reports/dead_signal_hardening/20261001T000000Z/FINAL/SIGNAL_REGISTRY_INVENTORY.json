@@ -1,0 +1,578 @@
+{
+  "profiles": {
+    "debug": [
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "LOCAL_PERCEPTION",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "RUN_SUMMARY",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "perception_research": [
+      "CARLA_PREFLIGHT",
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "DETERMINISM_FINGERPRINT",
+      "DOMAIN_GAP",
+      "ENVIRONMENT_SNAPSHOT",
+      "EXPERIMENT_READINESS",
+      "FINAL_ARTIFACT_RECEIPT",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "LOCAL_PERCEPTION",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "ROAD_DEFECTS",
+      "RQ1_DETERMINISM",
+      "RUN_SUMMARY",
+      "SCENARIORUNNER",
+      "SUCCESS_MARKER",
+      "THESIS_PERCEPTION",
+      "TILE_QA",
+      "VALIDATION_REPORT",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "structural_release": [
+      "CARLA_PREFLIGHT",
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "DETERMINISM_FINGERPRINT",
+      "ENVIRONMENT_SNAPSHOT",
+      "FINAL_ARTIFACT_RECEIPT",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "ROAD_DEFECTS",
+      "RUN_SUMMARY",
+      "SUCCESS_MARKER",
+      "TILE_QA",
+      "VALIDATION_REPORT",
+      "WRAPPED_GATE_FAILURES"
+    ],
+    "visual_build": [
+      "CARLA_PREFLIGHT",
+      "CUMULATIVE_GATES",
+      "CUMULATIVE_STAGE_GATES",
+      "ENVIRONMENT_SNAPSHOT",
+      "FINAL_ARTIFACT_RECEIPT",
+      "FINAL_RUN_VERDICT",
+      "G6_HYGIENE",
+      "MAP_ACCEPTANCE",
+      "PIPELINE_HEALTH",
+      "RUN_SUMMARY",
+      "SUCCESS_MARKER",
+      "TILE_QA",
+      "VALIDATION_REPORT",
+      "WRAPPED_GATE_FAILURES"
+    ]
+  },
+  "schema": "signal_registry_inventory/v1",
+  "signal_count": 22,
+  "signals": [
+    {
+      "artifact": "carla_loadability_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "UP_RUN_PREFLIGHT"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_08_integrity._step8d_preflight_validation",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "signal_id": "CARLA_PREFLIGHT",
+      "skip_policy": "BLOCKED_EXTERNAL_IF_NO_CARLA"
+    },
+    {
+      "artifact": "gate_failures.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._final_summary_and_llm",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "CUMULATIVE_GATES",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "cumulative_gate_report.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._finalize_gates",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "CUMULATIVE_STAGE_GATES",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "determinism_fingerprint.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._write_determinism_fingerprint",
+      "required_release_profiles": [
+        "perception_research",
+        "structural_release"
+      ],
+      "signal_id": "DETERMINISM_FINGERPRINT",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "domain_gap_stage_status.json",
+      "class": "EXTERNAL_BLOCKER",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_DOMAIN_GAP",
+        "UP_ENABLE_DOMAIN_GAP"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "BLOCKED_EXTERNAL_IF_NO_MANUAL_XODR",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._step12_domain_gap",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "signal_id": "DOMAIN_GAP",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "environment_snapshot.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.utils.environment_snapshot.write_environment_snapshot",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "signal_id": "ENVIRONMENT_SNAPSHOT",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "map_acceptance.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._publish_final_artifact_authority",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "signal_id": "EXPERIMENT_READINESS",
+      "skip_policy": "RECORD_IF_PROFILE_NOT_RESEARCH"
+    },
+    {
+      "artifact": "final_artifact_receipt.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._publish_final_artifact_authority",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "signal_id": "FINAL_ARTIFACT_RECEIPT",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "final_run_verdict.json",
+      "class": "HARD_GATE",
+      "consumer": "run_status_and_success_marker",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "BLOCKED_EXTERNAL"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._compute_final_run_verdict",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "FINAL_RUN_VERDICT",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "08h5_g6_lane_coverage_repair_report.json",
+      "class": "ADVISORY",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "not UP_ENABLE_G6_LANE_COVERAGE_REPAIR=0"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "RECORD",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_08_hygiene._step8h_map_hygiene",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "G6_HYGIENE",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "step10c_local_perception_status.json",
+      "class": "ADVISORY",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_LOCAL_PERCEPTION"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "RECORD",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "required_release_profiles": [
+        "debug",
+        "perception_research"
+      ],
+      "signal_id": "LOCAL_PERCEPTION",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "map_acceptance.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._publish_final_artifact_authority",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "MAP_ACCEPTANCE",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "pipeline_health_summary.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.quality.pipeline_health_summary.write_pipeline_health_summary",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "PIPELINE_HEALTH",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "step10c_road_defects_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_ROAD_DEFECT_SCAN"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "required_release_profiles": [
+        "structural_release",
+        "perception_research"
+      ],
+      "signal_id": "ROAD_DEFECTS",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "receipt_run_00.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "rq1_five_run_matrix",
+      "enabled_by": [
+        "UP_ENABLE_RQ1_DETERMINISM"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "tools.rq1_trial_run.main",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "signal_id": "RQ1_DETERMINISM",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "run_summary.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._write_run_summary",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "RUN_SUMMARY",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "step10d3_scenariorunner_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "UP_ENABLE_SCENARIORUNNER"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "signal_id": "SCENARIORUNNER",
+      "skip_policy": "BLOCKED_EXTERNAL_IF_NO_CARLA"
+    },
+    {
+      "artifact": "SUCCESS.txt",
+      "class": "HARD_GATE",
+      "consumer": "external_callers",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._finalize_run_pack_gated",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "signal_id": "SUCCESS_MARKER",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "step10d2_thesis_perception_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_THESIS_PERCEPTION_CAPTURE",
+        "UP_ENABLE_THESIS_PERCEPTION_CAPTURE"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10c_road_perception_screenshots",
+      "required_release_profiles": [
+        "perception_research"
+      ],
+      "signal_id": "THESIS_PERCEPTION",
+      "skip_policy": "BLOCKED_EXTERNAL_IF_NO_CARLA"
+    },
+    {
+      "artifact": "step10_tile_qa_status.json",
+      "class": "REQUIRED_WHEN_ENABLED",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_SIMULATION_GATE"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.pipeline_stages.stage_10_tile_qa._step10_tile_qa",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "signal_id": "TILE_QA",
+      "skip_policy": "RECORD_IF_DISABLED"
+    },
+    {
+      "artifact": "logs/validation_report_full.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.quality.quality_gates.run_quality_gates",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research"
+      ],
+      "signal_id": "VALIDATION_REPORT",
+      "skip_policy": "NEVER"
+    },
+    {
+      "artifact": "gate_failures.json",
+      "class": "HARD_GATE",
+      "consumer": "final_run_verdict",
+      "enabled_by": [
+        "ENABLE_QUALITY_GATES_WRAPPER"
+      ],
+      "failure_states": [
+        "FAIL",
+        "INCOMPLETE"
+      ],
+      "missing_policy": "FAIL",
+      "pass_states": [
+        "PASS"
+      ],
+      "producer": "ultimate_pipeline.main_pipeline._run_quality_gates_wrapper",
+      "required_release_profiles": [
+        "structural_release",
+        "visual_build",
+        "perception_research",
+        "debug"
+      ],
+      "signal_id": "WRAPPED_GATE_FAILURES",
+      "skip_policy": "NEVER"
+    }
+  ]
+}

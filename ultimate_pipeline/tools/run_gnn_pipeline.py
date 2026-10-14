@@ -80,6 +80,17 @@ def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
     ap.add_argument("--out-dir", type=Path, default=Path("thesis_results") / "gnn_v1")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--exclude-source-xodr",
+        dest="exclude_source_xodr",
+        nargs="*",
+        default=[],
+        help="GAP-010 source-identity exclusion contract: additional known "
+             "eval/reference XODR paths (beyond --manual-xodr and "
+             "--auto-xodr, which are ALWAYS excluded automatically, "
+             "mirroring run_ksweep.py's own-eval-pair auto-exclusion) "
+             "whose content must never become training data.",
+    )
     return ap.parse_args(list(argv))
 
 
@@ -118,6 +129,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("GNN TRAINING: DEFERRED (PyTorch not available)")
         return 0
 
+    manual_xodr = Path(args.manual_xodr).expanduser()
+    auto_xodr = Path(args.auto_xodr).expanduser()
+
+    # GAP-010 source-identity exclusion contract: this run's own eval pair
+    # (manual/auto, used below for compute_whole_map_latent_gap) is ALWAYS
+    # excluded from the training tile pool -- mirroring run_ksweep.py's
+    # own always-exclude-the-eval-pair behavior. --exclude-source-xodr adds
+    # further protected reference paths (e.g. a distinct historical
+    # duplicate). Non-existent paths are silently skipped by
+    # exclusion_hashes_for(), never fabricated.
+    exclude_source_paths = [manual_xodr, auto_xodr] + [
+        Path(p).expanduser() for p in args.exclude_source_xodr
+    ]
+
     train_cmd = [
         sys.executable,
         "-m",
@@ -134,7 +159,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         str(checkpoints_dir),
         "--seed",
         str(int(args.seed)),
-    ]
+        "--exclude_source_xodr",
+    ] + [str(p) for p in exclude_source_paths]
 
     if args.dry_run:
         report = {
@@ -164,8 +190,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     final_loss = _parse_loss(result.stdout or "")
 
     checkpoint_path = _resolve_checkpoint(checkpoints_dir)
-    manual_xodr = Path(args.manual_xodr).expanduser()
-    auto_xodr = Path(args.auto_xodr).expanduser()
 
     latent_gap: Dict[str, Any]
     if checkpoint_path is None:
@@ -208,6 +232,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "status": status,
         "timestamp": timestamp,
         "train_returncode": int(result.returncode),
+        "source_sha_exclusion_contract": {
+            "note": "GAP-010: manual_xodr/auto_xodr (this run's own eval pair) "
+                    "are ALWAYS excluded automatically (always includes "
+                    "manual_xodr/auto_xodr).",
+            "excluded_paths": [str(p) for p in exclude_source_paths],
+        },
     }
     _write_json(report_path, report)
 

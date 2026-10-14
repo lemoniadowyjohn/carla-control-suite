@@ -35,6 +35,7 @@ import pytest
 
 import ultimate_pipeline.main_pipeline as main_pipeline_mod
 import ultimate_pipeline.pipeline_stages.stage_09_tiling as stage_mod
+import ultimate_pipeline.tiling.tile_extractor as tile_extractor_mod
 import ultimate_pipeline.tiling.tile_metadata as tile_metadata_mod
 
 
@@ -73,6 +74,8 @@ def _run_with_mocks(fake_self, final_out, tiles, tile_health):
         tile_metadata_mod.TileMetadata, "generate_metadata", mock.Mock()
     ), mock.patch.object(
         tile_metadata_mod.TileMetadata, "write_manifest", mock.Mock()
+    ), mock.patch.object(
+        tile_extractor_mod, "freeze_tileset", mock.Mock(return_value={})
     ):
         return stage_mod._step9_tiling(fake_self, final_out)
 

@@ -1,0 +1,43 @@
+{
+  "defect_before": "ScenarioManager.create_anomalies() spawned a stopped vehicle via world.try_spawn_actor without registering it with FixedTrafficManager, so cleanup() could not destroy it",
+  "destroy_all": {
+    "destroyed": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "errors": {},
+    "owned_count_after": 0,
+    "owned_count_before": 4,
+    "survivors": []
+  },
+  "finding": "NEW-330",
+  "owned_kinds_tracked": [
+    "tm_vehicles",
+    "walkers",
+    "walker_controllers",
+    "anomaly_vehicles",
+    "temporary_props"
+  ],
+  "registry": "ScenarioActorRegistry",
+  "schema": "NEW330_SCENARIO_ACTOR_OWNERSHIP/v1",
+  "status": "PASS",
+  "surviving_actor_fails": {
+    "clean": false,
+    "failure_code": "SCENARIO_ACTOR_LEAK",
+    "owned_actors_remaining": [
+      "anomaly_vehicles:5"
+    ]
+  },
+  "verify_clean": {
+    "clean": true,
+    "failure_code": null,
+    "owned_actors_remaining": []
+  },
+  "wired_into": [
+    "ultimate_pipeline/carla_tools/carla_sim_consolidated.py",
+    "ultimate_pipeline/carla_tools/actor_stream_manager.py"
+  ],
+  "zero_owned_actors_verified": true
+}

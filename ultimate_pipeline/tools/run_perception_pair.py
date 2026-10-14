@@ -559,15 +559,16 @@ def _collect_unmapped_pair_flags(
     return unmapped
 
 
-def _build_safe_runner_env_overrides(*, seed: int, weather: str, seg: bool) -> Dict[str, str]:
-    env_overrides: Dict[str, str] = {
-        "UP_TM_SEED": str(int(seed)),
-        "UP_ENABLE_SEMSEG": "1" if bool(seg) else "0",
-    }
-    weather_value = str(weather or "").strip()
-    if weather_value:
-        env_overrides["UP_WEATHER_PRESET"] = weather_value
-    return env_overrides
+def _build_safe_runner_env_overrides(*, seed: int) -> Dict[str, str]:
+    """Environment forwarded to ``run_perception_safe`` for one pair arm.
+
+    Only keys some consumer actually reads belong here. NEW-347 removed
+    ``UP_ENABLE_SEMSEG`` (no reader anywhere in the tree; segmentation is
+    already carried by the ``--no-seg`` command flag) and ``UP_WEATHER_PRESET``
+    (also unread -- weather is recorded in the protocol snapshot only).
+    ``UP_TM_SEED`` is read by ``perception/record_route_fixed.py``.
+    """
+    return {"UP_TM_SEED": str(int(seed))}
 
 
 def _build_safe_runner_command(
@@ -1979,8 +1980,6 @@ def main() -> int:
     results["protocol_snapshot"] = _normalize_path(protocol_snapshot_path)
     safe_runner_env_overrides = _build_safe_runner_env_overrides(
         seed=int(args.seed),
-        weather=str(args.weather),
-        seg=bool(args.seg),
     )
 
     if disable_carla:

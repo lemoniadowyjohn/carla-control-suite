@@ -1,0 +1,63 @@
+{
+  "run_id": "20260919T000000Z_RQ3_PAIRED_CAPTURE_CONTRACT",
+  "generated_at_utc": "2026-09-19T00:00:00Z",
+  "toolchain": {
+    "python": "3.12.2 (Windows)",
+    "pytest": "9.0.1 via pytest.ini",
+    "ruff": "0.15.1 (all checks passed on changed/new files)"
+  },
+  "new_offline_test_suites": {
+    "ultimate_pipeline/tests/unit/test_route_manifest.py": {
+      "tests": 10,
+      "passed": 10,
+      "covers": ["digest determinism", "same-spawn-index != same-route ($2 defect)", "structure/digest validation", "pose projection thresholds", "paired route closure PAIR_ROUTE_VALID/INVALID"]
+    },
+    "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py": {
+      "tests": 25,
+      "passed": 25,
+      "covers": "identity engines (calib/rig/weather/timing/config), frame completeness + strict completion, spawn policy, map identity, claim boundary, deterministic manifests"
+    },
+    "ultimate_pipeline/tools/tests/test_capture_perception_pair_safe_completeness.py": {
+      "tests": 3,
+      "passed": 3,
+      "covers": "diagnostic tool false-success regression: partial frames after timeout -> INCOMPLETE (not ok); full completion -> PASS; smoke diagnostics never claim full success"
+    }
+  },
+  "required_case_coverage": {
+    "case_01_same_spawn_index_different_transforms": "test_route_manifest::test_same_spawn_index_does_not_imply_same_route_digests_differ + test_case01",
+    "case_02_route_hashes_differ": "test_case02_route_hashes_differ_rejected",
+    "case_03_calibration_differs": "test_calibration_identity_uses_content_sha + test_case03_calibration_differs_rejected",
+    "case_04_sensor_rig_differs": "test_case04_sensor_rig_differs_rejected",
+    "case_05_weather_differs": "test_case05_weather_differs_rejected",
+    "case_06_fixed_delta_differs": "test_case06_fixed_delta_differs_rejected",
+    "case_07_one_required_camera_missing": "test_case07_one_required_camera_missing_rejected",
+    "case_08_partial_frames_after_timeout": "test_case08_partial_frames_after_timeout_incomplete",
+    "case_09_all_contracts_identical": "test_case09_all_contracts_identical_protocol_valid",
+    "case_10_town10hd_control_boundary": "test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture",
+    "case_11_hidden_spawn_recovery_disabled_in_strict": "test_case11_hidden_spawn_recovery_disabled_in_strict_mode + test_spawn_policy_rejects_hidden_recovery_in_strict_mode",
+    "case_12_manifests_deterministic": "test_case12_manifests_deterministic_apart_from_excluded_wallclock + test_route_digest_is_deterministic_and_order_safe"
+  },
+  "summary": {
+    "new_tests": {"collected": 38, "passed": 38, "failed": 0, "skipped": 0},
+    "full_offline_suite": {
+      "command": "pytest -q -m \"not carla\" --ignore=submission --ignore=tests/unit/test_rq4_gnn_provenance.py",
+      "passed": 5802,
+      "skipped": 2,
+      "failed": 6,
+      "pre_existing_failures": [
+        "ultimate_pipeline/tests/unit/test_mtime_audit.py::TestMtimeAuthorityRegression::test_no_unprotected_mtime_authority[run_alignment_and_matching.py]",
+        "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py::TestTileGridMetaBoundsFromXodr::test_nan_coordinate_excluded_from_bbox",
+        "tests/unit/test_mesh_streamer_update.py::test_update_* (4 tests)"
+      ],
+      "classification": "downstream of unrelated UNCOMMITTED changes in the working tree (ultimate_pipeline/domain_gap/tile_grid_meta.py, ultimate_pipeline/carla_tools/mesh_streamer.py, domain_gap_gnn/, run_alignment_and_matching.py). None of the 6 failures reference any file touched by this task.",
+      "collection_blocker_excluded": "tests/unit/test_rq4_gnn_provenance.py fails to COLLECT (IndentationError at line 551) - pre-existing unrelated syntax break in the dirty tree",
+      "live_status": "BLOCKED_EXTERNAL - CARLA simulator unreachable at 127.0.0.1:2000: end-to-end paired capture, route_correspondence.json and live claim award are INCOMPLETE, not verified"
+    },
+    "ruff": {
+      "changed_files_checked": 9,
+      "result": "All checks passed!",
+      "baseline_notes": "baseline HEAD already carried 13 ruff findings across these same files (7x F821 carla annotations, F401 unused imports, F841) - all now resolved"
+    },
+    "regression_guard": "capture_perception_pair_safe false-success (any-frame == ok) is fixed; the old pattern (partial frames after 60s budget reported ok) is now INCOMPLETE via evaluate_frame_completeness"
+  }
+}

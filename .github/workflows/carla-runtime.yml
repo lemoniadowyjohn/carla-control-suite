@@ -1,46 +1,206 @@
 name: live CARLA runtime evidence
 
+# V5 / NEW-207 (E24) + NEW-206 (D18) hardening.
+#
+# The historical workflow ran a generic `doctor` + `test e2e` and recorded a
+# packet that did not say WHICH artifact was certified. E24 binds runtime
+# evidence to an exact candidate release identity: a pre-runtime identity gate
+# must PASS before a CARLA server is contacted, and the receipt records the
+# repository SHA, XODR hash, cook/package hashes, CARLA build and run ID.
+#
+# `BLOCKED_EXTERNAL` is a real, non-pass state. It is never coerced to PASS.
+
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      candidate_manifest:
+        description: "Path to the candidate release manifest (JSON) to certify"
+        required: true
+        type: string
+      expected_carla_version:
+        description: "Accepted CARLA build identity"
+        required: false
+        default: "0.9.16"
+        type: string
+
+# NOTE: `cancel-in-progress` is deliberately FALSE here. A runtime certification
+# run may be long, and cancelling a half-finished acceptance run to start a
+# newer one would waste the runner while leaving no evidence either way. Runs
+# are keyed by candidate identity so different candidates do not collide.
+concurrency:
+  group: carla-runtime-${{ github.workflow }}-${{ github.event.inputs.candidate_manifest }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
-  carla-runtime-verification:
-    name: live CARLA runtime verification
+  carla-runtime-certification:
+    name: live CARLA runtime certification
     runs-on: [self-hosted, carla]
+    timeout-minutes: 240
+    permissions:
+      contents: read
     env:
       UP_ENABLE_CARLA_TESTS: "1"
+      CANDIDATE_MANIFEST: ${{ github.event.inputs.candidate_manifest }}
+      EXPECTED_CARLA_VERSION: ${{ github.event.inputs.expected_carla_version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
       - name: Install runtime dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements-ci.txt
           pip install -e .
 
-      - name: Verify CARLA runtime and execute live checks
+      # ---------------------------------------------------------------------
+      # E24 PRE-RUNTIME IDENTITY GATE
+      # Any mismatch here is a hard FAIL: the certification must not be
+      # attempted against an artifact that is not the candidate under promotion.
+      # ---------------------------------------------------------------------
+      - name: Resolve the checked-out repository identity
+        id: repo
+        shell: bash
         run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD)"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "resolved repository SHA: $sha"
+
+      - name: Candidate identity pre-runtime gate
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m ultimate_pipeline.tools.repo_health \
+            --validate-candidate "$CANDIDATE_MANIFEST" \
+            --expected-repo-sha "${{ steps.repo.outputs.sha }}" \
+            --expected-carla-version "$EXPECTED_CARLA_VERSION" \
+            --json | tee reports_candidate_identity.json
+          # A non-zero exit here stops the job before any server is launched.
+
+      # ---------------------------------------------------------------------
+      # RUNTIME CHECKS against the exact requested map
+      # ---------------------------------------------------------------------
+      - name: Verify CARLA runtime and execute live checks
+        shell: bash
+        run: |
+          set -euo pipefail
           python -m ultimate_pipeline.cli doctor --verbose
           python -m ultimate_pipeline.cli test e2e
 
-      - name: Write runtime health packet
-        if: failure() || success()
+      # Resolve the NAMED runtime certification gate (D19). This is the check
+      # that may be required on the branch: it exits 0 only when
+      # runtime_verification is PASS. Here the runtime status is the job's own
+      # outcome, so a failed or cancelled run cannot report a green gate.
+      - name: Resolve the runtime certification gate
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
+          set -uo pipefail
           python -m ultimate_pipeline.tools.repo_health \
             --out-dir reports/repo_health/runtime \
-            --test-result "${{ job.status }}" \
-            --runtime-status "${{ job.status }}" \
-            --runtime-reason "Self-hosted CARLA runtime workflow executed."
+            --test-result "$JOB_STATUS" \
+            --runtime-status "$JOB_STATUS" \
+            --runtime-reason "Self-hosted CARLA runtime certification workflow." \
+            --gate runtime-certification-gate
+          gate_rc=$?
+          echo "runtime-certification-gate exit=$gate_rc"
+          exit $gate_rc
 
-      - name: Upload runtime health packet
-        if: failure() || success()
-        uses: actions/upload-artifact@v4
+      # ---------------------------------------------------------------------
+      # RECEIPT: identifies the exact candidate that was certified.
+      # ---------------------------------------------------------------------
+      - name: Write runtime certification receipt
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p reports/runtime_certification
+          python - <<'PY'
+          import json, os, platform, subprocess, sys
+          from datetime import datetime, timezone
+
+          manifest_path = os.environ["CANDIDATE_MANIFEST"]
+          try:
+              identity = json.load(open("reports_candidate_identity.json", encoding="utf-8"))
+          except Exception as exc:
+              identity = {"state": "IDENTITY_MISMATCH", "problems": [{"field": "receipt", "reason": str(exc)}]}
+
+          try:
+              manifest = json.load(open(manifest_path, encoding="utf-8"))
+          except Exception:
+              manifest = {}
+
+          def sha_of(path):
+              try:
+                  return subprocess.run(
+                      ["git", "hash-object", path], capture_output=True, text=True, check=False
+                  ).stdout.strip() or None
+              except Exception:
+                  return None
+
+          job_status = os.environ.get("JOB_STATUS", "NOT_RUN")
+          # Never let a non-success job status read as a certification pass.
+          if identity.get("state") == "PASS" and job_status == "success":
+              state = "PASS"
+          elif identity.get("state") != "PASS":
+              state = "IDENTITY_MISMATCH"
+          else:
+              state = "FAIL"
+
+          receipt = {
+              "schema": "CARLA_RUNTIME_CERTIFICATION/v1",
+              "state": state,
+              "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+              "job_status": job_status,
+              "candidate_sha": manifest.get("repo_sha"),
+              "candidate_id": manifest.get("candidate_id"),
+              "xodr_sha256": manifest.get("xodr_sha256"),
+              "xodr_path": manifest.get("xodr_path"),
+              "map_registry_id": manifest.get("map_registry_id"),
+              "runtime_map": manifest.get("runtime_map"),
+              "cook_manifest_sha256": manifest.get("cook_manifest_sha256"),
+              "import_package_sha256": manifest.get("import_package_sha256"),
+              "cooked_package_sha256": manifest.get("cooked_package_sha256"),
+              "carla_client_version": manifest.get("carla_client_version"),
+              "carla_server_version": manifest.get("carla_server_version"),
+              "ue_build": manifest.get("ue_build"),
+              "identity_gate": identity,
+              "runner": {
+                  "identity_class": "self-hosted-carla",
+                  "platform": platform.platform(),
+                  "python": sys.version.split()[0],
+              },
+              "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
+              "workflow_run_url": os.environ.get("GITHUB_SERVER_URL", "")
+                  + "/" + os.environ.get("GITHUB_REPOSITORY", "")
+                  + "/actions/runs/" + os.environ.get("GITHUB_RUN_ID", ""),
+          }
+          with open("reports/runtime_certification/receipt.json", "w", encoding="utf-8") as fh:
+              json.dump(receipt, fh, indent=2, sort_keys=True)
+              fh.write("\n")
+          print("runtime certification state:", state)
+          if state != "PASS":
+              sys.exit(1)
+          PY
+
+      - name: Upload runtime certification receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: repo-health-runtime
-          path: reports/repo_health/runtime
+          name: carla-runtime-certification
+          path: |
+            reports/runtime_certification
+            reports_candidate_identity.json

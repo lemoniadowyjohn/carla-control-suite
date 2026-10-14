@@ -79,6 +79,42 @@ def _resolve_run_dir(run_dir_arg: Optional[str], output_root: Optional[Path] = N
     return candidates[0]
 
 
+def _select_fallback_osm_candidate(
+    osm_files: List[Path], run_dir: Path
+) -> Tuple[Path, bool]:
+    """Pick a fallback OSM candidate when no conventional path exists.
+
+    Coordinate/OSM consistency audit (20260924): a bare
+    ``.sort(key=lambda p: p.stat().st_mtime, reverse=True)`` across every
+    ``*.osm``/``*.osm.pbf`` found anywhere under ``run_dir`` (via ``rglob``)
+    is the same unguarded mtime-as-authority anti-pattern already fixed
+    elsewhere for XODR candidates (GAP-012/GAP-023) -- a run directory can
+    genuinely contain more than one ``.osm`` file (e.g. a nested tile/probe
+    artifact under ``artifacts/tile_*/``), and picking whichever happens to
+    have the newest mtime has no content-identity guarantee.
+
+    This applies a structural guard first -- preferring the candidate
+    closest to ``run_dir`` (fewest path parts), since a nested probe
+    artifact is by construction deeper than a top-level extract -- and uses
+    mtime only as a tiebreaker among equally-shallow candidates. Returns
+    ``(chosen, ambiguous)`` where ``ambiguous`` is True
+    iff more than one candidate remained after the depth filter, i.e. mtime
+    alone had to decide -- callers should not report that case with the same
+    confidence as an exact conventional-path match.
+    """
+
+    def _depth(p: Path) -> int:
+        try:
+            return len(p.relative_to(run_dir).parts)
+        except ValueError:
+            return len(p.parts)
+
+    min_depth = min(_depth(p) for p in osm_files)
+    shallowest = [p for p in osm_files if _depth(p) == min_depth]
+    shallowest.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return shallowest[0], len(shallowest) > 1
+
+
 def _find_osm_in_run(run_dir: Path) -> Tuple[Optional[Path], str]:
     candidates = [
         run_dir / "osm" / "extract.osm",
@@ -93,8 +129,9 @@ def _find_osm_in_run(run_dir: Path) -> Tuple[Optional[Path], str]:
             return c, str(c)
     osm_files = sorted(run_dir.rglob("*.osm")) + sorted(run_dir.rglob("*.osm.pbf"))
     if osm_files:
-        osm_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-        return osm_files[0], str(osm_files[0])
+        chosen, ambiguous = _select_fallback_osm_candidate(osm_files, run_dir)
+        reason = f"{chosen}{'|ambiguous_mtime_fallback' if ambiguous else ''}"
+        return chosen, reason
     return None, "not_found"
 
 

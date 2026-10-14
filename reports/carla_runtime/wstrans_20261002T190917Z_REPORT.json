@@ -1,0 +1,125 @@
+{
+  "generated_at_utc": "2026-10-02T19:09:17.202497Z",
+  "governed_target": {
+    "fixed_delta_seconds": 0.05,
+    "max_substep_delta_time": 0.0125,
+    "max_substeps": 4,
+    "no_rendering_mode": false,
+    "substepping": true,
+    "synchronous_mode": true
+  },
+  "initial_map": "Carla/Maps/Town10HD_Opt",
+  "manual_map_identity": {
+    "arm": "manual",
+    "error": "AttributeError: 'Map' object has no attribute 'get_junctions'",
+    "generated_at_utc": "2026-10-02T19:09:17.202497Z",
+    "observed_world_map_name": "Grid0828/Maps/Grid0828/Grid0828",
+    "registry_key": "manual_grid0828",
+    "requested_package": "Grid0828",
+    "run_id": "wstrans_20261002T190917Z",
+    "schema": "runtime_map_identity/v1",
+    "status": "BLOCKED_RUNTIME"
+  },
+  "phases": {
+    "1_snapshot": {
+      "frame_probe_1": null,
+      "frame_probe_2": null,
+      "frames_advanced_during_probe": null,
+      "note": "async server: frames advance on their own; a readiness probe must not itself call tick()/wait_for_tick()",
+      "settings": {
+        "fixed_delta_seconds": 0.05,
+        "max_substep_delta_time": 0.0125,
+        "max_substeps": 4,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": true
+      }
+    },
+    "2_apply": {
+      "returned": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.0,
+        "max_substeps": 0,
+        "no_rendering_mode": false,
+        "substepping": false,
+        "synchronous_mode": false
+      }
+    },
+    "3_tick_after_apply": {
+      "elapsed_seconds": 146.00842549279332,
+      "frame": 9390,
+      "snapshot_frame": 9390,
+      "tick_return_type": "int_frame_id (synchronous mode)",
+      "tick_wall_seconds": 0.002
+    },
+    "3_verify_after_apply": {
+      "matches_governed": true,
+      "observed": {
+        "fixed_delta_seconds": 0.05,
+        "max_substep_delta_time": 0.0125,
+        "max_substeps": 4,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": true
+      }
+    },
+    "4_experiment": {
+      "fixed_delta_observed_max_abs_err": 0.0,
+      "fixed_delta_target": 0.05,
+      "frames": [
+        {
+          "elapsed_seconds": 146.058425,
+          "frame": 9391
+        },
+        {
+          "elapsed_seconds": 146.108425,
+          "frame": 9392
+        },
+        {
+          "elapsed_seconds": 146.158425,
+          "frame": 9393
+        },
+        {
+          "elapsed_seconds": 146.208425,
+          "frame": 9394
+        },
+        {
+          "elapsed_seconds": 146.258425,
+          "frame": 9395
+        }
+      ],
+      "monotonic": true,
+      "sim_time_deltas": [
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "5_restore": {
+      "restored_to": {
+        "fixed_delta_seconds": 0.05,
+        "max_substep_delta_time": 0.0125,
+        "max_substeps": 4,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": true
+      }
+    },
+    "6_verify_restore": {
+      "matches_original": true,
+      "observed": {
+        "fixed_delta_seconds": 0.05,
+        "max_substep_delta_time": 0.0125,
+        "max_substeps": 4,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": true
+      }
+    }
+  },
+  "run_id": "wstrans_20261002T190917Z",
+  "schema": "world_settings_transaction/v1",
+  "server_version": "0.9.16",
+  "tick_owner": "tools/world_settings_transaction.py (this run only)"
+}

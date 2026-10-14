@@ -1,0 +1,83 @@
+{
+  "schema": "rq3_ue426_import_cook_preflight/v1",
+  "generated_at_utc_note": "recorded during Batch 9; see sibling artifacts for exact timestamps",
+  "candidate_sha": "36ea3403811de21c288ef18108f8f2cb3d98cf58",
+  "package_name": "Ingolstadt",
+  "package_dir": "Import/Ingolstadt",
+  "package_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "tile_count": 20,
+  "target_carla_version": "0.9.16",
+  "target_ue_version": "4.26",
+  "laptop_vram_target_gib": 6,
+  "checks": {
+    "carla_0916_install_present": {
+      "status": "PASS",
+      "path": "E:/CARLA/CARLA_0.9.16",
+      "exe": "E:/CARLA/CARLA_0.9.16/CarlaUE4.exe",
+      "exe_bytes": 191488,
+      "exe_sha256": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+      "version_marker_file": "not present in the install root; version taken from the install directory name",
+      "evidence": "UP_CARLA_EXE environment variable points at this install"
+    },
+    "ue426_toolchain_available": {
+      "status": "BLOCKED_ENVIRONMENT",
+      "probed": [
+        "C:/Program Files/Epic Games/UE_4.26",
+        "C:/Program Files/Epic Games/UE_5.0",
+        "E:/Program Files/Epic Games"
+      ],
+      "ue4_root_env": "unset",
+      "ue4_root_env_var": "UE4_ROOT",
+      "reason": "no Unreal Engine editor/build host is installed on this machine, so the governed import/cook path cannot be executed"
+    },
+    "carla_rpc_live": {
+      "status": "BLOCKED_EXTERNAL",
+      "rpc_endpoint": "127.0.0.1:2000",
+      "probe": "carla.Client('127.0.0.1',2000).get_server_version() with 3s timeout",
+      "error": "RuntimeError: time-out of 3000ms while waiting for the simulator",
+      "carlaue4_process_running": false,
+      "listening_ports_2000_2001": "none",
+      "note": "no CARLA server is currently running; per Batch 9 step 15 no server was started and no process was killed"
+    },
+    "import_directory": {
+      "status": "PASS",
+      "path": "Import/Ingolstadt",
+      "promoted": true,
+      "promotion_receipt_status": "PASS"
+    },
+    "disk": {
+      "status": "PASS_WITH_CAVEAT",
+      "C_free_gib": 20.2,
+      "E_free_gib": 11.3,
+      "caveat": "a UE4.26 build plus a DDC for a 20-tile package would plausibly exceed 11 GiB on E: and is tight on C:; a cook should not be attempted without more headroom"
+    },
+    "ram": {
+      "status": "PASS",
+      "total_gib": 47.7,
+      "free_gib": 16.7
+    },
+    "vram": {
+      "status": "PASS",
+      "gpu": "NVIDIA Quadro P3200 with Max-Q Design",
+      "vram_total_mib": 6144,
+      "vram_free_mib": 5206,
+      "vram_used_mib": 818,
+      "driver_version": "573.22",
+      "matches_laptop_target": true,
+      "note": "measured with nvidia-smi; Win32_VideoController.AdapterRAM is 32-bit capped and was not relied on"
+    }
+  },
+  "parallelism_policy": {
+    "gpu_ue_stages_must_not_be_over_parallelized": true,
+    "measured_ram_gib": 16.7,
+    "recommended_worker_cap": 4,
+    "basis": "UE-heavy stages are GPU/IO bound on a 6 GiB mobile part; ResourceAwareExecutor is available in ultimate_pipeline/parallel/resource_aware.py but no import/cook driver was executed"
+  },
+  "overall": "UE4_COOK_BLOCKED_ENVIRONMENT",
+  "claims_not_made": [
+    "no import/cook was executed",
+    "no cooked artifact identity was established",
+    "no runtime map identity was established",
+    "no paired RQ3 capture was performed"
+  ]
+}

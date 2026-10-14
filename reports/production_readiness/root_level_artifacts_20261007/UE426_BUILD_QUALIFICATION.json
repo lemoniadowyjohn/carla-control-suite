@@ -1,0 +1,223 @@
+{
+  "schema": "ue426_build_qualification/v2",
+  "generated_at_utc": "2026-10-03T22:05:00Z",
+  "verdict": "UE426_BUILD_QUALIFIED",
+  "verdict_scope": "UE 4.26 engine toolchain + CARLA 0.9.16 CarlaUE4Editor target are built, loadable by Windows, and the editor reaches 'Engine is initialized'. This does NOT assert that a map has been imported or cooked, nor that a cooked map loads in the packaged Shipping runtime.",
+
+  "original_symptom": {
+    "reported": "Unable to launch G:/UnrealEngine_4.26_CARLA/Engine/Binaries/Win64/ShaderCompileWorker.exe - make sure you built ShaderCompileWorker",
+    "reproduced": false,
+    "root_cause_finding": "The symptom was not reproducible and was not a missing build. ShaderCompileWorker.exe was already present and functional at session start (mtime 2026-10-03T21:25:37, consistent with the prior wave's build). It launches and runs correctly.",
+    "evidence": {
+      "shader_compile_worker_direct_launch": {
+        "argv": ["-help"],
+        "exit_code": -1,
+        "stdout": "ShaderCompileWorker is called by UE4, it requires specific command like arguments.",
+        "interpretation": "Exit -1 plus the guard message is the expected, correct behaviour of a healthy SCW invoked without a valid command line."
+      },
+      "shader_compile_worker_sha256_equals_xgecontrolworker_sha256": "3B84E9B7DF824D67B468BB5A6CD7E2DA63203EFC80C3FD58B4E3D7796FAC2129",
+      "shader_compile_worker_identity_note": "ShaderCompileWorker.exe and XGEControlWorker.exe share a byte-identical SHA256. This is expected for this engine build (UE4 copies SCW to the XGE control worker post-build), and is corroborated by the prior wave's build log recording 'post-build SCW->XGEControlWorker copy done'. It is NOT evidence of a stub or truncated binary."
+    }
+  },
+
+  "source_authority": {
+    "engine": {
+      "path": "G:\\UnrealEngine_4.26_CARLA",
+      "remote": "https://github.com/CarlaUnreal/UnrealEngine.git",
+      "branch": "carla",
+      "commit": "e9d9e60c85f643e10eeb03f42f61554d18dcb30f",
+      "commit_subject": "Add VS2026 compatibility for removed MSVC extensions",
+      "commit_date": "2026-06-12T10:37:23+02:00",
+      "worktree_clean": true,
+      "sparse_checkout": false,
+      "clone_depth": 1,
+      "clone_depth_note": "SHALLOW clone (depth 1, rev-list --count HEAD = 1). Upstream provenance beyond the single tip commit CANNOT be verified locally; git describe returns 'No names found'. Recorded as a provenance limitation, not endorsed.",
+      "build_version": {
+        "MajorVersion": 4,
+        "MinorVersion": 26,
+        "PatchVersion": 2,
+        "Changelist": 0,
+        "CompatibleChangelist": 14830424,
+        "BranchName": "++UE4+Release-4.26"
+      },
+      "carla_engine_patch_present": true,
+      "carla_engine_patch_evidence": "Engine/Shaders/Private/CARLA/{CopyCustomStencil.usf,CopySceneDepth.usf,CopySceneStencil.usf,CopyVelocity.usf} present (CARLA semantic-stencil / scene-depth patches).",
+      "local_modification_caution": "Tip commit is a local VS2026-compatibility patch to a UE 4.26 tree, not an official CarlaUnreal release-branch commit. Official CARLA 0.9.16 pairs with branch '4.26_carla-release'. Binary output may therefore NOT be bit-identical to the engine that produced the packaged Shipping runtime."
+    },
+    "carla": {
+      "path": "G:\\CARLA\\carla_source_probe",
+      "remote": "https://github.com/carla-simulator/carla.git",
+      "commit": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "describe": "0.9.16",
+      "git_state": "detached HEAD at tag 0.9.16",
+      "commit_subject": "0.9.16 release docs updates (#9272)",
+      "commit_date": "2025-09-16T11:24:14+02:00",
+      "identity": "Official carla-simulator/carla 0.9.16 release tag. Canonical upstream, exact target version.",
+      "modified_files": [
+        "Util/BuildTools/BuildLibCarla.bat",
+        "Util/BuildTools/BuildOSM2ODR.bat",
+        "Util/InstallersWin/install_fastDDS.bat",
+        "Util/InstallersWin/install_gtest.bat",
+        "Util/InstallersWin/install_recast.bat",
+        "Util/InstallersWin/install_rpclib.bat",
+        "Util/InstallersWin/install_zlib.bat"
+      ],
+      "modified_files_note": "Windows installer/build script adaptations only. No engine or CARLA C++ source modified. Recorded, not endorsed.",
+      "deleted_tracked_files": 0
+    }
+  },
+
+  "toolchain": {
+    "visual_studio": "Visual Studio Build Tools 2022",
+    "vs_installation_version": "17.12.35521.163",
+    "vs_installation_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools",
+    "msvc_toolset_version": "14.42.34433",
+    "msvc_target_platform": "v143",
+    "ubt_reported_toolchain": "Using Visual Studio 2019 14.42.34435 toolchain (C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.42.34433) and Windows 10.0.22621.0 SDK",
+    "v142_vs2019_toolset_installed": false,
+    "windows_sdk": "10.0.22621.0",
+    "dotnet_host": "C:\\Program Files\\dotnet\\dotnet.exe",
+    "engine_bundled_dotnet": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe (present and used)",
+    "known_benign_warning": "Detected compiler newer than Visual Studio 2019, please update min version checking in WindowsPlatformCompilerSetup.h — expected consequence of the VS2026 compatibility patch; non-fatal."
+  },
+
+  "prerequisites": {
+    "Setup.bat_present": true,
+    "Setup.bat_completed": "partial / not required as blocking gate",
+    "Setup.bat_evidence": "Engine/Intermediate/Build present; engine ThirdParty binaries present (embree, OpenImageDenoise, fbxsdk, ortp, dxil). Engine/Binaries/ThirdParty/DotNet is absent, but UBT runs correctly from the system dotnet host plus Engine/Binaries/DotNET, so no gate is blocked.",
+    "GenerateProjectFiles.bat_present": true,
+    "GenerateProjectFiles_completed": false,
+    "GenerateProjectFiles_evidence": "Engine/Intermediate/ProjectFiles/UE4Editor.vcxproj ABSENT; Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool/UnrealBuildTool.csproj ABSENT. UE4.sln present but is the committed engine solution.",
+    "GenerateProjectFiles_impact": "None for command-line builds. UBT builds targets directly; every build below was executed WITHOUT generated project files and succeeded.",
+    "project_generation_required_for_cook": "unknown / not yet attempted"
+  },
+
+  "components": [
+    {
+      "component": "ShaderCompileWorker Win64 Development",
+      "status": "PASS",
+      "command": "Engine\\Build\\BatchFiles\\Build.bat ShaderCompileWorker Win64 Development -WaitMutex",
+      "return_code": 0,
+      "ubt_result": "Target is up to date",
+      "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\ShaderCompileWorker.exe",
+      "exe_bytes": 321536,
+      "exe_sha256": "3B84E9B7DF824D67B468BB5A6CD7E2DA63203EFC80C3FD58B4E3D7796FAC2129",
+      "loads_and_runs": true,
+      "runtime_probe": "exit -1 with 'requires specific command like arguments' (correct guard behaviour)"
+    },
+    {
+      "component": "UnrealHeaderTool Win64 Development",
+      "status": "PASS",
+      "command": "Engine\\Build\\BatchFiles\\Build.bat UnrealHeaderTool Win64 Development -WaitMutex",
+      "return_code": 0,
+      "ubt_result": "Target is up to date",
+      "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UnrealHeaderTool.exe",
+      "exe_bytes": 1390080,
+      "exe_sha256": "03EF36E5AE346D4BA13B84FA9F59BC91B5DCAD930025EC245F21A63CF39981E2",
+      "loads_and_runs": true,
+      "runtime_probe": "exit 6, 'LogCompile: Error: Missing module info filename on command line' (correct argument validation)"
+    },
+    {
+      "component": "UnrealLightmass Win64 Development",
+      "status": "PASS",
+      "command": "Engine\\Build\\BatchFiles\\Build.bat UnrealLightmass Win64 Development -WaitMutex",
+      "return_code": 0,
+      "ubt_result": "Built 81 actions with 12 processes (no existing makefile); subsequent invocation 'Target is up to date'",
+      "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UnrealLightmass.exe",
+      "exe_bytes": 1148416,
+      "exe_sha256": "3C5B8C265A61B34EA18E14A0A66A347709DE67D7CF9B0B4E48ED0D47BF42FC26",
+      "loads_and_runs": true,
+      "runtime_probe": "exit 0, 'LogLightmass: Display: Lightmass Win64 started' + usage banner",
+      "note": "Absent before this session; actually compiled during this session. aqProf.dll / VtuneApi.dll load failures are optional Intel profiler libraries and are benign."
+    },
+    {
+      "component": "UE4Editor Win64 Development",
+      "status": "PASS",
+      "command": "Engine\\Build\\BatchFiles\\Build.bat UE4Editor Win64 Development -WaitMutex",
+      "return_code": 0,
+      "ubt_result": "Target is up to date",
+      "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+      "exe_bytes": 505344,
+      "exe_sha256": "05DC57656EAC65FE0A4867ABA853155BB83D48F08D5B77DF164901E8B0D72134",
+      "loads_and_runs": true,
+      "runtime_probe": "UE4Editor-Cmd reached 'Engine is initialized. Leaving FEngineLoop::Init()' and loaded Template_Default.umap with 'Map check complete: 0 Error(s), 0 Warning(s)'"
+    },
+    {
+      "component": "UE4Editor-Cmd Win64 Development",
+      "status": "PASS",
+      "exe": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+      "exe_bytes": 505344,
+      "exe_sha256": "A34853EB703129570D75E9183890AA00BD38F795590E87436FC3E1B5CF656601",
+      "loads_and_runs": true
+    }
+  ],
+
+  "carla_editor_toolchain": {
+    "status": "PASS",
+    "target": "CarlaUE4Editor Win64 Development",
+    "uproject": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+    "command": "Engine\\Build\\BatchFiles\\Build.bat CarlaUE4Editor Win64 Development -Project=G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -WaitMutex -NoHotReloadFromIDE",
+    "actions": "17/17",
+    "total_execution_time_sec": 2255.76,
+    "stderr_bytes": 0,
+    "compiler_or_linker_errors": 0,
+    "target_receipt": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Binaries\\Win64\\CarlaUE4Editor.target (724734 bytes)",
+    "modules_built": [
+      {"name": "UE4Editor-CarlaUE4.dll", "bytes": 93184, "sha256": "62EC5A045B07DE99A1E9C07513BE90F17F27644E0817E81EAEF695A9C2D11B38"},
+      {"name": "UE4Editor-Carla.dll", "bytes": 10379776, "sha256": "2BB26F6BE0FE450C93E79F69EED8828EDFABCD5CA72143119BBDD7A308106139"},
+      {"name": "UE4Editor-CarlaExporter.dll", "bytes": 184320, "sha256": "A3EBB88BCEFD7DE55169B390C87AC4DA135249B20D501A5603EDA93A9BA7DA10"},
+      {"name": "UE4Editor-CarlaTools.dll", "bytes": 18539520, "sha256": "702EB5DBC406B90113AD134E4C5B4BA0CD02E4872D4EFFD2498E64B961E79D65"},
+      {"name": "UE4Editor-StreetMapRuntime.dll", "bytes": 326656},
+      {"name": "UE4Editor-StreetMapImporting.dll", "bytes": 380416}
+    ],
+    "carla_import_tooling_present": "Unreal/CarlaUE4/Plugins/CarlaTools (StreetMap, Converters/SimReady) and Util/BuildTools/Import.py",
+    "python_plugin": "Python 3.7.7 loaded inside the CARLA editor (log: 'LogPython: Using Python 3.7.7')"
+  },
+
+  "defect_found_and_fixed_this_session": {
+    "id": "CARLA_CONTENT_ROOT_LAYOUT",
+    "severity": "blocking",
+    "symptom": "CARLA editor aborted during startup with: \"Error: CDO Constructor (LoadAssetMaterialsCommandlet): Failed to find Blueprint'/Game/Carla/Blueprints/LevelDesign/RoadPainterPreset.RoadPainterPreset'\" followed by 'Fatal error!' and LogExit RequestExit(1).",
+    "root_cause": "CARLA content was materialised one directory level too shallow. Assets sat at Unreal/CarlaUE4/Content/{Blueprints,Config,Maps,Static,HDMaps}, i.e. /Game/Blueprints, /Game/Maps, /Game/Static, while the CARLA 0.9.16 C++ and the packaged 0.9.16 build both require /Game/Carla/*. The Unreal/CarlaUE4/Content/Carla directory existed but was empty (0 files).",
+    "corroboration": [
+      "CARLA build scripts reference 'Unreal\\CarlaUE4\\Content\\Carla\\HDMaps\\*.pcd' and a base content path of 'Unreal\\CarlaUE4\\Content' + MAP_FOLDER(/Carla/Maps).",
+      "Packaged runtime layout is CarlaUE4/Content/Carla/{Blueprints,Config,Maps,Static} — matching /Game/Carla/.",
+      "Editor crash explicitly demanded /Game/Carla/Blueprints/LevelDesign/RoadPainterPreset.",
+      "Content present is 0.9.16-appropriate (Town10HD/Town10HD_Opt, Town01..Town15 present); 43204 assets, 23924.75 MB."
+    ],
+    "fix_applied": "Created five reversible NTFS directory junctions inside the pre-existing empty Content/Carla: Blueprints, Config, Maps, Static, HDMaps -> their Content-root counterparts. No asset bytes were copied, moved, rewritten or modified.",
+    "fix_is_reversible": "Delete the five junctions under Unreal/CarlaUE4/Content/Carla to revert.",
+    "post_fix_result": "CARLA editor now reaches 'LogInit: Display: Engine is initialized. Leaving FEngineLoop::Init()' with 'LogCarla: == CARLA Settings ===' (RPC Port 2000, Streaming Port 2001, Secondary Port 2002, Synchronous Mode = Disabled, Rendering = Enabled, Quality Level = Low). No critical error, no missing blueprint.",
+    "carried_forward_caveat": "AGENTS.md forbids cosmetic XODR/final-map mutation and requires generator fixes at source stage only. This fix touches CARLA content LAYOUT (directory junctions, zero byte changes), not map geometry, and not the governed map package. It is recorded here for operator review because it is an environment adaptation rather than an upstream-clean state."
+  },
+
+  "exact_remaining_blocker": {
+    "id": "COOK_AND_RUNTIME_COMPATIBILITY_UNPROVEN",
+    "statement": "The UE4.26 + CARLA 0.9.16 editor toolchain is qualified and operational. The downstream closure wave (import/cook, runtime auto-map identity, paired RQ3, dataset quality, RQ5A, final release) CANNOT be reported as PASS. The precise next blocker is that no map has been imported or cooked yet, and runtime compatibility between a locally cooked map and the packaged Shipping runtime is UNPROVEN.",
+    "specific_risks": [
+      "Engine/packaged-runtime build divergence: the engine is a depth-1 shallow clone of branch 'carla' with a local 'VS2026 compatibility' patch, whereas CARLA 0.9.16 ships binaries built from '4.26_carla-release'. Cooked package versions may not load in E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe.",
+      "GenerateProjectFiles.bat has never been run (no UE4Editor.vcxproj). Required before any IDE-driven or cook-by-project step; unproven whether the cook path needs it.",
+      "No Import.py / CARLA import commandlet has been executed against the governed 20-tile package, so no UE4_IMPORT_RECEIPT.json, UE4_COOK_RECEIPT.json or COOKED_MAP_AUTHORITY.json exist.",
+      "Package descriptor / mirror / frame-identity / P0-4 contract were not revalidated in this session.",
+      "CARLA session hardening (async world load, single tick owner, WorldSettingsTransaction finally/atexit restoration, bounded structural fingerprint instead of generate_waypoints(), fault injection) was not implemented or tested in this session.",
+      "Live calibration, RQ3 paired capture, dataset_quality_gate, RQ5A execution, evidence regeneration on the final SHA, full regression, and remote push were not performed."
+    ],
+    "forbidden_shortcuts_observed": "No cook was faked. Pre-existing COOK_LOG.txt / AUTO_COOK_RECEIPT.json were NOT reused or promoted. No blocked experiment was marked authoritative."
+  },
+
+  "execution_log_locations": {
+    "carlaue4editor_build_log": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\build_carlaue4editor.log",
+    "carla_editor_smoke_pre_fix": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\carla_editor_smoke.log",
+    "carla_editor_smoke_post_fix": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\carla_editor_smoke2.log",
+    "engine_editor_smoke_log": "%TEMP%\\ue4_smoke.log"
+  },
+
+  "not_claimed": [
+    "No map was imported.",
+    "No map was cooked.",
+    "No cooked map was loaded into any CARLA runtime.",
+    "No CARLA RPC verification was performed in this session (prior-wave receipt reports 0.9.16, not re-run here).",
+    "No RQ3/RQ5 result was produced, regenerated or revalidated.",
+    "No regression suite was executed in this session."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "finding": "Avast quarantined G:/UnrealEngine_4.26_CARLA/Engine/Binaries/Win64/UE4Editor.exe as IDP.Generic",
+  "owner_steps": [
+    "open Avast quarantine/chest",
+    "restore/clear the UE4Editor entry if appropriate",
+    "add trusted UE4/CARLA dev path to Avast exclusions via normal UI",
+    "retry editor link/build"
+  ],
+  "post_remediation_gates": [
+    "exe exists, readable, size>0, valid PE, version captured",
+    "no quarantine recurrence",
+    "editor launch, project load, server launch, RPC handshake"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "safety_rule": "no antivirus disable/bypass attempted; Self-Defense respected",
+  "status": "BLOCKED_EXTERNAL",
+  "verification": {
+    "engine_dir_exists": true,
+    "rebuild_attempted": false,
+    "ue4editor_exe_exists": false,
+    "ue4editor_glob_matches": 0
+  }
+}

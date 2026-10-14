@@ -1,0 +1,57 @@
+{
+  "schema": "carla_runtime_receipt/v1",
+  "verdict": "RUNTIME_READY",
+  "run_id": "carla_run_20261002T190517Z_98274c",
+  "generated_at_utc": "2026-10-02T19:05:17Z",
+  "process_ownership": {
+    "owned_pid": 28196,
+    "exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+    "exe_sha256": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+    "exe_bytes": 191488,
+    "creation_time_utc": "2026-10-02T19:05:17.842840Z",
+    "launch_command": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe -RenderOffScreen -quality-level=Low -nosound",
+    "pre_existing_carla_pids": [],
+    "pre_existing_killed": false,
+    "global_taskkill_used": false
+  },
+  "ports": {
+    "rpc": 2000,
+    "rpc_listening": true,
+    "streaming": 2001,
+    "streaming_listening": true
+  },
+  "rpc_identity": {
+    "get_server_version": "0.9.16",
+    "world_get_map": "Carla/Maps/Town10HD_Opt",
+    "snapshot_frame": 12,
+    "snapshot_timestamp_sec": 1.9934168756008148,
+    "get_available_maps_count": 15
+  },
+  "available_maps": [
+    "AnnotationColorLandscape",
+    "Grid0821",
+    "Grid0828",
+    "Town01",
+    "Town01_Opt",
+    "Town02",
+    "Town02_Opt",
+    "Town03",
+    "Town03_Opt",
+    "Town04",
+    "Town04_Opt",
+    "Town05",
+    "Town05_Opt",
+    "Town10HD",
+    "Town10HD_Opt"
+  ],
+  "python_api": {
+    "module_path": "carla (site-packages)",
+    "client_import_ok": true
+  },
+  "notes": "Installation presence was NOT treated as readiness. Actual RPC handshake performed: client.get_server_version()='0.9.16', world.get_map() returned, snapshot/tick returned frame 12. RUNTIME_READY confirmed by real RPC response, not by port listening alone.",
+  "logs": {
+    "stdout": "reports/carla_runtime/carla_run_20261002T190517Z_98274c_stdout.log",
+    "stderr": "reports/carla_runtime/carla_run_20261002T190517Z_98274c_stderr.log",
+    "report": "reports/carla_runtime/carla_run_20261002T190517Z_98274c_REPORT.json"
+  }
+}

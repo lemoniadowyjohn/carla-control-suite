@@ -80,6 +80,31 @@ def _resolve_profile_default(
     return default
 
 
+#: ``settings.RELEASE_PROFILES`` keys are UPPERCASE (``STRUCTURAL_RELEASE``)
+#: while ``DEFAULTS`` keys are lowercase.  NEW-340: without normalization every
+#: uppercase profile fell through to ``default`` (False), so
+#: ``STRICT_QUALITY_GATES`` was silently inert for release profiles.
+#: ``development`` -> ``debug`` matches settings' ``STRICT_QUALITY_GATES: False``;
+#: every release profile in settings is strict, hence the alias to a strict key.
+_STRICT_PROFILE_ALIASES: Mapping[str, str] = {
+    "structural_release": "structural_release",
+    "carla_release": "structural_release",
+    "visual_build": "visual_build",
+    "visual_release": "visual_build",
+    "perception_release": "visual_build",
+    "scenario_augmentation": "scenario_augmentation",
+    "debug": "debug",
+    "development": "debug",
+    "experimental_unsafe": "experimental_unsafe",
+}
+
+
+def normalize_strict_profile(profile_name: str) -> str:
+    """Case/alias-normalize a release profile for strict-gate lookup."""
+    key = str(profile_name or "").strip().lower()
+    return _STRICT_PROFILE_ALIASES.get(key, key)
+
+
 def resolve_strict_quality_gates(
     profile_name: str,
     *,
@@ -92,7 +117,9 @@ def resolve_strict_quality_gates(
             return True
         if lowered in _FALSEY:
             return False
-    return _resolve_profile_default(profile_name, "strict_quality_gates", default)
+    return _resolve_profile_default(
+        normalize_strict_profile(profile_name), "strict_quality_gates", default
+    )
 
 
 def resolve_experimental_unsafe(

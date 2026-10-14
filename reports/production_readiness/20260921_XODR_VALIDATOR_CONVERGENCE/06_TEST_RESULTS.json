@@ -1,0 +1,23 @@
+{
+  "duration_s": 873.2,
+  "failed": 7,
+  "failures": [
+    "ultimate_pipeline/tests/unit/test_mtime_audit.py::...run_alignment_and_matching (PRE-EXISTING, stash-verified OC-51)",
+    "ultimate_pipeline/tests/unit/test_safe_float_nan_sweep_batch2.py::...test_nan_coordinate_excluded_from_bbox (PRE-EXISTING, stash-verified OC-51)",
+    "tests/topology/test_junction_model.py::test_junction_validator_lane_links_out_of_range (PRE-EXISTING, stash-verified this task)",
+    "tests/unit/test_mesh_streamer_update.py x4 (PRE-EXISTING other-agent churn, zero code link to OC-59 files)"
+  ],
+  "fixed_by_this_task": [
+    "tests/quality/test_carla_opendrive_compat_gate.py x3 (converged issue codes/severity)",
+    "tests/unit/test_c9_tail_gate_controls.py xsd false-green (now asserts NOT_CONFIGURED)",
+    "tests/unit/test_crash_safe_length_repair.py (acceptance no longer reads skipped XSD as pass)",
+    "ultimate_pipeline/tests/unit/test_quality_checkers_misc.py x5 (honest XML_BASIC_INTEGRITY label)",
+    "tests/phase_q/test_duplicate_module_drift.py (submission mirror re-synced)"
+  ],
+  "new_tests": "tests/unit/test_xodr_validator_convergence.py: 35 passed",
+  "note": "Filled by the pytest step after bundle generation.",
+  "passed": 5904,
+  "skipped": 2,
+  "status": "COMPLETE_WITH_PREEXISTING_FAILURES",
+  "suite": "full pytest (pytest.ini testpaths)"
+}

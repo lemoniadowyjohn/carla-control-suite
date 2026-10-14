@@ -2,8 +2,12 @@
 
 Navigation authority for this repository's documentation. Reflects the **actual current structure**
 as of baseline `2e020d9b` (branch `review/claude-independent-audit-20260906`) -- not an aspirational
-layout. See `DOCS_INFORMATION_ARCHITECTURE.md` (repo root) for the reconciled target structure and
-what a future mechanical migration would move where.
+layout. Active production work and gap tracking now live on
+`integration/production-large-map-20260918` (gap register:
+`reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/MASTER_GAP_REGISTER.md`;
+closure plan: `reports/production_readiness/20260923_MASTER_CLOSURE_PLAN/PLAN.md`). See
+`DOCS_INFORMATION_ARCHITECTURE.md` (repo root) for the reconciled target structure and what a
+future mechanical migration would move where.
 
 ## Start here
 
@@ -25,7 +29,7 @@ what a future mechanical migration would move where.
 
 - [`map_quality/JUNCTIONS_AND_CONNECTORS.md`](map_quality/JUNCTIONS_AND_CONNECTORS.md)
 - [`map_quality/JUNCTIONS_AND_ROUNDABOUTS.md`](map_quality/JUNCTIONS_AND_ROUNDABOUTS.md)
-- `../PRODUCTION_MAP_QUALITY_CONTRACT.yaml` -- the unified acceptance-profile contract
+- `../PRODUCTION_MAP_QUALITY_CONTRACT.yaml` -- (historical reference) the unified acceptance-profile contract (not executed by runtime)
   (`research_release` / `production_candidate` / `runtime_certified`).
 - `../MAP_QUALITY_GAP_REGISTER.json` -- the full, ranked (P0-P3) gap list this contract and the
   task graph are built from.

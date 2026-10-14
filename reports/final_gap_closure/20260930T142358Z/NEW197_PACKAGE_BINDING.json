@@ -1,0 +1,29 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "behaviors": [
+    "correct package/config -> PASS",
+    "config absent -> FAIL_MATERIAL_CONFIGURATION_MISSING",
+    "wrong package -> FAIL_PACKAGE_MISMATCH",
+    "two configs -> FAIL_AMBIGUOUS",
+    "outside root -> FAIL_CONFIG_OUTSIDE_PACKAGE_ROOT",
+    "manifest hash mismatch -> FAIL_PACKAGE_MISMATCH",
+    "CLI vs resolved mismatch -> explicit mismatch",
+    "no blind FileList[0]: length checked first"
+  ],
+  "files": [
+    "ultimate_pipeline/tiling/carla_0916_large_map_contract.py",
+    "ultimate_pipeline/tests/unit/test_v4_large_map_contract.py"
+  ],
+  "identity_fields": [
+    "requested_package",
+    "resolved_package",
+    "import_manifest",
+    "source_json",
+    "source_json_sha256",
+    "package_root",
+    "map_name",
+    "build_id"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "PASS"
+}

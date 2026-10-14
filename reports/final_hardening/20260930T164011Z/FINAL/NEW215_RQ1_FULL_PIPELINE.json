@@ -1,0 +1,31 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "blocker": "single run ~70+ min; 5 sequential runs exceed session budget",
+  "input": {
+    "fragment": false,
+    "junctions": 3559,
+    "registry_key": "auto_map_of_record",
+    "roads": 32266,
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "verification": "VERIFIED"
+  },
+  "matrix": "RQ1_FULL_DETERMINISM_MATRIX.json verdict INCOMPLETE run_count=1",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "resume": [
+    "python C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\rq1_trial_run.py <i> <base> (x5 isolated dirs)",
+    "collect 5 run receipts -> python tools/rq1_five_run_matrix.py <receipts> --out RQ1_FULL_DETERMINISM_MATRIX.json"
+  ],
+  "run_00": {
+    "receipt": "reports/final_hardening_p11/run_00_receipt.json",
+    "stages_complete": [
+      "01",
+      "02",
+      "03",
+      "05",
+      "06"
+    ]
+  },
+  "runs_completed": 1,
+  "runs_required": 5,
+  "status": "INCOMPLETE"
+}

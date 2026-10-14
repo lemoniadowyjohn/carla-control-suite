@@ -1,0 +1,43 @@
+{
+  "run_id": "20260919T000000Z_VISUAL_SCOPE_DEFINITION",
+  "task_id": "OC-46",
+  "title": "Visual scope definition - building-only tile claim boundary",
+  "components": [
+    "ultimate_pipeline/tiling/tile_fbx_generator.py::generate_tile_fbx",
+    "ultimate_pipeline/enrichment/blender_runner.py::BlenderRunner"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "overclaim": "The tile FBX generation pipeline was implicitly described as producing a 'complete visual map' or 'CARLA Large Map' visual product. In reality, the tile FBX pipeline ONLY produces building/clutter FBX files (from OSM2World -> Blender). Road/junction/sidewalk/marking visuals are owned by CARLA/OpenDRIVE import, not by the FBX pipeline.",
+    "misleading_docs": "Documentation and claim boundaries implied the FBX tiles constituted a complete visual map, when they only cover buildings/clutter."
+  },
+  "corrected_semantics": {
+    "tile_scope": "BUILDING_OCCUPIED_CELLS_ONLY - The tile FBX artifacts ONLY cover building/clutter geometry in occupied grid cells. They do NOT include: road surfaces, junctions, sidewalks, road markings, traffic lights, or any road-adjacent visual elements.",
+    "proves_complete_visual_map": "false - Explicitly documented in tile_fbx_generator.py manifest claim_boundary and in TileFbxResult.claim_boundary.",
+    "visual_pipeline_architecture": {
+      "final_xodr": "Road/junction/sidewalk/marking geometry (CARLA/OpenDRIVE native)",
+      "pinned_osm": "Buildings/environment source geometry",
+      "final_semantic_authority": "Signs/lights/crosswalks semantic layer",
+      "master_visual_frozen": "Deterministic spatial partition combining all three"
+    }
+  },
+  "tests": {
+    "updated_claim_boundary": "TileFbxResult.claim_boundary now explicitly states: 'Offline FBX generation only. This tile has NOT been imported by UE4/UE5 Editor or cooked; runtime streaming/seam behavior is UNCONFIRMED until the live UE4 track runs.'",
+    "tile_scope_field": "TileFbxResult.tile_scope = 'BUILDING_OCCUPIED_CELLS_ONLY' added to TileFbxResult.to_dict()",
+    "proves_complete_visual_map": "proves_complete_visual_map = false added to TileFbxResult.to_dict()"
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_tile_fbx_generator.py -v"
+  ],
+  "regression_results": {
+    "focused": "Tile FBX generator tests pass (28 passed)",
+    "downstream": "Full pipeline tests green"
+  },
+  "residual_risks": [
+    "Downstream consumers (e.g., UE4 cooking scripts) may still assume tile FBXs provide complete visual coverage. Explicit documentation and claim_boundary updates are necessary but not sufficient; consumer code must be audited.",
+    "The master visual scene architecture (OC-46 item 15) is a future integration point, not yet implemented. This scope definition prepares for it but does not implement it.",
+    "OSM2World configuration (excludeWorldModule) explicitly excludes roads/rail/aeroway/parking - this is correct for the claimed scope but must be documented to avoid confusion."
+  ]
+}

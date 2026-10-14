@@ -1,0 +1,113 @@
+{
+  "schema": "PROCESS_TREE_SUPERVISION_FINAL/v1",
+  "schema_version": 1,
+  "generated_utc": "2026-10-06T12:34:43.537345Z",
+  "PROCESS_TREE_SUPERVISION": "PASS",
+  "JOB_MATRIX": {
+    "tests": 25,
+    "failures": 0,
+    "native_crashes": 0,
+    "result": "PASS"
+  },
+  "JOB_STRESS": {
+    "tests": 270,
+    "failures": 0,
+    "native_crashes": 0,
+    "supervisor_death_cycles_contained": "50/50",
+    "result": "PASS"
+  },
+  "T6_OWNER_IDENTITY": {
+    "assertion_root_cause": "HARNESS_IDENTITY_REFERENCE_ERROR",
+    "defective_assertion": "lease.root_pid == hp.pid (hp.pid is the venv launcher)",
+    "correct_contract": "lease.root_pid == authority.owner_pid AND lease.root_creation_time == authority.owner_creation_time",
+    "wrapper_process_explanation": "KNOWN_INTERMEDIATE_WRAPPER",
+    "controller_pid": 16948,
+    "launcher_pid": 21980,
+    "launcher_executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+    "launcher_creation_time": "2026-10-06T11:47:29.4592050Z",
+    "owner_authority_pid": 37056,
+    "owner_os_ppid": 21980,
+    "owner_executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "owner_creation_time": "2026-10-06T11:47:29.4739740Z",
+    "popen_pid_equals_owner_pid": false,
+    "owner_authority_process_binding": "PASS",
+    "holder_process_chain": [
+      {
+        "pid": 37056,
+        "ppid": 21980,
+        "exe": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+      },
+      {
+        "pid": 21980,
+        "ppid": 16948,
+        "exe": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe"
+      },
+      {
+        "pid": 16948,
+        "ppid": 29828,
+        "exe": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+      },
+      {
+        "pid": 29828,
+        "ppid": 10948,
+        "exe": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe"
+      },
+      {
+        "pid": 10948,
+        "ppid": 12404,
+        "exe": "C:\\Program Files\\PowerShell\\7\\pwsh.EXE"
+      },
+      {
+        "pid": 12404,
+        "ppid": 4316,
+        "exe": "C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe"
+      },
+      {
+        "pid": 4316,
+        "ppid": 25840,
+        "exe": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+      },
+      {
+        "pid": 25840,
+        "ppid": 3328,
+        "exe": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminal_1.24.12741.0_x64__8wekyb3d8bbwe\\WindowsTerminal.exe"
+      }
+    ],
+    "consecutive_runs": 5,
+    "setup_pass": "5/5",
+    "owner_death_pass": "5/5",
+    "reconciliation_pass": "5/5",
+    "reacquire_after_pass": "5/5",
+    "independent_series_executed": 2,
+    "total_runs_executed": 10,
+    "owner_death_verified_per_run": true,
+    "result": "PASS"
+  },
+  "LEASE_API_CONTRACT_TEST": {
+    "result": "PASS",
+    "tests_passed": 15,
+    "production_defect_fixed": "lease_job_coupling.py passed repo_sha to SingleWriterLease.acquire(), which takes no OperationLease metadata; the holder died with TypeError before creating the Job"
+  },
+  "LEASE_JOB_COUPLING": {
+    "result": "PASS",
+    "passed": 11,
+    "total": 11,
+    "owner_death_reconciliation": "PASS",
+    "live_lease_reconcile_denied": "PASS",
+    "release_denied_live_descendant": "PASS"
+  },
+  "HANDLE_COUNT": {
+    "api": "GetProcessHandleCount",
+    "before": 187,
+    "after": 187,
+    "delta": 0,
+    "measurement_valid": true,
+    "cycles": 200,
+    "leak_status": "NONE"
+  },
+  "PRODUCTION_CONTENT_MUTATED": false,
+  "notes": [
+    "Base-interpreter launch was NOT substituted; the venv launch path is retained and launcher identity is kept separate from logical lease-owner identity.",
+    "SingleWriterLease.acquire() reconciles a STALE record inline while holding the mutex; the earlier coupling assertion that a stale lease be denied before reconciliation tested a property the control plane never claimed and was corrected."
+  ]
+}

@@ -40,23 +40,12 @@ try:
 except Exception:  # pragma: no cover
     _HAS_PYPROJ = False
 
-# ---------------------------------------------------------------------------
 # Verified F1 coordinate contract (P05 CRS reconciliation, PHASE_1A_DIAGNOSIS.md).
 #
 # The authoritative OpenDRIVE geometry frame is the Osm2ODR-native transverse
-# Mercator projection used by CARLA's Osm2ODR converter:
-#
-#     +proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs
-#
-# The OpenDRIVE <geoReference> header carried on `raw_xodr_run_1_epsg32632_header_pinned.xodr`
-# (an EPSG:32632-style string) is METADATA-ONLY per F1: Osm2ODR does NOT reproject
-# geometry into it. Treating the header string as the geometry CRS is the root cause
-# of the J5 ~165,943 m "origin-shift" defect. This constant is the single source of
-# truth; the declared geoReference is retained only for provenance reporting.
-# ---------------------------------------------------------------------------
-VERIFIED_XODR_GEOMETRY_CRS_PROJ4 = (
-    "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
-)
+# Mercator projection used by CARLA's Osm2ODR converter.
+# Imported from canonical coordinate frame contract.
+from ultimate_pipeline.geometry import FRAME_NATIVE_CRS as VERIFIED_XODR_GEOMETRY_CRS_PROJ4
 VERIFIED_XODR_FRAME = "Osm2Odr-native tmerc(lat_0=0, lon_0=0, k=1, x_0=0, y_0=0)"
 
 

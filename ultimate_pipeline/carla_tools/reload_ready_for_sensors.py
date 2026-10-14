@@ -51,6 +51,83 @@ def _wait_for_streaming_port(
     return False
 
 
+def _wait_for_sensor_canary(
+    world: Any,
+    *,
+    ticks: int = 10,
+    tick_timeout_s: float = 2.0,
+    width: int = 64,
+    height: int = 48,
+    result: Optional[dict] = None,
+) -> dict:
+    """
+    NEW-255: prove sensor callback transport with a canary, not a TCP port.
+
+    Streaming port 2001 was being used as the proxy for "sensors can work", which
+    is wrong in both directions: it blocks on maps that never open the port but
+    deliver callbacks fine, and it can be open on a map whose sensor transport is
+    still broken. The capability perception actually requires is "attach one RGB
+    sensor and receive a frame", so that is what is measured.
+
+    The canary deliberately avoids ``destroy()``: on the Grid maps
+    ``ASensor::EndPlay`` is a known teardown-crash source (NEW-258/NEW-259), and a
+    readiness check must not be able to crash the engine it is checking.
+
+    Returns a dict with ``ok``, ``frames_received`` and ``errors``.
+    """
+    receipt: dict = result if result is not None else {}
+    receipt.setdefault("canary_frames", 0)
+    receipt.setdefault("canary_errors", [])
+    frames: list[int] = []
+    sensor = None
+    listener_registered = False
+
+    try:
+        carla_mod = importlib.import_module("carla")
+        blueprint = world.get_blueprint_library().find("sensor.camera.rgb")
+        blueprint.set_attribute("image_size_x", str(int(width)))
+        blueprint.set_attribute("image_size_y", str(int(height)))
+        blueprint.set_attribute("fov", "90")
+        transform = carla_mod.Transform(carla_mod.Location(x=0.0, z=2.0))
+        sensor = world.spawn_actor(blueprint, transform)
+
+        def _on_image(image: Any) -> None:
+            frames.append(int(getattr(image, "frame", -1)))
+
+        sensor.listen(_on_image)
+        listener_registered = True
+
+        for _ in range(max(1, int(ticks))):
+            try:
+                settings = world.get_settings()
+                if bool(getattr(settings, "synchronous_mode", False)):
+                    world.tick(float(tick_timeout_s))
+                else:
+                    world.wait_for_tick(float(tick_timeout_s))
+            except Exception as exc:
+                receipt["canary_errors"].append(f"canary_tick_failed: {exc}")
+                break
+            if frames:
+                break
+    except Exception as exc:
+        receipt["canary_errors"].append(f"canary_spawn_failed: {type(exc).__name__}: {exc}")
+    finally:
+        # Stop the listener but DO NOT destroy the sensor. Leaving it to the world
+        # teardown is safer than an explicit destroy on unstable maps.
+        if sensor is not None and listener_registered:
+            try:
+                sensor.stop()
+            except Exception:
+                pass
+
+    receipt["canary_frames"] = len(frames)
+    receipt["canary_first_frame"] = frames[0] if frames else None
+    receipt["ok"] = bool(frames)
+    if not frames and not receipt["canary_errors"]:
+        receipt["canary_errors"].append("canary_no_frames: sensor attached but no callback arrived")
+    return receipt
+
+
 def _reload_ready_for_sensors(
     client: Any,
     *,
@@ -66,7 +143,18 @@ def _reload_ready_for_sensors(
     streaming_port: int = 2001,
     wait_for_streaming: bool = True,
     streaming_wait_s: float = 120.0,
+    require_sensor_canary: Optional[bool] = None,
 ) -> Any:
+    """
+    Load a map and make it ready for sensor attachment.
+
+    NEW-255: the streaming port is no longer decisive. Port 2001 is polled and
+    recorded as *diagnostic evidence*, but readiness requires a sensor canary --
+    one RGB sensor that actually produces a frame. The previous behaviour waved
+    the run through when the port never opened, which is both fail-open and
+    unreliable on the Grid maps, which do not consistently expose 2001 yet do
+    deliver sensor callbacks.
+    """
     carla = importlib.import_module("carla")
     # Allow env-var override for slow machines (e.g. Grid0828/Grid0821 first-load delay).
     try:
@@ -107,20 +195,22 @@ def _reload_ready_for_sensors(
         except TypeError:
             world = client.reload_world()
 
-    # Wait for streaming port to recover after world load.
-    # load_world/generate_opendrive_world restarts CARLA streaming server (port 2001).
-    # spawn_actor(attach_to=ego) hangs if streaming is not yet ready.
+    # NEW-255: port 2001 is diagnostic evidence, not the acceptance criterion.
+    streaming_receipt: dict = {"waited": bool(wait_for_streaming), "port_open": None}
     if wait_for_streaming:
         streaming_ok = _wait_for_streaming_port(
             host=streaming_host,
             port=streaming_port,
             wait_s=streaming_wait_s,
         )
+        streaming_receipt["port_open"] = bool(streaming_ok)
         if not streaming_ok:
+            # NEW-255: this is no longer a fail-open pass-through. A closed port is
+            # recorded, and the canary below decides readiness.
             print(
-                f"[reload_ready] WARNING: streaming port {streaming_port} did not "
-                f"open within {streaming_wait_s}s — proceeding anyway "
-                f"(use --skip-stream-check to suppress sensor spawn errors)"
+                f"[reload_ready] NOTE: streaming port {streaming_port} did not open "
+                f"within {streaming_wait_s}s; recorded as diagnostic only. Readiness "
+                f"is decided by the sensor canary, not by this port."
             )
 
     for _ in range(async_warmup_frames):
@@ -146,4 +236,26 @@ def _reload_ready_for_sensors(
             world.tick(seconds=timeout)
         except Exception:
             break
+
+    # NEW-255: the actual acceptance gate.
+    if require_sensor_canary is None:
+        env_flag = os.environ.get("UP_REQUIRE_SENSOR_CANARY", "").strip().lower()
+        require_sensor_canary = env_flag not in ("0", "false", "no", "")
+    if require_sensor_canary:
+        canary = _wait_for_sensor_canary(world, ticks=int(os.environ.get("UP_CANARY_TICKS", "10")))
+        canary["streaming"] = streaming_receipt
+        streaming_receipt["canary"] = canary
+        if not canary.get("ok"):
+            raise RuntimeError(
+                "SENSOR_CANARY_FAILED: " + "; ".join(canary.get("canary_errors") or ["no frames"])
+            )
+        print(
+            f"[reload_ready] sensor canary PASS (frames={canary.get('canary_frames')}, "
+            f"streaming_port_open={streaming_receipt.get('port_open')})"
+        )
+
+    try:
+        world._reload_ready_receipt = streaming_receipt  # type: ignore[attr-defined]
+    except Exception:
+        pass
     return world

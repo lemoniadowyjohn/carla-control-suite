@@ -1,0 +1,95 @@
+{
+  "acceptance_artifact": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260924T130000Z_PHASE10_STATIC_RELEASE_MATRIX\\measure_candidate_acceptance\\artifacts\\ingolstadt_perception_map_of_record_20260916_232831\\map_acceptance.json",
+  "acceptance_artifact_sha256": "aa8e06493e126de26ef09f24ee018618433bfdfa07c43802b1316a6a865df1e2",
+  "failed_gates": [],
+  "final_xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "final_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "hard_fail_reasons": [],
+  "linked_artifact_sha256": {
+    "lane_count_changes": "d4200f58707298f3bda246ab479b3d11486f33244f96ec5216a95bb81878ed8f"
+  },
+  "linked_artifacts": {
+    "lane_count_changes": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260924T130000Z_PHASE10_STATIC_RELEASE_MATRIX\\measure_candidate_acceptance\\lane_count_changes.json"
+  },
+  "metrics": {
+    "buildings_count": 5682,
+    "carla_import_s_issue_count": 0,
+    "carla_import_s_ok": true,
+    "carla_opendrive_compat_issue_count": 0,
+    "carla_opendrive_compat_ok": true,
+    "collision_mesh_issue_count": 0,
+    "collision_mesh_ok": true,
+    "component_reachability_recovery_status": "pass",
+    "component_reachability_spec_status": "incomplete",
+    "dem_coverage_ratio": 1.0,
+    "elevation_continuity_ok": true,
+    "elevation_max_link_dz_m": 1.4808929999999805,
+    "elevation_missing_and_cliffs_ok": true,
+    "elevation_smoothness_issue_count": 0,
+    "elevation_smoothness_ok": true,
+    "elevation_stats": {
+      "z_max": 404.915794,
+      "z_min": 362.026747,
+      "z_range": 42.889047000000005
+    },
+    "elevation_zero_ratio": 0.0,
+    "functional_signals_count": 21163,
+    "geometric_continuity_ok": true,
+    "isolated_components_spec": null,
+    "junction_integrity_issue_count": 0,
+    "junction_integrity_ok": true,
+    "lane_component_count_spec": null,
+    "lane_count_change_boundary_count": 45178,
+    "lane_count_change_no_change_count": 42171,
+    "lane_count_change_osm_explained_count": 0,
+    "lane_count_change_unexplained_count": 3007,
+    "lane_count_change_unresolved_road_link_count": 0,
+    "lane_geometry_continuity_issue_count": 0,
+    "lane_geometry_continuity_ok": true,
+    "lane_ok": true,
+    "lane_successor_missing_count": 0,
+    "lane_width_continuity_issue_count": 0,
+    "lane_width_continuity_ok": true,
+    "largest_component_fraction_spec": null,
+    "length_invariant_tol_m": 1e-09,
+    "length_invariant_violations": 0,
+    "origin_centroid_distance_m": 9669.597903721966,
+    "physics_feasibility_issue_count": 0,
+    "physics_feasibility_ok": true,
+    "post_tiling_integrity_issue_count": 0,
+    "post_tiling_integrity_ok": true,
+    "problematic_components_spec": null,
+    "randomness_entropy_entropy": 0.9889069103036516,
+    "randomness_entropy_ok": true,
+    "seam_stats": {
+      "bad_fraction": 0.0,
+      "count": 0,
+      "max_bad_fraction": 0.002,
+      "max_jump": 1.0,
+      "p95_jump": 0.1634999999999991,
+      "total_jump_samples": 283474
+    },
+    "semantic_overlap_issue_count": 0,
+    "semantic_overlap_ok": true,
+    "topology_production_evidence": "LITERAL_SPEC",
+    "traffic_light_object_count": 21163,
+    "unmatched_cross_link_details_spec": null,
+    "unmatched_cross_links_spec": null
+  },
+  "payload_sha256": "d1130720fc225de77c90637f677da4df0d689d6731d52611fe340a5ef46b9440",
+  "provenance": {
+    "git_sha": "98d526ca999f97abd806247aed07439aaefd9a7a",
+    "python_version": "3.12.2",
+    "tool": "map_acceptance"
+  },
+  "run_id": "ingolstadt_perception_map_of_record_20260916_232831",
+  "schema": "map_acceptance_v1",
+  "soft_warnings": [
+    {
+      "gate": "lane_count_changes",
+      "reason": "unexplained_changes=3007; unresolved_road_links=0; advisory review required"
+    }
+  ],
+  "valid": true,
+  "valid_for_experiments": true
+}

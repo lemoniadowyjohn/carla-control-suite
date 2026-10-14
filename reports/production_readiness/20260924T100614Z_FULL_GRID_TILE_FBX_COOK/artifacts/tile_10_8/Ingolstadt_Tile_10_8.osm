@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="tile_fbx_generator.py">
+  <node id="-1" lat="48.7666772" lon="11.4766226" visible="true" />
+  <node id="-2" lat="48.7665758" lon="11.4766211" visible="true" />
+  <node id="-3" lat="48.7665747" lon="11.4767857" visible="true" />
+  <node id="-4" lat="48.7666761" lon="11.4767872" visible="true" />
+  <node id="-5" lat="48.7668794" lon="11.4767844" visible="true" />
+  <node id="-6" lat="48.7668035" lon="11.4767842" visible="true" />
+  <node id="-7" lat="48.7668037" lon="11.4765011" visible="true" />
+  <node id="-8" lat="48.7668796" lon="11.4765012" visible="true" />
+  <node id="-9" lat="48.7599535" lon="11.4722350" visible="true" />
+  <node id="-10" lat="48.7600248" lon="11.4722559" visible="true" />
+  <node id="-11" lat="48.7600049" lon="11.4724118" visible="true" />
+  <node id="-12" lat="48.7599336" lon="11.4723908" visible="true" />
+  <node id="-13" lat="48.7599770" lon="11.4719516" visible="true" />
+  <node id="-14" lat="48.7599439" lon="11.4721967" visible="true" />
+  <node id="-15" lat="48.7599566" lon="11.4722007" visible="true" />
+  <node id="-16" lat="48.7599326" lon="11.4723782" visible="true" />
+  <node id="-17" lat="48.7599234" lon="11.4723754" visible="true" />
+  <node id="-18" lat="48.7599084" lon="11.4724864" visible="true" />
+  <node id="-19" lat="48.7597697" lon="11.4724432" visible="true" />
+  <node id="-20" lat="48.7598418" lon="11.4719095" visible="true" />
+  <node id="-21" lat="48.7667850" lon="11.4761795" visible="true" />
+  <node id="-22" lat="48.7667851" lon="11.4762231" visible="true" />
+  <node id="-23" lat="48.7667848" lon="11.4763394" visible="true" />
+  <node id="-24" lat="48.7668802" lon="11.4763368" visible="true" />
+  <node id="-25" lat="48.7668801" lon="11.4764928" visible="true" />
+  <node id="-26" lat="48.7665739" lon="11.4764919" visible="true" />
+  <node id="-27" lat="48.7665742" lon="11.4763365" visible="true" />
+  <node id="-28" lat="48.7666605" lon="11.4763388" visible="true" />
+  <node id="-29" lat="48.7666609" lon="11.4761796" visible="true" />
+  <node id="-30" lat="48.7666884" lon="11.4761797" visible="true" />
+  <way id="-1000000000" visible="true">
+    <nd ref="-1" />
+    <nd ref="-2" />
+    <nd ref="-3" />
+    <nd ref="-4" />
+    <nd ref="-1" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000001" visible="true">
+    <nd ref="-5" />
+    <nd ref="-6" />
+    <nd ref="-7" />
+    <nd ref="-8" />
+    <nd ref="-5" />
+    <tag k="building" v="yes" />
+  </way>
+  <way id="-1000000002" visible="true">
+    <nd ref="-9" />
+    <nd ref="-10" />
+    <nd ref="-11" />
+    <nd ref="-12" />
+    <nd ref="-9" />
+    <tag k="building" v="yes" />
+    <tag k="name" v="Rampe" />
+  </way>
+  <way id="-1000000003" visible="true">
+    <nd ref="-13" />
+    <nd ref="-14" />
+    <nd ref="-15" />
+    <nd ref="-16" />
+    <nd ref="-17" />
+    <nd ref="-18" />
+    <nd ref="-19" />
+    <nd ref="-20" />
+    <nd ref="-13" />
+    <tag k="building" v="shed" />
+    <tag k="name" v="Pionierhafen Technikgebäude" />
+  </way>
+  <way id="-1000000004" visible="true">
+    <nd ref="-21" />
+    <nd ref="-22" />
+    <nd ref="-23" />
+    <nd ref="-24" />
+    <nd ref="-25" />
+    <nd ref="-26" />
+    <nd ref="-27" />
+    <nd ref="-28" />
+    <nd ref="-29" />
+    <nd ref="-30" />
+    <nd ref="-21" />
+    <tag k="amenity" v="funeral_hall" />
+    <tag k="building" v="yes" />
+  </way>
+</osm>

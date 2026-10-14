@@ -1,0 +1,40 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": "ultimate_pipeline/utils/finalize_run_pack.py",
+  "defect_confirmed": "Requested files were silently skipped when missing/unreadable/out-of-root/failing, and SUCCESS.txt could be published independently of manifest completeness.",
+  "evidence_paths": [
+    "D16_NEW_202.json"
+  ],
+  "files_changed": [
+    "ultimate_pipeline/utils/finalize_run_pack.py",
+    "ultimate_pipeline/main_pipeline.py",
+    "ultimate_pipeline/run_full_domain_gap.py",
+    "ultimate_pipeline/tests/unit/test_finalize_run_pack.py"
+  ],
+  "finding_id": "NEW-202",
+  "implementation": [
+    "explicit categories: requested/present/hashed/missing/unreadable/outside_release_root/duplicate/unexpected",
+    "any failing MANDATORY artifact forces status=FAIL and suppresses SUCCESS.txt",
+    "signature.json written atomically (temp + os.replace) BEFORE SUCCESS.txt, so 'SUCCESS exists but manifest missing' is unreachable",
+    "SUCCESS.txt bound to manifest_sha256, signature_sha256, status and timestamp",
+    "verify_run_pack() detects post-finalization tampering, deletion and unbound SUCCESS",
+    "write_success_txt() gated on a recorded PASS finalization state",
+    "callers declare mandatory vs conditional artifact sets"
+  ],
+  "new_production_modules": 0,
+  "priority": "P0",
+  "remaining_blockers": [],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "status": "PASS",
+  "task_id": "D16",
+  "test_results": {
+    "failed": 0,
+    "passed": 29,
+    "skipped": 1,
+    "skipped_reason": "POSIX symlink-escape case (Windows host)"
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_finalize_run_pack.py -q"
+  ],
+  "title": "Fail-closed release pack finalization"
+}

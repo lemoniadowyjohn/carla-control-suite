@@ -1,0 +1,29 @@
+{
+  "adversarial_tests": {
+    "test_new295_coordinate_frame_binding": "PASS",
+    "test_new295_wrong_crs_fails": "PASS"
+  },
+  "blocking_conditions": [],
+  "description": "Coordinate-frame semantics with explicit transforms",
+  "finding_id": "NEW-295",
+  "implementation": {
+    "evidence_fields": [
+      "route_coordinate_frame",
+      "route_crs",
+      "manual_map_frame",
+      "manual_transform_sha256",
+      "auto_map_frame",
+      "auto_transform_sha256",
+      "both_maps_share_exact_frame"
+    ],
+    "file": "ultimate_pipeline/perception/route_frame_binding.py",
+    "functions": [
+      "route_frame_binding_from_manifest",
+      "validate_frame_binding",
+      "build_route_frame_binding"
+    ]
+  },
+  "schema_version": "rq3_receipt_v1",
+  "status": "PASS",
+  "timestamp_utc": "2026-10-01T03:10:43.075111Z"
+}

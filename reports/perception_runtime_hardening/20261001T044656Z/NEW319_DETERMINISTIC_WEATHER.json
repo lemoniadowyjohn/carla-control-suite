@@ -1,0 +1,62 @@
+{
+  "defect_before": {
+    "background_daemon_thread_used": true,
+    "global_random_used": true,
+    "imported_by_any_caller": false,
+    "wall_clock_sleep_used": true
+  },
+  "different_seed_different_schedule": true,
+  "dynamic_forbidden_for_pair": true,
+  "dynamic_gate_reason": [
+    "WEATHER_MODE_DYNAMIC_FORBIDDEN_FOR_PAIR:DIAGNOSTIC_DYNAMIC_WEATHER|GOVERNED_SCHEDULED_WEATHER",
+    "WEATHER_DETERMINISM_MISMATCH:weather_seed:1!=1234",
+    "WEATHER_DETERMINISM_MISMATCH:ticks_per_step:50!=10",
+    "WEATHER_DETERMINISM_MISMATCH:schedule_presence"
+  ],
+  "finding": "NEW-319",
+  "governed_modes": [
+    "GOVERNED_FIXED_WEATHER",
+    "GOVERNED_SCHEDULED_WEATHER"
+  ],
+  "legacy_controller_retained_as": "DIAGNOSTIC_DYNAMIC_WEATHER only",
+  "modes": [
+    "DIAGNOSTIC_DYNAMIC_WEATHER",
+    "GOVERNED_FIXED_WEATHER",
+    "GOVERNED_SCHEDULED_WEATHER"
+  ],
+  "new_controller": "ultimate_pipeline.perception.environment.deterministic_weather",
+  "progression_basis": "simulation frame id (never wall-clock seconds)",
+  "records_effective_weather_per_transition": true,
+  "records_transition_frame_ids": true,
+  "rng_ownership": "owned random.Random(seed); process-global RNG never seeded or mutated",
+  "same_seed_same_schedule": false,
+  "schedule": [
+    {
+      "end_frame": 10,
+      "preset": "CloudyNoon",
+      "start_frame": 0,
+      "step_index": 0,
+      "weather_sha256": "506745df9478c943a711f04b18ed3a3a85c030ec084cff13968d8258da41540c"
+    },
+    {
+      "end_frame": 20,
+      "preset": "ClearNoon",
+      "start_frame": 10,
+      "step_index": 1,
+      "weather_sha256": "8e71402694d974c8e3fae852b136a977b99a7a100f2b268db75f0b364aa3a3a8"
+    },
+    {
+      "end_frame": 30,
+      "preset": "ClearNoon",
+      "start_frame": 20,
+      "step_index": 2,
+      "weather_sha256": "8e71402694d974c8e3fae852b136a977b99a7a100f2b268db75f0b364aa3a3a8"
+    }
+  ],
+  "schedule_sha256": "7918aa923fd78f5067dbf65d9aa33658e36edcda84d28734ecb0bf4f84f288f9",
+  "schema": "NEW319_DETERMINISTIC_WEATHER/v1",
+  "status": "PASS",
+  "transition_frame_ids": true,
+  "wall_clock_independent": true,
+  "weather_seed": 1234
+}

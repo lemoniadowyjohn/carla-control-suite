@@ -1,0 +1,22 @@
+{
+  "canonical_branch": "integration/production-large-map-20260918",
+  "canonical_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "carla": "0.9.16",
+  "carla_server": "unreachable (RPC timeout)",
+  "gh_cli": "unavailable",
+  "pinned_map": {
+    "bytes": 149799632,
+    "junctions": 3559,
+    "registry_key": "auto_map_of_record",
+    "roads": 32266,
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "verification": "VERIFIED"
+  },
+  "platform": "win32",
+  "prior_campaign_branch_tip": "ba87fbb9 (P01-P07 equivalent, 4 commits, already on canonical tip; no rebase needed)",
+  "python": "3.12.2",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "ue4editor": "ABSENT (Avast IDP.Generic quarantine persists)",
+  "working_branch": "hardening/final-gap-closure-20260930"
+}

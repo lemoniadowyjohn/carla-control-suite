@@ -1,0 +1,80 @@
+{
+  "schema": "route_authority_matrix/v1",
+  "scope": "post-integration route authority (NEW-293..NEW-298)",
+  "authorities": {
+    "route_manifest": "ultimate_pipeline/perception/route_manifest.py (Candidate A, strengthened)",
+    "route_execution": "ultimate_pipeline/perception/route_execution.py (Candidate A)",
+    "route_frame_binding": "ultimate_pipeline/perception/route_frame_binding.py (Candidate A, repaired)"
+  },
+  "duplicate_route_execution_engines": 0,
+  "manifest_hash_validation": {
+    "verified": true,
+    "mechanism": "self-digest sha256 over canonical JSON with the digest field removed; route_digest() is the single recomputation point",
+    "fail_closed": "get_capture_poses_after_validation returns (None, ['route_manifest_digest_mismatch']) before any ego/sensor/map work",
+    "verified_by_test": "test_tampered_route_manifest_fails_closed, test_new294_tampered_route_manifest"
+  },
+  "sequence_validation": {
+    "verified": true,
+    "rules": "no duplicate sequence_index; sequence_index must be sorted",
+    "verified_by_test": "test_new294_duplicate_sequence_index"
+  },
+  "coordinate_frame_binding": {
+    "verified": true,
+    "repaired": true,
+    "defect": "frame identity was compared as raw strings ('EPSG:25832' vs '+proj=utm +zone=32 ...'), which can never be equal, so both_maps_share_exact_frame was structurally always False; the manifest was also never checked against itself",
+    "fix": "canonical_crs_identity() resolves EPSG codes and PROJ strings to canonical EPSG (lazy pyproj); unresolvable is None and treated as fail-closed, never as a match",
+    "additional_fail_closed_rules_added": [
+      "route_crs_unresolvable",
+      "route_georeference_unresolvable",
+      "route_crs_georeference_mismatch:<crs_epsg>:<georef_epsg>",
+      "manual_georeference_crs_mismatch:route_epsg=<>:manual_epsg=<>",
+      "auto_georeference_crs_mismatch:route_epsg=<>:auto_epsg=<>"
+    ],
+    "verified_by_tests": [
+      "test_wrong_route_frame_fails_binding",
+      "test_unresolvable_crs_is_fail_closed",
+      "test_matching_frame_binds",
+      "test_new295_coordinate_frame_binding",
+      "test_new295_wrong_crs_fails",
+      "test_validate_route_manifest_requires_declared_frame"
+    ]
+  },
+  "set_transform_verification": {
+    "verified": true,
+    "mechanism": "execute_route_strict commands ego.set_transform(carla.Transform), ticks once, reads get_transform() back and compares",
+    "api_requirement": "actor must expose set_transform; apply_transform alone is rejected as ego_actor_missing_set_transform",
+    "verified_by_tests": [
+      "test_new293_set_transform_with_verification",
+      "test_new293_actor_missing_set_transform",
+      "test_route_set_transform_verification_is_fatal_on_wrong_observed_pose"
+    ]
+  },
+  "position_yaw_tolerances": {
+    "STRICT_POSITION_THRESHOLD_M": 0.1,
+    "STRICT_YAW_THRESHOLD_DEG": 1.0,
+    "values_unchanged": true,
+    "note": "No tolerance was widened anywhere in this integration."
+  },
+  "fatal_route_execution_failure": {
+    "verified": true,
+    "mechanism": "any set_transform raise, world.tick raise, unreadable observed transform, or tolerance breach returns immediately with a failure reason and stops at that pose; verification does not continue",
+    "verified_by_test": "test_new297_route_movement_failures_fatal"
+  },
+  "strict_timing": {
+    "authority": "canonical_lidar_spec.thesis_sync_settings() + validate_effective_timing()",
+    "expected": {
+      "synchronous_mode": true,
+      "fixed_delta_seconds": 0.05,
+      "target_fps": 20.0,
+      "traffic_manager_synchronous": true
+    },
+    "verified": true,
+    "verified_by_test": "test_new298_strict_timing_enforcement"
+  },
+  "new296_live_route_adapter": {
+    "status": "BLOCKED_EXTERNAL",
+    "reason": "requires a real CARLA server to drive the paired route and read back transforms; CARLA RPC 2000 unreachable (see LIVE_RUNTIME_STATUS.json)",
+    "not_upgraded_to_pass": true
+  },
+  "verdict": "ROUTE_AUTHORITY_OFFLINE_PASS_LIVE_BLOCKED"
+}

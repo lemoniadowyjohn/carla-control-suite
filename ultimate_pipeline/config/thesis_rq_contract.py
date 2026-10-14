@@ -134,3 +134,135 @@ def metric_allowed_for_rq(rq: str, metric: str) -> bool:
     allowed -- this must fail closed, not default to permissive.
     """
     return metric in ALLOWED_METRICS.get(rq, frozenset())
+
+
+# ---------------------------------------------------------------------------
+# RQ5(b) claim-boundary (GAP-034).
+#
+# Rule (docs/research/THESIS_TO_CURRENT_PROGRESS.md, RQ5 row;
+# research/thesis_rq_contract.yaml claim_boundaries.RQ5): RQ5 splits into
+#   (a) labeled, CARLA-paired manual-sim evaluation, and
+#   (b) potentially-unlabeled real-world evaluation.
+# If RQ5(b) is ever evaluated against real-world data that is UNLABELED,
+# the allowed claim vocabulary is restricted to domain-shift /
+# representation-shift language -- NOT accuracy, mIoU, pixel accuracy, or
+# any other metric that requires ground-truth labels.
+#
+# ALLOWED_METRICS[RQ5] above deliberately still lists both families side by
+# side (it answers "is this metric an RQ5 metric at all", i.e. the RQ-label
+# drift check). The partition below answers the stricter question "may this
+# metric be claimed on real-world data WITHOUT ground-truth labels", and
+# audit_thesis_topic_contract.py enforces it fail-closed on every exported
+# RQ5 row that declares a real-world, unlabeled provenance.
+# ---------------------------------------------------------------------------
+
+#: RQ5 metrics that require ground-truth labels (accuracy / IoU family).
+#: Claiming any of these on unlabeled data is a claim-boundary violation.
+#: Includes the bare vocabulary names emitted by the eval entrypoints
+#: (eval_sim_labeled emits "mIoU"/"pixel_accuracy"/"per_class_iou") so the
+#: check bites on raw pipeline vocabulary, not just contract aliases.
+RQ5_LABELED_ONLY_METRICS: FrozenSet[str] = frozenset({
+    "generated_train_generated_test_accuracy",
+    "generated_train_manual_test_accuracy",
+    "mIoU_transfer_degradation",
+    "per_class_target_IoU",
+    "real_world_model_transfer_evaluation",
+    "miou_auto_train_manual_eval",
+    "accuracy",
+    "mIoU",
+    "mean_iou",
+    "pixel_accuracy",
+    "per_class_iou",
+})
+
+#: RQ5 metrics expressible WITHOUT ground-truth labels: prediction
+#: uncertainty / confidence and sim-vs-real feature-distribution shift
+#: (entropy, confidence, CORAL/MMD alignment, FID-like Frechet distances).
+#: This is the complete allow-list for RQ5(b)-unlabeled claims -- anything
+#: not on it (including brand-new, unrecognized metric names) is rejected
+#: on real-world unlabeled data. Fail closed, not fail open.
+RQ5_UNLABELED_SHIFT_METRICS: FrozenSet[str] = frozenset({
+    "real_unlabeled_shift_metrics",
+    "domain_adaptation_coral_mmd",
+    "entropy_mean",
+    "entropy_std",
+    "confidence_mean",
+    "confidence_std",
+    "frechet_pooled_logits",
+    "coral",
+    "mmd",
+})
+
+#: Normalized data_source tags that count as "real-world (non-synthetic,
+#: non-CARLA)" for the boundary. Comparison is case-insensitive with
+#: "-", "_", and whitespace ignored.
+RQ5_REAL_WORLD_SOURCES: FrozenSet[str] = frozenset({
+    "realworld",
+    "real",
+    "real_world_data",
+    "realworlddingolstadt",
+})
+
+
+def _normalize_claim_token(token: object) -> str:
+    return "".join(ch for ch in str(token).lower() if ch.isalnum())
+
+
+def _is_real_world_source(data_source: object) -> bool:
+    normalized = _normalize_claim_token(data_source or "")
+    if not normalized:
+        return False
+    if normalized in RQ5_REAL_WORLD_SOURCES:
+        return True
+    # Fail-closed on the source axis too: any source tag that *mentions*
+    # real-world counts as real-world even if it is not in the known set
+    # (e.g. "real_world_holdout_v2").
+    return "realworld" in normalized
+
+
+def rq5_claim_boundary_ok(
+    metric: str,
+    *,
+    data_source: object = "",
+    labels_available: object = None,
+) -> bool:
+    """Fail-closed RQ5(b) claim-boundary check (GAP-034).
+
+    - Rows NOT sourced from real-world data (RQ5(a) CARLA-paired, synthetic,
+      or no source claim at all) defer to the base metric->RQ allow-list.
+    - Rows sourced from real-world data WITH ground-truth labels
+      (labels_available is True) likewise defer to the base allow-list.
+    - Rows sourced from real-world data WITHOUT ground-truth labels
+      (labels_available False, None, or any non-True value -- an unlabeled
+      claim must positively prove labels exist) may only carry metrics in
+      RQ5_UNLABELED_SHIFT_METRICS. Unknown metric names are rejected.
+    """
+    if not _is_real_world_source(data_source):
+        return metric_allowed_for_rq(RQ5, metric)
+    if labels_available is True:
+        return metric_allowed_for_rq(RQ5, metric)
+    return _normalize_claim_token(metric) in {
+        _normalize_claim_token(m) for m in RQ5_UNLABELED_SHIFT_METRICS
+    }
+
+
+def rq5_claim_boundary_violation(
+    metric: str,
+    *,
+    data_source: object = "",
+    labels_available: object = None,
+) -> str | None:
+    """Human-readable violation, or None when the claim is allowed."""
+    if rq5_claim_boundary_ok(
+        metric, data_source=data_source, labels_available=labels_available
+    ):
+        return None
+    return (
+        f"RQ5(b) claim-boundary violation: metric {metric!r} requires "
+        "ground-truth labels but the result is sourced from real-world data "
+        f"(data_source={data_source!r}) with labels_available={labels_available!r}. "
+        "On unlabeled real-world data only domain-shift/representation-shift "
+        "metrics are allowed "
+        f"({sorted(RQ5_UNLABELED_SHIFT_METRICS)}); accuracy, mIoU, "
+        "pixel_accuracy, and per-class IoU must not be reported."
+    )

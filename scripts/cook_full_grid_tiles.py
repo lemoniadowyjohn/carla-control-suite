@@ -36,6 +36,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone
@@ -63,16 +64,97 @@ PINNED_BUILDINGS = (
 )
 _pinned = verify_pinned_map("auto_map_of_record")
 PINNED_XODR = Path(_pinned["path"])
-# The XODR header offset (global tmerc metres) used by the probe and unit tests.
-HEADER_OFFSET_XY: Tuple[float, float] = (832671.676, 5458671.104)
+
+
+def _header_offset_from_registry(pin: Dict[str, Any]) -> Tuple[float, float]:
+    """Extract (rebase_dx, rebase_dy) from a verified registry receipt (A2).
+
+    The authoritative source is PINNED_MAP_REGISTRY's structured frame
+    fields on the map-of-record entry, exposed via verify_pinned_map().
+    Values match the XODR <offset> header (832671.676, 5458671.104) and the
+    human-readable 'frame' text; they are never re-typed here so the frame
+    cannot drift from the registration. A missing field is a registry
+    schema violation and fails closed -- no developer-machine fallback.
+    """
+    dx = pin.get("rebase_dx")
+    dy = pin.get("rebase_dy")
+    if dx is None or dy is None:
+        raise ValueError(
+            f"Registry entry '{pin.get('registry_key', pin.get('key', 'auto_map_of_record'))}' "
+            "is missing structured frame fields 'rebase_dx' / 'rebase_dy'. "
+            "These must be present in PINNED_MAP_REGISTRY under "
+            "ultimate_pipeline/carla_tools/map_registry.py for the "
+            "frame_kind='rebased_local' entry. Check the 'frame' text string "
+            "in that entry for the human-readable values and promote them to "
+            "the structured fields."
+        )
+    return (float(dx), float(dy))
+
+
+# HEADER_OFFSET_XY is the authoritative global-tmerc rebase origin for this
+# map, resolved from the pinned map registry (not a re-typed literal).
+HEADER_OFFSET_XY: Tuple[float, float] = _header_offset_from_registry(_pinned)
 MAP_NAME = "Ingolstadt"
 TILE_SIZE_M = 1000.0
 
-# OSM2World binary location (same as probe script; untracked binary).
-DEFAULT_OSM2WORLD_HOME = str(
-    Path(r"C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main")
-    / "carla_governed" / "OSM2World-latest-bin"
-)
+
+def _resolve_default_osm2world_home() -> str:
+    """Portable OSM2World default (A1, import-safe, never raises).
+
+    Precedence: OSM2WORLD_HOME env (when set) > <repo>/carla_governed/
+    OSM2World-latest-bin > <repo>/OSM2World-latest-bin. Returns the first
+    candidate path even if missing; existence is validated at execution
+    time with a precise error naming every mechanism checked.
+    """
+    env_home = os.environ.get("OSM2WORLD_HOME", "").strip()
+    if env_home:
+        return env_home
+    governed = REPO_ROOT / "carla_governed" / "OSM2World-latest-bin"
+    if governed.is_dir():
+        return str(governed)
+    return str(REPO_ROOT / "OSM2World-latest-bin")
+
+
+def _require_osm2world_home(configured: Optional[str], *, context: str) -> str:
+    """Validate the OSM2World home for execution (A1: precise failure).
+
+    Checks, in order: --osm2world-home CLI value, OSM2WORLD_HOME env var,
+    portable repo-relative defaults. Raises SystemExit with an actionable
+    message when nothing resolves to an existing directory.
+    """
+    candidates: List[str] = []
+    if configured and str(configured).strip():
+        candidates.append(str(configured).strip())
+    env_home = os.environ.get("OSM2WORLD_HOME", "").strip()
+    if env_home and env_home not in candidates:
+        candidates.append(env_home)
+    for fallback in (
+        str(REPO_ROOT / "carla_governed" / "OSM2World-latest-bin"),
+        str(REPO_ROOT / "OSM2World-latest-bin"),
+    ):
+        if fallback not in candidates:
+            candidates.append(fallback)
+    for candidate in candidates:
+        if candidate and Path(candidate).is_dir():
+            return candidate
+    checked = "; ".join(f"'{c}'" for c in candidates)
+    raise SystemExit(
+        f"[ERROR] {context}: OSM2World home not found. Checked in order: "
+        f"CLI --osm2world-home, OSM2WORLD_HOME env var, portable repo defaults; "
+        f"all candidates missing: {checked}. Provide a valid directory via "
+        f"--osm2world-home <dir> or OSM2WORLD_HOME=<dir>."
+    )
+
+
+# OSM2World binary location (untracked binary). Resolution order (A1):
+#   1. --osm2world-home CLI argument (validated at execution time)
+#   2. OSM2WORLD_HOME environment variable
+#   3. <repo_root>/carla_governed/OSM2World-latest-bin (canonical layout)
+#   4. <repo_root>/OSM2World-latest-bin (legacy layout)
+# Import-time default is the portable first-existing candidate (never a
+# developer-machine absolute path); missing binaries fail at execution with
+# a precise error from _require_osm2world_home().
+DEFAULT_OSM2WORLD_HOME = _resolve_default_osm2world_home()
 
 # Expected counts from the probe (for cross-check).
 EXPECTED_OCCUPIED_CELLS = 20
@@ -193,17 +275,55 @@ def cook_all_tiles(
     print(f"[cook_grid] artifacts_dir={artifacts_dir}")
 
     # ------------------------------------------------------------------
-    # Verify pinned source files exist
+    # Verify pinned source files exist — O1: resolve through registry authority
+    # at execution time (not just import-time PINNED_XODR) so a stale pin
+    # cannot survive a re-promotion between import and execution.
     # ------------------------------------------------------------------
+    # Re-resolve authoritative XODR via verify_pinned_map (fresh, fail-closed).
+    try:
+        _fresh = verify_pinned_map("auto_map_of_record")
+        _fresh_path = Path(_fresh["path"])
+        # _fresh["path"] is repo-relative; resolve to absolute via REPO_ROOT
+        # when it is not already absolute after verify_pinned_map's own
+        # resolve_contained_path.  verify_pinned_map already validated bytes+sha,
+        # so we reuse its proven SHA directly (no second hash for XODR).
+        if not _fresh_path.is_absolute():
+            # verify_pinned_map's resolved_path is absolute and verified
+            _fresh_path = Path(_fresh["resolved_path"])
+        authoritative_xodr = _fresh_path
+        authoritative_xodr_sha = _fresh["sha256"]
+        authoritative_xodr_bytes = _fresh["bytes"]
+    except Exception as exc:
+        print(f"[ERROR] failed to resolve authoritative XODR via verify_pinned_map: {exc}", file=sys.stderr)
+        return 1
+
     if not PINNED_BUILDINGS.exists():
         print(f"[ERROR] buildings source not found: {PINNED_BUILDINGS}", file=sys.stderr)
         return 1
-    if not PINNED_XODR.exists():
-        print(f"[ERROR] XODR map-of-record not found: {PINNED_XODR}", file=sys.stderr)
+    if not authoritative_xodr.exists():
+        print(f"[ERROR] XODR map-of-record not found: {authoritative_xodr}", file=sys.stderr)
+        return 1
+    # Verify on-disk bytes still match the verified receipt (defends against a
+    # race where the file was swapped after verify_pinned_map).
+    try:
+        actual_bytes = authoritative_xodr.stat().st_size
+        if actual_bytes != authoritative_xodr_bytes:
+            print(f"[ERROR] authoritative XODR byte-size drift after verification: expected {authoritative_xodr_bytes}, got {actual_bytes}", file=sys.stderr)
+            return 1
+        # Re-hash to ensure content matches receipt (verify_pinned_map already
+        # did, but double-check after any potential race).
+        authoritative_xodr_sha_rehash = _sha256(authoritative_xodr)
+        if authoritative_xodr_sha_rehash != authoritative_xodr_sha:
+            print(f"[ERROR] authoritative XODR sha drift after verification: expected {authoritative_xodr_sha}, got {authoritative_xodr_sha_rehash}", file=sys.stderr)
+            return 1
+    except OSError as exc:
+        print(f"[ERROR] cannot stat/hash authoritative XODR: {exc}", file=sys.stderr)
         return 1
 
     buildings_sha = _sha256(PINNED_BUILDINGS)
-    xodr_sha = _sha256(PINNED_XODR)
+    xodr_sha = authoritative_xodr_sha
+    # Use authoritative (registry-resolved) XODR for all downstream provenance
+    resolved_xodr_for_provenance = authoritative_xodr
 
     def _rel(p: Path) -> str:
         """Return path relative to REPO_ROOT when possible, else absolute."""
@@ -215,13 +335,15 @@ def cook_all_tiles(
     source_provenance = {
         "buildings_source": _rel(PINNED_BUILDINGS),
         "buildings_source_sha256": buildings_sha,
-        "map_of_record": _rel(PINNED_XODR),
+        "map_of_record": _rel(resolved_xodr_for_provenance),
         "map_of_record_sha256": xodr_sha,
         "header_offset_xy": list(HEADER_OFFSET_XY),
         "tile_size_m": TILE_SIZE_M,
+        "provenance_authority": "verify_pinned_map('auto_map_of_record')",
+        "registry_sha256": _fresh.get("registry_sha256", ""),
     }
     print(f"[cook_grid] buildings sha256={buildings_sha[:16]}...")
-    print(f"[cook_grid] xodr sha256={xodr_sha[:16]}...")
+    print(f"[cook_grid] xodr sha256={xodr_sha[:16]}... (verified via registry, bytes={authoritative_xodr_bytes})")
 
     # ------------------------------------------------------------------
     # Load and partition
@@ -282,6 +404,94 @@ def cook_all_tiles(
             f"{n_bldgs} buildings ..."
         )
         tile_t0 = time.time()
+
+        # O1: Existing FBX is reusable only if its manifest proves current XODR SHA
+        # (no mtime, no latest-file).  Check the existing tile's manifest+FBX
+        # before deciding to regenerate.  This is the only reuse path — a stale
+        # FBX (different source SHA) is never reused, and a missing manifest
+        # forces regeneration (fail-closed).
+        existing_tile_dir = artifacts_dir / f"tile_{tx}_{ty}"
+        existing_manifest_path = existing_tile_dir / f"{MAP_NAME}_Tile_{tx}_{ty}.tile_fbx.json"
+        existing_fbx_path = existing_tile_dir / f"{MAP_NAME}_Tile_{tx}_{ty}.fbx"
+        reuse_candidate = False
+        if existing_manifest_path.is_file() and existing_fbx_path.is_file():
+            try:
+                _existing_doc = json.loads(existing_manifest_path.read_text(encoding="utf-8"))
+                _existing_prov = _existing_doc.get("source_provenance") or {}
+                _existing_sha = _existing_prov.get("map_of_record_sha256")
+                _manifest_fbx_sha = (_existing_doc.get("fbx") or {}).get("sha256")
+                _manifest_fbx_bytes = (_existing_doc.get("fbx") or {}).get("bytes")
+                _existing_status = _existing_doc.get("status")
+                if (
+                    isinstance(_existing_sha, str)
+                    and _existing_sha.strip().lower() == xodr_sha.lower()
+                    and _existing_status == "ok"
+                    and isinstance(_manifest_fbx_sha, str)
+                    and _manifest_fbx_sha.strip()
+                    and isinstance(_manifest_fbx_bytes, int)
+                ):
+                    # Verify FBX on disk still matches manifest (defends against
+                    # FBX mutated without regenerating manifest)
+                    try:
+                        _actual_fbx_sha = _sha256(existing_fbx_path)
+                        _actual_fbx_bytes = existing_fbx_path.stat().st_size
+                        if _actual_fbx_sha.lower() == _manifest_fbx_sha.lower() and _actual_fbx_bytes == _manifest_fbx_bytes:
+                            # Also buildings source must match (or be absent in old manifests)
+                            _existing_buildings_sha = _existing_prov.get("buildings_source_sha256")
+                            if _existing_buildings_sha is None or (isinstance(_existing_buildings_sha, str) and _existing_buildings_sha.strip().lower() == buildings_sha.lower()):
+                                reuse_candidate = True
+                    except (OSError, ValueError):
+                        reuse_candidate = False
+            except (json.JSONDecodeError, OSError, ValueError):
+                reuse_candidate = False
+
+        if reuse_candidate:
+            print(f"[cook_grid]   -> reusing existing FBX (proven current: manifest SHA matches current XODR {xodr_sha[:16]}...)")
+            # Construct a TileFbxResult-like dict from the existing manifest
+            # so the summary/ checkpoint logic sees a consistent "ok" result
+            # without invoking OSM2World/Blender.  We preserve the original
+            # manifest's timing and roundtrip fields but override source_provenance
+            # to the current run's provenance (they are equal by construction).
+            _existing_doc = json.loads(existing_manifest_path.read_text(encoding="utf-8"))
+            _fbx_info = _existing_doc.get("fbx") or {}
+            _rt = _existing_doc.get("roundtrip") or {}
+            result_dict = {
+                "status": _existing_doc.get("status", "ok"),
+                "tile_index": list(_existing_doc.get("tile_index", [tx, ty])),
+                "fbx_name": _existing_doc.get("fbx_name", f"{MAP_NAME}_Tile_{tx}_{ty}.fbx"),
+                "reason": _existing_doc.get("reason", ""),
+                "building_count": _existing_doc.get("clip", {}).get("buildings", n_bldgs),
+                "osm_path": str(existing_tile_dir / f"{MAP_NAME}_Tile_{tx}_{ty}.osm"),
+                "obj_path": str(existing_tile_dir / f"{MAP_NAME}_Tile_{tx}_{ty}.obj"),
+                "fbx_path": str(existing_fbx_path),
+                "fbx_bytes": _fbx_info.get("bytes", existing_fbx_path.stat().st_size),
+                "fbx_sha256": _fbx_info.get("sha256", _sha256(existing_fbx_path)),
+                "objects_total": _fbx_info.get("objects_total", 0),
+                "vertices_total": _fbx_info.get("vertices_total", 0),
+                "faces_total": _fbx_info.get("faces_total", 0),
+                "roundtrip_ok": _rt.get("ok"),
+                "roundtrip_verdict": _rt.get("verdict", ""),
+                "osm2world_sec": _existing_doc.get("timing_sec", {}).get("osm2world", 0.0),
+                "blender_sec": _existing_doc.get("timing_sec", {}).get("blender", 0.0),
+                "roundtrip_sec": _existing_doc.get("timing_sec", {}).get("roundtrip", 0.0),
+                "total_sec": _existing_doc.get("timing_sec", {}).get("total", 0.0),
+                "manifest_path": str(existing_manifest_path),
+                "semantic_classification": _existing_doc.get("semantic_classification", {}),
+                "source_provenance": per_tile_source_prov,
+                "reused_from_manifest": True,
+            }
+            # Append the reused dict directly (it is already in to_dict shape)
+            all_results.append(result_dict)
+            _write_checkpoint(
+                checkpoint_path,
+                run_id=run_id,
+                completed=all_results,
+                remaining=remaining,
+                wall_elapsed_sec=time.time() - t_start,
+            )
+            if verbose:
+                print(json.dumps(result_dict, indent=2))
+            continue
 
         result = generate_tile_fbx(
             buildings=tile_buildings,
@@ -451,8 +661,11 @@ def main() -> int:
         else report_dir / "artifacts"
     )
 
+    osm2world_home = _require_osm2world_home(
+        args.osm2world_home, context="cook_full_grid_tiles"
+    )
     return cook_all_tiles(
-        osm2world_home=args.osm2world_home,
+        osm2world_home=osm2world_home,
         blender_exe=args.blender_exe,
         report_dir=report_dir,
         artifacts_dir=artifacts_dir,

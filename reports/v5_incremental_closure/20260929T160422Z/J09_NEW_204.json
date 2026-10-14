@@ -1,0 +1,62 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "canonical_owner": "pyproject.toml, .github/workflows/tests.yml",
+  "defect_confirmed": "pyproject declared only click/numpy/pydantic while the operational environment is ~200 packages, so a wheel could pass an import-only smoke test without proving feature dependency correctness.",
+  "evidence_paths": [
+    "J09_NEW_204.json",
+    "DEPENDENCY_AUDIT.json"
+  ],
+  "files_changed": [
+    "pyproject.toml",
+    ".github/workflows/tests.yml",
+    "ultimate_pipeline/tests/unit/test_dependency_profiles.py"
+  ],
+  "finding_id": "NEW-204",
+  "implementation": [
+    "core layer kept minimal (click, numpy, pydantic) and free of compiled/CARLA/perception stacks",
+    "PEP 621 optional-dependency layers: geometry, geo, gnn, perception, runtime, visualization, full, test, dev",
+    "runtime extra pins the accepted carla==0.9.16 build",
+    "perception extra pins opencv-python-headless (never the GUI build)",
+    "CI wheel smoke extended: pip check, console script, and extras installability via --dry-run",
+    "self-referential extras validated to reference only declared extras"
+  ],
+  "import_analysis": {
+    "cv2_import_style": "guarded try/except in all call sites; no OpenCV GUI usage anywhere",
+    "method": "AST scan of unconditional top-level imports under ultimate_pipeline/",
+    "modules_importing_carla_unconditionally": 40,
+    "observed_families": {
+      "PIL": 36,
+      "carla": 129,
+      "lxml": 2,
+      "matplotlib": 45,
+      "numpy": 83,
+      "pandas": 4,
+      "psutil": 4,
+      "pyproj": 33,
+      "rasterio": 21,
+      "scipy": 13,
+      "shapely": 13,
+      "torch": 35,
+      "torch_geometric": 12,
+      "ultralytics": 2,
+      "yaml": 8
+    }
+  },
+  "new_production_modules": 0,
+  "priority": "P1",
+  "remaining_blockers": [],
+  "resulting_sha": "0ac86f1590fdf6840603d9b7c33734f76c179845",
+  "status": "PASS",
+  "task_id": "J09",
+  "test_results": {
+    "failed": 0,
+    "passed": 21,
+    "skipped": 0
+  },
+  "tests_executed": [
+    "python -m pytest ultimate_pipeline/tests/unit/test_dependency_profiles.py -q"
+  ],
+  "title": "Python distribution / feature dependency contract",
+  "wheel_build_note": "python -m build --wheel succeeded; METADATA re-read from the wheel and confirmed to declare all extras and marker-correct requirements",
+  "wheel_build_verified": true
+}

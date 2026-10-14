@@ -31,6 +31,9 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, Tuple, Any
 
+from ultimate_pipeline.tiling.tile_extractor import _assert_tileset_frozen
+from ultimate_pipeline.tiling.tile_equivalence import road_bounds_curve_aware
+
 
 # ==============================================================
 # SETTINGS SNAPSHOT (offline-safe, reproducibility-critical)
@@ -72,24 +75,35 @@ class TileMetadata:
 
     @staticmethod
     def _extract_bbox_from_root(root: ET.Element) -> Tuple[float, float, float, float]:
+        """
+        Extract curve-aware bounding box of all roads in the tile.
+
+        Uses road_bounds_curve_aware which computes AABB from complete reference
+        line geometry including curve extrema (arcs analytically, spirals/poly3
+        via bounded evaluation), inflated by lane half-width so no lane escapes
+        the tile. This is the same algorithm used by TileExtractor for tile
+        assignment (TIL-001), ensuring consistency between tile assignment and
+        reported metadata.
+
+        Returns (min_x, min_y, max_x, max_y) in XODR-local metres.
+        """
         min_x, min_y = float("inf"), float("inf")
         max_x, max_y = float("-inf"), float("-inf")
+        any_bounds = False
 
-        for geo in root.findall(".//planView/geometry"):
+        for road in root.findall("road"):
             try:
-                x = float(geo.get("x"))
-                y = float(geo.get("y"))
+                b = road_bounds_curve_aware(road, margin_m=0.0, include_lane_width=False)
             except Exception:
                 continue
+            any_bounds = True
+            min_x = min(min_x, b["x_min"])
+            min_y = min(min_y, b["y_min"])
+            max_x = max(max_x, b["x_max"])
+            max_y = max(max_y, b["y_max"])
 
-            min_x = min(min_x, x)
-            min_y = min(min_y, y)
-            max_x = max(max_x, x)
-            max_y = max(max_y, y)
-
-        if min_x == float("inf"):
+        if not any_bounds:
             return 0.0, 0.0, 0.0, 0.0
-
         return min_x, min_y, max_x, max_y
 
     # ---------------- Structural counters ----------------
@@ -187,7 +201,11 @@ class TileMetadata:
 
         IMPORTANT SEMANTIC POLICY:
         - is_drivable is based on *global semantics*, not standalone routability.
+
+        PRECONDITION: tileset must be frozen (all repairs complete).
         """
+        _assert_tileset_frozen(tiles_dir)
+
         if not os.path.isdir(tiles_dir):
             raise FileNotFoundError(f"Tiles directory not found: {tiles_dir}")
 
@@ -257,7 +275,11 @@ class TileMetadata:
     ) -> Dict[str, Any]:
         """
         Write a deterministic tile_manifest.json from tile_metadata.json.
+
+        PRECONDITION: tileset must be frozen (all repairs complete).
         """
+        _assert_tileset_frozen(tiles_dir)
+
         with open(metadata_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 

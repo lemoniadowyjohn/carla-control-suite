@@ -28,23 +28,27 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 NODATA_SENTINEL = -9999.0
 
 
-def _safe_float(x: Optional[str], default: float = 0.0) -> float:
-    try:
-        return float(x) if x is not None else default
-    except Exception:
-        return default
-
-
 def _get_road_sample_points(
     root: ET.Element,
     max_roads: int = 50,
     samples_per_road: int = 3,
+    warnings: Optional[List[str]] = None,
 ) -> List[Tuple[float, float, str]]:
     """
     Extract sample points (x, y, road_id) from road geometries.
 
-    Samples points at start, middle, and end of each road's planView geometry.
+    Uses canonical geometry evaluator for accurate sampling along any primitive type
+    (line, arc, spiral, poly3, paramPoly3).
+
+    Malformed/non-finite geometry attributes (bad ``length``, ``x``, ``y``, ...)
+    are NOT silently defaulted to 0.0 -- a road/geometry/point that cannot be
+    evaluated is skipped (and reported via ``warnings`` if a list is passed)
+    rather than injected as a phantom sample at a fabricated coordinate, which
+    would otherwise corrupt the coverage ratio with fake "valid" or fake
+    "invalid" points at (0, 0).
     """
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import pose_at_s, endpoint
+
     points: List[Tuple[float, float, str]] = []
     roads = root.findall("road")
 
@@ -52,9 +56,19 @@ def _get_road_sample_points(
     step = max(1, len(roads) // max_roads)
     selected_roads = roads[::step][:max_roads]
 
+    def _warn(msg: str) -> None:
+        if warnings is not None:
+            warnings.append(msg)
+
     for road in selected_roads:
         rid = (road.get("id") or "").strip()
-        road_len = _safe_float(road.get("length"))
+        try:
+            road_len = float(road.get("length"))
+            if not math.isfinite(road_len):
+                raise ValueError("non-finite road length")
+        except (TypeError, ValueError):
+            _warn(f"road {rid!r}: malformed/missing length attribute; road skipped")
+            continue
 
         plan_view = road.find("planView")
         if plan_view is None:
@@ -64,27 +78,63 @@ def _get_road_sample_points(
         if not geometries:
             continue
 
-        # Get first geometry start point
-        g0 = geometries[0]
-        x0 = _safe_float(g0.get("x"))
-        y0 = _safe_float(g0.get("y"))
-        hdg0 = _safe_float(g0.get("hdg"))
-
-        # Sample at start
-        points.append((x0, y0, rid))
-
-        # Sample at approximate middle (simplified: use first geometry direction)
-        if road_len > 0 and samples_per_road >= 2:
-            mid_s = road_len / 2.0
-            xm = x0 + math.cos(hdg0) * mid_s
-            ym = y0 + math.sin(hdg0) * mid_s
-            points.append((xm, ym, rid))
-
-        # Sample at approximate end
-        if road_len > 0 and samples_per_road >= 3:
-            xe = x0 + math.cos(hdg0) * road_len
-            ye = y0 + math.sin(hdg0) * road_len
-            points.append((xe, ye, rid))
+        # Use canonical evaluator for accurate sampling along the full road
+        if samples_per_road <= 1:
+            # Sample at start only
+            try:
+                pose = pose_at_s(geometries[0], 0.0)
+                points.append((pose.x, pose.y, rid))
+            except Exception as exc:
+                _warn(f"road {rid!r}: start sample failed ({exc}); point skipped")
+        else:
+            # Sample at evenly spaced s-values along the road
+            for i in range(samples_per_road):
+                s_sample = road_len * (i / (samples_per_road - 1))
+                # Find which geometry contains this s-value
+                cumulative_s = 0.0
+                sampled = False
+                geom_walk_failed = False
+                for geom in geometries:
+                    try:
+                        geom_len = float(geom.get("length"))
+                        if not math.isfinite(geom_len):
+                            raise ValueError("non-finite geometry length")
+                    except (TypeError, ValueError):
+                        _warn(
+                            f"road {rid!r}: malformed geometry length; "
+                            "remaining samples on this road skipped"
+                        )
+                        geom_walk_failed = True
+                        break
+                    if s_sample <= cumulative_s + geom_len + 1e-9:
+                        # Sample within this geometry
+                        local_s = s_sample - cumulative_s
+                        try:
+                            pose = pose_at_s(geom, local_s)
+                            points.append((pose.x, pose.y, rid))
+                            sampled = True
+                        except Exception as exc:
+                            _warn(
+                                f"road {rid!r}: sample at s={s_sample:.3f} failed "
+                                f"({exc}); point skipped"
+                            )
+                            sampled = True  # don't fall through to the endpoint fallback
+                        break
+                    cumulative_s += geom_len
+                if geom_walk_failed:
+                    break
+                if not sampled and geometries:
+                    # s_sample fell beyond the last geometry's cumulative length
+                    # (e.g. floating point at the very end of the road) -- use
+                    # the canonical endpoint of the last geometry.
+                    last_geom = geometries[-1]
+                    try:
+                        pose = endpoint(last_geom)
+                        points.append((pose.x, pose.y, rid))
+                    except Exception as exc:
+                        _warn(
+                            f"road {rid!r}: endpoint sample failed ({exc}); point skipped"
+                        )
 
     return points
 
@@ -188,7 +238,9 @@ def check_dem_coverage(
         import numpy as np
         import rasterio
     except ImportError:
-        report["warnings"].append("rasterio not installed - DEM coverage check skipped")
+        report["ok"] = False
+        report["reason"] = "rasterio_unavailable"
+        report["warnings"].append("rasterio not installed - DEM coverage check fails closed")
         return report
 
     try:
@@ -221,7 +273,8 @@ def check_dem_coverage(
 
     # Get sample points once from the parsed tree.
     points = _get_road_sample_points(
-        root, max_roads=max_roads, samples_per_road=samples_per_road
+        root, max_roads=max_roads, samples_per_road=samples_per_road,
+        warnings=report["warnings"],
     )
     report["total_samples"] = len(points)
     if not points:
@@ -401,10 +454,16 @@ def check_dem_coverage_with_sampler(
         return report
 
     # Get sample points
-    points = _get_road_sample_points(root, max_roads=max_roads, samples_per_road=samples_per_road)
+    points = _get_road_sample_points(
+        root, max_roads=max_roads, samples_per_road=samples_per_road,
+        warnings=report["warnings"],
+    )
     report["total_samples"] = len(points)
 
     if not points:
+        report["ok"] = False
+        report["reason"] = "no_sample_points"
+        report["valid_ratio"] = 0.0
         report["warnings"].append("no sample points extracted from XODR")
         return report
 

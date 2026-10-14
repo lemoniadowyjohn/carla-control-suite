@@ -1,0 +1,12 @@
+{
+  "check_carla_import_s.CarlaImportSChecker": "PRE-EXISTING s==0/ordering repair-oriented checker with own TOL=1e-6; left untouched (repair domain, not validation authority)",
+  "check_carla_opendrive_compat.StrictCarlaOpendriveGate": "CARLA import preflight (loader raises on error-severity issues): header/georef, road/geometry numerics, primitive count + coefficients, lane widths, junction refs. Converged onto the same numeric parser and primitive/length policies.",
+  "check_geometric_continuity": "PRE-EXISTING seam/continuity analysis with repair-domain thresholds; left untouched (not a validity gate; convergence target is validity semantics only)",
+  "check_xml_integrity.XMLIntegrityChecker": "XML_BASIC_INTEGRITY only; advisory except parse/missing/root/no-roads",
+  "check_xodr_schema": "optional XSD conformance with honest statuses (PASS/FAIL/INCOMPLETE_DEPENDENCY/NOT_CONFIGURED) + schema identity; legacy (bool, err) wrapper never reports unavailable as pass",
+  "verify_final_xodr.validate_final_xodr_static": "recommended offline facade orchestrating the above; no repairs; attests at most VERIFIED_OFFLINE_STATIC",
+  "xodr_numeric": "single strict parse API (MISSING/MALFORMED/NONFINITE/VALID); used by strict validator + compat gate",
+  "xodr_strict_validator.StrictXodrValidator": "structural validity: XML/root/header, road length, planView numerics + s-boundary classification, exactly-one primitive + coefficients, laneSection/lane-ID rules, width-polynomial evaluation, elevation coefficients, junction structural identity",
+  "xodr_validation_policy": "profiles, primitive contracts, road-length and s/lane tolerances (single definitions)",
+  "xodr_validation_result": "shared PASS/FAIL/INCOMPLETE/NOT_RUN envelope"
+}

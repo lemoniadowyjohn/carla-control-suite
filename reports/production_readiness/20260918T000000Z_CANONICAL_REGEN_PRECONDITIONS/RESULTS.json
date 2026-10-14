@@ -1,0 +1,66 @@
+{
+  "run_id": "20260918T000000Z_CANONICAL_REGEN_PRECONDITIONS",
+  "task_id": "OC-37",
+  "title": "Strict preconditions for canonical regeneration (manifest digest pin + PROJ authority)",
+  "components": [
+    "ultimate_pipeline/governance/inputs_manifest.py::verify_inputs_manifest",
+    "ultimate_pipeline/governance/proj_env_guard.py::check_proj_environment",
+    "scripts/regen_map_of_record.py::_verify_manifest / _check_proj_env / _emit_candidate"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/canonical-regen-preconditions-v1",
+  "final_head": "f1b3754219d1b9471289ebe07e6fd7d82de850e3",
+  "defect_summary": {
+    "lenient_manifest": "regen._verify_manifest called verify_inputs_manifest WITHOUT strict mode: a required generation input left status='pending' was reported but never digest-checked and never blocked canonical regeneration.",
+    "lenient_proj": "regen._check_proj_env called check_proj_environment(fail_closed=False): old/unknown proj.db layout and FOREIGN PROJ_LIB/PROJ_DATA env vars were loud warnings only, so canonical regen could silently proceed with ambiguous projection authority (silent-reprojection risk).",
+    "no_provenance_binding": "emitted provenance recorded the manifest path string only; the manifest's own digest and the required/checked/pending/unused sets were not captured, so a later regen could not prove which inputs were actually verified."
+  },
+  "corrected_semantics": {
+    "verify_inputs_manifest(require_pinned_keys)": "Every required key must be present in the manifest AND digest-verified on disk. A required key that is missing, pending, or unverified raises InputsManifestError with per-key reasons.",
+    "verify_inputs_manifest(require_no_pending)": "Any pending entry blocks verification (canonical generation may not proceed without a digest pin).",
+    "check_proj_environment(reject_foreign_proj)": "A PROJ_LIB/PROJ_DATA env var that does not match pyproj's resolved data dir flips ok=False (reported in new foreign_proj_vars field) instead of being a warning-only risk.",
+    "check_proj_environment(require_layout_known)": "An undeterminable proj.db DATABASE.LAYOUT.VERSION.MINOR flips ok=False instead of 'unknown but fine'.",
+    "backwards_compat": "Both new guard flags default to False, preserving historic loud-warn behavior for the startup path in main_pipeline; only canonical generation opts into fail-closed.",
+    "canonical_regen": "_check_proj_env now calls check_proj_environment(min_layout_minor=6, fail_closed=True, reject_foreign_proj=True, require_layout_known=True). _verify_manifest(profile) enforces REQUIRED_INPUT_KEYS_BY_PROFILE: PERCEPTION_RELEASE -> [roads_osm, buildings, dem] (DEM required because the enriched map uses DEM vertical authority); other profiles -> [roads_osm]. Provenance now records manifest_sha256, schema version, profile, required/checked/pending/unused keys and require_no_pending in regen_provenance.json and manifest_verification.json."
+  },
+  "profile_requirements": {
+    "PERCEPTION_RELEASE": ["roads_osm", "buildings", "dem"],
+    "STRUCTURAL_RELEASE": ["roads_osm"],
+    "CARLA_RELEASE": ["roads_osm"],
+    "VISUAL_RELEASE": ["roads_osm"],
+    "DEVELOPMENT": ["roads_osm"]
+  },
+  "tests": {
+    "file": "tests/unit/test_regen_strict_preconditions.py",
+    "collected": 15,
+    "passed": 15,
+    "coverage": {
+      "A": "strict require_pinned_keys passes when all required keys verified",
+      "B": "required key that is pending blocks with 'not digest verified' reasons",
+      "C": "required key missing from manifest blocks",
+      "D": "require_no_pending blocks any pending entry; lenient default still reports pending",
+      "E": "regen._verify_manifest('PERCEPTION_RELEASE') enforces the three required keys and records sha/unused",
+      "E2": "regen._verify_manifest blocks when buildings is still pending",
+      "F": "required-input-by-profile mapping (incl. unknown-profile floor = roads_osm)",
+      "G": "regen._check_proj_env calls the probe with fail_closed/reject_foreign_proj/require_layout_known=True and propagates ProjEnvironmentError",
+      "H": "reject_foreign_proj flips ok=False; default keeps foreign env var as warning-only",
+      "I": "require_layout_known flips ok=False on unknown layout; default remains tolerant",
+      "J": "require_layout_known + fail_closed raises ProjEnvironmentError",
+      "K": "_emit_candidate records the strict manifest_verification block in provenance",
+      "L": "real committed campaign manifest satisfies the strict PERCEPTION_RELEASE requirements on disk"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_regen_strict_preconditions.py tests/unit/test_inputs_manifest.py ultimate_pipeline/tests/unit/test_c11_inputs_manifest_guard.py ultimate_pipeline/tests/unit/test_c11_proj_env_guard.py -q",
+    "python -m pytest tests/unit ultimate_pipeline/tests -q"
+  ],
+  "regression_results": {
+    "focused": "15 passed (plus existing manifest/proj guard suites green)",
+    "tests_unit_and_pipeline": "3417 passed, 5 skipped"
+  },
+  "residual_risks": [
+    "REQUIRED_INPUT_KEYS_BY_PROFILE covers the five regen CLI release profiles; a future profile that introduces a new enrichment authority must extend the map explicitly or it inherits the roads_osm-only floor.",
+    "The DEM requirement is hard-wired into PERCEPTION_RELEASE. If the final vertical authority later becomes PLANAR (no DEM), the profile logic must be updated to legitimately drop dem from the required set rather than keeping it pinned.",
+    "tools/validate_thesis_claim_provenance.py and main_pipeline._verify_pinned_inputs still run lenient verification (no required-key sets); they were not changed in OC-37 (separate tapes) and remain lenient by design for their historical-peer roles."
+  ]
+}

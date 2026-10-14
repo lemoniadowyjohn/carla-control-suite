@@ -1,0 +1,91 @@
+{
+  "baseline_sha": "cfa393726b645241f4eb3305090d69b8330e027e",
+  "execution_order": [
+    "D16",
+    "D17",
+    "D19",
+    "D18",
+    "J09",
+    "J10",
+    "E24"
+  ],
+  "order_rationale": "D19 precedes D18 so the required-check semantics were correct before enforcement was configured. New modules: 1 (pack_lint.py, required by section 12 with no pre-existing owner).",
+  "resulting_sha": "42fd2dec874ad3e2379dc092f64c1f65f7fac494",
+  "schema": "V5_TASK_MATRIX/v1",
+  "tasks": [
+    {
+      "finding": "NEW-202",
+      "new_modules": 0,
+      "status": "PASS",
+      "task": "D16",
+      "tests": 29,
+      "title": "Fail-closed run pack finalization"
+    },
+    {
+      "finding": "NEW-203",
+      "new_modules": 0,
+      "status": "PASS",
+      "task": "D17",
+      "tests": 38,
+      "title": "Strict repository/tool provenance"
+    },
+    {
+      "finding": "NEW-208",
+      "new_modules": 0,
+      "status": "PASS",
+      "task": "D19",
+      "tests": 35,
+      "title": "CI status semantics"
+    },
+    {
+      "blocker": "No GitHub credentials for server-side branch protection/rulesets. Repository-local hardening complete and tested.",
+      "finding": "NEW-206",
+      "new_modules": 0,
+      "status": "BLOCKED_EXTERNAL",
+      "task": "D18",
+      "tests": 30,
+      "title": "GitHub enforcement + supply chain"
+    },
+    {
+      "finding": "NEW-204",
+      "new_modules": 0,
+      "status": "PASS",
+      "task": "J09",
+      "tests": 21,
+      "title": "Dependency contract"
+    },
+    {
+      "finding": "NEW-205",
+      "new_modules": 0,
+      "status": "PASS",
+      "task": "J10",
+      "tests": 21,
+      "title": "Dependency profiles / OpenCV conflict"
+    },
+    {
+      "blocker": "Identity contract, gate, workflow and receipt complete; live CARLA execution BLOCKED_EXTERNAL.",
+      "finding": "NEW-207",
+      "new_modules": 0,
+      "status": "INCOMPLETE",
+      "task": "E24",
+      "tests": 42,
+      "title": "Exact-artifact runtime certification"
+    },
+    {
+      "finding": "section 12",
+      "new_modules": 1,
+      "status": "PASS",
+      "task": "PACKAGING",
+      "tests": 19,
+      "title": "Pack generation lint"
+    },
+    {
+      "finding": "NEW-202..208",
+      "new_modules": 0,
+      "status": "PASS",
+      "task": "ADVERSARIAL",
+      "tests": 34,
+      "title": "Adversarial closure matrix"
+    }
+  ]
+}

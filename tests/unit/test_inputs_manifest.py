@@ -1,4 +1,4 @@
-"""ultimate_pipeline/governance/inputs_manifest.py -- C11's fail-closed digest guard for
+"""ultimate_pipeline/governance/reproducibility/inputs_manifest.py -- C11's fail-closed digest guard for
 pinned generation inputs, relied on all session (via validate_thesis_claim_provenance.py's
 _verify_inputs_manifest and the canonical regen path's _verify_manifest) but never directly
 tested itself on this branch -- found while sweeping orphaned .pyc files with no matching .py
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from ultimate_pipeline.governance.inputs_manifest import (
+from ultimate_pipeline.governance.reproducibility.inputs_manifest import (
     InputsManifestError,
     InputsManifestMismatchError,
     sha256_file,

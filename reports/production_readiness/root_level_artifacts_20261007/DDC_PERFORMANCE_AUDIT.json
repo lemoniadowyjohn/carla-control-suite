@@ -1,0 +1,51 @@
+{
+  "DDC_PHYSICAL_PATH": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+  "DDC_DRIVE": "G:",
+  "DDC_FILESYSTEM": "NTFS",
+  "DDC_SIZE_GB": 9.27,
+  "DDC_FILE_COUNT": 82834,
+  "OBSERVED_READ_MBPS": "0.00-0.08",
+  "DDC_PERFORMANCE_STATUS": "SEVERE_DEGRADATION",
+  "EVIDENCE_FROM_LOG": [
+    "LogDerivedDataCache: Speed tests for ../../../Engine/DerivedDataCache took 0.29 seconds",
+    "LogDerivedDataCache: Display: Performance to ../../../Engine/DerivedDataCache: Latency=3.17ms. RandomReadSpeed=4.29MBs, RandomWriteSpeed=24.00MBs. Assigned SpeedClass 'Fast'",
+    "LogDerivedDataCache: Warning: ../../../Engine/DerivedDataCache is very slow (0.08MB/s) when accessing ... (line 951)",
+    "LogDerivedDataCache: Warning: ../../../Engine/DerivedDataCache is very slow (0.00MB/s) when accessing ... (lines 952-955, 1019-1022)"
+  ],
+  "DISCREPANCY": "Initial DDC speed test reports 4.29 MB/s read (Fast class), but actual runtime access shows 0.00-0.08 MB/s. This indicates the speed test uses small sequential reads while actual shader/texture derivation accesses many small files randomly across the directory tree, causing severe seek/latency penalties.",
+  "PATH_RESOLUTION": {
+    "config_path": "../../../Engine/DerivedDataCache",
+    "resolved_from": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\",
+    "resolved_to": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+    "layer": "Direct NTFS path, no junction/symlink/network layer detected"
+  },
+  "DRIVE_HEALTH": {
+    "total_space_gb": 931.5,
+    "free_space_gb": 41.7,
+    "used_space_gb": 889.8,
+    "free_percentage": "4.5%",
+    "concern": "Drive G: has only 4.5% free space. NTFS performance degrades significantly below 15% free space due to MFT fragmentation and allocation contention."
+  },
+  "CONTENTION_FACTORS": [
+    "Low free space (4.5%) on mechanical or high-latency SSD",
+    "82,834 small files causing MFT contention",
+    "Concurrent access: UE4Editor (main) + 4 ShaderCompileWorkers all reading DDC simultaneously",
+    "Antivirus/indexer contention possible (not verified)",
+    "No dedicated DDC on fast NVMe - sharing drive with OS/pagefile/cook output"
+  ],
+  "DDC_HIERARCHY_FROM_LOG": {
+    "Boot_cache": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\DerivedDataCache\\Boot.ddc (44 MB)",
+    "Local_cache": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache (9.27 GB) - PRIMARY, SLOW",
+    "Pak_cache": "Not found (DDC.ddp missing)",
+    "EnginePak_cache": "Not found (DDC.ddp missing)",
+    "Shared_cache": "Not configured in Engine.ini"
+  },
+  "RECOMMENDATIONS": [
+    "Move Engine DDC to dedicated fast NVMe drive with >50% free space",
+    "Configure Shared DDC on fast network storage or local NVMe",
+    "Enable Pak cache (DDC.ddp) for read-only engine derivatives",
+    "Consider DDC cleanup (remove unused entries) but preserve for warm rerun benchmark",
+    "Increase Max Cache Size beyond 512 MB (currently limited)"
+  ],
+  "DDC_PERFORMANCE_BLOCKER": true
+}

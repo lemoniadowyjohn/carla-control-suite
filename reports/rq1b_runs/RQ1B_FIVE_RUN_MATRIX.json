@@ -1,0 +1,71 @@
+{
+  "schema": "rq1b_five_run_matrix/v1",
+  "generated_at_utc": "2026-10-03T12:00:00Z",
+  "input_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "runs_requested": 5,
+  "runs_completed": 1,
+  "runs_valid": 0,
+  "all_returncode_zero": false,
+  "all_receipts_present": false,
+  "any_timed_out": true,
+  "receipts": [
+    {
+      "schema": "rq1b_run_receipt/v1",
+      "run_index": 0,
+      "run_id": "rq1b_run00",
+      "input_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "command": "tools/rq1b_full_pipeline.py 0 reports/rq1b_runs/run_00 (via tools/rq1b_five_run_driver.py)",
+      "return_code": -1,
+      "timed_out": true,
+      "timeout_limit_s": 7200,
+      "duration_s": 7200,
+      "isolated": true,
+      "shared_cache": false,
+      "receipt_found": false,
+      "status": "FAILED_TIMEOUT",
+      "evidence": {
+        "partial_out_dir": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00",
+        "partial_bytes_mb": 1544,
+        "stages_complete": "01 sanitize, 02 sumo, 03 topology, 05 planview, 06 continuity (partial)",
+        "stage_evidence": "01_sanitized (142.9MB), 02_sumo_fixed (131.7MB), 03/05/06 planview+continuity (132.5MB each), stage6_containment_runtime.json (732MB), continuity_debug.json (25MB)",
+        "killed_during": "stage 06 geometry/containment (run_status.json: status=running, stage=geometry)",
+        "driver_defect_observed": "driver raised uncaught subprocess.TimeoutExpired and died before runs 01-04; fixed in this wave (timeout recorded as FAILED receipt, runs continue)"
+      }
+    },
+    {
+      "schema": "rq1b_run_receipt/v1",
+      "run_index": 1,
+      "run_id": "rq1b_run01",
+      "status": "NOT_ATTEMPTED",
+      "reason": "driver died on run_00 timeout before fix; five sequential runs at >2h each exceed this wave session budget (estimated 12-20h total)"
+    },
+    {
+      "schema": "rq1b_run_receipt/v1",
+      "run_index": 2,
+      "run_id": "rq1b_run02",
+      "status": "NOT_ATTEMPTED",
+      "reason": "same as run_01"
+    },
+    {
+      "schema": "rq1b_run_receipt/v1",
+      "run_index": 3,
+      "run_id": "rq1b_run03",
+      "status": "NOT_ATTEMPTED",
+      "reason": "same as run_01"
+    },
+    {
+      "schema": "rq1b_run_receipt/v1",
+      "run_index": 4,
+      "run_id": "rq1b_run04",
+      "status": "NOT_ATTEMPTED",
+      "reason": "same as run_01"
+    }
+  ],
+  "verdict": "RQ1B_NOT_EXECUTED",
+  "verdict_reason": "Contract forbids PASS with fewer than five valid receipts; 0 valid receipts exist. Corroborated by prior INCOMPLETE run (reports/final_hardening_p11/run_00_receipt.json, killed at 60-min session timeout in stage 06/07). Blocker B3 retained with fresh evidence.",
+  "driver_fixes_this_wave": [
+    "TimeoutExpired now recorded as FAILED receipt instead of killing the batch",
+    "child receipt path fixed: driver passes out_base so receipt lands in run_dir where the glob looks (was nested run_00/run_00, glob would miss even on success)",
+    "rq1b_full_pipeline.py hardcoded run index 0 fixed (receipt filename + receipt run field now use run_idx)"
+  ]
+}

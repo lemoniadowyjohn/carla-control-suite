@@ -4,6 +4,8 @@ import time
 from dataclasses import dataclass, asdict
 from typing import Callable
 
+from ultimate_pipeline.contracts.stage_contracts import normalize_gate_result
+
 
 @dataclass
 class GateRunRecord:
@@ -32,7 +34,10 @@ class CumulativeGateRunner:
         try:
             report = fn()
             if isinstance(report, dict):
-                ok = bool(report.get("ok", False))
+                # Single normalization authority shared with
+                # QualityGateManager._finalize_gate so both runners must
+                # always agree on the same (possibly malformed) report.
+                ok = bool(normalize_gate_result(report)["ok"])
             else:
                 # A gate function is contractually Callable[[], dict]. A
                 # non-dict return (e.g. a gate implementation missing its

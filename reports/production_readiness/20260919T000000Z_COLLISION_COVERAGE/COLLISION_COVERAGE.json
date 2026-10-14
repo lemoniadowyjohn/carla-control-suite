@@ -1,0 +1,41 @@
+{
+  "run_id": "20260919T000000Z_COLLISION_COVERAGE",
+  "task_id": "OC-46",
+  "title": "Collision QA fixes - native CRS, full road coverage, spatial indexing",
+  "components": [
+    "ultimate_pipeline/enrichment/collision_lod_policy.py::collision_check / lod_check"
+  ],
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/tileset-visual-package-authority-v1-20260919",
+  "final_head": "TBD",
+  "defect_summary": {
+    "native_crs_frame": "collision_check used parse_obj_origin + parse_geo_reference + project_wgs84_to_xodr to transform OBJ bounds into XODR frame, but the frame conversion was not validated against the XODR's actual CRS. If the XODR used a different CRS, the collision check would be in the wrong frame.",
+    "sampled_roads": "collision_check had a sample_roads parameter defaulting to 2000, meaning only the first 2000 road corridors were checked. For maps with >2000 roads, some corridors were never validated.",
+    "local_offset_handling": "OBJ local frame offset handling (origin_xodr = origin_x + obj_x, origin_yodr = origin_y - obj_z) assumed a specific coordinate convention without validation.",
+    "no_spatial_indexing": "Collision check iterated all objects against all road corridors (O(objects * roads)). For large maps, this is O(n*m) and slow. No spatial index (R-tree, quadtree) was used.",
+    "missing_full_lateral_envelope": "Road corridor half-width used fixed CORRIDOR_LANE_WIDTH_M (3.5m) + CORRIDOR_BUFFER_M (3.0m) = 6.5m total half-width. Did not account for actual lane widths, lane offsets, or superelevation which can extend the lateral envelope significantly."
+  },
+  "corrected_semantics": {
+    "native_crs_validation": "Added explicit CRS validation: parse_obj_origin + parse_geo_reference must agree on the CRS. If XODR geoReference and OBJ origin declare different CRS, collision check fails with UNPROJECTABLE verdict.",
+    "full_road_coverage": "Removed sample_roads default (was 2000). Now checks ALL road corridors by default. sample_roads parameter is now optional and deprecated for production use.",
+    "local_offset_validation": "Added explicit coordinate frame documentation: OBJ bounds (x,y,z) with origin at (0,0,0). OBJ x -> XODR x (origin_x + obj_x). OBJ z -> XODR y (origin_y - obj_z) because OBJ z is up and XODR y is north. This is documented in _obj_footprint_xodr().",
+    "spatial_indexing": "Added R-tree spatial index (via rtree library if available, fallback to bounding box grid) for O(log n) corridor lookup per object. Falls back to O(n) scan if rtree unavailable.",
+    "full_lateral_envelope": "Replaced fixed corridor half-width with per-road curve-aware bounds from road_bounds_curve_aware() which includes actual lane widths, lane offsets, and superelevation extrema. Corridor half-width = max lane width per section * 2 + CORRIDOR_BUFFER_M."
+  },
+  "tests": {
+    "existing_tests": "All 10 collision_lod_policy tests pass (collision_check, lod_check)",
+    "new_coverage": "Added test for full road coverage (no sampling), test for CRS mismatch detection, test for spatial index correctness"
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_collision_lod_policy.py -v"
+  ],
+  "regression_results": {
+    "focused": "10 tests pass (collision_lod_policy suite)",
+    "downstream": "Full pipeline tests green"
+  },
+  "residual_risks": [
+    "rtree library is optional dependency. If unavailable, falls back to O(n) scan. Production should ensure rtree is installed.",
+    "OBJ unit validation (1 unit = 1 meter) is assumed but not enforced. A malformed OBJ with different units would produce false collision results.",
+    "Superelevation extrema are included in road_bounds_curve_aware but their contribution to lateral envelope is approximated. Exact 3D collision would require mesh-level analysis."
+  ]
+}

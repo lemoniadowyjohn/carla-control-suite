@@ -1,0 +1,54 @@
+{
+  "arm": "manual",
+  "available_maps": [
+    "AnnotationColorLandscape",
+    "Grid0821",
+    "Grid0828",
+    "Town01",
+    "Town01_Opt",
+    "Town02",
+    "Town02_Opt",
+    "Town03",
+    "Town03_Opt",
+    "Town04",
+    "Town04_Opt",
+    "Town05",
+    "Town05_Opt",
+    "Town10HD",
+    "Town10HD_Opt"
+  ],
+  "exact_name_match": true,
+  "generated_at_utc": "2026-10-02T19:29:57.471703Z",
+  "identity_method": "client.load_world(<requested>) -> world.get_map().name (verbatim) + runtime structural fingerprint. Exact-name equality asserted; no substring/path heuristic used to derive identity.",
+  "load_world_returned_same_name": true,
+  "observed_name_verbatim": "Grid0828/Maps/Grid0828/Grid0828",
+  "observed_world_map_name": "Grid0828/Maps/Grid0828/Grid0828",
+  "pre_load_settings": {
+    "fixed_delta_seconds": 0.0,
+    "substepping": false,
+    "synchronous_mode": false
+  },
+  "registry_key": "unknown",
+  "requested_package": "Grid0828",
+  "run_id": "mapid_20261002T192957Z",
+  "runtime_structural_fingerprint": {
+    "actor_count": 223,
+    "fingerprint_mode": "light",
+    "landmarks": 0,
+    "map_name": "Grid0828/Maps/Grid0828/Grid0828",
+    "structural_fingerprint_sha256": "32e4f7908f87fa9e69bc795cfa8281aa7df73ee86bc795ae4d1ea82d850210fa",
+    "traffic_lights": 14,
+    "traffic_signs": 222,
+    "vehicles": 0,
+    "walkers": 0,
+    "world_bounding_box_error": "AttributeError: 'World' object has no attribute 'get_bounding_box'"
+  },
+  "schema": "runtime_map_identity/v1",
+  "server_version": "0.9.16",
+  "snapshot": {
+    "elapsed_seconds": 48.05269179493189,
+    "frame": 213
+  },
+  "source_xodr_sha256": null,
+  "status": "RUNTIME_IDENTITY_ESTABLISHED"
+}

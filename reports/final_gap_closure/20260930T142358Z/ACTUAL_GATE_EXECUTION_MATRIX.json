@@ -1,0 +1,34 @@
+{
+  "authority": [
+    "ultimate_pipeline/quality/map_acceptance.py",
+    "ultimate_pipeline/contracts/stage_contracts.py"
+  ],
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "callers": [
+    "ultimate_pipeline/main_pipeline.py",
+    "ultimate_pipeline/pipeline_stages/stage_08_hygiene.py",
+    "ultimate_pipeline/pipeline_stages/stage_10_tile_qa.py",
+    "scripts/measure_candidate_acceptance.py"
+  ],
+  "deprecated_yaml": "PRODUCTION_MAP_QUALITY_CONTRACT.yaml is NON-NORMATIVE reference; not an execution authority",
+  "gates_executed": [
+    "elevation_seams",
+    "elevation_continuity",
+    "dem_coverage",
+    "geometric_continuity",
+    "lane_section_successors",
+    "lane_count_changes",
+    "lane_connectivity",
+    "length_invariant",
+    "origin_sanity",
+    "junction_integrity",
+    "lane_width_continuity",
+    "lane_geometry_continuity",
+    "elevation_missing_and_cliffs",
+    "elevation_smoothness",
+    "physics_feasibility",
+    "component_reachability (literal SPEC_TOPOLOGY hard gate, governed WAIVED-capable)"
+  ],
+  "orphaned_mandatory_checks": "none found in executable architecture",
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09"
+}

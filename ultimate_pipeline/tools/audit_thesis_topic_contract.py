@@ -14,7 +14,7 @@ from ultimate_pipeline.config.thesis_contract import (
     PERCEPTION_RESULT_SMOKE,
     classify_variability_experiment,
 )
-from ultimate_pipeline.config.thesis_rq_contract import ALL_RQS, metric_allowed_for_rq
+from ultimate_pipeline.config.thesis_rq_contract import ALL_RQS, metric_allowed_for_rq, rq5_claim_boundary_violation
 
 
 def _repo_root() -> Path:
@@ -286,6 +286,19 @@ def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
                 f"row {rq}/{metric}: metric not in the allowed set for {rq} "
                 "(check for RQ-label drift against ultimate_pipeline.config.thesis_rq_contract)"
             )
+        # RQ5(b) claim-boundary (GAP-034): a result sourced from real-world
+        # data without ground-truth labels may only carry domain-shift /
+        # representation-shift metrics -- accuracy, mIoU, pixel_accuracy, or
+        # any other label-requiring metric fails closed here, even though it
+        # is a legitimate RQ5 metric in the labeled RQ5(a) arm.
+        if rq == "RQ5":
+            boundary_violation = rq5_claim_boundary_violation(
+                metric,
+                data_source=row.get("data_source", ""),
+                labels_available=row.get("labels_available"),
+            )
+            if boundary_violation is not None:
+                violations.append(f"row {rq}/{metric}: {boundary_violation}")
 
     # RQ numbers here follow the actual submitted thesis (submission/thesis_source/
     # Chapter1/chap1.tex): RQ1=determinism, RQ2=structural gap, RQ3=perceptual gap,

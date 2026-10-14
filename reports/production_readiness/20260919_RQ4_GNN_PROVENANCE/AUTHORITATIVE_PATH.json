@@ -1,0 +1,61 @@
+{
+  "authoritative_modules": [
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/graph_builder.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "f58393277d04182b521b81fcee588e0719b127cadd4983b28dfd834b5bcacdeb"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/map_tile_dataset.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "cfe6a00fc006cb05f0de39c3363919b56de052e0259fb25882c6d4205afd9134"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/map_encoder.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "f16d4af1977523e586361029407c37f6a8aabcdd65ecc89c4116a1f42e77f0b4"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/train_map_encoder.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "3a41daee87671d02147cb08f50cf31b5f7f5455e979d12c8f937e4b9c6d7f5fe"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/run_ksweep.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "b569bab62c50c9c097d954a5e545895bf809ce9b79dfb79ffe9a86f8719b177f"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/latent_gap_runner.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "cb8d836725e3a50b2629c13dbe93912fb8696d9921cce18c0cb40140525f1d5a"
+    },
+    {
+      "file": "ultimate_pipeline/domain_gap_gnn/gnn_provenance.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "aee95fb52aebda791a0c52c3500ed977ece02a2dc3ee39cced21fe53cc133f03"
+    },
+    {
+      "file": "ultimate_pipeline/tools/run_gnn_pipeline.py",
+      "role": "AUTHORITATIVE",
+      "sha256": "aa62154051d105181afab2fad959b8ad09aff8a38a0be4e77c06d275d6678e15"
+    }
+  ],
+  "generated_at_utc": "2026-09-19T13:05:58.734566+00:00",
+  "git_sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8-dirty",
+  "historical_only": [
+    {
+      "path": "reports/post_audit_hardening/C18_GNN_LATENT_GAP/",
+      "verdict": "HISTORICAL \u2014 single-seed prototype, descriptive IDs"
+    },
+    {
+      "path": "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/",
+      "verdict": "HISTORICAL \u2014 5-seed union-tiles run; checkpoints are LEGACY_UNBOUND (no manifests); tile set absent from this checkout"
+    },
+    {
+      "path": "reports/production_readiness/20260915T233000Z_DOMAIN_GAP_GNN_V2/",
+      "verdict": "HISTORICAL \u2014 adversarial audit with descriptive placeholder hashes, reclassified LEGACY_DESCRIPTIVE_PROVENANCE"
+    }
+  ],
+  "run_id": "20260919"
+}

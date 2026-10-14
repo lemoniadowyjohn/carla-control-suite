@@ -1,0 +1,92 @@
+{
+  "schema": "local_result_reconciliation/v2",
+  "generated_at_utc": "2026-10-03T12:05:00Z",
+  "durable_remote": {
+    "branch": "review/carla-production-convergence-20261002",
+    "sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+    "note": "Remote has advanced past the wave brief's known SHA 167b12fd via the prior Wave B session (Batch 9 evidence + Wave B infrastructure commits). ls-remote verified this session."
+  },
+  "known_local": {
+    "current_head": {
+      "sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "notes": "Wave B verdict NOT_PRODUCTION_READY + substantive commit pointer"
+    },
+    "batch9_fixes": {
+      "b074fc2b": "fix(rq3): bind sim timing, harden package validator, fix pair_valid inversion (separate lineage; equivalent content carried at 14a99c36)",
+      "14a99c36": "same fix, on the convergence lineage (ancestor of HEAD)",
+      "542b82e9": "docs(rq3) Batch 9 evidence packet (separate lineage; equivalent content at 7fbd33ff, ancestor of HEAD)"
+    },
+    "rq1_candidate": {
+      "sha": "082bc1369a77930386e008ab26ab77e9fc611106",
+      "notes": "RQ1 campaign infrastructure lineage; merge-base f897e0eb with HEAD (ancestor subset of 167b12fd, which is an ancestor of HEAD)"
+    }
+  },
+  "ancestry": {
+    "head_vs_167b12fd": {
+      "merge_base": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+      "ahead": 7,
+      "behind": 0,
+      "seven_commits": "14a99c36, 7fbd33ff (Batch 9) + 5b4169fe, 89519281, 76db7320, 0e93ee2a, a7a2a0a2 (Wave B)"
+    },
+    "head_vs_remote": {
+      "remote_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "local_sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "match": true
+    },
+    "rq1_candidate": {
+      "merge_base_with_head": "f897e0eb747ac827941ac4883170a5181a603111",
+      "status": "ANCESTOR_SUBSET of 167b12fd, which is ancestor of HEAD"
+    },
+    "batch9_separate_lineage": {
+      "merge_base_with_head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "status": "SEPARATE_LINEAGE; fixes preserved by equivalent commits on the convergence lineage (no blind merge performed)"
+    }
+  },
+  "batch9_included": true,
+  "batch9_preservation_evidence": "Batch 9 targeted tests re-run this session at a7a2a0a2: 144 passed (rq3 pair contract, pairing preflight, dataset manifest verifier, cook provenance chain, p0 recorder/provenance, large-map package contract+unit, package smoke, import preflight)",
+  "rq1_candidate_included": false,
+  "batch9_results_carried": {
+    "tiles": 20,
+    "staging": "PASS",
+    "staged_package_validation": "PASS (revalidated 2026-10-02: STAGED_PACKAGE_REVALIDATION.json)",
+    "rq3_map_lineage": "PASS",
+    "package_promotion": "PASS",
+    "negative_controls": "12/12 rejected",
+    "tile_frame_consistency": "RECLASSIFIED INVALID_PROXY_METRIC (not a placement defect; 10m threshold unchanged; zero tiles moved)"
+  },
+  "wave_b_deliverables_present": [
+    "P0_4_PROVENANCE_CONTRACT.json (VERIFIED_CURRENT_CONTRACT)",
+    "TRUE_WORLD_PLACEMENT_ACCEPTANCE.json (INVALID_PROXY_METRIC)",
+    "BLENDER_QUALIFICATION.json (PASS 4.3.0)",
+    "OSM2WORLD_QUALIFICATION.json (PASS governed 0.5.0-SNAPSHOT)",
+    "UE426_QUALIFICATION.json (UE426_BLOCKED_OPERATOR_INSTALL, re-verified this session)",
+    "STAGED_PACKAGE_REVALIDATION.json (PASS)",
+    "CARLA_RUNTIME_RECEIPT.json (RUNTIME_READY 0.9.16)",
+    "RUNTIME_MAP_IDENTITY_MANUAL.json (RUNTIME_IDENTITY_ESTABLISHED Grid0828)",
+    "RUNTIME_MAP_IDENTITY_AUTO.json (BLOCKED_COOK_REQUIRED, live-probe evidenced: Ingolstadt absent from get_available_maps())",
+    "EVIDENCE_FRESHNESS.json + RQ_CLOSURE_MATRIX.json + PRODUCTION_READINESS_MATRIX.json",
+    "CI triggers review/** + hardening/** (.github/workflows/tests.yml)",
+    "offline evidence gate PASS (tools/verify_offline_evidence_matrix.py, re-run this session)"
+  ],
+  "this_session_additions": [
+    "RQ1B executed: run_00 attempted, FAILED_TIMEOUT after 7200s in stage 06 (evidence in reports/rq1b_runs/); runs 01-04 NOT_ATTEMPTED",
+    "reports/rq1b_runs/RQ1B_FIVE_RUN_MATRIX.json (RQ1B_NOT_EXECUTED) + RQ1_CLOSURE.json (INCOMPLETE, tool-produced)",
+    "tools/rq1b_five_run_driver.py hardened (timeout->FAILED receipt) + receipt path/index bugs fixed",
+    "RQ5a triple-blocked (RQ3 capture + Wave A preflight absent + protocol audit FAIL); RQ5b DEFERRED_EXTERNAL_DATA re-verified (no data dirs)"
+  ],
+  "outstanding_blockers": [
+    "B1 UE426_BLOCKED_OPERATOR_INSTALL (re-verified: UE4_ROOT unset, no Epic installs, packaged-only CARLA)",
+    "B2 placement acceptance pending control-anchor run (anchor->FBX leg blocked: promoted package lacks per-tile OSM XML)",
+    "B3 RQ1B five cold runs not completable in-session (single run >2h; est. 12-20h for five)",
+    "B4 7 pre-existing suite failures at HEAD (dead signals + RQ3 contract), independent of this wave",
+    "B5 CARLA runtime fragility (Grid0828 waypoint expansion wedge; sync-mode owner crash leaks)",
+    "B6 DEFERRED_EXTERNAL_DATA (no operator dataset)",
+    "B7 RQ5 protocol not frozen (contract audit FAIL: 14 ambiguous, 2 missing) + Wave A RQ5 preflight absent from this tree"
+  ],
+  "directives": {
+    "do_not_blindly_merge_dirty_worktrees": true,
+    "do_not_weaken_offline_validators": true,
+    "do_not_fix_tile_positions_based_on_tile_frame_consistency_fail": true,
+    "preserve_batch9_fixes": true
+  }
+}

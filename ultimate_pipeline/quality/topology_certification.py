@@ -1,5 +1,6 @@
 # ultimate_pipeline/quality/topology_certification.py
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
 """
 Topology component certification (OC-2, AREA-008).
@@ -22,10 +23,16 @@ NOT literal-spec-conformant -- its only legitimate role is diagnostic.
 The statuses are `QualityStatus` values (see stage_contracts) so a FAIL can
 never be mistaken for a PASS, and an unmeasured/absent summary surfaces as
 INCOMPLETE -- never a silent pass (fail-closed).
+
+All outputs include SHA256 bindings for input summaries and the certification
+result, plus a provenance block with tool version, git SHA, and Python version.
+Schema versioning enables forward/backward compatibility.
 """
 
-from __future__ import annotations
-
+import hashlib
+import json
+import os
+import sys
 from typing import Any, Dict, Optional
 
 from ultimate_pipeline.contracts.stage_contracts import QualityStatus, from_legacy_bool
@@ -57,6 +64,24 @@ def _status_for_fraction(
     return from_legacy_bool(fraction >= fraction_threshold)
 
 
+def _sha256_dict(obj: Any) -> str:
+    """Deterministic SHA256 of a JSON-serializable object."""
+    return hashlib.sha256(
+        json.dumps(obj, sort_keys=True, ensure_ascii=True).encode("utf-8")
+    ).hexdigest()
+
+
+def _get_git_sha() -> str:
+    """Get current git commit SHA if available."""
+    try:
+        import subprocess
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
+    except Exception:
+        return ""
+
+
 def certify_topology(
     literal_summary: Optional[Dict[str, Any]],
     recovered_summary: Optional[Dict[str, Any]],
@@ -75,8 +100,13 @@ def certify_topology(
     Returns a dict with SPEC_TOPOLOGY / RECOVERY_DIAGNOSTIC QualityStatus
     values plus the supporting evidence numbers. Missing summaries map to
     INCOMPLETE (fail-closed), never PASS.
+
+    The returned dict includes SHA256 bindings for both input summaries and the
+    certification result itself, plus a provenance block with tool version,
+    git SHA, and Python version. Schema versioning enables forward/backward
+    compatibility.
     """
-    # The source marker is mandatory for production evidence.  Accepting an
+    # The source marker is mandatory for production evidence. Accepting an
     # unlabelled precomputed dict here would make it possible to pass a
     # recovered graph through the literal production slot.
     literal_status = _status_for_fraction(
@@ -90,7 +120,11 @@ def certify_topology(
         fraction_threshold=fraction_threshold,
     )
 
-    return {
+    literal_sha = _sha256_dict(literal_summary)
+    recovered_sha = _sha256_dict(recovered_summary)
+
+    result = {
+        "schema": "topology_certification_v1",
         "SPEC_TOPOLOGY": literal_status.value,
         "RECOVERY_DIAGNOSTIC": recovered_status.value,
         "production_evidence": SPEC_TOPOLOGY_EVIDENCE,
@@ -129,4 +163,19 @@ def certify_topology(
             "candidate depends on recovery heuristics and is not "
             "topology-spec-conformant."
         ),
+        "input_bindings": {
+            "literal_summary_sha256": literal_sha,
+            "recovered_summary_sha256": recovered_sha,
+        },
+        "certification_sha256": "",
+        "provenance": {
+            "tool": "topology_certification",
+            "git_sha": _get_git_sha(),
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        },
     }
+    # Compute certification SHA256 excluding itself
+    cert_sha = _sha256_dict({k: v for k, v in result.items() if k != "certification_sha256"})
+    result["certification_sha256"] = cert_sha
+
+    return result

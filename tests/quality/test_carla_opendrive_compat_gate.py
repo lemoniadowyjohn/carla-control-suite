@@ -158,7 +158,8 @@ def test_geometry_missing_s_flagged():
     ET.SubElement(geom, "line")
     root = _xodr(road)
     issues = StrictCarlaOpendriveGate.validate(root)
-    assert "geometry_missing_s" in _codes(issues)
+    # OC-59 §3: outcome-specific code (was the generic geometry_missing_s).
+    assert "geometry_s_missing" in _codes(issues)
 
 
 def test_geometry_s_not_increasing_flagged():
@@ -192,19 +193,21 @@ def test_geometry_nonfinite_coordinate_flagged():
     ET.SubElement(geom, "line")
     root = _xodr(road)
     issues = StrictCarlaOpendriveGate.validate(root)
-    assert "geometry_nonfinite" in _codes(issues)
+    # OC-59 §3: per-attribute outcome code (was generic geometry_nonfinite).
+    assert "geometry_x_nonfinite" in _codes(issues)
 
 
-def test_unsupported_primitive_is_a_warning():
+def test_unsupported_primitive_is_an_error():
+    # OC-59 §7: an unknown primitive child is an explicit error, not a warn.
     road = ET.Element("road", id="1", length="10.0")
     plan = ET.SubElement(road, "planView")
     geom = ET.SubElement(plan, "geometry", s="0", x="0", y="0", hdg="0", length="10.0")
     ET.SubElement(geom, "someUnknownPrimitive")
     root = _xodr(road)
     issues = StrictCarlaOpendriveGate.validate(root)
-    matches = [i for i in issues if i["code"] == "geometry_unsupported_primitive"]
+    matches = [i for i in issues if i["code"] == "geometry_unknown_primitive"]
     assert len(matches) == 1
-    assert matches[0]["severity"] == "warn"
+    assert matches[0]["severity"] == "error"
 
 
 def test_road_length_mismatch_vs_geometry_sum_flagged():

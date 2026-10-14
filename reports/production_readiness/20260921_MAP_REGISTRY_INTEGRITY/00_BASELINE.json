@@ -1,0 +1,20 @@
+{
+  "audited_baseline_head": "398193d4fc3cfb4164daf805438168813ae36aec",
+  "branch": "fix/map-registry-integrity-v1-20260921",
+  "generated_at_utc": "2026-09-21T15:13:31.827024+00:00",
+  "head": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8",
+  "recent_log": [
+    "e3a20bf4 OC-26: coordinate-control full-map coverage (sample_xodr_road_points dict return, coverage declaration, full-map mode support)",
+    "4825ec82 Merge commit 'e99ec35b' into baseline/production-integration-20260918",
+    "e99ec35b feat(pipeline): add stage capability contract + fail-closed validator",
+    "c75fd8c9 fix(tiling): stage independent copies, fail closed on roundtrip mismatch",
+    "1a42cd89 Merge fix/governed-map-release-gate-wiring-cleaned-v1-20260917",
+    "9dc31ce2 fix(roadrunner): recover governed_map_release gate profile (cleaned)",
+    "6c375abf docs(rq3): sync RQ3 diagnosis to corrected 2026-09-16/17 investigation findings",
+    "a93efea4 docs: mark THESIS_VS_CURRENT_STATE_COMPARISON_20260827.md as superseded",
+    "4481fdbd Merge test/fix-cosmetic-self-pair-skips-v1-20260917",
+    "df75cfa4 test: replace product() with combinations() in cross-comparison parametrize"
+  ],
+  "registry_vs_audited_baseline": "IDENTICAL at start of task (git diff 398193d4..HEAD empty for all \u00a71 files); every \u00a72 weakness CONFIRMED present, none partially fixed or superseded.",
+  "run_id": "20260921"
+}

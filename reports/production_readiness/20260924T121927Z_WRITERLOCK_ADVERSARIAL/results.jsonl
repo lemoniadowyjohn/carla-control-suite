@@ -1,0 +1,11 @@
+{"scenario": "contention_2_procs", "worker_count": 2, "rounds": 50, "total_ok": 50, "total_blocked": 50, "total_error": 0, "rounds_with_zero_winners": 0, "rounds_with_multi_winners": 0, "round_errors": []}
+{"scenario": "contention_8_procs", "worker_count": 8, "rounds": 50, "total_ok": 50, "total_blocked": 350, "total_error": 0, "rounds_with_zero_winners": 0, "rounds_with_multi_winners": 0, "round_errors": []}
+{"scenario": "contention_16_procs", "worker_count": 16, "rounds": 50, "total_ok": 50, "total_blocked": 750, "total_error": 0, "rounds_with_zero_winners": 0, "rounds_with_multi_winners": 0, "round_errors": []}
+{"scenario": "concurrent_release_acquire", "rounds": 20, "inconsistent": 0}
+{"scenario": "killed_during_publication_created", "expected_state": "empty_partial", "owner": "probe-created", "outcome": "blocked", "detail": "Writer lock at C:\\Users\\admin\\AppData\\Local\\Temp\\pytest-of-admin\\pytest-2102\\test_scenario_6_killed_during_0\\kill_created\\.agent_locks\\writer.lock is unparseable/corrupt (JSONDecodeError); failing closed and leaving the file untouched. A writer may still be mid-publication (e.g. killed between lock-file creation and fsync) - remove the file manually only after confirming no writer is active.", "controlled": true, "error_type": null}
+{"scenario": "killed_during_publication_fsynced", "expected_state": "complete_active", "owner": "probe-fsynced", "outcome": "blocked", "detail": "Writer lock held by doomed-fsynced (PID 38304, expires 2026-09-24T11:30:42.967633+00:00)", "controlled": true, "error_type": null}
+{"scenario": "malformed_zero_byte_fail_closed", "cases": ["malformed_json", "zero_byte", "truncated_json", "binary_garbage", "json_list"]}
+{"scenario": "active_valid_lock", "owner_after": "owner-a"}
+{"scenario": "stale_valid_lock", "reclaimed": true}
+{"scenario": "unknown_schema_live", "fail_closed": true}
+{"scenario": "delayed_publication_probe", "probe": {"unparseable": 1540, "held_by": 379}, "raw": []}

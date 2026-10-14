@@ -1,0 +1,20 @@
+{
+  "examples": [],
+  "link_pairs_checked": 22589,
+  "max_a": 404.915794,
+  "max_link_dz": 1.4808929999999805,
+  "median_nonzero_a": 371.010689,
+  "min_a": 362.0066945545023,
+  "ok": true,
+  "p99_link_dz": 0.49038599999994403,
+  "roads_nonzero_a": 32267,
+  "roads_total": 32267,
+  "roads_zero_a": 0,
+  "thresholds": {
+    "max_link_dz_m": 50.0,
+    "max_zero_ratio": 0.01,
+    "zero_a_eps": 1e-06
+  },
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "zero_ratio": 0.0
+}

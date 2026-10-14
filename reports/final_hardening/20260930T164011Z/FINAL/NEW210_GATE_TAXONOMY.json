@@ -1,0 +1,17 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "new_entries_this_pack": [
+    "runtime_map_identity",
+    "carla_runtime_identity",
+    "runtime_map (RUNTIME_DEPENDENT)",
+    "required_artifact_presence (STRUCTURAL)"
+  ],
+  "owner": "ultimate_pipeline/contracts/stage_contracts.py",
+  "result_sha": "a93ba01390589bf749d218fd10540a2e14844ec0",
+  "status": "PASS",
+  "strict_paths": [
+    "production_gate_waiver_allowed",
+    "enforce_taxonomy aggregate mode"
+  ],
+  "tests": 14
+}

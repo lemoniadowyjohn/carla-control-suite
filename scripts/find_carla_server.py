@@ -22,8 +22,15 @@ COMMON_CARLA_PATHS = [
 ]
 
 def find_carla_server():
-    """Return (exe_path, version_str) or (None, None) if not found."""
-    for p in COMMON_CARLA_PATHS:
+    """Return (exe_path, version_str) or (None, None) if not found.
+
+    Resolution order (A1: env var beats hardcoded workstation-specific
+    defaults): CARLA_EXE env var > UP_CARLA_EXE env var >
+    COMMON_CARLA_PATHS scan > drive-letter fallback scan.
+    """
+    env_exe = os.environ.get("CARLA_EXE") or os.environ.get("UP_CARLA_EXE")
+    candidates = ([env_exe] if env_exe else []) + COMMON_CARLA_PATHS
+    for p in candidates:
         if not p or not os.path.exists(p):
             continue
         try:

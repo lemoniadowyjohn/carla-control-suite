@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "qualification_date": "2026-10-02T19:50:00Z",
+  "qualified_distribution": "GOVERNED_PREBUILT (repo-governed, pipeline-native)",
+
+  "discovery": {
+    "method": "searched PATH, standard install roots, and the repo's own governed install directory before considering any external download or source build",
+    "path_probe_result": "NOT on PATH (expected; the pipeline resolves it by directory, not PATH)",
+    "governed_install_found": true,
+    "governed_install_path": "carla_governed/OSM2World-latest-bin",
+    "governed_install_is_gitignored": true,
+    "note": ".gitignore:328 ignores /carla_governed/ -- this is a pre-existing LOCAL governed install of the pipeline's own OSM2World, not something this wave created.",
+    "superseded_attempt": "An out-of-tree Maven build of OSM2World from source (OSM2World 0.5.0-SNAPSHOT) was performed earlier in this wave, before the governed install was located. It produced the SAME version string (0.5.0-SNAPSHOT), which independently corroborates that the governed JAR is this pipeline's OSM2World. That build was deleted and is NOT the qualified artifact."
+  },
+
+  "osm2world": {
+    "jar_path": "carla_governed/OSM2World-latest-bin/OSM2World.jar",
+    "jar_sha256": "F20B00E1C5DC50CE211FFAB817D874799576DACCE4F8190D83C8A7B48CB61FAC",
+    "jar_bytes": 506756,
+    "reported_version": "0.5.0-SNAPSHOT",
+    "java_version": "17.0.17 (Eclipse Adoptium, Temurin)",
+    "invocation_command": "java -jar OSM2World.jar convert --input=<in.osm> --output=<out.obj>",
+    "lib_dir": "carla_governed/OSM2World-latest-bin/lib (119 resolved runtime jars)"
+  },
+
+  "checks": {
+    "version_probe": "PASS (0.5.0-SNAPSHOT)",
+    "cli_probe": "PASS (convert/gui/params/tileset subcommands present)",
+    "deterministic_small_fixture": "PASS",
+    "same_converter_as_pipeline": "PASS -- this is the pipeline's own governed distribution, resolved by scripts/cook_full_grid_tiles.py::_resolve_default_osm2world_home; no unknown or substituted converter was used"
+  },
+
+  "determinism_fixture": {
+    "input": "minimal 5-node / 1-building-way OSM XML at lat 48.766, lon 11.425 (Ingolstadt bbox)",
+    "runs": 2,
+    "outputs": ["out1.obj", "out2.obj"],
+    "raw_sha256_differ": true,
+    "difference_explained": "The ONLY byte difference between the two runs is the self-referential `mtllib outN.obj.mtl` line, which names the output file itself and therefore necessarily differs between two differently-named outputs. No geometry, coordinate, normal, material-assignment or ordering byte differs.",
+    "normalized_comparison": {
+      "method": "replace `mtllib <name>.mtl` with a fixed token, then sha256",
+      "normalized_sha256_run1": "3286eac4433a232fad7ea1e09b56746c08f95907e4ee91e5d4ec80acd4ea00ae",
+      "normalized_sha256_run2": "3286eac4433a232fad7ea1e09b56746c08f95907e4ee91e5d4ec80acd4ea00ae",
+      "bytes": 798,
+      "result": "IDENTICAL"
+    },
+    "geometry_present": [
+      "building wall quads with per-face normals (vn)",
+      "roof faces with ROOF_DEFAULT_0 material",
+      "wall faces with BUILDING_DEFAULT_0 material",
+      "projection metadata header (coordinate origin, north direction, metres-per-unit)"
+    ]
+  },
+
+  "verdict": "PASS -- OSM2World is qualified against the pipeline's own governed distribution, on the same converter the FBX cook path actually invokes.",
+  "not_claimed": "Qualification covers the converter binary and its determinism on a small fixture. It does NOT certify the 20260924T100614Z tile release: no tile was re-exported, and the auto map still requires a UE4.26 cook (see UE426_QUALIFICATION.json)."
+}

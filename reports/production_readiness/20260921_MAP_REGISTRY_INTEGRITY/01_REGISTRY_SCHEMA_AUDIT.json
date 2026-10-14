@@ -1,0 +1,78 @@
+{
+  "entry_count": 10,
+  "errors": [],
+  "registry_sha256": "4f5ba9587cfee5f76958ba26ac1b1d6c32b6b953f2b4f583e2bd9e9bfa58a534",
+  "registry_valid": true,
+  "schema_per_entry": {
+    "auto_map_of_record": {
+      "bytes_match": true,
+      "frame_status": "STRUCTURED",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_c29_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_deepaudit_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_junctionfix_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_prec29_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_reproregen1_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_reproregen2_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_round5_hygienefix_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "auto_map_of_record_round6_elevationfix_superseded": {
+      "bytes_match": true,
+      "frame_status": "LEGACY_TEXT_ONLY",
+      "role": "auto",
+      "schema": "PASS",
+      "sha_match": true
+    },
+    "manual_grid0828": {
+      "bytes_match": true,
+      "frame_status": "STRUCTURED",
+      "role": "manual",
+      "schema": "PASS",
+      "sha_match": true
+    }
+  }
+}

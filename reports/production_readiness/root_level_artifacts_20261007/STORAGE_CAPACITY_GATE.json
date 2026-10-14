@@ -1,0 +1,104 @@
+{
+  "schema": "storage_capacity_gate/v1",
+  "generated_at_utc": "2026-10-05T15:20:00Z",
+  "basis": "Measured consumption on this host, plus the observed outcome of a real 3558-package cook that died.",
+
+  "current_free_space_gb": {
+    "C": 38.4,
+    "E": 31.4,
+    "F": 48.1,
+    "G": 41.7,
+    "H": 16.6
+  },
+
+  "measured_consumers_gb": {
+    "engine_derived_data_cache": 9.27,
+    "engine_intermediate": 21.74,
+    "engine_saved": 0.00,
+    "carlaue4_intermediate": 1.65,
+    "carlaue4_saved": 0.01,
+    "cook_out_ingolstadt_current_incomplete_run": 4.94,
+    "cook_out_total": 4.94,
+    "user_temp_total": 24.31,
+    "user_temp_shader_working_dir": 0.02,
+    "user_temp_unrealengine_local": 0.00,
+    "build_logs": 0.06,
+    "pytest_basetemp_recommended_location": "F: (used to keep suite scratch off C:)"
+  },
+
+  "evidence_for_thresholds": [
+    {
+      "observation": "A full 3558-package cook ran for 14 h 52 min and reached 2942/3558 packages (82.7 percent) before terminating.",
+      "measured_peak_output": "cook_out reached 4.94 GB at only 82.7 percent completion, with 616 packages still outstanding.",
+      "inference": "A COMPLETE cook of the same scope projects to roughly 4.94 / 0.827 = 5.97 GB of cooked output, and a re-cook that overwrites in place may transiently require both the old and new payload, so budget at least 2x = ~12 GB for the output directory.",
+      "confidence": "MEDIUM - one incomplete run, one scope"
+    },
+    {
+      "observation": "Engine DerivedDataCache reached 9.27 GB during cook work.",
+      "inference": "Shader and asset DDC for this project saturates near 10 GB. A fresh cook against a cold DDC can grow this further.",
+      "confidence": "HIGH - directly measured on the engine tree"
+    },
+    {
+      "observation": "Engine Intermediate is 21.74 GB after building ShaderCompileWorker, UnrealHeaderTool, UnrealLightmass, UE4Editor and CarlaUE4Editor.",
+      "inference": "A full engine rebuild is already paid for. A project-generation step (GenerateProjectFiles, never yet run) plus additional editor targets could add several GB.",
+      "confidence": "HIGH - directly measured"
+    },
+    {
+      "observation": "User TEMP held 32.92 GB of pytest scratch plus 15.20 GB of regression scratch before cleanup, filling C: to 0.00 GB. That condition broke a running test session with 'There is not enough space on the disk.'",
+      "inference": "Test/tooling scratch is the single largest observed consumer and is entirely avoidable by relocating scratch to F:.",
+      "confidence": "HIGH - directly observed failure"
+    },
+    {
+      "observation": "pagefile.sys (9 GB, system-managed) resides on C:, so C: free space directly constrains commit capacity. TotalVirtualSize was 56.7 GB against 47.7 GB of RAM.",
+      "inference": "A low C: free-space figure is a memory-pressure risk during shader compilation, not only a write-failure risk.",
+      "confidence": "HIGH - measured via Win32_PageFileUsage and Win32_OperatingSystem"
+    }
+  ],
+
+  "gates_gb": {
+    "MIN_C_FREE_IMPORT_GB": 12,
+    "MIN_E_FREE_IMPORT_GB": 8,
+    "MIN_G_FREE_IMPORT_GB": 30,
+    "MIN_C_FREE_COOK_GB": 20,
+    "MIN_E_FREE_COOK_GB": 12,
+    "MIN_G_FREE_COOK_GB": 45
+  },
+
+  "gate_derivation": {
+    "MIN_C_FREE_IMPORT_GB": "12 GB = 2x the 4.94 GB observed cook_out footprint, plus margin for import-setting temporaries and the recipe lockfile. C: also hosts pagefile.sys, so a low C: figure additionally risks commit exhaustion during shader work.",
+    "MIN_E_FREE_IMPORT_GB": "8 GB. E: hosts the packaged CARLA runtime (E:\\CARLA\\CARLA_0.9.16) and previously held 19.85 GB of stale Recycle Bin data that consumed it to 0.25 GB. 8 GB is the floor at which a staged copy plus log growth is safe.",
+    "MIN_G_FREE_IMPORT_GB": "30 GB. G: hosts the engine (Intermediate 21.74 GB + DDC 9.27 GB) and the CARLA source tree, and is the write target for a re-import.",
+    "MIN_C_FREE_COOK_GB": "20 GB, higher than the import gate because cook additionally drives DDC growth (9.27 GB observed) and shader working directories on C:.",
+    "MIN_E_FREE_COOK_GB": "12 GB. Cook writes cooked output and logs; E: previously proved able to reach 0.25 GB.",
+    "MIN_G_FREE_COOK_GB": "45 GB, the highest gate, because a cook writes output while the engine Intermediate (21.74 GB) and DDC (9.27 GB) remain resident on the same volume."
+  },
+
+  "current_gate_evaluation": {
+    "IMPORT": {"C": "PASS (38.4 >= 12)", "E": "PASS (31.4 >= 8)", "G": "PASS (41.7 >= 30)"},
+    "COOK": {"C": "PASS (38.4 >= 20)", "E": "PASS (31.4 >= 12)", "G": "FAIL (41.7 < 45)"},
+    "storage_gate": "FAIL_FOR_COOK",
+    "shortfall_gb": 3.3,
+    "verdict": "A further full import would pass the storage gate. A full cook would NOT, short by 3.3 GB on G:."
+  },
+
+  "preflight_check_required": {
+    "rule": "Refuse to start an import or cook when any gate in its class fails. Print the drive, the required gate, and the measured value.",
+    "suggested_placement": [
+      "scripts/cook_full_grid_tiles.py (pre-cook preflight)",
+      "tools/preflight_import_package.py (pre-import preflight, alongside the existing offset validation)"
+    ],
+    "implementation_status": "NOT YET IMPLEMENTED - the thresholds are derived and recorded here, but no gate has been wired into code. Recorded as a required follow-up rather than claimed as done."
+  },
+
+  "additional_recommendations": [
+    "Point all pytest and tool scratch at F: (--basetemp=F:\\...) so the system drive and its pagefile are never at risk. This was adopted for the baseline comparison arms in this wave.",
+    "Periodically clear %TEMP%\\pytest-of-admin; it accumulated 19 run directories instead of pytest's usual 3 because a disk-full condition had prevented cleanup, creating a positive-feedback failure loop.",
+    "Treat E:\\$Recycle.Bin as a monitored consumer: it held 19.85 GB of 2025-era CARLA content in this wave."
+  ],
+
+  "not_claimed": [
+    "No gate was enforced in code; only derived and recorded.",
+    "The 12 GB output projection rests on a single incomplete cook and may change for a different map scope.",
+    "Storage was not the proven cause of the earlier cook termination; that remains unestablished (see LIVE_COOK_FINAL_STATE.json)."
+  ]
+}

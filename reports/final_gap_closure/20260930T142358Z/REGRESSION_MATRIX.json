@@ -1,0 +1,48 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "full_suite": {
+    "campaign_regressions": 0,
+    "collected": 6717,
+    "duration_s": 1161.91,
+    "failed": 1,
+    "failure_cause": "PRE-EXISTING ENVIRONMENTAL: default path derives from repo root containing Windows username 'admin'; fails identically in pristine primary checkout without any campaign changes",
+    "passed": 6706,
+    "single_failure": "tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_no_hardcoded_username_in_production_defaults",
+    "skipped": 10
+  },
+  "oc35_aggregate": "all green (generic waiver semantics preserved)",
+  "packaging": {
+    "build": "sdist+wheel ok",
+    "clean_venv": "pip check clean",
+    "wheel_smoke": "new modules import ok"
+  },
+  "protected_areas": [
+    "NEW-200/201 RQ3 identity",
+    "NEW-202 finalization",
+    "NEW-203 provenance",
+    "NEW-204 packaging",
+    "NEW-205 profiles",
+    "NEW-208 CI semantics",
+    "writer lock",
+    "mtime authority",
+    "artifact freshness",
+    "map registry identity"
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "v5_focused": {
+    "failed": 0,
+    "passed": 264,
+    "skipped": 4,
+    "tests": [
+      "test_finalize_run_pack",
+      "test_run_provenance_strict",
+      "test_repo_health_gate_semantics",
+      "test_workflow_hardening",
+      "test_dependency_profiles",
+      "test_runtime_identity_gate",
+      "test_pack_lint",
+      "test_v5_adversarial_matrix",
+      "test_rq3_paired_capture_contract"
+    ]
+  }
+}

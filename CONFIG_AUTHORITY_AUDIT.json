@@ -1,0 +1,125 @@
+{
+  "categories": {
+    "A": "intentional local override",
+    "B": "test fixture",
+    "C": "historical evidence",
+    "D": "duplicated production authority",
+    "E": "stale documentation"
+  },
+  "map_registry_sha256": "4f5ba9587cfee5f76958ba26ac1b1d6c32b6b953f2b4f583e2bd9e9bfa58a534",
+  "map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "policy": "No global config framework was invented; existing registry/contracts remain authoritative.",
+  "production_authority_conflicts": [
+    "authoritative automatic map",
+    "manual map identity",
+    "CRS/header offset"
+  ],
+  "rows": [
+    {
+      "authority": "ultimate_pipeline/carla_tools/map_registry.py:PINNED_MAP_REGISTRY",
+      "category": "D",
+      "duplicates": [
+        "cook_full_grid_tiles.py: import-time pin",
+        "stage_large_map_import_package.py: import-time pin"
+      ],
+      "resolution": "Registry remains authority; execution paths re-resolve verify_pinned_map at runtime.",
+      "setting": "authoritative automatic map"
+    },
+    {
+      "authority": "ultimate_pipeline/carla_tools/map_registry.py:PINNED_MAP_REGISTRY.manual_grid0828",
+      "category": "D",
+      "duplicates": [
+        "README/manual map references",
+        "historical receipts"
+      ],
+      "resolution": "Registry remains authority; historical references are evidence, not runtime selection.",
+      "setting": "manual map identity"
+    },
+    {
+      "authority": "map_registry.py structured frame fields",
+      "category": "D",
+      "duplicates": [
+        "tile_fbx_generator.py:_PROJ_STRING",
+        "cook_full_grid_tiles.py:_header_offset_from_registry",
+        "historical XODR offsets"
+      ],
+      "resolution": "Frame transform is documented; offset is resolved from registry structured fields in current cook path.",
+      "setting": "CRS/header offset"
+    },
+    {
+      "authority": "scripts/cook_full_grid_tiles.py:TILE_SIZE_M and package descriptor",
+      "category": "A",
+      "duplicates": [
+        "large_map_package.py default 1000.0"
+      ],
+      "resolution": "Intentional local CLI/default; descriptor carries the actual staged value.",
+      "setting": "tile size"
+    },
+    {
+      "authority": "release contract / environment configuration",
+      "category": "A",
+      "duplicates": [
+        "README, reports, historical receipts"
+      ],
+      "resolution": "Documentation/evidence only; runtime receipt must verify executable.",
+      "setting": "CARLA version"
+    },
+    {
+      "authority": "UE4_ROOT environment variable",
+      "category": "A",
+      "duplicates": [
+        "hardcoded E:/ paths in historical scripts"
+      ],
+      "resolution": "Environment variable is runtime authority; hardcoded paths are legacy examples.",
+      "setting": "UE4 root"
+    },
+    {
+      "authority": "script argument or environment/config",
+      "category": "A",
+      "duplicates": [
+        "historical default paths in cook scripts"
+      ],
+      "resolution": "Explicit CLI argument wins; defaults are local conveniences.",
+      "setting": "OSM2World path"
+    },
+    {
+      "authority": "lane_width_policy.DEFAULT_DRIVING_WIDTH_M",
+      "category": "A",
+      "duplicates": [
+        "connector-specific 3.5 fallback",
+        "historical mesh remediation constants"
+      ],
+      "resolution": "Policy default is intentional; connector discrepancy is GAP-026 finding, not a global config authority conflict.",
+      "setting": "lane width fallback"
+    },
+    {
+      "authority": "checker call contract",
+      "category": "A",
+      "duplicates": [
+        "historical evidence thresholds"
+      ],
+      "resolution": "No silent changes; policy proposal is draft pending review.",
+      "setting": "position tolerance"
+    },
+    {
+      "authority": "experiment contract/manifest",
+      "category": "A",
+      "duplicates": [
+        "test fixtures and historical reports"
+      ],
+      "resolution": "Fixtures are local; production seeds remain manifest-bound.",
+      "setting": "experiment seeds"
+    },
+    {
+      "authority": "run/output contract",
+      "category": "A",
+      "duplicates": [
+        "historical report directories"
+      ],
+      "resolution": "Historical outputs are immutable evidence, not current selection.",
+      "setting": "output directories"
+    }
+  ],
+  "schema": "configuration_authority_audit/v1",
+  "status": "PASS"
+}

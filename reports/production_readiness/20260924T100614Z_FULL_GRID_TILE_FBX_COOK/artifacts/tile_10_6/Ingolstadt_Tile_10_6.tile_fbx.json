@@ -1,0 +1,58 @@
+{
+  "artifact_type": "carla_large_map_tile_fbx",
+  "claim_boundary": "Offline FBX generation only. This tile has NOT been imported by a UE4/UE5 Editor or cooked; runtime streaming/seam behavior is UNCONFIRMED until the live UE4 track runs.",
+  "clip": {
+    "buildings": 6,
+    "nodes_written": 33,
+    "relations_written": 0,
+    "ways_written": 6
+  },
+  "fbx": {
+    "bytes": 27900,
+    "faces_total": 93,
+    "objects_total": 6,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_6\\Ingolstadt_Tile_10_6.fbx",
+    "sha256": "2eec3857c6046616411c9c9628b01b3757c03aba9b42d939cdaf648126e8249c",
+    "vertices_total": 72
+  },
+  "fbx_name": "Ingolstadt_Tile_10_6.fbx",
+  "map_name": "Ingolstadt",
+  "roundtrip": {
+    "ok": true,
+    "verdict": "ROUNDTRIP_PASS"
+  },
+  "schema_version": 1,
+  "seam_strategy": "hard_nonoverlapping_clip_centroid_assignment",
+  "semantic_classification": {
+    "buildings_classified": 6,
+    "counts_by_folder": {
+      "Buildings": 6
+    },
+    "engine": "ultimate_pipeline.enrichment.carla_semantic_organizer.classify_object",
+    "non_buildings_anomalies": [],
+    "non_buildings_count": 0
+  },
+  "source_provenance": {
+    "buildings_source": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "buildings_source_sha256": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+    "header_offset_xy": [
+      832671.676,
+      5458671.104
+    ],
+    "map_of_record": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "osm2world_home": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+    "tile_size_m": 1000.0
+  },
+  "status": "ok",
+  "tile_index": [
+    10,
+    6
+  ],
+  "timing_sec": {
+    "blender": 7.071,
+    "osm2world": 2.459,
+    "roundtrip": 7.852,
+    "total": 17.389
+  }
+}

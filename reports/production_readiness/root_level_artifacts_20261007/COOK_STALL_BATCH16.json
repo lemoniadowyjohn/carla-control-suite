@@ -1,0 +1,32 @@
+{
+  "schema": "cook_stall_forensics/v1",
+  "generated_at_utc": "2026-10-05T14:35:00Z",
+  "map": "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt",
+  "cook_sessions": [
+    {
+      "log": "G:\\CARLA\\build_logs\\ingolstadt_cook_20261004T182534Z.log",
+      "end_state": "crashed: out-of-memory allocating 1073741856 bytes in a shader compiling thread (9 workers, 8.5GB VM)",
+      "packages": "2942/3558"
+    },
+    {
+      "log": "G:\\CARLA\\build_logs\\ingolstadt_cook_20261005T092342Z.log",
+      "end_state": "crashed: C: temp disk full (Free Disk Space 0 in UnrealShaderWorkingDir); downstream ShaderCode.Num() assert",
+      "packages": "2921/3558",
+      "fixes_applied": "project-scoped NumUnusedShaderCompilingThreads=8 (4 workers); TEMP/TMP redirected to G:\\CARLA\\cook_temp"
+    },
+    {
+      "log": "G:\\CARLA\\build_logs\\ingolstadt_cook_20261005T105458Z.log",
+      "end_state": "WEDGED ALIVE then killed by owner: cooker looped 'Missing cached shader map for M_Fabric_Master, compiling' with zero live ShaderCompileWorkers; main editor process survived but made no progress for 2h (2975/3558 frozen); no crash record, no OOM line, no disk error",
+      "packages": "2975/3558 (high-water mark; persists via -iterate)",
+      "disposition": "killed by owning session 2026-10-05 ~14:35Z to pivot to uncooked serving"
+    }
+  ],
+  "earlier_import_death": {
+    "log": "G:\\CARLA\\build_logs\\ingolstadt_import_20261003T215605Z.log",
+    "end_state": "all processes (driver, editor, SCW) vanished ~23:56 mid tile-import with zero crash records; completed commandlets showed 0 errors",
+    "killer": "UNIDENTIFIED (no WER crash, no reboot, no OOM line; Avast activity nearby is routine driver traffic, not a kill record)"
+  },
+  "pattern": "Long-running UE4 processes on this host repeatedly vanish without OS crash records (import @23:56 10-03, cook workers @14:42 10-05). The M_Fabric_Master shader-retry storm is a SYMPTOM of dead workers, not a content defect (same masters cook in official 0.9.16 builds).",
+  "pivot": "Serve Ingolstadt UNCOOKED via editor-game mode for identity/calibration/RQ3 (research does not require cooked packages). Cook packaging retried serially afterwards, never parallel with the game server.",
+  "not_claimed": "No cook receipt. COOKED_MAP_AUTHORITY remains cook_completed=false."
+}

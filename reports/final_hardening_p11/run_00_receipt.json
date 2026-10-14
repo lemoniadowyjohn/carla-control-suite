@@ -1,0 +1,60 @@
+{
+  "schema": "rq1_run_receipt/v1",
+  "run": 0,
+  "status": "INCOMPLETE",
+  "reason": "run killed at 60-min session timeout during stage 06/07; stages 01-06 complete",
+  "input": {
+    "registry_key": "auto_map_of_record",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "verification": "VERIFIED"
+  },
+  "config": {
+    "INPUT_XODR": "pinned map-of-record",
+    "QA_AUTOVIS": false,
+    "code_sha": "8eb80924",
+    "boundary": "Unreal cook/runtime excluded (offline structural claim)"
+  },
+  "xodr_sha256": null,
+  "normalized_xodr_sha256": null,
+  "structural_signature": {
+    "num_roads": 32266,
+    "num_junctions": 3559,
+    "total_road_length": 1487573.6902965326
+  },
+  "feature_counts": null,
+  "topology_counts": {
+    "roads": 32266,
+    "junctions": 3559
+  },
+  "output_path": null,
+  "tileset_digest": null,
+  "map_acceptance_digest": null,
+  "final_receipt_digest": null,
+  "completed_stages": {
+    "01": {
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "bytes": 149799632,
+      "mtime": 1790778956.1114483
+    },
+    "02": {
+      "sha256": "336c06deb54373ebca4c5578c8a6318dbdcdd0303a26666f27d33a0051aa3983",
+      "bytes": 138053323,
+      "mtime": 1790779499.6958237
+    },
+    "03": {
+      "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2",
+      "bytes": 138932131,
+      "mtime": 1790780814.4625652
+    },
+    "05": {
+      "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2",
+      "bytes": 138932131,
+      "mtime": 1790780814.4625652
+    },
+    "06": {
+      "sha256": "b89ec2706fb93dc01d7394e34d1348086289ce959bb33fc794f3ca1a206620c2",
+      "bytes": 138932131,
+      "mtime": 1790780814.4625652
+    }
+  }
+}

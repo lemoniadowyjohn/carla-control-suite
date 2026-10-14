@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from ultimate_pipeline.carla_tools.map_registry import PINNED_MAP_REGISTRY  # noqa: E402
-from ultimate_pipeline.governance.inputs_manifest import sha256_file  # noqa: E402
+from ultimate_pipeline.governance.reproducibility.inputs_manifest import sha256_file  # noqa: E402
 
 C19_DIR = REPO_ROOT / "reports" / "post_audit_hardening" / "C19_THESIS_ASSEMBLY"
 

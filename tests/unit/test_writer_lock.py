@@ -201,6 +201,68 @@ def test_save_and_load(tmp_path: Path) -> None:
     assert loaded.head_sha == lock.head_sha
 
 
+def test_load_corrupt_json_raises_runtime_error_not_json_decode_error(tmp_path: Path) -> None:
+    """load() must fail closed with a clear RuntimeError for content that
+    cannot be parsed as JSON, matching this module's fail-closed philosophy
+    -- not leak a raw json.JSONDecodeError to callers that only expect
+    FileNotFoundError / RuntimeError from this class's public API.
+    """
+    lock_path = tmp_path / ".agent_locks" / "writer.lock"
+    lock_path.parent.mkdir(parents=True)
+    lock_path.write_bytes(b"{not valid json")
+    with pytest.raises(RuntimeError) as err:
+        WriterLock.load(lock_path)
+    assert not isinstance(err.value, json.JSONDecodeError)
+    assert "lock" in str(err.value).lower()
+
+
+def test_load_zero_byte_raises_runtime_error_not_json_decode_error(tmp_path: Path) -> None:
+    lock_path = tmp_path / ".agent_locks" / "writer.lock"
+    lock_path.parent.mkdir(parents=True)
+    lock_path.write_bytes(b"")
+    with pytest.raises(RuntimeError) as err:
+        WriterLock.load(lock_path)
+    assert not isinstance(err.value, json.JSONDecodeError)
+    assert "lock" in str(err.value).lower()
+
+
+def test_load_json_non_object_raises_runtime_error(tmp_path: Path) -> None:
+    """A syntactically valid JSON value that isn't an object (e.g. a list)
+    must also fail closed with RuntimeError, not a raw TypeError from
+    from_dict()/cls(**data) unpacking a non-mapping.
+    """
+    lock_path = tmp_path / ".agent_locks" / "writer.lock"
+    lock_path.parent.mkdir(parents=True)
+    lock_path.write_text('["not", "a", "dict"]')
+    with pytest.raises(RuntimeError) as err:
+        WriterLock.load(lock_path)
+    assert "lock" in str(err.value).lower()
+
+
+def test_acquire_catches_runtime_error_from_load_during_fresh_publication_window(
+    tmp_path: Path,
+) -> None:
+    """acquire()'s FileExistsError branch must catch the RuntimeError that
+    load() now raises for unreadable content (not just the old raw
+    ValueError/TypeError), or it would stop entering the GAP-028
+    fresh-publication re-read window and instead crash out immediately --
+    breaking the bounded-retry-then-fail-closed contract for a real winner
+    still mid-publish. Simulated here with a persistently corrupt
+    pre-existing lock file: acquire() must still surface a controlled
+    RuntimeError (not let load()'s RuntimeError leak past the fresh-publish
+    handling in some different, uncontrolled shape), and must not delete or
+    reclaim the file.
+    """
+    lock_path = tmp_path / ".agent_locks" / "writer.lock"
+    lock_path.parent.mkdir(parents=True)
+    lock_path.write_bytes(b"{not valid json")
+    with pytest.raises(RuntimeError) as err:
+        WriterLock.acquire(root=tmp_path, branch="b", head_sha="s", owner="agent")
+    assert "lock" in str(err.value).lower()
+    assert lock_path.exists()
+    assert lock_path.read_bytes() == b"{not valid json"
+
+
 def test_allowed_paths(tmp_path: Path) -> None:
     lock = WriterLock.acquire(
         root=tmp_path,

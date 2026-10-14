@@ -1,0 +1,79 @@
+{
+  "run_id": "20260918T000000Z_AGGREGATE_STATUS_HARDENING",
+  "task_id": "OC-35",
+  "title": "Gate aggregate waiver precedence: per-child conversion then severity reduction",
+  "component": "ultimate_pipeline/contracts/stage_contracts.py::promote_aggregate",
+  "starting_head": "4825ec8268e2732154077d59a771544f247d00e0",
+  "branch": "fix/gate-aggregate-waiver-precedence-v1",
+  "final_head": "818a0cee6b53332fdc47b15a51c2378ba28bcfc9",
+  "repository_scan": {
+    "promote_aggregate_call_sites_audited": 0,
+    "governed_waiver_call_sites_audited": 0,
+    "all_pipeline_sources": "ultimate_pipeline/, scripts/, tools/, tests/, submission/infrastructure/"
+  },
+  "defect_summary": {
+    "waiver_before_severity": "Old logic returned WAIVED whenever every allow-listed FAIL had a waiver, before considering worse remaining children (INCOMPLETE / BLOCKED_EXTERNAL). Example: [FAIL(waivered), INCOMPLETE] incorrectly reduced to WAIVED.",
+    "not_per_child": "Waivers were evaluated against the whole waivable set, so a single shared waiver appeared to cover multiple failing children.",
+    "no_detail": "No per-child converted status / waiver justification / positional audit available for evidence.",
+    "unused_waiver_maskable": "A waiver keyed to a passing position (or a non-existent name) silently did nothing; no isolation guarantee against waiving the wrong child."
+  },
+  "corrected_semantics": {
+    "conversion": "Each child is converted individually: PASS->PASS, FAIL->WAIVED only when waivable_fail and allow-listed and an explicit governed waiver names that exact child, else FAIL; INCOMPLETE/NOT_RUN/BLOCKED_EXTERNAL are never convertible by a waiver; unknown values -> INCOMPLETE (fail-closed).",
+    "reduction": "Aggregate = worst of converted statuses under FAIL > INCOMPLETE > BLOCKED_EXTERNAL > WAIVED > NOT_RUN > PASS.",
+    "single_use_waivers": "One failing child per waiver; multiple failing children require per-child coverage.",
+    "audit": "promote_aggregate_detailed returns per-child rows (input, name, status, waiver, coerced_from), positional_audit (overflow_names, collisions, ambiguous), unused_waiver_keys.",
+    "evolving_api": "child_names optional strict binding (validated for length/duplicates); positional mandatory_children alignment preserved as legacy fallback."
+  },
+  "regression_examples": {
+    "previous_vs_corrected_1": {
+      "children": ["FAIL", "INCOMPLETE"],
+      "waivers": {"speed": "governed"},
+      "previous": "waived",
+      "corrected": "incomplete"
+    },
+    "previous_vs_corrected_2": {
+      "children": ["FAIL", "FAIL"],
+      "waivers": {"a": "governed"},
+      "previous": "waived",
+      "corrected": "fail"
+    },
+    "previous_vs_corrected_3": {
+      "children": ["PASS", "FAIL"],
+      "waivers": {"alpha": "governed-for-passing-position"},
+      "previous": "fail",
+      "corrected": "fail",
+      "note": "unchanged result but now provably isolated: waiver for a passing position can never waive the failing sibling"
+    }
+  },
+  "tests": {
+    "file": "tests/unit/test_stage_contracts_aggregate.py",
+    "collected": 36,
+    "passed": 36,
+    "coverage": {
+      "A": "uncorrupted pass chain and per-child conversion preservation",
+      "B": "severity reduction after per-child conversion (waived+incomplete->incomplete; blocked_external outranks waived)",
+      "C": "waivable FAIL with explicit governed waiver -> WAIVED",
+      "D": "unwaivable FAIL remains FAIL (no waiver / off allow-list / waivable_fail=False)",
+      "E": "waivers never convert INCOMPLETE / NOT_RUN / BLOCKED_EXTERNAL to WAIVED",
+      "F": "waivers are single-use; partial coverage stays FAIL; full coverage -> WAIVED",
+      "G": "ungoverned/unknown values coerce to INCOMPLETE (never PASS)",
+      "H": "aggregate is never PASS while any child is non-PASS",
+      "I": "name-only waiver with no failing child does nothing (reported as unused)",
+      "J": "positional/label mismatch isolation (waiver can never waive the wrong child)",
+      "K": "boolean coercion True->PASS / False->FAIL",
+      "L": "named-child ordering divergence audit, duplicate-name rejection, positional audit, empty children -> INCOMPLETE"
+    }
+  },
+  "regression_commands": [
+    "python -m pytest tests/unit/test_stage_contracts_aggregate.py -q",
+    "python -m pytest tests/unit -q"
+  ],
+  "regression_results": {
+    "focused": "36 passed",
+    "full_unit": "1990 passed, 4 skipped"
+  },
+  "residual_risks": [
+    "There are currently zero call sites of promote_aggregate / promote_aggregate_detailed in the repository; the corrected semantics and report surface are therefore exercised only by contract tests until OC-36 (QualityGateManager) and other gate consumers adopt them.",
+    "WAIVED outranks NOT_RUN in the mandated severity order (FAIL > INCOMPLETE > BLOCKED_EXTERNAL > WAIVED > NOT_RUN > PASS); a never-run (NOT_RUN) child can therefore be masked by a governed waiver. This is the declared ordering and should not be silently changed."
+  ]
+}

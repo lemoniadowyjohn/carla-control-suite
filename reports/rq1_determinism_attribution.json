@@ -1,0 +1,155 @@
+{
+  "normalization_rules": [
+    {
+      "description": "SUMO netconvert generation comment: wall-clock time and absolute invocation paths",
+      "name": "sumo_provenance_comment"
+    },
+    {
+      "description": "OpenDRIVE <header date=\"...\"> written once at stage 02 and propagated forward",
+      "name": "opendrive_header_date"
+    },
+    {
+      "description": "geometryFreezeHash=\"...\": hash of the artifact's own bytes, hence transitive on header date",
+      "name": "geometry_freeze_hash"
+    }
+  ],
+  "run_count": 5,
+  "schema": "rq1_determinism_attribution/v1",
+  "stages": [
+    {
+      "attribution": "identical bytes",
+      "content_normalized_deterministic": true,
+      "distinct_content_normalized_sha256": 1,
+      "distinct_raw_sha256": 1,
+      "per_run_content_normalized_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_00\\20261001_041117_096924": "a991706f89c1092e7a463f887392f11d0eaaf923e1987ca2edad5432359ea982",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "a991706f89c1092e7a463f887392f11d0eaaf923e1987ca2edad5432359ea982",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "a991706f89c1092e7a463f887392f11d0eaaf923e1987ca2edad5432359ea982",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "a991706f89c1092e7a463f887392f11d0eaaf923e1987ca2edad5432359ea982",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "a991706f89c1092e7a463f887392f11d0eaaf923e1987ca2edad5432359ea982"
+      },
+      "per_run_raw_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_00\\20261001_041117_096924": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+      },
+      "raw_deterministic": true,
+      "runs_missing": 0,
+      "runs_present": 5,
+      "stage": "01_sanitized"
+    },
+    {
+      "attribution": "converges after normalizing ['opendrive_header_date', 'sumo_provenance_comment']",
+      "content_normalized_deterministic": true,
+      "distinct_content_normalized_sha256": 1,
+      "distinct_raw_sha256": 4,
+      "per_run_content_normalized_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "3d3ec0683fdcf99f0f5c2299b03c6c01e0f0ca45db5fcaae1aa02f028e198ba2",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "3d3ec0683fdcf99f0f5c2299b03c6c01e0f0ca45db5fcaae1aa02f028e198ba2",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "3d3ec0683fdcf99f0f5c2299b03c6c01e0f0ca45db5fcaae1aa02f028e198ba2",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "3d3ec0683fdcf99f0f5c2299b03c6c01e0f0ca45db5fcaae1aa02f028e198ba2"
+      },
+      "per_run_raw_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "685f89923cdcee432ce3b41f61289f5791adfd2506bc9569dc6838a76c346756",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "e1c17cc2bdef6220f658b08caba54fdb67e94db884590598b9027e2463dfb4ad",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "c2274a7420efe2221bd4720438883efbc18c4b5f168967de2258e3a5edac8fb4",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "4b198d53211d82876e135db1e11a0f874335250b3f128551b42da23f9a8171d0"
+      },
+      "raw_deterministic": false,
+      "runs_missing": 1,
+      "runs_present": 4,
+      "stage": "02_sumo_fixed"
+    },
+    {
+      "attribution": "converges after normalizing ['opendrive_header_date']",
+      "content_normalized_deterministic": true,
+      "distinct_content_normalized_sha256": 1,
+      "distinct_raw_sha256": 4,
+      "per_run_content_normalized_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d"
+      },
+      "per_run_raw_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "612db9bfb20afd281d5ea91c83534cb512abbb1d1628e6369782df5335a0be7f",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "4fd78e041c80e105843f3b8089c275101f6f365267f107c948b6762646e38060",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "d8ed7a6379d78aa105a6823e565c7efa230fd29b14fbcf5793a57e22e205baaa"
+      },
+      "raw_deterministic": false,
+      "runs_missing": 1,
+      "runs_present": 4,
+      "stage": "03_topology"
+    },
+    {
+      "attribution": "converges after normalizing ['opendrive_header_date']",
+      "content_normalized_deterministic": true,
+      "distinct_content_normalized_sha256": 1,
+      "distinct_raw_sha256": 4,
+      "per_run_content_normalized_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "e627e96e2e34155a1f3025c893701b0c41e2433c57b404b812efb284c2b0842d"
+      },
+      "per_run_raw_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "612db9bfb20afd281d5ea91c83534cb512abbb1d1628e6369782df5335a0be7f",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "4fd78e041c80e105843f3b8089c275101f6f365267f107c948b6762646e38060",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "ed7247f502e2471fb9f70e29663ad30cfc70b363bc8becff7e7745de2e8e89e8",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "d8ed7a6379d78aa105a6823e565c7efa230fd29b14fbcf5793a57e22e205baaa"
+      },
+      "raw_deterministic": false,
+      "runs_missing": 1,
+      "runs_present": 4,
+      "stage": "05_planview"
+    },
+    {
+      "attribution": "converges after normalizing ['opendrive_header_date']",
+      "content_normalized_deterministic": true,
+      "distinct_content_normalized_sha256": 1,
+      "distinct_raw_sha256": 4,
+      "per_run_content_normalized_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "6f7b15996a85ac456cfceeae9227407f38888a578fe690afcaa6c27a572360fb",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "6f7b15996a85ac456cfceeae9227407f38888a578fe690afcaa6c27a572360fb",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "6f7b15996a85ac456cfceeae9227407f38888a578fe690afcaa6c27a572360fb",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "6f7b15996a85ac456cfceeae9227407f38888a578fe690afcaa6c27a572360fb"
+      },
+      "per_run_raw_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "faea8a453aa936bd19b4256c0b92f57bf979732fa3c47bf565d57347aceebc4b",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "e446cab60664853ad9a5c33356b612cc43ff7aa39ba8e4e009e910b1e005cb83",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "225d230a09c271aa49da90f2455b0ff3f3c5806e301f8ea332c106d9b4ac085e",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "c43ed91ff3cb7c9145bbbbbb1cd857e0380f0608260d91b66522b43fcc3b286f"
+      },
+      "raw_deterministic": false,
+      "runs_missing": 1,
+      "runs_present": 4,
+      "stage": "06_continuity"
+    },
+    {
+      "attribution": "converges after normalizing ['geometry_freeze_hash', 'opendrive_header_date']",
+      "content_normalized_deterministic": true,
+      "distinct_content_normalized_sha256": 1,
+      "distinct_raw_sha256": 4,
+      "per_run_content_normalized_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "b3e7cd6f27bfbbfcedb535f2f3c4084dd94ca7c569b2a4f0de5c7ad7ebde26f4",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "b3e7cd6f27bfbbfcedb535f2f3c4084dd94ca7c569b2a4f0de5c7ad7ebde26f4",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "b3e7cd6f27bfbbfcedb535f2f3c4084dd94ca7c569b2a4f0de5c7ad7ebde26f4",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "b3e7cd6f27bfbbfcedb535f2f3c4084dd94ca7c569b2a4f0de5c7ad7ebde26f4"
+      },
+      "per_run_raw_sha256": {
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_01\\20261001_042523_540218": "1c73aec0497d1bd7b0bf403ad164095bb71ba1de990d1f0fa05eda128d58fb2e",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_02\\20261001_055734_564949": "1cda44bfbc7cffeba0d9949b79c52e03b2feeea065c99165403a065e136972a5",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_03\\20261001_071735_324615": "0bc456f2c0caae3710704d4a349e7bd72c1098db59f31a6507d39df644f27df3",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-perception-final-hardening\\reports\\rq1_trial_runs\\run_04\\20261001_081936_561197": "41248f5da97f5bd00c53baa7a410c8fd28669f67e0de11c9e682008c3605afbc"
+      },
+      "raw_deterministic": false,
+      "runs_missing": 1,
+      "runs_present": 4,
+      "stage": "06_geometry_frozen"
+    }
+  ],
+  "verdict_note": "This audit attributes byte differences. It does not and cannot change the matrix verdict: tools/rq1_five_run_matrix.py compares raw sha256 with no normalization, so a differing raw sha256 remains a FAIL there."
+}

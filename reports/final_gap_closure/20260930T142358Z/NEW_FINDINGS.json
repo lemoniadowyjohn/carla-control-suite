@@ -1,0 +1,23 @@
+{
+  "baseline_sha": "4ef5879d76638d26cf2cf27ce1789918708b36b6",
+  "findings": [
+    {
+      "failure": "naive strict taxonomy (unknown gate names non-waivable by default) broke 8 OC-35 aggregate tests that waive synthetic gate names",
+      "file": "ultimate_pipeline/contracts/stage_contracts.py",
+      "fix": "layered design: generic utility preserved; explicit-class enforcement; production_gate_waiver_allowed; enforce_taxonomy aggregate mode; production callers wired strict",
+      "id": "NEW-211",
+      "severity": "medium",
+      "status": "FOUND_AND_FIXED_IN_CAMPAIGN",
+      "tests": "OC-35 suite green + 14 taxonomy tests"
+    },
+    {
+      "evidence": "fails identically in pristine primary checkout (no campaign changes present)",
+      "failure": "default OSM2World path derives from repo root, embedding Windows username; fails in any checkout under C:\\Users\\admin",
+      "file": "tests/unit/test_a1_a2_path_and_frame_resolution.py",
+      "id": "PRE-EXISTING-ENV-001",
+      "severity": "low",
+      "status": "DOCUMENTED_NOT_INTRODUCED"
+    }
+  ],
+  "result_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09"
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "ue4_discovery_test/v1",
+  "scope": "Section 17: UE4/CARLA build tooling follow-up.",
+  "defect": {
+    "summary": "Discovery looked only for UnrealEditor.exe, the UE5 name. CARLA 0.9.x targets UE4.26, whose Windows editor is Engine/Binaries/Win64/UE4Editor.exe, so a complete UE4.26 install was reported missing.",
+    "secondary_defect": "Both tools used next(iter((a, b)), None), which yields only the first element of the tuple, so one absent first candidate silently masked every later candidate.",
+    "files": [
+      "tools/unreal_cook_resource_preflight.py",
+      "tools/carla_source_build_receipt.py"
+    ]
+  },
+  "fix": {
+    "new_module": "tools/ue_executable_discovery.py",
+    "supported_editor_names_ue4_windows": ["UE4Editor.exe", "UE4Editor-Cmd.exe"],
+    "supported_editor_names_ue5_windows": ["UnrealEditor.exe", "UnrealEditor-Cmd.exe"],
+    "ue5_retained": "deliberately: the names differ, so UE5 detection is kept as a separate family",
+    "carla_server_names": ["CarlaUE4.exe", "CarlaUnreal.exe", "CarlaUE4.sh", "CarlaUnreal.sh"],
+    "search": "every candidate name in every Engine/Binaries/<platform> subdirectory, plus the root itself",
+    "engine_family_reported_as_evidence": true
+  },
+  "separate_receipt_states": {
+    "UE_ENGINE_EDITOR_PRESENT": "evidenced by locating an editor binary; nothing else inferred",
+    "CARLA_PROJECT_COMPILED": "evidenced by compiled project artifacts (UnrealEditor-Carla.dll/.so, .target); independent of the server binary",
+    "CARLA_SERVER_BINARY_PRESENT": "evidenced by locating a CarlaUE4 server binary; independent of the editor",
+    "CARLA_RPC_RESPONSIVE": "requires an actual RPC response; a listening port is explicitly not accepted as evidence",
+    "MAP_PACKAGE_COOKED": "evidenced by cooked content directories; explicitly not runtime loadability",
+    "MAP_RUNTIME_LOADABLE": "requires starting a server and loading the map",
+    "unknown_policy": "unknown remains unknown; no state is derived from another"
+  },
+  "tests": {
+    "file": "ultimate_pipeline/tests/unit/test_ue4_executable_discovery.py",
+    "count": 20,
+    "isolation": "all filesystem trees built under tmp_path; nothing written outside the test temp area",
+    "cases": [
+      "UE4.26 UE4Editor.exe discovered",
+      "UE5 UnrealEditor.exe still discovered",
+      "UE4.26 tree without UnrealEditor.exe is not missed",
+      "absent first candidate does not mask later candidates (the next(iter(...)) regression)",
+      "missing editor returns None and family 'unknown', not a guess",
+      "both engine families expose their real Windows names",
+      "CARLA server binary discovery",
+      "absent CARLA server binary reported as absent",
+      "compiled project present but server binary absent keeps both states",
+      "compiled project absent reported absent",
+      "cooked content present is not runtime loadable",
+      "uncooked content reported absent",
+      "receipt with no roots keeps all six states unknown, and RPC evidence names the port caveat",
+      "receipt finds the UE4.26 editor while project/RPC/runtime states stay unverified",
+      "receipt records project compiled and server binary separately, RPC and runtime load still unknown",
+      "preflight separates readiness from build state",
+      "preflight editor check uses the UE4.26 name and is not a build verdict",
+      "preflight editor check absent lists both real names as searched",
+      "preflight editor check unknown without a root",
+      "receipt is JSON serialisable"
+    ]
+  },
+  "result": "PASS_OFFLINE",
+  "observed_environment": {
+    "ue4_root_configured": false,
+    "carla_root_configured": false,
+    "engine_family_detected": "unknown",
+    "note": "no engine or CARLA build tree is configured in this environment, so discovery correctly returns unknown rather than inventing a path"
+  }
+}

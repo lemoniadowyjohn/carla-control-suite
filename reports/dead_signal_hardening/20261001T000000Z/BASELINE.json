@@ -1,0 +1,8 @@
+{
+  "baseline_sha": "f897e0eb747ac827941ac4883170a5181a603111",
+  "canonical_branch": "integration/production-large-map-20260918",
+  "fetch_timestamp_utc": "20261001T101300Z",
+  "working_repo": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+  "findings_targeted": ["NEW-334", "NEW-335", "NEW-336", "NEW-337", "NEW-338", "NEW-339", "NEW-340", "NEW-341", "NEW-342", "NEW-343", "NEW-344", "NEW-345", "NEW-346", "NEW-347", "NEW-348", "NEW-349"],
+  "scope_note": "This campaign addresses only NEW-334 through NEW-349. NEW-200 through NEW-333 are not re-implemented. Concurrent OpenCode work that already changed affected code will be inspected and verified against contract if found."
+}

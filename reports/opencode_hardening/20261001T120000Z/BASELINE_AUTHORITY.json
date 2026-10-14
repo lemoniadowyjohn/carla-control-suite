@@ -1,0 +1,33 @@
+{
+  "schema": "opencode_hardening_baseline_authority/v1",
+  "generated_for": "integration/opencode-runtime-rig-environment-closure-20261001",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "remote_origin": "https://github.com/lemoniadowyjohn/carla-control-suite.git",
+  "authoritative_branch": "integration/production-large-map-20260918",
+  "expected_authoritative_head": "f897e0eb747ac827941ac4883170a5181a603111",
+  "observed_authoritative_head": "f897e0eb747ac827941ac4883170a5181a603111",
+  "head_matches_expected": true,
+  "verdict": "BASELINE_VERIFIED",
+  "fetch_performed": true,
+  "worktree": "C:/Users/admin/AppData/Local/Temp/opencode/wt-runtime-rig",
+  "work_branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+  "work_branch_created_from": "f897e0eb747ac827941ac4883170a5181a603111",
+  "map_pin": {
+    "registry_key": "auto_map_of_record",
+    "resolved_via": "ultimate_pipeline.carla_tools.map_registry.verify_pinned_map",
+    "declared_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "bytes": 149799632,
+    "bytes_observed": 149799632,
+    "verification_status": "VERIFIED",
+    "frame_id": "ingolstadt_local_rebased",
+    "frame_kind": "rebased_local",
+    "frame_text": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+    "crs_authority": "local Cartesian via fixed offset from UTM-32N (EPSG:32632)",
+    "rebase_dx": 832671.676,
+    "rebase_dy": 5458671.104,
+    "registry_sha256": "4f5ba9587cfee5f76958ba26ac1b1d6c32b6b953f2b4f583e2bd9e9bfa58a534",
+    "real_lfs_object_verified": true,
+    "map_verdict": "MAP_PIN_VERIFIED"
+  }
+}

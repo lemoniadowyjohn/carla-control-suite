@@ -1,0 +1,21 @@
+{
+  "note": "Discrete Frechet distance (thesis future-work item #14), per matched manual<->auto road pair, after cropping auto to the manual map's convex-hull footprint and reprojecting both centerlines into manual's own CRS -- the current, correct RQ1/RQ2 local-registration methodology (see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md), not the thesis's original uncropped whole-network SE(2)-aligned comparison.",
+  "result": {
+    "matched_pair_count": 894,
+    "mean_m": 58.18353368018363,
+    "median_m": 36.13256042794515,
+    "p90_m": 140.4752823467876,
+    "spacing_m": 5.0,
+    "match_threshold_m": 50.0,
+    "footprint": "hull",
+    "auto_road_count_total": 32267,
+    "auto_road_count_cropped": 3536,
+    "manual_road_count": 993
+  },
+  "source_files": {
+    "auto_xodr": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "auto_xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "manual_xodr": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+    "manual_xodr_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+  }
+}

@@ -66,6 +66,7 @@ from ultimate_pipeline.carla_tools.runtime_enrichments import (
     parse_type_filter,
 )
 from ultimate_pipeline.carla_tools.thesis_sensor_rig import ThesisSensorRig
+from ultimate_pipeline.utils.file_hashing import safe_sha256_file
 from ultimate_pipeline.perception.capture_config import (
     PairedCaptureConfig,
     camera_count_for_config,
@@ -724,6 +725,7 @@ def _refresh_thesis_contract_artifacts(
             status.get("expected_map_name") or inputs.get("expected_map_name") or ""
         ),
         "xodr_in": str(inputs.get("xodr_in", "") or ""),
+        "xodr_in_sha256": str(inputs.get("xodr_in_sha256", "") or ""),
     }
 
     produced_artifacts = perception_status.get("produced_artifacts")
@@ -919,7 +921,19 @@ def _run_map_only_probe_subprocess(
     expected_map_name: str,
     use_current_world: bool,
     timeout_s: float,
+    xodr_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
+    """
+    Run the isolated, sacrificial map-only probe subprocess.
+
+    NEW-251: ``generate_opendrive_world()`` is one of the most crash-capable
+    operations in the whole pipeline (native LowLevelFatalError, road-length
+    asserts, OOM, server disappearance, RPC timeout). It must always be executed
+    first in an isolated process that can die without taking the capture with it.
+    Passing ``xodr_path`` routes the probe into OpenDRIVE mode; previously the
+    probe was invoked only for a *named* town, so a generated-XODR capture went
+    straight to generation in the main process.
+    """
     probe_dir = out_dir / "map_probe"
     probe_dir.mkdir(parents=True, exist_ok=True)
     stdout_path = probe_dir / "map_probe_stdout.txt"
@@ -933,13 +947,17 @@ def _run_map_only_probe_subprocess(
         str(host),
         "--port",
         str(int(port)),
-        "--town",
-        str(town),
+        # NEW-251: --town stays required by the probe's CLI, so a generated-XODR
+        # run passes a placeholder identity label rather than nothing. The probe
+        # switches to XODR mode when --xodr-path is present.
+        "--town", str(town or "OpenDriveMap"),
         "--out",
         str(probe_dir),
         "--timeout-s",
         str(float(timeout_s)),
     ]
+    if xodr_path is not None:
+        cmd += ["--xodr-path", str(xodr_path)]
     if str(expected_map_name or "").strip():
         cmd += ["--expected-map-name", str(expected_map_name)]
     if bool(use_current_world):
@@ -1518,15 +1536,48 @@ def _provision_requested_town_map(
             from ultimate_pipeline.core.carla_opendrive_loader import (
                 load_opendrive_world_from_file,
             )
-            world = load_opendrive_world_from_file(
+
+            # NEW-250: compute the approved structural fingerprint of the source
+            # XODR and require the runtime world to match it. Without this, any
+            # generated world that ticked was accepted, and metrics could be
+            # attributed to a map that was never actually generated.
+            expected_structural_sha256 = ""
+            try:
+                from ultimate_pipeline.carla_tools.map_runtime_identity import (
+                    structural_fingerprint,
+                )
+
+                expected_structural_sha256 = str(
+                    structural_fingerprint(
+                        Path(xodr_path).read_text(encoding="utf-8", errors="replace")
+                    ).get("fingerprint_sha256")
+                    or ""
+                )
+            except Exception as exc:
+                print(f"[perception_safe] WARNING: source XODR fingerprint failed: {exc}")
+
+            world, xodr_identity = load_opendrive_world_from_file(
                 client,
                 xodr_path,
                 timeout_s=float(map_load_timeout_s),
                 retries=2,
                 do_reload=True,
+                return_identity=True,
+                expected_structural_sha256=expected_structural_sha256,
             )
             pair_status["xodr_loaded"] = True
             pair_status["xodr_path"] = str(xodr_path)
+            # NEW-250: record all three identities for the capture evidence.
+            pair_status["xodr_identity"] = {
+                "source_xodr_sha256": xodr_identity.get("source_xodr_sha256"),
+                "runtime_payload_sha256": xodr_identity.get("runtime_payload_sha256"),
+                "runtime_payload_differs_from_source": xodr_identity.get(
+                    "runtime_payload_differs_from_source"
+                ),
+                "runtime_map_structural_sha256": xodr_identity.get(
+                    "runtime_map_structural_sha256"
+                ),
+            }
         else:
             # Cooked map loading (Grid0828, Grid0821, Towns, etc.)
             candidates = get_load_world_candidates(requested_town)
@@ -4100,6 +4151,16 @@ def main() -> int:
         if args.xodr_in
         else ""
     )
+    # Evidence binding (GAP-022): hash the ORIGINAL --xodr-in argument here, before
+    # any later normalization (e.g. the georeference rewrite further down replaces
+    # args.xodr_in with a generated _normalized_input.xodr copy). This is the sha256
+    # of the exact artifact the caller asked us to capture against, and it is what
+    # final_map_readiness_gate.evaluate_perception_status() cross-checks against the
+    # XODR it is evaluating -- so it must match that source file byte-for-byte, not
+    # an internal CARLA-loading intermediate.
+    xodr_in_sha256 = (
+        (safe_sha256_file(Path(args.xodr_in)) or "") if args.xodr_in else ""
+    )
     visual_qa_gate_required = bool(
         bool(getattr(args, "require_visual_qa_gate", False))
         or _env_bool("UP_REQUIRE_VISUAL_QA_GATE_FOR_PERCEPTION", False)
@@ -4205,6 +4266,7 @@ def main() -> int:
         "manual_town": str(args.manual_town),
         "town": str(args.town or ""),
         "xodr_in": str(xodr_in_metadata),
+        "xodr_in_sha256": str(xodr_in_sha256),
         "expected_map_name": str(args.expected_map_name or ""),
         "map_probe_requested": bool(map_probe_requested),
         "visual_qa_gate_required": bool(visual_qa_gate_required),
@@ -4265,6 +4327,11 @@ def main() -> int:
         "failure_detail": "",
         "warnings": [],
         "output_dir": str(out_dir),
+        # GAP-022 evidence binding: sha256 of the XODR this capture was run
+        # against (empty when the run used a named --town instead of --xodr-in).
+        # final_map_readiness_gate.evaluate_perception_status() cross-checks this
+        # against the XODR it is evaluating and fails closed on a mismatch.
+        "xodr_sha256": str(xodr_in_sha256),
         "png_files": 0,
         "semseg_files": 0,
         "ply_files": 0,
@@ -4383,6 +4450,7 @@ def main() -> int:
             "manual_town": args.manual_town,
             "town": args.town or "",
             "xodr_in": str(xodr_in_metadata),
+            "xodr_in_sha256": str(xodr_in_sha256),
             "rig_mode": args.rig,
             "expected_map_name": str(args.expected_map_name or ""),
             "map_probe_requested": bool(map_probe_requested),
@@ -4854,9 +4922,15 @@ def main() -> int:
                 }
             pair_manifest["status"]["carla_client_ok"] = True
             requested_town = str(args.town or "").strip()
-            if map_probe_requested and not requested_town:
-                if "map_probe_skipped_no_town" not in perception_status["warnings"]:
-                    perception_status["warnings"].append("map_probe_skipped_no_town")
+            # NEW-251: an XODR run is exactly the case that most needs the isolated
+            # probe. It is no longer skipped for lacking a named town.
+            map_probe_xodr = Path(args.xodr_in).resolve() if args.xodr_in else None
+            map_probe_subject = requested_town or (
+                "OpenDriveMap" if map_probe_xodr is not None else ""
+            )
+            if map_probe_requested and not map_probe_subject:
+                if "map_probe_skipped_no_subject" not in perception_status["warnings"]:
+                    perception_status["warnings"].append("map_probe_skipped_no_subject")
             if (
                 requested_town
                 and _is_known_unstable_map(requested_town)
@@ -4866,15 +4940,16 @@ def main() -> int:
                     f"MAP_LOAD_FAILED: MAP_TRAVEL_RISK_{requested_town.upper()}: map travel to {requested_town} is blocked. "
                     f"Load {requested_town} manually and rerun with --use-current-world."
                 )
-            if map_probe_requested and requested_town:
+            if map_probe_requested and map_probe_subject:
                 map_probe = _run_map_only_probe_subprocess(
                     out_dir=out_dir,
                     host=str(args.host),
                     port=int(args.port),
-                    town=requested_town,
+                    town=map_probe_subject,
                     expected_map_name=expected_map_substr,
                     use_current_world=bool(route_use_current_world),
                     timeout_s=float(map_probe_timeout_s),
+                    xodr_path=map_probe_xodr,
                 )
                 run_info_payload["map_probe"] = dict(map_probe)
                 _write_json(out_dir / "run_info.json", run_info_payload)

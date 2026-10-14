@@ -3,6 +3,11 @@
 
 """
 Safe ego spawn helper with road projection and retry logic.
+
+Also provides `spawn_ego_strict_exact` -- a THESIS_PAIRED_STRICT helper that
+uses ONE exact geographic pose with NO road re-projection, NO shuffle and NO
+fallback to other spawn points. Hidden spawn recovery is valid for smoke
+testing but never for a paired scientific comparison.
 """
 
 from __future__ import annotations
@@ -125,3 +130,83 @@ def safe_spawn_ego(
     report["warnings"].append("failed to spawn ego after retries")
     _write_report(report_path, report)
     return None, report
+
+
+def spawn_ego_strict_exact(
+    world,
+    *,
+    pose: Dict[str, Any],
+    blueprint_filter: str = "vehicle.tesla.model3",
+    z_offset: float = 0.0,
+    report_path: Optional[str] = None,
+) -> Tuple[Optional[Any], Dict[str, Any]]:
+    """Spawn the ego at EXACTLY the requested geographic pose.
+
+    Unlike `safe_spawn_ego`, this never re-projects the transform onto the
+    road, never walks the spawn list for a fallback and never retries at a
+    different location. If `world.try_spawn_actor` returns None the spawn
+    fails -- the caller must treat that as a route/universe failure, not
+    silently shift the arm to a different route.
+
+    `pose` is a route-manifest pose dict: x/y/z/yaw/pitch/roll.
+    """
+    report: Dict[str, Any] = {
+        "ok": False,
+        "mode": "THESIS_PAIRED_STRICT",
+        "spawn_recovery_used": False,
+        "spawn_projection_readjustment_used": False,
+        "requested_pose": {
+            "x": float(pose["x"]),
+            "y": float(pose["y"]),
+            "z": float(pose["z"]),
+            "yaw": float(pose["yaw"]),
+            "pitch": float(pose["pitch"]),
+            "roll": float(pose["roll"]),
+        },
+        "z_offset": float(z_offset),
+    }
+
+    try:
+        bp_lib = world.get_blueprint_library()
+        bps = bp_lib.filter(blueprint_filter)
+        if not bps:
+            report["warnings"] = [f"no blueprint matches: {blueprint_filter}"]
+            _write_report(report_path, report)
+            return None, report
+        blueprint = bps[0]
+        blueprint.set_attribute("role_name", "ego")
+    except Exception as exc:
+        report["warnings"] = [f"blueprint error: {exc}"]
+        _write_report(report_path, report)
+        return None, report
+
+    try:
+        import carla  # type: ignore
+
+        tf = carla.Transform(
+            carla.Location(
+                x=float(pose["x"]),
+                y=float(pose["y"]),
+                z=float(pose["z"]) + float(z_offset),
+            ),
+            carla.Rotation(
+                yaw=float(pose["yaw"]),
+                pitch=float(pose["pitch"]),
+                roll=float(pose["roll"]),
+            ),
+        )
+        actor = world.try_spawn_actor(blueprint, tf)
+    except Exception as exc:
+        report["warnings"] = [f"strict spawn failed: {exc}"]
+        _write_report(report_path, report)
+        return None, report
+
+    if actor is None:
+        report["warnings"] = ["try_spawn_actor returned None at exact pose; no recovery allowed"]
+        _write_report(report_path, report)
+        return None, report
+
+    report["ok"] = True
+    report["spawned_at_requested_pose"] = True
+    _write_report(report_path, report)
+    return actor, report

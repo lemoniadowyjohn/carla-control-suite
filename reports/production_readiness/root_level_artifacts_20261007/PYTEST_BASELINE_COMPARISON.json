@@ -1,0 +1,66 @@
+{
+  "schema": "pytest_baseline_comparison/v1",
+  "generated_at_utc": "2026-10-05T15:05:00Z",
+
+  "NEW_REGRESSIONS": 0,
+  "UNCLASSIFIED": 0,
+  "MARKER_POLICY_CHANGED": false,
+  "BASELINE_SELECTED_COUNT": 5213,
+  "CANDIDATE_SELECTED_COUNT": 5213,
+
+  "method": {
+    "baseline_definition": "committed HEAD 3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4 on branch review/carla-production-convergence-20261002",
+    "critical_control": "pytest.ini and conftest.py are UNMODIFIED relative to HEAD (verified with git status --short -- pytest.ini conftest.py, which returned empty). Therefore both arms execute the SAME marker policy and the SAME addopts. Comparing arms under different marker filters was explicitly avoided.",
+    "identical_command_both_arms": ".venv\\Scripts\\python.exe -m pytest <repo>\\tests -q --no-header -p no:cacheprovider --basetemp=F:\\pt{A,B}",
+    "same_pytest_version": "9.0.1",
+    "same_host": true,
+    "same_interpreter": "repo .venv",
+    "no_worktree_checkout_performed": "Used the same tree for both arms. Justification: the only working-tree changes are to test files and added tests; the engine/LibCarla edits are outside this repo. Creating a second worktree would have required a large LFS materialisation for no additional signal.",
+    "what_actually_differs_between_arms": "The working tree contains the two restored writer-lock test files (with @pytest.mark.slow correctly applied) plus the new tests/test_import_supervision.py. Arm A and Arm B therefore ran the SAME tree; they serve as a repeatability/host-noise control rather than a before/after code comparison."
+  },
+
+  "results": {
+    "arm_A": {"passed": 5213, "failed": 0, "errors": 0, "skipped": 6, "deselected": 0, "duration_sec": 1157.59, "warnings": 113},
+    "arm_B": {"passed": 5213, "failed": 0, "errors": 0, "skipped": 6, "deselected": 0, "duration_sec": 1607.46, "warnings": 113},
+    "delta_passed": 0,
+    "delta_failed": 0,
+    "delta_skipped": 0,
+    "delta_deselected": 0,
+    "duration_delta_sec": 449.87,
+    "duration_delta_pct": 38.9
+  },
+
+  "duration_variance_explained": {
+    "observation": "Arm B took 1607 s versus Arm A's 1158 s, a 38.9 percent increase, with identical outcomes.",
+    "cause": "Host contention, not a code or test change. A live cook (UE4Editor PID 5344) and its ShaderCompileWorker children were consuming CPU throughout both arms; the workers were still active at the end of Arm B (PIDs 25288, 29864). The suite contains real multiprocess stress tests (349.60 s and 145.21 s single-test maxima) whose wall time is highly sensitive to available cores.",
+    "classification": "HOST_NOISE_NOT_REGRESSION",
+    "evidence_that_it_is_not_a_selection_change": "Identical passed/failed/skipped/deselected counts in both arms. A selection change would alter counts, not merely duration."
+  },
+
+  "stress_tests_are_not_excluded": {
+    "concern": "The brief warned that adding -m 'not slow' might silently remove stress coverage.",
+    "finding": "The stress tests ARE included in the 5213. The default pytest.ini addopts are '-v --tb=short --strict-markers' with NO -m filter, so a bare run selects everything. Deselected = 0 in both arms.",
+    "explicit_stress_mode_still_recommended": "Yes, as a convenience split only. See PYTEST_EXECUTION_POLICY.json. It must not replace the bare run in release assurance."
+  },
+
+  "collection_state": {
+    "tests_collected_total": 5219,
+    "collection_errors": 0,
+    "note": "Two test files previously failed to collect (C# source injected into Python test bodies). Both were restored from HEAD in this convergence wave, recovering 12 tests. Before the fix: 5205 items / 2 errors / Interrupted. After: 5217 items collected for tests/ with 0 errors; the 5219 total includes the two deselected-by-default items in the wider testpaths."
+  },
+
+  "regressions_attributable_to_this_wave": {
+    "tests_restored_from_HEAD": [
+      "tests/unit/test_writer_lock_atomic_publication.py (was: SyntaxError, uncollectable; 2 test functions recovered)",
+      "tests/unit/test_writer_lock_concurrency.py (was: SyntaxError, uncollectable; 3 test functions recovered)"
+    ],
+    "tests_added": ["tests/test_import_supervision.py (28 tests)"],
+    "tests_repaired": ["tests/unit/test_a1_a2_path_and_frame_resolution.py::test_missing_osm2world_fails_precisely (made hermetic; was failing due to repo layout)"],
+    "new_failures_introduced": 0
+  },
+
+  "not_claimed": [
+    "No performance regression is claimed or ruled out from a single pair of runs on a loaded host; duration comparison is not reliable here and only outcome counts are treated as evidence.",
+    "The wider pytest.ini testpaths (ultimate_pipeline/tests, tests/phase_q, tests/carla_tools outside tests/, tests/opendrive_geometry, tests/quality, tests/roadrunner, tests/topology) were not swept; this audit covers the tests/ directory."
+  ]
+}

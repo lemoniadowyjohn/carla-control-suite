@@ -1,0 +1,130 @@
+{
+  "schema": "rq5_protocol_freeze/v1",
+  "frozen_utc": "2026-09-30T18:00:00Z",
+  "code_sha": "627afe9ff01d2338dd121530709b1e6d3b8bcb09",
+  "status": "FROZEN",
+  "amendment_policy": "Any change after freeze requires a new versioned contract (v2) with rationale; v1 values must never be edited in place once RQ5(a) training has started.",
+  "claim_boundary": "This contract freezes the protocol only. PASS of the contract audit means every required decision has an explicit frozen value, not that the science is validated. No RQ5 model training has been executed under this contract.",
+  "decisions": {
+    "model_architecture": {
+      "value": "torchvision fcn_resnet50, randomly initialized (weights=None), num_classes=29",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:101"
+    },
+    "initialization_policy": {
+      "value": "random initialization; no pretraining; per-seed torch.manual_seed(seed)",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py --seed"
+    },
+    "optimizer": {
+      "value": "torch.optim.Adam",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:104"
+    },
+    "learning_rate": {
+      "value": 0.0001,
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:76"
+    },
+    "lr_schedule": {
+      "value": "constant (trainer defines no scheduler)",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py"
+    },
+    "epochs": {
+      "value": 3,
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:74"
+    },
+    "batch_size": {
+      "value": 4,
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:75"
+    },
+    "image_resolution": {
+      "value": "native capture resolution; no resizing in dataset or eval default path",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:59 (TF.to_tensor only)"
+    },
+    "augmentations": {
+      "value": "none (trainer and dataset define no augmentation stage)",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py"
+    },
+    "class_mapping": {
+      "value": "CARLA 29-class semantic ids per carla_classes.py; Any(255) sentinel is ignore_index, never a predicted class",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/carla_classes.py + semantic_classes.CARLA_SEMANTIC_NUM_CLASSES=29"
+    },
+    "class_weighting": {
+      "value": "median_frequency, computed from the generated training split only",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:79"
+    },
+    "training_split": {
+      "value": "generated-train split from the RQ3 paired capture dataset manifest (rgb/<cam> + semseg_raw/<cam> layout)",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/dataset_generator.py layout; split manifest recorded at capture"
+    },
+    "validation_split": {
+      "value": "generated-validation split from the same RQ3 capture manifest; disjoint frames from training split",
+      "provenance": "campaign_frozen",
+      "source": "RQ3 paired manifest (to be bound at capture time)"
+    },
+    "test_split": {
+      "value": "RQ5(a): held-out generated-test frames AND the manual test split; manual frames never used for training, validation, or checkpoint selection",
+      "provenance": "campaign_frozen",
+      "source": "NEW218 no-leak rule"
+    },
+    "data_budget": {
+      "value": "full generated splits (trainer limit=0); manual test = all held-out manual frames; exact frame counts bound via dataset manifest hashes at execution",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:78 (limit default 0)"
+    },
+    "seed_policy": {
+      "value": "explicit seed list [7, 17, 42]; each seed trains an independent model; DataLoader order seeded per seed",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py --seed"
+    },
+    "checkpoint_selection": {
+      "value": "final-epoch checkpoint only (model_last.pt); selection uses generated-validation loss; manual test split is never consulted for selection",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/min_train_segmentation.py:150 + NEW218 no-leak rule"
+    },
+    "metrics": {
+      "value": "primary: generated->manual mIoU degradation (mIoU_generated_test minus mIoU_manual_test); secondary: per-class IoU, pixel accuracy",
+      "provenance": "campaign_frozen",
+      "source": "ultimate_pipeline/perception/eval_sim_labeled.py (mIoU, per_class_iou, pixel_accuracy)"
+    },
+    "primary_metric": {
+      "value": "generated->manual mIoU degradation",
+      "provenance": "campaign_frozen",
+      "source": "P12 RQ5(a) protocol"
+    },
+    "confidence_interval_method": {
+      "value": "nonparametric bootstrap over test frames, 1000 resamples, 95% interval, seed 7",
+      "provenance": "campaign_frozen",
+      "source": "NEW218 freeze (no repo precedent; fixed rule)"
+    },
+    "transfer_comparison_matrix": {
+      "value": "rows: seeds [7,17,42]; columns: mIoU generated-test, mIoU manual-test, degradation, per-class IoU delta; mean +- bootstrap CI across seeds",
+      "provenance": "campaign_frozen",
+      "source": "P12 RQ5(a) protocol"
+    },
+    "failure_policy": {
+      "value": "missing split, manifest hash mismatch, or Rig/capture-policy drift aborts the experiment; no substitution, no silent re-split; manual-test result never triggers protocol re-tuning",
+      "provenance": "campaign_frozen",
+      "source": "P12 + RQ3 capture contract"
+    },
+    "rq5b_boundary": {
+      "value": "labeled real-world evaluation reports mIoU only where ground-truth labels exist; unlabeled shift analysis reports distribution distances (FID-like/CORAL/MMD/entropy) ONLY as shift measures, never as accuracy or generalization performance",
+      "provenance": "repo_default",
+      "source": "ultimate_pipeline/perception/eval_real_unlabeled.py (no accuracy path)"
+    },
+    "no_manual_leak_rule": {
+      "value": "no manual target image may appear in training inputs, validation inputs, class-weight statistics, or checkpoint selection; violation fails the run",
+      "provenance": "campaign_frozen",
+      "source": "P12 RQ5(a) protocol"
+    }
+  }
+}

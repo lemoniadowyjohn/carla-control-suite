@@ -1,0 +1,24 @@
+{
+  "checks": {
+    "placement_authority": {
+      "status": "PASS",
+      "tiles_with_offsets": 20
+    },
+    "structure": {
+      "failures": [],
+      "status": "PASS",
+      "warnings": []
+    },
+    "tile_set": {
+      "expected_count": 20,
+      "extra_tiles": [],
+      "missing_tiles": [],
+      "staged_count": 20,
+      "status": "PASS"
+    }
+  },
+  "expected_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "overall": "PASS",
+  "package_dir": "Import\\.staging\\20260924T100614Z_rq3batch9\\Ingolstadt",
+  "schema": "rq3_map_lineage/v1"
+}
