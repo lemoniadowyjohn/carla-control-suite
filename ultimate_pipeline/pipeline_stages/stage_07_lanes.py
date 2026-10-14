@@ -261,6 +261,35 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     except Exception as e:
         print(f"⚠️ GAP-026 width harmonization failed (non-fatal): {e}")
 
+    # --- GAP-026: inner-first junction laneLink remap (source stage) ---
+    # Junction <laneLink> sets arrive from the SUMO import and are never
+    # regenerated (Stage 8 is VALIDATION_ONLY for lane topology).  This is
+    # POSITIVE construction: a connection is rewritten only when the
+    # deterministic inner-first pairing strictly reduces failing links under
+    # the production checker's own (unchanged) tolerances.  An empty
+    # inner-first set never replaces a non-empty original, so no connection
+    # is driven to zero laneLinks.  No tolerance, oracle, or Stage-8 check
+    # is modified.
+    try:
+        from ultimate_pipeline.lanes.junction_lanelink_inner_first import (
+            repair_outer_to_inner_mispaired_lane_links,
+        )
+
+        gap026_lanelink_report = repair_outer_to_inner_mispaired_lane_links(
+            root, verbose=True
+        )
+        self.vreport.add_dict("gap026_lanelink_inner_first", {
+            k: v for k, v in gap026_lanelink_report.items() if k != "remap_log"
+        })
+        print(
+            "[STEP 7] GAP-026 inner-first laneLink remap: "
+            f"evaluated={gap026_lanelink_report.get('evaluated_connections', 0)} "
+            f"remapped={gap026_lanelink_report.get('remapped_connections', 0)} "
+            f"kept={gap026_lanelink_report.get('kept_connections', 0)}"
+        )
+    except Exception as e:
+        print(f"⚠️ GAP-026 inner-first laneLink remap failed (non-fatal): {e}")
+
     save_xodr(tree, lanes_out)
     print(f"✅ Lane & cross-section repaired → {lanes_out}")
     if s.QA_AUTOVIS and not s.ENABLE_CARLA_TEST_EARLY:
