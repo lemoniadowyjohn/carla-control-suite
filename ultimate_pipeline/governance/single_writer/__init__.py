@@ -3,7 +3,7 @@
 OS primitive (named mutex) is authority; lease JSON is evidence.
 """
 from . import domains, exit_codes, handoff, job_supervision, lease_store
-from . import os_lock, preflight, run_settings, ungoverned_detector
+from . import os_lock, preflight, run_settings, ungoverned_detector, worktree_lock, common_git_lock
 
 __all__ = [
     "domains",
@@ -15,4 +15,6 @@ __all__ = [
     "preflight",
     "run_settings",
     "ungoverned_detector",
+    "worktree_lock",
+    "common_git_lock",
 ]

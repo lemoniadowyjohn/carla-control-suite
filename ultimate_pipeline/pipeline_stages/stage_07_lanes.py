@@ -206,6 +206,41 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     CrossSectionRepair.enforce(root)
     LaneWidthClamp.clamp(root)
 
+    # --- GAP-048: infer lane successors from REAL road/junction topology ---
+    # Generator-stage repair (before final XODR). Strategy 3 handles roads
+    # whose road-level successor is a junction, using unique junction laneLink
+    # targets only. Ambiguous/no-topology lanes are intentionally left
+    # unresolved (never guessed) and reported.
+    from ultimate_pipeline.enrichment.lane_successor_topology import (
+        infer_lane_successors_from_topology,
+    )
+
+    lane_successor_report = infer_lane_successors_from_topology(root)
+    lane_successor_report_path = os.path.join(
+        self.out_dir, "lane_successor_topology_report.json"
+    )
+    try:
+        with open(lane_successor_report_path, "w", encoding="utf-8") as f:
+            json.dump(
+                lane_successor_report,
+                f,
+                indent=2,
+                ensure_ascii=True,
+                sort_keys=True,
+            )
+        self.vreport.add_dict("lane_successor_topology", lane_successor_report)
+    except Exception as e:
+        print(f"⚠️ Failed to write lane successor topology report: {e}")
+    print(
+        "[STEP 7] lane successor topology: "
+        f"repaired={lane_successor_report.get('inferred_count', 0)} "
+        f"(road_to_road={lane_successor_report.get('road_to_road_count', 0)}, "
+        f"junction={lane_successor_report.get('junction_repaired_count', 0)}), "
+        f"unresolved_ambiguous={lane_successor_report.get('junction_unresolved_ambiguous', 0)}, "
+        f"unresolved_no_candidate={lane_successor_report.get('junction_unresolved_no_candidate', 0)} "
+        f"-> {lane_successor_report_path}"
+    )
+
     save_xodr(tree, lanes_out)
     print(f"✅ Lane & cross-section repaired → {lanes_out}")
     if s.QA_AUTOVIS and not s.ENABLE_CARLA_TEST_EARLY:
