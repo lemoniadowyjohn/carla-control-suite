@@ -1,0 +1,61 @@
+{
+  "schema": "georeference_compiled_acceptance/v1",
+  "scope": "FOCUSED_COMPILE_AND_CONTRACT_TEST",
+  "runtime_server_35812": "EXITED_NATURALLY_BEFORE_BUILD",
+  "full_libcarla_build": "NOT_RUN",
+  "full_libcarla_build_reason": "LibCarla requires Boost, msgpack and the road/geometry stack, none of which are present on this machine, so the full target cannot be configured or linked here. Building it is not a parser-contract question and is deferred.",
+  "what_was_compiled": {
+    "sources": [
+      "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp (REAL, unmodified production source)",
+      "LibCarla/source/carla/StringUtil.cpp (REAL)",
+      "LibCarla/source/third-party/pugixml/pugixml.cpp (REAL)",
+      "LibCarla/test/georeference_fail_closed_test.cpp (contract test)"
+    ],
+    "compiler": "MSVC 14.42.34433 (VS 2022 BuildTools), /std:c++17 /EHsc /W3 /O2",
+    "shims": [
+      "boost/algorithm/string.hpp -- boost::split + boost::is_any_of only; split KEEPS empty tokens, matching Boost, which the parser relies on",
+      "carla/Logging.h -- CARLA's variadic write_to_stream expander pattern reproduced faithfully",
+      "carla/geom/GeoLocation.h -- same 3-double layout, msgpack dropped",
+      "carla/road/MapBuilder.h -- georeference surface only, same signatures and same bodies as the edited headers"
+    ],
+    "harness_exe": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\georef_harness\\build\\georef_contract_test.exe",
+    "harness_exe_sha256": "7cc34874565cbce998cce09ffc78a5cd39ab0ff6766c5f67c32b5562305be82d"
+  },
+  "results": {
+    "checks": 26,
+    "failures": 0,
+    "exit_code": 0,
+    "BARE_TMERC_PARSE": "PASS",
+    "COMPLETE_TMERC_PARSE": "PASS",
+    "PARTIAL_LAT_LON_POLICY": "REJECT_BOTH_VARIANTS",
+    "MALFORMED_CRS_POLICY": "REJECT",
+    "AUTHORITATIVE_MAP_LOAD": "PASS",
+    "42_2_FALLBACK": "ABSENT",
+    "REBASE_PRESERVED": "PASS",
+    "LOCAL_MAP_WITHOUT_ORIGIN": "PASS",
+    "ABSOLUTE_CONVERSION_WITHOUT_ORIGIN": "NO_FAKE_VALUE",
+    "STOCK_MAP_CONTROL": "NUMERICS_UNCHANGED"
+  },
+  "authoritative_artifact": {
+    "path": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "geo_reference": "+proj=tmerc",
+    "offset_x": "832671.676000",
+    "offset_y": "5458671.104000",
+    "parsed_in_harness": true
+  },
+  "stock_controls": {
+    "source": "Town01/02/03 XODR geoReference",
+    "string": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +geoidgrids=egm96_15.gtx +vunits=m +no_defs",
+    "has_absolute_origin": true,
+    "numerical_behaviour": "unchanged",
+    "COMPLETE_GEOREFERENCE_REGRESSION": 0,
+    "note": "Stock maps declare +lat_0=0 +lon_0=0, which is a COMPLETE origin. They therefore keep has_absolute_origin=true and GNSS and local<->geo conversion keep working exactly as before."
+  },
+  "not_yet_compiled": [
+    "LibCarla client/Map.cpp and PythonAPI Map.cpp fail-closed throws (require boost + msgpack)",
+    "UE4 plugin edits: CarlaEpisode, CarlaGameModeBase, GnssSensor, CaService (require the UE4 build system)"
+  ],
+  "ABSOLUTE_FRAME_ORIGIN": "UNRESOLVED",
+  "verdict": "GEOREFERENCE_PARSER_QUALIFIED_LOCAL_FRAME"
+}

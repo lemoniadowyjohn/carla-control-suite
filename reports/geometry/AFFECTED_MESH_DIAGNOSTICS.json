@@ -1,0 +1,356 @@
+{
+  "aggregate": {
+    "collinear_faces": 0,
+    "degenerate_faces": 0,
+    "faces": 18708,
+    "meshes": 2,
+    "meshes_without_normals": 0,
+    "meshes_without_smoothing": 2,
+    "meshes_without_uv": 2,
+    "near_zero_binormal_faces": 18708,
+    "non_unit_normals": 0,
+    "sliver_faces": 0,
+    "tangent_degenerate_faces": 18708,
+    "uv_degenerate_faces": 18708,
+    "vertices": 11954,
+    "vertices_without_normal": 0,
+    "zero_area_faces": 0
+  },
+  "fbx_channel_delta": {
+    "files_after": [
+      "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\geom_verify\\fixed_10_9\\Ingolstadt_Tile_10_9.fbx",
+      "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\geom_verify\\fixed_6_6\\Ingolstadt_Tile_6_6.fbx"
+    ],
+    "files_before": [
+      "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.fbx",
+      "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.fbx"
+    ],
+    "layers": {
+      "LayerElementBinormal": {
+        "after": 0,
+        "before": 0,
+        "delta": 0
+      },
+      "LayerElementMaterial": {
+        "after": 1132,
+        "before": 1132,
+        "delta": 0
+      },
+      "LayerElementNormal": {
+        "after": 1132,
+        "before": 1132,
+        "delta": 0
+      },
+      "LayerElementSmoothing": {
+        "after": 1132,
+        "before": 0,
+        "delta": 1132
+      },
+      "LayerElementTangent": {
+        "after": 0,
+        "before": 0,
+        "delta": 0
+      },
+      "LayerElementUV": {
+        "after": 1132,
+        "before": 0,
+        "delta": 1132
+      }
+    }
+  },
+  "files": [
+    {
+      "coordinate_magnitude_max_m": 372.287,
+      "fatal": [
+        "no UV channel: MikkTSpace cannot derive a tangent basis, so every face (8443) predicts a degenerate-tangent and near-zero-bi-normal warning"
+      ],
+      "gate_status": "REJECTED",
+      "metrics": {
+        "collinear_faces": 0,
+        "coordinate_magnitude_max": 372.287,
+        "degenerate_faces": 0,
+        "face_count": 8443,
+        "has_normal_channel": true,
+        "has_smoothing_channel": false,
+        "has_tangent_channel": false,
+        "has_uv_channel": false,
+        "mean_face_area_m2": 16.58568122198003,
+        "min_face_area_m2": 0.0019217792986138994,
+        "min_uv_face_area": 0.0,
+        "name": "Ingolstadt_Tile_10_9",
+        "near_zero_binormal_faces": 8443,
+        "non_finite_normals": 0,
+        "non_unit_normals": 0,
+        "predicted_ue4_warnings": {
+          "degenerate_tangent_bases": 8443,
+          "degenerate_triangles": 0,
+          "missing_smoothing_group": 1,
+          "nearly_zero_binormals": 8443
+        },
+        "sliver_faces": 0,
+        "smoothing_group_count": 0,
+        "source_format": "obj objects=304",
+        "source_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.obj",
+        "tangent_degenerate_faces": 8443,
+        "uv_degenerate_faces": 8443,
+        "vertex_count": 5455,
+        "vertices_without_normal": 0,
+        "zero_area_faces": 0,
+        "zero_length_normals": 0
+      },
+      "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.obj",
+      "repairable": [
+        "FBX carries no LayerElementSmoothing -> UE4 'no smoothing group information' warning; regenerate with mesh_smooth_type='FACE' and angle-based sharp edges"
+      ],
+      "role": "OSM2World output (geometric analysis)",
+      "source": "obj",
+      "totals": null,
+      "uv_fix_projection": {
+        "degenerate_faces": 0,
+        "deterministic": true,
+        "eliminates_degenerate_tangent_basis": true,
+        "faces": 8443,
+        "mean_face_area": 0.003060170787934903,
+        "method": "per-face box (cube) projection onto the plane perpendicular to the dominant normal axis, normalized per object to [0,1]",
+        "min_face_area": 4.832226908916655e-08,
+        "overlap_aware": false,
+        "per_object_normalization": {
+          "degenerate_faces": 0,
+          "faces": 8443,
+          "mean_face_area": 0.003060170787934903,
+          "min_face_area": 4.832226908916655e-08
+        },
+        "per_tile_normalization": {
+          "degenerate_faces": 0,
+          "faces": 8443,
+          "mean_face_area": 5.723120770766305e-05,
+          "min_face_area": 6.667229093071713e-09
+        }
+      }
+    },
+    {
+      "coordinate_magnitude_max_m": 296.875,
+      "fatal": [
+        "no UV channel: MikkTSpace cannot derive a tangent basis, so every face (10265) predicts a degenerate-tangent and near-zero-bi-normal warning"
+      ],
+      "gate_status": "REJECTED",
+      "metrics": {
+        "collinear_faces": 0,
+        "coordinate_magnitude_max": 296.875,
+        "degenerate_faces": 0,
+        "face_count": 10265,
+        "has_normal_channel": true,
+        "has_smoothing_channel": false,
+        "has_tangent_channel": false,
+        "has_uv_channel": false,
+        "mean_face_area_m2": 12.927762092339028,
+        "min_face_area_m2": 0.003119789913290403,
+        "min_uv_face_area": 0.0,
+        "name": "Ingolstadt_Tile_6_6",
+        "near_zero_binormal_faces": 10265,
+        "non_finite_normals": 0,
+        "non_unit_normals": 0,
+        "predicted_ue4_warnings": {
+          "degenerate_tangent_bases": 10265,
+          "degenerate_triangles": 0,
+          "missing_smoothing_group": 1,
+          "nearly_zero_binormals": 10265
+        },
+        "sliver_faces": 0,
+        "smoothing_group_count": 0,
+        "source_format": "obj objects=264",
+        "source_path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+        "tangent_degenerate_faces": 10265,
+        "uv_degenerate_faces": 10265,
+        "vertex_count": 6499,
+        "vertices_without_normal": 0,
+        "zero_area_faces": 0,
+        "zero_length_normals": 0
+      },
+      "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+      "repairable": [
+        "FBX carries no LayerElementSmoothing -> UE4 'no smoothing group information' warning; regenerate with mesh_smooth_type='FACE' and angle-based sharp edges"
+      ],
+      "role": "OSM2World output (geometric analysis)",
+      "source": "obj",
+      "totals": null,
+      "uv_fix_projection": {
+        "degenerate_faces": 0,
+        "deterministic": true,
+        "eliminates_degenerate_tangent_basis": true,
+        "faces": 10265,
+        "mean_face_area": 0.002016601662320343,
+        "method": "per-face box (cube) projection onto the plane perpendicular to the dominant normal axis, normalized per object to [0,1]",
+        "min_face_area": 1.1521606953665853e-07,
+        "overlap_aware": false,
+        "per_object_normalization": {
+          "degenerate_faces": 0,
+          "faces": 10265,
+          "mean_face_area": 0.002016601662320343,
+          "min_face_area": 1.1521606953665853e-07
+        },
+        "per_tile_normalization": {
+          "degenerate_faces": 0,
+          "faces": 10265,
+          "mean_face_area": 3.697130288625152e-05,
+          "min_face_area": 8.723857678441422e-09
+        }
+      }
+    },
+    {
+      "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.fbx",
+      "phase": "before",
+      "probe": {
+        "fbx_version": 7400,
+        "format": "binary",
+        "has_binormal_layer": false,
+        "has_normal_layer": true,
+        "has_smoothing_layer": false,
+        "has_tangent_layer": false,
+        "has_uv_layer": false,
+        "layer_node_counts": {
+          "LayerElementBinormal": 0,
+          "LayerElementMaterial": 606,
+          "LayerElementNormal": 606,
+          "LayerElementSmoothing": 0,
+          "LayerElementTangent": 0,
+          "LayerElementUV": 0
+        },
+        "method": "ascii node-name byte search over the FBX payload",
+        "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.fbx",
+        "size_bytes": 818284
+      },
+      "role": "Blender output (vertex-channel probe)",
+      "source": "fbx"
+    },
+    {
+      "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.fbx",
+      "phase": "before",
+      "probe": {
+        "fbx_version": 7400,
+        "format": "binary",
+        "has_binormal_layer": false,
+        "has_normal_layer": true,
+        "has_smoothing_layer": false,
+        "has_tangent_layer": false,
+        "has_uv_layer": false,
+        "layer_node_counts": {
+          "LayerElementBinormal": 0,
+          "LayerElementMaterial": 526,
+          "LayerElementNormal": 526,
+          "LayerElementSmoothing": 0,
+          "LayerElementTangent": 0,
+          "LayerElementUV": 0
+        },
+        "method": "ascii node-name byte search over the FBX payload",
+        "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.fbx",
+        "size_bytes": 772028
+      },
+      "role": "Blender output (vertex-channel probe)",
+      "source": "fbx"
+    },
+    {
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\geom_verify\\fixed_10_9\\Ingolstadt_Tile_10_9.fbx",
+      "phase": "after",
+      "probe": {
+        "fbx_version": 7400,
+        "format": "binary",
+        "has_binormal_layer": false,
+        "has_normal_layer": true,
+        "has_smoothing_layer": true,
+        "has_tangent_layer": false,
+        "has_uv_layer": true,
+        "layer_node_counts": {
+          "LayerElementBinormal": 0,
+          "LayerElementMaterial": 606,
+          "LayerElementNormal": 606,
+          "LayerElementSmoothing": 606,
+          "LayerElementTangent": 0,
+          "LayerElementUV": 606
+        },
+        "method": "ascii node-name byte search over the FBX payload",
+        "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\geom_verify\\fixed_10_9\\Ingolstadt_Tile_10_9.fbx",
+        "size_bytes": 1155628
+      },
+      "role": "Blender output (vertex-channel probe)",
+      "source": "fbx"
+    },
+    {
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\geom_verify\\fixed_6_6\\Ingolstadt_Tile_6_6.fbx",
+      "phase": "after",
+      "probe": {
+        "fbx_version": 7400,
+        "format": "binary",
+        "has_binormal_layer": false,
+        "has_normal_layer": true,
+        "has_smoothing_layer": true,
+        "has_tangent_layer": false,
+        "has_uv_layer": true,
+        "layer_node_counts": {
+          "LayerElementBinormal": 0,
+          "LayerElementMaterial": 526,
+          "LayerElementNormal": 526,
+          "LayerElementSmoothing": 526,
+          "LayerElementTangent": 0,
+          "LayerElementUV": 526
+        },
+        "method": "ascii node-name byte search over the FBX payload",
+        "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\geom_verify\\fixed_6_6\\Ingolstadt_Tile_6_6.fbx",
+        "size_bytes": 1094348
+      },
+      "role": "Blender output (vertex-channel probe)",
+      "source": "fbx"
+    }
+  ],
+  "method": {
+    "fbx": "ascii node-name byte search over the FBX payload to determine which vertex layers exist; binary FBX stores node names as plain ascii so presence/absence is an exact test",
+    "no_editor": "no Blender, no UE4, no CARLA involved in the measurement itself",
+    "not_done": "FBX *geometry* is not parsed: Blender's FBXHeaderExtension writes a name length one byte short of the name it emits, so a hand-rolled binary geometry parser could not be trusted. Geometric metrics come from the OBJ instead, which is exact.",
+    "obj": "exact parse of Wavefront OBJ (v/vn/vt/f); areas and channels computed in float64"
+  },
+  "root_cause_hypotheses": [
+    {
+      "evidence": [
+        "OBJ: vt record count == 0",
+        "FBX (before): LayerElementUV node count == 0",
+        "blender_convert.py: use_tspace=False",
+        "blender manifest (before): uv_layers == 0 on every object"
+      ],
+      "fix": "generate a validated UV channel in the Blender conversion stage",
+      "id": "RC-UV-MISSING",
+      "predicted_ue4_warnings": [
+        "has degenerate tangent bases which will result in incorrect shading",
+        "has some nearly zero bi-normals"
+      ],
+      "severity": "root_cause",
+      "statement": "No mesh carries a UV channel. Blender exported with use_tspace=False, so the FBX contains no explicit tangents and UE4/MikkTSpace must derive them from UVs. With zero parametric area on every face, every face has a degenerate tangent basis and a near-zero bi-normal."
+    },
+    {
+      "evidence": [
+        "OBJ: s record count == 0",
+        "FBX: LayerElementSmoothing node count == 0",
+        "blender_convert.py: mesh_smooth_type='OFF'"
+      ],
+      "fix": "export with mesh_smooth_type='FACE' plus angle-based sharp edges",
+      "id": "RC-SMOOTHING-MISSING",
+      "predicted_ue4_warnings": [
+        "missing smoothing group information"
+      ],
+      "severity": "root_cause",
+      "statement": "No FBX carries LayerElementSmoothing because Blender exported with mesh_smooth_type='OFF'. This is the direct cause of UE4's missing smoothing group warning and is fully independent of the UV problem."
+    }
+  ],
+  "schema": "affected_mesh_diagnostics/v2",
+  "thresholds": {
+    "degenerate_face_ratio_max": 0.0,
+    "missing_normal_ratio_max": 0.0,
+    "normal_length_eps": 1e-09,
+    "normal_unit_tolerance": 0.001,
+    "sliver_area_eps_m2": 1e-06,
+    "sliver_face_ratio_max": 0.02,
+    "smoothing_group_count_min": 1,
+    "uv_degenerate_area_eps": 1e-12,
+    "uv_degenerate_face_ratio_max": 0.0,
+    "zero_area_eps_m2": 1e-12
+  }
+}

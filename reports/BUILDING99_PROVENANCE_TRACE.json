@@ -1,0 +1,13 @@
+{
+  "BUILDING99_LOG_NAMESPACE": "NOT_FOUND_IN_LOG",
+  "anchor": "Ingolstadt_Tile_8_8_Building99",
+  "conclusion": "The run logged building Ingolstadt_Tile_8_8_Building99 under /Game/Ingolstadt/Maps/Ingolstadt, but no tile mesh exists on disk in either namespace after exit.",
+  "exists_on_disk_in_maps": false,
+  "exists_on_disk_in_static": true,
+  "generated_utc": "2026-10-06T10:01:07.456338Z",
+  "log_bytes_scanned": 271189,
+  "log_namespace_counts": {},
+  "sample_log_lines": [],
+  "schema": "BUILDING99_PROVENANCE_TRACE.json/v1",
+  "schema_version": 1
+}

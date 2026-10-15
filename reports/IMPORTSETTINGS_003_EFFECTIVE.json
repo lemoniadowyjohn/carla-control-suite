@@ -1,0 +1,22 @@
+{
+  "IMPORTSETTINGS_TILE_DESTINATION": "MAPS",
+  "consumed_by": "PID 12312 (ImportAssets)",
+  "generated_utc": "2026-10-06T10:01:07.453335Z",
+  "schema": "IMPORTSETTINGS_003_EFFECTIVE/v1",
+  "schema_version": 1,
+  "settings": {
+    "bReplaceExisting": [
+      "true"
+    ],
+    "destinations": [
+      "/Game/Ingolstadt/Maps/Ingolstadt"
+    ],
+    "file_counts": [
+      20
+    ],
+    "group_count": 1,
+    "mtime_utc": "2026-10-06T10:01:07.435710Z",
+    "path": "G:\\CARLA\\carla_source_probe\\importsetting.json",
+    "sha256": "88DC8FA941446BED115E5F27524362B8B3A1CCEAED692B30CBD5668C9E482CD5"
+  }
+}

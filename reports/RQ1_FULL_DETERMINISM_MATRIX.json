@@ -1,0 +1,9 @@
+{
+  "comparison_policy": "No normalization of unknown fields; timestamp, ordering, floating-point, and structural differences remain observable.",
+  "reason": "five isolated run receipts required, got 0",
+  "run_count": 0,
+  "runs": [],
+  "schema": "rq1_full_determinism_matrix/v1",
+  "status": "INCOMPLETE",
+  "verdict": "INCOMPLETE"
+}

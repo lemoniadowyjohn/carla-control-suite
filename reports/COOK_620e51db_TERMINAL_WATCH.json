@@ -1,0 +1,164 @@
+{
+  "schema": "COOK_620e51db_TERMINAL_WATCH/v1",
+  "schema_version": 2,
+  "run_id": "COOK_620e51db",
+
+  "COOK_ROOT_PRESENT": false,
+  "COOK_ROOT_IDENTITY_MATCH": true,
+  "COOK_ROOT_IDENTITY_BASIS": "verified at 20:00:53Z as PID 29972 with creation 2026-10-06T16:59:33.3967880Z, exact match; no PID reuse observed",
+
+  "CURRENT_TIME_UTC": "2026-10-06T20:02:47Z",
+  "SUPERVISOR_TIMEOUT_SECONDS": 14400,
+  "SUPERVISOR_DEADLINE_UTC": "2026-10-06T20:59:33.393750Z (lower bound; see derivation)",
+  "SUPERVISOR_DEADLINE_LOCAL": "2026-10-06T22:59:33 (en-GB, UTC+2)",
+  "DEADLINE_PASSED": false,
+
+  "DEADLINE_DERIVATION_FROM_IMPLEMENTATION": {
+    "source": "supervised_ue_run.py",
+    "t0_assignment": "line 101: t0 = time.time()",
+    "clock": "time.time() = WALL CLOCK, not monotonic. A clock adjustment would shift the effective deadline.",
+    "t0_position": "taken AFTER Popen, Job assignment and resolve_executor_pid(timeout_s=120), so t0 is later than the receipt start_utc recorded at line 64",
+    "loop": "line 103: while time.time() - t0 < args.timeout_s",
+    "enforcement": "lines 111-117: on expiry timed_out=True then job.terminate_owned(99), then proc.wait(timeout=120), then wait_for_drain(timeout_s=300)",
+    "deadline_lower_bound_basis": "receipt start_utc 2026-10-06T16:59:33.393750Z + 14400 s; true deadline is at or slightly after this because t0 postdates start_utc",
+    "deadline_upper_bound_basis": "t0 cannot exceed the observation time",
+    "conclusion": "the cook terminated roughly 57 minutes BEFORE the earliest possible deadline"
+  },
+
+  "TIMEOUT_ENFORCEMENT": "NOT_YET_DUE",
+  "TIMEOUT_ENFORCEMENT_DEFECT": false,
+  "timeout_note": "enforcement never had to fire; timed_out=false in the producer receipt. No defect in the timeout path is demonstrated or claimed.",
+
+  "LIVE_COOK_HEALTH": "TERMINAL_COMPLETED",
+
+  "COOK_TERMINAL": true,
+  "COOK_EXIT_CODE": 0,
+  "COOK_EXIT_CODE_HEX": "0x0",
+  "COOK_TERMINATION_CLASS": "CLEAN_SUCCESS",
+  "COOK_TERMINAL_UTC": "2026-10-06T20:02:46.920442Z",
+
+  "FINAL_COOKED_COUNT": 1666,
+  "FINAL_REMAINING_COUNT": 0,
+  "FINAL_EXPECTED_COUNT": 1666,
+  "FINAL_SHADER_REMAINING": 0,
+  "FINAL_SHADER_FAILURE_COUNT": 0,
+  "COOK_DESCENDANTS_ALIVE": 0,
+  "commandlet_seconds": 10827.48,
+
+  "technical_evidence": {
+    "Error:": 0,
+    "Fatal error": 0,
+    "Assertion failed": 0,
+    "ensure condition failed": 0,
+    "Warning:": 331,
+    "error_summary_note": "the log contains one 'Error Summary' match, but it is the header 'Warning/Error Summary (Unique only)'. Every listed entry is a Warning, and all are stock-CARLA noise: r.Streaming.PoolSize priority, missing ExampleDeviceProfileSelector module, null world context, and duplicate PrimaryAssetID warnings for stock Town11/EmptyMap/LargeMap test maps. None reference Ingolstadt.",
+    "zero_byte_files": 1,
+    "zero_byte_detail": "the only zero-byte file is cook_6_8_20261006T165932Z.log.err, the stderr capture created empty at launch and never written to. It is not a cook output artifact."
+  },
+
+  "RETIRED_COOK_METADATA_CONSUMED": false,
+  "retired_reference_audit": {
+    "cook_out": 0,
+    "2975": 0,
+    "3558": 1,
+    "3558_context": "the single match is 'LogShaderCompilers: Display: Worker (3/4): shaders left to compile 3558' - a coincidental shader-count integer, NOT a reference to the retired 2975/3558 cook state",
+    "Saved/Cooked": 0,
+    "conclusion": "no reference to the retired cook output in the final log"
+  },
+  "iterative_metadata": {
+    "Metadata_directory_present": true,
+    "OpenOrder_present": false,
+    "uptnl_present": false,
+    "note": "iterative metadata was finalised into the fresh output root; no baseline from a prior run was present to consume"
+  },
+
+  "HANDLE_COUNT_PREVIOUS_STEP": 4293,
+  "HANDLE_COUNT_FINAL": 4293,
+  "HANDLE_CLASSIFICATION": "STEP_INCREASE_NONLEAK",
+  "handle_evidence": "3784 -> 4293 (+509) in one window, then delta 0 across a 150 s window, a 240 s window, a 4-minute watch loop, and the final pre-terminal sample. No renewed monotonic growth appeared, so this is a one-time step and not a leak.",
+
+  "PRODUCER_RECEIPT_STATE": "TERMINAL_TRANSITIONED",
+  "PRODUCER_RECEIPT_PRE_TERMINAL_SHA256": "8628326E77C1AA4BB437116452ECED7348A59586065601FFB85EE7AF7814DCB2",
+  "PRODUCER_RECEIPT_FINAL_SHA256": "594B368095347215082D96B7460EC9AA2CC32D25E6619776B4CC2A31C5DF569E",
+  "PRODUCER_RECEIPT_PRE_TERMINAL_BYTES": 686,
+  "PRODUCER_RECEIPT_FINAL_BYTES": 1023,
+  "PRODUCER_RECEIPT_MODIFIED_BY_PRODUCER": true,
+  "PRODUCER_RECEIPT_TERMINAL": true,
+  "PRODUCER_RECEIPT_ROOT_MATCH": true,
+  "PRODUCER_RECEIPT_EXECUTOR_RESOLVABLE": false,
+  "producer_receipt_terminal_fields": {
+    "end_utc": "2026-10-06T20:02:46.920442Z",
+    "exit_code_dec": 0,
+    "exit_code_hex": "0x0",
+    "termination_class": "SUCCESS",
+    "timed_out": false,
+    "drain_drained": true,
+    "drain_wait_s": 0.0,
+    "job_members_final": [],
+    "log_sha256": "c1fe8d8cc591b5dcc877cad99b9ce2dfa4ab195ebf8c09b71252455236bb422c",
+    "log_bytes": 503945
+  },
+  "executor_defect_persists": "the terminal receipt still carries executor_pid 34196 with no executor_creation_time, so the defect is NOT repaired by this run completing",
+
+  "LEASE_STATE_AFTER_TERMINAL": "RUNNING_NOT_TERMINAL",
+  "LEASE_HEARTBEAT_IMPLEMENTED": true,
+  "LEASE_HEARTBEAT_VALID": true,
+  "LEASE_PROCESS_BINDING_VALID": false,
+  "lease_after_terminal_detail": {
+    "sha256": "D19EDD1D78CB945881A80DA3F1EF97AD5889B6F5D9E0B822FAE3BFA77964A414",
+    "run_id": "COOK_620e51db",
+    "state": "RUNNING",
+    "terminal_state": "",
+    "end_utc": "",
+    "root_pid": 28436,
+    "root_creation_time": "2026-10-06T12:20:34.602992Z",
+    "executor_pid": 0,
+    "heartbeat_utc": "2026-10-06T20:02:46",
+    "finding": "the lease did NOT transition to a terminal state. It is left claiming RUNNING with empty terminal_state and empty end_utc. Heartbeat stopped only because the supervisor process exited, not because the lease recorded termination. The stale root_pid 28436 is unchanged."
+  },
+
+  "COOK_OUTPUT_AUTHORITY": "TECHNICALLY_VALID_NONAUTHORITATIVE",
+  "COOK_OUTPUT_AUTHORITY_BASING":
+    "technically the cook is clean and complete, but governance coverage is not proven: the lease was never bound to mutation root 29972, the lease remains falsely RUNNING after termination, and the receipt executor identity is unresolvable. Per the stated rule, AUTHORITATIVE is forbidden without independent equivalent exclusive-ownership evidence, and none exists.",
+
+  "TECHNICAL_COOK_RESULT": "PASS",
+  "TIMEOUT_PROJECTION_RETRACTED": {
+    "prior_claim": "cook would hit its 14400 s deadline with work outstanding, based on a sustained 32.5 shaders/min window projecting 166.5 min against 78 min remaining",
+    "outcome": "CONTRADICTED BY OBSERVATION. Shader throughput proved strongly non-uniform: 5408 shaders drained to 1 in roughly 16 minutes, on the order of 336/min, far above both the earlier 12-13/min and 32.5/min samples.",
+    "lesson": "a single bounded shader-rate window is not a valid basis for a completion projection on this workload. Rate must be sampled across the whole run, and the drain is burst-dominated.",
+    "corrected_timeout_conclusion": "the existing 14400 s budget was SUFFICIENT for this run, finishing about 57 minutes early. No timeout increase is required or justified by this evidence."
+  },
+
+  "OUTPUT_SUMMARY": {
+    "files": 3629,
+    "bytes": 1559078572,
+    "gb": 1.45,
+    "zero_byte_non_artifact": 1
+  },
+
+  "AUTHORITATIVE_BOUNDED_COOK_RERUN_REQUIRED": true,
+  "AUTHORITATIVE_BOUNDED_COOK_RERUN_REASON":
+    "technical output is valid but governance is not, and the harness defects (no lease acquire, timestamp-only heartbeat, no lease terminal transition, naked executor PID) are unrepaired. A rerun under the repaired harness is required to establish production authority. Per instruction this run's classification must NOT be upgraded retroactively by any later repair.",
+
+  "C_STORAGE_EMERGENCY": {
+    "severity": "CRITICAL",
+    "observed_free_mb": 4,
+    "cause": "C:\\Users\\admin\\AppData\\Local\\Temp\\pytest-of-admin grew to 14.02 GB with last write 2026-10-06T21:43 local, i.e. an ACTIVE pytest run from another session is filling C:",
+    "other_large_C_items": "Temp\\opencode 7.89 GB (live agent session store, must be preserved)",
+    "action_taken": "NONE. The pytest tree belongs to a live process and was not touched. Deleting it mid-run would break that session.",
+    "risk": "a volume at 4 MB free can fail pagefile growth, temp writes and logs, and can destabilise the machine",
+    "required_operator_decision": "either stop the other session's pytest run, or authorise deletion of INACTIVE pytest-of-admin subdirectories only"
+  },
+
+  "CODE_PATCHES_MADE": false,
+  "TIMEOUT_EXTENDED": false,
+  "MANUAL_TERMINATION": false,
+  "STORAGE_CLEANUP_RUN": false,
+  "RQ1_RUN": false,
+  "RECONCILIATION_RECEIPT_CREATED": false,
+  "RECONCILIATION_RECEIPT_WHY_NOT": "withheld per instruction; this task ends at terminal capture, and the next task performs reconciliation and repair",
+
+  "NEXT_RECOMMENDED_ACTION": "1) address the C: emergency (4 MB free, active pytest filling it) before anything else; 2) reconcile this cook into POST_HOC_RECONCILIATION, recording the lease's failure to transition to terminal as a second proven defect alongside the stale root; 3) open the isolated repair branch for the four harness defects plus a lease terminal-transition repair; 4) no timeout increase is justified; 5) rerun a representative bounded cook under the repaired harness to establish authority.",
+
+  "FINAL_VERDICT": "COOK_TERMINAL_READY_FOR_RECONCILIATION"
+}

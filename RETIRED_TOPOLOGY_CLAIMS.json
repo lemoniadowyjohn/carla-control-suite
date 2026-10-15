@@ -1,0 +1,64 @@
+{
+  "retired_claims": [
+    {
+      "claim": "2992 historical GAP026 failures",
+      "status": "HISTORICAL_SUPERSEDED",
+      "reason": "Pre-fix baseline from 2026-09; superseded by generator fixes in lane_successor_topology.py and Stage8 laneSection repair. Not citable for thesis."
+    },
+    {
+      "claim": "513 historical GAP026 failures",
+      "status": "HISTORICAL_SUPERSEDED",
+      "reason": "Early incomplete run; never reproduced under canonical config. INVALID_FOR_THESIS_CITATION."
+    },
+    {
+      "claim": "1186 GAP026 failures (Family A)",
+      "status": "VALID_DIAGNOSTIC_ONLY",
+      "reason": "Reference run from task description; different code commit (unknown) and settings. Not from authoritative configuration."
+    },
+    {
+      "claim": "1198 GAP026 failures (Family B)",
+      "status": "VALID_DIAGNOSTIC_ONLY",
+      "reason": "Reference run from task description; different code commit (unknown) and settings. Not from authoritative configuration."
+    },
+    {
+      "claim": "2924 GAP026 failures (Family C / autofix artifact)",
+      "status": "AUTHORITATIVE_CURRENT",
+      "reason": "Measured on canonical configuration (22cf39ab, THESIS_STRICT=true, DEVELOPMENT profile). Citable for thesis."
+    },
+    {
+      "claim": "10180 repaired by tracked code (historical alternate implementation)",
+      "status": "HISTORICAL_SUPERSEDED",
+      "reason": "From lane_successor_topology.py inferred_count on old implementation (commit 717ea543). Current implementation differs. INVALID_FOR_THESIS_CITATION."
+    },
+    {
+      "claim": "2338 repaired by tracked code (Family A)",
+      "status": "VALID_DIAGNOSTIC_ONLY",
+      "reason": "Family A specific count; different generator implementation. Not authoritative."
+    },
+    {
+      "claim": "2352 repaired by tracked code (Family B)",
+      "status": "VALID_DIAGNOSTIC_ONLY",
+      "reason": "Family B specific count; different generator implementation. Not authoritative."
+    },
+    {
+      "claim": "8095 true-multi-target (Family A)",
+      "status": "VALID_DIAGNOSTIC_ONLY",
+      "reason": "Through-junction funnel ambiguous count; different population denominator than authoritative."
+    },
+    {
+      "claim": "261 true-multi-target (Family B / authoritative)",
+      "status": "AUTHORITATIVE_CURRENT",
+      "reason": "Matches authoritative GAP048_AFTER_POPULATION junction_funnel ambiguous_multiple_candidates=261."
+    },
+    {
+      "claim": "376 missing successors (Family C pre-autofix)",
+      "status": "AUTHORITATIVE_CURRENT",
+      "reason": "Post-Stage8 laneSection repair residual; matches GAP048_STAGE8_SIMULATION broken_after_stage8=376."
+    },
+    {
+      "claim": "8213 unreported unrepaired (through-junction class)",
+      "status": "VALID_DIAGNOSTIC_ONLY",
+      "reason": "Different denominator (all junction-facing vs terminal-section only). Diagnostic only, not authoritative."
+    }
+  ]
+}

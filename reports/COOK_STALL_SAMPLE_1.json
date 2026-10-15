@@ -1,0 +1,44 @@
+{
+  "index": 1,
+  "utc": "2026-10-05T14:45:39Z",
+  "epoch": 1791211539.861776,
+  "editor": {
+    "pid": 5344,
+    "exists": false,
+    "error": "psutil.NoSuchProcess(pid=5344, msg='process PID not found')"
+  },
+  "shader_compile_workers": {
+    "count": 4,
+    "pids": [
+      4884,
+      8584,
+      11776,
+      21644
+    ]
+  },
+  "log": {
+    "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log",
+    "size_bytes": 250198,
+    "mtime_utc": "2026-10-05T14:45:38Z",
+    "mtime_epoch": 1791211538.6352446,
+    "tail_marker": "[2026.10.05-14.45.38:560][  0]LogShaderCompilers: Display: Worker (3/4): shaders left to compile 1157",
+    "total_cook_lines_in_tail": 0
+  },
+  "system": {
+    "commit_limit_bytes": 60934406144,
+    "commit_used_bytes": 39014215680,
+    "commit_limit_gb": 56.75,
+    "commit_used_gb": 36.33,
+    "commit_headroom_gb": 20.41,
+    "phys_total_gb": 47.75,
+    "phys_free_gb": 22.83,
+    "pagefiles": [
+      {
+        "Name": "C:\\pagefile.sys",
+        "AllocatedBaseSize": 9216,
+        "CurrentUsage": 175,
+        "PeakUsage": 185
+      }
+    ]
+  }
+}

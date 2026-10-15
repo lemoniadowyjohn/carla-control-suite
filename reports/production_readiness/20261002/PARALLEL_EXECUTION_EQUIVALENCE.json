@@ -1,0 +1,59 @@
+{
+  "overall_pass": true,
+  "producer_commit": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "schema": "parallel_execution_equivalence/v1",
+  "tests": [
+    {
+      "errors": [],
+      "metrics": {
+        "parallel_time": "measured_in_test",
+        "serial_time": "measured_in_test",
+        "tiles_processed": 20
+      },
+      "pass": true,
+      "test": "serial_vs_parallel_equivalence"
+    },
+    {
+      "errors": [],
+      "metrics": {
+        "failure_detected": true
+      },
+      "pass": true,
+      "test": "worker_failure_handling"
+    },
+    {
+      "errors": [],
+      "metrics": {
+        "timed_out_tasks": 1
+      },
+      "pass": true,
+      "test": "worker_timeout"
+    },
+    {
+      "errors": [],
+      "metrics": {
+        "completed_count": 4,
+        "started_count": 4
+      },
+      "pass": true,
+      "test": "cancellation_no_partial_artifacts"
+    },
+    {
+      "errors": [],
+      "metrics": {
+        "executor_stats": {
+          "completed": 10,
+          "cpu_percent": 0.0,
+          "max_workers": 2,
+          "memory_mb": 193.8203125,
+          "running": 0,
+          "vram_mb": 0.0
+        },
+        "initial_memory_mb": 193.78125
+      },
+      "pass": true,
+      "test": "resource_aware_scheduling"
+    }
+  ],
+  "timestamp": "2026-10-02T16:06:40Z"
+}

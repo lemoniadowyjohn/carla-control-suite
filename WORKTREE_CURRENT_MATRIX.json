@@ -1,0 +1,282 @@
+{
+  "worktrees_before": 27,
+  "matrix": [
+    {
+      "name": "carla_-main",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "head": "c736a9ce5792250f5d0c6a1fd4c78dc185f7243b",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CANONICAL_ACTIVE",
+      "purpose": "Main working directory (canonical)"
+    },
+    {
+      "name": "wt-admission",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-admission",
+      "head": "3a6f32255916b9783e41981ba284d68401294a92",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: 3a6f3225"
+    },
+    {
+      "name": "wt-base-9fa11e1",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-base-9fa11e1",
+      "head": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: 9fa11e1e"
+    },
+    {
+      "name": "wt-evidence",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-evidence",
+      "head": "3a6f32255916b9783e41981ba284d68401294a92",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: 3a6f3225"
+    },
+    {
+      "name": "wt-gap026-hermite",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap026-hermite",
+      "head": "b5ea49117daf13504eb12ef9c2618d0a295ba130",
+      "branch": "refs/heads/fix/gap026-connector-hermite-20261014",
+      "detached": false,
+      "exists": true,
+      "classification": "ACCEPTED_FIX",
+      "purpose": "GAP026 Hermite tangent fit (b5ea4911)"
+    },
+    {
+      "name": "wt-gap048-closure",
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap048-closure",
+      "head": "8edb01709a3bb784415dd36085d6176613b77ef1",
+      "branch": "refs/heads/fix/gap026-connector-tangent-fit-20261014",
+      "detached": false,
+      "exists": true,
+      "classification": "ACCEPTED_FIX",
+      "purpose": "GAP026 tangent fit (8edb0170) - superseded by hermite?"
+    },
+    {
+      "name": "wt-rq2-final",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-rq2-final",
+      "head": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: 65eb0f14"
+    },
+    {
+      "name": "wt-topo-conv",
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-topo-conv",
+      "head": "3a6f32255916b9783e41981ba284d68401294a92",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: 3a6f3225"
+    },
+    {
+      "name": "carla-control-plane",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-control-plane",
+      "head": "fdc8c16600db1c7de4892ef2ad868ea49baffece",
+      "branch": "refs/heads/control/writer-lock-semantic-diff-20261006",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "RQ/control branch: refs/heads/control/writer-lock-semantic-diff-20261006"
+    },
+    {
+      "name": "agent-a601acc34bd5e6126",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a601acc34bd5e6126",
+      "head": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+      "branch": "refs/heads/worktree-agent-a601acc34bd5e6126",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "Claude agent worktree"
+    },
+    {
+      "name": "agent-a9677fdcd7c1172ea",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a9677fdcd7c1172ea",
+      "head": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+      "branch": "refs/heads/worktree-agent-a9677fdcd7c1172ea",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "Claude agent worktree"
+    },
+    {
+      "name": "carla_final_offline_closure",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_final_offline_closure",
+      "head": "f6b983efd972ef47b2bff233711c17dfa2ea656d",
+      "branch": "refs/heads/review/carla-final-offline-closure-20261003",
+      "detached": false,
+      "exists": true,
+      "classification": "EVIDENCE_ONLY_DO_NOT_MERGE",
+      "purpose": "Review branch"
+    },
+    {
+      "name": "new316-333-perception-hardening",
+      "path": "E:/CARLA/worktrees/new316-333-perception-hardening",
+      "head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "branch": "refs/heads/fix/new316-333-perception-environment-20261001",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "Feature/hardening branch: refs/heads/fix/new316-333-perception-environment-20261001"
+    },
+    {
+      "name": "rq1-matrix-fix",
+      "path": "E:/CARLA/worktrees/rq1-matrix-fix",
+      "head": "d12a03145793ae89d03a40f9ebf500ec59f3c761",
+      "branch": "refs/heads/fix/rq1-matrix-integrity-20261001",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "RQ/control branch: refs/heads/fix/rq1-matrix-integrity-20261001"
+    },
+    {
+      "name": "wt-p1",
+      "path": "E:/CARLA/worktrees/wt-p1",
+      "head": "542b82e93b6bb866dc05e085480eecb3ceffbcc1",
+      "branch": "refs/heads/opencode/p1-runtime-capture-20261001",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "OpenCode runtime branch: refs/heads/opencode/p1-runtime-capture-20261001"
+    },
+    {
+      "name": "wt-p1-base",
+      "path": "E:/CARLA/worktrees/wt-p1-base",
+      "head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: 233e452f"
+    },
+    {
+      "name": "wt-runtime-rig",
+      "path": "E:/CARLA/worktrees/wt-runtime-rig",
+      "head": "692b42391c29457fef30e19857352e3ef74be9b2",
+      "branch": "refs/heads/integration/opencode-runtime-rig-environment-closure-20261001",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "OpenCode runtime branch: refs/heads/integration/opencode-runtime-rig-environment-closure-20261001"
+    },
+    {
+      "name": "session-batch1-full-verify-20260913",
+      "path": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913",
+      "head": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+      "branch": "refs/heads/integration/production-large-map-20260918",
+      "detached": false,
+      "exists": true,
+      "classification": "CANONICAL_ACTIVE",
+      "purpose": "Production integration branch"
+    },
+    {
+      "name": "b15_A_rq1b",
+      "path": "F:/carla-worktrees/b15_A_rq1b",
+      "head": "4d78561c9a516192d53c54ef2f7c3146ace1eb22",
+      "branch": "refs/heads/b15-rq1b",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "RQ/control branch: refs/heads/b15-rq1b"
+    },
+    {
+      "name": "lane_A1_rq1a-execution",
+      "path": "F:/carla-worktrees/lane_A1_rq1a-execution",
+      "head": "7437ee53c74231a0c5a358849218e0cd279d599b",
+      "branch": "refs/heads/rq1a-execution",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "RQ/control branch: refs/heads/rq1a-execution"
+    },
+    {
+      "name": "rq2-validate-20261008",
+      "path": "F:/carla-worktrees/rq2-validate-20261008",
+      "head": "2159a358feff585be5646a7757b96257dd935d82",
+      "branch": "refs/heads/rq2-authority-validate-20261008",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "RQ/control branch: refs/heads/rq2-authority-validate-20261008"
+    },
+    {
+      "name": "rq5-isolation-20261009",
+      "path": "F:/carla-worktrees/rq5-isolation-20261009",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "refs/heads/fix/rq5-test-isolation-leak-20261009",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "RQ/control branch: refs/heads/fix/rq5-test-isolation-leak-20261009"
+    },
+    {
+      "name": "rq5-sightb-20261009",
+      "path": "F:/carla-worktrees/rq5-sightb-20261009",
+      "head": "cfc0cd9c6ef3ad51d4fcf799e0d2fadf3af9fcc5",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "CLEAN_HISTORICAL_REMOTE",
+      "purpose": "Detached historical: cfc0cd9c"
+    },
+    {
+      "name": "smoke-harden-20261009",
+      "path": "F:/carla-worktrees/smoke-harden-20261009",
+      "head": "62f0d28859ec1dc21964cc74ec84f449d6c3a030",
+      "branch": "refs/heads/fix/carla-smoke-suite-skip-harden-20261009",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "Fix branch: refs/heads/fix/carla-smoke-suite-skip-harden-20261009"
+    },
+    {
+      "name": "p0-coord-frame-tile-placement-20261001",
+      "path": "F:/p0-coord-frame-tile-placement-20261001",
+      "head": "fb6c5e1899a844ba1d38444fc82e6d04e98db468",
+      "branch": "refs/heads/fix/p0-coord-frame-tile-placement-authority-20261001",
+      "detached": false,
+      "exists": true,
+      "classification": "DIRTY_PRESERVE",
+      "purpose": "Feature/hardening branch: refs/heads/fix/p0-coord-frame-tile-placement-authority-20261001"
+    },
+    {
+      "name": "wt-gap055-base",
+      "path": "F:/wt-gap055-base",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "ACCEPTED_FIX",
+      "purpose": "GAP055 platform guards (c736a9ce)"
+    },
+    {
+      "name": "wt-gap055-cand",
+      "path": "F:/wt-gap055-cand",
+      "head": "c736a9ce5792250f5d0c6a1fd4c78dc185f7243b",
+      "branch": "",
+      "detached": true,
+      "exists": true,
+      "classification": "ACCEPTED_FIX",
+      "purpose": "GAP055 platform guards (c736a9ce)"
+    }
+  ],
+  "counts": {
+    "CANONICAL_ACTIVE": 2,
+    "CLEAN_HISTORICAL_REMOTE": 7,
+    "ACCEPTED_FIX": 4,
+    "DIRTY_PRESERVE": 13,
+    "EVIDENCE_ONLY_DO_NOT_MERGE": 1
+  }
+}

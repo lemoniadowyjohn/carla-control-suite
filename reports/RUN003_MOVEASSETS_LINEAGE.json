@@ -1,0 +1,22 @@
+{
+  "schema": "RUN003_MOVEASSETS_LINEAGE/v1",
+  "MOVEASSETS_LINEAGE": "UNPROVEN",
+  "finding": "The relocation of run003's 5711 packages from /Game/Ingolstadt/Maps/Ingolstadt to /Game/Ingolstadt/Static/Terrain/Ingolstadt is NOT established by any log in this log set.",
+  "moveassets_invocations_found": [
+    {
+      "log": "CarlaUE4-backup-2026.10.05-18.38.43.log",
+      "command_line": "CarlaUE4.uproject -run=MoveAssets -PackageName=AUTO_COOK_RECEIPT -Maps=",
+      "class": "/Script/Carla.MoveAssetsCommandlet",
+      "maps_argument": "EMPTY",
+      "timing": "ended 2026.10.05-18.38.42Z, i.e. ~2 seconds BEFORE run003 began at 18:38:44Z",
+      "relevance": "none: wrong package name, empty -Maps list, and it predates run003"
+    }
+  ],
+  "what_is_actually_proven": [
+    "run003 saved 5711 packages into Content/Ingolstadt/Maps/Ingolstadt at 01:18:24Z-01:19:07Z",
+    "A later run, -run=PrepareAssetsForCooking -PackageName=Ingolstadt -OnlyPrepareMaps=1 (log 11:40:11Z-11:44:37Z), saved 20 tile .umap packages into Maps/Ingolstadt and 5711 mesh .uasset packages DIRECTLY into Static/Terrain/Ingolstadt at 11:42-11:43Z",
+    "Content/Ingolstadt/Maps/Ingolstadt now contains no mesh .uasset, so the Maps copies are gone, but no log in this set records that removal"
+  ],
+  "correction": "An earlier statement asserted that MoveAssets relocated run003's output. That is retracted: the only MoveAssets invocation found had an empty -Maps list, a different package name, and ran before run003. The LogSavePackage 'Moving ... to ...' strings in the PrepareAssets log are atomic temp-to-final WRITES, not namespace relocations, and must not be read as moves.",
+  "impact_on_static_tree_authority": "None. The static-tree decision rests on name lineage, per-tile counts and AssetImportData source hashes, all of which are independent of which step performed the relocation."
+}

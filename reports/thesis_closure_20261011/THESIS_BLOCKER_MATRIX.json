@@ -1,0 +1,188 @@
+{
+  "freeze_timestamp_utc": "2026-10-11T13:41:00Z",
+  "schema_version": 1,
+  "authority": "M0_THESIS_CLOSURE_AUTHORITY",
+  "production_sha": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+  "consolidation_sha": "b6a6726ae81c37d6c0613c319b12918bb99d4337",
+  "blocker_matrix": {
+    "RQ1": {
+      "status": "AUTHORITATIVE",
+      "blockers": [],
+      "thesis_blocking": false,
+      "post_thesis_items": [],
+      "evidence_completeness": "COMPLETE",
+      "notes": "Three-run structural repeatability confirmed; timestamp metadata identified as byte-level nondeterminism source. Large-artifact re-gen pending clean clone but not thesis-blocking (BOUNDED scope acknowledged)."
+    },
+    "RQ2": {
+      "status": "BOUNDED",
+      "blockers": [],
+      "thesis_blocking": false,
+      "post_thesis_items": [
+        "GeoAligner/CurvatureGap bug fixes not exercised by local_registration.py/frechet_gap.py (methodology boundary, not a defect)",
+        "Whole-map uncropped ratio (~27.8x) not a regression — different methodology scope"
+      ],
+      "evidence_completeness": "COMPLETE_FOR_BOUND",
+      "notes": "Local hull-footprint comparison re-verified 2026-09-17 against current map-of-record pin. Ratios stable: road-length 2.683x, junction 3.782x, road-count 3.561x. Fréchet recomputed: mean 58.18m, median 36.13m, p90 140.48m. Building density in-footprint gap 0.2308."
+    },
+    "RQ3": {
+      "status": "DEFERRED_RUNTIME",
+      "blockers": [
+        {
+          "id": "BLOCKER-RQ3-001",
+          "description": "GPU-driver adapter-creation stall in render path (nvwgf2umx.dll / OpenAdapter10)",
+          "criteria_met": [4],
+          "severity": "HIGH",
+          "evidence": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/GAP017_GAP_COOK_STALL_DIAGNOSTICS_20261008.md (Part A)",
+          "resolution_path": "Environment-level: different GPU, driver version, or CARLA binary; not resolvable by code changes in this repo"
+        },
+        {
+          "id": "BLOCKER-RQ3-002",
+          "description": "-nullrhi busy-spin livelock (zero GPU, CPU time advancing, working-set flat)",
+          "criteria_met": [4],
+          "severity": "HIGH",
+          "evidence": "Same report Part A; distinct from render-mode hang",
+          "resolution_path": "Environment-level: different GPU/driver/CARLA build; not resolvable by code changes"
+        },
+        {
+          "id": "BLOCKER-RQ3-003",
+          "description": "No working CARLA binary on this machine (Avast per-path quarantine of UE4Editor.exe blocks engine relink)",
+          "criteria_met": [4],
+          "severity": "HIGH",
+          "evidence": "GAP-017 residual_risk; GAP-018 Avast quarantine evidence",
+          "resolution_path": "AV exclusion for G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe or alternative build machine"
+        }
+      ],
+      "thesis_blocking": true,
+      "post_thesis_items": [
+        "Paired-capture protocol frame/rig mismatch FIXED (capture_config.py)",
+        "Audio mixer disable probe attempted (no effect)"
+      ],
+      "evidence_completeness": "CODE_READY_RUNTIME_BLOCKED",
+      "notes": "Paired capture code is ready (frame count 20 vs 8, camera rig 6 vs 1 mismatch fixed). Blockers are environment-level, not code-level. No amount of pipeline work unblocks this without working CARLA runtime."
+    },
+    "RQ4": {
+      "status": "AUTHORITATIVE",
+      "blockers": [],
+      "thesis_blocking": false,
+      "post_thesis_items": [
+        "Governed natural-vs-explicit DR experiments (separate extension)",
+        "K=1000 permutation test (thesis p<0.001) remains primary statistical support; bootstrap n=5 is fragile tails"
+      ],
+      "evidence_completeness": "COMPLETE",
+      "notes": "Leak-free 5-seed retrain complete 2026-09-24. Cosine distance 0.9207 (CI [0.845, 0.976]) excludes zero. Pre-training and post-hoc leakage audits PASS. Explicit DR wiring confirmed. Old leaky number (0.6434) preserved for comparison per discipline."
+    },
+    "RQ5A": {
+      "status": "DEFERRED_RUNTIME",
+      "blockers": [
+        {
+          "id": "BLOCKER-RQ5A-001",
+          "description": "Requires valid RQ3 paired datasets (auto + manual perception data)",
+          "criteria_met": [4],
+          "severity": "HIGH",
+          "evidence": "RQ3 blockers propagate directly",
+          "resolution_path": "Resolve RQ3 CARLA runtime blockers first"
+        }
+      ],
+      "thesis_blocking": true,
+      "post_thesis_items": [],
+      "evidence_completeness": "BLOCKED_BY_RQ3",
+      "notes": "Cannot train/evaluate without RQ3 datasets. Unlabeled shift/CORAL/MMD are not model-generalization accuracy (thesis contract boundary)."
+    },
+    "RQ5B": {
+      "status": "DEFERRED_EXTERNAL_DATA",
+      "blockers": [
+        {
+          "id": "BLOCKER-RQ5B-001",
+          "description": "No real-world Ingolstadt dataset available on this machine",
+          "criteria_met": [4],
+          "severity": "HIGH",
+          "evidence": "THESIS_TO_CURRENT_PROGRESS.md RQ5 row; research/thesis_rq_contract.yaml:88",
+          "resolution_path": "Operator-supplied external data; not in repository control"
+        }
+      ],
+      "thesis_blocking": true,
+      "post_thesis_items": [],
+      "evidence_completeness": "EXTERNAL_DEPENDENCY",
+      "notes": "Real-world evaluation explicitly requires external dataset. Contract boundary: unlabeled distribution shift alone is not model-generalization accuracy."
+    }
+  },
+  "summary": {
+    "thesis_blocking_rqs": ["RQ3", "RQ5A", "RQ5B"],
+    "complete_rqs": ["RQ1", "RQ2", "RQ4"],
+    "total_blockers": 5,
+    "environment_level_blockers": 3,
+    "external_data_blockers": 1,
+    "code_level_blockers": 0,
+    "post_thesis_tech_debt_count": 8
+  },
+  "post_thesis_tech_debt": [
+    {
+      "id": "TECHDEBT-001",
+      "source": "GAP-008",
+      "description": "Dual geometry kernels (opendrive_geometry_kernel.py + opendrive_geometry/) with no shared imports",
+      "rq_impact": "None — cross-oracle test shows 17/17 agreement to 1e-6..1e-9",
+      "resolution": "Written reconciliation plan (7-10 dev-days), requires explicit sign-off"
+    },
+    {
+      "id": "TECHDEBT-002",
+      "source": "GAP-017",
+      "description": "Audio mixer disable probe (diagnostic, not a fix)",
+      "rq_impact": "None — tested, no effect on RPC hang",
+      "resolution": "Documented as non-solution"
+    },
+    {
+      "id": "TECHDEBT-003",
+      "source": "GAP-018",
+      "description": "UE4 engine GitHub/Epic org access issue (chronic community issue)",
+      "rq_impact": "Blocks cook path but not thesis RQs directly",
+      "resolution": "User-resolved org access; build completed; Avast quarantine remains for UE4Editor.exe relink"
+    },
+    {
+      "id": "TECHDEBT-004",
+      "source": "GAP-038",
+      "description": "Import contract / Large-map contract modules exist but zero production callers (scaffolding)",
+      "rq_impact": "None — deliberately not wired; GAP-038 recommendation is defer",
+      "resolution": "Relabel as reference/scaffolding in gap register"
+    },
+    {
+      "id": "TECHDEBT-005",
+      "source": "GAP-048",
+      "description": "376 unresolved lane successors (261 ambiguous forks + 115 no-candidate)",
+      "rq_impact": "None — GAP-048 deliberately does not raise tolerance or run forbidden final-XODR patch",
+      "resolution": "Documented as partial unresolved topology; not a thesis claim"
+    },
+    {
+      "id": "TECHDEBT-006",
+      "source": "GAP-055",
+      "description": "CI WinDLL import safety (COMPLETED locally, CI gate running)",
+      "rq_impact": "None — all local collection errors resolved",
+      "resolution": "Await CI completion; no regression introduced"
+    },
+    {
+      "id": "TECHDEBT-007",
+      "source": "Lane-count classifier",
+      "description": "Classifier not wired to scripts/measure_candidate_acceptance.py or PRODUCTION_MAP_QUALITY_CONTRACT.yaml",
+      "rq_impact": "None — deliberately out of scope for acceptance gate",
+      "resolution": "Natural follow-up, flagged in GAP-005 residual_risk"
+    },
+    {
+      "id": "TECHDEBT-008",
+      "source": "UP_ENABLE_ROAD_LINK_TARGET_REPAIR=1",
+      "description": "Tiling flag edge case (default off) where tiles could derive from post-freeze artifact",
+      "rq_impact": "None — flag default off; fixed by c5b09591 prohibit post-freeze tile repair",
+      "resolution": "Fixed on production tip; flagged as LOW residual risk"
+    }
+  ],
+  "final_fields": {
+    "CURRENT_PRODUCTION_SHA": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+    "CURRENT_CONSOLIDATION_SHA": "b6a6726ae81c37d6c0613c319b12918bb99d4337",
+    "RQ1_BLOCKERS": [],
+    "RQ2_BLOCKERS": [],
+    "RQ3_BLOCKERS": ["BLOCKER-RQ3-001", "BLOCKER-RQ3-002", "BLOCKER-RQ3-003"],
+    "RQ4_BLOCKERS": [],
+    "RQ5A_BLOCKERS": ["BLOCKER-RQ5A-001"],
+    "RQ5B_BLOCKERS": ["BLOCKER-RQ5B-001"],
+    "POST_THESIS_TECH_DEBT": ["TECHDEBT-001", "TECHDEBT-002", "TECHDEBT-003", "TECHDEBT-004", "TECHDEBT-005", "TECHDEBT-006", "TECHDEBT-007", "TECHDEBT-008"],
+    "SCOPE_FREEZE": true
+  }
+}

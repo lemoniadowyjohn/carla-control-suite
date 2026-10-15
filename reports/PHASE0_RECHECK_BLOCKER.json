@@ -1,0 +1,104 @@
+{
+  "schema": "PHASE0_RECHECK_BLOCKER/v1",
+  "PHASE_0_RESULT": "FAIL",
+  "ACTIVE_CONFLICTING_MUTATORS": 1,
+  "mutator": {
+    "pid": 3560,
+    "creation_time_utc": "2026-10-06T15:28:37.4647190Z",
+    "parent_pid": 3904,
+    "parent_alive": false,
+    "image": "UE4Editor.exe",
+    "command_line": "\"G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe\" G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -nullrhi -unattended -executecmds=quit",
+    "classification": "UNKNOWN_PRESERVE_ORPHANED_EDITOR",
+    "state": {
+      "private_mb": 13184,
+      "threads": 114,
+      "accumulated_cpu_s": 29771,
+      "cpu_delta_over_10s_wall_s": 79.48,
+      "cpu_utilisation_pct_of_one_core": 795,
+      "note": "about 8 cores saturated continuously"
+    }
+  },
+  "AUTHORISATION_SCOPE": {
+    "granted": "terminate ONLY PID 396 bound to creation time 2026-10-06T12:30:44.7613250Z",
+    "pid_396_status": "already terminated in the previous batch and confirmed gone",
+    "pid_3560_covered": false,
+    "action_taken_on_3560": "NONE",
+    "why": "The authorisation is explicitly PID and creation-time bound. PID 3560 is a different process with a different creation time, so terminating it would exceed the granted authority. Killing by image name is also forbidden and would risk other legitimate sessions."
+  },
+  "PATTERN_EVIDENCE": {
+    "observation": "Two separate orphaned UE4Editor processes with an identical probe command line, three hours apart, both with dead parents, both running away instead of honouring -executecmds=quit.",
+    "instances": [
+      {
+        "pid": 396,
+        "created_utc": "2026-10-06T12:30:44.7613250Z",
+        "private_mb": 9989,
+        "cpu_pct_of_core": 63,
+        "status": "terminated"
+      },
+      {
+        "pid": 3560,
+        "created_utc": "2026-10-06T15:28:37.4647190Z",
+        "private_mb": 13184,
+        "cpu_pct_of_core": 795,
+        "status": "live"
+      }
+    ],
+    "implication": "Something is repeatedly launching this unattended probe and each instance runs away. Killing instances one at a time treats the symptom. The launcher, retry wrapper or scheduled task that creates these orphans should be identified, otherwise a new runaway will reappear during any future cook.",
+    "not_investigated_because": "Identifying the launcher requires inspecting scheduled tasks and other agent sessions, which is outside this batch's authorised scope and cannot be done safely while the process is consuming 8 cores."
+  },
+  "P0_CLEANUP_SAFETY_FINDING": {
+    "candidate": "C:\\Users\\admin\\AppData\\Local\\npm-cache (4.14 GB)",
+    "planned_classification": "REGENERABLE_CACHE / safe to delete",
+    "actual_status": "MUST_SKIP",
+    "reason": "Two live node processes execute code from inside it: PID 35440 runs _npx\\9833c18b2d85bc59\\...\\@playwright\\mcp\\cli.js and PID 32192 runs _npx\\ba4f1959e38407b5\\...\\firebase.js. Deleting npm-cache would break the operator's running MCP tooling.",
+    "partial_option": "Only _cacache (2.28 GB, last written 2026-09-15) is free of live users and would be the only safe npm-cache subset.",
+    "this_would_have_been_a_regression": "The P0 plan in the previous batch would have deleted a directory that live processes were executing from. The re-check prevented it."
+  },
+  "CLEANUP_EXECUTED": false,
+  "storage_baseline_at_recheck": {
+    "C_free_gb": 6.87,
+    "C_free_pct": 1.44,
+    "E_free_gb": 11.61,
+    "F_free_gb": 37.37,
+    "F_free_pct": 5.55,
+    "G_free_gb": 28.7,
+    "H_free_gb": 16.63
+  },
+  "STORAGE_DEGRADATION_TREND": {
+    "C_free_gb_series": [
+      9.8,
+      7.99,
+      6.87
+    ],
+    "F_free_gb_series": [
+      41.5,
+      41.11,
+      37.37
+    ],
+    "interpretation": "C: has lost about 2.9 GB and F: about 4.1 GB across successive measurements with no deletion by this session. The live runaway editor is the most plausible writer, but attribution is not proven. C: is now at 1.44% free, which is the most urgent condition on the machine.",
+    "C_BASELINE_STABLE": false
+  },
+  "phases_not_entered": [
+    "PHASE_2_P0_VERIFICATION",
+    "PHASE_3_P0_CLEANUP",
+    "PHASE_4_ZERO_DIRTY_WORKTREE_VALIDATION",
+    "PHASE_5_PYTEST_SCRATCH",
+    "PHASE_6_P1_CLEANUP",
+    "PHASE_7_POST_CLEANUP_MEASUREMENT",
+    "PHASE_8_SPLIT_STORAGE_MODEL",
+    "PHASE_9_CAPACITY_RECOMPUTE",
+    "PHASE_10_C_SAFETY_FLOOR",
+    "PHASE_11_DDC_PATH_CREATION",
+    "PHASE_12_PRECOOK_AUTHORITY_REFRESH",
+    "PHASE_13_COOK_FINGERPRINT",
+    "PHASE_14_TILE_LOAD",
+    "PHASE_15_LARGEMAP_REVALIDATION",
+    "PHASE_16_RHI_AUDIT",
+    "PHASE_17_DDC_QUALIFICATION",
+    "PHASE_18_SCW_VALIDATION"
+  ],
+  "content_mutated": false,
+  "cook_launched": false,
+  "READY_FOR_BOUNDED_COOK_EXECUTION": false
+}

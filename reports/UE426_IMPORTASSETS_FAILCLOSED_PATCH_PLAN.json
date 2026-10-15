@@ -1,0 +1,64 @@
+{
+  "schema": "UE426_IMPORTASSETS_FAILCLOSED_PATCH_PLAN/v1",
+  "schema_version": 1,
+  "status": "DESIGN_ONLY_NOT_APPLIED",
+  "target": "Engine/Source/Editor/UnrealEd/Private/Commandlets/ImportAssetsCommandlet.cpp (UE 4.26.2, installed at G:\\UnrealEngine_4.26_CARLA)",
+  "application_policy": "DO NOT apply to the production engine merely because the defects are obvious. This is an engine-wide behavioural change affecting stock content, CI and any tooling that shells ImportAssets. It requires its own review, a stock-map regression pass, and a decision about whether to carry it as a local patch.",
+  "changes": [
+    {
+      "id": "P1",
+      "defect": "Main returns 0 unconditionally",
+      "evidence": "line 397 'int32 Result = 0;' ; line 443 'Result = 0;' ; line 447 'return Result;'",
+      "behavior_before": "ImportAndSave returning false logs 'Could not import all groups' but the commandlet still exits 0.",
+      "behavior_after": "Result is set to a nonzero error code when ImportAndSave returns false, so CI and orchestrators can gate on exit status.",
+      "stock_map_compatibility_risk": "HIGH. Any existing pipeline that invokes ImportAssets in a situation the engine currently reports as failure while still producing acceptable output would start failing. Must be surveyed before rollout.",
+      "test_case": "Feed a settings file whose single group fails to import; assert nonzero exit and the existing error log line."
+    },
+    {
+      "id": "P2",
+      "defect": "ParseImportSettings bSuccess is never assigned true",
+      "evidence": "line 119 'bool bSuccess = false;' ; line 167 'return bSuccess;' ; no assignment anywhere in the function",
+      "behavior_before": "The function always returns false, including on a fully successful parse. Main discards the value at line 429, so the bug is currently latent.",
+      "behavior_after": "bSuccess is set true when the file loads, the JSON deserializes, and at least one group passes JsonObjectToUStruct plus Data->IsValid(). Once P4 lands, this becomes load-bearing.",
+      "stock_map_compatibility_risk": "LOW in isolation, because the return value is unused today.",
+      "test_case": "Valid settings file with 20 valid groups returns true; a missing file and a malformed JSON both return false."
+    },
+    {
+      "id": "P3",
+      "defect": "SavePackage return value is discarded",
+      "evidence": "line 170-172 SavePackage returns GEditor->SavePackage(...); line 301 'SavePackage(PackageToSave, PackageFilename);' with the result unused",
+      "behavior_before": "A failed package write is invisible; bImportAndSaveSucceeded stays true.",
+      "behavior_after": "Capture the bool; on false set bImportAndSaveSucceeded = false and emit an explicit error naming the package filename.",
+      "stock_map_compatibility_risk": "MEDIUM. Read-only or source-control-locked packages that currently fail silently would now be reported. That is the intent, but it will surface latent failures in existing pipelines.",
+      "test_case": "Save into a read-only or unwritable destination; assert the failure is reported and, with P1, that the exit is nonzero."
+    },
+    {
+      "id": "P4",
+      "defect": "ParseImportSettings return value is discarded by the caller",
+      "evidence": "line 429 'ParseImportSettings(ImportSettingsPath);' with no assignment or check",
+      "behavior_after": "Check the result; on false, log the parse diagnostics and return nonzero without calling ImportAndSave, so a settings file that was never consumed can never be mistaken for an empty-but-successful import.",
+      "behavior_before": "A missing or invalid settings file leaves ImportDataList empty, ImportAndSave iterates zero times, returns true, and the commandlet exits 0 having done nothing.",
+      "stock_map_compatibility_risk": "LOW to MEDIUM. The only workflows affected are ones that pass a bad settings path and currently succeed silently.",
+      "test_case": "Point -importSettings at a nonexistent file and at malformed JSON; assert nonzero exit in both cases."
+    },
+    {
+      "id": "P5",
+      "defect": "Zero-output import is indistinguishable from success",
+      "evidence": "line 213-214 'if(ImportedAssets.Num() > 0 && bImportAndSaveSucceeded)' gates the entire save block",
+      "behavior_before": "If the import performs substantial FBX/DDC work and yields zero UObjects, nothing is dirtied, nothing is saved, and exit is 0.",
+      "behavior_after": "When a non-empty requested import yields ImportedAssets.Num() == 0, treat it as a failure. This must be conditional on the request being non-empty, to avoid breaking legitimate empty or no-op invocations.",
+      "stock_map_compatibility_risk": "HIGH and needs source-contract analysis first. See the open question below.",
+      "test_case": "Settings requesting one FBX whose import yields no assets; assert nonzero exit."
+    }
+  ],
+  "open_question_before_P5": "It is NOT established that no legitimate UE 4.26 workflow intentionally invokes ImportAssets with a non-empty request expecting zero ImportedAssets. Before changing P5, survey the engine and project call sites for invocations that rely on a zero result, and confirm whether an empty ImportGroups array with a valid file is used as an intentional no-op. If such workflows exist, P5 must be scoped to 'request non-empty AND produced zero' and must not reject an explicitly empty request.",
+  "recommended_sequencing": [
+    "P2 and P4 first: they are latent, low risk, and make the settings path trustworthy.",
+    "P3 next: it converts silent save failures into reported ones.",
+    "P1 last among the reporting fixes, because it is the one that changes externally visible exit codes.",
+    "P5 only after the open question is answered."
+  ],
+  "relationship_to_wrapper_contract": "These engine changes are strictly better than a wrapper gate but are not a substitute for one. The wrapper contract in reports/IMPORT_SUCCESS_CONTRACT_V2.json depends on no engine modification and should be adopted regardless, since it also covers destination coverage, manifest-driven object counts, and independent output validation that the engine never performs.",
+  "applied_to_production_engine": false,
+  "production_mutation": "NONE. Plan only."
+}

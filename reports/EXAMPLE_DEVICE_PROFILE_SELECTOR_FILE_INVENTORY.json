@@ -1,0 +1,99 @@
+{
+  "plugin_root": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector",
+  "descriptor": {
+    "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\ExampleDeviceProfileSelector.uplugin",
+    "exists": true,
+    "size_bytes": 672,
+    "last_write": "2026-09-23T01:39:00Z",
+    "content": {
+      "FileVersion": 3,
+      "Version": 1,
+      "VersionName": "1.0",
+      "FriendlyName": "Example Device Profile Selector",
+      "Description": "Example Device Profile Selector used show selection of device profiles on hardware",
+      "Category": "Device Profile Selectors",
+      "CreatedBy": "Epic Games, Inc.",
+      "CreatedByURL": "http://epicgames.com",
+      "EnabledByDefault": true,
+      "CanContainContent": false,
+      "IsBetaVersion": false,
+      "Installed": false,
+      "Modules": [
+        {
+          "Name": "ExampleDeviceProfileSelector",
+          "Type": "RuntimeNoCommandlet",
+          "LoadingPhase": "PostConfigInit"
+        }
+      ]
+    }
+  },
+  "source": {
+    "directory": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Source\\ExampleDeviceProfileSelector",
+    "exists": true,
+    "files": [
+      {
+        "name": "ExampleDeviceProfileSelector.Build.cs",
+        "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Source\\ExampleDeviceProfileSelector\\ExampleDeviceProfileSelector.Build.cs",
+        "size_bytes": 501,
+        "last_write": "2026-09-23T01:39:00Z"
+      },
+      {
+        "name": "ExampleDeviceProfileSelector.h",
+        "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Source\\ExampleDeviceProfileSelector\\Public\\ExampleDeviceProfileSelector.h",
+        "size_bytes": 433,
+        "last_write": "2026-09-23T01:39:00Z"
+      },
+      {
+        "name": "ExampleDeviceProfileSelectorModule.h",
+        "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Source\\ExampleDeviceProfileSelector\\Private\\ExampleDeviceProfileSelectorModule.h",
+        "size_bytes": 737,
+        "last_write": "2026-09-23T01:39:00Z"
+      },
+      {
+        "name": "ExampleDeviceProfileSelectorModule.cpp",
+        "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Source\\ExampleDeviceProfileSelector\\Private\\ExampleDeviceProfileSelectorModule.cpp",
+        "size_bytes": 620,
+        "last_write": "2026-09-23T01:39:00Z"
+      }
+    ]
+  },
+  "binaries": {
+    "directory": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Binaries\\Win64",
+    "exists": true,
+    "dlls": [],
+    "libs": [],
+    "pdbs": [],
+    "modules_files": []
+  },
+  "intermediate": {
+    "directory": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Intermediate",
+    "exists": true,
+    "build_directory": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Intermediate\\Build\\Win64\\UE4Editor",
+    "last_write": "2026-10-07T00:35:00Z"
+  },
+  "resources": {
+    "directory": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Plugins\\Runtime\\ExampleDeviceProfileSelector\\Resources",
+    "exists": true,
+    "files": [
+      {
+        "name": "Icon128.png",
+        "size_bytes": 15543,
+        "last_write": "2026-09-23T10:16:00Z"
+      }
+    ]
+  },
+  "engine_registration": {
+    "ue4editor_modules_path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.modules",
+    "exists": true,
+    "build_id": "387f723e-84d8-421d-b406-60955bf0a115",
+    "module_registered": false,
+    "module_entry": null
+  },
+  "project_registration": {
+    "uproject_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+    "plugin_entry": {
+      "Name": "ExampleDeviceProfileSelector",
+      "Enabled": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "MATERIAL_PRODUCER_SOURCE_TRACE/v1",
+  "MATERIAL_PRODUCER": "NOT_TILE_PIPELINE__NO_PRODUCER_FOUND",
+  "searched": [
+    "LoadAssetMaterialsCommandlet.cpp - no MAT_ reference, no slot logic",
+    "PrepareAssetsForCookingCommandlet.cpp - assigns 7 fixed /Game/Carla/... instances by SSTag, never a MAT_ path",
+    "SSTags.h - no MAT_ value",
+    "Import.py - no material creation for the tile meshes"
+  ],
+  "producer_of_real_bindings": {
+    "file": "Plugins/Carla/Source/Carla/Commandlet/PrepareAssetsForCookingCommandlet.cpp",
+    "lines": "225-267",
+    "rule": "if (bUseCarlaMaterials) select by AssetName.Contains(SSTag): R_MARKING -> M_Road_03_Tiled_V3 / M_Road_03_LMW (chosen by whether ImportedMaterialSlotName contains 'Yellow'); R_ROAD -> M_Road_03_Tiled_V2; R_TERRAIN -> MI_LargeLandscape_Grass; R_SIDEWALK -> MI_largeM_tile02; R_CURB -> MI_largeM_curb01; R_GUTTER -> MI_largeM_gutter01",
+    "level": "StaticMeshComponent override via SetMaterial",
+    "assigned_material_instances_all_exist": true
+  },
+  "why_no_assignment_fired": "0 of 5711 canonical asset names contain any SSTag substring. The canonical tree is buildings only: every name is Ingolstadt_Tile_X_Y_Building*. There are zero Road/Terrain/Sidewalk/Curb/Gutter/Marking assets, so no branch can match.",
+  "MAT_N_M_dating": "2026-10-04T14:27-14:28Z, two days BEFORE run003 (2026-10-05T18:38Z). run003's log contains no MAT_ save record; its 5711 saves are all mesh assets."
+}

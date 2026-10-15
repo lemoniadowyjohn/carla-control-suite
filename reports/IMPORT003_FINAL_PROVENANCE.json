@@ -1,0 +1,41 @@
+{
+  "schema": "IMPORT003_FINAL_PROVENANCE/v1",
+  "IMPORT003_RESULT": "SUCCESSFUL_PERSISTED_IMPORT",
+  "IMPORT003_OPERATIONAL_RESULT": "SUCCESS",
+  "UE426_IMPORTASSETS_EXIT_CONTRACT": "UNSAFE",
+  "mandatory_distinction": "This run succeeded. That does NOT make the engine contract safe: UE 4.26.2's ImportAssetsCommandlet::Main returns 0 unconditionally, so exit 0 remains necessary-never-sufficient for any future run.",
+  "identity": {
+    "pid": 12312,
+    "creation_utc": "2026-10-05T18:38:44.1538360Z",
+    "exit_utc": "2026-10-06T01:19:40.524957Z",
+    "exit_code": 0
+  },
+  "command": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=ImportAssets -importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json -nosourcecontrol -replaceexisting",
+  "import_settings_sha256_prefix": "88DC8FA9",
+  "authoritative_log": "CarlaUE4-backup-2026.10.06-01.19.32.log",
+  "authoritative_log_sha256": "C98A89AD73F00E51F8317F7B24F2BE98C95DB2A543A93BD37E8491116DBE7831",
+  "fbx_loaded": "20/20",
+  "save_attempts": 5711,
+  "save_success_evidence": 5711,
+  "save_failures": 0,
+  "original_namespace": "/Game/Ingolstadt/Maps/Ingolstadt",
+  "current_namespace": "/Game/Ingolstadt/Static/Terrain/Ingolstadt",
+  "later_relocation_step": "UNPROVEN_IDENTITY; see RUN003_MOVEASSETS_LINEAGE.json",
+  "later_mtime_overwrite": "-run=PrepareAssetsForCooking -PackageName=Ingolstadt -OnlyPrepareMaps=1 at 11:40:11Z-11:44:37Z rewrote all 5711 mesh mtimes to 11:42-11:43Z, destroying simple temporal attribution to run003",
+  "lineage_to_current_canonical": {
+    "RUN003_ONLY": 0,
+    "CURRENT_ONLY": 0,
+    "INTERSECTION": 5711,
+    "per_tile_count_matches": 20,
+    "per_tile_count_mismatches": 0,
+    "assetimportdata_present": 5711,
+    "assetimportdata_hash_match": 5711,
+    "assetimportdata_hash_mismatch": 0
+  },
+  "retired_classifications": {
+    "STATIC_TREE_PROVENANCE=PRIOR_IMPORT": "SUPERSEDED; the canonical tree traces to run003 itself. Correct term: RUN003_CANONICAL_RELOCATED_OUTPUT",
+    "PRIOR_IMPORT_FBX_MATCH": "RETIRED as a decision variable; there is no separate prior import for these 5711 assets",
+    "run003_persisted_zero_output": "RETRACTED",
+    "5711_assets_predate_run003": "RETRACTED; they derive from run003"
+  }
+}

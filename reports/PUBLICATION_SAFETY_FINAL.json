@@ -1,0 +1,1881 @@
+{
+  "schema": "publication_safety_final/v1",
+  "repository_visibility": "public",
+  "policy": "new_and_modified_files_only; historical_history_not_rewritten",
+  "changed_entries": 191,
+  "files_scanned": 178,
+  "files_skipped": 13,
+  "NEW_SECRET_COUNT": 0,
+  "NEW_CREDENTIAL_COUNT": 0,
+  "NEW_MACHINE_PATH_OCCURRENCE_COUNT": 6203,
+  "files_with_findings": 71,
+  "findings": [
+    {
+      "status": "??",
+      "path": "reports/import_integrity/EXPECTED_VS_ACTUAL_BUILDING_ASSETS_FULL.json",
+      "hit_count": 5711,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 5711,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 66,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 79,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 92,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/PUBLICATION_SAFETY_FINAL.json",
+      "hit_count": 120,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 120,
+      "patterns": [
+        "F_DRIVE_PATH",
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 21,
+          "excerpt": "OPENCODE"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 27,
+          "excerpt": "OPENCODE"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 29,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/import_integrity/_raw_mount_probe.json",
+      "hit_count": 76,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 76,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 2,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 5,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 8,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/WORKTREE_TEMP_CLASSIFICATION.json",
+      "hit_count": 42,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 42,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 2,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 8,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 242,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/P0_WORKTREE_PROCESS_AUDIT.json",
+      "hit_count": 27,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 27,
+      "patterns": [
+        "G_DRIVE_PATH",
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 4,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 25,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 25,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/import_integrity/CONTENT_NAMESPACE_ALIAS_GRAPH.json",
+      "hit_count": 20,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 20,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 3936,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 3943,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 3950,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/ue4_hardening/IMPORT_BASELINE_MANIFEST.json",
+      "hit_count": 20,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 20,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 18,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 22,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 23,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/WORKTREE_RELOCATION.json",
+      "hit_count": 13,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 13,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 10,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 51,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 67,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/WORKTREE_INVENTORY.json",
+      "hit_count": 12,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 12,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 32,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 46,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 55,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY.json",
+      "hit_count": 12,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 12,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 50,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 73,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 86,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/import_integrity/UNREAL_MOUNT_POINT_MAP.json",
+      "hit_count": 11,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 11,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 3,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 18,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 24,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/P0_WORKTREE_RECOVERY.json",
+      "hit_count": 8,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 8,
+      "patterns": [
+        "G_DRIVE_PATH",
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 13,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 15,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 26,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "UE426_BUILD_QUALIFICATION.json",
+      "hit_count": 7,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 7,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 48,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 158,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 159,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/production_readiness/20261002/01_LOCAL_LINEAGE_GRAPH.json",
+      "hit_count": 7,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 7,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 9,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 19,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 29,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/production_readiness/RUN7/01_LOCAL_LINEAGE_GRAPH.json",
+      "hit_count": 7,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 7,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 9,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 19,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 29,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/geometry/AFFECTED_MESH_DIAGNOSTICS.json",
+      "hit_count": 6,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 6,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 21,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 22,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 253,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/REPOSITORY_CLOSURE_AUDIT.json",
+      "hit_count": 6,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 6,
+      "patterns": [
+        "F_DRIVE_PATH",
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 11,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 15,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 17,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "COOK_STALL_BATCH16.json",
+      "hit_count": 5,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 5,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 7,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 12,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 15,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/POST_RECOVERY_GATE.json",
+      "hit_count": 7,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 2,
+      "path_hits": 5,
+      "patterns": [
+        "G_DRIVE_PATH",
+        "OPENCODE_SCRATCH",
+        "SLACK_OR_GH_TOKEN"
+      ],
+      "cleared_samples": [
+        {
+          "excerpt": "ghp_supersecretvalue1234567890",
+          "classification": "FALSE_POSITIVE_TEST_FIXTURE",
+          "line": 98
+        },
+        {
+          "excerpt": "ghp_zzzzzzzzzzzzzzzzzzzz",
+          "classification": "FALSE_POSITIVE_TEST_FIXTURE",
+          "line": 99
+        }
+      ],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 10,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 22,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 69,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "CURRENT_COOK_FINAL_RECEIPT.json",
+      "hit_count": 4,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 4,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 8,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 8,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 56,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "IMPORT_TRUNCATION_ROOT_CAUSE.json",
+      "hit_count": 4,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 4,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 12,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 17,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 36,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/FINAL_REMEDIATION_BATCH_REPORT.json",
+      "hit_count": 4,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 4,
+      "patterns": [
+        "F_DRIVE_PATH",
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 71,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 79,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 87,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/geometry/AFFECTED_MESH_DIAGNOSTICS.md",
+      "hit_count": 4,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 4,
+      "patterns": [
+        "OPENCODE_SCRATCH",
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 40,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 41,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 40,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY_FOUR.json",
+      "hit_count": 4,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 4,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 12,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 26,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 40,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/publication_safety_scan.py",
+      "hit_count": 6,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 2,
+      "path_hits": 4,
+      "patterns": [
+        "OPENCODE_SCRATCH",
+        "SLACK_OR_GH_TOKEN",
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [
+        {
+          "excerpt": "ghp_supersecretvalue1234567890",
+          "classification": "FALSE_POSITIVE_TEST_FIXTURE",
+          "line": 169
+        },
+        {
+          "excerpt": "ghp_zzzzzzzzzzzzzzzzzzzz",
+          "classification": "FALSE_POSITIVE_TEST_FIXTURE",
+          "line": 169
+        }
+      ],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 22,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 28,
+          "excerpt": "OPENCODE"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 28,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "COOK_FLAG_SEMANTICS_AUDIT.json",
+      "hit_count": 3,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 3,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 2,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 2,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 20,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/import_integrity/CONVERGENCE_BATCH_18_STATUS.json",
+      "hit_count": 3,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 3,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 12,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 136,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 168,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "BUILDING_REFERENCE_FIX_STATIC_AUDIT.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 11,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 14,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "COOKED_MAP_AUTHORITY.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 5,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 7,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "CURRENT_CANDIDATE_RECONCILIATION.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 31,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 38,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "DDC_PERFORMANCE_AUDIT.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 18,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 37,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "MAP_ARTIFACT_AUTHORITY_RESOLUTION.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 15,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 52,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "TOWN10HD_RUNTIME_CONTROL.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 7,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 11,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "execute_phases_1-3.py",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 12,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 15,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/georeference/GEOREFERENCE_COMPILED_ACCEPTANCE.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH",
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 21,
+          "excerpt": "opencode"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 40,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/import_integrity/BUILDING_NAMESPACE_FORENSICS.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 211,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 212,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/IMPORT_PY_LOCAL_STATE.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 14,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 15,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/ue4_hardening/IMPORT_TERMINATION_FORENSICS.json",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 5,
+          "excerpt": "G:\\\\CARLA"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 52,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/final_batch_report.py",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "OPENCODE_SCRATCH",
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 14,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 70,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/georeference_reports.py",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "OPENCODE_SCRATCH",
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 11,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 161,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/relocate_worktrees.py",
+      "hit_count": 2,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 2,
+      "patterns": [
+        "OPENCODE_SCRATCH",
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 32,
+          "excerpt": "C:\\Users\\admin"
+        },
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 34,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "DDC_TARGET_SELECTION.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "F_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "F_DRIVE_PATH",
+          "line": 86,
+          "excerpt": "F:\\\\"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "GEOREFERENCE_CRS_AUTHORITY_RESOLUTION.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 14,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "PRIMARY_ASSET_COLLISION_FINAL.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 27,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "PYTEST_BASELINE_COMPARISON.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "F_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "F_DRIVE_PATH",
+          "line": 14,
+          "excerpt": "F:\\\\"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "SHADER_PLATFORM_SCOPE_AUDIT.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 14,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "STORAGE_CAPACITY_GATE.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "F_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "F_DRIVE_PATH",
+          "line": 94,
+          "excerpt": "F:\\\\"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "TRAFFIC_LIGHT_COMPLEXITY_AUDIT.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 4,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "WINDOWS_SHADER_TARGET_FIX.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 4,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apply_all3_options.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 5,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "pass10_search.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 4,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "pass11_expanded_geo.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 4,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "pass8_search.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 5,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "pass9_search.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 4,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/COOK_STALL_SAMPLE_1.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 20,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/COOK_STALL_SAMPLE_2.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 20,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/COOK_STALL_SAMPLE_3.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 20,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/WINDOWS_TARGET_RHI_FINAL.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 3,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/distance_field/DISTANCE_FIELD_ALL_27_FORENSICS.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 21,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/georeference/GEOREFERENCE_PATCH_QUARANTINE.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 4,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/import_integrity/CLOSURE_BATCH_17_STATUS.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 34,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/production_readiness/20261002/REMOTE_DURABILITY.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 19,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/FIFTH_WORKTREE_RESTORE.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 27,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/GEOREFERENCE_LOCAL_STATE.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 8,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/repository/PUBLICATION_SAFETY_AUDIT.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 322,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "reports/ue4_hardening/IMPORT_BASELINE_METRICS.json",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 6363,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/audit_windows_target_and_dedup_cost.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 25,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/cook_stall_sampler.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 34,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/test_manifest_dedup.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "USER_PROFILE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "USER_PROFILE_PATH",
+          "line": 204,
+          "excerpt": "C:\\Users\\admin"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "scripts/wt_classify_audit.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "OPENCODE_SCRATCH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "OPENCODE_SCRATCH",
+          "line": 12,
+          "excerpt": "opencode"
+        }
+      ]
+    },
+    {
+      "status": "??",
+      "path": "tests/unit/test_ue4_import_log_analysis.py",
+      "hit_count": 1,
+      "secret_hits": 0,
+      "secret_cleared_as_fixture": 0,
+      "path_hits": 1,
+      "patterns": [
+        "G_DRIVE_PATH"
+      ],
+      "cleared_samples": [],
+      "sample": [
+        {
+          "kind": "PATH",
+          "pattern": "G_DRIVE_PATH",
+          "line": 5,
+          "excerpt": "G:\\\\CARLA"
+        }
+      ]
+    }
+  ],
+  "verdict": "PASS",
+  "secret_fixture_disposition": "2 token-shaped matches were cleared as FALSE_POSITIVE_TEST_FIXTURE: 'ghp_supersecretvalue1234567890' and 'ghp_zzzzzzzzzzzzzzzzzzzz' in reports/repository/POST_RECOVERY_GATE.json. Both are dummy values set via monkeypatch.setenv in adversarial redaction tests that assert the token is absent from output, and that file already records \"BOTH ARE TEST FIXTURES, NOT CREDENTIALS\". They are reported rather than dropped so the clearance is auditable.",
+  "note": "No credentials or tokens were introduced. However the new scripts and evidence reports embed absolute machine paths (user profile, G:/ and F:/ roots, and the opencode scratch root). That is machine-specific disclosure in a public repository. It is a path-hygiene issue, not a credential leak, and must be remediated (parameterise the paths or exclude the reports) before any push."
+}

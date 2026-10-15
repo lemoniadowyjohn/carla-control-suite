@@ -1,0 +1,12 @@
+{
+  "POLLER_BUG_CONFIRMED": true,
+  "POLLER_DELTA_ONLY_FIXED": true,
+  "POLLER_UNCHANGED_HASH_COUNT_AFTER": 0,
+  "POLLER_UNCHANGED_ROW_COUNT_AFTER": 0,
+  "TERMINAL_CLASSIFIER_FIXED": true,
+  "branch": "fix/gap049-package-write-poller-delta-only-20261011",
+  "commit": "bb14b036",
+  "pushed": false,
+  "tests": "63 passed, 2 skipped (platform symlink) across poller, delta-only, guards, classifier, census, watchdog suites",
+  "worktree": "C:/Users/admin/AppData/Local/Temp/wt-gap049-fix"
+}

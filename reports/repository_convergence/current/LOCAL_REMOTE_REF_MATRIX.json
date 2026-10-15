@@ -1,0 +1,72 @@
+{
+  "report": "LOCAL_REMOTE_REF_MATRIX",
+  "generated_utc": "2026-10-12T14:07:30Z",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "audit_mode": "READ_ONLY",
+  "LOCAL_CONSOLIDATION_SHA": "75371cd900f2ec4ef745bfe2db78f03eb1765642",
+  "REMOTE_CONSOLIDATION_SHA": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+  "CONSOLIDATION_DIVERGENCE_CLASS": "NO_LOCAL_UNIQUE_VALUE__REMOTE_AHEAD_BY_3__ALL_3_ALREADY_ON_CANONICAL",
+  "consolidation_analysis": {
+    "direction": "remote is AHEAD of local; local is 0 ahead",
+    "ahead_behind_local_vs_remote": {
+      "local_only": 0,
+      "remote_only": 3
+    },
+    "cherry_pick_excluded": "git log --left-right --cherry-pick reported the same 3 commits (no patch-equivalent suppression), confirming they are genuine commits, not duplicates.",
+    "local_only_commits": [],
+    "local_only_commits_note": "ZERO local-only commits exist. The local consolidation branch is strictly behind its remote counterpart.",
+    "classification": [
+      {
+        "sha": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+        "short": "9fa11e1e",
+        "subject": "feat(cook-diagnostics): add GAP-049 cook diagnostics harness (files only)",
+        "class": "ALREADY_ON_TOPOLOGY_CONVERGENCE",
+        "also_on": [
+          "origin/fix/topology-convergence-gap026-gap048-20261011",
+          "origin/integration/consolidate-fixes-20261008",
+          "origin/integration/tooling-cherry-pick-20261009",
+          "origin/fix/gap049-poller-delta-only-20261011"
+        ]
+      },
+      {
+        "sha": "142ab1ea",
+        "short": "142ab1ea",
+        "subject": "feat(tools): skip xodr harden in carla_smoke_suite when CARLA unreachable",
+        "class": "ALREADY_ON_TOPOLOGY_CONVERGENCE",
+        "also_on": [
+          "origin/fix/topology-convergence-gap026-gap048-20261011",
+          "origin/integration/consolidate-fixes-20261008",
+          "origin/integration/tooling-cherry-pick-20261009",
+          "origin/fix/gap049-poller-delta-only-20261011"
+        ]
+      },
+      {
+        "sha": "7f320c7b",
+        "short": "7f320c7b",
+        "subject": "feat(tools): per-stage wall-clock profiler for RQ1 pipeline runs",
+        "class": "ALREADY_ON_TOPOLOGY_CONVERGENCE",
+        "also_on": [
+          "origin/fix/topology-convergence-gap026-gap048-20261011",
+          "origin/integration/consolidate-fixes-20261008",
+          "origin/integration/tooling-cherry-pick-20261009",
+          "origin/fix/gap049-poller-delta-only-20261011"
+        ]
+      }
+    ],
+    "action_taken": "NONE - no push, no local branch creation, no merge.",
+    "conclusion": "Divergence FULLY RESOLVED. Local consolidation carries no unique value; it is a strict ancestor subset of remote. Nothing would be lost by advancing local to remote, but that action is out of scope for this read-only audit."
+  },
+  "canonical_vs_authority": {
+    "CANONICAL": "3a6f3225",
+    "origin/fix/gap049-poller-delta-only-20261011": "NOT newer than canonical (canonical is not its ancestor)",
+    "origin/fix/gap055-ci-windll-platform-guard-20261011": "NOT newer than canonical",
+    "origin/integration/consolidate-fixes-20261008": "NOT newer than canonical (canonical contains it)",
+    "origin/rq2-authority": "older than canonical",
+    "origin/rq5-readiness": "older than canonical"
+  },
+  "unbacked_local_branches": {
+    "note": "Local branches with no remote counterpart are the highest deletion risk (no remote preservation). Population only; not individually classified in this run.",
+    "count_unpushed_local": 323
+  },
+  "FINAL_VERDICT": "REPO_NOT_QUIESCENT"
+}

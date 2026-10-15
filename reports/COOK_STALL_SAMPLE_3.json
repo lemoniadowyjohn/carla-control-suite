@@ -1,0 +1,44 @@
+{
+  "index": 3,
+  "utc": "2026-10-05T15:05:43Z",
+  "epoch": 1791212743.1280844,
+  "editor": {
+    "pid": 5344,
+    "exists": false,
+    "error": "psutil.NoSuchProcess(pid=5344, msg='process PID not found')"
+  },
+  "shader_compile_workers": {
+    "count": 4,
+    "pids": [
+      4492,
+      18360,
+      31988,
+      33884
+    ]
+  },
+  "log": {
+    "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log",
+    "size_bytes": 579536,
+    "mtime_utc": "2026-10-05T15:04:39Z",
+    "mtime_epoch": 1791212679.4007242,
+    "tail_marker": "[2026.10.05-15.04.39:208][  0]LogTemp: Loaded OpenDrive file 'G:/CARLA/carla_source_probe/Unreal/CarlaUE4/Content/Ingolstadt/Maps/Ingolstadt/OpenDrive/Ingolstadt.xodr'",
+    "total_cook_lines_in_tail": 0
+  },
+  "system": {
+    "commit_limit_bytes": 60934406144,
+    "commit_used_bytes": 47951978496,
+    "commit_limit_gb": 56.75,
+    "commit_used_gb": 44.66,
+    "commit_headroom_gb": 12.09,
+    "phys_total_gb": 47.75,
+    "phys_free_gb": 17.46,
+    "pagefiles": [
+      {
+        "Name": "C:\\pagefile.sys",
+        "AllocatedBaseSize": 9216,
+        "CurrentUsage": 177,
+        "PeakUsage": 185
+      }
+    ]
+  }
+}

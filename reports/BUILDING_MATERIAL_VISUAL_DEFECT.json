@@ -1,0 +1,22 @@
+{
+  "schema": "BUILDING_MATERIAL_VISUAL_DEFECT/v1",
+  "status": "OPEN",
+  "BUILDING_UNBOUND_MESH_COUNT": 5711,
+  "BUILDING_UNBOUND_SLOT_NAMES": [
+    "MAT_0",
+    "MAT_1"
+  ],
+  "RESOLVED_MATERIAL_SLOT_COUNT": 0,
+  "UNRESOLVED_MATERIAL_SLOT_COUNT": 2,
+  "current_behaviour": "Every canonical building StaticMesh declares two FBX material slots with no bound material interface. No MAT_N_M, no /Game/Carla material and no fallback material asset is referenced by any sampled mesh or by any of the 20 tile worlds. Buildings therefore render with engine/default surface material behaviour.",
+  "BUILDING_VISUAL_DEFECT_BLOCKS_COOK": false,
+  "why_not_blocking_cook": "Cooking a StaticMesh with unbound material interfaces succeeds; the engine substitutes a default at render time. This is a visual and semantic fidelity issue, not a cook-process failure mode.",
+  "must_be_resolved_or_explicitly_accepted_before": [
+    "perception-quality acceptance",
+    "visual-fidelity claims",
+    "RQ3 perception comparison"
+  ],
+  "likely_semantic_impact": "CARLA semantic segmentation is carried by materials. With no material bound, buildings are very likely to be untagged or default-tagged in the semantic camera. This was NOT verified by launching the runtime in this batch and must not be assumed either way.",
+  "remediation_not_attempted_here": true,
+  "correct_terminology_note": "Current material state must NOT be described as visually correct."
+}

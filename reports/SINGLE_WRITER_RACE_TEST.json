@@ -1,0 +1,54 @@
+{
+  "schema": "SINGLE_WRITER_RACE_TEST/v1",
+  "schema_version": 1,
+  "mutex_name": "Local\\CARLA_Test_47d8b9608c814b1086ebc2db7edddb75",
+  "contenders": 10,
+  "acquired": 1,
+  "denied": 9,
+  "winner_run_id": "885912c44ab04e96894639a08a6ef7b6",
+  "winner_mutex_verdict": "ACQUIRED",
+  "never_two_owners": true,
+  "results": [
+    {
+      "status": "ACQUIRED",
+      "run_id": "885912c44ab04e96894639a08a6ef7b6",
+      "verdict": "ACQUIRED"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    },
+    {
+      "status": "DENIED",
+      "reason": "HELD_BY_LIVE_OWNER"
+    }
+  ]
+}

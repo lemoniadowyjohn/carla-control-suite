@@ -1,0 +1,80 @@
+{
+  "schema": "reference_producer_trace_v2/v1",
+  "generated_at_utc": "2026-10-04T22:45:00Z",
+  "method": "Read-only log phase analysis + Import.py orchestration source + asset mtime analysis.",
+
+  "correction_to_v1": {
+    "error": "In v1 I treated the 13 'Commandlet:' lines at the end of the log as evidence of completed commandlet phases.",
+    "reality": "Those lines are inside the Python CalledProcessError traceback text embedded in the log. They are source-code context lines from Import.py showing variable values, NOT UE log output. They prove which command was in flight, not which phases completed.",
+    "lesson": "Multi-line tracebacks interleaved into the log must not be parsed as engine events."
+  },
+
+  "confirmed_phase_structure": {
+    "orchestration": "Import.py:740-755 runs per batch: import_assets(do_tiles=1) -> import_assets(do_tiles=0) -> move_assets_commandlet -> prepare_maps_commandlet_for_cooking -> load_asset_materials_commandlet -> build_binary_for_tm",
+    "move_assets_commandlet": "Import.py:771 invokes UE4 commandlet 'MoveAssets' with -PackageName=<pkg> -Maps=<names>. This is CARLA's asset relink step and is the prime candidate for relocating building meshes into /Game/<pkg>/Static/Terrain/<MapName>/.",
+    "batching": "Import.py:740-742 with args.batch_size -> 13 'Building Assets For Windows' starts observed at 00:18, 00:23, 00:26, 00:28, 00:31, 14:30, 14:59, 15:23, 15:26, 15:28, 15:31, 15:33, 15:35"
+  },
+
+  "NEW_P0_defect_missing_tilesinfo": {
+    "severity": "P0",
+    "log_evidence": [
+      "line 16582 [15:02:07] LogTemp: Warning: Loading ../../../../CARLA/carla_source_probe/Unreal/CarlaUE4/Content/Ingolstadt/Maps/Ingolstadt/TilesInfo.txt ...",
+      "line 18662 [15:22:46] LogTemp: Warning: Loading ... TilesInfo.txt ...",
+      "LogTemp: Warning: Could not find TilesInfo.txt file"
+    ],
+    "impact": "TilesInfo.txt is the tile-discovery input consumed by the large-map path (referenced in PrepareAssetsForCookingCommandlet.cpp and LoadAssetMaterialsCommandlet.cpp). It is absent, so tile enumeration has no authoritative source.",
+    "status": "NOT_INVESTIGATED_FURTHER - identified this batch, not yet root-caused"
+  },
+
+  "large_map_zero_tiles_CONFIRMED": {
+    "log_evidence": "line 18576 [15:20:59] LogCarla: Warning: Generating Large Map ; line 18577 [15:20:59] GenerateMap num Tiles generated 0",
+    "mechanism": "LargeMapManager.cpp:430 GenerateMap(InAssetsPath) loads UWorld assets and keeps only names containing '_Tile_'",
+    "filesystem_confirmation": "0 Ingolstadt *_Tile_*.umap exist; only Ingolstadt.umap",
+    "conclusion": "Confirmed root cause for 'zero tiles': the tile streaming-level maps do not exist. Ingolstadt therefore has NO tile sublevels, and LargeMap renders no Ingolstadt geometry regardless of mesh reference resolution.",
+    "status": "PROVEN"
+  },
+
+  "asset_write_timing": {
+    "5711_mesh_assets": "Content/Ingolstadt/Static/Terrain/Ingolstadt/",
+    "oldest_mtime": "2026-10-04T16:39:27",
+    "newest_mtime": "2026-10-04T16:40:56",
+    "burst_seconds": 89,
+    "total_mb": 72.13,
+    "interpretation": "ALL 5711 assets were written inside a single ~89 second burst, not spread across the 16.7 h run. That is inconsistent with per-tile progressive importing and instead indicates ONE bulk operation over all 20 tiles.",
+    "candidate_mechanism": "The MoveAssets commandlet, or a single import batch covering all tiles, performing a bulk relocate of previously imported meshes.",
+    "conflicting_evidence": "MoveAssets is invoked per batch AFTER import_assets completes. The final batch (started 15:35:31) never emitted a Success marker, i.e. it did not complete. Whether MoveAssets ran within that window is NOT established by the log.",
+    "status": "OBSERVATION_ONLY - the 89 s burst is measured fact; its cause is not yet identified"
+  },
+
+  "what_remains_unproven": [
+    "Which exact invocation wrote the 5711 meshes and with what DestinationPath.",
+    "Whether the 5711 broken references were ever persisted to disk in any saved asset. Evidence so far says NO: Ingolstadt.umap contains zero Ingolstadt_Tile_X_Y_ references and is far too small to hold them, and no tile .umap exists.",
+    "Whether MoveAssets rewrites references when it relocates meshes (it should, via UE4 rename/redirect), which would make the observed reference paths an in-flight artifact rather than a persisted defect."
+  ],
+
+  "decisive_next_experiment": {
+    "name": "single_tile_clean_import",
+    "precondition": "live cook (UE4Editor PID 5852) terminated",
+    "steps": [
+      "1. Import ONE small tile (e.g. Ingolstadt_Tile_9_6, 8 buildings) to completion, with MoveAssets enabled as in production.",
+      "2. Record whether Ingolstadt_Tile_9_6.umap is written under Content/Ingolstadt/Maps/Ingolstadt/.",
+      "3. Extract /Game strings from that .umap and record the reference root it uses for its building meshes.",
+      "4. Record the on-disk location of those meshes after MoveAssets.",
+      "5. Compare: reference root == mesh location => no standing defect; reference root != mesh location => producer defect confirmed."
+    ],
+    "why_this_is_the_only_way": "Both remaining hypotheses predict the same persisted state today, because the run was interrupted before any map could be saved. Only a completed single-tile run discriminates them.",
+    "cost": "Minutes, versus a 16.7 h full import."
+  },
+
+  "fix_direction": {
+    "FIX_A_move_meshes": "REJECTED (Town11 positive control)",
+    "FIX_B_prime": "CORRECT DIRECTION but must not be applied until single_tile_clean_import discriminates the two hypotheses",
+    "new_precondition": "TilesInfo.txt must exist and be regenerated before tile discovery can work at all"
+  },
+
+  "live_cook_constraint_respected": {
+    "ue4editor_pid": 5852,
+    "content_modified": false,
+    "actions": "log reads, source reads, asset mtime reads only"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "full_regression_classification/v1",
+  "producer_commit": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "timestamp": "2026-10-02T11:30:00Z",
+  "baseline_sha": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+  "candidate_sha": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "baseline_pass": 7009,
+  "baseline_fail": 4,
+  "candidate_pass": 7091,
+  "candidate_fail": 4,
+  "same_failure_set": true,
+  "NEW_REGRESSION": 0,
+  "FIXED": 0,
+  "PRE_EXISTING": 4,
+  "ENVIRONMENTAL": 0,
+  "STALE_TEST": 0,
+  "failure_details": [
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_registry_has_no_dead_signals",
+      "status": "PRE_EXISTING",
+      "reason": "Dead signals FINAL_RUN_VERDICT and SUCCESS_MARKER have unresolved producers"
+    },
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_every_producer_resolves_to_a_callable",
+      "status": "PRE_EXISTING",
+      "reason": "Producers _compute_final_run_verdict and _finalize_run_pack_gated not found"
+    },
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_every_artifact_has_at_least_one_production_writer",
+      "status": "PRE_EXISTING",
+      "reason": "FINAL_RUN_VERDICT artifact never written by production source"
+    },
+    {
+      "test": "tests/contracts/test_no_dead_pipeline_signals.py::test_auditor_flags_enabled_but_missing_required_evidence",
+      "status": "PRE_EXISTING",
+      "reason": "Required evidence FINAL_RUN_VERDICT and SUCCESS_MARKER missing"
+    }
+  ],
+  "targeted_tests": {
+    "p0_recorder_provenance": 16,
+    "traffic_manager_walker_authority": 36,
+    "recorder_backpressure_frame_integrity": 23,
+    "back_to_back_state_contamination": 7,
+    "integration_runtime_rig_environment_negative_controls": 40,
+    "optimization_infrastructure": 18,
+    "coordinate_frame_geometry": 18,
+    "perception_environment_hardening": 40,
+    "total_targeted": 198,
+    "targeted_pass": 198,
+    "targeted_fail": 0
+  },
+  "new_tests_added": 82,
+  "notes": "Candidate has 82 more tests than baseline due to new test files added with P0 fixes, TM/walker fixes, optimization infrastructure, and perception environment hardening. All targeted tests pass. The 4 pre-existing failures are in test_no_dead_pipeline_signals.py and are classified as PRE_EXISTING because declared artifacts under ultimate_pipeline/signals/ lack a registered production writer."
+}

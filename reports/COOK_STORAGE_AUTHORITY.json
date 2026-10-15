@@ -1,0 +1,66 @@
+{
+  "schema": "COOK_STORAGE_AUTHORITY/v1",
+  "topology_verified_fresh": true,
+  "volumes": [
+    {
+      "drive": "C:",
+      "disk": 1,
+      "media": "INTEL SSDPEKKF512G8L",
+      "bus": "NVMe",
+      "size_gb": 475.9,
+      "free_gb": 9.8,
+      "free_pct": 2.1
+    },
+    {
+      "drive": "E:",
+      "disk": 0,
+      "media": "INTENSO SSD",
+      "bus": "SATA",
+      "size_gb": 280.7,
+      "free_gb": 11.6,
+      "free_pct": 4.1
+    },
+    {
+      "drive": "F:",
+      "disk": 0,
+      "media": "INTENSO SSD",
+      "bus": "SATA",
+      "size_gb": 673.1,
+      "free_gb": 41.5,
+      "free_pct": 6.2
+    },
+    {
+      "drive": "G:",
+      "disk": 3,
+      "media": "Intenso SCSI",
+      "bus": "USB",
+      "size_gb": 931.5,
+      "free_gb": 32.7,
+      "free_pct": 3.5
+    },
+    {
+      "drive": "H:",
+      "disk": 4,
+      "media": "Intenso SCSI",
+      "bus": "USB",
+      "size_gb": 931.5,
+      "free_gb": 16.6,
+      "free_pct": 1.8
+    }
+  ],
+  "topology_matches_stated_authority": true,
+  "topology_note": "G is USB external and F is internal SATA as stated, but H is a SECOND USB disk that the stated authority did not mention. F and E share physical disk 0.",
+  "current_ddc_state": {
+    "project_ddc": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\DerivedDataCache = 1 file, ~0.0 GB (effectively empty)",
+    "F_ddc_candidate": "F:\\UnrealEngine_DDC exists but is EMPTY (0 files)",
+    "engine_ddc": "%ENGINEDIR%DerivedDataCache (G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache) not measured in this batch",
+    "implication": "The historical G: DDC slowdown does not apply to the current project DDC because it is empty. Any cook would build DDC essentially cold."
+  },
+  "capacity_admission": {
+    "DDC_TARGET_CAPACITY": "FAIL",
+    "reasoning": "Every volume is at or below 6.2% free. F: is the largest candidate at 41.5 GB free, but it must simultaneously hold a cold DDC for this content (typically tens of GB for 5711 meshes plus engine shader compilation) AND bounded cook output, with a safety reserve. C: at 9.8 GB free (2.1%) is the TEMP/pagefile volume and is itself a cook-time risk. No configuration of existing free space is capacity-safe.",
+    "no_migration_attempted": true,
+    "no_deletion_attempted": true,
+    "note": "Deleting old DDC or user data requires explicit authorization and was not attempted."
+  }
+}

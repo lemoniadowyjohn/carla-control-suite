@@ -1,0 +1,99 @@
+{
+  "answer": "PrepareAssetsForCooking, NOT ImportAssets. ImportAssets only creates StaticMesh assets; tile worlds are created and saved by a later commandlet in the Import.py pipeline.",
+  "expected_canonical_package_shape": "/Game/<Package>/Maps/<MapName>/<MapName>_Tile_<X>_<Y>",
+  "generated_utc": "2026-10-05T21:53:38.467985Z",
+  "observability_gap": "The 'Saving as %s to %s' log line at :645 is commented out, so a tile save failure would be invisible. Tile saves are also only observable in the PrepareAssetsForCooking phase, never in ImportAssets.",
+  "pipeline_order": [
+    "Import.py:import_assets()  -> invoke_commandlet('ImportAssets')",
+    "Import.py:move_assets_commandlet()",
+    "Import.py:prepare_maps_commandlet_for_cooking() -> invoke_commandlet('PrepareAssetsForCooking', -OnlyPrepareMaps=1)",
+    "Import.py:load_asset_materials_commandlet()",
+    "Import.py:build_binary_for_tm()"
+  ],
+  "producer_locations": {
+    "large_map_consumer": "Unreal/CarlaUE4/Plugins/Carla/Source/Carla/MapGen/LargeMapManager.cpp:453-462",
+    "package_path": "Map.Path + '/' + TileName  (registered as MapPathsIds at :647-649)",
+    "tile_discovery_loop": "PrepareAssetsForCookingCommandlet.cpp:631-658",
+    "tile_material_consumer": "LoadAssetMaterialsCommandlet.cpp:136,169-206,372",
+    "tile_mesh_match": "PrepareAssetsForCookingCommandlet.cpp:192 + :207 (TileName=_Tile_<i>_<j>; asset must EndWith(TileName) or Contain(TileName + '_'))",
+    "tile_name_format": "Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Commandlet/PrepareAssetsForCookingCommandlet.cpp:643",
+    "tile_save_call": "PrepareAssetsForCookingCommandlet.cpp:646 SaveWorld(AssetData, PackageName, Map.Path, TileName)"
+  },
+  "question": "Which code creates, names and saves per-tile .umap files?",
+  "save_phase_per_tile_fields": {
+    "PACKAGE_CREATED": "SaveWorld(...)",
+    "PACKAGE_NAME": "<Map.Name>_Tile_<i>_<j>",
+    "PACKAGE_PATH": "Map.Path + '/' + TileName",
+    "SAVE_REQUESTED": "SaveWorld(...)",
+    "SAVE_SUCCEEDED": "not logged at :645 (UE_LOG is COMMENTED OUT)",
+    "WORLD_CREATED_IN_MEMORY": "same UWorld is reused; actors are spawned then destroyed (:651)"
+  },
+  "schema": "TILE_UMAP_PRODUCER_TRACE/v1",
+  "schema_version": 1,
+  "tile_inventory": {
+    "assets_per_tile": {
+      "10_6": 6,
+      "10_7": 74,
+      "10_8": 5,
+      "10_9": 303,
+      "6_6": 263,
+      "6_7": 395,
+      "6_8": 625,
+      "6_9": 159,
+      "7_6": 326,
+      "7_7": 411,
+      "7_8": 573,
+      "7_9": 429,
+      "8_6": 263,
+      "8_7": 409,
+      "8_8": 493,
+      "8_9": 353,
+      "9_6": 8,
+      "9_7": 28,
+      "9_8": 193,
+      "9_9": 395
+    },
+    "non_tile_uassets": 0,
+    "origin_tile_0_0_present": false,
+    "tile_count": 20,
+    "tile_indices_present": [
+      "6_6",
+      "6_7",
+      "6_8",
+      "6_9",
+      "7_6",
+      "7_7",
+      "7_8",
+      "7_9",
+      "8_6",
+      "8_7",
+      "8_8",
+      "8_9",
+      "9_6",
+      "9_7",
+      "9_8",
+      "9_9",
+      "10_6",
+      "10_7",
+      "10_8",
+      "10_9"
+    ],
+    "total_uassets": 5711,
+    "x_range": [
+      6,
+      10
+    ],
+    "y_range": [
+      6,
+      9
+    ]
+  },
+  "umap_census": {
+    "tile_umap_count": 0,
+    "tile_umaps": [],
+    "umap_count": 1,
+    "umaps": [
+      "Ingolstadt.umap"
+    ]
+  }
+}

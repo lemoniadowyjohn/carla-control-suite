@@ -1,0 +1,163 @@
+{
+  "fast_group": {
+    "n": 27,
+    "stall_seconds": "below_logging_threshold"
+  },
+  "generated_at_utc": "2026-10-04T20:36:36.410953+00:00",
+  "geometry_comparison": {
+    "bbox_max_dimension_m": {
+      "fast": {
+        "max": 1122.657,
+        "median": 1016.38,
+        "min": 797.702
+      },
+      "slow": {
+        "max": 1122.657,
+        "median": 900.4455,
+        "min": 343.184
+      }
+    },
+    "boundary_edge_count": {
+      "fast": {
+        "max": 4010.0,
+        "median": 3110.0,
+        "min": 1104.0
+      },
+      "slow": {
+        "max": 4372.0,
+        "median": 2009.0,
+        "min": 30.0
+      }
+    },
+    "connected_components": {
+      "fast": {
+        "max": 402.0,
+        "median": 334.0,
+        "min": 96.0
+      },
+      "slow": {
+        "max": 501.0,
+        "median": 186.0,
+        "min": 5.0
+      }
+    },
+    "duplicate_face_count": {
+      "fast": {
+        "max": 405.0,
+        "median": 20.0,
+        "min": 0.0
+      },
+      "slow": {
+        "max": 405.0,
+        "median": 4.0,
+        "min": 0.0
+      }
+    },
+    "index_reuse_ratio": {
+      "fast": {
+        "max": 5.3655,
+        "median": 4.7465,
+        "min": 4.2779
+      },
+      "slow": {
+        "max": 5.3655,
+        "median": 4.5762,
+        "min": 3.7615
+      }
+    },
+    "non_manifold_edge_count": {
+      "fast": {
+        "max": 1669.0,
+        "median": 79.0,
+        "min": 9.0
+      },
+      "slow": {
+        "max": 1669.0,
+        "median": 61.0,
+        "min": 0.0
+      }
+    },
+    "surface_area_m2": {
+      "fast": {
+        "max": 517386.5667,
+        "median": 335502.1519,
+        "min": 89624.454
+      },
+      "slow": {
+        "max": 517386.5667,
+        "median": 155993.4829,
+        "min": 3816.5312
+      }
+    },
+    "surface_to_volume_ratio": {
+      "fast": {
+        "max": 0.0646,
+        "median": 0.0276,
+        "min": 0.007
+      },
+      "slow": {
+        "max": 0.0652,
+        "median": 0.0225,
+        "min": 0.0018
+      }
+    },
+    "tiny_triangle_fraction": {
+      "fast": {
+        "max": 0.0009,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "slow": {
+        "max": 0.0009,
+        "median": 0.0,
+        "min": 0.0
+      }
+    },
+    "triangle_count": {
+      "fast": {
+        "max": 15892.0,
+        "median": 13731.0,
+        "min": 3938.0
+      },
+      "slow": {
+        "max": 17746.0,
+        "median": 8059.0,
+        "min": 80.0
+      }
+    },
+    "triangles_per_component": {
+      "fast": {
+        "max": 83.948,
+        "median": 38.534,
+        "min": 18.891
+      },
+      "slow": {
+        "max": 83.948,
+        "median": 29.627,
+        "min": 10.867
+      }
+    },
+    "vertex_count": {
+      "fast": {
+        "max": 10282.0,
+        "median": 7849.0,
+        "min": 2695.0
+      },
+      "slow": {
+        "max": 11384.0,
+        "median": 4506.0,
+        "min": 60.0
+      }
+    }
+  },
+  "note": "Controls are meshes in the same tiles with no recorded distance-field stall. Stall time is not observable per mesh when it is below the logging threshold, so controls are treated as 'below threshold', not as measured zero.",
+  "schema": "distance_field_fast_control_comparison/v1",
+  "slow_group": {
+    "n": 24,
+    "stall_seconds": {
+      "max": 2807.558,
+      "median": 1467.982,
+      "min": 0.585
+    }
+  }
+}

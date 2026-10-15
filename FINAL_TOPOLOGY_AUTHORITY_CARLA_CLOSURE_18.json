@@ -1,0 +1,109 @@
+{
+  "FINAL_CODE_SHA": "8edb01709a3bb784415dd36085d6176613b77ef1",
+  "FINAL_SETTINGS_SHA": "997b5ad404c563f040e40d8a1a308079d19fffb157e4e7876c52f626dd1e1996",
+  "FINAL_OSM_SHA": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+
+  "STAGE7_SHA": "03568aec4544fc87f0e59463e76ba45603bb38bbe97a6e35d341d80cec81fb1f",
+  "STAGE8_SHA": "4a7f9a6b4fe5a2a6a9db9730b82017208e9226431bb3a2726fd0f871662b66cc",
+
+  "GAP026_FAIL": 18,
+  "GAP026_SEVERE_DISTANCE": 0,
+  "GAP026_SEVERE_ANGLE": 8,
+  "GAP026_UNEXPLAINED": 0,
+
+  "CHECKER_ORACLE_FP": 0,
+  "CHECKER_ORACLE_FN": 0,
+  "CHECKER_ORACLE_MAX_DELTA": 0.0,
+
+  "GAP048_RAW_BROKEN": 8412,
+  "GAP048_STRUCTURAL_TERMINATIONS": 8412,
+  "GAP048_ACTIONABLE_BROKEN": 8016,
+  "GAP048_UPSTREAM_INFORMATION_ABSENT": 377,
+  "GAP048_TRUE_AMBIGUITY": 19,
+  "GAP048_UNEXPLAINED": 0,
+
+  "INVALID_TARGETS": 0,
+
+  "STAGE8_LANE_TOPOLOGY_MUTATION": false,
+  "STAGE7_TOPOLOGY_HASH": "df5506e60c367c9b6682447ff3fcf2fa68bee5301f770be3354dbcfc8d0f61cf",
+  "STAGE8_TOPOLOGY_HASH": "df5506e60c367c9b6682447ff3fcf2fa68bee5301f770be3354dbcfc8d0f61cf",
+
+  "ORPHAN_INVALID": 6,
+  "ORPHAN_UNEXPLAINED": 6,
+
+  "RQ1_TOPOLOGY_ADMISSION": "BLOCKED_RESIDUALS",
+
+  "FINAL_VERDICT": "TOPOLOGY_BOUNDED_EXACT_RESIDUALS",
+
+  "details": {
+    "gap026": {
+      "stage7_checked": 23416,
+      "stage7_failed": 18,
+      "stage8_checked": 23416,
+      "stage8_failed": 18,
+      "max_distance_m": 3.13,
+      "max_angle_deg": 11.71,
+      "severe_distance_gt_10m": 0,
+      "severe_angle_gt_10deg": 8,
+      "checker_oracle_fp": 0,
+      "checker_oracle_fn": 0,
+      "checker_oracle_max_delta_m": 0.0,
+      "production_checker_agreement": "exact"
+    },
+    "gap048": {
+      "stage7_artifact": "regen_20261014T000000Z/pipeline_out/07_lanes_20261014_155337_691757.xodr",
+      "stage7_sha256": "03568aec4544fc87f0e59463e76ba45603bb38bbe97a6e35d341d80cec81fb1f",
+      "broken_total": 8412,
+      "partition_ok": true,
+      "through_junction_candidates": 8412,
+      "through_junction_unambiguous": 8016,
+      "through_junction_ambiguous": 19,
+      "through_junction_no_candidate": 377,
+      "structural_terminations": 8412,
+      "actionable_broken": 8016,
+      "upstream_information_absent": 377,
+      "true_ambiguity": 19,
+      "unexplained": 0
+    },
+    "invalid_targets": {
+      "stage7_dropped": 0,
+      "stage8_dropped": 0,
+      "historical_fixture_49289_lane_minus2_to_minus2": "not_in_map",
+      "historical_fixture_51702_lane_2_to_1": "not_found",
+      "historical_fixture_51702_lane_1_to_1": "not_found",
+      "note": "Road 51702 lane -1 has self-loop successor (-1 -> -1) on both stages"
+    },
+    "stage8_immutability": {
+      "stage7_topology_hash": "df5506e60c367c9b6682447ff3fcf2fa68bee5301f770be3354dbcfc8d0f61cf",
+      "stage8_topology_hash": "df5506e60c367c9b6682447ff3fcf2fa68bee5301f770be3354dbcfc8d0f61cf",
+      "mutation": false
+    },
+    "orphan_classification": {
+      "total_roads": 32296,
+      "orphan_count": 6,
+      "junction_connected": 22602,
+      "normal": 9688,
+      "orphan_unexplained": 6,
+      "orphans": [
+        {"road_id": "42367", "length": 186.8, "driving_lanes": 1, "geometry_types": ["line"]},
+        {"road_id": "43405", "length": 135.6, "driving_lanes": 1, "geometry_types": ["line", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "line", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "line", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "line"]},
+        {"road_id": "46369", "length": 49.3, "driving_lanes": 1, "geometry_types": ["line"]},
+        {"road_id": "46698", "length": 186.8, "driving_lanes": 1, "geometry_types": ["line"]},
+        {"road_id": "48129", "length": 135.6, "driving_lanes": 1, "geometry_types": ["line", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "line", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "line", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "paramPoly3", "line"]},
+        {"road_id": "51657", "length": 49.3, "driving_lanes": 1, "geometry_types": ["line"]}
+      ]
+    },
+    "environment": {
+      "python": "3.12",
+      "sumo": "1.24.0",
+      "proj_db_layout": 6,
+      "up_junction_tangent_fit": "1",
+      "up_strict_quality_gates": "1",
+      "up_autofix_lane_successors": "1",
+      "up_strict_lane_successors": "0",
+      "up_enable_map_hygiene": "1",
+      "up_preanchor_input_xodr": "0",
+      "up_release_profile": "PERCEPTION_RELEASE"
+    }
+  }
+}

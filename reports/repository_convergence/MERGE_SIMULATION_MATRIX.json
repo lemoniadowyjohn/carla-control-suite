@@ -1,0 +1,75 @@
+{
+  "schema": "merge_simulation_matrix/v1",
+  "simulated_with": "git merge-tree --write-tree (non-mutating)",
+  "rows": [
+    {
+      "branch": "fix/topology-convergence-gap026-gap048-20261011",
+      "merge_clean": true,
+      "merge_mode": "DIRECT_MERGE",
+      "unique_count": 5,
+      "conflict_files": []
+    },
+    {
+      "branch": "fix/gap049-poller-delta-only-20261011",
+      "merge_clean": true,
+      "merge_mode": "DIRECT_MERGE",
+      "unique_count": 1,
+      "conflict_files": []
+    },
+    {
+      "branch": "fix/gap048-through-junction-20261009",
+      "merge_clean": true,
+      "merge_mode": "NO_MERGE_SUPERSEDED",
+      "unique_count": 0,
+      "conflict_files": []
+    },
+    {
+      "branch": "fix/gap055-ci-windll-platform-guard-20261011",
+      "merge_clean": true,
+      "merge_mode": "REVIEW_REQUIRED",
+      "unique_count": 2,
+      "conflict_files": []
+    },
+    {
+      "branch": "rq2-authority",
+      "merge_clean": true,
+      "merge_mode": "CHERRY_PICK_EXACT_COMMIT",
+      "unique_count": 2,
+      "conflict_files": []
+    },
+    {
+      "branch": "rq5-readiness",
+      "merge_clean": true,
+      "merge_mode": "CHERRY_PICK_EXACT_COMMIT",
+      "unique_count": 2,
+      "conflict_files": []
+    },
+    {
+      "branch": "tools/rq1-stage-profiler-20261008",
+      "merge_clean": false,
+      "merge_mode": "NO_MERGE_ALREADY_ABSORBED",
+      "unique_count": 0,
+      "conflict_files": [
+        "(pre-existing polluted-base overlap)"
+      ]
+    },
+    {
+      "branch": "tools/cook-diagnostics-harness-20261008",
+      "merge_clean": false,
+      "merge_mode": "NO_MERGE_ALREADY_ABSORBED",
+      "unique_count": 0,
+      "conflict_files": [
+        "(pre-existing polluted-base overlap)"
+      ]
+    },
+    {
+      "branch": "tools/gap017-diagnostic-toolkit-20261008",
+      "merge_clean": false,
+      "merge_mode": "NO_MERGE_ALREADY_ABSORBED",
+      "unique_count": 0,
+      "conflict_files": [
+        "(pre-existing polluted-base overlap)"
+      ]
+    }
+  ]
+}

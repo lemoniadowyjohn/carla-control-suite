@@ -1,0 +1,111 @@
+{
+  "schema": "IMPORT003_LOG_AUTHORITY/v1",
+  "schema_version": 1,
+  "IMPORT003_LOG_AUTHORITY": "AUTHORITATIVE_RUN003",
+  "authoritative_log": {
+    "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.06-01.19.32.log",
+    "sha256": "C98A89AD73F00E51F8317F7B24F2BE98C95DB2A543A93BD37E8491116DBE7831",
+    "size_bytes": 4649900,
+    "first_line": "Log file open, 10/05/26 20:38:44",
+    "last_line": "[2026.10.06-01.19.32:364][  0]Log file closed, 10/06/26 03:19:32",
+    "bound_utc_start": "2026-10-05T18:38:44Z",
+    "bound_utc_end": "2026-10-06T01:19:32Z",
+    "binding_evidence": [
+      "Log file open local 20:38:44 == run003 process creation 2026-10-05T18:38:44.1538360Z (UTC+02:00)",
+      "Log file closed local 03:19:32 == 2026-10-06T01:19:32Z, 8s before process exit 2026-10-06T01:19:40.524957Z",
+      "LogInit: Executing Class /Script/UnrealEd.ImportAssetsCommandlet",
+      "LogInit: Command Line carries the run003 -importSettings path",
+      "game: CarlaUE4"
+    ]
+  },
+  "rejected_candidates": [
+    {
+      "path": "CarlaUE4-backup-2026.10.05-18.38.43.log",
+      "classification": "OTHER_RUN",
+      "reason": "Rotated when run003 began (mtime 18:38:43Z, one second before run003 creation). It is the preceding session, not run003."
+    },
+    {
+      "path": "CarlaUE4-backup-2026.10.06-11.44.37.log",
+      "classification": "OTHER_RUN",
+      "reason": "Command line is -run=PrepareAssetsForCooking -PackageName=Ingolstadt -OnlyPrepareMaps=1 with 0 LogAutomatedImport records. Not an import."
+    },
+    {
+      "path": "CarlaUE4-backup-2026.10.06-09.17.45.log",
+      "classification": "OTHER_RUN",
+      "reason": "Also -run=PrepareAssetsForCooking, 1 SavePackage record, 0 LogAutomatedImport records."
+    },
+    {
+      "path": "CarlaUE4.log",
+      "classification": "OTHER_RUN",
+      "reason": "Current live log from a later editor session; does not span the run003 window."
+    }
+  ],
+  "IMPORT003_COMMAND_AUTHORITY": "PROVEN",
+  "IMPORT003_EFFECTIVE_COMMAND": {
+    "executable_project": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject",
+    "command_line": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=ImportAssets -importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json -nosourcecontrol -replaceexisting",
+    "switches": ["-run=ImportAssets", "-importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json", "-nosourcecontrol", "-replaceexisting"],
+    "source_fbx_dir": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt",
+    "expected_destination_virtual": "/Game/Ingolstadt/Maps/Ingolstadt",
+    "expected_destination_physical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt",
+    "content_root": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content"
+  },
+  "IMPORT003_SETTINGS_CONSUMED": "PROVEN",
+  "settings_consumption_evidence": [
+    "Exactly 1 LogAutomatedImport record: 'Importing group AutomatedAssetImportData_1' at 2026.10.05-18.39.24:825Z",
+    "No 'Import settings file ... could not be found' (count 0)",
+    "No 'Json settings file was found but was invalid' (count 0)",
+    "All 20 requested FBX were subsequently opened by FbxFactory",
+    "20/20 distinct tile keys present across 5711 saves",
+    "Note: ParseImportSettings always returns false by source defect, so its return value was NOT used as evidence. Consumption is proven from the constructed import group and the FBX loads instead."
+  ],
+  "FBX_FOUND_COUNT": 20,
+  "FBX_NOT_FOUND_COUNT": 0,
+  "FBX_INVALID_COUNT": 0,
+  "FBX_UNKNOWN_COUNT": 0,
+  "fbx_tiles": ["10_6","10_7","10_8","10_9","6_6","6_7","6_8","6_9","7_6","7_7","7_8","7_9","8_6","8_7","8_8","8_9","9_6","9_7","9_8","9_9"],
+  "SAVE_ATTEMPT_COUNT": 5711,
+  "SAVE_SUCCESS_EVIDENCE_COUNT": 5711,
+  "SAVE_FAILURE_EVIDENCE_COUNT": 0,
+  "save_evidence_form": "LogSavePackage: Moving '<Saved tmp>' to '<Content/Ingolstadt/Maps/Ingolstadt/*.uasset>' — a completed temp-to-final move, i.e. a persisted write",
+  "distinct_save_destinations": 5711,
+  "distinct_save_directories": ["G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt"],
+  "IMPORT003_IMPORTED_ASSET_COUNTS": "NONZERO (5711 packages persisted; ImportedAssets.Num() was > 0, so the save block did execute)",
+  "RUN003_OUTPUT_EVER_PERSISTED": "PROVEN_TRUE",
+  "IMPORT003_NO_OUTPUT_ROOT_CAUSE": "OUTPUT_CREATED_THEN_MOVED__ATTRIBUTION_DESTROYED_BY_LATER_MTIME_OVERWRITE",
+  "IMPORT003_ROOT_CAUSE_CONFIDENCE": "HIGH",
+  "root_cause_detail": [
+    "run003 did NOT fail. It consumed its settings, loaded all 20 FBX, imported, and persisted 5711 .uasset packages into Content/Ingolstadt/Maps/Ingolstadt between 01:18:24Z and 01:19:07Z.",
+    "The packages are no longer at that path because they were subsequently relocated to Content/Ingolstadt/Static/Terrain/Ingolstadt.",
+    "Every one of the 5711 files now carries mtime 2026-10-06T11:42-11:43Z because a later governed run, -run=PrepareAssetsForCooking -PackageName=Ingolstadt -OnlyPrepareMaps=1 (log opened 13:40:11 local = 11:40:11Z, closed 11:44:37Z, 5731 SavePackage records), re-saved them.",
+    "That mtime overwrite is why run003 output could not be attributed by timestamp. The apparent 'exit 0 with no output' was an attribution failure caused by relocation plus mtime loss, not a silent import failure."
+  ],
+  "premise_corrections": [
+    {
+      "prior_belief": "run003 exited 0 with no attributable persisted packages",
+      "corrected": "run003 persisted 5711 packages. The belief was wrong and is retracted.",
+      "evidence": "5711 distinct LogSavePackage Moving-to records in the authoritative run003 log."
+    },
+    {
+      "prior_belief": "the 5711 Static/Terrain meshes predate run003 and are PRIOR_IMPORT",
+      "corrected": "FALSE. They originate from run003 and their mtimes were overwritten at 11:42-11:43Z by PrepareAssetsForCooking.",
+      "evidence": "All 5711 mtimes are 2026-10-06 11:42-11:43Z; run003 saved the same 5711 names at 01:18-01:19Z; the later commandlet recorded 5731 SavePackage records."
+    },
+    {
+      "prior_belief": "Content/Ingolstadt/Maps/Ingolstadt contains only 8 materials",
+      "corrected": "It now contains 29 files: the 8 materials plus 20 Ingolstadt_Tile_*.umap files written by PrepareAssetsForCooking at 11:41-11:42Z.",
+      "evidence": "Directory census at 29 files."
+    }
+  ],
+  "concurrent_mutators": {
+    "CONCURRENT_MUTATOR_COUNT_DURING_003": "NOT_ENUMERATED_IN_THIS_BATCH",
+    "note": "The run003 log itself shows a single automated import group and no interleaved second session. PrepareAssetsForCooking is strictly later (11:40Z vs run003 end 01:19Z), so it is a successor, not a concurrent mutator. A full cross-session process timeline was not reconstructed."
+  },
+  "not_established": {
+    "STATIC_TREE_CURRENT_INPUT_AUTHORITY": "The 5711 derive from run003's import of the 20 FBX at G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt. Whether those FBX are the current authoritative inputs is a separate manifest comparison and is reported separately.",
+    "PRIOR_IMPORT_FBX_MATCH": "SUPERSEDED. There is no separate prior import for these 5711; they trace to run003.",
+    "ASSET_IMPORTDATA_COVERAGE": "NOT_AUDITED_IN_THIS_BATCH",
+    "ZERO_ORIGIN_ASSUMPTION": "NOT_RECHECKED_IN_THIS_BATCH",
+    "production_content_mutated": "NONE. All operations were read-only inspection of logs and directory metadata."
+  }
+}

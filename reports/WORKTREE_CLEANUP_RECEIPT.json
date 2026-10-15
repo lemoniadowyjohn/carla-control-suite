@@ -1,0 +1,36 @@
+{
+  "removed_worktrees": [
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-gap049-ev",
+      "branch": "evidence/gap049-cook-write-failure-20261011",
+      "head": "9a4bd44f9ba619ae4fd53336674c7abb257666a4",
+      "remote_preserved": "origin/evidence/gap049-cook-write-failure-20261011",
+      "dirty": 0,
+      "untracked": 0,
+      "staged": 0
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/wt-gap049-fix",
+      "branch": "fix/gap049-package-write-poller-delta-only-20261011",
+      "head": "bb14b036acb2604c71803311eb49e47ed852cbcc",
+      "remote_preserved": "origin/fix/gap049-package-write-poller-delta-only-20261011",
+      "dirty": 0,
+      "untracked": 0,
+      "staged": 0
+    }
+  ],
+  "pruned_stale_registrations": [
+    "worktrees/wt-consolidate-20261008",
+    "worktrees/wt-gap048-m3",
+    "worktrees/wt-rq2-merge-verify-20261009",
+    "worktrees/wt-topology-convergence"
+  ],
+  "worktrees_before": 37,
+  "worktrees_after": 31,
+  "worktrees_removed": 6,
+  "c_free_before_bytes": 19965947904,
+  "c_free_after_bytes": 28452966400,
+  "worktree_reclaimed_bytes": 8487018496,
+  "pytest_reclaimed_bytes": 0,
+  "total_reclaimed_bytes": 8487018496
+}

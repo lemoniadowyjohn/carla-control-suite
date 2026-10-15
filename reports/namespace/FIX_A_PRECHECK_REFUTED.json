@@ -1,0 +1,86 @@
+{
+  "schema": "fix_a_precheck/v1",
+  "generated_at_utc": "2026-10-04T21:55:00Z",
+  "action_taken": "NONE - FIX_A was NOT applied. Read-only investigation only.",
+  "verdict": "FIX_A_IS_REFUTED_DO_NOT_APPLY",
+
+  "why_i_did_not_apply": [
+    "A live UE4 cook (PID 5852, ~24523 s CPU) is still running and scanning the Content tree; writing 5711 assets into it now risks corrupting the cook or the packages.",
+    "More importantly, CARLA's own stock layout shows FIX_A is the wrong direction. The meshes are already in the CARLA-canonical place; it is the serialized references that are wrong."
+  ],
+
+  "decisive_evidence": {
+    "carla_stock_layout": {
+      "static_root": "/Game/Static/<Tag>/<MapName>/",
+      "static_terrain_children": ["Town03", "Town04", "Town05", "Town06", "Town07",
+                                   "Town10HD", "Town11", "Town12", "Town13", "Town15"],
+      "maps_root": "/Game/Maps/",
+      "map_folder_contents_example": "TownNN.umap + TownNN_BuiltData.uasset + TownNN_Opt.umap, and NO building StaticMeshes beside them",
+      "conclusion": "CARLA separates maps from building meshes. Town maps reference their buildings from /Game/Static/<Tag>/<MapName>/, NOT from the map's own folder."
+    },
+    "ingolstadt_layout": {
+      "meshes": "/Game/Ingolstadt/Static/Terrain/Ingolstadt/  (5711 uasset, 72.13 MB)",
+      "pattern_match": "EXACTLY matches the stock /Game/Static/Terrain/<MapName>/ pattern used by Town03..Town15",
+      "map_folder": "/Game/Ingolstadt/Maps/Ingolstadt/ = Ingolstadt.umap + MAT_*.uasset + OpenDrive/ + TM/, and NO building meshes",
+      "references": "/Game/Ingolstadt/Maps/Ingolstadt/<Name>  (inside the map folder)"
+    },
+    "conclusion": "The 5711 building meshes are in the CARLA-canonical location. The tile-map serialized references are the defect: they point into the map folder, which diverges from the Town convention. FIX_A would move 72 MB of correct assets out of convention and duplicate them, making the map layout non-CARLA-like, to satisfy references that are themselves wrong."
+  },
+
+  "corrected_diagnosis": {
+    "previous": "MOUNT/subpath mismatch; FIX_A = move meshes beside the .umap",
+    "corrected": "The asset placement is CORRECT and CARLA-conformant. The reference generator is WRONG: it emitted /Game/<pkg>/Maps/<map>/<Mesh> instead of /Game/<pkg>/Static/Terrain/<map>/<Mesh>.",
+    "authority_evidence": "9 stock CARLA town maps use Static/Terrain/<MapName>/; none place building meshes beside the .umap."
+  },
+
+  "additional_findings": {
+    "props_channel_is_not_the_cause": {
+      "Ingolstadt.Package_json": "{\"props\": [], \"maps\": [{\"name\": \"Ingolstadt\", \"path\": \"/Game/Ingolstadt/Maps/Ingolstadt\", \"use_carla_materials\": true}]}",
+      "implication": "props is EMPTY for this package, and Import.py builds props_dest only from prop['tag']/prop['name']. So the Static/Terrain/Ingolstadt path was NOT produced by the props channel as I hypothesised earlier; it comes from CARLA's own large-map/Terrain generation, which is the same mechanism stock towns use.",
+      "correction": "My earlier statement that the buildings were 'imported through the props channel' was wrong."
+    },
+    "asset_provenance": {
+      "count": 5711,
+      "total_mb": 72.13,
+      "mtime_range": "2026-10-04T16:39:27 .. 16:40:56",
+      "interpretation": "Written near the END of the truncated import (which ended 17:03:54), i.e. during its second tile pass. They are products of this run, not stale."
+    },
+    "import_settings_were_correct": {
+      "DestinationPath": "/Game/package/Maps/Ingolstadt",
+      "note": "The declared tile-FBX import destination is the map folder, consistent with the references. So Import.py and the import settings are internally consistent; the divergence is between that convention and CARLA's Static/Terrain convention that stock maps follow."
+    }
+  },
+
+  "candidate_fixes_reframed": [
+    {"id": "FIX-B-prime", "preferred": true,
+     "action": "Correct the reference producer so tile maps serialize /Game/<pkg>/Static/Terrain/<MapName>/<Mesh>, matching stock Town maps.",
+     "layer": "reference producer (authoritative layer per policy preference 1)",
+     "requires": "Identify and change the producer, then regenerate the tile maps. If the producer is CARLA C++ (large-map generator), this needs a plugin rebuild.",
+     "risk": "Regeneration only; no asset duplication. Preserves CARLA convention.",
+     "status": "NOT_STARTED - producer not yet identified"},
+    {"id": "FIX-REDIRECT",
+     "action": "Add UE4 package redirects from /Game/Ingolstadt/Maps/Ingolstadt/* to /Game/Ingolstadt/Static/Terrain/Ingolstadt/*.",
+     "layer": "configuration",
+     "requires": "5711 redirect entries in project CoreRedirects; verify UE4 resolves them on load.",
+     "risk": "Large config; redirects are a migration mechanism, not a permanent fix; may not survive a resave.",
+     "status": "NOT_STARTED"},
+    {"id": "FIX-A-original",
+     "action": "Move/copy the 5711 meshes beside the .umap.",
+     "layer": "data",
+     "verdict": "REJECTED",
+     "reason": "Deviates from the CARLA stock layout, duplicates 72 MB, and treats correct assets as wrong to satisfy incorrect references."}
+  ],
+
+  "blocking_conditions": [
+    "Live cook still active: UE4Editor PID 5852; four ShaderCompileWorkers respawned at 02:07, so it is progressing. No Content writes permitted.",
+    "Reference producer not yet identified: must determine whether it is CARLA C++ (large-map generator) or the Python wrapper before changing anything."
+  ],
+
+  "recommended_next_actions": [
+    "1. Wait for the cook to terminate; confirm no UE4Editor process remains.",
+    "2. Identify the reference producer: search CARLA plugin source for where tile building references are serialized, and determine why it uses the Maps folder rather than Static/Terrain/<MapName>/.",
+    "3. Verify against a stock town: confirm Town11 (which has Static/Terrain/Town11) references /Game/Static/Terrain/Town11/* and that those references resolve. That is the positive control for the correct pattern.",
+    "4. Then apply FIX-B-prime at the producer layer and regenerate tile maps only.",
+    "5. Separately, fix GeoReferenceParser.cpp:52 to fail closed instead of substituting lat 42.0 / lon 2.0."
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "schema": "recent_branch_value_audit/v1",
+  "generated_utc": "2026-10-09T17:49:47.513293+00:00",
+  "read_only": true,
+  "authorities": {
+    "production": {
+      "ref": "origin/integration/production-large-map-20260918",
+      "sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d"
+    },
+    "consolidation": {
+      "ref": "origin/integration/consolidate-fixes-20261008",
+      "sha": "75371cd900f2ec4ef745bfe2db78f03eb1765642",
+      "relation_to_production": [
+        "0",
+        "8"
+      ]
+    },
+    "gap_register": {
+      "branch": "docs/sync-gap-register-md-20261008",
+      "sha": "4a5dc8da36e7bd236ae4ea1a9aa9c7824fda9cbf",
+      "relation_to_production": [
+        "16",
+        "22"
+      ],
+      "merge_base": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "instruction": "do NOT merge wholesale"
+    }
+  },
+  "recent_branch_count": {
+    "reported_by_dispatch": 24,
+    "derived_window_reproducing_24": "36h",
+    "counts_by_window": {
+      "24h": 9,
+      "36h": 24,
+      "48h": 36,
+      "60h": 40,
+      "72h": 42
+    },
+    "total_remote_branches": 230,
+    "note": "Derived from remote refs' committerdate. The reported 24 corresponds to a 36-hour window. Not forced."
+  },
+  "classification_counts": {
+    "A_FULLY_ABSORBED": 6,
+    "B_UNIQUE_LIVE_VALUE": 3,
+    "C_OBSOLETE_OR_STALE_PREMISE": 1,
+    "D_DOC_OR_EVIDENCE_ONLY": 0,
+    "E_UNCLEAR_REVIEW_REQUIRED": 0
+  },
+  "branches": {
+    "fix/gap039-new274-275-20261008": {
+      "branch": "fix/gap039-new274-275-20261008",
+      "tip": "61df05a40bf09f79410256f54325a1261ca3c177",
+      "date": "2026-10-08T13:15:04+02:00",
+      "subject": "fix(gap039): implement NEW-274 atomic capture commits + NEW-275 API docs (real, tested)",
+      "merge_base_prod": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_prod": 0,
+      "behind_prod": 1,
+      "merge_base_cons": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_cons": 8,
+      "behind_cons": 1,
+      "classification": "A_FULLY_ABSORBED",
+      "reason": "capture_writer.py and perception_api.py blobs are IDENTICAL in consolidation (c35c3a37 lineage: 3de7b33d). git cherry vs cons = 0 not-present.",
+      "patch_id_not_in_prod": 1,
+      "patch_id_not_in_cons": 0
+    },
+    "fix/gap039-new276-20261008": {
+      "branch": "fix/gap039-new276-20261008",
+      "tip": "176822c9c0dcec149919dba7ac39f1a47a25c968",
+      "date": "2026-10-08T14:33:48+02:00",
+      "subject": "fix(perception): NEW-276 label_quality any/unlabeled/learnable-fraction split (GAP-039)",
+      "merge_base_prod": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_prod": 0,
+      "behind_prod": 1,
+      "merge_base_cons": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_cons": 8,
+      "behind_cons": 1,
+      "classification": "A_FULLY_ABSORBED",
+      "reason": "label_quality.py blob IDENTICAL in consolidation (c87431fa). git cherry vs cons = 0.",
+      "patch_id_not_in_prod": 1,
+      "patch_id_not_in_cons": 0
+    },
+    "fix/gap051-registry-coverage-20261008": {
+      "branch": "fix/gap051-registry-coverage-20261008",
+      "tip": "cfc0cd9c6ef3ad51d4fcf799e0d2fadf3af9fcc5",
+      "date": "2026-10-08T18:07:16+02:00",
+      "subject": "fix(contracts): GAP-051 -- GATE_CLASS_REGISTRY must cover the gates actually emitted",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 16,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 16,
+      "classification": "A_FULLY_ABSORBED",
+      "reason": "stage_contracts.py AND test_gate_class_registry_coverage.py blobs IDENTICAL in consolidation (c35c3a37).",
+      "patch_id_not_in_prod": 16,
+      "patch_id_not_in_cons": 15
+    },
+    "fix/gap047-untracked-module-import-20261008": {
+      "branch": "fix/gap047-untracked-module-import-20261008",
+      "tip": "ec86903fa9cefeae55bf50396f0f3053bb0fd385",
+      "date": "2026-10-08T16:22:35+02:00",
+      "subject": "fix(tests): GAP-047 -- stop collection aborting on an untracked module",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 14,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 14,
+      "classification": "A_FULLY_ABSORBED",
+      "reason": "test_t6_owner_identity_authority.py AND test_tracked_test_import_hygiene.py blobs IDENTICAL in consolidation (616d1eb7).",
+      "patch_id_not_in_prod": 14,
+      "patch_id_not_in_cons": 13
+    },
+    "fix/gap039-new291-shapin-20261008": {
+      "branch": "fix/gap039-new291-shapin-20261008",
+      "tip": "8a79683960c5530a2c76d5956e5cb2bfb1f1ce95",
+      "date": "2026-10-08T19:13:55+02:00",
+      "subject": "test(thesis): NEW-291 SHA-pin mechanism tests + document why no pin is set",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 17,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 17,
+      "classification": "A_FULLY_ABSORBED",
+      "reason": "test_manual_refs_sha_pin.py blob IDENTICAL in consolidation (75371cd9).",
+      "patch_id_not_in_prod": 17,
+      "patch_id_not_in_cons": 15
+    },
+    "fix/gap039-new277-20261008": {
+      "branch": "fix/gap039-new277-20261008",
+      "tip": "e61b7fcda9dfe78cdaa438897633d59ecdde8b27",
+      "date": "2026-10-08T14:16:38+02:00",
+      "subject": "feat(train_launcher): NEW-277 DATASET_ACCEPTANCE enforcement (GAP-039)",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 13,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 13,
+      "classification": "A_FULLY_ABSORBED",
+      "reason": "test_train_launcher_dataset_acceptance.py blob IDENTICAL in consolidation. train_launcher.py differs by exactly 1 line, because consolidation commit 53030452 'restore missing validate_num_classes import' is a SUPERSET fixup on top of this branch's NEW-277 work. Consolidation is strictly newer; re-landing this branch would regress that import.",
+      "patch_id_not_in_prod": 13,
+      "patch_id_not_in_cons": 13
+    },
+    "fix/gap050-output-path-comparator-20261008": {
+      "branch": "fix/gap050-output-path-comparator-20261008",
+      "tip": "1e75454e2afd0cd2a354cb5ae6d4418d767d64d2",
+      "date": "2026-10-08T14:20:02+02:00",
+      "subject": "II1: fix GAP-050 - normalize output_path in RQ1 determinism matrix comparator",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 13,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 13,
+      "classification": "C_OBSOLETE_OR_STALE_PREMISE",
+      "reason": "GAP-050 is CLOSED in the current register (4a5dc8da) as a stale premise. VERIFIED DIRECTLY: production's tools/rq1_five_run_matrix.py COMPARED_KEYS does not contain output_path, and carries the explicit comment 'output_path and out_dir are deliberately NOT compared as measured'. The fix already exists on production; branch 1e75454e2 re-lands it and adds nothing live.",
+      "patch_id_not_in_prod": 13,
+      "patch_id_not_in_cons": 13
+    },
+    "tools/cook-diagnostics-harness-20261008": {
+      "branch": "tools/cook-diagnostics-harness-20261008",
+      "tip": "c859cd831c5b5a50d76cb513bc4e287493f326c4",
+      "date": "2026-10-08T19:25:03+02:00",
+      "subject": "GAP-049: Add cook diagnostics harness (package_write_poller, cook_resource_census, stall_watchdog)",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 17,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 17,
+      "classification": "B_UNIQUE_LIVE_VALUE",
+      "reason": "All three tools (stall_watchdog.py, package_write_poller.py, cook_resource_census.py) are ABSENT from production AND consolidation. 771 lines of harness + 1260 lines of unit tests. Empirically exercised 2026-10-09: attached to a real cook, produced a 7.9 KB census CSV before the cook exited.",
+      "patch_id_not_in_prod": 17,
+      "patch_id_not_in_cons": 16
+    },
+    "tools/rq1-stage-profiler-20261008": {
+      "branch": "tools/rq1-stage-profiler-20261008",
+      "tip": "64ce3fae9c4d15c024bf87c6d57ecf50a78cc703",
+      "date": "2026-10-09T13:13:12+02:00",
+      "subject": "feat(tools): per-stage wall-clock profiler for RQ1 pipeline runs",
+      "merge_base_prod": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_prod": 16,
+      "behind_prod": 20,
+      "merge_base_cons": "647c0ad5a03c8b3839808478693a1393c8976ddc",
+      "ahead_cons": 24,
+      "behind_cons": 20,
+      "classification": "B_UNIQUE_LIVE_VALUE",
+      "reason": "tools/rq1_stage_profiler.py is ABSENT from production AND consolidation. Exists because the 5h45m gap in the RQ1 trial is unanswerable without per-stage timing.",
+      "patch_id_not_in_prod": 20,
+      "patch_id_not_in_cons": 20
+    },
+    "fix/carla-smoke-suite-skip-harden-20261009": {
+      "branch": "fix/carla-smoke-suite-skip-harden-20261009",
+      "tip": "62f0d28859ec1dc21964cc74ec84f449d6c3a030",
+      "date": "2026-10-09T14:01:19+02:00",
+      "subject": "feat(tools): skip xodr harden in carla_smoke_suite when CARLA unreachable",
+      "merge_base_prod": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_prod": 0,
+      "behind_prod": 1,
+      "merge_base_cons": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_cons": 8,
+      "behind_cons": 1,
+      "classification": "B_UNIQUE_LIVE_VALUE",
+      "reason": "test_carla_smoke_suite_skip_harden.py ABSENT from both; carla_smoke_suite.py differs from both. Directly relevant to GAP-049: the run observed on 2026-10-09 reached package 3103 with 4 shader-compiler workers active, so the harden step now has real work to skip when CARLA is unreachable.",
+      "patch_id_not_in_prod": 1,
+      "patch_id_not_in_cons": 1
+    }
+  },
+  "branches_requiring_actual_integration": [
+    "tools/cook-diagnostics-harness-20261008",
+    "tools/rq1-stage-profiler-20261008",
+    "fix/carla-smoke-suite-skip-harden-20261009"
+  ],
+  "minimal_commits_to_integrate": [
+    {
+      "sha": "c859cd831c5b5a50d76cb513bc4e287493f326c4",
+      "branch": "tools/cook-diagnostics-harness-20261008",
+      "subject": "GAP-049: Add cook diagnostics harness",
+      "files": 4
+    },
+    {
+      "sha": "62f0d28859ec1dc21964cc74ec84f449d6c3a030",
+      "branch": "fix/carla-smoke-suite-skip-harden-20261009",
+      "subject": "feat(tools): skip xodr harden in carla_smoke_suite when CARLA unreachable",
+      "files": 2
+    },
+    {
+      "sha": "64ce3fae9c4d15c024bf87c6d57ecf50a78cc703",
+      "branch": "tools/rq1-stage-profiler-20261008",
+      "subject": "feat(tools): per-stage wall-clock profiler for RQ1 pipeline runs",
+      "files": 1,
+      "caveat": "cherry-pick THIS commit only; the branch also carries 4 gap-register doc commits that belong to a different lineage"
+    }
+  ],
+  "rq1_profiler_note": {
+    "commit_adding_the_tool": "64ce3fae9c4d15c024bf87c6d57ecf50a78cc703",
+    "caveat": "This branch carries 5 commits not in production/consolidation (dc7b9dc95, 1829f9b51, 495796fc3, aff34c37d, 64ce3fae9). Only the commit introducing tools/rq1_stage_profiler.py carries live value for this tool; the others need separate triage before any integration.",
+    "other_commits_on_branch": [
+      "dc7b9dc9",
+      "1829f9b5",
+      "495796fc3",
+      "aff34c37d"
+    ],
+    "other_commits_note": "All four are gap-register / SESSION_CLOSURE doc commits belonging to the register lineage (they carry GAP-051..054), NOT to this tool. They must NOT be cherry-picked with the tool."
+  },
+  "stale_document_warning_honoured": {
+    "SESSION_CLOSURE_20261009.md": "Not trusted. Everything re-derived from origin refs after git fetch --all --prune.",
+    "tools/cook-diagnostics-harness-20261008": "Confirmed diverged: merge-base 647c0ad5, +17/-16 vs production.",
+    "tools/rq1-stage-profiler-20261008": "Confirmed diverged: merge-base 647c0ad5, +20/-20 vs production (re-derived live)."
+  },
+  "pr10": {
+    "number": 10,
+    "state": "open",
+    "head": "docs/session-closure-20261008 @ 6e521ec5f",
+    "base": "integration/production-large-map-20260918",
+    "updated_at": "2026-10-08T09:08:53Z",
+    "current_register": {
+      "total": 55,
+      "fixed": 33,
+      "closed": 7,
+      "open": 11
+    },
+    "action": "SUPERSEDED",
+    "reasoning": "Docs-only and touches no production code, so it cannot break anything, but its gap-state content is superseded by the 4a5dc8da register (55 entries, fixed 33 / closed 7 / open 11) which itself must not be merged wholesale (22 ahead / 16 behind). Its own cited production lineage a82e0201 -> edf9be09 -> 68868f76 is still accurate because production has not moved past 68868f76. Recommend CLOSED_UNMERGED with a pointer to the register rather than a state rewrite. NOT mutated by this audit."
+  },
+  "branches_modified": false
+}

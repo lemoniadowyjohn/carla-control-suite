@@ -1,0 +1,140 @@
+{
+  "generated_at_utc": "2026-10-05T13:02:35.346232+00:00",
+  "heads": {
+    "final-convergence": "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5",
+    "offline-closure": "f6b983efd972ef47b2bff233711c17dfa2ea656d",
+    "production-convergence": "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4",
+    "research-integration": "8f02c34984090e9a54130f5c2b49728e31ee682f"
+  },
+  "main_lineage": "separate; no common ancestor with research branches per prior GitHub comparison",
+  "pairs": {
+    "final-convergence <-> research-integration": {
+      "ahead_behind": "8\t0",
+      "merge_base": "8f02c34984090e9a54130f5c2b49728e31ee682f",
+      "unique_on_final-convergence": [
+        "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5|docs(batch14): final convergence durability receipt with full regression result",
+        "64f6f4095d5c962e90923d0af1628f2ed3a093ea|docs(batch14): rebind current candidate commit in retired root matrices",
+        "03af8c19341934ae6e0031869880674ca3755988|research(batch14): regenerate central evidence for final candidate, retire stale root matrices",
+        "cb028ee9a483ee53145750564a26156a15f246e9|test(batch14): make OSM2World negative control hermetic and add positive counterpart",
+        "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a|docs(batch14): final convergence remote durability receipt",
+        "859b86e31f4717cc3d80d540c04c484f4f345bb0|docs(batch14): record release test reconciliation classification",
+        "5e4c93ed737e3e06b0398e59bcbb06b7964c618a|reconcile(batch14): RQ1B lineage, lane completeness receipt, RQ1 closure aggregation and RQ3 contract tests",
+        "7eb37a100b9b24da6ec4ba8cbd0f36d269c84bb3|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2"
+      ],
+      "unique_on_research-integration": []
+    },
+    "offline-closure <-> final-convergence": {
+      "ahead_behind": "1\t4",
+      "merge_base": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+      "unique_on_final-convergence": [
+        "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5|docs(batch14): final convergence durability receipt with full regression result",
+        "64f6f4095d5c962e90923d0af1628f2ed3a093ea|docs(batch14): rebind current candidate commit in retired root matrices",
+        "03af8c19341934ae6e0031869880674ca3755988|research(batch14): regenerate central evidence for final candidate, retire stale root matrices",
+        "cb028ee9a483ee53145750564a26156a15f246e9|test(batch14): make OSM2World negative control hermetic and add positive counterpart"
+      ],
+      "unique_on_offline-closure": [
+        "f6b983efd972ef47b2bff233711c17dfa2ea656d|test(governance): close final offline regression and evidence freshness gates"
+      ]
+    },
+    "offline-closure <-> research-integration": {
+      "ahead_behind": "5\t0",
+      "merge_base": "8f02c34984090e9a54130f5c2b49728e31ee682f",
+      "unique_on_offline-closure": [
+        "f6b983efd972ef47b2bff233711c17dfa2ea656d|test(governance): close final offline regression and evidence freshness gates",
+        "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a|docs(batch14): final convergence remote durability receipt",
+        "859b86e31f4717cc3d80d540c04c484f4f345bb0|docs(batch14): record release test reconciliation classification",
+        "5e4c93ed737e3e06b0398e59bcbb06b7964c618a|reconcile(batch14): RQ1B lineage, lane completeness receipt, RQ1 closure aggregation and RQ3 contract tests",
+        "7eb37a100b9b24da6ec4ba8cbd0f36d269c84bb3|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2"
+      ],
+      "unique_on_research-integration": []
+    },
+    "production-convergence <-> final-convergence": {
+      "ahead_behind": "1\t42",
+      "merge_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "unique_on_final-convergence": [
+        "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5|docs(batch14): final convergence durability receipt with full regression result",
+        "64f6f4095d5c962e90923d0af1628f2ed3a093ea|docs(batch14): rebind current candidate commit in retired root matrices",
+        "03af8c19341934ae6e0031869880674ca3755988|research(batch14): regenerate central evidence for final candidate, retire stale root matrices",
+        "cb028ee9a483ee53145750564a26156a15f246e9|test(batch14): make OSM2World negative control hermetic and add positive counterpart",
+        "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a|docs(batch14): final convergence remote durability receipt",
+        "859b86e31f4717cc3d80d540c04c484f4f345bb0|docs(batch14): record release test reconciliation classification",
+        "5e4c93ed737e3e06b0398e59bcbb06b7964c618a|reconcile(batch14): RQ1B lineage, lane completeness receipt, RQ1 closure aggregation and RQ3 contract tests",
+        "7eb37a100b9b24da6ec4ba8cbd0f36d269c84bb3|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2",
+        "8f02c34984090e9a54130f5c2b49728e31ee682f|docs(batch13): bind remote durability receipt to verified local/remote SHAs",
+        "bdb4300ee78937b876b26cfe53d97d1257ade700|research(batch13): final governance artifacts, NEW_REGRESSION=0, offline readiness matrix",
+        "ad43ff9f0d051c2def8e42dd2abb6d9e92325285|ci: pin research governance job to repo workflow-hardening policy",
+        "1116df3b90001e228a55b4bf5b72089347368d11|feat(research): central evidence graph, freshness, RQ closure orchestrator and offline CI gate",
+        "dc8070f342e25298aa7337db6274a1c7a37fa525|fix(signals): implement the declared FINAL_RUN_VERDICT and SUCCESS_MARKER production producers",
+        "575dd8979ccbb7b40ea7ad53b2593c3ebe81e368|ci(integration): record intermediate remote durability checkpoint",
+        "357795c146bc9e8dba95737f00aa2432bc085d73|ci(signals): reconcile dead-signal discrepancy as real baseline failure, no gate weakening",
+        "1908276c1e9953d083397fdac5115c0da2d502a3|ci(integration): record merge decisions and lane application correction",
+        "18ceaef67b7d34a6066f1cf6e2fed97c8abe7ee8|research(rq5): harden protocol v2, split authority and training readiness",
+        "c844a29d22dbb49f5c7e477ebb1d2718956c0a83|research(rq5): record RQ5 offline readiness evidence index",
+        "b2d1e4a41d4858ef8fd8c17cdee2ce0a1ad4879c|research(rq5): harden protocol v2, split authority and training readiness",
+        "66fd66a04879508aba446f06f94f1ead12aa6a81|research(rq5): refresh RQ5 preflight evidence"
+      ],
+      "unique_on_production-convergence": [
+        "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2"
+      ]
+    },
+    "production-convergence <-> offline-closure": {
+      "ahead_behind": "1\t39",
+      "merge_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "unique_on_offline-closure": [
+        "f6b983efd972ef47b2bff233711c17dfa2ea656d|test(governance): close final offline regression and evidence freshness gates",
+        "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a|docs(batch14): final convergence remote durability receipt",
+        "859b86e31f4717cc3d80d540c04c484f4f345bb0|docs(batch14): record release test reconciliation classification",
+        "5e4c93ed737e3e06b0398e59bcbb06b7964c618a|reconcile(batch14): RQ1B lineage, lane completeness receipt, RQ1 closure aggregation and RQ3 contract tests",
+        "7eb37a100b9b24da6ec4ba8cbd0f36d269c84bb3|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2",
+        "8f02c34984090e9a54130f5c2b49728e31ee682f|docs(batch13): bind remote durability receipt to verified local/remote SHAs",
+        "bdb4300ee78937b876b26cfe53d97d1257ade700|research(batch13): final governance artifacts, NEW_REGRESSION=0, offline readiness matrix",
+        "ad43ff9f0d051c2def8e42dd2abb6d9e92325285|ci: pin research governance job to repo workflow-hardening policy",
+        "1116df3b90001e228a55b4bf5b72089347368d11|feat(research): central evidence graph, freshness, RQ closure orchestrator and offline CI gate",
+        "dc8070f342e25298aa7337db6274a1c7a37fa525|fix(signals): implement the declared FINAL_RUN_VERDICT and SUCCESS_MARKER production producers",
+        "575dd8979ccbb7b40ea7ad53b2593c3ebe81e368|ci(integration): record intermediate remote durability checkpoint",
+        "357795c146bc9e8dba95737f00aa2432bc085d73|ci(signals): reconcile dead-signal discrepancy as real baseline failure, no gate weakening",
+        "1908276c1e9953d083397fdac5115c0da2d502a3|ci(integration): record merge decisions and lane application correction",
+        "18ceaef67b7d34a6066f1cf6e2fed97c8abe7ee8|research(rq5): harden protocol v2, split authority and training readiness",
+        "c844a29d22dbb49f5c7e477ebb1d2718956c0a83|research(rq5): record RQ5 offline readiness evidence index",
+        "b2d1e4a41d4858ef8fd8c17cdee2ce0a1ad4879c|research(rq5): harden protocol v2, split authority and training readiness",
+        "66fd66a04879508aba446f06f94f1ead12aa6a81|research(rq5): refresh RQ5 preflight evidence",
+        "865c641565fadbcfa1bc3a96805769a555fac25f|research(rq5): exclude preflight output from candidate cleanliness",
+        "9a1b58026de99f2e407b8356912afc3e58872337|research(rq5): normalize protocol digest across line endings and refresh evidence",
+        "af64d42a5532412a1656608a967285ef0624961b|research(rq5): harden protocol v2, split authority and training readiness"
+      ],
+      "unique_on_production-convergence": [
+        "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2"
+      ]
+    },
+    "production-convergence <-> research-integration": {
+      "ahead_behind": "1\t34",
+      "merge_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "unique_on_production-convergence": [
+        "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4|feat(wave-b): execute RQ1B probe, harden five-run driver, reconcile at a7a2a0a2"
+      ],
+      "unique_on_research-integration": [
+        "8f02c34984090e9a54130f5c2b49728e31ee682f|docs(batch13): bind remote durability receipt to verified local/remote SHAs",
+        "bdb4300ee78937b876b26cfe53d97d1257ade700|research(batch13): final governance artifacts, NEW_REGRESSION=0, offline readiness matrix",
+        "ad43ff9f0d051c2def8e42dd2abb6d9e92325285|ci: pin research governance job to repo workflow-hardening policy",
+        "1116df3b90001e228a55b4bf5b72089347368d11|feat(research): central evidence graph, freshness, RQ closure orchestrator and offline CI gate",
+        "dc8070f342e25298aa7337db6274a1c7a37fa525|fix(signals): implement the declared FINAL_RUN_VERDICT and SUCCESS_MARKER production producers",
+        "575dd8979ccbb7b40ea7ad53b2593c3ebe81e368|ci(integration): record intermediate remote durability checkpoint",
+        "357795c146bc9e8dba95737f00aa2432bc085d73|ci(signals): reconcile dead-signal discrepancy as real baseline failure, no gate weakening",
+        "1908276c1e9953d083397fdac5115c0da2d502a3|ci(integration): record merge decisions and lane application correction",
+        "18ceaef67b7d34a6066f1cf6e2fed97c8abe7ee8|research(rq5): harden protocol v2, split authority and training readiness",
+        "c844a29d22dbb49f5c7e477ebb1d2718956c0a83|research(rq5): record RQ5 offline readiness evidence index",
+        "b2d1e4a41d4858ef8fd8c17cdee2ce0a1ad4879c|research(rq5): harden protocol v2, split authority and training readiness",
+        "66fd66a04879508aba446f06f94f1ead12aa6a81|research(rq5): refresh RQ5 preflight evidence",
+        "865c641565fadbcfa1bc3a96805769a555fac25f|research(rq5): exclude preflight output from candidate cleanliness",
+        "9a1b58026de99f2e407b8356912afc3e58872337|research(rq5): normalize protocol digest across line endings and refresh evidence",
+        "af64d42a5532412a1656608a967285ef0624961b|research(rq5): harden protocol v2, split authority and training readiness",
+        "b1478ecdc31e9828c9c313f654d0ce6622f033f3|test(rq5): make preflight status assertion tree-honest",
+        "147877a0543fec7fe7bd81057be6b147782b85a0|test(rq5): protocol v2 contract and preflight orchestrator coverage",
+        "da0b5b0a11ca0f4cea02ee1286e68a802a39b9ee|test(rq5): negative control battery and evaluation role authority",
+        "0cad612839a7c59ba1f15d2fac60fdb9be74d8d6|test(rq5): training convergence gate positive and negative controls",
+        "02377e9e02265bebd814174566d7727cc8881bbb|test(rq5): research-strict mode, validation loop and class-weight isolation controls"
+      ]
+    }
+  },
+  "schema": "branch_lineage_matrix/v1"
+}

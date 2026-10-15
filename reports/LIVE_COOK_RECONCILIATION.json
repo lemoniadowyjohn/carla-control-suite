@@ -1,0 +1,161 @@
+{
+  "schema": "LIVE_COOK_RECONCILIATION/v1",
+  "schema_version": 1,
+
+  "PID3560_PRESENT": false,
+  "PID3560_TERMINATION_CLOSED": true,
+
+  "LIVE_COOK_PID": 29972,
+  "LIVE_COOK_RUN_ID": "COOK_620e51db",
+  "COOK_IDENTITY_MATCH": true,
+  "LIVE_COOK_IDENTITY": {
+    "pid": 29972,
+    "creation_time_utc": "2026-10-06T16:59:33.3967880Z",
+    "receipt_start_utc": "2026-10-06T16:59:33.393750Z",
+    "identity_agreement_ms": 3,
+    "parent_pid": 11096,
+    "parent_alive": true,
+    "executable": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "map": "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_6_8",
+    "target_platform": "WindowsNoEditor",
+    "output_dir": "F:\\CARLA\\cook_bounded\\COOK_620e51db",
+    "flags": ["-iterate", "-cooksinglepackage", "-unattended", "-NoLogTimes", "-UTF8Output", "-stdout"],
+    "ddc_env": "UE-LocalDataCachePath=F:\\UnrealEngine_DDC"
+  },
+
+  "LIVE_COOK_HEALTH": "PROGRESSING",
+  "LIVE_COOK_HEALTH_EVIDENCE": {
+    "sample_window_s": 75,
+    "cooked_packages": "1006 -> 1022",
+    "packages_remain": "531 -> 515",
+    "shaders_left": "8810 -> 8770",
+    "output_files": "2267 -> 2299",
+    "log_mtime_advancing": true,
+    "cpu_s": "14218.9 -> 14899.8",
+    "scw_count_stable": 4,
+    "later_sample": "1038 cooked / 499 remain / 1537 total; cpu_s 16159; handles 3784; private 3338 MB",
+    "classification_basis": "all four independent progress metrics advanced together; package-count stasis alone was not used"
+  },
+
+  "SUPERVISED_UE_RUN_SOURCE": "OTHER_WORKTREE",
+  "SUPERVISED_UE_RUN_SOURCE_DETAIL": {
+    "resolved_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-control-plane\\tools\\supervised_ue_run.py",
+    "bytes": 4961,
+    "sha256_prefix": "DA06616289C879D0",
+    "git_tracked": true,
+    "introducing_commit": "08e3284b48ff908afc5bf82b76490d1ad927a0b2",
+    "commit_subject": "feat(salvage): bounded import recovery execution under lease IMPORT_3c14831d",
+    "commit_author": "Gemini Agent",
+    "carrying_branch": "control/writer-lock-semantic-diff-20261006",
+    "is_ancestor_of_main_repo_HEAD": false,
+    "why_it_looked_missing":
+      "The main repo checkout does not contain this file because the commit is not an ancestor of its HEAD. The running supervisor was launched with a cwd inside the carla-control-plane worktree, which is why the relative --receipt and --log arguments resolved there.",
+    "misconception_corrected":
+      "In the previous batch this was reported as an ungoverned harness whose script was absent. That was wrong: the script is committed and present, just on another branch/worktree. It was also wrongly linked to the orphan probe pattern; no evidence supports that link and none is claimed."
+  },
+
+  "COOK_RECEIPT_LOCATION_CORRECTION": {
+    "previously_reported": "BOUNDED_COOK_6_8_RECEIPT.json absent",
+    "actual": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-control-plane\\reports\\control_plane\\BOUNDED_COOK_6_8_RECEIPT.json",
+    "bytes": 686,
+    "written_utc": "2026-10-06T16:59:43Z",
+    "schema": "supervised_ue_run/v1",
+    "reason_for_earlier_error": "searched only the main repo worktree; the receipt path was relative to the supervisor's cwd"
+  },
+
+  "LIVE_COOK_JOB_SUPERVISED": "UNPROVEN",
+  "LIVE_COOK_JOB_SUPERVISED_BASIS":
+    "Sysinternals handle.exe is not installed, so Job Object membership cannot be read directly. The parent supervisor (11096) is alive, which is necessary but not sufficient. No claim of Job supervision is made. Notably the two earlier orphan editors (396, 3560) were demonstrably unsupervised, so this cannot be assumed from the harness name.",
+  "LIVE_COOK_LEASE_VALID": false,
+  "LIVE_COOK_LEASE_VALID_BASIS": {
+    "control_plane_dir": "%ProgramData%\\CARLA\\control_plane",
+    "live_mutation_lease_json": "ABSENT",
+    "only_artifact": "mutation_lease.json.reconciled.json",
+    "artifact_reconciled_utc": "2026-10-06T14:16:24.850399Z",
+    "cook_start_utc": "2026-10-06T16:59:33.393750Z",
+    "gap": "the newest lease artifact predates the cook by about 2 hours 43 minutes",
+    "artifact_provenance": "session_id 'owner-sess' / 'new-sess' / 'fc-sess' and reason 'owner died in T6' identify this as lease TEST-FIXTURE residue, not a cook lease",
+    "receipt_claim": "the receipt asserts 'lease heartbeat every 60s'; no control-plane record corroborates any such heartbeat",
+    "conclusion": "the running cook is NOT covered by a valid lease record"
+  },
+  "LIVE_COOK_OWNER_AUTHORITY": "MISSING",
+  "LIVE_COOK_RECEIPT_PROVENANCE_DEFECT": {
+    "field": "executor_pid",
+    "receipt_value": 34196,
+    "actual_supervisor_pid": 11096,
+    "pid_34196_state": "ABSENT",
+    "impact": "the producer-emitted receipt references a process that no longer exists, so it cannot be used as a trustworthy ownership record"
+  },
+
+  "ITERATIVE_BASELINE_SOURCE": "EMPTY_BASELINE",
+  "RETIRED_COOK_METADATA_CONSUMED": false,
+  "ITERATIVE_BASELINE_EVIDENCE": [
+    "the -OutputDir root F:\\CARLA\\cook_bounded\\COOK_620e51db was created fresh at cook start; its only pre-existing member is the cook log",
+    "no Metadata directory, no OpenOrder file and no .uptnl artefact exists in the output root",
+    "zero log references to cook_out, 2975, 3558 or Saved/Cooked",
+    "the retired output G:\\CARLA\\cook_out\\Ingolstadt (7155 files, 4.9 GB) exists but is a different path and is not named in the command",
+    "residual uncertainty: iterative metadata is written at cook finalisation, which has not occurred, so this classification rests on the absence of any pre-existing baseline rather than on a written manifest"
+  ],
+
+  "STDOUT_FLAG_FOR_THIS_COOK": "SAFE",
+  "STDOUT_FLAG_BASIS": {
+    "historical_rule": "the prohibition concerned SECURE CRT behaviour on source-tree GAME launch, a different execution path",
+    "this_invocation": "UE4Editor.exe -run=cook commandlet, not a game launch",
+    "crt_indicators_in_log": {"SECURE CRT": 0, "CRT initialization": 0, "abnormal program termination": 0, "_CRT_": 0, "Fatal": 0, "Assertion": 0, "Error:": 0},
+    "stderr_bytes": 0,
+    "process_stability": "40+ minutes continuous, 3784 handles, no crash",
+    "conclusion": "-stdout shows no harmful behaviour in this cook context and is not the blocker. Classified SAFE for this invocation rather than blanket-banning it."
+  },
+
+  "COOK_TERMINAL": false,
+  "COOK_EXIT_CODE": null,
+  "COOK_TERMINATION_CLASS": "NOT_TERMINAL",
+  "COOK_TERMINAL_RECEIPT": "PRODUCER_EMITTED_WITH_DEFECT",
+  "COOK_TERMINAL_RECEIPT_DETAIL": "A producer-emitted receipt exists (supervised_ue_run/v1) but its executor_pid is dead, so it is not a trustworthy terminal record. No reconstructed receipt was fabricated; the cook has not reached terminal state.",
+  "COOK_OUTPUT_AUTHORITY": "INDETERMINATE",
+  "COOK_OUTPUT_AUTHORITY_BASIS": "cook still running; authority cannot be classified before terminal state, and must not be promoted on progress alone",
+
+  "PARALLEL_WORK_DISCOVERED": {
+    "note": "the carla-control-plane worktree contains a complete preflight evidence set produced by another session, including work this batch was separately asked to perform",
+    "artifacts": [
+      "COOK_INPUT_FINGERPRINT_V2.json",
+      "DDC_MIGRATION_RECEIPT.json (DDC moved to F:\\UnrealEngine_DDC via UE-LocalDataCachePath env override; smoke 3375 files / 4.3 GB; 0 slow warnings; DDC_QUALIFICATION=PASS; old G: DDC retained)",
+      "DDC_STORAGE_BENCHMARK.json",
+      "WINDOWS_RHI_SCOPE_FIX.json",
+      "BOUNDED_COOK_SELECTION.json",
+      "PRE_COOK_MACHINE_STATE.json",
+      "MEMORY_PAGEFILE_BASELINE.json",
+      "TILE_WORLD_REFERENCE_RESOLUTION.json",
+      "LARGEMAP_DISCOVERY_VALIDATION.json"
+    ],
+    "planned_second_map": "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_10_9",
+    "divergence_from_this_batch_plan": "DDC was placed on F: rather than the C: NVMe target modelled in the storage batch; F: currently has 35.24 GB free, so that choice deserves its own capacity review"
+  },
+
+  "C_FREE_PRE_CLEANUP_GB": 13.25,
+  "C_FREE_PERCENT": 2.78,
+  "C_FREE_POST_CLEANUP_GB": 13.25,
+  "C_STORAGE_ADMISSION": "FAIL",
+  "C_STORAGE_ADMISSION_BASIS":
+    "C: is at 2.78% free, below the 20-30 GB operating range established earlier. No cleanup was performed this batch because the objective is to preserve the healthy live cook and no live tooling may own a cleanup candidate while it runs.",
+
+  "ACTIVE_CONFLICTING_MUTATORS": 1,
+  "ACTIVE_CONFLICTING_MUTATORS_DETAIL": "the live bounded cook PID 29972 with 4 ShaderCompileWorkers, owned by another session",
+
+  "GOVERNED_OSM_HASH_MATCH": true,
+  "EFFECTIVE_OSM_FILE_MATCH": true,
+  "RQ1_OSM_PREFLIGHT_TESTS": "7/7 PASS (unchanged, not re-run this batch)",
+
+  "CONFIRMATION_TRIAL_RUN": false,
+  "OSM_NETWORK_FETCH_ATTEMPTED": false,
+  "DEM_STAGE_PASSED": "NOT_ASSESSED",
+  "STAGE_04_REACHED": false,
+  "STAGE_05_REACHED": false,
+  "CONFIRMATION_TRIAL_TERMINATION": "NOT_RUN",
+  "CONFIRMATION_TRIAL_NEXT_BLOCKER":
+    "ACTIVE_CONFLICTING_MUTATORS=1 (live cook) and C_STORAGE_ADMISSION=FAIL (2.78% free)",
+  "FULL_N5_RUN_STARTED": false,
+
+  "ACTIONS_TAKEN_THIS_BATCH": "read-only observation and receipt writing only; the live cook was not touched, interrupted or competed with",
+  "FINAL_VERDICT": "LIVE_COOK_RECONCILIATION_REQUIRED"
+}

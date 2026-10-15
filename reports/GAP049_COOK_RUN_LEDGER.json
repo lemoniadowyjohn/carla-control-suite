@@ -1,0 +1,109 @@
+{
+  "schema": "GAP049_COOK_RUN_LEDGER/v1",
+  "runs": [
+    {
+      "run_id": "GAP049-RUN1",
+      "description": "Historical ~2975 high-water stall (warm -iterate, Session 4)",
+      "start_utc": "2026-10-05T10:54:58Z",
+      "end_utc": "2026-10-05T12:23:13Z",
+      "command": "UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt -targetplatform=WindowsNoEditor -OutputDir=G:\\CARLA\\cook_out\\Ingolstadt -iterate -unattended -NoLogTimes -UTF8Output -stdout -abslog=G:\\CARLA\\build_logs\\ingolstadt_cook_20261005T105458Z.log -LogCmds=LogShaderCompilers Verbose -LogCmds=LogCook Verbose",
+      "output_root": "G:\\CARLA\\cook_out\\Ingolstadt",
+      "config_hashes": {
+        "base_sha": "unavailable",
+        "ddc_path": "F:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+        "pcd3d_es31_present": false  // removed post-session-4
+      },
+      "package_high_water": 2975,
+      "shader_high_water": 15034,
+      "total_packages_discovered": 3558,
+      "terminal_condition": "killed by owning session to pivot to uncooked serving",
+      "scw_identities": {
+        "count": 4,
+        "note": "NumUnusedShaderCompilingThreads=8 applied after Session 2 (reduced from 9)"
+      },
+      "evidence_files": [
+        "G:\\CARLA\\build_logs\\ingolstadt_cook_20261005T105458Z.log",
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_STALL_BATCH16.json",
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_RESOURCE_TIMELINE.csv",
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_MEMORY_POLICY_AUDIT.json"
+      ]
+    },
+    {
+      "run_id": "GAP049-RUN2",
+      "description": "Instrumented ~3103 high-water stall (full diagnostics)",
+      "start_utc": "2026-10-11T10:56:37Z",
+      "end_utc": "2026-10-11T11:22:25Z",
+      "command": "UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt -targetplatform=WindowsNoEditor -OutputDir=G:\\CARLA\\cook_out\\Ingolstadt -iterate -unattended -NoLogTimes -UTF8Output -stdout -abslog=<dynamic> -LogCmds=LogShaderCompilers Verbose -LogCmds=LogCook Verbose",
+      "output_root": "G:\\CARLA\\cook_out\\Ingolstadt",
+      "config_hashes": {
+        "base_sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+        "diagnostics_sha": "c859cd831c5b5a50d76cb513bc4e287493f326c4",
+        "ddc_path": "F:\\UnrealEngine_DDC"
+      },
+      "package_high_water": 3103,
+      "shader_high_water": 8227,
+      "total_packages_discovered": 3558,
+      "terminal_condition": "Fatal error: Could not write to G:/CARLA/cook_out/Ingolstadt/.../T_Fabric_15_R.ubulk! + TaskGraphThreadNP 2 crashed",
+      "scw_identities": {
+        "count": 4,
+        "note": "4 workers active throughout (NumUnusedShaderCompilingThreads=8 in effect)"
+      },
+      "evidence_files": [
+        "reports\\production_readiness\\20260918T000000Z_PRODUCTION_CLOSURE\\GAP049_COOK_DIAG_RUN_20261011_125615\\cook_20261011_125615.log",
+        "reports\\production_readiness\\20260918T000000Z_PRODUCTION_CLOSURE\\GAP049_COOK_DIAG_RUN_20261011_125615\\census_20261011_125615.csv",
+        "reports\\production_readiness\\20260918T000000Z_PRODUCTION_CLOSURE\\GAP049_COOK_DIAG_RUN_20261011_125615\\pids.json",
+        "reports\\production_readiness\\20260918T000000Z_PRODUCTION_CLOSURE\\GAP049_COOK_DIAG_RUN_20261011_125615\\package_writes_SIGNAL_only.csv"
+      ]
+    },
+    {
+      "run_id": "GAP049-RUN3",
+      "description": "Pre-package ShaderCompileWorker OOM (cold cook, Session 1)",
+      "start_utc": "2026-10-04T18:25:34Z",
+      "end_utc": "2026-10-05T11:17:59Z",
+      "command": "UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt -targetplatform=WindowsNoEditor -OutputDir=G:\\CARLA\\cook_out\\Ingolstadt -unattended -NoLogTimes -UTF8Output -stdout -abslog=G:\\CARLA\\build_logs\\ingolstadt_cook_20261004T182534Z.log -LogCmds=LogShaderCompilers Verbose",
+      "output_root": "G:\\CARLA\\cook_out\\Ingolstadt",
+      "config_hashes": {
+        "base_sha": "unavailable",
+        "note": "3197151362 bytes allocation figure not found in available evidence; closest evidence is 1073741856 bytes (1 GiB) OOM from Session 1"
+      },
+      "package_high_water": 2942,
+      "shader_high_water": "unknown",
+      "total_packages_discovered": 3558,
+      "terminal_condition": "crashed: out-of-memory allocating 1073741856 bytes in a shader compiling thread (9 workers, 8.5GB VM)",
+      "scw_identities": {
+        "count": 9,
+        "note": "9 ShaderCompileWorkers active; figure 3197151362 bytes unproven from available evidence"
+      },
+      "evidence_files": [
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_STALL_SAMPLE_1.json",
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_STALL_SAMPLE_2.json",
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_STALL_SAMPLE_3.json",
+        "reports\\production_readiness\\root_level_artifacts_20261007\\COOK_STALL_BATCH16.json"
+      ]
+    }
+  ],
+  "distinct_runs": true,
+  "windows_telemetry_correction": {
+    "psutil_virtual_memory_total_note": "psutil.virtual_memory().total gives physical RAM only (47.75 GB), NOT the Windows system commit limit. This value is NOT authoritative for commit-bound OOM diagnosis.",
+    "authoritative_commit_limit": "59,506 MB (physical RAM 50,069 MB + pagefile 9,437 MB per PAGEFILE_CAPACITY_AUDIT.json)",
+    "commit_saturation_evidence": "COOK_RESOURCE_TIMELINE.csv reports Sys_Commit_MB = Sys_CommitLimit_MB = 59,506,256 on every sample — signature of reading one counter twice, not true saturation.",
+    "correct_approach": "Use Windows GetPerformanceInfo or \\Memory\\Committed Bytes and \\Memory\\Commit Limit Performance Monitor counters for authoritative commit measurement."
+  },
+  "scw_oom_classification": "SYSTEM_COMMIT_PRESSURE",
+  "scw_oom_analysis": {
+    "system_commit_total_bytes": 60934406144,
+    "system_commit_limit_bytes": 60934406144,
+    "system_commit_headroom_bytes": 0,
+    "scw_private_bytes_note": "Not directly measured during cook; ShaderCompileWorker processes are separate and excluded from cooker accounting per COOK_MEMORY_POLICY_AUDIT.json.",
+    "scw_virtual_size_note": "Not directly measured during cook; SCWs can use 1-4+ GB each per psutil observations.",
+    "scw_working_set_note": "Not directly measured during cook; UE4Editor working set observed at 2.2-4.3 GB during cook runs.",
+    "aggregate_scw_private_bytes_note": "NOT_MEASURED per COOK_MEMORY_POLICY_AUDIT.json: 'ShaderCompileWorker processes are separate and excluded from cooker accounting.'",
+    "pagefile_state": "C:\\pagefile.sys, 9,437 MB allocated, system-managed, on C: drive at 3.3% free — cannot safely expand per PAGEFILE_CAPACITY_AUDIT.json.",
+    "c_drive_capacity": "3.3% free (15.6 GB free initially per COOK_RESOURCE_TIMELINE.csv, trending worse).",
+    "temp_directory_write_failures": "Sessions 3-4 show no C: UnrealShaderWorkingDir write failures; Session 2 had failures apparently resolved by redirecting TEMP/TMP to G:\\CARLA\\cook_temp.",
+    "batch_size": "4 ShaderCompileWorkers active (after NumUnusedShaderCompilingThreads=8 applied); shader queue grew to ~8,227 at peak per SHADER_QUEUE_GROWTH_ANALYSIS.json.",
+    "shader_platform": "PCD3D_ES31 present in DefaultEngine.ini post-session-4 (removed by edit 2026-10-05 17:15:36); adds ~33% redundant shader permutations per SHADER_QUEUE_GROWTH_ANALYSIS.json."
+  },
+  "minimal_mitigation": "Set MemoryMaxUsedVirtual to non-zero value (recommended 30500 MiB per COOK_MEMORY_BUDGET_DERIVATION.json) to enable commit throttling. This is the minimal change that addresses the root cause of SYSTEM_COMMIT_PRESSURE by preventing UE4Editor commit from unbounded growth. SCW memory bypasses cook accounting but commit throttling at the UE4Editor level provides system-wide protection.",
+  "notes": "DISTINCT_RUNS=true: Three separate cook sessions/events with different dates (2026-10-04/05/11), different terminal conditions (OOM crash, hang, fatal write error), and different package high-water marks (2942, 2975, 3103). No observations from different runs were combined into one causal narrative. Telemetry invalidation: Sys_Commit_MB = Sys_CommitLimit_MB on every COOK_RESOURCE_TIMELINE.csv sample is NOT authoritative Windows commit limit — it is the signature of reading one counter twice. The 3197151362 bytes SCW OOM allocation figure is unproven from available evidence; closest actual evidence is 1073741856 bytes (1 GiB) OOM in Session 1 with 9 workers."
+}

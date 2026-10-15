@@ -1,0 +1,32 @@
+{
+  "engine_build_id": {
+    "source": "UE4Editor.modules",
+    "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.modules",
+    "build_id": "387f723e-84d8-421d-b406-60955bf0a115",
+    "last_write": "2026-10-07T23:18:00Z",
+    "module_count": 231
+  },
+  "plugin_module_build_id": {
+    "source": "ExampleDeviceProfileSelector plugin .modules file",
+    "exists": false,
+    "note": "No .modules file exists for this plugin in plugin directory or engine Binaries/Win64"
+  },
+  "build_id_match": null,
+  "build_id_state": "MODULE_METADATA_MISSING",
+  "evidence": {
+    "engine_build_id_present": true,
+    "plugin_modules_file_present": false,
+    "plugin_dll_present": false,
+    "plugin_in_ue4editor_modules": false,
+    "plugin_dll_in_binaries": false,
+    "plugin_dll_in_engine_binaries": false
+  },
+  "timestamps": {
+    "engine_binaries_last_write": "2026-10-07T23:18:00Z",
+    "plugin_binaries_dir_last_write": "2026-10-07T00:35:00Z",
+    "plugin_intermediate_last_write": "2026-10-07T00:35:00Z",
+    "plugin_source_last_write": "2026-09-23T01:39:00Z",
+    "ue4editor_modules_last_write": "2026-10-07T23:18:00Z"
+  },
+  "conclusion": "Plugin module was never compiled - no DLL exists, no .modules metadata exists, not registered in UE4Editor.modules. The engine BuildId is 387f723e-84d8-421d-b406-60955bf0a115 but plugin has no BuildId to compare against."
+}

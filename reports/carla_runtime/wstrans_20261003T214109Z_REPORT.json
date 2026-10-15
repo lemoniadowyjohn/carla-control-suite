@@ -1,0 +1,154 @@
+{
+  "generated_at_utc": "2026-10-03T21:41:09.755163Z",
+  "governed_target": {
+    "fixed_delta_seconds": 0.05,
+    "max_substep_delta_time": 0.0125,
+    "max_substeps": 4,
+    "no_rendering_mode": false,
+    "substepping": true,
+    "synchronous_mode": true
+  },
+  "guaranteed_restore": "try/finally + atexit fallback to CARLA async defaults",
+  "initial_map": "Carla/Maps/Town10HD_Opt",
+  "manual_map_identity": {
+    "arm": "manual",
+    "error": "RuntimeError: time-out of 30000ms while waiting for the simulator, make sure the simulator is ready and connected to 127.0.0.1:2002",
+    "generated_at_utc": "2026-10-03T21:41:09.755163Z",
+    "registry_key": "manual_grid0828",
+    "requested_package": "Grid0828",
+    "run_id": "wstrans_20261003T214109Z",
+    "schema": "runtime_map_identity/v1",
+    "status": "BLOCKED_RUNTIME"
+  },
+  "phases": {
+    "1_snapshot": {
+      "frame_probe_1": 472,
+      "frame_probe_2": 503,
+      "frames_advanced_during_probe": true,
+      "note": "async server: frames advance on their own; a readiness probe must not itself call tick()/wait_for_tick()",
+      "settings": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.01,
+        "max_substeps": 10,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": false
+      }
+    },
+    "2_apply": {
+      "returned": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.0,
+        "max_substeps": 0,
+        "no_rendering_mode": false,
+        "substepping": false,
+        "synchronous_mode": false
+      }
+    },
+    "3_tick_after_apply": {
+      "elapsed_seconds": 15.589353859424591,
+      "frame": 508,
+      "snapshot_frame": 508,
+      "tick_return_type": "int_frame_id (synchronous mode)",
+      "tick_wall_seconds": 0.003
+    },
+    "3_verify_after_apply": {
+      "matches_governed": true,
+      "observed": {
+        "fixed_delta_seconds": 0.05,
+        "max_substep_delta_time": 0.0125,
+        "max_substeps": 4,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": true
+      }
+    },
+    "4_experiment": {
+      "fixed_delta_observed_max_abs_err": 0.0,
+      "fixed_delta_target": 0.05,
+      "frames": [
+        {
+          "elapsed_seconds": 15.639354,
+          "frame": 509
+        },
+        {
+          "elapsed_seconds": 15.689354,
+          "frame": 510
+        },
+        {
+          "elapsed_seconds": 15.739354,
+          "frame": 511
+        },
+        {
+          "elapsed_seconds": 15.789354,
+          "frame": 512
+        },
+        {
+          "elapsed_seconds": 15.839354,
+          "frame": 513
+        }
+      ],
+      "monotonic": true,
+      "sim_time_deltas": [
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "5_restore": {
+      "restored_to": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.01,
+        "max_substeps": 10,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": false
+      }
+    },
+    "6_verify_restore": {
+      "matches_original": true,
+      "observed": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.01,
+        "max_substeps": 10,
+        "no_rendering_mode": false,
+        "substepping": true,
+        "synchronous_mode": false
+      }
+    },
+    "7_restore_carla_default": {
+      "is_carla_default": true,
+      "observed": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.0,
+        "max_substeps": 0,
+        "no_rendering_mode": false,
+        "substepping": false,
+        "synchronous_mode": false
+      },
+      "target": "async default (synchronous_mode=False, fixed_delta=0, substepping=False)"
+    },
+    "7_verify_async_resumes": {
+      "server_advances_on_its_own": false,
+      "snapshot_frame_a": null,
+      "snapshot_frame_b": null
+    },
+    "guarded_restore": {
+      "observed": {
+        "fixed_delta_seconds": 0.0,
+        "max_substep_delta_time": 0.0,
+        "max_substeps": 0,
+        "no_rendering_mode": false,
+        "substepping": false,
+        "synchronous_mode": false
+      },
+      "restored": true
+    }
+  },
+  "rpc_port": 2002,
+  "run_id": "wstrans_20261003T214109Z",
+  "schema": "world_settings_transaction/v2",
+  "server_version": "0.9.16",
+  "tick_owner": "tools/world_settings_transaction.py (this run only)"
+}

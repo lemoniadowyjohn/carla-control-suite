@@ -1,0 +1,147 @@
+WORKTREE CLEANUP REPORT — 2026-10-08
+========================================
+
+Before: 28 registered worktrees
+After:  28 registered worktrees
+Removed: 0
+Total disk recovered: 0 GB
+
+Per-worktree disposition:
+-------------------------
+
+1. C:/Users/admin/AppData/Local/Temp/opencode/wt-fork-recon-20261007 — KEPT-FLAGGED-FOR-REVIEW (clean, ancestor of production, but recent pytest cache activity 1.5 hrs ago)
+2. C:/Users/admin/AppData/Local/Temp/opencode/wt-supervision-pr — KEPT-DIRTY (modified reports)
+3. C:/Users/admin/AppData/Local/Temp/opencode/wt-supervision-verify — KEPT-DIRTY (modified reports)
+4. C:/Users/admin/AppData/Local/Temp/opencode/wt-v2-docfix-20261007 — KEPT-FLAGGED-FOR-REVIEW (clean, NOT ancestor of production, recent doc activity 1.2 hrs ago)
+5. C:/Users/admin/AppData/Local/Temp/opencode/wt-x1-signalfix-20261007 — KEPT-FLAGGED-FOR-REVIEW (clean, ancestor [HEAD=production tip], but extensive recent activity 1.5 hrs ago)
+6. C:/Users/admin/AppData/Local/Temp/wt-68868f76 — KEPT-FLAGGED-FOR-REVIEW (clean, ancestor [HEAD=production tip], but extensive recent activity 6 min ago)
+7. C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-control-plane — KEPT-DIRTY (modified code and reports)
+8. C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a601acc34bd5e6126 — KEPT-DIRTY (many untracked files)
+9. C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a9677fdcd7c1172ea — KEPT-DIRTY (many untracked files)
+10. C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_final_offline_closure — KEPT-DIRTY (untracked files)
+11. C:/Users/admin/PycharmProjects/gpt4/pythonProject3/lane_A1_rq1a-execution — KEPT-DIRTY (untracked reports)
+12. E:/CARLA/worktrees/new316-333-perception-hardening — KEPT-DIRTY (modified code and reports)
+13. E:/CARLA/worktrees/rq1-matrix-fix — KEPT-DIRTY (modified code and reports)
+14. E:/CARLA/worktrees/wt-p1 — KEPT-DIRTY (modified xodr)
+15. E:/CARLA/worktrees/wt-p1-base — KEPT-DIRTY (modified reports)
+16. E:/CARLA/worktrees/wt-runtime-rig — KEPT-DIRTY (modified reports)
+17. F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913 — KEPT-DIRTY (untracked reports)
+18. F:/carla-worktrees/b15_A_rq1b — KEPT-DIRTY (untracked pytest dirs)
+19. F:/carla-worktrees/b15_B_placement — KEPT-UNMERGED-REAL-WORK (clean, NOT ancestor, no recent activity 98+ hrs, genuine unmerged placement work)
+20. F:/carla-worktrees/b15_C_rq4 — KEPT-UNMERGED-REAL-WORK (clean, NOT ancestor, no recent activity 100+ hrs, genuine unmerged RQ4 forensics)
+21. F:/carla-worktrees/baseline_check — KEPT-DIRTY (untracked tmp dir)
+22. F:/carla-worktrees/integration_a7 — KEPT-DIRTY (untracked pytest dirs)
+23. F:/carla-worktrees/integration_offline — KEPT-DIRTY (untracked pytest dirs and test lock files)
+24. F:/carla-worktrees/lane_A1_rq1a-execution — KEPT-DIRTY (untracked reports)
+25. F:/carla-worktrees/lane_A2_rq2-authority — KEPT-UNMERGED-REAL-WORK (clean, NOT ancestor, no recent activity 125+ hrs, genuine unmerged RQ2 authority work)
+26. F:/carla-worktrees/lane_A3_rq4-reproducibility — KEPT-DIRTY (untracked tmp dir)
+27. F:/carla-worktrees/lane_A4_rq5-readiness — KEPT-DIRTY (untracked fixtures)
+28. F:/p0-coord-frame-tile-placement-20261001 — KEPT-DIRTY (untracked reports)
+
+Summary by disposition:
+-----------------------
+KEPT-DIRTY: 21
+KEPT-FLAGGED-FOR-REVIEW: 4
+KEPT-UNMERGED-REAL-WORK: 3
+REMOVED: 0
+
+Safety gate verification:
+-------------------------
+- All 28 worktrees checked for git status --short
+- All 7 clean worktrees checked for ancestor relationship with origin/integration/production-large-map-20260918 (tip 68868f76)
+- All 7 clean worktrees checked for active referencing processes (handle.exe equivalent via file system locks, Get-Process open files)
+- All 7 clean worktrees checked for recent file activity within last 2 hours
+- All 7 clean worktrees checked for .lock files (git and application)
+- No worktree passed all safety gates for removal
+
+Notes:
+------
+- Main repository (C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main) excluded from cleanup as primary working tree (also dirty)
+- 4 clean worktrees are ancestors of production but have in-flight activity (<2 hrs): wt-fork-recon, wt-x1-signalfix, wt-68868f76, wt-v2-docfix
+- 3 clean worktrees have genuine unmerged work not on production: b15_B_placement, b15_C_rq4, lane_A2_rq2-authority
+- Clean worktrees total ~27.65 GB but none removable due to safety gates
+
+Classifications (batch 3 — items 21-24, 26-28; appended 2026-10-08):
+-----------------------------------------------------------------------
+Labels: REAL_IN_PROGRESS | LIKELY_ABANDONED_SCRATCH | SUPERSEDED_BY_PRODUCTION
+Evidence commands: git status --short; git cherry <prod> <HEAD> (patch-id);
+git branch -r --contains <tip>; git log --fixed-strings --grep=<subject> <prod>;
+file mtimes. Baseline = origin/integration/production-large-map-20260918 (68868f76).
+
+21. F:/carla-worktrees/baseline_check — LIKELY_ABANDONED_SCRATCH
+    status: only `?? .tmp-base/` (pytest-of-admin tmp cache, newest 02/10 22:35).
+    commits: HEAD 7fbd33ff "docs(rq3): Batch 9 evidence packet..." — git cherry
+    reports 0/0 (HEAD is an ancestor of production; reachable from 7fbd33ff's
+    remote list incl. origin/integration/production-large-map-20260918).
+    oldest dirt age: 6 days, zero unmerged commits. Nothing to preserve.
+
+22. F:/carla-worktrees/integration_a7 — LIKELY_ABANDONED_SCRATCH
+    status: `?? .pytest-inta7/ ?? .tmp-inta7/` (pytest caches) + `?? check_dead.py`
+    (20-line one-off debug wrapper for tools.audit_pipeline_signal_graph with
+    hardcoded sys.path, mtime 04/10 11:32).
+    commits: branch integration-waveA-a7 tip e73703a8 — 26 commits NOT on
+    production, 0 patch-equivalent; but tip IS pushed to
+    origin/rescue/integration-wavea-a7-20261006 (branch preserved remotely).
+    newest dirt: 04/10 (4 days). Uncommitted content is scratch only; the real
+    branch work is rescue-pushed.
+
+23. F:/carla-worktrees/integration_offline — LIKELY_ABANDONED_SCRATCH
+    status: `?? .pytest-int/ ?? .tmp-int/` only (pytest tmp dirs; the 2033
+    mtimes are deliberately-futuristic `map_of_record_stale.xodr` test fixtures
+    inside pytest tmp, not activity).
+    commits: tip 24a8e4fb — 4 commits NOT on production, 0 patch-equivalent;
+    pushed to origin/rescue/integration-offline-reconciliation-20261006.
+    newest real dirt: 04/10. Scratch only; branch rescue-pushed.
+
+24. F:/carla-worktrees/lane_A1_rq1a-execution — SUPERSEDED_BY_PRODUCTION
+    status: `?? reports/rq1a_runs/run_00..run_04/` — 28 files, ~511 MB
+    (per-run caches, generated `rQ1a_generated_run_0X.xodr`, timestamped dirs);
+    run receipts (`rq1_complete_receipt_run_0X.json`, RQ1A_FIVE_RUN_MATRIX.json)
+    are already COMMITTED at HEAD. mtimes 02/10 21:08.
+    commits: tip 7437ee53 (1 commit not on production) is NOT on any remote,
+    but its exact subject "feat(rq1a): execute five-run OSM-to-XODR
+    determinism matrix (BYTE_NONDETERMINISTIC_NORMALIZED_DETERMINISTIC)" exists
+    as 2cccf9d5 inside pushed origin/rescue/integration-wavea-a7-20261006, and
+    production landed its own authoritative RQ1 determinism-matrix lineage
+    (merge edf9be09, rq1-determinism-matrix-20261007) with newer evidence:
+    reports/rq1_trial_runs (07/10) + X2 verification (08/10).
+    The 02/10 run outputs predate and are superseded by that production
+    evidence; committed receipts remain in-branch if rerun is ever needed.
+
+26. F:/carla-worktrees/lane_A3_rq4-reproducibility — LIKELY_ABANDONED_SCRATCH
+    status: only `?? .tmp-basecheck/` (pytest tmp cache, newest 02/10 22:32).
+    commits: tip c3031ad9 — 1 commit NOT on production, 0 patch-equivalent,
+    subject absent from production log; pushed to
+    origin/rescue/lane-a3-rq4-repro-20261006 (genuine unmerged RQ4
+    reproducibility work preserved remotely — clean sibling of b15_C_rq4).
+    Uncommitted content is scratch only; no activity 6 days.
+
+27. F:/carla-worktrees/lane_A4_rq5-readiness — REAL_IN_PROGRESS
+    status: only `?? fixtures_rq5/` — split_manifest.fixture.json + synthetic
+    rgb/semseg fixture frames (mtime 02/10 21:44). NOT tmp: referenced by the
+    branch's COMMITTED receipts (DATASET_QUALITY_SCHEMA_TEST.json,
+    RQ5_NEGATIVE_CONTROLS.json, RQ5_SPLIT_LEAKAGE_AUDIT.json at HEAD record
+    fixtures_rq5/... roots), while repo-wide grep finds no code that creates or
+    reads them — i.e. these are real evidence inputs whose provenance exists
+    only uncommitted; the receipts are not reproducible without them.
+    commits: tip 9474894f — 1 commit NOT on production (subject absent from
+    production log), pushed to origin/rescue/lane-a4-rq5-readiness-20261006.
+    No activity since 02/10 (6 days): needs a commit-to-branch-or-discard
+    decision; do NOT silently remove.
+
+28. F:/p0-coord-frame-tile-placement-20261001 — REAL_IN_PROGRESS
+    status: only `?? reports/opencode_hardening/20261001T155657Z/
+    TRUE_PLACEMENT_VERIFICATION.json` (01/10) — failing placement-verification
+    receipt (tile p95 errors) from tools/true_placement_verification.py.
+    NOT on production (production tree contains only the tool itself
+    41c872c6-patch-equivalent and the DIFFERENT receipt
+    TRUE_WORLD_PLACEMENT_ACCEPTANCE.json, 02/10 19:40, verdict
+    INVALID_PROXY_METRIC for the older seam checker).
+    commits: tip fb6c5e18 — 9 commits not reachable from production, of which
+    3 are patch-equivalent already landed (incl. true_placement_verification
+    tool) and 6 unique (incl. cca51d2c "feat(coord-frame): canonical CRS
+    contract, tile placement authority, C29 fix", subject absent from
+    production log); pushed to
+    origin/fix/p0-coordinate-frame-tile-placement-authority-20261001.
+    Uncommitted receipt is real evidence for the branch's phase2 "blocked"
+    conclusion; stale 6 days; commit-to-branch-or-discard decision needed.

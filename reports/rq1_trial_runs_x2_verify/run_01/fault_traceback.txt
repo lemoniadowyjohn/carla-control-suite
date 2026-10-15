@@ -1,0 +1,19 @@
+Timeout (1:00:00)!
+Thread 0x0000490c (most recent call first):
+  File "C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\xml\etree\ElementTree.py", line 569 in parse
+  File "C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\xml\etree\ElementTree.py", line 1204 in parse
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\quality\check_geometric_continuity.py", line 672 in check_geometric_continuity
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\quality\quality_gate_manager.py", line 352 in gate_geometric_continuity
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_06_links.py", line 310 in <lambda>
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\contracts\gate_runner.py", line 35 in run
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 3338 in _stage_gate
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_06_links.py", line 307 in _run_stage6_read_only_diagnostic
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_06_links.py", line 424 in _step6_planview_continuity
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 3500 in _step6_planview_continuity
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\pipeline_stages\stage_05_geometry.py", line 169 in _step5_geometry_elevation_continuity
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 3489 in _step5_geometry_elevation_continuity
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 2187 in _run_internal
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\main_pipeline.py", line 1646 in run
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\rq1_trial_run.py", line 310 in run_single_trial
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\rq1_trial_run.py", line 439 in main
+  File "C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\rq1_trial_run.py", line 444 in <module>

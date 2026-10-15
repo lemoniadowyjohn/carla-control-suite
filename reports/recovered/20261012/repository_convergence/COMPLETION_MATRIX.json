@@ -1,0 +1,199 @@
+{
+  "report": "COMPLETION_MATRIX",
+  "captured_at": "2026-10-12T17:27:46Z",
+  "mode": "READ_ONLY_DERIVED_FROM_CANONICAL_TREE_AND_CONV04_MATRIX",
+  "CANONICAL_TOPOLOGY_SHA": "3a6f32255916b9783e41981ba284d68401294a92",
+  "caution": "CODE_IMPLEMENTED/UNIT_TESTED reflect presence on the canonical tree, NOT execution. No test was run by this audit (read-only). RUNTIME_VERIFIED is false everywhere because no RPC response evidence was inspected.",
+  "items": [
+    {
+      "item": "GAP017",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "tools/gap017-diagnostic-toolkit-20261008",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Live RPC probe exists but no real CARLA RPC response captured as evidence. Per repo rule, port-listening is NOT CARLA success."
+    },
+    {
+      "item": "GAP026",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "origin/fix/topology-convergence-gap026-gap048-20261011",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Source-stage fix + fixtures + unit tests canonical. GAP026_ROOT_CAUSE_AUDIT.json and GAP026_FIX_VALIDATION.json are uncommitted/unpreserved."
+    },
+    {
+      "item": "GAP031",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "NOT_RUN",
+      "EXACT_BLOCKER": "No GAP031 implementation or evidence found on canonical; not observed in this audit."
+    },
+    {
+      "item": "GAP036",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "docs/gap036-037-policy-proposals-20260929",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "BOUNDED_EXPLICIT_LIMITATION",
+      "EXACT_BLOCKER": "Policy proposal only; no implementation on canonical."
+    },
+    {
+      "item": "GAP038",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "NOT_RUN",
+      "EXACT_BLOCKER": "No GAP038 evidence located."
+    },
+    {
+      "item": "GAP039",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "origin/fix/gap039-new274-275-20261008 / -new276",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Content absorbed into canonical (CONTENT_ABSORBED per Tier1)."
+    },
+    {
+      "item": "GAP042",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "NOT_RUN",
+      "EXACT_BLOCKER": "No GAP042 evidence located."
+    },
+    {
+      "item": "GAP046",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "fix/gap046-stage-profiler-20261009",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "CURRENT_LIVE_VALUE_PENDING_MERGE",
+      "EXACT_BLOCKER": "CURRENT_LIVE_VALUE on origin, not on canonical. Merge required."
+    },
+    {
+      "item": "GAP048",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "origin/fix/topology-convergence-gap026-gap048-20261011",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Source-stage successor repair canonical via 2af80330."
+    },
+    {
+      "item": "GAP049",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "origin/fix/gap049-poller-delta-only-20261011 (73cbcb3e)",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": true,
+      "FINAL_STATUS": "LOCAL_PASS_CI_PENDING",
+      "EXACT_BLOCKER": "Poller delta patch + test present; NOT yet on canonical (1 patch-unique commit). Disk-output defect fixed; residual full-SHA256 scan remains."
+    },
+    {
+      "item": "GAP052",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "NOT_RUN",
+      "EXACT_BLOCKER": "No GAP052 evidence located."
+    },
+    {
+      "item": "GAP053",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "NOT_RUN",
+      "EXACT_BLOCKER": "No GAP053 evidence located."
+    },
+    {
+      "item": "GAP055",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "origin/fix/gap055-ci-windll-platform-guard-20261011",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Content absorbed on canonical (CONTENT_ABSORBED despite patch-id divergence)."
+    },
+    {
+      "item": "RQ1",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "tools/rq1-stage-profiler-20261008",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Determinism matrix correction absorbed; stage profiler CURRENT_LIVE_VALUE not canonical."
+    },
+    {
+      "item": "RQ2",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "origin/rq2-authority (2159a358)",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Authority layer exists; merge branch af90dd91 has ZERO remote preservation."
+    },
+    {
+      "item": "RQ3",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "fix/rq3-grid0828-governance-20261007",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Governance fix present; runtime verification outstanding."
+    },
+    {
+      "item": "RQ4",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "b15-rq4-forensics (41e2b7cd)",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Forensics branch CURRENT_LIVE_VALUE; RQ4_FINAL_VALIDATION.json uncommitted."
+    },
+    {
+      "item": "RQ5A",
+      "CODE_IMPLEMENTED": true,
+      "CURRENT_BRANCH": "opencode/batch12-rq5-readiness-20261002",
+      "UNIT_TESTED": true,
+      "REAL_ARTIFACT_VERIFIED": true,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "IMPLEMENTED_NOT_REAL_VERIFIED",
+      "EXACT_BLOCKER": "Readiness/protocol work SEMANTICALLY_SUPERSEDED but not merged; unique tests+configs."
+    },
+    {
+      "item": "RQ5B",
+      "CODE_IMPLEMENTED": false,
+      "CURRENT_BRANCH": "fix/gap034-rq5b-claim-boundary-20260929",
+      "UNIT_TESTED": false,
+      "REAL_ARTIFACT_VERIFIED": false,
+      "RUNTIME_VERIFIED": false,
+      "FINAL_STATUS": "BOUNDED_EXPLICIT_LIMITATION",
+      "EXACT_BLOCKER": "Claim-boundary handling only."
+    }
+  ]
+}

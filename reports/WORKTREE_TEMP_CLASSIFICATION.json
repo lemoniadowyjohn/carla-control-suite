@@ -1,0 +1,982 @@
+{
+  "scratch_root": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode",
+  "worktree_count": 5,
+  "total_unknown": 0,
+  "worktrees": [
+    {
+      "name": "new316-333-perception-hardening",
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\new316-333-perception-hardening",
+      "exists": true,
+      "branch": "fix/new316-333-perception-environment-20261001",
+      "HEAD": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "tree_sha": "12725bf0e21313557c06cfaf17a498ea64f26ab1",
+      "status_rc": 0,
+      "tracked_changes": [
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "ultimate_pipeline/carla_tools/fixed_traffic_manager.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/__init__.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/calibration_authority.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/calibration_lifecycle.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/camera_intrinsics.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/camera_response.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/deterministic_weather.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/lidar_camera_gate.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/live_calibration_assay.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/physics_profile.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/seed_tree.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/traffic_manager_session.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/vehicle_binding.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/perception/environment/weather_spec.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "ultimate_pipeline/tools/new316_333_evidence_pack.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        }
+      ],
+      "staged_changes": [],
+      "untracked_files": [],
+      "class_counts": {
+        "REAL_SOURCE_CHANGE": 16,
+        "UNTRACKED_EVIDENCE": 18
+      },
+      "class_paths": {
+        "REAL_SOURCE_CHANGE": [
+          "ultimate_pipeline/carla_tools/fixed_traffic_manager.py",
+          "ultimate_pipeline/perception/environment/__init__.py",
+          "ultimate_pipeline/perception/environment/calibration_authority.py",
+          "ultimate_pipeline/perception/environment/calibration_lifecycle.py",
+          "ultimate_pipeline/perception/environment/camera_intrinsics.py",
+          "ultimate_pipeline/perception/environment/camera_response.py",
+          "ultimate_pipeline/perception/environment/deterministic_weather.py",
+          "ultimate_pipeline/perception/environment/lidar_camera_gate.py",
+          "ultimate_pipeline/perception/environment/live_calibration_assay.py",
+          "ultimate_pipeline/perception/environment/physics_profile.py",
+          "ultimate_pipeline/perception/environment/seed_tree.py",
+          "ultimate_pipeline/perception/environment/traffic_manager_session.py",
+          "ultimate_pipeline/perception/environment/vehicle_binding.py",
+          "ultimate_pipeline/perception/environment/weather_spec.py",
+          "ultimate_pipeline/tests/unit/test_perception_environment_hardening_new316_333.py",
+          "ultimate_pipeline/tools/new316_333_evidence_pack.py"
+        ],
+        "UNTRACKED_EVIDENCE": [
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "submission/results/structural_gap_run11/auto_aligned_rigid.xodr"
+        ]
+      },
+      "UNKNOWN_COUNT": 0,
+      "REAL_SOURCE_CHANGE_COUNT": 16,
+      "tracked_diff_sha256": "887dcdd94f68460d17e3c7655e5fcb23a819fe0e4b6a7776960fd280b45ce037",
+      "tracked_diff_lines": 313703,
+      "tracked_diff_bytes": 22271208,
+      "untracked_manifest": [],
+      "untracked_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "rq1-matrix-fix",
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\rq1-matrix-fix",
+      "exists": true,
+      "branch": "fix/rq1-matrix-integrity-20261001",
+      "HEAD": "d12a03145793ae89d03a40f9ebf500ec59f3c761",
+      "tree_sha": "44261577bbafd45756a76be3d2a9254e948f4195",
+      "status_rc": 0,
+      "tracked_changes": [
+        {
+          "path": "docs/research/RQ1_DETERMINISM_FINDINGS.md",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "tests/unit/test_o15_rq1_five_run_matrix.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tools/rq1_determinism_audit.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tools/rq1_five_run_matrix.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tools/rq1_receipt_assembler.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        }
+      ],
+      "staged_changes": [],
+      "untracked_files": [],
+      "class_counts": {
+        "EXPECTED_REPORT": 1,
+        "REAL_SOURCE_CHANGE": 4,
+        "UNTRACKED_EVIDENCE": 18
+      },
+      "class_paths": {
+        "EXPECTED_REPORT": [
+          "docs/research/RQ1_DETERMINISM_FINDINGS.md"
+        ],
+        "REAL_SOURCE_CHANGE": [
+          "tests/unit/test_o15_rq1_five_run_matrix.py",
+          "tools/rq1_determinism_audit.py",
+          "tools/rq1_five_run_matrix.py",
+          "tools/rq1_receipt_assembler.py"
+        ],
+        "UNTRACKED_EVIDENCE": [
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "submission/results/structural_gap_run11/auto_aligned_rigid.xodr"
+        ]
+      },
+      "UNKNOWN_COUNT": 0,
+      "REAL_SOURCE_CHANGE_COUNT": 4,
+      "tracked_diff_sha256": "887dcdd94f68460d17e3c7655e5fcb23a819fe0e4b6a7776960fd280b45ce037",
+      "tracked_diff_lines": 313703,
+      "tracked_diff_bytes": 22271208,
+      "untracked_manifest": [],
+      "untracked_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "wt-p1",
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-p1",
+      "exists": true,
+      "branch": "opencode/p1-runtime-capture-20261001",
+      "HEAD": "542b82e93b6bb866dc05e085480eecb3ceffbcc1",
+      "tree_sha": "c29a6aa9b30cdc515b489f65c92ba8585f3b6f88",
+      "status_rc": 0,
+      "tracked_changes": [
+        {
+          "path": "reports/opencode_hardening/20261002T032209Z/BASELINE_CURRENT.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261002T032209Z/FINAL_VERDICT.md",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/rq3_batch9/20261002T040000Z/FINAL_VERDICT.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/rq3_batch9/20261002T040000Z/UE4_IMPORT_COOK_PREFLIGHT.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "tests/unit/test_back_to_back_state_contamination.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tests/unit/test_recorder_backpressure_and_frame_integrity.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tests/unit/test_rq3_batch9_pair_contract.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tests/unit/test_traffic_manager_and_walker_authority.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tools/rq3_batch9_negative_controls.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tools/rq3_batch9_pre_stage_authority.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        },
+        {
+          "path": "tools/rq3_map_lineage_validation.py",
+          "xy": " M",
+          "class": "REAL_SOURCE_CHANGE"
+        }
+      ],
+      "staged_changes": [],
+      "untracked_files": [],
+      "class_counts": {
+        "EXPECTED_REPORT": 4,
+        "REAL_SOURCE_CHANGE": 7,
+        "UNTRACKED_EVIDENCE": 18
+      },
+      "class_paths": {
+        "EXPECTED_REPORT": [
+          "reports/opencode_hardening/20261002T032209Z/BASELINE_CURRENT.json",
+          "reports/opencode_hardening/20261002T032209Z/FINAL_VERDICT.md",
+          "reports/rq3_batch9/20261002T040000Z/FINAL_VERDICT.json",
+          "reports/rq3_batch9/20261002T040000Z/UE4_IMPORT_COOK_PREFLIGHT.json"
+        ],
+        "REAL_SOURCE_CHANGE": [
+          "tests/unit/test_back_to_back_state_contamination.py",
+          "tests/unit/test_recorder_backpressure_and_frame_integrity.py",
+          "tests/unit/test_rq3_batch9_pair_contract.py",
+          "tests/unit/test_traffic_manager_and_walker_authority.py",
+          "tools/rq3_batch9_negative_controls.py",
+          "tools/rq3_batch9_pre_stage_authority.py",
+          "tools/rq3_map_lineage_validation.py"
+        ],
+        "UNTRACKED_EVIDENCE": [
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "submission/results/structural_gap_run11/auto_aligned_rigid.xodr"
+        ]
+      },
+      "UNKNOWN_COUNT": 0,
+      "REAL_SOURCE_CHANGE_COUNT": 7,
+      "tracked_diff_sha256": "887dcdd94f68460d17e3c7655e5fcb23a819fe0e4b6a7776960fd280b45ce037",
+      "tracked_diff_lines": 313703,
+      "tracked_diff_bytes": 22271208,
+      "untracked_manifest": [],
+      "untracked_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "wt-p1-base",
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-p1-base",
+      "exists": true,
+      "branch": "HEAD",
+      "HEAD": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "tree_sha": "39db5479202e6267a867d8967984d844cd4f0fd3",
+      "status_rc": 0,
+      "tracked_changes": [
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        }
+      ],
+      "staged_changes": [],
+      "untracked_files": [],
+      "class_counts": {
+        "UNTRACKED_EVIDENCE": 18
+      },
+      "class_paths": {
+        "UNTRACKED_EVIDENCE": [
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "submission/results/structural_gap_run11/auto_aligned_rigid.xodr"
+        ]
+      },
+      "UNKNOWN_COUNT": 0,
+      "REAL_SOURCE_CHANGE_COUNT": 0,
+      "tracked_diff_sha256": "887dcdd94f68460d17e3c7655e5fcb23a819fe0e4b6a7776960fd280b45ce037",
+      "tracked_diff_lines": 313703,
+      "tracked_diff_bytes": 22271208,
+      "untracked_manifest": [],
+      "untracked_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "wt-runtime-rig",
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-runtime-rig",
+      "exists": true,
+      "branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+      "HEAD": "692b42391c29457fef30e19857352e3ef74be9b2",
+      "tree_sha": "7f2d6a791b93b0a44a54bfbaf76501ec7146c20e",
+      "status_rc": 0,
+      "tracked_changes": [
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/BASELINE_AUTHORITY.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/CANDIDATE_BRANCH_AUTHORITY.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/CANDIDATE_OVERLAP_MATRIX.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/FINAL_VERDICT.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/FINAL_VERDICT.md",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/FULL_REGRESSION_RESULTS.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/INTEGRATION_DECISIONS.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/LIVE_RUNTIME_STATUS.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/ROUTE_AUTHORITY_MATRIX.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/SENSOR_AUTHORITY_MATRIX.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/STATE_CONTAMINATION_TEST.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/TARGETED_TEST_RESULTS.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/TM_AUTHORITY_MATRIX.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/UE4_DISCOVERY_TEST.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/opencode_hardening/20261001T120000Z/WEATHER_AUTHORITY_MATRIX.json",
+          "xy": " M",
+          "class": "EXPECTED_REPORT"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        },
+        {
+          "path": "submission/results/structural_gap_run11/auto_aligned_rigid.xodr",
+          "xy": " M",
+          "class": "UNTRACKED_EVIDENCE"
+        }
+      ],
+      "staged_changes": [],
+      "untracked_files": [],
+      "class_counts": {
+        "EXPECTED_REPORT": 15,
+        "UNTRACKED_EVIDENCE": 18
+      },
+      "class_paths": {
+        "EXPECTED_REPORT": [
+          "reports/opencode_hardening/20261001T120000Z/BASELINE_AUTHORITY.json",
+          "reports/opencode_hardening/20261001T120000Z/CANDIDATE_BRANCH_AUTHORITY.json",
+          "reports/opencode_hardening/20261001T120000Z/CANDIDATE_OVERLAP_MATRIX.json",
+          "reports/opencode_hardening/20261001T120000Z/FINAL_VERDICT.json",
+          "reports/opencode_hardening/20261001T120000Z/FINAL_VERDICT.md",
+          "reports/opencode_hardening/20261001T120000Z/FULL_REGRESSION_RESULTS.json",
+          "reports/opencode_hardening/20261001T120000Z/INTEGRATION_DECISIONS.json",
+          "reports/opencode_hardening/20261001T120000Z/LIVE_RUNTIME_STATUS.json",
+          "reports/opencode_hardening/20261001T120000Z/ROUTE_AUTHORITY_MATRIX.json",
+          "reports/opencode_hardening/20261001T120000Z/SENSOR_AUTHORITY_MATRIX.json",
+          "reports/opencode_hardening/20261001T120000Z/STATE_CONTAMINATION_TEST.json",
+          "reports/opencode_hardening/20261001T120000Z/TARGETED_TEST_RESULTS.json",
+          "reports/opencode_hardening/20261001T120000Z/TM_AUTHORITY_MATRIX.json",
+          "reports/opencode_hardening/20261001T120000Z/UE4_DISCOVERY_TEST.json",
+          "reports/opencode_hardening/20261001T120000Z/WEATHER_AUTHORITY_MATRIX.json"
+        ],
+        "UNTRACKED_EVIDENCE": [
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_0_1.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_0.xodr",
+          "reports/post_audit_hardening/20260804T060000Z/tiles/tile_1_1.xodr",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T125500Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T130959Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+          "reports/post_audit_hardening/20260804T185517Z/artifacts/ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_ok.xodr",
+          "reports/post_audit_hardening/20260808T000000Z_C0_REMEDIATION/R13_scratch/guard_tampered.xodr",
+          "reports/post_audit_hardening/C7_ENRICHMENT_EVIDENCE/demo_enriched_candidate_c7.xodr",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/ingolstadt_cooked_perception_v1_b9e07465_full_pin.fbx",
+          "reports/production_readiness/20260915T101124Z_FBX_REGEN_CURRENT_PIN/artifacts/scene.glb",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/ing_f3e82001_merged.fbx",
+          "reports/production_readiness/20260915T123949Z_OSM2WORLD_BUILDING_SOURCE_FIX/artifacts/osm2world/ingolstadt_cooked_perception_v1_merged_full_pin.glb",
+          "submission/results/structural_gap_run11/auto_aligned_rigid.xodr"
+        ]
+      },
+      "UNKNOWN_COUNT": 0,
+      "REAL_SOURCE_CHANGE_COUNT": 0,
+      "tracked_diff_sha256": "887dcdd94f68460d17e3c7655e5fcb23a819fe0e4b6a7776960fd280b45ce037",
+      "tracked_diff_lines": 313703,
+      "tracked_diff_bytes": 22271208,
+      "untracked_manifest": [],
+      "untracked_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "LOAD_ASSET_MATERIALS_CONTRACT/v1",
+  "source": "Plugins/Carla/Source/Carla/Commandlet/LoadAssetMaterialsCommandlet.cpp",
+  "what_it_actually_does": [
+    "Reads <PackageName>.Package.json for map paths (line 400-443).",
+    "Loads only those worlds (line 330-342).",
+    "Looks for a StaticMeshActor whose name contains 'Road' or 'Roads' (line 359-368).",
+    "If found and the map is tiled, ApplyRoadPainterMaterials spawns DecalActors whose materials come from roadpainter_decals.json (line 125-264).",
+    "Calls UEditorLoadingAndSavingUtils::SaveDirtyPackages (line 261, 377, 455)."
+  ],
+  "what_it_does_NOT_do": [
+    "It never touches StaticMesh material slots.",
+    "It contains no SetMaterial, no OverrideMaterials, no StaticMaterials iteration.",
+    "It contains no reference to any MAT_ asset.",
+    "It never assigns materials to StaticMeshComponents."
+  ],
+  "package_json_for_ingolstadt": {
+    "maps": [
+      {
+        "name": "Ingolstadt",
+        "path": "/Game/Ingolstadt/Maps/Ingolstadt",
+        "use_carla_materials": true
+      }
+    ],
+    "props": [],
+    "note": "Only the MAIN world is listed. The 20 tile worlds are NOT listed, so this commandlet never visits them."
+  },
+  "uses_carla_materials_flag": "Parsed into FMapData::bUseCarlaMapMaterials (line 424) but never read anywhere in this commandlet. Dead in this class.",
+  "MATERIAL_BINDING_BY_THIS_COMMANDLET": false
+}

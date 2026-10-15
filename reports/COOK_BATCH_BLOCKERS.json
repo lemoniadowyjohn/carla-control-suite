@@ -1,0 +1,33 @@
+{
+  "schema": "COOK_BATCH_BLOCKERS/v1",
+  "blockers": [
+    {
+      "id": "B1",
+      "severity": "HARD",
+      "title": "Orphaned unsupervised UE4Editor.exe actively spinning",
+      "evidence": "PID 396, creation 2026-10-06T12:30:44.7613250Z, parent 31268 dead, 9861 MB private, 115 threads, ~5000 s CPU, 62% of one core sustained, G: free fell 32.7->28.7 GB during observation",
+      "gate": "PHASE_0 / ACTIVE_CONFLICTING_MUTATORS=0",
+      "resolution": "Operator terminates PID 396 bound to its creation time, then re-runs Phase 0. Preferably relaunch any editor probe under a lease and Job Object so it can never orphan again."
+    },
+    {
+      "id": "B2",
+      "severity": "HARD",
+      "title": "No capacity-safe storage for DDC plus bounded cook",
+      "evidence": "C: 9.8 GB free (2.1%), E: 11.6 (4.1%), F: 41.5 (6.2%), G: 28.7 (3.1%), H: 16.6 (1.8%). Project DDC on G: is effectively empty so any cook builds DDC cold.",
+      "gate": "PHASE_9 / DDC_TARGET_CAPACITY=PASS",
+      "resolution": "Free capacity, most urgently on C: which backs TEMP and pagefile. Do not delete old DDC or user data without explicit authorization."
+    },
+    {
+      "id": "B3",
+      "severity": "MEDIUM",
+      "title": "Phase 1 receipts consumed without fresh revalidation",
+      "evidence": "The 6116/6116 mesh-reference receipt and the per-tile hash bindings were carried from prior batches; this batch did not launch Unreal to revalidate them.",
+      "gate": "PHASE_1",
+      "resolution": "Execute Phase 1 fresh revalidation once Phase 0 is clear, since Phase 3 launches Unreal anyway."
+    }
+  ],
+  "cook_executed": false,
+  "content_mutated": false,
+  "config_mutated": false,
+  "FULL_PRODUCTION_COOK_ALLOWED": false
+}

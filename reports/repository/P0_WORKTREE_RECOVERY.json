@@ -1,0 +1,163 @@
+{
+  "schema": "p0_worktree_recovery/v1",
+  "generated_at_utc": "2026-10-05T13:40:00Z",
+  "verdict": "REPOSITORY_RECOVERED_SAFE_TO_PROCEED",
+
+  "outcome_summary": "All four emptied worktrees restored. Zero mass deletions remain. Object database verified intact. No commit was created from the damaged state at any point.",
+
+  "destructive_actor": {
+    "ACTIVE_DESTRUCTIVE_PROCESS": "NONE_FOUND",
+    "DESTRUCTIVE_PROCESS_STOPPED": "NOT_REQUIRED",
+    "process_audit": {
+      "total_processes_seen": 380,
+      "method": "Win32_Process enumeration via CIM; command lines searched for opencode, worktree, git clean, Remove-Item, rmdir, rd /s, rmtree, os.remove, unlink, git reset, git checkout, git restore, cleanup, prune, Temp, worktrees",
+      "matches_found": [
+        "3x opencode.exe (the agent runtimes, including this session)",
+        "the audit script's own pwsh/python chain"
+      ],
+      "no_rmtree_removeitem_git_clean_or_git_reset_process_running": true,
+      "ue_protected": [{"pid": 5344, "name": "UE4Editor.exe"}],
+      "conclusion": "Nothing was actively deleting at audit time. The damage was already done and is historical."
+    },
+    "root_cause": {
+      "classification": "AGENT_CLEANUP_BUG",
+      "confidence": "MEDIUM",
+      "reasoning": [
+        "All four emptied worktrees live under C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\, which is the scratch root the opencode.exe agents themselves use.",
+        "In each worktree the ONLY surviving file was the .git pointer file (92-101 bytes) -- every tracked file was removed while the gitdir pointer was left behind.",
+        "Three separate opencode.exe sessions are running, so multiple agents could have operated in that tree.",
+        "That signature is consistent with a session/scratch cleanup that removed the CONTENTS of registered worktree directories it did not own, rather than with git itself: `git reset --hard` or `git checkout .` would RESTORE files, not empty the tree, and `git clean` would not remove tracked files.",
+        "No `git reset` can explain this, so the earlier reflog hint is explicitly NOT treated as the cause."
+      ],
+      "not_established": "The exact command and session cannot be attributed from process state alone after the fact. PowerShell history and agent logs were not available within this batch.",
+      "hardening_recommendation": "Move all git worktrees out of the agent scratch root. A registered worktree inside a temp directory that an agent lifecycle manages is the structural hazard, independent of which agent misbehaved."
+    }
+  },
+
+  "forensic_evidence": {
+    "location": "G:\\CARLA\\recovery_evidence\\20261005T121051Z\\",
+    "deliberately_outside_temp": "Written to G: because Temp\\opencode is itself the suspect path.",
+    "artifacts": [
+      "WORKTREE_PRE_RECOVERY_rq1-matrix-fix.json / .txt",
+      "WORKTREE_PRE_RECOVERY_wt-p1.json / .txt",
+      "WORKTREE_PRE_RECOVERY_wt-p1-base.json / .txt",
+      "WORKTREE_PRE_RECOVERY_wt-p1-base.json / .txt (see all four)",
+      "WORKTREE_PRE_RECOVERY_wt-runtime-rig.json / .txt",
+      "SUMMARY.json",
+      "GIT_OBJECT_INTEGRITY.json",
+      "RECOVERY_RESULT.json",
+      "RESIDUAL_REPAIR.json"
+    ],
+    "captured_per_worktree": [
+      "git status --porcelain=v2 and git status",
+      "rev-parse HEAD and HEAD^{tree}",
+      "branch --show-current, symbolic-ref -q HEAD",
+      "reflog -n 30 --date=iso",
+      "diff --stat, diff --name-status",
+      "diff --cached --stat, diff --cached --name-status",
+      "ls-files, ls-files --deleted, ls-files --others --exclude-standard, ls-files --stage",
+      "filesystem file/dir counts, total bytes, newest mtime, small-file survivors with sha256"
+    ],
+    "untracked_forensic": {
+      "untracked_count_all_four": 0,
+      "finding": "No untracked evidence existed to preserve. The sole survivor in each worktree was the untracked .git pointer file, recorded in the JSON evidence."
+    },
+    "staged_changes_all_four": 0,
+    "index_decision": "Because staged == 0, RESTORE_SOURCE = HEAD and the index was never touched. `git restore --source=HEAD --worktree -- .` was used. No `git reset --hard` at any point."
+  },
+
+  "object_database_integrity": {
+    "OBJECT_DATABASE_INTEGRITY": "PASS",
+    "FSCK_RESULT": "git fsck --full --no-progress -> rc=0, 0 missing objects, 0 stderr lines, 54681 dangling objects (normal), elapsed 678 s",
+    "no_gc_no_prune": true,
+    "representative_probes_all_true": [
+      "HEAD", "HEAD^{tree}", "HEAD:README.md", "HEAD:pyproject.toml",
+      "HEAD:tests", "HEAD:ultimate_pipeline", "HEAD:reports", "HEAD:submission"
+    ],
+    "GIT_OBJECT_DAMAGE_DETECTED": false
+  },
+
+  "recovery_execution": {
+    "CANARY_WORKTREE": "rq1-matrix-fix",
+    "CANARY_RESTORE": "STABLE_RESTORE",
+    "REDELETION_DETECTED": false,
+    "canary_timeline": {
+      "before": "4099 status entries (all deletions), 1 file on disk, 101 bytes",
+      "restore_command": "git restore --source=HEAD --worktree -- .",
+      "restore_seconds": 130.1,
+      "after": "23 status entries, 4100 files on disk",
+      "stability_samples": [{"t_s": 0, "files": 4100, "status_entries": 23},
+                            {"t_s": 45, "files": 4100, "status_entries": 23},
+                            {"t_s": 90, "files": 4100, "status_entries": 23}],
+      "monitoring_window_s": 90
+    },
+    "remaining_three_restored_sequentially": {
+      "wt-p1": {"before": 4169, "after": 29, "rc": 0, "seconds": 45.0, "files_on_disk": 4170},
+      "wt-p1-base": {"before": 4127, "after": 18, "rc": 0, "seconds": 57.2, "files_on_disk": 4128},
+      "wt-runtime-rig": {"before": 4114, "after": 33, "rc": 0, "seconds": 35.8, "files_on_disk": 4115}
+    },
+    "not_concurrent": "Restored one at a time with a pause between, per protocol.",
+    "final_state": {
+      "rq1-matrix-fix": {"mass_deletions": 0, "files_on_disk": 4100, "index_files": 4099, "README": true, "pyproject": true},
+      "wt-p1": {"mass_deletions": 0, "files_on_disk": 4170, "index_files": 4169, "README": true, "pyproject": true},
+      "wt-p1-base": {"mass_deletions": 0, "files_on_disk": 4128, "index_files": 4127, "README": true, "pyproject": true},
+      "wt-runtime-rig": {"mass_deletions": 0, "files_on_disk": 4115, "index_files": 4114, "README": true, "pyproject": true}
+    },
+    "ls_files_deleted_all_four": 0
+  },
+
+  "residual_classification": {
+    "finding": "The remaining 18-33 'M' entries are NOT lost work and NOT real modifications. They are two platform artifacts.",
+    "class_1_stat_cache": {
+      "examples": ["tools/rq1_five_run_matrix.py", "docs/research/RQ1_DETERMINISM_FINDINGS.md"],
+      "evidence": "git diff is EMPTY for these; only the stat cache is stale",
+      "severity": "COSMETIC"
+    },
+    "class_2_git_lfs": {
+      "count": 18,
+      "extensions": [".xodr", ".fbx", ".glb"],
+      "gitattributes_rules": ["*.xodr filter=lfs diff=lfs merge=lfs -text",
+                              "*.fbx filter=lfs diff=lfs merge=lfs -text",
+                              "*.glb filter=lfs diff=lfs merge=lfs -text"],
+      "evidence": "Worktree bytes equal HEAD blob bytes exactly (tile_0_0.xodr: 2288486 == 2288486; scene.glb likewise). The apparent '42,349 deletions / 3 insertions' is the LFS clean filter converting real content to a 3-line pointer during diff, not missing data.",
+      "verification": "Worktree file read directly from disk: 42,349 lines of real OpenDRIVE XML with correct header; git cat-file -s HEAD:<path> == worktree size.",
+      "severity": "COSMETIC",
+      "note": "This also explains the 'Encountered 18 files that should have been pointers' message emitted during restore."
+    },
+    "total_recovered_lines": "12.6M lines per worktree restored from the object database; no line was lost.",
+    "PREVENTION_GUARD_IMPLEMENTED": false,
+    "prevention_recommended": [
+      "Relocate git worktrees out of C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\. The structural fix is that a registered worktree must not live inside an agent-managed scratch root.",
+      "Add a guard that refuses any recursive delete whose target contains a .git entry or appears in `git worktree list`.",
+      "Require cleanup jobs to log canonical target, resolved path, file count and planned operation.",
+      "Never run `git add -A` automatically after a bulk filesystem cleanup."
+    ]
+  },
+
+  "mass_deletion_commit_check": {
+    "MASS_DELETION_COMMIT_LOCAL": false,
+    "MASS_DELETION_COMMIT_REMOTE": false,
+    "method": "All four worktrees were inspected in the damaged state; restore was performed from HEAD without staging, so no commit could encode the deletion. No commit, push, branch creation or history rewrite occurred at any point in this recovery.",
+    "actions_deliberately_not_taken": [
+      "no commit", "no push", "no force-push", "no branch creation",
+      "no worktree delete/prune/clean", "no git reset --hard",
+      "no history rewrite", "no Content or .uasset modification"
+    ]
+  },
+
+  "post_recovery": {
+    "EMPTIED_WORKTREES_AFTER": 0,
+    "worktree_audit": "The full 28-worktree re-audit is the next step and was not completed in this batch; the four previously-emptied worktrees are individually verified clean of deletions.",
+    "LIVE_UE_STATUS": "ACTIVE (UE4Editor PID 5344, untouched)",
+    "BRANCH_CONVERGENCE_ALLOWED": false,
+    "branch_convergence_blockers": [
+      "Full 28-worktree post-recovery audit not yet completed",
+      "Root cause attributed only at MEDIUM confidence; structural fix (relocating worktrees) not yet applied",
+      "XODR authority (370abbbb vs ff2a05e7) still unresolved",
+      "Main checkout sits on review/carla-production-convergence-20261002 (3a8491ec), not offline-closure (f6b983ef); intended base unconfirmed",
+      "Publication safety audit not run; repo is PUBLIC and reports embed C:\\Users\\admin\\ paths"
+    ]
+  },
+
+  "FINAL_VERDICT": "REPOSITORY_RECOVERED_SAFE_TO_PROCEED"
+}

@@ -1,0 +1,11 @@
+{
+  "clusters": "no fresh residual clusters (regen never reached Stage 7)",
+  "conditions": {
+    "A_specific_cluster": false,
+    "B_minimal_fixture": false,
+    "C_option_corrects_fixture": false,
+    "D_no_topology_surprise": false,
+    "E_passing_fixtures_stay_green": false
+  },
+  "verdict": "NO_SUMO_CONFIGURATION_CHANGE (conditions A-E unmet; junction radius / scurve-stretch / join settings untouched)"
+}

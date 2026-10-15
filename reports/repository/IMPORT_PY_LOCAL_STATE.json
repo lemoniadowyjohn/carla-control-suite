@@ -1,0 +1,19 @@
+{
+  "IMPORT_PY_OWNER_WORKTREE": "durable/non-temp (G: drive, not a git worktree)",
+  "exists": true,
+  "git_status": "M Util/BuildTools/Import.py",
+  "has_!= 'tiles'": true,
+  "has__strip_wrapping_quotes": true,
+  "has_is not 'tiles'": false,
+  "has_shell=False": true,
+  "has_supervise_child": true,
+  "head_blob": "b6e56be87a92c0529cae61151cb0e02e633a3991",
+  "head_commit": "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4",
+  "modifications_present": true,
+  "mtime_utc": "2026-10-04T18:55:10.801753+00:00",
+  "owning_repository": "G:\\CARLA\\carla_source_probe",
+  "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py",
+  "schema": "import_py_local_state/v1",
+  "size": 36273,
+  "working_tree_sha256": "4f6b46bf342639f880983b87c7a2fe300fd9cf30645f78c8a1ee8cff9b5f1286"
+}

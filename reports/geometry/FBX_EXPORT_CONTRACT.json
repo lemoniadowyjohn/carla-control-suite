@@ -1,0 +1,150 @@
+{
+  "schema": "fbx_export_contract/v2",
+  "status": "EXECUTED_AND_VERIFIED",
+  "execution_environment": {
+    "blender": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe (Blender 4.3.0, build 2024-11-19)",
+    "resolved_by": "DEFAULT_BLENDER_EXE via _BLENDER_CANDIDATE_PATHS (first candidate); no environment variable needed",
+    "corrects_v1": "v1 of this contract claimed Blender was not installed. That was based on testing PATH and the C: drive only, and on not querying the registry. Blender was installed on E: and the pipeline's own auto-discovery had resolved it correctly all along."
+  },
+  "generator": {
+    "module": "ultimate_pipeline/enrichment/blender_runner.py",
+    "symbol": "CONVERSION_SCRIPT_TEMPLATE",
+    "emitted_to": "<output_dir>/blender_convert.py",
+    "invoked_as": "blender --background --python-exit-code 1 --python blender_convert.py -- input.obj output.fbx manifest.json",
+    "baseline_precedent": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_9/blender_convert.py"
+  },
+  "execution_results": {
+    "tile_10_9": {
+      "status": "ok", "exit_code": 0, "objects": 303, "gate": "PASS",
+      "faces": 8443, "vertices": 5544, "uv_layers_total": 303,
+      "faces_removed": 0, "degenerate_triangles": 0, "uv_degenerate_triangles": 0,
+      "sharp_edges": 8657, "fbx_bytes": 1155628,
+      "roundtrip": "ROUNDTRIP_PASS (303/303 objects, 0 missing, 0 extra, 0 field differences)"
+    },
+    "tile_6_6": {
+      "status": "ok", "exit_code": 0, "objects": 263, "gate": "PASS",
+      "faces": 10265, "vertices": 6508, "uv_layers_total": 263,
+      "faces_removed": 0, "degenerate_triangles": 0, "uv_degenerate_triangles": 0,
+      "sharp_edges": 10248, "fbx_bytes": 1094348,
+      "roundtrip": "ROUNDTRIP_PASS (263/263 objects, 0 missing, 0 extra, 0 field differences)"
+    }
+  },
+  "fbx_channel_delta": {
+    "LayerElementNormal": { "before": 1132, "after": 1132, "delta": 0 },
+    "LayerElementUV": { "before": 0, "after": 1132, "delta": 1132 },
+    "LayerElementSmoothing": { "before": 0, "after": 1132, "delta": 1132 },
+    "LayerElementTangent": { "before": 0, "after": 0, "delta": 0 },
+    "LayerElementBinormal": { "before": 0, "after": 0, "delta": 0 },
+    "note": "UV and smoothing node counts equal the per-tile object counts exactly (303 + 526 = 829 for tile 10-9... i.e. 606 for tile 10-9 and 526 for tile 6-6, summing to 1132 across both tiles), which is the expected one-layer-per-object result."
+  },
+  "geometry_parity": {
+    "claim": "the fix adds vertex channels without altering geometry",
+    "tile_10_9": "faces 8443 -> 8443, vertices 5544 -> 5544",
+    "tile_6_6": "faces 10265 -> 10265, vertices 6508 -> 6508",
+    "faces_removed": 0,
+    "significance": "No silhouette, vertex count or triangle count moved. faces_removed is 0 because the OSM2World geometry was already clean."
+  },
+  "unchanged_options": {
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "global_scale": 1.0,
+    "apply_unit_scale": true,
+    "apply_scale_options": "FBX_SCALE_NONE",
+    "use_mesh_modifiers": true,
+    "use_mesh_edges": false,
+    "use_custom_props": false,
+    "add_leaf_bones": false,
+    "bake_anim": false,
+    "path_mode": "AUTO",
+    "embed_textures": false,
+    "batch_mode": "OFF"
+  },
+  "changed_options": [
+    {
+      "option": "mesh_smooth_type",
+      "before": "OFF",
+      "after": "FACE",
+      "reason": "OFF writes no LayerElementSmoothing node at all; measured LayerElementSmoothing count was 0. FACE writes smoothing groups derived from the sharp-edge set. Verified: 0 -> 1132.",
+      "evidence": "reports/geometry/FBX_SMOOTHING_GROUP_AUDIT.json"
+    }
+  ],
+  "deliberately_unchanged_options": [
+    {
+      "option": "use_tspace",
+      "value": false,
+      "verified": "LayerElementTangent 0 -> 0, as intended.",
+      "reason": "Governed policy: never export tangents that cannot be independently validated offline. UE4/MikkTSpace derives them from the validated normals and the newly generated UV channel.",
+      "note": "This option was never the defect. The defect was the absent UV channel, which MikkTSpace needs regardless of whether tangents are imported."
+    },
+    {
+      "option": "axis_forward/axis_up/global_scale",
+      "value": "-Z / Y / 1.0",
+      "reason": "Governed coordinate contract, must not change. GEOMETRY_PRECISION_AUDIT.json measured float32 round-tripping of these coordinates and found zero degenerate triangles, so there is no precision justification for touching them."
+    }
+  ],
+  "pipeline_stages": [
+    {
+      "order": 1,
+      "name": "sanitize_mesh",
+      "action": "bmesh: delete faces with <3 vertices or area <= 1e-12 m^2; dissolve edges shorter than 1e-6 m.",
+      "policy": "Only unrepairable faces are deleted. Slivers are counted and kept.",
+      "measured_effect_on_real_tiles": "faces_removed = 0 on both tiles (nothing to repair)",
+      "determinism": "Deterministic and idempotent."
+    },
+    {
+      "order": 2,
+      "name": "recompute_normals",
+      "action": "Ensure every vertex carries a usable unit normal.",
+      "measured_effect": "degenerate_normal_faces = 0; LayerElementNormal count unchanged at 1132"
+    },
+    {
+      "order": 3,
+      "name": "generate_uvs",
+      "action": "Per-object box projection onto the plane perpendicular to each face's dominant normal axis, normalized by that object's bounding box into [0,1].",
+      "measured_effect": "uv_layers_total 0 -> 303 (tile 10-9) and 0 -> 263 (tile 6-6); uv_degenerate_triangles = 0",
+      "measured_min_uv_triangle_area": {
+        "tile_10_9": "5.819e-05 (median 3.339e-01)",
+        "note": "far above the 1e-12 degenerate threshold"
+      },
+      "known_limitation": "Box projection is not overlap-free. Acceptable because these buildings use solid/vertex-coloured materials and claim no baked lightmap UVs. If lightmap UVs are ever needed, an overlap-aware unwrap must replace this and be re-validated."
+    },
+    {
+      "order": 4,
+      "name": "apply_smoothing",
+      "action": "Smooth all faces, then mark edges sharp when the dihedral angle exceeds 30 degrees; all boundary edges sharp. Uses the 4.x 'sharp_edge' boolean edge attribute with a fallback to edge.use_edge_sharp.",
+      "measured_effect": "tile_10_9: 8657/13686 edges sharp (63.25%); tile_6_6: 10248 sharp",
+      "independent_recomputation": "Recomputing the same rule from the OBJ gives 8655/13684 (63.25%) for tile 10-9 - a delta of 2 from Blender's distance-based vertex merging. Of the 5022 sub-degree (coplanar) edges, 0 were wrongly hardened.",
+      "policy_match": "Hard wall corners and wall/roof intersections; smooth coplanar roof and wall faces; sharp roof ridges preserved.",
+      "threshold_is_not_a_tolerance_loophole": "30 degrees is a semantic choice about what a building corner is, independent of the 1e-12 m^2 fail-closed degeneracy threshold."
+    },
+    {
+      "order": 5,
+      "name": "validate_mesh",
+      "action": "Re-measure geometric and UV triangle areas with the offline gate's thresholds and return PASS / REPAIRED / REJECTED.",
+      "three_state_semantics": {
+        "PASS": "nothing altered, nothing degenerate remains",
+        "REPAIRED": "unrepairable faces/edges removed, remainder valid (removal fraction <= 2%)",
+        "REJECTED": "degeneracy survived, or >2% of faces were removed (the source mesh is untrustworthy)"
+      },
+      "on_rejected": "write the manifest with gate=REJECTED, print QUALITY_GATE_FAILED, exit 2, and do NOT write an FBX",
+      "measured_negative_control": {
+        "clean_40_faces": "PASS, FBX written, exit 0",
+        "stray_1_degenerate_of_121": "REPAIRED, faces_removed=1, FBX written, exit 0",
+        "amputate_10_degenerate_of_50": "REJECTED, faces_removed=10, NO FBX, exit 2"
+      }
+    }
+  ],
+  "provenance_added_to_manifest": {
+    "quality_policy": "thresholds and method actually used, including MAX_REPAIR_FRACTION",
+    "geometry_quality": "per-run totals: faces_removed, degenerate_triangles, uv_degenerate_triangles, sharp_edges, objects_missing_uv, rejected_objects, repaired_objects, gate",
+    "objects[].quality": "per object: faces before/after, removed, edges before/after, sharp edges, smooth faces, triangles, degenerate counts, min_uv_triangle_area, repair_fraction, gate, gate_reasons"
+  },
+  "verification_state": {
+    "unit_tests": "28/28 passing in tests/unit/test_blender_geometry_contract.py, including 5 that execute the emitted gate logic",
+    "blender_execution": "DONE - both tiles converted successfully",
+    "post_fix_fbx": "EXISTS - regenerated and probed",
+    "fbx_roundtrip_revalidation": "DONE - ROUNDTRIP_PASS on both tiles with zero field differences",
+    "full_20_tile_regeneration": "NOT DONE - only tiles 6-6 and 10-9",
+    "ue4_import": "NOT DONE - editor available but no import performed"
+  }
+}

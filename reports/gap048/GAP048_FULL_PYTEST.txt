@@ -1,0 +1,906 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-9.0.1, pluggy-1.6.0
+rootdir: C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main
+configfile: pytest.ini
+testpaths: ultimate_pipeline/tests, tests, tests/unit, tests/phase_q, tests/carla_tools, tests/domain_gap, tests/opendrive_geometry, tests/quality, tests/roadrunner, tests/topology, ultimate_pipeline/domain_gap/tests, ultimate_pipeline/carla_tools/tests, ultimate_pipeline/tools/tests
+plugins: anyio-4.12.1
+collected 7708 items
+
+ultimate_pipeline\tests\adversarial\test_v5_adversarial_matrix.py ....s. [  0%]
+............................                                             [  0%]
+ultimate_pipeline\tests\test_contracts.py .............................. [  0%]
+........................................................................ [  1%]
+..................................                                       [  2%]
+ultimate_pipeline\tests\test_coordinate_control_fix.py ...               [  2%]
+ultimate_pipeline\tests\test_deterministic_alignment.py ................ [  2%]
+                                                                         [  2%]
+ultimate_pipeline\tests\test_perception_collect_tools.py ..              [  2%]
+ultimate_pipeline\tests\test_reload_ready_for_sensors.py .               [  2%]
+ultimate_pipeline\tests\test_run_root_inference.py ..                    [  2%]
+ultimate_pipeline\tests\test_stage_d0.py ......                          [  2%]
+ultimate_pipeline\tests\test_sumo_repair.py ....                         [  2%]
+ultimate_pipeline\tests\test_wait_for_first_sample.py ....               [  2%]
+ultimate_pipeline\tests\unit\test_animated_diff.py .....                 [  2%]
+ultimate_pipeline\tests\unit\test_artifact_locator_final_xodr.py ....... [  2%]
+..                                                                       [  2%]
+ultimate_pipeline\tests\unit\test_audit_normalization.py ............... [  3%]
+..                                                                       [  3%]
+ultimate_pipeline\tests\unit\test_audit_thesis_topic_contract_run11.py . [  3%]
+...                                                                      [  3%]
+ultimate_pipeline\tests\unit\test_auto_scenario_generator.py ......      [  3%]
+ultimate_pipeline\tests\unit\test_building_extruder.py .....             [  3%]
+ultimate_pipeline\tests\unit\test_building_multipolygon_fidelity.py .... [  3%]
+...                                                                      [  3%]
+ultimate_pipeline\tests\unit\test_c11_crs_comparability_decoupled.py ... [  3%]
+..                                                                       [  3%]
+ultimate_pipeline\tests\unit\test_c11_inputs_manifest_guard.py ......... [  3%]
+....                                                                     [  3%]
+ultimate_pipeline\tests\unit\test_c11_preanchor_default.py .....         [  3%]
+ultimate_pipeline\tests\unit\test_c11_proj_env_guard.py ......s          [  3%]
+ultimate_pipeline\tests\unit\test_calibration_ece.py .....               [  3%]
+ultimate_pipeline\tests\unit\test_carla_preflight_tcp_probe.py ..        [  3%]
+ultimate_pipeline\tests\unit\test_carla_quick_load_crop_xodr.py ......   [  3%]
+ultimate_pipeline\tests\unit\test_carla_smoke_suite_find_xodr.py ....    [  3%]
+ultimate_pipeline\tests\unit\test_check_elevation_smoothness.py ...      [  4%]
+ultimate_pipeline\tests\unit\test_check_junction_integrity.py .......... [  4%]
+..                                                                       [  4%]
+ultimate_pipeline\tests\unit\test_check_lane_connectivity.py ........... [  4%]
+.                                                                        [  4%]
+ultimate_pipeline\tests\unit\test_check_physics_feasibility.py ......    [  4%]
+ultimate_pipeline\tests\unit\test_classify_lane_count_transitions.py ... [  4%]
+.........                                                                [  4%]
+ultimate_pipeline\tests\unit\test_compare_runs_determinism_pick_final.py . [  4%]
+....                                                                     [  4%]
+ultimate_pipeline\tests\unit\test_connectivity_gap.py .................  [  4%]
+ultimate_pipeline\tests\unit\test_connectivity_gap_always_present.py ... [  4%]
+.....                                                                    [  4%]
+ultimate_pipeline\tests\unit\test_coordinate_contract.py ...             [  5%]
+ultimate_pipeline\tests\unit\test_coordinate_system_artifact.py ........ [  5%]
+.                                                                        [  5%]
+ultimate_pipeline\tests\unit\test_core_file_utils_and_misc.py .......... [  5%]
+....                                                                     [  5%]
+ultimate_pipeline\tests\unit\test_cross_section_visualizer.py .......... [  5%]
+..                                                                       [  5%]
+ultimate_pipeline\tests\unit\test_crosssection_repair.py .....           [  5%]
+ultimate_pipeline\tests\unit\test_curvature_gap_parampoly3.py ....       [  5%]
+ultimate_pipeline\tests\unit\test_dem_auto_downloader.py ..........s.    [  5%]
+ultimate_pipeline\tests\unit\test_dem_canonical_sampling.py ............ [  5%]
+....                                                                     [  5%]
+ultimate_pipeline\tests\unit\test_dem_diagnostics.py ...                 [  5%]
+ultimate_pipeline\tests\unit\test_dem_f1.py ................             [  6%]
+ultimate_pipeline\tests\unit\test_dependency_profiles.py ............... [  6%]
+...s..                                                                   [  6%]
+ultimate_pipeline\tests\unit\test_diagnostics_mesh_and_pipeline.py ..... [  6%]
+.....                                                                    [  6%]
+ultimate_pipeline\tests\unit\test_drivable_surface_scanner.py ...        [  6%]
+ultimate_pipeline\tests\unit\test_elevation_fallback_policy.py ......... [  6%]
+.......................                                                  [  7%]
+ultimate_pipeline\tests\unit\test_elevation_gap.py ................      [  7%]
+ultimate_pipeline\tests\unit\test_elevation_importer_structure_roads.py . [  7%]
+...                                                                      [  7%]
+ultimate_pipeline\tests\unit\test_elevation_profile_builder.py ......... [  7%]
+.....                                                                    [  7%]
+ultimate_pipeline\tests\unit\test_elevation_quality_gates_nan.py ....... [  7%]
+...                                                                      [  7%]
+ultimate_pipeline\tests\unit\test_elevation_smoother.py .....            [  7%]
+ultimate_pipeline\tests\unit\test_evaluate_tiling.py ................... [  7%]
+........                                                                 [  8%]
+ultimate_pipeline\tests\unit\test_extract_elevation_stats_thesis_impact.py . [  8%]
+.                                                                        [  8%]
+ultimate_pipeline\tests\unit\test_file_hashing.py ...................... [  8%]
+.                                                                        [  8%]
+ultimate_pipeline\tests\unit\test_final_artifact_authority.py .......... [  8%]
+.................                                                        [  8%]
+ultimate_pipeline\tests\unit\test_final_artifact_receipt_resolution.py . [  8%]
+.....                                                                    [  8%]
+ultimate_pipeline\tests\unit\test_final_evidence_ordering.py ........... [  8%]
+........                                                                 [  9%]
+ultimate_pipeline\tests\unit\test_finalize_run_pack.py ......s.......... [  9%]
+.............                                                            [  9%]
+ultimate_pipeline\tests\unit\test_gate_runner.py ..................      [  9%]
+ultimate_pipeline\tests\unit\test_geo_alignment_rigid_scale_lock.py ..   [  9%]
+ultimate_pipeline\tests\unit\test_geometric_and_origin_gates_nan.py .... [  9%]
+........                                                                 [  9%]
+ultimate_pipeline\tests\unit\test_geometry_freeze_hash_verify.py .....   [  9%]
+ultimate_pipeline\tests\unit\test_geometry_hardening.py ...              [  9%]
+ultimate_pipeline\tests\unit\test_geometry_math.py ..................... [ 10%]
+..............                                                           [ 10%]
+ultimate_pipeline\tests\unit\test_gnn_checkpoint_epoch_selection.py .... [ 10%]
+......                                                                   [ 10%]
+ultimate_pipeline\tests\unit\test_hash_tree.py ...............           [ 10%]
+ultimate_pipeline\tests\unit\test_hashing.py .............               [ 10%]
+ultimate_pipeline\tests\unit\test_heatmap_generator_severity.py ........ [ 10%]
+.....                                                                    [ 11%]
+ultimate_pipeline\tests\unit\test_heatmap_plotter.py .......             [ 11%]
+ultimate_pipeline\tests\unit\test_inputs_manifest_default.py ....        [ 11%]
+ultimate_pipeline\tests\unit\test_integration_runtime_rig_environment_negative_controls.py . [ 11%]
+.......................................                                  [ 11%]
+ultimate_pipeline\tests\unit\test_intersection_gap.py ........           [ 11%]
+ultimate_pipeline\tests\unit\test_junction_connector_rebuild.py ..       [ 11%]
+ultimate_pipeline\tests\unit\test_junction_connector_snap.py .......     [ 11%]
+ultimate_pipeline\tests\unit\test_lane_generator.py .....                [ 12%]
+ultimate_pipeline\tests\unit\test_lane_gnn_refiner_and_single_road_extractor.py . [ 12%]
+.......                                                                  [ 12%]
+ultimate_pipeline\tests\unit\test_lane_overlay.py ..........             [ 12%]
+ultimate_pipeline\tests\unit\test_lane_width_clamp.py ....               [ 12%]
+ultimate_pipeline\tests\unit\test_lane_width_invariants.py ............  [ 12%]
+ultimate_pipeline\tests\unit\test_lanelink_builder.py .............      [ 12%]
+ultimate_pipeline\tests\unit\test_laneoffset_normalizer.py .........     [ 12%]
+ultimate_pipeline\tests\unit\test_laneoffset_smoother.py ......          [ 12%]
+ultimate_pipeline\tests\unit\test_lanesection_boundary_fixer.py ........ [ 12%]
+                                                                         [ 12%]
+ultimate_pipeline\tests\unit\test_latent_gap_runner.py .....             [ 12%]
+ultimate_pipeline\tests\unit\test_legacy_geometry_delegation.py ........ [ 13%]
+..                                                                       [ 13%]
+ultimate_pipeline\tests\unit\test_llm_client_and_ollama_bootstrap.py ... [ 13%]
+..........                                                               [ 13%]
+ultimate_pipeline\tests\unit\test_llm_quality_gate.py ........           [ 13%]
+ultimate_pipeline\tests\unit\test_main_pipeline_stage_contract_wiring.py . [ 13%]
+...                                                                      [ 13%]
+ultimate_pipeline\tests\unit\test_map_diff_overlay.py ..                 [ 13%]
+ultimate_pipeline\tests\unit\test_map_fingerprint.py ........s.          [ 13%]
+ultimate_pipeline\tests\unit\test_map_fingerprint_and_env_snapshot.py .. [ 13%]
+.......                                                                  [ 13%]
+ultimate_pipeline\tests\unit\test_map_tile_dataset.py ........           [ 13%]
+ultimate_pipeline\tests\unit\test_markings_builder.py ..............     [ 13%]
+ultimate_pipeline\tests\unit\test_mtime_audit.py ....................    [ 14%]
+ultimate_pipeline\tests\unit\test_opendrive_geometry_line_arc.py ....... [ 14%]
+........................................................................ [ 15%]
+..........                                                               [ 15%]
+ultimate_pipeline\tests\unit\test_optional_carla_api.py ......           [ 15%]
+ultimate_pipeline\tests\unit\test_optional_imports.py .............      [ 15%]
+ultimate_pipeline\tests\unit\test_osm2world_pipeline_wiring.py ......... [ 15%]
+....                                                                     [ 15%]
+ultimate_pipeline\tests\unit\test_osm2world_runner_helpers.py .......... [ 15%]
+...................                                                      [ 16%]
+ultimate_pipeline\tests\unit\test_osm_meta_index.py .................... [ 16%]
+....                                                                     [ 16%]
+ultimate_pipeline\tests\unit\test_overpass_to_osm_xml.py ............... [ 16%]
+.                                                                        [ 16%]
+ultimate_pipeline\tests\unit\test_p07_elv_lan_invariants.py ............ [ 16%]
+.........                                                                [ 16%]
+ultimate_pipeline\tests\unit\test_p08_signal_enrichment.py ............. [ 17%]
+...                                                                      [ 17%]
+ultimate_pipeline\tests\unit\test_p09_tile_equivalence.py ............   [ 17%]
+ultimate_pipeline\tests\unit\test_p10_output_artifacts.py .............. [ 17%]
+......                                                                   [ 17%]
+ultimate_pipeline\tests\unit\test_pack_lint.py ...................       [ 17%]
+ultimate_pipeline\tests\unit\test_parampoly3_tangent_repair.py ..        [ 17%]
+ultimate_pipeline\tests\unit\test_path_utils.py ..........               [ 18%]
+ultimate_pipeline\tests\unit\test_paths.py ..................            [ 18%]
+ultimate_pipeline\tests\unit\test_perception_environment_hardening_new316_333.py . [ 18%]
+........................................................                 [ 18%]
+ultimate_pipeline\tests\unit\test_perception_gap_core.py ........        [ 19%]
+ultimate_pipeline\tests\unit\test_perception_metrics.py ...............  [ 19%]
+ultimate_pipeline\tests\unit\test_perception_metrics_paired.py ........  [ 19%]
+ultimate_pipeline\tests\unit\test_phase_e_policy.py ....                 [ 19%]
+ultimate_pipeline\tests\unit\test_pipeline_health_summary.py ........... [ 19%]
+............                                                             [ 19%]
+ultimate_pipeline\tests\unit\test_preflight_xodr_loadability.py ........ [ 19%]
+.                                                                        [ 19%]
+ultimate_pipeline\tests\unit\test_quality_checkers_misc.py ............. [ 20%]
+....                                                                     [ 20%]
+ultimate_pipeline\tests\unit\test_quality_gate_manager.py .............. [ 20%]
+.........                                                                [ 20%]
+ultimate_pipeline\tests\unit\test_quality_gates_drivability.py ....      [ 20%]
+ultimate_pipeline\tests\unit\test_repair_drop_invalid_lane_link_targets.py . [ 20%]
+.........                                                                [ 20%]
+ultimate_pipeline\tests\unit\test_repo_health_gate_semantics.py ........ [ 20%]
+.....................                                                    [ 20%]
+ultimate_pipeline\tests\unit\test_resolve_input_xodr_fallback.py ....    [ 20%]
+ultimate_pipeline\tests\unit\test_resolve_manual_xodr_no_wrong_town_fallback.py . [ 20%]
+.....                                                                    [ 21%]
+ultimate_pipeline\tests\unit\test_road_classification_gap.py .....       [ 21%]
+ultimate_pipeline\tests\unit\test_road_link_endpoint_errors.py ......... [ 21%]
+.....                                                                    [ 21%]
+ultimate_pipeline\tests\unit\test_route_manifest.py ...........          [ 21%]
+ultimate_pipeline\tests\unit\test_rq3_paired_capture_contract.py ....... [ 21%]
+..................                                                       [ 21%]
+ultimate_pipeline\tests\unit\test_rq3_route_rig_hardening.py ........... [ 21%]
+..                                                                       [ 21%]
+ultimate_pipeline\tests\unit\test_run_domain_gap_sweep_find_auto_xodr.py . [ 21%]
+.                                                                        [ 21%]
+ultimate_pipeline\tests\unit\test_run_full_domain_gap_offline_carla_guard.py . [ 21%]
+                                                                         [ 21%]
+ultimate_pipeline\tests\unit\test_run_full_domain_gap_reproducibility.py . [ 21%]
+..                                                                       [ 22%]
+ultimate_pipeline\tests\unit\test_run_gap_ablation_find_auto_xodr.py ..  [ 22%]
+ultimate_pipeline\tests\unit\test_run_provenance_strict.py ............. [ 22%]
+...s.....................                                                [ 22%]
+ultimate_pipeline\tests\unit\test_run_scenarios_batch.py ........        [ 22%]
+ultimate_pipeline\tests\unit\test_runtime_identity_gate.py ............. [ 22%]
+.............................                                            [ 23%]
+ultimate_pipeline\tests\unit\test_safe_float_nan_sweep_batch2.py ....... [ 23%]
+............                                                             [ 23%]
+ultimate_pipeline\tests\unit\test_select_final_xodr_osm_carla_determinism.py . [ 23%]
+...                                                                      [ 23%]
+ultimate_pipeline\tests\unit\test_semantic_gap.py ......                 [ 23%]
+ultimate_pipeline\tests\unit\test_semantic_mapper.py .................   [ 23%]
+ultimate_pipeline\tests\unit\test_sensor_logger.py .....                 [ 23%]
+ultimate_pipeline\tests\unit\test_stage05_structure_classification.py .. [ 23%]
+..                                                                       [ 23%]
+ultimate_pipeline\tests\unit\test_stage_02_sumo_repair_none_handling.py . [ 23%]
+.                                                                        [ 23%]
+ultimate_pipeline\tests\unit\test_stage_03_lane_width_log_keys.py .      [ 23%]
+ultimate_pipeline\tests\unit\test_stage_09_tiling_invariants.py ...      [ 23%]
+ultimate_pipeline\tests\unit\test_stage_12_per_tile_gap_keys.py .        [ 23%]
+ultimate_pipeline\tests\unit\test_stage_capability_contract.py ......... [ 24%]
+..                                                                       [ 24%]
+ultimate_pipeline\tests\unit\test_stage_gate_regression_final_xodr.py .. [ 24%]
+.                                                                        [ 24%]
+ultimate_pipeline\tests\unit\test_step8c_light_load_guard.py ...         [ 24%]
+ultimate_pipeline\tests\unit\test_structure_classifier.py ...........    [ 24%]
+ultimate_pipeline\tests\unit\test_structure_elevation_crs_probe.py .     [ 24%]
+ultimate_pipeline\tests\unit\test_sys001_import_smoke.py ...........     [ 24%]
+ultimate_pipeline\tests\unit\test_tile_adjacency.py .................    [ 24%]
+ultimate_pipeline\tests\unit\test_tile_auto_forensics.py ....            [ 24%]
+ultimate_pipeline\tests\unit\test_tile_crs_alignment.py ....             [ 24%]
+ultimate_pipeline\tests\unit\test_tile_extractor_crs.py .                [ 24%]
+ultimate_pipeline\tests\unit\test_tile_gap_evaluator.py ......           [ 24%]
+ultimate_pipeline\tests\unit\test_tile_iou_report_wire.py .......        [ 25%]
+ultimate_pipeline\tests\unit\test_tile_manual_xodr_windows_read_origin.py . [ 25%]
+.........                                                                [ 25%]
+ultimate_pipeline\tests\unit\test_tile_matcher_spatial.py ....           [ 25%]
+ultimate_pipeline\tests\unit\test_tile_metadata.py ..................    [ 25%]
+ultimate_pipeline\tests\unit\test_topology_validation.py ............... [ 25%]
+.....                                                                    [ 25%]
+ultimate_pipeline\tests\unit\test_transform_conventions.py ............. [ 25%]
+...                                                                      [ 25%]
+ultimate_pipeline\tests\unit\test_turn_restriction_audit.py .....        [ 25%]
+ultimate_pipeline\tests\unit\test_ue4_executable_discovery.py .......... [ 26%]
+..........                                                               [ 26%]
+ultimate_pipeline\tests\unit\test_unified_runner_artifact_setup_failure.py . [ 26%]
+...                                                                      [ 26%]
+ultimate_pipeline\tests\unit\test_utils_paths.py ..............          [ 26%]
+ultimate_pipeline\tests\unit\test_v4_import_contracts.py ............... [ 26%]
+......                                                                   [ 26%]
+ultimate_pipeline\tests\unit\test_v4_large_map_contract.py ............. [ 26%]
+.............                                                            [ 27%]
+ultimate_pipeline\tests\unit\test_waiver_taxonomy.py ..............      [ 27%]
+ultimate_pipeline\tests\unit\test_workflow_hardening.py ................ [ 27%]
+..............                                                           [ 27%]
+ultimate_pipeline\tests\unit\test_xodr_coordinate_report.py ...........  [ 27%]
+ultimate_pipeline\tests\unit\test_xodr_cropper_gps.py .                  [ 27%]
+ultimate_pipeline\tests\unit\test_xodr_junction_links.py .............   [ 27%]
+ultimate_pipeline\tests\unit\test_xodr_statistics.py .................   [ 28%]
+tests\carla_tools\test_session.py ..........                             [ 28%]
+tests\carla_tools\test_world_settings_hardening.py ......ssss            [ 28%]
+tests\contracts\test_no_dead_pipeline_signals.py ...........             [ 28%]
+tests\contracts\test_signal_verdict_semantics.py ....................... [ 28%]
+.................                                                        [ 29%]
+tests\domain_gap\test_elevation_contract.py .........                    [ 29%]
+tests\opendrive_geometry\test_arc.py ....................                [ 29%]
+tests\opendrive_geometry\test_existing_implementations.py .............. [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+.............                                                            [ 42%]
+tests\opendrive_geometry\test_geometry_freeze.py ....................... [ 43%]
+.                                                                        [ 43%]
+tests\opendrive_geometry\test_kernel_cross_oracle.py .................   [ 43%]
+tests\opendrive_geometry\test_line.py ................                   [ 43%]
+tests\opendrive_geometry\test_near_zero_curvature.py ................... [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+..............................................................           [ 51%]
+tests\opendrive_geometry\test_s_domain.py .............................. [ 51%]
+........................                                                 [ 51%]
+tests\opendrive_geometry\test_sampling.py ...............                [ 52%]
+tests\opendrive_geometry\test_transform_invariance.py .........          [ 52%]
+tests\phase_q\test_duplicate_module_drift.py .                           [ 52%]
+tests\quality\test_carla_opendrive_compat_gate.py ...................... [ 52%]
+.............                                                            [ 52%]
+tests\quality\test_failure_recovery_campaign.py .                        [ 52%]
+tests\quality\test_ingolstadt_coordinate_verification.py .............   [ 52%]
+tests\quality\test_lane_link_targets_gate.py .....................       [ 53%]
+tests\quality\test_stale_artifact_injection.py ....................      [ 53%]
+tests\roadrunner\test_alignment.py .................                     [ 53%]
+tests\roadrunner\test_capability_probe.py ..                             [ 53%]
+tests\roadrunner\test_exceptions.py ...                                  [ 53%]
+tests\roadrunner\test_export_inventory.py ..................             [ 53%]
+tests\roadrunner\test_gate_matrix.py ..................                  [ 54%]
+tests\roadrunner\test_installation.py ...............                    [ 54%]
+tests\roadrunner\test_manifest.py ......                                 [ 54%]
+tests\roadrunner\test_mesh_manifest.py ................                  [ 54%]
+tests\roadrunner\test_models.py ........................................ [ 55%]
+..                                                                       [ 55%]
+tests\roadrunner\test_profiles.py ............                           [ 55%]
+tests\roadrunner\test_semantic_manifest.py ...........                   [ 55%]
+tests\roadrunner\test_source_contract.py ....                            [ 55%]
+tests\test_crosswalk_schema.py ......................................... [ 56%]
+........................                                                 [ 56%]
+tests\test_import_supervision.py ............................            [ 56%]
+tests\test_r13_c0r_tag_freeze.py ....................                    [ 57%]
+tests\test_r13_digest_v2.py ...........                                  [ 57%]
+tests\test_r13_evidence.py .....                                         [ 57%]
+tests\test_r13_governed_payload_guard.py .....                           [ 57%]
+tests\test_r13_mutation_allowlist.py .....                               [ 57%]
+tests\test_stage_i_integrity.py ..............                           [ 57%]
+tests\topology\test_junction_model.py ...........                        [ 57%]
+tests\topology\test_missing_junction_link_repair.py ............         [ 57%]
+tests\topology\test_road_removal.py ....                                 [ 57%]
+tests\topology\test_roundabout_rebuilder.py .................            [ 58%]
+tests\topology\test_roundabout_reconstructor.py ........................ [ 58%]
+....                                                                     [ 58%]
+tests\topology\test_semantic_verifier.py ...........                     [ 58%]
+tests\topology\test_structure_prune_legacy.py ...........                [ 58%]
+tests\topology\test_structure_scanner.py ............................... [ 59%]
+..                                                                       [ 59%]
+tests\topology\test_topology_linter.py ...........................       [ 59%]
+tests\topology\test_topology_repair.py ..................                [ 59%]
+tests\unit\test_a1_a2_path_and_frame_resolution.py ..........F..         [ 59%]
+tests\unit\test_access_restriction_metadata.py ...                       [ 59%]
+tests\unit\test_agent_sync_contract.py ......                            [ 60%]
+tests\unit\test_artifact_locator.py .........                            [ 60%]
+tests\unit\test_artifact_transactions.py ......                          [ 60%]
+tests\unit\test_assert_supported_carla_version.py .....                  [ 60%]
+tests\unit\test_audit_building_frame_alignment.py .....                  [ 60%]
+tests\unit\test_audit_lane_link_turn_classification_cli.py ..            [ 60%]
+tests\unit\test_audit_osm_road_link_topology_cli.py .                    [ 60%]
+tests\unit\test_audit_thesis_topic_contract_current.py .......           [ 60%]
+tests\unit\test_back_to_back_state_contamination.py .......              [ 60%]
+tests\unit\test_blender_conversion_integrity.py .....................    [ 60%]
+tests\unit\test_blender_geometry_contract.py ..FFFFFFFF.FFFFFFFFFFFFFFF. [ 61%]
+.                                                                        [ 61%]
+tests\unit\test_c12_explicit_dr_wiring.py ...                            [ 61%]
+tests\unit\test_c16_cook_dry_run.py ....                                 [ 61%]
+tests\unit\test_c9_tail_gate_controls.py ............................... [ 61%]
+....                                                                     [ 61%]
+tests\unit\test_candidate_regression_gate.py ....                        [ 61%]
+tests\unit\test_capture_config.py .......                                [ 61%]
+tests\unit\test_carla_classes.py ......                                  [ 62%]
+tests\unit\test_carla_georeference_contract.py .......................   [ 62%]
+tests\unit\test_carla_import_supervision.py ............................ [ 62%]
+.....                                                                    [ 62%]
+tests\unit\test_carla_runtime_load_safety.py ........................... [ 63%]
+..................................                                       [ 63%]
+tests\unit\test_carla_semantic_organizer.py .............                [ 63%]
+tests\unit\test_carla_tools_honesty.py .....                             [ 63%]
+tests\unit\test_carla_utils_tier3_hardening.py .................         [ 63%]
+tests\unit\test_carla_visual_smoke_gate_evaluation.py ..........         [ 64%]
+tests\unit\test_carla_visual_smoke_gate_utils.py .............           [ 64%]
+tests\unit\test_cert_runtime_hardening.py ......                         [ 64%]
+tests\unit\test_check_junction_connection_coverage.py ......             [ 64%]
+tests\unit\test_check_lane_geometry_continuity.py ...........            [ 64%]
+tests\unit\test_check_lane_width_continuity.py ............              [ 64%]
+tests\unit\test_class_weights.py .......                                 [ 64%]
+tests\unit\test_cli_runtime_tile.py ..                                   [ 64%]
+tests\unit\test_codex_harness.py .                                       [ 64%]
+tests\unit\test_component_classifier.py ...........                      [ 64%]
+tests\unit\test_component_reachability.py .........                      [ 65%]
+tests\unit\test_compute_perception_gap.py ...                            [ 65%]
+tests\unit\test_confirmed_hygiene_gaps.py ....                           [ 65%]
+tests\unit\test_connector_validator_pose.py ..                           [ 65%]
+tests\unit\test_cook_resource_census.py ..........                       [ 65%]
+tests\unit\test_crash_classifier.py .......................              [ 65%]
+tests\unit\test_crash_safe_length_repair.py .....                        [ 65%]
+tests\unit\test_crosswalk_writer.py ....................                 [ 65%]
+tests\unit\test_curvature_wasserstein_gap.py .....                       [ 66%]
+tests\unit\test_db_manager.py .............                              [ 66%]
+tests\unit\test_db_manager_get_connection_removed.py ..                  [ 66%]
+tests\unit\test_dem_identity_crs.py ......                               [ 66%]
+tests\unit\test_domain_adaptation.py .......                             [ 66%]
+tests\unit\test_domain_gap_gnn.py ....................                   [ 66%]
+tests\unit\test_domain_gap_metrics.py ...........                        [ 66%]
+tests\unit\test_e2_map_quality_repair.py ....                            [ 66%]
+tests\unit\test_elevation_grade_clamp.py ...                             [ 66%]
+tests\unit\test_entrypoint_print_import_safety.py .....                  [ 66%]
+tests\unit\test_eval_real_unlabeled.py ......                            [ 67%]
+tests\unit\test_eval_sim_labeled_metrics.py .......                      [ 67%]
+tests\unit\test_evidence_sha256_anchors.py .                             [ 67%]
+tests\unit\test_exp_osm_to_xodr_determinism_normalized.py ......         [ 67%]
+tests\unit\test_export_thesis_tables.py ...............                  [ 67%]
+tests\unit\test_feature_gap.py .......                                   [ 67%]
+tests\unit\test_file_hashing.py .................                        [ 67%]
+tests\unit\test_final_map_readiness_gate.py ............................ [ 68%]
+.......                                                                  [ 68%]
+tests\unit\test_find_broken_roads_cli.py .......                         [ 68%]
+tests\unit\test_frechet_gap.py .............                             [ 68%]
+tests\unit\test_full_grid_tile_cook.py .............                     [ 68%]
+tests\unit\test_gap_analyzer_xodr_to_xodr.py ....                        [ 68%]
+tests\unit\test_gate_measurement_correctness.py ...............          [ 68%]
+tests\unit\test_geojson_multipolygon_buildings.py .....                  [ 68%]
+tests\unit\test_geometric_continuity_contactpoint.py ..........          [ 69%]
+tests\unit\test_geometric_continuity_migration.py ...................... [ 69%]
+..........                                                               [ 69%]
+tests\unit\test_geometry_kernel.py ........................              [ 69%]
+tests\unit\test_geometry_validator_kernel_migration.py ...........s      [ 69%]
+tests\unit\test_geometry_validator_xml_mutation.py ........              [ 70%]
+tests\unit\test_gpu_tdr_preflight.py .....                               [ 70%]
+tests\unit\test_harness_governance_contract.py ...............           [ 70%]
+tests\unit\test_import_success_contract_v2.py .............              [ 70%]
+tests\unit\test_infrastructure_regressions.py ..................         [ 70%]
+tests\unit\test_inputs_manifest.py ..................                    [ 70%]
+tests\unit\test_junction_complexity_gap.py ..................            [ 71%]
+tests\unit\test_junction_connector_boundary_gate.py ..                   [ 71%]
+tests\unit\test_junction_connector_classifier.py .............           [ 71%]
+tests\unit\test_junction_connector_rebuild.py ..                         [ 71%]
+tests\unit\test_junction_integrity_consistency.py .....                  [ 71%]
+tests\unit\test_label_quality.py .....                                   [ 71%]
+tests\unit\test_lane_count_changes.py ..                                 [ 71%]
+tests\unit\test_lane_generator_osm_count.py ....                         [ 71%]
+tests\unit\test_lane_section_successors.py ...                           [ 71%]
+tests\unit\test_lane_successor_hardening.py ..                           [ 71%]
+tests\unit\test_lane_successor_topology.py ........                      [ 71%]
+tests\unit\test_lane_width_policy.py ......                              [ 71%]
+tests\unit\test_large_map_package.py ................................    [ 72%]
+tests\unit\test_local_registration.py ......................             [ 72%]
+tests\unit\test_manual_refs_sha_pin.py .......                           [ 72%]
+tests\unit\test_map_acceptance.py ...................................... [ 73%]
+.....                                                                    [ 73%]
+tests\unit\test_map_event_record.py ............                         [ 73%]
+tests\unit\test_map_hygiene.py ..................                        [ 73%]
+tests\unit\test_map_identity_guard.py .....                              [ 73%]
+tests\unit\test_map_registry_integrity.py .............................. [ 74%]
+........                                                                 [ 74%]
+tests\unit\test_map_registry_name_normalization.py ..................... [ 74%]
+.........                                                                [ 74%]
+tests\unit\test_map_registry_pinning.py ..........                       [ 74%]
+tests\unit\test_map_registry_verify_pinned_map.py ..........             [ 74%]
+tests\unit\test_map_stats_curvature.py .......                           [ 74%]
+tests\unit\test_measure_candidate_acceptance_drivability_gates.py ...... [ 74%]
+.................                                                        [ 75%]
+tests\unit\test_measure_candidate_acceptance_junction_integrity.py ..    [ 75%]
+tests\unit\test_mesh_continuity_repairer_curvature_flag.py ...           [ 75%]
+tests\unit\test_mesh_continuity_repairer_parampoly3_endpoint.py ....     [ 75%]
+tests\unit\test_mesh_quality.py ..............................           [ 75%]
+tests\unit\test_mesh_streamer_update.py .....                            [ 75%]
+tests\unit\test_micro_stub_detection.py ....                             [ 75%]
+tests\unit\test_min_train_segmentation_any_255.py ....                   [ 75%]
+tests\unit\test_native_signal_enrichment.py .                            [ 75%]
+tests\unit\test_o10_gap026_severe_tail_fixtures.py ..                    [ 75%]
+tests\unit\test_o11_gap026_checker_bias_matrix.py ...                    [ 75%]
+tests\unit\test_o12_current_map_static_release_matrix.py ....            [ 75%]
+tests\unit\test_o13_configuration_authority_audit.py ...                 [ 76%]
+tests\unit\test_o14_clean_clone_offline_audit.py ..                      [ 76%]
+tests\unit\test_o15_rq1_five_run_matrix.py ..................            [ 76%]
+tests\unit\test_o16_rq3_pairing_preflight.py .....                       [ 76%]
+tests\unit\test_o17_rq3_dataset_manifest_verifier.py .....               [ 76%]
+tests\unit\test_o18_rq5_contract_audit.py ..                             [ 76%]
+tests\unit\test_o19_final_release_receipt.py ....                        [ 76%]
+tests\unit\test_o1_cook_provenance_chain.py ................             [ 76%]
+tests\unit\test_o20_recovery_resume_audit.py .....                       [ 76%]
+tests\unit\test_o2_large_map_package_contract.py ........                [ 76%]
+tests\unit\test_o3_tile_frame_consistency.py ........                    [ 76%]
+tests\unit\test_o4_preflight_import_package.py ........                  [ 77%]
+tests\unit\test_o5_unreal_cook_resource_preflight.py .....               [ 77%]
+tests\unit\test_o6_carla_source_build_receipt.py ....                    [ 77%]
+tests\unit\test_o7_rpc_instrumentation_audit.py ..                       [ 77%]
+tests\unit\test_o8_runtime_map_qa.py ..                                  [ 77%]
+tests\unit\test_o9_runtime_route_generator.py ....                       [ 77%]
+tests\unit\test_oc1_review_regression.py ....                            [ 77%]
+tests\unit\test_oc3_adversarial_review.py ..                             [ 77%]
+tests\unit\test_offline_cooking_pipeline_integration.py ..               [ 77%]
+tests\unit\test_opendrive_gen_diagnostic.py ......................       [ 77%]
+tests\unit\test_opendrive_geometry_parampoly3.py ....................... [ 77%]
+...............................................                          [ 78%]
+tests\unit\test_opendrive_rebase.py ...........                          [ 78%]
+tests\unit\test_orchestration_hardening.py ............................. [ 79%]
+.................................                                        [ 79%]
+tests\unit\test_osm_enrichment_writers_name_match.py ....                [ 79%]
+tests\unit\test_osm_file_selection_mtime_guard_20260924.py .....         [ 79%]
+tests\unit\test_osm_input_guard.py ......                                [ 79%]
+tests\unit\test_osm_meta_index_name_matching.py ....                     [ 79%]
+tests\unit\test_osm_multipolygon_buildings.py ....                       [ 79%]
+tests\unit\test_osm_polygon_loader_frame.py ...                          [ 79%]
+tests\unit\test_osm_polygon_loader_malformed_nodes.py ...                [ 79%]
+tests\unit\test_osm_road_link_topology.py ....                           [ 79%]
+tests\unit\test_osm_to_xodr_proj_string_gap021.py ...                    [ 80%]
+tests\unit\test_osm_xodr_correspondence.py ..........                    [ 80%]
+tests\unit\test_ost_run_protocol_adapter.py ......................       [ 80%]
+tests\unit\test_p09_tile_equivalence.py .........s...                    [ 80%]
+tests\unit\test_p0_recorder_and_provenance_repairs.py ................   [ 80%]
+tests\unit\test_pack_thesis_run.py ....                                  [ 80%]
+tests\unit\test_package_smoke_check.py ....                              [ 80%]
+tests\unit\test_package_write_poller.py ........ss..                     [ 81%]
+tests\unit\test_parampoly3_blind_spot_sweep.py ....                      [ 81%]
+tests\unit\test_patch_pinned_building_frame.py .....                     [ 81%]
+tests\unit\test_perception_any_255.py ....                               [ 81%]
+tests\unit\test_perception_dataset_roundtrip.py ......                   [ 81%]
+tests\unit\test_perception_metrics_exporter.py ....                      [ 81%]
+tests\unit\test_perception_metrics_simple.py ..............              [ 81%]
+tests\unit\test_phase_g3_cross_section_coverage.py .....                 [ 81%]
+tests\unit\test_phase_g5_lane_classification.py ...                      [ 81%]
+tests\unit\test_phase_g6_junction_lanelinks.py ......                    [ 81%]
+tests\unit\test_phase_g7_roadmark_semantics.py ...                       [ 81%]
+tests\unit\test_phase_h0_signal_offset.py ..                             [ 81%]
+tests\unit\test_planview_internal_seams_heading_only.py ......           [ 81%]
+tests\unit\test_positioned_osm_metadata.py ........                      [ 81%]
+tests\unit\test_probe_tile_fbx_densest_cli.py ......                     [ 82%]
+tests\unit\test_quarantine_bad_roads.py ......................           [ 82%]
+tests\unit\test_realism_module_infer_speed.py .........                  [ 82%]
+tests\unit\test_realism_module_rules_mode.py .........                   [ 82%]
+tests\unit\test_receipt_reconciler.py .........                          [ 82%]
+tests\unit\test_recompute_geometry_starts_chained_inplace.py ....        [ 82%]
+tests\unit\test_record_route_authority.py .....                          [ 82%]
+tests\unit\test_record_route_timeout_camera_scaling.py .......           [ 82%]
+tests\unit\test_recorder_backpressure_and_frame_integrity.py ........... [ 83%]
+............                                                             [ 83%]
+tests\unit\test_recorder_semseg_layout.py ...............                [ 83%]
+tests\unit\test_regen_find_final_xodr_hygiene.py ....                    [ 83%]
+tests\unit\test_regen_map_of_record_sumo_guard.py .......                [ 83%]
+tests\unit\test_regen_measure_acceptance_component_reachability.py ..    [ 83%]
+tests\unit\test_regen_rebase_buildings.py ...                            [ 83%]
+tests\unit\test_regen_strict_preconditions.py ...............            [ 83%]
+tests\unit\test_regen_structural_signature.py .....                      [ 83%]
+tests\unit\test_repo_health_tool.py ......                               [ 83%]
+tests\unit\test_rig_verifier_reexports.py .........                      [ 84%]
+tests\unit\test_rl_fuzzer.py ...........................                 [ 84%]
+tests\unit\test_roundabout_v2_real_map_probe.py ..                       [ 84%]
+tests\unit\test_roundabout_v2_regression.py ...............              [ 84%]
+tests\unit\test_roundabout_v2_source_aware.py .....                      [ 84%]
+tests\unit\test_rq1_osm_preflight.py .......                             [ 84%]
+tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 85%]
+......................                                                   [ 85%]
+tests\unit\test_rq4_gnn_provenance.py ...............................    [ 85%]
+tests\unit\test_rq5_execution_correctness.py ........................... [ 86%]
+.........                                                                [ 86%]
+tests\unit\test_rq5_protocol_freeze.py .........                         [ 86%]
+tests\unit\test_rq5b_claim_boundary.py ..........                        [ 86%]
+tests\unit\test_run_archiver.py ........                                 [ 86%]
+tests\unit\test_run_c19_assembly.py ....                                 [ 86%]
+tests\unit\test_run_determinism_audit.py ............................... [ 87%]
+.......................                                                  [ 87%]
+tests\unit\test_run_gnn_pipeline_seed.py .....                           [ 87%]
+tests\unit\test_run_perception_safe_failure_classification.py .......... [ 87%]
+..................................                                       [ 88%]
+tests\unit\test_run_perception_safe_rig_contract.py ..............       [ 88%]
+tests\unit\test_run_perception_safe_unstable_map_mitigations.py ........ [ 88%]
+...................                                                      [ 88%]
+tests\unit\test_runtime_enrichments.py .........................         [ 88%]
+tests\unit\test_runtime_tile_builder.py .....                            [ 88%]
+tests\unit\test_runtime_tile_referential_integrity.py ........           [ 89%]
+tests\unit\test_salvage_repair.py ...                                    [ 89%]
+tests\unit\test_semantic_class_policy.py .....                           [ 89%]
+tests\unit\test_semantic_completeness.py ....                            [ 89%]
+tests\unit\test_semantic_diff.py ......                                  [ 89%]
+tests\unit\test_semantic_overlap_wiring.py .....                         [ 89%]
+tests\unit\test_semantic_tagging.py .........................            [ 89%]
+tests\unit\test_sensor_calibration_semantics.py ....                     [ 89%]
+tests\unit\test_sidewalk_builder.py ............................         [ 90%]
+tests\unit\test_signal_digest_canonical.py ............                  [ 90%]
+tests\unit\test_single_writer_arbitration.py ........................... [ 90%]
+.....                                                                    [ 90%]
+tests\unit\test_single_writer_control_plane.py ......................    [ 90%]
+tests\unit\test_speed_limit_writer.py .......                            [ 91%]
+tests\unit\test_stage05_connector_snap_wiring.py ....                    [ 91%]
+tests\unit\test_stage07_structural_osm_metadata.py ..                    [ 91%]
+tests\unit\test_stage08_length_invariant.py .                            [ 91%]
+tests\unit\test_stage10c_respects_carla_disable.py .....                 [ 91%]
+tests\unit\test_stage4_offline_buildings.py .........                    [ 91%]
+tests\unit\test_stage6_containment.py ..............                     [ 91%]
+tests\unit\test_stage6_unsafe_flag_policy.py ................            [ 91%]
+tests\unit\test_stage8h_map_hygiene.py .......                           [ 91%]
+tests\unit\test_stage_boundary_contracts.py .............                [ 91%]
+tests\unit\test_stage_context.py ....                                    [ 92%]
+tests\unit\test_stage_contracts_aggregate.py ........................... [ 92%]
+.........                                                                [ 92%]
+tests\unit\test_stage_digest.py ..........                               [ 92%]
+tests\unit\test_stage_large_map_import_package_cli.py .....              [ 92%]
+tests\unit\test_stall_watchdog.py .................                      [ 92%]
+tests\unit\test_structure_elevation_plausibility.py ......               [ 92%]
+tests\unit\test_structure_elevation_remediation_probe.py ..              [ 92%]
+tests\unit\test_sumo_repair_frame_preservation.py ..                     [ 93%]
+tests\unit\test_t6_owner_identity_authority.py ...........               [ 93%]
+tests\unit\test_thesis_rq_contract.py ........                           [ 93%]
+tests\unit\test_tile_equivalence.py ............                         [ 93%]
+tests\unit\test_tile_extractor.py ..............................         [ 93%]
+tests\unit\test_tile_fbx_generator.py ........................           [ 94%]
+tests\unit\test_tile_metadata.py ..............                          [ 94%]
+tests\unit\test_tile_world_runner_runtime_tile.py ...                    [ 94%]
+tests\unit\test_tiling_seam_continuity.py ........                       [ 94%]
+tests\unit\test_topology_certification.py .............                  [ 94%]
+tests\unit\test_traffic_light_signals.py ........                        [ 94%]
+tests\unit\test_traffic_manager_and_walker_authority.py ................ [ 94%]
+....................                                                     [ 95%]
+tests\unit\test_train_launcher_any_255.py ...                            [ 95%]
+tests\unit\test_train_launcher_synthetic_dry_run.py .                    [ 95%]
+tests\unit\test_turn_cycle_lane_geometry.py ..........                   [ 95%]
+tests\unit\test_ue4_import_log_analysis.py ............................. [ 95%]
+......                                                                   [ 95%]
+tests\unit\test_validate_governance.py ................................. [ 96%]
+.........................                                                [ 96%]
+tests\unit\test_validate_thesis_claim_provenance.py ..........           [ 96%]
+tests\unit\test_verify_candidate_digest.py .......                       [ 96%]
+tests\unit\test_verify_final_xodr.py ..................                  [ 97%]
+tests\unit\test_visual_mesh_elevation_warp.py .......                    [ 97%]
+tests\unit\test_writer_lock.py ..................                        [ 97%]
+tests\unit\test_writer_lock_adversarial.py ........                      [ 97%]
+tests\unit\test_writer_lock_atomic_publication.py ....                   [ 97%]
+tests\unit\test_xodr_carla_hardener.py ................................. [ 97%]
+..                                                                       [ 97%]
+tests\unit\test_xodr_compare_gate.py .........................           [ 98%]
+tests\unit\test_xodr_junction_ref_cleanup.py ..........                  [ 98%]
+tests\unit\test_xodr_structural_summary.py .....................         [ 98%]
+tests\unit\test_xodr_validator_convergence.py .......................... [ 99%]
+.........                                                                [ 99%]
+tests\unit\test_zero_length_connector_repair.py ...                      [ 99%]
+ultimate_pipeline\domain_gap\tests\test_geo_alignment.py ............... [ 99%]
+..                                                                       [ 99%]
+ultimate_pipeline\domain_gap\tests\test_run_metadata.py .                [ 99%]
+ultimate_pipeline\carla_tools\tests\test_carla_recovery_helpers.py ..... [ 99%]
+.................                                                        [ 99%]
+ultimate_pipeline\carla_tools\tests\test_spawn_validator.py .....        [ 99%]
+ultimate_pipeline\carla_tools\tests\test_thesis_sensor_rig_contract.py . [ 99%]
+.............                                                            [ 99%]
+ultimate_pipeline\tools\tests\test_calib_path.py .                       [ 99%]
+ultimate_pipeline\tools\tests\test_capture_perception_pair_safe_completeness.py . [ 99%]
+..                                                                       [100%]
+
+================================== FAILURES ===================================
+______ TestPortablePathResolution.test_missing_osm2world_fails_precisely ______
+tests\unit\test_a1_a2_path_and_frame_resolution.py:222: in test_missing_osm2world_fails_precisely
+    with pytest.raises(SystemExit) as exc:
+E   Failed: DID NOT RAISE <class 'SystemExit'>
+_____________ TestUvChannelIsGenerated.test_defines_uv_generation _____________
+tests\unit\test_blender_geometry_contract.py:44: in test_defines_uv_generation
+    assert "def generate_uvs(" in src
+E   assert 'def generate_uvs(' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_________ TestUvChannelIsGenerated.test_uses_box_projection_per_face __________
+tests\unit\test_blender_geometry_contract.py:48: in test_uses_box_projection_per_face
+    assert "_UV_AXIS_PAIRS" in src
+E   assert '_UV_AXIS_PAIRS' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_____________ TestUvChannelIsGenerated.test_normalizes_per_object _____________
+tests\unit\test_blender_geometry_contract.py:53: in test_normalizes_per_object
+    assert "span = [((hi[i] - lo[i]) or 1.0) for i in range(3)]" in src
+E   assert 'span = [((hi[i] - lo[i]) or 1.0) for i in range(3)]' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_________ TestUvChannelIsGenerated.test_creates_uv_layer_when_missing _________
+tests\unit\test_blender_geometry_contract.py:56: in test_creates_uv_layer_when_missing
+    assert 'mesh.uv_layers.new(name="UVMap")' in src
+E   assert 'mesh.uv_layers.new(name="UVMap")' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_____________ TestUvChannelIsGenerated.test_does_not_disable_uvs ______________
+tests\unit\test_blender_geometry_contract.py:59: in test_does_not_disable_uvs
+    assert 'mesh_smooth_type=\'OFF\'' not in src
+E   assert "mesh_smooth_type='OFF'" not in '#!/usr/bin/...    main()\n'
+E     
+E     "mesh_smooth_type='OFF'" is contained here:
+E       ers=True, mesh_smooth_type='OFF', use_mesh_edges=False,
+E     ?           ++++++++++++++++++++++
+E               use_tspace=False, use_custom_props=False, add_leaf_bones=False,
+E               primary_bone_axis='Y', secondary_bone_axis='X', armature_nodetype='NULL',
+E               bake_anim=False, path_mode='AUTO', embed_textures=False, batch_mode='OFF',...
+E     
+E     ...Full output truncated (41 lines hidden), use '-vv' to show
+_________ TestSmoothingGroupsAreExported.test_exports_face_smoothing __________
+tests\unit\test_blender_geometry_contract.py:64: in test_exports_face_smoothing
+    assert "mesh_smooth_type='FACE'" in src
+E   assert "mesh_smooth_type='FACE'" in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_______ TestSmoothingGroupsAreExported.test_marks_sharp_edges_by_angle ________
+tests\unit\test_blender_geometry_contract.py:67: in test_marks_sharp_edges_by_angle
+    assert "def apply_smoothing(" in src
+E   assert 'def apply_smoothing(' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+____________ TestSmoothingGroupsAreExported.test_smooths_faces_too ____________
+tests\unit\test_blender_geometry_contract.py:74: in test_smooths_faces_too
+    assert "p.use_smooth = True" in src
+E   assert 'p.use_smooth = True' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_________________ TestFailClosed.test_validates_before_export _________________
+tests\unit\test_blender_geometry_contract.py:86: in test_validates_before_export
+    assert "def validate_mesh(" in src
+E   assert 'def validate_mesh(' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+___________________ TestFailClosed.test_three_state_verdict ___________________
+tests\unit\test_blender_geometry_contract.py:92: in test_three_state_verdict
+    assert 'report["gate"] = "REJECTED"' in src
+E   assert 'report["gate"] = "REJECTED"' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+____________ TestFailClosed.test_rejects_when_degeneracy_survives _____________
+tests\unit\test_blender_geometry_contract.py:97: in test_rejects_when_degeneracy_survives
+    assert "unrepairable geometry remains after sanitize" in src
+E   assert 'unrepairable geometry remains after sanitize' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+__________ TestFailClosed.test_escalates_heavy_deletion_to_rejected ___________
+tests\unit\test_blender_geometry_contract.py:101: in test_escalates_heavy_deletion_to_rejected
+    assert "MAX_REPAIR_FRACTION" in src
+E   assert 'MAX_REPAIR_FRACTION' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+________________ TestFailClosed.test_repaired_state_is_logged _________________
+tests\unit\test_blender_geometry_contract.py:105: in test_repaired_state_is_logged
+    assert "QUALITY_REPAIRED" in src
+E   assert 'QUALITY_REPAIRED' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_____________ TestFailClosed.test_exits_nonzero_and_writes_no_fbx _____________
+tests\unit\test_blender_geometry_contract.py:108: in test_exits_nonzero_and_writes_no_fbx
+    assert "QUALITY_GATE_FAILED" in src
+E   assert 'QUALITY_GATE_FAILED' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+________________ TestFailClosed.test_aggregate_gate_precedence ________________
+tests\unit\test_blender_geometry_contract.py:114: in test_aggregate_gate_precedence
+    assert 'if quality["rejected_objects"]' in src
+E   assert 'if quality["rejected_objects"]' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_______________ TestFailClosed.test_records_quality_in_manifest _______________
+tests\unit\test_blender_geometry_contract.py:118: in test_records_quality_in_manifest
+    assert 'manifest["geometry_quality"] = quality' in src
+E   assert 'manifest["geometry_quality"] = quality' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+____ TestSanitizeIsDeterministic.test_only_unrepairable_faces_are_dropped _____
+tests\unit\test_blender_geometry_contract.py:127: in test_only_unrepairable_faces_are_dropped
+    assert "len(f.verts) < 3 or f.calc_area() <= QUALITY_EPS_AREA" in src
+E   assert 'len(f.verts) < 3 or f.calc_area() <= QUALITY_EPS_AREA' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+_________ TestSanitizeIsDeterministic.test_dissolves_degenerate_edges _________
+tests\unit\test_blender_geometry_contract.py:130: in test_dissolves_degenerate_edges
+    assert "dissolve_degenerate" in src
+E   assert 'dissolve_degenerate' in '#!/usr/bin/env python3\n# Blender OBJ->FBX conversion with J3 manifest (auto-generated by blender_runner.py)\nimport ...s=True)\n    print("[BLENDER] CONVERSION_OK", flush=True)\n    sys.exit(0)\n\nif __name__ == "__main__":\n    main()\n'
+________________ TestGateIsExecutable.test_clean_mesh_is_pass _________________
+tests\unit\test_blender_geometry_contract.py:188: in test_clean_mesh_is_pass
+    assert self._gate(0, 100) == "PASS"
+           ^^^^^^^^^^^^^^^^^^
+tests\unit\test_blender_geometry_contract.py:146: in _gate
+    start = code.index("def validate_mesh(")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: substring not found
+_________ TestGateIsExecutable.test_stray_degenerate_face_is_repaired _________
+tests\unit\test_blender_geometry_contract.py:191: in test_stray_degenerate_face_is_repaired
+    assert self._gate(1, 100) == "REPAIRED"
+           ^^^^^^^^^^^^^^^^^^
+tests\unit\test_blender_geometry_contract.py:146: in _gate
+    start = code.index("def validate_mesh(")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: substring not found
+____________ TestGateIsExecutable.test_heavy_deletion_is_rejected _____________
+tests\unit\test_blender_geometry_contract.py:194: in test_heavy_deletion_is_rejected
+    assert self._gate(10, 50) == "REJECTED"
+           ^^^^^^^^^^^^^^^^^^
+tests\unit\test_blender_geometry_contract.py:146: in _gate
+    start = code.index("def validate_mesh(")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: substring not found
+________ TestGateIsExecutable.test_dissolved_edges_alone_are_repaired _________
+tests\unit\test_blender_geometry_contract.py:197: in test_dissolved_edges_alone_are_repaired
+    assert self._gate(0, 100, dissolved=3) == "REPAIRED"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_blender_geometry_contract.py:146: in _gate
+    start = code.index("def validate_mesh(")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: substring not found
+_________ TestGateIsExecutable.test_surviving_degeneracy_is_rejected __________
+tests\unit\test_blender_geometry_contract.py:200: in test_surviving_degeneracy_is_rejected
+    assert self._gate(0, 100, degen_geo=1) == "REJECTED"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_blender_geometry_contract.py:146: in _gate
+    start = code.index("def validate_mesh(")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: substring not found
+============================== warnings summary ===============================
+ultimate_pipeline\config\settings.py:2013: 1 warning
+ultimate_pipeline/tests/unit/test_c11_crs_comparability_decoupled.py: 4 warnings
+ultimate_pipeline/tests/unit/test_c11_preanchor_default.py: 3 warnings
+ultimate_pipeline/tests/unit/test_inputs_manifest_default.py: 4 warnings
+tests/unit/test_regen_strict_preconditions.py: 1 warning
+tests/unit/test_stage10c_respects_carla_disable.py: 5 warnings
+tests/unit/test_stage6_unsafe_flag_policy.py: 15 warnings
+tests/unit/test_stage8h_map_hygiene.py: 7 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\config\settings.py:2013: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2025: 1 warning
+ultimate_pipeline/tests/unit/test_c11_crs_comparability_decoupled.py: 4 warnings
+ultimate_pipeline/tests/unit/test_c11_preanchor_default.py: 3 warnings
+ultimate_pipeline/tests/unit/test_inputs_manifest_default.py: 4 warnings
+tests/unit/test_regen_strict_preconditions.py: 1 warning
+tests/unit/test_stage10c_respects_carla_disable.py: 5 warnings
+tests/unit/test_stage6_unsafe_flag_policy.py: 15 warnings
+tests/unit/test_stage8h_map_hygiene.py: 7 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\config\settings.py:2025: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2031: 1 warning
+ultimate_pipeline/tests/unit/test_c11_crs_comparability_decoupled.py: 4 warnings
+ultimate_pipeline/tests/unit/test_c11_preanchor_default.py: 3 warnings
+ultimate_pipeline/tests/unit/test_inputs_manifest_default.py: 4 warnings
+tests/unit/test_regen_strict_preconditions.py: 1 warning
+tests/unit/test_stage10c_respects_carla_disable.py: 5 warnings
+tests/unit/test_stage6_unsafe_flag_policy.py: 15 warnings
+tests/unit/test_stage8h_map_hygiene.py: 7 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\config\settings.py:2031: RuntimeWarning: HPC_DIR resolved to missing dir: 'C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\hpc'. Set UP_HPC_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+.venv\Lib\site-packages\torch_geometric\llm\utils\backend_utils.py:26
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\torch_geometric\llm\utils\backend_utils.py:26: DeprecationWarning: `torch_geometric.distributed` has been deprecated since 2.7.0 and will no longer be maintained. For distributed training, refer to our tutorials on distributed training at https://pytorch-geometric.readthedocs.io/en/latest/tutorial/distributed.html or cuGraph examples at https://github.com/rapidsai/cugraph-gnn/tree/main/python/cugraph-pyg/cugraph_pyg/examples
+    from torch_geometric.distributed import (
+
+ultimate_pipeline/tests/unit/test_dem_diagnostics.py::test_valid_geotiff_reports_bounds_crs_and_elevation_stats
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\numpy\ma\core.py:3511: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    super(MaskedArray, type(self)).shape.__set__(self, shape)
+
+ultimate_pipeline/tests/unit/test_tile_metadata.py: 5 warnings
+tests/unit/test_tile_metadata.py: 5 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\tiling\tile_extractor.py:576: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "frozen_at_utc": datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_c9_tail_gate_controls.py::test_check_dem_coverage_missing_georeference_fails_closed
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\quality\check_dem_coverage.py:292: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    band1 = ds.read(1)
+
+tests/unit/test_c9_tail_gate_controls.py::test_check_elevation_profile_positive_control_no_spikes
+tests/unit/test_c9_tail_gate_controls.py::test_check_elevation_profile_negative_control_grade_spike
+tests/unit/test_c9_tail_gate_controls.py::test_check_elevation_profile_negative_control_invalid_attribute
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\quality\check_elevation_profile.py:128: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_cook_resource_census.py: 12 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\cook_resource_census.py:122: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_osm_to_xodr_proj_string_gap021.py::test_default_config_pins_proj_string_to_native_frame
+tests/unit/test_osm_to_xodr_proj_string_gap021.py::test_conversion_header_georeference_resolves_to_real_world_location
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\pyproj\crs\crs.py:1295: UserWarning: You will likely lose important projection information when converting to a PROJ string from another format. See: https://proj.org/faq.html#what-is-the-best-format-for-describing-coordinate-reference-systems
+    proj = self._crs.to_proj4(version=version)
+
+tests/unit/test_package_write_poller.py: 15 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py:76: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow().isoformat() + "Z"
+
+tests/unit/test_package_write_poller.py: 12 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\package_write_poller.py:134: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_receipt_reconciler.py::test_case10_identity_not_membership
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\_pytest\unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <function Handle.Close at 0x0000017C956247C0>
+  
+  Traceback (most recent call last):
+    File "C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 221, in Close
+      CloseHandle(self)
+  OSError: [WinError 6] The handle is invalid
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+tests/unit/test_regen_strict_preconditions.py::test_k_emit_candidate_records_manifest_verification
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\scripts\regen_map_of_record.py:382: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_rq5_protocol_freeze.py::test_seeded_training_order_deterministic
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\.venv\Lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+    warnings.warn(warn_msg)
+
+tests/unit/test_stage_digest.py: 12 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\ultimate_pipeline\determinism\stage_digest.py:66: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_stall_watchdog.py: 83 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\stall_watchdog.py:89: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/unit/test_stall_watchdog.py: 15 warnings
+  C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\stall_watchdog.py:138: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    dump_file = self.dump_dir / f"cook_stall_pid{self.pid}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.dmp"
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_missing_osm2world_fails_precisely
+FAILED tests/unit/test_blender_geometry_contract.py::TestUvChannelIsGenerated::test_defines_uv_generation
+FAILED tests/unit/test_blender_geometry_contract.py::TestUvChannelIsGenerated::test_uses_box_projection_per_face
+FAILED tests/unit/test_blender_geometry_contract.py::TestUvChannelIsGenerated::test_normalizes_per_object
+FAILED tests/unit/test_blender_geometry_contract.py::TestUvChannelIsGenerated::test_creates_uv_layer_when_missing
+FAILED tests/unit/test_blender_geometry_contract.py::TestUvChannelIsGenerated::test_does_not_disable_uvs
+FAILED tests/unit/test_blender_geometry_contract.py::TestSmoothingGroupsAreExported::test_exports_face_smoothing
+FAILED tests/unit/test_blender_geometry_contract.py::TestSmoothingGroupsAreExported::test_marks_sharp_edges_by_angle
+FAILED tests/unit/test_blender_geometry_contract.py::TestSmoothingGroupsAreExported::test_smooths_faces_too
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_validates_before_export
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_three_state_verdict
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_rejects_when_degeneracy_survives
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_escalates_heavy_deletion_to_rejected
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_repaired_state_is_logged
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_exits_nonzero_and_writes_no_fbx
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_aggregate_gate_precedence
+FAILED tests/unit/test_blender_geometry_contract.py::TestFailClosed::test_records_quality_in_manifest
+FAILED tests/unit/test_blender_geometry_contract.py::TestSanitizeIsDeterministic::test_only_unrepairable_faces_are_dropped
+FAILED tests/unit/test_blender_geometry_contract.py::TestSanitizeIsDeterministic::test_dissolves_degenerate_edges
+FAILED tests/unit/test_blender_geometry_contract.py::TestGateIsExecutable::test_clean_mesh_is_pass
+FAILED tests/unit/test_blender_geometry_contract.py::TestGateIsExecutable::test_stray_degenerate_face_is_repaired
+FAILED tests/unit/test_blender_geometry_contract.py::TestGateIsExecutable::test_heavy_deletion_is_rejected
+FAILED tests/unit/test_blender_geometry_contract.py::TestGateIsExecutable::test_dissolved_edges_alone_are_repaired
+FAILED tests/unit/test_blender_geometry_contract.py::TestGateIsExecutable::test_surviving_degeneracy_is_rejected
+=== 24 failed, 7669 passed, 15 skipped, 290 warnings in 1829.49s (0:30:29) ====

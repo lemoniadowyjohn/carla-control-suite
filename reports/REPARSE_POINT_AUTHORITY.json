@@ -1,0 +1,152 @@
+{
+  "PASS": true,
+  "cycles_detected": [],
+  "duplicate_detections_collapsed": 5,
+  "generated_utc": "2026-10-05T20:53:47.790051Z",
+  "junctions_into_temporary_storage": [],
+  "junctions_outside_governed_project": [
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Blueprints",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Config",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Config"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\HDMaps",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\HDMaps"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Maps",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Maps"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Static",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Static"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Converters\\MDL\\Library\\mdl",
+      "target": [
+        "G:\\packman-repo\\chk\\omni_core_materials\\1.3.2.1-b08f4d18"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Converters\\MDL\\Source\\ThirdParty\\mdl_sdk",
+      "target": [
+        "G:\\packman-repo\\chk\\MDL-SDK\\2024.1.1-381500.4681-nt-x86-64"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Converters\\SimReady\\ThirdParty\\nvtt\\win64_release",
+      "target": [
+        "G:\\packman-repo\\chk\\nvtt\\nvtt-3.1.6-windows-x86_64"
+      ]
+    }
+  ],
+  "namespace_aliasing_detected": false,
+  "physical_targets_with_multiple_logical_paths": {},
+  "reparse_point_count": 8,
+  "reparse_points": [
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Blueprints",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Config",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Config"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\HDMaps",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\HDMaps"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Maps",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Maps"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Static",
+      "target": [
+        "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Static"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Converters\\MDL\\Library\\mdl",
+      "target": [
+        "G:\\packman-repo\\chk\\omni_core_materials\\1.3.2.1-b08f4d18"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Converters\\MDL\\Source\\ThirdParty\\mdl_sdk",
+      "target": [
+        "G:\\packman-repo\\chk\\MDL-SDK\\2024.1.1-381500.4681-nt-x86-64"
+      ]
+    },
+    {
+      "attributes": "Directory, ReparsePoint",
+      "kind": "Junction",
+      "logical": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Converters\\SimReady\\ThirdParty\\nvtt\\win64_release",
+      "target": [
+        "G:\\packman-repo\\chk\\nvtt\\nvtt-3.1.6-windows-x86_64"
+      ]
+    }
+  ],
+  "roots_missing": [],
+  "roots_scanned": [
+    "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content",
+    "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4",
+    "E:\\CARLA\\worktrees"
+  ],
+  "schema": "REPARSE_POINT_AUTHORITY/v1",
+  "schema_version": 1,
+  "stock_alias_policy": "Content/Carla/{Blueprints,Config,HDMaps,Maps,Static} -> Content/<Dir> is upstream CARLA structure making shared assets reachable as /Game/Carla/<Dir>. Recorded explicitly so a new alias is still a failure.",
+  "stock_carla_aliases_allowlisted": {}
+}

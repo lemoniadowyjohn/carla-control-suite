@@ -1,0 +1,28 @@
+{
+  "schema": "RQ2_FINAL_VALIDATION/v1",
+  "mode": "validate-only (read-only; no map, code, or history mutated)",
+  "base": {
+    "branch": "integration/production-large-map-20260918",
+    "sha": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+    "worktree": "C:/Users/admin/AppData/Local/Temp/wt-rq2-final (detached, uncommitted)"
+  },
+  "minimal_replay": {
+    "gate_file": "ultimate_pipeline/domain_gap/rq2_metric_authority.py",
+    "gate_blob": "97a96ab3cb31966bd9d3eca6e8d5be89c17b5d50",
+    "gate_source": "rq2-authority@2159a358 (byte-identical, unmodified)",
+    "frozen_oracle": "RQ2_RESULTS.json",
+    "frozen_blob": "4fcbb2fcfb98cefd052de2228c492679b1074ea1",
+    "frozen_source": "rq2-authority@2159a358 (comparison oracle only; frozen at 56a82a35; NOT merged as history)",
+    "shim": "production-tip registry predates the receipt API (returns raw entry), so pair SHAs were verified independently by hashing both files (auto 370abbbb...c8c8 149799632 B; manual 5eaece23...9b0c 66530869 B) and passed as receipt-equivalent fields to the UNMODIFIED gate functions compute_manual_hull/compute_whole_map/build_validation_report. Driver: rq2_shim_driver.py (worktree only)."
+  },
+  "recompute": {
+    "manual_hull": "recomputed (local_registration hull + frechet_gap 894 pairs)",
+    "whole_map": "recomputed (xodr_structural_summary + connectivity_gap + semantic_gap)",
+    "citations": {"total": 18, "passed": 18, "failed": 0},
+    "frozen_results_metrics_and_pair": "0 mismatches (atol=1e-9)",
+    "gate_output": "RQ2_VALIDATE_ONLY.json in worktree",
+    "verdict": "PASS"
+  },
+  "RQ2_STATUS": "AUTHORITATIVE",
+  "status_note": "Validation verdict AUTHORITATIVE for the recomputation gate on current integration. The RQ2 thesis claim itself remains BOUNDED (local-hull primary scope) per M0 scope freeze reports/thesis_closure_20261011/THESIS_CLOSURE_SCOPE.json; this file upgrades no claim."
+}

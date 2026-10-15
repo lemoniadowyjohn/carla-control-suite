@@ -1,0 +1,93 @@
+{
+  "schema": "IMPORT_SUCCESS_CONTRACT_V2/v1",
+  "schema_version": 2,
+  "status": "DESIGNED_AND_UNIT_TESTED_NOT_YET_ENFORCED_IN_PRODUCTION",
+  "rationale": "Established by direct source reading of the installed UE 4.26.2 ImportAssetsCommandlet.cpp: Main returns 0 unconditionally (Result initialised 0 at line 397, only assignment also 0 at line 443), SavePackage's bool is discarded at line 301, ParseImportSettings always returns false (bSuccess never set true), and the entire save block is gated on ImportedAssets.Num() > 0 at line 213-214. Process exit code therefore carries zero information about persistence. This contract makes exit code necessary but never sufficient.",
+  "MUST_NOT": "Do not treat PROCESS_EXIT == 0 as evidence of a successful import. Never again.",
+  "evaluation_order": [
+    {
+      "stage": 0,
+      "name": "PRE_LAUNCH_INPUT_VALIDATION",
+      "predicate": "every source path listed in the import settings exists, is readable, is non-empty, and matches the expected extension",
+      "on_failure": "FAIL",
+      "note": "runs BEFORE the commandlet; must never reach UE with a missing input"
+    },
+    {
+      "stage": 1,
+      "name": "PROCESS_EXIT",
+      "predicate": "PROCESS_EXIT == 0",
+      "on_failure": "FAIL",
+      "note": "necessary but NOT sufficient; a zero exit with zero persisted packages is the exact run003-shaped trap"
+    },
+    {
+      "stage": 2,
+      "name": "SETTINGS_CONSUMED",
+      "predicate": "the log contains at least one 'LogAutomatedImport: Importing group' record AND the constructed group count equals the expected group count from the settings file",
+      "on_failure": "FAIL",
+      "note": "do NOT use ParseImportSettings' return value; the engine always returns false regardless of outcome"
+    },
+    {
+      "stage": 3,
+      "name": "SOURCE_INPUTS_RESOLVED",
+      "predicate": "each requested input is accounted for as FOUND or explicitly INVALID, with FOUND count equal to the requested count",
+      "on_failure": "FAIL"
+    },
+    {
+      "stage": 4,
+      "name": "PERSISTED_OUTPUT_PRESENT",
+      "predicate": "count of newly written or updated .uasset packages in the destination > 0",
+      "on_failure": "FAIL",
+      "note": "derived from filesystem evidence with pre/post mtime and size capture, never from exit code"
+    },
+    {
+      "stage": 5,
+      "name": "NO_SAVE_FAILURE_DIAGNOSTICS",
+      "predicate": "no 'LogSavePackage' failure, no read-only refusal, no source-control add failure, no 'Could not import all groups'",
+      "on_failure": "FAIL"
+    },
+    {
+      "stage": 6,
+      "name": "OUTPUT_COVERAGE",
+      "predicate": "expected tile/group/object coverage derived from the settings manifest is fully present in the destination; partial coverage is a failure",
+      "on_failure": "FAIL"
+    },
+    {
+      "stage": 7,
+      "name": "OUTPUT_VALIDATION",
+      "predicate": "an independent validation stage passes (package loadability and, where practical, AssetRegistry visibility)",
+      "on_failure": "FAIL"
+    }
+  ],
+  "terminal_states": {
+    "IMPORT_STAGE_RESULT": {
+      "SUCCESS": "stages 0-7 all pass",
+      "FAIL": "any stage fails",
+      "INDETERMINATE": "evidence unavailable or unreadable, e.g. missing log, unreadable destination, or a stage that cannot be evaluated. Must never be silently upgraded to SUCCESS."
+    }
+  },
+  "explicit_prohibitions": [
+    "Never infer success from PROCESS_EXIT alone.",
+    "Never infer success from the absence of an error string in the log; the engine suppresses failures by design.",
+    "Never use ParseImportSettings' return value as evidence of settings consumption.",
+    "Never hardcode an expected package count such as 5711; coverage must be derived from the settings manifest so the gate generalises to arbitrary imports.",
+    "Never treat INDETERMINATE as SUCCESS."
+  ],
+  "wrapper_placement": "Immediately after the ImportAssets commandlet returns and BEFORE any MoveAssets or relocation step, while the destination still holds the freshly written packages. Validating after a move would attribute another step's output to this import.",
+  "tests": {
+    "file": "tests/unit/test_import_success_contract_v2.py",
+    "IMPORT_SUCCESS_CONTRACT_TESTS": "PASS",
+    "cases": [
+      {"id": "A", "case": "exit 0 with all expected packages persisted", "expected": "SUCCESS"},
+      {"id": "B", "case": "exit 0 with zero persisted packages", "expected": "FAIL", "guards": "the run003-shaped trap"},
+      {"id": "C", "case": "exit 0 with a save-failure diagnostic", "expected": "FAIL"},
+      {"id": "D", "case": "nonzero process exit", "expected": "FAIL"},
+      {"id": "E", "case": "missing input detected pre-launch", "expected": "FAIL before launch"},
+      {"id": "F", "case": "partial output coverage", "expected": "FAIL"},
+      {"id": "G", "case": "all expected groups persisted", "expected": "SUCCESS"},
+      {"id": "H", "case": "log unavailable so consumption is unevaluable", "expected": "INDETERMINATE, never SUCCESS"},
+      {"id": "I", "case": "exit 0, packages present, but coverage incomplete", "expected": "FAIL"}
+    ]
+  },
+  "engine_patch_plan": "reports/UE426_IMPORTASSETS_FAILCLOSED_PATCH_PLAN.json",
+  "production_mutation": "NONE. Contract and tests only; no ImportAssets execution."
+}

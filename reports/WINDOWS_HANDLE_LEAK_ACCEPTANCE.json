@@ -1,0 +1,12 @@
+{
+  "HANDLE_COUNT_AFTER": 184,
+  "HANDLE_COUNT_API": "GetProcessHandleCount",
+  "HANDLE_COUNT_BEFORE": 184,
+  "HANDLE_COUNT_DELTA": 0,
+  "HANDLE_COUNT_MEASUREMENT_VALID": true,
+  "HANDLE_LEAK_STATUS": "NO_LEAK",
+  "cycles": 200,
+  "generated_utc": "2026-10-06T11:09:13.122346Z",
+  "schema": "WINDOWS_HANDLE_LEAK_ACCEPTANCE/v1",
+  "schema_version": 1
+}

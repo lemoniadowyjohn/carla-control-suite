@@ -1,0 +1,157 @@
+{
+  "content": {
+    "asset_registry_files": [],
+    "content_bytes": 267302386,
+    "content_files": 5724,
+    "newest_assets": [
+      {
+        "bytes": 41809984,
+        "mtime_utc": "2026-10-04T15:26:33Z",
+        "path": "Maps\\Ingolstadt\\TM\\Ingolstadt.bin"
+      },
+      {
+        "bytes": 25828,
+        "mtime_utc": "2026-10-04T15:20:59Z",
+        "path": "Maps\\Ingolstadt\\Ingolstadt.umap"
+      },
+      {
+        "bytes": 13195,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_St__Martin_Apotheke.uasset"
+      },
+      {
+        "bytes": 12854,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Stberecke.uasset"
+      },
+      {
+        "bytes": 12792,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Schneider_Xaver_GmbH___Co__KG.uasset"
+      },
+      {
+        "bytes": 12761,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Rupertstubn.uasset"
+      },
+      {
+        "bytes": 12758,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Pemsl.uasset"
+      },
+      {
+        "bytes": 13278,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Marienkirche.uasset"
+      },
+      {
+        "bytes": 12715,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_La_Piazzetta.uasset"
+      },
+      {
+        "bytes": 12944,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Gasthof_Zum_Pauli.uasset"
+      },
+      {
+        "bytes": 15899,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building99.uasset"
+      },
+      {
+        "bytes": 12710,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building98.uasset"
+      },
+      {
+        "bytes": 12680,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building97.uasset"
+      },
+      {
+        "bytes": 15901,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building96.uasset"
+      },
+      {
+        "bytes": 16562,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building95.uasset"
+      },
+      {
+        "bytes": 17868,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building94.uasset"
+      },
+      {
+        "bytes": 12742,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building93.uasset"
+      },
+      {
+        "bytes": 13409,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building92.uasset"
+      },
+      {
+        "bytes": 12694,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building91.uasset"
+      },
+      {
+        "bytes": 12717,
+        "mtime_utc": "2026-10-04T14:40:56Z",
+        "path": "Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building90.uasset"
+      }
+    ],
+    "newest_mtime_epoch": 1791127593.2847223,
+    "newest_path": "Maps\\Ingolstadt\\TM\\Ingolstadt.bin",
+    "static_meshes": 5711,
+    "tile_umap_count": 0,
+    "tile_umaps": [],
+    "umap_count": 1,
+    "umaps": [
+      "Ingolstadt.umap"
+    ]
+  },
+  "ddc": {
+    "exists": true,
+    "files_written_last_hour": 6603,
+    "newest_file": "DIST_STATICMESH_14FB7BD55BAA4C14BCDC7C2AD14BCE50_228332BAE0224DD294E232B87D839__2D12B367C1A36CAC9C7ED8284ACF43B5AB5C4766.udd",
+    "newest_mtime_epoch": 1791242419.6393156
+  },
+  "epoch": 1791242413.6342406,
+  "import_settings": {
+    "mtime_utc": "2026-10-05T18:38:44Z",
+    "path": "G:\\CARLA\\carla_source_probe\\importsetting.json",
+    "sha256": "88dc8fa941446bed115e5f27524362b8b3a1cceaed692b30cbd5668c9e482cd5"
+  },
+  "index": 2,
+  "label": "T10",
+  "log": {
+    "mtime_epoch": 1791241936.3982997,
+    "mtime_utc": "2026-10-05T23:12:16Z",
+    "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log",
+    "size": 1992114
+  },
+  "process": {
+    "alive": true,
+    "children": [],
+    "cpu_system_s": 2114.7,
+    "cpu_total_s": 129320.12,
+    "cpu_user_s": 127205.42,
+    "create_time": 1791225524.1538365,
+    "handles": null,
+    "private_bytes": 4041248768,
+    "read_bytes": 2410725688,
+    "read_ops": 2191661,
+    "status": "running",
+    "threads": 69,
+    "virtual_bytes": 4041248768,
+    "working_set_bytes": 1120821248,
+    "write_bytes": 2265610611,
+    "write_ops": 145813
+  },
+  "utc": "2026-10-05T23:20:13.634240Z"
+}

@@ -1,0 +1,18 @@
+drive,path,size_GB,file_count,category,regenerable,safe_to_delete_without_data_loss,recommendation
+C,C:\Users\admin\AppData\Local\npm-cache,4.14,118649,REGENERABLE_CACHE,True,True,P0 delete: npm repopulates on demand; no project data
+C,C:\Users\admin\AppData\Local\pip\Cache,0.11,189,REGENERABLE_CACHE,True,True,P0 delete: pip cache
+C,C:\Users\admin\AppData\Local\CrashDumps,0.04,2,LOG_EVIDENCE,True,True,P0 delete only after confirming no crash under investigation
+C,C:\Users\admin\AppData\Local\Temp\pytest-of-admin,3.55,7299,TEMPORARY,True,PARTIAL,P1: delete all numbered subdirs EXCEPT the one the currently running pytest (PID 31632) is using
+C,C:\Users\admin\AppData\Local\Temp\opencode,7.89,8562,UNKNOWN_PRESERVE,UNKNOWN,False,"PRESERVE: this is the live agent session store for the operator's own tooling, including the session running this audit. Deleting it risks the session itself. Operator decision only."
+C,C:\Users\admin\AppData\Local\Temp\Diagnostics,0.23,66,TEMPORARY,True,True,P1 delete: diagnostic scratch
+F,F:\carla-worktrees (13 clean candidates only),8.46,,STALE_WORKTREE,True,True,P1: remove only the 13 worktrees with zero dirty entries; recreate with git worktree add
+F,F:\MobileSync,241.03,144684,USER_DATA,False,False,"PRESERVE: personal phone backup, last write 2021"
+F,F:\pobrane,20.73,15806,USER_DATA,False,False,PRESERVE: user downloads
+F,F:\Pictures,11.96,2863,USER_DATA,False,False,PRESERVE
+F,F:\Program Files,62.65,6874,SYSTEM,False,False,PRESERVE
+F,F:\UCDownloads,34.1,756,UNKNOWN_PRESERVE,UNKNOWN,False,PRESERVE pending operator review
+F,F:\pulpit,53.33,127431,UNKNOWN_PRESERVE,UNKNOWN,False,PRESERVE pending operator review
+F,F:\Win11_25H2_Polish_x64_v2.iso,7.77,1,UNKNOWN_PRESERVE,UNKNOWN,False,PRESERVE: OS installer image
+E,E:\ clean worktree candidates,4.23,,STALE_WORKTREE,True,True,"P1: same rule as F, zero-dirty only"
+G,G:\ clean worktree candidates,8.48,,STALE_WORKTREE,True,True,"P1 with CAUTION: G holds engine, Content and FBX inputs; removing a worktree must not touch those"
+C,C:\ clean worktree candidates,34.94,,STALE_WORKTREE,True,True,"P1: largest single recovery on C:, recreatable from git"

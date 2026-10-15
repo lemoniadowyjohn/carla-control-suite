@@ -1,0 +1,106 @@
+{
+  "schema": "RUN003_PER_TILE_COUNTS/v1",
+  "total": 5711,
+  "tiles": [
+    {
+      "tile": "6_6",
+      "saved_mesh_count": 263,
+      "assetimportdata_bound_count": 263
+    },
+    {
+      "tile": "6_7",
+      "saved_mesh_count": 395,
+      "assetimportdata_bound_count": 395
+    },
+    {
+      "tile": "6_8",
+      "saved_mesh_count": 625,
+      "assetimportdata_bound_count": 625
+    },
+    {
+      "tile": "6_9",
+      "saved_mesh_count": 159,
+      "assetimportdata_bound_count": 159
+    },
+    {
+      "tile": "7_6",
+      "saved_mesh_count": 326,
+      "assetimportdata_bound_count": 326
+    },
+    {
+      "tile": "7_7",
+      "saved_mesh_count": 411,
+      "assetimportdata_bound_count": 411
+    },
+    {
+      "tile": "7_8",
+      "saved_mesh_count": 573,
+      "assetimportdata_bound_count": 573
+    },
+    {
+      "tile": "7_9",
+      "saved_mesh_count": 429,
+      "assetimportdata_bound_count": 429
+    },
+    {
+      "tile": "8_6",
+      "saved_mesh_count": 263,
+      "assetimportdata_bound_count": 263
+    },
+    {
+      "tile": "8_7",
+      "saved_mesh_count": 409,
+      "assetimportdata_bound_count": 409
+    },
+    {
+      "tile": "8_8",
+      "saved_mesh_count": 493,
+      "assetimportdata_bound_count": 493
+    },
+    {
+      "tile": "8_9",
+      "saved_mesh_count": 353,
+      "assetimportdata_bound_count": 353
+    },
+    {
+      "tile": "9_6",
+      "saved_mesh_count": 8,
+      "assetimportdata_bound_count": 8
+    },
+    {
+      "tile": "9_7",
+      "saved_mesh_count": 28,
+      "assetimportdata_bound_count": 28
+    },
+    {
+      "tile": "9_8",
+      "saved_mesh_count": 193,
+      "assetimportdata_bound_count": 193
+    },
+    {
+      "tile": "9_9",
+      "saved_mesh_count": 395,
+      "assetimportdata_bound_count": 395
+    },
+    {
+      "tile": "10_6",
+      "saved_mesh_count": 6,
+      "assetimportdata_bound_count": 6
+    },
+    {
+      "tile": "10_7",
+      "saved_mesh_count": 74,
+      "assetimportdata_bound_count": 74
+    },
+    {
+      "tile": "10_8",
+      "saved_mesh_count": 5,
+      "assetimportdata_bound_count": 5
+    },
+    {
+      "tile": "10_9",
+      "saved_mesh_count": 303,
+      "assetimportdata_bound_count": 303
+    }
+  ]
+}

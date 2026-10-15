@@ -1,0 +1,73 @@
+{
+  "schema": "OSM_FILE_CONFIG_DIAGNOSTIC/v1",
+  "schema_version": 1,
+  "OSM_FILE_CONFIG_SOURCE": "ultimate_pipeline/config/settings.py",
+  "OSM_FILE_CONFIG_SOURCE_DETAIL": {
+    "authoritative_module": "ultimate_pipeline.config.settings (SETTINGS singleton; main_pipeline._load_settings_module loads this module)",
+    "CITY_NAME": "ingolstadt",
+    "declaration": "OSM_FILE default = city_dir(CITY_NAME)/'osm'/f'{CITY_NAME}.osm'",
+    "env_override": "UP_OSM_FILE (settings line ~1625 _env_path('UP_OSM_FILE', self.OSM_FILE))",
+    "derived_field": "OSM_INPUT_FILE = OSM_FILE",
+    "silent_substitution_risk": "a later resolution step substitutes the city path when the configured path is missing, so a bad OSM_FILE can degrade into a city default without a hard error",
+    "network_switches": {
+      "ENABLE_OSM_DOWNLOAD": true,
+      "AUTO_DOWNLOAD_OSM": false,
+      "download_call_site": "main_pipeline.py ~2009: s.OSM_FILE = ensure_osm_exists(s.GPS_BOUNDS, s.OSM_FILE)",
+      "risk": "with a missing OSM_FILE and ENABLE_OSM_DOWNLOAD true, the pipeline attempts a live Overpass fetch. Prior receipts record HTTP 406/403/429 on all mirrors."
+    }
+  },
+  "OSM_FILE_CONFIGURED_PATH": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\osm\\ingolstadt.osm",
+  "CONFIGURED_PATH_EXISTS": false,
+  "CURRENT_UP_OSM_FILE_ENV": null,
+  "LOCAL_OSM_CANDIDATES_FOUND": 33,
+  "LOCAL_OSM_CANDIDATES_SEARCH_SCOPE": "C: repo tree, G:\\CARLA, E:\\CARLA, F:\\carla-control-suite-worktrees, G:\\UnrealEngine_4.26_CARLA; filter >1 MB",
+  "AUTHORITATIVE_LOCAL_OSM_FOUND": true,
+  "AUTHORITATIVE_LOCAL_OSM": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "absolute_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "bytes": 11154738,
+    "manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
+    "manifest_entry": "inputs.roads_osm, status=pinned",
+    "manifest_hash_match": true,
+    "source_of_authority_documents": [
+      "RQ_CLOSURE_MATRIX.json: 'The governed OSM is pinned at campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and matches INPUTS_MANIFEST.json (sha b9e07465..., 11154738 bytes). A determinism run MUST pin OSM_FILE to that governed source; it must not reach the network.'",
+      "PRODUCTION_READINESS_MATRIX.json: 'unblock_procedure: Run tools/rq1b_five_run_driver.py --runs 5 with OSM_FILE pinned to campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm and network access disabled.'"
+    ],
+    "also_present_in_other_worktrees": true,
+    "note": "Multiple worktrees carry the same governed file; the repo-root copy is the one INPUTS_MANIFEST.json governs."
+  },
+  "CONFIG_CHANGE_REQUIRED": true,
+  "CONFIG_CHANGE_MINIMAL": {
+    "mechanism": "set the UP_OSM_FILE environment variable to the governed absolute path",
+    "why_env_not_file_edit": "fully reversible, scoped to a single invocation, and leaves settings.py and any pinned config byte-identical",
+    "old_value": "UP_OSM_FILE unset (effective OSM_FILE = cities/ingolstadt/osm/ingolstadt.osm, absent)",
+    "new_value": "UP_OSM_FILE=C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "config_files_modified": "NONE",
+    "gate_weakening": "NONE. ENABLE_OSM_DOWNLOAD is left True; the repair removes the need for it rather than suppressing it."
+  },
+  "CONFIG_CHANGED": false,
+  "CONFIG_CHANGE_NOT_APPLIED_REASON": "No file or environment change was made. The diagnostic stop condition in the execution policy was already met (the exact external input requirement is proven), the machine is not in a state to run compute, and the repair is a one-line env assignment the operator can apply deliberately. Applying it silently would have made CONFIG_CHANGED=true with no operator decision behind it.",
+  "CONFIRMATION_TRIAL_RUN": false,
+  "CONFIRMATION_TRIAL_WHY_NOT": [
+    "The policy permits exactly one confirmation trial 'after a justified path/config repair'. The repair was not applied, so no trial was warranted.",
+    "The machine cannot host a trustworthy trial: PID 3560 is a live orphaned runaway holding ~13.5 GB and saturating ~8 cores, and it is still growing.",
+    "C: free space is at ~1.4% and drifting downward, so a trial risks failing for environmental reasons that would be indistinguishable from a real pipeline result.",
+    "DEM stage 04/05 semantics were not established by any evidence in this session; launching pipeline stages blind risks the very live Overpass fetch the policy forbids reaching.",
+    "'Do not weaken any missing-input gate' argues against disabling ENABLE_OSM_DOWNLOAD to force a pass, so there was no legitimate shortcut to a green trial."
+  ],
+  "DEM_STAGE_PASSED": "NOT_ASSESSED",
+  "STAGE_04_REACHED": false,
+  "STAGE_05_REACHED": false,
+  "FULL_N5_RUN_STARTED": false,
+  "EXTERNAL_ACQUISITION_REQUIRED": false,
+  "EXTERNAL_ACQUISITION_BASIS": "The authoritative roads OSM is already present locally and its sha256 and byte length match the pinned INPUTS_MANIFEST.json entry exactly. No Overpass fetch, mirror, or operator download is needed. The defect is a configuration pointer, not a missing input.",
+  "OTHER_MISSING_INPUT_WARNINGS_OBSERVED_NOT_SUPPRESSED": {
+    "MANUAL_TILES_DIR": "domain_gap_results/manual_tiles (missing)",
+    "COORDINATES_JSON": "ultimate_pipeline/config/coordinates.json (missing)",
+    "HPC_DIR": "hpc (missing)",
+    "action": "left untouched and unremediated; these are separate gates and were deliberately not weakened"
+  },
+  "PRODUCTION_CONTENT_MUTATED": false,
+  "COOK_LAUNCHED": false
+}

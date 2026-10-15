@@ -1,0 +1,28 @@
+{
+  "ok": false,
+  "reason": "coverage_below_threshold",
+  "threshold": 0.6,
+  "total_samples": 149,
+  "valid_samples": 0,
+  "nodata_samples": 0,
+  "out_of_bounds_samples": 149,
+  "invalid_samples": 149,
+  "valid_ratio": 0.0,
+  "dem_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+  "dem_crs": "EPSG:4326",
+  "dem_bounds": [
+    11.312083322222236,
+    48.67430556666666,
+    11.537361100000014,
+    48.836250011111105
+  ],
+  "crs_conversion_applied": true,
+  "xodr_proj": "+proj=tmerc",
+  "sample_stats": {},
+  "warnings": [
+    "road '47290': sample at s=72.154 failed (local s outside geometry); point skipped",
+    "DEM coverage 0.0% is below threshold 60.0%"
+  ],
+  "sampled_map_points_inside_dem_fraction": 1.0,
+  "nodata_fraction_at_samples": 0.0
+}

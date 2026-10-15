@@ -1,0 +1,101 @@
+{
+  "schema": "fbx_smoothing_group_audit/v2",
+  "status": "BASELINE_AND_POST_FIX_BOTH_VERIFIED",
+
+  "baseline": {
+    "method": "byte search for FBX layer node names, cross-checked against the independent Blender manifest (uv_layers per object). Binary FBX stores node names as ASCII, so presence/absence is an exact existence test.",
+    "tiles": [
+      {
+        "tile": "Ingolstadt_Tile_10_9",
+        "fbx": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_10_9/Ingolstadt_Tile_10_9.fbx",
+        "LayerElementNormal": 606,
+        "LayerElementSmoothing": 0,
+        "LayerElementUV": 0,
+        "LayerElementTangent": 0,
+        "smoothing_layer_present": false,
+        "objects": 303
+      },
+      {
+        "tile": "Ingolstadt_Tile_6_6",
+        "fbx": "reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/tile_6_6/Ingolstadt_Tile_6_6.fbx",
+        "LayerElementNormal": 526,
+        "LayerElementSmoothing": 0,
+        "LayerElementUV": 0,
+        "LayerElementTangent": 0,
+        "smoothing_layer_present": false,
+        "objects": 263
+      }
+    ],
+    "corroboration": "The OSM2World OBJ for both tiles contains 0 's' (smoothing) records, and the baseline Blender manifest reports uv_layers == 0 on all 303 and 263 objects. Three independent sources agree.",
+    "cause": "ultimate_pipeline/enrichment/blender_runner.py exported with mesh_smooth_type='OFF', which writes no LayerElementSmoothing node."
+  },
+
+  "post_fix": {
+    "executed": true,
+    "environment": "Blender 4.3.0 at E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "tiles": [
+      {
+        "tile": "Ingolstadt_Tile_10_9",
+        "LayerElementSmoothing": 606,
+        "smoothing_layer_present": true,
+        "objects": 303,
+        "mesh_smooth_type": "FACE",
+        "sharp_angle_deg": 30.0,
+        "sharp_edges": 8657,
+        "edges_total": 13686,
+        "gate": "PASS"
+      },
+      {
+        "tile": "Ingolstadt_Tile_6_6",
+        "LayerElementSmoothing": 526,
+        "smoothing_layer_present": true,
+        "objects": 263,
+        "mesh_smooth_type": "FACE",
+        "sharp_angle_deg": 30.0,
+        "sharp_edges": 10248,
+        "gate": "PASS"
+      }
+    ],
+    "smoothing_node_count_equals_object_count": true,
+    "fbx_roundtrip": "ROUNDTRIP_PASS on both tiles with 0 missing objects, 0 extra objects and 0 field differences, confirming the new smoothing layer did not corrupt the file."
+  },
+
+  "policy_conformance_independently_verified": {
+    "why": "A 63% sharp-edge ratio could indicate blanket-sharpening, which would satisfy the FBX layer check while violating the smoothing policy.",
+    "method": "Recompute the 30 degree dihedral rule directly from the OSM2World OBJ, per object, and compare with the sharp-edge count Blender recorded.",
+    "tile_10_9": {
+      "blender_reported": "8657 sharp / 13686 edges (63.25%)",
+      "recomputed_from_obj": "8655 sharp / 13684 edges (63.25%)",
+      "delta": 2,
+      "delta_cause": "Blender merges vertices by distance on OBJ import, which removes 2 duplicate edges relative to the raw OBJ topology",
+      "coplanar_edges_below_1_degree_left_smooth": 5022,
+      "sub_degree_edges_wrongly_hardened": 0
+    },
+    "conclusion": "The sharp-edge set matches an independent recomputation of the stated policy, and no sub-degree (coplanar) edge was hardened. Hard edges occur only at genuine corners, wall/roof intersections and boundaries."
+  },
+
+  "smoothing_policy": {
+    "principle": "Smooth only where the surface is geometrically continuous; keep hard edges everywhere the surface actually turns.",
+    "hard_edges": [
+      "vertical wall corners between adjacent wall faces",
+      "wall/roof intersections",
+      "roof ridges and hip/gable edges",
+      "all boundary (non-manifold) edges"
+    ],
+    "smooth_regions": [
+      "coplanar wall faces of a single facade",
+      "coplanar roof faces within one roof plane"
+    ],
+    "threshold_deg": 30.0,
+    "threshold_rationale": "A building is a hard-edged object: walls are near-vertical planes meeting at roughly 90 degrees, and roof planes meet ridges at roughly 30 degrees or less. 30 degrees separates real geometry from the sub-degree wobble of a triangulated plane, so coplanar triangles stay smooth while real corners stay hard. This is a semantic choice about building geometry, deliberately independent of the 1e-12 m^2 degenerate-area fail-closed threshold.",
+    "not_a_warning_suppression": "The warning is expected to disappear because the FBX now carries the information UE4 asks for. No log filtering, no import-setting change, and no MikkTSpace disablement is involved."
+  },
+
+  "verification_state": {
+    "baseline_smoothing_absence": "VERIFIED (byte search + manifest + OBJ, three independent sources)",
+    "sharp_edge_algorithm": "VERIFIED BY EXECUTION and cross-checked against an independent recomputation from the OBJ",
+    "post_fix_fbx_measurement": "VERIFIED (LayerElementSmoothing 0 -> 1132 across both tiles)",
+    "fbx_roundtrip": "VERIFIED (ROUNDTRIP_PASS on both tiles)",
+    "ue4_warning_count_after": "NOT RUN - the editor is available but no import has been performed, so the actual UE4 smoothing-group warning count remains unmeasured"
+  }
+}

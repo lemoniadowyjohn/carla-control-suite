@@ -1,0 +1,679 @@
+{
+  "carla_related_count": 8,
+  "generated_utc": "2026-10-13T14:14:37.416848Z",
+  "identity_rule": "pid + process creation time (PID alone is reusable)",
+  "mutator_count": 0,
+  "mutators": [],
+  "policy": "READ_ONLY__NOTHING_TERMINATED",
+  "process_count": 18,
+  "processes": [
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-13T14:13:57.8724910Z",
+          "in_inventory": true,
+          "name": "python.exe",
+          "pid": 28820
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 26708
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe\" scripts/cross_session_inventory.py",
+      "cpu_s": 0.03,
+      "creation_utc": "2026-10-13T14:13:57.8724910Z",
+      "handles": 64,
+      "identity_key": "28820|2026-10-13T14:13:57.8724910Z",
+      "mutates_shared_state": false,
+      "name": "python.exe",
+      "operation_class": "ORCHESTRATOR",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-13T14:13:56.6051110Z",
+      "parent_name": "pwsh.exe",
+      "pid": 28820,
+      "ppid": 26708,
+      "private_mb": 0.8,
+      "process_class": "ORCHESTRATOR",
+      "responding": true,
+      "threads": 3,
+      "ws_mb": 4.2
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-13T14:13:57.9252730Z",
+          "in_inventory": true,
+          "name": "python.exe",
+          "pid": 50064
+        },
+        {
+          "creation_utc": "2026-10-13T14:13:57.8724910Z",
+          "in_inventory": true,
+          "name": "python.exe",
+          "pid": 28820
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 26708
+        }
+      ],
+      "carla_related": false,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" scripts/cross_session_inventory.py",
+      "cpu_s": 0.36,
+      "creation_utc": "2026-10-13T14:13:57.9252730Z",
+      "handles": 188,
+      "identity_key": "50064|2026-10-13T14:13:57.9252730Z",
+      "mutates_shared_state": false,
+      "name": "python.exe",
+      "operation_class": "ORCHESTRATOR",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-13T14:13:57.8724910Z",
+      "parent_name": "python.exe",
+      "pid": 50064,
+      "ppid": 28820,
+      "private_mb": 11.4,
+      "process_class": "ORCHESTRATOR",
+      "responding": true,
+      "threads": 6,
+      "ws_mb": 21.7
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:02:43.5455690Z",
+          "in_inventory": true,
+          "name": "opencode.exe",
+          "pid": 17556
+        },
+        {
+          "creation_utc": "2026-10-11T07:02:30.8500130Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 24116
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "cpu_s": 24344.69,
+      "creation_utc": "2026-10-11T07:02:43.5455690Z",
+      "handles": 318,
+      "identity_key": "17556|2026-10-11T07:02:43.5455690Z",
+      "mutates_shared_state": false,
+      "name": "opencode.exe",
+      "operation_class": "AGENT",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:30.8500130Z",
+      "parent_name": "powershell.exe",
+      "pid": 17556,
+      "ppid": 24116,
+      "private_mb": 1477.6,
+      "process_class": "AGENT_SESSION",
+      "responding": true,
+      "threads": 34,
+      "ws_mb": 742.8
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:02:46.7750380Z",
+          "in_inventory": true,
+          "name": "opencode.exe",
+          "pid": 24012
+        },
+        {
+          "creation_utc": "2026-10-11T07:02:38.4094480Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 8680
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "cpu_s": 22525.44,
+      "creation_utc": "2026-10-11T07:02:46.7750380Z",
+      "handles": 310,
+      "identity_key": "24012|2026-10-11T07:02:46.7750380Z",
+      "mutates_shared_state": false,
+      "name": "opencode.exe",
+      "operation_class": "AGENT",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:38.4094480Z",
+      "parent_name": "powershell.exe",
+      "pid": 24012,
+      "ppid": 8680,
+      "private_mb": 1802.5,
+      "process_class": "AGENT_SESSION",
+      "responding": true,
+      "threads": 33,
+      "ws_mb": 907.4
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:02:49.9213870Z",
+          "in_inventory": true,
+          "name": "opencode.exe",
+          "pid": 22952
+        },
+        {
+          "creation_utc": "2026-10-11T07:02:38.9787990Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 3420
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "cpu_s": 26699.88,
+      "creation_utc": "2026-10-11T07:02:49.9213870Z",
+      "handles": 309,
+      "identity_key": "22952|2026-10-11T07:02:49.9213870Z",
+      "mutates_shared_state": false,
+      "name": "opencode.exe",
+      "operation_class": "AGENT",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:38.9787990Z",
+      "parent_name": "powershell.exe",
+      "pid": 22952,
+      "ppid": 3420,
+      "private_mb": 1988.8,
+      "process_class": "AGENT_SESSION",
+      "responding": true,
+      "threads": 35,
+      "ws_mb": 858.3
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:04:15.6505390Z",
+          "in_inventory": true,
+          "name": "opencode.exe",
+          "pid": 15472
+        },
+        {
+          "creation_utc": "2026-10-11T07:04:04.1833480Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 3172
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "cpu_s": 42664.73,
+      "creation_utc": "2026-10-11T07:04:15.6505390Z",
+      "handles": 318,
+      "identity_key": "15472|2026-10-11T07:04:15.6505390Z",
+      "mutates_shared_state": false,
+      "name": "opencode.exe",
+      "operation_class": "AGENT",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:04:04.1833480Z",
+      "parent_name": "powershell.exe",
+      "pid": 15472,
+      "ppid": 3172,
+      "private_mb": 1808.8,
+      "process_class": "AGENT_SESSION",
+      "responding": true,
+      "threads": 36,
+      "ws_mb": 823.8
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:04:20.4517090Z",
+          "in_inventory": true,
+          "name": "opencode.exe",
+          "pid": 22900
+        },
+        {
+          "creation_utc": "2026-10-11T07:04:05.0374250Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 20492
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "cpu_s": 30813.14,
+      "creation_utc": "2026-10-11T07:04:20.4517090Z",
+      "handles": 316,
+      "identity_key": "22900|2026-10-11T07:04:20.4517090Z",
+      "mutates_shared_state": false,
+      "name": "opencode.exe",
+      "operation_class": "AGENT",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:04:05.0374250Z",
+      "parent_name": "powershell.exe",
+      "pid": 22900,
+      "ppid": 20492,
+      "private_mb": 1994.3,
+      "process_class": "AGENT_SESSION",
+      "responding": true,
+      "threads": 37,
+      "ws_mb": 922.5
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-13T07:11:58.3263760Z",
+          "in_inventory": true,
+          "name": "opencode.exe",
+          "pid": 40976
+        },
+        {
+          "creation_utc": "2026-10-12T20:25:08.0307410Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 34552
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": true,
+      "command_line": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "cpu_s": 9670.2,
+      "creation_utc": "2026-10-13T07:11:58.3263760Z",
+      "handles": 316,
+      "identity_key": "40976|2026-10-13T07:11:58.3263760Z",
+      "mutates_shared_state": false,
+      "name": "opencode.exe",
+      "operation_class": "AGENT",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-12T20:25:08.0307410Z",
+      "parent_name": "powershell.exe",
+      "pid": 40976,
+      "ppid": 34552,
+      "private_mb": 1744.3,
+      "process_class": "AGENT_SESSION",
+      "responding": true,
+      "threads": 35,
+      "ws_mb": 942.3
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:06:23.2355060Z",
+          "in_inventory": true,
+          "name": "cmd.exe",
+          "pid": 16864
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 25396
+        }
+      ],
+      "carla_related": false,
+      "command_line": "\"cmd\" /c \"\"C:\\Users\\admin\\AppData\\Local\\Programs\\Lenovo\\Lenovo Service Bridge\\LSB.exe\" -tag entry=LSBUpdater.exe,info={entry=unknown,afterupdate=no}\"",
+      "cpu_s": 0.03,
+      "creation_utc": "2026-10-11T07:06:23.2355060Z",
+      "handles": 120,
+      "identity_key": "16864|2026-10-11T07:06:23.2355060Z",
+      "mutates_shared_state": false,
+      "name": "cmd.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": null,
+      "parent_name": null,
+      "pid": 16864,
+      "ppid": 25396,
+      "private_mb": 5.2,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 1,
+      "ws_mb": 0.9
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:02:30.8500130Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 24116
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 3.06,
+      "creation_utc": "2026-10-11T07:02:30.8500130Z",
+      "handles": 538,
+      "identity_key": "24116|2026-10-11T07:02:30.8500130Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 24116,
+      "ppid": 19584,
+      "private_mb": 89.2,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 4.4
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:02:38.4094480Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 8680
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 3.09,
+      "creation_utc": "2026-10-11T07:02:38.4094480Z",
+      "handles": 566,
+      "identity_key": "8680|2026-10-11T07:02:38.4094480Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 8680,
+      "ppid": 19584,
+      "private_mb": 84.2,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 4.9
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:02:38.9787990Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 3420
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 3.11,
+      "creation_utc": "2026-10-11T07:02:38.9787990Z",
+      "handles": 562,
+      "identity_key": "3420|2026-10-11T07:02:38.9787990Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 3420,
+      "ppid": 19584,
+      "private_mb": 83.5,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 4.3
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:04:04.1833480Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 3172
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 4.38,
+      "creation_utc": "2026-10-11T07:04:04.1833480Z",
+      "handles": 662,
+      "identity_key": "3172|2026-10-11T07:04:04.1833480Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 3172,
+      "ppid": 19584,
+      "private_mb": 81.4,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 4.6
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-11T07:04:05.0374250Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 20492
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 4,
+      "creation_utc": "2026-10-11T07:04:05.0374250Z",
+      "handles": 533,
+      "identity_key": "20492|2026-10-11T07:04:05.0374250Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 20492,
+      "ppid": 19584,
+      "private_mb": 84.6,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 4.4
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-12T20:25:08.0307410Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 34552
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 3.66,
+      "creation_utc": "2026-10-12T20:25:08.0307410Z",
+      "handles": 574,
+      "identity_key": "34552|2026-10-12T20:25:08.0307410Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 34552,
+      "ppid": 19584,
+      "private_mb": 79.5,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 57.3
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-12T20:25:33.7118670Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 31932
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 3.47,
+      "creation_utc": "2026-10-12T20:25:33.7118670Z",
+      "handles": 533,
+      "identity_key": "31932|2026-10-12T20:25:33.7118670Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 31932,
+      "ppid": 19584,
+      "private_mb": 78.8,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 9,
+      "ws_mb": 57.4
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-13T07:31:32.5730650Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 47520
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 19584
+        }
+      ],
+      "carla_related": false,
+      "command_line": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "cpu_s": 4.17,
+      "creation_utc": "2026-10-13T07:31:32.5730650Z",
+      "handles": 544,
+      "identity_key": "47520|2026-10-13T07:31:32.5730650Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UNKNOWN",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-11T07:02:13.8404030Z",
+      "parent_name": "WindowsTerminal.exe",
+      "pid": 47520,
+      "ppid": 19584,
+      "private_mb": 77,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 10,
+      "ws_mb": 57.4
+    },
+    {
+      "ancestry": [
+        {
+          "creation_utc": "2026-10-13T14:13:58.4004210Z",
+          "in_inventory": true,
+          "name": "powershell.exe",
+          "pid": 49596
+        },
+        {
+          "creation_utc": "2026-10-13T14:13:57.9252730Z",
+          "in_inventory": true,
+          "name": "python.exe",
+          "pid": 50064
+        },
+        {
+          "creation_utc": "2026-10-13T14:13:57.8724910Z",
+          "in_inventory": true,
+          "name": "python.exe",
+          "pid": 28820
+        },
+        {
+          "in_inventory": false,
+          "name": null,
+          "pid": 26708
+        }
+      ],
+      "carla_related": true,
+      "command_line": "powershell -NoProfile -Command \"\n$rows = @()\nforeach ($n in ('python.exe','opencode.exe','hermes.exe','ue4editor.exe','ue4editor-cmd.exe','shadercompileworker.exe','carlaue4.exe','cmd.exe','powershell.exe','recaststaticmeshgenerator.exe','blender.exe','msbuild.exe','link.exe','cl.exe','unrealbuildtool.exe')) {\n  foreach ($p in (Get-CimInstance Win32_Process -Filter (\\\"Name='\\\" + $n + \\\"'\\\") -ErrorAction SilentlyContinue)) {\n    $gp = Get-Process -Id $p.ProcessId -ErrorAction SilentlyContinue\n    $parent = Get-CimInstance Win32_Process -Filter (\\\"ProcessId=\\\" + $p.ParentProcessId) -ErrorAction SilentlyContinue\n    $io = $null\n    try { $io = (Get-CimInstance Win32_Process -Filter (\\\"ProcessId=\\\" + $p.ProcessId)).CommandLine } catch {}\n    $rows += [pscustomobject]@{\n      pid = $p.ProcessId\n      ppid = $p.ParentProcessId\n      name = $p.Name\n      creation_utc = if ($p.CreationDate) { ([datetime]$p.CreationDate).ToUniversalTime().ToString('o') } else { $null }\n      parent_name = if ($parent) { $parent.Name } else { $null }\n      parent_creation_utc = if ($parent -and $parent.CreationDate) { ([datetime]$parent.CreationDate).ToUniversalTime().ToString('o') } else { $null }\n      command_line = $p.CommandLine\n      cpu_s = if ($gp) { [math]::Round($gp.CPU,2) } else { $null }\n      ws_mb = if ($gp) { [math]::Round($gp.WorkingSet64/1MB,1) } else { $null }\n      private_mb = if ($gp) { [math]::Round($gp.PrivateMemorySize64/1MB,1) } else { $null }\n      handles = if ($gp) { $gp.HandleCount } else { $null }\n      threads = if ($gp) { $gp.Threads.Count } else { $null }\n      responding = if ($gp) { $gp.Responding } else { $null }\n      owner = try { (Get-CimInstance Win32_Process -Filter (\\\"ProcessId=\\\" + $p.ProcessId) | Invoke-CimMethod -MethodName GetOwner).User } catch { $null }\n    } } }\n$rows | ConvertTo-Json -Compress\n\"",
+      "cpu_s": 2.92,
+      "creation_utc": "2026-10-13T14:13:58.4004210Z",
+      "handles": 597,
+      "identity_key": "49596|2026-10-13T14:13:58.4004210Z",
+      "mutates_shared_state": false,
+      "name": "powershell.exe",
+      "operation_class": "UE_EDITOR",
+      "owner_user": "admin",
+      "parent_creation_utc": "2026-10-13T14:13:57.9252730Z",
+      "parent_name": "python.exe",
+      "pid": 49596,
+      "ppid": 50064,
+      "private_mb": 68.1,
+      "process_class": "WRAPPER",
+      "responding": true,
+      "threads": 19,
+      "ws_mb": 88.1
+    }
+  ],
+  "schema": "CROSS_SESSION_PROCESS_INVENTORY/v1",
+  "schema_version": 1
+}

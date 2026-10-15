@@ -1,0 +1,2938 @@
+{
+  "inferred_count": 10180,
+  "road_to_road_count": 0,
+  "junction_repaired_count": 10180,
+  "junction_mapped_count": 10180,
+  "junction_unresolved_ambiguous": 261,
+  "junction_unresolved_no_candidate": 115,
+  "unresolved_ambiguous": [
+    {
+      "road_id": "42163",
+      "lane_id": "-2",
+      "junction_id": "61",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42247",
+      "lane_id": "-3",
+      "junction_id": "192",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42284",
+      "lane_id": "-2",
+      "junction_id": "1",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42404",
+      "lane_id": "-3",
+      "junction_id": "409",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42408",
+      "lane_id": "-2",
+      "junction_id": "413",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42434",
+      "lane_id": "-2",
+      "junction_id": "448",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42436",
+      "lane_id": "-3",
+      "junction_id": "452",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42563",
+      "lane_id": "-2",
+      "junction_id": "282",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42787",
+      "lane_id": "-2",
+      "junction_id": "886",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42904",
+      "lane_id": "-2",
+      "junction_id": "1016",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42925",
+      "lane_id": "-3",
+      "junction_id": "484",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "42993",
+      "lane_id": "-3",
+      "junction_id": "1105",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "43055",
+      "lane_id": "-2",
+      "junction_id": "998",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "43056",
+      "lane_id": "-3",
+      "junction_id": "1164",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "43141",
+      "lane_id": "-3",
+      "junction_id": "83",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "43145",
+      "lane_id": "-2",
+      "junction_id": "1241",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "44466",
+      "lane_id": "-3",
+      "junction_id": "1457",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "44496",
+      "lane_id": "-2",
+      "junction_id": "1177",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "44714",
+      "lane_id": "-2",
+      "junction_id": "1739",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45024",
+      "lane_id": "-3",
+      "junction_id": "2588",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45025",
+      "lane_id": "-2",
+      "junction_id": "2589",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45047",
+      "lane_id": "-2",
+      "junction_id": "2593",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45049",
+      "lane_id": "-2",
+      "junction_id": "2594",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45099",
+      "lane_id": "-2",
+      "junction_id": "2620",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45243",
+      "lane_id": "-2",
+      "junction_id": "2693",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45525",
+      "lane_id": "-2",
+      "junction_id": "236",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45549",
+      "lane_id": "-2",
+      "junction_id": "2796",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45550",
+      "lane_id": "-2",
+      "junction_id": "2845",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45743",
+      "lane_id": "-2",
+      "junction_id": "2743",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45744",
+      "lane_id": "-2",
+      "junction_id": "286",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45788",
+      "lane_id": "-3",
+      "junction_id": "517",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45961",
+      "lane_id": "-2",
+      "junction_id": "37",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "45962",
+      "lane_id": "-2",
+      "junction_id": "2848",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46013",
+      "lane_id": "-2",
+      "junction_id": "2989",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46017",
+      "lane_id": "-3",
+      "junction_id": "192",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46107",
+      "lane_id": "-2",
+      "junction_id": "3029",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46251",
+      "lane_id": "-2",
+      "junction_id": "2366",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46282",
+      "lane_id": "-2",
+      "junction_id": "2367",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46296",
+      "lane_id": "-2",
+      "junction_id": "415",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46320",
+      "lane_id": "-2",
+      "junction_id": "2642",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46325",
+      "lane_id": "-2",
+      "junction_id": "1950",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46326",
+      "lane_id": "-2",
+      "junction_id": "1968",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46327",
+      "lane_id": "-2",
+      "junction_id": "1873",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46329",
+      "lane_id": "-2",
+      "junction_id": "779",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46330",
+      "lane_id": "-2",
+      "junction_id": "1876",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46376",
+      "lane_id": "-2",
+      "junction_id": "3024",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46377",
+      "lane_id": "-2",
+      "junction_id": "430",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46459",
+      "lane_id": "-2",
+      "junction_id": "3131",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46462",
+      "lane_id": "-2",
+      "junction_id": "3131",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46463",
+      "lane_id": "-2",
+      "junction_id": "3133",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46474",
+      "lane_id": "-2",
+      "junction_id": "50",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46476",
+      "lane_id": "-3",
+      "junction_id": "3138",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "46542",
+      "lane_id": "-2",
+      "junction_id": "182",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46571",
+      "lane_id": "-2",
+      "junction_id": "3161",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46607",
+      "lane_id": "-3",
+      "junction_id": "3140",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46628",
+      "lane_id": "-2",
+      "junction_id": "3174",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46645",
+      "lane_id": "-2",
+      "junction_id": "3179",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46650",
+      "lane_id": "-2",
+      "junction_id": "2922",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46673",
+      "lane_id": "-3",
+      "junction_id": "3178",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46675",
+      "lane_id": "-2",
+      "junction_id": "277",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46681",
+      "lane_id": "-2",
+      "junction_id": "3204",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46684",
+      "lane_id": "-2",
+      "junction_id": "3209",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46698",
+      "lane_id": "-2",
+      "junction_id": "292",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46703",
+      "lane_id": "-2",
+      "junction_id": "299",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46716",
+      "lane_id": "-2",
+      "junction_id": "3219",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46720",
+      "lane_id": "-3",
+      "junction_id": "3066",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46721",
+      "lane_id": "-3",
+      "junction_id": "446",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "46728",
+      "lane_id": "-3",
+      "junction_id": "330",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46754",
+      "lane_id": "-2",
+      "junction_id": "52",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46813",
+      "lane_id": "-2",
+      "junction_id": "3245",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46816",
+      "lane_id": "-2",
+      "junction_id": "3246",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46825",
+      "lane_id": "-2",
+      "junction_id": "409",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46852",
+      "lane_id": "-2",
+      "junction_id": "3260",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46852",
+      "lane_id": "-3",
+      "junction_id": "3260",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46859",
+      "lane_id": "-3",
+      "junction_id": "2956",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46861",
+      "lane_id": "-3",
+      "junction_id": "428",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46862",
+      "lane_id": "-3",
+      "junction_id": "428",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46863",
+      "lane_id": "-3",
+      "junction_id": "428",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46865",
+      "lane_id": "-2",
+      "junction_id": "430",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46873",
+      "lane_id": "-2",
+      "junction_id": "405",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46887",
+      "lane_id": "-2",
+      "junction_id": "447",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46889",
+      "lane_id": "-2",
+      "junction_id": "450",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46921",
+      "lane_id": "-2",
+      "junction_id": "3280",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "46936",
+      "lane_id": "-2",
+      "junction_id": "3283",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47002",
+      "lane_id": "-2",
+      "junction_id": "3260",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47006",
+      "lane_id": "-2",
+      "junction_id": "3303",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47173",
+      "lane_id": "-2",
+      "junction_id": "687",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47174",
+      "lane_id": "-2",
+      "junction_id": "886",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47269",
+      "lane_id": "-2",
+      "junction_id": "3346",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47270",
+      "lane_id": "-3",
+      "junction_id": "2399",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47368",
+      "lane_id": "-2",
+      "junction_id": "3349",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47386",
+      "lane_id": "-2",
+      "junction_id": "3362",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47389",
+      "lane_id": "-2",
+      "junction_id": "3028",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47418",
+      "lane_id": "-3",
+      "junction_id": "83",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47456",
+      "lane_id": "-2",
+      "junction_id": "2397",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47499",
+      "lane_id": "-2",
+      "junction_id": "970",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47575",
+      "lane_id": "-2",
+      "junction_id": "3393",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47578",
+      "lane_id": "-2",
+      "junction_id": "3199",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47585",
+      "lane_id": "-2",
+      "junction_id": "1691",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47586",
+      "lane_id": "-2",
+      "junction_id": "1692",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47587",
+      "lane_id": "-2",
+      "junction_id": "178",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47589",
+      "lane_id": "-2",
+      "junction_id": "3395",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47590",
+      "lane_id": "-2",
+      "junction_id": "951",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47591",
+      "lane_id": "-2",
+      "junction_id": "3120",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47601",
+      "lane_id": "-2",
+      "junction_id": "556",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47612",
+      "lane_id": "-2",
+      "junction_id": "3115",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47660",
+      "lane_id": "-2",
+      "junction_id": "1085",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47744",
+      "lane_id": "-2",
+      "junction_id": "3396",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47745",
+      "lane_id": "-3",
+      "junction_id": "947",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47752",
+      "lane_id": "-2",
+      "junction_id": "39",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47753",
+      "lane_id": "-2",
+      "junction_id": "41",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47761",
+      "lane_id": "-2",
+      "junction_id": "1697",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47762",
+      "lane_id": "-2",
+      "junction_id": "517",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47851",
+      "lane_id": "-2",
+      "junction_id": "83",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47853",
+      "lane_id": "-2",
+      "junction_id": "1240",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47891",
+      "lane_id": "-2",
+      "junction_id": "3120",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "47918",
+      "lane_id": "-3",
+      "junction_id": "3402",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "48121",
+      "lane_id": "-2",
+      "junction_id": "178",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48122",
+      "lane_id": "-2",
+      "junction_id": "2244",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48123",
+      "lane_id": "-2",
+      "junction_id": "969",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48207",
+      "lane_id": "-2",
+      "junction_id": "1498",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48208",
+      "lane_id": "-2",
+      "junction_id": "1499",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48209",
+      "lane_id": "-2",
+      "junction_id": "1500",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48212",
+      "lane_id": "-2",
+      "junction_id": "1502",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48818",
+      "lane_id": "-3",
+      "junction_id": "3260",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "48861",
+      "lane_id": "-3",
+      "junction_id": "3423",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49257",
+      "lane_id": "-3",
+      "junction_id": "3440",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49268",
+      "lane_id": "-2",
+      "junction_id": "2213",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49268",
+      "lane_id": "-3",
+      "junction_id": "2213",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49271",
+      "lane_id": "-3",
+      "junction_id": "2213",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49272",
+      "lane_id": "-3",
+      "junction_id": "3449",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49273",
+      "lane_id": "-3",
+      "junction_id": "1950",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49275",
+      "lane_id": "-3",
+      "junction_id": "3453",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49283",
+      "lane_id": "-2",
+      "junction_id": "720",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49284",
+      "lane_id": "-2",
+      "junction_id": "714",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49285",
+      "lane_id": "-2",
+      "junction_id": "715",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49286",
+      "lane_id": "-2",
+      "junction_id": "1981",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49290",
+      "lane_id": "-3",
+      "junction_id": "3261",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49291",
+      "lane_id": "-3",
+      "junction_id": "3411",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49293",
+      "lane_id": "-3",
+      "junction_id": "2986",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49296",
+      "lane_id": "-3",
+      "junction_id": "852",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49304",
+      "lane_id": "-2",
+      "junction_id": "2127",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49305",
+      "lane_id": "-2",
+      "junction_id": "1019",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49306",
+      "lane_id": "-2",
+      "junction_id": "967",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49307",
+      "lane_id": "-2",
+      "junction_id": "1666",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49310",
+      "lane_id": "-3",
+      "junction_id": "484",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49311",
+      "lane_id": "-3",
+      "junction_id": "909",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49312",
+      "lane_id": "-2",
+      "junction_id": "1010",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49313",
+      "lane_id": "-3",
+      "junction_id": "1861",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49315",
+      "lane_id": "-2",
+      "junction_id": "2129",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49317",
+      "lane_id": "-3",
+      "junction_id": "1457",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49341",
+      "lane_id": "-3",
+      "junction_id": "3459",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49345",
+      "lane_id": "-4",
+      "junction_id": "3463",
+      "candidate_lane_ids": [
+        -4,
+        -1
+      ]
+    },
+    {
+      "road_id": "49348",
+      "lane_id": "-3",
+      "junction_id": "3441",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49349",
+      "lane_id": "-2",
+      "junction_id": "3311",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49355",
+      "lane_id": "-3",
+      "junction_id": "1105",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49356",
+      "lane_id": "-2",
+      "junction_id": "291",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49357",
+      "lane_id": "-3",
+      "junction_id": "2255",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49771",
+      "lane_id": "-2",
+      "junction_id": "62",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49781",
+      "lane_id": "-2",
+      "junction_id": "3465",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49835",
+      "lane_id": "-3",
+      "junction_id": "3470",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49879",
+      "lane_id": "-3",
+      "junction_id": "3126",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "49881",
+      "lane_id": "-2",
+      "junction_id": "1042",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49945",
+      "lane_id": "-3",
+      "junction_id": "3178",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49963",
+      "lane_id": "-2",
+      "junction_id": "3421",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49964",
+      "lane_id": "-2",
+      "junction_id": "3456",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49974",
+      "lane_id": "-2",
+      "junction_id": "2592",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49977",
+      "lane_id": "-2",
+      "junction_id": "413",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "49997",
+      "lane_id": "-2",
+      "junction_id": "3486",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50019",
+      "lane_id": "-2",
+      "junction_id": "1873",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50025",
+      "lane_id": "-2",
+      "junction_id": "649",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50029",
+      "lane_id": "-2",
+      "junction_id": "2367",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50037",
+      "lane_id": "-2",
+      "junction_id": "137",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50043",
+      "lane_id": "-2",
+      "junction_id": "1126",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50103",
+      "lane_id": "-2",
+      "junction_id": "107",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50114",
+      "lane_id": "-2",
+      "junction_id": "424",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50224",
+      "lane_id": "-2",
+      "junction_id": "3497",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50233",
+      "lane_id": "-2",
+      "junction_id": "2198",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50237",
+      "lane_id": "-2",
+      "junction_id": "553",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50247",
+      "lane_id": "-2",
+      "junction_id": "421",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50333",
+      "lane_id": "-4",
+      "junction_id": "2392",
+      "candidate_lane_ids": [
+        -4,
+        -1
+      ]
+    },
+    {
+      "road_id": "50514",
+      "lane_id": "-2",
+      "junction_id": "2938",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50515",
+      "lane_id": "-2",
+      "junction_id": "2835",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50522",
+      "lane_id": "-2",
+      "junction_id": "3205",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50529",
+      "lane_id": "-2",
+      "junction_id": "3350",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50557",
+      "lane_id": "-2",
+      "junction_id": "518",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50591",
+      "lane_id": "-2",
+      "junction_id": "2136",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50598",
+      "lane_id": "-2",
+      "junction_id": "2744",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50600",
+      "lane_id": "-2",
+      "junction_id": "2977",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50612",
+      "lane_id": "-2",
+      "junction_id": "99",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50679",
+      "lane_id": "-2",
+      "junction_id": "3350",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50688",
+      "lane_id": "-2",
+      "junction_id": "3450",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50705",
+      "lane_id": "-2",
+      "junction_id": "3287",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50707",
+      "lane_id": "-2",
+      "junction_id": "3285",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50720",
+      "lane_id": "-2",
+      "junction_id": "3511",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50847",
+      "lane_id": "-2",
+      "junction_id": "320",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50848",
+      "lane_id": "-2",
+      "junction_id": "1740",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50850",
+      "lane_id": "-2",
+      "junction_id": "1684",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50851",
+      "lane_id": "-2",
+      "junction_id": "1982",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50856",
+      "lane_id": "-2",
+      "junction_id": "3514",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50876",
+      "lane_id": "-2",
+      "junction_id": "3207",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50877",
+      "lane_id": "-2",
+      "junction_id": "3201",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50882",
+      "lane_id": "-2",
+      "junction_id": "3311",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50885",
+      "lane_id": "-2",
+      "junction_id": "51",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50886",
+      "lane_id": "-2",
+      "junction_id": "2998",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50917",
+      "lane_id": "-2",
+      "junction_id": "3303",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50932",
+      "lane_id": "-2",
+      "junction_id": "2332",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "50933",
+      "lane_id": "-2",
+      "junction_id": "405",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51033",
+      "lane_id": "-3",
+      "junction_id": "3462",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "51072",
+      "lane_id": "-2",
+      "junction_id": "3424",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51081",
+      "lane_id": "-2",
+      "junction_id": "3531",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51082",
+      "lane_id": "-3",
+      "junction_id": "2956",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51104",
+      "lane_id": "-3",
+      "junction_id": "3027",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51164",
+      "lane_id": "-2",
+      "junction_id": "2981",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51178",
+      "lane_id": "-2",
+      "junction_id": "2986",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51180",
+      "lane_id": "-2",
+      "junction_id": "3414",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51216",
+      "lane_id": "-2",
+      "junction_id": "3515",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51218",
+      "lane_id": "-2",
+      "junction_id": "320",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51234",
+      "lane_id": "-2",
+      "junction_id": "3298",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51236",
+      "lane_id": "-2",
+      "junction_id": "3520",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51260",
+      "lane_id": "-2",
+      "junction_id": "2842",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51262",
+      "lane_id": "-2",
+      "junction_id": "2397",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51299",
+      "lane_id": "-2",
+      "junction_id": "1852",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51302",
+      "lane_id": "-2",
+      "junction_id": "3538",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51320",
+      "lane_id": "-2",
+      "junction_id": "295",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51399",
+      "lane_id": "-2",
+      "junction_id": "653",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51400",
+      "lane_id": "-2",
+      "junction_id": "3091",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51425",
+      "lane_id": "-4",
+      "junction_id": "3549",
+      "candidate_lane_ids": [
+        -4,
+        -1
+      ]
+    },
+    {
+      "road_id": "51426",
+      "lane_id": "-4",
+      "junction_id": "3115",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51430",
+      "lane_id": "-2",
+      "junction_id": "2993",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51433",
+      "lane_id": "-2",
+      "junction_id": "2692",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51440",
+      "lane_id": "-2",
+      "junction_id": "3307",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51440",
+      "lane_id": "-3",
+      "junction_id": "3307",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51441",
+      "lane_id": "-2",
+      "junction_id": "3307",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51443",
+      "lane_id": "-2",
+      "junction_id": "3307",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51445",
+      "lane_id": "-2",
+      "junction_id": "3377",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51498",
+      "lane_id": "-2",
+      "junction_id": "1852",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51503",
+      "lane_id": "-3",
+      "junction_id": "2222",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51506",
+      "lane_id": "-2",
+      "junction_id": "422",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51507",
+      "lane_id": "-2",
+      "junction_id": "3524",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51511",
+      "lane_id": "-3",
+      "junction_id": "3481",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "51519",
+      "lane_id": "-2",
+      "junction_id": "3073",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51561",
+      "lane_id": "-2",
+      "junction_id": "3105",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51562",
+      "lane_id": "-2",
+      "junction_id": "3475",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51622",
+      "lane_id": "-2",
+      "junction_id": "3546",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51635",
+      "lane_id": "-3",
+      "junction_id": "518",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "51642",
+      "lane_id": "-3",
+      "junction_id": "2818",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51653",
+      "lane_id": "-2",
+      "junction_id": "3182",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51673",
+      "lane_id": "-3",
+      "junction_id": "3120",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51674",
+      "lane_id": "-3",
+      "junction_id": "1687",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "51675",
+      "lane_id": "-3",
+      "junction_id": "3177",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51680",
+      "lane_id": "-2",
+      "junction_id": "3090",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51681",
+      "lane_id": "-2",
+      "junction_id": "779",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51682",
+      "lane_id": "-2",
+      "junction_id": "1876",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51684",
+      "lane_id": "-2",
+      "junction_id": "3376",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51689",
+      "lane_id": "-2",
+      "junction_id": "3180",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51691",
+      "lane_id": "-2",
+      "junction_id": "1943",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51721",
+      "lane_id": "-3",
+      "junction_id": "3509",
+      "candidate_lane_ids": [
+        -3,
+        -1
+      ]
+    },
+    {
+      "road_id": "51746",
+      "lane_id": "-2",
+      "junction_id": "3118",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51774",
+      "lane_id": "-2",
+      "junction_id": "2716",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    },
+    {
+      "road_id": "51789",
+      "lane_id": "-3",
+      "junction_id": "144",
+      "candidate_lane_ids": [
+        -2,
+        -1
+      ]
+    }
+  ],
+  "unresolved_no_candidate": [
+    {
+      "road_id": "42154",
+      "lane_id": "-1",
+      "junction_id": "43"
+    },
+    {
+      "road_id": "42160",
+      "lane_id": "-1",
+      "junction_id": "55"
+    },
+    {
+      "road_id": "42193",
+      "lane_id": "-1",
+      "junction_id": "108"
+    },
+    {
+      "road_id": "42202",
+      "lane_id": "-1",
+      "junction_id": "125"
+    },
+    {
+      "road_id": "42226",
+      "lane_id": "-1",
+      "junction_id": "160"
+    },
+    {
+      "road_id": "42310",
+      "lane_id": "-1",
+      "junction_id": "280"
+    },
+    {
+      "road_id": "42328",
+      "lane_id": "-1",
+      "junction_id": "169"
+    },
+    {
+      "road_id": "42411",
+      "lane_id": "-1",
+      "junction_id": "327"
+    },
+    {
+      "road_id": "42436",
+      "lane_id": "-1",
+      "junction_id": "452"
+    },
+    {
+      "road_id": "42456",
+      "lane_id": "-1",
+      "junction_id": "483"
+    },
+    {
+      "road_id": "42558",
+      "lane_id": "-1",
+      "junction_id": "620"
+    },
+    {
+      "road_id": "43056",
+      "lane_id": "-1",
+      "junction_id": "1164"
+    },
+    {
+      "road_id": "43480",
+      "lane_id": "-1",
+      "junction_id": "1508"
+    },
+    {
+      "road_id": "43747",
+      "lane_id": "-1",
+      "junction_id": "1720"
+    },
+    {
+      "road_id": "44454",
+      "lane_id": "-1",
+      "junction_id": "270"
+    },
+    {
+      "road_id": "44461",
+      "lane_id": "-1",
+      "junction_id": "1242"
+    },
+    {
+      "road_id": "44685",
+      "lane_id": "-1",
+      "junction_id": "683"
+    },
+    {
+      "road_id": "44949",
+      "lane_id": "-1",
+      "junction_id": "2534"
+    },
+    {
+      "road_id": "45024",
+      "lane_id": "-1",
+      "junction_id": "2588"
+    },
+    {
+      "road_id": "45050",
+      "lane_id": "-1",
+      "junction_id": "326"
+    },
+    {
+      "road_id": "45091",
+      "lane_id": "-1",
+      "junction_id": "2614"
+    },
+    {
+      "road_id": "45788",
+      "lane_id": "-1",
+      "junction_id": "517"
+    },
+    {
+      "road_id": "45805",
+      "lane_id": "-1",
+      "junction_id": "2923"
+    },
+    {
+      "road_id": "45997",
+      "lane_id": "-1",
+      "junction_id": "2205"
+    },
+    {
+      "road_id": "46000",
+      "lane_id": "-1",
+      "junction_id": "2984"
+    },
+    {
+      "road_id": "46054",
+      "lane_id": "-1",
+      "junction_id": "3002"
+    },
+    {
+      "road_id": "46108",
+      "lane_id": "-1",
+      "junction_id": "3030"
+    },
+    {
+      "road_id": "46153",
+      "lane_id": "-1",
+      "junction_id": "2919"
+    },
+    {
+      "road_id": "46229",
+      "lane_id": "-1",
+      "junction_id": "2983"
+    },
+    {
+      "road_id": "46261",
+      "lane_id": "-1",
+      "junction_id": "3074"
+    },
+    {
+      "road_id": "46262",
+      "lane_id": "-1",
+      "junction_id": "92"
+    },
+    {
+      "road_id": "46345",
+      "lane_id": "-1",
+      "junction_id": "3097"
+    },
+    {
+      "road_id": "46354",
+      "lane_id": "-1",
+      "junction_id": "3092"
+    },
+    {
+      "road_id": "46385",
+      "lane_id": "-1",
+      "junction_id": "7"
+    },
+    {
+      "road_id": "46401",
+      "lane_id": "-1",
+      "junction_id": "3111"
+    },
+    {
+      "road_id": "46429",
+      "lane_id": "-1",
+      "junction_id": "9"
+    },
+    {
+      "road_id": "46434",
+      "lane_id": "-1",
+      "junction_id": "3116"
+    },
+    {
+      "road_id": "46446",
+      "lane_id": "-1",
+      "junction_id": "488"
+    },
+    {
+      "road_id": "46567",
+      "lane_id": "-1",
+      "junction_id": "3157"
+    },
+    {
+      "road_id": "46567",
+      "lane_id": "-2",
+      "junction_id": "3157"
+    },
+    {
+      "road_id": "46572",
+      "lane_id": "-2",
+      "junction_id": "3160"
+    },
+    {
+      "road_id": "46629",
+      "lane_id": "-1",
+      "junction_id": "234"
+    },
+    {
+      "road_id": "46679",
+      "lane_id": "-2",
+      "junction_id": "3200"
+    },
+    {
+      "road_id": "46711",
+      "lane_id": "-1",
+      "junction_id": "3214"
+    },
+    {
+      "road_id": "46728",
+      "lane_id": "-1",
+      "junction_id": "330"
+    },
+    {
+      "road_id": "46752",
+      "lane_id": "-1",
+      "junction_id": "57"
+    },
+    {
+      "road_id": "46823",
+      "lane_id": "-1",
+      "junction_id": "2192"
+    },
+    {
+      "road_id": "46833",
+      "lane_id": "-1",
+      "junction_id": "3077"
+    },
+    {
+      "road_id": "46850",
+      "lane_id": "-2",
+      "junction_id": "3258"
+    },
+    {
+      "road_id": "47095",
+      "lane_id": "-2",
+      "junction_id": "3308"
+    },
+    {
+      "road_id": "47096",
+      "lane_id": "-1",
+      "junction_id": "3061"
+    },
+    {
+      "road_id": "47096",
+      "lane_id": "-2",
+      "junction_id": "3061"
+    },
+    {
+      "road_id": "47097",
+      "lane_id": "-1",
+      "junction_id": "1680"
+    },
+    {
+      "road_id": "47097",
+      "lane_id": "-2",
+      "junction_id": "1680"
+    },
+    {
+      "road_id": "47160",
+      "lane_id": "-1",
+      "junction_id": "3327"
+    },
+    {
+      "road_id": "47343",
+      "lane_id": "-1",
+      "junction_id": "271"
+    },
+    {
+      "road_id": "47553",
+      "lane_id": "-3",
+      "junction_id": "3384"
+    },
+    {
+      "road_id": "47554",
+      "lane_id": "-3",
+      "junction_id": "3386"
+    },
+    {
+      "road_id": "47555",
+      "lane_id": "2",
+      "junction_id": "3387"
+    },
+    {
+      "road_id": "47555",
+      "lane_id": "1",
+      "junction_id": "3387"
+    },
+    {
+      "road_id": "47561",
+      "lane_id": "-1",
+      "junction_id": "3389"
+    },
+    {
+      "road_id": "47746",
+      "lane_id": "-1",
+      "junction_id": "3147"
+    },
+    {
+      "road_id": "47758",
+      "lane_id": "-1",
+      "junction_id": "3167"
+    },
+    {
+      "road_id": "48871",
+      "lane_id": "-1",
+      "junction_id": "3425"
+    },
+    {
+      "road_id": "49258",
+      "lane_id": "-3",
+      "junction_id": "3439"
+    },
+    {
+      "road_id": "49265",
+      "lane_id": "-3",
+      "junction_id": "3438"
+    },
+    {
+      "road_id": "49296",
+      "lane_id": "-1",
+      "junction_id": "852"
+    },
+    {
+      "road_id": "49347",
+      "lane_id": "-3",
+      "junction_id": "3458"
+    },
+    {
+      "road_id": "49352",
+      "lane_id": "-1",
+      "junction_id": "2254"
+    },
+    {
+      "road_id": "49353",
+      "lane_id": "-2",
+      "junction_id": "3466"
+    },
+    {
+      "road_id": "49836",
+      "lane_id": "-1",
+      "junction_id": "3477"
+    },
+    {
+      "road_id": "49851",
+      "lane_id": "-1",
+      "junction_id": "115"
+    },
+    {
+      "road_id": "50001",
+      "lane_id": "-2",
+      "junction_id": "3488"
+    },
+    {
+      "road_id": "50013",
+      "lane_id": "-1",
+      "junction_id": "2533"
+    },
+    {
+      "road_id": "50023",
+      "lane_id": "-1",
+      "junction_id": "2224"
+    },
+    {
+      "road_id": "50039",
+      "lane_id": "-1",
+      "junction_id": "894"
+    },
+    {
+      "road_id": "50222",
+      "lane_id": "-2",
+      "junction_id": "3498"
+    },
+    {
+      "road_id": "50242",
+      "lane_id": "-1",
+      "junction_id": "3500"
+    },
+    {
+      "road_id": "50285",
+      "lane_id": "-1",
+      "junction_id": "112"
+    },
+    {
+      "road_id": "50306",
+      "lane_id": "-1",
+      "junction_id": "2717"
+    },
+    {
+      "road_id": "50355",
+      "lane_id": "-1",
+      "junction_id": "2743"
+    },
+    {
+      "road_id": "50558",
+      "lane_id": "-1",
+      "junction_id": "3192"
+    },
+    {
+      "road_id": "50559",
+      "lane_id": "-1",
+      "junction_id": "3188"
+    },
+    {
+      "road_id": "50579",
+      "lane_id": "-1",
+      "junction_id": "2932"
+    },
+    {
+      "road_id": "50582",
+      "lane_id": "-1",
+      "junction_id": "3416"
+    },
+    {
+      "road_id": "50689",
+      "lane_id": "-1",
+      "junction_id": "3510"
+    },
+    {
+      "road_id": "50689",
+      "lane_id": "-2",
+      "junction_id": "3510"
+    },
+    {
+      "road_id": "50875",
+      "lane_id": "-1",
+      "junction_id": "2909"
+    },
+    {
+      "road_id": "50883",
+      "lane_id": "-2",
+      "junction_id": "3517"
+    },
+    {
+      "road_id": "50884",
+      "lane_id": "-2",
+      "junction_id": "3518"
+    },
+    {
+      "road_id": "50930",
+      "lane_id": "-1",
+      "junction_id": "2919"
+    },
+    {
+      "road_id": "50977",
+      "lane_id": "-1",
+      "junction_id": "2551"
+    },
+    {
+      "road_id": "51068",
+      "lane_id": "-2",
+      "junction_id": "3530"
+    },
+    {
+      "road_id": "51068",
+      "lane_id": "-3",
+      "junction_id": "3530"
+    },
+    {
+      "road_id": "51173",
+      "lane_id": "-1",
+      "junction_id": "2983"
+    },
+    {
+      "road_id": "51195",
+      "lane_id": "-1",
+      "junction_id": "2991"
+    },
+    {
+      "road_id": "51265",
+      "lane_id": "-3",
+      "junction_id": "3464"
+    },
+    {
+      "road_id": "51265",
+      "lane_id": "-4",
+      "junction_id": "3464"
+    },
+    {
+      "road_id": "51306",
+      "lane_id": "-1",
+      "junction_id": "3023"
+    },
+    {
+      "road_id": "51405",
+      "lane_id": "-1",
+      "junction_id": "1744"
+    },
+    {
+      "road_id": "51439",
+      "lane_id": "-1",
+      "junction_id": "167"
+    },
+    {
+      "road_id": "51472",
+      "lane_id": "-1",
+      "junction_id": "3555"
+    },
+    {
+      "road_id": "51516",
+      "lane_id": "-1",
+      "junction_id": "3064"
+    },
+    {
+      "road_id": "51523",
+      "lane_id": "-1",
+      "junction_id": "3011"
+    },
+    {
+      "road_id": "51542",
+      "lane_id": "-1",
+      "junction_id": "2972"
+    },
+    {
+      "road_id": "51586",
+      "lane_id": "-1",
+      "junction_id": "82"
+    },
+    {
+      "road_id": "51609",
+      "lane_id": "-1",
+      "junction_id": "442"
+    },
+    {
+      "road_id": "51644",
+      "lane_id": "-1",
+      "junction_id": "3048"
+    },
+    {
+      "road_id": "51705",
+      "lane_id": "-1",
+      "junction_id": "3100"
+    },
+    {
+      "road_id": "51712",
+      "lane_id": "-1",
+      "junction_id": "96"
+    },
+    {
+      "road_id": "51745",
+      "lane_id": "-1",
+      "junction_id": "2634"
+    },
+    {
+      "road_id": "51751",
+      "lane_id": "-1",
+      "junction_id": "8"
+    },
+    {
+      "road_id": "51771",
+      "lane_id": "-1",
+      "junction_id": "3044"
+    },
+    {
+      "road_id": "51777",
+      "lane_id": "-1",
+      "junction_id": "856"
+    },
+    {
+      "road_id": "51795",
+      "lane_id": "-1",
+      "junction_id": "3018"
+    }
+  ],
+  "roads_processed": 32266,
+  "lanes_without_topology": 714
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "COOK_CAPACITY_MODEL/v1",
+  "C_FREE_NOW_GB": 9.8,
+  "C_SAFE_RECOVERY_GB": 43.01,
+  "C_PROJECTED_FREE_GB": 52.81,
+  "C_meets_20_30_GB_target": true,
+  "E_FREE_NOW_GB": 11.6,
+  "E_SAFE_RECOVERY_GB": 4.23,
+  "E_PROJECTED_FREE_GB": 15.83,
+  "F_FREE_NOW_GB": 41.5,
+  "F_SAFE_RECOVERY_GB": 8.46,
+  "F_PROJECTED_FREE_GB": 49.96,
+  "F_meets_80_100_GB_target": false,
+  "G_FREE_NOW_GB": 28.71,
+  "H_FREE_NOW_GB": 16.6,
+  "DDC_ESTIMATED_RESERVE_GB": 25.0,
+  "BOUNDED_COOK_RESERVE_GB": 20.0,
+  "SAFETY_RESERVE_GB": 10.0,
+  "DDC_TARGET_CAPACITY_ON_F": "FAIL",
+  "DDC_TARGET_CAPACITY_ON_F_reason": "F projects to about 50.0 GB free after removing every zero-dirty worktree. The planning target is 80-100 GB. F: cannot reach it without touching USER_DATA (MobileSync 241 GB, pobrane 20.7 GB, Pictures 12 GB) or UNKNOWN_PRESERVE items (pulpit 53 GB, UCDownloads 34 GB), which is not authorised.",
+  "RECOMMENDED_SPLIT": {
+    "DDC": "C: (NVMe, faster and has more recoverable headroom than F:)",
+    "COOK_OUTPUT": "F: (SATA)",
+    "deviation_from_prompt": "The prompt nominated F:\\UnrealEngine_DDC as the candidate. That does not survive the capacity model: F: reaches only about 50.0 GB free and is a mixed personal-data volume. C: is recommended instead, and the deviation is stated explicitly rather than silently applied."
+  },
+  "capacity_gate_result": "PASS_CONDITIONAL",
+  "capacity_gate_conditions": [
+    "operator executes the P0 and P1 deletions",
+    "operator accepts C: as the DDC device",
+    "operator accepts DDC competing with TEMP on C:"
+  ],
+  "OLD_COOK_OUTPUT_AUTHORITY": "STALE",
+  "COOK_RESUME_ALLOWED": false,
+  "BASELINE_DRIFT": {
+    "C_measured_at_build_gb": 9.8,
+    "C_measured_minutes_later_gb": 7.99,
+    "C_drift_gb": -1.81,
+    "F_measured_at_build_gb": 41.5,
+    "F_measured_minutes_later_gb": 41.11,
+    "F_drift_gb": -0.39,
+    "interpretation": "C: lost about 1.8 GB during this analysis with no deletion by this session, so something is actively consuming it (a pytest run was in progress and this session's own tooling writes to the same TEMP). The C: baseline is therefore UNSTABLE and the projection carries downside risk. Re-measure immediately before any cleanup."
+  },
+  "VOLUME_MODELS": {
+    "single_volume_C_only": {
+      "needs_gb": 55.0,
+      "has_gb": 52.81,
+      "result": "FAIL",
+      "why": "a 25 GB DDC plus 20 GB cook output plus 10 GB reserve needs 55 GB and C: projects to about 52.8 GB"
+    },
+    "single_volume_F_only": {
+      "needs_gb": 55.0,
+      "has_gb": 49.96,
+      "result": "FAIL",
+      "why": "F: projects to about 50.0 GB and is also the slowest of the internal candidates"
+    },
+    "split_DDC_on_C_output_on_F": {
+      "C_needs_gb": 35.0,
+      "C_has_gb": 52.81,
+      "C_result": "PASS",
+      "C_headroom_after_gb": 17.81,
+      "F_needs_gb": 20.0,
+      "F_has_gb": 49.96,
+      "F_result": "PASS",
+      "F_headroom_after_gb": 29.96,
+      "result": "PASS",
+      "why": "DDC on the NVMe C: is both faster than the proposed SATA F: target and has more recoverable headroom, while F: absorbs the bounded cook output. C: retains about 17.8 GB for TEMP and pagefile after the DDC and reserve."
+    }
+  },
+  "DDC_TARGET_CAPACITY": "PASS_CONDITIONAL",
+  "DDC_TARGET_CAPACITY_CONDITIONS": [
+    "operator executes the P0 and P1 cleanup (about 43.0 GB on C:, 8.5 GB on F:)",
+    "operator accepts the split layout: DDC on C: (NVMe), cook output on F:",
+    "operator accepts DDC on C: competing with TEMP for the same device",
+    "C: free space is re-measured immediately before cleanup because the baseline is drifting downward"
+  ]
+}

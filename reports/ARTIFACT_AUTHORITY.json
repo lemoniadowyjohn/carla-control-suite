@@ -1,0 +1,75 @@
+{
+  "artifacts": [
+    {
+      "exists": true,
+      "logical_role": "AUTHORITATIVE_XODR",
+      "path": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "producer": "map_registry.py / promotion gate",
+      "producer_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "size_bytes": 149799632,
+      "superseded_by": null,
+      "supersedes": null
+    },
+    {
+      "exists": true,
+      "logical_role": "INGOLSTADT_RUNTIME_UMAP",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt.umap",
+      "producer": "map_registry.py / promotion gate",
+      "producer_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "sha256": "2f3c09de21bed850e2967103a721c60b43dfa4c4a9bea51ab2065080eaf38e17",
+      "size_bytes": 25828,
+      "superseded_by": null,
+      "supersedes": null
+    },
+    {
+      "exists": true,
+      "logical_role": "IMPORT_MANIFEST_PRIMARY",
+      "path": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\Ingolstadt.json",
+      "producer": "working tree",
+      "producer_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "sha256": "da5eb6ea9598dfc5005c283181e99c0ec605d477da1502401c434aa317f01024",
+      "size_bytes": 1014,
+      "superseded_by": null,
+      "supersedes": null
+    },
+    {
+      "exists": true,
+      "logical_role": "IMPORT_MANIFEST_DUPLICATE",
+      "path": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\package.json",
+      "producer": "working tree",
+      "producer_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "sha256": "da5eb6ea9598dfc5005c283181e99c0ec605d477da1502401c434aa317f01024",
+      "size_bytes": 1014,
+      "superseded_by": null,
+      "supersedes": null
+    },
+    {
+      "exists": true,
+      "logical_role": "UE_TARGET_CONFIG",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Config\\DefaultEngine.ini",
+      "producer": "working tree",
+      "producer_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "sha256": "a29b289a289d64fec961ee577da4fd6b6b13365cbcf5bc54cc5b71c63a7ebc92",
+      "size_bytes": 8748,
+      "superseded_by": null,
+      "supersedes": null
+    },
+    {
+      "exists": true,
+      "logical_role": "IMPORTER",
+      "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py",
+      "producer": "working tree",
+      "producer_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "sha256": "af0f05f1fe0948c00c10f494fb70ee57e18f4c0c84b2814744b1657935e80e79",
+      "size_bytes": 47515,
+      "superseded_by": null,
+      "supersedes": null
+    }
+  ],
+  "generated_utc": "2026-10-05T20:47:43.372939Z",
+  "policy": "An artifact may exist on disk without being selectable. Selection requires a promotion receipt binding role, hash and producer SHA.",
+  "schema": "ARTIFACT_AUTHORITY/v1",
+  "schema_version": 1,
+  "selection_requires_promotion_receipt": true
+}

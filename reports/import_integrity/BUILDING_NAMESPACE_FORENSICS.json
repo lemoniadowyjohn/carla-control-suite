@@ -1,0 +1,216 @@
+{
+  "ACTUAL_BUILDING_ASSET_ROOT": "/Game/Ingolstadt/Static/Terrain/Ingolstadt",
+  "BUILDING_REFERENCE_PATH_ROOT": "/Game/Ingolstadt/Maps/Ingolstadt",
+  "MOUNT_POINT_ROOT_CAUSE": "WRONG_SUBPATH_IN_SERIALIZED_REFERENCE",
+  "MOUNT_POINT_ROOT_CAUSE_PROVEN": true,
+  "UNRESOLVED_REFERENCES_AFTER": 5711,
+  "UNRESOLVED_REFERENCES_BEFORE": 5711,
+  "candidate_fixes": [
+    {
+      "action": "Import the tile FBX meshes into the map destination /Game/Ingolstadt/Maps/Ingolstadt so meshes sit beside the .umap, matching CARLA's stock Town01 layout.",
+      "id": "FIX-A",
+      "risk": "Changes the asset namespace; requires re-import and re-cook."
+    },
+    {
+      "action": "Rewrite the map's serialized references to /Game/Ingolstadt/Static/Terrain/Ingolstadt/<Name>.",
+      "id": "FIX-B",
+      "risk": "Requires editing serialized .umap or the reference producer; diverges from CARLA's stock layout."
+    },
+    {
+      "action": "FIX-A",
+      "id": "PREFERRED",
+      "reason": "Matches CARLA's stock Town01 layout (meshes beside the umap)."
+    }
+  ],
+  "decisive_filesystem_evidence": {
+    "building_meshes_present_in_map_folder": 0,
+    "building_meshes_present_in_static_terrain_folder": 5711,
+    "conclusion": "The map folder contains the .umap, MAT_*.uasset, OpenDrive and TM subfolders but ZERO building meshes, while the Static/Terrain/Ingolstadt folder contains all 5711. The buildings were imported through the props channel, not the map channel the references assume.",
+    "map_folder_contents": [
+      "Ingolstadt.umap",
+      "MAT_0_0.uasset",
+      "MAT_1_0.uasset",
+      "MAT_2_0.uasset",
+      "MAT_3_0.uasset",
+      "MAT_4_0.uasset",
+      "MAT_5_0.uasset",
+      "MAT_6_0.uasset",
+      "MAT_7_0.uasset",
+      "OpenDrive",
+      "TM"
+    ]
+  },
+  "generated_at_utc": "2026-10-04T19:54:12.666622+00:00",
+  "mismatch_class_counts": {
+    "ASSET_NOT_CREATED": 0,
+    "MATCH": 0,
+    "MISSING": 0,
+    "SERIALIZED_REFERENCE_WRONG": 5711,
+    "WRONG_OBJECT_NAME": 0,
+    "WRONG_PACKAGE_ROOT": 5711
+  },
+  "naming_is_correct": {
+    "conclusion": "Object names are correct. Only the package sub-path is wrong.",
+    "references_matching_real_uasset_names": 5711
+  },
+  "per_tile": [
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 6,
+      "name_match": 6,
+      "references": 6,
+      "tile": "10_6"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 74,
+      "name_match": 74,
+      "references": 74,
+      "tile": "10_7"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 5,
+      "name_match": 5,
+      "references": 5,
+      "tile": "10_8"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 303,
+      "name_match": 303,
+      "references": 303,
+      "tile": "10_9"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 263,
+      "name_match": 263,
+      "references": 263,
+      "tile": "6_6"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 395,
+      "name_match": 395,
+      "references": 395,
+      "tile": "6_7"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 625,
+      "name_match": 625,
+      "references": 625,
+      "tile": "6_8"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 159,
+      "name_match": 159,
+      "references": 159,
+      "tile": "6_9"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 326,
+      "name_match": 326,
+      "references": 326,
+      "tile": "7_6"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 411,
+      "name_match": 411,
+      "references": 411,
+      "tile": "7_7"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 573,
+      "name_match": 573,
+      "references": 573,
+      "tile": "7_8"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 429,
+      "name_match": 429,
+      "references": 429,
+      "tile": "7_9"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 263,
+      "name_match": 263,
+      "references": 263,
+      "tile": "8_6"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 409,
+      "name_match": 409,
+      "references": 409,
+      "tile": "8_7"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 493,
+      "name_match": 493,
+      "references": 493,
+      "tile": "8_8"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 353,
+      "name_match": 353,
+      "references": 353,
+      "tile": "8_9"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 8,
+      "name_match": 8,
+      "references": 8,
+      "tile": "9_6"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 28,
+      "name_match": 28,
+      "references": 28,
+      "tile": "9_7"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 193,
+      "name_match": 193,
+      "references": 193,
+      "tile": "9_8"
+    },
+    {
+      "class": "WRONG_PACKAGE_ROOT",
+      "meshes_on_disk": 395,
+      "name_match": 395,
+      "references": 395,
+      "tile": "9_9"
+    }
+  ],
+  "producer_evidence": {
+    "StaticMeshImportData": {
+      "TileSize": 1000.0,
+      "bAutoGenerateCollision": 1,
+      "bCombineMeshes": 0,
+      "bConvertSceneUnit": 1,
+      "bForceVerticesRelativeToTile": 1,
+      "bRemoveDegenerates": 1
+    },
+    "bCombineMeshes_staticmesh": 0,
+    "bCombineMeshes_top": 1,
+    "declared_DestinationPath": "/Game/package/Maps/Ingolstadt",
+    "declared_file_count": 20,
+    "declared_first_file": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\./Ingolstadt_Tile_10_6.fbx",
+    "import_settings_file": "G:\\CARLA\\carla_source_probe\\importsetting.json",
+    "note": "DestinationPath is the literal template '/Game/package/...'. CARLA substitutes PackageName at commandlet runtime, giving /Game/Ingolstadt/Maps/Ingolstadt. That matches the serialized reference exactly."
+  },
+  "schema": "building_namespace_forensics/v1"
+}

@@ -1,0 +1,76 @@
+{
+  "GAP048_SOURCE": {
+    "sha": "7ea387b4048bacd0e2bccc9f67f900d8abb98f8a",
+    "type": "commit",
+    "stat": "",
+    "local_branches": [
+      "+ fix/gap026-connector-hermite-20261014",
+      "+ fix/gap026-connector-tangent-fit-20261014",
+      "fix/gap026-inner-first-lanelink-20261013",
+      "fix/gap048-source-stage-closure-20261013"
+    ],
+    "remote_branches": [
+      "origin/fix/gap048-source-stage-closure-20261013"
+    ],
+    "remote_preserved": true
+  },
+  "GAP026_INNER_FIRST": {
+    "sha": "2a886117cc9fbffb879ba3a790a07333b5f24e96",
+    "remote_preserved": true,
+    "remote_branches": [
+      "origin/fix/gap026-connector-hermite-20261014",
+      "origin/fix/gap026-connector-tangent-fit-20261014",
+      "origin/fix/gap026-inner-first-lanelink-20261013"
+    ]
+  },
+  "GAP026_HERMITE": {
+    "sha": "b5ea49117daf13504eb12ef9c2618d0a295ba130",
+    "remote_preserved": true,
+    "remote_branches": [
+      "origin/fix/gap026-connector-hermite-20261014"
+    ]
+  },
+  "GAP026_TANGENT": {
+    "sha": "8edb01709a3bb784415dd36085d6176613b77ef1",
+    "remote_preserved": true,
+    "remote_branches": [
+      "origin/fix/gap026-connector-tangent-fit-20261014"
+    ]
+  },
+  "GAP049": {
+    "sha": "bb14b036acb2604c71803311eb49e47ed852cbcc",
+    "type": "commit",
+    "stat": "",
+    "local_branches": [
+      "fix/gap049-package-write-poller-delta-only-20261011"
+    ],
+    "remote_branches": [
+      "origin/fix/gap049-package-write-poller-delta-only-20261011"
+    ],
+    "remote_preserved": true
+  },
+  "GAP055": {
+    "sha": "c736a9ce5792250f5d0c6a1fd4c78dc185f7243b",
+    "type": "commit",
+    "stat": "",
+    "local_branches": [
+      "* (HEAD detached from 8015df6a)"
+    ],
+    "remote_branches": [
+      "origin/fix/gap055-ci-windll-platform-guard-20261011"
+    ],
+    "remote_preserved": true
+  },
+  "GAP052": {
+    "sha": "c736a9ce5792250f5d0c6a1fd4c78dc185f7243b",
+    "type": "commit",
+    "stat": "",
+    "local_branches": [
+      "* (HEAD detached from 8015df6a)"
+    ],
+    "remote_branches": [
+      "origin/fix/gap055-ci-windll-platform-guard-20261011"
+    ],
+    "remote_preserved": true
+  }
+}

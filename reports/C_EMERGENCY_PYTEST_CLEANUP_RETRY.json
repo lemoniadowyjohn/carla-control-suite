@@ -1,0 +1,18 @@
+{
+  "schema": "C_EMERGENCY_PYTEST_CLEANUP_RETRY/v1",
+  "live_pytest_pids": [],
+  "bytes_before_retry": 6403689450,
+  "bytes_after_retry": 432550,
+  "reclaimed_bytes": 6403689450,
+  "reclaimed_gb": 6.4,
+  "dirs_deleted": 13,
+  "dirs_undeletable": 0,
+  "undeletable_detail": [],
+  "undeletable_total_gb": 0.0,
+  "C_FREE_MB_BEFORE_RETRY": 28304.9,
+  "C_FREE_MB_AFTER_RETRY": 34729.7,
+  "C_FREE_GB_AFTER_RETRY": 34.73,
+  "classification_rule": "anything not removable is UNKNOWN_PRESERVE; no force-takeown, no ACL modification and no icacls was attempted",
+  "force_takeown_used": false,
+  "acl_modified": false
+}

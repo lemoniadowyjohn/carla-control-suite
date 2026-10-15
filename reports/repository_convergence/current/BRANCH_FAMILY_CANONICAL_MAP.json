@@ -1,0 +1,209 @@
+{
+  "report": "BRANCH_FAMILY_CANONICAL_MAP",
+  "generated_utc": "2026-10-12T16:39:54Z",
+  "audit_mode": "READ_ONLY",
+  "CANONICAL_TOPOLOGY_SHA": "3a6f32255916b9783e41981ba284d68401294a92",
+  "families_total": 17,
+  "families": [
+    {
+      "family": "CI",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 0,
+      "SUPERSEDED_BRANCHES": 15,
+      "HISTORICAL_BRANCHES": 2,
+      "unique_support_list": []
+    },
+    {
+      "family": "CRS",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 2,
+      "SUPERSEDED_BRANCHES": 46,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": [
+        "fix/collision-validator-native-crs-v1",
+        "fix/dem-elevation-canonical-sampling-v1-20260921"
+      ]
+    },
+    {
+      "family": "DOCS_AUDIT",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 8,
+      "SUPERSEDED_BRANCHES": 75,
+      "HISTORICAL_BRANCHES": 3,
+      "unique_support_list": [
+        "audit/cache-input-identity-v1",
+        "audit/hardcoded-tool-paths-v1",
+        "audit/quality-exception-swallowing-v1",
+        "audit/repository-lineage-governance-v1",
+        "audit/stale-map-sha-references-v1",
+        "chore/deprecated-layout-20260906",
+        "chore/production-engineering-20260906",
+        "chore/retire-orphaned-docs-20260907"
+      ]
+    },
+    {
+      "family": "GAP048",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 1,
+      "SUPERSEDED_BRANCHES": 4,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": [
+        "fix/production-strict-lane-successors-v1"
+      ]
+    },
+    {
+      "family": "GAP049_COOK",
+      "CANONICAL_BRANCH": "origin/fix/gap049-poller-delta-only-20261011 (73cbcb3e)",
+      "UNIQUE_SUPPORT_BRANCHES": 0,
+      "SUPERSEDED_BRANCHES": 18,
+      "HISTORICAL_BRANCHES": 1,
+      "unique_support_list": []
+    },
+    {
+      "family": "GAP055",
+      "CANONICAL_BRANCH": "origin/fix/gap055-ci-windll-platform-guard-20261011 (bec68678)",
+      "UNIQUE_SUPPORT_BRANCHES": 0,
+      "SUPERSEDED_BRANCHES": 7,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": []
+    },
+    {
+      "family": "OTHER",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 25,
+      "SUPERSEDED_BRANCHES": 269,
+      "HISTORICAL_BRANCHES": 75,
+      "unique_support_list": [
+        "feat/fbx-roundtrip-metadata-hardening-v1",
+        "feat/lane-count-transition-classification-v1",
+        "feat/strict-large-map-package-mode-v1",
+        "feat/visual-asset-production-preflight-v1",
+        "feat/visual-production-config-guard-v1",
+        "feature/deprecate-old-connector-tool-20260907",
+        "feature/docs-deprecation-migration-20260907",
+        "feature/stale-comment-fixes-20260907",
+        "feature/z-fighting-detector-20260907",
+        "fix/blender-conversion-integrity-v1",
+        "fix/building-multipolygon-fidelity-v1",
+        "fix/collision-lod-validator-basics-v1",
+        "fix/domain-gap-measurement-authority-v3-20260921",
+        "fix/gap051-registry-coverage-20261008-v2",
+        "fix/geometry-freeze-missing-fingerprint-v1",
+        "fix/large-map-offline-hardening-v1-20260915",
+        "fix/legacy-geometry-kernel-delegation-v1",
+        "fix/malformed-xodr-attrs-v2",
+        "fix/osm2world-cache-integrity-v1",
+        "fix/package-descriptor-single-authority-v1",
+        "fix/semantic-classification-determinism-v1",
+        "fix/strict-visual-input-resolution-v1",
+        "fix/tiling-full-road-cross-section-envelope-v1",
+        "fix/ue4-large-map-production-audit-v3",
+        "work-integration/production-large-map-20260918"
+      ]
+    },
+    {
+      "family": "PROCESS_SUPERVISION",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 0,
+      "SUPERSEDED_BRANCHES": 12,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": []
+    },
+    {
+      "family": "RESCUE",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 1,
+      "SUPERSEDED_BRANCHES": 11,
+      "HISTORICAL_BRANCHES": 7,
+      "unique_support_list": [
+        "wip/governed-map-release-gate-wiring-recovery-v1-20260917"
+      ]
+    },
+    {
+      "family": "RQ1",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 3,
+      "SUPERSEDED_BRANCHES": 15,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": [
+        "fix/gap046-stage-profiler-20261009",
+        "rq1-integration",
+        "rq1a-execution"
+      ]
+    },
+    {
+      "family": "RQ2",
+      "CANONICAL_BRANCH": "origin/rq2-authority (2159a358)",
+      "UNIQUE_SUPPORT_BRANCHES": 1,
+      "SUPERSEDED_BRANCHES": 14,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": [
+        "integration/rq2-authority-merge-20261009"
+      ]
+    },
+    {
+      "family": "RQ3",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 0,
+      "SUPERSEDED_BRANCHES": 10,
+      "HISTORICAL_BRANCHES": 3,
+      "unique_support_list": []
+    },
+    {
+      "family": "RQ4",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 1,
+      "SUPERSEDED_BRANCHES": 17,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": [
+        "fix/rq4-gnn-experimental-provenance-v1-20260921"
+      ]
+    },
+    {
+      "family": "RQ5",
+      "CANONICAL_BRANCH": "origin/rq5-readiness (7a2310c2)",
+      "UNIQUE_SUPPORT_BRANCHES": 1,
+      "SUPERSEDED_BRANCHES": 13,
+      "HISTORICAL_BRANCHES": 0,
+      "unique_support_list": [
+        "fix/rq5-thesis-evidence-governance-v1-20260919"
+      ]
+    },
+    {
+      "family": "RUNTIME",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 1,
+      "SUPERSEDED_BRANCHES": 34,
+      "HISTORICAL_BRANCHES": 3,
+      "unique_support_list": [
+        "fix/standalone-xodr-smoke-evidence-boundary-v1"
+      ]
+    },
+    {
+      "family": "TILE_PLACEMENT",
+      "CANONICAL_BRANCH": "NO_SINGLE_CANONICAL",
+      "UNIQUE_SUPPORT_BRANCHES": 5,
+      "SUPERSEDED_BRANCHES": 22,
+      "HISTORICAL_BRANCHES": 1,
+      "unique_support_list": [
+        "fix/tile-grid-spec-authority-v1",
+        "fix/tile-ownership-adjacency-geometry-v1",
+        "fix/tile-run-completeness-vocabulary-v1",
+        "test/artifact-locator-and-tile-classify-edge-cases-v1-20260916",
+        "test/runtime-tile-builder-edge-cases-v1-20260916"
+      ]
+    },
+    {
+      "family": "TOPOLOGY",
+      "CANONICAL_BRANCH": "origin/fix/topology-convergence-gap026-gap048-20261011 (3a6f3225)",
+      "UNIQUE_SUPPORT_BRANCHES": 2,
+      "SUPERSEDED_BRANCHES": 20,
+      "HISTORICAL_BRANCHES": 3,
+      "unique_support_list": [
+        "feature/wire-junction-coverage-20260907",
+        "fix/literal-topology-evidence-provenance-v2"
+      ]
+    }
+  ],
+  "FINAL_VERDICT": "BRANCH_VALUE_MAP_COMPLETE"
+}

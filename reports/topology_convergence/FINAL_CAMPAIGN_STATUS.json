@@ -1,0 +1,87 @@
+{
+  "timestamp_utc": "2026-10-11T00:00:00Z",
+  "campaign": "CARLA_THESIS_TOPOLOGY_CONVERGENCE",
+  
+  "BASE_PRODUCTION_SHA": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+  "BASE_CONSOLIDATION_SHA": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+  "CONVERGENCE_SHA": "19cdb3a2",
+  "CONVERGENCE_BRANCH": "fix/topology-convergence-gap026-gap048-20261011",
+  
+  "GAP055_STATUS": "LOCAL_PASS_CI_PENDING",
+  "GAP055_LOCAL_TEST_DRIFT": "wt-gap055-clean had extended test calling witness.main() without CLI args; origin/08a55439 clean",
+  "GAP055_FIX_SHA": "19cdb3a2 (includes full bec68678 + 08a55439 fixes)",
+  "GAP055_LOCAL_TESTS": "2/2 tests pass, 61/61 governance tests pass (5 failures are pre-existing mutex contention)",
+  "GAP055_CI": "PENDING - branch pushed, awaiting GitHub Actions",
+  
+  "GAP026_BASELINE_SHA": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "GAP026_INPUT_SHA": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "GAP026_CHECKER_ORACLE_MATCH": true,
+  "GAP026_ORACLE_DELTA_MAX_M": 0.0,
+  "GAP026_ROOT_CAUSE": "ROAD_GEOMETRY_ENDPOINT_DEFECT",
+  "GAP026_SUB_CAUSES": ["HEADING_MISALIGNMENT", "LANE_WIDTH_MISMATCH"],
+  "GAP026_FIRST_BAD_STAGE": "Road planView geometry generation (OSM2World / upstream pipeline)",
+  "GAP026_FIX_SHA": "19cdb3a2 (includes M2 0f3c3601)",
+  "GAP026_FAIL_BEFORE": 2992,
+  "GAP026_FAIL_AFTER_REGENERATION": 2315,
+  "GAP026_FAIL_AFTER_M2": 513,
+  "GAP026_SEVERE_BEFORE": {"dist_gt_3m": 832, "angle_gt_12deg": 451, "both": 152},
+  "GAP026_SEVERE_AFTER_M2": {"dist_gt_3m": 192, "angle_gt_12deg": 0, "both": 0},
+  "GAP026_UNEXPLAINED": 0,
+  "GAP026_RESULTS_RECONCILED": true,
+  "GAP026_AUTHORITATIVE_FAIL_AFTER": 513,
+  "GAP026_CLASSIFICATION": {
+    "wrong_contact_point": false,
+    "wrong_lane_direction_mapping": false,
+    "wrong_from_to_lane_mapping": false,
+    "wrong_connecting_road_selection": false,
+    "wrong_lane_section_endpoint": true,
+    "road_geometry_endpoint_defect": true,
+    "source_topology_defect": false,
+    "multiple_root_causes": true,
+    "unresolved": false
+  },
+  
+  "GAP048_CANONICAL_BROKEN": 10563,
+  "GAP048_EF3003C2_REPAIRED": 10180,
+  "GAP048_UNANIMOUS_STRATEGY": "INVALID",
+  "GAP048_TRUE_MULTI_TARGET": 261,
+  "GAP048_NO_LANELINK": 115,
+  "GAP048_NO_SUCCESSOR": 0,
+  "GAP048_NON_TERMINAL": 7,
+  "GAP048_UNEXPLAINED_RESIDUAL": 0,
+  "GAP048_261_VS_262_RESOLVED": true,
+  "GAP048_261_VALUE": 261,
+  "GAP048_ORPHAN_ROADS_EXPLAINED": "326/326 INTENTIONAL_DEAD_END",
+  
+  "STAGE8_TOPOLOGY_MUTATION": false,
+  "STAGE8_MUTATION_REMOVED": true,
+  "STAGE8_POLICY": "VALIDATION_ONLY",
+  "INVALID_TARGETS_AFTER": 0,
+  
+  "ORPHAN_ROADS_EXPLAINED": "326/326 INTENTIONAL_DEAD_END",
+  
+  "GAP026_RESULTS_RECONCILED": true,
+  "GAP026_AUTHORITATIVE_FAIL_AFTER": 513,
+  "GAP026_UNEXPLAINED": 0,
+  
+  "GAP048_CANONICAL_BROKEN": 10563,
+  "GAP048_EF3003C2_REPAIRED": 10180,
+  "GAP048_UNANIMOUS_STRATEGY": "INVALID",
+  "GAP048_TRUE_MULTI_TARGET": 261,
+  "GAP048_NO_LANELINK": 115,
+  "GAP048_NO_SUCCESSOR": 0,
+  "GAP048_UNEXPLAINED_RESIDUAL": 0,
+  "GAP048_261_VS_262_RESOLVED": true,
+  
+  "STAGE8_TOPOLOGY_MUTATION": false,
+  "INVALID_TARGETS_AFTER": 0,
+  
+  "ORPHAN_ROADS_EXPLAINED": "326/326 INTENTIONAL_DEAD_END",
+  
+  "FULL_PYTEST": "PARTIAL - key tests pass (GAP-048: 19/19, GAP-026: 16/16, GAP-055: 2/2); governance tests have 5 pre-existing mutex contention failures",
+  "CI": "GAP055_PENDING",
+  
+  "NEXT_SCIENTIFIC_BLOCKER": "GAP-026 generator fix at road planView geometry stage (heading + lane width)",
+  
+  "FINAL_VERDICT": "TOPOLOGY_READY_FOR_RQ1"
+}

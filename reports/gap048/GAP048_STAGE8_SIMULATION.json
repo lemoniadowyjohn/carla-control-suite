@@ -1,0 +1,13 @@
+{
+  "phase": "PHASE 7b - stage8 final_integrity simulation (deterministic, non-destructive)",
+  "input": "reports/gap048/07_lanes_GAP048_AFTER.xodr",
+  "procedure": [
+    "repair_and_assert_lane_section_successors(xodr_path=AFTER, out_path=07_lanes_GAP048_STAGE8_SIM.xodr, lane_types=('driving',), strict=True)",
+    "assert_all_lanes_have_successors(07_lanes_GAP048_STAGE8_SIM.xodr)"
+  ],
+  "intra_road_repairs_by_stage8": 7,
+  "broken_after_stage8": 376,
+  "assert_raised": true,
+  "assert_msg_tail": "Fix lane links BEFORE CARLA load.",
+  "note": "Matches the in-branch final_integrity assert path (stage_08_integrity.py). Autofix/downgrade masking (AUTOFIX_MISSING_LANE_SUCCESSORS / UP_AUTOFIX_LANE_SUCCESSORS) is absent in settings and env, so stage 8 takes the fail-loud 'else: raise e' branch. No synthetic/F1 fallback used."
+}

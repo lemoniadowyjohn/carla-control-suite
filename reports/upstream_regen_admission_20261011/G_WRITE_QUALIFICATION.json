@@ -1,0 +1,18 @@
+{
+  "G_WRITE_QUALIFICATION": "PASS",
+  "dir": "G:/_writequal_20261012 (disposable, removed after)",
+  "free_gb": 52.86,
+  "operations_each": "write + fsync + close + reopen + SHA256 + rename + delete, all verified",
+  "results": {
+    "100MB": {
+      "mb_s": 31.5,
+      "sec": 3.2,
+      "sha_match": true
+    },
+    "512MB": {
+      "mb_s": 24.9,
+      "sec": 20.5,
+      "sha_match": true
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "ENVIRONMENT_FINGERPRINT_SHA256": "8eb6b2074b4bdd12129871f191cf8604d8d35e3ffea0ae44d75d1c633e2e9258",
+  "fingerprint": {
+    "cpu": {
+      "Name": "Intel(R) Core(TM) i7-8850H CPU @ 2.60GHz",
+      "NumberOfCores": 6,
+      "NumberOfLogicalProcessors": 12
+    },
+    "drives": [
+      {
+        "bus_type": "NVMe",
+        "disk_friendly": "INTEL SSDPEKKF512G8L",
+        "disk_number": 1,
+        "drive": "C:",
+        "filesystem": "NTFS",
+        "free_gb": 33.85,
+        "is_boot": true,
+        "is_offline": false,
+        "is_read_only": false,
+        "is_system": true,
+        "physical_health": "Healthy",
+        "physical_media_type": "SSD",
+        "storage_identity_key": "1|NVMe|None",
+        "total_gb": 475.93,
+        "volume_guid": null,
+        "volume_name": ""
+      },
+      {
+        "bus_type": "SATA",
+        "disk_friendly": "INTENSO SSD",
+        "disk_number": 0,
+        "drive": "E:",
+        "filesystem": "NTFS",
+        "free_gb": 11.61,
+        "is_boot": false,
+        "is_offline": false,
+        "is_read_only": false,
+        "is_system": false,
+        "physical_health": "Healthy",
+        "physical_media_type": "SSD",
+        "storage_identity_key": "0|SATA|None",
+        "total_gb": 280.71,
+        "volume_guid": null,
+        "volume_name": ""
+      },
+      {
+        "bus_type": "SATA",
+        "disk_friendly": "INTENSO SSD",
+        "disk_number": 0,
+        "drive": "F:",
+        "filesystem": "NTFS",
+        "free_gb": 41.46,
+        "is_boot": false,
+        "is_offline": false,
+        "is_read_only": false,
+        "is_system": false,
+        "physical_health": "Healthy",
+        "physical_media_type": "SSD",
+        "storage_identity_key": "0|SATA|None",
+        "total_gb": 673.06,
+        "volume_guid": null,
+        "volume_name": "Nowy"
+      },
+      {
+        "bus_type": "USB",
+        "disk_friendly": "Intenso SCSI",
+        "disk_number": 3,
+        "drive": "G:",
+        "filesystem": "NTFS",
+        "free_gb": 35.27,
+        "is_boot": false,
+        "is_offline": false,
+        "is_read_only": false,
+        "is_system": false,
+        "physical_health": "Healthy",
+        "physical_media_type": "Unspecified",
+        "storage_identity_key": "3|USB|None",
+        "total_gb": 931.51,
+        "volume_guid": null,
+        "volume_name": "INTENSO"
+      },
+      {
+        "bus_type": "USB",
+        "disk_friendly": "Intenso SCSI",
+        "disk_number": 4,
+        "drive": "H:",
+        "filesystem": "NTFS",
+        "free_gb": 16.63,
+        "is_boot": false,
+        "is_offline": false,
+        "is_read_only": false,
+        "is_system": false,
+        "physical_health": "Healthy",
+        "physical_media_type": "Unspecified",
+        "storage_identity_key": "4|USB|None",
+        "total_gb": 931.51,
+        "volume_guid": null,
+        "volume_name": ""
+      }
+    ],
+    "env": {
+      "CARLA_ROOT": null,
+      "TEMP": "C:\\Users\\admin\\AppData\\Local\\Temp",
+      "TMP": "C:\\Users\\admin\\AppData\\Local\\Temp",
+      "UE_ROOT": null,
+      "ddc_path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+      "target_rhis": [
+        "PCD3D_SM5",
+        "SF_VULKAN_SM5"
+      ]
+    },
+    "git": {
+      "branch": "review/carla-production-convergence-20261002",
+      "dirty": true,
+      "head": "a78c423ab754905db09645fcb2ff93ea9228297f",
+      "tree": "b130e65982306ae412df915fb3ee1621c8780241"
+    },
+    "os": {
+      "auto_pagefile": true,
+      "build": "26300",
+      "caption": "Microsoft Windows 11 Pro",
+      "pagefiles": [
+        {
+          "allocated_mb": 10714,
+          "name": "C:\\pagefile.sys"
+        }
+      ],
+      "total_phys_kb": 50069072,
+      "total_virt_kb": 61041168,
+      "version": "10.0.26300"
+    },
+    "python": {
+      "executable_basename": "python.exe",
+      "implementation": "CPython",
+      "version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]"
+    },
+    "toolchain": {
+      "msvc": null,
+      "windows_sdk": [
+        "10.0.22621.0"
+      ]
+    }
+  },
+  "generated_utc": "2026-10-05T20:45:48.312561Z",
+  "schema": "ENVIRONMENT_FINGERPRINT/v1",
+  "schema_version": 1
+}

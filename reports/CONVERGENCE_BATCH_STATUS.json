@@ -1,0 +1,201 @@
+{
+  "schema": "convergence_batch_status/v1",
+  "generated_utc": "2026-10-05T20:34:22Z",
+  "LIBCARLA_BUILD": "PASS",
+  "libcarla_detail": {
+    "generator": "Visual Studio 17 2022",
+    "msvc": "14.42.34433",
+    "windows_sdk": "10.0.22621.0",
+    "targets": [
+      "carla_server (Release)",
+      "carla_client (Release)"
+    ],
+    "server_lib_sha256": "8500ab8c83a8608fa326901b5c67590052d5b5f7664f247ffaba10d6da941578",
+    "client_lib_sha256": "1fd432a8ec3d8c748bef58a5ead008c0b584cfdac7ffaf90113570a4c6004dd1",
+    "server_errors": 0,
+    "client_errors": 0,
+    "shim_contamination_hits": 0,
+    "boost": "G:/CARLA/carla_source_probe/Build/boost-1.84.0-install/boost/boost_1_84",
+    "rpclib_msgpack": "G:/CARLA/carla_source_probe/Build/rpclib-install",
+    "recast": "G:/CARLA/carla_source_probe/Build/recast-install",
+    "parser_string_verified_in_server_lib": true,
+    "legacy_fallback_string_in_server_lib": true,
+    "legacy_fallback_string_origin": "LibCarla/source/carla/opendrive/parser/LaneParser.cpp:44 -- lane WIDTH defaults, unrelated to georeference. The 42/2 georeference fallback is absent; the only remaining 42/2 text is the explanatory comment documenting its removal."
+  },
+  "UE_PLUGIN_BUILD": "COMPILE_PASS__LINK_BLOCKED",
+  "ue_plugin_detail": {
+    "command": "Build.bat CarlaUE4Editor Win64 Development -Project=G:/CARLA/carla_source_probe/Unreal/CarlaUE4/CarlaUE4.uproject -WaitMutex -FromMsBuild",
+    "covers": [
+      "CarlaEpisode",
+      "CarlaGameModeBase",
+      "GnssSensor",
+      "CaService"
+    ],
+    "compile_errors": 0,
+    "compile_phase": "PASS",
+    "link_phase": "BLOCKED",
+    "first_attempt_findings": [
+      "CarlaGameModeBase.cpp(481) C2039: 'HasAbsoluteOrigin' is not a member of carla::road::Map -- the UE plugin compiles against a VENDORED header tree (Unreal/CarlaUE4/Plugins/Carla/CarlaDependencies/include/carla) that is a separate copy from LibCarla/source/carla. A LibCarla-only change does not reach the UE build. Vendored road/Map.h, road/MapData.h and road/MapBuilder.h were synced and the omission fixed.",
+      "CarlaGameModeBase.cpp(484) C2065: 'MapName' undeclared -- my own bug, a log message referenced a variable not in scope. Fixed."
+    ],
+    "blocker": {
+      "errors": [
+        "LNK1104 cannot open output DLL (4 modules)"
+      ],
+      "root_cause": "UE4Editor-Cmd.exe PID 12312 holds UE4Editor-Carla.dll open, so the linker cannot write the output.",
+      "blocking_process": {
+        "pid": 12312,
+        "image": "UE4Editor-Cmd.exe",
+        "command": "-run=ImportAssets -importSettings=G:/CARLA/carla_source_probe/importsetting.json -nosourcecontrol -replaceexisting",
+        "started": "2026-10-05 20:38:44",
+        "cpu_seconds": 47592.9,
+        "parent_pid": 10224,
+        "parent": "python (alive)"
+      },
+      "action_taken": "NONE",
+      "rationale": "This is an in-flight import, not an orphan: it has a live Python parent and is consuming roughly 10 cores. Terminating it would destroy in-flight import state, so it was left alone and the link failure is reported instead. Retry the link once the import exits."
+    }
+  },
+  "ABI_WIRE_COMPATIBILITY": "PASS",
+  "abi_wire_detail": {
+    "MSGPACK_LAYOUT_CHANGE": false,
+    "RPC_WIRE_CHANGE": false,
+    "GNSS_PAYLOAD_LAYOUT_CHANGE": false,
+    "ROS2_LAYOUT_CHANGE": false,
+    "basis": [
+      "road::MapData declares no MSGPACK_DEFINE (verified by grep over road/*.h,*.cpp)",
+      "client::Map re-parses the XODR locally via OpenDriveParser::Load, so the flag is recomputed identically on both sides",
+      "geom::GeoLocation untouched: same 3 doubles, MSGPACK_DEFINE_ARRAY intact",
+      "the new field is a plain bool in MapData, outside any pack macro",
+      "confirmed by successful real carla_server/carla_client builds"
+    ],
+    "caveat": "ABI (sizeof MapData) changed, which is safe only because LibCarla, PythonAPI and the UE plugin are rebuilt from the same source. A mixed-version client/server pairing is NOT supported."
+  },
+  "BARE_TMERC": "PASS",
+  "COMPLETE_TMERC": "PASS",
+  "SILENT_42_2_FALLBACK": "ABSENT",
+  "AUTHORITATIVE_MAP_LOAD": "PASS",
+  "authoritative_detail": {
+    "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "geo_reference": "+proj=tmerc",
+    "has_absolute_origin": false,
+    "checks": 26,
+    "failures": 0,
+    "note": "Compiled contract test against the real parser source and the real 149 MB artifact. NOT yet exercised through a live CARLA server load."
+  },
+  "GNSS_WITHOUT_ORIGIN": "IMPLEMENTED_NO_MEASUREMENT_NOT_RUNTIME_VERIFIED",
+  "PYTHON_GEOLOCATION_WITHOUT_ORIGIN": "IMPLEMENTED_THROWS_NOT_RUNTIME_VERIFIED",
+  "GEOREFERENCE_PREFLIGHT": "NOT_IMPLEMENTED",
+  "GNSS_consumer_audit": "NOT_COMPLETED",
+  "fail_closed_note": "Code paths exist and LibCarla compiles, but no live server was started, so the Python exception and the GNSS no-emission behaviour are UNVERIFIED at runtime. GNSS silence remains a genuine operational hazard: a consumer cannot distinguish 'no origin' from 'sensor/network failure'.",
+  "ABSOLUTE_FRAME_ORIGIN": "UNRESOLVED",
+  "IMPORT_MANIFEST_DEDUP": "PASS",
+  "TILE_IMPORT_COUNT": 20,
+  "STATICMESH_DUPLICATE_PASS": 0,
+  "DDC": "NOT_QUALIFIED",
+  "PAGEFILE": "DEFERRED",
+  "MEMORY_POLICY": "DEFERRED",
+  "SCW_HARDENING": "NOT_IMPLEMENTED",
+  "NO_PROGRESS_WATCHDOG": "NOT_IMPLEMENTED",
+  "BOUNDED_COOK": "NOT_RUN",
+  "bounded_cook_blockers": [
+    "DDC not qualified; the 0.00-0.02 MB/s pathology is unaddressed",
+    "G: free space is 35.7 GB, below the 45 GB cook gate",
+    "UE plugin build not yet green, so the shader-target change is unproven in-engine"
+  ],
+  "WINDOWS_SHADER_TARGETS": "PASS",
+  "windows_shader_detail": {
+    "PCD3D_ES31_ENABLED": false,
+    "targeted_rhis": [
+      "PCD3D_SM5",
+      "SF_VULKAN_SM5"
+    ],
+    "REQUIRED_RUNTIME_SHADER_FAILURES": "UNVERIFIED_NO_COOK_RUN"
+  },
+  "SINGLE_TILE_IMPORT": "NOT_RUN",
+  "TILE_UMAP_COUNT": 0,
+  "LARGEMAP_STREAMING": "NOT_RUN",
+  "import_state_detail": {
+    "static_meshes_under_Static_Terrain_Ingolstadt": 5711,
+    "tile_umaps": 0,
+    "only_umap": "Ingolstadt.umap (25828 bytes, 2026-10-04 17:20:59, monolithic, predates the interrupted run)",
+    "conclusion": "Meshes landed but no tile map was ever produced. The 5711 reference warnings are therefore still NOT_YET_PROVEN as an interruption artifact; a completed single-tile import is required to settle them."
+  },
+  "TRAFFIC_SIGNAL_RUNTIME": "NOT_RUN",
+  "AUTO_MAP_RUNTIME_IDENTITY": "NOT_RUN",
+  "PLACEMENT": "BLOCKED_ABSOLUTE_ORIGIN_UNRESOLVED",
+  "LIVE_CALIBRATION": "NOT_RUN",
+  "RQ3_LIVE": "BLOCKED",
+  "RQ5A_PROTOCOL": "NOT_FROZEN",
+  "RQ5A_LIVE": "BLOCKED_RQ3_NOT_ACCEPTED",
+  "RQ5B": "DEFERRED_EXTERNAL_DATA",
+  "WORKTREE_SAFETY": "PASS",
+  "worktree_safety_detail": {
+    "registered_worktrees_under_temp": 0,
+    "cleanup_guard": "5/5 PASS"
+  },
+  "GATE_TYPE_SAFETY": "PASS",
+  "INFRASTRUCTURE_REGRESSION_HARDENING": "PASS",
+  "regression_test_detail": {
+    "file": "tests/unit/test_infrastructure_regressions.py",
+    "tests": 18,
+    "failed": 0,
+    "pins": [
+      "False==0 release gate",
+      "cleanup_guard link detection",
+      "cleanup_guard docstring self-check",
+      "manifest tile-counter operator precedence"
+    ]
+  },
+  "PUBLICATION_SAFETY": "PASS",
+  "publication_detail": {
+    "NEW_SECRET_COUNT": 0,
+    "NEW_CREDENTIAL_COUNT": 0,
+    "NEW_MACHINE_PATH_OCCURRENCE_COUNT": 6203,
+    "residual_risk": "Zero credentials, but ~6.2k machine-specific absolute paths in new scripts and reports. Push hygiene blocker, not a secret leak."
+  },
+  "FULL_REGRESSION": "PASS",
+  "full_regression_detail": {
+    "passed": 5213,
+    "skipped": 6,
+    "failed": 0,
+    "duration_sec": 984.84,
+    "NEW_REGRESSIONS": 0
+  },
+  "LOCAL_SHA": "a78c423ab754905db09645fcb2ff93ea9228297f",
+  "REMOTE_SHA": "NOT_PUSHED",
+  "REMOTE_DURABILITY": "NOT_ATTEMPTED",
+  "commit_status": "NOT_COMMITTED",
+  "release_gate": {
+    "LIBCARLA_BUILD": true,
+    "UE_PLUGIN_BUILD": false,
+    "ABI_WIRE_COMPATIBILITY": true,
+    "GEOREFERENCE_COMPILED_TESTS": true,
+    "AUTHORITATIVE_MAP_LOAD": true,
+    "IMPORT_MANIFEST_DEDUP": true,
+    "SECOND_DUPLICATE_PASS": true,
+    "DDC": false,
+    "SHADER_TARGETS": true,
+    "SCW_HARDENING": false,
+    "BOUNDED_COOK": false,
+    "SINGLE_TILE_IMPORT": false,
+    "LARGEMAP_STREAMING": false,
+    "WORKTREE_SAFETY": true,
+    "GATE_TYPE_SAFETY": true,
+    "PUBLICATION_SAFETY": true,
+    "NEW_REGRESSIONS": true
+  },
+  "release_gate_failed": [
+    "BOUNDED_COOK",
+    "DDC",
+    "LARGEMAP_STREAMING",
+    "SCW_HARDENING",
+    "SINGLE_TILE_IMPORT",
+    "UE_PLUGIN_BUILD"
+  ],
+  "FULL_PRODUCTION_RETRY_ALLOWED": false,
+  "LOCAL_RUNTIME_READY": true,
+  "ABSOLUTE_PLACEMENT_READY": false,
+  "GNSS_READY": false,
+  "FINAL_VERDICT": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

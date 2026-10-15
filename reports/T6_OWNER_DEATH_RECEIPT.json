@@ -1,0 +1,20 @@
+{
+  "OWNER_DEAD": true,
+  "REACQUIRE_AFTER_RECONCILIATION": "UNKNOWN",
+  "REACQUIRE_BEFORE_RECONCILIATION": "DENIED",
+  "T6_CHILD_ALIVE_BEFORE_OWNER_DEATH": false,
+  "T6_CHILD_TERMINATED_AFTER_OWNER_DEATH": true,
+  "T6_LEASE_EXISTS_BEFORE_OWNER_DEATH": false,
+  "T6_LEASE_OWNER_CREATION_TIME": null,
+  "T6_LEASE_OWNER_PID": null,
+  "T6_LEASE_OWNER_PID_MATCHES_HOLDER": false,
+  "T6_LEASE_RUN_ID": null,
+  "T6_OWNER_READY": true,
+  "generated_utc": "2026-10-06T11:09:13.096231Z",
+  "owner_state_after_death": "UNKNOWN(child_dead=True)",
+  "reacquire_before_reason": "HELD_BY_LIVE_OWNER",
+  "reconciliation": null,
+  "result": "FAIL",
+  "schema": "T6_OWNER_DEATH_RECEIPT/v1",
+  "schema_version": 1
+}

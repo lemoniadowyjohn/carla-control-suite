@@ -1,0 +1,36 @@
+{
+  "content_root": null,
+  "ddc_mutation_concurrency": "DENIED",
+  "domains": [
+    "DOMAIN_UNREAL_CONTENT",
+    "DOMAIN_IMPORT_SETTINGS",
+    "DOMAIN_DDC",
+    "DOMAIN_SAVED_INTERMEDIATE"
+  ],
+  "engine_root": null,
+  "heartbeat_utc": "2026-10-06T11:13:24.877074Z",
+  "mutex_name": "Local\\CARLA_T6_e427e1b9af",
+  "mutex_verdict": "ACQUIRED",
+  "operation": "IMPORT",
+  "operation_fingerprint": {
+    "content_root": null,
+    "engine_root": null,
+    "fingerprint": "3d9eefe17379dafef991c340e266d53fe24009bb5a072f5ea28dbd9a11779ab3",
+    "import_settings_sha256": null,
+    "operation": "IMPORT",
+    "output_root": null,
+    "package_identity": "",
+    "project_root": null
+  },
+  "parent_pid": 18248,
+  "prior_lease_state": null,
+  "project_root": null,
+  "root_creation_time": "2026-10-06T11:13:24.0669890Z",
+  "root_pid": 29092,
+  "run_id": "48ebbf28e4a74749a6e9890b1a73d2f0",
+  "schema": "CARLA_MUTATION_LEASE/v1",
+  "schema_version": 1,
+  "session_id": "owner-sess",
+  "start_utc": "2026-10-06T11:13:24.877074Z",
+  "status": "ACQUIRED"
+}

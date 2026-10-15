@@ -1,0 +1,90 @@
+{
+  "files": [
+    {
+      "coordinate_magnitude_max_m": 372.287,
+      "coordinate_max": [
+        192.277,
+        7.5,
+        372.262
+      ],
+      "coordinate_min": [
+        -192.277,
+        0.0,
+        -372.287
+      ],
+      "duplicate_vertices_merged_by_float32": 14,
+      "faces": 8443,
+      "float32_max_abs_error_m": 1.5231478755595163e-05,
+      "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_10_9\\Ingolstadt_Tile_10_9.obj",
+      "precision_causes_degeneracy": false,
+      "triangles_after_float32": {
+        "collapsed_triangles": 0,
+        "min_face_area_m2": 0.0019211410306236882,
+        "sliver_faces": 0,
+        "zero_area_faces": 0
+      },
+      "triangles_float64": {
+        "collapsed_triangles": 0,
+        "min_face_area_m2": 0.0019217792986138994,
+        "sliver_faces": 0,
+        "zero_area_faces": 0
+      },
+      "verdict": "ADEQUATE",
+      "vertices": 5455
+    },
+    {
+      "coordinate_magnitude_max_m": 296.875,
+      "coordinate_max": [
+        283.072,
+        7.5,
+        296.859
+      ],
+      "coordinate_min": [
+        -283.072,
+        0.0,
+        -296.875
+      ],
+      "duplicate_vertices_merged_by_float32": 2,
+      "faces": 10265,
+      "float32_max_abs_error_m": 1.5136718729991117e-05,
+      "path": "reports\\production_readiness\\20260924T100614Z_FULL_GRID_TILE_FBX_COOK\\artifacts\\tile_6_6\\Ingolstadt_Tile_6_6.obj",
+      "precision_causes_degeneracy": false,
+      "triangles_after_float32": {
+        "collapsed_triangles": 0,
+        "min_face_area_m2": 0.0031197101776860837,
+        "sliver_faces": 0,
+        "zero_area_faces": 0
+      },
+      "triangles_float64": {
+        "collapsed_triangles": 0,
+        "min_face_area_m2": 0.003119789913290403,
+        "sliver_faces": 0,
+        "zero_area_faces": 0
+      },
+      "verdict": "ADEQUATE",
+      "vertices": 6499
+    }
+  ],
+  "float32_eps": 1.1920928955078125e-07,
+  "interpretation": "The FBX exporter uses axis_forward='-Z', axis_up='Y' with global_scale=1.0. If these coordinates are large absolute map values, float32 quantization is the mechanism by which vertices merge. Measured result: it merges duplicate vertices but produces no degenerate or collapsed triangle, so precision does not explain the UE4 tangent / bi-normal / smoothing-group warnings. Those are explained by the missing UV channel and missing smoothing groups (see reports/geometry/AFFECTED_MESH_DIAGNOSTICS.md).",
+  "method": {
+    "decision_rule": "precision is a contributing cause only if the float32 round trip produces zero-area or collapsed triangles. Merged *duplicate* vertices are not by themselves a defect: OBJ legitimately emits the same corner from several faces, and merging them changes no triangle.",
+    "steps": [
+      "round-trip every OBJ vertex through float32 (the FBX storage format)",
+      "measure coordinate error and count merged duplicate vertices",
+      "recompute every triangle's area before and after the round trip"
+    ],
+    "thresholds": {
+      "sliver_area_eps_m2": 1e-06,
+      "zero_area_eps_m2": 1e-12
+    }
+  },
+  "question": "Does float32 FBX vertex storage create degenerate building geometry that could contribute to the UE4 warnings?",
+  "schema": "geometry_precision_audit/v1",
+  "summary": {
+    "files": 2,
+    "files_at_risk": [],
+    "new_zero_area_triangles_from_float32": 0,
+    "verdict": "PRECISION_NOT_A_CAUSE"
+  }
+}

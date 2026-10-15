@@ -1,0 +1,131 @@
+{
+  "schema": "repository_closure_audit/v1",
+  "generated_at_utc": "2026-10-05T13:10:00Z",
+
+  "verdict": "STOP__P0_REPOSITORY_INTEGRITY_EMERGENCY__DO_NOT_COMMIT_OR_PUSH",
+
+  "P0_incident_emptied_worktrees": {
+    "severity": "P0_DATA_LOSS_RISK",
+    "finding": "Four worktrees have been EMPTIED. Every tracked file has been deleted from the working directory while still tracked in the index.",
+    "affected_worktrees": [
+      {"path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\rq1-matrix-fix",
+       "head": "d12a03145793ae89d03a40f9ebf500ec59f3c761",
+       "deleted_files": 4099, "lines_deleted": 12656772,
+       "files_present_on_disk": 1, "bytes_on_disk": 101},
+      {"path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-p1",
+       "deleted_files": 4169, "lines_deleted": 12688015},
+      {"path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-p1-base",
+       "head": "233e452ff16db3d35ca717d0bf02e4779e86b258", "detached": true,
+       "deleted_files": 4127, "lines_deleted": 12674727},
+      {"path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt-runtime-rig",
+       "head": "692b42391c29457fef30e19857352e3ef74be9b2",
+       "deleted_files": 4114, "lines_deleted": 12669953}
+    ],
+    "evidence": {
+      "git_diff_shortstat": "4099 files changed, 12656772 deletions(-)  (0 insertions)",
+      "on_disk_probe": "README.md exists_on_disk=False; pyproject.toml exists_on_disk=False; .agent_locks/README.md False",
+      "index_vs_disk": "git ls-files reports 4099 entries; os.walk finds 1 file totalling 101 bytes",
+      "deletion_breakdown": {"reports": 1815, "ultimate_pipeline": 875, "submission": 783,
+                             "tests": 303, "docs": 97, "tools": 29, "campaigns": 27,
+                             "scripts": 26, "phase_q": 21},
+      "reflog_rq1_matrix_fix": [
+        "d12a0314 HEAD@{0}: commit: fix(rq1): correct determinism matrix; stage-03/05 duplicate is shutil.copy2, not fabrication",
+        "024dbb13 HEAD@{1}: reset: moving to HEAD"
+      ]
+    },
+    "data_loss_status": "NO_DATA_LOST_YET. The commits still exist and the blobs are intact in the object database; HEAD d12a0314 carries the full tree. What is missing is only the checked-out files on disk.",
+    "critical_warning": "Running `git add -A`, `git commit -am`, or pushing from any of these worktrees would record the deletion and destroy 12.6M lines of repository content. `git status` misreports this as 'DIRTY_TRACKED', which is exactly the trap.",
+    "correct_remediation": "Restore, do not commit: `git -C <worktree> checkout -- .` (or `git restore .`) to repopulate the working tree from the intact index/HEAD. No commit should ever be made from the emptied state.",
+    "root_cause": "UNKNOWN. Plausible causes include an interrupted/partial checkout, a disk or temp-directory cleanup, or a worktree prune that removed files without updating the index. The rq1-matrix-fix reflog shows a `reset: moving to HEAD` immediately before the commit, which is worth correlating with whatever touched these Temp paths."
+  },
+
+  "live_ue_status": {
+    "state": "ACTIVE",
+    "note": "A DIFFERENT UE process than the earlier cook. The previous cook (PID 5852) has exited; a new UE4Editor is running.",
+    "processes": [{"id": 5344, "name": "UE4Editor", "cpu_s": 539.5, "rss_mb": 3106,
+                   "started": "2026-10-05 12:54:59"}],
+    "shader_compile_workers": 0,
+    "actions_taken": "read-only inspection only; no UE process touched, no Content modified, no import/cook launched"
+  },
+
+  "worktree_inventory_summary": {
+    "total_worktrees": 28,
+    "classification_counts": {
+      "EMPTIED_MASS_DELETION": 4,
+      "MISSING_UPSTREAM": 8,
+      "DETACHED_HEAD": 6,
+      "DIRTY_UNTRACKED_only": 7,
+      "DIRTY_TRACKED_small": 2,
+      "CLEAN": 1
+    },
+    "verified_clean_or_near_clean": [
+      {"path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-final-convergence",
+       "head": "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5",
+       "state": "0 changed, 0 untracked", "note": "matches the known remote HEAD exactly"},
+      {"path": "F:\\carla-worktrees\\integration_a7",
+       "state": "0 tracked modifications; 3 untracked entries (.pytest-inta7/, .tmp-inta7/, check_dead.py)"},
+      {"path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-research-integration",
+       "head": "8f02c34984090e9a54130f5c2b49728e31ee682f",
+       "state": "0 changed"},
+      {"path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_final_offline_closure",
+       "state": "2 untracked only"}
+    ],
+    "main_checkout": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+      "head": "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4",
+      "branch": "review/carla-production-convergence-20261002",
+      "significance": "The main checkout is on the PRODUCTION convergence lineage, NOT the offline-closure lineage that the batch treats as the remote durable checkpoint (f6b983ef)."
+    },
+    "totals_across_all_worktrees": {"tracked_modified_entries": 20599, "untracked_entries": 153},
+    "totals_are_misleading": "20,599 'tracked modifications' is dominated by the 4 emptied worktrees (~16.5k of the entries are mass deletions). It must NOT be read as 20k files of unsaved local work."
+  },
+
+  "pytest_state_preserved": {
+    "PYTEST_DIRECTORY_HANG": False,
+    "PYTEST_EXPECTED_RUNTIME_SECONDS": 1384,
+    "DEFAULT_SUITE": "FULL",
+    "NEW_REGRESSIONS": 0,
+    "evidence": "pytest tests/ -q -> exit 0, 5213 passed, 6 skipped, 0 failed in 1378.25 s",
+    "slow_markers_retained": true,
+    "default_deselection_reverted": true,
+    "note": "The -m \"not slow\" optimization was reverted because it caused 3 real suite regressions. Markers remain so `pytest -m slow` selects 7 tests explicitly."
+  },
+
+  "work_completed_in_this_batch": [
+    "Live UE process state inspected read-only (a new UE4Editor PID 5344 is active).",
+    "All 28 local worktrees enumerated and classified -> reports/repository/WORKTREE_INVENTORY.json",
+    "Detected and evidenced the 4-worktree emptying incident (12.6M lines) - this is the batch's most important finding.",
+    "Verified carla-final-convergence is byte-clean at 4e7a913d, matching its known remote HEAD.",
+    "Verified integration_a7 and research-integration have no tracked modifications.",
+    "Preserved the pytest conclusion (no hang; ~1384 s; NEW_REGRESSIONS=0)."
+  ],
+
+  "work_deliberately_not_done": [
+    "No commit was created. Committing from an emptied worktree would destroy 12.6M lines.",
+    "No branch was created or pushed.",
+    "No remote branch was rewritten or force-pushed.",
+    "No worktree was deleted, pruned, cleaned, or reset.",
+    "No Content, .uasset, or UE asset was touched.",
+    "No CRS/XODR authority decision was made; it requires provenance review that was not reached."
+  ],
+
+  "required_next_actions_in_priority_order": [
+    "1. STOP all automated agents/sessions that may still be operating in C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\* worktrees. Something is deleting files there.",
+    "2. Restore the 4 emptied worktrees with `git -C <wt> checkout -- .` (restores from the intact index; makes no commit).",
+    "3. Determine WHY the Temp worktrees were emptied before creating any new worktree in that directory. Prefer moving future worktrees out of Temp.",
+    "4. Only then classify uncommitted changes and build the canonical branch.",
+    "5. Re-verify the main checkout lineage: it sits on production-convergence (3a8491ec), not offline-closure (f6b983ef). Confirm which is intended before branching.",
+    "6. Resolve XODR authority (370abbbb staged vs ff2a05e7 CRS-certified) before any further import work.",
+    "7. Publish nothing until PUBLICATION_SAFETY_AUDIT is produced; the repo is PUBLIC and contains absolute personal paths in reports."
+  ],
+
+  "publication_safety_warning": {
+    "severity": "HIGH",
+    "finding": "Reports written during this and prior sessions embed absolute personal paths such as C:\\Users\\admin\\..., C:/Users/admin/..., and machine-specific scratch directories.",
+    "repo_visibility": "PUBLIC (lemoniadowyjohn/carla-control-suite)",
+    "status": "NOT_FULLY_AUDITED_YET",
+    "required_before_push": "A systematic sweep for absolute user paths, machine names, API keys/tokens, private dataset references, and large logs. Prior review branches already exist, so some of this may already be public, which raises rather than lowers the urgency of checking."
+  },
+
+  "FINAL_VERDICT": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

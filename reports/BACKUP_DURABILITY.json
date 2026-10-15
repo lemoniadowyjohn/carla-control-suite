@@ -1,0 +1,310 @@
+{
+  "artifact": "authoritative XODR",
+  "copies": [
+    {
+      "path": "G:\\CARLA\\carla_source_probe\\Import\\Ingolstadt\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "PRIMARY",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+      "role": "COPY",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_214501.xodr",
+      "role": "COPY",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+      "role": "COPY",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_131617.xodr",
+      "role": "COPY",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "role": "COPY",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "COPY",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "matches_primary": true,
+      "path": "F:\\carla-worktrees\\b15_A_rq1b\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "COPY",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+      "role": "COPY",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_214501.xodr",
+      "role": "COPY",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+      "role": "COPY",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_131617.xodr",
+      "role": "COPY",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "role": "COPY",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "COPY",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "matches_primary": true,
+      "path": "F:\\carla-worktrees\\b15_B_placement\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "COPY",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_C_rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-worktrees\\b15_C_rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+      "role": "COPY",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_214501.xodr",
+      "role": "COPY",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+      "role": "COPY",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_131617.xodr",
+      "role": "COPY",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "role": "COPY",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "matches_primary": false,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "COPY",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "matches_primary": true,
+      "path": "F:\\carla-control-suite-worktrees\\session-batch1-full-verify-20260913\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "COPY",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+      "role": "COPY",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_214501.xodr",
+      "role": "COPY",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+      "role": "COPY",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_131617.xodr",
+      "role": "COPY",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "role": "COPY",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "COPY",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "matches_primary": true,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch10-rq2\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "COPY",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+      "role": "COPY",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_214501.xodr",
+      "role": "COPY",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+      "role": "COPY",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_131617.xodr",
+      "role": "COPY",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "role": "COPY",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "COPY",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "matches_primary": true,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch11-rq4\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "COPY",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350.xodr",
+      "role": "COPY",
+      "sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e"
+    },
+    {
+      "matches_primary": false,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla-batch12-rq5\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "COPY",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    }
+  ],
+  "distinct_hashes": 9,
+  "generated_utc": "2026-10-05T20:50:37.099677Z",
+  "note": "A git repository is not sufficient for large generated artifacts that are not fully tracked.",
+  "schema": "BACKUP_DURABILITY/v1",
+  "schema_version": 1,
+  "two_verified_copies": true
+}

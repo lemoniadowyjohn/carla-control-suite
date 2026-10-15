@@ -1,0 +1,185 @@
+{
+  "schema": "post_recovery_hardening_gate/v1",
+  "captured_utc": "2026-10-05T15:20:00Z",
+  "FINAL_VERDICT": "WORKTREE_RELOCATION_REQUIRED",
+
+  "LIVE_UE_STATUS": "ACTIVE (UE4Editor PID 5344, untouched; no UE process started, no Content modified, no import/cook)",
+
+  "worktree_audit": {
+    "WORKTREE_COUNT": 31,
+    "note_on_count": "31, not the 28 stated in the brief. Three worktrees were added during this session window: two .claude/worktrees/agent-* entries and Temp/opencode/new316-333-perception-hardening. The audit reports reality rather than the expected number.",
+    "WORKTREE_AUDIT_COMPLETE": true,
+    "EMPTIED_WORKTREES": 0,
+    "BROKEN_WORKTREES": 0,
+    "UNEXPLAINED_DELETIONS": 0,
+    "classification_counts": {
+      "DIRTY_EXPECTED": 14,
+      "DETACHED_VALID": 12,
+      "SCRATCH_ROOT_HAZARD": 4,
+      "BROKEN": 1
+    },
+    "BROKEN_worktree_now_restored": {
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\new316-333-perception-hardening",
+      "head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "found_with": "4076 deletions, 1 file on disk (.git only) - a FIFTH worktree emptied by the same mechanism",
+      "object_probes_before_restore": "all 8 probes true; connectivity-only fsck rc=0",
+      "staged_changes": 0,
+      "restore_command": "git restore --source=HEAD --worktree -- .",
+      "after": {"ls_files_deleted": 0, "files_on_disk": 4077, "status_entries": 34,
+                "head_unchanged": true, "tree_unchanged": true,
+                "tests": true, "ultimate_pipeline": true, "reports": true,
+                "submission": true},
+      "active_during_inspection": false,
+      "activity_watch": "stable across 90 s (files=1, deleted=4076); deletion was already complete"
+    },
+    "four_restored_reverified": {
+      "rq1-matrix-fix": {"ls_files_deleted": 0, "cached": "(empty)", "readme": true, "dirs_ok": true},
+      "wt-p1": {"ls_files_deleted": 0, "cached": "(empty)", "readme": true, "dirs_ok": true},
+      "wt-p1-base": {"ls_files_deleted": 0, "cached": "(empty)", "readme": true, "dirs_ok": true},
+      "wt-runtime-rig": {"ls_files_deleted": 0, "cached": "(empty)", "readme": true, "dirs_ok": true}
+    },
+    "lfs_residuals_classified": {
+      "count": 18,
+      "classification": "LFS_FILTER_DIFF_ARTIFACT",
+      "extensions": [".xodr", ".fbx", ".glb"],
+      "gitattributes": ["*.xodr filter=lfs diff=lfs merge=lfs -text",
+                        "*.fbx filter=lfs diff=lfs merge=lfs -text",
+                        "*.glb filter=lfs diff=lfs merge=lfs -text"],
+      "evidence": "worktree bytes == HEAD blob bytes (tile_0_0.xodr 2288486 == 2288486); direct disk read shows 42,349 lines of real OpenDRIVE XML",
+      "action_taken": "NONE - deliberately not 'fixed'. Converting real files to LFS pointers without understanding intended LFS state would risk data loss."
+    }
+  },
+
+  "scratch_root": {
+    "REGISTERED_WORKTREES_UNDER_TEMP_BEFORE": 5,
+    "REGISTERED_WORKTREES_UNDER_TEMP_AFTER": 5,
+    "WORKTREE_RELOCATION": "NOT_PERFORMED",
+    "why_not_performed": [
+      "A FIFTH worktree was found emptied during this batch, proving the hazard recurs. Relocation is therefore mandatory rather than cosmetic.",
+      "Relocation via `git worktree move` was not attempted blind: the four restored worktrees carry 18-34 modified entries each (LFS artifacts plus stat-cache entries), and the brief forbids moving dirty worktrees before their modifications are classified.",
+      "Disk capacity on the candidate durable root was not verified in this batch, and a failed relocation of a partially-dirty worktree is a worse outcome than not relocating."
+    ],
+    "classification_of_the_5": {
+      "rq1-matrix-fix": "SCRATCH_ROOT_HAZARD - previously emptied, now restored, 23 modified entries (18 LFS + 5 stat-cache)",
+      "wt-p1": "SCRATCH_ROOT_HAZARD - restored, 29 entries",
+      "wt-p1-base": "SCRATCH_ROOT_HAZARD - restored, 18 entries",
+      "wt-runtime-rig": "SCRATCH_ROOT_HAZARD - restored, 33 entries",
+      "new316-333-perception-hardening": "SCRATCH_ROOT_HAZARD - restored this batch, 34 entries"
+    },
+    "required_next_step": "Verify G:\\CARLA\\worktrees capacity, classify the 18-34 modified entries per worktree, then relocate each with `git worktree move`, recording HEAD/TREE before and after and requiring equality."
+  },
+
+  "cleanup_guard": {
+    "CLEANUP_GUARD": "NOT_IMPLEMENTED",
+    "UNSAFE_CLEANUP_PATHS": "NOT_AUDITED_IN_THIS_BATCH",
+    "status": "CLEANUP_GUARD_INCOMPLETE",
+    "note": "The guard module and its five negative tests were not written this batch. Given that the hazard has now materialised twice in the same scratch root, this guard is a hard prerequisite for convergence, not a follow-up."
+  },
+
+  "deletion_root_cause": {
+    "DELETION_ROOT_CAUSE": "SCRATCH_ROOT_CLEANUP_HAZARD",
+    "LIKELY_MECHANISM": "AGENT_OR_TEMP_CLEANUP_OF_WORKTREE_CONTENTS",
+    "ROOT_CAUSE_CONFIDENCE": "MEDIUM",
+    "no_overclaim": "No specific agent executable is named as the cause; no log or process evidence identifies one.",
+    "signature": "In all five cases every tracked file was removed while the .git pointer file survived (92-101 bytes). git reset and git checkout cannot produce this state; a content-only recursive wipe of a registered worktree can.",
+    "recurrence_proof": "4 worktrees damaged, all restored, then a 5th found damaged in this batch. The hazard is live and structural."
+  },
+
+  "publication_safety": {
+    "PUBLICATION_SAFETY": "PASS_FOR_NEW_FILES_BLOCKED_FOR_EXISTING",
+    "NEW_SECRET_COUNT": 0,
+    "NEW_CREDENTIAL_COUNT": 0,
+    "NEW_REDACTION_BLOCKERS": 0,
+    "HISTORICAL_PUBLIC_PATH_FINDINGS": 4125,
+    "secret_triage": {
+      "total_secret_like": 2,
+      "verdict": "BOTH ARE TEST FIXTURES, NOT CREDENTIALS",
+      "evidence": [
+        "ultimate_pipeline/tests/adversarial/test_v5_adversarial_matrix.py -> ghp_supersecretvalue1234567890 set via monkeypatch.setenv('UP_API_TOKEN', ...) then asserted absent from output",
+        "ultimate_pipeline/tests/unit/test_run_provenance_strict.py -> ghp_zzzzzzzzzzzzzzzzzzzz set via monkeypatch.setenv('UP_SECRET_TOKEN', ...) then asserted absent"
+      ],
+      "purpose": "These fixtures exist to verify secret scrubbing works. They are not live tokens."
+    },
+    "historical_metadata": {
+      "USERNAME_ADMIN_occurrences": 3420,
+      "LOCAL_USER_PATH_occurrences": 447,
+      "EMAIL_occurrences": 126,
+      "E_CARLA_PATH_occurrences": 86,
+      "APPDATA_PATH_occurrences": 16,
+      "TEMP_PATH_occurrences": 16,
+      "G_CARLA_PATH_occurrences": 13,
+      "distinct_files": 625,
+      "classification": "HISTORICAL_ALREADY_PUBLIC / LOCAL_PATH_METADATA",
+      "history_rewritten": false,
+      "policy": "No history rewrite in this batch. Remediation prepared only."
+    },
+    "oversized_tracked_candidates": {"count_over_4mb": 58, "concern": "Large tracked artifacts exist and should be reviewed before any further push."}
+  },
+
+  "branch_lineage": {
+    "BRANCH_LINEAGE_MATRIX": "COMPLETE",
+    "UNIQUE_COMMITS_CLASSIFIED": false,
+    "heads": {
+      "production-convergence": "3a8491ecc0a342d1fd2ed7a0a025944fa0705cc4",
+      "offline-closure": "f6b983efd972ef47b2bff233711c17dfa2ea656d",
+      "final-convergence": "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5",
+      "research-integration": "8f02c34984090e9a54130f5c2b49728e31ee682f"
+    },
+    "pairwise": {
+      "production-convergence <-> offline-closure": {"merge_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888", "ahead_behind": "1 39"},
+      "production-convergence <-> final-convergence": {"merge_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888", "ahead_behind": "1 42"},
+      "production-convergence <-> research-integration": {"merge_base": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888", "ahead_behind": "1 34"},
+      "offline-closure <-> final-convergence": {"merge_base": "7801f5528823...", "ahead_behind": "1 4"},
+      "offline-closure <-> research-integration": {"merge_base": "8f02c3498409...", "ahead_behind": "5 0"},
+      "final-convergence <-> research-integration": {"merge_base": "8f02c3498409...", "ahead_behind": "8 0"}
+    },
+    "interpretation": "All four research branches share ancestry (merge-base a7a2a0a2 or descendants), so unlike main they ARE reconcilable. research-integration is a strict ancestor of both offline-closure and final-convergence. offline-closure and final-convergence diverge on a different base (7801f552), with offline-closure +1 / -4.",
+    "not_done": "Per-commit SOURCE_REQUIRED / SUPERSEDED classification was not completed in this batch."
+  },
+
+  "local_source_state": {
+    "IMPORT_PY_STATE": "MODIFIED_UNCOMMITTED_IN_DURABLE_LOCATION",
+    "IMPORT_PY_OWNER_WORKTREE": "G:\\CARLA\\carla_source_probe (durable, non-temp, not a git worktree) - not stranded in scratch",
+    "import_py_working_tree_sha256": "4f6b46bf342639f880983b87...",
+    "import_py_git_status": "M Util/BuildTools/Import.py",
+    "import_py_contains": {"!= 'tiles'": true, "supervise_child": true, "shell=False": true,
+                          "_strip_wrapping_quotes": true},
+    "GEOREFERENCE_LOCAL_STATE": "CXX_SOURCE_MODIFIED",
+    "georeference_finding": "GeoReferenceParser.cpp is now git-modified ('M') and the string 'Using default values.' is NO LONGER PRESENT, i.e. the silent lat42/lon2.0 fallback has been removed from the C++ source during this session window.",
+    "georeference_not_yet": {"CXX_COMPILED": "UNKNOWN", "CXX_TESTED": "UNKNOWN",
+                             "runtime_verified": False},
+    "caution": "This C++ change appeared during the session and was NOT authored or verified by this batch. It is uncommitted, uncompiled and untested. It must not be treated as a completed fix."
+  },
+
+  "recovery_evidence_durability": {
+    "location": "G:\\CARLA\\recovery_evidence\\20261005T121051Z\\",
+    "exists": true,
+    "outside_temp": true,
+    "note": "Deliberately kept out of the public repository; per EVIDENCE_PUBLICATION_POLICY raw forensic dumps are local/archive evidence."
+  },
+
+  "storage_capacity": "NOT_MEASURED_IN_THIS_BATCH - required before relocation",
+
+  "BRANCH_CONVERGENCE_ALLOWED": false,
+  "gate_evaluation": {
+    "WORKTREE_AUDIT_COMPLETE": true,
+    "EMPTIED_WORKTREES": 0,
+    "BROKEN_WORKTREES": 0,
+    "REGISTERED_WORKTREES_UNDER_TEMP": "5 (required: 0)",
+    "WORKTREE_CLEANUP_GUARD": "NOT_IMPLEMENTED",
+    "UNSAFE_CLEANUP_PATHS": "NOT_AUDITED",
+    "PUBLICATION_SAFETY_AUDIT": "COMPLETE_FOR_NEW_FILES",
+    "NEW_SECRET_COUNT": 0,
+    "BRANCH_LINEAGE_MATRIX": "COMPLETE",
+    "UNIQUE_COMMITS_CLASSIFIED": false,
+    "IMPORT_PY_STATE_CAPTURED": true,
+    "RECOVERY_EVIDENCE_DURABLE": true,
+    "blocking": [
+      "REGISTERED_WORKTREES_UNDER_TEMP = 5, required 0",
+      "WORKTREE_CLEANUP_GUARD not implemented",
+      "UNSAFE_CLEANUP_PATHS not audited",
+      "UNIQUE_COMMITS_CLASSIFIED false",
+      "storage capacity unverified for the relocation target"
+    ]
+  }
+}

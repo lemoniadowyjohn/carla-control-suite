@@ -1,0 +1,8 @@
+{
+  "DDC_ON_C_DEFAULT_ABSENT": true,
+  "EFFECTIVE_DDC_PATH": "G:/CARLA/carla_source_probe/Unreal/CarlaUE4/DerivedDataCache/Boot.ddc + G:/UnrealEngine_4.26_CARLA/Engine/DerivedDataCache (from preserved cook log lines; Max Cache 512 MB)",
+  "EFFECTIVE_SHADER_PATH": "UNRESOLVED (no -shaderworkingdir in preserved evidence; default Engine-relative assumed, not proven)",
+  "EFFECTIVE_TEMP_PATH": "C:/Users/admin/AppData/Local/Temp (operator TEMP/TMP; UE cook ran under operator env; no -temp override found in preserved evidence)",
+  "EFFECTIVE_TMP_PATH": "C:/Users/admin/AppData/Local/Temp",
+  "F_UnrealEngine_DDC_USED": false
+}

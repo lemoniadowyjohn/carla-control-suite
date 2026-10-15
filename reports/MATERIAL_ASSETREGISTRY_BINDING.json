@@ -1,0 +1,9 @@
+{
+  "schema": "MATERIAL_ASSETREGISTRY_BINDING/v1",
+  "note": "No AssetRegistry query was executed, because doing so requires launching Unreal, which this batch forbids. Binding was instead established from package-level reference evidence plus source semantics.",
+  "hard_package_referencers_of_MAT_N_M": "NONE FOUND in any of the 29 Maps-namespace packages or in 300 sampled canonical meshes",
+  "referencers_of_representative_mesh_packages": "tile worlds (the 20 Ingolstadt_Tile_*.umap)",
+  "warning": "Absence of a serialized reference is NOT by itself proof of disuse. It is conclusive here only because the source shows no dynamic MAT_ lookup path exists (DYNAMIC_MATERIAL_LOOKUP=REFUTED), so there is no mechanism by which these assets could be resolved at runtime.",
+  "MATERIALS_REACHABLE_FROM_TILE_COOK_ROOT": "FALSE",
+  "MATERIALS_REACHABLE_RATIONALE": "Cook pulls dependencies from serialized references. MAT_N_M are referenced by nothing, so they are not in any cook dependency graph and are not cookable runtime assets for this map."
+}

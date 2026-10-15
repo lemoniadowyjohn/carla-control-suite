@@ -1,0 +1,202 @@
+[
+  {
+    "id": "GAP-001",
+    "fixing_commit": "c75fd8c9",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-002",
+    "fixing_commit": "c75fd8c9",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-003",
+    "fixing_commit": "22e3811c",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-004",
+    "fixing_commit": "433143f7",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-005",
+    "fixing_commit": "e2befc36",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-005",
+    "fixing_commit": "f5333f3a",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-006",
+    "fixing_commit": "7d82a581",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-007",
+    "fixing_commit": "fab0f8c7",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-009",
+    "fixing_commit": "c5b09591",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-010",
+    "fixing_commit": "4c2f0feb",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-010",
+    "fixing_commit": "fce9d794",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-011",
+    "fixing_commit": "c68a1059",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-012",
+    "fixing_commit": "f541c745",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-012",
+    "fixing_commit": "1c8caa2c",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-016",
+    "fixing_commit": "6e9fb064",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-016",
+    "fixing_commit": "1c8caa2c",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-019",
+    "fixing_commit": "c68a1059",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-020",
+    "fixing_commit": "0473b280",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-020",
+    "fixing_commit": "3748a671",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-021",
+    "fixing_commit": "870c56a2",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-022",
+    "fixing_commit": "e6052360",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-022",
+    "fixing_commit": "23913504",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-022",
+    "fixing_commit": "5f7d58bb",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-023",
+    "fixing_commit": "b09fd6e3",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-023",
+    "fixing_commit": "fdf91aff",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-024",
+    "fixing_commit": "b396191f",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-025",
+    "fixing_commit": "252432aa",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-027",
+    "fixing_commit": "4ddb7ced",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-027",
+    "fixing_commit": "b86d1170",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-028",
+    "fixing_commit": "8cb1cd95",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-029",
+    "fixing_commit": "1bc93eef",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-030",
+    "fixing_commit": "655671fd",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-031",
+    "fixing_commit": "975a7de1",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-031",
+    "fixing_commit": "5f826559",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-032",
+    "fixing_commit": "078b2f40",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-032",
+    "fixing_commit": "4d8c64b8",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-033",
+    "fixing_commit": "078b2f40",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-033",
+    "fixing_commit": "4d8c64b8",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-034",
+    "fixing_commit": "462ddeb3",
+    "is_ancestor_of_production": true
+  },
+  {
+    "id": "GAP-035",
+    "fixing_commit": "655671fd",
+    "is_ancestor_of_production": true
+  }
+]

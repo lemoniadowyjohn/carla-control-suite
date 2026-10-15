@@ -1,0 +1,111 @@
+{
+  "timestamp_utc": "2026-10-11T00:00:00Z",
+  "git_fetch_status": "completed",
+  "remote_refs": {
+    "production": {
+      "branch": "integration/production-large-map-20260918",
+      "sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "short_msg": "fix: implement the two declared signal producers; stop unknown->verified upgrade"
+    },
+    "consolidation": {
+      "branch": "integration/consolidate-fixes-20261008",
+      "sha": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+      "short_msg": "feat(cook-diagnostics): add GAP-049 cook diagnostics harness (files only)"
+    },
+    "gap055_candidate": {
+      "branch": "fix/gap055-ci-windll-platform-guard-20261009",
+      "sha": "08a55439cbb0722cd0114a8e78aa5a7abc71c603",
+      "short_msg": "fix(gap055): platform-guard module-level ctypes.WinDLL so Linux collection succeeds"
+    },
+    "gap048": {
+      "branch": "fix/gap048-through-junction-20261009",
+      "sha": "ef3003c2a97f838360aff94812fee9cc1dd79ca6",
+      "short_msg": "GAP-048: Source-stage through-junction lane successor repair (strategy 3)"
+    }
+  },
+  "branch_relationships": {
+    "consolidation_vs_production": {
+      "merge_base": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_by": 11,
+      "commits": [
+        "9fa11e1e feat(cook-diagnostics): add GAP-049 cook diagnostics harness (files only)",
+        "142ab1ea feat(tools): skip xodr harden in carla_smoke_suite when CARLA unreachable",
+        "7f320c7b feat(tools): per-stage wall-clock profiler for RQ1 pipeline runs",
+        "75371cd9 test(thesis): NEW-291 SHA-pin mechanism tests + document why no pin is set",
+        "c35c3a37 fix(contracts): GAP-051 -- GATE_CLASS_REGISTRY must cover the gates actually emitted",
+        "53030452 fix(train_launcher): restore missing validate_num_classes import",
+        "e10839c6 feat(gap017): one-command live RPC diagnostic probe",
+        "616d1eb7 fix(tests): GAP-047 -- stop collection aborting on an untracked module",
+        "ee7dc19a feat(train_launcher): NEW-277 DATASET_ACCEPTANCE enforcement (GAP-039)",
+        "c87431fa fix(perception): NEW-276 label_quality any/unlabeled/learnable-fraction split (GAP-039)",
+        "3de7b33d fix(gap039): implement NEW-274 atomic capture commits + NEW-275 API docs (real, tested)"
+      ]
+    },
+    "gap055_vs_consolidation": {
+      "merge_base": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_of_production_by": 1,
+      "based_on": "production (not consolidation)",
+      "missing_from_consolidation": true
+    },
+    "gap048_vs_consolidation": {
+      "merge_base": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_of_production_by": 1,
+      "based_on": "production (not consolidation)",
+      "missing_from_consolidation": true
+    }
+  },
+  "worktree_inventory": [
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "branch": "integration/tooling-cherry-pick-20261009",
+      "head": "9fa11e1e",
+      "dirty_count": 0
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap026",
+      "branch": "(detached HEAD)",
+      "head": "68868f76",
+      "dirty_count": 0
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap046",
+      "branch": "fix/gap046-stage-profiler-20261009",
+      "head": "0a0bff0c",
+      "dirty_count": 0
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap048",
+      "branch": "fix/gap048-through-junction-20261009",
+      "head": "ef3003c2",
+      "dirty_count": 0
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap055",
+      "branch": "fix/gap055-ci-windll-platform-guard-20261009",
+      "head": "08a55439",
+      "dirty_count": 0
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-gap055-clean",
+      "branch": "fix/gap055-ci-windll-import-safety-clean-20261009",
+      "head": "2ed9cb01",
+      "dirty_count": 0
+    }
+  ],
+  "live_processes": {
+    "UE4Editor.exe": 0,
+    "UE4Editor-Cmd.exe": 0,
+    "ShaderCompileWorker.exe": 0,
+    "CarlaUE4.exe": 0,
+    "python_processes": 4
+  },
+  "active_mutators": 0,
+  "active_cpu_heavy_tasks": 0,
+  "gap055_local_drift": {
+    "wt_gap055_clean_branch": "fix/gap055-ci-windll-import-safety-clean-20261009",
+    "wt_gap055_clean_head": "2ed9cb01",
+    "origin_gap055_branch": "fix/gap055-ci-windll-platform-guard-20261009",
+    "origin_gap055_head": "08a55439",
+    "diff_summary": "wt-gap055-clean adds: tools/orphan_terminal_witness.py to GUARDED_MODULES, extended AST checker for handle attribute access, and test_modules_import_without_windll behavioral test that calls witness.main() without CLI args causing test failure"
+  }
+}

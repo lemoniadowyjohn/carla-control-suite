@@ -1,0 +1,11 @@
+{
+  "missing_junction_ids_referenced": [],
+  "num_junctions_in_file": 3561,
+  "num_removed": 0,
+  "num_roads_affected": 0,
+  "ok": true,
+  "removals": [],
+  "removals_truncated": false,
+  "repair_type": "missing_junction_link_repair",
+  "roads_affected": []
+}

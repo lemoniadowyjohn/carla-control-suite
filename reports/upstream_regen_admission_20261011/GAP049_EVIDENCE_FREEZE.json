@@ -1,0 +1,24 @@
+{
+  "CURRENT_COOK_RESULT": "FAIL",
+  "CURRENT_FAILURE_CLASS": "SAVE_PACKAGE_WRITE_FAILURE",
+  "CURRENT_SILENT_HANG": false,
+  "GAP049_EVIDENCE_REMOTE_BRANCH": "evidence/gap049-cook-write-failure-20261011",
+  "GAP049_EVIDENCE_REMOTE_SHA": "9a4bd44f9ba619ae4fd53336674c7abb257666a4",
+  "HISTORICAL_SILENT_HANG": "SUPERSEDED_FOR_THIS_RUN",
+  "dir": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/GAP049_COOK_DIAG_RUN_20261011_125615",
+  "files_sha16": {
+    "census.err": "c14534d25d6bf9d1",
+    "census.log": "a7b6015bf1faa418",
+    "census_20261011_125615.csv": "e45244d14468173b",
+    "cook_20261011_125615.log": "04e334fb9c81e1e5",
+    "cook_20261011_125615.log.err": "e3b0c44298fc1c14",
+    "dumps/stall_watchdog_log.csv": "cb78fda7558a2ecf",
+    "package_writes_SIGNAL_only.csv": "6d4d2b62e648bb61",
+    "pids.json": "c5cbc119a0d3a6d7",
+    "poller.err": "b313519eed1a8398",
+    "poller.log": "a624dcd50c02cbf2",
+    "watchdog.err": "fee65c5b5214304f",
+    "watchdog.log": "e3b0c44298fc1c14"
+  },
+  "note": "remote also carries GAP049_COOK_WRITE_FAILURE_ANALYSIS.md; 273MB noisy CSV excluded; watchdogs tracked dead PID 40084 after crash (PID since recycled by a browser process)"
+}

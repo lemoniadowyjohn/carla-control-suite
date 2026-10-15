@@ -1,0 +1,54 @@
+{
+  "TILE_UMAP_ROOT_CAUSE": "OTHER",
+  "candidate_fixes": [
+    {
+      "cost": "full re-import of 5711 assets; changes asset names",
+      "detail": "rename/re-import tiles to start at (0,0)",
+      "option": "REINDEX_TILES_TO_ORIGIN",
+      "risk": "high"
+    },
+    {
+      "cost": "small C++ change in PrepareAssetsForCookingCommandlet.cpp",
+      "detail": "derive tile bounds from the actual asset set or from the manifest instead of scanning from (0,0) and stopping at the first miss",
+      "option": "PATCH_PRODUCER_ENUMERATION",
+      "risk": "low; does not disturb existing correct maps because a 0,0-anchored grid enumerates identically"
+    },
+    {
+      "detail": "rejected",
+      "option": "ADD_SYNTHETIC_TILE_0_0",
+      "risk": "would fabricate a tile that has no source geometry"
+    }
+  ],
+  "confidence": "HIGH",
+  "consequences": [
+    "PrepareAssetsForCooking saves zero tile .umap files for this grid",
+    "LargeMapManager therefore discovers zero tiles",
+    "LARGEMAP_STREAMING can never pass for this tile numbering",
+    "TILE_UMAP_COUNT=0 is expected and is NOT an interrupted-import symptom"
+  ],
+  "does_not_explain": "It does not explain the 5711 reference warnings, which concern mesh references rather than tile world enumeration. Those remain NOT_YET_PROVEN.",
+  "evidence": {
+    "mesh_assets": 5711,
+    "naming_pattern_matches_producer": "assets are named Ingolstadt_Tile_<X>_<Y>_<suffix>, which does satisfy the Contains(TileName + '_') test; naming is NOT the defect",
+    "non_tile_meshes": 0,
+    "tile_0_0_present": false,
+    "tile_count": 20,
+    "tile_umap_count": 0,
+    "x_range": [
+      6,
+      10
+    ],
+    "y_range": [
+      6,
+      9
+    ]
+  },
+  "explanation": "PrepareAssetsForCookingCommandlet.cpp:631-658 enumerates tiles with do { i=0; do { spawn(i,j); if (ok) {save; ++i;} } while (ok); ++j } while (i>0). The inner loop advances only while the previous tile was found and stops at the FIRST miss, so enumeration assumes a tile grid that is contiguous and anchored at (0,0). SpawnMeshesToWorld (:192,:207) selects meshes whose name ends with '_Tile_<i>_<j>'. The imported Ingolstadt grid is X in {6..10}, Y in {6..9}: 20 tiles, 5711 assets, and NO tile at (0,0). At (0,0) zero meshes match, ok is false, i is still 0, and the outer loop exits immediately having saved zero tile worlds.",
+  "generated_utc": "2026-10-05T21:53:38.479022Z",
+  "not_yet_observed": "The static proof is deterministic given the tile set, but PrepareAssetsForCooking has not yet been observed to run on this import. Confirmation requires the single-tile reproduction, which requires the UE binaries to be free.",
+  "proof_type": "STATIC_CODE_PROOF_PLUS_DISK_CENSUS",
+  "proximate_mechanism": "SAVE_PHASE_NEVER_REACHED",
+  "schema": "TILE_UMAP_ROOT_CAUSE/v1",
+  "schema_version": 1,
+  "sub_classification": "TILE_GRID_ORIGIN_MISMATCH"
+}

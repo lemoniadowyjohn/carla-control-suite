@@ -1,0 +1,40 @@
+{
+  "RUN_ALLOWED": false,
+  "files": [
+    {
+      "actual_sha256": "a29b289a289d64fec961ee577da4fd6b6b13365cbcf5bc54cc5b71c63a7ebc92",
+      "config": "DefaultEngine.ini",
+      "expected_sha256": "a29b289a289d64fec961ee577da4fd6b6b13365cbcf5bc54cc5b71c63a7ebc92",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Config\\DefaultEngine.ini",
+      "status": "MATCH"
+    },
+    {
+      "actual_sha256": "c5acc07bd0cd084d96cb2e670e6369304d24cbaf1dd6dd34184b4ba80f643c2c",
+      "config": "DefaultGame.ini",
+      "expected_sha256": null,
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Config\\DefaultGame.ini",
+      "status": "UNAPPROVED"
+    },
+    {
+      "actual_sha256": "af0f05f1fe0948c00c10f494fb70ee57e18f4c0c84b2814744b1657935e80e79",
+      "config": "Import.py",
+      "expected_sha256": null,
+      "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py",
+      "status": "UNAPPROVED"
+    }
+  ],
+  "gate_effect": "DENY_GOVERNED_EXPERIMENT",
+  "generated_utc": "2026-10-05T20:46:23.490694Z",
+  "schema": "CONFIGURATION_DRIFT_GATE/v1",
+  "schema_version": 1,
+  "unknown_drift": [
+    {
+      "config": "DefaultGame.ini",
+      "reason": "no approved hash recorded"
+    },
+    {
+      "config": "Import.py",
+      "reason": "no approved hash recorded"
+    }
+  ]
+}

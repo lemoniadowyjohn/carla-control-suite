@@ -1,0 +1,112 @@
+{
+  "bug": "The earlier probe read Win32_OperatingSystem FreePhysicalMemory and TotalVisibleMemorySize (KB-valued) and treated the numbers as bytes, reporting FreeGB=0.00 / TotalGB=0.00. That was a unit bug, NOT memory exhaustion.",
+  "disk": {
+    "free_space_risk": [
+      "E",
+      "C",
+      "H"
+    ],
+    "logical_disk_detail": [
+      {
+        "DeviceID": "C:",
+        "FileSystem": "NTFS",
+        "FreeSpace": 14347714560,
+        "Size": 511026905088,
+        "VolumeName": ""
+      },
+      {
+        "DeviceID": "E:",
+        "FileSystem": "NTFS",
+        "FreeSpace": 6627741696,
+        "Size": 301408124928,
+        "VolumeName": ""
+      },
+      {
+        "DeviceID": "F:",
+        "FileSystem": "NTFS",
+        "FreeSpace": 58669256704,
+        "Size": 722694656000,
+        "VolumeName": "Nowy"
+      },
+      {
+        "DeviceID": "G:",
+        "FileSystem": "NTFS",
+        "FreeSpace": 54424051712,
+        "Size": 1000201224192,
+        "VolumeName": "INTENSO"
+      },
+      {
+        "DeviceID": "H:",
+        "FileSystem": "NTFS",
+        "FreeSpace": 17853501440,
+        "Size": 1000202039296,
+        "VolumeName": ""
+      }
+    ],
+    "temp": {
+      "TEMP": "C:\\Users\\admin\\AppData\\Local\\Temp",
+      "TMP": "C:\\Users\\admin\\AppData\\Local\\Temp"
+    },
+    "volumes": {
+      "C": {
+        "free_gb": 13.36,
+        "free_percent": 2.81,
+        "total_gb": 475.93,
+        "used_gb": 462.57
+      },
+      "E": {
+        "free_gb": 6.17,
+        "free_percent": 2.2,
+        "total_gb": 280.71,
+        "used_gb": 274.54
+      },
+      "F": {
+        "free_gb": 54.64,
+        "free_percent": 8.12,
+        "total_gb": 673.06,
+        "used_gb": 618.42
+      },
+      "G": {
+        "free_gb": 50.69,
+        "free_percent": 5.44,
+        "total_gb": 931.51,
+        "used_gb": 880.82
+      },
+      "H": {
+        "free_gb": 16.63,
+        "free_percent": 1.78,
+        "total_gb": 931.51,
+        "used_gb": 914.88
+      }
+    }
+  },
+  "disk_pressure_assessment": {
+    "not_proven_cause": "Low disk space is a plausible contributor to an IO failure, but the observed termination was a console control event, so disk pressure is NOT the cause of this run's termination.",
+    "reasoning": "Free space is critically low on several volumes that the pipeline writes to: C: 13.36 GB (2.81%), E: 6.17 GB (2.2%), H: 16.63 GB (1.78%). A 16-hour import plus cook writes DDC, intermediate assets and saved packages to these volumes.",
+    "verdict": "DISK_PRESSURE_REAL_RISK"
+  },
+  "fix": "Values are sourced via PowerShell CIM and converted with kb_to_gb(kb) = kb * 1024 / 1024^3. wmic is unavailable on this host.",
+  "generated_at_utc": "2026-10-04T18:30:00.403610Z",
+  "memory": {
+    "method": "PowerShell CIM (wmic unavailable on this host)",
+    "physical_ram_free_gb": 16.778,
+    "physical_ram_free_kb_raw": 17592596.0,
+    "physical_ram_free_percent": 35.14,
+    "physical_ram_total_gb": 47.75,
+    "physical_ram_total_gb_csm": 47.75,
+    "physical_ram_total_kb_raw": 50069072.0,
+    "source_units": "KB (TotalVisibleMemorySize/FreePhysicalMemory)",
+    "status": "OK",
+    "unit_correction_applied": true,
+    "virtual_free_caveat": "FreeVirtualMemory counts the pagefile and can exceed physical RAM. It is NOT physical headroom and must not be used as OOM evidence.",
+    "virtual_free_gb": 6.197,
+    "virtual_total_gb": 53.0
+  },
+  "oom_assessment": {
+    "caveat": "No time series was captured during the run, so peak commit is unknown.",
+    "reasoning": "Physical RAM 47.75 GB total with 16.778 GB free (35.14%) at probe time. The import ran 16.76 hours, so this single snapshot is not proof about peak usage, but it does refute any claim that the machine was out of memory.",
+    "verdict": "NO_OOM_EVIDENCE_AT_PROBE_TIME"
+  },
+  "probe_bug_fixed": true,
+  "schema": "system_resource_baseline/v1"
+}

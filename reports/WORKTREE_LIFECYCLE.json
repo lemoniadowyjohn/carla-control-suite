@@ -1,0 +1,298 @@
+{
+  "PASS": true,
+  "REGISTERED_WORKTREES_UNDER_TEMP": 0,
+  "forbidden_root_patterns": [
+    "\\temp\\",
+    "\\appdata\\",
+    "\\.claude\\worktrees\\",
+    "\\scratch\\",
+    "\\opencode\\"
+  ],
+  "generated_utc": "2026-10-05T20:47:39.952436Z",
+  "policy": "No automatic deletion. Creation must go through a wrapper that rejects forbidden roots.",
+  "schema": "WORKTREE_LIFECYCLE/v1",
+  "schema_version": 1,
+  "under_forbidden_root": 0,
+  "worktree_count": 31,
+  "worktrees": [
+    {
+      "branch": "refs/heads/review/carla-production-convergence-20261002",
+      "created_or_link_mtime_utc": "2026-10-05T20:45:48Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "a78c423ab754905db09645fcb2ff93ea9228297f",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/opencode/batch10-rq2-authority-20261002",
+      "created_or_link_mtime_utc": "2026-10-02T20:04:47Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "ce47c1c1cdd669ea924437dafbcea429640e6da6",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-batch10-rq2",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/opencode/batch11-rq4-repro-20261002",
+      "created_or_link_mtime_utc": "2026-10-02T18:40:52Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "75f19438ad932a8c8ebcbef2f32aec9ca104418a",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-batch11-rq4",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/opencode/batch12-rq5-readiness-20261002",
+      "created_or_link_mtime_utc": "2026-10-02T18:39:23Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-batch12-rq5",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/review/carla-final-convergence-20261003",
+      "created_or_link_mtime_utc": "2026-10-03T18:08:13Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-final-convergence",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/review/carla-research-integration-20261002",
+      "created_or_link_mtime_utc": "2026-10-02T22:47:12Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "8f02c34984090e9a54130f5c2b49728e31ee682f",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-research-integration",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "(detached)",
+      "created_or_link_mtime_utc": "2026-10-02T23:07:12Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-signal-base",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "(detached)",
+      "created_or_link_mtime_utc": "2026-10-02T23:06:03Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-signal-baseline",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/worktree-agent-a601acc34bd5e6126",
+      "created_or_link_mtime_utc": "2026-09-16T09:13:58Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a601acc34bd5e6126",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/worktree-agent-a9677fdcd7c1172ea",
+      "created_or_link_mtime_utc": "2026-09-16T09:14:38Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.claude/worktrees/agent-a9677fdcd7c1172ea",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/baseline-regression-20261003",
+      "created_or_link_mtime_utc": "2026-10-03T20:27:45Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_baseline_regression",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/review/carla-final-offline-closure-20261003",
+      "created_or_link_mtime_utc": "2026-10-03T20:17:07Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "f6b983efd972ef47b2bff233711c17dfa2ea656d",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_final_offline_closure",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "(detached)",
+      "created_or_link_mtime_utc": "2026-10-02T18:34:38Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/lane_A1_rq1a-execution",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/fix/new316-333-perception-environment-20261001",
+      "created_or_link_mtime_utc": "2026-10-01T03:07:14Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "path": "E:/CARLA/worktrees/new316-333-perception-hardening",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/fix/rq1-matrix-integrity-20261001",
+      "created_or_link_mtime_utc": "2026-10-01T08:43:50Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "d12a03145793ae89d03a40f9ebf500ec59f3c761",
+      "path": "E:/CARLA/worktrees/rq1-matrix-fix",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/opencode/p1-runtime-capture-20261001",
+      "created_or_link_mtime_utc": "2026-10-01T20:28:24Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "542b82e93b6bb866dc05e085480eecb3ceffbcc1",
+      "path": "E:/CARLA/worktrees/wt-p1",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "(detached)",
+      "created_or_link_mtime_utc": "2026-10-01T23:44:52Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "path": "E:/CARLA/worktrees/wt-p1-base",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/integration/opencode-runtime-rig-environment-closure-20261001",
+      "created_or_link_mtime_utc": "2026-10-01T13:43:17Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "692b42391c29457fef30e19857352e3ef74be9b2",
+      "path": "E:/CARLA/worktrees/wt-runtime-rig",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/integration/production-large-map-20260918",
+      "created_or_link_mtime_utc": "2026-09-13T21:51:25Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+      "path": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/b15-rq1b",
+      "created_or_link_mtime_utc": "2026-10-03T18:08:48Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "543ddac634cffc7959d6257fd4381ac3a9151e92",
+      "path": "F:/carla-worktrees/b15_A_rq1b",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/b15-placement",
+      "created_or_link_mtime_utc": "2026-10-03T18:09:46Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888",
+      "path": "F:/carla-worktrees/b15_B_placement",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/b15-rq4-forensics",
+      "created_or_link_mtime_utc": "2026-10-03T18:10:32Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "41e2b7cd9389a0da069f9e3caec5bf583eafc824",
+      "path": "F:/carla-worktrees/b15_C_rq4",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "(detached)",
+      "created_or_link_mtime_utc": "2026-10-02T20:33:48Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "7fbd33ffc952aaafaca199f8e4939b1757cb94d6",
+      "path": "F:/carla-worktrees/baseline_check",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/integration-waveA-a7",
+      "created_or_link_mtime_utc": "2026-10-02T23:18:51Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "e73703a86c92f85db44ffc49e93b908b50dfbcd9",
+      "path": "F:/carla-worktrees/integration_a7",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/integration-offline",
+      "created_or_link_mtime_utc": "2026-10-02T19:48:59Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "24a8e4fbb5dd16faca328107a2792c9c9079a2cd",
+      "path": "F:/carla-worktrees/integration_offline",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/rq1a-execution",
+      "created_or_link_mtime_utc": "2026-10-02T18:38:08Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "7437ee53c74231a0c5a358849218e0cd279d599b",
+      "path": "F:/carla-worktrees/lane_A1_rq1a-execution",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/rq2-authority",
+      "created_or_link_mtime_utc": "2026-10-02T18:38:47Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "56a82a355d554be95e2484c5fd38f5c10265841a",
+      "path": "F:/carla-worktrees/lane_A2_rq2-authority",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/rq4-reproducibility",
+      "created_or_link_mtime_utc": "2026-10-02T18:39:54Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "c3031ad9d9c5815fe5769a00da7150eb93d4dd4c",
+      "path": "F:/carla-worktrees/lane_A3_rq4-reproducibility",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/rq5-readiness",
+      "created_or_link_mtime_utc": "2026-10-02T18:40:35Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "9474894f5fd10d25f7aae4b058ed52c4aaddf026",
+      "path": "F:/carla-worktrees/lane_A4_rq5-readiness",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/fix/p0-coord-frame-tile-placement-authority-20261001",
+      "created_or_link_mtime_utc": "2026-10-01T14:05:07Z",
+      "dirty": true,
+      "forbidden_root": null,
+      "head": "fb6c5e1899a844ba1d38444fc82e6d04e98db468",
+      "path": "F:/p0-coord-frame-tile-placement-20261001",
+      "retention_class": "ACTIVE"
+    },
+    {
+      "branch": "refs/heads/fix/new271-292-repairs-20261001",
+      "created_or_link_mtime_utc": "2026-09-30T22:08:10Z",
+      "dirty": false,
+      "forbidden_root": null,
+      "head": "e894586abd01d4339403ba9fc12017b7675c1fdf",
+      "path": "G:/fix-new271-292-20261001",
+      "retention_class": "ACTIVE"
+    }
+  ]
+}

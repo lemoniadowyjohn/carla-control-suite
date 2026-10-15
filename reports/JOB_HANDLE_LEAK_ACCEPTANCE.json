@@ -1,0 +1,10 @@
+{
+  "after": 187,
+  "api": "GetProcessHandleCount",
+  "before": 187,
+  "classification": "NONE",
+  "growth": 0,
+  "measurement_valid": true,
+  "schema": "JOB_HANDLE_LEAK_ACCEPTANCE/v1",
+  "schema_version": 1
+}

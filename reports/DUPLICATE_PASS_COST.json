@@ -1,0 +1,27 @@
+{
+  "schema": "duplicate_pass_cost/v1",
+  "fixture": "real Ingolstadt.json + package.json",
+  "manifest_files_discovered": 2,
+  "BEFORE_fix": {
+    "tile_import_executions": 40,
+    "staticmesh_builds": 40,
+    "distance_field_builds": 40,
+    "asset_saves": 40,
+    "manifests_processed": 2,
+    "wall_seconds": 0.0008
+  },
+  "AFTER_fix": {
+    "tile_import_executions": 20,
+    "staticmesh_builds": 20,
+    "distance_field_builds": 20,
+    "asset_saves": 20,
+    "manifests_processed": 1,
+    "wall_seconds": 0.0016
+  },
+  "SECOND_IDENTICAL_IMPORT_PASS": 0,
+  "tile_executions_removed": 20,
+  "staticmesh_builds_removed": 20,
+  "distance_field_builds_removed": 20,
+  "asset_saves_removed": 20,
+  "measurement_note": "Counters are the real work items the import driver issues, measured on the real manifests. Wall time is the manifest resolution stage only and is NOT a full import time; no UE commandlet was launched."
+}

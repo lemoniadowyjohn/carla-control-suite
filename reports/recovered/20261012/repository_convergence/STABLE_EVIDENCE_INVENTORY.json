@@ -1,0 +1,108 @@
+{
+  "report": "STABLE_EVIDENCE_INVENTORY",
+  "captured_at": "2026-10-12T17:26:51Z",
+  "mode": "STRICTLY_READ_ONLY_NO_COMMIT_NO_PUSH",
+  "high_value_stable_files": 8,
+  "live_files_deferred": 0,
+  "all_absent_from_all_commits": true,
+  "path_correction_note": "GAP026_ROOT_CAUSE_AUDIT.json and GAP026_FIX_VALIDATION.json are at REPOSITORY ROOT, not under reports/. Confirmed by both filesystem probe and git status.",
+  "files": [
+    {
+      "path": "GAP026_ROOT_CAUSE_AUDIT.json",
+      "exists": true,
+      "size": 5156,
+      "mtime_utc": "2026-10-11T14:44:44.0465507Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "79e7b24a73df623544cb401e39aa4ed625573a68e4d5448127db8f29445d866a",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "GAP026_FIX_VALIDATION.json",
+      "exists": true,
+      "size": 3006,
+      "mtime_utc": "2026-10-11T14:45:08.223485Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "ed54654dd0ad4a60b647766c7e06bb939ee70093707477a5261b55403742ada5",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "reports/GAP026_FINAL_CLASSIFICATION.md",
+      "exists": true,
+      "size": 1438,
+      "mtime_utc": "2026-10-11T12:24:42.6700703Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "73f6725909227a1be6d3d667202d457977a774e376688f64b6f51e03845593da",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "reports/GAP055_FINAL_VERDICT.md",
+      "exists": true,
+      "size": 3749,
+      "mtime_utc": "2026-10-11T08:42:27.9046032Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "679ff916401448271835ed42d7ecea1357c2a4ff2cdd963c6e87442c18b67863",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "reports/GAP055_SHARED_TREE_CONTAMINATION_INVENTORY.txt",
+      "exists": true,
+      "size": 11712,
+      "mtime_utc": "2026-10-09T15:46:10.3732623Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "857375a8fa6e5e5db7e0fdfc0ae5275057f5a126b6cb2951e064571fcae7f3d3",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "RQ2_FINAL_VALIDATION.json",
+      "exists": true,
+      "size": 1903,
+      "mtime_utc": "2026-10-11T15:37:16.8962686Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "57b3337778efc4a4d5bb20aac2746dc86c988c06f6846d8961417aa97992343d",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "RQ4_FINAL_VALIDATION.json",
+      "exists": true,
+      "size": 2252,
+      "mtime_utc": "2026-10-11T15:37:16.8984556Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "b06363079ee8a62ca5d4a86005612e6d92070fcff2d2502967ae0ca0acd40d55",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    },
+    {
+      "path": "HH1_VERIFICATION_REPORT.md",
+      "exists": true,
+      "size": 8632,
+      "mtime_utc": "2026-10-08T12:49:33.077293Z",
+      "stable_now": true,
+      "classification": "STABLE",
+      "sha256": "9911c49b79d1ac1a87c03f2ef921d488598c7c0784fa3896241d35773d2274a0",
+      "identical_copy_in_worktrees": [],
+      "in_any_commit": 0,
+      "later_preservation_priority": "HIGH__UNIQUE_NOT_IN_ANY_COMMIT"
+    }
+  ],
+  "recommendation": "These 8 files exist in ZERO commits and on NO remote. They are the highest irreversible-loss risk in the repository. Preservation requires a quiescent window; none were committed or pushed by this audit."
+}
