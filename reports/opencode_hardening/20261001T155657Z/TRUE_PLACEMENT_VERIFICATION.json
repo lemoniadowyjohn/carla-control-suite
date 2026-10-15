@@ -1,0 +1,655 @@
+{
+  "cook_results_sha256": "aa6e990dc8029873915388ea813b81ccc4c060351fb38fac27f2f1c501974824",
+  "failures": [
+    "tile 6,8: p95=29.62m > 10.0m",
+    "tile 7,8: p95=23.59m > 10.0m",
+    "tile 8,8: p95=189.74m > 10.0m",
+    "tile 7,9: p95=26.41m > 10.0m",
+    "tile 7,7: p95=65.07m > 10.0m",
+    "tile 8,7: p95=50.66m > 10.0m",
+    "tile 6,7: p95=54.04m > 10.0m",
+    "tile 9,9: p95=86.55m > 10.0m",
+    "tile 8,9: p95=26.85m > 10.0m",
+    "tile 7,6: p95=57.40m > 10.0m",
+    "tile 10,9: p95=24.43m > 10.0m",
+    "tile 6,6: p95=75.78m > 10.0m",
+    "tile 8,6: p95=23.81m > 10.0m",
+    "tile 9,8: p95=44.61m > 10.0m",
+    "tile 6,9: p95=30.55m > 10.0m",
+    "tile 10,7: p95=109.28m > 10.0m",
+    "tile 9,7: p95=154.83m > 10.0m",
+    "tile 9,6: p95=34.41m > 10.0m",
+    "tile 10,6: p95=109.10m > 10.0m",
+    "tile 10,8: p95=307.15m > 10.0m"
+  ],
+  "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "max_p95_residual_m": 307.1513821319956,
+  "median_p95_residual_m": 52.347173902699964,
+  "schema": "true_placement_verification/v1",
+  "status": "FAIL",
+  "tiles": [
+    {
+      "T_centroid": [
+        6652.088619798975,
+        8175.204836165399
+      ],
+      "T_optimal": [
+        6382.93861979899,
+        8225.254836165397
+      ],
+      "obj_vertices": 7849,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 99.8993437835286,
+        "median_m": 8.17836494012281,
+        "p95_m": 29.61830691240456,
+        "p99_m": 49.923889894741365,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 3263,
+      "source_vs_mor": {
+        "max_m": 23.15029856332863,
+        "median_m": 0.0004004564901102395
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_6_8",
+      "tile_index": [
+        6,
+        8
+      ]
+    },
+    {
+      "T_centroid": [
+        7431.7900507991635,
+        8913.192732033986
+      ],
+      "T_optimal": [
+        7071.740050799174,
+        8917.392732033984
+      ],
+      "obj_vertices": 11384,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 92.13232865782696,
+        "median_m": 6.941297680846354,
+        "p95_m": 23.59159327831399,
+        "p99_m": 61.23233184723052,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 2773,
+      "source_vs_mor": {
+        "max_m": 30.80903926075394,
+        "median_m": 0.0004016807009511471
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_7_8",
+      "tile_index": [
+        7,
+        8
+      ]
+    },
+    {
+      "T_centroid": [
+        8499.516710843776,
+        8840.07957384035
+      ],
+      "T_optimal": [
+        8219.816710843801,
+        8430.079573840343
+      ],
+      "obj_vertices": 7562,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 237.52851066860487,
+        "median_m": 14.139256866800714,
+        "p95_m": 189.73747187581083,
+        "p99_m": 211.2085911604867,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 2041,
+      "source_vs_mor": {
+        "max_m": 11.511191337795191,
+        "median_m": 0.00040593303623322
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_8_8",
+      "tile_index": [
+        8,
+        8
+      ]
+    },
+    {
+      "T_centroid": [
+        7431.9949299507225,
+        9177.5267968862
+      ],
+      "T_optimal": [
+        7004.994929950714,
+        9093.526796886203
+      ],
+      "obj_vertices": 8675,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 63.515480297253326,
+        "median_m": 8.18975284159279,
+        "p95_m": 26.4073853213194,
+        "p99_m": 42.37299725162049,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 2000,
+      "source_vs_mor": {
+        "max_m": 7.504899226635226,
+        "median_m": 0.0004011232101813765
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_7_9",
+      "tile_index": [
+        7,
+        9
+      ]
+    },
+    {
+      "T_centroid": [
+        7439.7741506460225,
+        7300.5038625456755
+      ],
+      "T_optimal": [
+        7015.424150646045,
+        7309.353862545663
+      ],
+      "obj_vertices": 10282,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 117.30454500602464,
+        "median_m": 15.93789607533013,
+        "p95_m": 65.0719617208704,
+        "p99_m": 83.63851088775422,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 2475,
+      "source_vs_mor": {
+        "max_m": 20.43914272191777,
+        "median_m": 0.00041023287760998703
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_7_7",
+      "tile_index": [
+        7,
+        7
+      ]
+    },
+    {
+      "T_centroid": [
+        8407.562885443844,
+        7526.718115673894
+      ],
+      "T_optimal": [
+        8350.96288544385,
+        7443.918115673902
+      ],
+      "obj_vertices": 6420,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 113.64589628705704,
+        "median_m": 11.101900936135445,
+        "p95_m": 50.65684785691695,
+        "p99_m": 76.00562313369343,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 2200,
+      "source_vs_mor": {
+        "max_m": 81.17694391621013,
+        "median_m": 0.00039900430311890357
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_8_7",
+      "tile_index": [
+        8,
+        7
+      ]
+    },
+    {
+      "T_centroid": [
+        6638.789463976939,
+        7952.522400047262
+      ],
+      "T_optimal": [
+        6583.789463976934,
+        8077.322400047272
+      ],
+      "obj_vertices": 4506,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 110.15429926536028,
+        "median_m": 8.227891112606564,
+        "p95_m": 54.037499948482974,
+        "p99_m": 88.54841055340053,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1859,
+      "source_vs_mor": {
+        "max_m": 15.303726079802173,
+        "median_m": 0.0003989639880738085
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_6_7",
+      "tile_index": [
+        6,
+        7
+      ]
+    },
+    {
+      "T_centroid": [
+        9563.310123401876,
+        9157.823386895005
+      ],
+      "T_optimal": [
+        9067.460123401866,
+        9097.623386894998
+      ],
+      "obj_vertices": 8987,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 202.73010590246267,
+        "median_m": 8.562775695959317,
+        "p95_m": 86.54831348801675,
+        "p99_m": 122.27027286869071,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1664,
+      "source_vs_mor": {
+        "max_m": 0.0006990802644934341,
+        "median_m": 0.0003911754478844577
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_9_9",
+      "tile_index": [
+        9,
+        9
+      ]
+    },
+    {
+      "T_centroid": [
+        8419.644027896466,
+        9134.793295716248
+      ],
+      "T_optimal": [
+        8167.3440278964645,
+        9130.193295716259
+      ],
+      "obj_vertices": 8491,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 89.52188514534723,
+        "median_m": 8.715070413157703,
+        "p95_m": 26.853778772070722,
+        "p99_m": 43.95666832602601,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1688,
+      "source_vs_mor": {
+        "max_m": 0.0006973931157852492,
+        "median_m": 0.000395315445194572
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_8_9",
+      "tile_index": [
+        8,
+        9
+      ]
+    },
+    {
+      "T_centroid": [
+        7623.212824124131,
+        6813.436952661459
+      ],
+      "T_optimal": [
+        7382.46282412414,
+        6786.5869526614515
+      ],
+      "obj_vertices": 5910,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 146.15023781488728,
+        "median_m": 8.311360316912717,
+        "p95_m": 57.40247837734278,
+        "p99_m": 101.26800018292235,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1641,
+      "source_vs_mor": {
+        "max_m": 5.252606308244206,
+        "median_m": 0.0004011060946102234
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_7_6",
+      "tile_index": [
+        7,
+        6
+      ]
+    },
+    {
+      "T_centroid": [
+        10150.32474486871,
+        9375.710122938372
+      ],
+      "T_optimal": [
+        9939.52474486873,
+        9390.060122938372
+      ],
+      "obj_vertices": 5455,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 66.4155952902725,
+        "median_m": 6.271806690329335,
+        "p95_m": 24.428063111277936,
+        "p99_m": 47.16978081533088,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1238,
+      "source_vs_mor": {
+        "max_m": 0.0007022750719463407,
+        "median_m": 0.0004010913409329388
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_10_9",
+      "tile_index": [
+        10,
+        9
+      ]
+    },
+    {
+      "T_centroid": [
+        6790.336218655369,
+        6546.365376925704
+      ],
+      "T_optimal": [
+        6385.236218655354,
+        6756.065376925704
+      ],
+      "obj_vertices": 6499,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 166.18167045233133,
+        "median_m": 7.492678813274692,
+        "p95_m": 75.77549843019747,
+        "p99_m": 114.81835509914295,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1164,
+      "source_vs_mor": {
+        "max_m": 0.0006905106708269209,
+        "median_m": 0.0003991626839065611
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_6_6",
+      "tile_index": [
+        6,
+        6
+      ]
+    },
+    {
+      "T_centroid": [
+        8265.045838262335,
+        6775.865661354709
+      ],
+      "T_optimal": [
+        7970.095838262335,
+        6800.265661354709
+      ],
+      "obj_vertices": 3418,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 64.62277748637759,
+        "median_m": 7.277803837438743,
+        "p95_m": 23.814607826850988,
+        "p99_m": 36.82095938648035,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 1205,
+      "source_vs_mor": {
+        "max_m": 71.51341774881202,
+        "median_m": 0.0004054275489990826
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_8_6",
+      "tile_index": [
+        8,
+        6
+      ]
+    },
+    {
+      "T_centroid": [
+        9520.523427453014,
+        9110.675568485845
+      ],
+      "T_optimal": [
+        9240.47342745303,
+        9119.675568485845
+      ],
+      "obj_vertices": 2695,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 127.97914985281179,
+        "median_m": 6.75143079248776,
+        "p95_m": 44.605996340049366,
+        "p99_m": 107.34608055445975,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 822,
+      "source_vs_mor": {
+        "max_m": 0.0006928282885036918,
+        "median_m": 0.00039636447493679976
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_9_8",
+      "tile_index": [
+        9,
+        8
+      ]
+    },
+    {
+      "T_centroid": [
+        6609.043634518676,
+        9130.736076104064
+      ],
+      "T_optimal": [
+        6156.893634518691,
+        9127.536076104063
+      ],
+      "obj_vertices": 3390,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 80.46865450314745,
+        "median_m": 8.020645421178898,
+        "p95_m": 30.554421490069398,
+        "p99_m": 55.04571285140769,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 761,
+      "source_vs_mor": {
+        "max_m": 19.750213854999355,
+        "median_m": 0.0003964757975209018
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_6_9",
+      "tile_index": [
+        6,
+        9
+      ]
+    },
+    {
+      "T_centroid": [
+        10499.314739773501,
+        7256.290857641028
+      ],
+      "T_optimal": [
+        10419.964739773495,
+        7335.640857641028
+      ],
+      "obj_vertices": 855,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 220.70617283165845,
+        "median_m": 19.54015356890354,
+        "p95_m": 109.27890745308476,
+        "p99_m": 214.7598063282901,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 420,
+      "source_vs_mor": {
+        "max_m": 25.913382858938046,
+        "median_m": 0.00038902991062828105
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_10_7",
+      "tile_index": [
+        10,
+        7
+      ]
+    },
+    {
+      "T_centroid": [
+        9555.547525029724,
+        7450.636056411256
+      ],
+      "T_optimal": [
+        9208.297525029728,
+        7519.536056411256
+      ],
+      "obj_vertices": 260,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 162.68723752960972,
+        "median_m": 87.54378733977299,
+        "p95_m": 154.82923243150128,
+        "p99_m": 161.79776140800698,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 124,
+      "source_vs_mor": {
+        "max_m": 49.161099191582856,
+        "median_m": 0.00044992910571341215
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_9_7",
+      "tile_index": [
+        9,
+        7
+      ]
+    },
+    {
+      "T_centroid": [
+        9425.460802125664,
+        6857.422289307021
+      ],
+      "T_optimal": [
+        9355.560802125667,
+        6817.372289307021
+      ],
+      "obj_vertices": 76,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 51.42015793628854,
+        "median_m": 14.09301727296791,
+        "p95_m": 34.40833722442722,
+        "p99_m": 51.42015793628854,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 38,
+      "source_vs_mor": {
+        "max_m": 0.0005951973244235911,
+        "median_m": 0.0004525262597806466
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_9_6",
+      "tile_index": [
+        9,
+        6
+      ]
+    },
+    {
+      "T_centroid": [
+        10236.095087688062,
+        6950.167375879211
+      ],
+      "T_optimal": [
+        10063.94508768806,
+        6895.117375879211
+      ],
+      "obj_vertices": 70,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 116.59554957822839,
+        "median_m": 23.238619946365674,
+        "p95_m": 109.10168974412518,
+        "p99_m": 116.59554957822839,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 33,
+      "source_vs_mor": {
+        "max_m": 0.0005617870650978777,
+        "median_m": 0.00035912458294908896
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_10_6",
+      "tile_index": [
+        10,
+        6
+      ]
+    },
+    {
+      "T_centroid": [
+        10118.467899081383,
+        8656.602892545925
+      ],
+      "T_optimal": [
+        9875.417899081383,
+        8476.652892545924
+      ],
+      "obj_vertices": 60,
+      "opt_reg_error": 0.0,
+      "placement_residual": {
+        "max_m": 313.61825952827877,
+        "median_m": 268.90516126810087,
+        "p95_m": 307.1513821319956,
+        "p99_m": 313.61825952827877,
+        "within_tolerance": false,
+        "within_tolerance_m": 10.0
+      },
+      "source_nodes": 30,
+      "source_vs_mor": {
+        "max_m": 0.0006567124253058473,
+        "median_m": 0.0003636669614088154
+      },
+      "status": "EXCEEDS_TOLERANCE",
+      "tile": "tile_10_8",
+      "tile_index": [
+        10,
+        8
+      ]
+    }
+  ],
+  "tiles_exceeding_tolerance": 20,
+  "tiles_verified": 20,
+  "tolerance_m": 10.0
+}
