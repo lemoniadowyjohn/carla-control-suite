@@ -181,6 +181,30 @@ def test_ci_installs_the_headless_dependency_profile():
     assert "pip install -r requirements.txt" not in text
 
 
+@pytest.mark.parametrize("wf", WORKFLOWS)
+def test_every_ci_profile_install_is_paired_with_nodeps_yolo_install(wf):
+    """ultralytics hard-requires GUI `opencv-python`; the YOLO layer must be
+    installed with --no-deps after the headless profile, in every job, or the
+    second cv2 provider is co-installed (J10 dependency_conflicts FAIL)."""
+    text = (_repo_root() / ".github" / "workflows" / wf).read_text(encoding="utf-8")
+    ci_installs = text.count("pip install -r requirements-ci.txt")
+    yolo_nodeps = text.count("pip install --no-deps -r requirements-yolo.txt")
+    assert ci_installs == yolo_nodeps, (
+        f"{wf}: {ci_installs} CI-profile installs but {yolo_nodeps} --no-deps YOLO installs"
+    )
+    stripped = text.replace("pip install --no-deps -r requirements-yolo.txt", "")
+    assert "pip install -r requirements-yolo.txt" not in stripped
+    assert "pip install -r requirements-desktop.txt" not in text
+    # ordering: in each job the --no-deps YOLO step follows the CI profile install
+    for job_name, job in _workflow(wf)["jobs"].items():
+        runs = "\n".join(step.get("run", "") for step in job.get("steps", []))
+        ci_at = runs.find("pip install -r requirements-ci.txt")
+        if ci_at == -1:
+            continue
+        yolo_at = runs.find("pip install --no-deps -r requirements-yolo.txt")
+        assert yolo_at > ci_at, f"{wf}:{job_name} must install the YOLO layer after requirements-ci.txt"
+
+
 def test_ci_runs_the_dependency_conflict_gate():
     text = (_repo_root() / ".github" / "workflows" / "tests.yml").read_text(encoding="utf-8")
     assert "dependency_conflicts" in text

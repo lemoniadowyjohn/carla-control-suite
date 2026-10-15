@@ -57,9 +57,17 @@ jobs:
 
       # J10: the CI profile pins the HEADLESS OpenCV provider. The base profile
       # deliberately declares no OpenCV provider at all, so the two mutually
-      # exclusive cv2 distributions can never be co-installed here.
+      # exclusive cv2 distributions can never be co-installed here. The YOLO
+      # layer (requirements-yolo.txt) is installed with --no-deps because
+      # ultralytics hard-requires the GUI distribution `opencv-python` in its
+      # metadata; a normal install would pull it in transitively, co-install
+      # both providers and fail dependency_conflicts. Every job that installs
+      # requirements-ci.txt must do the same.
       - name: Install remaining dependencies (headless profile)
         run: pip install -r requirements-ci.txt
+
+      - name: Install YOLO layer without its transitive GUI OpenCV
+        run: pip install --no-deps -r requirements-yolo.txt
 
       - name: Install package editable for tests
         run: pip install -e .
@@ -157,6 +165,7 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Run governance tests
@@ -182,6 +191,7 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Regenerate and audit C19 RQ tables
@@ -210,6 +220,7 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Validate thesis provenance
@@ -275,6 +286,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Write repository health packet and resolve the offline release gate

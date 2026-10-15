@@ -12,8 +12,14 @@
 # environment produces a shadowed-module conflict that pip does not report.
 # `ultimate_pipeline.tools.repo_health.dependency_conflicts()` fails CI if both are present.
 #
+# The YOLO layer (ultralytics) is deliberately NOT included here: its metadata
+# hard-requires the GUI distribution `opencv-python`, so a plain layered install
+# would pull the second cv2 provider in and break the mutual exclusion above.
+# It is installed separately with --no-deps (see requirements-yolo.txt).
+#
 # Install:
 #   pip install -r requirements-ci.txt
+#   pip install --no-deps -r requirements-yolo.txt
 # and install torch/torchvision from the CPU index first (see .github/workflows/tests.yml).
 
 -r requirements.txt

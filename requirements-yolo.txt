@@ -1,0 +1,26 @@
+# YOLO layer (V5 profile split follow-up).
+#
+# `ultralytics` hard-requires the distribution `opencv-python` (the GUI cv2
+# provider) in its PyPI metadata. Keeping these pins in the shared base
+# profile (requirements.txt) made every `pip install -r requirements-ci.txt`
+# co-install BOTH mutually exclusive cv2 providers, which fails
+# `ultimate_pipeline.tools.repo_health.dependency_conflicts()` (the J10
+# offline-release-gate blocker) and silently shadows the pinned headless build
+# (the GUI build installed second wins site-packages/cv2).
+#
+# Install rules:
+#   CI / headless:  pip install --no-deps -r requirements-yolo.txt
+#     AFTER `pip install -r requirements-ci.txt`. Every ultralytics runtime
+#     dependency except opencv-python is already pinned in the base profile;
+#     opencv-python-headless (requirements-ci.txt) provides the same `cv2`
+#     namespace. The single residual `pip check` finding
+#       "ultralytics <ver> requires opencv-python, which is not installed."
+#     is waived fail-closed by repo_health._dependency_integrity, and only while
+#     opencv-python-headless is installed and opencv-python is absent.
+#     NEVER install this file without --no-deps in a headless profile.
+#   Desktop / GUI:  layered by requirements-desktop.txt with normal dependency
+#     resolution (that profile pins opencv-python==4.13.0.92, which satisfies
+#     ultralytics' requirement).
+
+ultralytics==8.3.248
+ultralytics-thop==2.0.18
