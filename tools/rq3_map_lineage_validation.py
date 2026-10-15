@@ -29,7 +29,6 @@ from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
 from ultimate_pipeline.tiling.large_map_package import (
     stage_large_map_package,
     validate_staged_package,
-    PackageProfile,
 )
 
 
@@ -137,7 +136,7 @@ def main() -> int:
         tx, ty = map(int, pair.strip().split(","))
         expected_tiles.add((int(tx), int(ty)))
 
-    results = _verify_map_lineage(args.package_dir, args.expected_map_sha, args.expected_tiles)
+    results = _verify_map_lineage(args.package_dir, args.expected_map_sha, expected_tiles)
 
     output = json.dumps(results, indent=2, sort_keys=True)
     if args.out:
