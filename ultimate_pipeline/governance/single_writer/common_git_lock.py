@@ -22,6 +22,7 @@ GAP052: Prevents concurrent mutations of shared Git metadata.
 """
 from __future__ import annotations
 
+import calendar
 import json
 import os
 import platform
@@ -62,9 +63,13 @@ class CommonGitLock:
         if not self.expires_at:
             return False
         try:
-            exp = time.strptime(self.expires_at, "%Y-%m-%dT%H:%M:%SZ")
-            now = time.gmtime()
-            return time.mktime(now) > time.mktime(exp)
+            # expires_at is a UTC stamp: convert with calendar.timegm (pure
+            # UTC) and compare against time.time(). Never use time.mktime
+            # here -- it applies local time/DST, and gmtime() (tm_isdst=0)
+            # vs strptime() (tm_isdst=-1) were resolved with different DST
+            # rules, skewing expiry by an hour on DST-active hosts (GAP-052).
+            exp = calendar.timegm(time.strptime(self.expires_at, "%Y-%m-%dT%H:%M:%SZ"))
+            return time.time() > exp
         except Exception:
             return True
     

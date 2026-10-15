@@ -319,13 +319,27 @@ def test_is_expired_fails_closed_on_a_malformed_timestamp():
     assert wl.WorktreeLease(expires_at="not-a-timestamp").is_expired() is True
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: is_expired() (worktree_lock.py:64-66) compares mktime(gmtime()) "
-           "against mktime(strptime(stamp)); the structs differ in tm_isdst (0 vs -1), so on a "
-           "host with DST active the 'now' side resolves to standard time and the 'expiry' side "
-           "to daylight time, expiring every lease one hour early",
-)
+# GAP-052 regression: expiry must be computed in pure UTC. Each zone below has
+# DST active (dst offset != std offset) and the shim resolves mktime() with the
+# offset matching tm_isdst, exactly like a real DST-active host. Any return to
+# local-time conversion (time.mktime) makes the future-600s case read expired.
+_DST_ACTIVE_ZONES = [
+    pytest.param(3600, 7200, id="europe-cest"),
+    pytest.param(-18000, -14400, id="us-eastern-edt"),
+]
+
+
+@pytest.mark.parametrize("std_east, dst_east", _DST_ACTIVE_ZONES)
+def test_is_expired_in_dst_active_zone_regression(monkeypatch, std_east, dst_east):
+    monkeypatch.setattr(wl, "time", _OffsetTime(std_east_seconds=std_east, dst_east_seconds=dst_east))
+    now = time.time()
+    future = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now + 600))
+    past = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 600))
+
+    assert wl.WorktreeLease(expires_at=future).is_expired() is False
+    assert wl.WorktreeLease(expires_at=past).is_expired() is True
+
+
 def test_is_expired_is_timezone_independent(monkeypatch):
     monkeypatch.setattr(wl, "time", _OffsetTime(std_east_seconds=3600, dst_east_seconds=7200))
 
@@ -334,11 +348,6 @@ def test_is_expired_is_timezone_independent(monkeypatch):
     assert wl.WorktreeLease(expires_at=future).is_expired() is False
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: a lease with 1h 10m remaining is treated as already expired when the "
-           "host has DST active, so two writers can hold the same worktree lease at once",
-)
 def test_lease_stays_valid_through_its_remaining_minutes(leases_dir, worktree, monkeypatch):
     monkeypatch.setattr(wl, "time", _OffsetTime(std_east_seconds=3600, dst_east_seconds=7200))
 

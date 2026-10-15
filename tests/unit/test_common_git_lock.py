@@ -224,12 +224,27 @@ def test_default_timeout_is_five_minutes():
     assert cgl.DEFAULT_TIMEOUT_SECONDS == 300
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: is_expired() (common_git_lock.py:65-67) compares mktime(gmtime()) against "
-           "mktime(strptime(stamp)); the structs differ in tm_isdst (0 vs -1), so on a host with DST "
-           "active the 'now' side resolves to standard time and the 'expiry' side to daylight time",
-)
+# GAP-052 regression: expiry must be computed in pure UTC. Each zone below has
+# DST active (dst offset != std offset) and the shim resolves mktime() with the
+# offset matching tm_isdst, exactly like a real DST-active host. Any return to
+# local-time conversion (time.mktime) makes the future-600s case read expired.
+_DST_ACTIVE_ZONES = [
+    pytest.param(3600, 7200, id="europe-cest"),
+    pytest.param(-18000, -14400, id="us-eastern-edt"),
+]
+
+
+@pytest.mark.parametrize("std_east, dst_east", _DST_ACTIVE_ZONES)
+def test_is_expired_in_dst_active_zone_regression(monkeypatch, std_east, dst_east):
+    monkeypatch.setattr(cgl, "time", _OffsetTime(std_east_seconds=std_east, dst_east_seconds=dst_east))
+    now = time.time()
+    future = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now + 600))
+    past = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 600))
+
+    assert cgl.CommonGitLock(expires_at=future).is_expired() is False
+    assert cgl.CommonGitLock(expires_at=past).is_expired() is True
+
+
 def test_is_expired_is_timezone_independent(monkeypatch):
     monkeypatch.setattr(cgl, "time", _OffsetTime(std_east_seconds=3600, dst_east_seconds=7200))
 
@@ -238,12 +253,6 @@ def test_is_expired_is_timezone_independent(monkeypatch):
     assert cgl.CommonGitLock(expires_at=future).is_expired() is False
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: with the default 300s timeout a DST-active host reads the lock as already "
-           "expired, so the next acquirer steals it and two processes mutate shared Git metadata "
-           "concurrently -- the lock stops providing mutual exclusion at all",
-)
 def test_default_timeout_lock_is_not_stolen_while_held(repo, holder_appears_alive, monkeypatch):
     monkeypatch.setattr(cgl, "time", _OffsetTime(std_east_seconds=3600, dst_east_seconds=7200))
     first = cgl.acquire_common_git_lock(repo, "git fetch")
