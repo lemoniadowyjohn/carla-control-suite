@@ -1,0 +1,218 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "small_model": "opencode/cat-jam-free",
+  "agent": {
+    "explore": {
+      "model": "opencode/mimo-v2.6-flash-free",
+      "steps": 30,
+      "permission": {
+        "edit": "deny",
+        "task": "deny",
+        "bash": {
+          "*": "ask",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git branch*": "allow", "git ls-files*": "allow", "git rev-parse*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow",
+          "git push*": "deny", "git commit*": "deny", "git reset*": "deny", "git checkout*": "deny",
+          "git merge*": "deny", "git rebase*": "deny", "git stash*": "deny", "rm *": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    },
+    "general": {
+      "model": "opencode/longcat-2.5-preview-free",
+      "steps": 40,
+      "permission": {
+        "task": "deny",
+        "bash": {
+          "*": "ask",
+          "git push*": "deny", "git reset*": "deny", "git merge*": "deny", "git rebase*": "deny",
+          "git stash*": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    },
+
+    "scout": {
+      "mode": "subagent",
+      "description": "L1 fast read-only codebase mapper: locate code, trace call paths, list symbols. Use first for any 'where/how is X' question.",
+      "model": "opencode/nemotron-3.5-lightning-free",
+      "steps": 30,
+      "prompt": "Stay read-only. Map the actual execution path using targeted searches and file reads. Return concise, evidence-backed findings with files, symbols, and unanswered questions. Do not edit files, run CARLA, or propose broad refactors unless asked.",
+      "permission": {
+        "edit": "deny", "task": "deny", "webfetch": "deny",
+        "bash": {
+          "*": "deny",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git branch*": "allow", "git ls-files*": "allow", "git rev-parse*": "allow", "git grep*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow"
+        }
+      }
+    },
+    "scout_alt": {
+      "mode": "subagent",
+      "description": "Fallback for scout (same model, OpenRouter quota). Use only when scout fails with a rate-limit or provider error.",
+      "model": "openrouter/nvidia/nemotron-3.5-lightning:free",
+      "steps": 30,
+      "prompt": "Stay read-only. Map the actual execution path using targeted searches and file reads. Return concise, evidence-backed findings with files, symbols, and unanswered questions. Do not edit files, run CARLA, or propose broad refactors unless asked.",
+      "permission": {
+        "edit": "deny", "task": "deny", "webfetch": "deny",
+        "bash": {
+          "*": "deny",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git branch*": "allow", "git ls-files*": "allow", "git rev-parse*": "allow", "git grep*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow"
+        }
+      }
+    },
+
+    "test_triage": {
+      "mode": "subagent",
+      "description": "L1 read-only test/failure analyst: reproduce the smallest failing pytest command, classify product vs environment vs sparse-checkout failures.",
+      "model": "opencode/space-bunny-free",
+      "steps": 40,
+      "prompt": "Stay read-only. Reproduce the smallest relevant test command, isolate root cause, and distinguish product failures from environment or sparse-checkout limitations (sparse-checkout or missing full-map inputs are INCOMPLETE, never PASS). Report exact commands and failure signatures. Do not weaken tests or edit code. Never type a manual pytest path list for 'full suite' runs; use bare `pytest` so pytest.ini testpaths apply.",
+      "permission": {
+        "edit": "deny", "task": "deny", "webfetch": "deny",
+        "bash": {
+          "*": "ask",
+          "pytest*": "allow", "python -m pytest*": "allow", ".venv*pytest*": "allow",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow",
+          "git push*": "deny", "git commit*": "deny", "git reset*": "deny", "git checkout*": "deny",
+          "git merge*": "deny", "git stash*": "deny", "rm *": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    },
+    "test_triage_alt": {
+      "mode": "subagent",
+      "description": "Fallback for test_triage (code-specialised model, OpenRouter quota). Use when test_triage fails or for a second read of a confusing traceback.",
+      "model": "openrouter/cohere/north-mini-code:free",
+      "steps": 40,
+      "prompt": "Stay read-only. Reproduce the smallest relevant test command, isolate root cause, and distinguish product failures from environment or sparse-checkout limitations (sparse-checkout or missing full-map inputs are INCOMPLETE, never PASS). Report exact commands and failure signatures. Do not weaken tests or edit code. Never type a manual pytest path list for 'full suite' runs; use bare `pytest` so pytest.ini testpaths apply.",
+      "permission": {
+        "edit": "deny", "task": "deny", "webfetch": "deny",
+        "bash": {
+          "*": "ask",
+          "pytest*": "allow", "python -m pytest*": "allow", ".venv*pytest*": "allow",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow",
+          "git push*": "deny", "git commit*": "deny", "git reset*": "deny", "git checkout*": "deny",
+          "git merge*": "deny", "git stash*": "deny", "rm *": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    },
+
+    "evidence_auditor": {
+      "mode": "subagent",
+      "description": "L3/L4 read-only auditor for hashes, provenance, map-of-record registry pins, baseline comparisons, and governed scientific claims.",
+      "model": "opencode/nemotron-3-ultra-free",
+      "steps": 50,
+      "prompt": "Stay read-only. Verify claims against source files, git history, hashes, and generated artifacts. Separate measured facts, inferences, and unavailable evidence. Resolve the map-of-record via the registry, never by mtime/glob. Never rewrite historical evidence or convert missing evidence into a pass. A listening port is not CARLA success; only an actual RPC response is.",
+      "permission": {
+        "edit": "deny", "task": "deny",
+        "bash": {
+          "*": "deny",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git branch*": "allow", "git ls-files*": "allow", "git rev-parse*": "allow", "git cat-file*": "allow",
+          "git merge-base*": "allow", "sha256sum *": "allow", "certutil -hashfile*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow"
+        }
+      }
+    },
+    "evidence_auditor_alt": {
+      "mode": "subagent",
+      "description": "Fallback for evidence_auditor (same model family, OpenRouter quota). Use when evidence_auditor fails with a rate-limit or provider error.",
+      "model": "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+      "steps": 50,
+      "prompt": "Stay read-only. Verify claims against source files, git history, hashes, and generated artifacts. Separate measured facts, inferences, and unavailable evidence. Resolve the map-of-record via the registry, never by mtime/glob. Never rewrite historical evidence or convert missing evidence into a pass. A listening port is not CARLA success; only an actual RPC response is.",
+      "permission": {
+        "edit": "deny", "task": "deny",
+        "bash": {
+          "*": "deny",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git branch*": "allow", "git ls-files*": "allow", "git rev-parse*": "allow", "git cat-file*": "allow",
+          "git merge-base*": "allow", "sha256sum *": "allow", "certutil -hashfile*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow"
+        }
+      }
+    },
+
+    "reviewer": {
+      "mode": "subagent",
+      "description": "L2-L4 read-only adversarial reviewer for correctness, regressions, provenance and test gaps. Must be a different model than the implementer.",
+      "model": "opencode/step-5-preview-free",
+      "steps": 50,
+      "prompt": "Review as an owner. Lead with concrete correctness, release-risk, provenance, and test findings, using file references and reproductions where possible. Do not edit code or approve a claim that lacks executed evidence. Flag any tolerance-raising 'fix' for GAP-026, any final-XODR cosmetic mutation, and any generator fix not made at the source stage.",
+      "permission": {
+        "edit": "deny", "task": "deny",
+        "bash": {
+          "*": "ask",
+          "pytest*": "allow", "python -m pytest*": "allow",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git merge-base*": "allow", "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow",
+          "git push*": "deny", "git commit*": "deny", "git reset*": "deny", "git checkout*": "deny",
+          "git merge*": "deny", "git stash*": "deny", "rm *": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    },
+    "reviewer_alt": {
+      "mode": "subagent",
+      "description": "Independent second reviewer (different model family, OpenRouter quota). Use for L4 dual review or when reviewer fails.",
+      "model": "openrouter/poolside/laguna-s-2.1:free",
+      "steps": 50,
+      "prompt": "Review as an owner. Lead with concrete correctness, release-risk, provenance, and test findings, using file references and reproductions where possible. Do not edit code or approve a claim that lacks executed evidence. Flag any tolerance-raising 'fix' for GAP-026, any final-XODR cosmetic mutation, and any generator fix not made at the source stage.",
+      "permission": {
+        "edit": "deny", "task": "deny",
+        "bash": {
+          "*": "ask",
+          "pytest*": "allow", "python -m pytest*": "allow",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow",
+          "git merge-base*": "allow", "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow",
+          "git push*": "deny", "git commit*": "deny", "git reset*": "deny", "git checkout*": "deny",
+          "git merge*": "deny", "git stash*": "deny", "rm *": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    },
+
+    "report_reader": {
+      "mode": "subagent",
+      "description": "Read-only bulk summariser for large reports/, logs, JSON evidence and CI output. Returns short digests with exact quoted numbers and file paths.",
+      "model": "opencode/muse-spark-1.3-contributor-free",
+      "steps": 30,
+      "prompt": "Stay read-only. Summarise the requested reports or logs. Quote numbers, SHAs, verdicts and test counts exactly as written, with the file path for each. Never round, infer, or upgrade a status (e.g. INCOMPLETE stays INCOMPLETE). Say explicitly when a requested file is missing.",
+      "permission": {
+        "edit": "deny", "task": "deny", "webfetch": "deny",
+        "bash": { "*": "deny", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow", "rg *": "allow" }
+      }
+    },
+    "report_reader_alt": {
+      "mode": "subagent",
+      "description": "Fallback for report_reader (OpenRouter quota).",
+      "model": "openrouter/thinkingmachines/inkling:free",
+      "steps": 30,
+      "prompt": "Stay read-only. Summarise the requested reports or logs. Quote numbers, SHAs, verdicts and test counts exactly as written, with the file path for each. Never round, infer, or upgrade a status (e.g. INCOMPLETE stays INCOMPLETE). Say explicitly when a requested file is missing.",
+      "permission": {
+        "edit": "deny", "task": "deny", "webfetch": "deny",
+        "bash": { "*": "deny", "ls*": "allow", "cat *": "allow", "head *": "allow", "tail *": "allow", "wc *": "allow", "rg *": "allow" }
+      }
+    },
+
+    "implementer": {
+      "mode": "subagent",
+      "description": "L2+ SINGLE writer for one bounded, pre-mapped task in an assigned isolated worktree. Dispatch only after read-only findings are reconciled; never run two at once.",
+      "model": "opencode/big-pickle",
+      "steps": 80,
+      "prompt": "Own one bounded implementation task in the assigned isolated worktree. Read the parent agent's requirements and discovery findings first. Make focused edits, add meaningful tests, and report exact verification (commands run and their real output). Do not merge, reset, delete, rewrite evidence, alter map-of-record pins, or start CARLA. Stop and return the blocker if ownership or behavior is ambiguous.",
+      "permission": {
+        "task": "deny",
+        "bash": {
+          "*": "ask",
+          "pytest*": "allow", "python -m pytest*": "allow",
+          "git status*": "allow", "git log*": "allow", "git diff*": "allow", "git show*": "allow", "git add*": "allow",
+          "rg *": "allow", "ls*": "allow", "cat *": "allow", "head *": "allow",
+          "git push*": "deny", "git reset*": "deny", "git merge*": "deny", "git rebase*": "deny",
+          "git stash*": "deny", "git branch -D*": "deny", "git worktree remove*": "deny", "rm -r*": "deny", "*CarlaUE4*": "deny"
+        }
+      }
+    }
+  }
+}
