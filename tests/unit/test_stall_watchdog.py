@@ -204,8 +204,15 @@ class TestStallWatchdog:
         
         watchdog.stop()
 
+    @patch('tools.cook_diagnostics.stall_watchdog.sys.platform', 'win32')
     def test_procdump_triggered_on_stall(self):
-        """Test that procdump is triggered when stall detected."""
+        """Test that procdump is triggered when stall detected.
+
+        Forces sys.platform to 'win32' so this test deterministically
+        exercises the procdump branch regardless of the host OS running
+        the suite (e.g. Linux CI). The gdb/Linux branch is covered
+        separately by TestStallWatchdogLinuxGDB.test_linux_uses_gdb.
+        """
         watchdog = StallWatchdog(
             pid=12345,
             package_dir=self.package_dir,
