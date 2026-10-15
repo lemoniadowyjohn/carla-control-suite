@@ -58,6 +58,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       # ---------------------------------------------------------------------

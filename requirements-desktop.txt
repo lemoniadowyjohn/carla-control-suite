@@ -16,5 +16,6 @@
 # `ultimate_pipeline.tools.repo_health.dependency_conflicts()` will fail if both are present.
 
 -r requirements.txt
+-r requirements-yolo.txt
 
 opencv-python==4.13.0.92

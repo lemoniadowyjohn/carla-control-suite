@@ -126,15 +126,73 @@ def _package_status() -> Dict[str, Any]:
     }
 
 
+# Known-equivalent provider substitution in `pip check`, waived FAIL-CLOSED.
+#
+# `ultralytics` hard-requires the distribution name `opencv-python` (the GUI cv2
+# provider), but the headless CI profile installs `opencv-python-headless`,
+# which provides the identical `cv2` import namespace (the repository has no
+# OpenCV GUI call sites). Installing BOTH is forbidden by
+# EXCLUSIVE_PROVIDER_GROUPS / dependency_conflicts(), so the CI profile installs
+# ultralytics with --no-deps (requirements-yolo.txt) and `pip check` then
+# reports exactly one unmet requirement. Only that exact finding is waived, and
+# only while the substitute provider IS installed and the original is NOT.
+# Any other finding, any unparseable output, or a failed/crashed pip check
+# remains a FAIL. The waived line is recorded in the section payload.
+_PIP_CHECK_MISSING_RE = re.compile(
+    r"^(?P<dist>[A-Za-z0-9._-]+) (?P<ver>\S+) requires (?P<req>[A-Za-z0-9._-]+),"
+    r" which is not installed\.$"
+)
+#: (requiring distribution, required distribution) -> accepted substitute.
+KNOWN_EQUIVALENT_PROVIDERS: Dict[tuple, str] = {
+    ("ultralytics", "opencv-python"): "opencv-python-headless",
+}
+
+
+def _normalize_dist(name: str) -> str:
+    return re.sub(r"[-_.]+", "-", name).lower()
+
+
+def _classify_pip_check_line(line: str, installed: Dict[str, str]) -> bool:
+    """Return True only if ``line`` is the known-equivalent, waivable finding."""
+    match = _PIP_CHECK_MISSING_RE.match(line)
+    if not match:
+        return False
+    dist = _normalize_dist(match.group("dist"))
+    req = _normalize_dist(match.group("req"))
+    substitute = KNOWN_EQUIVALENT_PROVIDERS.get((dist, req))
+    if substitute is None:
+        return False
+    return substitute in installed and req not in installed and dist in installed
+
+
 def _dependency_integrity(repo_root: Path, *, run_pip_check: bool) -> Dict[str, Any]:
     if not run_pip_check:
         return {"status": STATUS_NOT_RUN, "reason": "pip check skipped"}
     result = _run([sys.executable, "-m", "pip", "check"], repo_root, timeout_s=120.0)
+    waived: List[str] = []
+    blocking: List[str] = []
+    if result["ok"]:
+        status = STATUS_PASS
+    elif result["returncode"] is None:
+        # pip check could not run at all (timeout / spawn failure): never green.
+        status = STATUS_FAIL
+    else:
+        installed = _installed_distributions()
+        for raw in result["stdout"].splitlines():
+            line = raw.strip()
+            if not line:
+                continue
+            (waived if _classify_pip_check_line(line, installed) else blocking).append(line)
+        # Fail closed: a nonzero exit is only accepted when every reported line
+        # was the known-equivalent finding and at least one such line exists.
+        status = STATUS_PASS if waived and not blocking else STATUS_FAIL
     return {
-        "status": STATUS_PASS if result["ok"] else STATUS_FAIL,
+        "status": status,
         "returncode": result["returncode"],
         "stdout": result["stdout"],
         "stderr": result["stderr"],
+        "waived_findings": waived,
+        "blocking_findings": blocking,
     }
 
 

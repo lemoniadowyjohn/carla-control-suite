@@ -76,7 +76,8 @@ def test_each_environment_profile_declares_exactly_one_provider(profile, expecte
 
 
 def test_no_single_profile_declares_both_opencv_providers():
-    for name in ("requirements.txt", "requirements-ci.txt", "requirements-desktop.txt"):
+    for name in ("requirements.txt", "requirements-ci.txt", "requirements-desktop.txt",
+                 "requirements-yolo.txt"):
         pins = _parse_pins(_repo_root() / name)
         assert len(set(pins) & OPENCV_PROVIDERS) <= 1, (
             f"{name} pins multiple mutually exclusive cv2 providers: {sorted(set(pins) & OPENCV_PROVIDERS)}"
@@ -89,6 +90,36 @@ def test_environment_profiles_include_the_base_layer():
         assert any(ln.startswith("-r requirements.txt") for ln in lines), (
             f"{name} must layer on top of requirements.txt"
         )
+
+
+YOLO_PACKAGES = ("ultralytics", "ultralytics-thop")
+
+
+def test_base_and_ci_profiles_do_not_pin_yolo_packages():
+    """ultralytics hard-requires the GUI `opencv-python` distribution.
+
+    Any profile resolved with full dependencies in CI must not contain it, or
+    the second cv2 provider is pulled in transitively (J10 conflict).
+    """
+    for name in ("requirements.txt", "requirements-ci.txt"):
+        pins = _parse_pins(_repo_root() / name)
+        for pkg in YOLO_PACKAGES:
+            assert pkg not in pins, f"{pkg} must live in requirements-yolo.txt, not {name}"
+    ci_lines = _req_lines(_repo_root() / "requirements-ci.txt")
+    assert "-r requirements-yolo.txt" not in ci_lines, (
+        "the CI profile must not layer the YOLO file with dependency resolution"
+    )
+
+
+def test_yolo_layer_pins_exactly_the_yolo_packages():
+    pins = _parse_pins(_repo_root() / "requirements-yolo.txt")
+    assert pins == {"ultralytics": "8.3.248", "ultralytics-thop": "2.0.18"}
+    assert not any(ln.startswith("-r ") for ln in _req_lines(_repo_root() / "requirements-yolo.txt"))
+
+
+def test_desktop_profile_layers_the_yolo_layer():
+    lines = _req_lines(_repo_root() / "requirements-desktop.txt")
+    assert "-r requirements-yolo.txt" in lines
 
 
 def test_opencv_provider_versions_are_deliberately_pinned():
@@ -153,6 +184,93 @@ def test_torch_and_torchvision_are_not_treated_as_conflicting(monkeypatch):
         rh, "_installed_distributions", lambda: {"torch": "2.9.1", "torchvision": "0.24.1"}
     )
     assert rh.dependency_conflicts()["status"] == "PASS"
+
+
+# ---------------------------------------------------------------------------
+# dependency_integrity: fail-closed known-equivalent-provider waiver
+# ---------------------------------------------------------------------------
+
+_YOLO_LINE = "ultralytics 8.3.248 requires opencv-python, which is not installed."
+
+
+def _integrity(monkeypatch, *, ok, returncode, stdout, installed):
+    import ultimate_pipeline.tools.repo_health as rh
+
+    monkeypatch.setattr(
+        rh, "_run",
+        lambda *a, **k: {"ok": ok, "returncode": returncode, "stdout": stdout, "stderr": ""},
+    )
+    monkeypatch.setattr(rh, "_installed_distributions", lambda: dict(installed))
+    return rh._dependency_integrity(Path("."), run_pip_check=True)
+
+
+_HEADLESS_ONLY = {"ultralytics": "8.3.248", "opencv-python-headless": "4.13.0.92"}
+
+
+def test_integrity_waives_headless_substitution(monkeypatch):
+    result = _integrity(monkeypatch, ok=False, returncode=1, stdout=_YOLO_LINE,
+                        installed=_HEADLESS_ONLY)
+    assert result["status"] == "PASS"
+    assert result["waived_findings"] == [_YOLO_LINE]
+    assert result["blocking_findings"] == []
+    assert result["returncode"] == 1  # the raw pip result is still recorded
+
+
+def test_integrity_fails_when_headless_substitute_is_missing(monkeypatch):
+    result = _integrity(monkeypatch, ok=False, returncode=1, stdout=_YOLO_LINE,
+                        installed={"ultralytics": "8.3.248"})
+    assert result["status"] == "FAIL"
+    assert result["waived_findings"] == []
+    assert result["blocking_findings"] == [_YOLO_LINE]
+
+
+def test_integrity_fails_when_both_providers_are_present(monkeypatch):
+    installed = dict(_HEADLESS_ONLY, **{"opencv-python": "5.0.0.93"})
+    result = _integrity(monkeypatch, ok=False, returncode=1, stdout=_YOLO_LINE,
+                        installed=installed)
+    assert result["status"] == "FAIL"
+    assert result["waived_findings"] == []
+
+
+@pytest.mark.parametrize("other", [
+    "keyring 25.6.0 requires jeepney, which is not installed.",
+    "ultralytics 8.3.248 requires opencv-python-headless, which is not installed.",
+    "somepkg 1.0 requires opencv-python, which is not installed.",
+    "ultralytics 8.3.248 has requirement opencv-python>=4.6.0, but you have opencv-python 4.5.0.",
+])
+def test_integrity_fails_on_unrelated_line_even_next_to_waivable_one(monkeypatch, other):
+    result = _integrity(monkeypatch, ok=False, returncode=1,
+                        stdout=f"{_YOLO_LINE}\n{other}", installed=_HEADLESS_ONLY)
+    assert result["status"] == "FAIL"
+    assert result["blocking_findings"] == [other]
+
+
+@pytest.mark.parametrize("garbage", ["", "   \n", "Traceback (most recent call last):",
+                                     _YOLO_LINE + " trailing", "ERROR: pip exploded"])
+def test_integrity_fails_closed_on_garbage_or_empty_output(monkeypatch, garbage):
+    result = _integrity(monkeypatch, ok=False, returncode=1, stdout=garbage,
+                        installed=_HEADLESS_ONLY)
+    assert result["status"] == "FAIL"
+    assert result["waived_findings"] == []
+
+
+def test_integrity_fails_when_pip_check_could_not_run(monkeypatch):
+    result = _integrity(monkeypatch, ok=False, returncode=None, stdout=_YOLO_LINE,
+                        installed=_HEADLESS_ONLY)
+    assert result["status"] == "FAIL"
+
+
+def test_integrity_passes_clean_pip_check(monkeypatch):
+    result = _integrity(monkeypatch, ok=True, returncode=0,
+                        stdout="No broken requirements found.", installed=_HEADLESS_ONLY)
+    assert result["status"] == "PASS"
+    assert result["waived_findings"] == [] and result["blocking_findings"] == []
+
+
+def test_dependency_integrity_is_a_required_offline_section():
+    from ultimate_pipeline.tools.repo_health import OFFLINE_REQUIRED_SECTIONS
+
+    assert "dependency_integrity" in OFFLINE_REQUIRED_SECTIONS
 
 
 def test_dependency_conflicts_is_a_required_offline_section():
@@ -255,7 +373,8 @@ def test_installed_metadata_matches_pyproject_extras():
 
 
 def test_all_profiles_are_fully_pinned():
-    for name in ("requirements.txt", "requirements-ci.txt", "requirements-desktop.txt"):
+    for name in ("requirements.txt", "requirements-ci.txt", "requirements-desktop.txt",
+                 "requirements-yolo.txt"):
         _parse_pins(_repo_root() / name)  # raises on any unpinned line
 
 
