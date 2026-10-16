@@ -371,19 +371,46 @@ class MapsPanel(QWidget):
             self.load_report.setPlainText("Map load cancelled by operator.")
             return
 
+        # Every outcome below (success, mismatch, exception) rebinds when
+        # possible and emits world_changed: a load RPC can fail AFTER the
+        # server switched levels (timeout, dropped response), so stale
+        # references must never outlive any load attempt.
+        load_error = None
         try:
             new_world = client.load_world(map_name)
         except Exception as exc:
-            self.load_report.setPlainText(
-                f"MAP LOAD FAILED: {type(exc).__name__}: {exc}"
-            )
-            return
+            new_world = None
+            load_error = f"{type(exc).__name__}: {exc}"
 
-        # The server may have switched levels even if verification below
-        # fails (e.g. RPC timeout after the switch): rebind and invalidate
-        # unconditionally so no stale reference can outlive the replacement.
+        if new_world is None and load_error is None:
+            # carla 0.9.16 load_world() returns a World; tolerate None by
+            # probing the client once before trusting any identity read.
+            try:
+                new_world = client.get_world()
+            except Exception:
+                new_world = None
+            if new_world is None:
+                load_error = ("load_world() returned no world and the "
+                              "get_world() probe failed")
+
         if new_world is not None:
             self.world = new_world
+
+        if load_error is not None:
+            # Identity against the old world would be a lie; attest nothing.
+            if new_world is None:
+                self.runtime_map = "UNKNOWN"
+                self.runtime_info.setText("RUNTIME MAP: UNKNOWN (state unverified)")
+            else:
+                self.runtime_map = self._active_map_name() or "UNKNOWN"
+                self.runtime_info.setText(f"RUNTIME MAP: {self.runtime_map}")
+            self._invalidate_stale_references(self.runtime_map)
+            self.load_report.setPlainText(
+                f"MAP LOAD FAILED: {load_error}\n"
+                "world_changed emitted regardless; server state unverified "
+                "(it may have switched maps)."
+            )
+            return
 
         actual_map = self._active_map_name()
         if not self._map_names_match(map_name, actual_map):

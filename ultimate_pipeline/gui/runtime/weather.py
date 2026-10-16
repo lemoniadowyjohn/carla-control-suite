@@ -170,28 +170,38 @@ def apply_weather(world: Any, requested: dict[str, Any],
             value=WeatherApplication(statuses).as_dict(),
         )
 
-    if parameters_factory is not None:
-        parameters = parameters_factory(accepted)
-    else:
-        import carla
+    try:
+        if parameters_factory is not None:
+            parameters = parameters_factory(accepted)
+        else:
+            import carla
 
-        # carla.WeatherParameters(**accepted) would reset every unrequested
-        # field to its constructor default. Seed those from a pre-write
-        # snapshot (best effort; verification below is independent of it).
-        merged: dict[str, Any] = dict(accepted)
-        try:
-            pre_write = world.get_weather()
-        except Exception:
-            pre_write = None
-        if pre_write is not None:
-            for governed in WEATHER_GOVERNED_FIELDS:
-                if governed in merged:
-                    continue
-                try:
-                    merged[governed] = float(getattr(pre_write, governed))
-                except (AttributeError, TypeError, ValueError):
-                    continue
-        parameters = carla.WeatherParameters(**merged)
+            # carla.WeatherParameters(**accepted) would reset every unrequested
+            # field to its constructor default. Seed those from a pre-write
+            # snapshot (best effort; verification below is independent of it).
+            merged: dict[str, Any] = dict(accepted)
+            try:
+                pre_write = world.get_weather()
+            except Exception:
+                pre_write = None
+            if pre_write is not None:
+                for governed in WEATHER_GOVERNED_FIELDS:
+                    if governed in merged:
+                        continue
+                    try:
+                        merged[governed] = float(getattr(pre_write, governed))
+                    except (AttributeError, TypeError, ValueError):
+                        continue
+            parameters = carla.WeatherParameters(**merged)
+    except Exception as exc:
+        # Building parameters must never escape apply_weather as a bare
+        # exception (e.g. TypeError from unexpected kwargs).
+        return Result.failure(
+            f"weather parameter build failed: {exc}",
+            error_class="WeatherApplyError",
+            error_source="ultimate_pipeline/gui/runtime/weather.py",
+            value=WeatherApplication(statuses).as_dict(),
+        )
     try:
         world.set_weather(parameters)
     except Exception as exc:
@@ -231,11 +241,19 @@ def apply_weather(world: Any, requested: dict[str, Any],
     application = WeatherApplication(statuses)
     if application.ok:
         return Result.success(application.as_dict())
-    unverifiable = fresh_readback is None
+    # Classify by the actual failing cause, not one blanket label.
+    if fresh_readback is None:
+        error_class = "WeatherReadbackUnavailable"
+        reason = "weather written; fresh readback unavailable"
+    elif any(f.status == "OUT_OF_RANGE" for f in application.fields):
+        error_class = "WeatherValidationIncomplete"
+        reason = "some requested fields were out of range and were never written"
+    else:
+        error_class = "WeatherReadbackMismatch"
+        reason = "weather applied but not every field verified"
     return Result.failure(
-        "weather applied but not every field verified",
-        error_class=("WeatherReadbackUnavailable" if unverifiable
-                     else "WeatherReadbackMismatch"),
+        reason,
+        error_class=error_class,
         remediation="inspect the per-field statuses; do NOT treat this as applied",
         value=application.as_dict(),
         state_restored=None,

@@ -426,6 +426,99 @@ def test_refresh_server_maps_without_client_refuses(app):
     assert "NO CARLA CLIENT" in panel.runtime_info.text()
 
 
+class RaisingCarlaClient:
+    """load_world fails (e.g. RPC timeout after the server already switched)."""
+
+    def __init__(self):
+        self.load_calls = []
+
+    def load_world(self, name):
+        self.load_calls.append(name)
+        raise RuntimeError("RPC timeout")
+
+    def get_available_maps(self):
+        return ["/Game/Carla/Maps/Town01"]
+
+
+def test_map_load_exception_still_invalidates(app, monkeypatch):
+    """A failed load RPC must still emit world_changed (fail-safe)."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+
+    client = RaisingCarlaClient()
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD)
+    emitted = []
+    panel.world_changed.connect(emitted.append)
+
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.Yes,
+    )
+    panel.load_selected_map()
+
+    assert client.load_calls == ["/Game/Carla/Maps/Town01"]
+    assert "MAP LOAD FAILED" in panel.load_report.toPlainText()
+    assert "RPC timeout" in panel.load_report.toPlainText()
+    assert emitted == ["UNKNOWN"], (
+        "world_changed must fire on the exception path with an unverified state"
+    )
+    assert panel.runtime_map == "UNKNOWN"
+    assert panel.world is None, "no world must be attested without a probe"
+
+
+def test_map_load_cancelled_by_operator_never_loads(app, monkeypatch):
+    """Declining the confirmation dialog loads nothing and emits nothing."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+
+    client = FakeCarlaClient()
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD)
+    emitted = []
+    panel.world_changed.connect(emitted.append)
+
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.No,
+    )
+    panel.load_selected_map()
+
+    assert client.load_calls == []
+    assert "cancelled" in panel.load_report.toPlainText()
+    assert emitted == []
+
+
+def test_map_load_world_none_is_probed_then_verified(app, monkeypatch):
+    """load_world() returning None falls back to client.get_world() probe."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+
+    class NoneReturningClient(FakeCarlaClient):
+        def load_world(self, name):
+            self.load_calls.append(name)
+            return None
+
+        def get_world(self):
+            return self.world
+
+    client = NoneReturningClient()
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD)
+    emitted = []
+    panel.world_changed.connect(emitted.append)
+
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.Yes,
+    )
+    panel.load_selected_map()
+
+    assert panel.world is client.world, "probe must rebind the world"
+    assert "identity verified" in panel.load_report.toPlainText()
+    assert emitted == ["/Game/Carla/Maps/Town01"]
+
+
 def test_weather_apply_refused_under_shared_readonly(app):
     """Weather mutation is refused under SHARED_READONLY (fail-closed gate)."""
     from ultimate_pipeline.gui.health import SessionAuthority
@@ -442,6 +535,28 @@ def test_weather_apply_refused_without_authority(app):
     panel.apply_custom()
     assert "REFUSED" in panel.custom_state.text()
     assert panel._worker is None
+
+
+def test_weather_mixed_out_of_range_is_validation_incomplete():
+    """Mixed valid + out-of-range request is classified as validation, not readback."""
+    world = FakeWorld()
+    result = apply_weather(world, {"cloudiness": 50.0, "precipitation": 999.0})
+    assert not result.ok
+    assert result.error_class == "WeatherValidationIncomplete"
+    statuses = {f["field"]: f["status"] for f in result.value["fields"]}
+    assert statuses["precipitation"] == "OUT_OF_RANGE"
+    assert statuses["cloudiness"] == "VERIFIED_APPLIED"
+
+
+def test_weather_no_readback_is_readback_unavailable_error_class():
+    """Connection loss is WeatherReadbackUnavailable, never a mismatch."""
+    class NoReadbackWorld:
+        def set_weather(self, params):
+            pass
+
+    result = apply_weather(NoReadbackWorld(), {"cloudiness": 50.0})
+    assert not result.ok
+    assert result.error_class == "WeatherReadbackUnavailable"
 
 
 # ----------------------------------------------------------------------
