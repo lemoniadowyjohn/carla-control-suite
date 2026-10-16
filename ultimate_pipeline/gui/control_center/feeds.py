@@ -12,11 +12,12 @@ from PyQt6.QtGui import QColor, QImage, QPainter, QPen, QPixmap
 from PyQt6.QtWidgets import (
     QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QSpinBox, QTabWidget,
-    QVBoxLayout, QWidget,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget,
 )
 
 from .widgets import action, section, text_label
 from .mjpeg import MjpegSource
+from .sensor_feeds import RENDERABLE_CAMERA_TYPES, SensorFeedBridge
 
 
 class FrameIngress(QObject):
@@ -100,7 +101,8 @@ class FeedsPanel(QWidget):
 
     CHANNELS = ("Front RGB", "Rear RGB", "Depth", "Semantic")
 
-    def __init__(self, parent=None, runtime_session=None):
+    def __init__(self, parent=None, runtime_session=None, sensors=None,
+                 authority_provider=None):
         super().__init__(parent)
         self.ingress = FrameIngress(self)
         self.ingress.frame_received.connect(self.on_frame)
@@ -113,7 +115,13 @@ class FeedsPanel(QWidget):
         self._timer.setInterval(250)
         self._timer.timeout.connect(self.next_frame)
         self.runtime_session = runtime_session
+        self.sensor_bridge = (
+            SensorFeedBridge(sensors, self.ingress,
+                             authority_provider=authority_provider, parent=self)
+            if sensors is not None else None)
         self._build_ui()
+        if self.sensor_bridge is not None:
+            self.sensor_bridge.activity.connect(self.state.setText)
         if runtime_session is not None:
             # No destroyed-hook: Python callbacks during C++ teardown can
             # fail fast (0xC0000409); RuntimeSession isolates dead-widget
@@ -136,6 +144,8 @@ class FeedsPanel(QWidget):
         try:
             self.stop()
             self._frame_index = 0
+            if self.sensor_bridge is not None:
+                self.sensor_bridge.stop_polling()
         except RuntimeError:
             return  # widget already deleted during teardown
         self.state.setText(
@@ -156,6 +166,8 @@ class FeedsPanel(QWidget):
         self._build_camera_config_tab()
         self._build_diagnostics_tab()
         self._build_other_sensors_tab()
+        self._build_inventory_tab()
+        self._build_recording_tab()
 
         wrapper = QVBoxLayout(self)
         wrapper.setContentsMargins(0, 0, 0, 0)
@@ -186,6 +198,15 @@ class FeedsPanel(QWidget):
         external.addWidget(action("Attach MJPEG", self.attach_stream))
         external.addWidget(action("Stop streams", self.stop_streams))
         layout.addLayout(external)
+
+        native = QHBoxLayout()
+        self.native_camera = QComboBox()
+        self.native_camera.addItems(RENDERABLE_CAMERA_TYPES)
+        self.native_camera.setAccessibleName("native camera type")
+        native.addWidget(self.native_camera)
+        native.addWidget(action("Attach native camera", self.attach_native_camera))
+        native.addWidget(action("Detach native camera", self.detach_native_camera))
+        layout.addLayout(native)
 
         self.state = text_label(
             "UNBOUND · No CARLA sensor frames. Attach a governed frame producer to FrameIngress.",
@@ -274,8 +295,42 @@ class FeedsPanel(QWidget):
         layout.addWidget(self.fps_label)
         self.frame_age_label = text_label("Frame Age: N/A", "muted")
         layout.addWidget(self.frame_age_label)
+        layout.addWidget(action("Refresh diagnostics", self.refresh_diagnostics))
 
         self.tabs.addTab(tab, "Diagnostics")
+
+    def _build_inventory_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.addWidget(text_label("Sensor Inventory", "workspace-heading"))
+        layout.addWidget(text_label(
+            "Truthful adapter matrix from the sensor service: native types, "
+            "explicit NOT_IMPLEMENTED rows, and currently attached sensors.",
+            "muted"
+        ))
+        self.inventory_table = QTableWidget(0, 3)
+        self.inventory_table.setHorizontalHeaderLabels(
+            ["sensor", "blueprint", "status"])
+        self.inventory_table.setEditTriggers(
+            QTableWidget.EditTrigger.NoEditTriggers)
+        self.inventory_table.setAccessibleName("sensor inventory table")
+        layout.addWidget(self.inventory_table)
+        layout.addWidget(action("Refresh inventory", self.refresh_inventory))
+        self.refresh_inventory()
+        self.tabs.addTab(tab, "Sensor Inventory")
+
+    def _build_recording_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.addWidget(text_label("Recording", "workspace-heading"))
+        layout.addWidget(text_label(
+            "NOT_IMPLEMENTED · no recording backend exists in this "
+            "repository (no sink writes sensor data to disk). Recording is "
+            "never simulated and no file is produced by this tab.",
+            "warning-pill"
+        ))
+        layout.addStretch(1)
+        self.tabs.addTab(tab, "Recording")
 
     def _build_other_sensors_tab(self):
         tab = QWidget()
@@ -331,11 +386,60 @@ class FeedsPanel(QWidget):
             self.state.setText("No supported local images found in selected folder")
 
     def on_frame(self, sensor_id: str, image: QImage, frame_id: int, timestamp: float):
-        tile = self.tiles.get(sensor_id)
+        source = (self.sensor_bridge.source_label(sensor_id)
+                  if self.sensor_bridge is not None else None)
+        tile_name = (self.sensor_bridge.tile_for(sensor_id)
+                     if self.sensor_bridge is not None else None) or sensor_id
+        tile = self.tiles.get(tile_name)
         if tile is None:
             return
-        tile.update_frame(image, "EXTERNAL FRAME PRODUCER", frame_id, timestamp)
-        self.state.setText("EXTERNAL FRAMES RECEIVED · source identity and authority not verified")
+        tile.update_frame(image, source or "EXTERNAL FRAME PRODUCER",
+                          frame_id, timestamp)
+        if source is not None:
+            self.state.setText(
+                f"ADAPTER FRAMES · {sensor_id} · {source} · "
+                "CARLA-live origin requires LIVE_VERIFIED")
+        else:
+            self.state.setText(
+                "EXTERNAL FRAMES RECEIVED · source identity and authority not verified")
+
+    def attach_native_camera(self):
+        if self.sensor_bridge is None:
+            self.state.setText(
+                "NO SENSOR SERVICE · registry did not provide one")
+            return
+        self.sensor_bridge.attach_camera(self.native_camera.currentText())
+
+    def detach_native_camera(self):
+        if self.sensor_bridge is None:
+            return
+        attached = self.sensor_bridge.sensors.sensor_ids()
+        if not attached:
+            self.state.setText("NO ATTACHED NATIVE SENSORS")
+            return
+        self.sensor_bridge.detach(attached[-1])
+
+    def refresh_diagnostics(self):
+        if self.sensor_bridge is None:
+            self.diag_report.setPlainText("No sensor service bound.")
+            return
+        self.diag_report.setPlainText(self.sensor_bridge.diagnostics_text())
+        ages = [self.sensor_bridge.frame_age_s(sid)
+                for sid in self.sensor_bridge.sensors.sensor_ids()]
+        known = [age for age in ages if age is not None]
+        self.frame_age_label.setText(
+            "Frame Age: N/A" if not known
+            else f"Frame Age: {max(known):.1f}s (newest adapter frame)")
+
+    def refresh_inventory(self):
+        rows = (self.sensor_bridge.inventory_rows()
+                if self.sensor_bridge is not None
+                else [("sensor service", "—", "UNAVAILABLE · not in registry")])
+        self.inventory_table.setRowCount(len(rows))
+        for row, (name, blueprint, status) in enumerate(rows):
+            for col, text in enumerate((name, blueprint, status)):
+                self.inventory_table.setItem(row, col, QTableWidgetItem(text))
+        self.inventory_table.resizeColumnsToContents()
 
     def next_frame(self):
         if not self._files:
@@ -403,6 +507,8 @@ class FeedsPanel(QWidget):
         self.state.setText(f"CONFIG SAVED: {destination}")
 
     def closeEvent(self, event):  # noqa: N802
+        if self.sensor_bridge is not None:
+            self.sensor_bridge.stop_polling()
         self._timer.stop()
         self.stop_streams()
         for stream in self._streams.values():

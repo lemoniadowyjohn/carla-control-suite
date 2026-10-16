@@ -109,6 +109,14 @@ def _runtime_session(registry):
     return registry.resolve("runtime_session")
 
 
+def _optional_service(registry, name):
+    """Resolve a service if present; None otherwise (never invent one)."""
+    try:
+        return registry.resolve(name)
+    except Exception:
+        return None
+
+
 def create_operator_workspace(route: str, registry, navigate):
     """Instantiate a practical workspace while retaining original evidence pages."""
     try:
@@ -132,7 +140,10 @@ def create_operator_workspace(route: str, registry, navigate):
                            ("Ownership & routes", StatusWorkspace(route)))
         if route == "08_sensors_streams":
             return grouped(("Camera feeds",
-                            FeedsPanel(runtime_session=_runtime_session(registry))),
+                            FeedsPanel(
+                                runtime_session=_runtime_session(registry),
+                                sensors=_optional_service(registry, "sensors"),
+                                authority_provider=lambda: registry.badges.session_authority)),
                            ("Sensor configuration", DraftControlsPanel(route)),
                            ("Stream diagnostics", StatusWorkspace(route)))
         if route == "09_calibration_workbench":
