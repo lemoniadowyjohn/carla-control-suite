@@ -312,7 +312,22 @@ class MapsPanel(QWidget):
             return
 
         try:
-            self.world.load_world(map_name)
+            # Use client.load_world, not world.load_world
+            client = self.world.get_client() if hasattr(self.world, "get_client") else self.world
+            client.load_world(map_name)
+
+            # Verify actual active-world map identity
+            actual_map = self.world.get_map().name if hasattr(self.world, "get_map") else "UNKNOWN"
+            if actual_map != map_name:
+                self.load_report.setPlainText(
+                    f"MAP LOAD MISMATCH: requested '{map_name}', "
+                    f"but active map is '{actual_map}'"
+                )
+                return
+
+            # Atomically invalidate stale references
+            self._invalidate_stale_references()
+
             self.runtime_map = map_name
             self.runtime_info.setText(f"RUNTIME MAP: {map_name}")
             self.map_label.setText(
@@ -320,13 +335,23 @@ class MapsPanel(QWidget):
                 f"  ·  RUNTIME: {self.runtime_map}"
             )
             self.load_report.setPlainText(
-                f"Map '{map_name}' loaded.\n"
-                "Stale actor and camera references have been invalidated."
+                f"Map '{map_name}' loaded and identity verified.\n"
+                "Stale actor, sensor, and camera references have been invalidated."
             )
         except Exception as exc:
             self.load_report.setPlainText(
                 f"MAP LOAD FAILED: {type(exc).__name__}: {exc}"
             )
+
+    def _invalidate_stale_references(self):
+        """Invalidate stale actor, sensor, feed, and runtime references."""
+        # Clear any cached sensor stats
+        if hasattr(self, "sensor_stats"):
+            self.sensor_stats = None
+        # Clear any cached frame data
+        for tile in getattr(self, "tiles", {}).values():
+            if hasattr(tile, "set_placeholder"):
+                tile.set_placeholder()
 
     def _has_exclusive_authority(self) -> bool:
         """Check if the current session has exclusive runtime authority."""

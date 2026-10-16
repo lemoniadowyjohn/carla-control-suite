@@ -76,18 +76,9 @@ class WeatherApplyWorker(QThread):
 
     def run(self):
         try:
-            # Read back current weather for verification
-            readback = None
-            if hasattr(self.world, "get_weather"):
-                try:
-                    readback = self.world.get_weather()
-                except Exception:
-                    pass
-
             result = apply_weather(
                 self.world,
                 self.requested,
-                readback=readback,
                 parameters_factory=self.parameters_factory,
             )
             self.finished.emit(result)

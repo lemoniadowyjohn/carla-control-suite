@@ -83,12 +83,14 @@ def test_weather_ranges_cover_numeric_fields():
 
 
 def test_weather_apply_with_valid_values():
-    """Applying valid weather values succeeds with readback verification."""
+    """Applying valid weather values succeeds with fresh-readback verification."""
     world = FakeWorld()
     requested = {"cloudiness": 50.0, "precipitation": 30.0, "fog_density": 10.0}
-    result = apply_weather(world, requested, readback=world.get_weather())
+    result = apply_weather(world, requested)
     assert result.ok
     assert len(world.set_weather_calls) == 1
+    statuses = {f["field"]: f["status"] for f in result.value["fields"]}
+    assert all(s == "VERIFIED_APPLIED" for s in statuses.values())
 
 
 def test_weather_apply_rejects_unknown_fields():
@@ -108,21 +110,74 @@ def test_weather_apply_rejects_out_of_range():
     assert any(f["status"] == "OUT_OF_RANGE" for f in data["fields"])
 
 
+class SilentIgnoreWorld:
+    """Fake world whose set_weather silently ignores the write.
+
+    Models a server that accepts the RPC but does not honor the value,
+    so the fresh get_weather() readback still reports the old state.
+    """
+    def __init__(self):
+        self._weather = FakeWeather(**{f: 0.0 for f in WEATHER_GOVERNED_FIELDS})
+
+    def set_weather(self, params):
+        pass
+
+    def get_weather(self):
+        return self._weather
+
+
 def test_weather_readback_mismatch_is_detected():
-    """A readback mismatch is reported, not silently passed."""
-    world = FakeWorld()
-    # Set a different value than requested
-    world._weather.cloudiness = 99.0
-    result = apply_weather(world, {"cloudiness": 50.0}, readback=world.get_weather())
-    # The apply succeeds but readback shows mismatch
+    """A fresh readback mismatch is reported, not silently passed."""
+    world = SilentIgnoreWorld()
+    result = apply_weather(world, {"cloudiness": 50.0})
+    assert not result.ok
     data = result.value
     cloudiness_status = [f for f in data["fields"] if f["field"] == "cloudiness"][0]
-    assert cloudiness_status["status"] in ("READBACK_MISMATCH", "APPLIED")
+    assert cloudiness_status["status"] == "READBACK_MISMATCH"
 
 
 def test_weather_readback_tolerance():
     """READBACK_TOLERANCE is 1/4096."""
     assert READBACK_TOLERANCE == 1.0 / 4096.0
+
+
+def test_weather_stale_readback_is_not_used():
+    """apply_weather must query get_weather() AFTER set_weather, not before."""
+    import inspect
+    sig = inspect.signature(apply_weather)
+    assert "readback" not in sig.parameters, (
+        "apply_weather must not accept a pre-set readback parameter"
+    )
+    source = inspect.getsource(apply_weather)
+    set_pos = source.find("world.set_weather")
+    get_pos = source.find("world.get_weather")
+    assert set_pos > 0 and get_pos > set_pos, (
+        "get_weather() must be called after set_weather()"
+    )
+
+
+def test_weather_no_readback_marks_not_verified():
+    """Without fresh readback, fields are WRITTEN_NOT_VERIFIED, not APPLIED."""
+    class NoReadbackWorld:
+        def set_weather(self, params):
+            pass
+        # No get_weather method
+    world = NoReadbackWorld()
+    result = apply_weather(world, {"cloudiness": 50.0})
+    assert not result.ok
+    data = result.value
+    cloudiness = [f for f in data["fields"] if f["field"] == "cloudiness"][0]
+    assert cloudiness["status"] == "WRITTEN_NOT_VERIFIED"
+
+
+def test_weather_verified_applied_on_fresh_readback():
+    """Fresh readback matching requested value yields VERIFIED_APPLIED."""
+    world = FakeWorld()
+    result = apply_weather(world, {"cloudiness": 50.0})
+    assert result.ok
+    data = result.value
+    cloudiness = [f for f in data["fields"] if f["field"] == "cloudiness"][0]
+    assert cloudiness["status"] == "VERIFIED_APPLIED"
 
 
 def test_weather_scattering_fields():
@@ -231,7 +286,7 @@ def test_frame_ingress_publish():
     assert received[0] == ("Front RGB", 42, 1.5)
 
 
-def test_feed_tile_placeholder():
+def test_feed_tile_placeholder(app):
     """FeedTile shows placeholder when no frame received."""
     from ultimate_pipeline.gui.control_center.feeds import FeedTile
     tile = FeedTile("Test")

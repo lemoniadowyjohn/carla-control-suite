@@ -259,31 +259,45 @@ def test_T_WX_03_out_of_range_values_are_rejected_and_they_never_reach_the_world
 
 def test_T_WX_04_readback_mismatch_is_reported_not_called_applied():
     class FakeWorld:
-        def __init__(self):
+        """set_weather stores the write; get_weather reports the stored state."""
+
+        def __init__(self, report_state=None):
             self.written = None
+            self._state = dict(report_state or {})
 
         def set_weather(self, parameters):
             self.written = parameters
+            if self._state is None:
+                return
+            for k in WEATHER_GOVERNED_FIELDS:
+                if hasattr(parameters, k):
+                    self._state[k] = getattr(parameters, k)
 
-    world = FakeWorld()
+        def get_weather(self):
+            state = self._state if self._state is not None else {}
+            return Readback(**state)
+
     requested = {"cloudiness": 40.0, "fog_density": 5.0}
-    # exact readback -> applied
-    exact = Readback(cloudiness=40.0, fog_density=5.0)
-    ok = apply_weather(world, requested, readback=exact, parameters_factory=dict)
+
+    # fresh readback matches -> verified applied
+    world = FakeWorld()
+    world._state = {"cloudiness": 40.0, "fog_density": 5.0}
+    ok = apply_weather(world, requested, parameters_factory=dict)
     assert ok.ok is True
     assert world.written == requested
 
-    # mismatch -> failure, never success
-    off = Readback(cloudiness=41.0, fog_density=5.0)
-    bad = apply_weather(world, requested, readback=off, parameters_factory=dict)
+    # fresh readback mismatch -> failure, never success
+    bad_world = FakeWorld(report_state={"cloudiness": 41.0, "fog_density": 5.0})
+    bad = apply_weather(bad_world, requested, parameters_factory=dict)
     assert bad.ok is False
     assert bad.error_class == "WeatherReadbackMismatch"
     statuses = {s["field"]: s for s in bad.value["fields"]}
     assert statuses["cloudiness"]["status"] == "READBACK_MISMATCH"
 
-    # within tolerance -> still applied
-    tiny = Readback(cloudiness=40.0 + READBACK_TOLERANCE / 2, fog_density=5.0)
-    assert apply_weather(world, requested, readback=tiny, parameters_factory=dict).ok is True
+    # within tolerance -> still verified applied
+    tiny_world = FakeWorld()
+    tiny_world._state = {"cloudiness": 40.0 + READBACK_TOLERANCE / 2, "fog_density": 5.0}
+    assert apply_weather(tiny_world, requested, parameters_factory=dict).ok is True
 
 
 # ================================================================= actors / routes

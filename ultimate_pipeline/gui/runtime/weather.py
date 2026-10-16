@@ -87,7 +87,9 @@ class WeatherApplication:
 
     @property
     def ok(self) -> bool:
-        return bool(self.fields) and all(f.status == "APPLIED" for f in self.fields)
+        return bool(self.fields) and all(
+            f.status in ("APPLIED", "VERIFIED_APPLIED") for f in self.fields
+        )
 
     def by_status(self, status: str) -> list[WeatherFieldStatus]:
         return [f for f in self.fields if f.status == status]
@@ -105,12 +107,14 @@ def _coerce(field_name: str, value: Any) -> Any:
 
 
 def apply_weather(world: Any, requested: dict[str, Any],
-                  readback: Any = None,
                   parameters_factory: Any = None) -> Result:
     """Apply governed weather fields through ``world.set_weather``.
 
-    ``readback`` is optional; when supplied it must reflect what the server
-    actually reports, and a mismatch beyond tolerance is a failure.
+    After calling ``world.set_weather``, queries ``world.get_weather()`` for a
+    fresh readback. Only marks a field ``VERIFIED_APPLIED`` when the fresh
+    observation matches the requested value within tolerance. Fields written
+    without a fresh readback are marked ``WRITTEN_NOT_VERIFIED`` — never
+    ``APPLIED``.
 
     ``parameters_factory`` exists so the whole path is testable mock-first: by
     default it builds a real ``carla.WeatherParameters``, but offline tests
@@ -140,17 +144,13 @@ def apply_weather(world: Any, requested: dict[str, Any],
             continue
 
         bounds = WEATHER_RANGES.get(field_name)
-        if bounds is None:
-            accepted[field_name] = numeric
-            statuses.append(WeatherFieldStatus(field_name, numeric, "APPLIED", numeric,
-                                               "no declared range"))
-            continue
-        low, high = bounds
-        if not (low <= numeric <= high):
-            statuses.append(WeatherFieldStatus(
-                field_name, numeric, "OUT_OF_RANGE", None,
-                f"outside [{low}, {high}]"))
-            continue
+        if bounds is not None:
+            low, high = bounds
+            if not (low <= numeric <= high):
+                statuses.append(WeatherFieldStatus(
+                    field_name, numeric, "OUT_OF_RANGE", None,
+                    f"outside [{low}, {high}]"))
+                continue
         accepted[field_name] = numeric
 
     if not accepted:
@@ -164,7 +164,7 @@ def apply_weather(world: Any, requested: dict[str, Any],
     if parameters_factory is not None:
         parameters = parameters_factory(accepted)
     else:
-        import carla  # lazy: only a real world write needs the simulator module
+        import carla
 
         parameters = carla.WeatherParameters(**accepted)
     try:
@@ -174,29 +174,34 @@ def apply_weather(world: Any, requested: dict[str, Any],
                               error_class="WeatherApplyError",
                               value=WeatherApplication(statuses).as_dict())
 
-    # read-back verification, when the backend can provide it
-    if readback is not None:
-        for field_name, wanted in accepted.items():
-            try:
-                actual = float(getattr(readback, field_name))
-            except (AttributeError, TypeError, ValueError):
-                statuses.append(WeatherFieldStatus(
-                    field_name, wanted, "UNSUPPORTED", None,
-                    "backend cannot read this field back"))
-                continue
-            if abs(actual - wanted) <= READBACK_TOLERANCE:
-                statuses.append(WeatherFieldStatus(field_name, wanted, "APPLIED", actual,
-                                                   "readback within tolerance"))
-            else:
-                statuses.append(WeatherFieldStatus(
-                    field_name, wanted, "READBACK_MISMATCH", actual,
-                    f"wanted {wanted}, read {actual}"))
+    # Fresh readback: query get_weather() AFTER set_weather, never before
+    fresh_readback = None
+    try:
+        fresh_readback = world.get_weather()
+    except Exception:
+        pass
 
     for field_name, wanted in accepted.items():
-        if any(s.field == field_name for s in statuses):
+        if fresh_readback is None:
+            statuses.append(WeatherFieldStatus(
+                field_name, wanted, "WRITTEN_NOT_VERIFIED", None,
+                "written; get_weather() unavailable or raised"))
             continue
-        statuses.append(WeatherFieldStatus(field_name, wanted, "APPLIED", None,
-                                           "written; readback not verified"))
+        try:
+            actual = float(getattr(fresh_readback, field_name))
+        except (AttributeError, TypeError, ValueError):
+            statuses.append(WeatherFieldStatus(
+                field_name, wanted, "UNSUPPORTED", None,
+                "backend cannot read this field back"))
+            continue
+        if abs(actual - wanted) <= READBACK_TOLERANCE:
+            statuses.append(WeatherFieldStatus(
+                field_name, wanted, "VERIFIED_APPLIED", actual,
+                "fresh readback within tolerance"))
+        else:
+            statuses.append(WeatherFieldStatus(
+                field_name, wanted, "READBACK_MISMATCH", actual,
+                f"wanted {wanted}, fresh read {actual}"))
 
     application = WeatherApplication(statuses)
     if application.ok:
