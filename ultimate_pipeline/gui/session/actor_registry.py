@@ -121,6 +121,16 @@ class OwnedActorRegistry:
                     remediation="call destroy_sensors_for() before destroy()",
                 )
 
+            # A sensor must stop listening before its actor is destroyed
+            # (same ordering as carla_tools/sensor_registry.py). A failed
+            # stop must never prevent destroy -- that would leak the actor.
+            if record.is_sensor:
+                stop = getattr(record.actor, "stop", None)
+                if callable(stop):
+                    try:
+                        stop()
+                    except Exception:
+                        pass
             try:
                 record.actor.destroy()
             except Exception as exc:

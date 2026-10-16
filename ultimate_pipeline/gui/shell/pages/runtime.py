@@ -134,19 +134,37 @@ RUNTIME_ROUTES = (
 )
 
 # Cached per registry instance so a test that injects a different registry
-# never receives another test's already-built pages.
-_PAGE_CACHE: dict[int, dict[str, RuntimePage]] = {}
+# never receives another test's already-built pages. The entry also holds the
+# registry strongly (registries are unhashable dataclasses, so weak keys are
+# impossible) which keeps id() stable, and every hit is liveness-validated: a
+# page whose C++ object died with a previous window must never be re-parented
+# into a new one.
+_PAGE_CACHE: dict[int, tuple[Any, dict[str, RuntimePage]]] = {}
+
+
+def _cached_pages(registry: Any) -> dict[str, RuntimePage] | None:
+    key = id(registry)
+    entry = _PAGE_CACHE.get(key)
+    if entry is None:
+        return None
+    owner, pages = entry
+    if owner is not registry:
+        return None
+    from PyQt6 import sip
+    if any(sip.isdeleted(page) for page in pages.values()):
+        del _PAGE_CACHE[key]
+        return None
+    return pages
 
 
 def runtime_page_factory(route: str) -> Any:
     """Return a PAGE_FACTORIES-compatible factory for one runtime route."""
 
     def factory(registry: Any) -> RuntimePage:
-        key = id(registry)
-        pages = _PAGE_CACHE.get(key)
+        pages = _cached_pages(registry)
         if pages is None:
             pages = build_runtime_pages(registry)
-            _PAGE_CACHE[key] = pages
+            _PAGE_CACHE[id(registry)] = (registry, pages)
         if route not in pages:
             raise KeyError(f"{route} is not a Task 14 runtime route")
         return pages[route]
