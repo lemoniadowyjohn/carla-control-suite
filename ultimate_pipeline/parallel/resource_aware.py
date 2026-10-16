@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Resource-aware parallelism for tile processing."""
+"""Resource-aware parallelism for tile processing.
+
+FAIL-CLOSED BEHAVIOUR:
+If psutil or nvidia-smi/torch.cuda are unavailable, resource probes
+**raise** rather than returning 0.0. A missing sensor cannot be treated as
+"zero usage" because that would silently bypass all limits.
+"""
 from __future__ import annotations
 
 import os
@@ -11,6 +17,22 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, Future, 
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Optional
+
+__all__ = [
+    "ResourceLimits", "WorkerStats", "ResourceMonitor",
+    "ResourceAwareExecutor", "ProcessResourceExecutor",
+    "Task", "TaskScheduler", "TileTask", "TileScheduler",
+    "parallel_map", "ResourceProbeUnavailable",
+]
+
+
+class ResourceProbeUnavailable(RuntimeError):
+    """Raised when a required resource probe cannot be performed.
+
+    This is a **fail-closed** signal: the caller must not proceed as if
+    resources were available.
+    """
+
 
 try:
     import psutil
@@ -40,11 +62,17 @@ class WorkerStats:
 
 
 class ResourceMonitor:
-    """Monitor system resources and enforce limits."""
+    """Monitor system resources and enforce limits.
+
+    All probes are **fail-closed**: if the underlying sensor (psutil, nvidia-smi,
+    torch.cuda) is unavailable, the probe raises ResourceProbeUnavailable.
+    """
 
     def __init__(self, limits: Optional[ResourceLimits] = None):
         self.limits = limits or ResourceLimits()
-        self._process = psutil.Process(os.getpid()) if HAS_PSUTIL else None
+        if not HAS_PSUTIL:
+            raise ResourceProbeUnavailable("psutil not installed; cannot measure process memory/CPU")
+        self._process = psutil.Process(os.getpid())
         self._gpu_available = self._check_gpu()
 
     def _check_gpu(self) -> bool:
@@ -62,15 +90,23 @@ class ResourceMonitor:
                 return False
 
     def get_memory_mb(self) -> float:
-        """Get current process memory in MB."""
-        if self._process:
-            return self._process.memory_info().rss / (1024 * 1024)
-        return 0.0
+        """Get current process memory in MB.
+
+        Raises:
+            ResourceProbeUnavailable: if psutil is not available.
+        """
+        if not HAS_PSUTIL:
+            raise ResourceProbeUnavailable("psutil not installed")
+        return self._process.memory_info().rss / (1024 * 1024)
 
     def get_vram_mb(self) -> float:
-        """Get current GPU VRAM usage in MB."""
+        """Get current GPU VRAM usage in MB.
+
+        Raises:
+            ResourceProbeUnavailable: if neither torch.cuda nor nvidia-smi is available.
+        """
         if not self._gpu_available:
-            return 0.0
+            raise ResourceProbeUnavailable("GPU not available (torch.cuda or nvidia-smi)")
         try:
             result = subprocess.run(
                 ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
@@ -80,16 +116,24 @@ class ResourceMonitor:
                 return float(result.stdout.strip().split("\n")[0])
         except Exception:
             pass
-        return 0.0
+        raise ResourceProbeUnavailable("nvidia-smi query failed")
 
     def get_cpu_percent(self) -> float:
-        """Get current CPU usage percent."""
-        if self._process:
-            return self._process.cpu_percent(interval=0.1)
-        return 0.0
+        """Get current CPU usage percent.
+
+        Raises:
+            ResourceProbeUnavailable: if psutil is not available.
+        """
+        if not HAS_PSUTIL:
+            raise ResourceProbeUnavailable("psutil not installed")
+        return self._process.cpu_percent(interval=0.1)
 
     def check_limits(self) -> tuple[bool, list[str]]:
-        """Check if current usage exceeds limits. Returns (ok, warnings)."""
+        """Check if current usage exceeds limits. Returns (ok, warnings).
+
+        Raises:
+            ResourceProbeUnavailable: if any probe is unavailable.
+        """
         warnings = []
         ok = True
 
@@ -111,7 +155,10 @@ class ResourceMonitor:
         return ok, warnings
 
     def wait_for_resources(self, timeout: float = 300.0, poll_interval: float = 5.0) -> bool:
-        """Wait until resources are within limits."""
+        """Wait until resources are within limits.
+
+        Returns False on timeout; raises ResourceProbeUnavailable if probes fail.
+        """
         start = time.time()
         while time.time() - start < timeout:
             ok, _ = self.check_limits()
@@ -119,6 +166,11 @@ class ResourceMonitor:
                 return True
             time.sleep(poll_interval)
         return False
+
+
+# The rest of the file (ResourceAwareExecutor, ProcessResourceExecutor, etc.)
+# remains unchanged but will now propagate ResourceProbeUnavailable from the monitor.
+# ... (keeping existing code)
 
 
 class ResourceAwareExecutor:

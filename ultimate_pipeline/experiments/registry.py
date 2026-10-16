@@ -421,22 +421,24 @@ def discover_experiments() -> None:
     if thesis_dir.is_dir():
         # Check for __init__.py to confirm it's a package
         if (thesis_dir / "__init__.py").exists():
-            try:
-                # Import thesis modules
-                for py_file in thesis_dir.glob("*.py"):
-                    if py_file.name.startswith("_"):
-                        continue
-                    module_name = f"ultimate_pipeline.experiments.thesis.{py_file.stem}"
-                    try:
-                        importlib.import_module(module_name)
-                    except Exception:
-                        pass  # Skip modules that fail to import
-            except Exception:
-                pass
+            # Import thesis modules. ImportError from missing optional deps
+            # (e.g., shapely) is caught and the module is marked unavailable;
+            # other exceptions are surfaced.
+            for py_file in thesis_dir.glob("*.py"):
+                if py_file.name.startswith("_"):
+                    continue
+                module_name = f"ultimate_pipeline.experiments.thesis.{py_file.stem}"
+                try:
+                    importlib.import_module(module_name)
+                except ImportError as exc:
+                    # Missing optional dependency - module unavailable, not broken
+                    if "shapely" in str(exc) or "ultralytics" in str(exc):
+                        continue  # expected missing dep; module just won't register
+                    raise  # unexpected import error; surface it
+                except Exception:
+                    # Any other error indicates a genuinely broken module
+                    raise
 
 
-# Run discovery on module load (wrapped in try/except for robustness)
-try:
-    discover_experiments()
-except Exception:
-    pass  # Discovery is optional; built-in experiments are always available
+# Run discovery on module load. Failures from broken modules are NOT swallowed.
+discover_experiments()

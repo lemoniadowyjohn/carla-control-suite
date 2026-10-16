@@ -3,7 +3,7 @@
 import os
 import json
 import random
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class AutoScenarioGenerator:
@@ -15,7 +15,12 @@ class AutoScenarioGenerator:
       - chooses a neighbor tile as 'target'
       - assigns a random seed and traffic density
       - optionally tags if it's near a roundabout (if you pass roundabout info later)
+
+    The generator uses a **seeded** Random instance for reproducibility.
     """
+
+    def __init__(self, seed: Optional[int] = None):
+        self._rng = random.Random(seed)
 
     @staticmethod
     def generate_from_graph(
@@ -23,6 +28,7 @@ class AutoScenarioGenerator:
         num_scenarios: int,
         out_dir: str,
         scenario_prefix: str = "scenario",
+        seed: Optional[int] = None,
     ) -> List[str]:
         os.makedirs(out_dir, exist_ok=True)
 
@@ -31,12 +37,13 @@ class AutoScenarioGenerator:
             return []
 
         paths: List[str] = []
+        rng = random.Random(seed)
 
         for idx in range(num_scenarios):
-            start_tile = random.choice(tile_names)
+            start_tile = rng.choice(tile_names)
             neighbors = adjacency_graph[start_tile].get("neighbors", [])
             if neighbors:
-                target_tile = random.choice(neighbors)
+                target_tile = rng.choice(neighbors)
             else:
                 target_tile = start_tile  # local-only scenario
 
@@ -44,9 +51,9 @@ class AutoScenarioGenerator:
                 "id": f"{scenario_prefix}_{idx}",
                 "start_tile": start_tile,
                 "target_tile": target_tile,
-                "seed": random.randint(0, 2**31 - 1),
-                "traffic_density": random.choice(["low", "medium", "high"]),
-                "weather": random.choice(["clear", "rain", "hard_rain", "fog"]),
+                "seed": rng.randint(0, 2**31 - 1),
+                "traffic_density": rng.choice(["low", "medium", "high"]),
+                "weather": rng.choice(["clear", "rain", "hard_rain", "fog"]),
                 # You can extend this later:
                 # "prefer_roundabout": True/False, etc.
             }
