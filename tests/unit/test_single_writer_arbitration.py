@@ -144,8 +144,7 @@ def test_01_simultaneous_acquisition_race(tmp_path):
         "never_two_owners": len(acquired) == 1,
         "results": results,
     }
-    out_path = os.path.join(REPO, "reports", "SINGLE_WRITER_RACE_TEST.json")
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    out_path = tmp_path / "SINGLE_WRITER_RACE_TEST.json"
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(receipt, fh, indent=2)
     assert receipt["never_two_owners"] is True
