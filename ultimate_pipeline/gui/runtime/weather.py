@@ -72,7 +72,7 @@ WEATHER_RANGES: dict[str, tuple[float, float]] = {
 class WeatherFieldStatus:
     field: str
     requested: Any
-    status: str            # APPLIED | READBACK_MISMATCH | UNSUPPORTED | OUT_OF_RANGE
+    status: str            # VERIFIED_APPLIED | WRITTEN_NOT_VERIFIED | READBACK_MISMATCH | UNSUPPORTED | OUT_OF_RANGE
     readback: Any = None
     detail: str = ""
 
@@ -87,8 +87,12 @@ class WeatherApplication:
 
     @property
     def ok(self) -> bool:
+        # Only a fresh, measured VERIFIED_APPLIED counts as success.
+        # The legacy "APPLIED" status is deliberately NOT accepted: nothing
+        # in this module emits it anymore, and accepting it would let a
+        # future emitter claim success without measurement.
         return bool(self.fields) and all(
-            f.status in ("APPLIED", "VERIFIED_APPLIED") for f in self.fields
+            f.status == "VERIFIED_APPLIED" for f in self.fields
         )
 
     def by_status(self, status: str) -> list[WeatherFieldStatus]:
@@ -113,8 +117,13 @@ def apply_weather(world: Any, requested: dict[str, Any],
     After calling ``world.set_weather``, queries ``world.get_weather()`` for a
     fresh readback. Only marks a field ``VERIFIED_APPLIED`` when the fresh
     observation matches the requested value within tolerance. Fields written
-    without a fresh readback are marked ``WRITTEN_NOT_VERIFIED`` — never
-    ``APPLIED``.
+    without a fresh readback are marked ``WRITTEN_NOT_VERIFIED``.
+
+    In the real-``carla`` path (no ``parameters_factory``), unrequested
+    governed fields are seeded from a pre-write snapshot so that building
+    ``carla.WeatherParameters`` does not silently reset them to defaults.
+    That snapshot is never used for verification: the post-write readback
+    below is the only evidence counted.
 
     ``parameters_factory`` exists so the whole path is testable mock-first: by
     default it builds a real ``carla.WeatherParameters``, but offline tests
@@ -166,7 +175,23 @@ def apply_weather(world: Any, requested: dict[str, Any],
     else:
         import carla
 
-        parameters = carla.WeatherParameters(**accepted)
+        # carla.WeatherParameters(**accepted) would reset every unrequested
+        # field to its constructor default. Seed those from a pre-write
+        # snapshot (best effort; verification below is independent of it).
+        merged: dict[str, Any] = dict(accepted)
+        try:
+            pre_write = world.get_weather()
+        except Exception:
+            pre_write = None
+        if pre_write is not None:
+            for governed in WEATHER_GOVERNED_FIELDS:
+                if governed in merged:
+                    continue
+                try:
+                    merged[governed] = float(getattr(pre_write, governed))
+                except (AttributeError, TypeError, ValueError):
+                    continue
+        parameters = carla.WeatherParameters(**merged)
     try:
         world.set_weather(parameters)
     except Exception as exc:
@@ -206,9 +231,11 @@ def apply_weather(world: Any, requested: dict[str, Any],
     application = WeatherApplication(statuses)
     if application.ok:
         return Result.success(application.as_dict())
+    unverifiable = fresh_readback is None
     return Result.failure(
         "weather applied but not every field verified",
-        error_class="WeatherReadbackMismatch",
+        error_class=("WeatherReadbackUnavailable" if unverifiable
+                     else "WeatherReadbackMismatch"),
         remediation="inspect the per-field statuses; do NOT treat this as applied",
         value=application.as_dict(),
         state_restored=None,

@@ -89,12 +89,23 @@ class WeatherApplyWorker(QThread):
 class WeatherPanel(QWidget):
     """Interactive Weather control panel with full CARLA 0.9.16 support."""
 
-    def __init__(self, world=None, parent=None):
+    def __init__(self, world=None, authority=None, parent=None):
         super().__init__(parent)
         self.world = world
+        self.authority = authority
         self._worker = None
         self.current_weather = None
         self._build_ui()
+
+    def _has_exclusive_authority(self) -> bool:
+        """Fail-closed: only an explicitly exclusive authority may mutate."""
+        if self.authority is None:
+            return False
+        from ultimate_pipeline.gui.session.session import exclusive_claimed
+        try:
+            return exclusive_claimed(self.authority)
+        except Exception:
+            return False
 
     def _build_ui(self):
         root, outer = section(
@@ -129,10 +140,7 @@ class WeatherPanel(QWidget):
         self.current_fields = {}
         form = QFormLayout()
         for field in WEATHER_GOVERNED_FIELDS:
-            if field in ("wetness_persistence", "cloud_height_enabled"):
-                lbl = QLabel("False")
-            else:
-                lbl = QLabel("0.0")
+            lbl = QLabel("0.0")
             lbl.setStyleSheet("font-family: monospace; color: #c9d6e6;")
             self.current_fields[field] = lbl
             form.addRow(field.replace("_", " "), lbl)
@@ -303,6 +311,10 @@ class WeatherPanel(QWidget):
         if not self.world:
             self.custom_state.setText("NO WORLD CONNECTED")
             return
+        if not self._has_exclusive_authority():
+            self.custom_state.setText("REFUSED · REQUIRES EXCLUSIVE AUTHORITY")
+            self.custom_state.setStyleSheet("color: #e65a5a; font-weight: bold;")
+            return
 
         requested = {f: w.value() for f, w in self.custom_inputs.items()}
 
@@ -346,8 +358,15 @@ class WeatherPanel(QWidget):
             self.current_state.setText(f"READBACK FAILED: {exc}")
 
     def _update_current_display(self, weather_or_app):
-        """Update current weather display from CARLA WeatherParameters or WeatherApplication."""
-        if isinstance(weather_or_app, WeatherApplication):
+        """Update current weather display from WeatherParameters, WeatherApplication, or result dict."""
+        if isinstance(weather_or_app, dict):
+            # Result.value shape from apply_weather: {"ok": ..., "fields": [...]}
+            data = {}
+            for entry in weather_or_app.get("fields", []):
+                value = entry.get("readback")
+                if value is not None:
+                    data[entry.get("field")] = value
+        elif isinstance(weather_or_app, WeatherApplication):
             data = {f.field: f.readback for f in weather_or_app.fields}
         else:
             data = {}

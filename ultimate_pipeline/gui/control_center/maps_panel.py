@@ -96,9 +96,19 @@ class PlanCanvas(QWidget):
 class MapsPanel(QWidget):
     """Multi-tab map workspace with local inspection and CARLA runtime map loading."""
 
-    def __init__(self, world=None, parent=None):
+    #: Emitted after the server world has been replaced (or an unverifiable
+    #: replacement occurred). Dependent panels must drop every cached
+    #: actor/sensor/feeds reference when this fires.
+    world_changed = pyqtSignal(str)
+
+    def __init__(self, world=None, client=None, authority=None, parent=None):
         super().__init__(parent)
         self.world = world
+        #: carla.Client (or compatible) handle — the only object with
+        #: load_world()/get_available_maps() in carla 0.9.16.
+        self.client = client
+        #: Session authority; None means fail-closed (no mutation allowed).
+        self.authority = authority
         self._worker = None
         self.selected = None
         self.runtime_map = "UNBOUND"
@@ -269,13 +279,32 @@ class MapsPanel(QWidget):
         )
 
     # --------------------------------------------------------- CARLA map load
+    def _resolve_client(self):
+        """Return a client handle or None. Never treat a world as a client.
+
+        carla 0.9.16: only carla.Client exposes load_world()/get_available_maps().
+        A world-like object with get_client() is honored; anything else is
+        refused (fail-closed) instead of being used as a pseudo-client.
+        """
+        if self.client is not None:
+            return self.client
+        getter = getattr(self.world, "get_client", None)
+        if callable(getter):
+            try:
+                return getter()
+            except Exception:
+                return None
+        return None
+
     def refresh_server_maps(self):
         """Query available maps from the connected CARLA server."""
-        if not self.world:
-            self.runtime_info.setText("NO WORLD CONNECTED")
+        client = self._resolve_client()
+        if client is None:
+            self.runtime_info.setText(
+                "NO CARLA CLIENT: get_available_maps() is client-only in 0.9.16"
+            )
             return
         try:
-            client = self.world.get_client() if hasattr(self.world, "get_client") else self.world
             maps = client.get_available_maps()
             self.available_maps_list.clear()
             for m in maps:
@@ -283,6 +312,27 @@ class MapsPanel(QWidget):
             self.runtime_info.setText(f"SERVER MAPS: {len(maps)} available")
         except Exception as exc:
             self.runtime_info.setText(f"REFRESH FAILED: {type(exc).__name__}: {exc}")
+
+    @staticmethod
+    def _map_base_name(name) -> str:
+        if not name:
+            return "UNKNOWN"
+        return str(name).replace("\\", "/").rsplit("/", 1)[-1]
+
+    def _active_map_name(self):
+        """Best-effort active map name from the current world, or None."""
+        if self.world is None or not hasattr(self.world, "get_map"):
+            return None
+        try:
+            return self.world.get_map().name
+        except Exception:
+            return None
+
+    @classmethod
+    def _map_names_match(cls, requested, actual) -> bool:
+        if not requested or not actual:
+            return False
+        return cls._map_base_name(requested).lower() == cls._map_base_name(actual).lower()
 
     def load_selected_map(self):
         """Load selected map with explicit authority check and confirmation."""
@@ -292,11 +342,21 @@ class MapsPanel(QWidget):
             return
         map_name = item.text()
 
-        # Authority check
+        # Authority check (fail-closed: None authority is refused)
         if not self._has_exclusive_authority():
             self.load_report.setPlainText(
                 f"REFUSED: Loading map '{map_name}' requires exclusive runtime authority.\n"
-                "Current session is SHARED_READONLY."
+                "Current session is not exclusive."
+            )
+            return
+
+        # Client check: only carla.Client.load_world can switch maps in 0.9.16
+        client = self._resolve_client()
+        if client is None:
+            self.load_report.setPlainText(
+                f"REFUSED: no CARLA client handle to load '{map_name}'.\n"
+                "carla.Client.load_world() is required; carla.World has neither "
+                "load_world() nor get_client() in 0.9.16."
             )
             return
 
@@ -312,52 +372,57 @@ class MapsPanel(QWidget):
             return
 
         try:
-            # Use client.load_world, not world.load_world
-            client = self.world.get_client() if hasattr(self.world, "get_client") else self.world
-            client.load_world(map_name)
-
-            # Verify actual active-world map identity
-            actual_map = self.world.get_map().name if hasattr(self.world, "get_map") else "UNKNOWN"
-            if actual_map != map_name:
-                self.load_report.setPlainText(
-                    f"MAP LOAD MISMATCH: requested '{map_name}', "
-                    f"but active map is '{actual_map}'"
-                )
-                return
-
-            # Atomically invalidate stale references
-            self._invalidate_stale_references()
-
-            self.runtime_map = map_name
-            self.runtime_info.setText(f"RUNTIME MAP: {map_name}")
-            self.map_label.setText(
-                f"LOCAL: {Path(self.selected).name if self.selected else 'NONE'}"
-                f"  ·  RUNTIME: {self.runtime_map}"
-            )
-            self.load_report.setPlainText(
-                f"Map '{map_name}' loaded and identity verified.\n"
-                "Stale actor, sensor, and camera references have been invalidated."
-            )
+            new_world = client.load_world(map_name)
         except Exception as exc:
             self.load_report.setPlainText(
                 f"MAP LOAD FAILED: {type(exc).__name__}: {exc}"
             )
+            return
 
-    def _invalidate_stale_references(self):
-        """Invalidate stale actor, sensor, feed, and runtime references."""
-        # Clear any cached sensor stats
-        if hasattr(self, "sensor_stats"):
-            self.sensor_stats = None
-        # Clear any cached frame data
-        for tile in getattr(self, "tiles", {}).values():
-            if hasattr(tile, "set_placeholder"):
-                tile.set_placeholder()
+        # The server may have switched levels even if verification below
+        # fails (e.g. RPC timeout after the switch): rebind and invalidate
+        # unconditionally so no stale reference can outlive the replacement.
+        if new_world is not None:
+            self.world = new_world
+
+        actual_map = self._active_map_name()
+        if not self._map_names_match(map_name, actual_map):
+            self.runtime_map = actual_map or "UNKNOWN"
+            self.runtime_info.setText(f"RUNTIME MAP: {self.runtime_map}")
+            self._invalidate_stale_references(self.runtime_map)
+            self.load_report.setPlainText(
+                f"MAP LOAD MISMATCH: requested '{map_name}', "
+                f"but active map is '{actual_map}'.\n"
+                "World reference rebound and world_changed emitted regardless."
+            )
+            return
+
+        self.runtime_map = map_name
+        self.runtime_info.setText(f"RUNTIME MAP: {self.runtime_map}")
+        self.map_label.setText(
+            f"LOCAL: {Path(self.selected).name if self.selected else 'NONE'}"
+            f"  ·  RUNTIME: {self.runtime_map}"
+        )
+        self._invalidate_stale_references(self.runtime_map)
+        self.load_report.setPlainText(
+            f"Map '{map_name}' loaded and identity verified.\n"
+            "world_changed emitted; dependent panels must drop stale references."
+        )
+
+    def _invalidate_stale_references(self, new_map: str):
+        """Emit world_changed so every dependent panel drops stale references.
+
+        This panel owns no actor/sensor/feed state itself; the real
+        invalidation is a signal each dependent panel must subscribe to.
+        """
+        self.world_changed.emit(new_map)
 
     def _has_exclusive_authority(self) -> bool:
-        """Check if the current session has exclusive runtime authority."""
-        if not self.world:
+        """Fail-closed: only an explicitly exclusive authority may mutate."""
+        if self.authority is None:
             return False
-        authority = getattr(self.world, "authority", None)
-        if authority is None:
+        from ultimate_pipeline.gui.session.session import exclusive_claimed
+        try:
+            return exclusive_claimed(self.authority)
+        except Exception:
             return False
-        return str(authority) not in ("SHARED_READONLY", "NONE")

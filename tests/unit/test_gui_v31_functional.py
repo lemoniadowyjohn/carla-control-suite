@@ -142,18 +142,56 @@ def test_weather_readback_tolerance():
 
 
 def test_weather_stale_readback_is_not_used():
-    """apply_weather must query get_weather() AFTER set_weather, not before."""
+    """apply_weather must observe state AFTER set_weather (behavioral).
+
+    A world that returns planted stale values for any read taken before the
+    write, and the true state for reads after it: verification must classify
+    from the post-write readback. Passes only if the call order is
+    set_weather -> get_weather; a pre-write readback yields READBACK_MISMATCH.
+    """
     import inspect
+    from types import SimpleNamespace
+
     sig = inspect.signature(apply_weather)
     assert "readback" not in sig.parameters, (
         "apply_weather must not accept a pre-set readback parameter"
     )
-    source = inspect.getsource(apply_weather)
-    set_pos = source.find("world.set_weather")
-    get_pos = source.find("world.get_weather")
-    assert set_pos > 0 and get_pos > set_pos, (
-        "get_weather() must be called after set_weather()"
+
+    class PlantedStaleWorld:
+        def __init__(self):
+            self.calls = []
+            self._written = False
+            self._weather = FakeWeather(**{f: 0.0 for f in WEATHER_GOVERNED_FIELDS})
+
+        def set_weather(self, params):
+            self.calls.append("set_weather")
+            self._written = True
+            for k in WEATHER_GOVERNED_FIELDS:
+                if hasattr(params, k):
+                    setattr(self._weather, k, getattr(params, k))
+
+        def get_weather(self):
+            self.calls.append("get_weather")
+            if not self._written:
+                return FakeWeather(**{f: 77.0 for f in WEATHER_GOVERNED_FIELDS})
+            return self._weather
+
+    world = PlantedStaleWorld()
+    result = apply_weather(
+        world, {"cloudiness": 50.0},
+        parameters_factory=lambda fields: SimpleNamespace(**fields),
     )
+    assert world.calls[-1] == "get_weather", (
+        "final observation must be get_weather(), after the write"
+    )
+    assert "set_weather" in world.calls[:-1], (
+        "set_weather() must precede the verification readback"
+    )
+    assert result.ok, (
+        f"post-write readback must drive verification, got {result.value}"
+    )
+    status = result.value["fields"][0]["status"]
+    assert status == "VERIFIED_APPLIED"
 
 
 def test_weather_no_readback_marks_not_verified():
@@ -252,7 +290,8 @@ def test_maps_panel_constructs_offscreen(app):
 
 def test_map_load_requires_exclusive_authority(app):
     """Map loading is refused under SHARED_READONLY."""
-    panel = MapsPanel()
+    from ultimate_pipeline.gui.health import SessionAuthority
+    panel = MapsPanel(authority=SessionAuthority.SHARED_READONLY)
     # No world connected — should refuse
     from PyQt6.QtWidgets import QListWidgetItem
     item = QListWidgetItem("Town01")
@@ -260,7 +299,149 @@ def test_map_load_requires_exclusive_authority(app):
     panel.available_maps_list.setCurrentItem(item)
     panel.load_selected_map()
     report = panel.load_report.toPlainText()
-    assert "REFUSED" in report or "NO WORLD" in report or "authority" in report.lower()
+    assert "REFUSED" in report
+
+
+def test_map_load_refused_when_authority_missing(app):
+    """A panel with no bound authority fails closed."""
+    panel = MapsPanel()
+    from PyQt6.QtWidgets import QListWidgetItem
+    item = QListWidgetItem("Town01")
+    panel.available_maps_list.addItem(item)
+    panel.available_maps_list.setCurrentItem(item)
+    panel.load_selected_map()
+    assert "REFUSED" in panel.load_report.toPlainText()
+
+
+def test_map_load_refused_without_client(app):
+    """Exclusive authority but no client handle: explicit refusal, no crash."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    panel = MapsPanel(world=object(), authority=SessionAuthority.EXCLUSIVE_WORLD)
+    from PyQt6.QtWidgets import QListWidgetItem
+    item = QListWidgetItem("Town01")
+    panel.available_maps_list.addItem(item)
+    panel.available_maps_list.setCurrentItem(item)
+    panel.load_selected_map()
+    report = panel.load_report.toPlainText()
+    assert "REFUSED" in report
+    assert "client" in report.lower()
+
+
+class FakeRuntimeMap:
+    def __init__(self, name):
+        self.name = name
+
+
+class FakeRuntimeWorld:
+    def __init__(self, map_name):
+        self._map = FakeRuntimeMap(map_name)
+
+    def get_map(self):
+        return self._map
+
+
+class FakeCarlaClient:
+    """Client double: the only object exposing load_world/get_available_maps."""
+
+    def __init__(self, loaded_map="/Game/Carla/Maps/Town01"):
+        self.loaded_map = loaded_map
+        self.load_calls = []
+        self.world = FakeRuntimeWorld(loaded_map)
+
+    def load_world(self, name):
+        self.load_calls.append(name)
+        return self.world
+
+    def get_available_maps(self):
+        return ["/Game/Carla/Maps/Town01", "/Game/Carla/Maps/Town02"]
+
+
+def _select_map(panel, name):
+    from PyQt6.QtWidgets import QListWidgetItem
+    item = QListWidgetItem(name)
+    panel.available_maps_list.addItem(item)
+    panel.available_maps_list.setCurrentItem(item)
+
+
+def test_map_load_with_client_verifies_and_emits(app, monkeypatch):
+    """Client path: load, rebind world, verify identity, emit world_changed."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+
+    client = FakeCarlaClient()
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD)
+    emitted = []
+    panel.world_changed.connect(emitted.append)
+
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.Yes,
+    )
+    panel.load_selected_map()
+
+    assert client.load_calls == ["/Game/Carla/Maps/Town01"]
+    assert panel.world is client.world, "world must be rebound to the loaded world"
+    assert panel.runtime_map == "/Game/Carla/Maps/Town01"
+    assert emitted == ["/Game/Carla/Maps/Town01"]
+    assert "identity verified" in panel.load_report.toPlainText()
+
+
+def test_map_load_identity_mismatch_still_invalidates(app, monkeypatch):
+    """Path-qualified mismatch is reported but never skips invalidation."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+
+    client = FakeCarlaClient(loaded_map="/Game/Carla/Maps/Town02")
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD)
+    emitted = []
+    panel.world_changed.connect(emitted.append)
+
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.Yes,
+    )
+    panel.load_selected_map()
+
+    assert "MISMATCH" in panel.load_report.toPlainText()
+    assert panel.world is client.world, "world must be rebound even on mismatch"
+    assert emitted == ["/Game/Carla/Maps/Town02"], (
+        "world_changed must fire even when identity verification fails"
+    )
+
+
+def test_refresh_server_maps_uses_client(app):
+    """get_available_maps is served by the injected client."""
+    client = FakeCarlaClient()
+    panel = MapsPanel(client=client)
+    panel.refresh_server_maps()
+    assert panel.available_maps_list.count() == 2
+
+
+def test_refresh_server_maps_without_client_refuses(app):
+    """No client: explicit message instead of treating world as a client."""
+    panel = MapsPanel(world=object())
+    panel.refresh_server_maps()
+    assert "NO CARLA CLIENT" in panel.runtime_info.text()
+
+
+def test_weather_apply_refused_under_shared_readonly(app):
+    """Weather mutation is refused under SHARED_READONLY (fail-closed gate)."""
+    from ultimate_pipeline.gui.health import SessionAuthority
+    panel = WeatherPanel(world=FakeWorld(),
+                         authority=SessionAuthority.SHARED_READONLY)
+    panel.apply_custom()
+    assert "REFUSED" in panel.custom_state.text()
+    assert panel._worker is None, "no worker must start under SHARED_READONLY"
+
+
+def test_weather_apply_refused_without_authority(app):
+    """World bound but no authority: apply is refused, not attempted."""
+    panel = WeatherPanel(world=FakeWorld(), authority=None)
+    panel.apply_custom()
+    assert "REFUSED" in panel.custom_state.text()
+    assert panel._worker is None
 
 
 # ----------------------------------------------------------------------
@@ -331,15 +512,16 @@ def test_experiment_templates_cover_v31_workspaces():
 # ----------------------------------------------------------------------
 
 def test_weather_application_ok_property():
-    """WeatherApplication.ok is True only when all fields are APPLIED."""
+    """WeatherApplication.ok is True only for VERIFIED_APPLIED fields."""
     app = WeatherApplication([
-        WeatherFieldStatus("cloudiness", 50.0, "APPLIED", 50.0),
-        WeatherFieldStatus("precipitation", 30.0, "APPLIED", 30.0),
+        WeatherFieldStatus("cloudiness", 50.0, "VERIFIED_APPLIED", 50.0),
+        WeatherFieldStatus("precipitation", 30.0, "VERIFIED_APPLIED", 30.0),
     ])
     assert app.ok
 
-    app_fail = WeatherApplication([
-        WeatherFieldStatus("cloudiness", 50.0, "APPLIED", 50.0),
-        WeatherFieldStatus("precipitation", 30.0, "READBACK_MISMATCH", 99.0),
-    ])
-    assert not app_fail.ok
+    for bad in ("APPLIED", "WRITTEN_NOT_VERIFIED", "READBACK_MISMATCH",
+                "OUT_OF_RANGE", "UNSUPPORTED"):
+        app_bad = WeatherApplication([
+            WeatherFieldStatus("cloudiness", 50.0, bad, 50.0),
+        ])
+        assert not app_bad.ok, f"status {bad!r} must not count as ok"
