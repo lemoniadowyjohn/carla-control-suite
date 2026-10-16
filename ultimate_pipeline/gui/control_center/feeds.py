@@ -100,18 +100,47 @@ class FeedsPanel(QWidget):
 
     CHANNELS = ("Front RGB", "Rear RGB", "Depth", "Semantic")
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, runtime_session=None):
         super().__init__(parent)
         self.ingress = FrameIngress(self)
         self.ingress.frame_received.connect(self.on_frame)
         self.tiles = {name: FeedTile(name) for name in self.CHANNELS}
         self._files: list[Path] = []
         self._frame_index = 0
+        self._frame_generation = 0
         self._streams = {}
         self._timer = QTimer(self)
         self._timer.setInterval(250)
         self._timer.timeout.connect(self.next_frame)
+        self.runtime_session = runtime_session
         self._build_ui()
+        if runtime_session is not None:
+            # No destroyed-hook: Python callbacks during C++ teardown can
+            # fail fast (0xC0000409); RuntimeSession isolates dead-widget
+            # subscribers at publish time instead.
+            self._unsubscribe_runtime = runtime_session.subscribe(
+                self._on_runtime_world_changed)
+
+    def _on_runtime_world_changed(self, event):
+        """Invalidation subscriber: drop every frame cache on a binding change.
+
+        Frames, playback index and the playback timer are world-generation
+        state; after a map change, disconnect or binding failure they must
+        not survive as if they described the current world. External MJPEG
+        workers are left running: their origin is external and unverified
+        either way, and stopping them is a separate lifecycle action.
+        """
+        if event.generation <= self._frame_generation:
+            return
+        self._frame_generation = event.generation
+        try:
+            self.stop()
+            self._frame_index = 0
+        except RuntimeError:
+            return  # widget already deleted during teardown
+        self.state.setText(
+            f"WORLD CHANGED · generation {event.generation} · {event.reason} · "
+            "frame caches invalidated, re-attach producers")
 
     def _build_ui(self):
         root, outer = section(

@@ -89,13 +89,40 @@ class WeatherApplyWorker(QThread):
 class WeatherPanel(QWidget):
     """Interactive Weather control panel with full CARLA 0.9.16 support."""
 
-    def __init__(self, world=None, authority=None, parent=None):
+    def __init__(self, world=None, authority=None, parent=None,
+                 runtime_session=None):
         super().__init__(parent)
         self.world = world
         self.authority = authority
         self._worker = None
         self.current_weather = None
+        self.runtime_session = runtime_session
         self._build_ui()
+        if runtime_session is not None:
+            # No destroyed-hook: Python callbacks during C++ teardown can
+            # fail fast (0xC0000409); RuntimeSession isolates dead-widget
+            # subscribers at publish time instead.
+            self._unsubscribe_runtime = runtime_session.subscribe(
+                self._on_runtime_world_changed)
+
+    def _on_runtime_world_changed(self, event):
+        """Invalidation subscriber: rebind or drop the cached world reference.
+
+        The shared session is authoritative: on MAP_LOAD the panel adopts
+        the new world, on LOAD_FAILURE/BINDING_FAILURE/DISCONNECT it drops
+        to None so no apply can target a dead reference.
+        """
+        session = self.runtime_session
+        if session is None:
+            return
+        self.world = session.world
+        if self.world is None:
+            self.current_state.setText(
+                f"WORLD UNBOUND · generation {event.generation} · "
+                f"{event.reason} · apply disabled")
+        else:
+            self.current_state.setText(
+                f"WORLD BOUND · generation {event.generation} · {event.reason}")
 
     def _has_exclusive_authority(self) -> bool:
         """Fail-closed: only an explicitly exclusive authority may mutate."""

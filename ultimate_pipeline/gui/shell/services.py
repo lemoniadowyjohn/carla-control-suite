@@ -125,10 +125,13 @@ def build_registry(*, mode: AppMode = AppMode.MOCK,
     from ultimate_pipeline.gui.health import SessionAuthority
     from ultimate_pipeline.gui.jobs.governance import EvidenceBrowser
     from ultimate_pipeline.gui.run_status import SOURCE_VOCABULARIES
+    from ultimate_pipeline.gui.session.runtime_session import RuntimeSession
 
     registry = ServiceRegistry()
     mocks = build_mock_registry()
 
+    registry.register("runtime_session", RuntimeSession(),
+                      "ultimate_pipeline/gui/session/runtime_session.py")
     registry.register("carla_backend", mocks["carla"],
                       "ultimate_pipeline/gui/adapters/mock_backend.py")
     registry.register("traffic_manager", mocks["traffic_manager"],

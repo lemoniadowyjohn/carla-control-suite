@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
 )
 
 from ultimate_pipeline.gui.shell.navigation import SCREEN_ROUTES
+from ultimate_pipeline.gui.session.runtime_session import RuntimeSession
 from .connection_panel import ConnectionPanel
 from .drafts import DraftControlsPanel, FIELDS
 from .experiments_panel import ExperimentsPanel
@@ -95,6 +96,19 @@ def grouped(*tabs: tuple[str, QWidget]) -> QTabWidget:
         group.addTab(content, name)
     return group
 
+def _runtime_session(registry):
+    """The app-wide shared runtime session: exactly one per registry.
+
+    Registered on first use so every route resolves the same instance;
+    build_registry() registers it up front in production.
+    """
+    if not registry.available("runtime_session"):
+        registry.register(
+            "runtime_session", RuntimeSession(),
+            "ultimate_pipeline/gui/session/runtime_session.py")
+    return registry.resolve("runtime_session")
+
+
 def create_operator_workspace(route: str, registry, navigate):
     """Instantiate a practical workspace while retaining original evidence pages."""
     try:
@@ -105,9 +119,10 @@ def create_operator_workspace(route: str, registry, navigate):
         if route == "03_connection_diagnostics":
             return ConnectionPanel()
         if route == "04_world_time":
-            return WeatherPanel()
+            return WeatherPanel(runtime_session=_runtime_session(registry))
         if route == "05_maps_gis_cooking":
-            return grouped(("Map & elevation explorer", MapsPanel()),
+            return grouped(("Map & elevation explorer",
+                            MapsPanel(runtime_session=_runtime_session(registry))),
                            ("Cook / runtime provenance", StatusWorkspace(route)))
         if route == "06_traffic_manager":
             return grouped(("Global policy drafts", DraftControlsPanel(route)),
@@ -116,7 +131,8 @@ def create_operator_workspace(route: str, registry, navigate):
             return grouped(("Actor population", DraftControlsPanel(route)),
                            ("Ownership & routes", StatusWorkspace(route)))
         if route == "08_sensors_streams":
-            return grouped(("Camera feeds", FeedsPanel()),
+            return grouped(("Camera feeds",
+                            FeedsPanel(runtime_session=_runtime_session(registry))),
                            ("Sensor configuration", DraftControlsPanel(route)),
                            ("Stream diagnostics", StatusWorkspace(route)))
         if route == "09_calibration_workbench":

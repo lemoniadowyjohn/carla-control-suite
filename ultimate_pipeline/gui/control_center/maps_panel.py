@@ -101,7 +101,8 @@ class MapsPanel(QWidget):
     #: actor/sensor/feeds reference when this fires.
     world_changed = pyqtSignal(str)
 
-    def __init__(self, world=None, client=None, authority=None, parent=None):
+    def __init__(self, world=None, client=None, authority=None, parent=None,
+                 runtime_session=None):
         super().__init__(parent)
         self.world = world
         #: carla.Client (or compatible) handle — the only object with
@@ -109,6 +110,8 @@ class MapsPanel(QWidget):
         self.client = client
         #: Session authority; None means fail-closed (no mutation allowed).
         self.authority = authority
+        #: Shared runtime session (Stage B1): single owner of world identity.
+        self.runtime_session = runtime_session
         self._worker = None
         self.selected = None
         self.runtime_map = "UNBOUND"
@@ -138,6 +141,13 @@ class MapsPanel(QWidget):
         wrapper = QVBoxLayout(self)
         wrapper.setContentsMargins(0, 0, 0, 0)
         wrapper.addWidget(root)
+
+        if runtime_session is not None:
+            # No destroyed-hook: running Python while the C++ object is being
+            # torn down can fail fast (0xC0000409). RuntimeSession isolates
+            # dead-widget subscribers at publish time instead.
+            self._unsubscribe_runtime = runtime_session.subscribe(
+                self._on_runtime_world_changed)
 
     # ------------------------------------------------------------------ tabs
     def _build_local_tab(self):
@@ -285,7 +295,12 @@ class MapsPanel(QWidget):
         carla 0.9.16: only carla.Client exposes load_world()/get_available_maps().
         A world-like object with get_client() is honored; anything else is
         refused (fail-closed) instead of being used as a pseudo-client.
+        When a shared runtime session is attached, its client handle wins,
+        because a disconnect drops the handle there first.
         """
+        session = self.runtime_session
+        if session is not None and session.client is not None:
+            return session.client
         if self.client is not None:
             return self.client
         getter = getattr(self.world, "get_client", None)
@@ -399,12 +414,15 @@ class MapsPanel(QWidget):
         if load_error is not None:
             # Identity against the old world would be a lie; attest nothing.
             if new_world is None:
+                # A failed attempt must not leave a stale world reference
+                # alive on this panel either (review minor N-R3-4).
+                self.world = None
                 self.runtime_map = "UNKNOWN"
                 self.runtime_info.setText("RUNTIME MAP: UNKNOWN (state unverified)")
             else:
                 self.runtime_map = self._active_map_name() or "UNKNOWN"
                 self.runtime_info.setText(f"RUNTIME MAP: {self.runtime_map}")
-            self._invalidate_stale_references(self.runtime_map)
+            self._invalidate_stale_references(self.runtime_map, "LOAD_FAILURE")
             self.load_report.setPlainText(
                 f"MAP LOAD FAILED: {load_error}\n"
                 "world_changed emitted regardless; server state unverified "
@@ -416,7 +434,7 @@ class MapsPanel(QWidget):
         if not self._map_names_match(map_name, actual_map):
             self.runtime_map = actual_map or "UNKNOWN"
             self.runtime_info.setText(f"RUNTIME MAP: {self.runtime_map}")
-            self._invalidate_stale_references(self.runtime_map)
+            self._invalidate_stale_references(self.runtime_map, "MAP_MISMATCH")
             self.load_report.setPlainText(
                 f"MAP LOAD MISMATCH: requested '{map_name}', "
                 f"but active map is '{actual_map}'.\n"
@@ -430,19 +448,50 @@ class MapsPanel(QWidget):
             f"LOCAL: {Path(self.selected).name if self.selected else 'NONE'}"
             f"  ·  RUNTIME: {self.runtime_map}"
         )
-        self._invalidate_stale_references(self.runtime_map)
+        self._invalidate_stale_references(self.runtime_map, "MAP_LOAD")
         self.load_report.setPlainText(
             f"Map '{map_name}' loaded and identity verified.\n"
             "world_changed emitted; dependent panels must drop stale references."
         )
 
-    def _invalidate_stale_references(self, new_map: str):
-        """Emit world_changed so every dependent panel drops stale references.
+    def _invalidate_stale_references(self, new_map: str, reason: str = "MAP_LOAD"):
+        """Record the outcome in the shared runtime session and emit world_changed.
 
         This panel owns no actor/sensor/feed state itself; the real
-        invalidation is a signal each dependent panel must subscribe to.
+        invalidation is the RuntimeSession event (this Qt signal remains
+        for existing consumers). A bound world is published with
+        bind_world, an unbound one with clear_binding, so subscribers can
+        never inherit a reference the panel could not attest.
         """
+        session = self.runtime_session
+        if session is not None:
+            if self.world is None:
+                session.clear_binding(reason=reason, source="maps_panel",
+                                      map_identity=new_map, drop_client=False)
+            else:
+                session.bind_world(self.world, map_identity=new_map,
+                                   reason=reason, source="maps_panel",
+                                   client=self.client)
         self.world_changed.emit(new_map)
+
+    def _on_runtime_world_changed(self, event):
+        """Invalidation subscriber: sync this panel from the shared session.
+
+        Events this panel produced already applied their state locally;
+        events from other sources (disconnect, binding failure) are adopted
+        verbatim so local references cannot go stale.
+        """
+        if event.source == "maps_panel" or self.runtime_session is None:
+            return
+        self.world = self.runtime_session.world
+        self.client = self.runtime_session.client
+        self.runtime_map = event.map_identity
+        if self.runtime_info is not None:
+            self.runtime_info.setText(f"RUNTIME MAP: {self.runtime_map}")
+        self.map_label.setText(
+            f"LOCAL: {Path(self.selected).name if self.selected else 'NONE'}"
+            f"  ·  RUNTIME: {self.runtime_map}"
+        )
 
     def _has_exclusive_authority(self) -> bool:
         """Fail-closed: only an explicitly exclusive authority may mutate."""
