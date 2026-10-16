@@ -32,6 +32,24 @@ import pytest
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "scripts"))
 
+# This module exercises scripts/control_plane.py, the machine-wide single-writer
+# control plane. That production design is Win32 by construction and not merely
+# by omission: it acquires a Global\ named mutex (CreateMutexW /
+# WaitForSingleObject / ReleaseMutex), it locates the durable lease under
+# %ProgramData%\CARLA\control_plane, and it identifies owners through Win32
+# process/CIM calls. GAP-055 already bound the kernel32 handle only on win32 so
+# the module imports cleanly elsewhere, but the arbitration contract itself has
+# no POSIX counterpart here.
+#
+# The repository's *portable* single-writer authority is the separate GAP-052
+# lease system (governance/single_writer/worktree_lock.py and
+# common_git_lock.py), which uses atomic O_CREAT|O_EXCL exclusion and retains its
+# own cross-platform coverage. This module is therefore skipped on non-Windows
+# rather than made to fail on unavailable Win32 OS primitives.
+pytestmark = pytest.mark.skipif(
+    not sys.platform.startswith("win"),
+    reason="single-writer arbitration validates the Win32 named-mutex control plane")
+
 import control_plane as cp  # noqa: E402
 from control_plane import (  # noqa: E402
     ArbitrationError, MutexHandle, SingleWriterLease,
