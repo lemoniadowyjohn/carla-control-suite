@@ -131,8 +131,11 @@ class MockCarlaBackend:
 
     # -- tick authority ----------------------------------------------------
     def acquire_tick(self, owner: str = "") -> TickGrant:
-        if self._authority is SessionAuthority.SHARED_READONLY:
-            return TickGrant(False, "", "SHARED_READONLY authority cannot grant tick")
+        from ultimate_pipeline.gui.session.session import exclusive_claimed
+        if not exclusive_claimed(self._authority):
+            return TickGrant(
+                False, "",
+                f"authority {self._authority!r} is not an explicit exclusive grant")
         if self._tick_holder:
             return TickGrant(False, self._tick_holder, "tick already granted")
         self._tick_holder = owner or "mock-owner"

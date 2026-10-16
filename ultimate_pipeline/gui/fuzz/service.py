@@ -275,13 +275,16 @@ class FuzzerService:
                                 detail=str(exc))
             return admission
 
-        # 2. authority
-        if authority == "SHARED_READONLY":
+        # 2. authority -- fail-closed allow-list (never a deny-list)
+        from ultimate_pipeline.gui.session.session import exclusive_claimed
+        if not exclusive_claimed(authority):
             checks.append(BudgetCheck(
                 BudgetDecision.EXCEEDED,
-                "SHARED_READONLY forbids all simulator mutation", "authority"))
+                f"authority {authority!r} is not an explicit exclusive grant "
+                "(only EXCLUSIVE_* authority may mutate)", "authority"))
         else:
-            checks.append(BudgetCheck(BudgetDecision.OK, f"authority {authority}"))
+            checks.append(BudgetCheck(BudgetDecision.OK, f"authority {authority}",
+                                      "authority"))
 
         # 3. live requires an explicit lease AND informed confirmation
         if live:

@@ -213,8 +213,9 @@ def connect(
         ladder.stages.append(StageReport(
             ConnectStage.MAP_IDENTITY, True, "map list read", value=list(maps.value or [])))
 
-    # 4. Tick authority readiness
-    if tick_authority is not None and not tick_authority.may_mutate:
+    # 4. Tick authority readiness -- fail-closed getattr: an object that
+    # does not expose may_mutate is treated as NOT ready, never as ready.
+    if tick_authority is not None and not getattr(tick_authority, "may_mutate", False):
         ladder.stages.append(StageReport(
             ConnectStage.TICK_AUTHORITY, False,
             "session is SHARED_READONLY; simulator mutation stays disabled"))

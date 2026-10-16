@@ -27,6 +27,7 @@ from ultimate_pipeline.gui.session.tick_authority import TickAuthority
 
 __all__ = [
     "ShutdownReason", "CleanupEvidence", "Session", "Watchdog",
+    "exclusive_claimed", "EXCLUSIVE_AUTHORITY_VALUES",
 ]
 
 
@@ -100,8 +101,18 @@ class Session:
     # -- exclusive authority ----------------------------------------------
     @property
     def may_mutate(self) -> bool:
-        """Never blanket live control: authority must be explicitly exclusive."""
-        return self.authority is not SessionAuthority.SHARED_READONLY
+        """Fail-closed mutation gate: only an explicitly exclusive authority.
+
+        The previous implementation compared
+        ``authority is not SessionAuthority.SHARED_READONLY`` -- an identity
+        deny-list that failed OPEN for ``None``, plain strings
+        (``"SHARED_READONLY" is not the enum singleton``) and every
+        malformed value. :func:`exclusive_claimed` is the one allow-list.
+
+        A Git writer lease is not a CARLA runtime lease: source-control
+        authority never grants simulator mutation.
+        """
+        return exclusive_claimed(self.authority)
 
     def acquire_tick(self) -> Result:
         if not self.may_mutate:
@@ -220,10 +231,23 @@ class Session:
                                   state_restored=False)
 
 
-def exclusive_claimed(authority: SessionAuthority) -> bool:
-    """True only for an explicitly granted exclusive authority."""
-    return authority in (
-        SessionAuthority.EXCLUSIVE_TICK,
-        SessionAuthority.EXCLUSIVE_WORLD,
-        SessionAuthority.EXCLUSIVE_TM_PORT,
-    )
+#: The only authority values that permit any mutation (fail-closed list).
+EXCLUSIVE_AUTHORITY_VALUES: frozenset[str] = frozenset({
+    SessionAuthority.EXCLUSIVE_TICK.value,
+    SessionAuthority.EXCLUSIVE_WORLD.value,
+    SessionAuthority.EXCLUSIVE_TM_PORT.value,
+})
+
+
+def exclusive_claimed(authority: Any) -> bool:
+    """True only for an explicitly claimed exclusive authority.
+
+    Fail-closed by construction: anything unavailable (``None``), shared
+    (``SHARED_READONLY``), malformed or not a string is refused. String
+    forms of the exclusive values are accepted so JSON/config round-trips
+    keep working; identity checks (``is not SHARED_READONLY``) and
+    deny-lists fail OPEN for those inputs and must never gate mutation.
+    """
+    if not isinstance(authority, str):
+        return False
+    return authority in EXCLUSIVE_AUTHORITY_VALUES
