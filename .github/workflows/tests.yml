@@ -38,9 +38,15 @@ jobs:
   offline-tests:
     name: offline tests
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # Phase-2 delta 4: the hermetic Windows suite runs ~30 min; hosted runners
+    # are slower and start cold, so 60 min left too little headroom.
+    timeout-minutes: 90
     permissions:
       contents: read
+    env:
+      # Keep scratch off the runner default so a large suite cannot exhaust it.
+      TMPDIR: ${{ runner.temp }}/pytest-tmp
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -49,6 +55,16 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
+
+      # Import authority must be owned by CI, never inherited. An inherited
+      # repository-specific PYTHONPATH silently prepends a *different* CARLA
+      # checkout to sys.path and the suite then tests the wrong code while
+      # reporting green. Record what arrived, then neutralise it for every
+      # later step in this job.
+      - name: Record and clear inherited PYTHONPATH
+        run: |
+          echo "inherited PYTHONPATH=[${PYTHONPATH}]"
+          echo "PYTHONPATH=" >> "$GITHUB_ENV"
 
       - name: Install CPU-only torch/torchvision first
         run: |
@@ -72,8 +88,35 @@ jobs:
       - name: Install package editable for tests
         run: pip install -e .
 
+      # Phase-2 delta 1: fail closed before running any test if a repository
+      # module could be supplied by another checkout. Ordering is not accepted
+      # as proof -- if any external location can supply the module, collection
+      # order could still change which one wins.
+      - name: Import-authority preflight (fail closed)
+        run: python tools/verify_import_authority.py
+
+      # Phase-2 delta 2: -rs/-rx were absent, so CI could not report which
+      # tests skipped or xfailed. That is what made an 18-vs-16 skip
+      # discrepancy unreconcilable from the base log. `set -o pipefail` is
+      # required: without it `tee` would mask a pytest failure and the job
+      # would report green.
       - name: Run offline pytest
-        run: python -m pytest -q
+        run: |
+          set -o pipefail
+          mkdir -p ci-artifacts "$TMPDIR"
+          python -m pytest -q -p no:cacheprovider -rfEsx 2>&1 \
+            | tee ci-artifacts/pytest.log
+
+      # Phase-2 delta 3: retain the pytest log/summary. Previously only the
+      # repo-health packet was uploaded, so a failing offline lane left no
+      # inspectable evidence behind.
+      - name: Upload pytest log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pytest-log
+          path: ci-artifacts/pytest.log
+          if-no-files-found: warn
 
   package-wheel-smoke:
     name: package / wheel smoke
