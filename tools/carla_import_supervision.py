@@ -247,16 +247,31 @@ class StorageGate:
     minimum_free_gb: dict = field(default_factory=dict)
     volumes: dict = field(default_factory=dict)
 
+    @staticmethod
+    def _volume_root(key) -> str:
+        """Resolve a threshold key to a filesystem root that can be measured.
+
+        A single-letter key names a Windows drive (``C`` -> ``C:\\``), which is
+        the historical contract and is preserved unchanged on Windows. Any other
+        key -- a POSIX mount point, a temporary directory anchor, an absolute
+        path -- is used verbatim so the gate measures real filesystems on every
+        platform instead of assuming drive letters exist.
+        """
+        key = str(key).strip()
+        if len(key) == 1 and key.isalpha():
+            return key.upper() + ":\\" if os.name == "nt" else key
+        return key
+
     def measure(self) -> dict:
         rows = {}
-        for letter in sorted({v[0].upper() for v in self.minimum_free_gb}):
-            root = letter + ":\\"
+        for key in sorted({str(v).strip() for v in self.minimum_free_gb}):
+            root = self._volume_root(key)
             if not os.path.isdir(root):
-                rows[letter] = {"error": "volume not present"}
+                rows[key] = {"error": "volume not present"}
                 continue
             u = shutil.disk_usage(root)
-            rows[letter] = {"total_gb": round(u.total / 1024 ** 3, 2),
-                            "free_gb": round(u.free / 1024 ** 3, 2)}
+            rows[key] = {"total_gb": round(u.total / 1024 ** 3, 2),
+                         "free_gb": round(u.free / 1024 ** 3, 2)}
         self.volumes = rows
         return rows
 

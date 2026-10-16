@@ -14,8 +14,10 @@ from __future__ import annotations
 import json
 import os
 import sys
+from pathlib import Path
 
 import pytest
+
 
 from tools.carla_import_supervision import (
     CHILD_FAILED,
@@ -252,8 +254,14 @@ class TestStorageGate:
         assert res["pass"] is False
         assert any(f.get("reason") == "unmeasurable" for f in res["failures"])
 
-    def test_real_volume_measures_free_space(self):
-        g = StorageGate(minimum_free_gb={"C": 0.001})
+    def test_real_volume_measures_free_space(self, tmp_path):
+        # The property under test is platform-neutral: a real, present volume
+        # with enough free space must be measured and reported as satisfied.
+        # A hard-coded "C" only names a drive on Windows, so the anchor of a
+        # real temporary path is used instead -- "C:\" on Windows, "/" on POSIX.
+        root = Path(tmp_path).anchor or os.path.abspath(os.sep)
+        g = StorageGate(minimum_free_gb={root: 0.001})
         res = g.evaluate()
-        assert "C" in res["satisfied"]
+        assert root in res["satisfied"]
+        assert res["satisfied"][root]["actual_free_gb"] >= 0.001
         assert res["pass"] is True
