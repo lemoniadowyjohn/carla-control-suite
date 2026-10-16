@@ -2,7 +2,8 @@
 
 Simulates ``probe``, ``server_version``, ``available_maps``, ``load_world``,
 ``reset_world``, ``acquire_tick``/``release_tick``, ``spawn_actor``,
-``destroy_actor``, ``attach_sensor``, ``apply_weather`` and ``read_settings``.
+``destroy_actor``, ``attach_sensor``/``detach_sensor``, ``apply_weather``
+and ``read_settings``.
 
 Determinism: every actor id, tick and sensor handle is derived from a
 monotonic counter, so two runs of the same script produce identical output.
@@ -82,6 +83,7 @@ class MockCarlaBackend:
         self._ids = itertools.count(1000)
         self._tick_ids = itertools.count(1)
         self._actor_ids: set[int] = set()
+        self._sensor_ids: set[str] = set()
         self._tick_holder: str = ""
         self._tick_issued: set[int] = set()
         self._world = WorldSettings(available=available)
@@ -176,7 +178,21 @@ class MockCarlaBackend:
 
     def attach_sensor(self, spec: Any, calibration: Any) -> Result:
         sensor_id = f"sensor-{next(self._ids)}"
+        self._sensor_ids.add(sensor_id)
         return Result.success(SensorBinding(sensor_id, True, getattr(calibration, "profile_id", "")))
+
+    def detach_sensor(self, sensor_id: str) -> Result:
+        if sensor_id not in self._sensor_ids:
+            return Result.failure(
+                f"sensor {sensor_id!r} is not attached",
+                error_class="RuntimeError",
+                error_source="ultimate_pipeline/gui/adapters/mock_backend.py",
+            )
+        self._sensor_ids.discard(sensor_id)
+        return Result.success(True)
+
+    def owned_sensor_ids(self) -> tuple[str, ...]:
+        return tuple(sorted(self._sensor_ids))
 
     # -- weather -----------------------------------------------------------
     def apply_weather(self, spec: WeatherSpec, token: CancellationToken | None = None) -> Result:
@@ -207,6 +223,8 @@ class MockCarlaBackend:
         failures: list[str] = []
         if self._actor_ids:
             failures.append(f"{len(self._actor_ids)} actors still alive: {sorted(self._actor_ids)}")
+        if self._sensor_ids:
+            failures.append(f"{len(self._sensor_ids)} sensors still attached: {sorted(self._sensor_ids)}")
         if self._tick_holder:
             failures.append(f"tick still granted to {self._tick_holder!r}")
         return failures
