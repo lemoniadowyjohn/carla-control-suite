@@ -35,6 +35,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
+from ultimate_pipeline.governance.single_writer import lock_paths
+
 SCHEMA_VERSION = "common-git-lock/v1"
 DEFAULT_TIMEOUT_SECONDS = 300  # 5 minutes max wait
 
@@ -106,16 +108,14 @@ class CommonGitLock:
 
 
 def _get_common_git_lock_path(repo_root: Path) -> Path:
-    """Get the path to the common Git lock file."""
-    repo_root = Path(repo_root).resolve()
-    git_dir = repo_root / ".git"
-    if not git_dir.exists():
-        raise RuntimeError(f"Not a Git repository: {repo_root}")
-    
-    # Lock file lives inside the .git directory so it's shared by all worktrees
-    lock_dir = git_dir / ".agent_locks"
-    lock_dir.mkdir(parents=True, exist_ok=True)
-    return lock_dir / "common_git_lock.json"
+    """Path of the repository-global shared-Git-metadata lock.
+
+    Anchored in the **common** Git directory, resolved by Git itself. A linked
+    worktree's ``.git`` is a file, so ``repo_root/".git"`` could never work for
+    one; worse, tolerating that would give each worktree a *different* lock and
+    silently stop excluding anybody.
+    """
+    return lock_paths.common_git_lock_path(repo_root)
 
 
 def _read_lock(repo_root: Path) -> Optional["CommonGitLock"]:
@@ -192,10 +192,6 @@ def acquire_common_git_lock(
         RuntimeError: If lock cannot be acquired within timeout.
     """
     repo_root = Path(repo_root).resolve()
-    git_dir = repo_root / ".git"
-    if not git_dir.exists():
-        raise RuntimeError(f"Not a Git repository: {repo_root}")
-    
     path = _get_common_git_lock_path(repo_root)
     path.parent.mkdir(parents=True, exist_ok=True)
     

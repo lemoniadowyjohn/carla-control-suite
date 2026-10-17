@@ -136,9 +136,35 @@ def test_lock_path_is_shared_by_every_worktree_of_the_repo(repo, linked_worktree
     assert cgl._get_common_git_lock_path(repo).is_relative_to(repo.resolve() / ".git")
 
 
+def test_linked_worktree_shares_the_main_checkout_lock(repo, linked_worktree):
+    """A linked worktree resolves to the SAME lock as the main checkout.
+
+    Previously ``repo_root/".git"`` was used, which is a *file* in a linked
+    worktree. That raised NotADirectoryError; and had it merely been tolerated,
+    every worktree would have computed its own path and the 'shared' lock would
+    not have excluded anybody.
+    """
+    from_main = cgl._get_common_git_lock_path(repo)
+    from_linked = cgl._get_common_git_lock_path(linked_worktree)
+
+    assert from_linked == from_main
+    assert from_linked.is_relative_to(repo.resolve() / ".git")
+
+
+def test_linked_worktree_acquires_the_same_lock(repo, linked_worktree):
+    lock = cgl.acquire_common_git_lock(linked_worktree, "git fetch")
+    try:
+        # Held from the linked worktree, therefore visible from the main one.
+        assert _read_raw(repo)["lock_id"] == lock.lock_id
+        with pytest.raises(RuntimeError, match="Common Git lock held by"):
+            cgl.acquire_common_git_lock(repo, "git push")
+    finally:
+        cgl.release_common_git_lock(linked_worktree, lock.lock_id)
+
+
 def test_lock_path_helper_rejects_a_non_repository(tmp_path):
     with pytest.raises(RuntimeError, match="Not a Git repository"):
-        cgl._get_common_git_lock_path(tmp_path)
+        cgl._get_common_git_lock_path(tmp_path / "not-a-repo")
 
 
 # --------------------------------------------------------------------------
@@ -639,14 +665,3 @@ def test_remove_lock_is_idempotent(repo):
     cgl._remove_lock(repo)
 
     assert not _lock_path(repo).exists()
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: _get_common_git_lock_path() treats any existing .git as a directory, so "
-           "passing a linked worktree root raises NotADirectoryError instead of the documented "
-           "RuntimeError('Not a Git repository')",
-)
-def test_linked_worktree_root_raises_a_clear_runtime_error(repo, linked_worktree):
-    with pytest.raises(RuntimeError, match="Not a Git repository"):
-        cgl.acquire_common_git_lock(linked_worktree, "git fetch")
