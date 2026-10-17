@@ -14,7 +14,9 @@ from __future__ import annotations
 import json
 import os
 import signal
+import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -88,6 +90,37 @@ class TestExitStatus:
         assert r["ntstatus_name"] == "UNKNOWN_NTSTATUS"
         assert r["is_crash"] is False
         assert r["classification"] == NONZERO_EXIT
+
+    def test_posix_sigint_returncode_is_externally_interrupted(self):
+        # The contract gap: -SIGINT used to fall through to UNKNOWN_NTSTATUS
+        # and read as a plain nonzero exit, so a signal-killed child was
+        # reported as a failure instead of an interruption.
+        r = classify_exit_status(-signal.SIGINT)
+        assert r["classification"] == EXTERNALLY_INTERRUPTED
+        assert r["is_interrupted"] is True
+        assert r["is_crash"] is False
+        assert r["signal_name"] == "SIGINT"
+        assert r["returncode"] == -signal.SIGINT
+
+    def test_posix_sigterm_returncode_is_externally_interrupted(self):
+        r = classify_exit_status(-signal.SIGTERM)
+        assert r["classification"] == EXTERNALLY_INTERRUPTED
+        assert r["is_interrupted"] is True
+
+    def test_posix_fault_signal_is_a_crash_not_an_interrupt(self):
+        r = classify_exit_status(-signal.SIGSEGV)
+        assert r["classification"] == CRASH
+        assert r["is_crash"] is True
+        assert r["is_interrupted"] is False
+        assert r["signal_name"] == "SIGSEGV"
+
+    def test_unlisted_negative_signal_is_a_plain_nonzero_exit(self):
+        # SIGKILL is deliberately not promoted to interrupted without evidence.
+        r = classify_exit_status(-9)
+        assert r["classification"] == NONZERO_EXIT
+        assert r["is_interrupted"] is False
+        assert r["is_crash"] is False
+        assert "signal 9" in r["detail"]
 
 
 # ---------------------------------------------------------------------------
@@ -245,6 +278,392 @@ class TestRunSupervised:
         assert rec["parent_pid"] == os.getpid()
         assert rec["child_pid"] is not None
         assert rec["start_utc"] and rec["end_utc"]
+
+
+# ---------------------------------------------------------------------------
+# Interrupt contract (T_int latch / T_done first-wins)
+# ---------------------------------------------------------------------------
+def _pid_alive(pid: int) -> bool:
+    """Liveness probe that never signals the pid.
+
+    os.kill(pid, 0) is POSIX-only; on Windows any nonzero sig passed to
+    os.kill is a TerminateProcess call, which would kill the very process
+    under test. Windows therefore uses OpenProcess/GetExitCodeProcess.
+    """
+    if os.name == "posix":
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+    import ctypes
+    handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)
+    if not handle:
+        return False
+    try:
+        code = ctypes.c_ulong()
+        ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+        return code.value == 259      # STILL_ACTIVE
+    finally:
+        ctypes.windll.kernel32.CloseHandle(handle)
+
+
+class _FakeChild:
+    """Popen-compatible stand-in: deterministic, no real process, no timing."""
+
+    def __init__(self):
+        self.pid = 424242
+        self.returncode = None
+        self._rc = None
+        self.terminate_calls = 0
+        self.kill_calls = 0
+        self.wait_calls = 0
+
+    def poll(self):
+        return self._rc
+
+    def _die(self, rc):
+        self._rc = rc
+        self.returncode = rc
+
+    def terminate(self):
+        self.terminate_calls += 1
+
+    def kill(self):
+        self.kill_calls += 1
+
+    def wait(self, timeout=None):
+        self.wait_calls += 1
+        return self._rc
+
+    def communicate(self, timeout=None):
+        raise NotImplementedError
+
+
+class _InterruptibleChild(_FakeChild):
+    """Spawned, then interrupted while waiting (post-readiness, pre-execution)."""
+
+    def communicate(self, timeout=None):
+        raise KeyboardInterrupt
+
+    def terminate(self):
+        self.terminate_calls += 1
+        self._die(-15)
+
+
+class _UnkillableChild(_FakeChild):
+    """Termination itself fails at every escalation step."""
+
+    def communicate(self, timeout=None):
+        raise KeyboardInterrupt
+
+    def terminate(self):
+        self.terminate_calls += 1
+        raise OSError("terminate refused")
+
+    def kill(self):
+        self.kill_calls += 1
+        raise OSError("kill refused")
+
+    def wait(self, timeout=None):
+        self.wait_calls += 1
+        raise subprocess.TimeoutExpired("wait", timeout if timeout is not None else 0)
+
+
+class TestInterruptContract:
+    """The Phase B contract: one latch point, completion-first-wins, receipts."""
+
+    def _state(self, tmp_path, name="s.json"):
+        st = ImportState(state_path=str(tmp_path / name), run_id="t",
+                         parent_pid=os.getpid())
+        st.transition("STARTING")
+        return st
+
+    @staticmethod
+    def _receipt(tmp_path):
+        return json.loads(
+            (tmp_path / "COMMANDLET_EXECUTION_RECEIPT.json").read_text(
+                encoding="utf-8"))
+
+    @staticmethod
+    def _events(rec):
+        return [e["event"] for e in rec["event_order"]]
+
+    @staticmethod
+    def _install_interrupting_communicate(monkeypatch, interrupts=1):
+        real = subprocess.Popen.communicate
+
+        def communicate_interrupting(self, timeout=None):
+            handler = signal.getsignal(signal.SIGINT)
+            for _ in range(interrupts):
+                handler(signal.SIGINT, None)
+            return real(self, timeout=timeout)
+
+        monkeypatch.setattr(subprocess.Popen, "communicate",
+                            communicate_interrupting)
+
+    def test_interrupt_during_initialization_never_spawns_a_child(
+            self, tmp_path, monkeypatch):
+        st = self._state(tmp_path)
+
+        def interrupt_at_spawn(*args, **kwargs):
+            raise KeyboardInterrupt
+
+        monkeypatch.setattr(subprocess, "Popen", interrupt_at_spawn)
+        rec = run_supervised([sys.executable, "-c", "pass"], state=st)
+        assert rec["interrupted"] is True
+        assert rec["child_pid"] is None
+        assert rec["child_alive_at_interrupt"] is None
+        assert rec["completion_observed"] is False
+        assert st.state == "INTERRUPTED"
+        events = self._events(rec)
+        assert "interrupt_latched" in events
+        assert "spawned" not in events
+        assert self._receipt(tmp_path)["interrupted"] is True
+
+    def test_interrupt_after_readiness_terminates_and_reaps_child(
+            self, tmp_path, monkeypatch):
+        st = self._state(tmp_path)
+        fake = _InterruptibleChild()
+        monkeypatch.setattr(subprocess, "Popen", lambda *a, **k: fake)
+        rec = run_supervised([sys.executable, "-c", "pass"], state=st)
+        assert rec["interrupted"] is True
+        assert rec["child_alive_at_interrupt"] is True
+        assert rec["termination_classification"]["ntstatus_name"] == \
+            "PYTHON_KEYBOARDINTERRUPT"
+        assert fake.terminate_calls == 1
+        assert rec["cleanup"]["outcome"] == "already_exited"
+        assert rec["child_return_code"] is not None
+        assert st.state == "INTERRUPTED"
+        events = self._events(rec)
+        assert "spawned" in events
+        assert "completion_observed" not in events
+
+    def test_interrupt_during_execution_kills_child_and_latches_first(
+            self, tmp_path, monkeypatch):
+        st = self._state(tmp_path)
+        self._install_interrupting_communicate(monkeypatch)
+        rec = run_supervised(
+            [sys.executable, "-c", "import time; time.sleep(30)"], state=st)
+        assert rec["interrupted"] is True
+        assert rec["child_alive_at_interrupt"] is True
+        assert rec["termination_classification"]["classification"] == \
+            EXTERNALLY_INTERRUPTED
+        assert rec["cleanup"]["outcome"] in ("already_exited",
+                                             "reaped_after_terminate")
+        assert st.state == "INTERRUPTED"
+        events = self._events(rec)
+        # T_int precedes T_done in the recorded ordering.
+        assert events.index("interrupt_latched") < \
+            events.index("completion_observed")
+        assert not _pid_alive(rec["child_pid"]), "interrupted child left running"
+
+    def test_interrupt_after_completion_keeps_the_success_outcome(
+            self, tmp_path, monkeypatch):
+        st = self._state(tmp_path)
+        real_classify = classify_exit_status
+        calls = {"n": 0}
+
+        def classify_raised_once(rc):
+            if calls["n"] == 0:
+                calls["n"] += 1
+                raise KeyboardInterrupt
+            return real_classify(rc)
+
+        monkeypatch.setattr("tools.carla_import_supervision.classify_exit_status",
+                            classify_raised_once)
+        rec = run_supervised([sys.executable, "-c", "pass"], state=st)
+        assert rec["interrupted"] is False
+        assert rec["interrupt_after_completion"] is True
+        assert rec["late_keyboard_interrupt"] is True
+        assert rec["termination_classification"]["classification"] == CLEAN_EXIT
+        assert rec["termination_classification"]["is_success"] is True
+        assert st.state == "VALIDATING_OUTPUT"
+
+    @pytest.mark.parametrize("ordering", ["interrupt_first", "completion_first"])
+    def test_simultaneous_interrupt_and_completion_linearise_deterministically(
+            self, tmp_path, monkeypatch, ordering):
+        st = self._state(tmp_path)
+        if ordering == "interrupt_first":
+            # T_int before T_done: the latch fires while the child is alive.
+            self._install_interrupting_communicate(monkeypatch)
+            rec = run_supervised(
+                [sys.executable, "-c", "import time; time.sleep(30)"], state=st)
+            assert rec["interrupted"] is True
+            assert rec["interrupt_after_completion"] is False
+            assert rec["child_alive_at_interrupt"] is True
+            assert st.state == "INTERRUPTED"
+        else:
+            # T_done before T_int: the child is reaped before the latch runs.
+            real_classify = classify_exit_status
+
+            def classify_after_child_exit(rc):
+                signal.getsignal(signal.SIGINT)(signal.SIGINT, None)
+                return real_classify(rc)
+
+            monkeypatch.setattr(
+                "tools.carla_import_supervision.classify_exit_status",
+                classify_after_child_exit)
+            rec = run_supervised([sys.executable, "-c", "pass"], state=st)
+            assert rec["interrupted"] is False
+            assert rec["interrupt_after_completion"] is True
+            assert rec["child_alive_at_interrupt"] is False
+            assert rec["termination_classification"]["classification"] == \
+                CLEAN_EXIT
+            assert st.state == "VALIDATING_OUTPUT"
+
+    def test_repeated_interrupts_produce_exactly_one_latched_outcome(
+            self, tmp_path, monkeypatch):
+        st = self._state(tmp_path)
+        self._install_interrupting_communicate(monkeypatch, interrupts=3)
+        rec = run_supervised(
+            [sys.executable, "-c", "import time; time.sleep(30)"], state=st)
+        assert rec["interrupted"] is True
+        assert rec["interrupt_repeats"] == 2
+        events = self._events(rec)
+        assert events.count("interrupt_latched") == 1
+        assert events.count("interrupt_repeated") == 2
+        assert st.state == "INTERRUPTED"
+
+    def test_startup_failure_writes_receipt_and_never_dangles_running(
+            self, tmp_path, monkeypatch):
+        st = self._state(tmp_path)
+
+        def spawn_fails(*args, **kwargs):
+            raise FileNotFoundError("UE4Editor-Cmd.exe not found")
+
+        monkeypatch.setattr(subprocess, "Popen", spawn_fails)
+        rec = run_supervised(["UE4Editor-Cmd.exe", "proj.uproject"], state=st)
+        assert rec["interrupted"] is False
+        assert rec["child_pid"] is None
+        assert rec["termination_classification"]["classification"] == \
+            "SPAWN_FAILURE"
+        assert rec["terminal_reason"] == "SPAWN_FAILURE"
+        assert st.state == CHILD_FAILED
+        on_disk = json.loads((tmp_path / "s.json").read_text(encoding="utf-8"))
+        assert on_disk["state"] == CHILD_FAILED
+        assert "spawn_failed" in self._events(rec)
+        assert self._receipt(tmp_path)["terminal_reason"] == "SPAWN_FAILURE"
+
+    def test_termination_failure_is_recorded_honestly(self, tmp_path,
+                                                      monkeypatch):
+        st = self._state(tmp_path)
+        fake = _UnkillableChild()
+        monkeypatch.setattr(subprocess, "Popen", lambda *a, **k: fake)
+        rec = run_supervised([sys.executable, "-c", "pass"], state=st)
+        assert rec["interrupted"] is True
+        assert rec["cleanup"]["outcome"] == "survived_escalation"
+        events = self._events(rec)
+        assert "terminate_failed" in events
+        assert "kill_failed" in events
+        assert "child_survived_escalation" in events
+        assert st.state == "INTERRUPTED"
+        assert self._receipt(tmp_path)["cleanup"]["outcome"] == \
+            "survived_escalation"
+
+    def test_interrupted_child_is_never_left_running(self, tmp_path,
+                                                     monkeypatch):
+        st = self._state(tmp_path)
+        self._install_interrupting_communicate(monkeypatch)
+        rec = run_supervised(
+            [sys.executable, "-c", "import time; time.sleep(30)"], state=st)
+        assert rec["child_pid"] is not None
+        assert rec["cleanup"] is not None
+        assert rec["cleanup"]["outcome"] != "survived_escalation"
+        assert not _pid_alive(rec["child_pid"])
+        assert st.state == "INTERRUPTED"
+
+    @pytest.mark.parametrize(
+        "child_code,return_code,expect_state,expect_class",
+        [("pass", 0, "VALIDATING_OUTPUT", CLEAN_EXIT),
+         ("raise SystemExit(4)", 4, CHILD_FAILED, NONZERO_EXIT)])
+    def test_receipt_state_and_classification_agree(
+            self, tmp_path, child_code, return_code, expect_state,
+            expect_class):
+        st = self._state(tmp_path)
+        rec = run_supervised([sys.executable, "-c", child_code], state=st)
+        cls = rec["termination_classification"]
+        assert cls["classification"] == expect_class
+        assert rec["terminal_reason"] == cls["classification"]
+        assert rec["child_return_code"] == return_code
+        assert st.state == expect_state
+        assert cls["is_success"] is (expect_state == "VALIDATING_OUTPUT")
+        assert cls["is_interrupted"] is (expect_state == "INTERRUPTED")
+        assert rec["interrupted"] is (expect_state == "INTERRUPTED")
+
+    @pytest.mark.skipif(os.name != "posix",
+                        reason="POSIX reports signal deaths as -SIGINT")
+    def test_posix_signal_death_is_interrupted_end_to_end(self, tmp_path):
+        st = self._state(tmp_path)
+        rec = run_supervised(
+            [sys.executable, "-c",
+             "import os, signal;"
+             "signal.signal(signal.SIGINT, signal.SIG_DFL);"
+             "os.kill(os.getpid(), signal.SIGINT)"],
+            state=st)
+        cls = rec["termination_classification"]
+        assert cls["returncode"] == -signal.SIGINT
+        assert cls["classification"] == EXTERNALLY_INTERRUPTED
+        assert cls["is_interrupted"] is True
+        assert rec["interrupted"] is True
+        assert rec["terminal_reason"] == EXTERNALLY_INTERRUPTED
+        assert st.state == "INTERRUPTED"
+
+    @pytest.mark.skipif(os.name != "posix",
+                        reason="POSIX signal delivery to a blocked supervisor")
+    def test_real_sigint_latched_end_to_end(self, tmp_path):
+        """One real-signal test: SIGINT to a blocked supervisor mid-child."""
+        root = str(Path(__file__).resolve().parents[2])
+        marker = tmp_path / "child_started.txt"
+        state_path = tmp_path / "active_import_state.json"
+        helper = tmp_path / "sigint_helper.py"
+        helper.write_text(
+            "import os, sys\n"
+            f"sys.path.insert(0, {root!r})\n"
+            "from tools.carla_import_supervision import ImportState, run_supervised\n"
+            "state_path, marker = sys.argv[1], sys.argv[2]\n"
+            "st = ImportState(state_path=state_path, run_id='sigint-e2e',\n"
+            "                 parent_pid=os.getpid())\n"
+            "st.transition('STARTING')\n"
+            "child = [sys.executable, '-c',\n"
+            "         'import os, pathlib, sys, time; '\n"
+            "         'pathlib.Path(sys.argv[1]).write_text(str(os.getpid())); '\n"
+            "         'time.sleep(30)', marker]\n"
+            "run_supervised(child, state=st)\n"
+            "print('SUPERVISOR_DONE')\n",
+            encoding="utf-8")
+        helper_proc = subprocess.Popen(
+            [sys.executable, str(helper), str(state_path), str(marker)],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            cwd=root)
+        # Rendezvous on the child-started event (bounded), not an outcome race:
+        # the marker exists only after the child spawned, and the SIGINT handler
+        # is installed before the spawn, so a live marker proves the handler.
+        deadline = time.monotonic() + 20.0
+        while not marker.exists() and time.monotonic() < deadline:
+            if helper_proc.poll() is not None:
+                break
+            time.sleep(0.05)
+        if not marker.exists():
+            _out, err = helper_proc.communicate(timeout=30)
+            pytest.fail("supervisor helper never started its child: %s" % err)
+        os.kill(helper_proc.pid, signal.SIGINT)
+        out, err = helper_proc.communicate(timeout=30)
+        assert helper_proc.returncode == 0, (out, err)
+        receipt = self._receipt(tmp_path)
+        assert receipt["interrupted"] is True
+        assert receipt["termination_classification"]["classification"] == \
+            EXTERNALLY_INTERRUPTED
+        assert receipt["termination_classification"]["is_success"] is False
+        assert receipt["cleanup"]["outcome"] in ("already_exited",
+                                                 "reaped_after_terminate",
+                                                 "reaped_after_kill")
+        on_disk = json.loads(state_path.read_text(encoding="utf-8"))
+        assert on_disk["state"] == "INTERRUPTED"
+        child_pid = int(marker.read_text())
+        assert not _pid_alive(child_pid), "interrupted child was left running"
 
 
 # ---------------------------------------------------------------------------

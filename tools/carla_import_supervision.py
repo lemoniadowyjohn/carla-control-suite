@@ -14,13 +14,24 @@ alive. Two specific defects are addressed:
    atomically, and :func:`write_receipt` always emits a receipt, including on the
    interrupt path.
 
+3. Interrupts had no linearisation contract. A SIGINT landing after the child
+   had already completed could rewrite a success into INTERRUPTED, the POSIX
+   child-death code ``-SIGINT`` was classified as a plain nonzero exit, the
+   interrupt path left the child running, and a Popen failure produced no
+   receipt at all. :func:`run_supervised` now latches the first interrupt at a
+   single linearisation point (child ``poll()`` on latch entry), reaps an
+   interrupted child with terminate -> bounded wait -> kill escalation, lets a
+   completion that was observed first stand as-is (recording the late
+   interrupt), and always writes a receipt with the event ordering.
+
 Design constraints:
   * The interactive editor must never be treated as the import child. Role is
     detected from the executable name: UE4Editor-Cmd.exe and UE4Editor.exe
     launched with ``-run=`` are commandlet invocations; a plain UE4Editor.exe is
     interactive.
   * No sleep-based synchronisation and no polling loops in this module; it only
-    classifies and records.
+    classifies and records. The interrupt-reap path uses bounded waits that are
+    escalation budgets for one dying child, never coordination between parties.
   * Pure stdlib, no Unreal dependency, so it is unit testable on any host.
 """
 from __future__ import annotations
@@ -28,6 +39,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import signal
 import subprocess
 import time
 from dataclasses import asdict, dataclass, field
@@ -71,16 +83,68 @@ CRASH_STATUSES = frozenset(
 )
 
 
+def _posix_signal_table() -> dict[int, tuple[str, str, str]]:
+    """Map negative return codes (POSIX signal deaths) to a classification.
+
+    Built at import time from whatever the platform defines, so the table is
+    inert on Windows (which never reports negative return codes) without
+    pretending signals it does not have. SIGINT/SIGTERM are external
+    interruptions; the fatal fault signals are crashes; everything else stays a
+    plain nonzero exit rather than being promoted without evidence.
+    """
+    wanted = [
+        ("SIGINT", "interrupt", "terminated by SIGINT"),
+        ("SIGTERM", "interrupt", "terminated by SIGTERM"),
+        ("SIGSEGV", "crash", "fatal SIGSEGV"),
+        ("SIGABRT", "crash", "fatal SIGABRT"),
+        ("SIGBUS", "crash", "fatal SIGBUS"),
+        ("SIGFPE", "crash", "fatal SIGFPE"),
+        ("SIGILL", "crash", "fatal SIGILL"),
+    ]
+    table: dict[int, tuple[str, str, str]] = {}
+    for name, kind, detail in wanted:
+        num = getattr(signal, name, None)
+        if isinstance(num, int) and num > 0:
+            table[-num] = (name, detail, kind)
+    return table
+
+
+POSIX_SIGNALS = _posix_signal_table()
+
+
 def classify_exit_status(returncode: int | None) -> dict[str, Any]:
     """Classify a child return code.
 
     A control-event exit is reported as EXTERNALLY_INTERRUPTED and explicitly
     NOT as a crash, and NOT as success. This is the classification the previous
-    run required and did not have.
+    run required and did not have. The same rule holds for POSIX signal deaths:
+    ``-SIGINT`` and ``-SIGTERM`` are interruptions, fatal fault signals are
+    crashes, and any other negative code is a nonzero exit -- never an
+    unrecognised NTSTATUS.
     """
     if returncode is None:
         return {"returncode": None, "classification": "UNKNOWN_NO_RETURN_CODE",
                 "ntstatus_name": None, "detail": "child produced no return code",
+                "is_crash": False, "is_success": False, "is_interrupted": False}
+
+    if returncode < 0:
+        posix = POSIX_SIGNALS.get(returncode)
+        if posix is not None:
+            sig_name, sig_detail, kind = posix
+            interrupted = kind == "interrupt"
+            return {
+                "returncode": returncode,
+                "signal_name": sig_name,
+                "classification": EXTERNALLY_INTERRUPTED if interrupted else CRASH,
+                "ntstatus_name": None,
+                "detail": sig_detail,
+                "is_crash": not interrupted,
+                "is_success": False,
+                "is_interrupted": interrupted,
+            }
+        return {"returncode": returncode, "classification": NONZERO_EXIT,
+                "ntstatus_name": None,
+                "detail": "killed by unlisted signal %d" % -returncode,
                 "is_crash": False, "is_success": False, "is_interrupted": False}
 
     code = returncode & 0xFFFFFFFF
@@ -303,9 +367,65 @@ class StorageGate:
 # ---------------------------------------------------------------------------
 def write_receipt(path: str, payload: dict) -> str:
     os.makedirs(os.path.dirname(os.path.abspath(path)) or ".", exist_ok=True)
-    with open(path, "w", encoding="utf-8") as fh:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=2, sort_keys=True, default=str)
+    os.replace(tmp, path)      # atomic: a reader never sees a half receipt
     return path
+
+
+# Escalation budgets for reaping one interrupted child: bounded waits on a
+# dying process, not synchronisation between cooperating parties.
+_REAP_TERMINATE_GRACE_S = 2.0
+_REAP_KILL_GRACE_S = 5.0
+
+
+def _utc_stamp() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _reap_interrupted_child(proc, events: list) -> dict:
+    """Reap an interrupt-path child: terminate -> bounded wait -> kill escalation.
+
+    Every outcome is returned for honest recording, including a child that
+    survives escalation (unkillable / foreign-owned). A ``None`` proc means the
+    interrupt latched before the child existed, which is also an outcome, not
+    an omission.
+    """
+    if proc is None:
+        return {"outcome": "no_child", "returncode": None}
+    rc = proc.poll()
+    if rc is not None:
+        events.append({"event": "child_already_exited", "utc": _utc_stamp(),
+                       "returncode": rc})
+        return {"outcome": "already_exited", "returncode": rc}
+    try:
+        proc.terminate()
+        events.append({"event": "terminate_sent", "utc": _utc_stamp()})
+    except OSError as exc:
+        events.append({"event": "terminate_failed", "utc": _utc_stamp(),
+                       "error": repr(exc)})
+    try:
+        rc = proc.wait(timeout=_REAP_TERMINATE_GRACE_S)
+        events.append({"event": "child_reaped", "utc": _utc_stamp(),
+                       "returncode": rc, "escalation": "terminate"})
+        return {"outcome": "reaped_after_terminate", "returncode": rc}
+    except subprocess.TimeoutExpired:
+        pass
+    try:
+        proc.kill()
+        events.append({"event": "kill_sent", "utc": _utc_stamp()})
+    except OSError as exc:
+        events.append({"event": "kill_failed", "utc": _utc_stamp(),
+                       "error": repr(exc)})
+    try:
+        rc = proc.wait(timeout=_REAP_KILL_GRACE_S)
+        events.append({"event": "child_reaped", "utc": _utc_stamp(),
+                       "returncode": rc, "escalation": "kill"})
+        return {"outcome": "reaped_after_kill", "returncode": rc}
+    except subprocess.TimeoutExpired:
+        events.append({"event": "child_survived_escalation", "utc": _utc_stamp()})
+        return {"outcome": "survived_escalation", "returncode": None}
 
 
 def run_supervised(command: list[str], *, state: ImportState,
@@ -316,79 +436,261 @@ def run_supervised(command: list[str], *, state: ImportState,
 
     Always produces a receipt, including on KeyboardInterrupt. Never kills
     unrelated UE4Editor sessions: it only manages the process it started.
+
+    Interrupt contract (linearised, no sleep-based synchronisation):
+
+    * **T_int** is the first interrupt observation (SIGINT handler entry or the
+      first caught KeyboardInterrupt); its first action is ``poll()`` of the
+      child. Child alive at T_int -> INTERRUPTED is latched and the child is
+      reaped. Repeated interrupts change nothing: the first latch wins, later
+      ones are recorded as events.
+    * **T_done** is the return of ``communicate()`` (terminal child state
+      observed). An interrupt seen only after T_done never rewrites the
+      outcome; it is recorded as ``interrupt_after_completion`` (and
+      ``late_keyboard_interrupt`` for a KeyboardInterrupt).
+    * A startup (Popen) failure writes a receipt and a terminal state;
+      RUNNING is only entered once the child exists, so it can never dangle.
     """
     role = detect_process_role(command[0], command[1:])
-    started = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    started = _utc_stamp()
     t0 = time.time()
-    if state.state == "STARTING":
-        state.transition("RUNNING", executable=command[0])
-    else:
-        state.flush()
+    events: list = []
 
-    out_fh = open(stdout_path, "w", encoding="utf-8") if stdout_path else None
-    err_fh = open(stderr_path, "w", encoding="utf-8") if stderr_path else None
-    proc = None
-    classification = None
-    detail = ""
+    def _event(name: str, **fields: Any) -> None:
+        events.append({"event": name, "utc": _utc_stamp(), **fields})
+
+    latch: dict[str, Any] = {"interrupted": False, "via": None,
+                             "alive_at_t_int": None, "utc": None, "repeats": 0}
+    proc_holder: dict[str, Any] = {"proc": None}
+    completion: dict[str, Any] = {"observed": False, "rc": None}
+    _event("supervision_start")
+
+    def _request_interrupt(via: str, signum: int | None = None) -> None:
+        if latch["interrupted"]:
+            latch["repeats"] += 1
+            _event("interrupt_repeated", via=via, signum=signum)
+            return
+        latch["interrupted"] = True
+        latch["via"] = via
+        latch["utc"] = _utc_stamp()
+        proc = proc_holder["proc"]
+        if proc is None:
+            latch["alive_at_t_int"] = None
+            _event("interrupt_latched", via=via, signum=signum,
+                   phase="pre_spawn", alive_at_t_int=None)
+            return
+        alive = proc.poll() is None
+        latch["alive_at_t_int"] = alive
+        _event("interrupt_latched", via=via, signum=signum,
+               phase="post_spawn", alive_at_t_int=alive)
+        if alive:
+            try:
+                proc.terminate()
+                _event("terminate_sent", reason="interrupt_latch")
+            except OSError as exc:
+                _event("terminate_failed", reason="interrupt_latch",
+                       error=repr(exc))
+
+    def _sig_handler(signum: int, frame: Any) -> None:
+        _request_interrupt("signal", signum=signum)
+
+    previous_sigint = None
     try:
-        proc = subprocess.Popen(command, cwd=cwd, stdout=out_fh or subprocess.PIPE,
-                                stderr=err_fh or subprocess.PIPE)
-        state.child_pid = proc.pid
-        state.flush()
-        stdout, stderr = proc.communicate(timeout=timeout_sec)
-        rc = proc.returncode
-        classification = classify_exit_status(rc)
-        if isinstance(stdout, bytes):
-            stdout = stdout.decode("utf-8", "replace")
-        if isinstance(stderr, bytes):
-            stderr = stderr.decode("utf-8", "replace")
-        detail = stderr[-4000:] if stderr else ""
-    except KeyboardInterrupt:
-        classification = {
-            "returncode": None, "classification": EXTERNALLY_INTERRUPTED,
-            "ntstatus_name": "PYTHON_KEYBOARDINTERRUPT",
-            "detail": "KeyboardInterrupt in the supervising wrapper",
-            "is_crash": False, "is_success": False, "is_interrupted": True}
-        detail = "KeyboardInterrupt: child left running; state recorded INTERRUPTED"
-    except subprocess.TimeoutExpired:
-        classification = {
-            "returncode": None, "classification": "CHILD_TIMEOUT",
-            "ntstatus_name": None, "detail": "timeout after %ss" % timeout_sec,
-            "is_crash": False, "is_success": False, "is_interrupted": False}
+        previous_sigint = signal.signal(signal.SIGINT, _sig_handler)
+    except (ValueError, OSError) as exc:
+        # Non-main thread: the exception path below still honours the contract.
+        _event("sigint_latch_unavailable", error=repr(exc))
+
+    try:
+        out_fh = None
+        err_fh = None
+        proc = None
+        classification: dict | None = None
+        detail = ""
+        stdout_text = stderr_text = None
+        spawn_error: OSError | None = None
+        ki_raised = False
+        timed_out = False
+
+        if state.state != "STARTING":
+            state.flush()
+
+        try:
+            if stdout_path:
+                out_fh = open(stdout_path, "w", encoding="utf-8")
+            if stderr_path:
+                err_fh = open(stderr_path, "w", encoding="utf-8")
+
+            if not latch["interrupted"]:
+                proc = subprocess.Popen(
+                    command, cwd=cwd,
+                    stdout=out_fh or subprocess.PIPE,
+                    stderr=err_fh or subprocess.PIPE)
+                proc_holder["proc"] = proc
+                _event("spawned", child_pid=proc.pid)
+                state.child_pid = proc.pid
+                if state.state == "STARTING":
+                    state.transition("RUNNING", executable=command[0])
+                else:
+                    state.flush()
+            else:
+                _event("spawn_skipped", reason="interrupt_latched_pre_spawn")
+
+            if proc is not None and not latch["interrupted"]:
+                stdout_text, stderr_text = proc.communicate(timeout=timeout_sec)
+                completion["observed"] = True
+                completion["rc"] = proc.returncode
+                _event("completion_observed", returncode=proc.returncode)
+                classification = classify_exit_status(proc.returncode)
+                if isinstance(stdout_text, bytes):
+                    stdout_text = stdout_text.decode("utf-8", "replace")
+                if isinstance(stderr_text, bytes):
+                    stderr_text = stderr_text.decode("utf-8", "replace")
+                detail = stderr_text[-4000:] if stderr_text else ""
+        except KeyboardInterrupt:
+            ki_raised = True
+            if completion["observed"]:
+                _event("late_keyboard_interrupt", phase="supervised_block")
+            else:
+                _request_interrupt("keyboard_interrupt")
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            _event("timeout_expired", timeout_sec=timeout_sec)
+        except OSError as exc:
+            spawn_error = exc
+            _event("spawn_failed", error=repr(exc))
+        finally:
+            if out_fh:
+                out_fh.close()
+            if err_fh:
+                err_fh.close()
+
+        # ---- outcome linearisation ------------------------------------
+        if completion["observed"] and classification is None:
+            # Classification was interrupted after T_done; recompute it: the
+            # child's terminal state, not the interrupt, decides the outcome.
+            classification = classify_exit_status(completion["rc"])
+
+        cleanup = None
+        interrupted_outcome = False
+        interrupt_after_completion = False
+        late_keyboard_interrupt = False
+
+        if ki_raised and completion["observed"]:
+            # Case E: T_done precedes the KeyboardInterrupt; the outcome stands.
+            late_keyboard_interrupt = True
+            interrupt_after_completion = True
+            _event("outcome_stood_after_completion", via="keyboard_interrupt")
+        elif (latch["interrupted"] and completion["observed"]
+              and latch["alive_at_t_int"] is False):
+            # Case D: the child had already exited when T_int observed it.
+            interrupt_after_completion = True
+            _event("outcome_stood_after_completion", via=latch["via"])
+        elif latch["interrupted"] or ki_raised:
+            # Cases B/C: child alive (or not yet existing) at T_int.
+            interrupted_outcome = True
+            cleanup = _reap_interrupted_child(proc, events)
+            classification = {
+                "returncode": proc.returncode if proc is not None else None,
+                "classification": EXTERNALLY_INTERRUPTED,
+                "ntstatus_name": ("PYTHON_KEYBOARDINTERRUPT"
+                                  if latch["via"] == "keyboard_interrupt"
+                                  else "SUPERVISOR_SIGINT"),
+                "detail": ("interrupt latched at T_int (via=%s, "
+                           "alive_at_t_int=%s); cleanup=%s; repeats=%d"
+                           % (latch["via"], latch["alive_at_t_int"],
+                              cleanup.get("outcome"), latch["repeats"])),
+                "is_crash": False,
+                "is_success": False,
+                "is_interrupted": True,
+            }
+            detail = classification["detail"]
+        elif spawn_error is not None:
+            classification = {
+                "returncode": None,
+                "classification": "SPAWN_FAILURE",
+                "ntstatus_name": None,
+                "detail": "%s: %s" % (type(spawn_error).__name__, spawn_error),
+                "is_crash": False, "is_success": False, "is_interrupted": False,
+            }
+            detail = classification["detail"]
+        elif timed_out:
+            classification = {
+                "returncode": None, "classification": "CHILD_TIMEOUT",
+                "ntstatus_name": None,
+                "detail": "timeout after %ss" % timeout_sec,
+                "is_crash": False, "is_success": False, "is_interrupted": False,
+            }
+
+        if classification is None:      # defensive: receipts are always complete
+            classification = classify_exit_status(completion["rc"]
+                                                  if completion["observed"]
+                                                  else None)
+
+        ended = _utc_stamp()
+        receipt = {
+            "schema": "commandlet_execution_receipt/v1",
+            "run_id": state.run_id,
+            "command": command,
+            "process_role": role,
+            "parent_pid": state.parent_pid,
+            "child_pid": proc.pid if proc else None,
+            "start_utc": started,
+            "end_utc": ended,
+            "duration_seconds": round(time.time() - t0, 3),
+            "child_return_code": proc.returncode if proc else None,
+            "termination_classification": classification,
+            "terminal_reason": classification["classification"],
+            "stdout_path": stdout_path,
+            "stderr_path": stderr_path,
+            "stderr_tail": detail,
+            "interrupted": interrupted_outcome,
+            "interrupt_after_completion": interrupt_after_completion,
+            "late_keyboard_interrupt": late_keyboard_interrupt,
+            "child_alive_at_interrupt": (latch["alive_at_t_int"]
+                                         if latch["interrupted"] else None),
+            "interrupt_latched_via": latch["via"],
+            "interrupt_repeats": latch["repeats"],
+            "completion_observed": completion["observed"],
+            "cleanup": cleanup,
+            "event_order": list(events),
+        }
+
+        def _record_terminal_state() -> None:
+            if interrupted_outcome:
+                state.transition("INTERRUPTED",
+                                 terminal_reason=classification["classification"],
+                                 return_code=classification.get("returncode"))
+            elif classification.get("is_success"):
+                state.transition("VALIDATING_OUTPUT",
+                                 terminal_reason="child exited 0")
+            else:
+                state.transition("CHILD_FAILED",
+                                 terminal_reason=classification["classification"],
+                                 return_code=classification.get("returncode"))
+
+        receipt_path = os.path.join(
+            os.path.dirname(os.path.abspath(state.state_path)),
+            "COMMANDLET_EXECUTION_RECEIPT.json")
+        try:
+            write_receipt(receipt_path, receipt)
+        except KeyboardInterrupt:
+            # A second Ctrl+C during recording must not cost the receipt.
+            receipt["event_order"].append(
+                {"event": "interrupt_during_recording", "utc": _utc_stamp(),
+                 "attempted": "receipt_retry"})
+            write_receipt(receipt_path, receipt)
+        try:
+            _record_terminal_state()
+        except KeyboardInterrupt:
+            if state.is_terminal():
+                state.flush()
+            else:
+                _record_terminal_state()
+        return receipt
     finally:
-        if out_fh:
-            out_fh.close()
-        if err_fh:
-            err_fh.close()
-
-    ended = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    receipt = {
-        "schema": "commandlet_execution_receipt/v1",
-        "run_id": state.run_id,
-        "command": command,
-        "process_role": role,
-        "parent_pid": state.parent_pid,
-        "child_pid": proc.pid if proc else None,
-        "start_utc": started,
-        "end_utc": ended,
-        "duration_seconds": round(time.time() - t0, 3),
-        "child_return_code": proc.returncode if proc else None,
-        "termination_classification": classification,
-        "terminal_reason": classification["classification"] if classification else "UNKNOWN",
-        "stdout_path": stdout_path,
-        "stderr_path": stderr_path,
-        "stderr_tail": detail,
-    }
-    write_receipt(os.path.join(os.path.dirname(os.path.abspath(state.state_path)),
-                               "COMMANDLET_EXECUTION_RECEIPT.json"), receipt)
-
-    if classification and classification.get("is_interrupted"):
-        state.transition("INTERRUPTED", terminal_reason=classification["classification"],
-                         return_code=classification.get("returncode"))
-    elif classification and classification.get("is_success"):
-        state.transition("VALIDATING_OUTPUT", terminal_reason="child exited 0")
-    elif classification:
-        state.transition("CHILD_FAILED",
-                         terminal_reason=classification["classification"],
-                         return_code=classification.get("returncode"))
-    return receipt
+        if previous_sigint is not None:
+            try:
+                signal.signal(signal.SIGINT, previous_sigint)
+            except (ValueError, OSError):
+                pass
