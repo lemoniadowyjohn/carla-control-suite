@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import sys
 from pathlib import Path
 
@@ -207,11 +208,26 @@ class TestRunSupervised:
     def test_interrupt_child_moves_to_interrupted(self, tmp_path):
         # A child that dies on SIGINT-like abort yields a control-event status
         # on Windows; simulate by having the child abort itself.
+        #
+        # The child must reset SIGINT to SIG_DFL before raising it. A process
+        # started as a background job of a non-interactive shell inherits
+        # SIGINT=SIG_IGN, and children inherit that disposition, so a child that
+        # merely calls os.kill(SIGINT) is left untouched, exits 0 and is
+        # classified CLEAN_EXIT. That silently turns this into a test of the
+        # launcher's signal disposition instead of the exit classifier, and made
+        # the test fail or pass purely as a function of how pytest was started.
         st = self._state(tmp_path)
         rec = run_supervised(
-            [sys.executable, "-c", "import os,signal;os.kill(os.getpid(),signal.SIGINT)"],
+            [sys.executable, "-c",
+             "import os,signal;"
+             "signal.signal(signal.SIGINT,signal.SIG_DFL);"
+             "os.kill(os.getpid(),signal.SIGINT)"],
             state=st)
         cls = rec["termination_classification"]
+        # Assert the child actually died from the signal, not merely that the
+        # outcome was "not a success": on POSIX a signal death reports -SIGINT.
+        if os.name == "posix":
+            assert cls["returncode"] == -signal.SIGINT
         assert cls["is_success"] is False
         assert st.state in ("INTERRUPTED", CHILD_FAILED)
         # on non-Windows SIGINT gives -2; either way it is never PASS
