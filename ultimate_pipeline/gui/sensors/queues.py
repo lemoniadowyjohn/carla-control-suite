@@ -156,10 +156,14 @@ class FrameBookkeeping:
     Memory is bounded: ``seen`` is only a recent-id window used for duplicate
     detection (capped at ``seen_cap`` entries) and ``steps`` is capped at
     :data:`_STEPS_CAP` entries. Lifetime ``unique``/``min_seen``/``max_seen``
-    aggregates keep :meth:`gap_count` exact even across window resets. All
-    bookkeeping work is O(1) per observed frame -- gap *computation* happens
-    only when :meth:`gap_count` is called explicitly (on-demand diagnostics),
-    never implicitly on the producer path.
+    aggregates let :meth:`gap_count` keep counting from the true observed
+    range. Honest limitation: after a window reset, an id older than the
+    window re-delivered counts as new, so gaps may be *understated* and
+    ``dropped`` undercounted for very long streams -- gaps are never
+    fabricated and never overstated. All bookkeeping work is O(1) per
+    observed frame; gap *computation* happens only when :meth:`gap_count`
+    is called explicitly (on-demand diagnostics), never implicitly on the
+    producer path.
     """
 
     _STEPS_CAP = 64
@@ -214,9 +218,12 @@ class FrameBookkeeping:
     def gap_count(self) -> int:
         """Missing frame ids implied by the observed range.
 
-        Uses lifetime aggregates, so it is exact regardless of how often the
-        duplicate window reset. Callers must only invoke this on demand
-        (diagnostics/stats), never per-frame on the producer path.
+        Computed from lifetime aggregates (O(1)), so it is stable across
+        duplicate-window resets with the documented caveat above: an
+        out-of-window re-delivery inflates ``unique``, which can only
+        *understate* the gap (never overstate it, never fabricate one).
+        Callers must only invoke this on demand (diagnostics/stats),
+        never per-frame on the producer path.
         """
         if self.unique == 0 or self.min_seen is None or self.max_seen is None:
             return 0

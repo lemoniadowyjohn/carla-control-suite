@@ -203,12 +203,17 @@ class SensorFeedBridge(QObject):
             age = self.frame_age_s(sensor_id)
             lines.append(
                 f"{sensor_id} ({stats.get('sensor_type', '?')}): "
+                f"closed={stats.get('closed', False)} "
                 f"enqueued={queue.get('enqueued', 0)} "
                 f"dropped={queue.get('dropped', 0)} "
                 f"pending={stats.get('pending', 0)} "
                 f"monotonic={ordering.get('monotonic')} "
                 f"gaps={stats.get('gaps', 0)} "
                 f"frame_age={'N/A' if age is None else f'{age:.1f}s'}")
+            if stats.get("closed"):
+                lines.append(
+                    f"{sensor_id}: CHANNEL CLOSED (zombie: registered for "
+                    "retry after a failed backend detach)")
         if self._non_image_payloads:
             lines.append(
                 "non-image payloads skipped (never rendered): "
@@ -230,8 +235,10 @@ class SensorFeedBridge(QObject):
             attachment = self._sensors.attachment(sensor_id)
             if attachment is None:
                 continue
-            rows.append((
-                f"attached:{sensor_id}", attachment.blueprint,
-                f"ATTACHED · {attachment.source_class} · "
-                f"cal={attachment.calibration_id or 'NONE'}"))
+            status = (f"ATTACHED · {attachment.source_class} · "
+                      f"cal={attachment.calibration_id or 'NONE'}")
+            if attachment.channel.closed:
+                # A retryable zombie must never read as healthy.
+                status += " · CHANNEL CLOSED (retry detach)"
+            rows.append((f"attached:{sensor_id}", attachment.blueprint, status))
         return rows

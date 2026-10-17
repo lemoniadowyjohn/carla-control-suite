@@ -320,3 +320,35 @@ def test_T_CAM_11_detach_recent_follows_attachment_order(app):
     panel.detach_native_camera()  # nothing left: honest refusal
     assert "DETACH REFUSED" in panel.state.text()
     assert "no attached native camera" in panel.state.text()
+
+
+# =========================================================== T-CAM-12
+def test_T_CAM_12_zombie_channel_marked_in_operator_surfaces(app):
+    from ultimate_pipeline.gui.results import Result
+
+    panel = _exclusive_panel()
+    sensor_id = panel.sensor_bridge.attach_camera("rgb_camera").unwrap().sensor_id
+
+    # force a backend detach failure: the attachment must stay registered
+    # as a retryable zombie, never vanish and never read as healthy
+    panel.sensor_bridge.sensors._backend.detach_sensor = (
+        lambda sid: Result.failure("backend refused detach",
+                                   error_class="RuntimeError",
+                                   error_source="test"))
+    result = panel.sensor_bridge.detach(sensor_id)
+    assert result.ok is False
+    assert sensor_id in panel.sensor_bridge.sensors.sensor_ids()
+    assert panel.sensor_bridge.tile_for(sensor_id) == "Front RGB"
+    assert panel.sensor_bridge.polling is True
+
+    panel.refresh_inventory()
+    rows = [tuple(panel.inventory_table.item(row, col).text()
+                  for col in range(3))
+            for row in range(panel.inventory_table.rowCount())]
+    attached = [r for r in rows if r[0].startswith("attached:")]
+    assert attached and "CHANNEL CLOSED" in attached[0][2], rows
+
+    panel.refresh_diagnostics()
+    text = panel.diag_report.toPlainText()
+    assert "closed=True" in text
+    assert "zombie" in text

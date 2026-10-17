@@ -623,3 +623,36 @@ def test_T_THR_10_stats_concurrent_with_offer_never_deadlocks():
         assert not thread.is_alive()
     assert not errors, errors
     assert channel.stats()["queue"]["enqueued"] > 0
+
+
+# =========================================================== T-SENSOR-12
+def test_T_SENSOR_12_post_spawn_setup_failure_rolls_back():
+    service, backend = _service()
+    failed = service.attach("rgb_camera", _Calibration(), EXCLUSIVE,
+                            queue_len=-1)  # reaches SensorChannel -> raises
+    assert failed.ok is False
+    assert failed.error_class == "ValueError"
+    assert "rolled back via backend detach_sensor" in failed.remediation
+    assert service.sensor_ids() == ()
+    assert backend.owned_sensor_ids() == ()
+    assert backend.cleanup() == []
+
+
+def test_T_SENSOR_12_malformed_binding_fails_honestly():
+    class _MalformedBackend(MockCarlaBackend):
+        def attach_sensor(self, spec, calibration):
+            super().attach_sensor(spec, calibration)  # spawns for real
+
+            class _Binding:
+                sensor_id = ""  # unusable: we cannot name what spawned
+                calibration_id = ""
+
+            return Result.success(_Binding())
+
+    backend = _MalformedBackend()
+    service = SensorService(backend)
+    failed = service.attach("rgb_camera", _Calibration(), EXCLUSIVE)
+    assert failed.ok is False
+    assert "no usable sensor_id" in failed.reason
+    assert "may retain the spawn" in failed.remediation
+    assert service.sensor_ids() == ()

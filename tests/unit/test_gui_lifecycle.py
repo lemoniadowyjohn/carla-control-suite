@@ -250,6 +250,43 @@ def test_T_LIFE_09_feeds_panel_is_wired_for_the_shutdown_hook(app):
     panel.close()
 
 
+def test_T_LIFE_09b_refused_close_runs_no_shutdown_hooks(app):
+    from ultimate_pipeline.gui.control_center.shutdown import stop_ui_workers
+
+    calls: list[str] = []
+
+    class _HookedWorkerHost(QWidget):
+        def __init__(self, worker: QThread, parent=None) -> None:
+            super().__init__(parent)
+            self._worker = worker
+
+        def shutdown(self) -> None:
+            calls.append("shutdown")
+
+    # a stubborn worker refuses the close: hooks must NOT run, a window
+    # that stays open keeps its timers/streams/attachments intact
+    stubborn = _StubbornThread(hold_s=1.0)
+    stubborn.start()
+    host = _HookedWorkerHost(stubborn)
+    try:
+        assert stop_ui_workers({"08_sensors_streams": host}, wait_ms=50) is False
+        assert calls == [], "a refused close must never run shutdown hooks"
+    finally:
+        stubborn.wait(3000)
+        host.close()
+
+    # once every worker stops, the hook runs on the success path
+    stopping = _StoppingThread()
+    stopping.start()
+    host2 = _HookedWorkerHost(stopping)
+    try:
+        assert stop_ui_workers({"08_sensors_streams": host2}, wait_ms=2000) is True
+        assert calls == ["shutdown"]
+    finally:
+        stopping.wait(2000)
+        host2.close()
+
+
 # ============================================================ T-LIFE-10
 def test_T_LIFE_10_swallowed_stop_failure_recorded_as_diagnostic():
     registry = OwnedActorRegistry()

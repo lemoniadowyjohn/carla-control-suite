@@ -177,22 +177,47 @@ class SensorService:
                 state_restored=True)
         if not bound.ok:
             return bound
-        binding = bound.unwrap()
-        channel = SensorChannel(
-            binding.sensor_id,
-            sensor_type,
-            maxlen=queue_len or self._default_queue_len,
-            preview_decimation=(preview_decimation
-                                or self._preview_decimation),
-        )
-        attachment = SensorAttachment(
-            sensor_id=binding.sensor_id,
-            sensor_type=sensor_type,
-            blueprint=blueprint,
-            source_class=self.source_class,
-            calibration_id=getattr(binding, "calibration_id", ""),
-            channel=channel,
-        )
+        binding = None
+        try:
+            binding = bound.unwrap()
+            if not getattr(binding, "sensor_id", None):
+                raise ValueError("backend binding carries no usable sensor_id")
+            channel = SensorChannel(
+                binding.sensor_id,
+                sensor_type,
+                maxlen=queue_len or self._default_queue_len,
+                preview_decimation=(preview_decimation
+                                    or self._preview_decimation),
+            )
+            attachment = SensorAttachment(
+                sensor_id=binding.sensor_id,
+                sensor_type=sensor_type,
+                blueprint=blueprint,
+                source_class=self.source_class,
+                calibration_id=getattr(binding, "calibration_id", ""),
+                channel=channel,
+            )
+        except Exception as exc:
+            # The backend spawned, but setup after the spawn failed. Roll the
+            # spawn back when an id is known; otherwise say so honestly --
+            # never leave an unregistered, invisible actor behind.
+            rollback = ("no usable sensor_id known; the backend state may "
+                        "retain the spawn")
+            spawn_id = getattr(binding, "sensor_id", None) if binding else None
+            detach_sensor = getattr(self._backend, "detach_sensor", None)
+            if spawn_id and detach_sensor is not None:
+                try:
+                    undone = detach_sensor(spawn_id)
+                    rollback = ("spawn rolled back via backend detach_sensor"
+                                if undone.ok else
+                                f"rollback detach refused: {undone.reason}")
+                except Exception as det_exc:
+                    rollback = (f"rollback detach raised: "
+                                f"{type(det_exc).__name__}: {det_exc}")
+            return Result.failure(
+                f"post-spawn setup failed: {exc}",
+                error_class=type(exc).__name__, error_source=SOURCE,
+                remediation=rollback, state_restored=False)
         with self._lock:
             self._channels[binding.sensor_id] = channel
             self._attachments[binding.sensor_id] = attachment
