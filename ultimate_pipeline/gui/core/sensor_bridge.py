@@ -86,12 +86,12 @@ class SensorChannel:
             ordering = self._bookkeeping.observe(frame)
             accepted = self._queue.offer(frame)
             pending = len(self._queue)
-            gaps = self._bookkeeping.gap_count()
+        # No gap computation on the producer path: gap_count is an on-demand
+        # diagnostics value (see stats()). Per-frame work stays O(1).
         return Result.success({
             "accepted": accepted,
             "pending": pending,
             "ordering": ordering.as_dict(),
-            "gaps": gaps,
         })
 
     def poll_preview(self, limit: int = 8) -> list[Frame]:

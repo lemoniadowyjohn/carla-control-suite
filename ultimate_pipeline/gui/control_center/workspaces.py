@@ -139,11 +139,13 @@ def create_operator_workspace(route: str, registry, navigate):
             return grouped(("Actor population", DraftControlsPanel(route)),
                            ("Ownership & routes", StatusWorkspace(route)))
         if route == "08_sensors_streams":
+            # No authority_provider: the session-authority badge is display
+            # state, never a grant. Until a reviewed claim flow exists,
+            # attach/detach stays fail-closed at SHARED_READONLY.
             return grouped(("Camera feeds",
                             FeedsPanel(
                                 runtime_session=_runtime_session(registry),
-                                sensors=_optional_service(registry, "sensors"),
-                                authority_provider=lambda: registry.badges.session_authority)),
+                                sensors=_optional_service(registry, "sensors"))),
                            ("Sensor configuration", DraftControlsPanel(route)),
                            ("Stream diagnostics", StatusWorkspace(route)))
         if route == "09_calibration_workbench":

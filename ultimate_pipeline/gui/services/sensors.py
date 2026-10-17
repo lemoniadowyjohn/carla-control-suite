@@ -11,8 +11,13 @@ Truthfulness contract:
   never stubbed into something that looks working.
 * Every attachment carries its ``source_class`` (``MOCK_BACKEND`` or
   ``LIVE_CARLA``) so a GUI can never label mock frames CARLA-native.
+  ``LIVE_CARLA`` is refused unless the backend itself provides
+  ``live_attestation()`` -- origin is never asserted without evidence.
 * ``attach``/``detach`` mutate the simulated world and are refused without
   an explicit exclusive authority (the Stage B0 fail-closed gate).
+* Backend calls are wrapped: an exception becomes a ``Result``, never a
+  crash on the callback/operator path. A failed detach keeps the
+  attachment registered (retryable) instead of leaking an invisible orphan.
 """
 
 from __future__ import annotations
@@ -98,6 +103,12 @@ class SensorService:
         if not source_class:
             raise ValueError(
                 "source_class is required; frame origin is never assumed")
+        if source_class == "LIVE_CARLA" and not callable(
+                getattr(backend, "live_attestation", None)):
+            raise ValueError(
+                "source_class='LIVE_CARLA' requires a backend exposing "
+                "live_attestation(); frame origin is never asserted "
+                "without evidence")
         self.source_class = source_class
         self._backend = backend
         self._default_queue_len = int(default_queue_len)
@@ -150,8 +161,20 @@ class SensorService:
                 f"{authority!r} is not an explicit exclusive grant",
                 remediation="claim EXCLUSIVE_WORLD before attaching sensors",
                 error_class="AuthorityRequired", error_source=AUTHORITY_SOURCE)
-        bound = self._backend.attach_sensor(
-            NativeSensorSpec(sensor_type, blueprint), calibration)
+        attach_sensor = getattr(self._backend, "attach_sensor", None)
+        if attach_sensor is None:
+            return Result.failure(
+                f"backend {type(self._backend).__name__} has no attach_sensor",
+                error_class="UnsupportedCapability", error_source=SOURCE)
+        try:
+            bound = attach_sensor(
+                NativeSensorSpec(sensor_type, blueprint), calibration)
+        except Exception as exc:
+            return Result.failure(
+                f"backend attach raised: {exc}",
+                error_class=type(exc).__name__, error_source=SOURCE,
+                remediation="no attachment was registered; nothing leaks",
+                state_restored=True)
         if not bound.ok:
             return bound
         binding = bound.unwrap()
@@ -176,7 +199,12 @@ class SensorService:
         return Result.success(attachment)
 
     def detach(self, sensor_id: str, authority: Any) -> Result:
-        """Close the channel first, then destroy the backend sensor."""
+        """Close the channel first, then destroy the backend sensor.
+
+        Tracking is released **only after the backend confirms the detach**.
+        A backend failure or exception keeps the attachment registered with a
+        closed channel (a retryable zombie), never an invisible orphan.
+        """
         with self._lock:
             channel = self._channels.get(sensor_id)
         if channel is None:
@@ -192,26 +220,68 @@ class SensorService:
         channel_stats = channel.close()
         detach_sensor = getattr(self._backend, "detach_sensor", None)
         if detach_sensor is None:
-            with self._lock:
-                self._channels.pop(sensor_id, None)
-                self._attachments.pop(sensor_id, None)
             return Result.failure(
                 f"backend {type(self._backend).__name__} has no detach_sensor; "
-                "channel closed but the sensor may still exist",
+                f"channel closed but {sensor_id!r} stays registered for retry",
                 error_class="UnsupportedCapability", error_source=SOURCE,
                 value=channel_stats)
-        backend_result = detach_sensor(sensor_id)
-        with self._lock:
-            self._channels.pop(sensor_id, None)
-            self._attachments.pop(sensor_id, None)
+        try:
+            backend_result = detach_sensor(sensor_id)
+        except Exception as exc:
+            return Result.failure(
+                f"channel closed but backend detach raised: {exc}",
+                error_class=type(exc).__name__, error_source=SOURCE,
+                remediation=f"{sensor_id!r} stays registered for retry",
+                value=channel_stats)
         if not backend_result.ok:
             return Result.failure(
                 f"channel closed but backend detach failed: "
                 f"{backend_result.reason}",
                 error_class=backend_result.error_class or "RuntimeError",
                 error_source=backend_result.error_source or SOURCE,
+                remediation=f"{sensor_id!r} stays registered for retry",
                 value=channel_stats)
+        with self._lock:
+            self._channels.pop(sensor_id, None)
+            self._attachments.pop(sensor_id, None)
         return Result.success({"sensor_id": sensor_id, "channel": channel_stats})
+
+    def invalidate_all(self, reason: str, *, source: str = SOURCE) -> Result:
+        """Drop every attachment after a world/binding change or shutdown.
+
+        Not an authority gate: this only closes local channels and asks the
+        backend to forget the ids (best effort, every failure reported).
+        Actors bound to a previous world die with it; bookkeeping never
+        pretends they survived. Backend exceptions are evidence, not crashes.
+        """
+        with self._lock:
+            sensor_ids = tuple(sorted(self._channels))
+        closed: dict[str, dict] = {}
+        backend_failures: dict[str, str] = {}
+        detach_sensor = getattr(self._backend, "detach_sensor", None)
+        for sensor_id in sensor_ids:
+            channel = self._channels.get(sensor_id)
+            if channel is not None:
+                closed[sensor_id] = channel.close()
+            if detach_sensor is None:
+                continue
+            try:
+                result = detach_sensor(sensor_id)
+                if not result.ok:
+                    backend_failures[sensor_id] = result.reason
+            except Exception as exc:
+                backend_failures[sensor_id] = f"{type(exc).__name__}: {exc}"
+        with self._lock:
+            for sensor_id in sensor_ids:
+                self._channels.pop(sensor_id, None)
+                self._attachments.pop(sensor_id, None)
+        return Result.success({
+            "reason": reason,
+            "source": source,
+            "invalidated": list(sensor_ids),
+            "closed": closed,
+            "backend_failures": backend_failures,
+        })
 
     # -- frame path --------------------------------------------------------
     def deliver(self, sensor_id: str, frame: Frame) -> Result:

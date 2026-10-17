@@ -220,3 +220,76 @@ def test_T_LIFE_08_gui_tree_has_exactly_one_world_tick_call_site():
             hits.append((path.relative_to(root), count))
     assert hits == [(Path("session/tick_authority.py"), 1)], (
         f"expected exactly one world.tick() call site in gui/, found {hits}")
+
+
+# ============================================================ T-LIFE-09
+def test_T_LIFE_09_stop_ui_workers_invokes_widget_shutdown_hooks(app):
+    from ultimate_pipeline.gui.control_center.shutdown import stop_ui_workers
+
+    calls: list[str] = []
+
+    class _HookedHost(QWidget):
+        def shutdown(self) -> None:
+            calls.append("shutdown")
+
+    host = _HookedHost()
+    try:
+        assert stop_ui_workers({"08_sensors_streams": host},
+                               wait_ms=500) is True
+        assert calls == ["shutdown"], "panel shutdown hook must run exactly once"
+    finally:
+        host.close()
+
+
+def test_T_LIFE_09_feeds_panel_is_wired_for_the_shutdown_hook(app):
+    from ultimate_pipeline.gui.control_center.feeds import FeedsPanel
+
+    panel = FeedsPanel()
+    assert callable(getattr(panel, "shutdown", None))
+    panel.shutdown()  # must be safe with no sensor bridge
+    panel.close()
+
+
+# ============================================================ T-LIFE-10
+def test_T_LIFE_10_swallowed_stop_failure_recorded_as_diagnostic():
+    registry = OwnedActorRegistry()
+
+    class _StopFails(_RecordingSensor):
+        def stop(self) -> None:
+            self.calls.append("stop")
+            raise RuntimeError("stop failed")
+
+    sensor = _StopFails()
+    registry.register(8, sensor, kind="sensor")
+    outcome = registry.destroy(8)
+    assert outcome.ok is True, "destroy must proceed despite stop failure"
+    assert sensor.calls == ["stop", "destroy"]
+    kinds = [d.kind for d in registry.diagnostics]
+    assert kinds == ["SWALLOWED_EXCEPTION"]
+    assert "sensor 8 stop()" in registry.diagnostics[0].subject
+    assert "stop failed" in registry.diagnostics[0].detail
+
+    report = registry.cleanup_report()
+    assert report.ok is True
+    assert len(report.value["diagnostics"]) == 1, (
+        "cleanup evidence must carry the swallowed failure")
+
+
+# ============================================================ T-LIFE-11
+def test_T_LIFE_11_page_cache_evicts_dead_registries(app):
+    import ultimate_pipeline.gui.shell.pages.runtime as runtime_mod
+    from ultimate_pipeline.gui.shell.services import build_registry
+
+    factory = runtime_mod.runtime_page_factory("04_world_time")
+    registry = build_registry()
+    factory(registry)
+    key = id(registry)
+    assert key in runtime_mod._PAGE_CACHE
+
+    del registry
+    gc.collect()
+
+    factory(build_registry())  # next call prunes the dead entry
+    entry = runtime_mod._PAGE_CACHE.get(key)
+    assert entry is None or entry[0]() is not None, (
+        "a dead registry must never pin its pages in the cache")

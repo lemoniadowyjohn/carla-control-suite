@@ -6,10 +6,22 @@ from PyQt6.QtWidgets import QWidget
 
 
 def stop_ui_workers(operator_pages: dict, wait_ms: int = 10000) -> bool:
-    """Ask workers to stop; prevent Qt teardown while an active QThread remains."""
+    """Ask workers to stop; prevent Qt teardown while an active QThread remains.
+
+    Panels exposing a zero-argument ``shutdown()`` method are called first
+    (duck-typed, normal Python call during teardown -- never a destructor
+    hook) so they can stop timers and invalidate local sensor state. A
+    widget already deleted mid-teardown (RuntimeError) is tolerated.
+    """
     workers: dict[int, QThread] = {}
     for workspace in operator_pages.values():
         for widget in (workspace, *workspace.findChildren(QWidget)):
+            hook = getattr(widget, "shutdown", None)
+            if callable(hook):
+                try:
+                    hook()
+                except RuntimeError:
+                    pass  # widget already deleted during teardown
             streams = getattr(widget, "_streams", None)
             if isinstance(streams, dict):
                 for worker in streams.values():

@@ -145,12 +145,16 @@ class FeedsPanel(QWidget):
             self.stop()
             self._frame_index = 0
             if self.sensor_bridge is not None:
-                self.sensor_bridge.stop_polling()
+                # A world change destroys bound sensor actors; local
+                # attachments must not outlive the world they described.
+                self.sensor_bridge.invalidate_attachments(event.reason)
         except RuntimeError:
             return  # widget already deleted during teardown
+        suffix = (" · native sensors invalidated"
+                  if self.sensor_bridge is not None else "")
         self.state.setText(
             f"WORLD CHANGED · generation {event.generation} · {event.reason} · "
-            "frame caches invalidated, re-attach producers")
+            f"frame caches invalidated, re-attach producers{suffix}")
 
     def _build_ui(self):
         root, outer = section(
@@ -413,11 +417,9 @@ class FeedsPanel(QWidget):
     def detach_native_camera(self):
         if self.sensor_bridge is None:
             return
-        attached = self.sensor_bridge.sensors.sensor_ids()
-        if not attached:
-            self.state.setText("NO ATTACHED NATIVE SENSORS")
-            return
-        self.sensor_bridge.detach(attached[-1])
+        # Detach the most recently attached camera (tracked by the bridge);
+        # lexicographic "last id" is not attachment order.
+        self.sensor_bridge.detach_recent()
 
     def refresh_diagnostics(self):
         if self.sensor_bridge is None:
@@ -506,7 +508,14 @@ class FeedsPanel(QWidget):
         Path(destination).write_text(json.dumps(record, indent=2), encoding="utf-8")
         self.state.setText(f"CONFIG SAVED: {destination}")
 
-    def closeEvent(self, event):  # noqa: N802
+    def shutdown(self):
+        """Stop all activity, then invalidate native attachments.
+
+        Called by closeEvent and duck-typed by stop_ui_workers during
+        MainWindow teardown (a normal Python call, not a destructor hook).
+        Invalidate is bookkeeping-only: it closes local channels and asks
+        the backend to forget our ids; it never destroys foreign actors.
+        """
         if self.sensor_bridge is not None:
             self.sensor_bridge.stop_polling()
         self._timer.stop()
@@ -514,4 +523,13 @@ class FeedsPanel(QWidget):
         for stream in self._streams.values():
             if stream.isRunning():
                 stream.wait(4000)
+        if self.sensor_bridge is not None:
+            self.sensor_bridge.invalidate_attachments("SHUTDOWN")
+        try:
+            self.refresh_inventory()
+        except RuntimeError:
+            pass  # widget already deleted during teardown
+
+    def closeEvent(self, event):  # noqa: N802
+        self.shutdown()
         super().closeEvent(event)

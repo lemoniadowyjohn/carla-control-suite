@@ -170,7 +170,13 @@ class RuntimeSession:
 
     # -- subscription ------------------------------------------------------
     def subscribe(self, callback: Callable[[WorldChangedEvent], None]):
-        """Register ``callback`` for future events; returns an unsubscribe fn."""
+        """Register ``callback`` for future events; returns an unsubscribe fn.
+
+        Subscribers run synchronously on the *publisher's* thread. Callers
+        that touch widgets must publish from the GUI thread; a subscriber
+        raising (including a dead widget) is isolated and counted, never
+        propagated to the publisher.
+        """
         if not callable(callback):
             raise TypeError("subscriber must be callable")
         with self._lock:

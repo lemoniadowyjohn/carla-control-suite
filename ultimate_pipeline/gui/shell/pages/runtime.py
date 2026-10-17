@@ -10,6 +10,7 @@ constructs a worker at construction time.
 
 from __future__ import annotations
 
+import weakref
 from typing import Any
 
 from PyQt6.QtCore import Qt
@@ -134,12 +135,21 @@ RUNTIME_ROUTES = (
 )
 
 # Cached per registry instance so a test that injects a different registry
-# never receives another test's already-built pages. The entry also holds the
-# registry strongly (registries are unhashable dataclasses, so weak keys are
-# impossible) which keeps id() stable, and every hit is liveness-validated: a
-# page whose C++ object died with a previous window must never be re-parented
-# into a new one.
+# never receives another test's already-built pages. The entry holds a *weak*
+# reference to the registry: identity comes from owner validation (a dead ref
+# and a recycled id() both fail `owner is registry`), so a dead registry can
+# never pin its pages forever. Every hit is liveness-validated as well: a page
+# whose C++ object died with a previous window must never be re-parented into
+# a new one.
 _PAGE_CACHE: dict[int, tuple[Any, dict[str, RuntimePage]]] = {}
+
+
+def _prune_page_cache() -> None:
+    """Drop entries whose registry died (keeps the cache from pinning pages)."""
+    dead = [key for key, (owner_ref, _) in _PAGE_CACHE.items()
+            if owner_ref() is None]
+    for key in dead:
+        del _PAGE_CACHE[key]
 
 
 def _cached_pages(registry: Any) -> dict[str, RuntimePage] | None:
@@ -147,7 +157,12 @@ def _cached_pages(registry: Any) -> dict[str, RuntimePage] | None:
     entry = _PAGE_CACHE.get(key)
     if entry is None:
         return None
-    owner, pages = entry
+    owner_ref, pages = entry
+    owner = owner_ref()
+    if owner is None:
+        # Previous owner died and its id() was recycled by this registry.
+        del _PAGE_CACHE[key]
+        return None
     if owner is not registry:
         return None
     from PyQt6 import sip
@@ -161,10 +176,17 @@ def runtime_page_factory(route: str) -> Any:
     """Return a PAGE_FACTORIES-compatible factory for one runtime route."""
 
     def factory(registry: Any) -> RuntimePage:
+        _prune_page_cache()
         pages = _cached_pages(registry)
         if pages is None:
             pages = build_runtime_pages(registry)
-            _PAGE_CACHE[id(registry)] = (registry, pages)
+            if route not in pages:
+                raise KeyError(f"{route} is not a Task 14 runtime route")
+            try:
+                _PAGE_CACHE[id(registry)] = (weakref.ref(registry), pages)
+            except TypeError:
+                pass  # unweakrefable registry: build without caching
+            return pages[route]
         if route not in pages:
             raise KeyError(f"{route} is not a Task 14 runtime route")
         return pages[route]

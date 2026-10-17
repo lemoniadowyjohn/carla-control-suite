@@ -453,3 +453,173 @@ def test_sensors_service_registered_in_build_registry():
     assert service.source_class == "MOCK_BACKEND"
     assert registry.source_of("sensors") == (
         "ultimate_pipeline/gui/services/sensors.py")
+
+
+# =========================================================== T-SENSOR-07
+def test_T_SENSOR_07_malformed_timestamp_refused_not_defaulted():
+    from ultimate_pipeline.gui.sensors.queues import FrameTimestampError
+
+    for bad in (None, "not-a-time", float("nan"), float("inf")):
+        with pytest.raises(FrameTimestampError):
+            Frame(frame_id=1, timestamp=bad)  # type: ignore[arg-type]
+    assert Frame(frame_id=1, timestamp=1).timestamp == 1
+
+
+# =========================================================== T-SENSOR-08
+class _ExplodingBackend(MockCarlaBackend):
+    def __init__(self) -> None:
+        super().__init__()
+        self.explode_on_attach = False
+        self.explode_on_detach = False
+
+    def attach_sensor(self, spec, calibration):
+        if self.explode_on_attach:
+            raise RuntimeError("adapter exploded during attach")
+        return super().attach_sensor(spec, calibration)
+
+    def detach_sensor(self, sensor_id):
+        if self.explode_on_detach:
+            raise RuntimeError("adapter exploded during detach")
+        return super().detach_sensor(sensor_id)
+
+
+def test_T_SENSOR_08_backend_exceptions_become_results_not_crashes():
+    backend = _ExplodingBackend()
+    service = SensorService(backend)
+
+    backend.explode_on_attach = True
+    failed = service.attach("rgb_camera", _Calibration(), EXCLUSIVE)
+    assert failed.ok is False and failed.error_class == "RuntimeError"
+    assert service.sensor_ids() == ()
+    assert backend.owned_sensor_ids() == ()
+
+    backend.explode_on_attach = False
+    sensor_id = _attach(service)
+
+    backend.explode_on_detach = True
+    failed = service.detach(sensor_id, EXCLUSIVE)
+    assert failed.ok is False and failed.error_class == "RuntimeError"
+    # zombie, not orphan: still registered, channel closed, retryable
+    assert sensor_id in service.sensor_ids()
+    assert service.channel(sensor_id) is not None
+    assert service.channel(sensor_id).closed is True
+
+    backend.explode_on_detach = False
+    retried = service.detach(sensor_id, EXCLUSIVE)
+    assert retried.ok, retried.reason
+    assert service.sensor_ids() == ()
+    assert sensor_id not in backend.owned_sensor_ids()
+
+
+def test_T_SENSOR_08b_backend_refused_detach_keeps_registration():
+    service, backend = _service()
+    sensor_id = _attach(service)
+    # force a backend refusal by asking the backend twice underneath service
+    assert backend.detach_sensor(sensor_id).ok is True
+    result = service.detach(sensor_id, EXCLUSIVE)
+    assert result.ok is False
+    assert sensor_id in service.sensor_ids()
+    assert service.channel(sensor_id).closed is True
+
+
+# =========================================================== T-SENSOR-09
+def test_T_SENSOR_09_invalidate_all_closes_everything_with_evidence():
+    service, backend = _service()
+    one = _attach(service, "rgb_camera")
+    two = _attach(service, "depth_camera")
+    service.deliver(one, _frame(1, one))
+
+    outcome = service.invalidate_all("MAP_LOAD", source="test")
+    assert outcome.ok, outcome.reason
+    value = outcome.value
+    assert value["reason"] == "MAP_LOAD"
+    assert value["invalidated"] == sorted([one, two])
+    assert value["backend_failures"] == {}
+    assert value["closed"][one]["closed"] is True
+    assert service.sensor_ids() == ()
+    assert service.channel(one) is None
+    assert backend.owned_sensor_ids() == ()
+    assert backend.cleanup() == []
+
+    again = service.invalidate_all("SHUTDOWN")
+    assert again.ok and again.value["invalidated"] == []
+
+
+# =========================================================== T-SENSOR-10
+def test_T_SENSOR_10_live_carla_source_requires_backend_attestation():
+    with pytest.raises(ValueError):
+        SensorService(MockCarlaBackend(), source_class="LIVE_CARLA")
+
+    class _AttestedBackend(MockCarlaBackend):
+        def live_attestation(self) -> dict:
+            return {"rpc": "127.0.0.1:2000", "verified": True}
+
+    service = SensorService(_AttestedBackend(), source_class="LIVE_CARLA")
+    assert service.source_class == "LIVE_CARLA"
+
+
+# =========================================================== T-SENSOR-11
+def test_T_SENSOR_11_bookkeeping_window_bounded_gaps_survive_resets():
+    from ultimate_pipeline.gui.sensors.queues import FrameBookkeeping
+
+    book = FrameBookkeeping(sensor_id="s", seen_cap=8)
+    ids = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13]  # frame 4 never arrived
+    for frame_id in ids:
+        book.observe(Frame(frame_id=frame_id, timestamp=float(frame_id)))
+    assert len(book.seen) <= 8, "recent-id window must stay bounded"
+    assert book.gap_count() == 1
+    assert book.unique == len(ids)
+
+    book.observe(Frame(frame_id=13, timestamp=13.0))  # in-window duplicate
+    assert book.dropped == 1
+    assert book.gap_count() == 1  # duplicates never fabricate a gap
+
+    for frame_id in range(14, 40):
+        book.observe(Frame(frame_id=frame_id, timestamp=float(frame_id)))
+    assert len(book.seen) <= 8, "window resets must not grow memory"
+    assert book.gap_count() == 1, "hole at 4 survives window resets"
+
+
+# ============================================================= T-THR-09
+def test_T_THR_09_offer_path_stays_linear_at_high_frame_counts():
+    channel = SensorChannel("s1", "rgb_camera", maxlen=64)
+    total = 20000
+    started = time.perf_counter()
+    for frame_id in range(total):
+        assert channel.offer(_frame(frame_id, "s1")).ok
+    elapsed = time.perf_counter() - started
+    # Quadratic bookkeeping measured 8.83s at 20k frames (reviewer evidence);
+    # the linear producer path must stay far below that.
+    assert elapsed < 3.0, (
+        f"offer path took {elapsed:.2f}s for {total} frames; "
+        "gap work must not run per-frame")
+
+
+# ============================================================= T-THR-10
+def test_T_THR_10_stats_concurrent_with_offer_never_deadlocks():
+    channel = SensorChannel("s1", "rgb_camera", maxlen=128,
+                            preview_decimation=1)
+    stop = threading.Event()
+    errors: list[BaseException] = []
+
+    def producer() -> None:
+        frame_id = 0
+        try:
+            while not stop.is_set():
+                frame_id += 1
+                channel.offer(_frame(frame_id, "s1"))
+        except BaseException as exc:  # pragma: no cover
+            errors.append(exc)
+
+    threads = [threading.Thread(target=producer) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    deadline = time.perf_counter() + 1.0
+    while time.perf_counter() < deadline:
+        channel.stats()  # must never invert the channel->stats lock order
+    stop.set()
+    for thread in threads:
+        thread.join(timeout=15)
+        assert not thread.is_alive()
+    assert not errors, errors
+    assert channel.stats()["queue"]["enqueued"] > 0

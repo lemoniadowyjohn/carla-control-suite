@@ -15,6 +15,7 @@ Hard rules from the operating contract:
 
 from __future__ import annotations
 
+import math
 import threading
 from collections import deque
 from dataclasses import dataclass, field
@@ -22,7 +23,7 @@ from typing import Any, Deque, Generic, TypeVar
 
 __all__ = [
     "Frame", "QueueStats", "BoundedFrameQueue", "FrameBookkeeping",
-    "OrderingReport", "Decimator", "FrameIdMissingError",
+    "OrderingReport", "Decimator", "FrameIdMissingError", "FrameTimestampError",
 ]
 
 T = TypeVar("T")
@@ -32,9 +33,13 @@ class FrameIdMissingError(ValueError):
     """A frame arrived without a frame id. Fabrication is refused."""
 
 
+class FrameTimestampError(ValueError):
+    """A frame arrived without a usable timestamp. Fabrication is refused."""
+
+
 @dataclass(frozen=True)
 class Frame:
-    """One sensor sample. ``frame_id`` is mandatory."""
+    """One sensor sample. ``frame_id`` and ``timestamp`` are mandatory."""
 
     frame_id: int
     timestamp: float
@@ -45,6 +50,15 @@ class Frame:
         if self.frame_id is None:
             raise FrameIdMissingError(
                 "frame id is required; a missing frame id is never fabricated")
+        try:
+            value = float(self.timestamp)
+        except (TypeError, ValueError):
+            raise FrameTimestampError(
+                "timestamp is required and must be numeric; a malformed "
+                "timestamp is never defaulted") from None
+        if not math.isfinite(value):
+            raise FrameTimestampError(
+                "timestamp must be finite; NaN/inf is never defaulted")
 
 
 @dataclass
@@ -137,7 +151,18 @@ class OrderingReport:
 
 @dataclass
 class FrameBookkeeping:
-    """Tracks frame-id ordering and drops for one sensor stream."""
+    """Tracks frame-id ordering and drops for one sensor stream.
+
+    Memory is bounded: ``seen`` is only a recent-id window used for duplicate
+    detection (capped at ``seen_cap`` entries) and ``steps`` is capped at
+    :data:`_STEPS_CAP` entries. Lifetime ``unique``/``min_seen``/``max_seen``
+    aggregates keep :meth:`gap_count` exact even across window resets. All
+    bookkeeping work is O(1) per observed frame -- gap *computation* happens
+    only when :meth:`gap_count` is called explicitly (on-demand diagnostics),
+    never implicitly on the producer path.
+    """
+
+    _STEPS_CAP = 64
 
     sensor_id: str = ""
     last_frame_id: int | None = None
@@ -145,16 +170,32 @@ class FrameBookkeeping:
     dropped: int = 0
     regressions: int = 0
     steps: list[tuple[int, int]] = field(default_factory=list)
+    seen_cap: int = 65536
+    unique: int = 0
+    min_seen: int | None = None
+    max_seen: int | None = None
 
     def observe(self, frame: Frame) -> OrderingReport:
-        """Record one frame and report whether ordering held."""
+        """Record one frame and report whether ordering held. O(1) per frame."""
         if frame.frame_id in self.seen:
             self.dropped += 1
-        self.seen.add(frame.frame_id)
+        else:
+            if len(self.seen) >= self.seen_cap:
+                # Bounded duplicate memory: the window resets, the lifetime
+                # aggregates below survive, so gap_count stays exact.
+                self.seen.clear()
+            self.seen.add(frame.frame_id)
+            self.unique += 1
+            if self.min_seen is None or frame.frame_id < self.min_seen:
+                self.min_seen = frame.frame_id
+            if self.max_seen is None or frame.frame_id > self.max_seen:
+                self.max_seen = frame.frame_id
 
         if self.last_frame_id is not None:
             if frame.frame_id < self.last_frame_id:
                 self.regressions += 1
+                if len(self.steps) >= self._STEPS_CAP:
+                    self.steps.pop(0)
                 self.steps.append((self.last_frame_id, frame.frame_id))
 
         self.last_frame_id = frame.frame_id
@@ -171,10 +212,16 @@ class FrameBookkeeping:
         )
 
     def gap_count(self) -> int:
-        """Missing frame ids implied by the observed range."""
-        if not self.seen:
+        """Missing frame ids implied by the observed range.
+
+        Uses lifetime aggregates, so it is exact regardless of how often the
+        duplicate window reset. Callers must only invoke this on demand
+        (diagnostics/stats), never per-frame on the producer path.
+        """
+        if self.unique == 0 or self.min_seen is None or self.max_seen is None:
             return 0
-        return (max(self.seen) - min(self.seen) + 1) - len(self.seen)
+        span = (self.max_seen - self.min_seen + 1)
+        return max(0, span - self.unique)
 
 
 class Decimator:

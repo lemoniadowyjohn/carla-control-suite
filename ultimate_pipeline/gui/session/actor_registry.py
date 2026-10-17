@@ -19,7 +19,7 @@ import threading
 from dataclasses import dataclass, field
 from typing import Any, Iterable
 
-from ultimate_pipeline.gui.results import Result
+from ultimate_pipeline.gui.results import Diagnostic, Result
 
 __all__ = ["ActorRecord", "OwnedActorRegistry", "is_alive"]
 
@@ -67,6 +67,9 @@ class OwnedActorRegistry:
         self._actors: dict[int, ActorRecord] = {}
         #: actors observed but NOT created by us; never destroyed
         self._external: set[int] = set()
+        #: surfaced swallowed exceptions (e.g. a sensor stop() failure that
+        #: did not block destroy) -- never invisible, never fatal
+        self.diagnostics: list[Diagnostic] = []
 
     # -- registration ------------------------------------------------------
     def register(self, actor_id: int, actor: Any, kind: str = "vehicle",
@@ -129,8 +132,15 @@ class OwnedActorRegistry:
                 if callable(stop):
                     try:
                         stop()
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        # Destroy proceeds (a failed stop must not leak the
+                        # actor) but the failure is surfaced, never hidden.
+                        self.diagnostics.append(Diagnostic(
+                            kind="SWALLOWED_EXCEPTION",
+                            subject=f"sensor {actor_id} stop()",
+                            detail=f"{type(exc).__name__}: {exc}",
+                            source="ultimate_pipeline/gui/session/actor_registry.py",
+                        ))
             try:
                 record.actor.destroy()
             except Exception as exc:
@@ -199,6 +209,7 @@ class OwnedActorRegistry:
         with self._lock:
             leaked = sorted(self._actors)
             external = sorted(self._external)
+            diagnostics = tuple(self.diagnostics)
         if leaked:
             return Result.failure(
                 f"{len(leaked)} actor(s) still owned: {leaked}",
@@ -207,7 +218,9 @@ class OwnedActorRegistry:
                 # the ids are also carried on the value so callers can record
                 # explicit leak evidence without re-parsing the reason string
                 value={"leaked": len(leaked), "leaked_ids": tuple(leaked),
-                       "preserved_external": tuple(external)},
+                       "preserved_external": tuple(external),
+                       "diagnostics": diagnostics},
             )
         return Result.success({"leaked": 0, "leaked_ids": (),
-                               "preserved_external": tuple(external)})
+                               "preserved_external": tuple(external),
+                               "diagnostics": diagnostics})

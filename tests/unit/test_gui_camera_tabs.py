@@ -151,6 +151,9 @@ def test_T_CAM_04_detach_refused_under_readonly_keeps_channel(app):
     assert "DETACH REFUSED" in panel.state.text()
     assert service.channel(sensor_id) is not None
     assert panel.sensor_bridge.polling is True
+    # a refused detach must not orphan the tile: still mapped, still visible
+    assert panel.sensor_bridge.tile_for(sensor_id) == "Front RGB"
+    assert panel.sensor_bridge.source_label(sensor_id) == "ADAPTER MOCK_BACKEND"
 
 
 # ============================================================ T-CAM-05
@@ -249,3 +252,71 @@ def test_T_CAM_08_workspace_route_08_provides_the_sensor_service(app):
     assert panels, "route 08 must contain a FeedsPanel"
     assert panels[0].sensor_bridge is not None
     assert panels[0].sensor_bridge.sensors is registry.resolve("sensors")
+    # No authority_provider: the badge is display state, never a grant, so
+    # the workspace-wired panel fails closed until a claim flow exists.
+    assert panels[0].sensor_bridge._authority_provider is None
+
+
+# ============================================================ T-CAM-09
+def test_T_CAM_09_world_change_invalidates_native_attachments(app):
+    from ultimate_pipeline.gui.session.runtime_session import WorldChangedEvent
+
+    panel = _exclusive_panel()
+    sensor_id = panel.sensor_bridge.attach_camera("rgb_camera").unwrap().sensor_id
+    assert panel.sensor_bridge.tile_for(sensor_id) == "Front RGB"
+    assert panel.sensor_bridge.polling is True
+
+    panel._on_runtime_world_changed(WorldChangedEvent(
+        generation=1, reason="MAP_LOAD", map_identity="map-b",
+        source="test", world_bound=True, client_bound=False))
+
+    assert panel.sensor_bridge.sensors.sensor_ids() == ()
+    assert panel.sensor_bridge.sensors.channel(sensor_id) is None
+    assert panel.sensor_bridge.tile_for(sensor_id) is None
+    assert panel.sensor_bridge.polling is False
+    assert "WORLD CHANGED" in panel.state.text()
+    assert "native sensors invalidated" in panel.state.text()
+
+    # a stale (same or older) generation must never re-invalidate
+    panel.sensor_bridge.attach_camera("rgb_camera")
+    panel._on_runtime_world_changed(WorldChangedEvent(
+        generation=1, reason="MAP_LOAD", map_identity="map-b",
+        source="test", world_bound=True, client_bound=False))
+    assert panel.sensor_bridge.sensors.sensor_ids() != ()
+
+
+# =========================================================== T-CAM-10
+def test_T_CAM_10_shutdown_detaches_everything_and_refreshes_inventory(app):
+    panel = _exclusive_panel()
+    sensor_id = panel.sensor_bridge.attach_camera("rgb_camera").unwrap().sensor_id
+    assert panel.sensor_bridge.polling is True
+
+    panel.shutdown()
+
+    assert panel.sensor_bridge.sensors.sensor_ids() == ()
+    assert panel.sensor_bridge.polling is False
+    assert panel.sensor_bridge.tile_for(sensor_id) is None
+    names = [panel.inventory_table.item(row, 0).text()
+             for row in range(panel.inventory_table.rowCount())]
+    assert not any(name.startswith("attached:") for name in names), names
+    assert panel.sensor_bridge.sensors.channel(sensor_id) is None
+
+
+# =========================================================== T-CAM-11
+def test_T_CAM_11_detach_recent_follows_attachment_order(app):
+    panel = _exclusive_panel()
+    first = panel.sensor_bridge.attach_camera("rgb_camera").unwrap().sensor_id
+    second = panel.sensor_bridge.attach_camera("depth_camera").unwrap().sensor_id
+
+    panel.detach_native_camera()  # most recent first, not lexicographic
+    assert second not in panel.sensor_bridge.sensors.sensor_ids()
+    assert first in panel.sensor_bridge.sensors.sensor_ids()
+    assert panel.sensor_bridge.tile_for(first) == "Front RGB"
+    assert panel.sensor_bridge.tile_for(second) is None
+
+    panel.detach_native_camera()
+    assert panel.sensor_bridge.sensors.sensor_ids() == ()
+
+    panel.detach_native_camera()  # nothing left: honest refusal
+    assert "DETACH REFUSED" in panel.state.text()
+    assert "no attached native camera" in panel.state.text()

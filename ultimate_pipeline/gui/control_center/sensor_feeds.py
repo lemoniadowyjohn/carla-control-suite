@@ -50,6 +50,7 @@ class SensorFeedBridge(QObject):
         self._authority_provider = authority_provider
         self._tiles: dict[str, str] = {}
         self._last_frame_at: dict[str, float] = {}
+        self._attached_order: list[str] = []  # attachment order, not id order
         self._non_image_payloads = 0
         self._timer = QTimer(self)
         self._timer.setInterval(200)
@@ -86,6 +87,8 @@ class SensorFeedBridge(QObject):
             return result
         attachment = result.unwrap()
         self._tiles[attachment.sensor_id] = CAMERA_TILE_MAP[sensor_type]
+        if attachment.sensor_id not in self._attached_order:
+            self._attached_order.append(attachment.sensor_id)
         self.activity.emit(
             f"ATTACHED {sensor_type} · {attachment.sensor_id} · source "
             f"{attachment.source_class} · adapter frames, not LIVE_VERIFIED")
@@ -94,10 +97,15 @@ class SensorFeedBridge(QObject):
         return result
 
     def detach(self, sensor_id: str) -> Result:
+        """Detach one sensor. Tile bookkeeping is released only on success:
+        a refused/failed detach must leave the channel pollable and visible,
+        never an orphaned tile or a frozen one."""
         result = self._sensors.detach(sensor_id, self._authority())
-        self._tiles.pop(sensor_id, None)
-        self._last_frame_at.pop(sensor_id, None)
         if result.ok:
+            self._tiles.pop(sensor_id, None)
+            self._last_frame_at.pop(sensor_id, None)
+            if sensor_id in self._attached_order:
+                self._attached_order.remove(sensor_id)
             self.activity.emit(
                 f"DETACHED {sensor_id} · channel closed before destroy")
         else:
@@ -107,6 +115,42 @@ class SensorFeedBridge(QObject):
         if not self._sensors.sensor_ids():
             self._timer.stop()
         return result
+
+    def detach_recent(self) -> Result:
+        """Detach the most recently attached camera (never lexicographic)."""
+        target = (self._attached_order[-1] if self._attached_order else None)
+        if target is None:
+            failure = Result.failure(
+                "no attached native camera to detach",
+                error_class="KeyError", error_source=SOURCE,
+                remediation="attach a native camera first")
+            self.activity.emit(
+                "DETACH REFUSED · no attached native camera")
+            return failure
+        return self.detach(target)
+
+    def invalidate_attachments(self, reason: str) -> dict:
+        """Drop every attachment after a world change or shutdown.
+
+        Channels close, tiles clear, the poll timer stops; the service
+        reports any backend failures as evidence instead of hiding them.
+        """
+        result = self._sensors.invalidate_all(reason, source=SOURCE)
+        self._tiles.clear()
+        self._last_frame_at.clear()
+        self._attached_order.clear()
+        if not self._sensors.sensor_ids():
+            self._timer.stop()
+        if not result.ok:
+            return {}
+        value = result.value or {}
+        failures = value.get("backend_failures", {})
+        text = (f"SENSORS INVALIDATED · {reason} · "
+                f"{len(value.get('invalidated', []))} channel(s)")
+        if failures:
+            text += f" · backend failures: {failures}"
+        self.activity.emit(text)
+        return value
 
     def stop_polling(self) -> None:
         """Stop the poll timer. Does not detach sensors."""
