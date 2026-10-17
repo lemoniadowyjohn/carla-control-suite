@@ -172,12 +172,12 @@ def test_real_root_owned_pid_is_not_reclaimed():
 
 def test_windows_access_denied_is_alive_not_dead(monkeypatch):
     """ERROR_ACCESS_DENIED means the process exists but cannot be opened."""
-    import ctypes
-
     monkeypatch.setattr(pi.sys, "platform", "win32")
     monkeypatch.setattr(pi, "_OpenProcess", lambda *a: None)
-    monkeypatch.setattr(pi, "_process_start_identity", lambda pid: None, raising=False)
-    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: pi.ERROR_ACCESS_DENIED)
+    # get_last_error only exists on Windows, hence raising=False: these tests
+    # simulate the Windows branch from either platform.
+    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: pi.ERROR_ACCESS_DENIED,
+                        raising=False)
 
     result = pi.probe_liveness(4242)
     assert result.state is pi.LivenessState.ALIVE
@@ -185,22 +185,20 @@ def test_windows_access_denied_is_alive_not_dead(monkeypatch):
 
 
 def test_windows_invalid_parameter_is_dead(monkeypatch):
-    import ctypes
-
     monkeypatch.setattr(pi.sys, "platform", "win32")
     monkeypatch.setattr(pi, "_OpenProcess", lambda *a: None)
-    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: pi.ERROR_INVALID_PARAMETER)
+    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: pi.ERROR_INVALID_PARAMETER,
+                        raising=False)
 
     assert pi.probe_liveness(4242).reclaimable is True
 
 
 def test_windows_unclassified_error_is_unknown(monkeypatch):
+    """ERROR_INVALID_PARAMETER is death; every other failure code is UNKNOWN."""
     monkeypatch.setattr(pi.sys, "platform", "win32")
     monkeypatch.setattr(pi, "_OpenProcess", lambda *a: None)
-    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: 5)
+    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: 1117, raising=False)
 
-    # 5 is ACCESS_DENIED here; force an unrelated code instead.
-    monkeypatch.setattr(pi.ctypes, "get_last_error", lambda: 1117)
     result = pi.probe_liveness(4242)
     assert result.state is pi.LivenessState.UNKNOWN
     assert result.reclaimable is False
