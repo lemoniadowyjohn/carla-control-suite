@@ -186,7 +186,9 @@ class FrameBookkeeping:
         else:
             if len(self.seen) >= self.seen_cap:
                 # Bounded duplicate memory: the window resets, the lifetime
-                # aggregates below survive, so gap_count stays exact.
+                # aggregates below survive; a re-delivered frame older than
+                # the window is then counted as fresh, so gap_count and
+                # dropped may be understated — never overstated.
                 self.seen.clear()
             self.seen.add(frame.frame_id)
             self.unique += 1
