@@ -16,6 +16,7 @@ import os
 import signal
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -574,6 +575,83 @@ class TestInterruptContract:
         assert rec["cleanup"]["outcome"] != "survived_escalation"
         assert not _pid_alive(rec["child_pid"])
         assert st.state == "INTERRUPTED"
+
+    @pytest.mark.parametrize("platform_interrupt_code", [
+        pytest.param(-signal.SIGINT, id="posix_signal_death"),
+        pytest.param(0xC000013A, id="windows_control_event_exit"),
+    ])
+    def test_interrupt_classification_drives_state_without_a_supervisor_latch(
+            self, tmp_path, monkeypatch, platform_interrupt_code):
+        """A child killed by an interrupt is INTERRUPTED even when the
+        supervisor was never signalled.
+
+        The state transition is driven by the child's termination
+        classification, not only by the supervisor's own latch; keying it to
+        the latch alone mislabels a signal-killed child as CHILD_FAILED.
+        """
+        st = self._state(tmp_path)
+
+        class _SignalKilledChild(_FakeChild):
+            def __init__(self, rc):
+                super().__init__()
+                self._die(rc)
+
+            def communicate(self, timeout=None):
+                return b"", b""
+
+        monkeypatch.setattr(
+            subprocess, "Popen",
+            lambda *a, **k: _SignalKilledChild(platform_interrupt_code))
+        rec = run_supervised(["UE4Editor-Cmd.exe", "proj.uproject"], state=st)
+        assert rec["termination_classification"]["classification"] == \
+            EXTERNALLY_INTERRUPTED
+        assert rec["termination_classification"]["is_interrupted"] is True
+        assert rec["supervisor_latched_interrupt"] is False
+        assert rec["interrupted"] is True
+        assert st.state == "INTERRUPTED"
+
+    def test_timeout_reaps_the_child_it_started(self, tmp_path):
+        st = self._state(tmp_path)
+        rec = run_supervised(
+            [sys.executable, "-c", "import time; time.sleep(30)"],
+            state=st, timeout_sec=1)
+        assert rec["termination_classification"]["classification"] == \
+            "CHILD_TIMEOUT"
+        assert rec["cleanup"] is not None
+        assert rec["cleanup"]["outcome"] != "survived_escalation"
+        assert not _pid_alive(rec["child_pid"])
+        assert st.state == CHILD_FAILED
+
+    def test_sigint_handler_is_restored_after_the_call(self, tmp_path):
+        before = signal.getsignal(signal.SIGINT)
+        st = self._state(tmp_path)
+        run_supervised([sys.executable, "-c", "pass"], state=st)
+        assert signal.getsignal(signal.SIGINT) is before
+
+    def test_runs_from_a_non_main_thread_and_still_writes_a_receipt(self,
+                                                                     tmp_path):
+        """signal.signal is main-thread only; the contract must still hold."""
+        st = self._state(tmp_path)
+        box = {}
+
+        def worker():
+            try:
+                box["receipt"] = run_supervised(
+                    [sys.executable, "-c", "pass"], state=st)
+            except BaseException as exc:          # pragma: no cover - diagnostic
+                box["error"] = exc
+
+        thread = threading.Thread(target=worker)
+        thread.start()
+        thread.join(timeout=60)
+        assert "error" not in box, box.get("error")
+        assert box["receipt"]["termination_classification"]["classification"] \
+            == CLEAN_EXIT
+        assert st.state == "VALIDATING_OUTPUT"
+        assert self._receipt(tmp_path)["schema"] == \
+            "commandlet_execution_receipt/v1"
+        assert "sigint_latch_unavailable" in [
+            e["event"] for e in box["receipt"]["event_order"]]
 
     @pytest.mark.parametrize(
         "child_code,return_code,expect_state,expect_class",

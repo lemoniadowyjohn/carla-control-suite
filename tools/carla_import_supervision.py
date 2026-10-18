@@ -621,6 +621,12 @@ def run_supervised(command: list[str], *, state: ImportState,
                 "detail": "timeout after %ss" % timeout_sec,
                 "is_crash": False, "is_success": False, "is_interrupted": False,
             }
+            # A timed-out child is still ours: reaping it here is the same
+            # obligation as the interrupt path, otherwise CHILD_TIMEOUT leaks a
+            # live process that outlives its own terminal record.
+            cleanup = _reap_interrupted_child(proc, events)
+            detail = "%s; cleanup=%s" % (
+                classification["detail"], cleanup.get("outcome"))
 
         if classification is None:      # defensive: receipts are always complete
             classification = classify_exit_status(completion["rc"]
@@ -644,7 +650,9 @@ def run_supervised(command: list[str], *, state: ImportState,
             "stdout_path": stdout_path,
             "stderr_path": stderr_path,
             "stderr_tail": detail,
-            "interrupted": interrupted_outcome,
+            "interrupted": interrupted_outcome or bool(
+                classification.get("is_interrupted")),
+            "supervisor_latched_interrupt": interrupted_outcome,
             "interrupt_after_completion": interrupt_after_completion,
             "late_keyboard_interrupt": late_keyboard_interrupt,
             "child_alive_at_interrupt": (latch["alive_at_t_int"]
@@ -657,7 +665,11 @@ def run_supervised(command: list[str], *, state: ImportState,
         }
 
         def _record_terminal_state() -> None:
-            if interrupted_outcome:
+            # An INTERRUPTED terminal state is driven by the child's termination
+            # classification, not only by the supervisor's own latch: a child
+            # killed by SIGINT/SIGTERM (or a Windows control-event exit) is an
+            # interruption even when the supervisor itself was never signalled.
+            if interrupted_outcome or classification.get("is_interrupted"):
                 state.transition("INTERRUPTED",
                                  terminal_reason=classification["classification"],
                                  return_code=classification.get("returncode"))
