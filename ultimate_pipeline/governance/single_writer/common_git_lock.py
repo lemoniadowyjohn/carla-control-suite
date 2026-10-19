@@ -65,6 +65,14 @@ SCHEMA_VERSION = "common-git-lock/v2"
 DEFAULT_TIMEOUT_SECONDS = 300
 
 _FRESH_PUBLISH_REREAD_DELAY_S = 0.005
+
+# Windows denies ``os.replace`` on a file another thread holds open for reading
+# (WinError 32, no FILE_SHARE_DELETE). A concurrent acquirer reads the published
+# record while deciding whether it may reclaim, so a legitimate claim-by-rename
+# can lose that race. The rename is therefore retried for a bounded interval.
+# These are retry budgets for one rename, not a wait on another party.
+_CLAIM_RENAME_RETRY_S = 2.0
+_CLAIM_RENAME_RETRY_DELAY_S = 0.005
 _LOCK_FILENAME = lock_paths.COMMON_GIT_LOCK_FILENAME
 _LEDGER_FILENAME = "common_git_lock.generations"
 
@@ -400,7 +408,7 @@ def _issue_generation(repo_root: Path, floor: int = 0) -> int:
 # ABA-safe transition primitives
 # ---------------------------------------------------------------------------
 
-def _claim_by_rename(repo_root: Path, tag: str, expect) -> tuple[bool, Optional[bytes]]:
+def _claim_by_rename(repo_root: Path, tag: str, expect):
     """Atomically move the published lock onto a private tombstone.
 
     ``os.replace`` is the linearization point of every ownership transition in
@@ -413,26 +421,51 @@ def _claim_by_rename(repo_root: Path, tag: str, expect) -> tuple[bool, Optional[
     else and must not be destroyed.
 
     On success the caller owns the returned tombstone path and must unlink it.
+
+    Returns ``(claimed, tombstone)``. ``(False, None)`` means the claim could not
+    be performed or verified -- callers must NOT read that as "somebody stole
+    the lock", because on Windows the rename is denied (WinError 32) whenever a
+    concurrent reader holds the published file open without FILE_SHARE_DELETE.
+    That is a transient condition, not evidence of a successor, so it is retried
+    for a bounded interval before giving up.
     """
     path = _get_common_git_lock_path(repo_root)
-    tomb = path.with_name(f"{path.name}.{tag}.{uuid.uuid4().hex}.tombstone")
-    try:
-        os.replace(path, tomb)
-    except OSError:
+    deadline = time.time() + _CLAIM_RENAME_RETRY_S
+    while True:
+        tomb = path.with_name(
+            f"{path.name}.{tag}.{uuid.uuid4().hex}.tombstone")
+        try:
+            os.replace(path, tomb)
+        except OSError:
+            # A concurrent reader can hold the published record open on
+            # Windows. Give it a bounded moment to finish and retry; only a
+            # persistent failure means the claim genuinely did not happen.
+            if time.time() < deadline and path.exists():
+                time.sleep(_CLAIM_RENAME_RETRY_DELAY_S)
+                continue
+            return False, None
+        try:
+            moved = tomb.read_bytes()
+        except OSError:
+            moved = b""
+        if expect(moved):
+            return True, tomb
+        # Not ours: put the bytes back ONLY while the published path is still
+        # free. A concurrent acquirer may have published into the claim window;
+        # replacing that successor would destroy a live owner's record, which is
+        # exactly the evidence loss this module exists to prevent. When the path
+        # is occupied the tombstone is kept as the preserved evidence.
+        if path.exists():
+            # Hand the tombstone back: the displaced evidence stays reachable by
+            # the caller instead of being orphaned.
+            return False, tomb
+        # A concurrent acquirer may briefly observe the path missing, but the
+        # evidence is never destroyed.
+        try:
+            os.replace(tomb, path)
+        except OSError:
+            pass
         return False, None
-    try:
-        moved = tomb.read_bytes()
-    except OSError:
-        moved = b""
-    if expect(moved):
-        return True, tomb
-    # Not ours: put the bytes straight back. A concurrent acquirer may briefly
-    # observe the path missing, but the evidence is never destroyed.
-    try:
-        os.replace(tomb, path)
-    except OSError:
-        pass
-    return False, None
 
 
 def _lock_matches(lock_id: str, owner_token: str, generation: int):
@@ -685,7 +718,26 @@ def release_common_git_lock(
         _lock_matches(current.lock_id, current.owner_token, current.generation),
     )
     if not claimed:
-        # The published lock changed between our read and our claim.
+        # Distinguish a changed owner from a rename that never happened. On
+        # Windows a concurrent reader can hold the published record open beyond
+        # the retry budget, which denies the rename without changing the owner.
+        # Reporting that as "the lock changed" would be false evidence.
+        try:
+            latest = _read_lock(repo_root)
+        except Exception:
+            latest = None
+        unchanged = (
+            latest is not None
+            and latest.lock_id == current.lock_id
+            and latest.owner_token == current.owner_token
+            and latest.generation == current.generation
+        )
+        if unchanged:
+            raise RuntimeError(
+                f"cannot release: the published lock could not be claimed "
+                f"(rename persistently denied; generation={current.generation} "
+                f"is unchanged); refusing"
+            )
         raise RuntimeError(
             f"cannot release: the published lock changed while releasing "
             f"(expected generation={current.generation}); refusing"

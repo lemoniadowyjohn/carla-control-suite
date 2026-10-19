@@ -14,6 +14,7 @@ import calendar
 import json
 import os
 import subprocess
+import threading
 import time
 from pathlib import Path
 
@@ -541,3 +542,129 @@ def test_common_git_lock_has_no_read_only_session_gate(repo, monkeypatch):
         assert lock.status == "active"
     finally:
         cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+
+
+# ---------------------------------------------------------------------------
+# Windows claim-by-rename: a concurrent reader must not abort a release.
+# On Windows `os.replace` is denied (WinError 32) while any other handle holds
+# the published record open without FILE_SHARE_DELETE, so a claim that lost that
+# race used to surface as "the published lock changed while releasing" -- a
+# misleading refusal of a perfectly legitimate release. It must instead retry.
+# ---------------------------------------------------------------------------
+
+
+def test_claim_survives_a_concurrent_reader_holding_the_lock_open(repo):
+    """A brief concurrent reader must not abort the claim.
+
+    A competing acquirer reads the published record while deciding whether it
+    may reclaim. On Windows that open handle denies the owner's rename
+    (WinError 32); the claim must retry and succeed once the reader is done
+    rather than surfacing a misleading "the lock changed" refusal.
+    """
+    incumbent = cgl.acquire_common_git_lock(repo, "incumbent")
+    path = _lock_path(repo)
+    before = path.read_bytes()
+
+    reader = open(path, "rb")
+
+    def release_reader():
+        time.sleep(0.05)          # a read is short-lived, unlike a hung holder
+        reader.close()
+
+    threading.Thread(target=release_reader, daemon=True).start()
+    claimed, tomb = cgl._claim_by_rename(repo, "release", lambda raw: raw == before)
+
+    assert claimed is True, "a transient reader must not abort the claim"
+    assert tomb is not None
+    tomb.unlink()
+
+    again = cgl.acquire_common_git_lock(repo, "after")
+    cgl.release_common_git_lock(repo, again.owner_token, again.lock_id)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="WinError 32 is Windows-specific")
+def test_release_is_not_refused_merely_because_a_reader_is_open(repo):
+    """End-to-end: release succeeds while a short-lived reader holds the lock."""
+    incumbent = cgl.acquire_common_git_lock(repo, "incumbent")
+    path = _lock_path(repo)
+    reader = open(path, "rb")
+
+    def release_reader():
+        time.sleep(0.05)
+        reader.close()
+
+    threading.Thread(target=release_reader, daemon=True).start()
+    cgl.release_common_git_lock(repo, incumbent.owner_token, incumbent.lock_id)
+    reader.close()
+    assert not path.exists()
+
+
+@pytest.mark.skipif(os.name != "nt", reason="WinError 32 is Windows-specific")
+def test_release_reports_a_persistent_rename_denial_accurately(repo, monkeypatch):
+    """A denied rename is not a changed owner and must not be reported as one.
+
+    When a reader holds the record open past the retry budget the rename never
+    happens, so the published generation is unchanged. Claiming it "changed"
+    would be false evidence; the refusal must say what actually happened and
+    leave the live record intact and releasable.
+    """
+    incumbent = cgl.acquire_common_git_lock(repo, "incumbent")
+    path = _lock_path(repo)
+    monkeypatch.setattr(cgl, "_CLAIM_RENAME_RETRY_S", 0.05)
+    monkeypatch.setattr(cgl, "_CLAIM_RENAME_RETRY_DELAY_S", 0.01)
+
+    reader = open(path, "rb")
+    try:
+        with pytest.raises(RuntimeError) as excinfo:
+            cgl.release_common_git_lock(
+                repo, incumbent.owner_token, incumbent.lock_id)
+    finally:
+        reader.close()
+
+    message = str(excinfo.value)
+    assert "could not be claimed" in message
+    assert "changed while releasing" not in message
+    assert path.exists(), "the live record must survive a denied rename"
+    assert cgl.release_common_git_lock(
+        repo, incumbent.owner_token, incumbent.lock_id) is True
+
+
+def test_claim_restore_never_clobbers_a_concurrent_successor(repo, monkeypatch):
+    """Restoring non-matching bytes must not overwrite a new owner's record.
+
+    A successor that publishes while a claim is in flight must keep its record:
+    replacing it would destroy a live owner's evidence, which is precisely what
+    this module exists to prevent.
+    """
+    path = _lock_path(repo)
+    cgl._write_lock(cgl.CommonGitLock(
+        repo_root=str(repo), operation="incumbent", generation=7,
+        holder_pid=os.getpid(), holder_ppid=os.getpid(),
+        holder_cmdline="pytest", holder_start_identity="x",
+        expires_at="2999-01-01T00:00:00Z",
+    ))
+
+    real_replace = os.replace
+    successor_bytes = json.dumps(
+        {"lock_id": "successor", "owner_token": "t", "generation": 8}
+    ).encode("utf-8")
+    injected = {"done": False}
+
+    def replace_and_publish_a_successor(src, dst):
+        real_replace(src, dst)
+        # The claim has just moved the published record away; a successor
+        # publishes into the window before the claim inspects the path.
+        if not injected["done"] and Path(dst).name.endswith(".tombstone"):
+            injected["done"] = True
+            path.write_bytes(successor_bytes)
+
+    monkeypatch.setattr(cgl.os, "replace", replace_and_publish_a_successor)
+    claimed, tomb = cgl._claim_by_rename(repo, "reclaim", lambda raw: False)
+    monkeypatch.undo()
+
+    assert claimed is False
+    assert path.read_bytes() == successor_bytes, "successor record was clobbered"
+    assert tomb is not None and Path(tomb).exists(), \
+        "displaced evidence must be preserved as a tombstone"
+    Path(tomb).unlink()
+    path.unlink()
