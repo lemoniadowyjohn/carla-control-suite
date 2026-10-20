@@ -44,8 +44,6 @@ jobs:
     permissions:
       contents: read
     env:
-      # Keep scratch off the runner default so a large suite cannot exhaust it.
-      TMPDIR: ${{ runner.temp }}/pytest-tmp
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -101,6 +99,9 @@ jobs:
       # required: without it `tee` would mask a pytest failure and the job
       # would report green.
       - name: Run offline pytest
+        env:
+          # `runner` context is only available at step level, not job level.
+          TMPDIR: ${{ runner.temp }}/pytest-tmp
         run: |
           set -o pipefail
           mkdir -p ci-artifacts "$TMPDIR"
