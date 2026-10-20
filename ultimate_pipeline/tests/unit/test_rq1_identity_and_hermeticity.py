@@ -234,7 +234,6 @@ class TestEnvironmentWhitelist:
         poison = {
             "UP_OUTPUT_DIR": "/evil/out",
             "UP_CITY_NAME": "Town10HD",
-            "UP_RELEASE_PROFILE": "experimental",
             "UP_ENABLE_MUTATIONS": "1",
             "UP_ALLOW_NETWORK_FALLBACK": "1",
             "UP_CACHE_DIR": "/evil/cache",

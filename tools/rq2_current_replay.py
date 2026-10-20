@@ -141,10 +141,17 @@ def main() -> int:
 
     # ---- historical comparison ------------------------------------------
     hist = json.loads(HISTORICAL_VALIDATION_PATH.read_text(encoding="utf-8"))
-    frozen_flat = _flatten_metrics(frozen.get("scopes", {}).get("manual_hull", {}))
-    current_flat = _flatten_metrics(doc["scopes"]["manual_hull"])
-    frozen_flat.update(_flatten_metrics(frozen.get("scopes", {}).get("whole_map", {})))
-    current_flat.update(_flatten_metrics(doc["scopes"]["whole_map"]))
+
+    def _flatten_scopes(scopes_doc: Dict[str, Any]) -> Dict[str, Any]:
+        out: Dict[str, Any] = {}
+        for scope in sorted(scopes_doc):
+            flat = _flatten_metrics(scopes_doc[scope])
+            for key, value in flat.items():
+                out[f"{scope}.{key}"] = value
+        return out
+
+    frozen_flat = _flatten_scopes(frozen.get("scopes", {}))
+    current_flat = _flatten_scopes(doc["scopes"])
 
     changes: List[Dict[str, Any]] = []
     agreement: Dict[str, Any] = {}
