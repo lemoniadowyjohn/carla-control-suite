@@ -13,7 +13,10 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
+# Import expected health gates from registry for authoritative gate list
+from ultimate_pipeline.signals.registry import expected_health_gates
 
 
 def _utc_now() -> str:
@@ -248,6 +251,20 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
     except Exception:
         summary["overall_ok"] = True
 
+    # Enforce expected health gates (NEW-335): all expected gates must be present
+    # and passing. Missing expected gates are treated as failures.
+    try:
+        expected = expected_health_gates()
+        missing = [g for g in expected if g not in summary["gates"]]
+        if missing:
+            summary["overall_ok"] = False
+            summary["missing_expected_gates"] = missing
+            for g in missing:
+                summary["per_stage_failures"].setdefault("health_enforcement", []).append(g)
+    except Exception:
+        # If registry is unavailable, fall back to observed-only behavior
+        pass
+
     try:
         map_stats = _load_json(os.path.join(out_dir, "map_statistics.json")) or {}
         roads = map_stats.get("roads", {}).get("count")
@@ -322,17 +339,15 @@ def build_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = 
 
 
 def write_pipeline_health_summary(out_dir: str, stage_reports_dir: str | None = None) -> str:
+    """Write pipeline health summary. Raises on failure (not fail-open)."""
     summary = build_pipeline_health_summary(out_dir, stage_reports_dir=stage_reports_dir)
     output_path = os.path.join(out_dir, "pipeline_health_summary.json")
-    try:
-        os.makedirs(out_dir, exist_ok=True)
-        text = json.dumps(summary, indent=2, sort_keys=True, ensure_ascii=True)
-        if not text.endswith("\n"):
-            text += "\n"
-        with open(output_path, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text)
-    except Exception:
-        pass
+    os.makedirs(out_dir, exist_ok=True)
+    text = json.dumps(summary, indent=2, sort_keys=True, ensure_ascii=True)
+    if not text.endswith("\n"):
+        text += "\n"
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
     return output_path
 
 
