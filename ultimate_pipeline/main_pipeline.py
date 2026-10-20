@@ -575,6 +575,15 @@ from ultimate_pipeline.core.odr_io import (
 )
 from ultimate_pipeline.core.validation_report import ValidationReport
 from ultimate_pipeline.core.run_manifest import update_run_manifest
+from ultimate_pipeline.core.terminal_authority import (
+    revoke_stale_success,
+    generate_run_id,
+    generate_run_started_at,
+    compute_settings_digest,
+    get_source_sha,
+    get_effective_profile,
+    write_run_identity,
+)
 from ultimate_pipeline.utils.file_hashing import safe_md5_file
 from ultimate_pipeline.core.carla_utils import (
     ensure_carla_ready,
@@ -903,12 +912,12 @@ class MainPipeline:
         ensure_dir(self.out_dir)
 
         # Terminal run identity (generated once at admission)
-        self._run_id = uuid.uuid4().hex
-        self._run_started_at = datetime.now(timezone.utc).isoformat()
-        self._source_sha = self._get_source_sha()
-        self._profile = self._get_effective_profile()
-        self._settings_digest = self._compute_settings_digest()
-        self._write_run_identity()
+        self._run_id = generate_run_id()
+        self._run_started_at = generate_run_started_at()
+        self._source_sha = get_source_sha()
+        self._profile = get_effective_profile(self.settings)
+        self._settings_digest = compute_settings_digest(self.settings)
+        write_run_identity(self.out_dir, self._run_id, self._source_sha, self._profile, self._settings_digest, self._run_started_at)
 
         # Optional preanchoring provenance (opt-in; default OFF)
         self._preanchor_manifest: dict = {"applied": False}
@@ -965,79 +974,38 @@ class MainPipeline:
         self._run_stage = str(stage)
         self._write_run_status(status="running", stage=self._run_stage, message=message)
 
-    # -----------------------------------------------------
+# -----------------------------------------------------
     # 🏷️ TERMINAL RUN IDENTITY & STALE SUCCESS REVOCATION
     # -----------------------------------------------------
+    def _revoke_stale_success(self) -> None:
+        """Detect and revoke any pre-existing SUCCESS.txt before a new run mutates state.
+
+        Delegates to the standalone utility for testability and reuse.
+        """
+        revoke_stale_success(self.out_dir)
+
     def _get_source_sha(self) -> str:
         """Return the current Git commit SHA, or a deterministic placeholder."""
-        try:
-            import subprocess
-            repo_root = Path(__file__).resolve().parents[2]
-            result = subprocess.run(
-                ["git", "rev-parse", "HEAD"],
-                cwd=repo_root,
-                capture_output=True,
-                text=True,
-                timeout=5,
-            )
-            if result.returncode == 0:
-                return result.stdout.strip()
-        except Exception:
-            pass
-        return "unknown"
+        return get_source_sha()
 
     def _get_effective_profile(self) -> str:
         """Resolve the effective release profile from settings or environment."""
-        profile = getattr(self.settings, "RELEASE_PROFILE", "")
-        if not profile:
-            profile = os.getenv("UP_RELEASE_PROFILE", "")
-        if not profile:
-            profile = "structural_release"
-        return profile.lower()
+        return get_effective_profile(self.settings)
 
     def _compute_settings_digest(self) -> str:
         """Compute a deterministic SHA-256 of the effective settings snapshot."""
-        try:
-            s = self.settings
-            snapshot = {
-                k: getattr(s, k)
-                for k in dir(s)
-                if k.isupper() and not callable(getattr(s, k))
-            }
-            blob = json.dumps(snapshot, sort_keys=True, default=str).encode("utf-8")
-            return hashlib.sha256(blob).hexdigest()
-        except Exception:
-            return ""
+        return compute_settings_digest(self.settings)
 
     def _write_run_identity(self) -> None:
         """Write run_identity.json at admission time."""
-        try:
-            identity = {
-                "run_id": self._run_id,
-                "source_sha": self._source_sha,
-                "profile": self._profile,
-                "settings_digest": self._settings_digest,
-                "started_at_utc": self._run_started_at,
-                "out_dir": self.out_dir,
-            }
-            path = Path(self.out_dir) / "run_identity.json"
-            path.write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        except Exception as e:
-            print(f"⚠️ Failed to write run_identity.json: {e}")
-
-    def _revoke_stale_success(self) -> None:
-        """Detect and revoke any pre-existing SUCCESS.txt before a new run mutates state."""
-        success_path = Path(self.out_dir) / "SUCCESS.txt"
-        if success_path.is_file():
-            try:
-                stale_hash = hashlib.sha256(success_path.read_bytes()).hexdigest()[:16]
-            except Exception:
-                stale_hash = "unreadable"
-            try:
-                success_path.unlink()
-                print(f"🗑️  Revoked stale SUCCESS.txt (sha256:{stale_hash}) from previous run")
-            except Exception as e:
-                print(f"⚠️ Failed to revoke stale SUCCESS.txt: {e}")
+        write_run_identity(
+            self.out_dir,
+            self._run_id,
+            self._source_sha,
+            self._profile,
+            self._settings_digest,
+            self._run_started_at,
+        )
 
     def _find_final_xodr(self) -> str:
         """Return the path to the final XODR artifact for this run."""
