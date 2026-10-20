@@ -187,6 +187,14 @@ def main() -> int:
         "python": sys.version.split()[0],
         "platform": __import__("platform").platform(),
     }
+
+    # Physical metric payload written FIRST so the experiment receipt binds
+    # real bytes on disk (fail-closed hex-SHA256 bindings; no placeholders).
+    metrics_payload_path = REPO / "RQ2_CURRENT_METRICS_PAYLOAD.json"
+    metrics_payload_path.write_text(
+        json.dumps(doc, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8"
+    )
+
     inputs = [
         {"path": str(Path(auto_p).relative_to(REPO)), "sha256": doc["pair"]["auto"]["sha256"]},
         {"path": str(Path(manual_p).relative_to(REPO)), "sha256": doc["pair"]["manual"]["sha256"]},
@@ -211,7 +219,9 @@ def main() -> int:
         ),
         runtime=runtime_env,
         seeds=["deterministic-no-seed"],
-        output_paths=[{"path": str(REPO / "RQ2_CURRENT_VALIDATION.json"), "sha256": "PENDING"}],
+        output_paths=[
+            {"path": str(metrics_payload_path), "sha256": sha256_file(metrics_payload_path)}
+        ],
         raw_metric_payload=raw_metric_payload,
         statistics_method=(
             "point metric recomputation under frozen thresholds; frozen-check "
@@ -283,10 +293,12 @@ def main() -> int:
         json.dumps(current_doc, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8"
     )
 
-    receipt["output_paths"][0]["sha256"] = sha256_file(current_out)
-    receipt["output_paths"].append(
-        {"path": str(evidence_out), "sha256": "SELF (written after digest closure)"}
-    )
+    receipt["output_paths"] = [
+        {"path": str(metrics_payload_path), "sha256": sha256_file(metrics_payload_path)}
+    ]
+    from research.evidence.schemas import validate_receipt
+
+    validate_receipt(receipt, verify=True)
     evidence = {
         "schema": "rq2_evidence_receipt/v1",
         "generated_at_utc": now,
